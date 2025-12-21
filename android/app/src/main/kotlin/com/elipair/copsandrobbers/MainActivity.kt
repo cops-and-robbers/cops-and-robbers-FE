@@ -1,4 +1,4 @@
-package com.example.cops_and_robbers
+package com.elipair.copsandrobbers
 
 import io.flutter.embedding.android.FlutterActivity
 
