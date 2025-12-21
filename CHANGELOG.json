@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "lastUpdated": "2025-12-21T17:29:32Z",
+    "currentVersion": "1.0.8",
+    "projectType": "flutter",
+    "totalReleases": 1
+  },
+  "releases": [
+    {
+      "version": "1.0.8",
+      "project_type": "flutter",
+      "date": "2025-12-21",
+      "pr_number": 3,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트\n\n* **새로운 기능**\n  * 코드 품질 검사 자동화 워크플로우 추가\n  * iOS TestFlight 배포 자동화 구현\n  * Pretendard 폰트 지원 추가\n  * 게임 상세 요구사항 문서(PRD V2) 작성\n\n* **개선 사항**\n  * 앱 번들 식별자 업데이트\n  * iOS 최소 지원 버전을 15.0으로 상향\n  * Android 및 iOS 빌드 서명 설정 강화\n  * 환경 설정 관리 개선\n\n* **메타데이터**\n  * 버전 1.0.8으로 업데이트\n  * Git 커밋 작성자 매핑 추가",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "코드 품질 검사 자동화 워크플로우 추가",
+            "iOS TestFlight 배포 자동화 구현",
+            "Pretendard 폰트 지원 추가",
+            "게임 상세 요구사항 문서(PRD V2) 작성"
+          ]
+        },
+        "개선_사항": {
+          "title": "개선 사항",
+          "items": [
+            "앱 번들 식별자 업데이트",
+            "iOS 최소 지원 버전을 15.0으로 상향",
+            "Android 및 iOS 빌드 서명 설정 강화",
+            "환경 설정 관리 개선"
+          ]
+        },
+        "메타데이터": {
+          "title": "메타데이터",
+          "items": [
+            "버전 1.0.8으로 업데이트",
+            "Git 커밋 작성자 매핑 추가"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    }
+  ]
+}
