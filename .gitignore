@@ -44,6 +44,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# iOS/macOS build artifacts
+/ios/build/
+/macos/build/
+
+# CocoaPods
+/macos/Podfile
+
 # ====================================================================
 # TEMPLATE: Auto-added entries
 # ====================================================================
