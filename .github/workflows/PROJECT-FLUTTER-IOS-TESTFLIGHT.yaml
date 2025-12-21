@@ -61,7 +61,7 @@ on:
   push:
     branches: ["deploy"]
   workflow_run:
-    workflows: ["CHANGELOG 자동 업데이트"]
+    workflows: ["AUTO UPDATE PROJECT CHANGELOG"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
