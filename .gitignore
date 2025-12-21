@@ -44,9 +44,18 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# iOS/macOS build artifacts
+/ios/build/
+/macos/build/
+
+# CocoaPods
++/ios/Pods/  
++/macos/Pods/ 
+
 # ====================================================================
-# SUH-DEVOPS-TEMPLATE: Auto-added entries
+# TEMPLATE: Auto-added entries
 # ====================================================================
+CLAUDE.md
 /.claude/settings.local.json
 /.report
 CLEADME.md
