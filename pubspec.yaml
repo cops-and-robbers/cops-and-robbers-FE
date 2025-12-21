@@ -5,14 +5,12 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: 'none'
-version: 1.0.1+1
-
+version: 1.0.2+2
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
 environment:
   sdk: ^3.9.2
-
 # --------------------------------------------
 # 프로덕션 의존성 (앱 실행에 필요한 패키지)
 # --------------------------------------------
@@ -20,11 +18,8 @@ dependencies:
   # Flutter SDK 기본 패키지
   flutter:
     sdk: flutter
-
   # iOS 스타일 아이콘 (Cupertino 디자인)
   cupertino_icons: ^1.0.8
-
-
 # --------------------------------------------
 # 개발 의존성 (개발/빌드 시에만 필요한 패키지)
 # --------------------------------------------
@@ -32,34 +27,29 @@ dev_dependencies:
   # Flutter 테스트 프레임워크
   flutter_test:
     sdk: flutter
-
   # 코드 린트 규칙 (코드 품질 검사)
   flutter_lints: ^5.0.0
-
   # 앱 아이콘 생성 도구
   # 사용법: flutter pub run flutter_launcher_icons
   flutter_launcher_icons: ^0.14.3
-
   # 앱 패키지명 변경 도구
   # 사용법: flutter pub run change_app_package_name:main com.새패키지명
   change_app_package_name: ^1.5.0
-
 # --------------------------------------------
 # Flutter 설정
 # --------------------------------------------
 flutter:
   # Material Design 아이콘 및 위젯 사용
   uses-material-design: true
+# TODO: 에셋 추가 시 아래 주석 해제
+# assets:
+#   - assets/images/
+#   - assets/icons/
 
-  # TODO: 에셋 추가 시 아래 주석 해제
-  # assets:
-  #   - assets/images/
-  #   - assets/icons/
-
-  # TODO: 커스텀 폰트 추가 시 아래 주석 해제
-  # fonts:
-  #   - family: CustomFont
-  #     fonts:
-  #       - asset: assets/fonts/CustomFont-Regular.ttf
-  #       - asset: assets/fonts/CustomFont-Bold.ttf
-  #         weight: 700
+# TODO: 커스텀 폰트 추가 시 아래 주석 해제
+# fonts:
+#   - family: CustomFont
+#     fonts:
+#       - asset: assets/fonts/CustomFont-Regular.ttf
+#       - asset: assets/fonts/CustomFont-Bold.ttf
+#         weight: 700
