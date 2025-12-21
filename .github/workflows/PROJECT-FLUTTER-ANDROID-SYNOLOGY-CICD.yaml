@@ -52,7 +52,7 @@ jobs:
       # .env 파일 생성
       - name: Create .env file from GitHub Secret
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "${{ secrets.ENV }}" > .env
           echo ".env file created"
           ls -la
 
