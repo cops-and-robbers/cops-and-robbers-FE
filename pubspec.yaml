@@ -76,7 +76,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # TODO: 에셋 추가 시 주석 해제
   assets:
     - assets/
     - assets/fonts/
