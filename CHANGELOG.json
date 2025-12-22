@@ -1,11 +1,27 @@
 {
   "metadata": {
-    "lastUpdated": "2025-12-22T01:52:57Z",
-    "currentVersion": "1.0.10",
+    "lastUpdated": "2025-12-22T02:22:02Z",
+    "currentVersion": "1.0.11",
     "projectType": "flutter",
-    "totalReleases": 2
+    "totalReleases": 3
   },
   "releases": [
+    {
+      "version": "1.0.11",
+      "project_type": "flutter",
+      "date": "2025-12-22",
+      "pr_number": 7,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리즈 노트\n\n* **기타**\n  * 애플리케이션 버전이 1.0.11로 업데이트되었습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "애플리케이션 버전이 1.0.11로 업데이트되었습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.0.10",
       "project_type": "flutter",
