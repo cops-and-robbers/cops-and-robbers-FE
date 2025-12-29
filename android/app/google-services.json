@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "361137060318",
+    "project_id": "copsandrobbers-c2281",
+    "storage_bucket": "copsandrobbers-c2281.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361137060318:android:828ad5f499a5cb5837454f",
+        "android_client_info": {
+          "package_name": "com.elipair.copsandrobbers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqXgByFZfTJAwK4Zw3385hVyh3pugdSzs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

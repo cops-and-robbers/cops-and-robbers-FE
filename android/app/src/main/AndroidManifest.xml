@@ -1,4 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 인터넷 권한 (FCM 통신용) -->
+    <!-- Internet permission for FCM communication -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- 알림 권한 (Android 13+) -->
+    <!-- Notification permission for Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- 진동 권한 (알림 진동용) -->
+    <!-- Vibration permission for notification vibration -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
     <application
         android:label="cops_and_robbers"
         android:name="${applicationName}"
@@ -30,6 +42,18 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- FCM 기본 알림 아이콘 -->
+        <!-- FCM default notification icon -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+
+        <!-- FCM 기본 알림 색상 -->
+        <!-- FCM default notification color -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@android:color/white" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
