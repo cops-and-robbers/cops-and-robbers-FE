@@ -80,9 +80,15 @@ class FontTestPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Spacing & Radius 테스트', style: AppTextStyles.heading4.bold()),
+                  Text(
+                    'Spacing & Radius 테스트',
+                    style: AppTextStyles.heading4.bold(),
+                  ),
                   SizedBox(height: AppSpacing.s8),
-                  Text('AppPadding.cardPadding + AppRadius.card 적용됨', style: AppTextStyles.caption),
+                  Text(
+                    'AppPadding.cardPadding + AppRadius.card 적용됨',
+                    style: AppTextStyles.caption,
+                  ),
                 ],
               ),
             ),
