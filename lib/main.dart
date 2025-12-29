@@ -1,8 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cops_and_robbers/core/constants/text_styles.dart';
+import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
+import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
 
-void main() {
+void main() async {
+  // Flutter 엔진 초기화 보장
+  // Ensure Flutter engine is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 1. Firebase 초기화
+  // 1. Initialize Firebase
+  await Firebase.initializeApp();
+
+  // 2. 로컬 알림 서비스 초기화
+  // 2. Initialize local notifications service
+  final localNotificationsService = LocalNotificationsService.instance();
+  await localNotificationsService.init();
+
+  // 3. FCM 서비스 초기화
+  // 3. Initialize FCM service
+  await FirebaseMessagingService.instance().init(
+    localNotificationsService: localNotificationsService,
+  );
+
   runApp(const MyApp());
 }
 
