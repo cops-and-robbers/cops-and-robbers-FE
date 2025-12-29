@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cops_and_robbers/core/constants/text_styles.dart';
+import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
 
@@ -65,112 +66,130 @@ class FontTestPage extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppPadding.screenPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Spacing & Radius 테스트
+            Container(
+              padding: AppPadding.cardPadding,
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: AppRadius.card,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Spacing & Radius 테스트', style: AppTextStyles.heading4.bold()),
+                  SizedBox(height: AppSpacing.s8),
+                  Text('AppPadding.cardPadding + AppRadius.card 적용됨', style: AppTextStyles.caption),
+                ],
+              ),
+            ),
+            SizedBox(height: AppSpacing.s24),
+
             // Heading Styles 테스트
             Text('Heading Styles', style: AppTextStyles.heading3.bold()),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s16),
             Text('Heading 1 (32sp)', style: AppTextStyles.heading1),
             Text(
               '경찰과 도둑 Cops and Robbers 1234567890',
               style: AppTextStyles.heading1,
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s32),
             Text('Heading 2 (28sp)', style: AppTextStyles.heading2),
             Text(
               '경찰과 도둑 Cops and Robbers 1234567890',
               style: AppTextStyles.heading2,
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s32),
             Text('Heading 3 (24sp)', style: AppTextStyles.heading3),
             Text(
               '경찰과 도둑 Cops and Robbers 1234567890',
               style: AppTextStyles.heading3,
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s32),
             Text('Heading 4 (20sp)', style: AppTextStyles.heading4),
             Text(
               '경찰과 도둑 Cops and Robbers 1234567890',
               style: AppTextStyles.heading4,
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: AppSpacing.s32),
 
             // Body Styles 테스트
             Text('Body Styles', style: AppTextStyles.heading3.bold()),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s16),
             Text('Body 1 (16sp)', style: AppTextStyles.body1),
             Text(
               '경찰과 도둑 Cops and Robbers 1234567890',
               style: AppTextStyles.body1,
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s32),
             Text('Body 2 (14sp)', style: AppTextStyles.body2),
             Text(
               '경찰과 도둑 Cops and Robbers 1234567890',
               style: AppTextStyles.body2,
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: AppSpacing.s32),
 
             // Small Styles 테스트
             Text('Small Styles', style: AppTextStyles.heading3.bold()),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s16),
             Text('Caption (12sp)', style: AppTextStyles.caption),
             Text(
               '경찰과 도둑 Cops and Robbers 1234567890',
               style: AppTextStyles.caption,
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s32),
             Text('Overline (10sp)', style: AppTextStyles.overline),
             Text(
               '경찰과 도둑 Cops and Robbers 1234567890',
               style: AppTextStyles.overline,
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: AppSpacing.s32),
 
             // Weight 테스트
             Text('Weight Variations', style: AppTextStyles.heading3.bold()),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s16),
             Text('Thin (100)', style: AppTextStyles.body1.thin()),
             Text('경찰과 도둑 Cops and Robbers', style: AppTextStyles.body1.thin()),
-            const Divider(),
+            Divider(height: AppSpacing.s24),
             Text('ExtraLight (200)', style: AppTextStyles.body1.extraLight()),
             Text(
               '경찰과 도둑 Cops and Robbers',
               style: AppTextStyles.body1.extraLight(),
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s24),
             Text('Light (300)', style: AppTextStyles.body1.light()),
             Text('경찰과 도둑 Cops and Robbers', style: AppTextStyles.body1.light()),
-            const Divider(),
+            Divider(height: AppSpacing.s24),
             Text('Regular (400)', style: AppTextStyles.body1.regular()),
             Text(
               '경찰과 도둑 Cops and Robbers',
               style: AppTextStyles.body1.regular(),
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s24),
             Text('Medium (500)', style: AppTextStyles.body1.medium()),
             Text(
               '경찰과 도둑 Cops and Robbers',
               style: AppTextStyles.body1.medium(),
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s24),
             Text('SemiBold (600)', style: AppTextStyles.body1.semiBold()),
             Text(
               '경찰과 도둑 Cops and Robbers',
               style: AppTextStyles.body1.semiBold(),
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s24),
             Text('Bold (700)', style: AppTextStyles.body1.bold()),
             Text('경찰과 도둑 Cops and Robbers', style: AppTextStyles.body1.bold()),
-            const Divider(),
+            Divider(height: AppSpacing.s24),
             Text('ExtraBold (800)', style: AppTextStyles.body1.extraBold()),
             Text(
               '경찰과 도둑 Cops and Robbers',
               style: AppTextStyles.body1.extraBold(),
             ),
-            const Divider(),
+            Divider(height: AppSpacing.s24),
             Text('Black (900)', style: AppTextStyles.body1.black()),
             Text('경찰과 도둑 Cops and Robbers', style: AppTextStyles.body1.black()),
           ],
