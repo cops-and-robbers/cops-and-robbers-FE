@@ -1,11 +1,43 @@
 {
   "metadata": {
-    "lastUpdated": "2025-12-22T02:22:02Z",
-    "currentVersion": "1.0.11",
+    "lastUpdated": "2025-12-29T03:15:53Z",
+    "currentVersion": "1.0.13",
     "projectType": "flutter",
-    "totalReleases": 3
+    "totalReleases": 4
   },
   "releases": [
+    {
+      "version": "1.0.13",
+      "project_type": "flutter",
+      "date": "2025-12-29",
+      "pr_number": 10,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Documentation**\n  * 커맨드 라우터 및 워크플로우 가이드 문서 업데이트\n  * 계획, 분석, 구현 단계별 상세 프로세스 문서 추가\n  * 디자인 및 리팩토링 분석 모드 가이드 추가\n\n* **New Features**\n  * 일관된 텍스트 스타일 시스템 도입으로 UI 일관성 강화\n  * 반응형 디자인 유틸리티 통합\n\n* **Chores**\n  * 애플리케이션 버전을 1.0.13으로 업데이트\n  * iOS 빌드 서명 설정 개선",
+      "parsed_changes": {
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "커맨드 라우터 및 워크플로우 가이드 문서 업데이트",
+            "계획, 분석, 구현 단계별 상세 프로세스 문서 추가",
+            "디자인 및 리팩토링 분석 모드 가이드 추가"
+          ]
+        },
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "일관된 텍스트 스타일 시스템 도입으로 UI 일관성 강화",
+            "반응형 디자인 유틸리티 통합"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전을 1.0.13으로 업데이트",
+            "iOS 빌드 서명 설정 개선"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.0.11",
       "project_type": "flutter",
