@@ -180,6 +180,17 @@ lib/core/
 
 ### 2. Features 레이어 (기능 모듈)
 
+**프로젝트 Feature 목록**:
+```
+features/
+├── auth/           # Google 로그인 및 인증
+├── session/        # F1: 게임 세션 관리
+├── map/            # F2: 지도 및 위치 추적
+├── game/           # F3: 게임 로직 및 규칙
+├── chat/           # F4: 팀별 채팅
+└── notification/   # F4: 알림 시스템
+```
+
 각 feature는 **Clean Architecture 3계층**으로 구성:
 
 ```
@@ -353,32 +364,8 @@ class GameSession with _$GameSession {
 
 ---
 
-### 3. Either 패턴 (에러 처리)
 
-**dartz 패키지 사용**:
-```dart
-import 'package:dartz/dartz.dart';
-
-abstract class SessionRepository {
-  Future<Either<Failure, GameSession>> createSession(CreateSessionRequest request);
-}
-
-// 사용 예시
-final result = await repository.createSession(request);
-result.fold(
-  (failure) => print('에러: ${failure.message}'),
-  (session) => print('성공: ${session.id}'),
-);
-```
-
-**장점**:
-- ✅ 명시적 에러 처리 (try-catch 대비)
-- ✅ 컴파일 타임 안전성
-- ✅ 함수형 프로그래밍 패턴
-
----
-
-### 4. WebSocket 연결 관리
+### 3. WebSocket 연결 관리
 
 **구조**:
 ```dart
@@ -423,6 +410,235 @@ class ChatWebSocketDataSource {
     );
   }
 }
+```
+
+---
+
+## Google 로그인 아키텍처
+
+### 인증 플로우 (Authentication Flow)
+
+```
+[User Tap Google Login Button]
+    ↓
+[LoginPage Widget] → onPressed()
+    ↓
+[AuthNotifier Provider] → signInWithGoogle()
+    ↓
+[GoogleSignInUseCase] → execute()
+    ↓
+[AuthRepository] → signInWithGoogle()
+    ↓
+[SocialAuthDataSource] → signInWithGoogle()
+    ↓
+[Google Sign-In SDK] → GoogleSignIn().signIn()
+    ↓
+[Google OAuth] → User Authentication
+    ↓
+[ID Token (JWT)] ← Google Returns
+    ↓
+[AuthRemoteDataSource] → POST /auth/google { idToken }
+    ↓
+[Backend Server] → Verify Token with Google
+    ↓
+[JWT Access/Refresh Token] ← Server Returns
+    ↓
+[SecureStorageService] → Save Tokens
+    ↓
+[AuthRepository] → Return UserEntity
+    ↓
+[AuthNotifier] → state = AsyncValue.data(user)
+    ↓
+[UI Rebuild] → Navigate to Home
+```
+
+### Google Sign-In 구성
+
+**패키지**: `google_sign_in: ^6.2.3`
+
+**설정 요구사항**:
+- Android: `google-services.json` 필요
+- iOS: `GoogleService-Info.plist` + URL Scheme 설정
+
+**토큰 타입**: ID Token (JWT)
+
+**코드 예시**:
+```dart
+// features/auth/data/datasources/social_auth_datasource.dart
+class SocialAuthDataSource {
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+  );
+
+  Future<String> signInWithGoogle() async {
+    final GoogleSignInAccount? account = await _googleSignIn.signIn();
+    if (account == null) throw AuthCancelledException();
+
+    final GoogleSignInAuthentication auth = await account.authentication;
+    return auth.idToken!; // JWT Token
+  }
+
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
+  }
+}
+```
+
+### JWT 토큰 관리
+
+#### 토큰 저장 (Secure Storage)
+```dart
+// core/services/storage/secure_storage_service.dart
+class SecureStorageService {
+  static const String _accessTokenKey = 'access_token';
+  static const String _refreshTokenKey = 'refresh_token';
+
+  Future<void> saveAccessToken(String token) async {
+    await _storage.write(key: _accessTokenKey, value: token);
+  }
+
+  Future<void> saveRefreshToken(String token) async {
+    await _storage.write(key: _refreshTokenKey, value: token);
+  }
+
+  Future<String?> getAccessToken() async {
+    return await _storage.read(key: _accessTokenKey);
+  }
+
+  Future<String?> getRefreshToken() async {
+    return await _storage.read(key: _refreshTokenKey);
+  }
+
+  Future<void> clearAll() async {
+    await _storage.deleteAll();
+  }
+}
+```
+
+#### 자동 토큰 갱신 (Dio Interceptor)
+```dart
+// core/network/api_interceptor.dart
+@override
+void onError(DioException err, ErrorInterceptorHandler handler) async {
+  if (err.response?.statusCode == 401) {
+    final refreshToken = await _storage.getRefreshToken();
+
+    if (refreshToken != null) {
+      try {
+        // Refresh Token으로 새 Access Token 요청
+        final response = await _dio.post('/auth/refresh',
+          data: {'refreshToken': refreshToken},
+        );
+
+        final newAccessToken = response.data['accessToken'];
+        await _storage.saveAccessToken(newAccessToken);
+
+        // 원래 요청 재시도
+        final retryRequest = err.requestOptions;
+        retryRequest.headers['Authorization'] = 'Bearer $newAccessToken';
+        final retryResponse = await _dio.fetch(retryRequest);
+
+        return handler.resolve(retryResponse);
+      } catch (_) {
+        // Refresh Token 만료 → 로그아웃
+        await _storage.clearAll();
+      }
+    }
+  }
+  handler.next(err);
+}
+```
+
+### 인증 상태 관리 (Riverpod)
+
+#### AuthNotifier Provider
+```dart
+// features/auth/presentation/providers/auth_provider.dart
+@riverpod
+class AuthNotifier extends _$AuthNotifier {
+  @override
+  FutureOr<UserEntity?> build() async {
+    // 앱 시작 시 저장된 토큰으로 자동 로그인 시도
+    final accessToken = await ref.read(secureStorageServiceProvider).getAccessToken();
+
+    if (accessToken != null) {
+      try {
+        final usecase = ref.read(getCurrentUserUsecaseProvider);
+        return await usecase.execute();
+      } catch (e) {
+        // 토큰 만료 시 null 반환
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  Future<void> signInWithGoogle() async {
+    state = const AsyncValue.loading();
+
+    try {
+      final usecase = ref.read(googleSignInUsecaseProvider);
+      final user = await usecase.execute();
+      state = AsyncValue.data(user);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  Future<void> logout() async {
+    await ref.read(logoutUsecaseProvider).execute();
+    state = const AsyncValue.data(null);
+  }
+}
+```
+
+#### UI 사용 예시
+```dart
+// features/auth/presentation/pages/login_page.dart
+class LoginPage extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authNotifierProvider);
+
+    return Scaffold(
+      body: authState.when(
+        data: (user) {
+          if (user != null) {
+            // 로그인 완료 → 홈 화면으로 이동
+            Future.microtask(() => context.go('/home'));
+            return const SizedBox();
+          }
+
+          // Google 로그인 버튼 표시
+          return Center(
+            child: GoogleSignInButton(
+              onPressed: () => ref.read(authNotifierProvider.notifier).signInWithGoogle(),
+            ),
+          );
+        },
+        loading: () => const CircularProgressIndicator(),
+        error: (error, stack) => Text('로그인 실패: $error'),
+      ),
+    );
+  }
+}
+```
+
+### 백엔드 API 엔드포인트
+
+```
+POST /auth/google
+Request: { "idToken": "eyJhbGc..." }
+Response: { "accessToken": "...", "refreshToken": "..." }
+
+POST /auth/refresh
+Request: { "refreshToken": "..." }
+Response: { "accessToken": "..." }
+
+POST /auth/logout
+Headers: { "Authorization": "Bearer <accessToken>" }
+Response: { "message": "Logged out successfully" }
 ```
 
 ---
@@ -636,7 +852,6 @@ class ChatWebSocketDataSource {
 - [WebSocket in Flutter](https://docs.flutter.dev/cookbook/networking/web-sockets)
 
 ### 디자인 패턴
-- [Either Pattern in Dart (dartz)](https://pub.dev/packages/dartz)
 - [Repository Pattern](https://medium.com/@jun.chenying/flutter-repository-pattern-5dc3d8dd0fa6)
 
 ---

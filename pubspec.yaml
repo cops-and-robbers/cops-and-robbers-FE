@@ -33,6 +33,9 @@ dependencies:
   flutter_dotenv: ^6.0.0 # 환경 변수 관리 (.env 파일)
   device_info_plus: ^10.1.2 # 기기 정보 수집 (FCM 기기 식별용)
   uuid: ^4.5.2 # 앱 내 고유 식별자 생성
+
+  # 소셜 로그인
+  google_sign_in: ^6.2.3 # Google 소셜 로그인
   # UI/UX 레이아웃
   flutter_screenutil: ^5.9.3 # 화면, 해상도 대응 유틸리티
   smooth_page_indicator: ^1.2.1 # 페이지 이동 인디케이터 UI (온보딩)
