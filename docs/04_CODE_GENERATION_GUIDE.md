@@ -81,28 +81,27 @@ class SessionNotifier extends _$SessionNotifier {
   Future<void> createSession(CreateSessionRequest request) async {
     state = const AsyncValue.loading();
 
-    // Use Case 호출
-    final usecase = ref.read(createSessionUsecaseProvider);
-    final result = await usecase.execute(request);
-
-    // Either 패턴 결과 처리
-    state = result.fold(
-      (failure) => AsyncValue.error(failure, StackTrace.current),
-      (session) => AsyncValue.data(session),
-    );
+    try {
+      // Use Case 호출
+      final usecase = ref.read(createSessionUsecaseProvider);
+      final session = await usecase.execute(request);
+      state = AsyncValue.data(session);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 
   /// 게임 세션 참가
   Future<void> joinSession(String inviteCode) async {
     state = const AsyncValue.loading();
 
-    final usecase = ref.read(joinSessionUsecaseProvider);
-    final result = await usecase.execute(inviteCode);
-
-    state = result.fold(
-      (failure) => AsyncValue.error(failure, StackTrace.current),
-      (session) => AsyncValue.data(session),
-    );
+    try {
+      final usecase = ref.read(joinSessionUsecaseProvider);
+      final session = await usecase.execute(inviteCode);
+      state = AsyncValue.data(session);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 }
 ```
@@ -231,12 +230,7 @@ final baseUrl = ref.watch(apiBaseUrlProvider);
 @riverpod
 Future<GameArea> gameArea(GameAreaRef ref, String gameId) async {
   final repository = ref.watch(mapRepositoryProvider);
-  final result = await repository.getGameArea(gameId);
-
-  return result.fold(
-    (failure) => throw failure,
-    (area) => area,
-  );
+  return await repository.getGameArea(gameId);
 }
 
 // 사용
@@ -632,7 +626,7 @@ class SessionRepositoryImpl implements SessionRepository {
   SessionRepositoryImpl(this._api);
 
   @override
-  Future<Either<Failure, SessionEntity>> createSession(
+  Future<SessionEntity> createSession(
     CreateSessionRequest request,
   ) async {
     try {
@@ -640,33 +634,30 @@ class SessionRepositoryImpl implements SessionRepository {
       final session = await _api.createSession(request);
 
       // Data Model → Domain Entity 변환
-      final entity = SessionEntity.fromModel(session);
-
-      return Right(entity);
+      return SessionEntity.fromModel(session);
     } on DioException catch (e) {
       // HTTP 에러 처리
       if (e.response?.statusCode == 400) {
-        return Left(ValidationFailure(e.response?.data['message'] ?? '잘못된 요청'));
+        throw ValidationException(e.response?.data['message'] ?? '잘못된 요청');
       } else if (e.response?.statusCode == 500) {
-        return Left(ServerFailure('서버 에러가 발생했습니다'));
+        throw ServerException('서버 에러가 발생했습니다');
       }
-      return Left(NetworkFailure('네트워크 연결을 확인하세요'));
+      throw NetworkException('네트워크 연결을 확인하세요');
     } catch (e) {
-      return Left(UnknownFailure(e.toString()));
+      throw UnknownException(e.toString());
     }
   }
 
   @override
-  Future<Either<Failure, SessionEntity>> joinSession(String inviteCode) async {
+  Future<SessionEntity> joinSession(String inviteCode) async {
     try {
       final session = await _api.joinSession(inviteCode);
-      final entity = SessionEntity.fromModel(session);
-      return Right(entity);
+      return SessionEntity.fromModel(session);
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
-        return Left(NotFoundFailure('초대 코드를 찾을 수 없습니다'));
+        throw NotFoundException('초대 코드를 찾을 수 없습니다');
       }
-      return Left(NetworkFailure('네트워크 연결을 확인하세요'));
+      throw NetworkException('네트워크 연결을 확인하세요');
     }
   }
 }
