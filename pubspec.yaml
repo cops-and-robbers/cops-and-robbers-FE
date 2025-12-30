@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: 'none'
-version: 1.0.17+17
+version: 1.0.18+18
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -33,7 +33,6 @@ dependencies:
   flutter_dotenv: ^6.0.0 # 환경 변수 관리 (.env 파일)
   device_info_plus: ^10.1.2 # 기기 정보 수집 (FCM 기기 식별용)
   uuid: ^4.5.2 # 앱 내 고유 식별자 생성
-
   # 소셜 로그인
   google_sign_in: ^6.2.3 # Google 소셜 로그인
   # UI/UX 레이아웃
