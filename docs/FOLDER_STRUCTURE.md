@@ -30,6 +30,7 @@ lib/
 │   └── widgets/                   # 공통 UI 위젯
 │
 ├── features/                      # 기능 중심 모듈
+│   ├── auth/                      # Google 로그인 및 인증
 │   ├── session/                   # F1: 세션 관리
 │   ├── map/                       # F2: 지도 및 위치
 │   ├── game/                      # F3: 게임 로직
@@ -521,6 +522,217 @@ features/[feature_name]/
     ├── providers/                 # Riverpod Provider
     ├── pages/                     # 화면
     └── widgets/                   # 기능 특화 위젯
+```
+
+---
+
+### 📁 features/auth/ (Google 로그인 및 인증)
+
+**기능**: Google 소셜 로그인 및 JWT 토큰 관리
+
+```
+features/auth/
+├── data/
+│   ├── models/
+│   │   ├── auth_user.dart                 # 인증 사용자 모델
+│   │   ├── auth_user.freezed.dart
+│   │   ├── auth_user.g.dart
+│   │   ├── auth_token.dart                # JWT Access/Refresh Token
+│   │   ├── auth_token.freezed.dart
+│   │   ├── auth_token.g.dart
+│   │   └── login_request.dart             # 로그인 요청 DTO
+│   ├── datasources/
+│   │   ├── auth_remote_datasource.dart    # 백엔드 인증 API
+│   │   ├── auth_local_datasource.dart     # 로컬 토큰 저장
+│   │   └── social_auth_datasource.dart    # 소셜 로그인 SDK 통합
+│   └── repositories/
+│       └── auth_repository_impl.dart      # Repository 구현체
+│
+├── domain/
+│   ├── entities/
+│   │   └── user_entity.dart               # 사용자 엔티티
+│   ├── repositories/
+│   │   └── auth_repository.dart           # Repository 인터페이스
+│   └── usecases/
+│       ├── google_sign_in_usecase.dart    # Google 로그인
+│       ├── refresh_token_usecase.dart     # Token 갱신
+│       └── logout_usecase.dart            # 로그아웃
+│
+└── presentation/
+    ├── providers/
+    │   ├── auth_provider.dart             # 인증 상태 관리
+    │   └── auth_provider.g.dart
+    ├── pages/
+    │   └── login_page.dart                # 로그인 화면
+    └── widgets/
+        └── google_sign_in_button.dart     # Google 로그인 버튼
+```
+
+#### 파일 생성 예시: `social_auth_datasource.dart`
+
+```dart
+/// Google 로그인 SDK 통합 Data Source
+class SocialAuthDataSource {
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+  );
+
+  /// Google 로그인 실행
+  ///
+  /// 반환: ID Token (JWT)
+  Future<String> signInWithGoogle() async {
+    final account = await _googleSignIn.signIn();
+    if (account == null) {
+      throw AuthCancelledException('사용자가 로그인을 취소했습니다');
+    }
+    final auth = await account.authentication;
+    if (auth.idToken == null) {
+      throw AuthTokenException('ID Token을 가져올 수 없습니다');
+    }
+    return auth.idToken!;
+  }
+
+  /// 로그아웃
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
+  }
+}
+```
+
+#### 파일 생성 예시: `google_sign_in_usecase.dart`
+
+```dart
+/// Google 소셜 로그인 Use Case
+///
+/// 프로세스:
+/// 1. Google Sign-In SDK로 ID Token 획득
+/// 2. 백엔드에 ID Token 전송
+/// 3. JWT Access/Refresh Token 수신
+/// 4. SecureStorage에 토큰 저장
+class GoogleSignInUseCase {
+  final AuthRepository _repository;
+
+  GoogleSignInUseCase(this._repository);
+
+  /// Google 로그인 실행
+  Future<UserEntity> execute() async {
+    return await _repository.signInWithGoogle();
+  }
+}
+```
+
+#### 파일 생성 예시: `auth_provider.dart`
+
+```dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'auth_provider.g.dart';
+
+/// 인증 상태 관리 Provider
+///
+/// 상태:
+/// - null: 로그인 전
+/// - UserEntity: 로그인 완료
+@riverpod
+class AuthNotifier extends _$AuthNotifier {
+  @override
+  FutureOr<UserEntity?> build() async {
+    // 앱 시작 시 저장된 토큰 확인
+    final storage = ref.read(secureStorageServiceProvider);
+    final accessToken = await storage.getAccessToken();
+
+    if (accessToken != null) {
+      try {
+        // 토큰이 있으면 사용자 정보 로드
+        final usecase = ref.read(getCurrentUserUsecaseProvider);
+        return await usecase.execute();
+      } catch (e) {
+        // 토큰 만료 시 null 반환
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  /// Google 로그인
+  Future<void> signInWithGoogle() async {
+    state = const AsyncValue.loading();
+
+    try {
+      final usecase = ref.read(googleSignInUsecaseProvider);
+      final user = await usecase.execute();
+      state = AsyncValue.data(user);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  /// 로그아웃
+  Future<void> logout() async {
+    final usecase = ref.read(logoutUsecaseProvider);
+    await usecase.execute();
+    state = const AsyncValue.data(null);
+  }
+}
+```
+
+#### 백엔드 연동: `core/network/api_interceptor.dart` 수정
+
+```dart
+/// Dio Interceptor - JWT 토큰 자동 추가 및 갱신
+class ApiInterceptor extends Interceptor {
+  final SecureStorageService _storage;
+  final Dio _dio;
+
+  ApiInterceptor(this._storage, this._dio);
+
+  @override
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    // Access Token을 요청 헤더에 자동 추가
+    final token = await _storage.getAccessToken();
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+    handler.next(options);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    // 401 Unauthorized → Token 갱신 시도
+    if (err.response?.statusCode == 401) {
+      final refreshToken = await _storage.getRefreshToken();
+
+      if (refreshToken != null) {
+        try {
+          // Refresh Token으로 새로운 Access Token 요청
+          final response = await _dio.post(
+            '/auth/refresh',
+            data: {'refreshToken': refreshToken},
+          );
+
+          final newAccessToken = response.data['accessToken'];
+          await _storage.saveAccessToken(newAccessToken);
+
+          // 실패한 요청 재시도
+          final retryRequest = err.requestOptions;
+          retryRequest.headers['Authorization'] = 'Bearer $newAccessToken';
+          final retryResponse = await _dio.fetch(retryRequest);
+
+          return handler.resolve(retryResponse);
+        } catch (refreshError) {
+          // Refresh Token도 만료 → 로그아웃 처리
+          await _storage.clearAll();
+        }
+      }
+    }
+
+    handler.next(err);
+  }
+}
 ```
 
 ---
