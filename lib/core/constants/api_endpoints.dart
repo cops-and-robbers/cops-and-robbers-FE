@@ -33,8 +33,7 @@ class ApiEndpoints {
   ///
   /// **기본값**: `ws://localhost:8080/ws`
   /// **Default**: `ws://localhost:8080/ws`
-  static String get wsUrl =>
-      dotenv.env['WS_URL'] ?? 'ws://localhost:8080/ws';
+  static String get wsUrl => dotenv.env['WS_URL'] ?? 'ws://localhost:8080/ws';
 
   /// Mock API 사용 여부 (.env에서 로드)
   /// Whether to use Mock API (loaded from .env)
