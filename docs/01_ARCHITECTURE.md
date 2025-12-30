@@ -11,11 +11,29 @@
 1. [개요](#개요)
 2. [아키텍처 전략](#아키텍처-전략)
 3. [기술 스택](#기술-스택)
+   - 3.1 [핵심 프레임워크](#핵심-프레임워크)
+   - 3.2 [상태 관리](#상태-관리-state-management)
+   - 3.3 [불변 데이터 모델](#불변-데이터-모델-immutable-data-models)
+   - 3.4 [네트워킹](#네트워킹-networking)
+   - 3.5 [실시간 통신](#실시간-통신-real-time-communication)
+   - 3.6 [위치 서비스](#위치-서비스-location-services)
+   - 3.7 [로컬 저장소](#로컬-저장소-local-storage)
+   - 3.8 [알림](#알림-notifications)
+   - 3.9 [UI/UX](#uiux)
 4. [계층 구조](#계층-구조)
+   - 4.1 [Core 레이어](#1-core-레이어-공통-인프라)
+   - 4.2 [Features 레이어](#2-features-레이어-기능-모듈)
+   - 4.3 [의존성 흐름](#의존성-흐름-요약)
 5. [핵심 설계 결정](#핵심-설계-결정)
-6. [데이터 흐름](#데이터-흐름)
-7. [실시간 통신 아키텍처](#실시간-통신-아키텍처)
-8. [참고 자료](#참고-자료)
+   - 5.1 [Riverpod 코드 생성](#1-riverpod-코드-생성-패턴)
+   - 5.2 [Freezed 불변 데이터](#2-freezed-불변-데이터-클래스)
+   - 5.3 [에러 처리 패턴](#3-에러-처리-패턴-try-catch)
+   - 5.4 [실시간 통신 레이어](#4-실시간-통신-레이어-corerealtime)
+   - 5.5 [로깅 시스템](#5-로깅-시스템-corelogging)
+6. [Google 로그인 아키텍처](#google-로그인-아키텍처)
+7. [데이터 흐름](#데이터-흐름)
+8. [실시간 통신 아키텍처](#실시간-통신-아키텍처)
+9. [참고 자료](#참고-자료)
 
 ---
 
@@ -162,6 +180,8 @@ showcaseview: ^5.0.1             # 튜토리얼 오버레이
 lib/core/
 ├── constants/      # 앱 전역 상수
 ├── network/        # 네트워크 인프라 (Dio, WebSocket)
+├── realtime/       # 실시간 통신 (WebSocket, STOMP)
+├── logging/        # 로깅 시스템 (Logger, 에러 리포팅)
 ├── services/       # 범용 서비스 (FCM, Device, Storage)
 ├── utils/          # 유틸리티 함수 및 Extension
 ├── errors/         # 에러 정의 (Exception, Failure)
@@ -173,6 +193,10 @@ lib/core/
 **예시**:
 - `constants/api_endpoints.dart` → 모든 API URL 중앙 관리
 - `network/dio_client.dart` → Dio 인스턴스 전역 설정
+- `realtime/websocket_client.dart` → WebSocket 연결 관리 및 재연결 로직
+- `realtime/stomp_client.dart` → STOMP 프로토콜 구현 (게임 이벤트, 채팅, 위치 동기화)
+- `logging/logger.dart` → 통합 로깅 시스템 (Debug, Info, Warning, Error)
+- `logging/error_reporter.dart` → 에러 리포팅 (Crashlytics, Sentry 등)
 - `services/storage/secure_storage_service.dart` → JWT 토큰 안전 저장
 - `widgets/app_button.dart` → 앱 전체에서 사용하는 버튼 스타일
 
@@ -185,11 +209,12 @@ lib/core/
 features/
 ├── auth/           # Google 로그인 및 인증
 ├── session/        # F1: 게임 세션 관리
-├── map/            # F2: 지도 및 위치 추적
-├── game/           # F3: 게임 로직 및 규칙
+├── game/           # F2+F3: 지도, 위치 추적, 게임 로직 (통합)
 ├── chat/           # F4: 팀별 채팅
 └── notification/   # F4: 알림 시스템
 ```
+
+**참고**: `features/map/` 폴더는 `features/game/`로 통합되었습니다. 게임 로직과 지도/위치 기능이 밀접하게 연관되어 있어 하나의 feature로 관리합니다.
 
 각 feature는 **Clean Architecture 3계층**으로 구성:
 
@@ -278,14 +303,14 @@ class SessionNotifier extends _$SessionNotifier {
   Future<void> createSession(CreateSessionRequest request) async {
     state = const AsyncValue.loading();
 
-    // ✅ domain의 Use Case 호출
-    final usecase = ref.read(createSessionUsecaseProvider);
-    final result = await usecase.execute(request);
-
-    state = result.fold(
-      (failure) => AsyncValue.error(failure, StackTrace.current),
-      (session) => AsyncValue.data(session),
-    );
+    try {
+      // ✅ domain의 Use Case 호출
+      final usecase = ref.read(createSessionUsecaseProvider);
+      final session = await usecase.execute(request);
+      state = AsyncValue.data(session);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 }
 ```
@@ -364,22 +389,134 @@ class GameSession with _$GameSession {
 
 ---
 
+### 3. 에러 처리 패턴 (try-catch)
 
-### 3. WebSocket 연결 관리
+**프로젝트 표준**: Dart 네이티브 try-catch 패턴 사용
+
+**변경 이력**:
+- **이전**: Either<Failure, Success> 패턴 (dartz 패키지)
+- **현재**: try-catch + Custom Exception
+- **변경일**: 2025-12-30
+
+**변경 이유**:
+1. ✅ **학습 곡선 감소**: Dart 네이티브 에러 처리로 신규 개발자 진입 장벽 낮춤
+2. ✅ **번들 사이즈 감소**: dartz 패키지 제거 (~150KB)
+3. ✅ **직관적인 비동기 코드**: async/await와 자연스러운 통합
+4. ✅ **Riverpod AsyncValue 통합**: AsyncValue.error()와 자연스러운 연동
+
+**패턴**:
+```dart
+// Repository Layer
+Future<SessionEntity> createSession(CreateSessionRequest request) async {
+  try {
+    final session = await _api.createSession(request);
+    return SessionEntity.fromModel(session);
+  } on DioException catch (e) {
+    if (e.response?.statusCode == 400) {
+      throw ValidationException('잘못된 요청입니다');
+    }
+    throw NetworkException('네트워크 연결을 확인하세요');
+  }
+}
+
+// Use Case Layer
+Future<SessionEntity> execute(CreateSessionRequest request) async {
+  // 비즈니스 로직 검증
+  if (request.roundTime < minTime) {
+    throw ValidationException('라운드 시간이 너무 짧습니다');
+  }
+
+  // Repository 호출 (Exception 전파)
+  return await _repository.createSession(request);
+}
+
+// Presentation Layer (Riverpod)
+Future<void> createSession(CreateSessionRequest request) async {
+  state = const AsyncValue.loading();
+
+  try {
+    final usecase = ref.read(createSessionUsecaseProvider);
+    final session = await usecase.execute(request);
+    state = AsyncValue.data(session);
+  } catch (e, stack) {
+    state = AsyncValue.error(e, stack);
+  }
+}
+```
+
+**Custom Exception 체계**:
+```dart
+// lib/core/errors/exceptions.dart
+class NetworkException implements Exception {
+  final String message;
+  const NetworkException(this.message);
+}
+
+class ValidationException implements Exception {
+  final String message;
+  const ValidationException(this.message);
+}
+
+class AuthException implements Exception {
+  final String message;
+  final String? code;
+  const AuthException(this.message, {this.code});
+}
+
+class ServerException implements Exception {
+  final String message;
+  const ServerException(this.message);
+}
+```
+
+**제거된 의존성**:
+- **dartz**: Either<Failure, Success> 함수형 에러 처리 (제거됨)
+
+**참고 문서**: [CODE_CONVENTIONS.md - 에러 처리](./CODE_CONVENTIONS.md#에러-처리)
+
+---
+
+### 4. 실시간 통신 레이어 (core/realtime/)
+
+**패키지 의존성**:
+```yaml
+dependencies:
+  stomp_dart_client: ^2.0.0        # STOMP 프로토콜 지원
+  web_socket_channel: ^3.0.0       # WebSocket 채널 관리
+```
+
+#### WebSocket Client (core/realtime/websocket_client.dart)
+
+**역할**:
+- WebSocket 연결 생애주기 관리 (연결, 재연결, 종료)
+- 자동 재연결 로직 (네트워크 끊김 시)
+- 연결 상태 모니터링
 
 **구조**:
 ```dart
-// core/network/websocket/websocket_client.dart
+// core/realtime/websocket_client.dart
 class WebSocketClient {
   late StompClient _stompClient;
+  final StreamController<ConnectionState> _connectionStateController =
+      StreamController.broadcast();
+
+  Stream<ConnectionState> get connectionState => _connectionStateController.stream;
 
   void connect(String url, {required VoidCallback onConnect}) {
     _stompClient = StompClient(
       config: StompConfig(
         url: url,
-        onConnect: onConnect,
+        onConnect: (frame) {
+          _connectionStateController.add(ConnectionState.connected);
+          onConnect();
+        },
+        onDisconnect: (frame) {
+          _connectionStateController.add(ConnectionState.disconnected);
+        },
         onWebSocketError: _handleError,
         reconnectDelay: const Duration(seconds: 5),
+        heartbeatIncoming: const Duration(seconds: 10),
+        heartbeatOutgoing: const Duration(seconds: 10),
       ),
     );
     _stompClient.activate();
@@ -391,8 +528,24 @@ class WebSocketClient {
       callback: callback,
     );
   }
+
+  void send({required String destination, required String body}) {
+    _stompClient.send(destination: destination, body: body);
+  }
+
+  void disconnect() {
+    _stompClient.deactivate();
+    _connectionStateController.add(ConnectionState.disconnected);
+  }
 }
 ```
+
+#### STOMP Client Wrapper (core/realtime/stomp_manager.dart)
+
+**역할**:
+- STOMP 프로토콜 추상화
+- 구독 관리 (여러 채널 동시 구독)
+- 메시지 발행/구독 인터페이스
 
 **사용 예시**:
 ```dart
@@ -408,6 +561,128 @@ class ChatWebSocketDataSource {
         onMessage(message);
       },
     );
+  }
+
+  void sendMessage(String gameId, Team team, ChatMessage message) {
+    _client.send(
+      destination: '/app/chat/$gameId/team/${team.name}',
+      body: jsonEncode(message.toJson()),
+    );
+  }
+}
+```
+
+---
+
+### 5. 로깅 시스템 (core/logging/)
+
+**패키지 의존성**:
+```yaml
+dependencies:
+  logger: ^2.5.0                  # 구조화된 로깅
+
+dev_dependencies:
+  # 프로덕션 에러 리포팅 (선택사항)
+  # sentry_flutter: ^8.0.0        # Sentry 에러 추적
+  # firebase_crashlytics: ^4.0.0  # Firebase Crashlytics
+```
+
+#### Logger (core/logging/logger.dart)
+
+**역할**:
+- 통합 로깅 인터페이스
+- 로그 레벨 관리 (Debug, Info, Warning, Error)
+- 개발 환경별 로그 설정 (개발/프로덕션)
+
+**구조**:
+```dart
+// core/logging/logger.dart
+import 'package:logger/logger.dart';
+
+class AppLogger {
+  static final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 2,
+      errorMethodCount: 8,
+      lineLength: 120,
+      colors: true,
+      printEmojis: true,
+      printTime: true,
+    ),
+  );
+
+  static void debug(String message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.d(message, error: error, stackTrace: stackTrace);
+  }
+
+  static void info(String message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.i(message, error: error, stackTrace: stackTrace);
+  }
+
+  static void warning(String message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.w(message, error: error, stackTrace: stackTrace);
+  }
+
+  static void error(String message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.e(message, error: error, stackTrace: stackTrace);
+  }
+}
+```
+
+#### Error Reporter (core/logging/error_reporter.dart)
+
+**역할**:
+- 프로덕션 에러 추적
+- 사용자 정보 첨부 (익명화)
+- 에러 심각도 분류
+
+**구조**:
+```dart
+// core/logging/error_reporter.dart
+class ErrorReporter {
+  static Future<void> initialize() async {
+    // Sentry, Crashlytics 등 초기화
+    // 개발 환경에서는 비활성화
+    if (kReleaseMode) {
+      // await SentryFlutter.init(...);
+    }
+  }
+
+  static Future<void> reportError(
+    dynamic error,
+    StackTrace? stackTrace, {
+    String? context,
+    Map<String, dynamic>? additionalInfo,
+  }) async {
+    // 1. 로컬 로그 기록
+    AppLogger.error('Error in $context', error, stackTrace);
+
+    // 2. 프로덕션 환경에서만 원격 리포팅
+    if (kReleaseMode) {
+      // await Sentry.captureException(error, stackTrace: stackTrace);
+    }
+  }
+}
+```
+
+**사용 예시**:
+```dart
+// features/session/data/repositories/session_repository_impl.dart
+@override
+Future<SessionEntity> createSession(CreateSessionRequest request) async {
+  try {
+    final session = await _api.createSession(request);
+    AppLogger.info('Session created successfully: ${session.id}');
+    return SessionEntity.fromModel(session);
+  } on DioException catch (e, stack) {
+    AppLogger.error('Failed to create session', e, stack);
+    await ErrorReporter.reportError(
+      e,
+      stack,
+      context: 'SessionRepository.createSession',
+      additionalInfo: {'requestData': request.toJson()},
+    );
+    throw NetworkException('네트워크 연결을 확인하세요');
   }
 }
 ```
@@ -670,9 +945,9 @@ Response: { "message": "Logged out successfully" }
     ↓
 [Repository Impl] → Entity 변환
     ↓
-[Use Case] → Either<Failure, Entity> 반환
+[Use Case] → Entity 반환 (또는 Exception throw)
     ↓
-[Provider] → state 업데이트
+[Provider] → state 업데이트 (try-catch)
     ↓
 [Widget] → UI rebuild
 ```
