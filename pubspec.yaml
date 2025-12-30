@@ -73,6 +73,7 @@ flutter:
   assets:
     - assets/
     - assets/fonts/
+    - .env
   fonts:
     - family: Pretendard-Thin
       fonts:
