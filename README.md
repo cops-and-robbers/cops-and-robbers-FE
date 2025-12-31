@@ -308,19 +308,21 @@ genhtml coverage/lcov.info -o coverage/html
 
 | 문서 | 설명 | 언제 읽어야 하나요? |
 |------|------|---------------------|
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | 아키텍처 상세, 기술 스택, 계층 구조, 실시간 통신 | 프로젝트 전체 구조와 설계 이해가 필요할 때 |
-| [FOLDER_STRUCTURE.md](docs/FOLDER_STRUCTURE.md) | 폴더 구조, 파일 네이밍 규칙, 실제 예시 | 새 파일을 어디에 만들어야 할지 모를 때 |
-| [CODE_CONVENTIONS.md](docs/CODE_CONVENTIONS.md) | 코딩 규칙, 네이밍 컨벤션, 에러 처리 패턴 | 코드 작성 전 또는 코드 리뷰 전 |
-| [CODE_GENERATION_GUIDE.md](docs/CODE_GENERATION_GUIDE.md) | Riverpod, Freezed, Retrofit 코드 생성 가이드 | 코드 생성 방법이나 패턴을 모를 때 |
+| [⭐ QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) | 빠른 참조 가이드 (핵심 규칙만 간결하게) | 코드 작성 중 빠르게 참조할 때 |
+| [01_ARCHITECTURE.md](docs/01_ARCHITECTURE.md) | 아키텍처 상세, 기술 스택, 계층 구조, 실시간 통신 | 프로젝트 전체 구조와 설계 이해가 필요할 때 |
+| [02_FOLDER_STRUCTURE.md](docs/02_FOLDER_STRUCTURE.md) | 폴더 구조, 파일 네이밍 규칙, 실제 예시 | 새 파일을 어디에 만들어야 할지 모를 때 |
+| [03_CODE_CONVENTIONS.md](docs/03_CODE_CONVENTIONS.md) | 코딩 규칙, 네이밍 컨벤션, 에러 처리 패턴 | 코드 작성 전 또는 코드 리뷰 전 |
+| [04_CODE_GENERATION_GUIDE.md](docs/04_CODE_GENERATION_GUIDE.md) | Riverpod, Freezed, Retrofit 코드 생성 가이드 | 코드 생성 방법이나 패턴을 모를 때 |
 | [경찰과도둑_PRD_2.md](docs/경찰과도둑_PRD_2.md) | 제품 요구사항 문서 (PRD) | 비즈니스 요구사항 확인이 필요할 때 |
 
 ### 신규 개발자 온보딩 순서
 
 1. **README.md** (현재 문서) - 프로젝트 개요 및 환경 설정
-2. **ARCHITECTURE.md** - 아키텍처와 Clean Architecture 3계층 이해
-3. **CODE_GENERATION_GUIDE.md** - 코드 생성 실습 (Riverpod, Freezed)
-4. **FOLDER_STRUCTURE.md** - 폴더 구조와 파일 위치 파악
-5. **CODE_CONVENTIONS.md** - 코딩 규칙 숙지 및 적용
+2. **⭐ QUICK_REFERENCE.md** - 핵심 규칙 빠른 파악 (코드 작성 시 참고용)
+3. **01_ARCHITECTURE.md** - 아키텍처와 Clean Architecture 3계층 이해
+4. **04_CODE_GENERATION_GUIDE.md** - 코드 생성 실습 (Riverpod, Freezed)
+5. **02_FOLDER_STRUCTURE.md** - 폴더 구조와 파일 위치 파악
+6. **03_CODE_CONVENTIONS.md** - 코딩 규칙 상세 내용
 
 ---
 
