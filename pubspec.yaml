@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: 'none'
-version: 1.0.21+21
+version: 1.0.22+22
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -20,16 +20,13 @@ dependencies:
     sdk: flutter
   # iOS 스타일 아이콘 (Cupertino 디자인)
   cupertino_icons: ^1.0.8
-
   go_router: ^17.0.1 # 화면 라우팅 및 내비게이션
-
   # 상태 관리 및 데이터 모델
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
   freezed_annotation: ^2.4.4 # freezed 어노테이션 (불변 데이터 클래스)
   json_annotation: ^4.9.0 # JSON 직렬화 어노테이션
   shared_preferences: ^2.3.4 # 로컬 설정 저장 (테마, 온보딩 등)
-
   # 네트워크 & 인증
   dio: ^5.9.0 # HTTP 클라이언트
   retrofit: ^4.7.2 # REST API 클라이언트 생성
@@ -37,28 +34,22 @@ dependencies:
   flutter_dotenv: ^6.0.0 # 환경 변수 관리 (.env 파일)
   device_info_plus: ^10.1.2 # 기기 정보 수집 (FCM 기기 식별용)
   uuid: ^4.5.2 # 앱 내 고유 식별자 생성
-
   # 소셜 로그인
   google_sign_in: ^6.2.3 # Google 소셜 로그인
-
   # UI/UX 레이아웃
   flutter_screenutil: ^5.9.3 # 화면, 해상도 대응 유틸리티
   smooth_page_indicator: ^1.2.1 # 페이지 이동 인디케이터 UI (온보딩)
   toggle_switch: ^2.3.0 # 토글 버튼 UI
   flutter_svg: ^2.2.1 # 앱 아이콘
   showcaseview: ^5.0.1 # 튜토리얼
-
   # 알림 & 실시간 통신
   firebase_core: ^4.1.0
   firebase_messaging: ^16.0.1 # 푸시 알림(Firebase Cloud Messaging)
   firebase_crashlytics: ^5.0.6 # 에러 리포팅 및 크래시 수집
   flutter_local_notifications: ^19.4.2 # 로컬 알림 생성 및 관리
   stomp_dart_client: ^3.0.1 # WebSocket 기반 실시간 통신
-
   # 기기 정보
   package_info_plus: ^9.0.0
-
-
 # --------------------------------------------
 # 개발 의존성 (개발/빌드 시에만 필요한 패키지)
 # --------------------------------------------
