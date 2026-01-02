@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:label="cops_and_robbers"
+        android:label="경찰과도둑"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -164,7 +164,7 @@ class MyApp extends StatelessWidget {
 
       builder: (context, child) {
         return MaterialApp(
-          title: 'Cops and Robbers',
+          title: '경찰과도둑',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
             useMaterial3: true,
