@@ -1,11 +1,39 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-09T05:22:29Z",
-    "currentVersion": "1.0.26",
+    "lastUpdated": "2026-01-09T06:19:17Z",
+    "currentVersion": "1.0.29",
     "projectType": "flutter",
-    "totalReleases": 5
+    "totalReleases": 6
   },
   "releases": [
+    {
+      "version": "1.0.29",
+      "project_type": "flutter",
+      "date": "2026-01-09",
+      "pr_number": 21,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **버전 업데이트**\n  * 프로젝트 버전이 1.0.29로 업데이트되었습니다.\n\n* **종속성 업데이트**\n  * Google Services Gradle 플러그인이 업데이트되었습니다.\n\n* **구성 변경**\n  * 푸시 알림 환경 설정이 변경되었습니다.",
+      "parsed_changes": {
+        "버전_업데이트": {
+          "title": "버전 업데이트",
+          "items": [
+            "프로젝트 버전이 1.0.29로 업데이트되었습니다."
+          ]
+        },
+        "종속성_업데이트": {
+          "title": "종속성 업데이트",
+          "items": [
+            "Google Services Gradle 플러그인이 업데이트되었습니다."
+          ]
+        },
+        "구성_변경": {
+          "title": "구성 변경",
+          "items": [
+            "푸시 알림 환경 설정이 변경되었습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.0.26",
       "project_type": "flutter",
