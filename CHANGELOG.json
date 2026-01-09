@@ -1,11 +1,38 @@
 {
   "metadata": {
-    "lastUpdated": "2025-12-29T03:15:53Z",
-    "currentVersion": "1.0.13",
+    "lastUpdated": "2026-01-09T05:22:29Z",
+    "currentVersion": "1.0.26",
     "projectType": "flutter",
-    "totalReleases": 4
+    "totalReleases": 5
   },
   "releases": [
+    {
+      "version": "1.0.26",
+      "project_type": "flutter",
+      "date": "2026-01-09",
+      "pr_number": 20,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **New Features**\n  * Firebase Crashlytics를 통한 안정성 모니터링 추가\n  * Firebase Cloud Messaging 푸시 알림 지원\n  * Google 계정으로 로그인 기능 추가\n  * 실시간 통신 기능 기반 구축\n\n* **Chores**\n  * 앱 버전 업데이트 (1.0.13 → 1.0.26)\n  * Firebase 설정 및 네이티브 플랫폼 구성\n  * 개발 문서 및 아키텍처 가이드 추가",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "Firebase Crashlytics를 통한 안정성 모니터링 추가",
+            "Firebase Cloud Messaging 푸시 알림 지원",
+            "Google 계정으로 로그인 기능 추가",
+            "실시간 통신 기능 기반 구축"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전 업데이트 (1.0.13 → 1.0.26)",
+            "Firebase 설정 및 네이티브 플랫폼 구성",
+            "개발 문서 및 아키텍처 가이드 추가"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.0.13",
       "project_type": "flutter",
