@@ -29,9 +29,7 @@ void main() async {
   // ============================================================
   bool isFirebaseInitialized = false;
   try {
-    await Firebase.initializeApp().timeout(
-      const Duration(seconds: 10),
-    );
+    await Firebase.initializeApp().timeout(const Duration(seconds: 10));
     isFirebaseInitialized = true;
     debugPrint('✅ Firebase initialized successfully');
   } catch (e, stackTrace) {
@@ -50,7 +48,9 @@ void main() async {
       // 개발 모드에서는 Crashlytics 비활성화 (프로덕션에서만 수집)
       // Disable Crashlytics in debug mode (only collect in production)
       if (kDebugMode) {
-        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+          false,
+        );
       }
 
       // Flutter 프레임워크 에러 캡처 (위젯 빌드 에러 등)
@@ -140,10 +140,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({
-    super.key,
-    this.isFirebaseInitialized = true,
-  });
+  const MyApp({super.key, this.isFirebaseInitialized = true});
 
   final bool isFirebaseInitialized;
 
