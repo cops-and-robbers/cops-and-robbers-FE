@@ -4,9 +4,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 /// 앱 전역 TextStyle 상수
 ///
 /// 사용법:
-/// - 기본: AppTextStyles.heading1
-/// - Weight 변경: AppTextStyles.heading1.bold()
-/// - 색상 추가: AppTextStyles.body1.medium().copyWith(color: Colors.red)
+/// ```dart
+/// // 1. 기본 사용
+/// Text('제목', style: AppTextStyles.heading1)
+/// Text('본문', style: AppTextStyles.body1)
+///
+/// // 2. Weight 변경 (Extension 활용)
+/// Text('굵은 제목', style: AppTextStyles.heading1.bold())
+/// Text('중간 굵기', style: AppTextStyles.body2.medium())
+/// Text('가벼운 텍스트', style: AppTextStyles.caption.light())
+///
+/// // 3. 색상 및 기타 속성 변경
+/// Text('빨간 글씨', style: AppTextStyles.body1.copyWith(color: Colors.red))
+/// Text('밑줄', style: AppTextStyles.body2.medium().copyWith(decoration: TextDecoration.underline))
+///
+/// // 4. Weight + 색상 조합
+/// Text('진한 파란 제목', style: AppTextStyles.heading2.bold().copyWith(color: Colors.blue))
+/// ```
 class AppTextStyles {
   // Private 생성자 - 인스턴스화 방지
   AppTextStyles._();
