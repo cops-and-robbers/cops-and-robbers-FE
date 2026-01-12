@@ -201,14 +201,16 @@ class FirebaseMessagingService {
     if (token != null) {
       // Listen for token refresh events
       // 토큰 갱신 이벤트 수신 대기
-      FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-        debugPrint('🔄 FCM token refreshed: $fcmToken');
-        debugPrint('✅ Updated token will be sent on next login.');
-      }).onError((error) {
-        // Handle errors during token refresh
-        // 토큰 갱신 중 발생한 에러 처리
-        debugPrint('❌ Error refreshing FCM token: $error');
-      });
+      FirebaseMessaging.instance.onTokenRefresh
+          .listen((fcmToken) {
+            debugPrint('🔄 FCM token refreshed: $fcmToken');
+            debugPrint('✅ Updated token will be sent on next login.');
+          })
+          .onError((error) {
+            // Handle errors during token refresh
+            // 토큰 갱신 중 발생한 에러 처리
+            debugPrint('❌ Error refreshing FCM token: $error');
+          });
     } else {
       // Show helpful message for simulator users when token is null
       // 시뮬레이터 사용자를 위한 안내 메시지
