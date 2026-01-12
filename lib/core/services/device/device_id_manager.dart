@@ -1,20 +1,30 @@
+import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 /// 기기 고유 ID 관리 서비스
 ///
-/// SharedPreferences에 UUID를 저장하여
-/// 앱 재시작 후에도 동일한 기기로 인식되도록 합니다.
+/// 플랫폼별 고유 ID를 사용하여 기기를 식별합니다.
+/// - Android: Android ID (Settings.Secure.ANDROID_ID)
+/// - iOS: IDFV (Identifier For Vendor)
+///
+/// 플랫폼 ID를 SharedPreferences에 캐싱하여 성능을 최적화합니다.
 ///
 /// **사용 목적**:
 /// - FCM 멀티 디바이스 푸시 알림 지원
 /// - 한 사용자가 여러 기기(폰, 태블릿)에서 로그인 시 각 기기별 식별
 ///
 /// **영속성**:
-/// - 앱 재시작: UUID 유지 ✅
-/// - 앱 업데이트: UUID 유지 ✅
-/// - 앱 재설치: UUID 새로 생성 (새 기기로 등록) ✅
+/// - 앱 재시작: ID 유지 ✅
+/// - 앱 업데이트: ID 유지 ✅
+/// - 앱 재설치: ID 유지 ✅ (Android), 조건부 유지 ⚠️ (iOS)
+/// - 공장 초기화: ID 변경 (Android), 조건부 변경 (iOS)
+///
+/// **플랫폼별 특징**:
+/// - **Android ID**: 공장 초기화 전까지 영구적, 앱 재설치해도 동일
+/// - **iOS IDFV**: 같은 개발자의 앱이 하나라도 남아있으면 유지, 모두 삭제 시 리셋
 class DeviceIdManager {
   /// SharedPreferences 저장 키
   static const String _deviceIdKey = 'DEVICE_ID';
@@ -22,57 +32,86 @@ class DeviceIdManager {
   /// UUID 생성기 인스턴스
   static const _uuid = Uuid();
 
-  /// 기존 기기 ID를 가져오거나 새로 생성합니다
+  /// DeviceInfoPlugin 인스턴스
+  static final _deviceInfo = DeviceInfoPlugin();
+
+  /// 기기 고유 ID를 가져옵니다
   ///
-  /// **동작**:
-  /// 1. SharedPreferences에서 기존 ID 확인
-  /// 2. 없으면 UUID v4 형식으로 새 ID 생성
-  /// 3. 새 ID를 SharedPreferences에 저장
+  /// **동작 순서**:
+  /// 1. SharedPreferences에서 캐시된 ID 확인
+  /// 2. 없으면 플랫폼별 ID 가져오기:
+  ///    - Android: Android ID (androidInfo.id)
+  ///    - iOS: IDFV (iosInfo.identifierForVendor)
+  /// 3. 플랫폼 ID를 SharedPreferences에 캐시
   /// 4. ID 반환
   ///
-  /// **UUID v4 형식**:
-  /// - 예: "550e8400-e29b-41d4-a716-446655440000"
-  /// - 랜덤 생성, 충돌 가능성 극히 낮음
+  /// **반환값 형식**:
+  /// - Android: 16자리 Hex (예: "9774d56d682e549c")
+  /// - iOS: UUID 형식 (예: "A1B2C3D4-E5F6-47G8-H9I0-J1K2L3M4N5O6")
   ///
-  /// Returns: UUID v4 형식의 기기 고유 ID
+  /// Returns: 플랫폼별 기기 고유 ID
   static Future<String> getOrCreateDeviceId() async {
     try {
+      // 1. 캐시된 ID 확인
       final prefs = await SharedPreferences.getInstance();
-      String? deviceId = prefs.getString(_deviceIdKey);
+      String? cachedId = prefs.getString(_deviceIdKey);
 
-      if (deviceId == null || deviceId.isEmpty) {
-        // 없으면 새로 생성하여 저장
-        deviceId = _uuid.v4();
-        await prefs.setString(_deviceIdKey, deviceId);
-        debugPrint('[DeviceIdManager] 📱 새 기기 ID 생성: $deviceId');
-      } else {
-        debugPrint('[DeviceIdManager] 📱 기존 기기 ID 사용: $deviceId');
+      if (cachedId != null && cachedId.isNotEmpty) {
+        debugPrint('[DeviceIdManager] 📱 캐시된 기기 ID 사용: $cachedId');
+        return cachedId;
       }
 
-      return deviceId;
+      // 2. 플랫폼별 ID 가져오기
+      String platformId;
+
+      if (Platform.isAndroid) {
+        final androidInfo = await _deviceInfo.androidInfo;
+        platformId = androidInfo.id; // Android ID
+        debugPrint('[DeviceIdManager] 📱 Android ID 가져오기: $platformId');
+      } else if (Platform.isIOS) {
+        final iosInfo = await _deviceInfo.iosInfo;
+        platformId = iosInfo.identifierForVendor ?? _uuid.v4();
+
+        if (iosInfo.identifierForVendor != null) {
+          debugPrint('[DeviceIdManager] 📱 iOS IDFV 가져오기: $platformId');
+        } else {
+          debugPrint('[DeviceIdManager] ⚠️ IDFV 없음, UUID 생성: $platformId');
+        }
+      } else {
+        // 기타 플랫폼 (웹, 데스크톱)
+        platformId = _uuid.v4();
+        debugPrint('[DeviceIdManager] 📱 기타 플랫폼, UUID 생성: $platformId');
+      }
+
+      // 3. 캐시에 저장
+      await prefs.setString(_deviceIdKey, platformId);
+      debugPrint('[DeviceIdManager] 💾 기기 ID 캐시 저장 완료');
+
+      return platformId;
     } catch (e) {
       debugPrint('[DeviceIdManager] ❌ 기기 ID 가져오기 실패: $e');
-      // 실패 시 임시 ID 생성 (저장하지 않음)
+
+      // 실패 시 임시 UUID 생성 (저장하지 않음)
       final tempId = _uuid.v4();
-      debugPrint('[DeviceIdManager] ⚠️ 임시 ID 사용: $tempId');
+      debugPrint('[DeviceIdManager] ⚠️ 임시 UUID 사용: $tempId');
       return tempId;
     }
   }
 
-  /// 저장된 기기 ID를 삭제합니다 (테스트용)
+  /// 캐시된 기기 ID를 삭제합니다 (테스트용)
   ///
   /// **주의**: 프로덕션에서는 사용하지 마세요.
-  /// 기기 ID가 변경되면 푸시 알림이 해당 기기로 전송되지 않습니다.
+  /// 캐시를 삭제해도 플랫폼 ID는 동일하므로 다음 호출 시 같은 ID를 받습니다.
   ///
   /// **사용 시나리오**:
-  /// - 테스트 중 기기 ID 초기화
+  /// - 테스트 중 캐시 초기화
   /// - 디버깅 목적
   @visibleForTesting
   static Future<void> clearDeviceId() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_deviceIdKey);
-      debugPrint('[DeviceIdManager] 🗑️ 기기 ID 삭제 완료');
+      debugPrint('[DeviceIdManager] 🗑️ 캐시된 기기 ID 삭제 완료');
     } catch (e) {
       debugPrint('[DeviceIdManager] ❌ 기기 ID 삭제 실패: $e');
     }
