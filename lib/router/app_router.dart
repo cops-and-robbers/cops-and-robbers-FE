@@ -1,0 +1,372 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../core/constants/spacing_and_radius.dart';
+import '../core/constants/text_styles.dart';
+import 'route_paths.dart';
+
+// TODO: Import providers when they are implemented
+// import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+// import 'package:cops_and_robbers/features/session/presentation/providers/session_provider.dart';
+
+// Page Imports
+import 'package:cops_and_robbers/features/auth/presentation/pages/splash_page.dart';
+import 'package:cops_and_robbers/features/auth/presentation/pages/login_page.dart';
+import 'package:cops_and_robbers/features/auth/presentation/pages/onboarding_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/home_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/select_area_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/session_settings_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/invite_code_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
+import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
+import 'package:cops_and_robbers/features/game/presentation/pages/results_page.dart';
+
+/// GoRouter 인스턴스를 제공하는 Riverpod Provider
+///
+/// 앱 전체의 네비게이션을 관리하며, 인증 및 세션 상태에 따라
+/// 자동으로 리다이렉트를 수행합니다.
+///
+/// 사용법:
+/// ```dart
+/// // 1. main.dart에서 MaterialApp.router에 연결
+/// final router = ref.watch(routerProvider);
+/// return MaterialApp.router(
+///   routerConfig: router,
+/// );
+///
+/// // 2. 페이지에서 네비게이션 사용
+/// // 경로로 이동
+/// context.go(RoutePaths.home);              // 현재 페이지 대체
+/// context.push(RoutePaths.login);           // 새 페이지 추가
+///
+/// // 이름으로 이동
+/// context.goNamed(RoutePaths.homeName);
+/// context.pushNamed(RoutePaths.loginName);
+///
+/// // 동적 파라미터 전달
+/// context.go(RoutePaths.waitingRoomWithId('session123'));
+/// context.goNamed(
+///   RoutePaths.waitingRoomName,
+///   pathParameters: {'sessionId': 'session123'},
+/// );
+///
+/// // 뒤로가기
+/// context.pop();                            // 이전 페이지로
+/// context.pop(result);                      // 결과값과 함께 돌아가기
+///
+/// // 3. 라우팅 가드 (자동 리다이렉트)
+/// // - 비로그인 시 → 로그인 페이지로
+/// // - 온보딩 미완료 시 → 온보딩 페이지로
+/// // - 게임 진행 중 시 → 게임 페이지로 강제 이동
+/// ```
+///
+/// 주요 기능:
+/// - 선언적 라우팅: routes 리스트로 모든 경로 정의
+/// - 중첩 라우팅: 부모-자식 관계로 URL 구조화
+/// - 자동 리다이렉트: redirect 함수로 접근 제어
+/// - Deep Link 지원: URL로 직접 특정 페이지 접근
+/// - 404 에러 처리: errorBuilder로 잘못된 경로 처리
+final routerProvider = Provider<GoRouter>((ref) {
+  // TODO: 실제 Provider로 교체 필요
+  // final authState = ref.watch(authNotifierProvider);
+  // final sessionState = ref.watch(sessionNotifierProvider);
+
+  return GoRouter(
+    initialLocation: RoutePaths.splash,
+    debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
+    // TODO: 상태 변경 시 자동 리다이렉트 트리거 (Provider 구현 후 활성화)
+    // refreshListenable: GoRouterRefreshStream([
+    //   authState.stream,
+    //   sessionState.stream,
+    // ]),
+    redirect: (BuildContext context, GoRouterState state) {
+      // TODO: 실제 Provider로 교체 필요
+      // final authState = ref.watch(authNotifierProvider);
+      // final sessionState = ref.watch(sessionNotifierProvider);
+      // final isAuthenticated = authState.value != null;
+      // final isOnboardingCompleted = authState.value?.isOnboardingCompleted ?? false;
+      // final currentSession = sessionState.value;
+
+      // ⚠️ 개발/프로파일 빌드에서는 인증 가드 비활성화
+      // 릴리즈 빌드(flutter build ios/appbundle --release)에서만 인증 가드 활성화
+      // Provider 구현 완료 후 이 조건문을 제거하고 프로덕션 로직만 사용
+      //
+      // ignore: dead_code
+      // 📝 Analyzer Note: 아래 코드는 개발 환경에서 도달 불가능하지만 의도된 동작입니다.
+      //    - 개발/프로파일 빌드: 라우팅 가드 비활성화 (모든 페이지 자유 접근)
+      //    - 릴리즈 빌드: Line 108-185의 인증 가드 로직 활성화
+      //    - TODO: auth/session Provider 구현 후 이 조건문 제거 예정
+      if (!kReleaseMode) {
+        return null; // 디버그/프로파일 모드: 모든 경로 허용
+      }
+
+      // ====================================================================
+      // 릴리즈 빌드: 라우팅 가드 활성화
+      // ====================================================================
+      // 이 코드는 릴리즈 빌드(flutter build --release)에서만 실행됩니다.
+      // 디버그/프로파일 빌드에서는 위의 if (!kReleaseMode) 조건으로 인해
+      // 이 섹션에 도달하지 않습니다.
+
+      // 실제 Provider에서 인증 상태 가져오기
+      // ignore: dead_code
+      // 📝 Analyzer Note: 아래 변수들이 false로 하드코딩되어 있어
+      //    이후 라우팅 가드 로직(Line 130-187)이 부분적으로 도달 불가능합니다.
+      //    이는 의도된 동작이며, Provider 구현 후 정상 작동합니다.
+      final isAuthenticated = false; // TODO: authState.value != null
+      final isOnboardingCompleted =
+          false; // TODO: authState.value?.isOnboardingCompleted ?? false
+      // final currentSession = sessionState.value;
+
+      final currentPath = state.uri.path;
+
+      // 인증이 불필요한 공개 경로 (Splash, Login)
+      final publicPaths = [RoutePaths.splash, RoutePaths.login];
+
+      // ====================================================================
+      // 1. 인증 체크 - 로그인 필요한 페이지 보호
+      // ====================================================================
+      if (!isAuthenticated) {
+        // 스플래시와 로그인 페이지는 허용
+        if (publicPaths.contains(currentPath)) {
+          return null;
+        }
+        // 그 외 모든 페이지는 로그인으로 리다이렉트
+        return RoutePaths.login;
+      }
+
+      // ====================================================================
+      // 2. 인증된 사용자가 로그인 페이지 접근 시
+      // ====================================================================
+      // ignore: dead_code
+      if (currentPath == RoutePaths.login) {
+        // ignore: dead_code
+        // 온보딩 미완료 시 온보딩으로
+        if (!isOnboardingCompleted) {
+          return RoutePaths.onboarding;
+        }
+        // 온보딩 완료 시 홈으로
+        return RoutePaths.home;
+      }
+
+      // ====================================================================
+      // 3. 온보딩 완료 체크
+      // ====================================================================
+      if (!isOnboardingCompleted && currentPath != RoutePaths.onboarding) {
+        return RoutePaths.onboarding;
+      }
+
+      // 온보딩 완료 후 온보딩 페이지 접근 시 홈으로
+      if (isOnboardingCompleted && currentPath == RoutePaths.onboarding) {
+        return RoutePaths.home;
+      }
+
+      // ====================================================================
+      // 4. 세션 상태 체크 (게임 진행 중인 경우 강제 리다이렉트)
+      // ====================================================================
+      // TODO: Session Provider 구현 후 활성화
+      // if (currentSession != null) {
+      //   switch (currentSession.status) {
+      //     case SessionStatus.lobby:
+      //       if (!currentPath.startsWith('/waiting-room/')) {
+      //         return RoutePaths.waitingRoomWithId(currentSession.id);
+      //       }
+      //       break;
+      //     case SessionStatus.playing:
+      //       if (!currentPath.startsWith('/game/')) {
+      //         return RoutePaths.gameWithId(currentSession.id);
+      //       }
+      //       break;
+      //     case SessionStatus.ended:
+      //       if (!currentPath.startsWith('/results/')) {
+      //         return RoutePaths.resultsWithId(currentSession.id);
+      //       }
+      //       break;
+      //   }
+      // }
+
+      return null; // 리다이렉트 불필요
+    },
+
+    routes: [
+      // ====================================================================
+      // Root & Authentication Routes
+      // ====================================================================
+      GoRoute(
+        path: RoutePaths.splash,
+        name: RoutePaths.splashName,
+        builder: (context, state) => const SplashPage(),
+      ),
+
+      GoRoute(
+        path: RoutePaths.login,
+        name: RoutePaths.loginName,
+        builder: (context, state) => const LoginPage(),
+      ),
+
+      GoRoute(
+        path: RoutePaths.onboarding,
+        name: RoutePaths.onboardingName,
+        builder: (context, state) => const OnboardingPage(),
+      ),
+
+      // ====================================================================
+      // Home & Main Navigation
+      // ====================================================================
+      GoRoute(
+        path: RoutePaths.home,
+        name: RoutePaths.homeName,
+        builder: (context, state) => const HomePage(),
+        routes: [
+          // ==============================================================
+          // Session Creation Flow (Nested Routes)
+          // ==============================================================
+          GoRoute(
+            path: 'create-session/select-area',
+            name: RoutePaths.selectAreaName,
+            builder: (context, state) => const SelectAreaPage(),
+            routes: [
+              // 플레이그라운드 설정
+              GoRoute(
+                path: 'playground',
+                name: RoutePaths.setupPlaygroundName,
+                builder: (context, state) => const SetupPlaygroundPage(),
+              ),
+              // 감옥 설정
+              GoRoute(
+                path: 'prison',
+                name: RoutePaths.setupPrisonName,
+                builder: (context, state) => const SetupPrisonPage(),
+              ),
+              // 기본 정보 설정
+              GoRoute(
+                path: 'settings',
+                name: RoutePaths.sessionSettingsName,
+                builder: (context, state) => const SessionSettingsPage(),
+                // TODO: redirect 로직 추가 (구역 설정 완료 체크)
+                // redirect: (context, state) {
+                //   final sessionState = ref.read(sessionNotifierProvider);
+                //   final isAreaSetupCompleted =
+                //       sessionState.playgroundArea != null &&
+                //       sessionState.prisonArea != null;
+                //   if (!isAreaSetupCompleted) {
+                //     return RoutePaths.selectArea;
+                //   }
+                //   return null;
+                // },
+              ),
+              // 초대 코드 생성
+              GoRoute(
+                path: 'invite-code',
+                name: RoutePaths.inviteCodeName,
+                builder: (context, state) => const InviteCodePage(),
+              ),
+            ],
+          ),
+        ],
+      ),
+
+      // ====================================================================
+      // Game Flow Routes (Top-level with sessionId parameter)
+      // ====================================================================
+      GoRoute(
+        path: RoutePaths.waitingRoom,
+        name: RoutePaths.waitingRoomName,
+        builder: (context, state) {
+          final sessionId = state.pathParameters['sessionId']!;
+          return WaitingRoomPage(sessionId: sessionId);
+        },
+      ),
+
+      GoRoute(
+        path: RoutePaths.game,
+        name: RoutePaths.gameName,
+        builder: (context, state) {
+          final sessionId = state.pathParameters['sessionId']!;
+          return GamePage(sessionId: sessionId);
+        },
+      ),
+
+      GoRoute(
+        path: RoutePaths.results,
+        name: RoutePaths.resultsName,
+        builder: (context, state) {
+          final sessionId = state.pathParameters['sessionId']!;
+          return ResultsPage(sessionId: sessionId);
+        },
+      ),
+    ],
+
+    // ====================================================================
+    // Error Handling (404 Page)
+    // ====================================================================
+    errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(
+        title: Text('페이지를 찾을 수 없습니다', style: AppTextStyles.body1.semiBold()),
+      ),
+      body: Center(
+        child: Padding(
+          padding: AppPadding.all20,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              SizedBox(height: AppSpacing.s16),
+              Text('요청하신 페이지가 존재하지 않습니다.', style: AppTextStyles.body1),
+              SizedBox(height: AppSpacing.s8),
+              Text(
+                '경로: ${state.uri.path}',
+                style: AppTextStyles.caption.copyWith(color: Colors.grey),
+              ),
+              SizedBox(height: AppSpacing.s24),
+              ElevatedButton(
+                onPressed: () => context.go(RoutePaths.home),
+                child: Text('홈으로 돌아가기', style: AppTextStyles.body2),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+});
+
+// ============================================================================
+// GoRouter용 Stream 래퍼 (상태 변경 감지)
+// ============================================================================
+
+/// GoRouter의 refreshListenable로 사용할 Stream 래퍼
+///
+/// 여러 Provider의 상태 변경을 감지하여 GoRouter에게
+/// 리다이렉트 재실행을 트리거합니다.
+class GoRouterRefreshStream extends ChangeNotifier {
+  late final List<StreamSubscription<dynamic>> _subscriptions;
+
+  /// 여러 Stream을 받아 변경 사항을 감지합니다.
+  ///
+  /// Example:
+  /// ```dart
+  /// GoRouterRefreshStream([
+  ///   authNotifierProvider.stream,
+  ///   sessionNotifierProvider.stream,
+  /// ])
+  /// ```
+  GoRouterRefreshStream(List<Stream<dynamic>> streams) {
+    _subscriptions = streams
+        .map((stream) => stream.listen((_) => notifyListeners()))
+        .toList();
+  }
+
+  @override
+  void dispose() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    super.dispose();
+  }
+}
