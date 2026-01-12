@@ -1,11 +1,38 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-09T06:56:09Z",
-    "currentVersion": "1.0.34",
+    "lastUpdated": "2026-01-12T23:45:19Z",
+    "currentVersion": "1.0.37",
     "projectType": "flutter",
-    "totalReleases": 7
+    "totalReleases": 8
   },
   "releases": [
+    {
+      "version": "1.0.37",
+      "project_type": "flutter",
+      "date": "2026-01-12",
+      "pr_number": 23,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리즈 노트\n\n* **새로운 기능**\n  * 인증 플로우 추가: 스플래시 화면, 로그인, 온보딩 페이지\n  * 방 관리 기능: 방 만들기, 방 참여하기, 초대 코드 표시\n  * 게임 플로우: 게임 진행 화면, 게임 결과 화면\n  * 개선된 앱 네비게이션\n\n* **설정 업데이트**\n  * 버전 1.0.37로 업데이트\n  * 플랫폼별 기기 식별 기능 강화\n  * Google OAuth 환경 설정 추가",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "인증 플로우 추가: 스플래시 화면, 로그인, 온보딩 페이지",
+            "방 관리 기능: 방 만들기, 방 참여하기, 초대 코드 표시",
+            "게임 플로우: 게임 진행 화면, 게임 결과 화면",
+            "개선된 앱 네비게이션"
+          ]
+        },
+        "설정_업데이트": {
+          "title": "설정 업데이트",
+          "items": [
+            "버전 1.0.37로 업데이트",
+            "플랫폼별 기기 식별 기능 강화",
+            "Google OAuth 환경 설정 추가"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.0.34",
       "project_type": "flutter",
