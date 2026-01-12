@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'local_notifications_service.dart';
 import '../device/device_info_service.dart';
+import '../device/device_id_manager.dart';
 
 /// Firebase Cloud Messaging 서비스
 /// FCM 푸시 알림을 관리하고 메시지를 처리합니다
@@ -59,7 +60,7 @@ class FirebaseMessagingService {
   ///
   /// 로그인 API 호출 시 이 메서드를 사용하여 FCM 토큰을 가져옵니다.
   ///
-  /// **주의**:d
+  /// **주의**:
   /// - iOS 시뮬레이터에서는 토큰을 사용할 수 없어 null을 반환합니다
   /// - 권한이 거부된 경우에도 null을 반환합니다
   ///
@@ -78,6 +79,55 @@ class FirebaseMessagingService {
     } catch (e) {
       debugPrint('[FCM] ❌ 토큰 가져오기 실패: $e');
       return null;
+    }
+  }
+
+  /// 백엔드 등록용 Device 정보를 가져옵니다
+  ///
+  /// 로그인 API 호출 시 FCM 토큰과 함께 이 정보를 서버에 전송합니다.
+  ///
+  /// **반환 데이터**:
+  /// - deviceId: 플랫폼 기기 고유 ID (Android ID / iOS IDFV)
+  /// - deviceName: 사용자가 지정한 기기 이름 (예: "루카의 iPhone")
+  /// - deviceType: 플랫폼 타입 ("IOS" / "ANDROID")
+  /// - osVersion: OS 버전 (예: "17.4" / "13")
+  ///
+  /// **사용 예시**:
+  /// ```dart
+  /// final deviceInfo = await FirebaseMessagingService.instance().getDeviceInfo();
+  /// final fcmToken = await FirebaseMessagingService.instance().getFcmToken();
+  ///
+  /// await authApi.login(
+  ///   idToken: googleIdToken,
+  ///   fcmToken: fcmToken,
+  ///   deviceId: deviceInfo['deviceId'],
+  ///   deviceName: deviceInfo['deviceName'],
+  ///   deviceType: deviceInfo['deviceType'],
+  /// );
+  /// ```
+  ///
+  /// Returns: Device 정보 Map
+  Future<Map<String, String>> getDeviceInfo() async {
+    try {
+      final deviceId = await DeviceIdManager.getOrCreateDeviceId();
+      final deviceName = await DeviceInfoService.getDeviceName();
+      final deviceType = DeviceInfoService.getDeviceType();
+      final osVersion = await DeviceInfoService.getOSVersion();
+
+      return {
+        'deviceId': deviceId,
+        'deviceName': deviceName,
+        'deviceType': deviceType,
+        'osVersion': osVersion,
+      };
+    } catch (e) {
+      debugPrint('[FCM] ❌ Device 정보 가져오기 실패: $e');
+      return {
+        'deviceId': 'unknown',
+        'deviceName': 'Unknown Device',
+        'deviceType': 'UNKNOWN',
+        'osVersion': 'Unknown',
+      };
     }
   }
 
@@ -123,6 +173,7 @@ class FirebaseMessagingService {
   Future<void> _handlePushNotificationsToken() async {
     // 1. Get device information first (always runs, even on simulator)
     // 1. 먼저 기기 정보 수집 (시뮬레이터에서도 항상 실행됨)
+    final deviceId = await DeviceIdManager.getOrCreateDeviceId();
     final deviceName = await DeviceInfoService.getDeviceName();
     final deviceType = DeviceInfoService.getDeviceType();
     final osVersion = await DeviceInfoService.getOSVersion();
@@ -130,6 +181,7 @@ class FirebaseMessagingService {
 
     // 2. Print device info (always visible, even on simulator)
     // 2. 기기 정보 출력 (시뮬레이터에서도 항상 표시됨)
+    debugPrint('📱 Device ID: $deviceId');
     debugPrint('📱 Device Name: $deviceName');
     debugPrint('📱 Device Type: $deviceType');
     debugPrint('📱 OS Version: $osVersion');
@@ -158,9 +210,11 @@ class FirebaseMessagingService {
 
             // Get updated device info
             // 갱신된 기기 정보 가져오기
+            final updatedDeviceId = await DeviceIdManager.getOrCreateDeviceId();
             final updatedDeviceName = await DeviceInfoService.getDeviceName();
             final updatedDeviceType = DeviceInfoService.getDeviceType();
 
+            debugPrint('📱 Updated Device ID: $updatedDeviceId');
             debugPrint('📱 Updated Device Name: $updatedDeviceName');
             debugPrint('📱 Updated Device Type: $updatedDeviceType');
 
