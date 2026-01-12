@@ -2,13 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:cops_and_robbers/core/config/env_config.dart';
-import 'package:cops_and_robbers/core/constants/text_styles.dart';
-import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
+import 'package:cops_and_robbers/router/app_router.dart';
+import 'package:cops_and_robbers/core/constants/text_styles.dart';
+import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
 
 void main() async {
   // Flutter 엔진 초기화 보장
@@ -136,16 +138,20 @@ void main() async {
     }
   }
 
-  runApp(MyApp(isFirebaseInitialized: isFirebaseInitialized));
+  runApp(
+    ProviderScope(child: MyApp(isFirebaseInitialized: isFirebaseInitialized)),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key, this.isFirebaseInitialized = true});
 
   final bool isFirebaseInitialized;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
     return ScreenUtilInit(
       // 디자인 기준 화면 크기 (iPhone 12/13/14 기준)
       // Base design screen size (iPhone 12/13/14)
@@ -160,13 +166,14 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
 
       builder: (context, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           title: '경찰과도둑',
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
             useMaterial3: true,
           ),
-          home: const FontTestPage(),
+          routerConfig: router,
         );
       },
     );
