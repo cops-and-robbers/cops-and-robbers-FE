@@ -1,0 +1,81 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../router/route_paths.dart';
+
+/// 홈 화면
+///
+/// 게임 세션 생성 또는 참가를 선택할 수 있는 메인 화면입니다.
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  /// 방 참여 다이얼로그 표시
+  void _showJoinRoomDialog(BuildContext context) {
+    final TextEditingController codeController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('방 참여하기'),
+          content: TextField(
+            controller: codeController,
+            decoration: const InputDecoration(
+              hintText: '초대 코드를 입력하세요',
+              border: OutlineInputBorder(),
+            ),
+            textCapitalization: TextCapitalization.characters,
+            maxLength: 6,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                final code = codeController.text.trim();
+                if (code.isNotEmpty) {
+                  Navigator.of(dialogContext).pop();
+                  context.go(RoutePaths.waitingRoomWithId(code));
+                }
+              },
+              child: const Text('참여'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Home')),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Home',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 60),
+              ElevatedButton(
+                onPressed: () => context.go(RoutePaths.selectArea),
+                child: const Text('방 만들기'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => _showJoinRoomDialog(context),
+                child: const Text('방 참여하기'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
