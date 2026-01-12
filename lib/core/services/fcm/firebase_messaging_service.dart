@@ -173,18 +173,15 @@ class FirebaseMessagingService {
   Future<void> _handlePushNotificationsToken() async {
     // 1. Get device information first (always runs, even on simulator)
     // 1. 먼저 기기 정보 수집 (시뮬레이터에서도 항상 실행됨)
-    final deviceId = await DeviceIdManager.getOrCreateDeviceId();
-    final deviceName = await DeviceInfoService.getDeviceName();
-    final deviceType = DeviceInfoService.getDeviceType();
-    final osVersion = await DeviceInfoService.getOSVersion();
+    final deviceInfo = await getDeviceInfo();
     final isPhysical = await DeviceInfoService.isPhysicalDevice();
 
     // 2. Print device info (always visible, even on simulator)
     // 2. 기기 정보 출력 (시뮬레이터에서도 항상 표시됨)
-    debugPrint('📱 Device ID: $deviceId');
-    debugPrint('📱 Device Name: $deviceName');
-    debugPrint('📱 Device Type: $deviceType');
-    debugPrint('📱 OS Version: $osVersion');
+    debugPrint('📱 Device ID: ${deviceInfo['deviceId']}');
+    debugPrint('📱 Device Name: ${deviceInfo['deviceName']}');
+    debugPrint('📱 Device Type: ${deviceInfo['deviceType']}');
+    debugPrint('📱 OS Version: ${deviceInfo['osVersion']}');
     debugPrint('📱 Physical Device: $isPhysical');
 
     // Print full device info for debugging (개발 중에만 활성화)
@@ -204,31 +201,14 @@ class FirebaseMessagingService {
     if (token != null) {
       // Listen for token refresh events
       // 토큰 갱신 이벤트 수신 대기
-      FirebaseMessaging.instance.onTokenRefresh
-          .listen((fcmToken) async {
-            debugPrint('🔄 FCM token refreshed: $fcmToken');
-
-            // Get updated device info
-            // 갱신된 기기 정보 가져오기
-            final updatedDeviceId = await DeviceIdManager.getOrCreateDeviceId();
-            final updatedDeviceName = await DeviceInfoService.getDeviceName();
-            final updatedDeviceType = DeviceInfoService.getDeviceType();
-
-            debugPrint('📱 Updated Device ID: $updatedDeviceId');
-            debugPrint('📱 Updated Device Name: $updatedDeviceName');
-            debugPrint('📱 Updated Device Type: $updatedDeviceType');
-
-            // Note: Updated token will be sent to backend on next login
-            // 참고: 갱신된 토큰은 다음 로그인 시 백엔드로 전송됩니다
-            debugPrint(
-              '✅ FCM token refresh completed. Token will be sent on next login.',
-            );
-          })
-          .onError((error) {
-            // Handle errors during token refresh
-            // 토큰 갱신 중 발생한 에러 처리
-            debugPrint('❌ Error refreshing FCM token: $error');
-          });
+      FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+        debugPrint('🔄 FCM token refreshed: $fcmToken');
+        debugPrint('✅ Updated token will be sent on next login.');
+      }).onError((error) {
+        // Handle errors during token refresh
+        // 토큰 갱신 중 발생한 에러 처리
+        debugPrint('❌ Error refreshing FCM token: $error');
+      });
     } else {
       // Show helpful message for simulator users when token is null
       // 시뮬레이터 사용자를 위한 안내 메시지
