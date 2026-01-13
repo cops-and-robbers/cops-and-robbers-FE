@@ -118,9 +118,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       // 📝 Analyzer Note: 아래 변수들이 false로 하드코딩되어 있어
       //    이후 라우팅 가드 로직(Line 130-187)이 부분적으로 도달 불가능합니다.
       //    이는 의도된 동작이며, Provider 구현 후 정상 작동합니다.
-      final isAuthenticated = false; // TODO: authState.value != null
+
+      // 와이어 프레임이라 true로 고정, 추후 실제 auth 상태로 변경 필요
+      final isAuthenticated = true; // TODO: authState.value != null
       final isOnboardingCompleted =
-          false; // TODO: authState.value?.isOnboardingCompleted ?? false
+          true; // TODO: authState.value?.isOnboardingCompleted ?? false
       // final currentSession = sessionState.value;
 
       final currentPath = state.uri.path;

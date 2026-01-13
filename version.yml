@@ -35,7 +35,7 @@
 # ===================================================================
 
 version: "1.0.37"
-version_code: 37 # app build number
+version_code: 38 # app build number
 project_type: "flutter" # spring, flutter, react, react-native, react-native-expo, node, python, basic
 metadata:
   last_updated: "2026-01-12 23:33:33"
