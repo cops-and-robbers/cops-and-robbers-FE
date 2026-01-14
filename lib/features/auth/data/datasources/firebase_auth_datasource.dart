@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart';
 
 /// Firebase Authentication DataSource
@@ -115,7 +116,55 @@ class FirebaseAuthDataSource {
     }
   }
 
-  /// 디버그 정보 출력
+  /// Apple 로그인 수행
+  ///
+  /// Returns: Firebase [UserCredential]
+  /// Throws: [FirebaseAuthException], [SignInWithAppleAuthorizationException], [Exception]
+  Future<UserCredential> signInWithApple() async {
+    try {
+      // 1. Apple Sign-In 실행
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      // 2. Firebase Credential 생성
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      // 3. Firebase Auth 로그인
+      final UserCredential userCredential =
+          await _firebaseAuth.signInWithCredential(oauthCredential);
+
+      // 4. 디버그 콘솔 출력
+      _printAppleDebugInfo(userCredential, appleCredential);
+
+      return userCredential;
+    } on SignInWithAppleAuthorizationException catch (e) {
+      debugPrint('❌ Apple SignIn Authorization Error: ${e.code} - ${e.message}');
+
+      // 사용자 취소 시 Firebase 에러 코드로 변환
+      if (e.code == AuthorizationErrorCode.canceled) {
+        throw FirebaseAuthException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Sign in aborted by user',
+        );
+      }
+      rethrow;
+    } on FirebaseAuthException catch (e) {
+      debugPrint('❌ FirebaseAuthException: ${e.code} - ${e.message}');
+      rethrow;
+    } catch (e) {
+      debugPrint('❌ Apple Sign-In Error: $e');
+      rethrow;
+    }
+  }
+
+  /// 디버그 정보 출력 (Google)
   void _printDebugInfo(
     UserCredential userCredential,
     GoogleSignInAuthentication googleAuth,
@@ -132,6 +181,28 @@ class FirebaseAuthDataSource {
 
     debugPrint(
       '🔄 Google Access Token: ${googleAuth.accessToken?.substring(0, 20)}...',
+    );
+    debugPrint('========================================');
+  }
+
+  /// Apple 로그인 디버그 정보 출력
+  void _printAppleDebugInfo(
+    UserCredential userCredential,
+    AuthorizationCredentialAppleID appleCredential,
+  ) {
+    debugPrint('========================================');
+    debugPrint('🍎 Firebase Apple Login Success');
+    debugPrint('========================================');
+    debugPrint('📧 Email: ${userCredential.user?.email}');
+    debugPrint('🆔 UID: ${userCredential.user?.uid}');
+    debugPrint('👤 DisplayName: ${userCredential.user?.displayName}');
+    debugPrint('🖼️ PhotoURL: ${userCredential.user?.photoURL}');
+    debugPrint('🎫 Apple ID Token: ${appleCredential.identityToken}');
+    debugPrint(
+      '🎫 Apple ID Token length: ${appleCredential.identityToken?.length}',
+    );
+    debugPrint(
+      '🔄 Apple Auth Code: ${appleCredential.authorizationCode.substring(0, 20)}...',
     );
     debugPrint('========================================');
   }

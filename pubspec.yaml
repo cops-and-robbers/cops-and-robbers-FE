@@ -35,6 +35,7 @@ dependencies:
   uuid: ^4.5.2 # 앱 내 고유 식별자 생성
   # 소셜 로그인
   google_sign_in: ^6.2.3 # Google 소셜 로그인
+  sign_in_with_apple: ^6.1.3 # Apple 소셜 로그인
   firebase_auth: ^6.1.3 # Firebase 인증
   # UI/UX 레이아웃
   flutter_screenutil: ^5.9.3 # 화면, 해상도 대응 유틸리티
