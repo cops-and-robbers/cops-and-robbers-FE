@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../data/datasources/firebase_auth_datasource.dart';
+import '../../domain/utils/firebase_auth_error_handler.dart';
 
 part 'auth_provider.g.dart';
 
@@ -50,69 +51,22 @@ class AuthNotifier extends _$AuthNotifier {
       final dataSource = ref.read(firebaseAuthDataSourceProvider);
       final userCredential = await dataSource.signInWithGoogle();
 
-      // Firebase ID Token 발급 (실패 시 로그인 취소)
-      try {
-        await dataSource.getIdToken();
-      } catch (tokenError) {
-        // 토큰 발급 실패 시 로그아웃 처리
-        debugPrint('❌ Firebase ID Token 발급 실패 - 로그인 취소 및 로그아웃 처리');
-        await dataSource.signOut();
-        rethrow; // 에러를 상위로 전파하여 사용자에게 표시
-      }
+      // Firebase ID Token 검증 (실패 시 세션 정리 및 에러 전파)
+      await _validateIdToken('google');
 
       state = AsyncValue.data(userCredential.user);
     } on FirebaseAuthException catch (e) {
       // 로그인 실패 시 세션 정리
-      try {
-        final dataSource = ref.read(firebaseAuthDataSourceProvider);
-        await dataSource.signOut();
-        debugPrint('🔄 로그인 실패 - Firebase/Google 세션 정리 완료');
-      } catch (signOutError) {
-        debugPrint('⚠️ 로그아웃 중 에러 (무시): $signOutError');
-      }
+      await _cleanupSessionOnFailure('google');
 
       // Firebase 에러를 사용자 친화적 메시지로 변환
-      String errorMessage;
-      switch (e.code) {
-        case 'user-not-found':
-          errorMessage = '로그인 정보를 가져올 수 없습니다. 다시 시도해주세요.';
-          break;
-        case 'token-not-available':
-          errorMessage = '인증 토큰 발급에 실패했습니다. 다시 시도해주세요.';
-          break;
-        case 'ERROR_ABORTED_BY_USER':
-          errorMessage = '로그인이 취소되었습니다.';
-          break;
-        case 'network-request-failed':
-          errorMessage = '네트워크 연결을 확인해주세요.';
-          break;
-        case 'invalid-credential':
-          errorMessage = '잘못된 인증 정보입니다.';
-          break;
-        case 'user-disabled':
-          errorMessage = '비활성화된 계정입니다.';
-          break;
-        default:
-          errorMessage = '로그인에 실패했습니다. 다시 시도해주세요.';
-      }
-
       state = AsyncValue.error(
-        AuthException(
-          message: errorMessage,
-          code: e.code,
-          originalException: e,
-        ),
+        FirebaseAuthErrorHandler.createAuthException(e, provider: 'Google'),
         StackTrace.current,
       );
     } catch (e, stack) {
       // 로그인 실패 시 세션 정리
-      try {
-        final dataSource = ref.read(firebaseAuthDataSourceProvider);
-        await dataSource.signOut();
-        debugPrint('🔄 로그인 실패 - Firebase/Google 세션 정리 완료');
-      } catch (signOutError) {
-        debugPrint('⚠️ 로그아웃 중 에러 (무시): $signOutError');
-      }
+      await _cleanupSessionOnFailure('google');
 
       // 기타 예외 처리
       state = AsyncValue.error(
@@ -127,7 +81,7 @@ class AuthNotifier extends _$AuthNotifier {
   /// 사용자가 취소하거나 네트워크 오류 발생 시
   /// [AuthException]으로 변환하여 에러 상태를 설정합니다.
   ///
-  /// 로그인 실패 시 Firebase 세션을 정리합니다.
+  /// 로그인 실패 시 Firebase/Google 세션을 모두 정리합니다.
   Future<void> signInWithApple() async {
     state = const AsyncValue.loading();
 
@@ -135,69 +89,22 @@ class AuthNotifier extends _$AuthNotifier {
       final dataSource = ref.read(firebaseAuthDataSourceProvider);
       final userCredential = await dataSource.signInWithApple();
 
-      // Firebase ID Token 발급 (실패 시 로그인 취소)
-      try {
-        await dataSource.getIdToken();
-      } catch (tokenError) {
-        // 토큰 발급 실패 시 로그아웃 처리
-        debugPrint('❌ Firebase ID Token 발급 실패 - 로그인 취소 및 로그아웃 처리');
-        await dataSource.signOut();
-        rethrow; // 에러를 상위로 전파하여 사용자에게 표시
-      }
+      // Firebase ID Token 검증 (실패 시 세션 정리 및 에러 전파)
+      await _validateIdToken('apple');
 
       state = AsyncValue.data(userCredential.user);
     } on FirebaseAuthException catch (e) {
       // 로그인 실패 시 세션 정리
-      try {
-        final dataSource = ref.read(firebaseAuthDataSourceProvider);
-        await dataSource.signOut();
-        debugPrint('🔄 로그인 실패 - Firebase 세션 정리 완료');
-      } catch (signOutError) {
-        debugPrint('⚠️ 로그아웃 중 에러 (무시): $signOutError');
-      }
+      await _cleanupSessionOnFailure('apple');
 
       // Firebase 에러를 사용자 친화적 메시지로 변환
-      String errorMessage;
-      switch (e.code) {
-        case 'user-not-found':
-          errorMessage = '로그인 정보를 가져올 수 없습니다. 다시 시도해주세요.';
-          break;
-        case 'token-not-available':
-          errorMessage = '인증 토큰 발급에 실패했습니다. 다시 시도해주세요.';
-          break;
-        case 'ERROR_ABORTED_BY_USER':
-          errorMessage = '로그인이 취소되었습니다.';
-          break;
-        case 'network-request-failed':
-          errorMessage = '네트워크 연결을 확인해주세요.';
-          break;
-        case 'invalid-credential':
-          errorMessage = '잘못된 인증 정보입니다.';
-          break;
-        case 'user-disabled':
-          errorMessage = '비활성화된 계정입니다.';
-          break;
-        default:
-          errorMessage = 'Apple 로그인에 실패했습니다. 다시 시도해주세요.';
-      }
-
       state = AsyncValue.error(
-        AuthException(
-          message: errorMessage,
-          code: e.code,
-          originalException: e,
-        ),
+        FirebaseAuthErrorHandler.createAuthException(e, provider: 'Apple'),
         StackTrace.current,
       );
     } catch (e, stack) {
       // 로그인 실패 시 세션 정리
-      try {
-        final dataSource = ref.read(firebaseAuthDataSourceProvider);
-        await dataSource.signOut();
-        debugPrint('🔄 로그인 실패 - Firebase 세션 정리 완료');
-      } catch (signOutError) {
-        debugPrint('⚠️ 로그아웃 중 에러 (무시): $signOutError');
-      }
+      await _cleanupSessionOnFailure('apple');
 
       // 기타 예외 처리
       state = AsyncValue.error(
@@ -220,6 +127,40 @@ class AuthNotifier extends _$AuthNotifier {
         AuthException(message: '로그아웃에 실패했습니다.', originalException: e),
         stack,
       );
+    }
+  }
+
+  /// 로그인 실패 시 세션 정리
+  ///
+  /// Firebase 및 Google 세션을 모두 정리합니다.
+  /// 에러가 발생해도 무시하고 계속 진행합니다.
+  ///
+  /// [provider]: 로그인 제공자 이름 (로그 출력용)
+  Future<void> _cleanupSessionOnFailure(String provider) async {
+    try {
+      final dataSource = ref.read(firebaseAuthDataSourceProvider);
+      await dataSource.signOut();
+      debugPrint('🔄 로그인 실패 - Firebase/Google 세션 정리 완료 ($provider)');
+    } catch (signOutError) {
+      debugPrint('⚠️ 로그아웃 중 에러 (무시): $signOutError');
+    }
+  }
+
+  /// 로그인 후 Firebase ID Token 검증
+  ///
+  /// 토큰 발급 실패 시 세션을 정리하고 에러를 재전파합니다.
+  ///
+  /// [provider]: 로그인 제공자 이름 (로그 출력용)
+  ///
+  /// Throws: [FirebaseAuthException] 토큰 발급 실패 시
+  Future<void> _validateIdToken(String provider) async {
+    try {
+      final dataSource = ref.read(firebaseAuthDataSourceProvider);
+      await dataSource.getIdToken();
+    } catch (tokenError) {
+      debugPrint('❌ Firebase ID Token 발급 실패 - 로그인 취소 및 로그아웃 처리 ($provider)');
+      await _cleanupSessionOnFailure(provider);
+      rethrow;
     }
   }
 }

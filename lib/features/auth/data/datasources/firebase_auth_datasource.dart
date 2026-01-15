@@ -137,18 +137,23 @@ class FirebaseAuthDataSource {
       );
 
       // 3. Firebase Auth 로그인
-      final UserCredential userCredential =
-          await _firebaseAuth.signInWithCredential(oauthCredential);
+      final UserCredential userCredential = await _firebaseAuth
+          .signInWithCredential(oauthCredential);
 
       // 4. 디버그 콘솔 출력
       _printAppleDebugInfo(userCredential, appleCredential);
 
       return userCredential;
     } on SignInWithAppleAuthorizationException catch (e) {
-      debugPrint('❌ Apple SignIn Authorization Error: ${e.code} - ${e.message}');
+      debugPrint(
+        '❌ Apple SignIn Authorization Error: ${e.code} - ${e.message}',
+      );
 
       // 사용자 취소 시 Firebase 에러 코드로 변환
-      if (e.code == AuthorizationErrorCode.canceled) {
+      // - canceled: 명시적 취소
+      // - unknown (1000): iOS에서 사용자 취소 시 발생하는 일반적인 에러
+      if (e.code == AuthorizationErrorCode.canceled ||
+          e.code == AuthorizationErrorCode.unknown) {
         throw FirebaseAuthException(
           code: 'ERROR_ABORTED_BY_USER',
           message: 'Sign in aborted by user',
