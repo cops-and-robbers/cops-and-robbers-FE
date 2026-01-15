@@ -153,9 +153,9 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return ScreenUtilInit(
-      // 디자인 기준 화면 크기 (iPhone 12/13/14 기준)
-      // Base design screen size (iPhone 12/13/14)
-      designSize: const Size(390, 844),
+      // 디자인 기준 화면 크기 (iPhone 16 기준)
+      // Base design screen size (iPhone 16)
+      designSize: const Size(393, 852),
 
       // 텍스트 크기 자동 조정 (접근성 설정 반영)
       // Automatic text size adaptation (respects accessibility settings)
