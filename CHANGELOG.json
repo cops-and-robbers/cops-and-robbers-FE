@@ -1,11 +1,30 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-15T09:21:05Z",
-    "currentVersion": "1.1.0",
+    "lastUpdated": "2026-01-15T14:50:58Z",
+    "currentVersion": "1.1.1",
     "projectType": "flutter",
-    "totalReleases": 12
+    "totalReleases": 13
   },
   "releases": [
+    {
+      "version": "1.1.1",
+      "project_type": "flutter",
+      "date": "2026-01-15",
+      "pr_number": 30,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **작업(Chores)**\n  * 애플리케이션 버전을 1.1.1로 업데이트했습니다.\n  * iOS 앱스토어 배포 자동화를 위한 빌드 설정을 개선했습니다.\n  * TestFlight 배포 파이프라인을 추가하여 배포 프로세스를 강화했습니다.\n  * 버전 관리 메타데이터 및 통합 정보를 업데이트했습니다.",
+      "parsed_changes": {
+        "작업_chores": {
+          "title": "작업(Chores)",
+          "items": [
+            "애플리케이션 버전을 1.1.1로 업데이트했습니다.",
+            "iOS 앱스토어 배포 자동화를 위한 빌드 설정을 개선했습니다.",
+            "TestFlight 배포 파이프라인을 추가하여 배포 프로세스를 강화했습니다.",
+            "버전 관리 메타데이터 및 통합 정보를 업데이트했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.0",
       "project_type": "flutter",
