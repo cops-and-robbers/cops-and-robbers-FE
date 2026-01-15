@@ -970,8 +970,9 @@ features/game/
     │   └── location_provider.dart         # F2: 위치 추적
     ├── pages/
     │   ├── game_screen.dart               # 메인 게임 화면 (지도 포함)
-    │   ├── result_screen.dart             # 결과 화면
     │   └── area_setup_page.dart           # F2.1 구역 설정 화면
+    │   # Note: 결과 화면(F3.4)은 별도 페이지가 아닌 game_screen.dart 내부에서
+    │   # 모달을 띄우는 방식으로 표시 
     └── widgets/
         ├── game_hud.dart                  # F4.1 HUD (타이머, 현황)
         ├── capture_dialog.dart            # F3.2 체포 다이얼로그
