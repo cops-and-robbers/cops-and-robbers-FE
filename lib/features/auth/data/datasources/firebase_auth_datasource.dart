@@ -106,6 +106,7 @@ class FirebaseAuthDataSource {
           message: 'Failed to retrieve Firebase ID Token',
         );
       }
+      // TODO : 릴리즈 빌드에서는 제거하거나 로그 레벨을 조정할 것
       debugPrint('🔥 Firebase ID Token : $idToken)');
       debugPrint('🔥 Firebase ID Token length: ${idToken.length})');
 
@@ -174,6 +175,7 @@ class FirebaseAuthDataSource {
     UserCredential userCredential,
     GoogleSignInAuthentication googleAuth,
   ) {
+    // TODO: 릴리즈 빌드에서는 제거하거나 로그 레벨을 조정할 것
     debugPrint('========================================');
     debugPrint('🔐 Firebase Google Login Success');
     debugPrint('========================================');
