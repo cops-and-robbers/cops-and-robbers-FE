@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-15T14:50:58Z",
-    "currentVersion": "1.1.1",
+    "lastUpdated": "2026-01-15T15:27:29Z",
+    "currentVersion": "1.1.2",
     "projectType": "flutter",
-    "totalReleases": 13
+    "totalReleases": 14
   },
   "releases": [
+    {
+      "version": "1.1.2",
+      "project_type": "flutter",
+      "date": "2026-01-15",
+      "pr_number": 31,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **Chores**\n  * 애플리케이션 버전을 1.1.2로 업데이트\n  * 빌드 자동화 및 배포 인프라 구성 개선\n  * 버전 메타데이터 및 빌드 번호 업데이트",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전을 1.1.2로 업데이트",
+            "빌드 자동화 및 배포 인프라 구성 개선",
+            "버전 메타데이터 및 빌드 번호 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.1",
       "project_type": "flutter",
