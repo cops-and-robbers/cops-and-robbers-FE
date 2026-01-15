@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+# Fastlane - Android 빌드 자동화
+gem "fastlane", "~> 2.225"
