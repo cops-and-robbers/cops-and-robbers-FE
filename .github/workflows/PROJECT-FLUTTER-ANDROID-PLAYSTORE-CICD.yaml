@@ -4,7 +4,7 @@ on:
   push:
     branches: ["deploy"]
   workflow_run:
-    workflows: ["AUTO UPDATE PROJECT CHANGELOG"]
+    workflows: ["CHANGELOG 자동 업데이트"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -44,7 +44,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "${{ secrets.ENV }}" > .env
+          echo "${{ secrets.ENV_FILE }}" > .env
           echo ".env file created"
 
       - name: Set up Flutter
@@ -173,7 +173,7 @@ jobs:
       # .env 파일 생성 (보안을 위해 아티팩트가 아닌 시크릿에서 생성)
       - name: Create .env file
         run: |
-          echo "${{ secrets.ENV }}" > .env
+          echo "${{ secrets.ENV_FILE }}" > .env
           echo "✅ .env 파일 생성됨 (크기: $(wc -c < .env) bytes)"
 
       # Release Keystore 설정
@@ -199,7 +199,9 @@ jobs:
       # Google-services.json 생성
       - name: Create Google-services.json
         run: |
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
+          cat << 'EOF' > android/app/google-services.json
+          ${{ secrets.GOOGLE_SERVICES_JSON }}
+          EOF
           echo "✅ Google-services.json 생성 완료"
 
       - name: Set up Flutter

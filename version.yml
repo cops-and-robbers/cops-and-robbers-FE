@@ -35,11 +35,18 @@
 # ===================================================================
 
 version: "1.0.40"
-version_code: 41 # app build number
-project_type: "flutter" # spring, flutter, react, react-native, react-native-expo, node, python, basic
+version_code: 1  # app build number
+project_type: "flutter"  # spring, flutter, react, react-native, react-native-expo, node, python, basic
 metadata:
-  last_updated: "2026-01-15 06:50:31"
-  last_updated_by: "EM-H20"
-  default_branch: "(unknown)"
+  last_updated: "2026-01-15 07:17:37"
+  last_updated_by: "template_integrator"
+  default_branch: "main"
   integrated_from: "SUH-DEVOPS-TEMPLATE"
-  integration_date: "2025-12-21"
+  integration_date: "2026-01-15"
+  template:
+    source: "SUH-DEVOPS-TEMPLATE"
+    version: "1.3.14"
+    integrated_date: "2026-01-15"
+    last_update_date: "2026-01-15"
+    options:
+      synology: false
