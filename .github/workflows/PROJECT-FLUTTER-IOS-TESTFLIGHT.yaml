@@ -307,7 +307,8 @@ jobs:
           xcodebuild -workspace Runner.xcworkspace \
             -scheme Runner \
             -archivePath build/Runner.xcarchive \
-            -destination 'generic/platform=iOS' \
+            -sdk iphoneos \
+            -configuration Release \
             archive \
             CODE_SIGN_STYLE=Manual \
             PROVISIONING_PROFILE_SPECIFIER="$IOS_PROVISIONING_PROFILE_NAME" \
