@@ -33,12 +33,10 @@ class GamePage extends StatelessWidget {
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 60),
-              ElevatedButton(
-                onPressed: () =>
-                    context.go(RoutePaths.resultsWithId(sessionId)),
-                child: const Text('결과 화면 보기'),
-              ),
-              const SizedBox(height: 20),
+              // TODO:
+              // 게임 종료 시 결과 Dialog/Modal UI 표시 예정
+              // - 라우팅 이동 없이 GamePage 위에서 표시
+              // - 홈으로 이동 버튼 제공
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.home),
                 child: const Text('나가기'),

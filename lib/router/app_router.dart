@@ -23,7 +23,6 @@ import 'package:cops_and_robbers/features/session/presentation/pages/session_set
 import 'package:cops_and_robbers/features/session/presentation/pages/invite_code_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
-import 'package:cops_and_robbers/features/game/presentation/pages/results_page.dart';
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
 ///
@@ -120,13 +119,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       //       }
       //       break;
       //     case SessionStatus.playing:
+      //     case SessionStatus.ended:
+      //       // playing 및 ended 상태 모두 game 화면 유지
+      //       // ended 상태에서는 GamePage 내부에서 결과 모달(Dialog)이 표시됨
       //       if (!currentPath.startsWith('/game/')) {
       //         return RoutePaths.gameWithId(currentSession.id);
-      //       }
-      //       break;
-      //     case SessionStatus.ended:
-      //       if (!currentPath.startsWith('/results/')) {
-      //         return RoutePaths.resultsWithId(currentSession.id);
       //       }
       //       break;
       //   }
@@ -234,14 +231,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      GoRoute(
-        path: RoutePaths.results,
-        name: RoutePaths.resultsName,
-        builder: (context, state) {
-          final sessionId = state.pathParameters['sessionId']!;
-          return ResultsPage(sessionId: sessionId);
-        },
-      ),
+      // Note: 결과 화면(F3.4)은 별도 라우트가 아닌 GamePage 내부에서
+      // 모달 형태로 표시됩니다.
     ],
 
     // ====================================================================
