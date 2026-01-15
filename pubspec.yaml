@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: 'none'
-version: 1.0.40+40
+version: 1.0.41+1
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -110,6 +110,6 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/app_icon_512.png"
-  adaptive_icon_background: "#FFFFFF"       # Android 전용 배경 (흰색)
+  adaptive_icon_background: "#FFFFFF" # Android 전용 배경 (흰색)
   adaptive_icon_foreground: "assets/app_icon_512.png"
-  remove_alpha_ios: true                    # iOS는 알파 제거 후 단색 배경
+  remove_alpha_ios: true # iOS는 알파 제거 후 단색 배경
