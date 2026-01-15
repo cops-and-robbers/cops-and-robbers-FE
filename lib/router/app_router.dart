@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,9 +8,8 @@ import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
 import 'route_paths.dart';
 
-// TODO: Import providers when they are implemented
-// import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
-// import 'package:cops_and_robbers/features/session/presentation/providers/session_provider.dart';
+// Auth Provider Import
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 
 // Page Imports
 import 'package:cops_and_robbers/features/auth/presentation/pages/splash_page.dart';
@@ -73,57 +71,17 @@ import 'package:cops_and_robbers/features/game/presentation/pages/results_page.d
 /// - Deep Link 지원: URL로 직접 특정 페이지 접근
 /// - 404 에러 처리: errorBuilder로 잘못된 경로 처리
 final routerProvider = Provider<GoRouter>((ref) {
-  // TODO: 실제 Provider로 교체 필요
-  // final authState = ref.watch(authNotifierProvider);
-  // final sessionState = ref.watch(sessionNotifierProvider);
-
   return GoRouter(
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
-    // TODO: 상태 변경 시 자동 리다이렉트 트리거 (Provider 구현 후 활성화)
-    // refreshListenable: GoRouterRefreshStream([
-    //   authState.stream,
-    //   sessionState.stream,
-    // ]),
+    // refreshListenable 활성화 (auth 상태 변경 감지)
+    refreshListenable: _GoRouterRefreshNotifier(ref, authStateProvider),
     redirect: (BuildContext context, GoRouterState state) {
-      // TODO: 실제 Provider로 교체 필요
-      // final authState = ref.watch(authNotifierProvider);
-      // final sessionState = ref.watch(sessionNotifierProvider);
-      // final isAuthenticated = authState.value != null;
-      // final isOnboardingCompleted = authState.value?.isOnboardingCompleted ?? false;
-      // final currentSession = sessionState.value;
-
-      // ⚠️ 개발/프로파일 빌드에서는 인증 가드 비활성화
-      // 릴리즈 빌드(flutter build ios/appbundle --release)에서만 인증 가드 활성화
-      // Provider 구현 완료 후 이 조건문을 제거하고 프로덕션 로직만 사용
-      //
-      // ignore: dead_code
-      // 📝 Analyzer Note: 아래 코드는 개발 환경에서 도달 불가능하지만 의도된 동작입니다.
-      //    - 개발/프로파일 빌드: 라우팅 가드 비활성화 (모든 페이지 자유 접근)
-      //    - 릴리즈 빌드: Line 108-185의 인증 가드 로직 활성화
-      //    - TODO: auth/session Provider 구현 후 이 조건문 제거 예정
-      if (!kReleaseMode) {
-        return null; // 디버그/프로파일 모드: 모든 경로 허용
-      }
-
       // ====================================================================
-      // 릴리즈 빌드: 라우팅 가드 활성화
-      // ====================================================================
-      // 이 코드는 릴리즈 빌드(flutter build --release)에서만 실행됩니다.
-      // 디버그/프로파일 빌드에서는 위의 if (!kReleaseMode) 조건으로 인해
-      // 이 섹션에 도달하지 않습니다.
-
       // 실제 Provider에서 인증 상태 가져오기
-      // ignore: dead_code
-      // 📝 Analyzer Note: 아래 변수들이 false로 하드코딩되어 있어
-      //    이후 라우팅 가드 로직(Line 130-187)이 부분적으로 도달 불가능합니다.
-      //    이는 의도된 동작이며, Provider 구현 후 정상 작동합니다.
-
-      // 와이어 프레임이라 true로 고정, 추후 실제 auth 상태로 변경 필요
-      final isAuthenticated = true; // TODO: authState.value != null
-      final isOnboardingCompleted =
-          true; // TODO: authState.value?.isOnboardingCompleted ?? false
-      // final currentSession = sessionState.value;
+      // ====================================================================
+      final authUser = ref.read(authStateProvider).value;
+      final isAuthenticated = authUser != null;
 
       final currentPath = state.uri.path;
 
@@ -145,26 +103,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       // ====================================================================
       // 2. 인증된 사용자가 로그인 페이지 접근 시
       // ====================================================================
-      // ignore: dead_code
       if (currentPath == RoutePaths.login) {
-        // ignore: dead_code
-        // 온보딩 미완료 시 온보딩으로
-        if (!isOnboardingCompleted) {
-          return RoutePaths.onboarding;
-        }
-        // 온보딩 완료 시 홈으로
-        return RoutePaths.home;
-      }
-
-      // ====================================================================
-      // 3. 온보딩 완료 체크
-      // ====================================================================
-      if (!isOnboardingCompleted && currentPath != RoutePaths.onboarding) {
-        return RoutePaths.onboarding;
-      }
-
-      // 온보딩 완료 후 온보딩 페이지 접근 시 홈으로
-      if (isOnboardingCompleted && currentPath == RoutePaths.onboarding) {
+        // 로그인 완료 시 홈으로
         return RoutePaths.home;
       }
 
@@ -371,4 +311,23 @@ class GoRouterRefreshStream extends ChangeNotifier {
     }
     super.dispose();
   }
+}
+
+// ============================================================================
+// GoRouter용 Refresh Notifier (StreamProvider 감지용)
+// ============================================================================
+
+/// GoRouter용 Refresh Notifier
+///
+/// StreamProvider의 상태 변경을 감지하여 GoRouter에게
+/// 리다이렉트 재실행을 트리거합니다.
+class _GoRouterRefreshNotifier extends ChangeNotifier {
+  _GoRouterRefreshNotifier(this._ref, this._provider) {
+    _ref.listen<AsyncValue<dynamic>>(_provider, (previous, next) {
+      notifyListeners(); // 상태 변경 시 GoRouter에 알림
+    });
+  }
+
+  final Ref _ref;
+  final ProviderListenable<AsyncValue<dynamic>> _provider;
 }

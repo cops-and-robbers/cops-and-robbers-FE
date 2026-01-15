@@ -12,7 +12,20 @@
           "package_name": "com.elipair.copsandrobbers"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "361137060318-vfjqdduu6ircug77qnsn72reo5gnd11m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.elipair.copsandrobbers",
+            "certificate_hash": "48c3a89f3f204f5699110175e58b0c86286bf641"
+          }
+        },
+        {
+          "client_id": "361137060318-3775p9g24elb36lu4i3k6t645as4444e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAqXgByFZfTJAwK4Zw3385hVyh3pugdSzs"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361137060318-3775p9g24elb36lu4i3k6t645as4444e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "361137060318-2kee6bp0lgnlvgb6ijn47vsa62jqfs3t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.elipair.copsandrobbers"
+              }
+            }
+          ]
         }
       }
     }
