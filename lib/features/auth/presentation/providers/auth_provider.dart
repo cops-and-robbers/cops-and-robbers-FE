@@ -51,13 +51,16 @@ class AuthNotifier extends _$AuthNotifier {
       final dataSource = ref.read(firebaseAuthDataSourceProvider);
       final userCredential = await dataSource.signInWithGoogle();
 
-      // Firebase ID Token 검증 (실패 시 세션 정리 및 에러 전파)
+      // Firebase ID Token 검증 (실패 시 내부에서 세션 정리 수행)
       await _validateIdToken('google');
 
       state = AsyncValue.data(userCredential.user);
     } on FirebaseAuthException catch (e) {
-      // 로그인 실패 시 세션 정리
-      await _cleanupSessionOnFailure('google');
+      // 토큰 검증 실패는 이미 _validateIdToken에서 세션 정리됨
+      // 그 외 Firebase 에러만 여기서 세션 정리
+      if (e.code != 'token-validation-failed') {
+        await _cleanupSessionOnFailure('google');
+      }
 
       // Firebase 에러를 사용자 친화적 메시지로 변환
       state = AsyncValue.error(
@@ -65,7 +68,7 @@ class AuthNotifier extends _$AuthNotifier {
         StackTrace.current,
       );
     } catch (e, stack) {
-      // 로그인 실패 시 세션 정리
+      // 예상치 못한 에러 발생 시 세션 정리
       await _cleanupSessionOnFailure('google');
 
       // 기타 예외 처리
@@ -81,7 +84,7 @@ class AuthNotifier extends _$AuthNotifier {
   /// 사용자가 취소하거나 네트워크 오류 발생 시
   /// [AuthException]으로 변환하여 에러 상태를 설정합니다.
   ///
-  /// 로그인 실패 시 Firebase/Google 세션을 모두 정리합니다.
+  /// 로그인 실패 시 Firebase 및 소셜 로그인 세션을 모두 정리합니다.
   Future<void> signInWithApple() async {
     state = const AsyncValue.loading();
 
@@ -89,13 +92,16 @@ class AuthNotifier extends _$AuthNotifier {
       final dataSource = ref.read(firebaseAuthDataSourceProvider);
       final userCredential = await dataSource.signInWithApple();
 
-      // Firebase ID Token 검증 (실패 시 세션 정리 및 에러 전파)
+      // Firebase ID Token 검증 (실패 시 내부에서 세션 정리 수행)
       await _validateIdToken('apple');
 
       state = AsyncValue.data(userCredential.user);
     } on FirebaseAuthException catch (e) {
-      // 로그인 실패 시 세션 정리
-      await _cleanupSessionOnFailure('apple');
+      // 토큰 검증 실패는 이미 _validateIdToken에서 세션 정리됨
+      // 그 외 Firebase 에러만 여기서 세션 정리
+      if (e.code != 'token-validation-failed') {
+        await _cleanupSessionOnFailure('apple');
+      }
 
       // Firebase 에러를 사용자 친화적 메시지로 변환
       state = AsyncValue.error(
@@ -103,7 +109,7 @@ class AuthNotifier extends _$AuthNotifier {
         StackTrace.current,
       );
     } catch (e, stack) {
-      // 로그인 실패 시 세션 정리
+      // 예상치 못한 에러 발생 시 세션 정리
       await _cleanupSessionOnFailure('apple');
 
       // 기타 예외 처리
@@ -148,19 +154,29 @@ class AuthNotifier extends _$AuthNotifier {
 
   /// 로그인 후 Firebase ID Token 검증
   ///
-  /// 토큰 발급 실패 시 세션을 정리하고 에러를 재전파합니다.
+  /// 토큰 발급 실패 시 세션을 정리하고 명시적인 FirebaseAuthException을 발생시킵니다.
+  /// 상위 호출자는 토큰 검증 실패(code: 'token-validation-failed')에 대한
+  /// 세션 정리를 신경쓰지 않아도 됩니다.
   ///
   /// [provider]: 로그인 제공자 이름 (로그 출력용)
   ///
-  /// Throws: [FirebaseAuthException] 토큰 발급 실패 시
+  /// Throws: [FirebaseAuthException] (code: 'token-validation-failed') 토큰 발급 실패 시
   Future<void> _validateIdToken(String provider) async {
     try {
       final dataSource = ref.read(firebaseAuthDataSourceProvider);
       await dataSource.getIdToken();
     } catch (tokenError) {
       debugPrint('❌ Firebase ID Token 발급 실패 - 로그인 취소 및 로그아웃 처리 ($provider)');
+      debugPrint('에러 타입: ${tokenError.runtimeType}');
+      debugPrint('에러 상세: $tokenError');
       await _cleanupSessionOnFailure(provider);
-      rethrow;
+
+      // 토큰 발급 실패를 명시적인 FirebaseAuthException으로 변환
+      // 이를 통해 상위 호출자에서 일관된 에러 처리 가능
+      throw FirebaseAuthException(
+        code: 'token-validation-failed',
+        message: 'Firebase ID Token 발급에 실패했습니다.',
+      );
     }
   }
 }

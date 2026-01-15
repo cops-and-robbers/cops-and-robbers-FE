@@ -30,6 +30,8 @@ class FirebaseAuthErrorHandler {
         return '로그인 정보를 가져올 수 없습니다. 다시 시도해주세요.';
       case 'token-not-available':
         return '인증 토큰 발급에 실패했습니다. 다시 시도해주세요.';
+      case 'token-validation-failed':
+        return 'Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요.';
       case 'ERROR_ABORTED_BY_USER':
         return '로그인이 취소되었습니다.';
       case 'network-request-failed':
