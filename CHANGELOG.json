@@ -1,11 +1,44 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-15T06:53:35Z",
-    "currentVersion": "1.0.40",
+    "lastUpdated": "2026-01-15T09:21:05Z",
+    "currentVersion": "1.1.0",
     "projectType": "flutter",
-    "totalReleases": 11
+    "totalReleases": 12
   },
   "releases": [
+    {
+      "version": "1.1.0",
+      "project_type": "flutter",
+      "date": "2026-01-15",
+      "pr_number": 29,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트\n\n* **새로운 기능**\n  * Play Store 마법사(Wizard) 웹 인터페이스 및 스크립트 추가 - Android 앱 출시 자동화 지원\n  * TestFlight 마법사 내보내기/가져오기 기능 강화 (ZIP, JSON, TXT 형식)\n  * 버전 정보 자동 동기화 기능 추가\n\n* **버그 수정**\n  * Git 푸시 실패 시 자동 재시도 로직 추가로 동시성 문제 해결\n  * 브랜치 존재 여부 사전 검증으로 오류 처리 개선\n\n* **업데이트**\n  * 앱 아이콘 및 적응형 아이콘 설정 개선\n  * Xcode 버전 16.3 → 16.4 업그레이드\n  * 앱 버전 1.0.40 → 1.1.0 출시",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "Play Store 마법사(Wizard) 웹 인터페이스 및 스크립트 추가 - Android 앱 출시 자동화 지원",
+            "TestFlight 마법사 내보내기/가져오기 기능 강화 (ZIP, JSON, TXT 형식)",
+            "버전 정보 자동 동기화 기능 추가"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "Git 푸시 실패 시 자동 재시도 로직 추가로 동시성 문제 해결",
+            "브랜치 존재 여부 사전 검증으로 오류 처리 개선"
+          ]
+        },
+        "업데이트": {
+          "title": "업데이트",
+          "items": [
+            "앱 아이콘 및 적응형 아이콘 설정 개선",
+            "Xcode 버전 16.3 → 16.4 업그레이드",
+            "앱 버전 1.0.40 → 1.1.0 출시"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.0.40",
       "project_type": "flutter",
