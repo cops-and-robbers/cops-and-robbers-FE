@@ -80,7 +80,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       // ====================================================================
       // 실제 Provider에서 인증 상태 가져오기
       // ====================================================================
-      final authUser = ref.watch(authStateProvider).value;
+      final authUser = ref.read(authStateProvider).value;
       final isAuthenticated = authUser != null;
 
       final currentPath = state.uri.path;
