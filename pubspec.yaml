@@ -45,6 +45,7 @@ dependencies:
   showcaseview: ^5.0.1 # 튜토리얼
   # 지도
   google_maps_flutter: ^2.14.0 # Google Maps SDK (Flutter)
+  flutter_naver_map: ^1.4.4    # Naver Map SDK (Flutter)
   # 알림 & 실시간 통신
   firebase_core: ^4.1.0
   firebase_messaging: ^16.0.1 # 푸시 알림(Firebase Cloud Messaging)
@@ -54,7 +55,6 @@ dependencies:
   # 기기 정보
   package_info_plus: ^9.0.0 # 앱 정보 수집 (버전 등)
   device_info_plus: ^10.1.2 # 기기 정보 수집 (FCM 기기 식별용)
-  flutter_naver_map: ^1.4.4
 # --------------------------------------------
 # 개발 의존성 (개발/빌드 시에만 필요한 패키지)
 # --------------------------------------------
