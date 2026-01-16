@@ -83,7 +83,7 @@ class _GamePageState extends State<GamePage> {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Text(
@@ -110,7 +110,7 @@ class _GamePageState extends State<GamePage> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Text(
@@ -125,7 +125,7 @@ class _GamePageState extends State<GamePage> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
@@ -155,7 +155,7 @@ class _GamePageState extends State<GamePage> {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Text(
@@ -170,7 +170,7 @@ class _GamePageState extends State<GamePage> {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Text(
@@ -195,7 +195,7 @@ class _GamePageState extends State<GamePage> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(18),
                   ),
                   child: Row(
@@ -207,7 +207,7 @@ class _GamePageState extends State<GamePage> {
                           decoration: InputDecoration(
                             hintText: '채팅을 입력하세요',
                             hintStyle: TextStyle(
-                              color: Colors.white.withOpacity(0.85),
+                              color: Colors.white.withValues(alpha: 0.85),
                             ),
                             border: InputBorder.none,
                             isDense: true,
@@ -225,7 +225,7 @@ class _GamePageState extends State<GamePage> {
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
