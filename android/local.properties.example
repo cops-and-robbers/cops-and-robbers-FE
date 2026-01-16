@@ -4,5 +4,4 @@ flutter.sdk=/path/to/flutter/sdk
 
 # Google Maps API Key
 # Gradle을 통해 AndroidManifest에 주입됨
-GOOGLE_MAPS_API_KEY=YO
-UR_GOOGLE_MAPS_API_KEY
+GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY

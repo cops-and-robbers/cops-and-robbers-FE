@@ -43,6 +43,8 @@ dependencies:
   toggle_switch: ^2.3.0 # 토글 버튼 UI
   flutter_svg: ^2.2.1 # 앱 아이콘
   showcaseview: ^5.0.1 # 튜토리얼
+  # 지도
+  google_maps_flutter: ^2.14.0 # Google Maps SDK (Flutter)
   # 알림 & 실시간 통신
   firebase_core: ^4.1.0
   firebase_messaging: ^16.0.1 # 푸시 알림(Firebase Cloud Messaging)
