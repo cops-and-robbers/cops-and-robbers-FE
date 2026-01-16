@@ -31,7 +31,7 @@
 
 `android/local.properties` 파일에 다음 줄을 추가합니다:
 
-```properties
+```text
 GOOGLE_MAPS_API_KEY=발급받은_API_KEY
 ```
 
@@ -48,7 +48,7 @@ cat android/local.properties.example
 
 ### 키 주입 흐름
 
-```
+```text
 local.properties (GOOGLE_MAPS_API_KEY=xxx)
        ↓
 build.gradle.kts (manifestPlaceholders로 주입)
@@ -75,7 +75,7 @@ cp ios/Flutter/Secrets.xcconfig.example ios/Flutter/Secrets.xcconfig
 
 `ios/Flutter/Secrets.xcconfig` 파일을 열고 실제 키를 입력합니다:
 
-```
+```text
 GOOGLE_MAPS_API_KEY=발급받은_API_KEY
 ```
 
@@ -83,7 +83,7 @@ GOOGLE_MAPS_API_KEY=발급받은_API_KEY
 
 ### 키 주입 흐름
 
-```
+```text
 Secrets.xcconfig (GOOGLE_MAPS_API_KEY=xxx)
        ↓
 Debug.xcconfig / Release.xcconfig (#include)
@@ -125,7 +125,7 @@ Google Maps SDK 초기화
 
 ### iOS 디버그 콘솔에 경고 메시지
 
-```
+```text
 ⚠️ GOOGLE_MAPS_API_KEY가 비어 있습니다. Secrets.xcconfig 설정을 확인하세요.
 ```
 
