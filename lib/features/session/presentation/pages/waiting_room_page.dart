@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../../../router/route_paths.dart';
 
 /// 대기실 화면
@@ -18,25 +20,19 @@ class WaitingRoomPage extends StatelessWidget {
       appBar: AppBar(title: const Text('대기실')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: AppPadding.all20,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '대기실',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Session ID: $sessionId',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 60),
+              Text('대기실', style: AppTextStyles.heading01),
+              SizedBox(height: AppSpacing.vertical20),
+              Text('Session ID: $sessionId', style: AppTextStyles.label),
+              SizedBox(height: AppSpacing.vertical64),
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.gameWithId(sessionId)),
                 child: const Text('시작하기'),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: AppSpacing.vertical20),
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.home),
                 child: const Text('나가기'),

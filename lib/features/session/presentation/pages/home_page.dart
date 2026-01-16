@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -69,20 +71,17 @@ class HomePage extends ConsumerWidget {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: AppPadding.all20,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Home',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 60),
+              Text('Home', style: AppTextStyles.heading01),
+              SizedBox(height: AppSpacing.vertical64),
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.selectArea),
                 child: const Text('방 만들기'),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: AppSpacing.vertical20),
               ElevatedButton(
                 onPressed: () => _showJoinRoomDialog(context),
                 child: const Text('방 참여하기'),

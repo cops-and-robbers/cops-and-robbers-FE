@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../../../router/route_paths.dart';
 
 /// 초대 코드 생성 및 공유 화면
@@ -17,33 +19,23 @@ class InviteCodePage extends StatelessWidget {
       appBar: AppBar(title: const Text('초대 코드')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: AppPadding.all20,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '방이 생성되었습니다!',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 40),
+              Text('방이 생성되었습니다!', style: AppTextStyles.heading02),
+              SizedBox(height: AppSpacing.vertical40),
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: AppPadding.all24,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blue, width: 2),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.large,
                 ),
-                child: const Text(
-                  inviteCode,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 4,
-                  ),
-                ),
+                child: Text(inviteCode, style: AppTextStyles.inviteCode),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: AppSpacing.vertical20),
               const Text('이 코드를 친구들에게 공유하세요'),
-              const SizedBox(height: 40),
+              SizedBox(height: AppSpacing.vertical40),
               ElevatedButton(
                 onPressed: () =>
                     context.go(RoutePaths.waitingRoomWithId(inviteCode)),

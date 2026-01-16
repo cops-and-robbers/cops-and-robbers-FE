@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../../../router/route_paths.dart';
 
 /// 구역 선택/확인 화면
@@ -23,15 +25,12 @@ class _SelectAreaPageState extends State<SelectAreaPage> {
       appBar: AppBar(title: const Text('구역 설정')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: AppPadding.all20,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '플레이그라운드와 감옥 구역을 설정하세요',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 40),
+              Text('플레이그라운드와 감옥 구역을 설정하세요', style: AppTextStyles.heading02),
+              SizedBox(height: AppSpacing.vertical40),
               ElevatedButton(
                 onPressed: () async {
                   await context.push(RoutePaths.setupPlaygroundPath);
@@ -41,7 +40,7 @@ class _SelectAreaPageState extends State<SelectAreaPage> {
                 },
                 child: Text(playgroundSet ? '플레이그라운드 설정 완료 ✓' : '플레이그라운드 설정'),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSpacing.vertical12),
               ElevatedButton(
                 onPressed: () async {
                   await context.push(RoutePaths.setupPrisonPath);
@@ -51,7 +50,7 @@ class _SelectAreaPageState extends State<SelectAreaPage> {
                 },
                 child: Text(prisonSet ? '감옥 설정 완료 ✓' : '감옥 설정'),
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: AppSpacing.vertical40),
               ElevatedButton(
                 onPressed: (playgroundSet && prisonSet)
                     ? () => context.go(RoutePaths.sessionSettingsPath)

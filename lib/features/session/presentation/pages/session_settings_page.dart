@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../../../router/route_paths.dart';
 
 /// 게임 설정 화면
@@ -16,21 +18,18 @@ class SessionSettingsPage extends StatelessWidget {
       appBar: AppBar(title: const Text('기본 정보 설정')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: AppPadding.all20,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '게임 기본 정보',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
+              Text('게임 기본 정보', style: AppTextStyles.heading02),
+              SizedBox(height: AppSpacing.vertical20),
               const Text('라운드 시간: 10분'),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSpacing.vertical12),
               const Text('위치 공유 주기: 5초'),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSpacing.vertical12),
               const Text('경찰 대기 시간: 30초'),
-              const SizedBox(height: 40),
+              SizedBox(height: AppSpacing.vertical40),
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.inviteCodePath),
                 child: const Text('다음'),
