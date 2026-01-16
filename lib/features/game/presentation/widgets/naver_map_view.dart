@@ -10,19 +10,13 @@ class NaverMapView extends StatelessWidget {
   const NaverMapView({super.key});
 
   // 임시 초기 위치: 어린이대공원
-  static const NLatLng _initial = NLatLng(
-    37.5479,
-    127.0746,
-  );
+  static const NLatLng _initial = NLatLng(37.5479, 127.0746);
 
   @override
   Widget build(BuildContext context) {
     return NaverMap(
       options: const NaverMapViewOptions(
-        initialCameraPosition: NCameraPosition(
-          target: _initial,
-          zoom: 15,
-        ),
+        initialCameraPosition: NCameraPosition(target: _initial, zoom: 15),
       ),
       onMapReady: (_) {
         debugPrint('✅ naver map ready');

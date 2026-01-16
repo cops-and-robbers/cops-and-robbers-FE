@@ -40,9 +40,7 @@ class _GamePageState extends State<GamePage> {
       body: Stack(
         children: [
           /// 지도 (GoogleMapView/NaverMapView 중에 선택해서 사용)
-          const Positioned.fill(
-            child: GoogleMapView(),
-          ),
+          const Positioned.fill(child: GoogleMapView()),
 
           /// 상단 HUD
           SafeArea(
@@ -232,10 +230,7 @@ class _GamePageState extends State<GamePage> {
                           ),
                           child: const Text(
                             '전송',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 13),
                           ),
                         ),
                       ),
