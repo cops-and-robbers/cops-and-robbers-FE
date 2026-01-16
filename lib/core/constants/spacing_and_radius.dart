@@ -8,44 +8,87 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 /// 앱 전역 간격 상수 (숫자 값)
 ///
 /// 사용법:
-/// - SizedBox(height: AppSpacing.s16)
-/// - Padding(padding: EdgeInsets.all(AppSpacing.s12))
+/// - SizedBox(height: AppSpacing.vertical16)  // 세로 간격 (높이 기준)
+/// - SizedBox(width: AppSpacing.horizontal16)  // 가로 간격 (너비 기준)
+/// - EdgeInsets.only(left: AppSpacing.horizontal20)
+/// - EdgeInsets.only(top: AppSpacing.vertical20)
 class AppSpacing {
   // Private 생성자 - 인스턴스화 방지
   AppSpacing._();
 
-  /// 4px 간격
-  static double get s4 => 4.w;
+  // ============================================
+  // Horizontal Spacing - 좌우 간격 (너비 기준)
+  // ============================================
 
-  /// 8px 간격
-  static double get s8 => 8.w;
+  /// 좌우 4px 간격
+  static double get horizontal4 => 4.w;
 
-  /// 12px 간격
-  static double get s12 => 12.w;
+  /// 좌우 8px 간격
+  static double get horizontal8 => 8.w;
 
-  /// 16px 간격
-  static double get s16 => 16.w;
+  /// 좌우 12px 간격
+  static double get horizontal12 => 12.w;
 
-  /// 20px 간격
-  static double get s20 => 20.w;
+  /// 좌우 16px 간격
+  static double get horizontal16 => 16.w;
 
-  /// 24px 간격
-  static double get s24 => 24.w;
+  /// 좌우 20px 간격
+  static double get horizontal20 => 20.w;
 
-  /// 32px 간격
-  static double get s32 => 32.w;
+  /// 좌우 24px 간격
+  static double get horizontal24 => 24.w;
 
-  /// 40px 간격
-  static double get s40 => 40.w;
+  /// 좌우 32px 간격
+  static double get horizontal32 => 32.w;
 
-  /// 48px 간격
-  static double get s48 => 48.w;
+  /// 좌우 40px 간격
+  static double get horizontal40 => 40.w;
 
-  /// 56px 간격
-  static double get s56 => 56.w;
+  /// 좌우 48px 간격
+  static double get horizontal48 => 48.w;
 
-  /// 64px 간격
-  static double get s64 => 64.w;
+  /// 좌우 56px 간격
+  static double get horizontal56 => 56.w;
+
+  /// 좌우 64px 간격
+  static double get horizontal64 => 64.w;
+
+  // ============================================
+  // Vertical Spacing - 상하 간격 (높이 기준)
+  // ============================================
+
+  /// 상하 4px 간격
+  static double get vertical4 => 4.h;
+
+  /// 상하 8px 간격
+  static double get vertical8 => 8.h;
+
+  /// 상하 12px 간격
+  static double get vertical12 => 12.h;
+
+  /// 상하 16px 간격
+  static double get vertical16 => 16.h;
+
+  /// 상하 20px 간격
+  static double get vertical20 => 20.h;
+
+  /// 상하 24px 간격
+  static double get vertical24 => 24.h;
+
+  /// 상하 32px 간격
+  static double get vertical32 => 32.h;
+
+  /// 상하 40px 간격
+  static double get vertical40 => 40.h;
+
+  /// 상하 48px 간격
+  static double get vertical48 => 48.h;
+
+  /// 상하 56px 간격
+  static double get vertical56 => 56.h;
+
+  /// 상하 64px 간격
+  static double get vertical64 => 64.h;
 }
 
 // ============================================
