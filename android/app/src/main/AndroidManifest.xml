@@ -43,6 +43,12 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- Google 지도 API -->
+        <!-- Google Maps SDK API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${GOOGLE_MAPS_API_KEY}" />
+
         <!-- FCM 기본 알림 아이콘 -->
         <!-- FCM default notification icon -->
         <meta-data
