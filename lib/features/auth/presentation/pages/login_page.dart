@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../font_test_page.dart'; // ⚠️ 임시 개발용 - 테스트 후 제거 필요
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
@@ -32,7 +35,7 @@ class LoginPage extends ConsumerWidget {
       //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorMessage),
+          content: Text(errorMessage, style: AppTextStyles.toast),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
@@ -63,7 +66,7 @@ class LoginPage extends ConsumerWidget {
       //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorMessage),
+          content: Text(errorMessage, style: AppTextStyles.toast),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
@@ -79,16 +82,28 @@ class LoginPage extends ConsumerWidget {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(
+        title: Text('Login', style: AppTextStyles.subHeading),
+        // ⚠️ 개발용 버튼 - 프로덕션 배포 전 제거 필요
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.text_fields),
+            tooltip: 'Font Test',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FontTestPage()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Login',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 40),
+            Text('Login', style: AppTextStyles.heading01),
+            SizedBox(height: AppSpacing.vertical40),
 
             // TODO: Google 로그인 버튼 디자인 만들어지면 바뀌어야함
             ElevatedButton.icon(
@@ -98,17 +113,14 @@ class LoginPage extends ConsumerWidget {
               icon: const Icon(Icons.login),
               label: const Text('Google 로그인'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
-                ),
-                textStyle: const TextStyle(fontSize: 18),
+                padding: AppPadding.buttonPadding,
+                textStyle: AppTextStyles.label,
               ),
             ),
 
             // iOS에서만 Apple 로그인 버튼 표시
             if (Platform.isIOS) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: AppSpacing.vertical16),
               // TODO: Apple 로그인 버튼 디자인 만들어지면 바뀌어야함
               ElevatedButton.icon(
                 onPressed: authState.isLoading
@@ -117,11 +129,8 @@ class LoginPage extends ConsumerWidget {
                 icon: const Icon(Icons.apple),
                 label: const Text('Apple 로그인'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  textStyle: const TextStyle(fontSize: 18),
+                  padding: AppPadding.buttonPadding,
+                  textStyle: AppTextStyles.label,
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
                 ),
@@ -130,20 +139,24 @@ class LoginPage extends ConsumerWidget {
 
             // 로딩 인디케이터
             if (authState.isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.only(top: AppSpacing.vertical20),
+                child: const CircularProgressIndicator(),
               ),
 
             // 에러 메시지 (선택사항 - SnackBar와 중복이므로 간단하게 표시)
             if (authState.hasError && !authState.isLoading)
               Padding(
-                padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                padding: EdgeInsets.only(
+                  top: AppSpacing.vertical20,
+                  left: AppSpacing.horizontal20,
+                  right: AppSpacing.horizontal20,
+                ),
                 child: Text(
                   authState.error is AuthException
                       ? (authState.error as AuthException).message
                       : '로그인에 실패했습니다.',
-                  style: const TextStyle(color: Colors.red),
+                  style: AppTextStyles.paragraph.copyWith(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
               ),

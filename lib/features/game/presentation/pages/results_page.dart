@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../../../router/route_paths.dart';
 
 /// 게임 종료 결과 화면
@@ -18,25 +20,16 @@ class ResultsPage extends StatelessWidget {
       appBar: AppBar(title: const Text('게임 결과')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: AppPadding.all20,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '게임 종료',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Session ID: $sessionId',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                '게임 결과 통계',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 60),
+              Text('게임 종료', style: AppTextStyles.heading01),
+              SizedBox(height: AppSpacing.vertical20),
+              Text('Session ID: $sessionId', style: AppTextStyles.label),
+              SizedBox(height: AppSpacing.vertical20),
+              Text('게임 결과 통계', style: AppTextStyles.subHeading),
+              SizedBox(height: AppSpacing.vertical64),
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.home),
                 child: const Text('홈으로 나가기'),
