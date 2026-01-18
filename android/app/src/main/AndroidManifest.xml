@@ -11,6 +11,11 @@
     <!-- Vibration permission for notification vibration -->
     <uses-permission android:name="android.permission.VIBRATE"/>
 
+    <!-- 위치 권한 -->
+    <!-- Location permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:label="경찰과도둑"
         android:name="${applicationName}"

@@ -41,6 +41,8 @@
 	<true/>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>알림을 받으려면 권한이 필요합니다.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>게임 진행을 위해 현재 위치 접근이 필요합니다.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
