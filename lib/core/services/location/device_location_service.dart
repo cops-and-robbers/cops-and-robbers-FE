@@ -10,7 +10,7 @@ class DeviceLocationService {
   DeviceLocationService._();
 
   /// 현재 위치 1회 조회
-  static Future<Position> getCurrentPosition({
+  static Future<Position?> getCurrentPosition({
     LocationAccuracy accuracy = LocationAccuracy.high,
     Duration timeLimit = const Duration(seconds: 10),
   }) {
