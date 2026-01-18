@@ -7,9 +7,79 @@ import 'package:geolocator/geolocator.dart';
 /// - 위치 서비스(GPS) 활성화 여부 확인
 /// - 위치 권한 상태 확인 및 요청
 /// - 게임 진입 전 위치 접근 가능 여부 판단
-/// - 설정 화면 이동 유틸 제공
+/// - 권한 미충족 시 설정 화면 이동까지 처리
 class LocationPermissionService {
   LocationPermissionService._();
+
+  /// 게임 진입 전 위치 권한 확보 플로우
+  ///
+  /// 흐름:
+  /// 1. 위치 서비스 OFF → 위치 서비스 설정 화면 이동
+  /// 2. 권한 denied → 권한 요청
+  /// 3. deniedForever → 앱 설정 화면 이동
+  /// 4. 허용 시 true 반환
+  static Future<bool> ensurePermission() async {
+    try {
+      // 1. 위치 서비스 확인
+      final serviceEnabled = await isServiceEnabled();
+      if (!serviceEnabled) {
+        debugPrint('[위치] ❌ 위치 서비스 꺼짐 → 위치 설정 화면 이동');
+        await Geolocator.openLocationSettings();
+        return false;
+      }
+
+      // 2. 권한 상태 확인
+      var permission = await checkPermission();
+
+      // 3. 권한 거부 → 요청
+      if (permission == LocationPermission.denied) {
+        debugPrint('[위치] ⚠️ 위치 권한 미허용 → 권한 요청');
+        permission = await requestPermission();
+      }
+
+      // 4. 영구 거부 → 앱 설정 이동
+      if (permission == LocationPermission.deniedForever) {
+        debugPrint('[위치] ❌ 위치 권한 영구 거부 → 앱 설정 화면 이동');
+        await Geolocator.openAppSettings();
+        return false;
+      }
+
+      // 5. 최종 판단
+      final granted =
+          permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always;
+
+      debugPrint('[위치] ✅ 최종 위치 권한 상태: $permission');
+      return granted;
+    } catch (e) {
+      debugPrint('[위치] ❌ 위치 권한 처리 중 오류 발생: $e');
+      return false;
+    }
+  }
+
+  /// 위치 접근 가능 여부 종합 판단 (상태 체크용)
+  ///
+  /// true 조건:
+  /// - 위치 서비스 활성화
+  /// - 권한 상태가 whileInUse 또는 always
+  static Future<bool> canAccessLocation() async {
+    final serviceEnabled = await isServiceEnabled();
+    if (!serviceEnabled) {
+      debugPrint('[위치] ⚠️ 위치 서비스 비활성화 상태');
+      return false;
+    }
+
+    final permission = await checkPermission();
+    final granted =
+        permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always;
+
+    if (!granted) {
+      debugPrint('[위치] ⚠️ 위치 권한 미허용 상태: $permission');
+    }
+
+    return granted;
+  }
 
   /// 위치 서비스(GPS)가 켜져 있는지 확인
   static Future<bool> isServiceEnabled() async {
@@ -39,63 +109,6 @@ class LocationPermissionService {
       debugPrint('[위치] ❌ 위치 권한 요청 중 오류 발생: $e');
       return LocationPermission.denied;
     }
-  }
-
-  /// 위치 접근 가능 여부 종합 판단
-  ///
-  /// true 조건:
-  /// - 위치 서비스 활성화
-  /// - 권한 상태가 whileInUse 또는 always
-  static Future<bool> canAccessLocation() async {
-    final serviceEnabled = await isServiceEnabled();
-    if (!serviceEnabled) {
-      debugPrint('[위치] ⚠️ 위치 서비스가 비활성화 상태');
-      return false;
-    }
-
-    final permission = await checkPermission();
-    final granted =
-        permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always;
-
-    if (!granted) {
-      debugPrint('[위치] ⚠️ 위치 권한 미허용 상태: $permission');
-    }
-
-    return granted;
-  }
-
-  /// 게임 진입 전 기본 권한 확보 플로우
-  ///
-  /// 흐름:
-  /// 1. 위치 서비스 활성화 여부 확인
-  /// 2. 권한 상태 확인
-  /// 3. denied → 권한 요청
-  /// 4. deniedForever → 설정 이동 필요
-  static Future<bool> ensurePermission() async {
-    final serviceEnabled = await isServiceEnabled();
-    if (!serviceEnabled) {
-      debugPrint('[위치] ⚠️ 위치 서비스 꺼짐 (설정 필요)');
-      return false;
-    }
-
-    var permission = await checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await requestPermission();
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      debugPrint('[위치] ⚠️ 위치 권한 영구 거부 상태 (설정 이동 필요)');
-      return false;
-    }
-
-    final granted =
-        permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always;
-
-    debugPrint('[위치] ✅ 최종 위치 권한 상태: $permission');
-    return granted;
   }
 
   /// 앱 권한 설정 화면으로 이동
