@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../router/route_paths.dart';
 import '../widgets/google_map_view.dart';
+// import '../widgets/naver_map_view.dart';
 
 /// 인게임 지도 화면
 /// 게임 진행 중 사용되는 메인 화면

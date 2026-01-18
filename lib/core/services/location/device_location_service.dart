@@ -24,9 +24,7 @@ class DeviceLocationService {
     LocationAccuracy accuracy = LocationAccuracy.high,
     int distanceFilter = 5,
   }) {
-    debugPrint(
-      '[위치] 위치 스트림 시작 (distanceFilter: ${distanceFilter}m)',
-    );
+    debugPrint('[위치] 위치 스트림 시작 (distanceFilter: ${distanceFilter}m)');
 
     return Geolocator.getPositionStream(
       locationSettings: LocationSettings(

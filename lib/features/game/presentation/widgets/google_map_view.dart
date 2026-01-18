@@ -38,19 +38,14 @@ class _GoogleMapViewState extends State<GoogleMapView> {
 
     final target = LatLng(pos.latitude, pos.longitude);
     _controller?.moveCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: target, zoom: 16),
-      ),
+      CameraUpdate.newCameraPosition(CameraPosition(target: target, zoom: 16)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
-      initialCameraPosition: const CameraPosition(
-        target: _fallback,
-        zoom: 15,
-      ),
+      initialCameraPosition: const CameraPosition(target: _fallback, zoom: 15),
       onMapCreated: (controller) {
         _controller = controller;
         _moveCameraToCurrentLocation();
