@@ -85,6 +85,14 @@ class RoutePaths {
   static const String results = '/results/:sessionId';
 
   // ============================================================================
+  // Developer Tools (개발/테스트용)
+  // ============================================================================
+
+  /// 생명주기 테스트 화면 (WidgetsBindingObserver 테스트용)
+  /// ⚠️ 개발 전용 - 프로덕션 배포 시 제거 또는 숨김 처리 필요
+  static const String lifecycleTest = '/lifecycle-test';
+
+  // ============================================================================
   // Dynamic Route Helpers
   // ============================================================================
 
@@ -166,4 +174,5 @@ class RoutePaths {
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
   static const String resultsName = 'results';
+  static const String lifecycleTestName = 'lifecycleTest';
 }

@@ -24,6 +24,7 @@ import 'package:cops_and_robbers/features/session/presentation/pages/invite_code
 import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/results_page.dart';
+import 'package:cops_and_robbers/features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
 ///
@@ -241,6 +242,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           final sessionId = state.pathParameters['sessionId']!;
           return ResultsPage(sessionId: sessionId);
         },
+      ),
+
+      // ====================================================================
+      // Developer Tools (개발/테스트용)
+      // ====================================================================
+      GoRoute(
+        path: RoutePaths.lifecycleTest,
+        name: RoutePaths.lifecycleTestName,
+        builder: (context, state) => const LifecycleTestPage(),
       ),
     ],
 
