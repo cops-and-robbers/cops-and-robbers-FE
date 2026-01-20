@@ -23,7 +23,6 @@ import 'package:cops_and_robbers/features/session/presentation/pages/session_set
 import 'package:cops_and_robbers/features/session/presentation/pages/invite_code_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
-import 'package:cops_and_robbers/features/game/presentation/pages/results_page.dart';
 import 'package:cops_and_robbers/features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
@@ -233,16 +232,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: RoutePaths.gameName,
         builder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
-          return GamePage(sessionId: sessionId);
-        },
-      ),
-
-      GoRoute(
-        path: RoutePaths.results,
-        name: RoutePaths.resultsName,
-        builder: (context, state) {
-          final sessionId = state.pathParameters['sessionId']!;
-          return ResultsPage(sessionId: sessionId);
+          final mapType = state.uri.queryParameters['mapType'] ?? 'google';
+          return GamePage(sessionId: sessionId, mapType: mapType);
         },
       ),
 

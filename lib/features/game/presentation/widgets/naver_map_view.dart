@@ -20,41 +20,90 @@ class _NaverMapViewState extends State<NaverMapView> {
   // 위치 조회 실패 대비 fallback (어린이대공원)
   static const NLatLng _fallback = NLatLng(37.5479, 127.0746);
 
+  @override
+  void initState() {
+    super.initState();
+    debugPrint('========================================');
+    debugPrint('🗺️ NaverMapView initState 시작');
+    debugPrint('========================================');
+  }
+
+  @override
+  void dispose() {
+    debugPrint('🗺️ NaverMapView dispose');
+    super.dispose();
+  }
+
   Future<void> _moveCameraToCurrentLocation() async {
-    final pos = await DeviceLocationService.getCurrentPosition();
+    debugPrint('📍 NaverMap: 현재 위치로 카메라 이동 시작');
+    try {
+      final pos = await DeviceLocationService.getCurrentPosition();
 
-    if (pos == null) {
-      debugPrint('[지도/Naver] 위치 조회 실패 → fallback 사용');
-      return;
+      if (pos == null) {
+        debugPrint('[지도/Naver] 위치 조회 실패 → fallback 사용');
+        return;
+      }
+
+      debugPrint('[지도/Naver] 초기 위치: ${pos.latitude}, ${pos.longitude}');
+
+      final target = NLatLng(pos.latitude, pos.longitude);
+      await _controller?.updateCamera(
+        NCameraUpdate.withParams(target: target, zoom: 16),
+      );
+      debugPrint('✅ NaverMap: 카메라 이동 완료');
+    } catch (e, stack) {
+      debugPrint('❌ NaverMap: 카메라 이동 실패 - $e');
+      debugPrint('Stack: $stack');
     }
-
-    debugPrint('[지도/Naver] 초기 위치: ${pos.latitude}, ${pos.longitude}');
-
-    final target = NLatLng(pos.latitude, pos.longitude);
-    await _controller?.updateCamera(
-      NCameraUpdate.withParams(target: target, zoom: 16),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return NaverMap(
-      options: const NaverMapViewOptions(
-        initialCameraPosition: NCameraPosition(target: _fallback, zoom: 15),
+    debugPrint('🗺️ NaverMapView build 호출');
 
-        locationButtonEnable: false,
-        indoorEnable: false,
-      ),
-      onMapReady: (controller) {
-        _controller = controller;
+    try {
+      return NaverMap(
+        options: const NaverMapViewOptions(
+          initialCameraPosition: NCameraPosition(target: _fallback, zoom: 15),
 
-        // 내 위치 오버레이 활성화
-        controller.setLocationTrackingMode(NLocationTrackingMode.noFollow);
+          locationButtonEnable: false,
+          indoorEnable: false,
+        ),
+        onMapReady: (controller) {
+          debugPrint('🗺️ NaverMap onMapReady 콜백 시작');
+          try {
+            _controller = controller;
 
-        // 초기 1회 카메라 이동
-        _moveCameraToCurrentLocation();
-        debugPrint('✅ naver map ready');
-      },
-    );
+            // 내 위치 오버레이 활성화
+            debugPrint('📍 NaverMap: setLocationTrackingMode 호출');
+            controller.setLocationTrackingMode(NLocationTrackingMode.noFollow);
+
+            // 초기 1회 카메라 이동
+            _moveCameraToCurrentLocation();
+            debugPrint('✅ naver map ready');
+          } catch (e, stack) {
+            debugPrint('❌ NaverMap onMapReady 에러: $e');
+            debugPrint('Stack: $stack');
+          }
+        },
+      );
+    } catch (e, stack) {
+      debugPrint('❌ NaverMap 생성 실패: $e');
+      debugPrint('Stack: $stack');
+
+      // 에러 발생 시 대체 UI 표시
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            const Text('Naver Map 로드 실패'),
+            const SizedBox(height: 8),
+            Text('Error: $e', style: const TextStyle(fontSize: 12)),
+          ],
+        ),
+      );
+    }
   }
 }

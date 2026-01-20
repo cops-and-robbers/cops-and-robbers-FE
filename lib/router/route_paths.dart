@@ -168,6 +168,5 @@ class RoutePaths {
   static const String inviteCodeName = 'inviteCode';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
-  static const String resultsName = 'results';
   static const String lifecycleTestName = 'lifecycleTest';
 }

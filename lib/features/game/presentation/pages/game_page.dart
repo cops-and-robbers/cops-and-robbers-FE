@@ -3,15 +3,22 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../router/route_paths.dart';
 import '../widgets/google_map_view.dart';
-// import '../widgets/naver_map_view.dart';
+import '../widgets/naver_map_view.dart';
 
 /// 인게임 지도 화면
 /// 게임 진행 중 사용되는 메인 화면
 class GamePage extends StatefulWidget {
-  const GamePage({required this.sessionId, super.key});
+  const GamePage({
+    required this.sessionId,
+    required this.mapType,
+    super.key,
+  });
 
   /// 게임 세션 ID
   final String sessionId;
+
+  /// 지도 타입 ('google' 또는 'naver')
+  final String mapType;
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -37,11 +44,19 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('========================================');
+    debugPrint('🗺️ GamePage build - mapType: ${widget.mapType}');
+    debugPrint('========================================');
+
     return Scaffold(
       body: Stack(
         children: [
           /// 지도 (GoogleMapView/NaverMapView 중에 선택해서 사용)
-          const Positioned.fill(child: GoogleMapView()),
+          Positioned.fill(
+            child: widget.mapType == 'naver'
+                ? const NaverMapView()
+                : const GoogleMapView(),
+          ),
 
           /// 상단 HUD
           SafeArea(
