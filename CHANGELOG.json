@@ -1,11 +1,48 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-20T05:52:09Z",
-    "currentVersion": "1.1.5",
+    "lastUpdated": "2026-01-20T16:29:59Z",
+    "currentVersion": "1.1.9",
     "projectType": "flutter",
-    "totalReleases": 16
+    "totalReleases": 17
   },
   "releases": [
+    {
+      "version": "1.1.9",
+      "project_type": "flutter",
+      "date": "2026-01-20",
+      "pr_number": 46,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새로운 기능**\n  * 구글맵과 네이버맵 중 선택 가능한 지도 기능 추가\n  * 실시간 위치 추적 및 위치 기반 서비스 지원\n  * 앱 생명주기 모니터링 기능 추가\n\n* **개선사항**\n  * 게임 결과 화면을 별도 페이지에서 모달 형식으로 변경\n\n* **문서**\n  * Google Maps API 설정 가이드 추가\n\n* **Chores**\n  * 버전 업데이트 (v1.1.5 → v1.1.9)\n  * 지도 SDK 및 위치 서비스 라이브러리 추가",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "구글맵과 네이버맵 중 선택 가능한 지도 기능 추가",
+            "실시간 위치 추적 및 위치 기반 서비스 지원",
+            "앱 생명주기 모니터링 기능 추가"
+          ]
+        },
+        "개선사항": {
+          "title": "개선사항",
+          "items": [
+            "게임 결과 화면을 별도 페이지에서 모달 형식으로 변경"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "Google Maps API 설정 가이드 추가"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전 업데이트 (v1.1.5 → v1.1.9)",
+            "지도 SDK 및 위치 서비스 라이브러리 추가"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.5",
       "project_type": "flutter",
