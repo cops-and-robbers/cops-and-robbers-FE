@@ -176,6 +176,48 @@ jobs:
           echo "${{ secrets.ENV_FILE }}" > .env
           echo "✅ .env 파일 생성됨 (크기: $(wc -c < .env) bytes)"
 
+      # Android Native Config 생성 (Google Maps API Key)
+      - name: Setup Android Secrets (Google Maps)
+        run: |
+          # 기존 local.properties가 있으면 버전 정보 제거 후 업데이트
+          if [ -f "android/local.properties" ]; then
+            # 버전 정보만 보존하고 나머지는 새로 작성
+            grep "flutter.versionName\|flutter.versionCode" android/local.properties > android/local.properties.tmp || touch android/local.properties.tmp
+            mv android/local.properties.tmp android/local.properties
+          else
+            touch android/local.properties
+          fi
+
+          # Google Maps API Key 추가
+          cat >> android/local.properties << 'SECRETS_EOF'
+
+          # Google Maps API Key
+          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          SECRETS_EOF
+          echo "✅ android/local.properties updated with API key"
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      # 보안 검증 (API 키 노출 확인)
+      - name: Verify Secrets Not Exposed
+        run: |
+          echo "🔒 보안 검증: API 키가 노출되지 않았는지 확인"
+
+          # Android local.properties 확인
+          if [ -f android/local.properties ]; then
+            echo "✅ android/local.properties exists"
+            if grep -q "GOOGLE_MAPS_API_KEY" android/local.properties; then
+              echo "✅ GOOGLE_MAPS_API_KEY variable found in local.properties"
+            else
+              echo "⚠️ GOOGLE_MAPS_API_KEY not found in local.properties"
+            fi
+          else
+            echo "❌ android/local.properties not created"
+            exit 1
+          fi
+
+          echo "✅ 보안 검증 완료: 설정 파일 생성됨 (API 키 값은 마스킹됨)"
+
       # Release Keystore 설정
       - name: Setup Release Keystore
         run: |

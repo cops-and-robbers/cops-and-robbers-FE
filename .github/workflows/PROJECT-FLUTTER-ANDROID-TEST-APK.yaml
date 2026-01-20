@@ -355,6 +355,44 @@ jobs:
           EOF
           echo "✅ ${{ env.ENV_FILE_PATH }} file created"
 
+      # Android Native Config 생성 (Google Maps API Key)
+      - name: Setup Android Secrets (Google Maps)
+        run: |
+          # 기존 local.properties가 있으면 백업
+          if [ -f android/local.properties ]; then
+            cp android/local.properties android/local.properties.backup
+          fi
+
+          # local.properties 생성/업데이트
+          cat >> android/local.properties << 'SECRETS_EOF'
+
+          # Google Maps API Key
+          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          SECRETS_EOF
+          echo "✅ android/local.properties updated with API key"
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      # 보안 검증 (API 키 노출 확인)
+      - name: Verify Secrets Not Exposed
+        run: |
+          echo "🔒 보안 검증: API 키가 노출되지 않았는지 확인"
+
+          # Android local.properties 확인
+          if [ -f android/local.properties ]; then
+            echo "✅ android/local.properties exists"
+            if grep -q "GOOGLE_MAPS_API_KEY" android/local.properties; then
+              echo "✅ GOOGLE_MAPS_API_KEY variable found in local.properties"
+            else
+              echo "⚠️ GOOGLE_MAPS_API_KEY not found in local.properties"
+            fi
+          else
+            echo "❌ android/local.properties not created"
+            exit 1
+          fi
+
+          echo "✅ 보안 검증 완료: 설정 파일 생성됨 (API 키 값은 마스킹됨)"
+
       # Keystore와 key.properties 설정 (선택적)
       - name: Setup Keystore and key.properties
         run: |

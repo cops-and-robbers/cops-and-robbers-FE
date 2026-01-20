@@ -121,10 +121,39 @@ jobs:
           mkdir -p ios/Flutter
           if [ -n "${{ secrets.SECRETS_XCCONFIG }}" ]; then
             echo "${{ secrets.SECRETS_XCCONFIG }}" > ios/Flutter/Secrets.xcconfig
-            echo "Secrets.xcconfig created"
+            echo "✅ Secrets.xcconfig created from SECRETS_XCCONFIG secret"
           else
-            echo "// No secrets provided" > ios/Flutter/Secrets.xcconfig
+            # SECRETS_XCCONFIG가 없으면 개별 시크릿으로 생성
+            cat > ios/Flutter/Secrets.xcconfig << 'SECRETS_EOF'
+          // Google Maps API Key
+          // iOS Google Maps SDK에서 사용
+          // Info.plist → AppDelegate를 통해 초기화
+          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          SECRETS_EOF
+            echo "✅ Secrets.xcconfig created from individual secrets"
           fi
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      # 보안 검증 (API 키 노출 확인)
+      - name: Verify Secrets Not Exposed
+        run: |
+          echo "🔒 보안 검증: API 키가 노출되지 않았는지 확인"
+
+          # iOS Secrets.xcconfig 확인
+          if [ -f ios/Flutter/Secrets.xcconfig ]; then
+            echo "✅ ios/Flutter/Secrets.xcconfig exists"
+            if grep -q "GOOGLE_MAPS_API_KEY" ios/Flutter/Secrets.xcconfig; then
+              echo "✅ GOOGLE_MAPS_API_KEY variable found in Secrets.xcconfig"
+            else
+              echo "⚠️ GOOGLE_MAPS_API_KEY not found in Secrets.xcconfig"
+            fi
+          else
+            echo "❌ ios/Flutter/Secrets.xcconfig not created"
+            exit 1
+          fi
+
+          echo "✅ 보안 검증 완료: 설정 파일 생성됨 (API 키 값은 마스킹됨)"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2

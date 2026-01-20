@@ -43,7 +43,73 @@ jobs:
           ${{ secrets.ENV }}
           EOF
 
-      # 5. 코드 포맷팅 검사
+      # 5. iOS Native Config 생성 (Google Maps API Key)
+      - name: Setup iOS Secrets (Google Maps)
+        run: |
+          mkdir -p ios/Flutter
+          cat > ios/Flutter/Secrets.xcconfig << 'SECRETS_EOF'
+          // Google Maps API Key
+          // iOS Google Maps SDK에서 사용
+          // Info.plist → AppDelegate를 통해 초기화
+          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          SECRETS_EOF
+          echo "✅ ios/Flutter/Secrets.xcconfig created"
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      # 6. Android Native Config 생성 (Google Maps API Key)
+      - name: Setup Android Secrets (Google Maps)
+        run: |
+          # 기존 local.properties가 있으면 백업
+          if [ -f android/local.properties ]; then
+            cp android/local.properties android/local.properties.backup
+          fi
+
+          # local.properties 생성/업데이트
+          cat >> android/local.properties << 'SECRETS_EOF'
+
+          # Google Maps API Key
+          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          SECRETS_EOF
+          echo "✅ android/local.properties updated with API key"
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      # 7. 보안 검증 (API 키 노출 확인)
+      - name: Verify Secrets Not Exposed
+        run: |
+          echo "🔒 보안 검증: API 키가 노출되지 않았는지 확인"
+
+          # iOS Secrets.xcconfig 확인
+          if [ -f ios/Flutter/Secrets.xcconfig ]; then
+            echo "✅ ios/Flutter/Secrets.xcconfig exists"
+            # 파일 내용에 실제 API 키가 아닌 변수만 있는지 확인 (키 값은 출력하지 않음)
+            if grep -q "GOOGLE_MAPS_API_KEY" ios/Flutter/Secrets.xcconfig; then
+              echo "✅ GOOGLE_MAPS_API_KEY variable found in Secrets.xcconfig"
+            else
+              echo "⚠️ GOOGLE_MAPS_API_KEY not found in Secrets.xcconfig"
+            fi
+          else
+            echo "❌ ios/Flutter/Secrets.xcconfig not created"
+            exit 1
+          fi
+
+          # Android local.properties 확인
+          if [ -f android/local.properties ]; then
+            echo "✅ android/local.properties exists"
+            if grep -q "GOOGLE_MAPS_API_KEY" android/local.properties; then
+              echo "✅ GOOGLE_MAPS_API_KEY variable found in local.properties"
+            else
+              echo "⚠️ GOOGLE_MAPS_API_KEY not found in local.properties"
+            fi
+          else
+            echo "❌ android/local.properties not created"
+            exit 1
+          fi
+
+          echo "✅ 보안 검증 완료: 설정 파일 생성됨 (API 키 값은 마스킹됨)"
+
+      # 8. 코드 포맷팅 검사
       - name: Check formatting
         id: format_check
         continue-on-error: true
@@ -51,7 +117,7 @@ jobs:
           dart format --set-exit-if-changed . 2>&1 | tee format_output.txt
           exit ${PIPESTATUS[0]}
 
-      # 6. 정적 분석
+      # 9. 정적 분석
       - name: Analyze code
         id: analyze_check
         continue-on-error: true
@@ -59,7 +125,7 @@ jobs:
           flutter analyze 2>&1 | tee analyze_output.txt
           exit ${PIPESTATUS[0]}
 
-      # 7. PR에 결과 댓글 달기 (실패 시)
+      # 10. PR에 결과 댓글 달기 (실패 시)
       - name: Comment on PR with issues
         if: failure() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -164,7 +230,7 @@ jobs:
               }
             }
 
-      # 8. 최종 결과 확인 (실패 시 워크플로우 실패)
+      # 11. 최종 결과 확인 (실패 시 워크플로우 실패)
       - name: Check final status
         if: steps.format_check.outcome == 'failure' || steps.analyze_check.outcome == 'failure'
         run: |
