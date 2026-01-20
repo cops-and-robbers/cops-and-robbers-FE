@@ -51,18 +51,18 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
-  /// Label - 라벨, 강조 텍스트 (16px SemiBold)
-  /// Line Height: 100%, Letter Spacing: -0.32px
-  static TextStyle get label => TextStyle(
-    fontFamily: 'Pretendard-SemiBold',
-    fontSize: 16.sp,
-    height: 1.0, // 100% line height
-    letterSpacing: -0.32,
-  );
-
   // ============================================
   // Body Styles (Medium)
   // ============================================
+
+  /// Label - 라벨, 강조 텍스트 (16px SemiBold)
+  /// Line Height: 140%, Letter Spacing: -0.32px
+  static TextStyle get label => TextStyle(
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 16.sp,
+    height: 1.4, // 140% line height
+    letterSpacing: -0.32,
+  );
 
   /// Paragraph - 본문 (14px Medium)
   /// Line Height: 140%, Letter Spacing: -0.32px
@@ -114,12 +114,12 @@ class AppTextStyles {
   // Special Styles
   // ============================================
 
-  /// InviteCode - 초대 코드 표시 (32px SemiBold)
-  /// Line Height: 100%, Letter Spacing: 4px
+  /// InviteCode - 초대 코드 표시 (28px SemiBold)
+  /// Line Height: 100%, Letter Spacing: -0.32px
   static TextStyle get inviteCode => TextStyle(
     fontFamily: 'Pretendard-SemiBold',
-    fontSize: 32.sp,
+    fontSize: 28.sp,
     height: 1.0, // 100% line height
-    letterSpacing: 4,
+    letterSpacing: -0.32,
   );
 }
