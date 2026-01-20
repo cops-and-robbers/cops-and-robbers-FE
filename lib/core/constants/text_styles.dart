@@ -114,8 +114,8 @@ class AppTextStyles {
   // Special Styles
   // ============================================
 
-  /// InviteCode - 초대 코드 표시 (32px SemiBold)
-  /// Line Height: 100%, Letter Spacing: 4px
+  /// InviteCode - 초대 코드 표시 (28px SemiBold)
+  /// Line Height: 100%, Letter Spacing: -0.32px
   static TextStyle get inviteCode => TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 28.sp,
