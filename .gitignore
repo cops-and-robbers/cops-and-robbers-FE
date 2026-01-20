@@ -61,5 +61,10 @@ CLAUDE.md
 CLEADME.md
 .env
 /env.*
-/local.properties
 /secrets.json
+
+# Android (local build config)
+/android/local.properties
+
+# iOS (API Keys)
+/ios/Flutter/Secrets.xcconfig

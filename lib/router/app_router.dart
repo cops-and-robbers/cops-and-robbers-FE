@@ -125,13 +125,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       //       }
       //       break;
       //     case SessionStatus.playing:
+      //     case SessionStatus.ended:
+      //       // playing 및 ended 상태 모두 game 화면 유지
+      //       // ended 상태에서는 GamePage 내부에서 결과 모달(Dialog)이 표시됨
       //       if (!currentPath.startsWith('/game/')) {
       //         return RoutePaths.gameWithId(currentSession.id);
-      //       }
-      //       break;
-      //     case SessionStatus.ended:
-      //       if (!currentPath.startsWith('/results/')) {
-      //         return RoutePaths.resultsWithId(currentSession.id);
       //       }
       //       break;
       //   }

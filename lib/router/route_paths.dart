@@ -69,7 +69,7 @@ class RoutePaths {
   static const String inviteCode = '/home/create-session/invite-code';
 
   // ============================================================================
-  // Game Flow Routes (PRD F1.6, F2.2, F3.4)
+  // Game Flow Routes (PRD F1.6, F2.2)
   // ============================================================================
 
   /// F1.6: 대기실 (팀 선택, 준비 완료)
@@ -80,9 +80,12 @@ class RoutePaths {
   /// 경로 파라미터: sessionId
   static const String game = '/game/:sessionId';
 
-  /// F3.4: 게임 종료 결과 화면
-  /// 경로 파라미터: sessionId
-  static const String results = '/results/:sessionId';
+  // ============================================================================
+  // Note: 게임 종료 결과 화면 (F3.4)
+  // ============================================================================
+  // 결과 화면은 별도 라우트가 아닌 GamePage 내부에서 Dialog/Modal로 표시됩니다.
+  // 설계 의도: 게임 종료 후에도 지도 UI를 유지하면서 결과를 오버레이로 표시하여
+  // 사용자가 게임 맥락을 유지한 상태에서 결과를 확인할 수 있도록 합니다.
 
   // ============================================================================
   // Developer Tools (개발/테스트용)
@@ -112,14 +115,6 @@ class RoutePaths {
   /// context.go(RoutePaths.gameWithId('abc123'));
   /// ```
   static String gameWithId(String sessionId) => '/game/$sessionId';
-
-  /// 특정 세션 ID로 결과 화면 경로 생성
-  ///
-  /// Example:
-  /// ```dart
-  /// context.go(RoutePaths.resultsWithId('abc123'));
-  /// ```
-  static String resultsWithId(String sessionId) => '/results/$sessionId';
 
   /// 플레이그라운드 설정 화면 전체 경로
   ///

@@ -12,6 +12,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// local.properties에서 API 키 읽기
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
 android {
     namespace = "com.elipair.copsandrobbers"
     compileSdk = flutter.compileSdkVersion
@@ -36,6 +43,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // AndroidManifest.xml의 ${GOOGLE_MAPS_API_KEY} placeholder에 값 주입
+        manifestPlaceholders["GOOGLE_MAPS_API_KEY"] =
+            localProperties.getProperty("GOOGLE_MAPS_API_KEY") ?: ""
     }
 
     val keystorePropertiesFile = rootProject.file("key.properties")

@@ -5,9 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:cops_and_robbers/core/config/env_config.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
+import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
 
 void main() async {
@@ -19,9 +21,36 @@ void main() async {
   // Initialize environment variables (API URL, WebSocket URL, etc.)
   await EnvConfig.initialize();
 
+  // 네이버 지도 SDK 초기화
+  // Initialize Naver Map SDK
+  try {
+    await FlutterNaverMap().init(
+      clientId: EnvConfig.naverMapClientId,
+      onAuthFailed: (ex) {
+        debugPrint('❌ Naver Map auth failed: $ex');
+      },
+    );
+    debugPrint('✅ Naver Map initialized successfully');
+  } catch (e, stackTrace) {
+    debugPrint('❌ Naver Map initialization failed: $e');
+    debugPrint('Stack trace: $stackTrace');
+    // 네이버 지도 없이도 앱 실행 가능하도록 계속 진행
+    // Continue execution even without Naver Map
+  }
+
   // 화면 방향을 세로 모드(정방향)로 고정
   // Lock screen orientation to portrait mode only
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  // ============================================================
+  // 위치 권한 확인
+  // ============================================================
+  final locationGranted = await LocationPermissionService.ensurePermission();
+
+  if (!locationGranted) {
+    debugPrint('[위치] ❌ 위치 권한 확보 실패');
+    // 접근 제한 로직 추가 필요
+  }
 
   // ============================================================
   // 1. Firebase 초기화 (필수, 하지만 실패해도 앱 실행 가능)

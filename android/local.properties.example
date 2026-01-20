@@ -1,0 +1,7 @@
+# Android SDK 경로 (자동 생성)
+sdk.dir=/path/to/Android/sdk
+flutter.sdk=/path/to/flutter/sdk
+
+# Google Maps API Key
+# Gradle을 통해 AndroidManifest에 주입됨
+GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
