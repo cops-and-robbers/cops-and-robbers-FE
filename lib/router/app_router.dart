@@ -86,14 +86,18 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final currentPath = state.uri.path;
 
-      // 인증이 불필요한 공개 경로 (Splash, Login)
-      final publicPaths = [RoutePaths.splash, RoutePaths.login];
+      // 인증이 불필요한 공개 경로 (Splash, Login, 개발자 도구)
+      final publicPaths = [
+        RoutePaths.splash,
+        RoutePaths.login,
+        RoutePaths.lifecycleTest, // 생명주기 테스트는 로그인 불필요
+      ];
 
       // ====================================================================
       // 1. 인증 체크 - 로그인 필요한 페이지 보호
       // ====================================================================
       if (!isAuthenticated) {
-        // 스플래시와 로그인 페이지는 허용
+        // 스플래시, 로그인 페이지, 개발자 도구는 허용
         if (publicPaths.contains(currentPath)) {
           return null;
         }
