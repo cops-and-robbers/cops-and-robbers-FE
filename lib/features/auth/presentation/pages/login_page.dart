@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../font_test_page.dart'; // ⚠️ 임시 개발용 - 테스트 후 제거 필요
+import '../../../../router/route_paths.dart';
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
@@ -86,6 +88,15 @@ class LoginPage extends ConsumerWidget {
         title: Text('Login', style: AppTextStyles.subHeading),
         // ⚠️ 개발용 버튼 - 프로덕션 배포 전 제거 필요
         actions: [
+          // 생명주기 테스트 화면 이동
+          IconButton(
+            icon: const Icon(Icons.pending_actions),
+            tooltip: 'Lifecycle Test',
+            onPressed: () {
+              context.push(RoutePaths.lifecycleTest);
+            },
+          ),
+          // 폰트 테스트 화면 이동
           IconButton(
             icon: const Icon(Icons.text_fields),
             tooltip: 'Font Test',

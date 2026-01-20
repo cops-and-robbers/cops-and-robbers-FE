@@ -42,13 +42,16 @@
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>알림을 받으려면 권한이 필요합니다.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-    <string>게임 진행을 위해 현재 위치 접근이 필요합니다.</string>
+	<string>경찰과 도둑 게임에서 실시간 위치 기반 플레이를 위해 사용됩니다. 게임 중 다른 플레이어와 상호작용하기 위해 필요합니다.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>게임 진행 중 앱이 백그라운드에 있어도 위치를 추적하여 게임 연결을 유지합니다. 백그라운드 위치 권한을 허용하면 더 안정적인 게임 플레이가 가능합니다.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
 		<string>remote-notification</string>
+		<string>location</string>
 	</array>
 	<key>GOOGLE_MAPS_API_KEY</key>
 	<string>$(GOOGLE_MAPS_API_KEY)</string>

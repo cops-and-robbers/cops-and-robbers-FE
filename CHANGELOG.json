@@ -1,11 +1,52 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-15T15:27:29Z",
-    "currentVersion": "1.1.2",
+    "lastUpdated": "2026-01-20T05:52:09Z",
+    "currentVersion": "1.1.5",
     "projectType": "flutter",
-    "totalReleases": 14
+    "totalReleases": 16
   },
   "releases": [
+    {
+      "version": "1.1.5",
+      "project_type": "flutter",
+      "date": "2026-01-20",
+      "pr_number": 41,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Chores**\n  * 앱 버전이 1.1.5로 업데이트되었습니다.\n  * iOS 빌드 워크플로우의 Xcode 버전이 업데이트되었습니다.\n  * 최신 버전 정보로 문서가 업데이트되었습니다.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전이 1.1.5로 업데이트되었습니다.",
+            "iOS 빌드 워크플로우의 Xcode 버전이 업데이트되었습니다.",
+            "최신 버전 정보로 문서가 업데이트되었습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
+    {
+      "version": "1.1.4",
+      "project_type": "flutter",
+      "date": "2026-01-20",
+      "pr_number": 39,
+      "raw_summary": "## Summary by CodeRabbit\n\n# v1.1.4 릴리스 노트\n\n* **스타일**\n  * 텍스트 스타일 및 간격 시스템 개선으로 애플리케이션 전체의 시각적 일관성 강화\n  * 모든 페이지에서 통일된 디자인 언어 적용\n\n* **Chores**\n  * 버전 업데이트: v1.1.2 → v1.1.4",
+      "parsed_changes": {
+        "스타일": {
+          "title": "스타일",
+          "items": [
+            "텍스트 스타일 및 간격 시스템 개선으로 애플리케이션 전체의 시각적 일관성 강화",
+            "모든 페이지에서 통일된 디자인 언어 적용"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전 업데이트: v1.1.2 → v1.1.4"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.2",
       "project_type": "flutter",

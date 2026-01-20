@@ -86,6 +86,17 @@ class HomePage extends ConsumerWidget {
                 onPressed: () => _showJoinRoomDialog(context),
                 child: const Text('방 참여하기'),
               ),
+              SizedBox(height: AppSpacing.vertical64),
+              // 개발 전용: 생명주기 테스트 버튼
+              OutlinedButton.icon(
+                onPressed: () => context.push(RoutePaths.lifecycleTest),
+                icon: const Icon(Icons.bug_report, size: 16),
+                label: const Text('생명주기 테스트', style: TextStyle(fontSize: 12)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.grey,
+                  side: const BorderSide(color: Colors.grey),
+                ),
+              ),
             ],
           ),
         ),

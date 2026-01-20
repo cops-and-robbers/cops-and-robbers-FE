@@ -23,6 +23,8 @@ import 'package:cops_and_robbers/features/session/presentation/pages/session_set
 import 'package:cops_and_robbers/features/session/presentation/pages/invite_code_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
+import 'package:cops_and_robbers/features/game/presentation/pages/results_page.dart';
+import 'package:cops_and_robbers/features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
 ///
@@ -84,14 +86,18 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final currentPath = state.uri.path;
 
-      // 인증이 불필요한 공개 경로 (Splash, Login)
-      final publicPaths = [RoutePaths.splash, RoutePaths.login];
+      // 인증이 불필요한 공개 경로 (Splash, Login, 개발자 도구)
+      final publicPaths = [
+        RoutePaths.splash,
+        RoutePaths.login,
+        RoutePaths.lifecycleTest, // 생명주기 테스트는 로그인 불필요
+      ];
 
       // ====================================================================
       // 1. 인증 체크 - 로그인 필요한 페이지 보호
       // ====================================================================
       if (!isAuthenticated) {
-        // 스플래시와 로그인 페이지는 허용
+        // 스플래시, 로그인 페이지, 개발자 도구는 허용
         if (publicPaths.contains(currentPath)) {
           return null;
         }
@@ -231,8 +237,23 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Note: 결과 화면(F3.4)은 별도 라우트가 아닌 GamePage 내부에서
-      // 모달 형태로 표시됩니다.
+      GoRoute(
+        path: RoutePaths.results,
+        name: RoutePaths.resultsName,
+        builder: (context, state) {
+          final sessionId = state.pathParameters['sessionId']!;
+          return ResultsPage(sessionId: sessionId);
+        },
+      ),
+
+      // ====================================================================
+      // Developer Tools (개발/테스트용)
+      // ====================================================================
+      GoRoute(
+        path: RoutePaths.lifecycleTest,
+        name: RoutePaths.lifecycleTestName,
+        builder: (context, state) => const LifecycleTestPage(),
+      ),
     ],
 
     // ====================================================================

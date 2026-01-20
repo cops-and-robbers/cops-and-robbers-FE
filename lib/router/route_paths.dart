@@ -88,6 +88,14 @@ class RoutePaths {
   // 사용자가 게임 맥락을 유지한 상태에서 결과를 확인할 수 있도록 합니다.
 
   // ============================================================================
+  // Developer Tools (개발/테스트용)
+  // ============================================================================
+
+  /// 생명주기 테스트 화면 (WidgetsBindingObserver 테스트용)
+  /// ⚠️ 개발 전용 - 프로덕션 배포 시 제거 또는 숨김 처리 필요
+  static const String lifecycleTest = '/lifecycle-test';
+
+  // ============================================================================
   // Dynamic Route Helpers
   // ============================================================================
 
@@ -160,4 +168,6 @@ class RoutePaths {
   static const String inviteCodeName = 'inviteCode';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
+  static const String resultsName = 'results';
+  static const String lifecycleTestName = 'lifecycleTest';
 }
