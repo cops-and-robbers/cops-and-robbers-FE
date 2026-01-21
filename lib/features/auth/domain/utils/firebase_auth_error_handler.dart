@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/errors/app_exception.dart';
 
@@ -44,6 +45,10 @@ class FirebaseAuthErrorHandler {
         return '너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요.';
       case 'operation-not-allowed':
         return '이 로그인 방법은 현재 사용할 수 없습니다.';
+      case 'firebase-api-key-invalid':
+        return 'Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요.';
+      case 'internal-error':
+        return 'Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
       default:
         // 제공자별 기본 메시지 커스터마이징
         if (provider != null) {
@@ -65,10 +70,43 @@ class FirebaseAuthErrorHandler {
     String? customMessage,
     String? provider,
   }) {
+    String errorCode = e.code;
+
+    // API 키 에러 감지
+    if (e.code == 'internal-error' && _isApiKeyError(e)) {
+      errorCode = 'firebase-api-key-invalid';
+
+      // 개발 모드에서만 상세 정보 출력
+      if (kDebugMode) {
+        debugPrint('🔥 Firebase API Key 에러 감지');
+        debugPrint('  - Error Code: ${e.code}');
+        debugPrint('  - Message: ${e.message}');
+        debugPrint('  - 조치 방법:');
+        debugPrint('    1. Firebase Console에서 API 키 상태 확인');
+        debugPrint('    2. google-services.json (Android) 재다운로드');
+        debugPrint('       위치: android/app/google-services.json');
+        debugPrint('    3. GoogleService-Info.plist (iOS) 재다운로드');
+        debugPrint('       위치: ios/Runner/GoogleService-Info.plist');
+        debugPrint('  - Firebase Console: https://console.firebase.google.com/');
+      }
+    }
+
     return AuthException(
-      message: customMessage ?? getErrorMessage(e.code, provider: provider),
-      code: e.code,
+      message: customMessage ?? getErrorMessage(errorCode, provider: provider),
+      code: errorCode,
       originalException: e,
     );
+  }
+
+  /// FirebaseAuthException이 API 키 관련 에러인지 확인
+  ///
+  /// internal-error 중에서 API_KEY_INVALID reason을 가진 에러만 감지합니다.
+  ///
+  /// [e]: Firebase에서 발생한 원본 예외
+  ///
+  /// Returns: API 키 에러 여부
+  static bool _isApiKeyError(FirebaseAuthException e) {
+    final message = e.message?.toLowerCase() ?? '';
+    return message.contains('api key') || message.contains('api_key_invalid');
   }
 }
