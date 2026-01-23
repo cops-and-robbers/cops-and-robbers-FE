@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-20T16:29:59Z",
-    "currentVersion": "1.1.9",
+    "lastUpdated": "2026-01-23T05:57:46Z",
+    "currentVersion": "1.1.11",
     "projectType": "flutter",
-    "totalReleases": 17
+    "totalReleases": 18
   },
   "releases": [
+    {
+      "version": "1.1.11",
+      "project_type": "flutter",
+      "date": "2026-01-23",
+      "pr_number": 49,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새로운 기능**\n  * 배경 위치 추적 기능 추가로 게임 중 실시간 위치 기반 플레이 개선\n\n* **버그 수정**\n  * Firebase 인증 에러 처리 개선으로 사용자 경험 향상\n\n* **Chores**\n  * 앱 버전 1.1.11로 업데이트\n  * Google 서비스 자격증명 갱신\n  * iOS 위치 권한 설명 업데이트",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "배경 위치 추적 기능 추가로 게임 중 실시간 위치 기반 플레이 개선"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "Firebase 인증 에러 처리 개선으로 사용자 경험 향상"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전 1.1.11로 업데이트",
+            "Google 서비스 자격증명 갱신",
+            "iOS 위치 권한 설명 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.9",
       "project_type": "flutter",
