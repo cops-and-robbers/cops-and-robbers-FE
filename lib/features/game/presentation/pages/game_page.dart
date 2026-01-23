@@ -8,11 +8,7 @@ import '../widgets/naver_map_view.dart';
 /// 인게임 지도 화면
 /// 게임 진행 중 사용되는 메인 화면
 class GamePage extends StatefulWidget {
-  const GamePage({
-    required this.sessionId,
-    required this.mapType,
-    super.key,
-  });
+  const GamePage({required this.sessionId, required this.mapType, super.key});
 
   /// 게임 세션 ID
   final String sessionId;

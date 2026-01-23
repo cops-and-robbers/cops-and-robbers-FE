@@ -49,7 +49,9 @@ class _GoogleMapViewState extends State<GoogleMapView> {
 
       final target = LatLng(pos.latitude, pos.longitude);
       _controller?.moveCamera(
-        CameraUpdate.newCameraPosition(CameraPosition(target: target, zoom: 16)),
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: target, zoom: 16),
+        ),
       );
       debugPrint('✅ GoogleMap: 카메라 이동 완료');
     } catch (e, stack) {
@@ -64,7 +66,10 @@ class _GoogleMapViewState extends State<GoogleMapView> {
 
     try {
       return GoogleMap(
-        initialCameraPosition: const CameraPosition(target: _fallback, zoom: 15),
+        initialCameraPosition: const CameraPosition(
+          target: _fallback,
+          zoom: 15,
+        ),
         onMapCreated: (controller) {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
