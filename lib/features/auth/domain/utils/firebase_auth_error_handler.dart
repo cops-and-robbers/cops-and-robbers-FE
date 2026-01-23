@@ -87,7 +87,9 @@ class FirebaseAuthErrorHandler {
         debugPrint('       위치: android/app/google-services.json');
         debugPrint('    3. GoogleService-Info.plist (iOS) 재다운로드');
         debugPrint('       위치: ios/Runner/GoogleService-Info.plist');
-        debugPrint('  - Firebase Console: https://console.firebase.google.com/');
+        debugPrint(
+          '  - Firebase Console: https://console.firebase.google.com/',
+        );
       }
     }
 
