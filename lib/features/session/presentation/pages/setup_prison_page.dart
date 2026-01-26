@@ -20,7 +20,7 @@ class SetupPrisonPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('감옥 구역', style: AppTextStyles.heading02),
+              Text('감옥 구역', style: AppTextStyles.heading_20),
               SizedBox(height: AppSpacing.vertical20),
               const Text('지도에서 감옥 범위를 지정하세요'),
               SizedBox(height: AppSpacing.vertical40),

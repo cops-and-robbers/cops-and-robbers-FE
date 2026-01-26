@@ -24,11 +24,11 @@ class ResultsPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('게임 종료', style: AppTextStyles.heading01),
+              Text('게임 종료', style: AppTextStyles.heading_24),
               SizedBox(height: AppSpacing.vertical20),
-              Text('Session ID: $sessionId', style: AppTextStyles.label),
+              Text('Session ID: $sessionId', style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical20),
-              Text('게임 결과 통계', style: AppTextStyles.subHeading),
+              Text('게임 결과 통계', style: AppTextStyles.subHeading_18),
               SizedBox(height: AppSpacing.vertical64),
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.home),

@@ -29,7 +29,7 @@ class _SelectAreaPageState extends State<SelectAreaPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('플레이그라운드와 감옥 구역을 설정하세요', style: AppTextStyles.heading02),
+              Text('플레이그라운드와 감옥 구역을 설정하세요', style: AppTextStyles.heading_20),
               SizedBox(height: AppSpacing.vertical40),
               ElevatedButton(
                 onPressed: () async {

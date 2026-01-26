@@ -41,13 +41,13 @@ class WaitingRoomPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('대기실', style: AppTextStyles.heading01),
+              Text('대기실', style: AppTextStyles.heading_24),
               SizedBox(height: AppSpacing.vertical20),
-              Text('Session ID: $sessionId', style: AppTextStyles.label),
+              Text('Session ID: $sessionId', style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical64),
 
               // 지도 선택 안내
-              Text('지도를 선택하세요', style: AppTextStyles.paragraph),
+              Text('지도를 선택하세요', style: AppTextStyles.paragraph_14),
               SizedBox(height: AppSpacing.vertical20),
 
               // Google Map 버튼

@@ -23,7 +23,7 @@ class InviteCodePage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('방이 생성되었습니다!', style: AppTextStyles.heading02),
+              Text('방이 생성되었습니다!', style: AppTextStyles.heading_20),
               SizedBox(height: AppSpacing.vertical40),
               Container(
                 padding: AppPadding.all24,
@@ -31,7 +31,7 @@ class InviteCodePage extends StatelessWidget {
                   border: Border.all(color: Colors.blue, width: 2),
                   borderRadius: AppRadius.large,
                 ),
-                child: Text(inviteCode, style: AppTextStyles.inviteCode),
+                child: Text(inviteCode, style: AppTextStyles.heading_24),
               ),
               SizedBox(height: AppSpacing.vertical20),
               const Text('이 코드를 친구들에게 공유하세요'),

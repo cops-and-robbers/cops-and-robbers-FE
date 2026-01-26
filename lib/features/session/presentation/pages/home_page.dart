@@ -75,7 +75,7 @@ class HomePage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Home', style: AppTextStyles.heading01),
+              Text('Home', style: AppTextStyles.heading_24),
               SizedBox(height: AppSpacing.vertical64),
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.selectArea),

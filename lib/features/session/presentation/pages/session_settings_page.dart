@@ -22,7 +22,7 @@ class SessionSettingsPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('게임 기본 정보', style: AppTextStyles.heading02),
+              Text('게임 기본 정보', style: AppTextStyles.heading_20),
               SizedBox(height: AppSpacing.vertical20),
               const Text('라운드 시간: 10분'),
               SizedBox(height: AppSpacing.vertical12),

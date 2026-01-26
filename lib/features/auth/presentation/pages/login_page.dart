@@ -37,7 +37,7 @@ class LoginPage extends ConsumerWidget {
       //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorMessage, style: AppTextStyles.toast),
+          content: Text(errorMessage, style: AppTextStyles.paragraph_14),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
@@ -68,7 +68,7 @@ class LoginPage extends ConsumerWidget {
       //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorMessage, style: AppTextStyles.toast),
+          content: Text(errorMessage, style: AppTextStyles.paragraph_14),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
@@ -85,7 +85,7 @@ class LoginPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login', style: AppTextStyles.subHeading),
+        title: Text('Login', style: AppTextStyles.subHeading_18),
         // ⚠️ 개발용 버튼 - 프로덕션 배포 전 제거 필요
         actions: [
           // 생명주기 테스트 화면 이동
@@ -113,7 +113,7 @@ class LoginPage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Login', style: AppTextStyles.heading01),
+            Text('Login', style: AppTextStyles.heading_24),
             SizedBox(height: AppSpacing.vertical40),
 
             // TODO: Google 로그인 버튼 디자인 만들어지면 바뀌어야함
@@ -125,7 +125,7 @@ class LoginPage extends ConsumerWidget {
               label: const Text('Google 로그인'),
               style: ElevatedButton.styleFrom(
                 padding: AppPadding.buttonPadding,
-                textStyle: AppTextStyles.label,
+                textStyle: AppTextStyles.label_16,
               ),
             ),
 
@@ -141,7 +141,7 @@ class LoginPage extends ConsumerWidget {
                 label: const Text('Apple 로그인'),
                 style: ElevatedButton.styleFrom(
                   padding: AppPadding.buttonPadding,
-                  textStyle: AppTextStyles.label,
+                  textStyle: AppTextStyles.label_16,
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
                 ),
@@ -167,7 +167,7 @@ class LoginPage extends ConsumerWidget {
                   authState.error is AuthException
                       ? (authState.error as AuthException).message
                       : '로그인에 실패했습니다.',
-                  style: AppTextStyles.paragraph.copyWith(color: Colors.red),
+                  style: AppTextStyles.paragraph_14.copyWith(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
               ),

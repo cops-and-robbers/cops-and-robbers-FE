@@ -20,7 +20,7 @@ class SetupPlaygroundPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('플레이그라운드 구역', style: AppTextStyles.heading02),
+              Text('플레이그라운드 구역', style: AppTextStyles.heading_20),
               SizedBox(height: AppSpacing.vertical20),
               const Text('지도에서 플레이그라운드 범위를 지정하세요'),
               SizedBox(height: AppSpacing.vertical40),

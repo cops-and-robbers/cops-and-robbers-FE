@@ -251,7 +251,9 @@ final routerProvider = Provider<GoRouter>((ref) {
     // Error Handling (404 Page)
     // ====================================================================
     errorBuilder: (context, state) => Scaffold(
-      appBar: AppBar(title: Text('페이지를 찾을 수 없습니다', style: AppTextStyles.label)),
+      appBar: AppBar(
+        title: Text('페이지를 찾을 수 없습니다', style: AppTextStyles.label_16),
+      ),
       body: Center(
         child: Padding(
           padding: AppPadding.all20,
@@ -260,16 +262,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             children: [
               const Icon(Icons.error_outline, size: 64, color: Colors.red),
               SizedBox(height: AppSpacing.vertical16),
-              Text('요청하신 페이지가 존재하지 않습니다.', style: AppTextStyles.label),
+              Text('요청하신 페이지가 존재하지 않습니다.', style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical8),
               Text(
                 '경로: ${state.uri.path}',
-                style: AppTextStyles.callout.copyWith(color: Colors.grey),
+                style: AppTextStyles.tag_12.copyWith(color: Colors.grey),
               ),
               SizedBox(height: AppSpacing.vertical24),
               ElevatedButton(
                 onPressed: () => context.go(RoutePaths.home),
-                child: Text('홈으로 돌아가기', style: AppTextStyles.paragraph),
+                child: Text('홈으로 돌아가기', style: AppTextStyles.paragraph_14),
               ),
             ],
           ),
