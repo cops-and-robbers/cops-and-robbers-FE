@@ -24,6 +24,15 @@ class AppTextStyles {
   // Heading Styles (SemiBold)
   // ============================================
 
+  /// SemiBold28 - 초대 코드 (28px SemiBold)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get semibold28 => TextStyle(
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 28.sp,
+    height: 1.0, // 100% line height
+    letterSpacing: -0.32,
+  );
+
   /// Heading01 - 메인 타이틀 (24px SemiBold)
   /// Line Height: 100%, Letter Spacing: -0.32px
   static TextStyle get heading_24 => TextStyle(

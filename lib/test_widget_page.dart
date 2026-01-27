@@ -6,6 +6,9 @@ import 'core/constants/spacing_and_radius.dart';
 import 'core/widgets/buttons/app_button.dart';
 import 'core/widgets/inputs/app_slider.dart';
 import 'core/widgets/inputs/app_text_field.dart';
+import 'features/session/domain/entities/session_settings.dart';
+import 'features/session/domain/entities/zone_info.dart';
+import 'features/session/presentation/widgets/session_info_view.dart';
 
 /// 공용 컴포넌트 테스트 페이지
 ///
@@ -379,6 +382,28 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   onChanged: (value) {
                     setState(() => _playgroundRadius = value);
                   },
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // SessionInfoView 테스트
+                // ============================================
+                _buildSectionTitle('SessionInfoView 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                const SessionInfoView(
+                  sessionCode: 'A1B2C3',
+                  zones: [
+                    ZoneInfo(id: '1', name: '플레이그라운드', radiusMeters: 400),
+                    ZoneInfo(id: '2', name: '감옥', radiusMeters: 200),
+                  ],
+                  settings: SessionSettings(
+                    maxPlayers: 50,
+                    roundTimeMinutes: 30,
+                    locationShareSeconds: 5,
+                    policeStartDelayMinutes: 5,
+                  ),
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),
