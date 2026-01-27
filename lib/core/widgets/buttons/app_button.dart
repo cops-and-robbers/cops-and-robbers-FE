@@ -1,0 +1,235 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../constants/app_colors.dart';
+import '../../constants/spacing_and_radius.dart';
+import '../../constants/text_styles.dart';
+
+/// 아이콘 위치를 정의하는 Enum
+///
+/// 버튼 내에서 아이콘이 텍스트의 왼쪽에 위치할지 오른쪽에 위치할지 결정합니다.
+enum IconPosition {
+  /// 텍스트 왼쪽에 아이콘 배치
+  leading,
+
+  /// 텍스트 오른쪽에 아이콘 배치
+  trailing,
+}
+
+/// 앱 전역에서 사용하는 공용 버튼 컴포넌트
+///
+/// **기본 스펙**:
+/// - 크기: 353x56 (반응형)
+/// - 모서리: 16px 라운드
+/// - 텍스트: AppTextStyles.label_16
+/// - 테두리: 기본 1px (showBorder로 제어 가능)
+///
+/// **색상**:
+/// - 활성화: 배경 black, 텍스트 white, 테두리 black100
+/// - 비활성화: 배경 black100, 텍스트 white, 테두리 없음
+///
+/// **사용 예시**:
+/// ```dart
+/// // 기본 버튼 (테두리 있음)
+/// AppButton(
+///   text: '로그인',
+///   onPressed: () {},
+/// )
+///
+/// // 테두리 없는 버튼
+/// AppButton(
+///   text: '건너뛰기',
+///   onPressed: () {},
+///   showBorder: false,
+///   backgroundColor: AppColors.green,
+/// )
+///
+/// // 아이콘 포함 버튼
+/// AppButton(
+///   text: '설정',
+///   onPressed: () {},
+///   icon: Icon(Icons.settings, size: 20.w),
+///   iconPosition: IconPosition.leading,
+/// )
+///
+/// // 로딩 중 버튼
+/// AppButton(
+///   text: '로그인 중...',
+///   onPressed: () {},
+///   isLoading: true,
+/// )
+/// ```
+class AppButton extends StatelessWidget {
+  const AppButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.disabledBackgroundColor,
+    this.disabledForegroundColor,
+    this.showBorder = true,
+    this.borderWidth = 1.0,
+    this.borderColor,
+    this.width,
+    this.height,
+    this.borderRadius,
+    this.icon,
+    this.iconPosition = IconPosition.leading,
+    this.isLoading = false,
+  });
+
+  /// 버튼 텍스트 (필수)
+  final String text;
+
+  /// 버튼 클릭 핸들러 (필수, null이면 비활성화)
+  final VoidCallback? onPressed;
+
+  /// 활성화 상태 배경색 (기본: AppColors.black)
+  final Color? backgroundColor;
+
+  /// 활성화 상태 텍스트/아이콘 색상 (기본: AppColors.white)
+  final Color? foregroundColor;
+
+  /// 비활성화 상태 배경색 (기본: AppColors.black100)
+  final Color? disabledBackgroundColor;
+
+  /// 비활성화 상태 텍스트/아이콘 색상 (기본: AppColors.white)
+  final Color? disabledForegroundColor;
+
+  /// 테두리 표시 여부 (기본: true)
+  final bool showBorder;
+
+  /// 테두리 두께 (기본: 1.0px)
+  final double borderWidth;
+
+  /// 활성화 상태 테두리 색상 (기본: AppColors.black100)
+  final Color? borderColor;
+
+  /// 버튼 너비 (기본: 353.w)
+  final double? width;
+
+  /// 버튼 높이 (기본: 56.h)
+  final double? height;
+
+  /// 모서리 반경 (기본: 16.r)
+  final BorderRadius? borderRadius;
+
+  /// 아이콘 위젯 (선택 사항)
+  final Widget? icon;
+
+  /// 아이콘 위치 (기본: leading - 텍스트 왼쪽)
+  final IconPosition iconPosition;
+
+  /// 로딩 상태 (true면 CircularProgressIndicator 표시)
+  final bool isLoading;
+
+  // ============================================
+  // 기본값 Getter 메서드
+  // ============================================
+
+  /// 활성 상태 배경색
+  Color get _effectiveBackgroundColor {
+    if (isLoading || onPressed == null) {
+      return disabledBackgroundColor ?? AppColors.black100;
+    }
+    return backgroundColor ?? AppColors.black;
+  }
+
+  /// 활성 상태 텍스트/아이콘 색상
+  Color get _effectiveForegroundColor {
+    if (isLoading || onPressed == null) {
+      return disabledForegroundColor ?? AppColors.white;
+    }
+    return foregroundColor ?? AppColors.white;
+  }
+
+  /// 활성 상태 테두리 색상 (비활성화 시 투명)
+  Color get _effectiveBorderColor {
+    if (isLoading || onPressed == null) {
+      return Colors.transparent; // 비활성화 시 테두리 없음
+    }
+    return borderColor ?? AppColors.black100; // 활성화 시 black100
+  }
+
+  /// 기본 너비 (353px)
+  double get _effectiveWidth => width ?? 353.w;
+
+  /// 기본 높이 (56px)
+  double get _effectiveHeight => height ?? 56.h;
+
+  /// 기본 모서리 반경 (16px)
+  BorderRadius get _effectiveBorderRadius {
+    return borderRadius ?? AppRadius.xlarge;
+  }
+
+  // ============================================
+  // Widget Build
+  // ============================================
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: _effectiveWidth,
+      height: _effectiveHeight,
+      decoration: BoxDecoration(
+        borderRadius: _effectiveBorderRadius,
+        border: showBorder
+            ? Border.all(color: _effectiveBorderColor, width: borderWidth)
+            : null,
+      ),
+      child: ElevatedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          fixedSize: Size(_effectiveWidth, _effectiveHeight),
+          backgroundColor: _effectiveBackgroundColor,
+          foregroundColor: _effectiveForegroundColor,
+          disabledBackgroundColor:
+              disabledBackgroundColor ?? AppColors.black100,
+          disabledForegroundColor: disabledForegroundColor ?? AppColors.white,
+          shape: RoundedRectangleBorder(borderRadius: _effectiveBorderRadius),
+          padding: EdgeInsets.zero,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+        ),
+        child: isLoading ? _buildLoadingIndicator() : _buildButtonContent(),
+      ),
+    );
+  }
+
+  // ============================================
+  // Private Helper Methods
+  // ============================================
+
+  /// 로딩 인디케이터 위젯
+  Widget _buildLoadingIndicator() {
+    return SizedBox(
+      width: AppSpacing.horizontal20,
+      height: AppSpacing.vertical20,
+      child: CircularProgressIndicator(
+        strokeWidth: 2.0,
+        valueColor: AlwaysStoppedAnimation<Color>(_effectiveForegroundColor),
+      ),
+    );
+  }
+
+  /// 버튼 내용 (텍스트 + 아이콘)
+  Widget _buildButtonContent() {
+    if (icon == null) {
+      // 텍스트만
+      return Text(text, style: AppTextStyles.label_16);
+    }
+
+    // 아이콘 + 텍스트
+    final iconWidget = icon!;
+    final textWidget = Text(text, style: AppTextStyles.label_16);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max, // 전체 너비 사용 (SizedBox 크기 유지)
+      children: iconPosition == IconPosition.trailing
+          ? [textWidget, SizedBox(width: AppSpacing.horizontal8), iconWidget]
+          : [iconWidget, SizedBox(width: AppSpacing.horizontal8), textWidget],
+    );
+  }
+}

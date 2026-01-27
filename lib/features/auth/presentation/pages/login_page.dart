@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cops_and_robbers/core/constants/app_colors.dart';
+import 'package:cops_and_robbers/test_widget_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
-import '../../../../font_test_page.dart'; // ⚠️ 임시 개발용 - 테스트 후 제거 필요
+import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../router/route_paths.dart';
 import '../providers/auth_provider.dart';
 
@@ -84,7 +86,9 @@ class LoginPage extends ConsumerWidget {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
+        backgroundColor: AppColors.white,
         title: Text('Login', style: AppTextStyles.subHeading_18),
         // ⚠️ 개발용 버튼 - 프로덕션 배포 전 제거 필요
         actions: [
@@ -98,12 +102,12 @@ class LoginPage extends ConsumerWidget {
           ),
           // 폰트 테스트 화면 이동
           IconButton(
-            icon: const Icon(Icons.text_fields),
-            tooltip: 'Font Test',
+            icon: const Icon(Icons.widgets),
+            tooltip: 'Test Widget',
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const FontTestPage()),
+                MaterialPageRoute(builder: (context) => const TestWidgetPage()),
               );
             },
           ),
@@ -116,50 +120,28 @@ class LoginPage extends ConsumerWidget {
             Text('Login', style: AppTextStyles.heading_24),
             SizedBox(height: AppSpacing.vertical40),
 
-            // TODO: Google 로그인 버튼 디자인 만들어지면 바뀌어야함
-            ElevatedButton.icon(
-              onPressed: authState.isLoading
-                  ? null // 로딩 중에는 버튼 비활성화
-                  : () => _handleGoogleSignIn(context, ref),
-              icon: const Icon(Icons.login),
-              label: const Text('Google 로그인'),
-              style: ElevatedButton.styleFrom(
-                padding: AppPadding.buttonPadding,
-                textStyle: AppTextStyles.label_16,
-              ),
+            // Google 로그인 버튼
+            GoogleLoginButton(
+              onPressed: () => _handleGoogleSignIn(context, ref),
+              isLoading: authState.isLoading,
             ),
+            SizedBox(height: AppSpacing.vertical12),
 
             // iOS에서만 Apple 로그인 버튼 표시
             if (Platform.isIOS) ...[
-              SizedBox(height: AppSpacing.vertical16),
-              // TODO: Apple 로그인 버튼 디자인 만들어지면 바뀌어야함
-              ElevatedButton.icon(
-                onPressed: authState.isLoading
-                    ? null // 로딩 중에는 버튼 비활성화
-                    : () => _handleAppleSignIn(context, ref),
-                icon: const Icon(Icons.apple),
-                label: const Text('Apple 로그인'),
-                style: ElevatedButton.styleFrom(
-                  padding: AppPadding.buttonPadding,
-                  textStyle: AppTextStyles.label_16,
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                ),
+              // Apple 로그인 버튼
+              AppleLoginButton(
+                onPressed: () => _handleAppleSignIn(context, ref),
+                isLoading: authState.isLoading,
               ),
+              SizedBox(height: AppSpacing.vertical12),
             ],
-
-            // 로딩 인디케이터
-            if (authState.isLoading)
-              Padding(
-                padding: EdgeInsets.only(top: AppSpacing.vertical20),
-                child: const CircularProgressIndicator(),
-              ),
 
             // 에러 메시지 (선택사항 - SnackBar와 중복이므로 간단하게 표시)
             if (authState.hasError && !authState.isLoading)
               Padding(
                 padding: EdgeInsets.only(
-                  top: AppSpacing.vertical20,
+                  top: AppSpacing.vertical12,
                   left: AppSpacing.horizontal20,
                   right: AppSpacing.horizontal20,
                 ),

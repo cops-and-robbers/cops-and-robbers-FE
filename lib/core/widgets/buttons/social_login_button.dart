@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/spacing_and_radius.dart';
 import 'app_button.dart';
 
 /// Google 소셜 로그인 버튼
@@ -40,12 +40,12 @@ class GoogleLoginButton extends StatelessWidget {
       onPressed: onPressed,
       icon: SvgPicture.asset(
         'assets/icons/icon_google.svg',
-        width: 20.w,
-        height: 20.h,
+        width: AppSpacing.horizontal20,
+        height: AppSpacing.vertical20,
       ),
       iconPosition: IconPosition.leading,
       backgroundColor: AppColors.white,
-      foregroundColor: AppColors.black,
+      foregroundColor: const Color(0xFF000000),
       showBorder: true,
       isLoading: isLoading,
     );
@@ -87,8 +87,8 @@ class AppleLoginButton extends StatelessWidget {
       onPressed: onPressed,
       icon: SvgPicture.asset(
         'assets/icons/icon_apple.svg',
-        width: 20.w,
-        height: 20.h,
+        width: AppSpacing.horizontal20,
+        height: AppSpacing.vertical20,
       ),
       iconPosition: IconPosition.leading,
       backgroundColor: AppColors.black,
