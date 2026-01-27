@@ -251,9 +251,17 @@ class AppTextField extends StatelessWidget {
             horizontal: AppSpacing.horizontal20, // 20px
             vertical: AppSpacing.vertical16, // 16px
           ),
-          border: _buildBorder(hasError ? _effectiveErrorBorderColor : _effectiveBorderColor),
-          enabledBorder: _buildBorder(hasError ? _effectiveErrorBorderColor : _effectiveBorderColor),
-          focusedBorder: _buildBorder(hasError ? _effectiveErrorBorderColor : _effectiveFocusedBorderColor),
+          border: _buildBorder(
+            hasError ? _effectiveErrorBorderColor : _effectiveBorderColor,
+          ),
+          enabledBorder: _buildBorder(
+            hasError ? _effectiveErrorBorderColor : _effectiveBorderColor,
+          ),
+          focusedBorder: _buildBorder(
+            hasError
+                ? _effectiveErrorBorderColor
+                : _effectiveFocusedBorderColor,
+          ),
           disabledBorder: _buildBorder(Colors.transparent),
           prefixIcon: prefixIcon,
           suffixIcon: suffixIcon,

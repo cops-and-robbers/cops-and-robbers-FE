@@ -216,6 +216,9 @@ class AppRadius {
   /// 매우 큰 라운드 (16px)
   static BorderRadius get xlarge => BorderRadius.circular(16.r);
 
+  /// 20px 라운드
+  static BorderRadius get xl20 => BorderRadius.circular(20.r);
+
   /// 초대형 라운드 (24px)
   static BorderRadius get xxlarge => BorderRadius.circular(24.r);
 

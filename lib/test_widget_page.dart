@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/spacing_and_radius.dart';
 import 'core/widgets/buttons/app_button.dart';
+import 'core/widgets/inputs/app_slider.dart';
 import 'core/widgets/inputs/app_text_field.dart';
 
 /// 공용 컴포넌트 테스트 페이지
@@ -24,6 +25,12 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
   bool _emailHasError = false;
   String _emailErrorMessage = '';
   bool _isLoading = false;
+
+  // AppSlider 테스트용 상태
+  double _maxPlayers = 50.0;
+  double _policeWaitTime = 5.0;
+  double _playgroundRadius = 400.0;
+  double _roundTime = 30.0;
 
   @override
   void dispose() {
@@ -286,6 +293,92 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     });
                   },
                   isLoading: _isLoading,
+                ),
+
+                SizedBox(height: AppSpacing.vertical32),
+
+                // ============================================
+                // AppSlider 테스트
+                // ============================================
+                _buildSectionTitle('AppSlider 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 기본 슬라이더 (검정 계열)
+                AppSlider(
+                  label: '라운드 제한 시간',
+                  value: _maxPlayers,
+                  min: 5,
+                  max: 50,
+                  unit: '명',
+                  divisions: 45, // 1명 단위
+                  onChanged: (value) {
+                    setState(() => _maxPlayers = value);
+                  },
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 파란색 슬라이더
+                AppSlider(
+                  label: '플레이그라운드 반경',
+                  value: _playgroundRadius,
+                  min: 100,
+                  max: 1000,
+                  unit: 'm',
+                  divisions: 90, // 10m 단위
+                  activeTrackColor: AppColors.blue800,
+                  thumbColor: AppColors.blue,
+                  inactiveTrackColor: AppColors.blue100,
+                  onChanged: (value) {
+                    setState(() => _playgroundRadius = value);
+                  },
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 복합 텍스트 스타일 슬라이더 (NEW)
+                AppSlider(
+                  label: '경찰 시작 시간',
+                  value: _policeWaitTime,
+                  min: 1,
+                  max: 10,
+                  unit: '분',
+                  divisions: 9, // 1분 단위
+                  displayPrefix: '도둑 시작 후',
+                  displaySuffix: '뒤',
+                  onChanged: (value) {
+                    setState(() => _policeWaitTime = value);
+                  },
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 최소/최대 숨김 슬라이더 (초록색)
+                AppSlider(
+                  label: '라운드 시간',
+                  value: _roundTime,
+                  min: 10,
+                  max: 60,
+                  unit: '분',
+                  showMinMax: false, // 최소/최대 숨김
+                  activeTrackColor: AppColors.green800,
+                  thumbColor: AppColors.green,
+                  inactiveTrackColor: AppColors.green100,
+                  onChanged: (value) {
+                    setState(() => _roundTime = value);
+                  },
+                ),
+                AppSlider(
+                  label: '플레이그라운드 반경',
+                  value: _playgroundRadius,
+                  min: 100,
+                  max: 1000,
+                  unit: 'm',
+                  divisions: 90, // 10m 단위
+                  activeTrackColor: AppColors.blue800,
+                  thumbColor: AppColors.blue,
+                  inactiveTrackColor: AppColors.blue100,
+                  showContainer: false,
+                  onChanged: (value) {
+                    setState(() => _playgroundRadius = value);
+                  },
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),
