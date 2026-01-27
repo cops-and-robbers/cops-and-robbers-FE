@@ -23,10 +23,7 @@ import '../../domain/entities/session_settings.dart';
 /// )
 /// ```
 class SettingListCard extends StatelessWidget {
-  const SettingListCard({
-    super.key,
-    required this.settings,
-  });
+  const SettingListCard({super.key, required this.settings});
 
   /// 게임 설정 정보
   final SessionSettings settings;
@@ -42,25 +39,13 @@ class SettingListCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _SettingRow(
-            label: '참여 인원',
-            value: settings.maxPlayersDisplay,
-          ),
+          _SettingRow(label: '참여 인원', value: settings.maxPlayersDisplay),
           SizedBox(height: AppSpacing.vertical12),
-          _SettingRow(
-            label: '라운드 제한 시간',
-            value: settings.roundTimeDisplay,
-          ),
+          _SettingRow(label: '라운드 제한 시간', value: settings.roundTimeDisplay),
           SizedBox(height: AppSpacing.vertical12),
-          _SettingRow(
-            label: '위치 공유 간격',
-            value: settings.locationShareDisplay,
-          ),
+          _SettingRow(label: '위치 공유 간격', value: settings.locationShareDisplay),
           SizedBox(height: AppSpacing.vertical12),
-          _SettingRow(
-            label: '경찰 시작 시간',
-            value: settings.policeStartDisplay,
-          ),
+          _SettingRow(label: '경찰 시작 시간', value: settings.policeStartDisplay),
         ],
       ),
     );
@@ -69,10 +54,7 @@ class SettingListCard extends StatelessWidget {
 
 /// 설정 행 (내부 위젯)
 class _SettingRow extends StatelessWidget {
-  const _SettingRow({
-    required this.label,
-    required this.value,
-  });
+  const _SettingRow({required this.label, required this.value});
 
   final String label;
   final String value;
