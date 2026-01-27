@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/spacing_and_radius.dart';
 import 'core/widgets/buttons/app_button.dart';
+import 'core/widgets/chips/action_chip.dart' as custom_chips;
+import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
 import 'core/widgets/inputs/app_text_field.dart';
 import 'features/session/domain/entities/session_settings.dart';
@@ -407,6 +409,62 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // InfoRadiusChip & ActionChip 테스트
+                // ============================================
+                _buildSectionTitle('InfoRadiusChip & ActionChip 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 기본 InfoRadiusChip (파란색)
+                const InfoRadiusChip(prefix: '반경', value: '400m'),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 커스텀 InfoRadiusChip (초록색, 더 넓음)
+                InfoRadiusChip(
+                  prefix: '거리',
+                  value: '1.2km',
+                  backgroundColor: AppColors.green,
+                  width: 130.w,
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 기본 ActionChip (검정)
+                custom_chips.ActionChip(
+                  text: '중복 확인',
+                  onTap: () {
+                    _showSnackBar('중복확인 클릭!');
+                  },
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 커스텀 ActionChip (파란색, 더 좁음)
+                custom_chips.ActionChip(
+                  text: '확인',
+                  onTap: () {
+                    _showSnackBar('확인 클릭!');
+                  },
+                  backgroundColor: AppColors.blue,
+                  width: 80.w,
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 조합 예시 (Row로 배치)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const InfoRadiusChip(prefix: '플레이그라운드', value: '500m'),
+                    SizedBox(width: AppSpacing.horizontal12),
+                    custom_chips.ActionChip(
+                      text: '설정',
+                      onTap: () {
+                        _showSnackBar('설정 클릭!');
+                      },
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
               ],
             ),
           ),
@@ -429,12 +487,13 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
   /// 스낵바 표시
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-        backgroundColor: AppColors.green,
-      ),
-    );
+    // 스낵바 비활성화
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(message),
+    //     duration: const Duration(seconds: 2),
+    //     backgroundColor: AppColors.green,
+    //   ),
+    // );
   }
 }
