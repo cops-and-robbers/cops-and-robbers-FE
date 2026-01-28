@@ -77,6 +77,9 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.iconPosition = IconPosition.leading,
     this.isLoading = false,
+    this.subtitle,
+    this.subtitleColor,
+    this.contentAlignment,
   });
 
   /// 버튼 텍스트 (필수)
@@ -124,6 +127,15 @@ class AppButton extends StatelessWidget {
   /// 로딩 상태 (true면 CircularProgressIndicator 표시)
   final bool isLoading;
 
+  /// 서브 텍스트 (선택 사항, 메인 텍스트 아래 작은 글씨)
+  final String? subtitle;
+
+  /// 서브 텍스트 색상 (기본: foregroundColor)
+  final Color? subtitleColor;
+
+  /// 버튼 내용 정렬 (기본: center, spaceBetween으로 좌우 정렬 가능)
+  final MainAxisAlignment? contentAlignment;
+
   // ============================================
   // 기본값 Getter 메서드
   // ============================================
@@ -161,6 +173,16 @@ class AppButton extends StatelessWidget {
   /// 기본 모서리 반경 (16px)
   BorderRadius get _effectiveBorderRadius {
     return borderRadius ?? AppRadius.xlarge;
+  }
+
+  /// 기본 정렬 방식 (center)
+  MainAxisAlignment get _effectiveContentAlignment {
+    return contentAlignment ?? MainAxisAlignment.center;
+  }
+
+  /// 서브텍스트 색상 (기본: 메인 텍스트 색상과 동일)
+  Color get _effectiveSubtitleColor {
+    return subtitleColor ?? _effectiveForegroundColor;
   }
 
   // ============================================
@@ -215,21 +237,62 @@ class AppButton extends StatelessWidget {
 
   /// 버튼 내용 (텍스트 + 아이콘)
   Widget _buildButtonContent() {
+    // 텍스트 위젯 구성 (단일 or 2줄)
+    Widget textWidget;
+    if (subtitle == null) {
+      // 기존: 단일 텍스트
+      textWidget = Text(
+        text,
+        style: AppTextStyles.label_16.copyWith(
+          color: _effectiveForegroundColor,
+        ),
+      );
+    } else {
+      // 새로운: 2줄 텍스트 (Column)
+      textWidget = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start, // 좌측 정렬
+        children: [
+          Text(
+            text,
+            style: AppTextStyles.label_16.copyWith(
+              color: _effectiveForegroundColor,
+            ),
+          ),
+          SizedBox(height: AppSpacing.vertical4), // 간격
+          Text(
+            subtitle!,
+            style: AppTextStyles.tag_12.copyWith(
+              color: _effectiveSubtitleColor,
+            ),
+          ),
+        ],
+      );
+    }
+
     if (icon == null) {
-      // 텍스트만
-      return Text(text, style: AppTextStyles.label_16);
+      return textWidget;
     }
 
     // 아이콘 + 텍스트
     final iconWidget = icon!;
-    final textWidget = Text(text, style: AppTextStyles.label_16);
+    final isSpaceBetween =
+        _effectiveContentAlignment == MainAxisAlignment.spaceBetween;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max, // 전체 너비 사용 (SizedBox 크기 유지)
+      mainAxisAlignment: _effectiveContentAlignment,
+      mainAxisSize: MainAxisSize.max, // 전체 너비 사용
       children: iconPosition == IconPosition.trailing
-          ? [textWidget, SizedBox(width: AppSpacing.horizontal8), iconWidget]
-          : [iconWidget, SizedBox(width: AppSpacing.horizontal8), textWidget],
+          ? [
+              textWidget,
+              if (!isSpaceBetween) SizedBox(width: AppSpacing.horizontal8),
+              iconWidget,
+            ]
+          : [
+              iconWidget,
+              if (!isSpaceBetween) SizedBox(width: AppSpacing.horizontal8),
+              textWidget,
+            ],
     );
   }
 }
