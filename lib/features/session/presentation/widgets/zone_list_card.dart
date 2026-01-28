@@ -37,9 +37,11 @@ class ZoneListCard extends StatelessWidget {
     return InfoCard(
       title: '구역',
       titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
-      padding: EdgeInsets.symmetric(
-        vertical: AppSpacing.vertical20,
-        horizontal: AppSpacing.horizontal24,
+      padding: EdgeInsets.only(
+        top: AppSpacing.vertical20,
+        bottom: AppSpacing.vertical16,
+        left: AppSpacing.horizontal24,
+        right: AppSpacing.horizontal20,
       ),
       child: Column(
         children: [

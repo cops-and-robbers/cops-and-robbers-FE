@@ -8,7 +8,7 @@ import 'core/widgets/chips/action_chip.dart' as custom_chips;
 import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
 import 'core/widgets/inputs/app_text_field.dart';
-import 'core/widgets/map/zone_setting_test_page.dart';
+import 'core/widgets/buttons/zone_setting_button_example.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
 import 'features/session/presentation/widgets/session_info_view.dart';
@@ -412,19 +412,19 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 SizedBox(height: AppSpacing.vertical64),
 
                 // ============================================
-                // ZoneSettingWidget 테스트
+                // ZoneSettingButton 테스트
                 // ============================================
-                _buildSectionTitle('ZoneSettingWidget 테스트'),
+                _buildSectionTitle('ZoneSettingButton 테스트'),
                 SizedBox(height: AppSpacing.vertical16),
 
                 // 전용 테스트 페이지 이동 버튼
                 AppButton(
-                  text: '구역 설정 테스트 페이지 열기',
+                  text: '구역 설정 버튼 예시 페이지 열기',
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ZoneSettingTestPage(),
+                        builder: (context) => const ZoneSettingButtonExample(),
                       ),
                     );
                   },

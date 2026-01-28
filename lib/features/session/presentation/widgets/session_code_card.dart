@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/widgets/buttons/copy_icon_button.dart';
 
 /// 세션 코드 표시 및 복사 카드
 ///
 /// 검은 배경에 흰색 텍스트로 세션 코드를 표시하고,
-/// 복사 버튼을 제공합니다.
+/// 카드 전체를 탭하면 진동과 함께 코드가 복사됩니다.
 ///
 /// 사용 예시:
 /// ```dart
@@ -45,27 +45,38 @@ class SessionCodeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 353.w,
-      height: 84.h,
-      decoration: BoxDecoration(
-        color: AppColors.black,
-        borderRadius: AppRadius.xl20,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            code,
-            style: AppTextStyles.semibold28.copyWith(color: AppColors.white),
-          ),
-          SizedBox(width: AppSpacing.horizontal8),
-          CopyIconButton(
-            iconPath: 'assets/icons/icon_copy.svg',
-            size: 24.w,
-            onTap: () => _copyToClipboard(context),
-          ),
-        ],
+    return InkWell(
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        _copyToClipboard(context);
+      },
+      borderRadius: AppRadius.xl20,
+      child: Container(
+        width: 353.w,
+        height: 84.h,
+        decoration: BoxDecoration(
+          color: AppColors.black,
+          borderRadius: AppRadius.xl20,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              code,
+              style: AppTextStyles.semibold28.copyWith(color: AppColors.white),
+            ),
+            SizedBox(width: AppSpacing.horizontal8),
+            SvgPicture.asset(
+              'assets/icons/icon_copy.svg',
+              width: 24.w,
+              height: 24.h,
+              colorFilter: const ColorFilter.mode(
+                AppColors.white,
+                BlendMode.srcIn,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
