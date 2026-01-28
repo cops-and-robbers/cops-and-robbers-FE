@@ -47,9 +47,12 @@ class StepIndicator extends StatelessWidget {
     this.inactiveColor,
     this.barHeight = 4.0,
     this.spacing = 8.0,
-  })  : assert(totalSteps > 0, 'totalSteps must be greater than 0'),
-        assert(currentStep >= 0, 'currentStep must be non-negative'),
-        assert(currentStep < totalSteps, 'currentStep must be less than totalSteps');
+  }) : assert(totalSteps > 0, 'totalSteps must be greater than 0'),
+       assert(currentStep >= 0, 'currentStep must be non-negative'),
+       assert(
+         currentStep < totalSteps,
+         'currentStep must be less than totalSteps',
+       );
 
   /// 전체 단계 수 (필수)
   final int totalSteps;
@@ -102,7 +105,9 @@ class StepIndicator extends StatelessWidget {
               curve: Curves.easeInOut,
               height: barHeight.h,
               decoration: BoxDecoration(
-                color: isCompleted ? _effectiveActiveColor : _effectiveInactiveColor,
+                color: isCompleted
+                    ? _effectiveActiveColor
+                    : _effectiveInactiveColor,
                 borderRadius: BorderRadius.circular(barHeight.r / 2),
               ),
             ),

@@ -19,69 +19,100 @@ import '../providers/auth_provider.dart';
 /// Google/Apple Sign-In을 통해 사용자 인증을 수행합니다.
 /// 앱바가 없는 전체 화면 레이아웃으로 구성되며,
 /// 로고는 중앙에, 소셜 로그인 버튼은 하단에 고정됩니다.
-class LoginPage extends ConsumerWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  ConsumerState<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> {
+  /// Google 로그인 로딩 상태
+  bool _isGoogleLoading = false;
+
+  /// Apple 로그인 로딩 상태
+  bool _isAppleLoading = false;
 
   /// Google 로그인 버튼 핸들러
   ///
   /// Google 로그인을 수행하고 에러 발생 시 SnackBar를 표시합니다.
-  Future<void> _handleGoogleSignIn(BuildContext context, WidgetRef ref) async {
-    // AuthNotifier로 로그인 수행
-    await ref.read(authNotifierProvider.notifier).signInWithGoogle();
+  Future<void> _handleGoogleSignIn(BuildContext context) async {
+    // 로딩 시작
+    setState(() => _isGoogleLoading = true);
 
-    // 에러 체크 및 SnackBar 표시
-    if (!context.mounted) return;
+    try {
+      // AuthNotifier로 로그인 수행
+      await ref.read(authNotifierProvider.notifier).signInWithGoogle();
 
-    final authState = ref.read(authNotifierProvider);
+      // 성공 시 GoRouter가 자동으로 HomePage로 리다이렉트
+    } catch (e) {
+      // AuthNotifier에서 rethrow한 에러를 여기서 처리
+      if (!mounted) return;
 
-    if (authState.hasError) {
-      final errorMessage = authState.error is AuthException
-          ? (authState.error as AuthException).message
-          : '로그인 중 오류가 발생했습니다.';
+      final authState = ref.read(authNotifierProvider);
 
-      //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage, style: AppTextStyles.paragraph_14),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      if (authState.hasError) {
+        final errorMessage = authState.error is AuthException
+            ? (authState.error as AuthException).message
+            : '로그인 중 오류가 발생했습니다.';
+
+        //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage, style: AppTextStyles.paragraph_14),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      // 로딩 종료 (에러 발생 시에도 반드시 실행)
+      if (mounted) {
+        setState(() => _isGoogleLoading = false);
+      }
     }
-
-    // 성공 시 GoRouter가 자동으로 HomePage로 리다이렉트
   }
 
   /// Apple 로그인 버튼 핸들러
   ///
   /// Apple 로그인을 수행하고 에러 발생 시 SnackBar를 표시합니다.
-  Future<void> _handleAppleSignIn(BuildContext context, WidgetRef ref) async {
-    // AuthNotifier로 로그인 수행
-    await ref.read(authNotifierProvider.notifier).signInWithApple();
+  Future<void> _handleAppleSignIn(BuildContext context) async {
+    // 로딩 시작
+    setState(() => _isAppleLoading = true);
 
-    // 에러 체크 및 SnackBar 표시
-    if (!context.mounted) return;
+    try {
+      // AuthNotifier로 로그인 수행
+      await ref.read(authNotifierProvider.notifier).signInWithApple();
 
-    final authState = ref.read(authNotifierProvider);
+      // 성공 시 GoRouter가 자동으로 HomePage로 리다이렉트
+    } catch (e) {
+      // AuthNotifier에서 rethrow한 에러를 여기서 처리
+      if (!mounted) return;
 
-    if (authState.hasError) {
-      final errorMessage = authState.error is AuthException
-          ? (authState.error as AuthException).message
-          : 'Apple 로그인 중 오류가 발생했습니다.';
+      final authState = ref.read(authNotifierProvider);
 
-      //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage, style: AppTextStyles.paragraph_14),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      if (authState.hasError) {
+        final errorMessage = authState.error is AuthException
+            ? (authState.error as AuthException).message
+            : 'Apple 로그인 중 오류가 발생했습니다.';
+
+        //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage, style: AppTextStyles.paragraph_14),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      // 로딩 종료 (에러 발생 시에도 반드시 실행)
+      if (mounted) {
+        setState(() => _isAppleLoading = false);
+      }
     }
-
-    // 성공 시 GoRouter가 자동으로 HomePage로 리다이렉트
   }
 
   /// 개발자 도구 메뉴 표시
@@ -124,9 +155,7 @@ class LoginPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authNotifierProvider);
-
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -149,16 +178,20 @@ class LoginPage extends ConsumerWidget {
 
                   // Google 로그인 버튼
                   GoogleLoginButton(
-                    onPressed: () => _handleGoogleSignIn(context, ref),
-                    isLoading: authState.isLoading,
+                    onPressed: _isAppleLoading
+                        ? null
+                        : () => _handleGoogleSignIn(context),
+                    isLoading: _isGoogleLoading,
                   ),
 
                   // iOS에서만 Apple 로그인 버튼 표시
                   if (Platform.isIOS) ...[
                     SizedBox(height: 12.h),
                     AppleLoginButton(
-                      onPressed: () => _handleAppleSignIn(context, ref),
-                      isLoading: authState.isLoading,
+                      onPressed: _isGoogleLoading
+                          ? null
+                          : () => _handleAppleSignIn(context),
+                      isLoading: _isAppleLoading,
                     ),
                   ],
                 ],

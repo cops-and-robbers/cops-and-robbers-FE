@@ -67,6 +67,7 @@ class AuthNotifier extends _$AuthNotifier {
         FirebaseAuthErrorHandler.createAuthException(e, provider: 'Google'),
         StackTrace.current,
       );
+      rethrow; // CRITICAL: 일반 catch로 fall-through 방지
     } catch (e, stack) {
       // 예상치 못한 에러 발생 시 세션 정리
       await _cleanupSessionOnFailure('google');
@@ -76,6 +77,7 @@ class AuthNotifier extends _$AuthNotifier {
         AuthException(message: '알 수 없는 오류가 발생했습니다.', originalException: e),
         stack,
       );
+      rethrow; // CRITICAL: Future 재완료 시도 방지
     }
   }
 
@@ -108,6 +110,7 @@ class AuthNotifier extends _$AuthNotifier {
         FirebaseAuthErrorHandler.createAuthException(e, provider: 'Apple'),
         StackTrace.current,
       );
+      rethrow; // CRITICAL: 일반 catch로 fall-through 방지
     } catch (e, stack) {
       // 예상치 못한 에러 발생 시 세션 정리
       await _cleanupSessionOnFailure('apple');
@@ -117,6 +120,7 @@ class AuthNotifier extends _$AuthNotifier {
         AuthException(message: '알 수 없는 오류가 발생했습니다.', originalException: e),
         stack,
       );
+      rethrow; // CRITICAL: Future 재완료 시도 방지
     }
   }
 

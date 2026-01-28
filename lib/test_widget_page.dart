@@ -677,9 +677,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const LoadingPage(
-                          message: '로그인 중...',
-                        ),
+                        builder: (context) =>
+                            const LoadingPage(message: '로그인 중...'),
                       ),
                     );
                   },

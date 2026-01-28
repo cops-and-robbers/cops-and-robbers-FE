@@ -130,10 +130,7 @@ class CustomProgressBar extends StatelessWidget {
       children: [
         // 진행률 텍스트 (선택 사항)
         if (showPercentage) ...[
-          Text(
-            '$_percentageValue%',
-            style: _effectivePercentageStyle,
-          ),
+          Text('$_percentageValue%', style: _effectivePercentageStyle),
           SizedBox(height: AppSpacing.vertical4),
         ],
 

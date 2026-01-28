@@ -75,12 +75,16 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
     // refreshListenable 활성화 (auth 상태 변경 감지)
-    refreshListenable: _GoRouterRefreshNotifier(ref, authStateProvider),
+    // authNotifierProvider 사용: 즉시 반영되는 인증 상태
+    refreshListenable: _GoRouterRefreshNotifier(ref, authNotifierProvider),
     redirect: (BuildContext context, GoRouterState state) {
       // ====================================================================
       // 실제 Provider에서 인증 상태 가져오기
       // ====================================================================
-      final authUser = ref.read(authStateProvider).value;
+      // authNotifierProvider 사용: 즉시 반영되는 인증 상태
+      // authStateProvider (Stream 기반)는 비동기 업데이트 지연 가능
+      final authState = ref.read(authNotifierProvider);
+      final authUser = authState.value;
       final isAuthenticated = authUser != null;
 
       final currentPath = state.uri.path;

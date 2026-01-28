@@ -107,8 +107,8 @@ class FirebaseAuthDataSource {
         );
       }
       // TODO : 릴리즈 빌드에서는 제거하거나 로그 레벨을 조정할 것
-      debugPrint('🔥 Firebase ID Token : $idToken)');
-      debugPrint('🔥 Firebase ID Token length: ${idToken.length})');
+      debugPrint('🔥 Firebase ID Token : $idToken');
+      debugPrint('🔥 Firebase ID Token length: ${idToken.length}');
 
       return idToken;
     } catch (e) {
