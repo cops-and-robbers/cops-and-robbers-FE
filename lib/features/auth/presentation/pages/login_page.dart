@@ -1,21 +1,24 @@
 import 'dart:io';
 
-import 'package:cops_and_robbers/core/constants/app_colors.dart';
-import 'package:cops_and_robbers/test_widget_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../router/route_paths.dart';
+import '../../../../test_widget_page.dart';
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
 ///
-/// Google Sign-In을 통해 사용자 인증을 수행합니다.
+/// Google/Apple Sign-In을 통해 사용자 인증을 수행합니다.
+/// 앱바가 없는 전체 화면 레이아웃으로 구성되며,
+/// 로고는 중앙에, 소셜 로그인 버튼은 하단에 고정됩니다.
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
 
@@ -81,81 +84,102 @@ class LoginPage extends ConsumerWidget {
     // 성공 시 GoRouter가 자동으로 HomePage로 리다이렉트
   }
 
+  /// 개발자 도구 메뉴 표시
+  ///
+  /// 생명주기 테스트와 위젯 테스트 페이지로 이동할 수 있는 다이얼로그를 표시합니다.
+  /// 개발 모드(kDebugMode)에서만 동작합니다.
+  void _showDevMenu(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('개발자 도구', style: AppTextStyles.heading_20),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.pending_actions),
+              title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
+              onTap: () {
+                Navigator.pop(context);
+                context.push(RoutePaths.lifecycleTest);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.widgets),
+              title: Text('Test Widget', style: AppTextStyles.paragraph_14),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TestWidgetPage(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        title: Text('Login', style: AppTextStyles.subHeading_18),
-        // ⚠️ 개발용 버튼 - 프로덕션 배포 전 제거 필요
-        actions: [
-          // 생명주기 테스트 화면 이동
-          IconButton(
-            icon: const Icon(Icons.pending_actions),
-            tooltip: 'Lifecycle Test',
-            onPressed: () {
-              context.push(RoutePaths.lifecycleTest);
-            },
-          ),
-          // 폰트 테스트 화면 이동
-          IconButton(
-            icon: const Icon(Icons.widgets),
-            tooltip: 'Test Widget',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TestWidgetPage()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: SafeArea(
+        child: Stack(
           children: [
-            Text('Login', style: AppTextStyles.heading_24),
-            SizedBox(height: AppSpacing.vertical40),
+            // 로고와 버튼을 Column으로 배치 (정확한 간격 제어)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 앱 로고
+                  Image.asset(
+                    'assets/app_icon_512.png',
+                    width: 224.w,
+                    height: 224.w,
+                  ),
 
-            // Google 로그인 버튼
-            GoogleLoginButton(
-              onPressed: () => _handleGoogleSignIn(context, ref),
-              isLoading: authState.isLoading,
-            ),
-            SizedBox(height: AppSpacing.vertical12),
+                  // 로고와 버튼 사이 간격 (플랫폼별)
+                  SizedBox(height: Platform.isIOS ? 155.h : 185.h),
 
-            // iOS에서만 Apple 로그인 버튼 표시
-            if (Platform.isIOS) ...[
-              // Apple 로그인 버튼
-              AppleLoginButton(
-                onPressed: () => _handleAppleSignIn(context, ref),
-                isLoading: authState.isLoading,
+                  // Google 로그인 버튼
+                  GoogleLoginButton(
+                    onPressed: () => _handleGoogleSignIn(context, ref),
+                    isLoading: authState.isLoading,
+                  ),
+
+                  // iOS에서만 Apple 로그인 버튼 표시
+                  if (Platform.isIOS) ...[
+                    SizedBox(height: 12.h),
+                    AppleLoginButton(
+                      onPressed: () => _handleAppleSignIn(context, ref),
+                      isLoading: authState.isLoading,
+                    ),
+                  ],
+                ],
               ),
-              SizedBox(height: AppSpacing.vertical12),
-            ],
+            ),
 
             // 에러 메시지 (선택사항 - SnackBar와 중복이므로 간단하게 표시)
-            if (authState.hasError && !authState.isLoading)
-              Padding(
-                padding: EdgeInsets.only(
-                  top: AppSpacing.vertical12,
-                  left: AppSpacing.horizontal20,
-                  right: AppSpacing.horizontal20,
-                ),
-                child: Text(
-                  authState.error is AuthException
-                      ? (authState.error as AuthException).message
-                      : '로그인에 실패했습니다.',
-                  style: AppTextStyles.paragraph_14.copyWith(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-              ),
           ],
         ),
       ),
+
+      // 개발 모드에서만 개발자 도구 버튼 표시
+      floatingActionButton: kDebugMode
+          ? FloatingActionButton(
+              mini: true,
+              backgroundColor: AppColors.black.withValues(alpha: 0.7),
+              foregroundColor: AppColors.white,
+              onPressed: () => _showDevMenu(context),
+              child: const Icon(Icons.bug_report),
+            )
+          : null,
     );
   }
 }
