@@ -8,6 +8,7 @@ import 'core/widgets/chips/action_chip.dart' as custom_chips;
 import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
 import 'core/widgets/inputs/app_text_field.dart';
+import 'core/widgets/map/zone_setting_test_page.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
 import 'features/session/presentation/widgets/session_info_view.dart';
@@ -406,6 +407,35 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     locationShareSeconds: 5,
                     policeStartDelayMinutes: 5,
                   ),
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // ZoneSettingWidget 테스트
+                // ============================================
+                _buildSectionTitle('ZoneSettingWidget 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 전용 테스트 페이지 이동 버튼
+                AppButton(
+                  text: '구역 설정 테스트 페이지 열기',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ZoneSettingTestPage(),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.blue,
+                  showBorder: false,
+                  icon: Icon(
+                    Icons.map_outlined,
+                    size: 20.w,
+                    color: AppColors.white,
+                  ),
+                  iconPosition: IconPosition.leading,
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),
