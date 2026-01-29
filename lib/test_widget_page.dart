@@ -12,6 +12,7 @@ import 'core/widgets/buttons/zone_setting_button_example.dart';
 import 'core/widgets/indicators/step_indicator.dart';
 import 'core/widgets/loading/custom_progress_bar.dart';
 import 'core/widgets/loading/loading_page.dart';
+import 'features/auth/presentation/pages/nickname_setup_page.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
 import 'features/session/presentation/widgets/session_info_view.dart';
@@ -394,6 +395,36 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   onChanged: (value) {
                     setState(() => _playgroundRadius = value);
                   },
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // NicknameSetupPage 테스트
+                // ============================================
+                _buildSectionTitle('NicknameSetupPage 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 닉네임 설정 페이지 이동 버튼
+                AppButton(
+                  text: '닉네임 설정 페이지 열기',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NicknameSetupPage(),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
+                  showBorder: false,
+                  icon: Icon(
+                    Icons.person_outline,
+                    size: 20.w,
+                    color: AppColors.black,
+                  ),
+                  iconPosition: IconPosition.leading,
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),

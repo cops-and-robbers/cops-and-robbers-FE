@@ -248,7 +248,7 @@ class AppTextField extends StatelessWidget {
           filled: true,
           fillColor: _effectiveBackgroundColor,
           contentPadding: EdgeInsets.symmetric(
-            horizontal: AppSpacing.horizontal20, // 20px
+            horizontal: AppSpacing.horizontal16, // 20px
             vertical: AppSpacing.vertical16, // 16px
           ),
           border: _buildBorder(
