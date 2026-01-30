@@ -104,13 +104,9 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
           ),
           backgroundColor: AppColors.white,
           elevation: 0,
-          iconTheme: const IconThemeData(
-            color: AppColors.black800,
-          ),
+          iconTheme: const IconThemeData(color: AppColors.black800),
         ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 

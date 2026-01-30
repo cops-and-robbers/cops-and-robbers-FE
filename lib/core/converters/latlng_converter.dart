@@ -23,18 +23,12 @@ class LatLngConverter implements JsonConverter<LatLng?, Map<String, dynamic>?> {
   @override
   LatLng? fromJson(Map<String, dynamic>? json) {
     if (json == null) return null;
-    return LatLng(
-      json['latitude'] as double,
-      json['longitude'] as double,
-    );
+    return LatLng(json['latitude'] as double, json['longitude'] as double);
   }
 
   @override
   Map<String, dynamic>? toJson(LatLng? latLng) {
     if (latLng == null) return null;
-    return {
-      'latitude': latLng.latitude,
-      'longitude': latLng.longitude,
-    };
+    return {'latitude': latLng.latitude, 'longitude': latLng.longitude};
   }
 }

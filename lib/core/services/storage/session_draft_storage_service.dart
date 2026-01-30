@@ -104,14 +104,9 @@ class SessionDraftStorageService {
     try {
       final currentDraft = await loadDraft();
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(
-        playgroundCenter: center,
-        playgroundRadiusInMeters: radius,
-      );
+          .copyWith(playgroundCenter: center, playgroundRadiusInMeters: radius);
       await saveDraft(updatedDraft);
-      debugPrint(
-        '✅ 플레이그라운드 업데이트: center=$center, radius=${radius}m',
-      );
+      debugPrint('✅ 플레이그라운드 업데이트: center=$center, radius=${radius}m');
     } catch (e, stack) {
       debugPrint('❌ 플레이그라운드 업데이트 실패: $e');
       debugPrint('Stack: $stack');
@@ -125,10 +120,7 @@ class SessionDraftStorageService {
     try {
       final currentDraft = await loadDraft();
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(
-        jailCenter: center,
-        jailRadiusInMeters: radius,
-      );
+          .copyWith(jailCenter: center, jailRadiusInMeters: radius);
       await saveDraft(updatedDraft);
       debugPrint('✅ 감옥 업데이트: center=$center, radius=${radius}m');
     } catch (e, stack) {
@@ -150,11 +142,11 @@ class SessionDraftStorageService {
       final currentDraft = await loadDraft();
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
           .copyWith(
-        roundDurationMinutes: roundDurationMinutes,
-        locationRevealIntervalMinutes: locationRevealIntervalMinutes,
-        policeWaitMinutes: policeWaitMinutes,
-        maxParticipants: maxParticipants,
-      );
+            roundDurationMinutes: roundDurationMinutes,
+            locationRevealIntervalMinutes: locationRevealIntervalMinutes,
+            policeWaitMinutes: policeWaitMinutes,
+            maxParticipants: maxParticipants,
+          );
       await saveDraft(updatedDraft);
       debugPrint('✅ 게임 설정 업데이트 완료');
     } catch (e, stack) {
