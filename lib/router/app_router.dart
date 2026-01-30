@@ -20,6 +20,7 @@ import 'package:cops_and_robbers/features/session/presentation/pages/select_area
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/session_settings_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/game_settings_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/invite_code_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
@@ -191,30 +192,27 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.setupPrisonName,
                 builder: (context, state) => const SetupPrisonPage(),
               ),
-              // 기본 정보 설정
-              GoRoute(
-                path: 'settings',
-                name: RoutePaths.sessionSettingsName,
-                builder: (context, state) => const SessionSettingsPage(),
-                // TODO: redirect 로직 추가 (구역 설정 완료 체크)
-                // redirect: (context, state) {
-                //   final sessionState = ref.read(sessionNotifierProvider);
-                //   final isAreaSetupCompleted =
-                //       sessionState.playgroundArea != null &&
-                //       sessionState.prisonArea != null;
-                //   if (!isAreaSetupCompleted) {
-                //     return RoutePaths.selectArea;
-                //   }
-                //   return null;
-                // },
-              ),
-              // 초대 코드 생성
-              GoRoute(
-                path: 'invite-code',
-                name: RoutePaths.inviteCodeName,
-                builder: (context, state) => const InviteCodePage(),
-              ),
             ],
+          ),
+          // 인원 설정 (2단계)
+          GoRoute(
+            path: 'create-session/participant-settings',
+            name: RoutePaths.sessionSettingsName,
+            builder: (context, state) => const SessionSettingsPage(),
+          ),
+          // 기본 정보 설정 (3단계)
+          GoRoute(
+            path: 'create-session/game-settings',
+            builder: (context, state) => const GameSettingsPage(),
+          ),
+          // 초대 코드 (4단계)
+          GoRoute(
+            path: 'create-session/invite-code/:inviteCode',
+            name: RoutePaths.inviteCodeName,
+            builder: (context, state) {
+              final inviteCode = state.pathParameters['inviteCode']!;
+              return InviteCodePage(inviteCode: inviteCode);
+            },
           ),
         ],
       ),
