@@ -1,4 +1,3 @@
-import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -7,8 +6,9 @@ import '../../constants/text_styles.dart';
 
 /// 정보 표시용 칩 컴포넌트
 ///
-/// 복합 텍스트 스타일을 지원하여 "반경 400m" 형태의 정보를 표시합니다.
+/// Stack 기반 레이아웃으로 "반경 400m" 형태의 정보를 표시합니다.
 /// prefix는 paragraph_14_100, value는 label_16 스타일을 사용합니다.
+/// prefix는 절대 위치에 고정되어 value 변경 시에도 위치가 변하지 않습니다.
 ///
 /// 사용 예시:
 /// ```dart
@@ -16,6 +16,12 @@ import '../../constants/text_styles.dart';
 /// InfoRadiusChip(
 ///   prefix: '반경',
 ///   value: '400m',
+/// )
+///
+/// // 값 변경 시에도 "반경" 위치 고정
+/// InfoRadiusChip(
+///   prefix: '반경',
+///   value: '1.50km',  // ← 값이 변경되어도 "반경" 위치는 동일
 /// )
 ///
 /// // 커스텀 색상
@@ -95,28 +101,37 @@ class InfoRadiusChip extends StatelessWidget {
         color: _effectiveBackgroundColor,
         borderRadius: BorderRadius.circular(_effectiveBorderRadius),
       ),
-      alignment: Alignment.center,
-      child: RichText(
-        text: TextSpan(
-          children: [
-            // prefix: paragraph_14_100
-            TextSpan(
-              text: prefix,
-              style: AppTextStyles.paragraph_14_100.copyWith(
-                color: _effectivePrefixColor,
+      child: Stack(
+        children: [
+          // prefix: 절대 위치 고정 (왼쪽에서 AppSpacing.horizontal12)
+          Positioned(
+            left: 14.w,
+            top: 0,
+            bottom: 0,
+            child: Center(
+              child: Text(
+                prefix,
+                style: AppTextStyles.paragraph_14_100.copyWith(
+                  color: _effectivePrefixColor,
+                ),
               ),
             ),
-            // 공백
-            WidgetSpan(child: SizedBox(width: AppSpacing.horizontal8)),
-            // value: label_16
-            TextSpan(
-              text: value,
-              style: AppTextStyles.label_16.copyWith(
-                color: _effectiveValueColor,
+          ),
+          // value: 오른쪽 정렬 (우측 공간 최소화)
+          Positioned(
+            right: 14.w,
+            top: 0,
+            bottom: 0,
+            child: Center(
+              child: Text(
+                value,
+                style: AppTextStyles.label_16.copyWith(
+                  color: _effectiveValueColor,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
