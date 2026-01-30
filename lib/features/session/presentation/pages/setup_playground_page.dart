@@ -100,7 +100,7 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
         backgroundColor: AppColors.white,
         appBar: AppBar(
           title: Text(
-            '플레이그라운드 설정',
+            '플레이그라운드',
             style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
           ),
           backgroundColor: AppColors.white,
@@ -116,7 +116,7 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
       backgroundColor: AppColors.white,
       appBar: AppBar(
         title: Text(
-          '플레이그라운드 설정',
+          '플레이그라운드',
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
         backgroundColor: AppColors.white,

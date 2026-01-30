@@ -100,7 +100,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
         backgroundColor: AppColors.white,
         appBar: AppBar(
           title: Text(
-            '감옥 설정',
+            '감옥',
             style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
           ),
           backgroundColor: AppColors.white,
@@ -117,7 +117,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
       backgroundColor: AppColors.white,
       appBar: AppBar(
         title: Text(
-          '감옥 설정',
+          '감옥',
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
         backgroundColor: AppColors.white,
