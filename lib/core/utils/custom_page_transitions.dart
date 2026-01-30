@@ -91,10 +91,7 @@ CustomTransitionPage<T> buildSmoothFade<T>({
     transitionDuration: const Duration(milliseconds: 150),
     reverseTransitionDuration: const Duration(milliseconds: 150),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
+      return FadeTransition(opacity: animation, child: child);
     },
   );
 }

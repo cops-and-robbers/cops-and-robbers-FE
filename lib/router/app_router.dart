@@ -156,19 +156,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.login,
         name: RoutePaths.loginName,
-        pageBuilder: (context, state) => buildSmoothFade(
-          key: state.pageKey,
-          child: const LoginPage(),
-        ),
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const LoginPage()),
       ),
 
       GoRoute(
         path: RoutePaths.onboarding,
         name: RoutePaths.onboardingName,
-        pageBuilder: (context, state) => buildSmoothFade(
-          key: state.pageKey,
-          child: const OnboardingPage(),
-        ),
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const OnboardingPage()),
       ),
 
       // ====================================================================
@@ -177,10 +173,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.home,
         name: RoutePaths.homeName,
-        pageBuilder: (context, state) => buildSmoothFade(
-          key: state.pageKey,
-          child: const HomePage(),
-        ),
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const HomePage()),
         routes: [
           // ==============================================================
           // Session Creation Flow (Nested Routes)
