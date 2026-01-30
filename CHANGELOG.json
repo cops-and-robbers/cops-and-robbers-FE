@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-30T10:15:00Z",
-    "currentVersion": "1.1.17",
+    "lastUpdated": "2026-01-30T13:36:35Z",
+    "currentVersion": "1.1.21",
     "projectType": "flutter",
-    "totalReleases": 21
+    "totalReleases": 22
   },
   "releases": [
+    {
+      "version": "1.1.21",
+      "project_type": "flutter",
+      "date": "2026-01-30",
+      "pr_number": 61,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트\n\n* **새로운 기능**\n  * 슬라이더 값 포매팅 기능 추가\n  * 영역 설정 위젯의 색상 커스터마이징 옵션 추가\n\n* **스타일**\n  * 감옥 영역 UI 색상 테마 개선\n  * 영역 표시기 색상 및 배경색 조정\n\n* **Chores**\n  * 앱 버전을 1.1.21로 업데이트",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "슬라이더 값 포매팅 기능 추가",
+            "영역 설정 위젯의 색상 커스터마이징 옵션 추가"
+          ]
+        },
+        "스타일": {
+          "title": "스타일",
+          "items": [
+            "감옥 영역 UI 색상 테마 개선",
+            "영역 표시기 색상 및 배경색 조정"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전을 1.1.21로 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.17",
       "project_type": "flutter",
