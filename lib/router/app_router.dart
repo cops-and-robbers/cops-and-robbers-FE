@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
+import '../core/utils/custom_page_transitions.dart';
 import 'route_paths.dart';
 
 // Auth Provider Import
@@ -155,13 +156,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.login,
         name: RoutePaths.loginName,
-        builder: (context, state) => const LoginPage(),
+        pageBuilder: (context, state) => buildSmoothFade(
+          key: state.pageKey,
+          child: const LoginPage(),
+        ),
       ),
 
       GoRoute(
         path: RoutePaths.onboarding,
         name: RoutePaths.onboardingName,
-        builder: (context, state) => const OnboardingPage(),
+        pageBuilder: (context, state) => buildSmoothFade(
+          key: state.pageKey,
+          child: const OnboardingPage(),
+        ),
       ),
 
       // ====================================================================
@@ -170,15 +177,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.home,
         name: RoutePaths.homeName,
-        builder: (context, state) => const HomePage(),
+        pageBuilder: (context, state) => buildSmoothFade(
+          key: state.pageKey,
+          child: const HomePage(),
+        ),
         routes: [
           // ==============================================================
           // Session Creation Flow (Nested Routes)
           // ==============================================================
+          // 구역 선택 (0단계) - 부드러운 페이드
           GoRoute(
             path: 'create-session/select-area',
             name: RoutePaths.selectAreaName,
-            builder: (context, state) => const SelectAreaPage(),
+            pageBuilder: (context, state) => buildSmoothFade(
+              key: state.pageKey,
+              child: const SelectAreaPage(),
+            ),
             routes: [
               // 플레이그라운드 설정
               GoRoute(
@@ -194,24 +208,33 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // 인원 설정 (2단계)
+          // 인원 설정 (1단계) - 부드러운 페이드
           GoRoute(
             path: 'create-session/participant-settings',
             name: RoutePaths.sessionSettingsName,
-            builder: (context, state) => const SessionSettingsPage(),
+            pageBuilder: (context, state) => buildSmoothFade(
+              key: state.pageKey,
+              child: const SessionSettingsPage(),
+            ),
           ),
-          // 기본 정보 설정 (3단계)
+          // 기본 정보 설정 (2단계) - 부드러운 페이드
           GoRoute(
             path: 'create-session/game-settings',
-            builder: (context, state) => const GameSettingsPage(),
+            pageBuilder: (context, state) => buildSmoothFade(
+              key: state.pageKey,
+              child: const GameSettingsPage(),
+            ),
           ),
-          // 초대 코드 (4단계)
+          // 초대 코드 (3단계) - 부드러운 페이드
           GoRoute(
             path: 'create-session/invite-code/:inviteCode',
             name: RoutePaths.inviteCodeName,
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final inviteCode = state.pathParameters['inviteCode']!;
-              return InviteCodePage(inviteCode: inviteCode);
+              return buildSmoothFade(
+                key: state.pageKey,
+                child: InviteCodePage(inviteCode: inviteCode),
+              );
             },
           ),
         ],

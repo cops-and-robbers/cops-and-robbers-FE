@@ -48,17 +48,15 @@ class SessionInfoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SessionCodeCard(code: sessionCode, onCopy: onCodeCopy),
-          SizedBox(height: AppSpacing.vertical16),
-          ZoneListCard(zones: zones, onZoneTap: onZoneTap),
-          SizedBox(height: AppSpacing.vertical8),
-          SettingListCard(settings: settings),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SessionCodeCard(code: sessionCode, onCopy: onCodeCopy),
+        SizedBox(height: AppSpacing.vertical16),
+        ZoneListCard(zones: zones, onZoneTap: onZoneTap),
+        SizedBox(height: AppSpacing.vertical8),
+        SettingListCard(settings: settings),
+      ],
     );
   }
 }

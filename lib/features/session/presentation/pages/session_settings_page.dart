@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
-import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
-import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../core/widgets/inputs/app_slider.dart';
 import '../../../../router/route_paths.dart';
+import '../widgets/session_step_layout.dart';
 
 /// 인원 설정 화면 (2단계)
 ///
@@ -79,87 +74,14 @@ class _SessionSettingsPageState extends State<SessionSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 로딩 중일 때는 로딩 인디케이터 표시
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: AppColors.white,
-        appBar: AppBar(
-          backgroundColor: AppColors.white,
-          elevation: 0,
-          iconTheme: const IconThemeData(color: AppColors.black800),
-          title: const StepIndicator(totalSteps: 4, currentStep: 1),
-          centerTitle: false,
-          actions: [SizedBox(width: AppSpacing.horizontal4)],
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    // 로딩 완료 후 정상 UI 렌더링
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.black800),
-        title: const StepIndicator(totalSteps: 4, currentStep: 1),
-        centerTitle: false,
-        titleSpacing: 0,
-        leading: PreviousButton(
-          onPressed: () => context.go(RoutePaths.selectArea),
-        ),
-        actions: [SizedBox(width: AppSpacing.horizontal20)],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: AppPadding.all20,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: AppSpacing.vertical16),
-
-              // 제목 및 설명
-              _buildHeader(),
-
-              SizedBox(height: AppSpacing.vertical28),
-
-              // 최대 참가자 수 슬라이더
-              _buildMaxParticipantsSlider(),
-
-              const Spacer(),
-
-              // 다음 버튼
-              _buildNextButton(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// 헤더 섹션 (제목 + 설명)
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 제목
-          Text(
-            '인원을 설정해요',
-            style: AppTextStyles.heading_24.copyWith(color: AppColors.black),
-          ),
-          SizedBox(height: AppSpacing.vertical16),
-
-          // 설명
-          Text(
-            '최소 5명부터 게임 진행이 가능해요',
-            style: AppTextStyles.paragraph_14_100.copyWith(
-              color: AppColors.black600,
-            ),
-          ),
-        ],
-      ),
+    return SessionStepLayout(
+      currentStep: 1,
+      title: '인원을 설정해요',
+      description: '최소 5명부터 게임 진행이 가능해요',
+      content: _buildMaxParticipantsSlider(),
+      onNext: _onNextPressed,
+      onPrevious: () => context.go(RoutePaths.selectArea),
+      isLoading: _isLoading,
     );
   }
 
@@ -178,10 +100,5 @@ class _SessionSettingsPageState extends State<SessionSettingsPage> {
         });
       },
     );
-  }
-
-  /// 다음 버튼
-  Widget _buildNextButton() {
-    return AppButton(text: '다음', onPressed: _onNextPressed, showBorder: false);
   }
 }

@@ -2,17 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
-import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
-import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../router/route_paths.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../domain/entities/zone_info.dart';
 import '../widgets/session_info_view.dart';
+import '../widgets/session_step_layout.dart';
 
 /// 초대 코드 생성 및 공유 화면 (4단계)
 ///
@@ -146,103 +141,22 @@ class _InviteCodePageState extends State<InviteCodePage> {
 
   @override
   Widget build(BuildContext context) {
-    // 로딩 중일 때는 로딩 인디케이터 표시
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: AppColors.white,
-        appBar: AppBar(
-          backgroundColor: AppColors.white,
-          elevation: 0,
-          iconTheme: const IconThemeData(color: AppColors.black800),
-          title: const StepIndicator(totalSteps: 4, currentStep: 3),
-          centerTitle: false,
-          actions: [SizedBox(width: AppSpacing.horizontal4)],
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    // 로딩 완료 후 정상 UI 렌더링
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.black800),
-        title: const StepIndicator(totalSteps: 4, currentStep: 3),
-        centerTitle: false,
-        titleSpacing: 0,
-        leading: PreviousButton(
-          onPressed: () => context.go(RoutePaths.gameSettingsPath),
-        ),
-        actions: [SizedBox(width: AppSpacing.horizontal20)],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: AppPadding.all20,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: AppSpacing.vertical16),
-
-              // 제목 및 설명
-              _buildHeader(),
-
-              SizedBox(height: AppSpacing.vertical28),
-
-              // SessionInfoView (세션 코드, 구역 정보, 게임 설정)
-              Expanded(
-                child: SessionInfoView(
-                  sessionCode: widget.inviteCode,
-                  zones: _zones,
-                  settings: _settings!,
-                  onCodeCopy: _onCodeCopy,
-                ),
-              ),
-
-              SizedBox(height: AppSpacing.vertical20),
-
-              // 대기실 입장 버튼
-              _buildEnterButton(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// 헤더 섹션 (제목 + 설명)
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 제목
-          Text(
-            '초대 코드를 생성했어요',
-            style: AppTextStyles.heading_24.copyWith(color: AppColors.black),
-          ),
-          SizedBox(height: AppSpacing.vertical16),
-
-          // 설명
-          Text(
-            '친구에게 아래 코드를 공유하고 함께 게임에 참여해요',
-            style: AppTextStyles.paragraph_14_100.copyWith(
-              color: AppColors.black600,
+    return SessionStepLayout(
+      currentStep: 3,
+      title: '초대 코드를 생성했어요',
+      description: '친구에게 아래 코드를 공유하고 함께 게임에 참여해요',
+      content: _isLoading
+          ? const SizedBox.shrink() // 로딩 중일 때는 빈 위젯
+          : SessionInfoView(
+              sessionCode: widget.inviteCode,
+              zones: _zones,
+              settings: _settings!, // 로딩이 false일 때만 실행되므로 안전
+              onCodeCopy: _onCodeCopy,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// 대기실 입장 버튼
-  Widget _buildEnterButton() {
-    return AppButton(
-      text: '참여하기',
-      onPressed: _onEnterWaitingRoom,
-      showBorder: false,
+      buttonText: '참여하기',
+      onNext: _onEnterWaitingRoom,
+      onPrevious: () => context.go(RoutePaths.gameSettingsPath),
+      isLoading: _isLoading,
     );
   }
 }

@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
-import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/buttons/zone_setting_button.dart';
-import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../router/route_paths.dart';
 import '../../../session/data/models/session_creation_draft_model.dart';
+import '../widgets/session_step_layout.dart';
 
 /// 구역 선택/확인 화면
 ///
@@ -135,73 +131,13 @@ class _SelectAreaPageState extends State<SelectAreaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(
-          color: AppColors.black800, // 뒤로가기 아이콘 색상
-        ),
-        // title 영역에 StepIndicator 배치
-        title: const StepIndicator(
-          totalSteps: 4,
-          currentStep: 0, // 0: 구역설정 (현재), 1: 인원설정, 2: 기본정보, 3: 초대코드
-        ),
-        centerTitle: false, // 좌측 정렬로 더 많은 공간 확보
-        titleSpacing: 0, // 뒤로가기 버튼과 title 사이 간격 제거
-        leading: PreviousButton(onPressed: () => context.pop()),
-        actions: [SizedBox(width: AppSpacing.horizontal20)],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: AppPadding.all20,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: AppSpacing.vertical16),
-              // 제목 및 설명
-              _buildHeader(),
-
-              SizedBox(height: AppSpacing.vertical28),
-
-              // ZoneSettingButton 두 개
-              _buildZoneButtons(),
-
-              const Spacer(),
-
-              // 확인 버튼 (NicknameSetupPage와 동일한 위치)
-              _buildNextButton(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// 헤더 섹션 (제목 + 설명)
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 제목
-          Text(
-            '구역을 먼저 설정할까요?',
-            style: AppTextStyles.heading_24.copyWith(color: AppColors.black),
-          ),
-          SizedBox(height: AppSpacing.vertical16),
-
-          // 설명
-          Text(
-            '게임에 필요한 구역을 설정해요',
-            style: AppTextStyles.paragraph_14_100.copyWith(
-              color: AppColors.black600,
-            ),
-          ),
-        ],
-      ),
+    return SessionStepLayout(
+      currentStep: 0,
+      title: '구역을 먼저 설정할까요?',
+      description: '게임에 필요한 구역을 설정해요',
+      content: _buildZoneButtons(),
+      isButtonEnabled: isComplete,
+      onNext: _onNextPressed,
     );
   }
 
@@ -227,15 +163,6 @@ class _SelectAreaPageState extends State<SelectAreaPage> {
           onPressed: _onPrisonPressed,
         ),
       ],
-    );
-  }
-
-  /// 다음 버튼 (NicknameSetupPage 스타일)
-  Widget _buildNextButton() {
-    return AppButton(
-      text: '다음',
-      onPressed: isComplete ? _onNextPressed : null,
-      showBorder: false,
     );
   }
 }
