@@ -131,6 +131,26 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
       body: SafeArea(
         child: Column(
           children: [
+            // 간격 20px
+            SizedBox(height: AppSpacing.vertical20),
+
+            // 설명 텍스트
+            Padding(
+              padding: AppPadding.horizontal24,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '도둑을 잡아둘 감옥의 위치와 크기를 설정해요',
+                  style: AppTextStyles.label_16_medium.copyWith(
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+            ),
+
+            // 간격 20px
+            SizedBox(height: AppSpacing.vertical20),
+
             // ZoneSettingWidget (지도 + 슬라이더)
             Expanded(
               child: ZoneSettingWidget(
