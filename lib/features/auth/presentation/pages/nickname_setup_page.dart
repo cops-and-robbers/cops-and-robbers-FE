@@ -154,7 +154,7 @@ class _NicknameSetupPageState extends State<NicknameSetupPage> {
                   ),
                 ),
 
-                SizedBox(height: 28.h),
+                SizedBox(height: AppSpacing.vertical28),
 
                 // 닉네임 입력칸 + 중복 확인 버튼
                 _buildNicknameInputRow(),
