@@ -1,11 +1,44 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-23T06:27:08Z",
-    "currentVersion": "1.1.13",
+    "lastUpdated": "2026-01-30T09:56:00Z",
+    "currentVersion": "1.1.16",
     "projectType": "flutter",
-    "totalReleases": 19
+    "totalReleases": 20
   },
   "releases": [
+    {
+      "version": "1.1.16",
+      "project_type": "flutter",
+      "date": "2026-01-30",
+      "pr_number": 59,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **New Features**\n  * 세션 생성 워크플로우 추가: 지역 설정, 게임 설정, 초대 코드 공유 기능\n  * 지도 기반 지역 설정 위젯 구현\n  * 로컬 저장소를 통한 세션 임시 저장 기능\n  * 소셜 로그인 버튼 (Google, Apple)\n\n* **UI/UX Improvements**\n  * 새로운 색상 팔레트 적용 (그레이스케일, 그린, 블루, 레드)\n  * 텍스트 스타일 명칭 통일 및 개선\n  * 여러 커스텀 UI 컴포넌트 추가 (슬라이더, 칩, 진행도 표시 등)\n\n* **Chores**\n  * 버전 업데이트 (1.1.16+57)",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "세션 생성 워크플로우 추가: 지역 설정, 게임 설정, 초대 코드 공유 기능",
+            "지도 기반 지역 설정 위젯 구현",
+            "로컬 저장소를 통한 세션 임시 저장 기능",
+            "소셜 로그인 버튼 (Google, Apple)"
+          ]
+        },
+        "ui_ux_improvements": {
+          "title": "UI/UX Improvements",
+          "items": [
+            "새로운 색상 팔레트 적용 (그레이스케일, 그린, 블루, 레드)",
+            "텍스트 스타일 명칭 통일 및 개선",
+            "여러 커스텀 UI 컴포넌트 추가 (슬라이더, 칩, 진행도 표시 등)"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전 업데이트 (1.1.16+57)"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.13",
       "project_type": "flutter",
