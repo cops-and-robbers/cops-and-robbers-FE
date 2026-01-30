@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-30T09:56:00Z",
-    "currentVersion": "1.1.16",
+    "lastUpdated": "2026-01-30T10:15:00Z",
+    "currentVersion": "1.1.17",
     "projectType": "flutter",
-    "totalReleases": 20
+    "totalReleases": 21
   },
   "releases": [
+    {
+      "version": "1.1.17",
+      "project_type": "flutter",
+      "date": "2026-01-30",
+      "pr_number": 60,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 버전 1.1.17 출시\n\n* **버그 수정**\n  * iOS 빌드 환경의 SDK 설정을 개선했습니다.\n\n* **기타**\n  * 앱 버전을 1.1.17로 업데이트했습니다.",
+      "parsed_changes": {
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "iOS 빌드 환경의 SDK 설정을 개선했습니다."
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "앱 버전을 1.1.17로 업데이트했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.16",
       "project_type": "flutter",
