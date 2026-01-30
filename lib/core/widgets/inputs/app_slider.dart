@@ -77,6 +77,18 @@ import '../../constants/text_styles.dart';
 ///   displayValue: '도둑 시작 후 ${_policeWaitTime.toInt()}분 뒤',
 ///   onChanged: (value) => setState(() => _policeWaitTime = value),
 /// )
+///
+/// // 값 변환 (m → km)
+/// AppSlider(
+///   label: '반경',
+///   value: _radius,
+///   min: 50,
+///   max: 500,
+///   unit: 'km',
+///   divisions: 45,
+///   valueFormatter: (value) => (value / 1000).toStringAsFixed(2),
+///   onChanged: (value) => setState(() => _radius = value),
+/// )
 /// ```
 class AppSlider extends StatelessWidget {
   const AppSlider({
@@ -90,6 +102,7 @@ class AppSlider extends StatelessWidget {
     this.displayValue,
     this.displayPrefix,
     this.displaySuffix,
+    this.valueFormatter,
     this.activeTrackColor,
     this.thumbColor,
     this.inactiveTrackColor,
@@ -133,6 +146,10 @@ class AppSlider extends StatelessWidget {
   /// 값 뒤 추가 텍스트 (예: '뒤', '이내')
   /// label_16 스타일 + valueColor 사용
   final String? displaySuffix;
+
+  /// 값 변환 함수 (예: m → km 변환)
+  /// null이면 value를 그대로 사용
+  final String Function(double)? valueFormatter;
 
   /// 슬라이더 활성 트랙 색상 (기본: AppColors.black800)
   final Color? activeTrackColor;

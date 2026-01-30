@@ -43,6 +43,8 @@ class ZoneSettingWidget extends StatefulWidget {
     this.centerColor,
     this.borderColor,
     this.fillColor,
+    this.inactiveTrackColor,
+    this.radiusChipBackgroundColor,
     this.mapHeight,
     this.initialCenter,
   });
@@ -74,6 +76,14 @@ class ZoneSettingWidget extends StatefulWidget {
   /// 중간 영역 색상 (기본: AppColors.blue500)
   /// Fill color (default: AppColors.blue500)
   final Color? fillColor;
+
+  /// 슬라이더 비활성 트랙 색상 (기본: AppColors.blue100)
+  /// Slider inactive track color (default: AppColors.blue100)
+  final Color? inactiveTrackColor;
+
+  /// 반경 인디케이터 배경색 (기본: centerColor)
+  /// Radius indicator background color (default: centerColor)
+  final Color? radiusChipBackgroundColor;
 
   /// 지도 높이 (기본: 360)
   /// Map height (default: 360)
@@ -305,16 +315,27 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   /// 반경 슬라이더 위젯
   /// Radius slider widget
   Widget _buildRadiusSlider() {
+    // divisions 계산: 10m 단위로 증가
+    final divisions = ((widget.maxRadius - widget.minRadius) / 10).round();
+
     return AppSlider(
       label: '반경',
       value: _currentRadius,
       min: widget.minRadius,
       max: widget.maxRadius,
-      unit: 'm',
+      unit: _currentRadius >= 1000 ? 'km' : 'm',
+      divisions: divisions,
+      valueFormatter: (value) {
+        if (value >= 1000) {
+          return (value / 1000).toStringAsFixed(2);
+        } else {
+          return value.toInt().toString();
+        }
+      },
       showContainer: false,
       activeTrackColor: widget.borderColor ?? AppColors.blue800,
       thumbColor: widget.centerColor ?? AppColors.blue,
-      inactiveTrackColor: AppColors.blue100,
+      inactiveTrackColor: widget.inactiveTrackColor ?? AppColors.blue100,
       onChanged: _onRadiusChanged,
     );
   }
@@ -322,7 +343,22 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   /// 반경 표시 인디케이터
   /// Radius indicator widget
   Widget _buildRadiusIndicator() {
-    return InfoRadiusChip(prefix: '반경', value: '${_currentRadius.toInt()}m');
+    final String displayValue;
+    if (_currentRadius >= 1000) {
+      final radiusInKm = (_currentRadius / 1000).toStringAsFixed(2);
+      displayValue = '${radiusInKm}km';
+    } else {
+      displayValue = '${_currentRadius.toInt()}m';
+    }
+
+    return InfoRadiusChip(
+      prefix: '반경',
+      value: displayValue,
+      backgroundColor:
+          widget.radiusChipBackgroundColor ??
+          widget.centerColor ??
+          AppColors.blue,
+    );
   }
 
   /// 슬라이더 Thumb 스타일의 구역 중심 원 (20x20, 시각적 표시만)
@@ -333,7 +369,7 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
         width: 20,
         height: 20,
         decoration: BoxDecoration(
-          color: AppColors.blue, // #3F63D9
+          color: widget.centerColor ?? AppColors.blue,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
@@ -420,9 +456,14 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       _shape.setRadius(newRadius);
     });
 
-    // 카메라 zoom 조정 (원형이 잘 보이도록)
+    // 카메라를 구역 중심으로 이동하면서 zoom 조정 (원형이 잘 보이도록)
     _mapController?.animateCamera(
-      CameraUpdate.zoomTo(_calculateZoom(newRadius)),
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: _currentCenter,
+          zoom: _calculateZoom(newRadius),
+        ),
+      ),
     );
 
     // 부모 위젯에 변경 알림

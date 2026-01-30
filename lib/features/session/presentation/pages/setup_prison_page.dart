@@ -157,6 +157,8 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 centerColor: AppColors.red,
                 borderColor: AppColors.red800,
                 fillColor: AppColors.red500,
+                inactiveTrackColor: AppColors.red100,
+                radiusChipBackgroundColor: AppColors.red,
                 onZoneChanged: _onZoneChanged,
               ),
             ),
