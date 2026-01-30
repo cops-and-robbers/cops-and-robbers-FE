@@ -459,10 +459,7 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     // 카메라를 구역 중심으로 이동하면서 zoom 조정 (원형이 잘 보이도록)
     _mapController?.animateCamera(
       CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: _currentCenter,
-          zoom: _calculateZoom(newRadius),
-        ),
+        CameraPosition(target: _currentCenter, zoom: _calculateZoom(newRadius)),
       ),
     );
 
