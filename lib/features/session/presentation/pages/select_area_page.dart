@@ -7,6 +7,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/buttons/zone_setting_button.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../router/route_paths.dart';
@@ -148,6 +149,9 @@ class _SelectAreaPageState extends State<SelectAreaPage> {
           currentStep: 0, // 0: 구역설정 (현재), 1: 인원설정, 2: 기본정보, 3: 초대코드
         ),
         centerTitle: false, // 좌측 정렬로 더 많은 공간 확보
+        titleSpacing: 0, // 뒤로가기 버튼과 title 사이 간격 제거
+        leading: PreviousButton(onPressed: () => context.pop()),
+        actions: [SizedBox(width: AppSpacing.horizontal20)],
       ),
       body: SafeArea(
         child: Padding(

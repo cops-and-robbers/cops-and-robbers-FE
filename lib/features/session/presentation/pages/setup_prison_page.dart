@@ -7,6 +7,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
 
 /// 감옥 구역 설정 화면
@@ -105,6 +106,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
           backgroundColor: AppColors.white,
           elevation: 0,
           iconTheme: const IconThemeData(color: AppColors.black800),
+          centerTitle: true,
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -123,6 +125,8 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
         iconTheme: const IconThemeData(
           color: AppColors.black800, // 뒤로가기 아이콘 색상
         ),
+        centerTitle: true,
+        leading: PreviousButton(onPressed: () => context.pop()),
       ),
       body: SafeArea(
         child: Column(
