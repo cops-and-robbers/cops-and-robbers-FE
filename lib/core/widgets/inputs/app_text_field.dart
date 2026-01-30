@@ -10,7 +10,7 @@ import '../../constants/text_styles.dart';
 /// **기본 스펙**:
 /// - 크기: 353x48 (반응형)
 /// - 모서리: 12px 라운드
-/// - 텍스트: AppTextStyles.label_16_medium
+/// - 텍스트: AppTextStyles.label16Medium
 /// - Hint: AppColors.black600
 /// - 입력 텍스트: AppColors.black
 /// - 패딩: 좌우 20px, 상하 16px
@@ -237,20 +237,15 @@ class AppTextField extends StatelessWidget {
         maxLines: maxLines,
         minLines: minLines,
         maxLength: maxLength,
-        style: AppTextStyles.label_16_medium.copyWith(
-          color: _effectiveTextColor,
-        ),
+        style: AppTextStyles.label16Medium.copyWith(color: _effectiveTextColor),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: AppTextStyles.label_16_medium.copyWith(
+          hintStyle: AppTextStyles.label16Medium.copyWith(
             color: _effectiveHintColor,
           ),
           filled: true,
           fillColor: _effectiveBackgroundColor,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: AppSpacing.horizontal20, // 20px
-            vertical: AppSpacing.vertical16, // 16px
-          ),
+          contentPadding: AppPadding.all16, // 내부 패딩: 좌우 16px, 상하 16px
           border: _buildBorder(
             hasError ? _effectiveErrorBorderColor : _effectiveBorderColor,
           ),

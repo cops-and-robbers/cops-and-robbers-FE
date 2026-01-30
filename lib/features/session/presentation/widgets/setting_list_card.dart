@@ -72,7 +72,7 @@ class _SettingRow extends StatelessWidget {
         ),
         Text(
           value,
-          style: AppTextStyles.paragraph_14_semibold.copyWith(
+          style: AppTextStyles.paragraph14Semibold.copyWith(
             color: AppColors.black,
           ),
         ),

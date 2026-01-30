@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
+import '../core/utils/custom_page_transitions.dart';
 import 'route_paths.dart';
 
 // Auth Provider Import
@@ -20,6 +21,7 @@ import 'package:cops_and_robbers/features/session/presentation/pages/select_area
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/session_settings_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/game_settings_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/invite_code_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
@@ -75,12 +77,16 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
     // refreshListenable 활성화 (auth 상태 변경 감지)
-    refreshListenable: _GoRouterRefreshNotifier(ref, authStateProvider),
+    // authNotifierProvider 사용: 즉시 반영되는 인증 상태
+    refreshListenable: _GoRouterRefreshNotifier(ref, authNotifierProvider),
     redirect: (BuildContext context, GoRouterState state) {
       // ====================================================================
       // 실제 Provider에서 인증 상태 가져오기
       // ====================================================================
-      final authUser = ref.read(authStateProvider).value;
+      // authNotifierProvider 사용: 즉시 반영되는 인증 상태
+      // authStateProvider (Stream 기반)는 비동기 업데이트 지연 가능
+      final authState = ref.read(authNotifierProvider);
+      final authUser = authState.value;
       final isAuthenticated = authUser != null;
 
       final currentPath = state.uri.path;
@@ -150,13 +156,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.login,
         name: RoutePaths.loginName,
-        builder: (context, state) => const LoginPage(),
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const LoginPage()),
       ),
 
       GoRoute(
         path: RoutePaths.onboarding,
         name: RoutePaths.onboardingName,
-        builder: (context, state) => const OnboardingPage(),
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const OnboardingPage()),
       ),
 
       // ====================================================================
@@ -165,15 +173,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.home,
         name: RoutePaths.homeName,
-        builder: (context, state) => const HomePage(),
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const HomePage()),
         routes: [
           // ==============================================================
           // Session Creation Flow (Nested Routes)
           // ==============================================================
+          // 구역 선택 (0단계) - 부드러운 페이드
           GoRoute(
             path: 'create-session/select-area',
             name: RoutePaths.selectAreaName,
-            builder: (context, state) => const SelectAreaPage(),
+            pageBuilder: (context, state) => buildSmoothFade(
+              key: state.pageKey,
+              child: const SelectAreaPage(),
+            ),
             routes: [
               // 플레이그라운드 설정
               GoRoute(
@@ -187,30 +200,37 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.setupPrisonName,
                 builder: (context, state) => const SetupPrisonPage(),
               ),
-              // 기본 정보 설정
-              GoRoute(
-                path: 'settings',
-                name: RoutePaths.sessionSettingsName,
-                builder: (context, state) => const SessionSettingsPage(),
-                // TODO: redirect 로직 추가 (구역 설정 완료 체크)
-                // redirect: (context, state) {
-                //   final sessionState = ref.read(sessionNotifierProvider);
-                //   final isAreaSetupCompleted =
-                //       sessionState.playgroundArea != null &&
-                //       sessionState.prisonArea != null;
-                //   if (!isAreaSetupCompleted) {
-                //     return RoutePaths.selectArea;
-                //   }
-                //   return null;
-                // },
-              ),
-              // 초대 코드 생성
-              GoRoute(
-                path: 'invite-code',
-                name: RoutePaths.inviteCodeName,
-                builder: (context, state) => const InviteCodePage(),
-              ),
             ],
+          ),
+          // 인원 설정 (1단계) - 부드러운 페이드
+          GoRoute(
+            path: 'create-session/participant-settings',
+            name: RoutePaths.sessionSettingsName,
+            pageBuilder: (context, state) => buildSmoothFade(
+              key: state.pageKey,
+              child: const SessionSettingsPage(),
+            ),
+          ),
+          // 기본 정보 설정 (2단계) - 부드러운 페이드
+          GoRoute(
+            path: 'create-session/game-settings',
+            name: RoutePaths.gameSettingsName,
+            pageBuilder: (context, state) => buildSmoothFade(
+              key: state.pageKey,
+              child: const GameSettingsPage(),
+            ),
+          ),
+          // 초대 코드 (3단계) - 부드러운 페이드
+          GoRoute(
+            path: 'create-session/invite-code/:inviteCode',
+            name: RoutePaths.inviteCodeName,
+            pageBuilder: (context, state) {
+              final inviteCode = state.pathParameters['inviteCode']!;
+              return buildSmoothFade(
+                key: state.pageKey,
+                child: InviteCodePage(inviteCode: inviteCode),
+              );
+            },
           ),
         ],
       ),

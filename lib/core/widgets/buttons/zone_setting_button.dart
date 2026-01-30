@@ -172,6 +172,7 @@ class ZoneSettingButton extends StatelessWidget {
                   _subtitle!,
                   style: AppTextStyles.tag_12.copyWith(color: _subtitleColor),
                 ),
+                SizedBox(height: AppSpacing.vertical8),
               ],
             ],
           ),

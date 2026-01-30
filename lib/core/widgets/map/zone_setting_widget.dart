@@ -149,7 +149,13 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       _isInitialized = true;
     });
 
+    // 초기화 완료 시 부모 위젯에 초기 중심점과 반경 알림
+    widget.onZoneChanged(_currentCenter, _currentRadius);
+
     debugPrint('✅ ZoneSettingWidget: 구역 초기화 완료');
+    debugPrint(
+      '📤 초기 구역 정보 전달: center=$_currentCenter, radius=$_currentRadius',
+    );
   }
 
   /// Shape 생성 (Factory 패턴)

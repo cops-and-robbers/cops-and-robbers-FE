@@ -134,23 +134,30 @@ class RoutePaths {
   static const String setupPrisonPath =
       '/home/create-session/select-area/prison';
 
-  /// 게임 설정 화면 전체 경로
+  /// 인원 설정 화면 전체 경로 (2단계)
   ///
   /// Example:
   /// ```dart
   /// context.go(RoutePaths.sessionSettingsPath);
   /// ```
   static const String sessionSettingsPath =
-      '/home/create-session/select-area/settings';
+      '/home/create-session/participant-settings';
 
-  /// 초대 코드 화면 전체 경로
+  /// 기본 정보 설정 화면 전체 경로 (3단계)
+  ///
+  /// Example:
+  /// ```dart
+  /// context.go(RoutePaths.gameSettingsPath);
+  /// ```
+  static const String gameSettingsPath = '/home/create-session/game-settings';
+
+  /// 초대 코드 화면 전체 경로 (4단계)
   ///
   /// Example:
   /// ```dart
   /// context.go(RoutePaths.inviteCodePath);
   /// ```
-  static const String inviteCodePath =
-      '/home/create-session/select-area/invite-code';
+  static const String inviteCodePath = '/home/create-session/invite-code';
 
   // ============================================================================
   // Route Names (for named navigation)
@@ -165,6 +172,7 @@ class RoutePaths {
   static const String setupPlaygroundName = 'setupPlayground';
   static const String setupPrisonName = 'setupPrison';
   static const String sessionSettingsName = 'sessionSettings';
+  static const String gameSettingsName = 'gameSettings';
   static const String inviteCodeName = 'inviteCode';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';

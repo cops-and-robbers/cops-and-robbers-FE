@@ -13,7 +13,7 @@ import '../../constants/text_styles.dart';
 /// ```dart
 /// // 기본 (검정)
 /// ActionChip(
-///   text: '중복확인',
+///   text: '중복 확인',
 ///   onTap: () => check(),
 /// )
 ///

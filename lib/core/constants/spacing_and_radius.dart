@@ -75,6 +75,9 @@ class AppSpacing {
   /// 상하 24px 간격
   static double get vertical24 => 24.h;
 
+  // 상하 28px 간격
+  static double get vertical28 => 28.h;
+
   /// 상하 32px 간격
   static double get vertical32 => 32.h;
 
@@ -163,6 +166,9 @@ class AppPadding {
 
   /// 상하 24px
   static EdgeInsets get vertical24 => EdgeInsets.symmetric(vertical: 24.h);
+
+  /// 상하 28px
+  static EdgeInsets get vertical28 => EdgeInsets.symmetric(vertical: 28.h);
 
   // ============================================
   // 조합 패턴 - 자주 사용하는 특정 조합

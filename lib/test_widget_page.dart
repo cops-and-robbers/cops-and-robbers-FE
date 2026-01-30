@@ -9,6 +9,10 @@ import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
 import 'core/widgets/inputs/app_text_field.dart';
 import 'core/widgets/buttons/zone_setting_button_example.dart';
+import 'core/widgets/indicators/step_indicator.dart';
+import 'core/widgets/loading/custom_progress_bar.dart';
+import 'core/widgets/loading/loading_page.dart';
+import 'features/auth/presentation/pages/nickname_setup_page.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
 import 'features/session/presentation/widgets/session_info_view.dart';
@@ -37,6 +41,12 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
   double _policeWaitTime = 5.0;
   double _playgroundRadius = 400.0;
   double _roundTime = 30.0;
+
+  // StepIndicator 테스트용 상태
+  int _currentStep = 0;
+
+  // CustomProgressBar 테스트용 상태
+  double _progress = 0.0;
 
   @override
   void dispose() {
@@ -390,6 +400,36 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 SizedBox(height: AppSpacing.vertical64),
 
                 // ============================================
+                // NicknameSetupPage 테스트
+                // ============================================
+                _buildSectionTitle('NicknameSetupPage 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 닉네임 설정 페이지 이동 버튼
+                AppButton(
+                  text: '닉네임 설정 페이지 열기',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NicknameSetupPage(),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
+                  showBorder: false,
+                  icon: Icon(
+                    Icons.person_outline,
+                    size: 20.w,
+                    color: AppColors.black,
+                  ),
+                  iconPosition: IconPosition.leading,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
                 // SessionInfoView 테스트
                 // ============================================
                 _buildSectionTitle('SessionInfoView 테스트'),
@@ -492,6 +532,251 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       },
                     ),
                   ],
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // StepIndicator 테스트
+                // ============================================
+                _buildSectionTitle('StepIndicator 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 현재 단계 표시
+                Text(
+                  '현재 단계: ${_currentStep + 1} / 4',
+                  style: TextStyle(fontSize: 14.sp, color: AppColors.black600),
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 기본 StepIndicator (검정 계열)
+                StepIndicator(
+                  totalSteps: 4,
+                  currentStep: _currentStep,
+                  barHeight: 4.0,
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 초록색 StepIndicator
+                StepIndicator(
+                  totalSteps: 4,
+                  currentStep: _currentStep,
+                  barHeight: 4.0,
+                  activeColor: AppColors.green,
+                  inactiveColor: AppColors.green100,
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 크기 큰 StepIndicator
+                StepIndicator(
+                  totalSteps: 5,
+                  currentStep: _currentStep % 5,
+                  barHeight: 4.0,
+                  spacing: 12.0,
+                  activeColor: AppColors.blue,
+                  inactiveColor: AppColors.blue100,
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 단계 변경 버튼
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AppButton(
+                      text: '이전',
+                      onPressed: _currentStep > 0
+                          ? () {
+                              setState(() {
+                                _currentStep = (_currentStep - 1) % 4;
+                              });
+                            }
+                          : null,
+                      width: 100.w,
+                      height: 44.h,
+                      backgroundColor: AppColors.black800,
+                      showBorder: false,
+                    ),
+                    SizedBox(width: AppSpacing.horizontal16),
+                    AppButton(
+                      text: '다음',
+                      onPressed: () {
+                        setState(() {
+                          _currentStep = (_currentStep + 1) % 4;
+                        });
+                      },
+                      width: 100.w,
+                      height: 44.h,
+                      showBorder: false,
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // CustomProgressBar 테스트
+                // ============================================
+                _buildSectionTitle('CustomProgressBar 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 기본 ProgressBar (검정 계열)
+                CustomProgressBar(progress: _progress),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 진행률 텍스트 포함
+                CustomProgressBar(progress: _progress, showPercentage: true),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 초록색 ProgressBar (높이 큰)
+                CustomProgressBar(
+                  progress: _progress,
+                  fillColor: AppColors.green,
+                  backgroundColor: AppColors.green100,
+                  height: 12.h,
+                  showPercentage: true,
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 파란색 ProgressBar (커스텀 너비)
+                CustomProgressBar(
+                  progress: _progress,
+                  fillColor: AppColors.blue,
+                  backgroundColor: AppColors.blue100,
+                  width: 300.w,
+                  height: 6.h,
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 진행률 조절 버튼
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AppButton(
+                      text: '-25%',
+                      onPressed: () {
+                        setState(() {
+                          _progress = (_progress - 0.25).clamp(0.0, 1.0);
+                        });
+                      },
+                      width: 80.w,
+                      height: 44.h,
+                      backgroundColor: AppColors.red,
+                      showBorder: false,
+                    ),
+                    SizedBox(width: AppSpacing.horizontal12),
+                    AppButton(
+                      text: '+25%',
+                      onPressed: () {
+                        setState(() {
+                          _progress = (_progress + 0.25).clamp(0.0, 1.0);
+                        });
+                      },
+                      width: 80.w,
+                      height: 44.h,
+                      backgroundColor: AppColors.green,
+                      foregroundColor: AppColors.black,
+                      showBorder: false,
+                    ),
+                    SizedBox(width: AppSpacing.horizontal12),
+                    AppButton(
+                      text: '초기화',
+                      onPressed: () {
+                        setState(() {
+                          _progress = 0.0;
+                        });
+                      },
+                      width: 80.w,
+                      height: 44.h,
+                      backgroundColor: AppColors.black800,
+                      showBorder: false,
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // LoadingPage 테스트
+                // ============================================
+                _buildSectionTitle('LoadingPage 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 기본 로딩 페이지 (진행률 없음)
+                AppButton(
+                  text: '기본 로딩 페이지 (진행률 없음)',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const LoadingPage(message: '로그인 중...'),
+                      ),
+                    );
+                  },
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 진행률 포함 로딩 페이지
+                AppButton(
+                  text: '진행률 포함 로딩 페이지',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoadingPage(
+                          message: '방 입장 중...',
+                          progress: 0.7,
+                          showPercentage: true,
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.blue,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 서브 메시지 포함 로딩 페이지
+                AppButton(
+                  text: '서브 메시지 포함 로딩 페이지',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoadingPage(
+                          message: '게임 준비 중...',
+                          subtitle: '잠시만 기다려주세요',
+                          progress: 0.5,
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 어두운 배경 로딩 페이지
+                AppButton(
+                  text: '어두운 배경 로딩 페이지',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoadingPage(
+                          message: '로딩 중...',
+                          backgroundColor: AppColors.black,
+                          textColor: AppColors.white,
+                          progress: 0.3,
+                          showPercentage: true,
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.black800,
+                  showBorder: false,
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),
