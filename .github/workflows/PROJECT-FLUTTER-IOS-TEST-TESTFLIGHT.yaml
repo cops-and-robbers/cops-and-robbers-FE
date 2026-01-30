@@ -531,7 +531,6 @@ jobs:
             -scheme Runner \
             -sdk iphoneos \
             -archivePath build/Runner.xcarchive \
-            -destination 'generic/platform=iOS' \
             archive \
             CODE_SIGN_STYLE=Manual \
             PROVISIONING_PROFILE_SPECIFIER="$IOS_PROVISIONING_PROFILE_NAME" \
