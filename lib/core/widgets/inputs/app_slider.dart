@@ -267,10 +267,7 @@ class AppSlider extends StatelessWidget {
           SizedBox(height: AppSpacing.vertical8),
 
           // 2. 슬라이더 (좌우 4px 패딩 추가)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w),
-            child: _buildSlider(),
-          ),
+          _buildSlider(),
 
           // 3. 최소/최대 라벨 (패딩 없음 - 넓게 유지)
           if (showMinMax) ...[_buildMinMaxLabels()],
