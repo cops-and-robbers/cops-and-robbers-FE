@@ -73,7 +73,7 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
-  static TextStyle get label_16_medium => TextStyle(
+  static TextStyle get label16Medium => TextStyle(
     fontFamily: 'Pretendard-Medium',
     fontSize: 16.sp,
     height: 1.0, // 140% line height
@@ -96,7 +96,7 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
-  static TextStyle get paragraph_14_semibold => TextStyle(
+  static TextStyle get paragraph14Semibold => TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 14.sp,
     height: 1.0, // 100% line height

@@ -140,7 +140,7 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '게임이 진행될 전체 구역의 크기를 설정해요',
-                  style: AppTextStyles.label_16_medium.copyWith(
+                  style: AppTextStyles.label16Medium.copyWith(
                     color: AppColors.black,
                   ),
                 ),

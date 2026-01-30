@@ -83,7 +83,7 @@ class _ZoneItem extends StatelessWidget {
             children: [
               Text(
                 zone.displayDistance,
-                style: AppTextStyles.paragraph_14_semibold.copyWith(
+                style: AppTextStyles.paragraph14Semibold.copyWith(
                   color: AppColors.black,
                 ),
               ),

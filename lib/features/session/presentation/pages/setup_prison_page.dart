@@ -141,7 +141,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '도둑을 잡아둘 감옥의 위치와 크기를 설정해요',
-                  style: AppTextStyles.label_16_medium.copyWith(
+                  style: AppTextStyles.label16Medium.copyWith(
                     color: AppColors.black,
                   ),
                 ),

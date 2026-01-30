@@ -37,6 +37,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   ///
   /// Google 로그인을 수행하고 에러 발생 시 SnackBar를 표시합니다.
   Future<void> _handleGoogleSignIn(BuildContext context) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     // 로딩 시작
     setState(() => _isGoogleLoading = true);
 
@@ -57,7 +58,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             : '로그인 중 오류가 발생했습니다.';
 
         //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(errorMessage, style: AppTextStyles.paragraph_14),
             backgroundColor: Colors.red,
@@ -78,6 +79,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   ///
   /// Apple 로그인을 수행하고 에러 발생 시 SnackBar를 표시합니다.
   Future<void> _handleAppleSignIn(BuildContext context) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     // 로딩 시작
     setState(() => _isAppleLoading = true);
 
@@ -98,7 +100,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             : 'Apple 로그인 중 오류가 발생했습니다.';
 
         //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(errorMessage, style: AppTextStyles.paragraph_14),
             backgroundColor: Colors.red,
