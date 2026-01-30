@@ -529,6 +529,7 @@ jobs:
           cd ios
           xcodebuild -workspace Runner.xcworkspace \
             -scheme Runner \
+            -sdk iphoneos \
             -archivePath build/Runner.xcarchive \
             -destination 'generic/platform=iOS' \
             archive \
