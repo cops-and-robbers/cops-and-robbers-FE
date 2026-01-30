@@ -74,11 +74,6 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
 
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
-    if (_currentCenter == null) {
-      debugPrint('⚠️ 구역 중심이 설정되지 않았습니다');
-      return;
-    }
-
     // 로컬 저장소에 저장
     await _storageService.updatePrisonZone(_currentCenter!, _currentRadius);
 

@@ -45,7 +45,10 @@ class SessionDraftStorageService {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = jsonEncode(draft.toJson());
       await prefs.setString(_key, jsonString);
-      debugPrint('✅ SessionDraft 저장 완료: $jsonString');
+      // TODO: 로그는 디버깅용으로만 사용중
+      if (kDebugMode) {
+        debugPrint('✅ SessionDraft 저장 완료: $jsonString');
+      }
     } catch (e, stack) {
       debugPrint('❌ SessionDraft 저장 실패: $e');
       debugPrint('Stack: $stack');
@@ -70,7 +73,9 @@ class SessionDraftStorageService {
 
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
       final draft = SessionCreationDraftModel.fromJson(json);
-      debugPrint('✅ SessionDraft 로드 완료: $jsonString');
+      if (kDebugMode) {
+        debugPrint('✅ SessionDraft 로드 완료: $jsonString');
+      }
       return draft;
     } catch (e, stack) {
       debugPrint('❌ SessionDraft 로드 실패: $e');
@@ -106,7 +111,9 @@ class SessionDraftStorageService {
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
           .copyWith(playgroundCenter: center, playgroundRadiusInMeters: radius);
       await saveDraft(updatedDraft);
-      debugPrint('✅ 플레이그라운드 업데이트: center=$center, radius=${radius}m');
+      if (kDebugMode) {
+        debugPrint('✅ 플레이그라운드 업데이트: center=$center, radius=${radius}m');
+      }
     } catch (e, stack) {
       debugPrint('❌ 플레이그라운드 업데이트 실패: $e');
       debugPrint('Stack: $stack');

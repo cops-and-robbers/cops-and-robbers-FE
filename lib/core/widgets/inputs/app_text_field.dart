@@ -245,10 +245,7 @@ class AppTextField extends StatelessWidget {
           ),
           filled: true,
           fillColor: _effectiveBackgroundColor,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: AppSpacing.horizontal16, // 20px
-            vertical: AppSpacing.vertical16, // 16px
-          ),
+          contentPadding: AppPadding.all16, // 내부 패딩: 좌우 16px, 상하 16px
           border: _buildBorder(
             hasError ? _effectiveErrorBorderColor : _effectiveBorderColor,
           ),

@@ -172,6 +172,7 @@ class RoutePaths {
   static const String setupPlaygroundName = 'setupPlayground';
   static const String setupPrisonName = 'setupPrison';
   static const String sessionSettingsName = 'sessionSettings';
+  static const String gameSettingsName = 'gameSettings';
   static const String inviteCodeName = 'inviteCode';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';

@@ -65,6 +65,7 @@ CustomTransitionPage<T> buildInstantTransition<T>({
     key: key,
     child: child,
     transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
     transitionsBuilder: (_, _, _, child) => child,
   );
 }

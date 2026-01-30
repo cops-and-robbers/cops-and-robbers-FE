@@ -214,6 +214,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           // 기본 정보 설정 (2단계) - 부드러운 페이드
           GoRoute(
             path: 'create-session/game-settings',
+            name: RoutePaths.gameSettingsName,
             pageBuilder: (context, state) => buildSmoothFade(
               key: state.pageKey,
               child: const GameSettingsPage(),

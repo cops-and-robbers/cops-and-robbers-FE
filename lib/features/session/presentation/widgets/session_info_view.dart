@@ -48,8 +48,10 @@ class SessionInfoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return ListView(
+      // Column → ListView
+      shrinkWrap: true, // 부모 크기에 맞춤
+      physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
       children: [
         SessionCodeCard(code: sessionCode, onCopy: onCodeCopy),
         SizedBox(height: AppSpacing.vertical16),

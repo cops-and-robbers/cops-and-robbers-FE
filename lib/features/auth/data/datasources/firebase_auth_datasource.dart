@@ -106,9 +106,9 @@ class FirebaseAuthDataSource {
           message: 'Failed to retrieve Firebase ID Token',
         );
       }
-      // TODO : 릴리즈 빌드에서는 제거하거나 로그 레벨을 조정할 것
-      debugPrint('🔥 Firebase ID Token : $idToken');
-      debugPrint('🔥 Firebase ID Token length: ${idToken.length}');
+      if (kDebugMode) {
+        debugPrint('🔥 Firebase ID Token length: ${idToken.length}');
+      }
 
       return idToken;
     } catch (e) {
@@ -175,21 +175,20 @@ class FirebaseAuthDataSource {
     UserCredential userCredential,
     GoogleSignInAuthentication googleAuth,
   ) {
-    // TODO: 릴리즈 빌드에서는 제거하거나 로그 레벨을 조정할 것
-    debugPrint('========================================');
-    debugPrint('🔐 Firebase Google Login Success');
-    debugPrint('========================================');
-    debugPrint('📧 Email: ${userCredential.user?.email}');
-    debugPrint('🆔 UID: ${userCredential.user?.uid}');
-    debugPrint('👤 DisplayName: ${userCredential.user?.displayName}');
-    debugPrint('🖼️ PhotoURL: ${userCredential.user?.photoURL}');
-    debugPrint('🎫 Google ID Token: ${googleAuth.idToken}');
-    debugPrint('🎫 Google ID Token length : ${googleAuth.idToken?.length}');
-
-    debugPrint(
-      '🔄 Google Access Token: ${googleAuth.accessToken?.substring(0, 20)}...',
-    );
-    debugPrint('========================================');
+    if (kDebugMode) {
+      debugPrint('========================================');
+      debugPrint('🔐 Firebase Google Login Success');
+      debugPrint('========================================');
+      debugPrint('📧 Email: ${userCredential.user?.email}');
+      debugPrint('🆔 UID: ${userCredential.user?.uid}');
+      debugPrint('👤 DisplayName: ${userCredential.user?.displayName}');
+      debugPrint('🖼️ PhotoURL: ${userCredential.user?.photoURL}');
+      debugPrint('🎫 Google ID Token length: ${googleAuth.idToken?.length}');
+      debugPrint(
+        '🔄 Google Access Token length: ${googleAuth.accessToken?.length}',
+      );
+      debugPrint('========================================');
+    }
   }
 
   /// Apple 로그인 디버그 정보 출력
@@ -197,20 +196,21 @@ class FirebaseAuthDataSource {
     UserCredential userCredential,
     AuthorizationCredentialAppleID appleCredential,
   ) {
-    debugPrint('========================================');
-    debugPrint('🍎 Firebase Apple Login Success');
-    debugPrint('========================================');
-    debugPrint('📧 Email: ${userCredential.user?.email}');
-    debugPrint('🆔 UID: ${userCredential.user?.uid}');
-    debugPrint('👤 DisplayName: ${userCredential.user?.displayName}');
-    debugPrint('🖼️ PhotoURL: ${userCredential.user?.photoURL}');
-    debugPrint('🎫 Apple ID Token: ${appleCredential.identityToken}');
-    debugPrint(
-      '🎫 Apple ID Token length: ${appleCredential.identityToken?.length}',
-    );
-    debugPrint(
-      '🔄 Apple Auth Code: ${appleCredential.authorizationCode.substring(0, 20)}...',
-    );
-    debugPrint('========================================');
+    if (kDebugMode) {
+      debugPrint('========================================');
+      debugPrint('🍎 Firebase Apple Login Success');
+      debugPrint('========================================');
+      debugPrint('📧 Email: ${userCredential.user?.email}');
+      debugPrint('🆔 UID: ${userCredential.user?.uid}');
+      debugPrint('👤 DisplayName: ${userCredential.user?.displayName}');
+      debugPrint('🖼️ PhotoURL: ${userCredential.user?.photoURL}');
+      debugPrint(
+        '🎫 Apple ID Token length: ${appleCredential.identityToken?.length}',
+      );
+      debugPrint(
+        '🔄 Apple Auth Code length: ${appleCredential.authorizationCode.length}',
+      );
+      debugPrint('========================================');
+    }
   }
 }
