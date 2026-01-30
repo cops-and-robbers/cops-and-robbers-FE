@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -13,6 +14,19 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 /// 게임 세션 생성 또는 참가를 선택할 수 있는 메인 화면입니다.
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
+
+  /// 방 만들기 버튼 클릭 시
+  ///
+  /// 이전 세션 생성 임시 데이터를 초기화한 후 구역 설정 화면으로 이동합니다.
+  Future<void> _onCreateSession(BuildContext context) async {
+    // 1. 이전 임시 저장 데이터 초기화
+    await SessionDraftStorageService().clearDraft();
+
+    // 2. 세션 생성 플로우 시작 (1단계: 구역 설정)
+    if (context.mounted) {
+      context.go(RoutePaths.selectArea);
+    }
+  }
 
   /// 방 참여 다이얼로그 표시
   void _showJoinRoomDialog(BuildContext context) {
@@ -81,7 +95,7 @@ class HomePage extends ConsumerWidget {
               Text('Home', style: AppTextStyles.heading_24),
               SizedBox(height: AppSpacing.vertical64),
               ElevatedButton(
-                onPressed: () => context.go(RoutePaths.selectArea),
+                onPressed: () => _onCreateSession(context),
                 child: const Text('방 만들기'),
               ),
               SizedBox(height: AppSpacing.vertical20),
