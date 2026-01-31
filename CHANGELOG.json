@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-31T00:49:20Z",
-    "currentVersion": "1.1.25",
+    "lastUpdated": "2026-01-31T08:23:57Z",
+    "currentVersion": "1.1.26",
     "projectType": "flutter",
-    "totalReleases": 25
+    "totalReleases": 26
   },
   "releases": [
+    {
+      "version": "1.1.26",
+      "project_type": "flutter",
+      "date": "2026-01-31",
+      "pr_number": 65,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Chores**\n  * 애플리케이션 버전을 1.1.26으로 업데이트했습니다.\n  * iOS 빌드 인프라를 개선하여 최신 개발 도구 지원을 추가했습니다.\n  * 빌드 파이프라인의 안정성을 강화하기 위한 검증 단계를 추가했습니다.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전을 1.1.26으로 업데이트했습니다.",
+            "iOS 빌드 인프라를 개선하여 최신 개발 도구 지원을 추가했습니다.",
+            "빌드 파이프라인의 안정성을 강화하기 위한 검증 단계를 추가했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.25",
       "project_type": "flutter",
