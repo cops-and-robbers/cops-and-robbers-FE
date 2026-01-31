@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-31T08:23:57Z",
-    "currentVersion": "1.1.26",
+    "lastUpdated": "2026-01-31T15:33:12Z",
+    "currentVersion": "1.1.28",
     "projectType": "flutter",
-    "totalReleases": 26
+    "totalReleases": 27
   },
   "releases": [
+    {
+      "version": "1.1.28",
+      "project_type": "flutter",
+      "date": "2026-01-31",
+      "pr_number": 67,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **버그 수정**\n  * 지도 초기화 완료 시까지 설정 완료 버튼 비활성화\n  * 지도 중심 마커 오버레이 렌더링 방식 개선\n\n* **스타일**\n  * 페이지 전환 애니메이션 속도 조정\n\n* **Chores**\n  * 버전 업데이트 (1.1.28)\n  * 내부 코드 정리",
+      "parsed_changes": {
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "지도 초기화 완료 시까지 설정 완료 버튼 비활성화",
+            "지도 중심 마커 오버레이 렌더링 방식 개선"
+          ]
+        },
+        "스타일": {
+          "title": "스타일",
+          "items": [
+            "페이지 전환 애니메이션 속도 조정"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전 업데이트 (1.1.28)",
+            "내부 코드 정리"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.26",
       "project_type": "flutter",
