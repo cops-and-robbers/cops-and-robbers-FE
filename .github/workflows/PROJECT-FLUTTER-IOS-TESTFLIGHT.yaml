@@ -71,7 +71,7 @@ on:
 # ============================================
 env:
   FLUTTER_VERSION: "3.35.5"
-  XCODE_VERSION: "16.4"  # 26.0에서 변경: macOS-15 러너의 안정 버전 (iOS 26.0 Platform Not Installed 해결)
+  XCODE_VERSION: "26.0"  # iOS 26 SDK 사용 (TestFlight 경고 90725 대응 - 2026년 4월 필수)
   PROJECT_TYPE: "flutter"
 
   # ============================================
@@ -107,7 +107,27 @@ jobs:
         run: git pull origin deploy
 
       - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer
+        run: |
+          XCODE_PATH="/Applications/Xcode_${{ env.XCODE_VERSION }}.app"
+
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "⚠️ Xcode ${{ env.XCODE_VERSION }}이 설치되어 있지 않습니다."
+            echo "📦 사용 가능한 Xcode 버전:"
+            ls /Applications | grep "Xcode_"
+
+            # 최신 Xcode 자동 선택 (Xcode 26.x 우선)
+            LATEST_XCODE=$(ls /Applications | grep "Xcode_26" | sort -V | tail -1)
+            if [ -z "$LATEST_XCODE" ]; then
+              echo "⚠️ Xcode 26.x를 찾을 수 없습니다. 사용 가능한 최신 버전 사용:"
+              LATEST_XCODE=$(ls /Applications | grep "Xcode_" | sort -V | tail -1)
+            fi
+
+            echo "✅ 선택된 Xcode: $LATEST_XCODE"
+            sudo xcode-select -s "/Applications/$LATEST_XCODE/Contents/Developer"
+          else
+            echo "✅ Xcode ${{ env.XCODE_VERSION }} 발견"
+            sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          fi
 
       - name: Verify Xcode and iOS SDK
         run: |
@@ -117,6 +137,14 @@ jobs:
           echo ""
           echo "📦 사용 가능한 iOS SDK:"
           xcodebuild -showsdks | grep "iOS"
+
+          echo ""
+          echo "🎯 iOS 26 SDK 확인:"
+          if xcodebuild -showsdks | grep -q "iOS 26"; then
+            echo "✅ iOS 26 SDK 사용 가능 (경고 90725 해결)"
+          else
+            echo "⚠️ iOS 26 SDK 없음 (현재 SDK로 빌드, 2026년 4월 전 업데이트 필요)"
+          fi
 
           echo ""
           echo "✅ Xcode 환경 검증 완료"
@@ -269,7 +297,27 @@ jobs:
         run: git pull origin deploy
 
       - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer
+        run: |
+          XCODE_PATH="/Applications/Xcode_${{ env.XCODE_VERSION }}.app"
+
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "⚠️ Xcode ${{ env.XCODE_VERSION }}이 설치되어 있지 않습니다."
+            echo "📦 사용 가능한 Xcode 버전:"
+            ls /Applications | grep "Xcode_"
+
+            # 최신 Xcode 자동 선택 (Xcode 26.x 우선)
+            LATEST_XCODE=$(ls /Applications | grep "Xcode_26" | sort -V | tail -1)
+            if [ -z "$LATEST_XCODE" ]; then
+              echo "⚠️ Xcode 26.x를 찾을 수 없습니다. 사용 가능한 최신 버전 사용:"
+              LATEST_XCODE=$(ls /Applications | grep "Xcode_" | sort -V | tail -1)
+            fi
+
+            echo "✅ 선택된 Xcode: $LATEST_XCODE"
+            sudo xcode-select -s "/Applications/$LATEST_XCODE/Contents/Developer"
+          else
+            echo "✅ Xcode ${{ env.XCODE_VERSION }} 발견"
+            sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          fi
 
       - name: Verify Xcode and iOS SDK
         run: |
@@ -279,6 +327,14 @@ jobs:
           echo ""
           echo "📦 사용 가능한 iOS SDK:"
           xcodebuild -showsdks | grep "iOS"
+
+          echo ""
+          echo "🎯 iOS 26 SDK 확인:"
+          if xcodebuild -showsdks | grep -q "iOS 26"; then
+            echo "✅ iOS 26 SDK 사용 가능 (경고 90725 해결)"
+          else
+            echo "⚠️ iOS 26 SDK 없음 (현재 SDK로 빌드, 2026년 4월 전 업데이트 필요)"
+          fi
 
           echo ""
           echo "✅ Xcode 환경 검증 완료"
