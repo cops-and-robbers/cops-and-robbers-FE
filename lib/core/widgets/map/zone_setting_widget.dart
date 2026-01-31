@@ -155,17 +155,27 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     _shape.setCenter(_currentCenter);
     _shape.setRadius(_currentRadius);
 
-    setState(() {
-      _isInitialized = true;
-    });
+    // 3. 위젯이 여전히 마운트되어 있을 때만 상태 업데이트
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
 
-    // 초기화 완료 시 부모 위젯에 초기 중심점과 반경 알림
-    widget.onZoneChanged(_currentCenter, _currentRadius);
+      // 초기화 완료 시 부모 위젯에 초기 중심점과 반경 알림
+      // ⚠️ 빌드 중 setState 방지: 다음 프레임에서 콜백 실행
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.onZoneChanged(_currentCenter, _currentRadius);
+        }
+      });
 
-    debugPrint('✅ ZoneSettingWidget: 구역 초기화 완료');
-    debugPrint(
-      '📤 초기 구역 정보 전달: center=$_currentCenter, radius=$_currentRadius',
-    );
+      debugPrint('✅ ZoneSettingWidget: 구역 초기화 완료');
+      debugPrint(
+        '📤 초기 구역 정보 전달: center=$_currentCenter, radius=$_currentRadius',
+      );
+    } else {
+      debugPrint('⚠️ ZoneSettingWidget: 위젯이 dispose되어 초기화 중단');
+    }
   }
 
   /// Shape 생성 (Factory 패턴)
@@ -276,13 +286,17 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
           // 마커 제거 (커스텀 원으로 대체)
           markers: const {},
 
-          // 제스처 인식기 설정 (기본 제스처만 허용)
+          // 제스처 인식기 설정 (기본 제스처 + Long Press)
           gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
             Factory<PanGestureRecognizer>(() => PanGestureRecognizer()),
             Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
             Factory<TapGestureRecognizer>(() => TapGestureRecognizer()),
             Factory<VerticalDragGestureRecognizer>(
               () => VerticalDragGestureRecognizer(),
+            ),
+            // Android에서 구역 원 드래그를 위한 Long Press 제스처 인식
+            Factory<LongPressGestureRecognizer>(
+              () => LongPressGestureRecognizer(),
             ),
           },
 
@@ -412,6 +426,8 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
 
         // 화면 좌표 → 지리 좌표 변환
         final newLatLng = await _screenPositionToLatLng(adjustedPosition);
+
+        // 위젯이 마운트되어 있을 때만 드래그 상태 업데이트
         if (newLatLng != null && mounted) {
           setState(() {
             _currentCenter = newLatLng;
@@ -525,6 +541,8 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   /// Update center screen position in real-time
   Future<void> _updateCenterScreenPosition() async {
     final newPosition = await _latLngToScreenPosition(_currentCenter);
+
+    // 위젯이 마운트되어 있을 때만 화면 좌표 업데이트
     if (newPosition != null && mounted) {
       setState(() {
         _centerScreenPosition = newPosition;
@@ -564,29 +582,34 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
         return;
       }
 
-      // 구역 중심 업데이트
-      setState(() {
-        _currentCenter = currentLocation;
-        _shape.setCenter(currentLocation);
-      });
+      // 위젯이 마운트되어 있을 때만 중심 이동
+      if (mounted) {
+        // 구역 중심 업데이트
+        setState(() {
+          _currentCenter = currentLocation;
+          _shape.setCenter(currentLocation);
+        });
 
-      // 화면 좌표 업데이트
-      await _updateCenterScreenPosition();
+        // 화면 좌표 업데이트
+        await _updateCenterScreenPosition();
 
-      // 카메라 애니메이션으로 이동
-      await _mapController?.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: currentLocation,
-            zoom: _calculateZoom(_currentRadius),
+        // 카메라 애니메이션으로 이동
+        await _mapController?.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: currentLocation,
+              zoom: _calculateZoom(_currentRadius),
+            ),
           ),
-        ),
-      );
+        );
 
-      // 부모 위젯에 변경 알림
-      widget.onZoneChanged(_currentCenter, _currentRadius);
+        // 부모 위젯에 변경 알림
+        widget.onZoneChanged(_currentCenter, _currentRadius);
 
-      debugPrint('✅ 구역 중심 이동 완료: $currentLocation');
+        debugPrint('✅ 구역 중심 이동 완료: $currentLocation');
+      } else {
+        debugPrint('⚠️ 위젯이 dispose되어 중심 이동 중단');
+      }
     } catch (e, stack) {
       debugPrint('❌ 구역 중심 이동 실패: $e');
       debugPrint('Stack: $stack');

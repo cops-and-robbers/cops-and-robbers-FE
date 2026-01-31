@@ -36,6 +36,9 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
   /// 로딩 상태 (데이터 로드 중 여부)
   bool _isLoading = true;
 
+  /// 지도 초기화 완료 상태 (ZoneSettingWidget이 _onZoneChanged를 호출했는지 여부)
+  bool _isMapReady = false;
+
   /// 로컬 저장소 서비스
   final _storageService = SessionDraftStorageService();
 
@@ -68,8 +71,11 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
 
   /// 구역 변경 시 호출되는 콜백
   void _onZoneChanged(LatLng center, double radius) {
-    _currentCenter = center;
-    _currentRadius = radius;
+    setState(() {
+      _currentCenter = center;
+      _currentRadius = radius;
+      _isMapReady = true; // 지도 초기화 완료
+    });
   }
 
   /// 설정 완료 버튼 클릭 시
@@ -168,7 +174,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
               padding: AppPadding.all20,
               child: AppButton(
                 text: '완료',
-                onPressed: _onComplete,
+                onPressed: _isMapReady ? _onComplete : null,
                 backgroundColor: AppColors.red,
                 showBorder: false,
               ),
