@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -103,18 +102,6 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   late double _currentRadius;
   late ZoneShape _shape;
   bool _isInitialized = false;
-
-  /// 드래그 모드 활성화 여부
-  /// Drag mode active flag
-  bool _isDragging = false;
-
-  /// 구역 중심의 화면 좌표 (실시간 업데이트)
-  /// Center screen position (real-time updated)
-  Offset _centerScreenPosition = Offset.zero;
-
-  /// 드래그 시작 시 터치 위치와 원 중심 사이의 오프셋
-  /// Offset between touch position and circle center at drag start
-  Offset _dragOffset = Offset.zero;
 
   // Fallback 위치 (어린이대공원)
   static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
@@ -248,81 +235,64 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     );
   }
 
-  /// Google Map 위젯 (커스텀 원 오버레이 포함)
-  /// Google Map widget with custom circle overlay
+  /// Google Map 위젯 (화면 중앙 고정 오버레이 포함)
+  /// Google Map widget with center-fixed overlay
   Widget _buildGoogleMap() {
-    return Stack(
-      children: [
-        // 1. Google Map (Circle 오버레이, 마커 제거)
-        GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: _currentCenter,
-            zoom: _calculateZoom(_currentRadius),
-          ),
-          onMapCreated: (controller) async {
-            _mapController = controller;
-            debugPrint('✅ ZoneSettingWidget: Google Map 생성 완료');
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final mapWidth = constraints.maxWidth;
+        final mapHeight = constraints.maxHeight;
 
-            // 초기 화면 좌표 계산
-            await _updateCenterScreenPosition();
-          },
+        return Stack(
+          children: [
+            // 1. Google Map (Circle 오버레이)
+            GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _currentCenter,
+                zoom: _calculateZoom(_currentRadius),
+              ),
+              onMapCreated: (controller) {
+                _mapController = controller;
+                debugPrint('✅ ZoneSettingWidget: Google Map 생성 완료');
+              },
 
-          // 지도 카메라 이동 시 원 위치 실시간 업데이트
-          onCameraMove: (CameraPosition position) {
-            if (_isDragging) return; // 드래그 중에는 동기화 스킵
-            _updateCenterScreenPosition();
-          },
+              // 지도 이동 완료 시 화면 중앙 좌표를 LatLng로 변환하여 업데이트
+              onCameraIdle: () {
+                _updateCenterFromScreenCenter();
+              },
 
-          // 지도 카메라 이동 완료 시 최종 위치 확정
-          onCameraIdle: () {
-            if (!_isDragging) {
-              _updateCenterScreenPosition();
-            }
-          },
+              // Circle 오버레이 (지도와 함께 이동)
+              circles: _shape.toMapOverlay(),
 
-          // Circle 오버레이
-          circles: _shape.toMapOverlay(),
+              // 마커 제거 (커스텀 원으로 대체)
+              markers: const {},
 
-          // 마커 제거 (커스텀 원으로 대체)
-          markers: const {},
+              // 제스처 인식기 설정 (기본 제스처 사용)
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                Factory<PanGestureRecognizer>(() => PanGestureRecognizer()),
+                Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
+                Factory<TapGestureRecognizer>(() => TapGestureRecognizer()),
+                Factory<VerticalDragGestureRecognizer>(
+                  () => VerticalDragGestureRecognizer(),
+                ),
+              },
 
-          // 제스처 인식기 설정 (기본 제스처 + Long Press)
-          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-            Factory<PanGestureRecognizer>(() => PanGestureRecognizer()),
-            Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
-            Factory<TapGestureRecognizer>(() => TapGestureRecognizer()),
-            Factory<VerticalDragGestureRecognizer>(
-              () => VerticalDragGestureRecognizer(),
+              // 사용자 현재 위치 표시 (기본 스타일)
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: false,
+              compassEnabled: false,
             ),
-            // Android에서 구역 원 드래그를 위한 Long Press 제스처 인식
-            Factory<LongPressGestureRecognizer>(
-              () => LongPressGestureRecognizer(),
+
+            // 2. 화면 중앙 고정 중심점 오버레이 (20x20)
+            Positioned(
+              left: (mapWidth / 2) - 10, // 화면 중앙 - 반지름
+              top: (mapHeight / 2) - 10,
+              child: _buildZoneCenterCircle(),
             ),
-          },
-
-          // 사용자 현재 위치 표시 (기본 스타일)
-          myLocationEnabled: true,
-          myLocationButtonEnabled: false,
-          zoomControlsEnabled: false,
-          compassEnabled: false,
-        ),
-
-        // 2. 커스텀 구역 중심 원 오버레이 (20x20)
-        if (_centerScreenPosition != Offset.zero)
-          Positioned(
-            left: _centerScreenPosition.dx - 10, // 반지름만큼 빼서 중앙 정렬
-            top: _centerScreenPosition.dy - 10,
-            child: _buildZoneCenterCircle(),
-          ),
-
-        // 3. 전체 원 영역 제스처 감지기 (투명)
-        if (_centerScreenPosition != Offset.zero)
-          Positioned(
-            left: _centerScreenPosition.dx - _getCircleRadiusInPixels(),
-            top: _centerScreenPosition.dy - _getCircleRadiusInPixels(),
-            child: _buildCircleGestureDetector(),
-          ),
-      ],
+          ],
+        );
+      },
     );
   }
 
@@ -375,8 +345,8 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     );
   }
 
-  /// 슬라이더 Thumb 스타일의 구역 중심 원 (20x20, 시각적 표시만)
-  /// Zone center circle widget (slider thumb style, visual only)
+  /// 슬라이더 Thumb 스타일의 구역 중심 원 (20x20, 화면 중앙 고정)
+  /// Zone center circle widget (slider thumb style, fixed at screen center)
   Widget _buildZoneCenterCircle() {
     return IgnorePointer(
       child: Container(
@@ -392,73 +362,6 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
               offset: const Offset(0, 2),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  /// 전체 원 영역 제스처 감지기 (투명)
-  /// Full circle area gesture detector (transparent)
-  Widget _buildCircleGestureDetector() {
-    final circleRadius = _getCircleRadiusInPixels();
-    final circleDiameter = circleRadius * 2;
-
-    return GestureDetector(
-      onLongPressStart: (details) {
-        // 햅틱 피드백 (진동)
-        HapticFeedback.mediumImpact();
-
-        setState(() => _isDragging = true);
-
-        // 터치 위치와 원 중심 사이의 오프셋 저장
-        _dragOffset = details.globalPosition - _centerScreenPosition;
-
-        debugPrint('🎯 [LONG PRESS START] 드래그 모드 활성화');
-        debugPrint('   터치 위치: ${details.globalPosition}');
-        debugPrint('   원 중심: $_centerScreenPosition');
-        debugPrint('   오프셋: $_dragOffset');
-      },
-      onLongPressMoveUpdate: (details) async {
-        if (!_isDragging) return;
-
-        // 터치 위치에서 초기 오프셋을 빼서 실제 원 중심 위치 계산
-        final adjustedPosition = details.globalPosition - _dragOffset;
-
-        // 화면 좌표 → 지리 좌표 변환
-        final newLatLng = await _screenPositionToLatLng(adjustedPosition);
-
-        // 위젯이 마운트되어 있을 때만 드래그 상태 업데이트
-        if (newLatLng != null && mounted) {
-          setState(() {
-            _currentCenter = newLatLng;
-            _shape.setCenter(newLatLng);
-          });
-
-          // 화면 좌표도 즉시 업데이트
-          await _updateCenterScreenPosition();
-
-          // 부모 위젯에 변경 알림
-          widget.onZoneChanged(_currentCenter, _currentRadius);
-
-          debugPrint('🎯 [DRAGGING] 구역 이동 중: $newLatLng');
-        }
-      },
-      onLongPressEnd: (details) {
-        setState(() {
-          _isDragging = false;
-          _dragOffset = Offset.zero;
-        });
-        debugPrint(
-          '🎯 [LONG PRESS END] 드래그 완료: ${_currentCenter.latitude}, ${_currentCenter.longitude}',
-        );
-      },
-      child: Container(
-        width: circleDiameter,
-        height: circleDiameter,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          // 디버그용: 투명 컨테이너 (터치 영역 확인하려면 주석 해제)
-          // color: Colors.red.withValues(alpha: 0.1),
         ),
       ),
     );
@@ -495,77 +398,36 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     return 13;
   }
 
-  /// 지리 좌표(LatLng) → 화면 좌표(Offset) 변환
-  /// Convert geographic coordinate to screen coordinate
-  Future<Offset?> _latLngToScreenPosition(LatLng latLng) async {
-    if (_mapController == null) {
-      debugPrint('⚠️ MapController가 아직 초기화되지 않음');
-      return null;
-    }
+  /// 화면 중앙 좌표를 LatLng로 변환하여 중심점 업데이트
+  /// Update center by converting screen center to LatLng
+  Future<void> _updateCenterFromScreenCenter() async {
+    if (_mapController == null || !mounted) return;
 
     try {
-      final screenCoordinate = await _mapController!.getScreenCoordinate(
-        latLng,
-      );
-      return Offset(
-        screenCoordinate.x.toDouble(),
-        screenCoordinate.y.toDouble(),
-      );
-    } catch (e) {
-      debugPrint('⚠️ 좌표 변환 실패 (LatLng → Screen): $e');
-      return null;
-    }
-  }
+      // 현재 카메라가 보는 영역의 중심이 화면 중앙의 LatLng
+      final visibleRegion = await _mapController!.getVisibleRegion();
+      final centerLat =
+          (visibleRegion.northeast.latitude +
+              visibleRegion.southwest.latitude) /
+          2;
+      final centerLng =
+          (visibleRegion.northeast.longitude +
+              visibleRegion.southwest.longitude) /
+          2;
+      final screenCenterLatLng = LatLng(centerLat, centerLng);
 
-  /// 화면 좌표(Offset) → 지리 좌표(LatLng) 변환
-  /// Convert screen coordinate to geographic coordinate
-  Future<LatLng?> _screenPositionToLatLng(Offset offset) async {
-    if (_mapController == null) {
-      debugPrint('⚠️ MapController가 아직 초기화되지 않음');
-      return null;
-    }
-
-    try {
-      final screenCoordinate = ScreenCoordinate(
-        x: offset.dx.toInt(),
-        y: offset.dy.toInt(),
-      );
-      return await _mapController!.getLatLng(screenCoordinate);
-    } catch (e) {
-      debugPrint('⚠️ 좌표 변환 실패 (Screen → LatLng): $e');
-      return null;
-    }
-  }
-
-  /// 중심점의 화면 좌표를 실시간으로 업데이트
-  /// Update center screen position in real-time
-  Future<void> _updateCenterScreenPosition() async {
-    final newPosition = await _latLngToScreenPosition(_currentCenter);
-
-    // 위젯이 마운트되어 있을 때만 화면 좌표 업데이트
-    if (newPosition != null && mounted) {
       setState(() {
-        _centerScreenPosition = newPosition;
+        _currentCenter = screenCenterLatLng;
+        _shape.setCenter(screenCenterLatLng);
       });
+
+      // 부모 위젯에 변경 알림
+      widget.onZoneChanged(_currentCenter, _currentRadius);
+
+      debugPrint('🗺️ [CAMERA IDLE] 중심점 업데이트: $screenCenterLatLng');
+    } catch (e) {
+      debugPrint('❌ 화면 중앙 좌표 변환 실패: $e');
     }
-  }
-
-  /// 원의 화면상 반지름(픽셀) 계산
-  /// Calculate circle radius in screen pixels
-  double _getCircleRadiusInPixels() {
-    // 줌 레벨에 따른 대략적인 픽셀 계산
-    // 정확한 계산을 위해서는 지도의 현재 줌 레벨과 위도를 고려해야 하지만
-    // 여기서는 현재 반경에 비례하는 충분히 큰 영역을 제공
-    final zoom = _calculateZoom(_currentRadius);
-
-    // 줌 레벨별 미터당 픽셀 비율 (대략적)
-    final metersPerPixel = 156543.03392 * (1 / (1 << zoom.toInt())) / 2;
-
-    // 원의 반지름을 픽셀로 변환
-    final radiusInPixels = _currentRadius / metersPerPixel;
-
-    // 최소 50px, 최대 200px로 제한하여 제스처 감지 영역 확보
-    return radiusInPixels.clamp(50.0, 200.0);
   }
 
   /// 구역 중심을 현재 위치로 이동 (Public API)
@@ -589,9 +451,6 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
           _currentCenter = currentLocation;
           _shape.setCenter(currentLocation);
         });
-
-        // 화면 좌표 업데이트
-        await _updateCenterScreenPosition();
 
         // 카메라 애니메이션으로 이동
         await _mapController?.animateCamera(
