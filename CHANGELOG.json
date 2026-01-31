@@ -1,11 +1,30 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-30T13:52:07Z",
-    "currentVersion": "1.1.22",
+    "lastUpdated": "2026-01-31T00:06:37Z",
+    "currentVersion": "1.1.23",
     "projectType": "flutter",
-    "totalReleases": 23
+    "totalReleases": 24
   },
   "releases": [
+    {
+      "version": "1.1.23",
+      "project_type": "flutter",
+      "date": "2026-01-31",
+      "pr_number": 63,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Chores**\n  * 앱 버전을 1.1.23으로 업데이트하고 빌드 번호를 65로 증가\n  * iOS 빌드 워크플로우의 Xcode 버전 설정 업데이트\n  * Xcode 및 iOS SDK 검증 단계 추가하여 빌드 환경 확인 강화\n  * 통합 메타데이터 및 개발 템플릿 정보 추가",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전을 1.1.23으로 업데이트하고 빌드 번호를 65로 증가",
+            "iOS 빌드 워크플로우의 Xcode 버전 설정 업데이트",
+            "Xcode 및 iOS SDK 검증 단계 추가하여 빌드 환경 확인 강화",
+            "통합 메타데이터 및 개발 템플릿 정보 추가"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.22",
       "project_type": "flutter",
