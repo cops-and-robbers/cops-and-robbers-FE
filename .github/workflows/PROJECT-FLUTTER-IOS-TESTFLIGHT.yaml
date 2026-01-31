@@ -71,7 +71,7 @@ on:
 # ============================================
 env:
   FLUTTER_VERSION: "3.35.5"
-  XCODE_VERSION: "26.0"
+  XCODE_VERSION: "16.4"  # 26.0에서 변경: macOS-15 러너의 안정 버전 (iOS 26.0 Platform Not Installed 해결)
   PROJECT_TYPE: "flutter"
 
   # ============================================
@@ -108,6 +108,18 @@ jobs:
 
       - name: Select Xcode version
         run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer
+
+      - name: Verify Xcode and iOS SDK
+        run: |
+          echo "📱 선택된 Xcode 버전:"
+          xcodebuild -version
+
+          echo ""
+          echo "📦 사용 가능한 iOS SDK:"
+          xcodebuild -showsdks | grep "iOS"
+
+          echo ""
+          echo "✅ Xcode 환경 검증 완료"
 
       - name: Create .env file
         run: |
@@ -258,6 +270,18 @@ jobs:
 
       - name: Select Xcode version
         run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer
+
+      - name: Verify Xcode and iOS SDK
+        run: |
+          echo "📱 선택된 Xcode 버전:"
+          xcodebuild -version
+
+          echo ""
+          echo "📦 사용 가능한 iOS SDK:"
+          xcodebuild -showsdks | grep "iOS"
+
+          echo ""
+          echo "✅ Xcode 환경 검증 완료"
 
       - name: Download project files
         uses: actions/download-artifact@v4
