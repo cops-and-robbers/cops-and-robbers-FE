@@ -188,23 +188,24 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'playground',
                 name: 'setupPlaygroundFromFlow',
-                pageBuilder: (context, state) => buildSmoothFade(
+                pageBuilder: (context, state) => buildDirectionalSlide(
                   key: state.pageKey,
                   child: const SetupPlaygroundPage(),
+                  isForward: true,
                 ),
               ),
               // 감옥 설정 (모달 페이지)
               GoRoute(
                 path: 'prison',
                 name: 'setupPrisonFromFlow',
-                pageBuilder: (context, state) => buildSmoothFade(
+                pageBuilder: (context, state) => buildDirectionalSlide(
                   key: state.pageKey,
                   child: const SetupPrisonPage(),
+                  isForward: true,
                 ),
               ),
             ],
           ),
-
         ],
       ),
 

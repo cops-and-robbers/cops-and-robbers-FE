@@ -59,7 +59,6 @@ class RoutePaths {
   /// - Step 3: 초대 코드
   static const String sessionCreationFlow = '/home/create-session';
 
-
   // ============================================================================
   // Game Flow Routes (PRD F1.6, F2.2)
   // ============================================================================
@@ -107,7 +106,6 @@ class RoutePaths {
   /// context.go(RoutePaths.gameWithId('abc123'));
   /// ```
   static String gameWithId(String sessionId) => '/game/$sessionId';
-
 
   // ============================================================================
   // Route Names (for named navigation)
