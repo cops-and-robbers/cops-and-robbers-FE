@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 1.1.28+69
+version: 1.1.29+70
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -113,7 +113,6 @@ flutter:
     - family: Pretendard-Black
       fonts:
         - asset: assets/fonts/Pretendard-Black.ttf
-
 flutter_launcher_icons:
   android: true
   ios: true
