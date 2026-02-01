@@ -1,11 +1,45 @@
 {
   "metadata": {
-    "lastUpdated": "2026-01-31T15:33:12Z",
-    "currentVersion": "1.1.28",
+    "lastUpdated": "2026-02-01T10:59:57Z",
+    "currentVersion": "1.1.29",
     "projectType": "flutter",
-    "totalReleases": 27
+    "totalReleases": 28
   },
   "releases": [
+    {
+      "version": "1.1.29",
+      "project_type": "flutter",
+      "date": "2026-02-01",
+      "pr_number": 68,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새로운 기능**\n  * 세션 생성 과정을 통합된 4단계 플로우로 재설계했습니다.\n\n* **버그 수정**\n  * 위치 공유 설정 표시 단위를 초에서 분으로 통일했습니다.\n\n* **UI 개선**\n  * 구역 목록 카드에서 불필요한 아이콘을 제거했습니다.\n\n* **기타**\n  * 앱 버전을 v1.1.29로 업데이트했습니다.",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "세션 생성 과정을 통합된 4단계 플로우로 재설계했습니다."
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "위치 공유 설정 표시 단위를 초에서 분으로 통일했습니다."
+          ]
+        },
+        "ui_개선": {
+          "title": "UI 개선",
+          "items": [
+            "구역 목록 카드에서 불필요한 아이콘을 제거했습니다."
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "앱 버전을 v1.1.29로 업데이트했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.28",
       "project_type": "flutter",
