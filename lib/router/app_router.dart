@@ -18,12 +18,8 @@ import 'package:cops_and_robbers/features/auth/presentation/pages/login_page.dar
 import 'package:cops_and_robbers/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/home_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/session_creation_flow_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/select_area_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/session_settings_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/game_settings_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/invite_code_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
 import 'package:cops_and_robbers/features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
@@ -209,86 +205,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
 
-          // ==============================================================
-          // Session Creation Flow (Nested Routes) - OLD (비교용)
-          // ==============================================================
-          // 구역 선택 (0단계) - 좌우 슬라이드 전환
-          GoRoute(
-            path: 'create-session/select-area',
-            name: RoutePaths.selectAreaName,
-            pageBuilder: (context, state) => buildDirectionalSlide(
-              key: state.pageKey,
-              child: const SelectAreaPage(),
-              isForward: true, // 우→좌 슬라이드
-            ),
-            // 기존 페이드 전환 (비교용)
-            // pageBuilder: (context, state) => buildSmoothFade(
-            //   key: state.pageKey,
-            //   child: const SelectAreaPage(),
-            // ),
-            routes: [
-              // 플레이그라운드 설정
-              GoRoute(
-                path: 'playground',
-                name: RoutePaths.setupPlaygroundName,
-                builder: (context, state) => const SetupPlaygroundPage(),
-              ),
-              // 감옥 설정
-              GoRoute(
-                path: 'prison',
-                name: RoutePaths.setupPrisonName,
-                builder: (context, state) => const SetupPrisonPage(),
-              ),
-            ],
-          ),
-          // 인원 설정 (1단계) - 좌우 슬라이드 전환
-          GoRoute(
-            path: 'create-session/participant-settings',
-            name: RoutePaths.sessionSettingsName,
-            pageBuilder: (context, state) => buildDirectionalSlide(
-              key: state.pageKey,
-              child: const SessionSettingsPage(),
-              isForward: true, // 우→좌 슬라이드
-            ),
-            // 기존 페이드 전환 (비교용)
-            // pageBuilder: (context, state) => buildSmoothFade(
-            //   key: state.pageKey,
-            //   child: const SessionSettingsPage(),
-            // ),
-          ),
-          // 기본 정보 설정 (2단계) - 좌우 슬라이드 전환
-          GoRoute(
-            path: 'create-session/game-settings',
-            name: RoutePaths.gameSettingsName,
-            pageBuilder: (context, state) => buildDirectionalSlide(
-              key: state.pageKey,
-              child: const GameSettingsPage(),
-              isForward: true, // 우→좌 슬라이드
-            ),
-            // 기존 페이드 전환 (비교용)
-            // pageBuilder: (context, state) => buildSmoothFade(
-            //   key: state.pageKey,
-            //   child: const GameSettingsPage(),
-            // ),
-          ),
-          // 초대 코드 (3단계) - 좌우 슬라이드 전환
-          GoRoute(
-            path: 'create-session/invite-code/:inviteCode',
-            name: RoutePaths.inviteCodeName,
-            pageBuilder: (context, state) {
-              final inviteCode = state.pathParameters['inviteCode']!;
-              return buildDirectionalSlide(
-                key: state.pageKey,
-                child: InviteCodePage(inviteCode: inviteCode),
-                isForward: true, // 우→좌 슬라이드
-              );
-              // 기존 페이드 전환 (비교용)
-              // return buildSmoothFade(
-              //   key: state.pageKey,
-              //   child: InviteCodePage(inviteCode: inviteCode),
-              // );
-            },
-          ),
         ],
       ),
 

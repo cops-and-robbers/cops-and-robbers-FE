@@ -59,22 +59,6 @@ class RoutePaths {
   /// - Step 3: 초대 코드
   static const String sessionCreationFlow = '/home/create-session';
 
-  /// 구역 선택/확인 화면 (플레이그라운드, 감옥 설정 진입점)
-  /// ⚠️ 구버전 - sessionCreationFlow 사용 권장
-  static const String selectArea = '/home/create-session/select-area';
-
-  /// 플레이그라운드 구역 설정 (지도에서 범위 지정)
-  static const String setupPlayground = 'playground';
-
-  /// 감옥 구역 설정 (지도에서 범위 지정)
-  static const String setupPrison = 'prison';
-
-  /// F1.2: 게임 설정 (라운드 시간, 위치 공유 주기, 경찰 대기 시간)
-  /// ⚠️ 구역 설정 완료 후에만 접근 가능
-  static const String sessionSettings = '/home/create-session/settings';
-
-  /// F1.3: 초대 코드 생성 및 공유
-  static const String inviteCode = '/home/create-session/invite-code';
 
   // ============================================================================
   // Game Flow Routes (PRD F1.6, F2.2)
@@ -124,48 +108,6 @@ class RoutePaths {
   /// ```
   static String gameWithId(String sessionId) => '/game/$sessionId';
 
-  /// 플레이그라운드 설정 화면 전체 경로
-  ///
-  /// Example:
-  /// ```dart
-  /// context.push(RoutePaths.setupPlaygroundPath);
-  /// ```
-  static const String setupPlaygroundPath =
-      '/home/create-session/select-area/playground';
-
-  /// 감옥 설정 화면 전체 경로
-  ///
-  /// Example:
-  /// ```dart
-  /// context.push(RoutePaths.setupPrisonPath);
-  /// ```
-  static const String setupPrisonPath =
-      '/home/create-session/select-area/prison';
-
-  /// 인원 설정 화면 전체 경로 (2단계)
-  ///
-  /// Example:
-  /// ```dart
-  /// context.go(RoutePaths.sessionSettingsPath);
-  /// ```
-  static const String sessionSettingsPath =
-      '/home/create-session/participant-settings';
-
-  /// 기본 정보 설정 화면 전체 경로 (3단계)
-  ///
-  /// Example:
-  /// ```dart
-  /// context.go(RoutePaths.gameSettingsPath);
-  /// ```
-  static const String gameSettingsPath = '/home/create-session/game-settings';
-
-  /// 초대 코드 화면 전체 경로 (4단계)
-  ///
-  /// Example:
-  /// ```dart
-  /// context.go(RoutePaths.inviteCodePath);
-  /// ```
-  static const String inviteCodePath = '/home/create-session/invite-code';
 
   // ============================================================================
   // Route Names (for named navigation)
@@ -176,12 +118,6 @@ class RoutePaths {
   static const String loginName = 'login';
   static const String onboardingName = 'onboarding';
   static const String homeName = 'home';
-  static const String selectAreaName = 'selectArea';
-  static const String setupPlaygroundName = 'setupPlayground';
-  static const String setupPrisonName = 'setupPrison';
-  static const String sessionSettingsName = 'sessionSettings';
-  static const String gameSettingsName = 'gameSettings';
-  static const String inviteCodeName = 'inviteCode';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
   static const String lifecycleTestName = 'lifecycleTest';

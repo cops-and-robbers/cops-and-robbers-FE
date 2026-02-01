@@ -4,7 +4,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/constants/spacing_and_radius.dart';
 import '../../../../../core/widgets/buttons/zone_setting_button.dart';
-import '../../../../../router/route_paths.dart';
 
 /// 세션 생성 Step 0: 구역 선택 컨텐츠
 ///
@@ -50,7 +49,7 @@ class Step0SelectAreaContent extends StatelessWidget {
 
   /// 플레이그라운드 설정 버튼 클릭 시
   Future<void> _onPlaygroundPressed(BuildContext context) async {
-    final result = await context.push(RoutePaths.setupPlaygroundPath);
+    final result = await context.pushNamed('setupPlaygroundFromFlow');
 
     if (result is Map<String, dynamic>) {
       final center = result['center'] as LatLng;
@@ -61,7 +60,7 @@ class Step0SelectAreaContent extends StatelessWidget {
 
   /// 감옥 설정 버튼 클릭 시
   Future<void> _onPrisonPressed(BuildContext context) async {
-    final result = await context.push(RoutePaths.setupPrisonPath);
+    final result = await context.pushNamed('setupPrisonFromFlow');
 
     if (result is Map<String, dynamic>) {
       final center = result['center'] as LatLng;
