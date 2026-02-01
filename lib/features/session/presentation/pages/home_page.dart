@@ -17,14 +17,14 @@ class HomePage extends ConsumerWidget {
 
   /// 방 만들기 버튼 클릭 시
   ///
-  /// 이전 세션 생성 임시 데이터를 초기화한 후 구역 설정 화면으로 이동합니다.
+  /// 이전 세션 생성 임시 데이터를 초기화한 후 세션 생성 플로우로 이동합니다.
   Future<void> _onCreateSession(BuildContext context) async {
     // 1. 이전 임시 저장 데이터 초기화
     await SessionDraftStorageService().clearDraft();
 
-    // 2. 세션 생성 플로우 시작 (1단계: 구역 설정)
+    // 2. 세션 생성 플로우 시작 (새 PageView 기반 플로우)
     if (context.mounted) {
-      context.go(RoutePaths.selectArea);
+      context.go(RoutePaths.sessionCreationFlow);
     }
   }
 

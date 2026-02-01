@@ -19,8 +19,7 @@ _$SessionCreationDraftModelImpl _$$SessionCreationDraftModelImplFromJson(
   ),
   jailRadiusInMeters: (json['jailRadiusInMeters'] as num?)?.toDouble(),
   roundDurationMinutes: (json['roundDurationMinutes'] as num?)?.toInt(),
-  locationRevealIntervalMinutes: (json['locationRevealIntervalMinutes'] as num?)
-      ?.toInt(),
+  locationShareMinutes: (json['locationShareMinutes'] as num?)?.toInt(),
   policeWaitMinutes: (json['policeWaitMinutes'] as num?)?.toInt(),
   maxParticipants: (json['maxParticipants'] as num?)?.toInt(),
 );
@@ -33,7 +32,7 @@ Map<String, dynamic> _$$SessionCreationDraftModelImplToJson(
   'jailCenter': const LatLngConverter().toJson(instance.jailCenter),
   'jailRadiusInMeters': instance.jailRadiusInMeters,
   'roundDurationMinutes': instance.roundDurationMinutes,
-  'locationRevealIntervalMinutes': instance.locationRevealIntervalMinutes,
+  'locationShareMinutes': instance.locationShareMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
 };

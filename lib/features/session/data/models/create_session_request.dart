@@ -41,8 +41,8 @@ class CreateSessionRequest with _$CreateSessionRequest {
     /// 라운드 시간 (분)
     required int roundDurationMinutes,
 
-    /// 위치 공개 주기 (분)
-    required int locationRevealIntervalMinutes,
+    /// 위치 공유 간격 (분)
+    required int locationShareMinutes,
 
     /// 경찰 대기 시간 (분)
     required int policeWaitMinutes,

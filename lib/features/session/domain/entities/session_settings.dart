@@ -10,7 +10,7 @@ class SessionSettings with _$SessionSettings {
   const factory SessionSettings({
     required int maxPlayers,
     required int roundTimeMinutes,
-    required int locationShareSeconds,
+    required int locationShareMinutes,
     required int policeStartDelayMinutes,
   }) = _SessionSettings;
 
@@ -28,8 +28,8 @@ class SessionSettings with _$SessionSettings {
 
   /// 화면 표시용 위치 공유 간격
   ///
-  /// 예: "5초"
-  String get locationShareDisplay => '$locationShareSeconds초';
+  /// 예: "5분"
+  String get locationShareDisplay => '$locationShareMinutes분';
 
   /// 화면 표시용 경찰 시작 시간
   ///

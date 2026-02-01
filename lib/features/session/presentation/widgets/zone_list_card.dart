@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -37,11 +35,9 @@ class ZoneListCard extends StatelessWidget {
     return InfoCard(
       title: '구역',
       titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
-      padding: EdgeInsets.only(
-        top: AppSpacing.vertical20,
-        bottom: AppSpacing.vertical16,
-        left: AppSpacing.horizontal24,
-        right: AppSpacing.horizontal20,
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal24,
+        vertical: AppSpacing.vertical20,
       ),
       child: Column(
         children: [
@@ -85,16 +81,6 @@ class _ZoneItem extends StatelessWidget {
                 zone.displayDistance,
                 style: AppTextStyles.paragraph14Semibold.copyWith(
                   color: AppColors.black,
-                ),
-              ),
-              SizedBox(width: AppSpacing.horizontal8),
-              SvgPicture.asset(
-                'assets/icons/icon_arrow.svg',
-                width: 20.w,
-                height: 20.h,
-                colorFilter: ColorFilter.mode(
-                  AppColors.black600,
-                  BlendMode.srcIn,
                 ),
               ),
             ],

@@ -19,7 +19,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$SessionSettings {
   int get maxPlayers => throw _privateConstructorUsedError;
   int get roundTimeMinutes => throw _privateConstructorUsedError;
-  int get locationShareSeconds => throw _privateConstructorUsedError;
+  int get locationShareMinutes => throw _privateConstructorUsedError;
   int get policeStartDelayMinutes => throw _privateConstructorUsedError;
 
   /// Create a copy of SessionSettings
@@ -39,7 +39,7 @@ abstract class $SessionSettingsCopyWith<$Res> {
   $Res call({
     int maxPlayers,
     int roundTimeMinutes,
-    int locationShareSeconds,
+    int locationShareMinutes,
     int policeStartDelayMinutes,
   });
 }
@@ -61,7 +61,7 @@ class _$SessionSettingsCopyWithImpl<$Res, $Val extends SessionSettings>
   $Res call({
     Object? maxPlayers = null,
     Object? roundTimeMinutes = null,
-    Object? locationShareSeconds = null,
+    Object? locationShareMinutes = null,
     Object? policeStartDelayMinutes = null,
   }) {
     return _then(
@@ -74,9 +74,9 @@ class _$SessionSettingsCopyWithImpl<$Res, $Val extends SessionSettings>
                 ? _value.roundTimeMinutes
                 : roundTimeMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
-            locationShareSeconds: null == locationShareSeconds
-                ? _value.locationShareSeconds
-                : locationShareSeconds // ignore: cast_nullable_to_non_nullable
+            locationShareMinutes: null == locationShareMinutes
+                ? _value.locationShareMinutes
+                : locationShareMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
             policeStartDelayMinutes: null == policeStartDelayMinutes
                 ? _value.policeStartDelayMinutes
@@ -100,7 +100,7 @@ abstract class _$$SessionSettingsImplCopyWith<$Res>
   $Res call({
     int maxPlayers,
     int roundTimeMinutes,
-    int locationShareSeconds,
+    int locationShareMinutes,
     int policeStartDelayMinutes,
   });
 }
@@ -121,7 +121,7 @@ class __$$SessionSettingsImplCopyWithImpl<$Res>
   $Res call({
     Object? maxPlayers = null,
     Object? roundTimeMinutes = null,
-    Object? locationShareSeconds = null,
+    Object? locationShareMinutes = null,
     Object? policeStartDelayMinutes = null,
   }) {
     return _then(
@@ -134,9 +134,9 @@ class __$$SessionSettingsImplCopyWithImpl<$Res>
             ? _value.roundTimeMinutes
             : roundTimeMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
-        locationShareSeconds: null == locationShareSeconds
-            ? _value.locationShareSeconds
-            : locationShareSeconds // ignore: cast_nullable_to_non_nullable
+        locationShareMinutes: null == locationShareMinutes
+            ? _value.locationShareMinutes
+            : locationShareMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
         policeStartDelayMinutes: null == policeStartDelayMinutes
             ? _value.policeStartDelayMinutes
@@ -153,7 +153,7 @@ class _$SessionSettingsImpl extends _SessionSettings {
   const _$SessionSettingsImpl({
     required this.maxPlayers,
     required this.roundTimeMinutes,
-    required this.locationShareSeconds,
+    required this.locationShareMinutes,
     required this.policeStartDelayMinutes,
   }) : super._();
 
@@ -162,13 +162,13 @@ class _$SessionSettingsImpl extends _SessionSettings {
   @override
   final int roundTimeMinutes;
   @override
-  final int locationShareSeconds;
+  final int locationShareMinutes;
   @override
   final int policeStartDelayMinutes;
 
   @override
   String toString() {
-    return 'SessionSettings(maxPlayers: $maxPlayers, roundTimeMinutes: $roundTimeMinutes, locationShareSeconds: $locationShareSeconds, policeStartDelayMinutes: $policeStartDelayMinutes)';
+    return 'SessionSettings(maxPlayers: $maxPlayers, roundTimeMinutes: $roundTimeMinutes, locationShareMinutes: $locationShareMinutes, policeStartDelayMinutes: $policeStartDelayMinutes)';
   }
 
   @override
@@ -180,8 +180,8 @@ class _$SessionSettingsImpl extends _SessionSettings {
                 other.maxPlayers == maxPlayers) &&
             (identical(other.roundTimeMinutes, roundTimeMinutes) ||
                 other.roundTimeMinutes == roundTimeMinutes) &&
-            (identical(other.locationShareSeconds, locationShareSeconds) ||
-                other.locationShareSeconds == locationShareSeconds) &&
+            (identical(other.locationShareMinutes, locationShareMinutes) ||
+                other.locationShareMinutes == locationShareMinutes) &&
             (identical(
                   other.policeStartDelayMinutes,
                   policeStartDelayMinutes,
@@ -194,7 +194,7 @@ class _$SessionSettingsImpl extends _SessionSettings {
     runtimeType,
     maxPlayers,
     roundTimeMinutes,
-    locationShareSeconds,
+    locationShareMinutes,
     policeStartDelayMinutes,
   );
 
@@ -214,7 +214,7 @@ abstract class _SessionSettings extends SessionSettings {
   const factory _SessionSettings({
     required final int maxPlayers,
     required final int roundTimeMinutes,
-    required final int locationShareSeconds,
+    required final int locationShareMinutes,
     required final int policeStartDelayMinutes,
   }) = _$SessionSettingsImpl;
   const _SessionSettings._() : super._();
@@ -224,7 +224,7 @@ abstract class _SessionSettings extends SessionSettings {
   @override
   int get roundTimeMinutes;
   @override
-  int get locationShareSeconds;
+  int get locationShareMinutes;
   @override
   int get policeStartDelayMinutes;
 

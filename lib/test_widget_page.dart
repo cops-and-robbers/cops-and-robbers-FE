@@ -444,7 +444,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   settings: SessionSettings(
                     maxPlayers: 50,
                     roundTimeMinutes: 30,
-                    locationShareSeconds: 5,
+                    locationShareMinutes: 5,
                     policeStartDelayMinutes: 5,
                   ),
                 ),

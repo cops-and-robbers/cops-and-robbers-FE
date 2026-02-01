@@ -32,7 +32,7 @@ class _GameSettingsPageState extends State<GameSettingsPage> {
   int _roundDurationMinutes = 30; // 기본값: 30분
 
   /// 위치 공유 간격 (분)
-  int _locationRevealIntervalMinutes = 5; // 기본값: 5분
+  int _locationShareMinutes = 5; // 기본값: 5분
 
   /// 경찰 시작 시간 (분, 도둑 시작 후)
   int _policeWaitMinutes = 5; // 기본값: 5분
@@ -59,8 +59,8 @@ class _GameSettingsPageState extends State<GameSettingsPage> {
     if (mounted) {
       setState(() {
         _roundDurationMinutes = draft?.roundDurationMinutes ?? 30;
-        _locationRevealIntervalMinutes =
-            draft?.locationRevealIntervalMinutes ?? 5;
+        _locationShareMinutes =
+            draft?.locationShareMinutes ?? 5;
         _policeWaitMinutes = draft?.policeWaitMinutes ?? 5;
         _isLoading = false;
       });
@@ -76,7 +76,7 @@ class _GameSettingsPageState extends State<GameSettingsPage> {
     // 1. 로컬 저장소에 게임 설정 저장
     await _storageService.updateGameSettings(
       roundDurationMinutes: _roundDurationMinutes,
-      locationRevealIntervalMinutes: _locationRevealIntervalMinutes,
+      locationShareMinutes: _locationShareMinutes,
       policeWaitMinutes: _policeWaitMinutes,
     );
 
@@ -104,7 +104,7 @@ class _GameSettingsPageState extends State<GameSettingsPage> {
       jailLongitude: draft.jailCenter!.longitude,
       jailRadiusInMeters: draft.jailRadiusInMeters ?? 100,
       roundDurationMinutes: _roundDurationMinutes,
-      locationRevealIntervalMinutes: _locationRevealIntervalMinutes,
+      locationShareMinutes: _locationShareMinutes,
       policeWaitMinutes: _policeWaitMinutes,
       maxParticipants: draft.maxParticipants ?? 30,
     );
@@ -125,7 +125,7 @@ class _GameSettingsPageState extends State<GameSettingsPage> {
       '  - 감옥: (${draft.jailCenter!.latitude}, ${draft.jailCenter!.longitude}), 반경: ${draft.jailRadiusInMeters}m',
     );
     debugPrint(
-      '  - 게임 설정: 라운드 $_roundDurationMinutes분, 위치 공유 $_locationRevealIntervalMinutes분, 경찰 대기 $_policeWaitMinutes분',
+      '  - 게임 설정: 라운드 $_roundDurationMinutes분, 위치 공유 $_locationShareMinutes분, 경찰 대기 $_policeWaitMinutes분',
     );
     debugPrint('  - 최대 참가자: ${draft.maxParticipants}명');
     debugPrint('  - 요청 객체: $request');
@@ -183,14 +183,14 @@ class _GameSettingsPageState extends State<GameSettingsPage> {
   Widget _buildLocationIntervalSlider() {
     return AppSlider(
       label: '위치 공유 간격',
-      value: _locationRevealIntervalMinutes.toDouble(),
+      value: _locationShareMinutes.toDouble(),
       min: 1,
       max: 10,
       unit: '분',
       divisions: 9, // 1~10, 1분 단위
       onChanged: (value) {
         setState(() {
-          _locationRevealIntervalMinutes = value.toInt();
+          _locationShareMinutes = value.toInt();
         });
       },
     );

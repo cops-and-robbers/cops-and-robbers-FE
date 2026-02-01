@@ -17,6 +17,7 @@ import 'package:cops_and_robbers/features/auth/presentation/pages/splash_page.da
 import 'package:cops_and_robbers/features/auth/presentation/pages/login_page.dart';
 import 'package:cops_and_robbers/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/home_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/session_creation_flow_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/select_area_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
@@ -177,16 +178,54 @@ final routerProvider = Provider<GoRouter>((ref) {
             buildSmoothFade(key: state.pageKey, child: const HomePage()),
         routes: [
           // ==============================================================
-          // Session Creation Flow (Nested Routes)
+          // Session Creation Flow (Single PageView Page) - NEW
           // ==============================================================
-          // 구역 선택 (0단계) - 부드러운 페이드
+          GoRoute(
+            path: 'create-session',
+            pageBuilder: (context, state) => buildDirectionalSlide(
+              key: state.pageKey,
+              child: const SessionCreationFlowPage(),
+              isForward: true,
+            ),
+            routes: [
+              // 플레이그라운드 설정 (모달 페이지)
+              GoRoute(
+                path: 'playground',
+                name: 'setupPlaygroundFromFlow',
+                pageBuilder: (context, state) => buildSmoothFade(
+                  key: state.pageKey,
+                  child: const SetupPlaygroundPage(),
+                ),
+              ),
+              // 감옥 설정 (모달 페이지)
+              GoRoute(
+                path: 'prison',
+                name: 'setupPrisonFromFlow',
+                pageBuilder: (context, state) => buildSmoothFade(
+                  key: state.pageKey,
+                  child: const SetupPrisonPage(),
+                ),
+              ),
+            ],
+          ),
+
+          // ==============================================================
+          // Session Creation Flow (Nested Routes) - OLD (비교용)
+          // ==============================================================
+          // 구역 선택 (0단계) - 좌우 슬라이드 전환
           GoRoute(
             path: 'create-session/select-area',
             name: RoutePaths.selectAreaName,
-            pageBuilder: (context, state) => buildSmoothFade(
+            pageBuilder: (context, state) => buildDirectionalSlide(
               key: state.pageKey,
               child: const SelectAreaPage(),
+              isForward: true, // 우→좌 슬라이드
             ),
+            // 기존 페이드 전환 (비교용)
+            // pageBuilder: (context, state) => buildSmoothFade(
+            //   key: state.pageKey,
+            //   child: const SelectAreaPage(),
+            // ),
             routes: [
               // 플레이그라운드 설정
               GoRoute(
@@ -202,34 +241,52 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // 인원 설정 (1단계) - 부드러운 페이드
+          // 인원 설정 (1단계) - 좌우 슬라이드 전환
           GoRoute(
             path: 'create-session/participant-settings',
             name: RoutePaths.sessionSettingsName,
-            pageBuilder: (context, state) => buildSmoothFade(
+            pageBuilder: (context, state) => buildDirectionalSlide(
               key: state.pageKey,
               child: const SessionSettingsPage(),
+              isForward: true, // 우→좌 슬라이드
             ),
+            // 기존 페이드 전환 (비교용)
+            // pageBuilder: (context, state) => buildSmoothFade(
+            //   key: state.pageKey,
+            //   child: const SessionSettingsPage(),
+            // ),
           ),
-          // 기본 정보 설정 (2단계) - 부드러운 페이드
+          // 기본 정보 설정 (2단계) - 좌우 슬라이드 전환
           GoRoute(
             path: 'create-session/game-settings',
             name: RoutePaths.gameSettingsName,
-            pageBuilder: (context, state) => buildSmoothFade(
+            pageBuilder: (context, state) => buildDirectionalSlide(
               key: state.pageKey,
               child: const GameSettingsPage(),
+              isForward: true, // 우→좌 슬라이드
             ),
+            // 기존 페이드 전환 (비교용)
+            // pageBuilder: (context, state) => buildSmoothFade(
+            //   key: state.pageKey,
+            //   child: const GameSettingsPage(),
+            // ),
           ),
-          // 초대 코드 (3단계) - 부드러운 페이드
+          // 초대 코드 (3단계) - 좌우 슬라이드 전환
           GoRoute(
             path: 'create-session/invite-code/:inviteCode',
             name: RoutePaths.inviteCodeName,
             pageBuilder: (context, state) {
               final inviteCode = state.pathParameters['inviteCode']!;
-              return buildSmoothFade(
+              return buildDirectionalSlide(
                 key: state.pageKey,
                 child: InviteCodePage(inviteCode: inviteCode),
+                isForward: true, // 우→좌 슬라이드
               );
+              // 기존 페이드 전환 (비교용)
+              // return buildSmoothFade(
+              //   key: state.pageKey,
+              //   child: InviteCodePage(inviteCode: inviteCode),
+              // );
             },
           ),
         ],

@@ -88,7 +88,7 @@ class _InviteCodePageState extends State<InviteCodePage> {
       final settings = SessionSettings(
         maxPlayers: draft.maxParticipants ?? 30,
         roundTimeMinutes: draft.roundDurationMinutes ?? 30,
-        locationShareSeconds: (draft.locationRevealIntervalMinutes ?? 5) * 60,
+        locationShareMinutes: draft.locationShareMinutes ?? 5,
         policeStartDelayMinutes: draft.policeWaitMinutes ?? 5,
       );
 
@@ -107,7 +107,7 @@ class _InviteCodePageState extends State<InviteCodePage> {
         _settings = const SessionSettings(
           maxPlayers: 30,
           roundTimeMinutes: 30,
-          locationShareSeconds: 300,
+          locationShareMinutes: 5,
           policeStartDelayMinutes: 5,
         );
         _isLoading = false;

@@ -17,8 +17,7 @@ _$CreateSessionRequestImpl _$$CreateSessionRequestImplFromJson(
   jailLongitude: (json['jailLongitude'] as num).toDouble(),
   jailRadiusInMeters: (json['jailRadiusInMeters'] as num).toDouble(),
   roundDurationMinutes: (json['roundDurationMinutes'] as num).toInt(),
-  locationRevealIntervalMinutes: (json['locationRevealIntervalMinutes'] as num)
-      .toInt(),
+  locationShareMinutes: (json['locationShareMinutes'] as num).toInt(),
   policeWaitMinutes: (json['policeWaitMinutes'] as num).toInt(),
   maxParticipants: (json['maxParticipants'] as num).toInt(),
 );
@@ -33,7 +32,7 @@ Map<String, dynamic> _$$CreateSessionRequestImplToJson(
   'jailLongitude': instance.jailLongitude,
   'jailRadiusInMeters': instance.jailRadiusInMeters,
   'roundDurationMinutes': instance.roundDurationMinutes,
-  'locationRevealIntervalMinutes': instance.locationRevealIntervalMinutes,
+  'locationShareMinutes': instance.locationShareMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
 };

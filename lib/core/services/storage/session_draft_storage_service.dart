@@ -157,7 +157,7 @@ class SessionDraftStorageService {
   /// **사용 시점**: GameSettingsPage에서 설정 완료 시
   Future<void> updateGameSettings({
     required int roundDurationMinutes,
-    required int locationRevealIntervalMinutes,
+    required int locationShareMinutes,
     required int policeWaitMinutes,
   }) async {
     try {
@@ -165,7 +165,7 @@ class SessionDraftStorageService {
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
           .copyWith(
             roundDurationMinutes: roundDurationMinutes,
-            locationRevealIntervalMinutes: locationRevealIntervalMinutes,
+            locationShareMinutes: locationShareMinutes,
             policeWaitMinutes: policeWaitMinutes,
           );
       await saveDraft(updatedDraft);

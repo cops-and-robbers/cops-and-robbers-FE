@@ -45,8 +45,8 @@ mixin _$SessionCreationDraftModel {
   /// 라운드 시간 (분)
   int? get roundDurationMinutes => throw _privateConstructorUsedError;
 
-  /// 위치 공개 주기 (분)
-  int? get locationRevealIntervalMinutes => throw _privateConstructorUsedError;
+  /// 위치 공유 간격 (분)
+  int? get locationShareMinutes => throw _privateConstructorUsedError;
 
   /// 경찰 대기 시간 (분)
   int? get policeWaitMinutes => throw _privateConstructorUsedError;
@@ -77,7 +77,7 @@ abstract class $SessionCreationDraftModelCopyWith<$Res> {
     @LatLngConverter() LatLng? jailCenter,
     double? jailRadiusInMeters,
     int? roundDurationMinutes,
-    int? locationRevealIntervalMinutes,
+    int? locationShareMinutes,
     int? policeWaitMinutes,
     int? maxParticipants,
   });
@@ -106,7 +106,7 @@ class _$SessionCreationDraftModelCopyWithImpl<
     Object? jailCenter = freezed,
     Object? jailRadiusInMeters = freezed,
     Object? roundDurationMinutes = freezed,
-    Object? locationRevealIntervalMinutes = freezed,
+    Object? locationShareMinutes = freezed,
     Object? policeWaitMinutes = freezed,
     Object? maxParticipants = freezed,
   }) {
@@ -132,10 +132,9 @@ class _$SessionCreationDraftModelCopyWithImpl<
                 ? _value.roundDurationMinutes
                 : roundDurationMinutes // ignore: cast_nullable_to_non_nullable
                       as int?,
-            locationRevealIntervalMinutes:
-                freezed == locationRevealIntervalMinutes
-                ? _value.locationRevealIntervalMinutes
-                : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
+            locationShareMinutes: freezed == locationShareMinutes
+                ? _value.locationShareMinutes
+                : locationShareMinutes // ignore: cast_nullable_to_non_nullable
                       as int?,
             policeWaitMinutes: freezed == policeWaitMinutes
                 ? _value.policeWaitMinutes
@@ -166,7 +165,7 @@ abstract class _$$SessionCreationDraftModelImplCopyWith<$Res>
     @LatLngConverter() LatLng? jailCenter,
     double? jailRadiusInMeters,
     int? roundDurationMinutes,
-    int? locationRevealIntervalMinutes,
+    int? locationShareMinutes,
     int? policeWaitMinutes,
     int? maxParticipants,
   });
@@ -195,7 +194,7 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
     Object? jailCenter = freezed,
     Object? jailRadiusInMeters = freezed,
     Object? roundDurationMinutes = freezed,
-    Object? locationRevealIntervalMinutes = freezed,
+    Object? locationShareMinutes = freezed,
     Object? policeWaitMinutes = freezed,
     Object? maxParticipants = freezed,
   }) {
@@ -221,9 +220,9 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
             ? _value.roundDurationMinutes
             : roundDurationMinutes // ignore: cast_nullable_to_non_nullable
                   as int?,
-        locationRevealIntervalMinutes: freezed == locationRevealIntervalMinutes
-            ? _value.locationRevealIntervalMinutes
-            : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
+        locationShareMinutes: freezed == locationShareMinutes
+            ? _value.locationShareMinutes
+            : locationShareMinutes // ignore: cast_nullable_to_non_nullable
                   as int?,
         policeWaitMinutes: freezed == policeWaitMinutes
             ? _value.policeWaitMinutes
@@ -247,7 +246,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
     @LatLngConverter() this.jailCenter,
     this.jailRadiusInMeters,
     this.roundDurationMinutes,
-    this.locationRevealIntervalMinutes,
+    this.locationShareMinutes,
     this.policeWaitMinutes,
     this.maxParticipants,
   });
@@ -282,9 +281,9 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
   @override
   final int? roundDurationMinutes;
 
-  /// 위치 공개 주기 (분)
+  /// 위치 공유 간격 (분)
   @override
-  final int? locationRevealIntervalMinutes;
+  final int? locationShareMinutes;
 
   /// 경찰 대기 시간 (분)
   @override
@@ -296,7 +295,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
 
   @override
   String toString() {
-    return 'SessionCreationDraftModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters, roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
+    return 'SessionCreationDraftModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
   }
 
   @override
@@ -317,12 +316,8 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
                 other.jailRadiusInMeters == jailRadiusInMeters) &&
             (identical(other.roundDurationMinutes, roundDurationMinutes) ||
                 other.roundDurationMinutes == roundDurationMinutes) &&
-            (identical(
-                  other.locationRevealIntervalMinutes,
-                  locationRevealIntervalMinutes,
-                ) ||
-                other.locationRevealIntervalMinutes ==
-                    locationRevealIntervalMinutes) &&
+            (identical(other.locationShareMinutes, locationShareMinutes) ||
+                other.locationShareMinutes == locationShareMinutes) &&
             (identical(other.policeWaitMinutes, policeWaitMinutes) ||
                 other.policeWaitMinutes == policeWaitMinutes) &&
             (identical(other.maxParticipants, maxParticipants) ||
@@ -338,7 +333,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
     jailCenter,
     jailRadiusInMeters,
     roundDurationMinutes,
-    locationRevealIntervalMinutes,
+    locationShareMinutes,
     policeWaitMinutes,
     maxParticipants,
   );
@@ -367,7 +362,7 @@ abstract class _SessionCreationDraftModel implements SessionCreationDraftModel {
     @LatLngConverter() final LatLng? jailCenter,
     final double? jailRadiusInMeters,
     final int? roundDurationMinutes,
-    final int? locationRevealIntervalMinutes,
+    final int? locationShareMinutes,
     final int? policeWaitMinutes,
     final int? maxParticipants,
   }) = _$SessionCreationDraftModelImpl;
@@ -401,9 +396,9 @@ abstract class _SessionCreationDraftModel implements SessionCreationDraftModel {
   @override
   int? get roundDurationMinutes;
 
-  /// 위치 공개 주기 (분)
+  /// 위치 공유 간격 (분)
   @override
-  int? get locationRevealIntervalMinutes;
+  int? get locationShareMinutes;
 
   /// 경찰 대기 시간 (분)
   @override

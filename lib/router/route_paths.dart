@@ -52,7 +52,15 @@ class RoutePaths {
   // Session Creation Flow Routes (PRD F1.1)
   // ============================================================================
 
+  /// 세션 생성 플로우 (단일 PageView 페이지)
+  /// - Step 0: 구역 선택
+  /// - Step 1: 인원 설정
+  /// - Step 2: 게임 설정
+  /// - Step 3: 초대 코드
+  static const String sessionCreationFlow = '/home/create-session';
+
   /// 구역 선택/확인 화면 (플레이그라운드, 감옥 설정 진입점)
+  /// ⚠️ 구버전 - sessionCreationFlow 사용 권장
   static const String selectArea = '/home/create-session/select-area';
 
   /// 플레이그라운드 구역 설정 (지도에서 범위 지정)

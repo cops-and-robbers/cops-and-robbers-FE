@@ -42,8 +42,8 @@ mixin _$CreateSessionRequest {
   /// 라운드 시간 (분)
   int get roundDurationMinutes => throw _privateConstructorUsedError;
 
-  /// 위치 공개 주기 (분)
-  int get locationRevealIntervalMinutes => throw _privateConstructorUsedError;
+  /// 위치 공유 간격 (분)
+  int get locationShareMinutes => throw _privateConstructorUsedError;
 
   /// 경찰 대기 시간 (분)
   int get policeWaitMinutes => throw _privateConstructorUsedError;
@@ -76,7 +76,7 @@ abstract class $CreateSessionRequestCopyWith<$Res> {
     double jailLongitude,
     double jailRadiusInMeters,
     int roundDurationMinutes,
-    int locationRevealIntervalMinutes,
+    int locationShareMinutes,
     int policeWaitMinutes,
     int maxParticipants,
   });
@@ -107,7 +107,7 @@ class _$CreateSessionRequestCopyWithImpl<
     Object? jailLongitude = null,
     Object? jailRadiusInMeters = null,
     Object? roundDurationMinutes = null,
-    Object? locationRevealIntervalMinutes = null,
+    Object? locationShareMinutes = null,
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
   }) {
@@ -141,9 +141,9 @@ class _$CreateSessionRequestCopyWithImpl<
                 ? _value.roundDurationMinutes
                 : roundDurationMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
-            locationRevealIntervalMinutes: null == locationRevealIntervalMinutes
-                ? _value.locationRevealIntervalMinutes
-                : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
+            locationShareMinutes: null == locationShareMinutes
+                ? _value.locationShareMinutes
+                : locationShareMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
             policeWaitMinutes: null == policeWaitMinutes
                 ? _value.policeWaitMinutes
@@ -176,7 +176,7 @@ abstract class _$$CreateSessionRequestImplCopyWith<$Res>
     double jailLongitude,
     double jailRadiusInMeters,
     int roundDurationMinutes,
-    int locationRevealIntervalMinutes,
+    int locationShareMinutes,
     int policeWaitMinutes,
     int maxParticipants,
   });
@@ -203,7 +203,7 @@ class __$$CreateSessionRequestImplCopyWithImpl<$Res>
     Object? jailLongitude = null,
     Object? jailRadiusInMeters = null,
     Object? roundDurationMinutes = null,
-    Object? locationRevealIntervalMinutes = null,
+    Object? locationShareMinutes = null,
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
   }) {
@@ -237,9 +237,9 @@ class __$$CreateSessionRequestImplCopyWithImpl<$Res>
             ? _value.roundDurationMinutes
             : roundDurationMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
-        locationRevealIntervalMinutes: null == locationRevealIntervalMinutes
-            ? _value.locationRevealIntervalMinutes
-            : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
+        locationShareMinutes: null == locationShareMinutes
+            ? _value.locationShareMinutes
+            : locationShareMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
         policeWaitMinutes: null == policeWaitMinutes
             ? _value.policeWaitMinutes
@@ -265,7 +265,7 @@ class _$CreateSessionRequestImpl implements _CreateSessionRequest {
     required this.jailLongitude,
     required this.jailRadiusInMeters,
     required this.roundDurationMinutes,
-    required this.locationRevealIntervalMinutes,
+    required this.locationShareMinutes,
     required this.policeWaitMinutes,
     required this.maxParticipants,
   });
@@ -301,9 +301,9 @@ class _$CreateSessionRequestImpl implements _CreateSessionRequest {
   @override
   final int roundDurationMinutes;
 
-  /// 위치 공개 주기 (분)
+  /// 위치 공유 간격 (분)
   @override
-  final int locationRevealIntervalMinutes;
+  final int locationShareMinutes;
 
   /// 경찰 대기 시간 (분)
   @override
@@ -315,7 +315,7 @@ class _$CreateSessionRequestImpl implements _CreateSessionRequest {
 
   @override
   String toString() {
-    return 'CreateSessionRequest(playgroundLatitude: $playgroundLatitude, playgroundLongitude: $playgroundLongitude, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailLatitude: $jailLatitude, jailLongitude: $jailLongitude, jailRadiusInMeters: $jailRadiusInMeters, roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
+    return 'CreateSessionRequest(playgroundLatitude: $playgroundLatitude, playgroundLongitude: $playgroundLongitude, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailLatitude: $jailLatitude, jailLongitude: $jailLongitude, jailRadiusInMeters: $jailRadiusInMeters, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
   }
 
   @override
@@ -340,12 +340,8 @@ class _$CreateSessionRequestImpl implements _CreateSessionRequest {
                 other.jailRadiusInMeters == jailRadiusInMeters) &&
             (identical(other.roundDurationMinutes, roundDurationMinutes) ||
                 other.roundDurationMinutes == roundDurationMinutes) &&
-            (identical(
-                  other.locationRevealIntervalMinutes,
-                  locationRevealIntervalMinutes,
-                ) ||
-                other.locationRevealIntervalMinutes ==
-                    locationRevealIntervalMinutes) &&
+            (identical(other.locationShareMinutes, locationShareMinutes) ||
+                other.locationShareMinutes == locationShareMinutes) &&
             (identical(other.policeWaitMinutes, policeWaitMinutes) ||
                 other.policeWaitMinutes == policeWaitMinutes) &&
             (identical(other.maxParticipants, maxParticipants) ||
@@ -363,7 +359,7 @@ class _$CreateSessionRequestImpl implements _CreateSessionRequest {
     jailLongitude,
     jailRadiusInMeters,
     roundDurationMinutes,
-    locationRevealIntervalMinutes,
+    locationShareMinutes,
     policeWaitMinutes,
     maxParticipants,
   );
@@ -395,7 +391,7 @@ abstract class _CreateSessionRequest implements CreateSessionRequest {
     required final double jailLongitude,
     required final double jailRadiusInMeters,
     required final int roundDurationMinutes,
-    required final int locationRevealIntervalMinutes,
+    required final int locationShareMinutes,
     required final int policeWaitMinutes,
     required final int maxParticipants,
   }) = _$CreateSessionRequestImpl;
@@ -431,9 +427,9 @@ abstract class _CreateSessionRequest implements CreateSessionRequest {
   @override
   int get roundDurationMinutes;
 
-  /// 위치 공개 주기 (분)
+  /// 위치 공유 간격 (분)
   @override
-  int get locationRevealIntervalMinutes;
+  int get locationShareMinutes;
 
   /// 경찰 대기 시간 (분)
   @override

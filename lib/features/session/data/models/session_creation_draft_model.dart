@@ -53,8 +53,8 @@ class SessionCreationDraftModel with _$SessionCreationDraftModel {
     /// 라운드 시간 (분)
     int? roundDurationMinutes,
 
-    /// 위치 공개 주기 (분)
-    int? locationRevealIntervalMinutes,
+    /// 위치 공유 간격 (분)
+    int? locationShareMinutes,
 
     /// 경찰 대기 시간 (분)
     int? policeWaitMinutes,

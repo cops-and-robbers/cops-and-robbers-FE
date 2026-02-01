@@ -1,0 +1,92 @@
+import 'package:flutter/material.dart';
+
+import '../../../../../core/constants/spacing_and_radius.dart';
+import '../../../../../core/widgets/inputs/app_slider.dart';
+
+/// 세션 생성 Step 2: 게임 설정 컨텐츠
+///
+/// 게임 규칙을 설정합니다:
+/// - 라운드 제한 시간 (10~60분)
+/// - 위치 공유 간격 (1~10분)
+/// - 경찰 시작 시간 (도둑 시작 후 1~10분 뒤)
+class Step2GameSettingsContent extends StatelessWidget {
+  const Step2GameSettingsContent({
+    super.key,
+    required this.roundDurationMinutes,
+    required this.locationShareMinutes,
+    required this.policeWaitMinutes,
+    required this.onRoundDurationChanged,
+    required this.onLocationShareChanged,
+    required this.onPoliceWaitChanged,
+  });
+
+  // ============================================
+  // Properties
+  // ============================================
+
+  /// 라운드 제한 시간 (분)
+  final int roundDurationMinutes;
+
+  /// 위치 공유 간격 (분)
+  final int locationShareMinutes;
+
+  /// 경찰 시작 시간 (분, 도둑 시작 후)
+  final int policeWaitMinutes;
+
+  /// 라운드 시간 변경 콜백
+  final ValueChanged<int> onRoundDurationChanged;
+
+  /// 위치 공유 간격 변경 콜백
+  final ValueChanged<int> onLocationShareChanged;
+
+  /// 경찰 대기 시간 변경 콜백
+  final ValueChanged<int> onPoliceWaitChanged;
+
+  // ============================================
+  // Build Methods
+  // ============================================
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // 라운드 제한 시간
+        AppSlider(
+          label: '라운드 제한 시간',
+          value: roundDurationMinutes.toDouble(),
+          min: 10,
+          max: 60,
+          unit: '분',
+          divisions: 50, // 10~60, 1분 단위
+          onChanged: (value) => onRoundDurationChanged(value.toInt()),
+        ),
+
+        SizedBox(height: AppSpacing.vertical8),
+
+        // 위치 공유 간격
+        AppSlider(
+          label: '위치 공유 간격',
+          value: locationShareMinutes.toDouble(),
+          min: 1,
+          max: 10,
+          unit: '분',
+          divisions: 9, // 1~10, 1분 단위
+          onChanged: (value) => onLocationShareChanged(value.toInt()),
+        ),
+
+        SizedBox(height: AppSpacing.vertical8),
+
+        // 경찰 시작 시간 (도둑 시작 후)
+        AppSlider(
+          label: '경찰 시작 시간',
+          value: policeWaitMinutes.toDouble(),
+          min: 1,
+          max: 10,
+          unit: '분',
+          divisions: 9, // 1~10, 1분 단위
+          onChanged: (value) => onPoliceWaitChanged(value.toInt()),
+        ),
+      ],
+    );
+  }
+}
