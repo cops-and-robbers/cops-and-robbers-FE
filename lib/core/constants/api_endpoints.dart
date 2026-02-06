@@ -35,6 +35,13 @@ class ApiEndpoints {
   /// **Default**: `ws://localhost:8080/ws`
   static String get wsUrl => dotenv.env['WS_URL'] ?? 'ws://localhost:8080/ws';
 
+  /// 게임 소켓 연결 URL (STOMP over WebSocket)
+  ///
+  /// 채팅, 게임 이벤트 등 실시간 통신에 사용됩니다.
+  /// .env의 WS_URL을 직접 사용합니다.
+  ///
+  static String get gameConnectionUrl => wsUrl;
+
   /// Mock API 사용 여부 (.env에서 로드)
   /// Whether to use Mock API (loaded from .env)
   ///
