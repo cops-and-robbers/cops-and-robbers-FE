@@ -17,6 +17,13 @@ class ZoneInfo with _$ZoneInfo {
 
   /// 화면 표시용 거리 문자열
   ///
-  /// 예: "반경 400m"
-  String get displayDistance => '반경 ${radiusMeters}m';
+  /// 1000m 미만: "반경 400m"
+  /// 1000m 이상: "반경 1.50km" (소수점 2자리 고정)
+  String get displayDistance {
+    if (radiusMeters >= 1000) {
+      final km = (radiusMeters / 1000).toStringAsFixed(2);
+      return '반경 ${km}km';
+    }
+    return '반경 ${radiusMeters}m';
+  }
 }

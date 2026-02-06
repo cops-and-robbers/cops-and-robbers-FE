@@ -84,6 +84,8 @@ class Step2GameSettingsContent extends StatelessWidget {
           max: 10,
           unit: '분',
           divisions: 9, // 1~10, 1분 단위
+          displayPrefix: "도둑 시작 후 ",
+          displaySuffix: " 뒤",
           onChanged: (value) => onPoliceWaitChanged(value.toInt()),
         ),
       ],
