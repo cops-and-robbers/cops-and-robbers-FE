@@ -1,11 +1,30 @@
 {
   "metadata": {
-    "lastUpdated": "2026-02-06T01:45:51Z",
-    "currentVersion": "1.1.30",
+    "lastUpdated": "2026-02-06T14:19:02Z",
+    "currentVersion": "1.1.31",
     "projectType": "flutter",
-    "totalReleases": 29
+    "totalReleases": 30
   },
   "releases": [
+    {
+      "version": "1.1.31",
+      "project_type": "flutter",
+      "date": "2026-02-06",
+      "pr_number": 71,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Chores**\n  * 애플리케이션 버전이 v1.1.31로 업그레이드되었습니다.\n  * Android 플랫폼의 인증 설정이 추가 및 개선되었습니다.\n  * iOS 앱 정보가 업데이트되었습니다.\n  * 앱 메타데이터 및 빌드 정보가 동기화되었습니다.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전이 v1.1.31로 업그레이드되었습니다.",
+            "Android 플랫폼의 인증 설정이 추가 및 개선되었습니다.",
+            "iOS 앱 정보가 업데이트되었습니다.",
+            "앱 메타데이터 및 빌드 정보가 동기화되었습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.30",
       "project_type": "flutter",
