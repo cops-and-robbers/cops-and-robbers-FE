@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../router/route_paths.dart';
+import '../../../chat/presentation/providers/chat_provider.dart';
 import '../widgets/google_map_view.dart';
 import '../widgets/naver_map_view.dart';
 
 /// 인게임 지도 화면
 /// 게임 진행 중 사용되는 메인 화면
-class GamePage extends StatefulWidget {
+class GamePage extends ConsumerStatefulWidget {
   const GamePage({required this.sessionId, required this.mapType, super.key});
 
   /// 게임 세션 ID
@@ -17,15 +19,17 @@ class GamePage extends StatefulWidget {
   final String mapType;
 
   @override
-  State<GamePage> createState() => _GamePageState();
+  ConsumerState<GamePage> createState() => _GamePageState();
 }
 
-class _GamePageState extends State<GamePage> {
+class _GamePageState extends ConsumerState<GamePage> {
   final TextEditingController _chatController = TextEditingController();
 
   @override
   void dispose() {
     _chatController.dispose();
+    // 화면 이탈 시 채팅 연결 해제
+    ref.read(chatNotifierProvider.notifier).disconnectChat();
     super.dispose();
   }
 
@@ -34,6 +38,7 @@ class _GamePageState extends State<GamePage> {
     final text = _chatController.text.trim();
     if (text.isEmpty) return;
 
+    // TODO: chatNotifier를 통해 실제 메시지 전송 연동
     debugPrint('send chat: $text');
     _chatController.clear();
   }
@@ -47,7 +52,7 @@ class _GamePageState extends State<GamePage> {
     return Scaffold(
       body: Stack(
         children: [
-          /// 지도 (GoogleMapView/NaverMapView 중에 선택해서 사용)
+          /// 지도 (전체 화면)
           Positioned.fill(
             child: widget.mapType == 'naver'
                 ? const NaverMapView()
@@ -155,7 +160,7 @@ class _GamePageState extends State<GamePage> {
             ),
           ),
 
-          /// 우측 하단 버튼 영역 (사람. 현위치)
+          /// 우측 하단 버튼 영역 (사람, 현위치)
           Positioned(
             right: 14,
             bottom: 120,
