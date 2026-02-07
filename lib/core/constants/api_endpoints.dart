@@ -87,6 +87,12 @@ class ApiEndpoints {
   // User API - 사용자 정보
   // ============================================
 
-  /// 마이페이지
+  /// 내 정보 조회
   static const String myPage = '/api/user/me';
+
+  /// 닉네임 변경
+  static const String updateNickname = '/api/user/me/nickname';
+
+  /// 닉네임 중복 확인
+  static const String checkNickname = '/api/user/check-nickname';
 }
