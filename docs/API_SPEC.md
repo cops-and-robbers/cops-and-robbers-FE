@@ -21,8 +21,10 @@
 4. [Lobby API - 게임 로비 상태 변경](#4-lobby-api---게임-로비-상태-변경)
    - [PATCH /api/games/{gameId}/team - 로비 팀 변경](#41-patch-apigamesgameidteam---로비-팀-변경)
    - [PATCH /api/games/{gameId}/ready - 로비 준비 상태 변경](#42-patch-apigamesgameidready---로비-준비-상태-변경)
-5. [User API - 사용자 정보](#5-user-api---사용자-정보)
-   - [GET /api/user/me - 마이페이지](#51-get-apiuserme---마이페이지)
+5. [User API - 사용자 정보 및 프로필 관리](#5-user-api---사용자-정보-및-프로필-관리)
+   - [GET /api/user/me - 내 정보 조회](#51-get-apiuserme---내-정보-조회)
+   - [PATCH /api/user/me/nickname - 닉네임 변경](#52-patch-apiusermenickname---닉네임-변경)
+   - [GET /api/user/check-nickname - 닉네임 중복 확인](#53-get-apiusercheck-nickname---닉네임-중복-확인)
 6. [공통 스키마](#6-공통-스키마)
 
 ---
@@ -118,7 +120,7 @@
 
 - **인증 필요**: No
 
-#### Request Body (`application/json`)
+#### Request Body (`application/json`) - [ReissueRequest](#reissuerequest) 재사용
 
 | 필드 | 타입 | 필수 | 설명 |
 |------|------|------|------|
@@ -161,8 +163,10 @@
 **200 - 토큰 재발급 성공**
 ```json
 {
-  "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
-  "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
+  "tokens": {
+    "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
+    "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
+  }
 }
 ```
 
@@ -324,10 +328,7 @@
 ```json
 {
   "gameId": 1,
-  "userId": 2,
-  "nickname": "집요한괴도4053",
-  "isHost": false,
-  "joinedAt": "2026-01-16T02:30:45.123456"
+  "participantId": 5
 }
 ```
 
@@ -605,9 +606,9 @@
 
 ---
 
-## 5. User API - 사용자 정보
+## 5. User API - 사용자 정보 및 프로필 관리
 
-### 5.1 GET /api/user/me - 마이페이지
+### 5.1 GET /api/user/me - 내 정보 조회
 
 현재 로그인한 사용자의 정보를 조회합니다.
 
@@ -623,6 +624,123 @@
   "socialPlatform": "KAKAO",
   "allowGamePush": true,
   "allowMarketingPush": false
+}
+```
+
+**401 - 인증 실패**
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/user/me"
+}
+```
+
+---
+
+### 5.2 PATCH /api/user/me/nickname - 닉네임 변경
+
+현재 로그인한 사용자의 닉네임을 변경합니다. 본인의 현재 닉네임으로 변경 요청 시에도 204가 반환됩니다.
+
+- **인증 필요**: Yes (JWT)
+
+#### Request Body (`application/json`)
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `nickname` | string | O | 변경할 닉네임 (최대 10자) |
+
+**요청 예시:**
+```json
+{
+  "nickname": "새닉네임"
+}
+```
+
+#### Responses
+
+**204 - 닉네임 변경 성공** (응답 본문 없음)
+
+**400 - 잘못된 요청**
+
+| 케이스 | detail |
+|--------|--------|
+| 닉네임 누락/공백 | `nickname: 닉네임은 필수입니다.` |
+| 길이 초과 (10자 초과) | `nickname: 닉네임은 최대 10자까지 가능합니다.` |
+
+```json
+{
+  "title": "유효하지 않은 입력값",
+  "status": 400,
+  "detail": "nickname: 닉네임은 필수입니다.",
+  "instance": "/api/user/me/nickname"
+}
+```
+
+**401 - 인증 실패**
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/user/me/nickname"
+}
+```
+
+**409 - 닉네임 중복**
+```json
+{
+  "title": "닉네임 중복",
+  "status": 409,
+  "detail": "이미 사용 중인 닉네임입니다.",
+  "instance": "/api/user/me/nickname"
+}
+```
+
+---
+
+### 5.3 GET /api/user/check-nickname - 닉네임 중복 확인
+
+닉네임의 사용 가능 여부를 확인합니다.
+
+- **인증 필요**: No
+
+#### Query Parameters
+
+| 파라미터 | 타입 | 필수 | 설명 | 예시 |
+|----------|------|------|------|------|
+| `nickname` | string | O | 확인할 닉네임 | `새닉네임` |
+
+**요청 예시:**
+```
+GET /api/user/check-nickname?nickname=새닉네임
+```
+
+#### Responses
+
+**200 - 닉네임 확인 결과**
+```json
+{
+  "isAvailable": true,
+  "message": "사용 가능한 닉네임입니다."
+}
+```
+
+```json
+{
+  "isAvailable": false,
+  "message": "이미 사용 중인 닉네임입니다."
+}
+```
+
+**400 - 파라미터 누락**
+```json
+{
+  "title": "유효하지 않은 입력값",
+  "status": 400,
+  "detail": "nickname: 닉네임은 필수입니다.",
+  "instance": "/api/user/check-nickname"
 }
 ```
 
@@ -688,8 +806,7 @@
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| `accessToken` | string | 새 Access Token |
-| `refreshToken` | string | 새 Refresh Token |
+| `tokens` | [Tokens](#tokens) | JWT 토큰 (Access + Refresh) |
 
 ### GameCreateRequest
 
@@ -747,10 +864,7 @@
 | 필드 | 타입 | 설명 |
 |------|------|------|
 | `gameId` | integer (int64) | 게임 ID |
-| `userId` | integer (int64) | 사용자 ID |
-| `nickname` | string | 닉네임 |
-| `isHost` | boolean | 방장 여부 |
-| `joinedAt` | string (date-time) | 참여 시간 |
+| `participantId` | integer (int64) | 참여자 ID |
 
 ### GameLeaveResponse
 
@@ -770,6 +884,19 @@
 | 필드 | 타입 | 필수 | 설명 |
 |------|------|------|------|
 | `isReady` | boolean | O | 준비 상태 |
+
+### NicknameUpdateRequest
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `nickname` | string | O | 변경할 닉네임 (최대 10자) |
+
+### NicknameCheckResponse
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `isAvailable` | boolean | 사용 가능 여부 |
+| `message` | string | 결과 메시지 |
 
 ### MyPageResponse
 
