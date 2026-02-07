@@ -36,6 +36,7 @@ class SecureTokenStorage {
 
   static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
+  static const String _userIdKey = 'user_id';
 
   // ============================================
   // Token 저장
@@ -65,6 +66,14 @@ class SecureTokenStorage {
     await _storage.write(key: _refreshTokenKey, value: refreshToken);
   }
 
+  /// 사용자 ID 저장
+  ///
+  /// 로그인 성공 시 백엔드에서 반환한 userId를 저장합니다.
+  /// 앱 재시작 시 AuthNotifier에서 복원에 사용됩니다.
+  Future<void> saveUserId(int userId) async {
+    await _storage.write(key: _userIdKey, value: userId.toString());
+  }
+
   // ============================================
   // Token 조회
   // ============================================
@@ -83,6 +92,14 @@ class SecureTokenStorage {
     return await _storage.read(key: _refreshTokenKey);
   }
 
+  /// 사용자 ID 조회
+  ///
+  /// 저장된 userId가 없으면 null 반환
+  Future<int?> getUserId() async {
+    final value = await _storage.read(key: _userIdKey);
+    return value != null ? int.tryParse(value) : null;
+  }
+
   // ============================================
   // Token 삭제
   // ============================================
@@ -94,6 +111,7 @@ class SecureTokenStorage {
     await Future.wait([
       _storage.delete(key: _accessTokenKey),
       _storage.delete(key: _refreshTokenKey),
+      _storage.delete(key: _userIdKey),
     ]);
     if (kDebugMode) {
       debugPrint('✅ 토큰 삭제 완료');

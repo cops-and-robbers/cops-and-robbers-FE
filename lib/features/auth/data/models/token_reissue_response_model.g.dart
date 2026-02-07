@@ -14,4 +14,4 @@ _$TokenReissueResponseModelImpl _$$TokenReissueResponseModelImplFromJson(
 
 Map<String, dynamic> _$$TokenReissueResponseModelImplToJson(
   _$TokenReissueResponseModelImpl instance,
-) => <String, dynamic>{'tokens': instance.tokens};
+) => <String, dynamic>{'tokens': instance.tokens.toJson()};

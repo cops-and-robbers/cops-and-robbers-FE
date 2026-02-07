@@ -12,6 +12,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/chips/action_chip.dart' as custom_chip;
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../user/presentation/providers/user_provider.dart';
+import '../providers/auth_provider.dart';
 import '../../../../router/route_paths.dart';
 
 /// 닉네임 검증 상태
@@ -143,6 +144,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
     // 닉네임을 변경하지 않았으면 API 호출 없이 바로 홈으로 이동
     if (!_isNicknameChanged) {
+      ref
+          .read(authNotifierProvider.notifier)
+          .updateNicknameCompleted(widget.initialNickname);
       context.go(RoutePaths.home);
       return;
     }
@@ -158,7 +162,8 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
       if (!mounted) return;
 
-      // 닉네임 설정 완료 후 홈으로 이동
+      // 닉네임 설정 완료 → authNotifier 상태 갱신 (isNewUser: false)
+      ref.read(authNotifierProvider.notifier).updateNicknameCompleted(nickname);
       context.go(RoutePaths.home);
     } on AppException catch (e) {
       if (!mounted) return;

@@ -24,19 +24,25 @@ part 'auth_provider.g.dart';
 // ============================================================================
 
 /// SecureTokenStorage Provider
-@riverpod
+///
+/// 앱 생애주기 동안 유지 (keepAlive) — 인터셉터 콜백에서 안전하게 접근 가능
+@Riverpod(keepAlive: true)
 SecureTokenStorage secureTokenStorage(Ref ref) {
   return SecureTokenStorage();
 }
 
 /// FirebaseAuthDataSource Provider
-@riverpod
+///
+/// 앱 생애주기 동안 유지 (keepAlive) — 인터셉터 콜백에서 안전하게 접근 가능
+@Riverpod(keepAlive: true)
 FirebaseAuthDataSource firebaseAuthDataSource(Ref ref) {
   return FirebaseAuthDataSource();
 }
 
 /// Dio Provider (AuthInterceptor 포함)
-@riverpod
+///
+/// 앱 생애주기 동안 유지 (keepAlive) — HTTP 클라이언트는 dispose되면 안 됨
+@Riverpod(keepAlive: true)
 Dio dio(Ref ref) {
   final tokenStorage = ref.watch(secureTokenStorageProvider);
 
@@ -136,9 +142,9 @@ class AuthNotifier extends _$AuthNotifier {
       }
 
       // Firebase + JWT 토큰 모두 존재 → 인증된 사용자
-      // (실제 nickname/isNewUser는 백엔드 로그인 시 갱신됨)
+      // userId는 SecureTokenStorage에서 복원
       return AuthResultEntity(
-        userId: 0, // Firebase만으로는 백엔드 userId를 알 수 없음
+        userId: await tokenStorage.getUserId() ?? 0,
         nickname: currentUser.displayName ?? '',
         isNewUser: false,
       );
@@ -221,6 +227,23 @@ class AuthNotifier extends _$AuthNotifier {
       state = AsyncValue.error(
         AuthException(message: '로그아웃에 실패했습니다.', originalException: e),
         stack,
+      );
+    }
+  }
+
+  /// 닉네임 설정 완료 후 상태 갱신
+  ///
+  /// isNewUser를 false로 변경하여 GoRouter가 다시
+  /// /nickname-setup으로 리다이렉트하지 않도록 합니다.
+  void updateNicknameCompleted(String nickname) {
+    final current = state.value;
+    if (current != null) {
+      state = AsyncValue.data(
+        AuthResultEntity(
+          userId: current.userId,
+          nickname: nickname,
+          isNewUser: false,
+        ),
       );
     }
   }

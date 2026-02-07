@@ -1,9 +1,9 @@
 # API 명세서 (API Specification)
 
-> **Base URL**: `http://43.203.59.210:8080`
-> **OpenAPI Version**: 3.0.1
-> **API Version**: 1.0.0
-> **인증 방식**: JWT Bearer Token (`Authorization: Bearer {accessToken}`)
+> **Base URL**: ``
+**OpenAPI Version**: 3.0.1
+**API Version**: 1.0.0
+**인증 방식**: JWT Bearer Token (`Authorization: Bearer {accessToken}`)
 
 ---
 
@@ -39,15 +39,16 @@
 
 #### Request Body (`application/json`)
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `socialPlatform` | string | O | 소셜 플랫폼 (`KAKAO`, `GOOGLE`, `APPLE`) |
-| `idToken` | string | O | 소셜 인증 토큰 (ID Token) |
-| `fcmToken` | string | O | FCM 디바이스 토큰 |
-| `deviceType` | string | O | 디바이스 타입 (`IOS`, `ANDROID`) |
-| `deviceId` | string | O | 고유 디바이스 ID |
+| 필드             | 타입   | 필수 | 설명                                     |
+| ---------------- | ------ | ---- | ---------------------------------------- |
+| `socialPlatform` | string | O    | 소셜 플랫폼 (`KAKAO`, `GOOGLE`, `APPLE`) |
+| `idToken`        | string | O    | 소셜 인증 토큰 (ID Token)                |
+| `fcmToken`       | string | O    | FCM 디바이스 토큰                        |
+| `deviceType`     | string | O    | 디바이스 타입 (`IOS`, `ANDROID`)         |
+| `deviceId`       | string | O    | 고유 디바이스 ID                         |
 
 **요청 예시:**
+
 ```json
 {
   "socialPlatform": "KAKAO",
@@ -61,6 +62,7 @@
 #### Responses
 
 **200 - 기존 회원 로그인 성공**
+
 ```json
 {
   "userId": 1,
@@ -74,6 +76,7 @@
 ```
 
 **201 - 신규 회원 가입 및 로그인 성공**
+
 ```json
 {
   "userId": 2,
@@ -88,10 +91,10 @@
 
 **400 - 잘못된 요청**
 
-| 케이스 | detail |
-|--------|--------|
+| 케이스              | detail                                            |
+| ------------------- | ------------------------------------------------- |
 | 필수 요청 필드 누락 | `idToken: 소셜 인증 토큰(ID Token)은 필수입니다.` |
-| JSON 형식 오류 | `요청 본문의 형식이 잘못되었습니다.` |
+| JSON 형식 오류      | `요청 본문의 형식이 잘못되었습니다.`              |
 
 ```json
 {
@@ -103,6 +106,7 @@
 ```
 
 **401 - 소셜 ID Token 검증 실패**
+
 ```json
 {
   "title": "소셜 로그인 실패",
@@ -122,11 +126,12 @@
 
 #### Request Body (`application/json`) - [ReissueRequest](#reissuerequest) 재사용
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `refreshToken` | string | O | Refresh Token |
+| 필드           | 타입   | 필수 | 설명          |
+| -------------- | ------ | ---- | ------------- |
+| `refreshToken` | string | O    | Refresh Token |
 
 **요청 예시:**
+
 ```json
 {
   "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
@@ -147,11 +152,12 @@
 
 #### Request Body (`application/json`)
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `refreshToken` | string | O | Refresh Token |
+| 필드           | 타입   | 필수 | 설명          |
+| -------------- | ------ | ---- | ------------- |
+| `refreshToken` | string | O    | Refresh Token |
 
 **요청 예시:**
+
 ```json
 {
   "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
@@ -161,6 +167,7 @@
 #### Responses
 
 **200 - 토큰 재발급 성공**
+
 ```json
 {
   "tokens": {
@@ -171,6 +178,7 @@
 ```
 
 **400 - 잘못된 요청**
+
 ```json
 {
   "title": "유효하지 않은 입력값",
@@ -181,6 +189,7 @@
 ```
 
 **401 - Refresh Token 검증 실패**
+
 ```json
 {
   "title": "토큰 재발급 실패",
@@ -202,20 +211,21 @@
 
 #### Request Body (`application/json`)
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `area` | [AreaRequest](#arearequest) | O | 영역 설정 |
-| `area.playgroundCenter` | [CoordinatesRequest](#coordinatesrequest) | O | 플레이그라운드 중심 좌표 |
-| `area.playgroundRadiusInMeters` | integer | O | 플레이그라운드 반경 (최소 10m) |
-| `area.jailCenter` | [CoordinatesRequest](#coordinatesrequest) | O | 감옥 중심 좌표 |
-| `area.jailRadiusInMeters` | integer | O | 감옥 반경 (최소 5m) |
-| `settings` | [GameSettingsRequest](#gamesettingsrequest) | O | 게임 규칙 설정 |
-| `settings.roundDurationMinutes` | integer | O | 라운드 시간 (10~180분) |
-| `settings.locationRevealIntervalMinutes` | integer | O | 위치 공개 주기 (최소 5분) |
-| `settings.policeWaitMinutes` | integer | O | 경찰 대기 시간 (최소 0분) |
-| `settings.maxParticipants` | integer | O | 최대 참여 인원 (2~50명) |
+| 필드                                     | 타입                                        | 필수 | 설명                           |
+| ---------------------------------------- | ------------------------------------------- | ---- | ------------------------------ |
+| `area`                                   | [AreaRequest](#arearequest)                 | O    | 영역 설정                      |
+| `area.playgroundCenter`                  | [CoordinatesRequest](#coordinatesrequest)   | O    | 플레이그라운드 중심 좌표       |
+| `area.playgroundRadiusInMeters`          | integer                                     | O    | 플레이그라운드 반경 (최소 10m) |
+| `area.jailCenter`                        | [CoordinatesRequest](#coordinatesrequest)   | O    | 감옥 중심 좌표                 |
+| `area.jailRadiusInMeters`                | integer                                     | O    | 감옥 반경 (최소 5m)            |
+| `settings`                               | [GameSettingsRequest](#gamesettingsrequest) | O    | 게임 규칙 설정                 |
+| `settings.roundDurationMinutes`          | integer                                     | O    | 라운드 시간 (10~180분)         |
+| `settings.locationRevealIntervalMinutes` | integer                                     | O    | 위치 공개 주기 (최소 5분)      |
+| `settings.policeWaitMinutes`             | integer                                     | O    | 경찰 대기 시간 (최소 0분)      |
+| `settings.maxParticipants`               | integer                                     | O    | 최대 참여 인원 (2~50명)        |
 
 **요청 예시:**
+
 ```json
 {
   "area": {
@@ -242,6 +252,7 @@
 #### Responses
 
 **201 - 게임 방 생성 성공**
+
 ```json
 {
   "gameId": 1,
@@ -257,12 +268,12 @@
 
 **400 - 잘못된 요청**
 
-| 케이스 | detail |
-|--------|--------|
-| 필수 필드 누락 | `area: 영역 설정은 필수입니다.` |
-| 감옥이 플레이그라운드 밖 | `감옥 영역이 플레이그라운드 영역 내에 포함되어야 합니다.` |
-| 위치 공개 주기 > 라운드 시간 | `위치 공개 주기는 라운드 시간보다 짧아야 합니다.` |
-| JSON 형식 오류 | `요청 본문의 형식이 잘못되었습니다.` |
+| 케이스                       | detail                                                    |
+| ---------------------------- | --------------------------------------------------------- |
+| 필수 필드 누락               | `area: 영역 설정은 필수입니다.`                           |
+| 감옥이 플레이그라운드 밖     | `감옥 영역이 플레이그라운드 영역 내에 포함되어야 합니다.` |
+| 위치 공개 주기 > 라운드 시간 | `위치 공개 주기는 라운드 시간보다 짧아야 합니다.`         |
+| JSON 형식 오류               | `요청 본문의 형식이 잘못되었습니다.`                      |
 
 ```json
 {
@@ -274,6 +285,7 @@
 ```
 
 **401 - 인증 실패**
+
 ```json
 {
   "title": "인증 필요",
@@ -284,6 +296,7 @@
 ```
 
 **409 - 이미 다른 활성 게임에 참여 중**
+
 ```json
 {
   "title": "이미 참가 중인 게임",
@@ -305,17 +318,18 @@
 
 #### Path Parameters
 
-| 파라미터 | 타입 | 필수 | 설명 | 예시 |
-|----------|------|------|------|------|
-| `gameId` | integer (int64) | O | 게임 ID | `1` |
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
 
 #### Request Body (`application/json`)
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `inviteCode` | string | O | 초대 코드 |
+| 필드         | 타입   | 필수 | 설명      |
+| ------------ | ------ | ---- | --------- |
+| `inviteCode` | string | O    | 초대 코드 |
 
 **요청 예시:**
+
 ```json
 {
   "inviteCode": "ABC123"
@@ -325,6 +339,7 @@
 #### Responses
 
 **200 - 게임 참여 성공**
+
 ```json
 {
   "gameId": 1,
@@ -334,11 +349,11 @@
 
 **400 - 잘못된 요청**
 
-| 케이스 | detail |
-|--------|--------|
-| 초대 코드 누락 | `inviteCode: 초대 코드는 필수입니다.` |
-| 잘못된 초대 코드 | `잘못된 초대 코드입니다.` |
-| 게임이 이미 시작됨 | `이미 시작된 게임에는 참여할 수 없습니다.` |
+| 케이스              | detail                                     |
+| ------------------- | ------------------------------------------ |
+| 초대 코드 누락      | `inviteCode: 초대 코드는 필수입니다.`      |
+| 잘못된 초대 코드    | `잘못된 초대 코드입니다.`                  |
+| 게임이 이미 시작됨  | `이미 시작된 게임에는 참여할 수 없습니다.` |
 | 최대 참여 인원 초과 | `게임 방의 최대 참여 인원에 도달했습니다.` |
 
 ```json
@@ -351,6 +366,7 @@
 ```
 
 **401 - 인증 실패**
+
 ```json
 {
   "title": "인증 필요",
@@ -361,6 +377,7 @@
 ```
 
 **404 - 게임을 찾을 수 없음**
+
 ```json
 {
   "title": "게임을 찾을 수 없음",
@@ -371,6 +388,7 @@
 ```
 
 **409 - 이미 다른 활성 게임에 참여 중**
+
 ```json
 {
   "title": "이미 참가 중인 게임",
@@ -390,15 +408,16 @@
 
 #### Path Parameters
 
-| 파라미터 | 타입 | 필수 | 설명 | 예시 |
-|----------|------|------|------|------|
-| `gameId` | integer (int64) | O | 게임 ID | `1` |
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
 
 #### Responses
 
 **200 - 게임 퇴장 성공**
 
 일반 참여자 퇴장:
+
 ```json
 {
   "leftUserId": 2,
@@ -407,6 +426,7 @@
 ```
 
 마지막 참여자 퇴장 (방 삭제):
+
 ```json
 {
   "leftUserId": 1,
@@ -415,6 +435,7 @@
 ```
 
 **401 - 인증 실패**
+
 ```json
 {
   "title": "인증 필요",
@@ -426,9 +447,9 @@
 
 **404 - 게임 또는 참여 정보를 찾을 수 없음**
 
-| 케이스 | detail |
-|--------|--------|
-| 존재하지 않는 게임 | `해당 게임을 찾을 수 없습니다.` |
+| 케이스             | detail                                |
+| ------------------ | ------------------------------------- |
+| 존재하지 않는 게임 | `해당 게임을 찾을 수 없습니다.`       |
 | 참여하지 않은 게임 | `해당 게임에 참여하고 있지 않습니다.` |
 
 ```json
@@ -452,17 +473,18 @@
 
 #### Path Parameters
 
-| 파라미터 | 타입 | 필수 | 설명 | 예시 |
-|----------|------|------|------|------|
-| `gameId` | integer (int64) | O | 게임 ID | `1` |
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
 
 #### Request Body (`application/json`)
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `targetTeam` | string | O | 변경할 팀 (`POLICE`, `ROBBER`) |
+| 필드         | 타입   | 필수 | 설명                           |
+| ------------ | ------ | ---- | ------------------------------ |
+| `targetTeam` | string | O    | 변경할 팀 (`POLICE`, `ROBBER`) |
 
 **요청 예시 (경찰로 변경):**
+
 ```json
 {
   "targetTeam": "POLICE"
@@ -470,6 +492,7 @@
 ```
 
 **요청 예시 (도둑으로 변경):**
+
 ```json
 {
   "targetTeam": "ROBBER"
@@ -482,11 +505,11 @@
 
 **400 - 잘못된 요청**
 
-| 케이스 | detail |
-|--------|--------|
-| 요청 바디 검증 실패 | `targetTeam: 팀은 필수입니다.` |
-| 게임이 이미 시작됨 | `이미 시작된 게임에는 참여할 수 없습니다.` |
-| 로비 조작 불가 | `게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.` |
+| 케이스              | detail                                                   |
+| ------------------- | -------------------------------------------------------- |
+| 요청 바디 검증 실패 | `targetTeam: 팀은 필수입니다.`                           |
+| 게임이 이미 시작됨  | `이미 시작된 게임에는 참여할 수 없습니다.`               |
+| 로비 조작 불가      | `게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.` |
 
 ```json
 {
@@ -498,6 +521,7 @@
 ```
 
 **401 - 인증 실패**
+
 ```json
 {
   "title": "인증 필요",
@@ -509,9 +533,9 @@
 
 **404 - 게임 또는 참여 정보 없음**
 
-| 케이스 | detail |
-|--------|--------|
-| 존재하지 않는 게임 | `해당 게임을 찾을 수 없습니다.` |
+| 케이스                | detail                                    |
+| --------------------- | ----------------------------------------- |
+| 존재하지 않는 게임    | `해당 게임을 찾을 수 없습니다.`           |
 | 참가자를 찾을 수 없음 | `해당 게임에 참가하지 않은 사용자입니다.` |
 
 ```json
@@ -533,17 +557,18 @@
 
 #### Path Parameters
 
-| 파라미터 | 타입 | 필수 | 설명 | 예시 |
-|----------|------|------|------|------|
-| `gameId` | integer (int64) | O | 게임 ID | `1` |
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
 
 #### Request Body (`application/json`)
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `isReady` | boolean | O | 준비 상태 |
+| 필드      | 타입    | 필수 | 설명      |
+| --------- | ------- | ---- | --------- |
+| `isReady` | boolean | O    | 준비 상태 |
 
 **요청 예시 (준비 ON):**
+
 ```json
 {
   "isReady": true
@@ -551,6 +576,7 @@
 ```
 
 **요청 예시 (준비 OFF):**
+
 ```json
 {
   "isReady": false
@@ -563,11 +589,11 @@
 
 **400 - 잘못된 요청**
 
-| 케이스 | detail |
-|--------|--------|
-| 요청 바디 검증 실패 | `isReady: 준비 여부는 필수입니다.` |
-| 게임이 이미 시작됨 | `이미 시작된 게임에는 참여할 수 없습니다.` |
-| 로비 조작 불가 | `게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.` |
+| 케이스              | detail                                                   |
+| ------------------- | -------------------------------------------------------- |
+| 요청 바디 검증 실패 | `isReady: 준비 여부는 필수입니다.`                       |
+| 게임이 이미 시작됨  | `이미 시작된 게임에는 참여할 수 없습니다.`               |
+| 로비 조작 불가      | `게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.` |
 
 ```json
 {
@@ -579,6 +605,7 @@
 ```
 
 **401 - 인증 실패**
+
 ```json
 {
   "title": "인증 필요",
@@ -590,9 +617,9 @@
 
 **404 - 게임 또는 참여 정보 없음**
 
-| 케이스 | detail |
-|--------|--------|
-| 존재하지 않는 게임 | `해당 게임을 찾을 수 없습니다.` |
+| 케이스                | detail                                    |
+| --------------------- | ----------------------------------------- |
+| 존재하지 않는 게임    | `해당 게임을 찾을 수 없습니다.`           |
 | 참가자를 찾을 수 없음 | `해당 게임에 참가하지 않은 사용자입니다.` |
 
 ```json
@@ -617,6 +644,7 @@
 #### Responses
 
 **200 - 사용자 정보 조회 성공**
+
 ```json
 {
   "userId": 1,
@@ -628,6 +656,7 @@
 ```
 
 **401 - 인증 실패**
+
 ```json
 {
   "title": "인증 필요",
@@ -647,11 +676,12 @@
 
 #### Request Body (`application/json`)
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `nickname` | string | O | 변경할 닉네임 (최대 10자) |
+| 필드       | 타입   | 필수 | 설명                      |
+| ---------- | ------ | ---- | ------------------------- |
+| `nickname` | string | O    | 변경할 닉네임 (최대 10자) |
 
 **요청 예시:**
+
 ```json
 {
   "nickname": "새닉네임"
@@ -664,9 +694,9 @@
 
 **400 - 잘못된 요청**
 
-| 케이스 | detail |
-|--------|--------|
-| 닉네임 누락/공백 | `nickname: 닉네임은 필수입니다.` |
+| 케이스                | detail                                         |
+| --------------------- | ---------------------------------------------- |
+| 닉네임 누락/공백      | `nickname: 닉네임은 필수입니다.`               |
 | 길이 초과 (10자 초과) | `nickname: 닉네임은 최대 10자까지 가능합니다.` |
 
 ```json
@@ -679,6 +709,7 @@
 ```
 
 **401 - 인증 실패**
+
 ```json
 {
   "title": "인증 필요",
@@ -689,6 +720,7 @@
 ```
 
 **409 - 닉네임 중복**
+
 ```json
 {
   "title": "닉네임 중복",
@@ -708,18 +740,20 @@
 
 #### Query Parameters
 
-| 파라미터 | 타입 | 필수 | 설명 | 예시 |
-|----------|------|------|------|------|
-| `nickname` | string | O | 확인할 닉네임 | `새닉네임` |
+| 파라미터   | 타입   | 필수 | 설명          | 예시       |
+| ---------- | ------ | ---- | ------------- | ---------- |
+| `nickname` | string | O    | 확인할 닉네임 | `새닉네임` |
 
 **요청 예시:**
-```
+
+```http
 GET /api/user/check-nickname?nickname=새닉네임
 ```
 
 #### Responses
 
 **200 - 닉네임 확인 결과**
+
 ```json
 {
   "isAvailable": true,
@@ -735,6 +769,7 @@ GET /api/user/check-nickname?nickname=새닉네임
 ```
 
 **400 - 파라미터 누락**
+
 ```json
 {
   "title": "유효하지 않은 입력값",
@@ -761,149 +796,149 @@ GET /api/user/check-nickname?nickname=새닉네임
 }
 ```
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `title` | string | 에러 제목 |
-| `status` | integer | HTTP 상태 코드 |
-| `detail` | string | 에러 상세 설명 |
-| `instance` | string | 요청 경로 |
+| 필드       | 타입    | 설명           |
+| ---------- | ------- | -------------- |
+| `title`    | string  | 에러 제목      |
+| `status`   | integer | HTTP 상태 코드 |
+| `detail`   | string  | 에러 상세 설명 |
+| `instance` | string  | 요청 경로      |
 
 ---
 
 ### LoginRequest
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `socialPlatform` | string | O | `KAKAO` \| `GOOGLE` \| `APPLE` |
-| `idToken` | string | O | 소셜 인증 토큰 |
-| `fcmToken` | string | O | FCM 디바이스 토큰 |
-| `deviceType` | string | O | `IOS` \| `ANDROID` |
-| `deviceId` | string | O | 고유 디바이스 ID |
+| 필드             | 타입   | 필수 | 설명                           |
+| ---------------- | ------ | ---- | ------------------------------ |
+| `socialPlatform` | string | O    | `KAKAO` \| `GOOGLE` \| `APPLE` |
+| `idToken`        | string | O    | 소셜 인증 토큰                 |
+| `fcmToken`       | string | O    | FCM 디바이스 토큰              |
+| `deviceType`     | string | O    | `IOS` \| `ANDROID`             |
+| `deviceId`       | string | O    | 고유 디바이스 ID               |
 
 ### LoginResponse
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `userId` | integer (int64) | 사용자 ID |
-| `nickname` | string | 닉네임 |
-| `tokens` | [Tokens](#tokens) | 토큰 정보 |
-| `isNewUser` | boolean | 신규 회원 여부 |
+| 필드        | 타입              | 설명           |
+| ----------- | ----------------- | -------------- |
+| `userId`    | integer (int64)   | 사용자 ID      |
+| `nickname`  | string            | 닉네임         |
+| `tokens`    | [Tokens](#tokens) | 토큰 정보      |
+| `isNewUser` | boolean           | 신규 회원 여부 |
 
 ### Tokens
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `accessToken` | string | JWT Access Token |
+| 필드           | 타입   | 설명              |
+| -------------- | ------ | ----------------- |
+| `accessToken`  | string | JWT Access Token  |
 | `refreshToken` | string | JWT Refresh Token |
 
 ### ReissueRequest
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `refreshToken` | string | O | Refresh Token |
+| 필드           | 타입   | 필수 | 설명          |
+| -------------- | ------ | ---- | ------------- |
+| `refreshToken` | string | O    | Refresh Token |
 
 ### ReissueResponse
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
+| 필드     | 타입              | 설명                        |
+| -------- | ----------------- | --------------------------- |
 | `tokens` | [Tokens](#tokens) | JWT 토큰 (Access + Refresh) |
 
 ### GameCreateRequest
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `area` | [AreaRequest](#arearequest) | O | 영역 설정 |
-| `settings` | [GameSettingsRequest](#gamesettingsrequest) | O | 게임 규칙 설정 |
+| 필드       | 타입                                        | 필수 | 설명           |
+| ---------- | ------------------------------------------- | ---- | -------------- |
+| `area`     | [AreaRequest](#arearequest)                 | O    | 영역 설정      |
+| `settings` | [GameSettingsRequest](#gamesettingsrequest) | O    | 게임 규칙 설정 |
 
 ### AreaRequest
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `playgroundCenter` | [CoordinatesRequest](#coordinatesrequest) | O | 플레이그라운드 중심 좌표 |
-| `playgroundRadiusInMeters` | integer (int32) | O | 플레이그라운드 반경 (최소 10m) |
-| `jailCenter` | [CoordinatesRequest](#coordinatesrequest) | O | 감옥 중심 좌표 |
-| `jailRadiusInMeters` | integer (int32) | O | 감옥 반경 (최소 5m) |
+| 필드                       | 타입                                      | 필수 | 설명                           |
+| -------------------------- | ----------------------------------------- | ---- | ------------------------------ |
+| `playgroundCenter`         | [CoordinatesRequest](#coordinatesrequest) | O    | 플레이그라운드 중심 좌표       |
+| `playgroundRadiusInMeters` | integer (int32)                           | O    | 플레이그라운드 반경 (최소 10m) |
+| `jailCenter`               | [CoordinatesRequest](#coordinatesrequest) | O    | 감옥 중심 좌표                 |
+| `jailRadiusInMeters`       | integer (int32)                           | O    | 감옥 반경 (최소 5m)            |
 
 ### CoordinatesRequest
 
-| 필드 | 타입 | 필수 | 범위 | 설명 |
-|------|------|------|------|------|
-| `latitude` | double | O | -90 ~ 90 | 위도 |
-| `longitude` | double | O | -180 ~ 180 | 경도 |
+| 필드        | 타입   | 필수 | 범위       | 설명 |
+| ----------- | ------ | ---- | ---------- | ---- |
+| `latitude`  | double | O    | -90 ~ 90   | 위도 |
+| `longitude` | double | O    | -180 ~ 180 | 경도 |
 
 ### GameSettingsRequest
 
-| 필드 | 타입 | 필수 | 범위 | 설명 |
-|------|------|------|------|------|
-| `roundDurationMinutes` | integer (int32) | O | 10~180 | 라운드 시간 (분) |
-| `locationRevealIntervalMinutes` | integer (int32) | O | 5~ | 위치 공개 주기 (분) |
-| `policeWaitMinutes` | integer (int32) | O | 0~ | 경찰 대기 시간 (분) |
-| `maxParticipants` | integer (int32) | O | 2~50 | 최대 참여 인원 |
+| 필드                            | 타입            | 필수 | 범위   | 설명                |
+| ------------------------------- | --------------- | ---- | ------ | ------------------- |
+| `roundDurationMinutes`          | integer (int32) | O    | 10~180 | 라운드 시간 (분)    |
+| `locationRevealIntervalMinutes` | integer (int32) | O    | 5~     | 위치 공개 주기 (분) |
+| `policeWaitMinutes`             | integer (int32) | O    | 0~     | 경찰 대기 시간 (분) |
+| `maxParticipants`               | integer (int32) | O    | 2~50   | 최대 참여 인원      |
 
 ### GameCreateResponse
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `gameId` | integer (int64) | 게임 ID |
-| `inviteCode` | string | 초대 코드 |
-| `status` | string | 게임 상태 |
-| `roundDurationMinutes` | integer (int32) | 라운드 시간 |
-| `locationRevealIntervalMinutes` | integer (int32) | 위치 공개 주기 |
-| `policeWaitMinutes` | integer (int32) | 경찰 대기 시간 |
-| `maxParticipants` | integer (int32) | 최대 참여 인원 |
-| `createdAt` | string (date-time) | 생성 시간 |
+| 필드                            | 타입               | 설명           |
+| ------------------------------- | ------------------ | -------------- |
+| `gameId`                        | integer (int64)    | 게임 ID        |
+| `inviteCode`                    | string             | 초대 코드      |
+| `status`                        | string             | 게임 상태      |
+| `roundDurationMinutes`          | integer (int32)    | 라운드 시간    |
+| `locationRevealIntervalMinutes` | integer (int32)    | 위치 공개 주기 |
+| `policeWaitMinutes`             | integer (int32)    | 경찰 대기 시간 |
+| `maxParticipants`               | integer (int32)    | 최대 참여 인원 |
+| `createdAt`                     | string (date-time) | 생성 시간      |
 
 ### GameJoinRequest
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `inviteCode` | string | O | 초대 코드 |
+| 필드         | 타입   | 필수 | 설명      |
+| ------------ | ------ | ---- | --------- |
+| `inviteCode` | string | O    | 초대 코드 |
 
 ### GameJoinResponse
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `gameId` | integer (int64) | 게임 ID |
+| 필드            | 타입            | 설명      |
+| --------------- | --------------- | --------- |
+| `gameId`        | integer (int64) | 게임 ID   |
 | `participantId` | integer (int64) | 참여자 ID |
 
 ### GameLeaveResponse
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `leftUserId` | integer (int64) | 퇴장한 사용자 ID |
-| `remainingCount` | integer (int32) | 남은 참여자 수 |
+| 필드             | 타입            | 설명             |
+| ---------------- | --------------- | ---------------- |
+| `leftUserId`     | integer (int64) | 퇴장한 사용자 ID |
+| `remainingCount` | integer (int32) | 남은 참여자 수   |
 
 ### TeamChangeRequest
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `targetTeam` | string | O | `POLICE` \| `ROBBER` |
+| 필드         | 타입   | 필수 | 설명                 |
+| ------------ | ------ | ---- | -------------------- |
+| `targetTeam` | string | O    | `POLICE` \| `ROBBER` |
 
 ### ReadyUpdateRequest
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `isReady` | boolean | O | 준비 상태 |
+| 필드      | 타입    | 필수 | 설명      |
+| --------- | ------- | ---- | --------- |
+| `isReady` | boolean | O    | 준비 상태 |
 
 ### NicknameUpdateRequest
 
-| 필드 | 타입 | 필수 | 설명 |
-|------|------|------|------|
-| `nickname` | string | O | 변경할 닉네임 (최대 10자) |
+| 필드       | 타입   | 필수 | 설명                      |
+| ---------- | ------ | ---- | ------------------------- |
+| `nickname` | string | O    | 변경할 닉네임 (최대 10자) |
 
 ### NicknameCheckResponse
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
+| 필드          | 타입    | 설명           |
+| ------------- | ------- | -------------- |
 | `isAvailable` | boolean | 사용 가능 여부 |
-| `message` | string | 결과 메시지 |
+| `message`     | string  | 결과 메시지    |
 
 ### MyPageResponse
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `userId` | integer (int64) | 사용자 ID |
-| `nickname` | string | 닉네임 |
-| `socialPlatform` | string | `KAKAO` \| `GOOGLE` \| `APPLE` |
-| `allowGamePush` | boolean | 게임 푸시 허용 여부 |
-| `allowMarketingPush` | boolean | 마케팅 푸시 허용 여부 |
+| 필드                 | 타입            | 설명                           |
+| -------------------- | --------------- | ------------------------------ |
+| `userId`             | integer (int64) | 사용자 ID                      |
+| `nickname`           | string          | 닉네임                         |
+| `socialPlatform`     | string          | `KAKAO` \| `GOOGLE` \| `APPLE` |
+| `allowGamePush`      | boolean         | 게임 푸시 허용 여부            |
+| `allowMarketingPush` | boolean         | 마케팅 푸시 허용 여부          |

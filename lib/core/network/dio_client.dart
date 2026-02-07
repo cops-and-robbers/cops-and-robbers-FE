@@ -29,18 +29,22 @@ class DioClient {
     required SecureTokenStorage tokenStorage,
     required Future<void> Function() onForceLogout,
   }) {
-    final dio = Dio(
-      BaseOptions(
-        baseUrl: EnvConfig.apiBaseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-        sendTimeout: const Duration(seconds: 10),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
+    final baseOptions = BaseOptions(
+      baseUrl: EnvConfig.apiBaseUrl,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      sendTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
+
+    final dio = Dio(baseOptions);
+
+    // reissue 전용 plain Dio (인터셉터 없음)
+    // AuthInterceptor 재진입으로 인한 이중 강제 로그아웃 방지
+    final plainDio = Dio(baseOptions);
 
     // 인터셉터 추가
     dio.interceptors.addAll([
@@ -48,6 +52,7 @@ class DioClient {
       AuthInterceptor(
         tokenStorage: tokenStorage,
         dio: dio,
+        plainDio: plainDio,
         onForceLogout: onForceLogout,
       ),
 

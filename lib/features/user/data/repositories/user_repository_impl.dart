@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_remote_datasource.dart';
@@ -26,6 +27,11 @@ class UserRepositoryImpl implements UserRepository {
       return response.isAvailable;
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '닉네임 확인 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
     }
   }
 
@@ -41,6 +47,11 @@ class UserRepositoryImpl implements UserRepository {
       }
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '닉네임 변경 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
     }
   }
 }

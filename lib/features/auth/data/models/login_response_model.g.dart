@@ -20,7 +20,7 @@ Map<String, dynamic> _$$LoginResponseModelImplToJson(
 ) => <String, dynamic>{
   'userId': instance.userId,
   'nickname': instance.nickname,
-  'tokens': instance.tokens,
+  'tokens': instance.tokens.toJson(),
   'isNewUser': instance.isNewUser,
 };
 

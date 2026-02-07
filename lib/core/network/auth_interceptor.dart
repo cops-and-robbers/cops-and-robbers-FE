@@ -21,6 +21,13 @@ class AuthInterceptor extends Interceptor {
   final SecureTokenStorage _tokenStorage;
   final Dio _dio;
 
+  /// 토큰 재발급 전용 Dio (인터셉터 없음)
+  ///
+  /// reissue API 호출 시 AuthInterceptor를 타지 않도록
+  /// 별도의 plain Dio 인스턴스를 사용합니다.
+  /// 이를 통해 reissue 401 시 이중 강제 로그아웃 방지.
+  final Dio _plainDio;
+
   /// 강제 로그아웃 콜백
   ///
   /// 토큰 재발급 실패 시 호출됩니다.
@@ -39,9 +46,11 @@ class AuthInterceptor extends Interceptor {
   AuthInterceptor({
     required SecureTokenStorage tokenStorage,
     required Dio dio,
+    required Dio plainDio,
     required this.onForceLogout,
   }) : _tokenStorage = tokenStorage,
-       _dio = dio;
+       _dio = dio,
+       _plainDio = plainDio;
 
   // ============================================
   // 토큰 자동 주입을 제외할 경로
@@ -133,8 +142,8 @@ class AuthInterceptor extends Interceptor {
         return handler.next(err);
       }
 
-      // /api/auth/reissue 호출
-      final response = await _dio.post(
+      // /api/auth/reissue 호출 (plain Dio 사용 — 인터셉터 재진입 방지)
+      final response = await _plainDio.post(
         ApiEndpoints.reissue,
         data: {'refreshToken': refreshToken},
       );

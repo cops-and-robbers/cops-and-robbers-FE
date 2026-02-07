@@ -7,35 +7,38 @@ part of 'auth_provider.dart';
 // **************************************************************************
 
 String _$secureTokenStorageHash() =>
-    r'e5e69a815ffd6b90eeab1a23c33f70a8c9c2675c';
+    r'ec2a6ab4973e2476db2619c692e149e324a2cdab';
 
 /// SecureTokenStorage Provider
 ///
+/// 앱 생애주기 동안 유지 (keepAlive) — 인터셉터 콜백에서 안전하게 접근 가능
+///
 /// Copied from [secureTokenStorage].
 @ProviderFor(secureTokenStorage)
-final secureTokenStorageProvider =
-    AutoDisposeProvider<SecureTokenStorage>.internal(
-      secureTokenStorage,
-      name: r'secureTokenStorageProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$secureTokenStorageHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final secureTokenStorageProvider = Provider<SecureTokenStorage>.internal(
+  secureTokenStorage,
+  name: r'secureTokenStorageProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$secureTokenStorageHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef SecureTokenStorageRef = AutoDisposeProviderRef<SecureTokenStorage>;
+typedef SecureTokenStorageRef = ProviderRef<SecureTokenStorage>;
 String _$firebaseAuthDataSourceHash() =>
-    r'48a4b1d0b638348c2e65ba7193c1ab3feb6d4f98';
+    r'95a0b0edd77b64b9889b799f7f261a1e504f76b6';
 
 /// FirebaseAuthDataSource Provider
+///
+/// 앱 생애주기 동안 유지 (keepAlive) — 인터셉터 콜백에서 안전하게 접근 가능
 ///
 /// Copied from [firebaseAuthDataSource].
 @ProviderFor(firebaseAuthDataSource)
 final firebaseAuthDataSourceProvider =
-    AutoDisposeProvider<FirebaseAuthDataSource>.internal(
+    Provider<FirebaseAuthDataSource>.internal(
       firebaseAuthDataSource,
       name: r'firebaseAuthDataSourceProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -47,15 +50,16 @@ final firebaseAuthDataSourceProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef FirebaseAuthDataSourceRef =
-    AutoDisposeProviderRef<FirebaseAuthDataSource>;
-String _$dioHash() => r'1d5323541bcde0f7ee8e0b3b355d738306481583';
+typedef FirebaseAuthDataSourceRef = ProviderRef<FirebaseAuthDataSource>;
+String _$dioHash() => r'39aeecfc1d3bf21de375577db5bac9c73488f171';
 
 /// Dio Provider (AuthInterceptor 포함)
 ///
+/// 앱 생애주기 동안 유지 (keepAlive) — HTTP 클라이언트는 dispose되면 안 됨
+///
 /// Copied from [dio].
 @ProviderFor(dio)
-final dioProvider = AutoDisposeProvider<Dio>.internal(
+final dioProvider = Provider<Dio>.internal(
   dio,
   name: r'dioProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -67,7 +71,7 @@ final dioProvider = AutoDisposeProvider<Dio>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef DioRef = AutoDisposeProviderRef<Dio>;
+typedef DioRef = ProviderRef<Dio>;
 String _$authRemoteDataSourceHash() =>
     r'08fbc5fbf94c86964791b7f20b39f2504c0e8a74';
 
@@ -193,7 +197,7 @@ final authStateProvider = AutoDisposeStreamProvider<User?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthStateRef = AutoDisposeStreamProviderRef<User?>;
-String _$authNotifierHash() => r'4e9dcd66e7e978e60afab2caba22f2f7b4944ad2';
+String _$authNotifierHash() => r'2b66c30ed2617959b3e721b3deb14e8c32766ed3';
 
 /// 인증 상태를 관리하는 Notifier
 ///
