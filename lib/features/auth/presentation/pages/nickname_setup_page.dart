@@ -196,7 +196,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
                 // 제목, 설명, 입력칸 영역 (좌우 패딩 4)
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal4),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.horizontal4,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -263,6 +265,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
           hintText: '포근포근백설기',
           controller: _nicknameController,
           maxLength: 10,
+          textColor: _isNicknameChanged ? null : AppColors.black600,
           onChanged: (value) {
             // 입력값이 변경되면 검증 상태 초기화 + 버튼 상태 갱신
             setState(() {
@@ -286,10 +289,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
               : custom_chip.ActionChip(
                   text: '중복 확인',
                   height: AppSpacing.vertical40,
-                  backgroundColor: _isNicknameChanged
-                      ? null
-                      : AppColors.black400,
-                  onTap: _isNicknameChanged ? _onCheckDuplicate : () {},
+                  onTap: _isNicknameChanged ? _onCheckDuplicate : null,
                 ),
         ),
       ],
