@@ -1,19 +1,107 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../../../core/storage/secure_token_storage.dart';
+import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/datasources/firebase_auth_datasource.dart';
+import '../../data/repositories/auth_repository_impl.dart';
+import '../../domain/entities/auth_result_entity.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/sign_in_with_apple_usecase.dart';
+import '../../domain/usecases/sign_in_with_google_usecase.dart';
+import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/utils/firebase_auth_error_handler.dart';
 
 part 'auth_provider.g.dart';
+
+// ============================================================================
+// Core Infrastructure Providers
+// ============================================================================
+
+/// SecureTokenStorage Provider
+@riverpod
+SecureTokenStorage secureTokenStorage(Ref ref) {
+  return SecureTokenStorage();
+}
 
 /// FirebaseAuthDataSource Provider
 @riverpod
 FirebaseAuthDataSource firebaseAuthDataSource(Ref ref) {
   return FirebaseAuthDataSource();
 }
+
+/// Dio Provider (AuthInterceptor 포함)
+@riverpod
+Dio dio(Ref ref) {
+  final tokenStorage = ref.watch(secureTokenStorageProvider);
+
+  return DioClient.create(
+    tokenStorage: tokenStorage,
+    onForceLogout: () async {
+      // 강제 로그아웃: Firebase 로그아웃 + 토큰 삭제 + 상태 초기화
+      final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
+      await firebaseDataSource.signOut();
+      await tokenStorage.clearTokens();
+
+      // AuthNotifier 상태를 null로 초기화하여 GoRouter 리다이렉트 트리거
+      ref.read(authNotifierProvider.notifier).forceLogout();
+
+      debugPrint('🚨 강제 로그아웃 완료 (토큰 만료/재발급 실패)');
+    },
+  );
+}
+
+// ============================================================================
+// Data Layer Providers
+// ============================================================================
+
+/// AuthRemoteDataSource Provider (Retrofit)
+@riverpod
+AuthRemoteDataSource authRemoteDataSource(Ref ref) {
+  final dio = ref.watch(dioProvider);
+  return AuthRemoteDataSource(dio);
+}
+
+/// AuthRepository Provider
+@riverpod
+AuthRepository authRepository(Ref ref) {
+  return AuthRepositoryImpl(
+    firebaseAuthDataSource: ref.watch(firebaseAuthDataSourceProvider),
+    authRemoteDataSource: ref.watch(authRemoteDataSourceProvider),
+    tokenStorage: ref.watch(secureTokenStorageProvider),
+  );
+}
+
+// ============================================================================
+// Domain Layer Providers (UseCases)
+// ============================================================================
+
+/// Google 로그인 UseCase Provider
+@riverpod
+SignInWithGoogleUseCase signInWithGoogleUseCase(Ref ref) {
+  return SignInWithGoogleUseCase(repository: ref.watch(authRepositoryProvider));
+}
+
+/// Apple 로그인 UseCase Provider
+@riverpod
+SignInWithAppleUseCase signInWithAppleUseCase(Ref ref) {
+  return SignInWithAppleUseCase(repository: ref.watch(authRepositoryProvider));
+}
+
+/// 로그아웃 UseCase Provider
+@riverpod
+SignOutUseCase signOutUseCase(Ref ref) {
+  return SignOutUseCase(repository: ref.watch(authRepositoryProvider));
+}
+
+// ============================================================================
+// Presentation Layer Providers
+// ============================================================================
 
 /// Firebase Auth State를 실시간으로 제공하는 StreamProvider
 ///
@@ -27,110 +115,107 @@ Stream<User?> authState(Ref ref) {
 
 /// 인증 상태를 관리하는 Notifier
 ///
-/// Google 로그인, 로그아웃 등의 인증 작업을 수행하며
+/// UseCase를 통해 로그인/로그아웃을 수행하며
 /// 로딩/에러 상태를 관리합니다.
+///
+/// **State**: `AsyncValue<AuthResultEntity?>` - 로그인 결과 (null = 미로그인)
 @riverpod
 class AuthNotifier extends _$AuthNotifier {
   @override
-  FutureOr<User?> build() {
-    // Firebase Auth의 현재 사용자를 반환
+  FutureOr<AuthResultEntity?> build() async {
+    // 초기 상태: Firebase Auth + JWT 토큰 모두 존재해야 인증된 것으로 판단
     final dataSource = ref.watch(firebaseAuthDataSourceProvider);
-    return dataSource.currentUser;
+    final tokenStorage = ref.watch(secureTokenStorageProvider);
+    final currentUser = dataSource.currentUser;
+
+    if (currentUser != null) {
+      // Firebase에 로그인된 사용자가 있어도 JWT 토큰이 없으면 미인증
+      final hasTokens = await tokenStorage.hasTokens();
+      if (!hasTokens) {
+        return null;
+      }
+
+      // Firebase + JWT 토큰 모두 존재 → 인증된 사용자
+      // (실제 nickname/isNewUser는 백엔드 로그인 시 갱신됨)
+      return AuthResultEntity(
+        userId: 0, // Firebase만으로는 백엔드 userId를 알 수 없음
+        nickname: currentUser.displayName ?? '',
+        isNewUser: false,
+      );
+    }
+
+    return null;
   }
 
   /// Google 로그인 수행
   ///
-  /// 사용자가 취소하거나 네트워크 오류 발생 시
-  /// [AuthException]으로 변환하여 에러 상태를 설정합니다.
-  ///
-  /// 로그인 실패 시 Firebase/Google 세션을 모두 정리합니다.
+  /// UseCase를 통해 Firebase 로그인 → 백엔드 로그인 → 토큰 저장을 수행합니다.
+  /// 성공 시 [AuthResultEntity]를 state에 설정합니다.
   Future<void> signInWithGoogle() async {
     state = const AsyncValue.loading();
 
     try {
-      final dataSource = ref.read(firebaseAuthDataSourceProvider);
-      final userCredential = await dataSource.signInWithGoogle();
-
-      // Firebase ID Token 검증 (실패 시 내부에서 세션 정리 수행)
-      await _validateIdToken('google');
-
-      state = AsyncValue.data(userCredential.user);
+      final useCase = ref.read(signInWithGoogleUseCaseProvider);
+      final result = await useCase.execute();
+      state = AsyncValue.data(result);
     } on FirebaseAuthException catch (e) {
-      // 토큰 검증 실패는 이미 _validateIdToken에서 세션 정리됨
-      // 그 외 Firebase 에러만 여기서 세션 정리
-      if (e.code != 'token-validation-failed') {
-        await _cleanupSessionOnFailure('google');
-      }
-
-      // Firebase 에러를 사용자 친화적 메시지로 변환
       state = AsyncValue.error(
         FirebaseAuthErrorHandler.createAuthException(e, provider: 'Google'),
         StackTrace.current,
       );
-      rethrow; // CRITICAL: 일반 catch로 fall-through 방지
+      rethrow;
     } catch (e, stack) {
-      // 예상치 못한 에러 발생 시 세션 정리
-      await _cleanupSessionOnFailure('google');
-
-      // 기타 예외 처리
-      state = AsyncValue.error(
-        AuthException(message: '알 수 없는 오류가 발생했습니다.', originalException: e),
-        stack,
-      );
-      rethrow; // CRITICAL: Future 재완료 시도 방지
+      if (e is AppException) {
+        state = AsyncValue.error(e, stack);
+      } else {
+        state = AsyncValue.error(
+          AuthException(message: '알 수 없는 오류가 발생했습니다.', originalException: e),
+          stack,
+        );
+      }
+      rethrow;
     }
   }
 
   /// Apple 로그인 수행
   ///
-  /// 사용자가 취소하거나 네트워크 오류 발생 시
-  /// [AuthException]으로 변환하여 에러 상태를 설정합니다.
-  ///
-  /// 로그인 실패 시 Firebase 및 소셜 로그인 세션을 모두 정리합니다.
+  /// UseCase를 통해 Firebase 로그인 → 백엔드 로그인 → 토큰 저장을 수행합니다.
+  /// 성공 시 [AuthResultEntity]를 state에 설정합니다.
   Future<void> signInWithApple() async {
     state = const AsyncValue.loading();
 
     try {
-      final dataSource = ref.read(firebaseAuthDataSourceProvider);
-      final userCredential = await dataSource.signInWithApple();
-
-      // Firebase ID Token 검증 (실패 시 내부에서 세션 정리 수행)
-      await _validateIdToken('apple');
-
-      state = AsyncValue.data(userCredential.user);
+      final useCase = ref.read(signInWithAppleUseCaseProvider);
+      final result = await useCase.execute();
+      state = AsyncValue.data(result);
     } on FirebaseAuthException catch (e) {
-      // 토큰 검증 실패는 이미 _validateIdToken에서 세션 정리됨
-      // 그 외 Firebase 에러만 여기서 세션 정리
-      if (e.code != 'token-validation-failed') {
-        await _cleanupSessionOnFailure('apple');
-      }
-
-      // Firebase 에러를 사용자 친화적 메시지로 변환
       state = AsyncValue.error(
         FirebaseAuthErrorHandler.createAuthException(e, provider: 'Apple'),
         StackTrace.current,
       );
-      rethrow; // CRITICAL: 일반 catch로 fall-through 방지
+      rethrow;
     } catch (e, stack) {
-      // 예상치 못한 에러 발생 시 세션 정리
-      await _cleanupSessionOnFailure('apple');
-
-      // 기타 예외 처리
-      state = AsyncValue.error(
-        AuthException(message: '알 수 없는 오류가 발생했습니다.', originalException: e),
-        stack,
-      );
-      rethrow; // CRITICAL: Future 재완료 시도 방지
+      if (e is AppException) {
+        state = AsyncValue.error(e, stack);
+      } else {
+        state = AsyncValue.error(
+          AuthException(message: '알 수 없는 오류가 발생했습니다.', originalException: e),
+          stack,
+        );
+      }
+      rethrow;
     }
   }
 
   /// 로그아웃
+  ///
+  /// 백엔드 + Firebase + 토큰 삭제를 모두 수행합니다.
   Future<void> signOut() async {
     state = const AsyncValue.loading();
 
     try {
-      final dataSource = ref.read(firebaseAuthDataSourceProvider);
-      await dataSource.signOut();
+      final useCase = ref.read(signOutUseCaseProvider);
+      await useCase.execute();
       state = const AsyncValue.data(null);
     } catch (e, stack) {
       state = AsyncValue.error(
@@ -140,47 +225,11 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  /// 로그인 실패 시 세션 정리
+  /// 강제 로그아웃 (AuthInterceptor에서 호출)
   ///
-  /// Firebase 및 Google 세션을 모두 정리합니다.
-  /// 에러가 발생해도 무시하고 계속 진행합니다.
-  ///
-  /// [provider]: 로그인 제공자 이름 (로그 출력용)
-  Future<void> _cleanupSessionOnFailure(String provider) async {
-    try {
-      final dataSource = ref.read(firebaseAuthDataSourceProvider);
-      await dataSource.signOut();
-      debugPrint('🔄 로그인 실패 - Firebase/Google 세션 정리 완료 ($provider)');
-    } catch (signOutError) {
-      debugPrint('⚠️ 로그아웃 중 에러 (무시): $signOutError');
-    }
-  }
-
-  /// 로그인 후 Firebase ID Token 검증
-  ///
-  /// 토큰 발급 실패 시 세션을 정리하고 명시적인 FirebaseAuthException을 발생시킵니다.
-  /// 상위 호출자는 토큰 검증 실패(code: 'token-validation-failed')에 대한
-  /// 세션 정리를 신경쓰지 않아도 됩니다.
-  ///
-  /// [provider]: 로그인 제공자 이름 (로그 출력용)
-  ///
-  /// Throws: [FirebaseAuthException] (code: 'token-validation-failed') 토큰 발급 실패 시
-  Future<void> _validateIdToken(String provider) async {
-    try {
-      final dataSource = ref.read(firebaseAuthDataSourceProvider);
-      await dataSource.getIdToken();
-    } catch (tokenError) {
-      debugPrint('❌ Firebase ID Token 발급 실패 - 로그인 취소 및 로그아웃 처리 ($provider)');
-      debugPrint('에러 타입: ${tokenError.runtimeType}');
-      debugPrint('에러 상세: $tokenError');
-      await _cleanupSessionOnFailure(provider);
-
-      // 토큰 발급 실패를 명시적인 FirebaseAuthException으로 변환
-      // 이를 통해 상위 호출자에서 일관된 에러 처리 가능
-      throw FirebaseAuthException(
-        code: 'token-validation-failed',
-        message: 'Firebase ID Token 발급에 실패했습니다.',
-      );
-    }
+  /// 토큰 재발급 실패 시 state를 null로 초기화하여
+  /// GoRouter가 로그인 화면으로 리다이렉트하도록 합니다.
+  void forceLogout() {
+    state = const AsyncValue.data(null);
   }
 }

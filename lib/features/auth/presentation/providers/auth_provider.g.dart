@@ -6,6 +6,27 @@ part of 'auth_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$secureTokenStorageHash() =>
+    r'e5e69a815ffd6b90eeab1a23c33f70a8c9c2675c';
+
+/// SecureTokenStorage Provider
+///
+/// Copied from [secureTokenStorage].
+@ProviderFor(secureTokenStorage)
+final secureTokenStorageProvider =
+    AutoDisposeProvider<SecureTokenStorage>.internal(
+      secureTokenStorage,
+      name: r'secureTokenStorageProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$secureTokenStorageHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SecureTokenStorageRef = AutoDisposeProviderRef<SecureTokenStorage>;
 String _$firebaseAuthDataSourceHash() =>
     r'48a4b1d0b638348c2e65ba7193c1ab3feb6d4f98';
 
@@ -28,6 +49,128 @@ final firebaseAuthDataSourceProvider =
 // ignore: unused_element
 typedef FirebaseAuthDataSourceRef =
     AutoDisposeProviderRef<FirebaseAuthDataSource>;
+String _$dioHash() => r'1d5323541bcde0f7ee8e0b3b355d738306481583';
+
+/// Dio Provider (AuthInterceptor 포함)
+///
+/// Copied from [dio].
+@ProviderFor(dio)
+final dioProvider = AutoDisposeProvider<Dio>.internal(
+  dio,
+  name: r'dioProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$dioHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef DioRef = AutoDisposeProviderRef<Dio>;
+String _$authRemoteDataSourceHash() =>
+    r'08fbc5fbf94c86964791b7f20b39f2504c0e8a74';
+
+/// AuthRemoteDataSource Provider (Retrofit)
+///
+/// Copied from [authRemoteDataSource].
+@ProviderFor(authRemoteDataSource)
+final authRemoteDataSourceProvider =
+    AutoDisposeProvider<AuthRemoteDataSource>.internal(
+      authRemoteDataSource,
+      name: r'authRemoteDataSourceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$authRemoteDataSourceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AuthRemoteDataSourceRef = AutoDisposeProviderRef<AuthRemoteDataSource>;
+String _$authRepositoryHash() => r'76a65429e2d010171c010ca11e8101871250895e';
+
+/// AuthRepository Provider
+///
+/// Copied from [authRepository].
+@ProviderFor(authRepository)
+final authRepositoryProvider = AutoDisposeProvider<AuthRepository>.internal(
+  authRepository,
+  name: r'authRepositoryProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$authRepositoryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AuthRepositoryRef = AutoDisposeProviderRef<AuthRepository>;
+String _$signInWithGoogleUseCaseHash() =>
+    r'8c98caf1266b3f621de1fff95dbe743d11d7fe48';
+
+/// Google 로그인 UseCase Provider
+///
+/// Copied from [signInWithGoogleUseCase].
+@ProviderFor(signInWithGoogleUseCase)
+final signInWithGoogleUseCaseProvider =
+    AutoDisposeProvider<SignInWithGoogleUseCase>.internal(
+      signInWithGoogleUseCase,
+      name: r'signInWithGoogleUseCaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$signInWithGoogleUseCaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SignInWithGoogleUseCaseRef =
+    AutoDisposeProviderRef<SignInWithGoogleUseCase>;
+String _$signInWithAppleUseCaseHash() =>
+    r'b05f076cc162feb22a75ff665b77b0c9d13bd4c2';
+
+/// Apple 로그인 UseCase Provider
+///
+/// Copied from [signInWithAppleUseCase].
+@ProviderFor(signInWithAppleUseCase)
+final signInWithAppleUseCaseProvider =
+    AutoDisposeProvider<SignInWithAppleUseCase>.internal(
+      signInWithAppleUseCase,
+      name: r'signInWithAppleUseCaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$signInWithAppleUseCaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SignInWithAppleUseCaseRef =
+    AutoDisposeProviderRef<SignInWithAppleUseCase>;
+String _$signOutUseCaseHash() => r'43363bb12c29608b922dc4b401fe5f632f2dcbe8';
+
+/// 로그아웃 UseCase Provider
+///
+/// Copied from [signOutUseCase].
+@ProviderFor(signOutUseCase)
+final signOutUseCaseProvider = AutoDisposeProvider<SignOutUseCase>.internal(
+  signOutUseCase,
+  name: r'signOutUseCaseProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$signOutUseCaseHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SignOutUseCaseRef = AutoDisposeProviderRef<SignOutUseCase>;
 String _$authStateHash() => r'facb22ebd952358284758f2de88b4f654584d127';
 
 /// Firebase Auth State를 실시간으로 제공하는 StreamProvider
@@ -50,17 +193,19 @@ final authStateProvider = AutoDisposeStreamProvider<User?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthStateRef = AutoDisposeStreamProviderRef<User?>;
-String _$authNotifierHash() => r'55585995fd876633b6209eafc2ddf0258901e346';
+String _$authNotifierHash() => r'4e9dcd66e7e978e60afab2caba22f2f7b4944ad2';
 
 /// 인증 상태를 관리하는 Notifier
 ///
-/// Google 로그인, 로그아웃 등의 인증 작업을 수행하며
+/// UseCase를 통해 로그인/로그아웃을 수행하며
 /// 로딩/에러 상태를 관리합니다.
+///
+/// **State**: `AsyncValue<AuthResultEntity?>` - 로그인 결과 (null = 미로그인)
 ///
 /// Copied from [AuthNotifier].
 @ProviderFor(AuthNotifier)
 final authNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<AuthNotifier, User?>.internal(
+    AutoDisposeAsyncNotifierProvider<AuthNotifier, AuthResultEntity?>.internal(
       AuthNotifier.new,
       name: r'authNotifierProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -70,6 +215,6 @@ final authNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$AuthNotifier = AutoDisposeAsyncNotifier<User?>;
+typedef _$AuthNotifier = AutoDisposeAsyncNotifier<AuthResultEntity?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
