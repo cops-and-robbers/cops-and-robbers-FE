@@ -61,6 +61,13 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
   /// API 호출 중 로딩 상태
   bool _isLoading = false;
 
+  /// 닉네임이 서버 생성 값에서 변경되었는지 여부
+  ///
+  /// 서버가 생성한 랜덤 닉네임은 이미 유니크하므로,
+  /// 변경하지 않으면 중복확인 없이 바로 확인 가능합니다.
+  bool get _isNicknameChanged =>
+      _nicknameController.text.trim() != widget.initialNickname;
+
   // ============================================
   // Lifecycle Methods
   // ============================================
@@ -129,10 +136,16 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
   /// 확인 버튼 클릭 시 호출
   ///
-  /// 버튼이 valid 상태에서만 활성화되므로,
-  /// 이 메서드는 유효한 닉네임에 대해서만 호출됩니다.
+  /// - 닉네임 미변경: 서버 닉네임 그대로 사용 → API 호출 없이 홈 이동
+  /// - 닉네임 변경: 중복확인 통과 후 → updateNickname API 호출
   Future<void> _onConfirm() async {
     if (_isLoading) return;
+
+    // 닉네임을 변경하지 않았으면 API 호출 없이 바로 홈으로 이동
+    if (!_isNicknameChanged) {
+      context.go(RoutePaths.home);
+      return;
+    }
 
     final nickname = _nicknameController.text.trim();
 
@@ -183,7 +196,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
                 // 제목, 설명, 입력칸 영역 (좌우 패딩 4)
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -218,12 +231,16 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
                 const Spacer(),
 
-                // 확인 버튼 (valid 상태 + 로딩 아닐 때만 활성화)
+                // 확인 버튼
+                // - 닉네임 미변경: 바로 활성화 (서버 닉네임은 이미 유니크)
+                // - 닉네임 변경: 중복확인 통과 후 활성화
                 AppButton(
                   text: '확인',
                   onPressed:
-                      _validationState == NicknameValidationState.valid &&
-                          !_isLoading
+                      !_isLoading &&
+                          _nicknameController.text.trim().isNotEmpty &&
+                          (!_isNicknameChanged ||
+                              _validationState == NicknameValidationState.valid)
                       ? _onConfirm
                       : null,
                   showBorder: false,
@@ -247,12 +264,10 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
           controller: _nicknameController,
           maxLength: 10,
           onChanged: (value) {
-            // 입력값이 변경되면 검증 상태 초기화
-            if (_validationState != NicknameValidationState.none) {
-              setState(() {
-                _validationState = NicknameValidationState.none;
-              });
-            }
+            // 입력값이 변경되면 검증 상태 초기화 + 버튼 상태 갱신
+            setState(() {
+              _validationState = NicknameValidationState.none;
+            });
           },
         ),
 
@@ -271,7 +286,10 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
               : custom_chip.ActionChip(
                   text: '중복 확인',
                   height: AppSpacing.vertical40,
-                  onTap: _onCheckDuplicate,
+                  backgroundColor: _isNicknameChanged
+                      ? null
+                      : AppColors.black400,
+                  onTap: _isNicknameChanged ? _onCheckDuplicate : () {},
                 ),
         ),
       ],
