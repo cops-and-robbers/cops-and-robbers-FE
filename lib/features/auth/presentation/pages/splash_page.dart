@@ -30,12 +30,8 @@ class _SplashPageState extends State<SplashPage> {
     // Widget이 여전히 마운트되어 있는지 확인 (메모리 누수 방지)
     if (!mounted) return;
 
-    // TODO: 인증 상태에 따라 분기 처리
-    // 현재는 무조건 로그인 화면으로 이동
-    // 향후 Auth Provider 구현 후 다음과 같이 분기:
-    // - 비인증 → login
-    // - 인증 + 온보딩 미완료 → onboarding
-    // - 인증 + 온보딩 완료 → home
+    // GoRouter redirect에서 인증 상태별 분기를 처리하므로
+    // splash에서는 /login으로 이동만 하면 됨
     context.go(RoutePaths.login);
   }
 
