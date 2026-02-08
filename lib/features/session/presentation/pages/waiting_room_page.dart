@@ -8,6 +8,22 @@ import '../../../../router/route_paths.dart';
 /// 대기실 화면
 ///
 /// 게임 시작 전 참가자들이 팀을 선택하고 준비 완료를 표시합니다.
+///
+/// ## TODO: 대기방 API 연동 (미구현)
+///
+/// ### 1. 방 참가 API 연동
+/// - `POST /api/games/{gameId}/participants` (inviteCode 전달)
+/// - 초대코드로 입장하는 사용자가 대기방 진입 시 호출
+/// - 방 생성자는 createGame 응답의 gameId로 직접 진입 (별도 참가 API 불필요할 수 있음 - 백엔드 확인 필요)
+///
+/// ### 2. 대기방 정보 조회
+/// - 참가자 목록, 초대코드 표시, 방 설정 정보 등
+///
+/// ### 3. 방 나가기 API 연동
+/// - `DELETE /api/games/{gameId}/participants`
+///
+/// ### 4. 실시간 참가자 동기화
+/// - WebSocket/STOMP 구독으로 참가자 입장/퇴장 실시간 반영
 class WaitingRoomPage extends StatelessWidget {
   const WaitingRoomPage({required this.sessionId, super.key});
 

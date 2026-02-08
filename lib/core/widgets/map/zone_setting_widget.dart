@@ -93,10 +93,10 @@ class ZoneSettingWidget extends StatefulWidget {
   final LatLng? initialCenter;
 
   @override
-  State<ZoneSettingWidget> createState() => _ZoneSettingWidgetState();
+  State<ZoneSettingWidget> createState() => ZoneSettingWidgetState();
 }
 
-class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
+class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   GoogleMapController? _mapController;
   late LatLng _currentCenter;
   late double _currentRadius;

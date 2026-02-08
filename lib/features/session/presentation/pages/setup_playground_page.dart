@@ -39,6 +39,9 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
   /// 지도 초기화 완료 상태 (ZoneSettingWidget이 _onZoneChanged를 호출했는지 여부)
   bool _isMapReady = false;
 
+  /// ZoneSettingWidget 상태 접근용 키
+  final _zoneKey = GlobalKey<ZoneSettingWidgetState>();
+
   /// 로컬 저장소 서비스
   final _storageService = SessionDraftStorageService();
 
@@ -127,6 +130,12 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
         ),
         centerTitle: true,
         leading: PreviousButton(onPressed: () => context.pop()),
+        actions: [
+          IconButton(
+            onPressed: () => _zoneKey.currentState?.resetToCurrentLocation(),
+            icon: const Icon(Icons.my_location, color: AppColors.black800),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -154,6 +163,7 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
             // ZoneSettingWidget (지도 + 슬라이더)
             Expanded(
               child: ZoneSettingWidget(
+                key: _zoneKey,
                 initialCenter: _currentCenter,
                 initialRadius: _currentRadius,
                 minRadius: 100,

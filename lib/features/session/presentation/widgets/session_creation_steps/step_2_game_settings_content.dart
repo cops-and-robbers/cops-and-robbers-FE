@@ -7,7 +7,7 @@ import '../../../../../core/widgets/inputs/app_slider.dart';
 ///
 /// 게임 규칙을 설정합니다:
 /// - 라운드 제한 시간 (10~60분)
-/// - 위치 공유 간격 (1~10분)
+/// - 위치 공유 간격 (5~30분)
 /// - 경찰 시작 시간 (도둑 시작 후 1~10분 뒤)
 class Step2GameSettingsContent extends StatelessWidget {
   const Step2GameSettingsContent({
@@ -67,10 +67,10 @@ class Step2GameSettingsContent extends StatelessWidget {
         AppSlider(
           label: '위치 공유 간격',
           value: locationShareMinutes.toDouble(),
-          min: 1,
-          max: 10,
+          min: 5,
+          max: 30,
           unit: '분',
-          divisions: 9, // 1~10, 1분 단위
+          divisions: 25, // 5~30, 1분 단위
           onChanged: (value) => onLocationShareChanged(value.toInt()),
         ),
 
