@@ -13,7 +13,8 @@ _$CreateSessionResponseImpl _$$CreateSessionResponseImplFromJson(
   inviteCode: json['inviteCode'] as String,
   status: json['status'] as String,
   roundDurationMinutes: (json['roundDurationMinutes'] as num).toInt(),
-  locationShareMinutes: (json['locationShareMinutes'] as num).toInt(),
+  locationRevealIntervalMinutes: (json['locationRevealIntervalMinutes'] as num)
+      .toInt(),
   policeWaitMinutes: (json['policeWaitMinutes'] as num).toInt(),
   maxParticipants: (json['maxParticipants'] as num).toInt(),
   createdAt: json['createdAt'] as String,
@@ -26,7 +27,7 @@ Map<String, dynamic> _$$CreateSessionResponseImplToJson(
   'inviteCode': instance.inviteCode,
   'status': instance.status,
   'roundDurationMinutes': instance.roundDurationMinutes,
-  'locationShareMinutes': instance.locationShareMinutes,
+  'locationRevealIntervalMinutes': instance.locationRevealIntervalMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
   'createdAt': instance.createdAt,
