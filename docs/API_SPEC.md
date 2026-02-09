@@ -341,26 +341,10 @@
 
 **200 - 게임 참여 성공**
 
-> ⚠️ **주의**: 스키마 정의는 `{gameId, participantId}`이지만, OpenAPI 예시는 `{gameId, userId, nickname, isHost, joinedAt}`입니다. 실제 서버 응답 확인 필요.
-
-스키마 기준:
-
 ```json
 {
   "gameId": 1,
-  "participantId": 5
-}
-```
-
-OpenAPI 예시 기준:
-
-```json
-{
-  "gameId": 1,
-  "userId": 2,
-  "nickname": "집요한괴도4053",
-  "isHost": false,
-  "joinedAt": "2026-01-16T02:30:45.123456"
+  "participantId": 2
 }
 ```
 
@@ -832,7 +816,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 ```json
 {
   "isAvailable": true,
-  "message": "사용가능한 닉네임 입니다!"
+  "message": "사용 가능한 닉네임 입니다!"
 }
 ```
 
@@ -973,24 +957,10 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ### GameJoinResponse
 
-> ⚠️ 스키마와 예시 불일치 — 백엔드 확인 필요
-
-스키마 기준:
-
 | 필드            | 타입            | 설명      |
 | --------------- | --------------- | --------- |
 | `gameId`        | integer (int64) | 게임 ID   |
 | `participantId` | integer (int64) | 참여자 ID |
-
-OpenAPI 예시 기준:
-
-| 필드       | 타입               | 설명      |
-| ---------- | ------------------ | --------- |
-| `gameId`   | integer (int64)    | 게임 ID   |
-| `userId`   | integer (int64)    | 사용자 ID |
-| `nickname` | string             | 닉네임    |
-| `isHost`   | boolean            | 방장 여부 |
-| `joinedAt` | string (date-time) | 참여 시간 |
 
 ### GameLeaveResponse
 
