@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +14,7 @@ import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provi
 import 'package:cops_and_robbers/features/auth/presentation/pages/splash_page.dart';
 import 'package:cops_and_robbers/features/auth/presentation/pages/login_page.dart';
 import 'package:cops_and_robbers/features/auth/presentation/pages/onboarding_page.dart';
+import 'package:cops_and_robbers/features/auth/presentation/pages/nickname_setup_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/home_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/session_creation_flow_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
@@ -108,11 +107,26 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       // ====================================================================
-      // 2. 인증된 사용자가 로그인 페이지 접근 시
+      // 2. 인증된 사용자가 로그인/스플래시 페이지 접근 시
       // ====================================================================
-      if (currentPath == RoutePaths.login) {
-        // 로그인 완료 시 홈으로
+      if (currentPath == RoutePaths.login || currentPath == RoutePaths.splash) {
+        // 신규 회원 → 닉네임 설정 페이지로
+        if (authUser.isNewUser) {
+          final encodedNickname = Uri.encodeComponent(authUser.nickname);
+          return '${RoutePaths.nicknameSetup}?nickname=$encodedNickname';
+        }
+        // 기존 회원 → 홈으로
         return RoutePaths.home;
+      }
+
+      // ====================================================================
+      // 3. 닉네임 설정 페이지 보호 (신규 회원만 접근 가능)
+      // ====================================================================
+      if (currentPath == RoutePaths.nicknameSetup) {
+        // 기존 회원(isNewUser == false)이 직접 접근 시 홈으로 리다이렉트
+        if (authUser.isNewUser == false) {
+          return RoutePaths.home;
+        }
       }
 
       // ====================================================================
@@ -162,6 +176,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: RoutePaths.onboardingName,
         pageBuilder: (context, state) =>
             buildSmoothFade(key: state.pageKey, child: const OnboardingPage()),
+      ),
+
+      GoRoute(
+        path: RoutePaths.nicknameSetup,
+        name: RoutePaths.nicknameSetupName,
+        pageBuilder: (context, state) {
+          final nickname = state.uri.queryParameters['nickname'] ?? '';
+          return buildSmoothFade(
+            key: state.pageKey,
+            child: NicknameSetupPage(initialNickname: nickname),
+          );
+        },
       ),
 
       // ====================================================================
@@ -274,41 +300,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     ),
   );
 });
-
-// ============================================================================
-// GoRouter용 Stream 래퍼 (상태 변경 감지)
-// ============================================================================
-
-/// GoRouter의 refreshListenable로 사용할 Stream 래퍼
-///
-/// 여러 Provider의 상태 변경을 감지하여 GoRouter에게
-/// 리다이렉트 재실행을 트리거합니다.
-class GoRouterRefreshStream extends ChangeNotifier {
-  late final List<StreamSubscription<dynamic>> _subscriptions;
-
-  /// 여러 Stream을 받아 변경 사항을 감지합니다.
-  ///
-  /// Example:
-  /// ```dart
-  /// GoRouterRefreshStream([
-  ///   authNotifierProvider.stream,
-  ///   sessionNotifierProvider.stream,
-  /// ])
-  /// ```
-  GoRouterRefreshStream(List<Stream<dynamic>> streams) {
-    _subscriptions = streams
-        .map((stream) => stream.listen((_) => notifyListeners()))
-        .toList();
-  }
-
-  @override
-  void dispose() {
-    for (final subscription in _subscriptions) {
-      subscription.cancel();
-    }
-    super.dispose();
-  }
-}
 
 // ============================================================================
 // GoRouter용 Refresh Notifier (StreamProvider 감지용)

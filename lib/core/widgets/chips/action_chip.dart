@@ -8,6 +8,7 @@ import '../../constants/text_styles.dart';
 ///
 /// 탭 가능한 버튼 형태의 칩입니다.
 /// 단일 텍스트와 onTap 콜백을 지원합니다.
+/// `onTap`이 null이면 비활성화(disabled) 상태로 표시됩니다.
 ///
 /// 사용 예시:
 /// ```dart
@@ -15,6 +16,12 @@ import '../../constants/text_styles.dart';
 /// ActionChip(
 ///   text: '중복 확인',
 ///   onTap: () => check(),
+/// )
+///
+/// // 비활성화
+/// ActionChip(
+///   text: '중복 확인',
+///   onTap: null,
 /// )
 ///
 /// // 커스텀 색상
@@ -29,7 +36,7 @@ class ActionChip extends StatelessWidget {
   const ActionChip({
     super.key,
     required this.text,
-    required this.onTap,
+    this.onTap,
     this.backgroundColor,
     this.textColor,
     this.width,
@@ -40,8 +47,8 @@ class ActionChip extends StatelessWidget {
   /// 버튼 텍스트
   final String text;
 
-  /// 탭 콜백 (필수)
-  final VoidCallback onTap;
+  /// 탭 콜백 (null이면 비활성화)
+  final VoidCallback? onTap;
 
   /// 배경색 (기본: AppColors.black800)
   final Color? backgroundColor;
@@ -62,8 +69,10 @@ class ActionChip extends StatelessWidget {
   // 기본값 Getter 메서드
   // ============================================
 
-  /// 배경색 (기본: AppColors.black800)
-  Color get _effectiveBackgroundColor => backgroundColor ?? AppColors.black800;
+  /// 배경색 (기본: AppColors.black800, 비활성화 시: AppColors.black200)
+  Color get _effectiveBackgroundColor => _isDisabled
+      ? AppColors.black200
+      : (backgroundColor ?? AppColors.black800);
 
   /// 텍스트 색상 (기본: AppColors.white)
   Color get _effectiveTextColor => textColor ?? AppColors.white;
@@ -76,6 +85,9 @@ class ActionChip extends StatelessWidget {
 
   /// 모서리 둥글기 (기본: 8.r)
   double get _effectiveBorderRadius => borderRadius ?? 8.r;
+
+  /// 비활성화 여부 (onTap이 null이면 비활성화)
+  bool get _isDisabled => onTap == null;
 
   @override
   Widget build(BuildContext context) {

@@ -44,18 +44,55 @@ class ApiEndpoints {
       dotenv.env['USE_MOCK_API']?.toLowerCase() == 'true';
 
   // ============================================
-  // 참고: 구체적인 API 엔드포인트
-  // Note: Specific API Endpoints
+  // Auth API - 소셜 로그인 및 토큰 관리
   // ============================================
-  //
-  // 백엔드 API가 정의되면 아래와 같은 형태로 추가 예정:
-  // Will be added in the following format once backend API is defined:
-  //
-  // static const String googleLogin = '/auth/google';
-  // static const String refreshToken = '/auth/refresh';
-  // static const String createSession = '/api/sessions';
-  // static String getSession(String sessionId) => '/api/sessions/$sessionId';
-  //
-  // 현재는 백엔드 정의 전이므로 빈 상태로 유지
-  // Currently kept empty until backend is defined
+
+  /// 소셜 로그인
+  static const String login = '/api/auth/login';
+
+  /// 로그아웃
+  static const String logout = '/api/auth/logout';
+
+  /// 토큰 재발급
+  static const String reissue = '/api/auth/reissue';
+
+  // ============================================
+  // Game API - 게임 방 생성 및 관리
+  // ============================================
+
+  /// 게임 방 생성
+  static const String createGame = '/api/games';
+
+  // ============================================
+  // Game Participant API - 게임 참여자 관리
+  // ============================================
+
+  /// 게임 방 참여
+  static String joinGame(int gameId) => '/api/games/$gameId/participants';
+
+  /// 게임 방 퇴장
+  static String leaveGame(int gameId) => '/api/games/$gameId/participants';
+
+  // ============================================
+  // Lobby API - 게임 로비 상태 변경
+  // ============================================
+
+  /// 로비 팀 변경
+  static String changeTeam(int gameId) => '/api/games/$gameId/team';
+
+  /// 로비 준비 상태 변경
+  static String updateReady(int gameId) => '/api/games/$gameId/ready';
+
+  // ============================================
+  // User API - 사용자 정보
+  // ============================================
+
+  /// 내 정보 조회
+  static const String myPage = '/api/user/me';
+
+  /// 닉네임 변경
+  static const String updateNickname = '/api/user/me/nickname';
+
+  /// 닉네임 중복 확인
+  static const String checkNickname = '/api/user/check-nickname';
 }
