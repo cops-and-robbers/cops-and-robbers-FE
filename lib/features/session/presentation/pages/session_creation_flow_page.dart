@@ -205,9 +205,7 @@ class _SessionCreationFlowPageState
       return; // 네비게이션 후 setState 불필요
     } else if (sessionState is AsyncError) {
       if (kDebugMode) {
-        debugPrint(
-          '❌ [SessionCreationFlow] 세션 생성 실패: ${sessionState.error}',
-        );
+        debugPrint('❌ [SessionCreationFlow] 세션 생성 실패: ${sessionState.error}');
       }
 
       if (mounted) {
