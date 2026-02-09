@@ -13,6 +13,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../router/route_paths.dart';
+import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../domain/entities/zone_info.dart';
@@ -186,38 +187,36 @@ class _SessionCreationFlowPageState
 
     final sessionState = ref.read(sessionCreationNotifierProvider);
 
-    sessionState.when(
-      data: (result) async {
-        if (result != null) {
-          if (kDebugMode) {
-            debugPrint(
-              '✅ [SessionCreationFlow] 세션 생성 완료: '
-              'gameId=${result.gameId}, inviteCode=${result.inviteCode}',
-            );
-          }
+    if (sessionState is AsyncData<CreateSessionResult?> &&
+        sessionState.value != null) {
+      final result = sessionState.value!;
+      if (kDebugMode) {
+        debugPrint(
+          '✅ [SessionCreationFlow] 세션 생성 완료: '
+          'gameId=${result.gameId}, inviteCode=${result.inviteCode}',
+        );
+      }
 
-          // 세션 생성 성공 → Draft 삭제 후 대기실로 이동
-          await _storageService.clearDraft();
-          if (mounted) {
-            context.go(RoutePaths.waitingRoomWithId('${result.gameId}'));
-          }
-        }
-      },
-      error: (error, stack) {
-        if (kDebugMode) {
-          debugPrint('❌ [SessionCreationFlow] 세션 생성 실패: $error');
-          debugPrint('Stack trace: $stack');
-        }
+      // 세션 생성 성공 → Draft 삭제 후 대기실로 이동
+      await _storageService.clearDraft();
+      if (mounted) {
+        context.go(RoutePaths.waitingRoomWithId('${result.gameId}'));
+      }
+      return; // 네비게이션 후 setState 불필요
+    } else if (sessionState is AsyncError) {
+      if (kDebugMode) {
+        debugPrint(
+          '❌ [SessionCreationFlow] 세션 생성 실패: ${sessionState.error}',
+        );
+      }
 
-        final errorMessage = _getErrorMessage(error);
+      if (mounted) {
+        final errorMessage = _getErrorMessage(sessionState.error!);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
         );
-      },
-      loading: () {
-        // createGame이 완료된 후이므로 loading 상태는 없어야 하지만 안전 처리
-      },
-    );
+      }
+    }
 
     if (mounted) {
       setState(() => _isLoading = false);
