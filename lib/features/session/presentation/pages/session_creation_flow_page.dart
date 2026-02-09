@@ -198,7 +198,13 @@ class _SessionCreationFlowPageState
       }
 
       // 세션 생성 성공 → Draft 삭제 후 대기실로 이동
-      await _storageService.clearDraft();
+      try {
+        await _storageService.clearDraft();
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('⚠️ [SessionCreationFlow] Draft 삭제 실패 (무시): $e');
+        }
+      }
       if (mounted) {
         context.go(RoutePaths.waitingRoomWithId('${result.gameId}'));
       }
