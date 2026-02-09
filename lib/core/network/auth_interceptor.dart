@@ -149,7 +149,7 @@ class AuthInterceptor extends Interceptor {
           '   URL: ${_plainDio.options.baseUrl}${ApiEndpoints.reissue}',
         );
         debugPrint(
-          '   refreshToken: ${refreshToken.substring(0, 20)}...(${refreshToken.length}자)',
+          '   refreshToken: ${refreshToken.length > 20 ? '${refreshToken.substring(0, 20)}...' : refreshToken}(${refreshToken.length}자)',
         );
       }
 
