@@ -45,9 +45,6 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
   LatLng? _playgroundCenter;
   double? _playgroundRadius;
 
-  /// ZoneSettingWidget 상태 접근용 키
-  final _zoneKey = GlobalKey<ZoneSettingWidgetState>();
-
   /// 로컬 저장소 서비스
   final _storageService = SessionDraftStorageService();
 
@@ -92,12 +89,15 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
 
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
+    final center = _currentCenter;
+    if (center == null) return;
+
     // 로컬 저장소에 저장
-    await _storageService.updatePrisonZone(_currentCenter!, _currentRadius);
+    await _storageService.updatePrisonZone(center, _currentRadius);
 
     // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({'center': _currentCenter, 'radius': _currentRadius});
+      context.pop({'center': center, 'radius': _currentRadius});
     }
   }
 
@@ -114,21 +114,28 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
     );
   }
 
+  /// 부동소수점 오차 방지를 위한 허용 오차 (미터)
+  static const double _epsilonMeters = 1.0;
+
   /// 감옥이 플레이그라운드 안에 있는지 검증
   bool _isJailInsidePlayground() {
+    final center = _currentCenter;
+    final playgroundCenter = _playgroundCenter;
+    final playgroundRadius = _playgroundRadius;
+
     // 플레이그라운드 미설정 시 완료 불가
-    if (_playgroundCenter == null || _playgroundRadius == null) return false;
-    if (_currentCenter == null) return false;
+    if (playgroundCenter == null || playgroundRadius == null) return false;
+    if (center == null) return false;
 
     final distance = Geolocator.distanceBetween(
-      _currentCenter!.latitude,
-      _currentCenter!.longitude,
-      _playgroundCenter!.latitude,
-      _playgroundCenter!.longitude,
+      center.latitude,
+      center.longitude,
+      playgroundCenter.latitude,
+      playgroundCenter.longitude,
     );
 
     // 감옥 중심 ~ 플레이그라운드 중심 거리 + 감옥 반경 ≤ 플레이그라운드 반경
-    return (distance + _currentRadius) <= _playgroundRadius!;
+    return (distance + _currentRadius) <= (playgroundRadius + _epsilonMeters);
   }
 
   // ============================================
@@ -150,6 +157,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
           elevation: 0,
           iconTheme: const IconThemeData(color: AppColors.black800),
           centerTitle: true,
+          leading: PreviousButton(onPressed: () => context.pop()),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -197,7 +205,6 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
             // ZoneSettingWidget (지도 + 슬라이더)
             Expanded(
               child: ZoneSettingWidget(
-                key: _zoneKey,
                 initialCenter: _currentCenter,
                 initialRadius: _currentRadius,
                 minRadius: 50,
@@ -213,6 +220,23 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 onZoneChanged: _onZoneChanged,
               ),
             ),
+
+            // 검증 실패 안내 문구
+            if (_isMapReady && !_isJailInsidePlayground())
+              Padding(
+                padding: AppPadding.horizontal24,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _playgroundCenter == null
+                        ? '플레이그라운드를 먼저 설정해주세요'
+                        : '감옥이 플레이그라운드 범위를 벗어났어요',
+                    style: AppTextStyles.label16Medium.copyWith(
+                      color: AppColors.red,
+                    ),
+                  ),
+                ),
+              ),
 
             // 하단 버튼 영역
             Padding(

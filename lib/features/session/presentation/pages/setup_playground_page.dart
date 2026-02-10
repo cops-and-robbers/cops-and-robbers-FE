@@ -39,9 +39,6 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
   /// 지도 초기화 완료 상태 (ZoneSettingWidget이 _onZoneChanged를 호출했는지 여부)
   bool _isMapReady = false;
 
-  /// ZoneSettingWidget 상태 접근용 키
-  final _zoneKey = GlobalKey<ZoneSettingWidgetState>();
-
   /// 로컬 저장소 서비스
   final _storageService = SessionDraftStorageService();
 
@@ -83,12 +80,15 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
 
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
+    final center = _currentCenter;
+    if (center == null) return;
+
     // 로컬 저장소에 저장
-    await _storageService.updatePlaygroundZone(_currentCenter!, _currentRadius);
+    await _storageService.updatePlaygroundZone(center, _currentRadius);
 
     // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({'center': _currentCenter, 'radius': _currentRadius});
+      context.pop({'center': center, 'radius': _currentRadius});
     }
   }
 
@@ -110,6 +110,8 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
           backgroundColor: AppColors.white,
           elevation: 0,
           iconTheme: const IconThemeData(color: AppColors.black800),
+          centerTitle: true,
+          leading: PreviousButton(onPressed: () => context.pop()),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -157,7 +159,6 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
             // ZoneSettingWidget (지도 + 슬라이더)
             Expanded(
               child: ZoneSettingWidget(
-                key: _zoneKey,
                 initialCenter: _currentCenter,
                 initialRadius: _currentRadius,
                 minRadius: 100,
