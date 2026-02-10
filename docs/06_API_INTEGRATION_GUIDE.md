@@ -8,7 +8,7 @@
 
 `AuthInterceptor`가 **모든 API 요청에 자동으로** JWT Access Token을 주입합니다.
 
-```
+```text
 [내 코드] → POST /api/games/{gameId}/participants
                 ↓ AuthInterceptor 자동 개입
 [실제 요청] → Authorization: Bearer eyJhbGci...  ← 자동 주입됨
@@ -37,7 +37,7 @@
 
 Clean Architecture 기준으로 4단계입니다.
 
-```
+```text
 ① Data 계층 — DTO(Model) + Retrofit DataSource
 ② Domain 계층 — Entity + Repository 인터페이스
 ③ Data 계층 — Repository 구현체
