@@ -45,6 +45,7 @@ class ZoneSettingWidget extends StatefulWidget {
     this.inactiveTrackColor,
     this.radiusChipBackgroundColor,
     this.locationButtonColor,
+    this.referenceZone,
     this.mapHeight,
     this.initialCenter,
   });
@@ -88,6 +89,10 @@ class ZoneSettingWidget extends StatefulWidget {
   /// 내 위치 버튼 아이콘 색상 (기본: AppColors.blue)
   /// My location button icon color (default: AppColors.blue)
   final Color? locationButtonColor;
+
+  /// 읽기 전용 참조 구역 (감옥 설정 시 플레이그라운드 표시용)
+  /// Read-only reference zone overlay (e.g. playground shown during prison setup)
+  final CircleZoneShape? referenceZone;
 
   /// 지도 높이 (기본: 360)
   /// Map height (default: 360)
@@ -274,7 +279,10 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
               },
 
               // Circle 오버레이 (지도와 함께 이동)
-              circles: _shape.toMapOverlay(),
+              circles: {
+                ..._shape.toMapOverlay(),
+                ...?widget.referenceZone?.toMapOverlay(),
+              },
 
               // 마커 제거 (커스텀 원으로 대체)
               markers: const {},

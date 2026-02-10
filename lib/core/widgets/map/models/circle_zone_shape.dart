@@ -15,6 +15,7 @@ class CircleZoneShape implements ZoneShape {
     required this.fillColor,
     required this.strokeColor,
     required this.strokeWidth,
+    this.circleId = 'zone_circle',
   }) : _center = center,
        _radius = radius;
 
@@ -33,11 +34,15 @@ class CircleZoneShape implements ZoneShape {
   /// Stroke width for the zone border
   final int strokeWidth;
 
+  /// Circle 식별자 (동일 지도에 여러 Circle 배치 시 구분용)
+  /// Circle identifier for distinguishing multiple circles on the same map
+  final String circleId;
+
   @override
   Set<Circle> toMapOverlay() {
     return {
       Circle(
-        circleId: const CircleId('zone_circle'),
+        circleId: CircleId(circleId),
         center: _center,
         radius: _radius,
         fillColor: fillColor.withValues(alpha: 0.2),

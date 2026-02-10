@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -8,6 +9,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/map/models/circle_zone_shape.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
 
 /// 감옥 구역 설정 화면
@@ -39,6 +41,10 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
   /// 지도 초기화 완료 상태 (ZoneSettingWidget이 _onZoneChanged를 호출했는지 여부)
   bool _isMapReady = false;
 
+  /// 플레이그라운드 구역 정보 (참조용)
+  LatLng? _playgroundCenter;
+  double? _playgroundRadius;
+
   /// ZoneSettingWidget 상태 접근용 키
   final _zoneKey = GlobalKey<ZoneSettingWidgetState>();
 
@@ -63,6 +69,9 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
         // 저장된 데이터가 있으면 복원, 없으면 null 유지
         _currentCenter = draft?.jailCenter;
         _currentRadius = draft?.jailRadiusInMeters ?? 100.0;
+        // 플레이그라운드 구역 정보 로드 (참조 오버레이용)
+        _playgroundCenter = draft?.playgroundCenter;
+        _playgroundRadius = draft?.playgroundRadiusInMeters;
         _isLoading = false; // 로딩 완료
       });
     }
@@ -90,6 +99,36 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
     if (mounted) {
       context.pop({'center': _currentCenter, 'radius': _currentRadius});
     }
+  }
+
+  /// 플레이그라운드 참조 구역 생성
+  CircleZoneShape? _buildPlaygroundReferenceZone() {
+    if (_playgroundCenter == null || _playgroundRadius == null) return null;
+    return CircleZoneShape(
+      center: _playgroundCenter!,
+      radius: _playgroundRadius!,
+      fillColor: AppColors.blue500,
+      strokeColor: AppColors.blue800,
+      strokeWidth: 2,
+      circleId: 'reference_zone',
+    );
+  }
+
+  /// 감옥이 플레이그라운드 안에 있는지 검증
+  bool _isJailInsidePlayground() {
+    // 플레이그라운드 미설정 시 완료 불가
+    if (_playgroundCenter == null || _playgroundRadius == null) return false;
+    if (_currentCenter == null) return false;
+
+    final distance = Geolocator.distanceBetween(
+      _currentCenter!.latitude,
+      _currentCenter!.longitude,
+      _playgroundCenter!.latitude,
+      _playgroundCenter!.longitude,
+    );
+
+    // 감옥 중심 ~ 플레이그라운드 중심 거리 + 감옥 반경 ≤ 플레이그라운드 반경
+    return (distance + _currentRadius) <= _playgroundRadius!;
   }
 
   // ============================================
@@ -170,6 +209,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 inactiveTrackColor: AppColors.red100,
                 radiusChipBackgroundColor: AppColors.red,
                 locationButtonColor: AppColors.red,
+                referenceZone: _buildPlaygroundReferenceZone(),
                 onZoneChanged: _onZoneChanged,
               ),
             ),
@@ -179,7 +219,9 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
               padding: AppPadding.all20,
               child: AppButton(
                 text: '완료',
-                onPressed: _isMapReady ? _onComplete : null,
+                onPressed: _isMapReady && _isJailInsidePlayground()
+                    ? _onComplete
+                    : null,
                 backgroundColor: AppColors.red,
                 showBorder: false,
               ),
