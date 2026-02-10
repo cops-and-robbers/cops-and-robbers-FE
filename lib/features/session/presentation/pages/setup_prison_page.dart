@@ -131,12 +131,6 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
         ),
         centerTitle: true,
         leading: PreviousButton(onPressed: () => context.pop()),
-        actions: [
-          IconButton(
-            onPressed: () => _zoneKey.currentState?.resetToCurrentLocation(),
-            icon: const Icon(Icons.my_location, color: AppColors.black800),
-          ),
-        ],
       ),
       body: SafeArea(
         child: Column(
@@ -175,6 +169,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 fillColor: AppColors.red500,
                 inactiveTrackColor: AppColors.red100,
                 radiusChipBackgroundColor: AppColors.red,
+                locationButtonColor: AppColors.red,
                 onZoneChanged: _onZoneChanged,
               ),
             ),

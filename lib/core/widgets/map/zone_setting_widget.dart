@@ -44,6 +44,7 @@ class ZoneSettingWidget extends StatefulWidget {
     this.fillColor,
     this.inactiveTrackColor,
     this.radiusChipBackgroundColor,
+    this.locationButtonColor,
     this.mapHeight,
     this.initialCenter,
   });
@@ -83,6 +84,10 @@ class ZoneSettingWidget extends StatefulWidget {
   /// 반경 인디케이터 배경색 (기본: centerColor)
   /// Radius indicator background color (default: centerColor)
   final Color? radiusChipBackgroundColor;
+
+  /// 내 위치 버튼 아이콘 색상 (기본: AppColors.blue)
+  /// My location button icon color (default: AppColors.blue)
+  final Color? locationButtonColor;
 
   /// 지도 높이 (기본: 360)
   /// Map height (default: 360)
@@ -216,10 +221,17 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
               // Google Map
               _buildGoogleMap(),
 
-              // Info card (우측하단 16, 16)
+              // 내 위치 버튼 (좌측하단 16, 20)
               Positioned(
                 bottom: 16.h,
-                right: 16.w,
+                left: 20.w,
+                child: _buildMyLocationButton(),
+              ),
+
+              // Info card (우측하단 16, 20)
+              Positioned(
+                bottom: 16.h,
+                right: 20.w,
                 child: _buildRadiusIndicator(),
               ),
             ],
@@ -355,13 +367,27 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
         decoration: BoxDecoration(
           color: widget.centerColor ?? AppColors.blue,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+        ),
+      ),
+    );
+  }
+
+  /// 내 위치 버튼 (40x40 컨테이너 + 24x24 아이콘)
+  /// My location button (40x40 container + 24x24 icon)
+  Widget _buildMyLocationButton() {
+    return GestureDetector(
+      onTap: resetToCurrentLocation,
+      child: Container(
+        width: 40.w,
+        height: 40.w,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: AppRadius.large,
+        ),
+        child: Icon(
+          Icons.my_location,
+          size: 24.w,
+          color: widget.locationButtonColor ?? AppColors.blue,
         ),
       ),
     );

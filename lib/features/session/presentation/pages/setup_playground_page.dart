@@ -130,12 +130,6 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
         ),
         centerTitle: true,
         leading: PreviousButton(onPressed: () => context.pop()),
-        actions: [
-          IconButton(
-            onPressed: () => _zoneKey.currentState?.resetToCurrentLocation(),
-            icon: const Icon(Icons.my_location, color: AppColors.black800),
-          ),
-        ],
       ),
       body: SafeArea(
         child: Column(
@@ -172,6 +166,7 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
                 centerColor: AppColors.blue,
                 borderColor: AppColors.blue800,
                 fillColor: AppColors.blue500,
+                locationButtonColor: AppColors.blue,
                 onZoneChanged: _onZoneChanged,
               ),
             ),
