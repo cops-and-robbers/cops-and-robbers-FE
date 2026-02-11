@@ -15,6 +15,8 @@ class CircleZoneShape implements ZoneShape {
     required this.fillColor,
     required this.strokeColor,
     required this.strokeWidth,
+    this.circleId = 'zone_circle',
+    this.fillAlpha = 0.2,
   }) : _center = center,
        _radius = radius;
 
@@ -33,14 +35,22 @@ class CircleZoneShape implements ZoneShape {
   /// Stroke width for the zone border
   final int strokeWidth;
 
+  /// Circle 식별자 (동일 지도에 여러 Circle 배치 시 구분용)
+  /// Circle identifier for distinguishing multiple circles on the same map
+  final String circleId;
+
+  /// 채우기 투명도 (0.0 ~ 1.0, 기본: 0.2)
+  /// Fill opacity (0.0 ~ 1.0, default: 0.2)
+  final double fillAlpha;
+
   @override
   Set<Circle> toMapOverlay() {
     return {
       Circle(
-        circleId: const CircleId('zone_circle'),
+        circleId: CircleId(circleId),
         center: _center,
         radius: _radius,
-        fillColor: fillColor.withValues(alpha: 0.2),
+        fillColor: fillColor.withValues(alpha: fillAlpha),
         strokeColor: strokeColor,
         strokeWidth: strokeWidth,
         consumeTapEvents: false, // Circle 터치 이벤트 비활성화 (마커 드래그 우선)

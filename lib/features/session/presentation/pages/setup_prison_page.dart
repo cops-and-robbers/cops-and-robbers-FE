@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -8,6 +9,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/map/models/circle_zone_shape.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
 
 /// 감옥 구역 설정 화면
@@ -39,6 +41,10 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
   /// 지도 초기화 완료 상태 (ZoneSettingWidget이 _onZoneChanged를 호출했는지 여부)
   bool _isMapReady = false;
 
+  /// 플레이그라운드 구역 정보 (참조용)
+  LatLng? _playgroundCenter;
+  double? _playgroundRadius;
+
   /// 로컬 저장소 서비스
   final _storageService = SessionDraftStorageService();
 
@@ -60,6 +66,9 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
         // 저장된 데이터가 있으면 복원, 없으면 null 유지
         _currentCenter = draft?.jailCenter;
         _currentRadius = draft?.jailRadiusInMeters ?? 100.0;
+        // 플레이그라운드 구역 정보 로드 (참조 오버레이용)
+        _playgroundCenter = draft?.playgroundCenter;
+        _playgroundRadius = draft?.playgroundRadiusInMeters;
         _isLoading = false; // 로딩 완료
       });
     }
@@ -80,13 +89,53 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
 
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
+    final center = _currentCenter;
+    if (center == null) return;
+
     // 로컬 저장소에 저장
-    await _storageService.updatePrisonZone(_currentCenter!, _currentRadius);
+    await _storageService.updatePrisonZone(center, _currentRadius);
 
     // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({'center': _currentCenter, 'radius': _currentRadius});
+      context.pop({'center': center, 'radius': _currentRadius});
     }
+  }
+
+  /// 플레이그라운드 참조 구역 생성
+  CircleZoneShape? _buildPlaygroundReferenceZone() {
+    if (_playgroundCenter == null || _playgroundRadius == null) return null;
+    return CircleZoneShape(
+      center: _playgroundCenter!,
+      radius: _playgroundRadius!,
+      fillColor: AppColors.blue500,
+      strokeColor: AppColors.blue800,
+      strokeWidth: 2,
+      circleId: 'reference_zone',
+    );
+  }
+
+  /// 부동소수점 오차 방지를 위한 허용 오차 (미터)
+  static const double _epsilonMeters = 1.0;
+
+  /// 감옥이 플레이그라운드 안에 있는지 검증
+  bool _isJailInsidePlayground() {
+    final center = _currentCenter;
+    final playgroundCenter = _playgroundCenter;
+    final playgroundRadius = _playgroundRadius;
+
+    // 플레이그라운드 미설정 시 완료 불가
+    if (playgroundCenter == null || playgroundRadius == null) return false;
+    if (center == null) return false;
+
+    final distance = Geolocator.distanceBetween(
+      center.latitude,
+      center.longitude,
+      playgroundCenter.latitude,
+      playgroundCenter.longitude,
+    );
+
+    // 감옥 중심 ~ 플레이그라운드 중심 거리 + 감옥 반경 ≤ 플레이그라운드 반경
+    return (distance + _currentRadius) <= (playgroundRadius + _epsilonMeters);
   }
 
   // ============================================
@@ -108,6 +157,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
           elevation: 0,
           iconTheme: const IconThemeData(color: AppColors.black800),
           centerTitle: true,
+          leading: PreviousButton(onPressed: () => context.pop()),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -165,16 +215,37 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 fillColor: AppColors.red500,
                 inactiveTrackColor: AppColors.red100,
                 radiusChipBackgroundColor: AppColors.red,
+                locationButtonColor: AppColors.red,
+                referenceZone: _buildPlaygroundReferenceZone(),
                 onZoneChanged: _onZoneChanged,
               ),
             ),
+
+            // 검증 실패 안내 문구
+            if (_isMapReady && !_isJailInsidePlayground())
+              Padding(
+                padding: AppPadding.horizontal24,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _playgroundCenter == null
+                        ? '플레이그라운드를 먼저 설정해주세요'
+                        : '감옥이 플레이그라운드 범위를 벗어났어요',
+                    style: AppTextStyles.label16Medium.copyWith(
+                      color: AppColors.red,
+                    ),
+                  ),
+                ),
+              ),
 
             // 하단 버튼 영역
             Padding(
               padding: AppPadding.all20,
               child: AppButton(
                 text: '완료',
-                onPressed: _isMapReady ? _onComplete : null,
+                onPressed: _isMapReady && _isJailInsidePlayground()
+                    ? _onComplete
+                    : null,
                 backgroundColor: AppColors.red,
                 showBorder: false,
               ),

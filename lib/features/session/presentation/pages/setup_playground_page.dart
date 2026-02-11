@@ -80,12 +80,15 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
 
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
+    final center = _currentCenter;
+    if (center == null) return;
+
     // 로컬 저장소에 저장
-    await _storageService.updatePlaygroundZone(_currentCenter!, _currentRadius);
+    await _storageService.updatePlaygroundZone(center, _currentRadius);
 
     // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({'center': _currentCenter, 'radius': _currentRadius});
+      context.pop({'center': center, 'radius': _currentRadius});
     }
   }
 
@@ -107,6 +110,8 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
           backgroundColor: AppColors.white,
           elevation: 0,
           iconTheme: const IconThemeData(color: AppColors.black800),
+          centerTitle: true,
+          leading: PreviousButton(onPressed: () => context.pop()),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -162,6 +167,7 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
                 centerColor: AppColors.blue,
                 borderColor: AppColors.blue800,
                 fillColor: AppColors.blue500,
+                locationButtonColor: AppColors.blue,
                 onZoneChanged: _onZoneChanged,
               ),
             ),

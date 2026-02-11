@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,15 +7,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../router/route_paths.dart';
-import '../../data/models/create_session_request.dart';
+import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../domain/entities/zone_info.dart';
+import '../providers/session_provider.dart';
 import '../widgets/session_creation_steps/step_0_select_area_content.dart';
 import '../widgets/session_creation_steps/step_1_participant_settings_content.dart';
 import '../widgets/session_creation_steps/step_2_game_settings_content.dart';
@@ -26,13 +29,13 @@ import '../widgets/session_creation_steps/step_3_invite_code_content.dart';
 /// - Step 0: 구역 선택 (플레이그라운드, 감옥)
 /// - Step 1: 인원 설정 (최대 참가자)
 /// - Step 2: 게임 설정 (라운드 시간, 위치 공유 간격, 경찰 대기 시간)
-/// - Step 3: 초대 코드 확인
+/// - Step 3: 최종 설정 확인 → "방 생성하기" → API 호출 → 대기실 이동
 ///
 /// 특징:
 /// - 좌우 슬라이드 애니메이션으로 단계 전환
 /// - 뒤로가기 시 이전 단계로 이동 (Step 0에서는 홈으로)
 /// - 임시 저장 기능 (SessionDraftStorageService)
-/// - Step 2→3 전환 시 세션 생성 API 호출
+/// - Step 3에서 "방 생성하기" 버튼 클릭 시 세션 생성 API 호출
 class SessionCreationFlowPage extends ConsumerStatefulWidget {
   const SessionCreationFlowPage({super.key});
 
@@ -63,11 +66,8 @@ class _SessionCreationFlowPageState
 
   // Step 2: 게임 설정
   int _roundDurationMinutes = 30;
-  int _locationShareMinutes = 3;
+  int _locationShareMinutes = 5;
   int _policeWaitMinutes = 5;
-
-  // Step 3: 초대 코드
-  String? _inviteCode;
 
   // ============================================
   // Lifecycle
@@ -102,7 +102,7 @@ class _SessionCreationFlowPageState
         _prisonRadiusMeters = draft.jailRadiusInMeters;
         _maxParticipants = draft.maxParticipants ?? 10;
         _roundDurationMinutes = draft.roundDurationMinutes ?? 30;
-        _locationShareMinutes = draft.locationShareMinutes ?? 3;
+        _locationShareMinutes = draft.locationShareMinutes ?? 5;
         _policeWaitMinutes = draft.policeWaitMinutes ?? 5;
       });
     }
@@ -140,7 +140,7 @@ class _SessionCreationFlowPageState
     }
   }
 
-  /// 다음 단계로 이동 (Step 0~2: "다음" 버튼)
+  /// 다음 단계로 이동 (Step 0~2: "다음" / Step 3: "방 생성하기")
   Future<void> _goToNextStep() async {
     if (_currentStep < 3) {
       await _saveDraft();
@@ -149,79 +149,93 @@ class _SessionCreationFlowPageState
         curve: Curves.easeInOut,
       );
     } else {
-      // Step 3: "방 생성하기" 버튼 → 세션 생성 API 호출
+      // Step 3: "방 생성하기" → API 호출 → 대기실 이동
       await _createSessionAndNavigate();
     }
   }
 
-  /// 세션 생성 및 대기실 이동
+  /// 세션 생성 API 호출 후 대기실로 이동
   Future<void> _createSessionAndNavigate() async {
-    await _createSession();
-
-    if (_inviteCode != null) {
-      // 세션 생성 성공 → Draft 삭제 후 대기실로 이동
-      await _storageService.clearDraft();
-      if (mounted) {
-        // TODO: 대기실로 이동 (현재는 게임으로)
-        context.go(RoutePaths.waitingRoom);
-      }
-    }
-  }
-
-  /// 세션 생성 API 호출
-  Future<void> _createSession() async {
     if (_playgroundCenter == null ||
         _playgroundRadiusMeters == null ||
         _prisonCenter == null ||
         _prisonRadiusMeters == null) {
-      debugPrint('❌ [SessionCreationFlow] 구역 정보가 없습니다');
+      if (kDebugMode) {
+        debugPrint('❌ [SessionCreationFlow] 구역 정보가 없습니다');
+      }
       return;
     }
 
     setState(() => _isLoading = true);
 
-    try {
-      final request = CreateSessionRequest(
-        playgroundLatitude: _playgroundCenter!.latitude,
-        playgroundLongitude: _playgroundCenter!.longitude,
-        playgroundRadiusInMeters: _playgroundRadiusMeters!,
-        jailLatitude: _prisonCenter!.latitude,
-        jailLongitude: _prisonCenter!.longitude,
-        jailRadiusInMeters: _prisonRadiusMeters!,
-        maxParticipants: _maxParticipants,
-        roundDurationMinutes: _roundDurationMinutes,
-        locationShareMinutes: _locationShareMinutes,
-        policeWaitMinutes: _policeWaitMinutes,
-      );
+    await ref
+        .read(sessionCreationNotifierProvider.notifier)
+        .createGame(
+          playgroundLatitude: _playgroundCenter!.latitude,
+          playgroundLongitude: _playgroundCenter!.longitude,
+          playgroundRadiusInMeters: _playgroundRadiusMeters!.toInt(),
+          jailLatitude: _prisonCenter!.latitude,
+          jailLongitude: _prisonCenter!.longitude,
+          jailRadiusInMeters: _prisonRadiusMeters!.toInt(),
+          roundDurationMinutes: _roundDurationMinutes,
+          locationRevealIntervalMinutes: _locationShareMinutes,
+          policeWaitMinutes: _policeWaitMinutes,
+          maxParticipants: _maxParticipants,
+        );
 
-      debugPrint('🔧 [SessionCreationFlow] 세션 생성 요청: ${request.toJson()}');
+    if (!mounted) return;
 
-      // TODO: API 연동 후 실제 코드로 교체 필요
-      // final session = await ref.read(sessionNotifierProvider.notifier).createSession(request);
-      // setState(() => _inviteCode = session.inviteCode);
+    final sessionState = ref.read(sessionCreationNotifierProvider);
 
-      // 임시 하드코딩된 초대 코드 (API 연동 전)
-      await Future.delayed(const Duration(milliseconds: 500));
-      setState(() => _inviteCode = 'ABC123');
-
-      debugPrint('✅ [SessionCreationFlow] 세션 생성 완료: $_inviteCode');
-    } catch (e, stack) {
-      debugPrint('❌ [SessionCreationFlow] 세션 생성 실패: $e');
-      debugPrint('Stack trace: $stack');
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('세션 생성에 실패했습니다: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+    if (sessionState is AsyncData<CreateSessionResult?> &&
+        sessionState.value != null) {
+      final result = sessionState.value!;
+      if (kDebugMode) {
+        debugPrint(
+          '✅ [SessionCreationFlow] 세션 생성 완료: '
+          'gameId=${result.gameId}, inviteCode=${result.inviteCode}',
         );
       }
-    } finally {
+
+      // 세션 생성 성공 → Draft 삭제 후 대기실로 이동
+      try {
+        await _storageService.clearDraft();
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('⚠️ [SessionCreationFlow] Draft 삭제 실패 (무시): $e');
+        }
+      }
       if (mounted) {
-        setState(() => _isLoading = false);
+        context.go(RoutePaths.waitingRoomWithId('${result.gameId}'));
+      }
+      return; // 네비게이션 후 setState 불필요
+    } else if (sessionState is AsyncError) {
+      if (kDebugMode) {
+        debugPrint('❌ [SessionCreationFlow] 세션 생성 실패: ${sessionState.error}');
+      }
+
+      if (mounted) {
+        final errorMessage = _getErrorMessage(sessionState.error!);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        );
       }
     }
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  /// 에러 타입별 사용자 메시지 반환
+  ///
+  /// [AppException]인 경우 백엔드의 RFC 7807 `detail` 메시지를 그대로 표시합니다.
+  /// (예: 409 → "이미 게임에 참가하고 있습니다.")
+  String _getErrorMessage(Object error) {
+    if (error is AppException) {
+      return error.message;
+    }
+    return '게임 방 생성에 실패했습니다. 다시 시도해주세요.';
   }
 
   // ============================================
@@ -263,7 +277,7 @@ class _SessionCreationFlowPageState
   // ============================================
 
   /// 각 단계별 제목
-  final _stepTitles = const [
+  static const _stepTitles = [
     '구역 선택을 먼저 설정할까요?',
     '인원을 설정해요',
     '기본 정보를 설정해요',
@@ -271,7 +285,7 @@ class _SessionCreationFlowPageState
   ];
 
   /// 각 단계별 설명
-  final _stepDescriptions = const [
+  static const _stepDescriptions = [
     '게임에 필요한 구역을 설정해요',
     '최소 5명부터 게임 진행이 가능해요',
     '게임을 진행할 때, 꼭 필요한 정보들이에요',
@@ -317,6 +331,9 @@ class _SessionCreationFlowPageState
 
   @override
   Widget build(BuildContext context) {
+    // autoDispose provider를 유지하기 위해 watch (401 토큰 재발급 중 dispose 방지)
+    ref.watch(sessionCreationNotifierProvider);
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {

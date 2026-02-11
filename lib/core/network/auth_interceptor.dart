@@ -143,10 +143,25 @@ class AuthInterceptor extends Interceptor {
       }
 
       // /api/auth/reissue 호출 (plain Dio 사용 — 인터셉터 재진입 방지)
+      if (kDebugMode) {
+        debugPrint('🔑 [Reissue] 토큰 재발급 요청 시작');
+        debugPrint(
+          '   URL: ${_plainDio.options.baseUrl}${ApiEndpoints.reissue}',
+        );
+        debugPrint(
+          '   refreshToken: ${refreshToken.length > 20 ? '${refreshToken.substring(0, 20)}...' : refreshToken}(${refreshToken.length}자)',
+        );
+      }
+
       final response = await _plainDio.post(
         ApiEndpoints.reissue,
         data: {'refreshToken': refreshToken},
       );
+
+      if (kDebugMode) {
+        debugPrint('🔑 [Reissue] 응답 수신: statusCode=${response.statusCode}');
+        debugPrint('   responseData: ${response.data}');
+      }
 
       if (response.statusCode == 200) {
         final tokens = response.data['tokens'] as Map<String, dynamic>?;
@@ -190,17 +205,19 @@ class AuthInterceptor extends Interceptor {
     } catch (e) {
       if (kDebugMode) {
         if (e is DioException) {
+          debugPrint('❌ [Reissue] 토큰 재발급 실패');
+          debugPrint('   statusCode: ${e.response?.statusCode}');
+          debugPrint('   responseData: ${e.response?.data}');
+          debugPrint('   requestURL: ${e.requestOptions.uri}');
+          debugPrint('   requestData: ${e.requestOptions.data}');
           final apiError = ApiErrorResponse.tryParse(e.response?.data);
           if (apiError != null) {
-            debugPrint('❌ 토큰 재발급 실패 [${apiError.status}]');
-            debugPrint('   title: ${apiError.title}');
-            debugPrint('   detail: ${apiError.detail}');
-            debugPrint('   instance: ${apiError.instance}');
-          } else {
-            debugPrint('❌ 토큰 재발급 실패: $e');
+            debugPrint('   RFC7807 title: ${apiError.title}');
+            debugPrint('   RFC7807 detail: ${apiError.detail}');
+            debugPrint('   RFC7807 instance: ${apiError.instance}');
           }
         } else {
-          debugPrint('❌ 토큰 재발급 실패: $e');
+          debugPrint('❌ [Reissue] 토큰 재발급 실패 (non-Dio): $e');
         }
       }
       await _handleForceLogout();
