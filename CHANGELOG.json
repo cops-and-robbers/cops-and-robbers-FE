@@ -1,11 +1,44 @@
 {
   "metadata": {
-    "lastUpdated": "2026-02-06T14:19:02Z",
-    "currentVersion": "1.1.31",
+    "lastUpdated": "2026-02-11T15:53:08Z",
+    "currentVersion": "1.1.33",
     "projectType": "flutter",
-    "totalReleases": 30
+    "totalReleases": 31
   },
   "releases": [
+    {
+      "version": "1.1.33",
+      "project_type": "flutter",
+      "date": "2026-02-11",
+      "pr_number": 76,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트\n\n* **새로운 기능**\n  * 소셜 로그인 시 JWT 토큰 자동 관리 및 갱신 기능 추가\n  * 게임 생성 및 참여 API 통합\n  * 닉네임 설정 플로우 개선\n\n* **버그 수정**\n  * 토큰 처리 오류 수정\n  * 비동기 작업 레이스 컨디션 해결\n\n* **개선 사항**\n  * 플레이그라운드 및 감옥 영역 설정 시각화 강화\n  * 게임 설정 범위 조정 (라운드, 위치 공개 간격, 경찰 대기 시간)\n  * 참가자 수 범위 확대 (2~50명)",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "소셜 로그인 시 JWT 토큰 자동 관리 및 갱신 기능 추가",
+            "게임 생성 및 참여 API 통합",
+            "닉네임 설정 플로우 개선"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "토큰 처리 오류 수정",
+            "비동기 작업 레이스 컨디션 해결"
+          ]
+        },
+        "개선_사항": {
+          "title": "개선 사항",
+          "items": [
+            "플레이그라운드 및 감옥 영역 설정 시각화 강화",
+            "게임 설정 범위 조정 (라운드, 위치 공개 간격, 경찰 대기 시간)",
+            "참가자 수 범위 확대 (2~50명)"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.31",
       "project_type": "flutter",
