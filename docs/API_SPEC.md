@@ -19,14 +19,17 @@
    - [POST /api/games/{gameId}/participants - 게임 방 참여](#31-post-apigamesgameidparticipants---게임-방-참여)
    - [DELETE /api/games/{gameId}/participants - 게임 방 퇴장](#32-delete-apigamesgameidparticipants---게임-방-퇴장)
 4. [Lobby API - 게임 로비 상태 변경](#4-lobby-api---게임-로비-상태-변경)
-   - [PATCH /api/games/{gameId}/team - 로비 팀 변경](#41-patch-apigamesgameidteam---로비-팀-변경)
-   - [PATCH /api/games/{gameId}/ready - 로비 준비 상태 변경](#42-patch-apigamesgameidready---로비-준비-상태-변경)
-   - [POST /api/games/{gameId}/start - 게임 시작](#43-post-apigamesgameidstart---게임-시작)
+   - [PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경](#41-patch-apigamesgameidlobbyteam---로비-팀-변경)
+   - [PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경](#42-patch-apigamesgameidlobbyready---로비-준비-상태-변경)
+   - [POST /api/games/{gameId}/lobby/start - 게임 시작](#43-post-apigamesgameidlobbystart---게임-시작)
 5. [User API - 사용자 정보 및 프로필 관리](#5-user-api---사용자-정보-및-프로필-관리)
    - [GET /api/user/me - 내 정보 조회](#51-get-apiuserme---내-정보-조회)
    - [PATCH /api/user/me/nickname - 닉네임 변경](#52-patch-apiusermenickname---닉네임-변경)
    - [GET /api/user/check-nickname - 닉네임 중복 확인](#53-get-apiusercheck-nickname---닉네임-중복-확인)
-6. [공통 스키마](#6-공통-스키마)
+6. [System API - 게임 시스템 상호작용](#6-system-api---게임-시스템-상호작용)
+   - [POST /api/games/{gameId}/system/arrest - 도둑 체포](#61-post-apigamesgameidsystemarrest---도둑-체포)
+   - [POST /api/games/{gameId}/system/escape - 도둑 탈옥](#62-post-apigamesgameidsystemescape---도둑-탈옥)
+7. [공통 스키마](#7-공통-스키마)
 
 ---
 
@@ -125,7 +128,7 @@
 
 - **인증 필요**: No
 
-#### Request Body (`application/json`) - [ReissueRequest](#reissuerequest) 재사용
+#### Request Body (`application/json`) - [LogoutRequest](#logoutrequest)
 
 | 필드           | 타입   | 필수 | 설명          |
 | -------------- | ------ | ---- | ------------- |
@@ -466,7 +469,7 @@
 
 ## 4. Lobby API - 게임 로비 상태 변경
 
-### 4.1 PATCH /api/games/{gameId}/team - 로비 팀 변경
+### 4.1 PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경
 
 대기 상태(WAITING)에서만 팀을 변경할 수 있습니다. 팀 변경 시 해당 유저의 준비 상태는 해제됩니다.
 
@@ -517,7 +520,7 @@
   "title": "유효하지 않은 입력값",
   "status": 400,
   "detail": "targetTeam: 팀은 필수입니다.",
-  "instance": "/api/games/1/team"
+  "instance": "/api/games/1/lobby/team"
 }
 ```
 
@@ -528,7 +531,7 @@
   "title": "인증 필요",
   "status": 401,
   "detail": "로그인이 필요한 서비스입니다.",
-  "instance": "/api/games/1/team"
+  "instance": "/api/games/1/lobby/team"
 }
 ```
 
@@ -544,13 +547,13 @@
   "title": "게임을 찾을 수 없음",
   "status": 404,
   "detail": "해당 게임을 찾을 수 없습니다.",
-  "instance": "/api/games/999/team"
+  "instance": "/api/games/999/lobby/team"
 }
 ```
 
 ---
 
-### 4.2 PATCH /api/games/{gameId}/ready - 로비 준비 상태 변경
+### 4.2 PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경
 
 대기 상태(WAITING)에서만 준비 상태를 변경할 수 있습니다.
 
@@ -593,6 +596,7 @@
 | 케이스              | title                | detail                                                   |
 | ------------------- | -------------------- | -------------------------------------------------------- |
 | 요청 바디 검증 실패 | 유효하지 않은 입력값 | `isReady: 준비 여부는 필수입니다.`                       |
+| 방장 레디 해제 불가 | 방장 레디 해제 불가  | `방장은 항상 준비 상태여야 합니다.`                      |
 | 게임이 이미 시작됨  | 이미 시작된 게임     | `이미 시작된 게임에는 참여할 수 없습니다.`               |
 | 로비 조작 불가      | 로비 조작 불가       | `게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.` |
 
@@ -601,7 +605,7 @@
   "title": "유효하지 않은 입력값",
   "status": 400,
   "detail": "isReady: 준비 여부는 필수입니다.",
-  "instance": "/api/games/1/ready"
+  "instance": "/api/games/1/lobby/ready"
 }
 ```
 
@@ -612,7 +616,7 @@
   "title": "인증 필요",
   "status": 401,
   "detail": "로그인이 필요한 서비스입니다.",
-  "instance": "/api/games/1/ready"
+  "instance": "/api/games/1/lobby/ready"
 }
 ```
 
@@ -628,13 +632,13 @@
   "title": "게임을 찾을 수 없음",
   "status": 404,
   "detail": "해당 게임을 찾을 수 없습니다.",
-  "instance": "/api/games/999/ready"
+  "instance": "/api/games/999/lobby/ready"
 }
 ```
 
 ---
 
-### 4.3 POST /api/games/{gameId}/start - 게임 시작
+### 4.3 POST /api/games/{gameId}/lobby/start - 게임 시작
 
 대기 중인 게임을 시작합니다.
 
@@ -655,20 +659,20 @@
 
 **400 - 잘못된 요청**
 
-| 케이스                       | title                      | detail                                                          |
-| ---------------------------- | -------------------------- | --------------------------------------------------------------- |
-| 방장이 아님                  | 권한 없음                  | `게임을 시작할 수 있는 권한이 없습니다. (방장만 가능)`          |
-| 팀 구성 오류                 | 팀 구성 오류               | `경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다.`    |
-| 모든 참가자가 준비하지 않음  | 준비되지 않은 참가자 존재  | `모든 참가자가 준비 상태여야 게임을 시작할 수 있습니다.`        |
-| 게임이 이미 시작됨           | 이미 시작된 게임           | `이미 시작된 게임에는 참여할 수 없습니다.`                      |
-| 로비 조작 불가               | 로비 조작 불가             | `게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.`        |
+| 케이스                      | title                     | detail                                                       |
+| --------------------------- | ------------------------- | ------------------------------------------------------------ |
+| 방장이 아님                 | 권한 없음                 | `게임을 시작할 수 있는 권한이 없습니다. (방장만 가능)`       |
+| 팀 구성 오류                | 팀 구성 오류              | `경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다.` |
+| 모든 참가자가 준비하지 않음 | 준비되지 않은 참가자 존재 | `모든 참가자가 준비 상태여야 게임을 시작할 수 있습니다.`     |
+| 게임이 이미 시작됨          | 이미 시작된 게임          | `이미 시작된 게임에는 참여할 수 없습니다.`                   |
+| 로비 조작 불가              | 로비 조작 불가            | `게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.`     |
 
 ```json
 {
   "title": "권한 없음",
   "status": 400,
   "detail": "게임을 시작할 수 있는 권한이 없습니다. (방장만 가능)",
-  "instance": "/api/games/1/start"
+  "instance": "/api/games/1/lobby/start"
 }
 ```
 
@@ -679,7 +683,7 @@
   "title": "인증 필요",
   "status": 401,
   "detail": "로그인이 필요한 서비스입니다.",
-  "instance": "/api/games/1/start"
+  "instance": "/api/games/1/lobby/start"
 }
 ```
 
@@ -695,7 +699,7 @@
   "title": "게임을 찾을 수 없음",
   "status": 404,
   "detail": "해당 게임을 찾을 수 없습니다.",
-  "instance": "/api/games/999/start"
+  "instance": "/api/games/999/lobby/start"
 }
 ```
 
@@ -842,7 +846,156 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ---
 
-## 6. 공통 스키마
+## 6. System API - 게임 시스템 상호작용
+
+### 6.1 POST /api/games/{gameId}/system/arrest - 도둑 체포
+
+경찰이 도둑을 체포합니다.
+
+- **인증 필요**: Yes (JWT)
+- 경찰만 요청 가능
+- 도둑만 체포 대상이 될 수 있음
+- 이미 체포된 도둑은 체포 불가
+- 같은 게임 내 참가자끼리만 상호작용 가능
+
+#### Path Parameters
+
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
+
+#### Request Body (`application/json`)
+
+| 필드                  | 타입            | 필수 | 설명                   |
+| --------------------- | --------------- | ---- | ---------------------- |
+| `robberParticipantId` | integer (int64) | O    | 체포 대상 도둑 참가 ID |
+
+**요청 예시:**
+
+```json
+{
+  "robberParticipantId": 102
+}
+```
+
+#### Responses
+
+**200 - 체포 성공**
+
+```json
+{
+  "robberNickname": "잡힌도둑",
+  "remainingThieves": 2
+}
+```
+
+**400 - 잘못된 요청**
+
+| 케이스             | title              | detail                                              |
+| ------------------ | ------------------ | --------------------------------------------------- |
+| 게임 진행 중 아님  | 게임 진행 중 아님  | `게임이 진행 중인 상태가 아닙니다.`                 |
+| 경찰이 아님        | 경찰만 체포 가능   | `경찰 팀만 도둑을 체포할 수 있습니다.`              |
+| 경찰 대기 시간     | 경찰 대기 시간     | `경찰은 대기 시간 동안 도둑을 체포할 수 없습니다.`  |
+| 대상이 도둑이 아님 | 도둑만 체포 가능   | `도둑 팀만 체포될 수 있습니다.`                     |
+| 참가자 게임 불일치 | 참가자 게임 불일치 | `경찰과 도둑이 서로 다른 게임에 참여하고 있습니다.` |
+| 이미 체포된 도둑   | 이미 체포됨        | `이미 수감된 도둑입니다.`                           |
+
+```json
+{
+  "title": "경찰만 체포 가능",
+  "status": 400,
+  "detail": "경찰 팀만 도둑을 체포할 수 있습니다.",
+  "instance": "/api/games/1/system/arrest"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/games/1/system/arrest"
+}
+```
+
+**404 - 참가자 정보 없음**
+
+```json
+{
+  "title": "참가자를 찾을 수 없음",
+  "status": 404,
+  "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+  "instance": "/api/games/1/system/arrest"
+}
+```
+
+---
+
+### 6.2 POST /api/games/{gameId}/system/escape - 도둑 탈옥
+
+수감된 도둑이 탈옥합니다.
+
+- **인증 필요**: Yes (JWT)
+- 도둑만 요청 가능
+- 수감된 상태(JAILED)에서만 탈옥 가능
+
+#### Path Parameters
+
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
+
+#### Request Body
+
+없음
+
+#### Responses
+
+**204 - 탈옥 성공** (응답 본문 없음)
+
+**400 - 잘못된 요청**
+
+| 케이스            | title             | detail                                  |
+| ----------------- | ----------------- | --------------------------------------- |
+| 게임 진행 중 아님 | 게임 진행 중 아님 | `게임이 진행 중인 상태가 아닙니다.`     |
+| 수감되지 않음     | 수감되지 않음     | `수감된 상태에서만 탈옥할 수 있습니다.` |
+
+```json
+{
+  "title": "수감되지 않음",
+  "status": 400,
+  "detail": "수감된 상태에서만 탈옥할 수 있습니다.",
+  "instance": "/api/games/1/system/escape"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/games/1/system/escape"
+}
+```
+
+**404 - 참가자 정보 없음**
+
+```json
+{
+  "title": "참가자를 찾을 수 없음",
+  "status": 404,
+  "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+  "instance": "/api/games/1/system/escape"
+}
+```
+
+---
+
+## 7. 공통 스키마
 
 ### ErrorResponse
 
@@ -891,6 +1044,12 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | -------------- | ------ | ----------------- |
 | `accessToken`  | string | JWT Access Token  |
 | `refreshToken` | string | JWT Refresh Token |
+
+### LogoutRequest
+
+| 필드           | 타입   | 필수 | 설명          |
+| -------------- | ------ | ---- | ------------- |
+| `refreshToken` | string | O    | Refresh Token |
 
 ### ReissueRequest
 
@@ -980,6 +1139,19 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | 필드      | 타입    | 필수 | 설명      |
 | --------- | ------- | ---- | --------- |
 | `isReady` | boolean | O    | 준비 상태 |
+
+### ArrestRequest
+
+| 필드                  | 타입            | 필수 | 설명                   |
+| --------------------- | --------------- | ---- | ---------------------- |
+| `robberParticipantId` | integer (int64) | O    | 체포 대상 도둑 참가 ID |
+
+### ArrestResponse
+
+| 필드               | 타입            | 설명               |
+| ------------------ | --------------- | ------------------ |
+| `robberNickname`   | string          | 체포된 도둑 닉네임 |
+| `remainingThieves` | integer (int32) | 남은 도둑 수       |
 
 ### NicknameUpdateRequest
 

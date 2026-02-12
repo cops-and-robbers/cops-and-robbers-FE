@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -205,7 +206,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                   // iOS에서만 Apple 로그인 버튼 표시
                   if (Platform.isIOS) ...[
-                    SizedBox(height: 12.h),
+                    SizedBox(height: AppSpacing.vertical12),
                     AppleLoginButton(
                       onPressed: _isGoogleLoading
                           ? null
