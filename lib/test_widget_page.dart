@@ -87,7 +87,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: '기본 버튼 (검정)',
                   onPressed: () {
-                    _showSnackBar('기본 버튼 클릭!');
+                    _showSnackBar('기본 버튼 클릭!!');
                   },
                 ),
 

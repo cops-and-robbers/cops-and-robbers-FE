@@ -14,11 +14,27 @@
       },
       "oauth_client": [
         {
+          "client_id": "54954969671-02d018blq67asg3s988kqentjo3iesg2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.elipair.copsandrobbers",
+            "certificate_hash": "f90235cd19adf6ef8e751670132829c7a058bd4a"
+          }
+        },
+        {
           "client_id": "54954969671-3dpcga46ljqdkn11u7m78te93b9r2gb9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.elipair.copsandrobbers",
             "certificate_hash": "e83d29755a8067732c4463ce46e49e5fb7818f67"
+          }
+        },
+        {
+          "client_id": "54954969671-uk5o3b1750h264lt7vea02bsj97g2e9l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.elipair.copsandrobbers",
+            "certificate_hash": "89f457f24e6cfef30d2f0f12ba2e645f5840795a"
           }
         },
         {
@@ -39,10 +55,11 @@
               "client_type": 3
             },
             {
-              "client_id": "54954969671-fau3f2o9eqh5o53a1uastkpgd1pgnucs.apps.googleusercontent.com",
+              "client_id": "54954969671-6j0msdb9a037soorjjsnnf4a36sniep8.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.elipair.copsandrobbers"
+                "bundle_id": "com.elipair.copsandrobbers",
+                "app_store_id": "6756843948"
               }
             }
           ]

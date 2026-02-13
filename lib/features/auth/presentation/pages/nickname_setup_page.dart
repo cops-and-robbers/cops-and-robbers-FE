@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/chips/action_chip.dart' as custom_chip;
 import '../../../../core/widgets/inputs/app_text_field.dart';
+import '../../../user/presentation/providers/user_provider.dart';
+import '../providers/auth_provider.dart';
+import '../../../../router/route_paths.dart';
 
 /// 닉네임 검증 상태
 enum NicknameValidationState {
@@ -30,15 +36,19 @@ enum NicknameValidationState {
 /// 첫 로그인 시 닉네임 설정 페이지
 ///
 /// 사용자가 서비스에서 사용할 닉네임(1~10글자)을 설정합니다.
-/// 중복 확인 기능을 제공하며, 나중에 API 연동 예정입니다.
-class NicknameSetupPage extends StatefulWidget {
-  const NicknameSetupPage({super.key});
+/// 백엔드에서 자동 생성된 닉네임이 초기값으로 표시되며, 수정 가능합니다.
+/// 중복 확인 후 닉네임을 변경합니다.
+class NicknameSetupPage extends ConsumerStatefulWidget {
+  /// 백엔드에서 자동 생성된 닉네임 (로그인 응답의 nickname 필드)
+  final String initialNickname;
+
+  const NicknameSetupPage({super.key, this.initialNickname = ''});
 
   @override
-  State<NicknameSetupPage> createState() => _NicknameSetupPageState();
+  ConsumerState<NicknameSetupPage> createState() => _NicknameSetupPageState();
 }
 
-class _NicknameSetupPageState extends State<NicknameSetupPage> {
+class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
   // ============================================
   // State Variables
   // ============================================
@@ -49,6 +59,16 @@ class _NicknameSetupPageState extends State<NicknameSetupPage> {
   /// 닉네임 검증 상태
   NicknameValidationState _validationState = NicknameValidationState.none;
 
+  /// API 호출 중 로딩 상태
+  bool _isLoading = false;
+
+  /// 닉네임이 서버 생성 값에서 변경되었는지 여부
+  ///
+  /// 서버가 생성한 랜덤 닉네임은 이미 유니크하므로,
+  /// 변경하지 않으면 중복확인 없이 바로 확인 가능합니다.
+  bool get _isNicknameChanged =>
+      _nicknameController.text.trim() != widget.initialNickname;
+
   // ============================================
   // Lifecycle Methods
   // ============================================
@@ -56,7 +76,8 @@ class _NicknameSetupPageState extends State<NicknameSetupPage> {
   @override
   void initState() {
     super.initState();
-    _nicknameController = TextEditingController();
+    // 백엔드에서 받은 닉네임을 초기값으로 설정 (수정 가능)
+    _nicknameController = TextEditingController(text: widget.initialNickname);
   }
 
   @override
@@ -70,7 +91,9 @@ class _NicknameSetupPageState extends State<NicknameSetupPage> {
   // ============================================
 
   /// 중복 확인 버튼 클릭 시 호출
-  void _onCheckDuplicate() {
+  Future<void> _onCheckDuplicate() async {
+    if (_isLoading) return;
+
     final nickname = _nicknameController.text.trim();
 
     // 빈 닉네임 검증
@@ -81,30 +104,78 @@ class _NicknameSetupPageState extends State<NicknameSetupPage> {
       return;
     }
 
-    debugPrint('중복 확인 - 입력값: $nickname');
+    setState(() {
+      _isLoading = true;
+    });
 
-    // TODO: API 연동 - 닉네임 중복 체크
-    // 임시로 "test"는 중복으로 처리
-    if (nickname == 'test') {
+    try {
+      final isAvailable = await ref
+          .read(userRepositoryProvider)
+          .checkNickname(nickname);
+
+      if (!mounted) return;
+
       setState(() {
-        _validationState = NicknameValidationState.duplicate;
+        _isLoading = false;
+        _validationState = isAvailable
+            ? NicknameValidationState.valid
+            : NicknameValidationState.duplicate;
       });
-    } else {
+    } on AppException catch (e) {
+      if (!mounted) return;
+
       setState(() {
-        _validationState = NicknameValidationState.valid;
+        _isLoading = false;
+        _validationState = NicknameValidationState.error;
       });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
   /// 확인 버튼 클릭 시 호출
   ///
-  /// 버튼이 valid 상태에서만 활성화되므로,
-  /// 이 메서드는 유효한 닉네임에 대해서만 호출됩니다.
-  void _onConfirm() {
+  /// - 닉네임 미변경: 서버 닉네임 그대로 사용 → API 호출 없이 홈 이동
+  /// - 닉네임 변경: 중복확인 통과 후 → updateNickname API 호출
+  Future<void> _onConfirm() async {
+    if (_isLoading) return;
+
+    // 닉네임을 변경하지 않았으면 API 호출 없이 바로 홈으로 이동
+    if (!_isNicknameChanged) {
+      ref
+          .read(authNotifierProvider.notifier)
+          .updateNicknameCompleted(widget.initialNickname);
+      context.go(RoutePaths.home);
+      return;
+    }
+
     final nickname = _nicknameController.text.trim();
 
-    debugPrint('확인 버튼 클릭 - 닉네임: $nickname');
-    // TODO: API 연동 - 닉네임 저장 및 다음 페이지 이동
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await ref.read(userRepositoryProvider).updateNickname(nickname);
+
+      if (!mounted) return;
+
+      // 닉네임 설정 완료 → authNotifier 상태 갱신 (isNewUser: false)
+      ref.read(authNotifierProvider.notifier).updateNicknameCompleted(nickname);
+      context.go(RoutePaths.home);
+    } on AppException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    }
   }
 
   // ============================================
@@ -130,7 +201,9 @@ class _NicknameSetupPageState extends State<NicknameSetupPage> {
 
                 // 제목, 설명, 입력칸 영역 (좌우 패딩 4)
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.horizontal4,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -165,10 +238,16 @@ class _NicknameSetupPageState extends State<NicknameSetupPage> {
 
                 const Spacer(),
 
-                // 확인 버튼 (valid 상태에서만 활성화)
+                // 확인 버튼
+                // - 닉네임 미변경: 바로 활성화 (서버 닉네임은 이미 유니크)
+                // - 닉네임 변경: 중복확인 통과 후 활성화
                 AppButton(
                   text: '확인',
-                  onPressed: _validationState == NicknameValidationState.valid
+                  onPressed:
+                      !_isLoading &&
+                          _nicknameController.text.trim().isNotEmpty &&
+                          (!_isNicknameChanged ||
+                              _validationState == NicknameValidationState.valid)
                       ? _onConfirm
                       : null,
                   showBorder: false,
@@ -191,24 +270,32 @@ class _NicknameSetupPageState extends State<NicknameSetupPage> {
           hintText: '포근포근백설기',
           controller: _nicknameController,
           maxLength: 10,
+          textColor: _isNicknameChanged ? null : AppColors.black600,
           onChanged: (value) {
-            // 입력값이 변경되면 검증 상태 초기화
-            if (_validationState != NicknameValidationState.none) {
-              setState(() {
-                _validationState = NicknameValidationState.none;
-              });
-            }
+            // 입력값이 변경되면 검증 상태 초기화 + 버튼 상태 갱신
+            setState(() {
+              _validationState = NicknameValidationState.none;
+            });
           },
         ),
 
         // 중복 확인 버튼 (TextField 오른쪽 내부에 위치)
         Positioned(
           right: AppSpacing.horizontal4,
-          child: custom_chip.ActionChip(
-            text: '중복 확인',
-            height: AppSpacing.vertical40,
-            onTap: _onCheckDuplicate,
-          ),
+          child: _isLoading
+              ? Padding(
+                  padding: EdgeInsets.only(right: AppSpacing.horizontal8),
+                  child: SizedBox(
+                    width: 24.w,
+                    height: 24.h,
+                    child: const CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : custom_chip.ActionChip(
+                  text: '중복 확인',
+                  height: AppSpacing.vertical40,
+                  onTap: _isNicknameChanged ? _onCheckDuplicate : null,
+                ),
         ),
       ],
     );

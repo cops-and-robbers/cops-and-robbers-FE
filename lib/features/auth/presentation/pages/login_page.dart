@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,31 +43,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _isGoogleLoading = true);
 
     try {
-      // AuthNotifier로 로그인 수행
+      // AuthNotifier로 로그인 수행 (Firebase + 백엔드)
       await ref.read(authNotifierProvider.notifier).signInWithGoogle();
 
-      // 성공 시 GoRouter가 자동으로 HomePage로 리다이렉트
+      if (!mounted) return;
+
+      // 로그인 성공 후 isNewUser에 따라 분기
+      _navigateAfterLogin();
     } catch (e) {
       // AuthNotifier에서 rethrow한 에러를 여기서 처리
       if (!mounted) return;
-
-      final authState = ref.read(authNotifierProvider);
-
-      if (authState.hasError) {
-        final errorMessage = authState.error is AuthException
-            ? (authState.error as AuthException).message
-            : '로그인 중 오류가 발생했습니다.';
-
-        //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(errorMessage, style: AppTextStyles.paragraph_14),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      _showLoginError(scaffoldMessenger, '로그인 중 오류가 발생했습니다.');
     } finally {
       // 로딩 종료 (에러 발생 시에도 반드시 실행)
       if (mounted) {
@@ -84,37 +71,68 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _isAppleLoading = true);
 
     try {
-      // AuthNotifier로 로그인 수행
+      // AuthNotifier로 로그인 수행 (Firebase + 백엔드)
       await ref.read(authNotifierProvider.notifier).signInWithApple();
 
-      // 성공 시 GoRouter가 자동으로 HomePage로 리다이렉트
+      if (!mounted) return;
+
+      // 로그인 성공 후 isNewUser에 따라 분기
+      _navigateAfterLogin();
     } catch (e) {
       // AuthNotifier에서 rethrow한 에러를 여기서 처리
       if (!mounted) return;
-
-      final authState = ref.read(authNotifierProvider);
-
-      if (authState.hasError) {
-        final errorMessage = authState.error is AuthException
-            ? (authState.error as AuthException).message
-            : 'Apple 로그인 중 오류가 발생했습니다.';
-
-        //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(errorMessage, style: AppTextStyles.paragraph_14),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      _showLoginError(scaffoldMessenger, 'Apple 로그인 중 오류가 발생했습니다.');
     } finally {
       // 로딩 종료 (에러 발생 시에도 반드시 실행)
       if (mounted) {
         setState(() => _isAppleLoading = false);
       }
     }
+  }
+
+  /// 로그인 성공 후 네비게이션 분기
+  ///
+  /// - isNewUser == true → 닉네임 설정 페이지
+  /// - isNewUser == false → 홈 페이지
+  void _navigateAfterLogin() {
+    final authState = ref.read(authNotifierProvider);
+    final authResult = authState.value;
+
+    if (authResult != null && authResult.isNewUser) {
+      // 신규 회원: 닉네임 설정 페이지로 이동
+      context.go(
+        Uri(
+          path: RoutePaths.nicknameSetup,
+          queryParameters: {'nickname': authResult.nickname},
+        ).toString(),
+      );
+    } else {
+      // 기존 회원: 홈으로 이동
+      context.go(RoutePaths.home);
+    }
+  }
+
+  /// 로그인 에러 SnackBar 표시
+  void _showLoginError(
+    ScaffoldMessengerState messenger,
+    String fallbackMessage,
+  ) {
+    final authState = ref.read(authNotifierProvider);
+
+    final errorMessage =
+        (authState.hasError && authState.error is AuthException)
+        ? (authState.error as AuthException).message
+        : fallbackMessage;
+
+    //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(errorMessage, style: AppTextStyles.paragraph_14),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   /// 개발자 도구 메뉴 표시
@@ -188,7 +206,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                   // iOS에서만 Apple 로그인 버튼 표시
                   if (Platform.isIOS) ...[
-                    SizedBox(height: 12.h),
+                    SizedBox(height: AppSpacing.vertical12),
                     AppleLoginButton(
                       onPressed: _isGoogleLoading
                           ? null

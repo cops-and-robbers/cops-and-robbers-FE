@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 1.1.29+70
+version: 1.1.35+76
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -29,7 +29,7 @@ dependencies:
   shared_preferences: ^2.3.4 # 로컬 설정 저장 (테마, 온보딩 등)
   # 네트워크 & 인증
   dio: ^5.9.0 # HTTP 클라이언트
-  retrofit: ^4.7.2 # REST API 클라이언트 생성
+  retrofit: 4.7.3 # REST API 클라이언트 생성 (4.9.x logError 호환성 이슈로 고정)
   flutter_secure_storage: ^9.2.4 # 민감 데이터 안전 저장
   flutter_dotenv: ^6.0.0 # 환경 변수 관리 (.env 파일)
   uuid: ^4.5.2 # 앱 내 고유 식별자 생성

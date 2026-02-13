@@ -44,6 +44,8 @@ class ZoneSettingWidget extends StatefulWidget {
     this.fillColor,
     this.inactiveTrackColor,
     this.radiusChipBackgroundColor,
+    this.locationButtonColor,
+    this.referenceZone,
     this.mapHeight,
     this.initialCenter,
   });
@@ -84,6 +86,14 @@ class ZoneSettingWidget extends StatefulWidget {
   /// Radius indicator background color (default: centerColor)
   final Color? radiusChipBackgroundColor;
 
+  /// 내 위치 버튼 아이콘 색상 (기본: AppColors.blue)
+  /// My location button icon color (default: AppColors.blue)
+  final Color? locationButtonColor;
+
+  /// 읽기 전용 참조 구역 (감옥 설정 시 플레이그라운드 표시용)
+  /// Read-only reference zone overlay (e.g. playground shown during prison setup)
+  final CircleZoneShape? referenceZone;
+
   /// 지도 높이 (기본: 360)
   /// Map height (default: 360)
   final double? mapHeight;
@@ -93,10 +103,10 @@ class ZoneSettingWidget extends StatefulWidget {
   final LatLng? initialCenter;
 
   @override
-  State<ZoneSettingWidget> createState() => _ZoneSettingWidgetState();
+  State<ZoneSettingWidget> createState() => ZoneSettingWidgetState();
 }
 
-class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
+class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   GoogleMapController? _mapController;
   late LatLng _currentCenter;
   late double _currentRadius;
@@ -216,10 +226,17 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
               // Google Map
               _buildGoogleMap(),
 
-              // Info card (우측하단 16, 16)
+              // 내 위치 버튼 (좌측하단 16, 20)
               Positioned(
                 bottom: 16.h,
-                right: 16.w,
+                left: 20.w,
+                child: _buildMyLocationButton(),
+              ),
+
+              // Info card (우측하단 16, 20)
+              Positioned(
+                bottom: 16.h,
+                right: 20.w,
                 child: _buildRadiusIndicator(),
               ),
             ],
@@ -262,7 +279,10 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
               },
 
               // Circle 오버레이 (지도와 함께 이동)
-              circles: _shape.toMapOverlay(),
+              circles: {
+                ..._shape.toMapOverlay(),
+                ...?widget.referenceZone?.toMapOverlay(),
+              },
 
               // 마커 제거 (커스텀 원으로 대체)
               markers: const {},
@@ -355,13 +375,27 @@ class _ZoneSettingWidgetState extends State<ZoneSettingWidget> {
         decoration: BoxDecoration(
           color: widget.centerColor ?? AppColors.blue,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+        ),
+      ),
+    );
+  }
+
+  /// 내 위치 버튼 (40x40 컨테이너 + 24x24 아이콘)
+  /// My location button (40x40 container + 24x24 icon)
+  Widget _buildMyLocationButton() {
+    return GestureDetector(
+      onTap: resetToCurrentLocation,
+      child: Container(
+        width: 40.w,
+        height: 40.w,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: AppRadius.large,
+        ),
+        child: Icon(
+          Icons.my_location,
+          size: 24.w,
+          color: widget.locationButtonColor ?? AppColors.blue,
         ),
       ),
     );

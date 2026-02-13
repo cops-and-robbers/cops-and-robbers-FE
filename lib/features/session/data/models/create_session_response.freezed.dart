@@ -35,8 +35,8 @@ mixin _$CreateSessionResponse {
   /// 라운드 시간 (분)
   int get roundDurationMinutes => throw _privateConstructorUsedError;
 
-  /// 위치 공유 간격 (분)
-  int get locationShareMinutes => throw _privateConstructorUsedError;
+  /// 위치 공개 주기 (분)
+  int get locationRevealIntervalMinutes => throw _privateConstructorUsedError;
 
   /// 경찰 대기 시간 (분)
   int get policeWaitMinutes => throw _privateConstructorUsedError;
@@ -69,7 +69,7 @@ abstract class $CreateSessionResponseCopyWith<$Res> {
     String inviteCode,
     String status,
     int roundDurationMinutes,
-    int locationShareMinutes,
+    int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
     String createdAt,
@@ -98,7 +98,7 @@ class _$CreateSessionResponseCopyWithImpl<
     Object? inviteCode = null,
     Object? status = null,
     Object? roundDurationMinutes = null,
-    Object? locationShareMinutes = null,
+    Object? locationRevealIntervalMinutes = null,
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
     Object? createdAt = null,
@@ -121,9 +121,9 @@ class _$CreateSessionResponseCopyWithImpl<
                 ? _value.roundDurationMinutes
                 : roundDurationMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
-            locationShareMinutes: null == locationShareMinutes
-                ? _value.locationShareMinutes
-                : locationShareMinutes // ignore: cast_nullable_to_non_nullable
+            locationRevealIntervalMinutes: null == locationRevealIntervalMinutes
+                ? _value.locationRevealIntervalMinutes
+                : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
             policeWaitMinutes: null == policeWaitMinutes
                 ? _value.policeWaitMinutes
@@ -157,7 +157,7 @@ abstract class _$$CreateSessionResponseImplCopyWith<$Res>
     String inviteCode,
     String status,
     int roundDurationMinutes,
-    int locationShareMinutes,
+    int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
     String createdAt,
@@ -183,7 +183,7 @@ class __$$CreateSessionResponseImplCopyWithImpl<$Res>
     Object? inviteCode = null,
     Object? status = null,
     Object? roundDurationMinutes = null,
-    Object? locationShareMinutes = null,
+    Object? locationRevealIntervalMinutes = null,
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
     Object? createdAt = null,
@@ -206,9 +206,9 @@ class __$$CreateSessionResponseImplCopyWithImpl<$Res>
             ? _value.roundDurationMinutes
             : roundDurationMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
-        locationShareMinutes: null == locationShareMinutes
-            ? _value.locationShareMinutes
-            : locationShareMinutes // ignore: cast_nullable_to_non_nullable
+        locationRevealIntervalMinutes: null == locationRevealIntervalMinutes
+            ? _value.locationRevealIntervalMinutes
+            : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
         policeWaitMinutes: null == policeWaitMinutes
             ? _value.policeWaitMinutes
@@ -235,7 +235,7 @@ class _$CreateSessionResponseImpl implements _CreateSessionResponse {
     required this.inviteCode,
     required this.status,
     required this.roundDurationMinutes,
-    required this.locationShareMinutes,
+    required this.locationRevealIntervalMinutes,
     required this.policeWaitMinutes,
     required this.maxParticipants,
     required this.createdAt,
@@ -260,9 +260,9 @@ class _$CreateSessionResponseImpl implements _CreateSessionResponse {
   @override
   final int roundDurationMinutes;
 
-  /// 위치 공유 간격 (분)
+  /// 위치 공개 주기 (분)
   @override
-  final int locationShareMinutes;
+  final int locationRevealIntervalMinutes;
 
   /// 경찰 대기 시간 (분)
   @override
@@ -278,7 +278,7 @@ class _$CreateSessionResponseImpl implements _CreateSessionResponse {
 
   @override
   String toString() {
-    return 'CreateSessionResponse(gameId: $gameId, inviteCode: $inviteCode, status: $status, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, createdAt: $createdAt)';
+    return 'CreateSessionResponse(gameId: $gameId, inviteCode: $inviteCode, status: $status, roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, createdAt: $createdAt)';
   }
 
   @override
@@ -292,8 +292,12 @@ class _$CreateSessionResponseImpl implements _CreateSessionResponse {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.roundDurationMinutes, roundDurationMinutes) ||
                 other.roundDurationMinutes == roundDurationMinutes) &&
-            (identical(other.locationShareMinutes, locationShareMinutes) ||
-                other.locationShareMinutes == locationShareMinutes) &&
+            (identical(
+                  other.locationRevealIntervalMinutes,
+                  locationRevealIntervalMinutes,
+                ) ||
+                other.locationRevealIntervalMinutes ==
+                    locationRevealIntervalMinutes) &&
             (identical(other.policeWaitMinutes, policeWaitMinutes) ||
                 other.policeWaitMinutes == policeWaitMinutes) &&
             (identical(other.maxParticipants, maxParticipants) ||
@@ -310,7 +314,7 @@ class _$CreateSessionResponseImpl implements _CreateSessionResponse {
     inviteCode,
     status,
     roundDurationMinutes,
-    locationShareMinutes,
+    locationRevealIntervalMinutes,
     policeWaitMinutes,
     maxParticipants,
     createdAt,
@@ -340,7 +344,7 @@ abstract class _CreateSessionResponse implements CreateSessionResponse {
     required final String inviteCode,
     required final String status,
     required final int roundDurationMinutes,
-    required final int locationShareMinutes,
+    required final int locationRevealIntervalMinutes,
     required final int policeWaitMinutes,
     required final int maxParticipants,
     required final String createdAt,
@@ -365,9 +369,9 @@ abstract class _CreateSessionResponse implements CreateSessionResponse {
   @override
   int get roundDurationMinutes;
 
-  /// 위치 공유 간격 (분)
+  /// 위치 공개 주기 (분)
   @override
-  int get locationShareMinutes;
+  int get locationRevealIntervalMinutes;
 
   /// 경찰 대기 시간 (분)
   @override

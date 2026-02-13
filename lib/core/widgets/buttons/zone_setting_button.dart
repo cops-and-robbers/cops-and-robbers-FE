@@ -119,8 +119,15 @@ class ZoneSettingButton extends StatelessWidget {
   Color get _iconColor => _mainTextColor;
 
   /// 서브텍스트 (반경 미터 정보)
+  ///
+  /// 1000m 미만: "반경 400m"
+  /// 1000m 이상: "반경 1.50km" (소수점 2자리 고정)
   String? get _subtitle {
     if (radiusMeters == null) return null;
+    if (radiusMeters! >= 1000) {
+      final km = (radiusMeters! / 1000).toStringAsFixed(2);
+      return '반경 ${km}km';
+    }
     return '반경 ${radiusMeters!.toInt()}m';
   }
 
