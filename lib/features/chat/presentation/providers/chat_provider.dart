@@ -138,6 +138,9 @@ class ChatNotifier extends _$ChatNotifier {
 
     // STOMP 연결
     final wsUrl = ApiEndpoints.gameConnectionUrl;
+    debugPrint('[ChatNotifier] 🔗 STOMP 연결 시도: $wsUrl');
+    debugPrint('[ChatNotifier] 📍 gameId: $gameId, team: $team');
+    debugPrint('[ChatNotifier] 🔑 token length: ${accessToken.length}');
     datasource.connect(wsUrl, accessToken);
   }
 
@@ -206,7 +209,7 @@ class ChatNotifier extends _$ChatNotifier {
         _reconnectTimer = null;
 
         if (_gameId != null && _team != null) {
-          datasource.subscribeAll(_gameId!);
+          // 팀 채널만 구독 (서버가 scope에 따라 ALL/TEAM 메시지를 라우팅)
           datasource.subscribeTeam(_gameId!, _team!);
         }
         state = state.copyWith(errorMessage: null);

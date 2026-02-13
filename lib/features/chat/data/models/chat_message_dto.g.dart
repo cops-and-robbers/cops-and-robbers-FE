@@ -21,7 +21,7 @@ Map<String, dynamic> _$$ChatMessageDtoImplToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'gameId': instance.gameId,
-  'sender': instance.sender,
+  'sender': instance.sender.toJson(),
   'message': instance.message,
   'timestamp': instance.timestamp,
   'scope': instance.scope,

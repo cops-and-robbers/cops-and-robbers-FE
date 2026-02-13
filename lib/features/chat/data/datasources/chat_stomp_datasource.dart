@@ -104,28 +104,13 @@ class ChatStompDatasource {
     _stompClient!.activate();
   }
 
-  /// 전체 채팅 구독
-  ///
-  /// destination: /sub/game/{gameId}/chat/all
-  void subscribeAll(int gameId) {
-    if (_stompClient == null ||
-        _currentState != StompConnectionState.connected) {
-      debugPrint('[ChatStomp] ⚠️ subscribeAll 실패 - 연결되지 않음');
-      return;
-    }
-
-    final sub = _stompClient!.subscribe(
-      destination: '/sub/game/$gameId/chat/all',
-      callback: _handleMessage,
-    );
-    _subscriptions.add(sub);
-    debugPrint('[ChatStomp] ✅ 전체 채팅 구독 완료: /sub/game/$gameId/chat/all');
-  }
-
   /// 팀 채팅 구독
   ///
-  /// destination: /sub/game/{gameId}/chat/{team}
+  /// destination: /subscribe/game/{gameId}/chat/{team}
   /// [team] "police" 또는 "robber" (소문자)
+  ///
+  /// 서버에서 scope(ALL/TEAM)에 따라 메시지를 라우팅하므로,
+  /// 클라이언트는 자신의 팀 채널만 구독하면 전체/팀 채팅 모두 수신 가능합니다.
   void subscribeTeam(int gameId, String team) {
     if (_stompClient == null ||
         _currentState != StompConnectionState.connected) {
@@ -133,17 +118,18 @@ class ChatStompDatasource {
       return;
     }
 
+    final destination = '/subscribe/game/$gameId/chat/$team';
     final sub = _stompClient!.subscribe(
-      destination: '/sub/game/$gameId/chat/$team',
+      destination: destination,
       callback: _handleMessage,
     );
     _subscriptions.add(sub);
-    debugPrint('[ChatStomp] ✅ 팀 채팅 구독 완료: /sub/game/$gameId/chat/$team');
+    debugPrint('[ChatStomp] ✅ 팀 채팅 구독 완료: $destination');
   }
 
   /// 채팅 메시지 발행
   ///
-  /// destination: /pub/game/{gameId}/chat
+  /// destination: /publish/game/{gameId}/chat
   void publishChat(int gameId, String message, String scope) {
     if (_stompClient == null ||
         _currentState != StompConnectionState.connected) {
@@ -152,12 +138,13 @@ class ChatStompDatasource {
     }
 
     final request = ChatSendRequest(message: message, scope: scope);
+    final destination = '/publish/game/$gameId/chat';
 
     _stompClient!.send(
-      destination: '/pub/game/$gameId/chat',
+      destination: destination,
       body: jsonEncode(request.toJson()),
     );
-    debugPrint('[ChatStomp] 메시지 전송: $message (scope: $scope)');
+    debugPrint('[ChatStomp] 메시지 전송: $message (scope: $scope) → $destination');
   }
 
   /// 연결 해제
