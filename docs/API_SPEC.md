@@ -16,8 +16,8 @@
 2. [Game API - 게임 방 생성 및 관리](#2-game-api---게임-방-생성-및-관리)
    - [POST /api/games - 게임 방 생성](#21-post-apigames---게임-방-생성)
 3. [Game Participant API - 게임 참여자 관리](#3-game-participant-api---게임-참여자-관리)
-   - [POST /api/games/{gameId}/participants - 게임 방 참여](#31-post-apigamesgameidparticipants---게임-방-참여)
-   - [DELETE /api/games/{gameId}/participants - 게임 방 퇴장](#32-delete-apigamesgameidparticipants---게임-방-퇴장)
+   - [POST /api/games/join - 게임 방 참여](#31-post-apigamesjoin---게임-방-참여)
+   - [DELETE /api/games/{gameId}/leave - 게임 방 퇴장](#32-delete-apigamesgameidleave---게임-방-퇴장)
 4. [Lobby API - 게임 로비 상태 변경](#4-lobby-api---게임-로비-상태-변경)
    - [PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경](#41-patch-apigamesgameidlobbyteam---로비-팀-변경)
    - [PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경](#42-patch-apigamesgameidlobbyready---로비-준비-상태-변경)
@@ -314,17 +314,11 @@
 
 ## 3. Game Participant API - 게임 참여자 관리
 
-### 3.1 POST /api/games/{gameId}/participants - 게임 방 참여
+### 3.1 POST /api/games/join - 게임 방 참여
 
 초대 코드를 사용하여 게임 방에 참여합니다. 이미 다른 활성 게임에 참여 중이거나, 게임이 이미 시작되었거나, 최대 참여 인원에 도달한 경우 참여할 수 없습니다.
 
 - **인증 필요**: Yes (JWT)
-
-#### Path Parameters
-
-| 파라미터 | 타입            | 필수 | 설명    | 예시 |
-| -------- | --------------- | ---- | ------- | ---- |
-| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
 
 #### Request Body (`application/json`)
 
@@ -356,7 +350,7 @@
 | 케이스              | title                | detail                                     |
 | ------------------- | -------------------- | ------------------------------------------ |
 | 초대 코드 누락      | 유효하지 않은 입력값 | `inviteCode: 초대 코드는 필수입니다.`      |
-| 잘못된 초대 코드    | 초대 코드 불일치     | `잘못된 초대 코드입니다.`                  |
+| 잘못된 초대 코드    | 초대 코드 오류       | `입력하신 초대 코드가 유효하지 않습니다.`  |
 | 게임이 이미 시작됨  | 게임 참여 불가       | `이미 시작된 게임에는 참여할 수 없습니다.` |
 | 최대 참여 인원 초과 | 게임 참여 불가       | `게임 방의 최대 참여 인원에 도달했습니다.` |
 
@@ -365,7 +359,7 @@
   "title": "유효하지 않은 입력값",
   "status": 400,
   "detail": "inviteCode: 초대 코드는 필수입니다.",
-  "instance": "/api/games/1/participants"
+  "instance": "/api/games/join"
 }
 ```
 
@@ -376,18 +370,7 @@
   "title": "인증 필요",
   "status": 401,
   "detail": "로그인이 필요한 서비스입니다.",
-  "instance": "/api/games/1/participants"
-}
-```
-
-**404 - 게임을 찾을 수 없음**
-
-```json
-{
-  "title": "게임을 찾을 수 없음",
-  "status": 404,
-  "detail": "해당 게임을 찾을 수 없습니다.",
-  "instance": "/api/games/999/participants"
+  "instance": "/api/games/join"
 }
 ```
 
@@ -398,13 +381,13 @@
   "title": "이미 참가 중인 게임",
   "status": 409,
   "detail": "이미 게임에 참가하고 있습니다.",
-  "instance": "/api/games/1/participants"
+  "instance": "/api/games/join"
 }
 ```
 
 ---
 
-### 3.2 DELETE /api/games/{gameId}/participants - 게임 방 퇴장
+### 3.2 DELETE /api/games/{gameId}/leave - 게임 방 퇴장
 
 현재 참여 중인 게임 방에서 퇴장합니다. 방장이 퇴장하는 경우 가장 먼저 참여한 참여자에게 방장 권한이 이전됩니다. 마지막 참여자가 퇴장하면 게임 방이 자동으로 삭제됩니다.
 
@@ -445,7 +428,7 @@
   "title": "인증 필요",
   "status": 401,
   "detail": "로그인이 필요한 서비스입니다.",
-  "instance": "/api/games/1/participants"
+  "instance": "/api/games/1/leave"
 }
 ```
 
@@ -461,7 +444,7 @@
   "title": "게임을 찾을 수 없음",
   "status": 404,
   "detail": "해당 게임을 찾을 수 없습니다.",
-  "instance": "/api/games/999/participants"
+  "instance": "/api/games/999/leave"
 }
 ```
 

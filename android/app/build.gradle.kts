@@ -19,10 +19,27 @@ if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
 
+// .env에서 API 호스트 읽기 (network_security_config.xml 자동 생성용)
+val envFile = rootProject.file("../.env")
+val envProps = Properties()
+if (envFile.exists()) {
+    envProps.load(FileInputStream(envFile))
+}
+val apiHost: String = envProps.getProperty("API_BASE_URL", "")
+    .replace(Regex("^https?://"), "")
+    .replace(Regex(":[0-9]+.*$"), "")
+
 android {
     namespace = "com.elipair.copsandrobbers"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+
+    // 빌드 시 생성되는 network_security_config.xml 리소스 경로 추가
+    sourceSets {
+        getByName("main") {
+            res.srcDirs("src/main/res", "${layout.buildDirectory.get()}/generated/res/networkSecurity")
+        }
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -73,6 +90,35 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// .env의 API_BASE_URL에서 호스트를 읽어 network_security_config.xml 자동 생성
+tasks.register("generateNetworkSecurityConfig") {
+    val outputDir = file("${layout.buildDirectory.get()}/generated/res/networkSecurity/xml")
+    outputs.dir(outputDir)
+    doLast {
+        outputDir.mkdirs()
+        File(outputDir, "network_security_config.xml").writeText(
+            """<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">$apiHost</domain>
+        <domain includeSubdomains="false">10.0.2.2</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <domain includeSubdomains="false">127.0.0.1</domain>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>""".trimIndent()
+        )
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn("generateNetworkSecurityConfig")
 }
 
 dependencies {
