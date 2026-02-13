@@ -8,6 +8,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../providers/session_provider.dart';
 
 /// 홈 화면
 ///
@@ -29,39 +30,80 @@ class HomePage extends ConsumerWidget {
   }
 
   /// 방 참여 다이얼로그 표시
-  void _showJoinRoomDialog(BuildContext context) {
+  void _showJoinRoomDialog(BuildContext context, WidgetRef ref) {
     final TextEditingController codeController = TextEditingController();
+    bool isLoading = false;
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('방 참여하기'),
-          content: TextField(
-            controller: codeController,
-            decoration: const InputDecoration(
-              hintText: '초대 코드를 입력하세요',
-              border: OutlineInputBorder(),
-            ),
-            textCapitalization: TextCapitalization.characters,
-            maxLength: 6,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () {
-                final code = codeController.text.trim();
-                if (code.isNotEmpty) {
-                  Navigator.of(dialogContext).pop();
-                  context.go(RoutePaths.waitingRoomWithId(code));
-                }
-              },
-              child: const Text('참여'),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('방 참여하기'),
+              content: TextField(
+                controller: codeController,
+                decoration: const InputDecoration(
+                  hintText: '초대 코드를 입력하세요',
+                  border: OutlineInputBorder(),
+                ),
+                textCapitalization: TextCapitalization.characters,
+                maxLength: 6,
+                enabled: !isLoading,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isLoading ? null : () => Navigator.of(dialogContext).pop(),
+                  child: const Text('취소'),
+                ),
+                TextButton(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          final code = codeController.text.trim();
+                          if (code.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('초대 코드를 입력해주세요.')),
+                            );
+                            return;
+                          }
+
+                          setState(() => isLoading = true);
+
+                          // 참여 API 호출
+                          final response = await ref.read(
+                            joinGameProvider(inviteCode: code).future,
+                          );
+
+                          if (response != null) {
+                            // 성공: 대기실로 이동
+                            if (dialogContext.mounted) {
+                              Navigator.of(dialogContext).pop();
+                            }
+                            if (context.mounted) {
+                              context.go(RoutePaths.waitingRoomWithId('${response.gameId}'));
+                            }
+                          } else {
+                            // 실패
+                            setState(() => isLoading = false);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('참여에 실패했습니다. 초대 코드를 확인해주세요.')),
+                              );
+                            }
+                          }
+                        },
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('참여'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -100,7 +142,7 @@ class HomePage extends ConsumerWidget {
               ),
               SizedBox(height: AppSpacing.vertical20),
               ElevatedButton(
-                onPressed: () => _showJoinRoomDialog(context),
+                onPressed: () => _showJoinRoomDialog(context, ref),
                 child: const Text('방 참여하기'),
               ),
               SizedBox(height: AppSpacing.vertical64),
@@ -114,6 +156,38 @@ class HomePage extends ConsumerWidget {
                   side: const BorderSide(color: Colors.grey),
                 ),
               ),
+              // ============================================================
+              // TODO: 임시 디버그 버튼 (게임 1~20 강제 퇴장)
+              // ============================================================
+              const SizedBox(height: 16),
+                OutlinedButton.icon(
+                onPressed: () async {
+                  debugPrint('[DEBUG] 게임 1~20 강제 퇴장 시작...');
+                  for (int gameId = 1; gameId <= 20; gameId++) {
+                    try {
+                      await ref.read(leaveGameProvider(gameId).future);
+                      debugPrint('[DEBUG] 게임 $gameId 퇴장 완료');
+                    } catch (e) {
+                      debugPrint('[DEBUG] 게임 $gameId 퇴장 실패: $e');
+                    }
+                  }
+                  debugPrint('[DEBUG] 강제 퇴장 완료!');
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('게임 1~20 퇴장 완료!')),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.exit_to_app, size: 16, color: Colors.red),
+                label: const Text(
+                  '[임시] 게임 1~20 강제 퇴장',
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.red),
+                ),
+              ),
+              // ============================================================
             ],
           ),
         ),
