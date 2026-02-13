@@ -1,11 +1,46 @@
 {
   "metadata": {
-    "lastUpdated": "2026-02-11T18:10:55Z",
-    "currentVersion": "1.1.34",
+    "lastUpdated": "2026-02-13T03:29:36Z",
+    "currentVersion": "1.1.36",
     "projectType": "flutter",
-    "totalReleases": 32
+    "totalReleases": 33
   },
   "releases": [
+    {
+      "version": "1.1.36",
+      "project_type": "flutter",
+      "date": "2026-02-13",
+      "pr_number": 78,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **New Features**\n  * 게임플레이 중 도둑 체포(Arrest) 및 탈옥(Escape) 기능 추가로 새로운 게임 메커니즘 도입\n\n* **Documentation**\n  * 게임 시스템 API 및 로비 엔드포인트 명세 개선\n\n* **Style**\n  * 인증 페이지 UI 요소 간격 최적화\n\n* **Chores**\n  * 애플리케이션 버전 1.1.36으로 업데이트\n  * 백엔드 서비스 설정 및 문서 정리",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "게임플레이 중 도둑 체포(Arrest) 및 탈옥(Escape) 기능 추가로 새로운 게임 메커니즘 도입"
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "게임 시스템 API 및 로비 엔드포인트 명세 개선"
+          ]
+        },
+        "style": {
+          "title": "Style",
+          "items": [
+            "인증 페이지 UI 요소 간격 최적화"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전 1.1.36으로 업데이트",
+            "백엔드 서비스 설정 및 문서 정리"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.34",
       "project_type": "flutter",
