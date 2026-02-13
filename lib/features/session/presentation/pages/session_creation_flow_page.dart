@@ -17,6 +17,7 @@ import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../domain/entities/zone_info.dart';
+import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../widgets/session_creation_steps/step_0_select_area_content.dart';
 import '../widgets/session_creation_steps/step_1_participant_settings_content.dart';
@@ -196,6 +197,12 @@ class _SessionCreationFlowPageState
           'gameId=${result.gameId}, inviteCode=${result.inviteCode}',
         );
       }
+
+      // 게임 참가 정보 설정 (방장은 기본적으로 POLICE 팀)
+      ref.read(gameParticipantNotifierProvider.notifier).setGameInfo(
+            gameId: result.gameId,
+            team: 'POLICE',
+          );
 
       // 세션 생성 성공 → Draft 삭제 후 대기실로 이동
       try {
