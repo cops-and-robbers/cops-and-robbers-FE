@@ -6,12 +6,11 @@ part of 'token_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$tokenProviderHash() => r'c1c674e928d9019bec6d8a54235a757b545a2a27';
+String _$tokenProviderHash() => r'4e766bbacbcf7eefc0a472dbcadf4453a358c006';
 
 /// TokenProvider Provider
 ///
-/// 현재는 FirebaseTokenProvider를 사용합니다.
-/// 서버 JWT 도입 시 ServerTokenProvider로 교체 예정.
+/// SecureTokenStorage에서 서버 JWT를 제공합니다.
 ///
 /// Copied from [tokenProvider].
 @ProviderFor(tokenProvider)
