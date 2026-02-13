@@ -253,7 +253,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
           final mapType = state.uri.queryParameters['mapType'] ?? 'google';
-          return GamePage(sessionId: sessionId, mapType: mapType);
+          final team = state.uri.queryParameters['team'] ?? 'POLICE';
+          // TODO: participantId는 로비 API 연동 후 실제 값으로 교체
+          final participantId =
+              int.tryParse(state.uri.queryParameters['pid'] ?? '') ?? 1;
+          return GamePage(
+            sessionId: sessionId,
+            mapType: mapType,
+            team: team,
+            participantId: participantId,
+          );
         },
       ),
 

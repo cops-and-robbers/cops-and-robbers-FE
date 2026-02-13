@@ -4,13 +4,22 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../router/route_paths.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
+import '../../../chat/presentation/widgets/chat_overlay.dart';
+import '../../../session/presentation/providers/game_participant_provider.dart';
+import '../../../session/presentation/providers/session_provider.dart';
 import '../widgets/google_map_view.dart';
 import '../widgets/naver_map_view.dart';
 
 /// 인게임 지도 화면
 /// 게임 진행 중 사용되는 메인 화면
 class GamePage extends ConsumerStatefulWidget {
-  const GamePage({required this.sessionId, required this.mapType, super.key});
+  const GamePage({
+    required this.sessionId,
+    required this.mapType,
+    required this.team,
+    required this.participantId,
+    super.key,
+  });
 
   /// 게임 세션 ID
   final String sessionId;
@@ -18,29 +27,56 @@ class GamePage extends ConsumerStatefulWidget {
   /// 지도 타입 ('google' 또는 'naver')
   final String mapType;
 
+  /// 플레이어 팀 ('POLICE' 또는 'ROBBER')
+  final String team;
+
+  /// 플레이어 참가자 ID
+  final int participantId;
+
   @override
   ConsumerState<GamePage> createState() => _GamePageState();
 }
 
 class _GamePageState extends ConsumerState<GamePage> {
-  final TextEditingController _chatController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    // 채팅 STOMP 연결 및 구독
+    _connectChat();
+  }
 
   @override
   void dispose() {
-    _chatController.dispose();
     // 화면 이탈 시 채팅 연결 해제
     ref.read(chatNotifierProvider.notifier).disconnectChat();
     super.dispose();
   }
 
-  /// 채팅 전송
-  void _sendChat() {
-    final text = _chatController.text.trim();
-    if (text.isEmpty) return;
+  /// 채팅 연결 및 구독
+  void _connectChat() {
+    final gameId = int.tryParse(widget.sessionId) ?? 1;
+    final team = widget.team.toLowerCase(); // "police" 또는 "robber"
 
-    // TODO: chatNotifier를 통해 실제 메시지 전송 연동
-    debugPrint('send chat: $text');
-    _chatController.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(chatNotifierProvider.notifier).connectAndSubscribe(
+            gameId: gameId,
+            team: team,
+          );
+    });
+  }
+
+  /// 게임 퇴장
+  Future<void> _leaveGame(BuildContext context) async {
+    final gameId = int.tryParse(widget.sessionId);
+    if (gameId != null) {
+      // 서버에 퇴장 알림
+      await ref.read(leaveGameProvider(gameId).future);
+    }
+    // 로컬 상태 초기화
+    ref.read(gameParticipantNotifierProvider.notifier).clear();
+    if (context.mounted) {
+      context.go(RoutePaths.home);
+    }
   }
 
   @override
@@ -92,7 +128,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: InkWell(
-                        onTap: () => context.go(RoutePaths.home),
+                        onTap: () => _leaveGame(context),
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -199,61 +235,15 @@ class _GamePageState extends ConsumerState<GamePage> {
             ),
           ),
 
-          /// 하단 채팅 창
+          /// 하단 채팅 오버레이
           SafeArea(
             top: false,
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _chatController,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: '채팅을 입력하세요',
-                            hintStyle: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.85),
-                            ),
-                            border: InputBorder.none,
-                            isDense: true,
-                          ),
-                          onSubmitted: (_) => _sendChat(),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      InkWell(
-                        onTap: _sendChat,
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            '전송',
-                            style: TextStyle(color: Colors.white, fontSize: 13),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              child: ChatOverlay(
+                gameId: int.tryParse(widget.sessionId) ?? 1,
+                myParticipantId: widget.participantId,
+                myTeam: widget.team,
               ),
             ),
           ),
