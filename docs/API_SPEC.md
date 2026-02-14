@@ -128,7 +128,7 @@
 
 - **인증 필요**: No
 
-#### Request Body (`application/json`) - [LogoutRequest](#logoutrequest)
+#### Request Body (`application/json`)
 
 | 필드           | 타입   | 필수 | 설명          |
 | -------------- | ------ | ---- | ------------- |
@@ -175,8 +175,8 @@
 ```json
 {
   "tokens": {
-    "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
-    "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
+    "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIx.....",
+    "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIx....."
   }
 }
 ```
@@ -692,13 +692,13 @@
 
 ### 5.1 GET /api/user/me - 내 정보 조회
 
-로그인한 사용자의 상세 정보를 조회합니다.
+로그인한 사용자의 상세 정보를 조회합니다. (일단은 테스트용)
 
 - **인증 필요**: Yes (JWT)
 
 #### Responses
 
-**200 - 사용자 정보 조회 성공**
+**200 - 조회 성공**
 
 ```json
 {
@@ -725,9 +725,10 @@
 
 ### 5.2 PATCH /api/user/me/nickname - 닉네임 변경
 
-로그인한 사용자의 닉네임을 변경합니다. (최대 10자, 중복 불가) 본인의 현재 닉네임으로 변경 요청 시에도 204가 반환됩니다.
+로그인한 사용자의 닉네임을 변경합니다. (최대 10자, 중복 불가)
 
 - **인증 필요**: Yes (JWT)
+- 현재 유저 본인의 닉네임으로 변경 요청 시에도 204 응답
 
 #### Request Body (`application/json`)
 
@@ -745,13 +746,13 @@
 
 #### Responses
 
-**204 - 닉네임 변경 성공** (응답 본문 없음)
+**204 - 변경 성공** (응답 본문 없음)
 
 **400 - 유효성 검사 실패**
 
 | 케이스                | title                | detail                                         |
 | --------------------- | -------------------- | ---------------------------------------------- |
-| 닉네임 누락/공백      | 유효하지 않은 입력값 | `nickname: 닉네임은 필수 입력 항목입니다.`     |
+| 공백 입력             | 유효하지 않은 입력값 | `nickname: 닉네임은 필수 입력 항목입니다.`     |
 | 길이 초과 (10자 초과) | 유효하지 않은 입력값 | `nickname: 닉네임은 최대 10자까지 가능합니다.` |
 
 ```json
@@ -796,7 +797,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 #### Responses
 
-**200 - 닉네임 확인 결과**
+**200 - 확인 완료**
 
 사용 가능한 닉네임:
 
