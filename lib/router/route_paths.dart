@@ -114,7 +114,7 @@ class RoutePaths {
   // Route Names (for named navigation)
   // ============================================================================
 
-  /// 라우트 이름 상수 (go_router의 name 파라미터용 커스텀 가능)
+  /// 라우트 이름 상수 (go_router의 name 파라미터용)
   static const String splashName = 'splash';
   static const String loginName = 'login';
   static const String onboardingName = 'onboarding';
