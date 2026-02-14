@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-02-13T10:34:42Z",
-    "currentVersion": "1.1.37",
+    "lastUpdated": "2026-02-14T01:59:50Z",
+    "currentVersion": "1.1.41",
     "projectType": "flutter",
-    "totalReleases": 34
+    "totalReleases": 35
   },
   "releases": [
+    {
+      "version": "1.1.41",
+      "project_type": "flutter",
+      "date": "2026-02-14",
+      "pr_number": 82,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트 - v1.1.37\n\n* **새로운 기능**\n  * 인증 실패 및 충돌 상황에 대한 상세한 API 오류 응답 추가\n  * Android 앱 네트워크 보안 설정 자동 적용\n\n* **개선 사항**\n  * API 응답 코드 체계 정비 (201, 204, 401, 404, 409 추가)\n  * 게임 참가 및 닉네임 변경 등 주요 기능의 에러 처리 명확화\n\n* **문서**\n  * API 명세서 업데이트로 오류 케이스 커버리지 확대",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "인증 실패 및 충돌 상황에 대한 상세한 API 오류 응답 추가",
+            "Android 앱 네트워크 보안 설정 자동 적용"
+          ]
+        },
+        "개선_사항": {
+          "title": "개선 사항",
+          "items": [
+            "API 응답 코드 체계 정비 (201, 204, 401, 404, 409 추가)",
+            "게임 참가 및 닉네임 변경 등 주요 기능의 에러 처리 명확화"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "API 명세서 업데이트로 오류 케이스 커버리지 확대"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.1.37",
       "project_type": "flutter",
