@@ -44,8 +44,10 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
-          echo ".env file created"
+          cat << 'EOF' > .env
+          ${{ secrets.ENV_FILE || secrets.ENV }}
+          EOF
+          echo "✅ .env file created"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -173,7 +175,9 @@ jobs:
       # .env 파일 생성 (보안을 위해 아티팩트가 아닌 시크릿에서 생성)
       - name: Create .env file
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
+          cat << 'EOF' > .env
+          ${{ secrets.ENV_FILE || secrets.ENV }}
+          EOF
           echo "✅ .env 파일 생성됨 (크기: $(wc -c < .env) bytes)"
 
       # Android Native Config 생성 (Google Maps API Key)
