@@ -40,7 +40,7 @@ jobs:
       - name: Create .env file
         run: |
           cat > .env << 'EOF'
-          ${{ secrets.ENV }}
+          ${{ secrets.ENV_FILE || secrets.ENV }}
           EOF
 
       # 5. iOS Native Config 생성 (Google Maps API Key)
