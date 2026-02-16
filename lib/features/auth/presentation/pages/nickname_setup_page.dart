@@ -267,7 +267,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       children: [
         // TextField
         AppTextField(
-          hintText: '포근포근백설기',
+          hintText: widget.initialNickname.isNotEmpty
+              ? widget.initialNickname
+              : '닉네임을 입력하세요',
           controller: _nicknameController,
           maxLength: 10,
           textColor: _isNicknameChanged ? null : AppColors.black600,
