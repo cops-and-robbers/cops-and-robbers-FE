@@ -10,6 +10,8 @@ import '../../../../../core/widgets/buttons/zone_setting_button.dart';
 /// 플레이그라운드와 감옥 구역 설정을 위한 UI를 제공합니다.
 /// ZoneSettingButton을 통해 각 구역 설정 페이지로 이동하며,
 /// 설정 완료 시 콜백으로 데이터를 전달합니다.
+///
+/// 플레이그라운드 설정이 완료된 후에만 감옥 구역 설정 버튼이 노출됩니다.
 class Step0SelectAreaContent extends StatelessWidget {
   const Step0SelectAreaContent({
     super.key,
@@ -75,9 +77,12 @@ class Step0SelectAreaContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPlaygroundSet =
+        playgroundCenter != null && playgroundRadiusMeters != null;
+
     return Column(
       children: [
-        // 플레이그라운드 버튼
+        // 플레이그라운드 버튼 (항상 노출)
         ZoneSettingButton(
           zoneType: ZoneType.playground,
           title: '플레이그라운드',
@@ -85,15 +90,16 @@ class Step0SelectAreaContent extends StatelessWidget {
           onPressed: () => _onPlaygroundPressed(context),
         ),
 
-        SizedBox(height: AppSpacing.vertical8),
-
-        // 감옥 버튼
-        ZoneSettingButton(
-          zoneType: ZoneType.prison,
-          title: '감옥',
-          radiusMeters: prisonRadiusMeters,
-          onPressed: () => _onPrisonPressed(context),
-        ),
+        // 감옥 버튼 (플레이그라운드 설정 완료 후에만 노출)
+        if (isPlaygroundSet) ...[
+          SizedBox(height: AppSpacing.vertical8),
+          ZoneSettingButton(
+            zoneType: ZoneType.prison,
+            title: '감옥',
+            radiusMeters: prisonRadiusMeters,
+            onPressed: () => _onPrisonPressed(context),
+          ),
+        ],
       ],
     );
   }
