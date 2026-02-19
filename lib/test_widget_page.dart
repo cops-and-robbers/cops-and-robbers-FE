@@ -809,10 +809,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: '1버튼 다이얼로그 (설명 없음)',
                   onPressed: () {
-                    AppDialog.show(
-                      context: context,
-                      title: '게임 규칙',
-                    );
+                    AppDialog.show(context: context, title: '게임 규칙');
                   },
                   showBorder: false,
                   backgroundColor: AppColors.black800,

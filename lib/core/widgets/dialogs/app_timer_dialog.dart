@@ -18,10 +18,7 @@ import '../../constants/spacing_and_radius.dart';
 /// );
 /// ```
 class AppTimerDialog extends StatelessWidget {
-  const AppTimerDialog({
-    super.key,
-    required this.content,
-  });
+  const AppTimerDialog({super.key, required this.content});
 
   /// 타이머 콘텐츠 위젯
   final Widget content;
@@ -66,10 +63,7 @@ class AppTimerDialog extends StatelessWidget {
       child: Container(
         width: double.infinity,
         margin: AppPadding.horizontal36,
-        padding: EdgeInsets.symmetric(
-          vertical: 42.w,
-          horizontal: 16.w,
-        ),
+        padding: EdgeInsets.symmetric(vertical: 42.w, horizontal: 16.w),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: AppRadius.xxlarge,
@@ -81,10 +75,7 @@ class AppTimerDialog extends StatelessWidget {
             ),
           ],
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: content,
-        ),
+        child: Material(color: Colors.transparent, child: content),
       ),
     );
   }

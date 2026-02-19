@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
@@ -140,7 +141,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 text: '로그아웃',
                 textColor: AppColors.red,
                 onTap: () async {
-                  await ref.read(authNotifierProvider.notifier).signOut();
+                  final result = await AppDialog.confirm(
+                    context: context,
+                    title: '로그아웃',
+                    message: '정말 로그아웃 하시겠어요?',
+                    confirmText: '로그아웃',
+                    isDestructive: true,
+                  );
+                  if (result == true && mounted) {
+                    await ref.read(authNotifierProvider.notifier).signOut();
+                  }
                 },
               ),
 
