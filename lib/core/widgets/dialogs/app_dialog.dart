@@ -5,6 +5,7 @@ import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../buttons/app_button.dart';
+import 'dialog_animation.dart';
 
 /// 앱 전역에서 사용하는 공용 다이얼로그 컴포넌트
 ///
@@ -138,27 +139,8 @@ class AppDialog extends StatelessWidget {
   final TextStyle? titleStyle;
 
   // ============================================
-  // 애니메이션 상수
-  // ============================================
-  static const _animationDuration = Duration(milliseconds: 250);
-  static const _animationCurve = Curves.easeOutBack;
-
-  // ============================================
   // 정적 메서드
   // ============================================
-
-  /// 공용 트랜지션 빌더 (스케일 + 페이드)
-  static Widget _buildTransition(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return ScaleTransition(
-      scale: CurvedAnimation(parent: animation, curve: _animationCurve),
-      child: FadeTransition(opacity: animation, child: child),
-    );
-  }
 
   /// 다이얼로그 표시
   static Future<T?> show<T>({
@@ -186,8 +168,8 @@ class AppDialog extends StatelessWidget {
       context: context,
       barrierDismissible: barrierDismissible,
       barrierLabel: 'Dialog',
-      barrierColor: Colors.black.withValues(alpha: 0.5),
-      transitionDuration: _animationDuration,
+      barrierColor: DialogAnimation.barrierColor,
+      transitionDuration: DialogAnimation.duration,
       pageBuilder: (dialogContext, animation, secondaryAnimation) {
         return AppDialog(
           title: title,
@@ -219,7 +201,7 @@ class AppDialog extends StatelessWidget {
               : () => Navigator.of(dialogContext).pop(),
         );
       },
-      transitionBuilder: _buildTransition,
+      transitionBuilder: DialogAnimation.buildTransition,
     );
   }
 
@@ -245,8 +227,8 @@ class AppDialog extends StatelessWidget {
       context: context,
       barrierDismissible: barrierDismissible,
       barrierLabel: 'Dialog',
-      barrierColor: Colors.black.withValues(alpha: 0.5),
-      transitionDuration: _animationDuration,
+      barrierColor: DialogAnimation.barrierColor,
+      transitionDuration: DialogAnimation.duration,
       pageBuilder: (dialogContext, animation, secondaryAnimation) {
         return AppDialog(
           title: title,
@@ -266,7 +248,7 @@ class AppDialog extends StatelessWidget {
           onCancel: () => Navigator.of(dialogContext).pop(false),
         );
       },
-      transitionBuilder: _buildTransition,
+      transitionBuilder: DialogAnimation.buildTransition,
     );
   }
 
@@ -289,13 +271,6 @@ class AppDialog extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: AppRadius.xxlarge,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
         ),
         child: Material(
           color: Colors.transparent,
@@ -320,7 +295,7 @@ class AppDialog extends StatelessWidget {
 
               // 메시지
               if (message != null) ...[
-                SizedBox(height: AppSpacing.vertical12),
+                SizedBox(height: AppSpacing.vertical16),
                 Text(
                   message!,
                   style: AppTextStyles.paragraph_14.copyWith(
@@ -333,7 +308,13 @@ class AppDialog extends StatelessWidget {
               // 커스텀 콘텐츠
               if (customContent != null) ...[
                 SizedBox(height: AppSpacing.vertical12),
-                customContent!,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: customContent!,
+                  ),
+                ),
               ],
 
               // 버튼들
