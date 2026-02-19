@@ -68,6 +68,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
         backgroundColor: AppColors.white,
         appBar: AppBar(
           title: const Text('공용 컴포넌트 테스트'),
+          centerTitle: true,
           backgroundColor: AppColors.black,
           foregroundColor: AppColors.white,
         ),

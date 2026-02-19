@@ -12,7 +12,10 @@ class ZoneSettingButtonExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Zone Setting Button Example')),
+      appBar: AppBar(
+        title: const Text('Zone Setting Button Example'),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: EdgeInsets.all(AppSpacing.horizontal20),
         child: Column(

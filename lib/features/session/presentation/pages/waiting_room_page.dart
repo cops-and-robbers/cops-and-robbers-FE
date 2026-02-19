@@ -50,7 +50,7 @@ class WaitingRoomPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('대기실')),
+      appBar: AppBar(title: const Text('대기실'), centerTitle: true),
       body: Center(
         child: Padding(
           padding: AppPadding.all20,
