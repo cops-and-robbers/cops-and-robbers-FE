@@ -96,7 +96,7 @@ class HomePage extends ConsumerWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // TODO: 설정 화면 네비게이션 (별도 이슈에서 구현)
+                        context.push(RoutePaths.settings);
                       },
                       child: SvgPicture.asset(
                         'assets/icons/icon_setting_1.svg',
@@ -158,6 +158,7 @@ class HomePage extends ConsumerWidget {
               AppButton(
                 text: '방 만들기',
                 onPressed: () => _onCreateSession(context),
+                showBorder: false,
               ),
               SizedBox(height: AppSpacing.vertical12),
               AppButton(
