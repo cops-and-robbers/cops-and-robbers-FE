@@ -10,6 +10,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../router/route_paths.dart';
 import '../../../../test_widget_page.dart';
 import '../providers/auth_provider.dart';
@@ -127,7 +128,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     messenger.showSnackBar(
       SnackBar(
         content: Text(errorMessage, style: AppTextStyles.paragraph_14),
-        backgroundColor: Colors.red,
+        backgroundColor: AppColors.red,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
       ),
@@ -139,36 +140,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// 생명주기 테스트와 위젯 테스트 페이지로 이동할 수 있는 다이얼로그를 표시합니다.
   /// 개발 모드(kDebugMode)에서만 동작합니다.
   void _showDevMenu(BuildContext context) {
-    showDialog(
+    AppDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('개발자 도구', style: AppTextStyles.heading_20),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.pending_actions),
-              title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
-              onTap: () {
-                Navigator.pop(context);
-                context.push(RoutePaths.lifecycleTest);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.widgets),
-              title: Text('Test Widget', style: AppTextStyles.paragraph_14),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TestWidgetPage(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+      title: '개발자 도구',
+      showButtons: false,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.pending_actions),
+            title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              Navigator.pop(context);
+              context.push(RoutePaths.lifecycleTest);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.widgets),
+            title: Text('Test Widget', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TestWidgetPage()),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

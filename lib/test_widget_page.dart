@@ -207,8 +207,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                             SizedBox(width: AppSpacing.horizontal4),
                             Text(
                               _emailErrorMessage,
-                              style: TextStyle(
-                                fontSize: 12.sp,
+                              style: AppTextStyles.tag_12.copyWith(
                                 color: AppColors.red,
                               ),
                             ),
@@ -549,7 +548,9 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 // 현재 단계 표시
                 Text(
                   '현재 단계: ${_currentStep + 1} / 4',
-                  style: TextStyle(fontSize: 14.sp, color: AppColors.black600),
+                  style: AppTextStyles.paragraph_14_100.copyWith(
+                    color: AppColors.black600,
+                  ),
                 ),
                 SizedBox(height: AppSpacing.vertical12),
 
@@ -912,7 +913,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       title: '해당 플레이어를 체포하셨나요?',
                       showAvatar: true,
                       avatarWidget: ClipRRect(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: AppRadius.large,
                         child: Image.asset(
                           'assets/app_icon_512.png',
                           width: 92.w,
@@ -1029,11 +1030,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: 18.sp,
-        fontWeight: FontWeight.bold,
-        color: AppColors.black,
-      ),
+      style: AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
     );
   }
 
