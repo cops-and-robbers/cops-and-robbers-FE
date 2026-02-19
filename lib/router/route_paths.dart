@@ -54,6 +54,9 @@ class RoutePaths {
   /// 설정 화면
   static const String settings = '/home/settings';
 
+  /// 공지사항 화면
+  static const String notices = '/home/notices';
+
   // ============================================================================
   // Session Creation Flow Routes (PRD F1.1)
   // ============================================================================
@@ -126,5 +129,6 @@ class RoutePaths {
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
   static const String settingsName = 'settings';
+  static const String noticesName = 'notices';
   static const String lifecycleTestName = 'lifecycleTest';
 }

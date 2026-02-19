@@ -125,7 +125,7 @@ class HomePage extends ConsumerWidget {
                         SvgIconButton(
                           assetPath: 'assets/icons/Loudspeaker.svg',
                           onPressed: () {
-                            // TODO: 공지사항 페이지 네비게이션 (별도 이슈에서 구현)
+                            context.push(RoutePaths.notices);
                           },
                         ),
                         SizedBox(width: AppSpacing.horizontal8),
