@@ -17,7 +17,7 @@ class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('게임 결과')),
+      appBar: AppBar(title: const Text('게임 결과'), centerTitle: true),
       body: Center(
         child: Padding(
           padding: AppPadding.all20,

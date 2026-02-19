@@ -1,17 +1,22 @@
-import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
+import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/buttons/svg_icon_button.dart';
+import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../router/route_paths.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 
 /// 홈 화면
 ///
 /// 게임 세션 생성 또는 참가를 선택할 수 있는 메인 화면입니다.
+/// 디자인: LOGO + 설정, 공지/역할 아이콘, 말풍선, 아바타, 방만들기/참여하기 버튼
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -19,10 +24,7 @@ class HomePage extends ConsumerWidget {
   ///
   /// 이전 세션 생성 임시 데이터를 초기화한 후 세션 생성 플로우로 이동합니다.
   Future<void> _onCreateSession(BuildContext context) async {
-    // 1. 이전 임시 저장 데이터 초기화
     await SessionDraftStorageService().clearDraft();
-
-    // 2. 세션 생성 플로우 시작 (새 PageView 기반 플로우)
     if (context.mounted) {
       context.go(RoutePaths.sessionCreationFlow);
     }
@@ -71,49 +73,102 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        title: const Text('Home'),
-        actions: [
-          // 로그아웃 버튼
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: '로그아웃',
-            onPressed: () async {
-              await ref.read(authNotifierProvider.notifier).signOut();
-              // GoRouter가 자동으로 LoginPage로 이동 (redirect 함수가 처리)
-            },
-          ),
-        ],
-      ),
-      body: Center(
+      body: SafeArea(
         child: Padding(
-          padding: AppPadding.all20,
+          padding: AppPadding.horizontal20,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Home', style: AppTextStyles.heading_24),
-              SizedBox(height: AppSpacing.vertical64),
-              ElevatedButton(
-                onPressed: () => _onCreateSession(context),
-                child: const Text('방 만들기'),
-              ),
-              SizedBox(height: AppSpacing.vertical20),
-              ElevatedButton(
-                onPressed: () => _showJoinRoomDialog(context),
-                child: const Text('방 참여하기'),
-              ),
-              SizedBox(height: AppSpacing.vertical64),
-              // 개발 전용: 생명주기 테스트 버튼
-              OutlinedButton.icon(
-                onPressed: () => context.push(RoutePaths.lifecycleTest),
-                icon: const Icon(Icons.bug_report, size: 16),
-                label: const Text('생명주기 테스트', style: TextStyle(fontSize: 12)),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.grey,
-                  side: const BorderSide(color: Colors.grey),
+              SizedBox(height: AppSpacing.vertical16),
+
+              // ── Top Bar: LOGO + Settings (좌우 24px) ──
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.horizontal4,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'LOGO',
+                      style: AppTextStyles.heading_20.copyWith(
+                        color: AppColors.black,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        context.push(RoutePaths.settings);
+                      },
+                      child: SvgPicture.asset(
+                        'assets/icons/icon_setting_1.svg',
+                        width: 24.w,
+                        height: 24.h,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.black800,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
+              // ── Middle Content (Expandable) ──
+              Expanded(
+                child: Column(
+                  children: [
+                    SizedBox(height: AppSpacing.vertical32),
+
+                    // ── Icon Buttons Row (aligned right) ──
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SvgIconButton(
+                          assetPath: 'assets/icons/Loudspeaker.svg',
+                          onPressed: () {
+                            // TODO: 공지사항 페이지 네비게이션 (별도 이슈에서 구현)
+                          },
+                        ),
+                        SizedBox(width: AppSpacing.horizontal8),
+                        SvgIconButton(
+                          assetPath: 'assets/icons/Top_hat.svg',
+                          onPressed: () {
+                            // TODO: 역할 선택 또는 테마 관련 기능
+                          },
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: AppSpacing.vertical48),
+
+                    // ── Speech Bubble ──
+                    const SpeechBubble(text: '너무 기대 돼\n이번에는 어떤 역할을 할까?'),
+
+                    // ── Avatar Placeholder ──
+                    Image.asset(
+                      'assets/app_icon_512.png',
+                      width: 223.w,
+                      height: 260.h,
+                      fit: BoxFit.contain,
+                    ),
+                  ],
+                ),
+              ),
+
+              // ── Bottom Buttons ──
+              AppButton(
+                text: '방 만들기',
+                onPressed: () => _onCreateSession(context),
+                showBorder: false,
+              ),
+              SizedBox(height: AppSpacing.vertical12),
+              AppButton(
+                text: '방 참여하기',
+                onPressed: () => _showJoinRoomDialog(context),
+                backgroundColor: AppColors.black100,
+                foregroundColor: AppColors.black600,
+                showBorder: false,
+              ),
+              SizedBox(height: AppSpacing.vertical20),
             ],
           ),
         ),

@@ -38,21 +38,6 @@ class AppSpacing {
   /// 좌우 24px 간격
   static double get horizontal24 => 24.w;
 
-  /// 좌우 32px 간격
-  static double get horizontal32 => 32.w;
-
-  /// 좌우 40px 간격
-  static double get horizontal40 => 40.w;
-
-  /// 좌우 48px 간격
-  static double get horizontal48 => 48.w;
-
-  /// 좌우 56px 간격
-  static double get horizontal56 => 56.w;
-
-  /// 좌우 64px 간격
-  static double get horizontal64 => 64.w;
-
   // ============================================
   // Vertical Spacing - 상하 간격 (높이 기준)
   // ============================================
@@ -75,7 +60,7 @@ class AppSpacing {
   /// 상하 24px 간격
   static double get vertical24 => 24.h;
 
-  // 상하 28px 간격
+  /// 상하 28px 간격
   static double get vertical28 => 28.h;
 
   /// 상하 32px 간격
@@ -86,9 +71,6 @@ class AppSpacing {
 
   /// 상하 48px 간격
   static double get vertical48 => 48.h;
-
-  /// 상하 56px 간격
-  static double get vertical56 => 56.h;
 
   /// 상하 64px 간격
   static double get vertical64 => 64.h;
@@ -111,33 +93,15 @@ class AppPadding {
   // All 패턴 - 모든 방향 동일한 간격
   // ============================================
 
-  /// 모든 방향 4px
-  static EdgeInsets get all4 => EdgeInsets.all(4.w);
-
-  /// 모든 방향 8px
-  static EdgeInsets get all8 => EdgeInsets.all(8.w);
-
-  /// 모든 방향 12px
-  static EdgeInsets get all12 => EdgeInsets.all(12.w);
-
   /// 모든 방향 16px
   static EdgeInsets get all16 => EdgeInsets.all(16.w);
 
   /// 모든 방향 20px
   static EdgeInsets get all20 => EdgeInsets.all(20.w);
 
-  /// 모든 방향 24px
-  static EdgeInsets get all24 => EdgeInsets.all(24.w);
-
   // ============================================
   // Horizontal 패턴 - 좌우 간격
   // ============================================
-
-  /// 좌우 8px
-  static EdgeInsets get horizontal8 => EdgeInsets.symmetric(horizontal: 8.w);
-
-  /// 좌우 12px
-  static EdgeInsets get horizontal12 => EdgeInsets.symmetric(horizontal: 12.w);
 
   /// 좌우 16px
   static EdgeInsets get horizontal16 => EdgeInsets.symmetric(horizontal: 16.w);
@@ -147,47 +111,6 @@ class AppPadding {
 
   /// 좌우 24px
   static EdgeInsets get horizontal24 => EdgeInsets.symmetric(horizontal: 24.w);
-
-  // ============================================
-  // Vertical 패턴 - 상하 간격
-  // ============================================
-
-  /// 상하 8px
-  static EdgeInsets get vertical8 => EdgeInsets.symmetric(vertical: 8.h);
-
-  /// 상하 12px
-  static EdgeInsets get vertical12 => EdgeInsets.symmetric(vertical: 12.h);
-
-  /// 상하 16px
-  static EdgeInsets get vertical16 => EdgeInsets.symmetric(vertical: 16.h);
-
-  /// 상하 20px
-  static EdgeInsets get vertical20 => EdgeInsets.symmetric(vertical: 20.h);
-
-  /// 상하 24px
-  static EdgeInsets get vertical24 => EdgeInsets.symmetric(vertical: 24.h);
-
-  /// 상하 28px
-  static EdgeInsets get vertical28 => EdgeInsets.symmetric(vertical: 28.h);
-
-  // ============================================
-  // 조합 패턴 - 자주 사용하는 특정 조합
-  // ============================================
-
-  /// 화면 전체 기본 패딩 (좌우 20px, 상하 16px)
-  static EdgeInsets get screenPadding =>
-      EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h);
-
-  /// 카드 내부 패딩 (모든 방향 16px)
-  static EdgeInsets get cardPadding => EdgeInsets.all(16.w);
-
-  /// 리스트 아이템 패딩 (좌우 16px, 상하 12px)
-  static EdgeInsets get listItemPadding =>
-      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h);
-
-  /// 버튼 내부 패딩 (좌우 24px, 상하 12px)
-  static EdgeInsets get buttonPadding =>
-      EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h);
 }
 
 // ============================================
@@ -207,12 +130,6 @@ class AppRadius {
   // 기본 라운드 값
   // ============================================
 
-  /// 라운드 없음 (0px)
-  static BorderRadius get none => BorderRadius.zero;
-
-  /// 작은 라운드 (4px)
-  static BorderRadius get small => BorderRadius.circular(4.r);
-
   /// 중간 라운드 (8px)
   static BorderRadius get medium => BorderRadius.circular(8.r);
 
@@ -224,27 +141,4 @@ class AppRadius {
 
   /// 20px 라운드
   static BorderRadius get xl20 => BorderRadius.circular(20.r);
-
-  /// 초대형 라운드 (24px)
-  static BorderRadius get xxlarge => BorderRadius.circular(24.r);
-
-  // ============================================
-  // 특수 목적 프리셋
-  // ============================================
-
-  /// 버튼용 라운드 (8px)
-  static BorderRadius get button => BorderRadius.circular(8.r);
-
-  /// 카드용 라운드 (12px)
-  static BorderRadius get card => BorderRadius.circular(12.r);
-
-  /// 모달 상단 라운드 (상단만 16px)
-  static BorderRadius get modal =>
-      BorderRadius.vertical(top: Radius.circular(16.r));
-
-  /// 칩/태그용 라운드 (완전 둥글게)
-  static BorderRadius get chip => BorderRadius.circular(100.r);
-
-  /// 입력 필드용 라운드 (8px)
-  static BorderRadius get input => BorderRadius.circular(8.r);
 }

@@ -135,6 +135,18 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
     }
   }
 
+  /// 닉네임 설정/변경 완료 후 네비게이션
+  ///
+  /// - 설정에서 진입 (push): canPop == true → pop으로 설정 페이지로 복귀
+  /// - 첫 로그인 (redirect): canPop == false → go로 홈 이동
+  void _navigateAfterComplete() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(RoutePaths.home);
+    }
+  }
+
   /// 확인 버튼 클릭 시 호출
   ///
   /// - 닉네임 미변경: 서버 닉네임 그대로 사용 → API 호출 없이 홈 이동
@@ -142,12 +154,14 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
   Future<void> _onConfirm() async {
     if (_isLoading) return;
 
-    // 닉네임을 변경하지 않았으면 API 호출 없이 바로 홈으로 이동
+    // 닉네임을 변경하지 않았으면 API 호출 없이 바로 이동
+    // ⚠️ 네비게이션을 먼저 수행 후 상태 갱신
+    // (상태 변경 → refreshListenable → GoRouter가 push된 라우트를 잃는 문제 방지)
     if (!_isNicknameChanged) {
+      _navigateAfterComplete();
       ref
           .read(authNotifierProvider.notifier)
           .updateNicknameCompleted(widget.initialNickname);
-      context.go(RoutePaths.home);
       return;
     }
 
@@ -162,9 +176,10 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
       if (!mounted) return;
 
-      // 닉네임 설정 완료 → authNotifier 상태 갱신 (isNewUser: false)
+      // ⚠️ 네비게이션을 먼저 수행 후 상태 갱신
+      // (상태 변경 → refreshListenable → GoRouter가 push된 라우트를 잃는 문제 방지)
+      _navigateAfterComplete();
       ref.read(authNotifierProvider.notifier).updateNicknameCompleted(nickname);
-      context.go(RoutePaths.home);
     } on AppException catch (e) {
       if (!mounted) return;
 

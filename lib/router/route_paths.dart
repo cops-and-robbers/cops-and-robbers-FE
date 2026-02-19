@@ -51,6 +51,9 @@ class RoutePaths {
   /// 홈 화면 (인증 필수, 게임 세션 생성/참가 선택)
   static const String home = '/home';
 
+  /// 설정 화면
+  static const String settings = '/home/settings';
+
   // ============================================================================
   // Session Creation Flow Routes (PRD F1.1)
   // ============================================================================
@@ -122,5 +125,6 @@ class RoutePaths {
   static const String homeName = 'home';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
+  static const String settingsName = 'settings';
   static const String lifecycleTestName = 'lifecycleTest';
 }
