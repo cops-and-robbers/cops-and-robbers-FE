@@ -62,6 +62,7 @@ CLEADME.md
 .env
 /env.*
 /secrets.json
+.claude
 
 # Android (local build config)
 /android/local.properties
