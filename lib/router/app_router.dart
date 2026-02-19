@@ -2,27 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/constants/app_colors.dart';
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
 import '../core/utils/custom_page_transitions.dart';
 import 'route_paths.dart';
 
 // Auth Provider Import
-import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import '../features/auth/presentation/providers/auth_provider.dart';
 
 // Page Imports
-import 'package:cops_and_robbers/features/auth/presentation/pages/splash_page.dart';
-import 'package:cops_and_robbers/features/auth/presentation/pages/login_page.dart';
-import 'package:cops_and_robbers/features/auth/presentation/pages/onboarding_page.dart';
-import 'package:cops_and_robbers/features/auth/presentation/pages/nickname_setup_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/home_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/session_creation_flow_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
-import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
-import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
-import 'package:cops_and_robbers/features/settings/presentation/pages/settings_page.dart';
-import 'package:cops_and_robbers/features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
+import '../features/auth/presentation/pages/splash_page.dart';
+import '../features/auth/presentation/pages/login_page.dart';
+import '../features/auth/presentation/pages/onboarding_page.dart';
+import '../features/auth/presentation/pages/nickname_setup_page.dart';
+import '../features/session/presentation/pages/home_page.dart';
+import '../features/session/presentation/pages/session_creation_flow_page.dart';
+import '../features/session/presentation/pages/setup_playground_page.dart';
+import '../features/session/presentation/pages/setup_prison_page.dart';
+import '../features/session/presentation/pages/waiting_room_page.dart';
+import '../features/game/presentation/pages/game_page.dart';
+import '../features/settings/presentation/pages/settings_page.dart';
+import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
 ///
@@ -285,13 +286,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const Icon(Icons.error_outline, size: 64, color: AppColors.red),
               SizedBox(height: AppSpacing.vertical16),
               Text('요청하신 페이지가 존재하지 않습니다.', style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical8),
               Text(
                 '경로: ${state.uri.path}',
-                style: AppTextStyles.tag_12.copyWith(color: Colors.grey),
+                style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
               ),
               SizedBox(height: AppSpacing.vertical24),
               ElevatedButton(
