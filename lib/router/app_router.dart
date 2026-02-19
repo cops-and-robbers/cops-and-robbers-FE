@@ -22,6 +22,7 @@ import '../features/session/presentation/pages/setup_playground_page.dart';
 import '../features/session/presentation/pages/setup_prison_page.dart';
 import '../features/session/presentation/pages/waiting_room_page.dart';
 import '../features/game/presentation/pages/game_page.dart';
+import '../features/notice/presentation/pages/notices_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 
@@ -200,6 +201,19 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) => buildDirectionalSlide(
               key: state.pageKey,
               child: const SettingsPage(),
+              isForward: true,
+            ),
+          ),
+
+          // ==============================================================
+          // Notices Page
+          // ==============================================================
+          GoRoute(
+            path: 'notices',
+            name: RoutePaths.noticesName,
+            pageBuilder: (context, state) => buildDirectionalSlide(
+              key: state.pageKey,
+              child: const NoticesPage(),
               isForward: true,
             ),
           ),
