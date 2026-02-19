@@ -10,6 +10,8 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../router/route_paths.dart';
 
@@ -32,39 +34,23 @@ class HomePage extends ConsumerWidget {
 
   /// 방 참여 다이얼로그 표시
   void _showJoinRoomDialog(BuildContext context) {
-    final TextEditingController codeController = TextEditingController();
+    final codeController = TextEditingController();
 
-    showDialog(
+    AppDialog.show(
       context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('방 참여하기'),
-          content: TextField(
-            controller: codeController,
-            decoration: const InputDecoration(
-              hintText: '초대 코드를 입력하세요',
-              border: OutlineInputBorder(),
-            ),
-            textCapitalization: TextCapitalization.characters,
-            maxLength: 6,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () {
-                final code = codeController.text.trim();
-                if (code.isNotEmpty) {
-                  Navigator.of(dialogContext).pop();
-                  context.go(RoutePaths.waitingRoomWithId(code));
-                }
-              },
-              child: const Text('참여'),
-            ),
-          ],
-        );
+      title: '방 참여하기',
+      customContent: AppTextField(
+        controller: codeController,
+        hintText: '초대 코드를 입력하세요',
+        maxLength: 6,
+      ),
+      cancelText: '취소',
+      confirmText: '참여',
+      onConfirm: () {
+        final code = codeController.text.trim();
+        if (code.isNotEmpty) {
+          context.go(RoutePaths.waitingRoomWithId(code));
+        }
       },
     );
   }
