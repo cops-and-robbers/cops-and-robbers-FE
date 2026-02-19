@@ -21,6 +21,7 @@ import 'package:cops_and_robbers/features/session/presentation/pages/setup_playg
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/waiting_room_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
+import 'package:cops_and_robbers/features/settings/presentation/pages/settings_page.dart';
 import 'package:cops_and_robbers/features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
@@ -120,16 +121,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       // ====================================================================
-      // 3. 닉네임 설정 페이지 보호 (신규 회원만 접근 가능)
-      // ====================================================================
-      if (currentPath == RoutePaths.nicknameSetup) {
-        // 기존 회원(isNewUser == false)이 직접 접근 시 홈으로 리다이렉트
-        if (authUser.isNewUser == false) {
-          return RoutePaths.home;
-        }
-      }
-
-      // ====================================================================
       // 4. 세션 상태 체크 (게임 진행 중인 경우 강제 리다이렉트)
       // ====================================================================
       // TODO: Session Provider 구현 후 활성화
@@ -199,6 +190,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) =>
             buildSmoothFade(key: state.pageKey, child: const HomePage()),
         routes: [
+          // ==============================================================
+          // Settings Page
+          // ==============================================================
+          GoRoute(
+            path: 'settings',
+            name: RoutePaths.settingsName,
+            pageBuilder: (context, state) => buildDirectionalSlide(
+              key: state.pageKey,
+              child: const SettingsPage(),
+              isForward: true,
+            ),
+          ),
+
           // ==============================================================
           // Session Creation Flow (Single PageView Page) - NEW
           // ==============================================================
@@ -273,6 +277,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorBuilder: (context, state) => Scaffold(
       appBar: AppBar(
         title: Text('페이지를 찾을 수 없습니다', style: AppTextStyles.label_16),
+        centerTitle: true,
       ),
       body: Center(
         child: Padding(
