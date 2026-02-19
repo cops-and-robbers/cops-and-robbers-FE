@@ -6,7 +6,7 @@ import 'core/constants/spacing_and_radius.dart';
 import 'core/constants/text_styles.dart';
 import 'core/widgets/buttons/app_button.dart';
 import 'core/widgets/dialogs/app_dialog.dart';
-import 'core/widgets/dialogs/app_timer_dialog.dart';
+import 'core/widgets/dialogs/app_popup.dart';
 import 'core/widgets/chips/action_chip.dart' as custom_chips;
 import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
@@ -791,25 +791,75 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 _buildSectionTitle('AppDialog 테스트'),
                 SizedBox(height: AppSpacing.vertical16),
 
-                // 1버튼 (확인만)
+                // 1버튼 (게임 규칙)
                 AppButton(
-                  text: '1버튼 다이얼로그 (확인만)',
+                  text: '1버튼 다이얼로그 (게임 규칙)',
                   onPressed: () {
                     AppDialog.show(
                       context: context,
                       title: '게임 규칙',
-                      message: '30분 안에 모든 도둑을 체포하세요',
+                      customContent: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '1. 경찰은 모든 도둑을 잡아서 체포하면,\n'
+                            '도둑은 제한 시간이 끝날 때까지 버티면 승리해요',
+                            style: AppTextStyles.paragraph_14.copyWith(
+                              color: AppColors.black600,
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.vertical8),
+                          Text(
+                            '2. 도둑팀의 위치는 n분마다 경찰팀에게 공유돼요',
+                            style: AppTextStyles.paragraph_14.copyWith(
+                              color: AppColors.black600,
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.vertical8),
+                          Text(
+                            '3. 지정된 게임 구역에서 벗어나면 안 돼요\n'
+                            '→ 구역 안으로 돌아갈 때까지 위치가 드러나요',
+                            style: AppTextStyles.paragraph_14.copyWith(
+                              color: AppColors.black600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      confirmText: '확인했어요!',
+                      confirmColor: AppColors.blue,
                     );
                   },
                   showBorder: false,
                 ),
                 SizedBox(height: AppSpacing.vertical12),
 
-                // 1버튼 (설명 없음)
+                // 팝업 (게임 종료)
                 AppButton(
-                  text: '1버튼 다이얼로그 (설명 없음)',
+                  text: '팝업 (게임 종료)',
                   onPressed: () {
-                    AppDialog.show(context: context, title: '게임 규칙');
+                    AppPopup.show(
+                      context: context,
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '게임 종료!',
+                            style: AppTextStyles.heading_20.copyWith(
+                              color: AppColors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: AppSpacing.vertical12),
+                          Text(
+                            '게임 시작 지점으로 모여 주세요!',
+                            style: AppTextStyles.paragraph_14_100.copyWith(
+                              color: AppColors.black600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   showBorder: false,
                   backgroundColor: AppColors.black800,
@@ -839,8 +889,9 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   onPressed: () async {
                     final result = await AppDialog.confirm(
                       context: context,
-                      title: '삭제할까요?',
-                      message: '삭제하면 되돌릴 수 없어요',
+                      title: '정말 탈퇴하시겠어요?',
+                      message: '회원 정보가 전부 삭제되어 복구할 수 없어요',
+                      confirmText: '탈퇴하기',
                       isDestructive: true,
                     );
                     if (result == true && mounted) {
@@ -858,8 +909,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   onPressed: () {
                     AppDialog.show(
                       context: context,
-                      title: '체포 성공!',
-                      message: '도둑을 체포했습니다',
+                      title: '해당 플레이어를 체포하셨나요?',
                       showAvatar: true,
                       avatarWidget: ClipRRect(
                         borderRadius: BorderRadius.circular(12.r),
@@ -870,8 +920,9 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                           fit: BoxFit.cover,
                         ),
                       ),
-                      nickname: '도둑닉네임',
-                      cancelText: '취소',
+                      nickname: '닉네임',
+                      cancelText: '아니요',
+                      confirmText: '네',
                       confirmColor: AppColors.blue,
                     );
                   },
@@ -885,23 +936,21 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: '타이머 다이얼로그 (여유)',
                   onPressed: () {
-                    AppTimerDialog.show(
+                    AppPopup.show(
                       context: context,
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '25:30',
-                            style: TextStyle(
-                              fontSize: 44.sp,
-                              fontWeight: FontWeight.w600,
+                            '04:59',
+                            style: AppTextStyles.semibold_44.copyWith(
                               color: AppColors.black,
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: AppSpacing.vertical4),
+                          SizedBox(height: AppSpacing.vertical12),
                           Text(
-                            '남은 시간이 표시됩니다',
+                            '도둑이 도망치는 중이에요!',
                             style: AppTextStyles.paragraph_14_100.copyWith(
                               color: AppColors.black600,
                             ),
@@ -920,23 +969,21 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: '타이머 다이얼로그 (1분 미만)',
                   onPressed: () {
-                    AppTimerDialog.show(
+                    AppPopup.show(
                       context: context,
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '00:47',
-                            style: TextStyle(
-                              fontSize: 44.sp,
-                              fontWeight: FontWeight.w600,
+                            '00:59',
+                            style: AppTextStyles.semibold_44.copyWith(
                               color: AppColors.red,
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: AppSpacing.vertical4),
+                          SizedBox(height: AppSpacing.vertical12),
                           Text(
-                            '시간이 얼마 남지 않았습니다!',
+                            '도둑 잡을 준비 되셨나요?',
                             style: AppTextStyles.paragraph_14_100.copyWith(
                               color: AppColors.red800,
                             ),

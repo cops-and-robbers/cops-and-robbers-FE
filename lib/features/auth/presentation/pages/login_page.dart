@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -223,16 +222,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ),
       ),
 
-      // 개발 모드에서만 개발자 도구 버튼 표시
-      floatingActionButton: kDebugMode
-          ? FloatingActionButton(
-              mini: true,
-              backgroundColor: AppColors.black.withValues(alpha: 0.7),
-              foregroundColor: AppColors.white,
-              onPressed: () => _showDevMenu(context),
-              child: const Icon(Icons.bug_report),
-            )
-          : null,
+      // floatingActionButton: kDebugMode
+      // ? FloatingActionButton(
+      //     mini: true,
+      //     backgroundColor: AppColors.black.withValues(alpha: 0.7),
+      //     foregroundColor: AppColors.white,
+      //     onPressed: () => _showDevMenu(context),
+      //     child: const Icon(Icons.bug_report),
+      //   )
+      // : null,
+
+      // 개발자 도구 버튼 (디자이너 확인용으로 릴리즈에서도 표시)
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        backgroundColor: AppColors.black.withValues(alpha: 0.7),
+        foregroundColor: AppColors.white,
+        onPressed: () => _showDevMenu(context),
+        child: const Icon(Icons.bug_report),
+      ),
     );
   }
 }
