@@ -99,6 +99,9 @@ class AppPadding {
   /// 모든 방향 20px
   static EdgeInsets get all20 => EdgeInsets.all(20.w);
 
+  /// 모든 방향 24px
+  static EdgeInsets get all24 => EdgeInsets.all(24.w);
+
   // ============================================
   // Horizontal 패턴 - 좌우 간격
   // ============================================
@@ -111,6 +114,9 @@ class AppPadding {
 
   /// 좌우 24px
   static EdgeInsets get horizontal24 => EdgeInsets.symmetric(horizontal: 24.w);
+
+  /// 좌우 36px
+  static EdgeInsets get horizontal36 => EdgeInsets.symmetric(horizontal: 36.w);
 }
 
 // ============================================
@@ -141,4 +147,7 @@ class AppRadius {
 
   /// 20px 라운드
   static BorderRadius get xl20 => BorderRadius.circular(20.r);
+
+  /// 매우 매우 큰 라운드 (24px) - 다이얼로그 등
+  static BorderRadius get xxlarge => BorderRadius.circular(24.r);
 }
