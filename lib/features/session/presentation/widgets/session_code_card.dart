@@ -63,7 +63,7 @@ class SessionCodeCard extends StatelessWidget {
           children: [
             Text(
               code,
-              style: AppTextStyles.semibold28.copyWith(color: AppColors.white),
+              style: AppTextStyles.semibold_28.copyWith(color: AppColors.white),
             ),
             SizedBox(width: AppSpacing.horizontal8),
             SvgPicture.asset(

@@ -19,6 +19,10 @@ import 'dialog_animation.dart';
 /// 2. 1버튼 (확인만): `cancelText` 미지정 (기본값)
 /// 3. 무버튼: `showButtons: false` (타이머, 공지, 게임종료용)
 ///
+/// **유효성 검증 + shake 애니메이션**:
+/// `validator`를 지정하면 확인 버튼 탭 시 validator 실행.
+/// false 반환 시 다이얼로그를 닫지 않고 흔들림 애니메이션으로 피드백.
+///
 /// **사용 예시**:
 /// ```dart
 /// // 기본 확인 다이얼로그 (1버튼)
@@ -37,23 +41,15 @@ import 'dialog_animation.dart';
 ///   onConfirm: () => capture(),
 /// );
 ///
-/// // 아바타 포함 다이얼로그 (체포 로직 - 파란 확인 버튼)
+/// // validator + shake (6자리 코드 검증)
 /// AppDialog.show(
 ///   context: context,
-///   title: '체포 성공!',
-///   message: '도둑을 체포했습니다',
-///   showAvatar: true,
-///   avatarWidget: CircleAvatar(backgroundImage: NetworkImage(url)),
-///   nickname: '도둑닉네임',
-///   confirmColor: AppColors.blue,
-/// );
-///
-/// // 버튼 없는 다이얼로그 (타이머/공지)
-/// AppDialog.show(
-///   context: context,
-///   title: '게임 종료',
-///   showButtons: false,
-///   customContent: TimerWidget(),
+///   title: '방 참여하기',
+///   customContent: AppTextField(controller: ctrl, maxLength: 6),
+///   cancelText: '취소',
+///   confirmText: '참여',
+///   validator: () => ctrl.text.trim().length == 6,
+///   onConfirm: () => joinRoom(ctrl.text.trim()),
 /// );
 ///
 /// // 간편 확인 (bool 반환)
@@ -65,7 +61,7 @@ import 'dialog_animation.dart';
 /// );
 /// if (result == true) { /* 삭제 */ }
 /// ```
-class AppDialog extends StatelessWidget {
+class AppDialog extends StatefulWidget {
   const AppDialog({
     super.key,
     this.title,
@@ -143,6 +139,9 @@ class AppDialog extends StatelessWidget {
   // ============================================
 
   /// 다이얼로그 표시
+  ///
+  /// [validator]를 지정하면 확인 버튼 탭 시 먼저 호출됩니다.
+  /// false를 반환하면 다이얼로그를 닫지 않고 흔들림 애니메이션을 실행합니다.
   static Future<T?> show<T>({
     required BuildContext context,
     String? title,
@@ -163,7 +162,10 @@ class AppDialog extends StatelessWidget {
     Color? cancelColor,
     Color? cancelTextColor,
     TextStyle? titleStyle,
+    bool Function()? validator,
   }) {
+    final dialogKey = GlobalKey<_AppDialogState>();
+
     return showGeneralDialog<T>(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -172,6 +174,7 @@ class AppDialog extends StatelessWidget {
       transitionDuration: DialogAnimation.duration,
       pageBuilder: (dialogContext, animation, secondaryAnimation) {
         return AppDialog(
+          key: dialogKey,
           title: title,
           message: message,
           confirmText: confirmText,
@@ -187,12 +190,14 @@ class AppDialog extends StatelessWidget {
           cancelColor: cancelColor,
           cancelTextColor: cancelTextColor,
           titleStyle: titleStyle,
-          onConfirm: onConfirm != null
-              ? () {
-                  Navigator.of(dialogContext).pop();
-                  onConfirm.call();
-                }
-              : () => Navigator.of(dialogContext).pop(),
+          onConfirm: () {
+            if (validator != null && !validator()) {
+              dialogKey.currentState?.shake();
+              return;
+            }
+            Navigator.of(dialogContext).pop();
+            onConfirm?.call();
+          },
           onCancel: onCancel != null
               ? () {
                   Navigator.of(dialogContext).pop();
@@ -253,76 +258,140 @@ class AppDialog extends StatelessWidget {
   }
 
   // ============================================
-  // UI 빌드
+  // State
   // ============================================
+
+  @override
+  State<AppDialog> createState() => _AppDialogState();
+}
+
+class _AppDialogState extends State<AppDialog>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shakeController;
+  late final Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _shakeAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 0, end: -8), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: -8, end: 8), weight: 2),
+          TweenSequenceItem(tween: Tween(begin: 8, end: -6), weight: 2),
+          TweenSequenceItem(tween: Tween(begin: -6, end: 4), weight: 2),
+          TweenSequenceItem(tween: Tween(begin: 4, end: 0), weight: 1),
+        ]).animate(
+          CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut),
+        );
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  /// 흔들림 애니메이션 실행
+  void shake() {
+    _shakeController.forward(from: 0);
+  }
+
+  /// 확인 버튼 배경색 (기본값 적용)
+  Color get _resolvedConfirmColor =>
+      widget.confirmColor ??
+      (widget.isDestructive ? AppColors.red : AppColors.black);
+
+  /// 확인 버튼 텍스트색 (기본값 적용)
+  Color get _resolvedConfirmTextColor =>
+      widget.confirmTextColor ?? AppColors.white;
+
+  /// 취소 버튼 배경색 (기본값 적용)
+  Color get _resolvedCancelColor => widget.cancelColor ?? AppColors.black100;
+
+  /// 취소 버튼 텍스트색 (기본값 적용)
+  Color get _resolvedCancelTextColor =>
+      widget.cancelTextColor ?? AppColors.black600;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: double.infinity,
-        margin: AppPadding.horizontal36,
-        padding: EdgeInsets.only(
-          top: 24.w,
-          left: 16.w,
-          right: 16.w,
-          bottom: 16.w,
+      child: AnimatedBuilder(
+        animation: _shakeAnimation,
+        builder: (context, child) => Transform.translate(
+          offset: Offset(_shakeAnimation.value, 0),
+          child: child,
         ),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: AppRadius.xxlarge,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 아바타 + 닉네임 (선택)
-              if (showAvatar) ...[
-                _buildAvatarSection(),
-                SizedBox(height: AppSpacing.vertical16),
-              ],
+        child: Container(
+          width: double.infinity,
+          margin: AppPadding.horizontal36,
+          padding: EdgeInsets.only(
+            top: 24.w,
+            left: 16.w,
+            right: 16.w,
+            bottom: 16.w,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: AppRadius.xxlarge,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 아바타 + 닉네임 (선택)
+                if (widget.showAvatar) ...[
+                  _buildAvatarSection(),
+                  SizedBox(height: AppSpacing.vertical16),
+                ],
 
-              // 제목
-              if (title != null)
-                Text(
-                  title!,
-                  style:
-                      titleStyle ??
-                      AppTextStyles.heading_20.copyWith(color: AppColors.black),
-                  textAlign: TextAlign.center,
-                ),
-
-              // 메시지
-              if (message != null) ...[
-                SizedBox(height: AppSpacing.vertical16),
-                Text(
-                  message!,
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black600,
+                // 제목
+                if (widget.title != null)
+                  Text(
+                    widget.title!,
+                    style:
+                        widget.titleStyle ??
+                        AppTextStyles.heading_20.copyWith(
+                          color: AppColors.black,
+                        ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
 
-              // 커스텀 콘텐츠
-              if (customContent != null) ...[
-                SizedBox(height: AppSpacing.vertical12),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: customContent!,
+                // 메시지
+                if (widget.message != null) ...[
+                  SizedBox(height: AppSpacing.vertical16),
+                  Text(
+                    widget.message!,
+                    style: AppTextStyles.paragraph_14.copyWith(
+                      color: AppColors.black600,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-              ],
+                ],
 
-              // 버튼들
-              if (showButtons) ...[
-                SizedBox(height: AppSpacing.vertical20),
-                _buildButtons(),
+                // 커스텀 콘텐츠
+                if (widget.customContent != null) ...[
+                  SizedBox(height: AppSpacing.vertical12),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 6.w),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: widget.customContent!,
+                    ),
+                  ),
+                ],
+
+                // 버튼들
+                if (widget.showButtons) ...[
+                  SizedBox(height: AppSpacing.vertical20),
+                  _buildButtons(),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -338,13 +407,13 @@ class AppDialog extends StatelessWidget {
         SizedBox(
           width: 92.w,
           height: 108.w,
-          child: avatarWidget ?? const SizedBox.shrink(),
+          child: widget.avatarWidget ?? const SizedBox.shrink(),
         ),
         // 닉네임
-        if (nickname != null) ...[
+        if (widget.nickname != null) ...[
           SizedBox(height: AppSpacing.vertical4),
           Text(
-            nickname!,
+            widget.nickname!,
             style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
             textAlign: TextAlign.center,
           ),
@@ -353,22 +422,9 @@ class AppDialog extends StatelessWidget {
     );
   }
 
-  /// 확인 버튼 배경색 (기본값 적용)
-  Color get _resolvedConfirmColor =>
-      confirmColor ?? (isDestructive ? AppColors.red : AppColors.black);
-
-  /// 확인 버튼 텍스트색 (기본값 적용)
-  Color get _resolvedConfirmTextColor => confirmTextColor ?? AppColors.white;
-
-  /// 취소 버튼 배경색 (기본값 적용)
-  Color get _resolvedCancelColor => cancelColor ?? AppColors.black100;
-
-  /// 취소 버튼 텍스트색 (기본값 적용)
-  Color get _resolvedCancelTextColor => cancelTextColor ?? AppColors.black600;
-
   /// 버튼 영역
   Widget _buildButtons() {
-    final hasCancel = cancelText != null;
+    final hasCancel = widget.cancelText != null;
 
     if (hasCancel) {
       // 2버튼: 취소 + 확인
@@ -376,8 +432,8 @@ class AppDialog extends StatelessWidget {
         children: [
           Expanded(
             child: AppButton(
-              text: cancelText!,
-              onPressed: onCancel,
+              text: widget.cancelText!,
+              onPressed: widget.onCancel,
               backgroundColor: _resolvedCancelColor,
               foregroundColor: _resolvedCancelTextColor,
               borderRadius: AppRadius.medium,
@@ -388,8 +444,8 @@ class AppDialog extends StatelessWidget {
           SizedBox(width: AppSpacing.horizontal8),
           Expanded(
             child: AppButton(
-              text: confirmText,
-              onPressed: onConfirm,
+              text: widget.confirmText,
+              onPressed: widget.onConfirm,
               backgroundColor: _resolvedConfirmColor,
               foregroundColor: _resolvedConfirmTextColor,
               borderRadius: AppRadius.medium,
@@ -403,8 +459,8 @@ class AppDialog extends StatelessWidget {
 
     // 1버튼: 확인만
     return AppButton(
-      text: confirmText,
-      onPressed: onConfirm,
+      text: widget.confirmText,
+      onPressed: widget.onConfirm,
       backgroundColor: _resolvedConfirmColor,
       foregroundColor: _resolvedConfirmTextColor,
       borderRadius: AppRadius.medium,

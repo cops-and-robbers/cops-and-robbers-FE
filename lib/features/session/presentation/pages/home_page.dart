@@ -46,11 +46,9 @@ class HomePage extends ConsumerWidget {
       ),
       cancelText: '취소',
       confirmText: '참여',
+      validator: () => codeController.text.trim().length == 6,
       onConfirm: () {
-        final code = codeController.text.trim();
-        if (code.isNotEmpty) {
-          context.go(RoutePaths.waitingRoomWithId(code));
-        }
+        context.go(RoutePaths.waitingRoomWithId(codeController.text.trim()));
       },
     );
   }
