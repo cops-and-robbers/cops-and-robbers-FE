@@ -279,11 +279,20 @@ class _AppDialogState extends State<AppDialog>
     );
     _shakeAnimation =
         TweenSequence<double>([
-          TweenSequenceItem(tween: Tween(begin: 0, end: -8), weight: 1),
-          TweenSequenceItem(tween: Tween(begin: -8, end: 8), weight: 2),
-          TweenSequenceItem(tween: Tween(begin: 8, end: -6), weight: 2),
-          TweenSequenceItem(tween: Tween(begin: -6, end: 4), weight: 2),
-          TweenSequenceItem(tween: Tween(begin: 4, end: 0), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: 0, end: -8.w), weight: 1),
+          TweenSequenceItem(
+            tween: Tween(begin: -8.w, end: 8.w),
+            weight: 2,
+          ),
+          TweenSequenceItem(
+            tween: Tween(begin: 8.w, end: -6.w),
+            weight: 2,
+          ),
+          TweenSequenceItem(
+            tween: Tween(begin: -6.w, end: 4.w),
+            weight: 2,
+          ),
+          TweenSequenceItem(tween: Tween(begin: 4.w, end: 0), weight: 1),
         ]).animate(
           CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut),
         );
@@ -318,79 +327,86 @@ class _AppDialogState extends State<AppDialog>
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AnimatedBuilder(
-        animation: _shakeAnimation,
-        builder: (context, child) => Transform.translate(
-          offset: Offset(_shakeAnimation.value, 0),
-          child: child,
-        ),
-        child: Container(
-          width: double.infinity,
-          margin: AppPadding.horizontal36,
-          padding: EdgeInsets.only(
-            top: 24.w,
-            left: 16.w,
-            right: 16.w,
-            bottom: 16.w,
+    return AnimatedPadding(
+      padding: MediaQuery.viewInsetsOf(context),
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.decelerate,
+      child: Center(
+        child: AnimatedBuilder(
+          animation: _shakeAnimation,
+          builder: (context, child) => Transform.translate(
+            offset: Offset(_shakeAnimation.value, 0),
+            child: child,
           ),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: AppRadius.xxlarge,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 아바타 + 닉네임 (선택)
-                if (widget.showAvatar) ...[
-                  _buildAvatarSection(),
-                  SizedBox(height: AppSpacing.vertical16),
-                ],
+          child: SingleChildScrollView(
+            child: Container(
+              width: double.infinity,
+              margin: AppPadding.horizontal36,
+              padding: EdgeInsets.only(
+                top: 24.w,
+                left: 16.w,
+                right: 16.w,
+                bottom: 16.w,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: AppRadius.xxlarge,
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 아바타 + 닉네임 (선택)
+                    if (widget.showAvatar) ...[
+                      _buildAvatarSection(),
+                      SizedBox(height: AppSpacing.vertical16),
+                    ],
 
-                // 제목
-                if (widget.title != null)
-                  Text(
-                    widget.title!,
-                    style:
-                        widget.titleStyle ??
-                        AppTextStyles.heading_20.copyWith(
-                          color: AppColors.black,
+                    // 제목
+                    if (widget.title != null)
+                      Text(
+                        widget.title!,
+                        style:
+                            widget.titleStyle ??
+                            AppTextStyles.heading_20.copyWith(
+                              color: AppColors.black,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+
+                    // 메시지
+                    if (widget.message != null) ...[
+                      SizedBox(height: AppSpacing.vertical16),
+                      Text(
+                        widget.message!,
+                        style: AppTextStyles.paragraph_14.copyWith(
+                          color: AppColors.black600,
                         ),
-                    textAlign: TextAlign.center,
-                  ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
 
-                // 메시지
-                if (widget.message != null) ...[
-                  SizedBox(height: AppSpacing.vertical16),
-                  Text(
-                    widget.message!,
-                    style: AppTextStyles.paragraph_14.copyWith(
-                      color: AppColors.black600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                    // 커스텀 콘텐츠
+                    if (widget.customContent != null) ...[
+                      SizedBox(height: AppSpacing.vertical12),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 6.w),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: widget.customContent!,
+                        ),
+                      ),
+                    ],
 
-                // 커스텀 콘텐츠
-                if (widget.customContent != null) ...[
-                  SizedBox(height: AppSpacing.vertical12),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6.w),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: widget.customContent!,
-                    ),
-                  ),
-                ],
-
-                // 버튼들
-                if (widget.showButtons) ...[
-                  SizedBox(height: AppSpacing.vertical20),
-                  _buildButtons(),
-                ],
-              ],
+                    // 버튼들
+                    if (widget.showButtons) ...[
+                      SizedBox(height: AppSpacing.vertical20),
+                      _buildButtons(),
+                    ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),

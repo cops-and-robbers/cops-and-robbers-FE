@@ -1,7 +1,5 @@
 # AppDialog Shake Validation Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
-
 **Goal:** AppDialog에 validator 파라미터 추가 — 유효성 검증 실패 시 다이얼로그를 닫지 않고 흔들림 애니메이션으로 피드백
 
 **Architecture:** `AppDialog.show()`에 `bool Function()? validator` 파라미터 추가. validator가 false 반환하면 pop() 하지 않고 다이얼로그 컨테이너에 수평 흔들림(shake) 애니메이션 실행. 기존 AppDialog를 StatelessWidget에서 StatefulWidget으로 변환하여 AnimationController 관리.
@@ -10,7 +8,7 @@
 
 ---
 
-### Task 1: AppDialog에 shake 애니메이션 + validator 지원 추가
+## Task 1: AppDialog에 shake 애니메이션 + validator 지원 추가
 
 **Files:**
 - Modify: `lib/core/widgets/dialogs/app_dialog.dart`
@@ -136,7 +134,7 @@ git commit -m "feat: AppDialog에 validator + shake 애니메이션 추가 #99"
 
 ---
 
-### Task 2: 방 참여 다이얼로그에 6자리 검증 적용
+## Task 2: 방 참여 다이얼로그에 6자리 검증 적용
 
 **Files:**
 - Modify: `lib/features/session/presentation/pages/home_page.dart:36-56`
@@ -184,7 +182,7 @@ git commit -m "feat: 방 참여 다이얼로그에 6자리 코드 검증 적용 
 
 ---
 
-### Task 3: 테스트 위젯 페이지에서 shake 동작 확인 케이스 추가 (선택)
+## Task 3: 테스트 위젯 페이지에서 shake 동작 확인 케이스 추가 (선택)
 
 이 태스크는 필요 시에만 진행.
 

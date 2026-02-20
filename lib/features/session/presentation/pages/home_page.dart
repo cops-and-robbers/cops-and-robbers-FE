@@ -57,6 +57,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.white,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding: AppPadding.horizontal20,
