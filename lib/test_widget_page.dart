@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'core/utils/share_util.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'core/constants/app_colors.dart';
@@ -1006,6 +1008,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   text: '초대코드 생성 다이얼로그',
                   onPressed: () {
                     const sessionCode = 'A1B2C3';
+                    final messenger = ScaffoldMessenger.of(context);
                     AppDialog.show(
                       context: context,
                       title: '초대코드를 생성했어요',
@@ -1014,15 +1017,24 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       confirmText: '공유하기',
                       confirmColor: AppColors.blue,
                       onConfirm: () {
-                        // TODO: 나중에 공유 기능으로 교체
-                        Clipboard.setData(
-                          const ClipboardData(text: sessionCode),
+                        shareText(
+                          '경찰과 도둑 게임에 참여하세요!\n참여코드: $sessionCode',
+                          subject: '경찰과 도둑 초대코드',
                         );
                       },
                       customContent: GestureDetector(
                         onTap: () {
                           Clipboard.setData(
                             const ClipboardData(text: sessionCode),
+                          );
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '코드가 복사되었습니다',
+                                style: AppTextStyles.paragraph_14,
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
                           );
                         },
                         child: Container(
