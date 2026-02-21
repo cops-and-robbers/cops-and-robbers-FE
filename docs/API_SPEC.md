@@ -16,8 +16,8 @@
 2. [Game API - 게임 방 생성 및 관리](#2-game-api---게임-방-생성-및-관리)
    - [POST /api/games - 게임 방 생성](#21-post-apigames---게임-방-생성)
 3. [Game Participant API - 게임 참여자 관리](#3-game-participant-api---게임-참여자-관리)
-   - [POST /api/games/{gameId}/participants - 게임 방 참여](#31-post-apigamesgameidparticipants---게임-방-참여)
-   - [DELETE /api/games/{gameId}/participants - 게임 방 퇴장](#32-delete-apigamesgameidparticipants---게임-방-퇴장)
+   - [POST /api/games/join - 게임 방 참여](#31-post-apigamesjoin---게임-방-참여)
+   - [DELETE /api/games/{gameId}/leave - 게임 방 퇴장](#32-delete-apigamesgameidleave---게임-방-퇴장)
 4. [Lobby API - 게임 로비 상태 변경](#4-lobby-api---게임-로비-상태-변경)
    - [PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경](#41-patch-apigamesgameidlobbyteam---로비-팀-변경)
    - [PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경](#42-patch-apigamesgameidlobbyready---로비-준비-상태-변경)
@@ -128,7 +128,7 @@
 
 - **인증 필요**: No
 
-#### Request Body (`application/json`) - [LogoutRequest](#logoutrequest)
+#### Request Body (`application/json`)
 
 | 필드           | 타입   | 필수 | 설명          |
 | -------------- | ------ | ---- | ------------- |
@@ -175,8 +175,8 @@
 ```json
 {
   "tokens": {
-    "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
-    "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
+    "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIx.....",
+    "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIx....."
   }
 }
 ```
@@ -314,17 +314,11 @@
 
 ## 3. Game Participant API - 게임 참여자 관리
 
-### 3.1 POST /api/games/{gameId}/participants - 게임 방 참여
+### 3.1 POST /api/games/join - 게임 방 참여
 
 초대 코드를 사용하여 게임 방에 참여합니다. 이미 다른 활성 게임에 참여 중이거나, 게임이 이미 시작되었거나, 최대 참여 인원에 도달한 경우 참여할 수 없습니다.
 
 - **인증 필요**: Yes (JWT)
-
-#### Path Parameters
-
-| 파라미터 | 타입            | 필수 | 설명    | 예시 |
-| -------- | --------------- | ---- | ------- | ---- |
-| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
 
 #### Request Body (`application/json`)
 
@@ -356,7 +350,7 @@
 | 케이스              | title                | detail                                     |
 | ------------------- | -------------------- | ------------------------------------------ |
 | 초대 코드 누락      | 유효하지 않은 입력값 | `inviteCode: 초대 코드는 필수입니다.`      |
-| 잘못된 초대 코드    | 초대 코드 불일치     | `잘못된 초대 코드입니다.`                  |
+| 잘못된 초대 코드    | 초대 코드 오류       | `입력하신 초대 코드가 유효하지 않습니다.`  |
 | 게임이 이미 시작됨  | 게임 참여 불가       | `이미 시작된 게임에는 참여할 수 없습니다.` |
 | 최대 참여 인원 초과 | 게임 참여 불가       | `게임 방의 최대 참여 인원에 도달했습니다.` |
 
@@ -365,7 +359,7 @@
   "title": "유효하지 않은 입력값",
   "status": 400,
   "detail": "inviteCode: 초대 코드는 필수입니다.",
-  "instance": "/api/games/1/participants"
+  "instance": "/api/games/join"
 }
 ```
 
@@ -376,18 +370,7 @@
   "title": "인증 필요",
   "status": 401,
   "detail": "로그인이 필요한 서비스입니다.",
-  "instance": "/api/games/1/participants"
-}
-```
-
-**404 - 게임을 찾을 수 없음**
-
-```json
-{
-  "title": "게임을 찾을 수 없음",
-  "status": 404,
-  "detail": "해당 게임을 찾을 수 없습니다.",
-  "instance": "/api/games/999/participants"
+  "instance": "/api/games/join"
 }
 ```
 
@@ -398,13 +381,13 @@
   "title": "이미 참가 중인 게임",
   "status": 409,
   "detail": "이미 게임에 참가하고 있습니다.",
-  "instance": "/api/games/1/participants"
+  "instance": "/api/games/join"
 }
 ```
 
 ---
 
-### 3.2 DELETE /api/games/{gameId}/participants - 게임 방 퇴장
+### 3.2 DELETE /api/games/{gameId}/leave - 게임 방 퇴장
 
 현재 참여 중인 게임 방에서 퇴장합니다. 방장이 퇴장하는 경우 가장 먼저 참여한 참여자에게 방장 권한이 이전됩니다. 마지막 참여자가 퇴장하면 게임 방이 자동으로 삭제됩니다.
 
@@ -445,7 +428,7 @@
   "title": "인증 필요",
   "status": 401,
   "detail": "로그인이 필요한 서비스입니다.",
-  "instance": "/api/games/1/participants"
+  "instance": "/api/games/1/leave"
 }
 ```
 
@@ -461,7 +444,7 @@
   "title": "게임을 찾을 수 없음",
   "status": 404,
   "detail": "해당 게임을 찾을 수 없습니다.",
-  "instance": "/api/games/999/participants"
+  "instance": "/api/games/999/leave"
 }
 ```
 
@@ -709,13 +692,13 @@
 
 ### 5.1 GET /api/user/me - 내 정보 조회
 
-로그인한 사용자의 상세 정보를 조회합니다.
+로그인한 사용자의 상세 정보를 조회합니다. (일단은 테스트용)
 
 - **인증 필요**: Yes (JWT)
 
 #### Responses
 
-**200 - 사용자 정보 조회 성공**
+**200 - 조회 성공**
 
 ```json
 {
@@ -742,9 +725,10 @@
 
 ### 5.2 PATCH /api/user/me/nickname - 닉네임 변경
 
-로그인한 사용자의 닉네임을 변경합니다. (최대 10자, 중복 불가) 본인의 현재 닉네임으로 변경 요청 시에도 204가 반환됩니다.
+로그인한 사용자의 닉네임을 변경합니다. (최대 10자, 중복 불가)
 
 - **인증 필요**: Yes (JWT)
+- 현재 유저 본인의 닉네임으로 변경 요청 시에도 204 응답
 
 #### Request Body (`application/json`)
 
@@ -762,13 +746,13 @@
 
 #### Responses
 
-**204 - 닉네임 변경 성공** (응답 본문 없음)
+**204 - 변경 성공** (응답 본문 없음)
 
 **400 - 유효성 검사 실패**
 
 | 케이스                | title                | detail                                         |
 | --------------------- | -------------------- | ---------------------------------------------- |
-| 닉네임 누락/공백      | 유효하지 않은 입력값 | `nickname: 닉네임은 필수 입력 항목입니다.`     |
+| 공백 입력             | 유효하지 않은 입력값 | `nickname: 닉네임은 필수 입력 항목입니다.`     |
 | 길이 초과 (10자 초과) | 유효하지 않은 입력값 | `nickname: 닉네임은 최대 10자까지 가능합니다.` |
 
 ```json
@@ -813,7 +797,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 #### Responses
 
-**200 - 닉네임 확인 결과**
+**200 - 확인 완료**
 
 사용 가능한 닉네임:
 

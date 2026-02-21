@@ -179,6 +179,7 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('생명주기 테스트'),
+        centerTitle: true,
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
         actions: [

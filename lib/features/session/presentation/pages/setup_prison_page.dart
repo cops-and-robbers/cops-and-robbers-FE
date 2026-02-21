@@ -226,7 +226,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
               Padding(
                 padding: AppPadding.horizontal24,
                 child: Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: Alignment.center,
                   child: Text(
                     _playgroundCenter == null
                         ? '플레이그라운드를 먼저 설정해주세요'

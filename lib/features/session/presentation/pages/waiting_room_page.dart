@@ -160,7 +160,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage> {
     final currentTeam = participantInfo?.team ?? 'POLICE';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('대기실')),
+      appBar: AppBar(title: const Text('대기실'), centerTitle: true),
       body: Center(
         child: Padding(
           padding: AppPadding.all20,

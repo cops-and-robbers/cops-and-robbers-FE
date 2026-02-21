@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "54954969671-jiois0alu8qifp96u008geiovbbtu8av.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.elipair.copsandrobbers",
+            "certificate_hash": "38d9410718e3327e7b49df0e82773ff6156c1ca0"
+          }
+        },
+        {
           "client_id": "54954969671-uk5o3b1750h264lt7vea02bsj97g2e9l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

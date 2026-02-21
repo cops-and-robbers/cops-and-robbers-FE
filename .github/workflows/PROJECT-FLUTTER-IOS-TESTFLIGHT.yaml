@@ -71,7 +71,7 @@ on:
 # ============================================
 env:
   FLUTTER_VERSION: "3.35.5"
-  XCODE_VERSION: "26.0"  # macos-26 runner + iOS 26 SDK (TestFlight 경고 90725 대응 - 2026년 4월 필수)
+  XCODE_VERSION: "26.0" # macos-26 runner + iOS 26 SDK (TestFlight 경고 90725 대응 - 2026년 4월 필수)
   PROJECT_TYPE: "flutter"
 
   # ============================================
@@ -88,7 +88,7 @@ env:
 jobs:
   prepare-build:
     name: 환경 설정 및 준비
-    runs-on: macos-26  # iOS 26 SDK 지원 (2026년 4월 App Store 정책 대응)
+    runs-on: macos-26 # iOS 26 SDK 지원 (2026년 4월 App Store 정책 대응)
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
 
     outputs:
@@ -270,7 +270,7 @@ jobs:
   # ============================================
   build-ios:
     name: iOS 앱 빌드
-    runs-on: macos-26  # iOS 26 SDK 지원 (2026년 4월 App Store 정책 대응)
+    runs-on: macos-26 # iOS 26 SDK 지원 (2026년 4월 App Store 정책 대응)
     needs: prepare-build
 
     steps:
@@ -453,8 +453,13 @@ jobs:
           fi
           echo "✅ Fastfile 확인됨: ios/fastlane/Fastfile"
 
+      # Fastlane 설치 (Bundler 방식으로 CFPropertyList 의존성 충돌 방지)
       - name: Install Fastlane
-        run: gem install fastlane
+        run: |
+          printf 'source "https://rubygems.org"\ngem "fastlane"\n' > Gemfile
+          bundle install
+          echo "✅ Fastlane 설치 완료"
+          bundle exec fastlane --version
 
       - name: Upload to TestFlight
         env:
@@ -494,7 +499,7 @@ jobs:
 
           # Fastlane 실행 (마법사가 생성한 Fastfile 사용)
           cd ios
-          fastlane upload_testflight
+          bundle exec fastlane upload_testflight
 
       - name: Notify TestFlight Upload Success
         if: success()
