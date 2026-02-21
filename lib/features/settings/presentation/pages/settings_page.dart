@@ -148,6 +148,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 text: '로그아웃',
                 textColor: AppColors.red,
                 onTap: () async {
+                  final messenger = ScaffoldMessenger.of(context);
                   final result = await AppDialog.confirm(
                     context: context,
                     title: '로그아웃',
@@ -157,6 +158,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   );
                   if (result == true && mounted) {
                     await ref.read(authNotifierProvider.notifier).signOut();
+                    final authState = ref.read(authNotifierProvider);
+                    messenger.clearSnackBars();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          authState.hasError ? '로그아웃에 실패했습니다' : '로그아웃되었습니다',
+                          style: AppTextStyles.paragraph_14,
+                        ),
+                        backgroundColor: authState.hasError
+                            ? AppColors.red
+                            : AppColors.blue,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
                   }
                 },
               ),
