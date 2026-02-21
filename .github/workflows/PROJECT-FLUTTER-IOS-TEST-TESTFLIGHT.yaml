@@ -732,12 +732,6 @@ jobs:
           fi
           echo "✅ Fastfile 확인됨: ios/fastlane/Fastfile"
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.3"
-          bundler-cache: false
-
       # Fastlane 설치 (Bundler 방식으로 CFPropertyList 의존성 충돌 방지)
       - name: Install Fastlane
         run: |
