@@ -46,6 +46,7 @@ dependencies:
   animations: ^2.1.1 # 페이지 전환 애니메이션
   # 외부 링크
   url_launcher: ^6.3.2 # 외부 URL 브라우저 열기
+  share_plus: ^12.0.1  # 네이티브 공유 시트
   # 지도
   google_maps_flutter: ^2.14.0 # Google Maps SDK (Flutter)
   flutter_naver_map: ^1.4.4 # Naver Map SDK (Flutter)
