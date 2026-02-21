@@ -41,11 +41,11 @@ class HomePage extends ConsumerWidget {
       title: '방 참여하기',
       customContent: AppTextField(
         controller: codeController,
-        hintText: '초대 코드를 입력하세요',
+        hintText: '참여코드를 입력하세요',
         maxLength: 6,
       ),
       cancelText: '취소',
-      confirmText: '참여',
+      confirmText: '참여하기',
       validator: () => codeController.text.trim().length == 6,
       onConfirm: () {
         context.go(RoutePaths.waitingRoomWithId(codeController.text.trim()));
