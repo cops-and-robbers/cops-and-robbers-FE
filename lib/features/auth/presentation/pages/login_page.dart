@@ -150,12 +150,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         : fallbackMessage;
 
     //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
+    messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
         content: Text(errorMessage, style: AppTextStyles.paragraph_14),
         backgroundColor: AppColors.red,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

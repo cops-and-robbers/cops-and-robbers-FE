@@ -939,7 +939,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
                 // 타이머 다이얼로그 (여유)
                 AppButton(
-                  text: '타이머 다이얼로그 (여유)',
+                  text: '타이머 팝업 (여유)',
                   onPressed: () {
                     AppPopup.show(
                       context: context,
@@ -972,7 +972,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
                 // 타이머 다이얼로그 (1분 미만)
                 AppButton(
-                  text: '타이머 다이얼로그 (1분 미만)',
+                  text: '타이머 팝업 (1분 미만)',
                   onPressed: () {
                     AppPopup.show(
                       context: context,
@@ -1027,6 +1027,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                           Clipboard.setData(
                             const ClipboardData(text: sessionCode),
                           );
+                          messenger.clearSnackBars();
                           messenger.showSnackBar(
                             SnackBar(
                               content: Text(
