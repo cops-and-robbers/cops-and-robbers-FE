@@ -1,13 +1,16 @@
 import 'dart:io';
 
 import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -33,6 +36,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   /// Apple 로그인 로딩 상태
   bool _isAppleLoading = false;
+
+  /// 개인정보 처리방침 탭 인식기
+  late final TapGestureRecognizer _privacyRecognizer;
+
+  /// 이용약관 탭 인식기
+  late final TapGestureRecognizer _termsRecognizer;
+
+  @override
+  void initState() {
+    super.initState();
+    _privacyRecognizer = TapGestureRecognizer()
+      ..onTap = () => launchExternalUrl(AppUrls.privacyPolicy);
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = () => launchExternalUrl(AppUrls.termsOfService);
+  }
+
+  @override
+  void dispose() {
+    _privacyRecognizer.dispose();
+    _termsRecognizer.dispose();
+    super.dispose();
+  }
 
   /// Google 로그인 버튼 핸들러
   ///
@@ -215,7 +240,44 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
             ),
 
-            // 에러 메시지 (선택사항 - SnackBar와 중복이므로 간단하게 표시)
+            // 약관 동의 안내 텍스트 (하단 고정)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 10.h,
+              child: Padding(
+                padding: AppPadding.horizontal20,
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: AppTextStyles.tag_12.copyWith(
+                      color: AppColors.black400,
+                    ),
+                    children: [
+                      const TextSpan(text: '로그인 시 '),
+                      TextSpan(
+                        text: '개인정보 처리방침',
+                        style: AppTextStyles.tag_12.copyWith(
+                          color: AppColors.black600,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: _privacyRecognizer,
+                      ),
+                      const TextSpan(text: ' 및 '),
+                      TextSpan(
+                        text: '이용약관',
+                        style: AppTextStyles.tag_12.copyWith(
+                          color: AppColors.black600,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: _termsRecognizer,
+                      ),
+                      const TextSpan(text: '에 동의합니다'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
