@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../models/my_page_response_model.dart';
 import '../models/nickname_check_response_model.dart';
 import '../models/nickname_update_request_model.dart';
 
@@ -39,4 +40,12 @@ abstract class UserRemoteDataSource {
   /// - 409: 닉네임 중복
   @PATCH(ApiEndpoints.updateNickname)
   Future<void> updateNickname(@Body() NicknameUpdateRequestModel request);
+
+  /// 내 정보 조회
+  ///
+  /// 현재 로그인한 사용자의 프로필 정보를 조회합니다.
+  ///
+  /// - 200: 사용자 정보 (MyPageResponseModel)
+  @GET(ApiEndpoints.myPage)
+  Future<MyPageResponseModel> getMyPage();
 }

@@ -246,6 +246,9 @@ class _SessionCreationFlowPageState
     setState(() {
       _playgroundCenter = center;
       _playgroundRadiusMeters = radius;
+      // 플레이그라운드 변경 시 감옥 초기화 (새 범위 내에서 재설정 필요)
+      _prisonCenter = null;
+      _prisonRadiusMeters = null;
     });
   }
 

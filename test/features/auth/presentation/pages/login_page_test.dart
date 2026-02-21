@@ -175,5 +175,32 @@ void main() {
       );
       expect(logoFinder, findsOneWidget);
     });
+
+    testWidgets('약관 동의 텍스트가 표시된다', (tester) async {
+      // Given
+      await tester.pumpWidget(createTestableWidget(tester));
+
+      // Then - RichText로 약관 텍스트가 포함되어 있는지 확인
+      expect(find.byType(RichText), findsWidgets);
+
+      // 개인정보 처리방침 텍스트 확인
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is RichText &&
+              widget.text.toPlainText().contains('개인정보 처리방침'),
+        ),
+        findsOneWidget,
+      );
+
+      // 이용약관 텍스트 확인
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is RichText && widget.text.toPlainText().contains('이용약관'),
+        ),
+        findsOneWidget,
+      );
+    });
   });
 }

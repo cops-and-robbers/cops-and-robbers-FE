@@ -1,16 +1,19 @@
 import 'dart:io';
 
 import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../router/route_paths.dart';
 import '../../../../test_widget_page.dart';
 import '../providers/auth_provider.dart';
@@ -33,6 +36,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   /// Apple 로그인 로딩 상태
   bool _isAppleLoading = false;
+
+  /// 개인정보 처리방침 탭 인식기
+  late final TapGestureRecognizer _privacyRecognizer;
+
+  /// 이용약관 탭 인식기
+  late final TapGestureRecognizer _termsRecognizer;
+
+  @override
+  void initState() {
+    super.initState();
+    _privacyRecognizer = TapGestureRecognizer()
+      ..onTap = () async => await launchExternalUrl(AppUrls.privacyPolicy);
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = () async => await launchExternalUrl(AppUrls.termsOfService);
+  }
+
+  @override
+  void dispose() {
+    _privacyRecognizer.dispose();
+    _termsRecognizer.dispose();
+    super.dispose();
+  }
 
   /// Google 로그인 버튼 핸들러
   ///
@@ -125,12 +150,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         : fallbackMessage;
 
     //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
+    messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
         content: Text(errorMessage, style: AppTextStyles.paragraph_14),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
+        backgroundColor: AppColors.red,
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -140,36 +165,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// 생명주기 테스트와 위젯 테스트 페이지로 이동할 수 있는 다이얼로그를 표시합니다.
   /// 개발 모드(kDebugMode)에서만 동작합니다.
   void _showDevMenu(BuildContext context) {
-    showDialog(
+    AppDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('개발자 도구', style: AppTextStyles.heading_20),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.pending_actions),
-              title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
-              onTap: () {
-                Navigator.pop(context);
-                context.push(RoutePaths.lifecycleTest);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.widgets),
-              title: Text('Test Widget', style: AppTextStyles.paragraph_14),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TestWidgetPage(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+      title: '개발자 도구',
+      showButtons: false,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.pending_actions),
+            title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              Navigator.pop(context);
+              context.push(RoutePaths.lifecycleTest);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.widgets),
+            title: Text('Test Widget', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TestWidgetPage()),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -218,21 +240,66 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
             ),
 
-            // 에러 메시지 (선택사항 - SnackBar와 중복이므로 간단하게 표시)
+            // 약관 동의 안내 텍스트 (하단 고정)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 10.h,
+              child: Padding(
+                padding: AppPadding.horizontal20,
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: AppTextStyles.tag_12.copyWith(
+                      color: AppColors.black400,
+                    ),
+                    children: [
+                      const TextSpan(text: '로그인 시 '),
+                      TextSpan(
+                        text: '개인정보 처리방침',
+                        style: AppTextStyles.tag_12.copyWith(
+                          color: AppColors.black600,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: _privacyRecognizer,
+                      ),
+                      const TextSpan(text: ' 및 '),
+                      TextSpan(
+                        text: '이용약관',
+                        style: AppTextStyles.tag_12.copyWith(
+                          color: AppColors.black600,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: _termsRecognizer,
+                      ),
+                      const TextSpan(text: '에 동의합니다'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
 
-      // 개발 모드에서만 개발자 도구 버튼 표시
-      floatingActionButton: kDebugMode
-          ? FloatingActionButton(
-              mini: true,
-              backgroundColor: AppColors.black.withValues(alpha: 0.7),
-              foregroundColor: AppColors.white,
-              onPressed: () => _showDevMenu(context),
-              child: const Icon(Icons.bug_report),
-            )
-          : null,
+      // floatingActionButton: kDebugMode
+      // ? FloatingActionButton(
+      //     mini: true,
+      //     backgroundColor: AppColors.black.withValues(alpha: 0.7),
+      //     foregroundColor: AppColors.white,
+      //     onPressed: () => _showDevMenu(context),
+      //     child: const Icon(Icons.bug_report),
+      //   )
+      // : null,
+
+      // 개발자 도구 버튼 (디자이너 확인용으로 릴리즈에서도 표시)
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        backgroundColor: AppColors.black.withValues(alpha: 0.7),
+        foregroundColor: AppColors.white,
+        onPressed: () => _showDevMenu(context),
+        child: const Icon(Icons.bug_report),
+      ),
     );
   }
 }

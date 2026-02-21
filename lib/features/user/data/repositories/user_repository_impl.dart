@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
+import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_remote_datasource.dart';
 import '../models/nickname_update_request_model.dart';
@@ -50,6 +51,32 @@ class UserRepositoryImpl implements UserRepository {
     } catch (e) {
       throw ServerException(
         message: '닉네임 변경 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<UserProfileEntity> getMyProfile() async {
+    try {
+      final response = await _dataSource.getMyPage();
+
+      if (kDebugMode) {
+        debugPrint('✅ 내 정보 조회 성공: ${response.nickname}');
+      }
+
+      return UserProfileEntity(
+        userId: response.userId,
+        nickname: response.nickname,
+        socialPlatform: response.socialPlatform,
+        allowGamePush: response.allowGamePush,
+        allowMarketingPush: response.allowMarketingPush,
+      );
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '사용자 정보 조회 중 오류가 발생했습니다.',
         originalException: e,
       );
     }

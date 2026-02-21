@@ -32,6 +32,7 @@ class _ZoneSettingTestPageState extends State<ZoneSettingTestPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('구역 설정 테스트 (Circle)'),
+        centerTitle: true,
         actions: [
           // 내 위치로 돌아가기 버튼
           IconButton(
