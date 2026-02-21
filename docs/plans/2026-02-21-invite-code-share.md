@@ -8,7 +8,7 @@
 
 ---
 
-### Task 1: share_plus 패키지 추가
+## Task 1: share_plus 패키지 추가
 
 **Files:**
 
@@ -38,7 +38,7 @@ git commit -m "chore: share_plus 패키지 추가"
 
 ---
 
-### Task 2: 공유 유틸리티 함수 생성
+## Task 2: 공유 유틸리티 함수 생성
 
 **Files:**
 
@@ -69,7 +69,7 @@ git commit -m "feat: shareText 유틸리티 함수 추가"
 
 ---
 
-### Task 3: 초대코드 다이얼로그에 공유 기능 연결
+## Task 3: 초대코드 다이얼로그에 공유 기능 연결
 
 **Files:**
 

@@ -47,9 +47,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     _privacyRecognizer = TapGestureRecognizer()
-      ..onTap = () => launchExternalUrl(AppUrls.privacyPolicy);
+      ..onTap = () async => await launchExternalUrl(AppUrls.privacyPolicy);
     _termsRecognizer = TapGestureRecognizer()
-      ..onTap = () => launchExternalUrl(AppUrls.termsOfService);
+      ..onTap = () async => await launchExternalUrl(AppUrls.termsOfService);
   }
 
   @override

@@ -1023,8 +1023,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                         );
                       },
                       customContent: GestureDetector(
-                        onTap: () {
-                          Clipboard.setData(
+                        onTap: () async {
+                          await Clipboard.setData(
                             const ClipboardData(text: sessionCode),
                           );
                           messenger.clearSnackBars();

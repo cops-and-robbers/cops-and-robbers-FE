@@ -130,7 +130,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               // ── 개인정보 처리방침 ──
               _buildMenuItem(
                 text: '개인정보 처리방침',
-                onTap: () => launchExternalUrl(AppUrls.privacyPolicy),
+                onTap: () async =>
+                    await launchExternalUrl(AppUrls.privacyPolicy),
               ),
 
               const Divider(color: AppColors.black100, height: 1),
@@ -138,7 +139,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               // ── 이용약관 ──
               _buildMenuItem(
                 text: '이용약관',
-                onTap: () => launchExternalUrl(AppUrls.termsOfService),
+                onTap: () async =>
+                    await launchExternalUrl(AppUrls.termsOfService),
               ),
 
               const Divider(color: AppColors.black100, height: 1),
@@ -158,6 +160,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   );
                   if (result == true && mounted) {
                     await ref.read(authNotifierProvider.notifier).signOut();
+                    if (!mounted) return;
                     final authState = ref.read(authNotifierProvider);
                     messenger.clearSnackBars();
                     messenger.showSnackBar(
