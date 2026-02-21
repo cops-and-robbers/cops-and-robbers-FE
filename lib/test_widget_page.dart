@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'core/utils/share_util.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'core/constants/app_colors.dart';
 import 'core/constants/spacing_and_radius.dart';
+import 'core/constants/text_styles.dart';
 import 'core/widgets/buttons/app_button.dart';
+import 'core/widgets/dialogs/app_dialog.dart';
+import 'core/widgets/dialogs/app_popup.dart';
 import 'core/widgets/chips/action_chip.dart' as custom_chips;
 import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
@@ -204,8 +211,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                             SizedBox(width: AppSpacing.horizontal4),
                             Text(
                               _emailErrorMessage,
-                              style: TextStyle(
-                                fontSize: 12.sp,
+                              style: AppTextStyles.tag_12.copyWith(
                                 color: AppColors.red,
                               ),
                             ),
@@ -546,7 +552,9 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 // 현재 단계 표시
                 Text(
                   '현재 단계: ${_currentStep + 1} / 4',
-                  style: TextStyle(fontSize: 14.sp, color: AppColors.black600),
+                  style: AppTextStyles.paragraph_14_100.copyWith(
+                    color: AppColors.black600,
+                  ),
                 ),
                 SizedBox(height: AppSpacing.vertical12),
 
@@ -781,6 +789,315 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // AppDialog 테스트
+                // ============================================
+                _buildSectionTitle('AppDialog 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 1버튼 (게임 규칙)
+                AppButton(
+                  text: '1버튼 다이얼로그 (게임 규칙)',
+                  onPressed: () {
+                    AppDialog.show(
+                      context: context,
+                      title: '게임 규칙',
+                      customContent: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '1. 경찰은 모든 도둑을 잡아서 체포하면,\n'
+                            '도둑은 제한 시간이 끝날 때까지 버티면 승리해요',
+                            style: AppTextStyles.paragraph_14.copyWith(
+                              color: AppColors.black600,
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.vertical8),
+                          Text(
+                            '2. 도둑팀의 위치는 n분마다 경찰팀에게 공유돼요',
+                            style: AppTextStyles.paragraph_14.copyWith(
+                              color: AppColors.black600,
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.vertical8),
+                          Text(
+                            '3. 지정된 게임 구역에서 벗어나면 안 돼요\n'
+                            '→ 구역 안으로 돌아갈 때까지 위치가 드러나요',
+                            style: AppTextStyles.paragraph_14.copyWith(
+                              color: AppColors.black600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      confirmText: '확인했어요!',
+                      confirmColor: AppColors.blue,
+                    );
+                  },
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 팝업 (게임 종료)
+                AppButton(
+                  text: '팝업 (게임 종료)',
+                  onPressed: () {
+                    AppPopup.show(
+                      context: context,
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '게임 종료!',
+                            style: AppTextStyles.heading_20.copyWith(
+                              color: AppColors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: AppSpacing.vertical12),
+                          Text(
+                            '게임 시작 지점으로 모여 주세요!',
+                            style: AppTextStyles.paragraph_14_100.copyWith(
+                              color: AppColors.black600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  showBorder: false,
+                  backgroundColor: AppColors.black800,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 2버튼 (취소 + 확인)
+                AppButton(
+                  text: '2버튼 다이얼로그 (취소+확인)',
+                  onPressed: () {
+                    AppDialog.show(
+                      context: context,
+                      title: '체포할까요?',
+                      message: '이 플레이어를 체포합니다',
+                      cancelText: '취소',
+                      onConfirm: () {},
+                    );
+                  },
+                  backgroundColor: AppColors.blue,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 위험 액션 (빨간 확인 버튼)
+                AppButton(
+                  text: '위험 액션 다이얼로그 (isDestructive)',
+                  onPressed: () async {
+                    final result = await AppDialog.confirm(
+                      context: context,
+                      title: '정말 탈퇴하시겠어요?',
+                      message: '회원 정보가 전부 삭제되어 복구할 수 없어요',
+                      confirmText: '탈퇴하기',
+                      isDestructive: true,
+                    );
+                    if (result == true && mounted) {
+                      _showSnackBar('삭제 확인!');
+                    }
+                  },
+                  backgroundColor: AppColors.red,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 아바타 포함 (체포 로직 - 파란 확인 버튼)
+                AppButton(
+                  text: '아바타 다이얼로그 (체포 로직)',
+                  onPressed: () {
+                    AppDialog.show(
+                      context: context,
+                      title: '해당 플레이어를 체포하셨나요?',
+                      showAvatar: true,
+                      avatarWidget: ClipRRect(
+                        borderRadius: AppRadius.large,
+                        child: Image.asset(
+                          'assets/app_icon_512.png',
+                          width: 92.w,
+                          height: 108.w,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      nickname: '닉네임',
+                      cancelText: '아니요',
+                      confirmText: '네',
+                      confirmColor: AppColors.blue,
+                    );
+                  },
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 타이머 다이얼로그 (여유)
+                AppButton(
+                  text: '타이머 팝업 (여유)',
+                  onPressed: () {
+                    AppPopup.show(
+                      context: context,
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '04:59',
+                            style: AppTextStyles.semibold_44.copyWith(
+                              color: AppColors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: AppSpacing.vertical12),
+                          Text(
+                            '도둑이 도망치는 중이에요!',
+                            style: AppTextStyles.paragraph_14_100.copyWith(
+                              color: AppColors.black600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.black600,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 타이머 다이얼로그 (1분 미만)
+                AppButton(
+                  text: '타이머 팝업 (1분 미만)',
+                  onPressed: () {
+                    AppPopup.show(
+                      context: context,
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '00:59',
+                            style: AppTextStyles.semibold_44.copyWith(
+                              color: AppColors.red,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: AppSpacing.vertical12),
+                          Text(
+                            '도둑 잡을 준비 되셨나요?',
+                            style: AppTextStyles.paragraph_14_100.copyWith(
+                              color: AppColors.red800,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.red,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 초대코드 생성 다이얼로그
+                AppButton(
+                  text: '초대코드 생성 다이얼로그',
+                  onPressed: () {
+                    const sessionCode = 'A1B2C3';
+                    final messenger = ScaffoldMessenger.of(context);
+                    AppDialog.show(
+                      context: context,
+                      title: '초대코드를 생성했어요',
+                      message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
+                      cancelText: '닫기',
+                      confirmText: '공유하기',
+                      confirmColor: AppColors.blue,
+                      onConfirm: () {
+                        shareText(
+                          '경찰과 도둑 게임에 참여하세요!\n참여코드: $sessionCode',
+                          subject: '경찰과 도둑 초대코드',
+                        );
+                      },
+                      customContent: GestureDetector(
+                        onTap: () async {
+                          await Clipboard.setData(
+                            const ClipboardData(text: sessionCode),
+                          );
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '코드가 복사되었습니다',
+                                style: AppTextStyles.paragraph_14,
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            vertical: AppSpacing.vertical20,
+                            horizontal: AppSpacing.horizontal16,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.black100),
+                            borderRadius: AppRadius.medium,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                sessionCode,
+                                style: AppTextStyles.heading_20.copyWith(
+                                  color: AppColors.black,
+                                ),
+                              ),
+                              SizedBox(width: AppSpacing.horizontal4),
+                              SvgPicture.asset(
+                                'assets/icons/icon_copy.svg',
+                                width: 20.w,
+                                height: 20.w,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.black300,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.blue,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 커스텀 타이틀 스타일
+                AppButton(
+                  text: '커스텀 타이틀 스타일',
+                  onPressed: () {
+                    AppDialog.show(
+                      context: context,
+                      title: '커스텀 제목',
+                      message: 'titleStyle로 제목 스타일을 변경할 수 있습니다',
+                      titleStyle: AppTextStyles.heading_20.copyWith(
+                        color: AppColors.blue,
+                      ),
+                      confirmColor: AppColors.blue,
+                    );
+                  },
+                  backgroundColor: AppColors.blue800,
+                  showBorder: false,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
               ],
             ),
           ),
@@ -793,11 +1110,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: 18.sp,
-        fontWeight: FontWeight.bold,
-        color: AppColors.black,
-      ),
+      style: AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
     );
   }
 

@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
@@ -48,7 +51,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               // ── 닉네임 변경 ──
               _buildMenuItem(
                 text: '닉네임 변경',
-                subtitle: '1~10글자로 생성할 수 있어요',
                 onTap: () async {
                   final router = GoRouter.of(context);
                   final messenger = ScaffoldMessenger.of(context);
@@ -128,9 +130,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               // ── 개인정보 처리방침 ──
               _buildMenuItem(
                 text: '개인정보 처리방침',
-                onTap: () {
-                  // TODO: 개인정보 처리방침 페이지 이동
-                },
+                onTap: () async =>
+                    await launchExternalUrl(AppUrls.privacyPolicy),
+              ),
+
+              const Divider(color: AppColors.black100, height: 1),
+
+              // ── 이용약관 ──
+              _buildMenuItem(
+                text: '이용약관',
+                onTap: () async =>
+                    await launchExternalUrl(AppUrls.termsOfService),
               ),
 
               const Divider(color: AppColors.black100, height: 1),
@@ -140,7 +150,32 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 text: '로그아웃',
                 textColor: AppColors.red,
                 onTap: () async {
-                  await ref.read(authNotifierProvider.notifier).signOut();
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await AppDialog.confirm(
+                    context: context,
+                    title: '로그아웃',
+                    message: '정말 로그아웃 하시겠어요?',
+                    confirmText: '로그아웃',
+                    isDestructive: true,
+                  );
+                  if (result == true && mounted) {
+                    await ref.read(authNotifierProvider.notifier).signOut();
+                    if (!mounted) return;
+                    final authState = ref.read(authNotifierProvider);
+                    messenger.clearSnackBars();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          authState.hasError ? '로그아웃에 실패했습니다' : '로그아웃되었습니다',
+                          style: AppTextStyles.paragraph_14,
+                        ),
+                        backgroundColor: authState.hasError
+                            ? AppColors.red
+                            : AppColors.blue,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  }
                 },
               ),
 
