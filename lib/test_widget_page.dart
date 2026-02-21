@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'core/constants/app_colors.dart';
 import 'core/constants/spacing_and_radius.dart';
@@ -995,6 +997,71 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     );
                   },
                   backgroundColor: AppColors.red,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 초대코드 생성 다이얼로그
+                AppButton(
+                  text: '초대코드 생성 다이얼로그',
+                  onPressed: () {
+                    const sessionCode = 'A1B2C3';
+                    AppDialog.show(
+                      context: context,
+                      title: '초대코드를 생성했어요',
+                      message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
+                      cancelText: '닫기',
+                      confirmText: '공유하기',
+                      confirmColor: AppColors.blue,
+                      onConfirm: () {
+                        // TODO: 나중에 공유 기능으로 교체
+                        Clipboard.setData(
+                          const ClipboardData(text: sessionCode),
+                        );
+                      },
+                      customContent: GestureDetector(
+                        onTap: () {
+                          Clipboard.setData(
+                            const ClipboardData(text: sessionCode),
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            vertical: AppSpacing.vertical20,
+                            horizontal: AppSpacing.horizontal16,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.black100),
+                            borderRadius: AppRadius.medium,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                sessionCode,
+                                style: AppTextStyles.heading_20.copyWith(
+                                  color: AppColors.black,
+                                ),
+                              ),
+                              SizedBox(width: AppSpacing.horizontal4),
+                              SvgPicture.asset(
+                                'assets/icons/icon_copy.svg',
+                                width: 20.w,
+                                height: 20.w,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.black300,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.blue,
                   showBorder: false,
                 ),
                 SizedBox(height: AppSpacing.vertical12),
