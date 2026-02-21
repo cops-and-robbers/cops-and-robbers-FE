@@ -453,13 +453,10 @@ jobs:
           fi
           echo "✅ Fastfile 확인됨: ios/fastlane/Fastfile"
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.1"
-          bundler-cache: true
-
       # Fastlane 설치 (Bundler 방식으로 CFPropertyList 의존성 충돌 방지)
+      # ⚠️ Set up Ruby 불필요: macOS runner 시스템 Ruby에 cocoapods가 이미 설치되어 있음
+      # ruby/setup-ruby + bundler-cache: true 사용 시 BUNDLE_PATH가 격리되어
+      # ios/Gemfile의 cocoapods를 찾지 못하는 문제 발생
       - name: Install Fastlane
         run: |
           printf 'source "https://rubygems.org"\ngem "fastlane"\n' > Gemfile
