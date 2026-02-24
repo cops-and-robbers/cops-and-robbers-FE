@@ -11,10 +11,10 @@ class NaverMapView extends StatefulWidget {
   const NaverMapView({super.key});
 
   @override
-  State<NaverMapView> createState() => _NaverMapViewState();
+  State<NaverMapView> createState() => NaverMapViewState();
 }
 
-class _NaverMapViewState extends State<NaverMapView> {
+class NaverMapViewState extends State<NaverMapView> {
   NaverMapController? _controller;
 
   // 위치 조회 실패 대비 fallback (어린이대공원)
@@ -34,7 +34,7 @@ class _NaverMapViewState extends State<NaverMapView> {
     super.dispose();
   }
 
-  Future<void> _moveCameraToCurrentLocation() async {
+  Future<void> moveCameraToCurrentLocation() async {
     debugPrint('📍 NaverMap: 현재 위치로 카메라 이동 시작');
     try {
       final pos = await DeviceLocationService.getCurrentPosition();
@@ -47,9 +47,12 @@ class _NaverMapViewState extends State<NaverMapView> {
       debugPrint('[지도/Naver] 초기 위치: ${pos.latitude}, ${pos.longitude}');
 
       final target = NLatLng(pos.latitude, pos.longitude);
-      await _controller?.updateCamera(
-        NCameraUpdate.withParams(target: target, zoom: 16),
+      final cameraUpdate = NCameraUpdate.withParams(target: target, zoom: 16);
+      cameraUpdate.setAnimation(
+        animation: NCameraAnimation.easing,
+        duration: const Duration(milliseconds: 800),
       );
+      await _controller?.updateCamera(cameraUpdate);
       debugPrint('✅ NaverMap: 카메라 이동 완료');
     } catch (e, stack) {
       debugPrint('❌ NaverMap: 카메라 이동 실패 - $e');
@@ -79,7 +82,7 @@ class _NaverMapViewState extends State<NaverMapView> {
             controller.setLocationTrackingMode(NLocationTrackingMode.noFollow);
 
             // 초기 1회 카메라 이동
-            _moveCameraToCurrentLocation();
+            moveCameraToCurrentLocation();
             debugPrint('✅ naver map ready');
           } catch (e, stack) {
             debugPrint('❌ NaverMap onMapReady 에러: $e');

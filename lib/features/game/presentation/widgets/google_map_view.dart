@@ -11,10 +11,10 @@ class GoogleMapView extends StatefulWidget {
   const GoogleMapView({super.key});
 
   @override
-  State<GoogleMapView> createState() => _GoogleMapViewState();
+  State<GoogleMapView> createState() => GoogleMapViewState();
 }
 
-class _GoogleMapViewState extends State<GoogleMapView> {
+class GoogleMapViewState extends State<GoogleMapView> {
   GoogleMapController? _controller;
 
   // 위치 조회 실패 대비 fallback (어린이대공원)
@@ -35,7 +35,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     super.dispose();
   }
 
-  Future<void> _moveCameraToCurrentLocation() async {
+  Future<void> moveCameraToCurrentLocation() async {
     debugPrint('📍 GoogleMap: 현재 위치로 카메라 이동 시작');
     try {
       final pos = await DeviceLocationService.getCurrentPosition();
@@ -48,7 +48,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
       debugPrint('[지도/Google] 초기 위치: ${pos.latitude}, ${pos.longitude}');
 
       final target = LatLng(pos.latitude, pos.longitude);
-      _controller?.moveCamera(
+      await _controller?.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(target: target, zoom: 16),
         ),
@@ -74,7 +74,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
             _controller = controller;
-            _moveCameraToCurrentLocation();
+            moveCameraToCurrentLocation();
             debugPrint('✅ google map ready');
           } catch (e, stack) {
             debugPrint('❌ GoogleMap onMapCreated 에러: $e');
