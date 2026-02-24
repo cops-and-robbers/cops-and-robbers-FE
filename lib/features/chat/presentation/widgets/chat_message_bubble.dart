@@ -42,7 +42,12 @@ class ChatMessageBubble extends StatelessWidget {
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+      padding: EdgeInsets.only(
+        left: isMe ? 16.w : 24.w,
+        right: isMe ? 24.w : 16.w,
+        top: 4.h,
+        bottom: 4.h,
+      ),
       child: isMe ? _buildMyMessage() : _buildOtherMessage(),
     );
   }
@@ -82,7 +87,7 @@ class ChatMessageBubble extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: 4.h),
+          padding: EdgeInsets.only(bottom: 4.h, right: 4.w),
           child: Text(
             message.sender.nickname,
             style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
@@ -131,7 +136,7 @@ class ChatMessageBubble extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: 4.h),
+          padding: EdgeInsets.only(bottom: 4.h, left: 4.w),
           child: Text(
             message.sender.nickname,
             style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
