@@ -386,8 +386,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       customContent: Container(
         height: 64.h,
         decoration: BoxDecoration(
-          color: AppColors.black100,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: AppColors.black100),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -409,7 +410,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                 width: 20.w,
                 height: 20.w,
                 colorFilter: const ColorFilter.mode(
-                  AppColors.black400,
+                  AppColors.black300,
                   BlendMode.srcIn,
                 ),
               ),
