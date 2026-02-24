@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../data/models/chat_message_dto.dart';
 
-/// TODO: 임시 UI
-///
 /// 채팅 메시지 버블 위젯
 ///
 /// 개별 채팅 메시지를 표시합니다.
-/// 본인 메시지는 오른쪽, 다른 사람 메시지는 왼쪽에 표시됩니다.
+/// 본인 메시지는 오른쪽(우측 꼬리), 다른 사람 메시지는 왼쪽(좌측 꼬리)에 표시됩니다.
 class ChatMessageBubble extends StatelessWidget {
   const ChatMessageBubble({
     required this.message,
@@ -20,107 +22,156 @@ class ChatMessageBubble extends StatelessWidget {
   final bool isMe;
   final String myTeam;
 
+  bool get _isSystemMessage =>
+      message.sender.team.toUpperCase() == 'SYSTEM' ||
+      message.sender.participantId == 0;
+
+  String get _formattedTime {
+    try {
+      final dt = DateTime.parse(message.timestamp);
+      return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+    } catch (_) {
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isTeamChat = message.scope == 'TEAM';
-    final senderTeam = message.sender.team.toUpperCase();
-    final isMyTeam = senderTeam == myTeam.toUpperCase();
+    if (_isSystemMessage) {
+      return _buildSystemMessage();
+    }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+      child: isMe ? _buildMyMessage() : _buildOtherMessage(),
+    );
+  }
+
+  /// 시스템 메시지 (중앙 정렬, 파란색 텍스트 + Loudspeaker 16x16)
+  Widget _buildSystemMessage() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
       child: Row(
-        mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (!isMe) ...[
-            _buildNicknameTag(isMyTeam, senderTeam),
-            const SizedBox(width: 6),
-          ],
-          Flexible(
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 220),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: _getBubbleColor(isMe, isTeamChat),
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
-                  bottomLeft: Radius.circular(isMe ? 16 : 4),
-                  bottomRight: Radius.circular(isMe ? 4 : 16),
-                ),
-              ),
-              child: Text(
-                message.message,
-                style: TextStyle(
-                  color: isMe ? Colors.white : Colors.black87,
-                  fontSize: 14,
-                ),
-              ),
+          SvgPicture.asset(
+            'assets/icons/Loudspeaker.svg',
+            width: 16.w,
+            height: 16.w,
+            colorFilter: const ColorFilter.mode(
+              AppColors.blue,
+              BlendMode.srcIn,
             ),
           ),
-          if (isMe) ...[
-            const SizedBox(width: 6),
-            _buildScopeIndicator(isTeamChat),
-          ],
+          SizedBox(width: 4.w),
+          Flexible(
+            child: Text(
+              message.message,
+              style: AppTextStyles.paragraph_14.copyWith(color: AppColors.blue),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildNicknameTag(bool isMyTeam, String team) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: _getTeamColor(team).withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        message.sender.nickname,
-        style: TextStyle(
-          color: _getTeamColor(team),
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
+  Widget _buildMyMessage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: 4.h),
+          child: Text(
+            message.sender.nickname,
+            style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
+          ),
         ),
-      ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(right: 4.w, bottom: 2.h),
+              child: Text(
+                _formattedTime,
+                style: AppTextStyles.tag_10.copyWith(color: AppColors.black400),
+              ),
+            ),
+            Flexible(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 240.w),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.r),
+                    topRight: Radius.circular(12.r),
+                    bottomLeft: Radius.circular(12.r),
+                    bottomRight: Radius.circular(4.r),
+                  ),
+                ),
+                child: Text(
+                  message.message,
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black900,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
-  Widget _buildScopeIndicator(bool isTeamChat) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(
-        color: isTeamChat
-            ? Colors.orange.withValues(alpha: 0.3)
-            : Colors.grey.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        isTeamChat ? '팀' : '전체',
-        style: TextStyle(
-          color: isTeamChat ? Colors.orange.shade700 : Colors.grey.shade600,
-          fontSize: 9,
-          fontWeight: FontWeight.w600,
+  Widget _buildOtherMessage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: 4.h),
+          child: Text(
+            message.sender.nickname,
+            style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
+          ),
         ),
-      ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Flexible(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 240.w),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.r),
+                    topRight: Radius.circular(12.r),
+                    bottomLeft: Radius.circular(4.r),
+                    bottomRight: Radius.circular(12.r),
+                  ),
+                ),
+                child: Text(
+                  message.message,
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black900,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 2.h),
+              child: Text(
+                _formattedTime,
+                style: AppTextStyles.tag_10.copyWith(color: AppColors.black400),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
-  }
-
-  Color _getBubbleColor(bool isMe, bool isTeamChat) {
-    if (isMe) {
-      return isTeamChat ? Colors.orange : Colors.blue;
-    }
-    return Colors.grey.shade200;
-  }
-
-  Color _getTeamColor(String team) {
-    switch (team.toUpperCase()) {
-      case 'POLICE':
-        return Colors.blue;
-      case 'ROBBER':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
   }
 }

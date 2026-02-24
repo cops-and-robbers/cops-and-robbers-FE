@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
@@ -75,6 +76,9 @@ class ChatNotifier extends _$ChatNotifier {
   /// 현재 게임/팀 정보 (재연결용)
   int? _gameId;
   String? _team;
+
+  /// 더미 모드 여부
+  bool _isDummyMode = false;
 
   /// 메시지 리스트 최대 크기
   static const _maxMessages = 200;
@@ -180,8 +184,106 @@ class ChatNotifier extends _$ChatNotifier {
   }) {
     if (message.trim().isEmpty) return;
 
+    // 더미 모드: 로컬에서 메시지 추가
+    if (_isDummyMode) {
+      _addDummyMessage(
+        message: message.trim(),
+        scope: scope,
+        participantId: _dummyMyPid,
+        nickname: '나',
+        team: _team?.toUpperCase() ?? 'POLICE',
+      );
+      // 상대방 자동 응답 (1초 후)
+      Future.delayed(const Duration(seconds: 1), () {
+        if (_isDummyMode) {
+          _addDummyMessage(
+            message: '${scope == 'TEAM' ? '[팀] ' : ''}응답 테스트 메시지!',
+            scope: scope,
+            participantId: 999,
+            nickname: scope == 'TEAM' ? '팀원닉네임' : '상대닉네임',
+            team: scope == 'TEAM'
+                ? (_team?.toUpperCase() ?? 'POLICE')
+                : 'ROBBER',
+          );
+        }
+      });
+      return;
+    }
+
     final datasource = ref.read(chatStompDatasourceProvider);
     datasource.publishChat(gameId, message.trim(), scope);
+  }
+
+  // ============================================
+  // 더미 모드 (서버 미연동 시 UI 테스트용)
+  // ============================================
+
+  int _dummyMyPid = 0;
+
+  /// 더미 모드 활성화 (서버 연결 없이 채팅 UI 테스트)
+  void enableDummyMode({required int participantId, required String team}) {
+    _isDummyMode = true;
+    _dummyMyPid = participantId;
+    _team = team.toLowerCase();
+    _gameId = 1;
+
+    state = state.copyWith(connectionState: StompConnectionState.connected);
+
+    // 초기 더미 메시지
+    _addDummyMessage(
+      message: '제한 시간은 30분입니다.',
+      scope: 'ALL',
+      participantId: 0,
+      nickname: '시스템',
+      team: 'SYSTEM',
+    );
+    _addDummyMessage(
+      message: '게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!',
+      scope: 'ALL',
+      participantId: 0,
+      nickname: '시스템',
+      team: 'SYSTEM',
+    );
+    _addDummyMessage(
+      message: '도둑 잘 도망쳐 봐요~',
+      scope: 'ALL',
+      participantId: 10,
+      nickname: '닉네임',
+      team: 'POLICE',
+    );
+    _addDummyMessage(
+      message: '이겨봅시다!',
+      scope: 'TEAM',
+      participantId: 11,
+      nickname: '닉네임',
+      team: team.toUpperCase(),
+    );
+  }
+
+  void _addDummyMessage({
+    required String message,
+    required String scope,
+    required int participantId,
+    required String nickname,
+    required String team,
+  }) {
+    final msg = ChatMessageDto(
+      id: const Uuid().v4(),
+      gameId: _gameId ?? 1,
+      sender: ChatSenderDto(
+        participantId: participantId,
+        nickname: nickname,
+        team: team,
+      ),
+      message: message,
+      timestamp: DateTime.now().toIso8601String(),
+      scope: scope,
+    );
+    final updated = [...state.messages, msg];
+    final trimmed = updated.length > _maxMessages
+        ? updated.sublist(updated.length - _maxMessages)
+        : updated;
+    state = state.copyWith(messages: trimmed);
   }
 
   // ============================================
@@ -209,7 +311,7 @@ class ChatNotifier extends _$ChatNotifier {
         _reconnectTimer = null;
 
         if (_gameId != null && _team != null) {
-          // 팀 채널만 구독 (서버가 scope에 따라 ALL/TEAM 메시지를 라우팅)
+          datasource.subscribeAll(_gameId!);
           datasource.subscribeTeam(_gameId!, _team!);
         }
         state = state.copyWith(errorMessage: null);

@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../router/route_paths.dart';
+import '../../../lobby/data/models/lobby_event_dto.dart';
+import '../../../lobby/presentation/providers/lobby_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 
@@ -45,6 +47,56 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage> {
 
   /// 팀 변경 중
   bool _isChangingTeam = false;
+
+  /// 선택된 지도 타입 (방장이 게임 시작 시 사용)
+  String _selectedMapType = 'google';
+
+  @override
+  void initState() {
+    super.initState();
+    // 대기실 진입 시 lobby STOMP 연결 및 구독
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _connectLobby();
+    });
+  }
+
+  @override
+  void dispose() {
+    // 대기실 이탈 시 lobby 연결 해제
+    ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
+    super.dispose();
+  }
+
+  /// Lobby STOMP 연결 및 구독
+  void _connectLobby() {
+    final gameId = int.tryParse(widget.sessionId);
+    if (gameId == null) return;
+
+    ref.read(lobbyNotifierProvider.notifier).connectAndSubscribe(
+      gameId: gameId,
+      onGameStart: _onGameStartEvent,
+    );
+  }
+
+  /// GAME_START 이벤트 수신 시 호출
+  void _onGameStartEvent(LobbyEventDto event) {
+    debugPrint('[WaitingRoom] 🎮 GAME_START 이벤트 수신! → GamePage로 이동');
+
+    final participantInfo = ref.read(gameParticipantNotifierProvider);
+    final team = participantInfo?.team ?? 'POLICE';
+    final participantId = participantInfo?.participantId ?? 0;
+
+    // TODO: 서버에서 mapType을 제공하면 event.data에서 추출
+    final mapType = _selectedMapType;
+
+    final route =
+        '${RoutePaths.gameWithId(widget.sessionId)}?mapType=$mapType&team=$team&pid=$participantId';
+    debugPrint('[WaitingRoom] ✅ 이동 경로: $route');
+
+    if (mounted) {
+      context.go(route);
+    }
+  }
 
   /// 팀 변경
   Future<void> _changeTeam(String targetTeam) async {
@@ -102,7 +154,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage> {
     setState(() => _isUpdatingReady = false);
   }
 
-  /// 지도 선택 및 게임 시작
+  /// 지도 선택 및 게임 시작 (방장 전용)
   Future<void> _startGame(String mapType) async {
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) {
@@ -110,8 +162,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage> {
       return;
     }
 
+    // 선택된 지도 타입 저장 (GAME_START 이벤트 수신 시 사용)
+    setState(() => _selectedMapType = mapType);
+
     debugPrint('========================================');
-    debugPrint('🎮 게임 시작 요청: gameId=$gameId');
+    debugPrint('🎮 게임 시작 요청: gameId=$gameId, mapType=$mapType');
     debugPrint('========================================');
 
     // 게임 시작 API 호출
@@ -126,18 +181,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage> {
       return;
     }
 
-    // 게임 시작 성공 → GamePage로 이동
-    final participantInfo = ref.read(gameParticipantNotifierProvider);
-    final team = participantInfo?.team ?? 'POLICE';
-    final participantId = participantInfo?.participantId ?? 0;
-
-    final route =
-        '${RoutePaths.gameWithId(widget.sessionId)}?mapType=$mapType&team=$team&pid=$participantId';
-    debugPrint('✅ 게임 시작 성공! 이동 경로: $route');
-
-    if (mounted) {
-      context.go(route);
-    }
+    // 게임 시작 성공 → GAME_START 이벤트를 통해 GamePage로 이동
+    // (방장도 팀원과 동일하게 이벤트로 이동)
+    debugPrint('✅ 게임 시작 API 성공! GAME_START 이벤트 대기 중...');
   }
 
   /// 방 나가기
@@ -156,8 +202,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    // lobby provider를 watch하여 생존 유지 (autoDispose 방지)
+    final lobbyState = ref.watch(lobbyNotifierProvider);
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final currentTeam = participantInfo?.team ?? 'POLICE';
+
+    // 연결 상태 디버그 출력
+    debugPrint('[WaitingRoom] lobby 연결 상태: ${lobbyState.connectionState}');
 
     return Scaffold(
       appBar: AppBar(title: const Text('대기실'), centerTitle: true),
