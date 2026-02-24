@@ -26,6 +26,12 @@ mixin _$CreateSessionResult {
   /// 세션 상태 (예: "WAITING")
   String get status => throw _privateConstructorUsedError;
 
+  /// 최대 참가 인원
+  int get maxParticipants => throw _privateConstructorUsedError;
+
+  /// 위치 공개 주기 (분)
+  int get locationRevealIntervalMinutes => throw _privateConstructorUsedError;
+
   /// Create a copy of CreateSessionResult
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -40,7 +46,13 @@ abstract class $CreateSessionResultCopyWith<$Res> {
     $Res Function(CreateSessionResult) then,
   ) = _$CreateSessionResultCopyWithImpl<$Res, CreateSessionResult>;
   @useResult
-  $Res call({int gameId, String inviteCode, String status});
+  $Res call({
+    int gameId,
+    String inviteCode,
+    String status,
+    int maxParticipants,
+    int locationRevealIntervalMinutes,
+  });
 }
 
 /// @nodoc
@@ -61,6 +73,8 @@ class _$CreateSessionResultCopyWithImpl<$Res, $Val extends CreateSessionResult>
     Object? gameId = null,
     Object? inviteCode = null,
     Object? status = null,
+    Object? maxParticipants = null,
+    Object? locationRevealIntervalMinutes = null,
   }) {
     return _then(
       _value.copyWith(
@@ -76,6 +90,14 @@ class _$CreateSessionResultCopyWithImpl<$Res, $Val extends CreateSessionResult>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as String,
+            maxParticipants: null == maxParticipants
+                ? _value.maxParticipants
+                : maxParticipants // ignore: cast_nullable_to_non_nullable
+                      as int,
+            locationRevealIntervalMinutes: null == locationRevealIntervalMinutes
+                ? _value.locationRevealIntervalMinutes
+                : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -91,7 +113,13 @@ abstract class _$$CreateSessionResultImplCopyWith<$Res>
   ) = __$$CreateSessionResultImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int gameId, String inviteCode, String status});
+  $Res call({
+    int gameId,
+    String inviteCode,
+    String status,
+    int maxParticipants,
+    int locationRevealIntervalMinutes,
+  });
 }
 
 /// @nodoc
@@ -111,6 +139,8 @@ class __$$CreateSessionResultImplCopyWithImpl<$Res>
     Object? gameId = null,
     Object? inviteCode = null,
     Object? status = null,
+    Object? maxParticipants = null,
+    Object? locationRevealIntervalMinutes = null,
   }) {
     return _then(
       _$CreateSessionResultImpl(
@@ -126,6 +156,14 @@ class __$$CreateSessionResultImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as String,
+        maxParticipants: null == maxParticipants
+            ? _value.maxParticipants
+            : maxParticipants // ignore: cast_nullable_to_non_nullable
+                  as int,
+        locationRevealIntervalMinutes: null == locationRevealIntervalMinutes
+            ? _value.locationRevealIntervalMinutes
+            : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -138,6 +176,8 @@ class _$CreateSessionResultImpl implements _CreateSessionResult {
     required this.gameId,
     required this.inviteCode,
     required this.status,
+    required this.maxParticipants,
+    required this.locationRevealIntervalMinutes,
   });
 
   /// 게임 세션 ID
@@ -152,9 +192,17 @@ class _$CreateSessionResultImpl implements _CreateSessionResult {
   @override
   final String status;
 
+  /// 최대 참가 인원
+  @override
+  final int maxParticipants;
+
+  /// 위치 공개 주기 (분)
+  @override
+  final int locationRevealIntervalMinutes;
+
   @override
   String toString() {
-    return 'CreateSessionResult(gameId: $gameId, inviteCode: $inviteCode, status: $status)';
+    return 'CreateSessionResult(gameId: $gameId, inviteCode: $inviteCode, status: $status, maxParticipants: $maxParticipants, locationRevealIntervalMinutes: $locationRevealIntervalMinutes)';
   }
 
   @override
@@ -165,11 +213,26 @@ class _$CreateSessionResultImpl implements _CreateSessionResult {
             (identical(other.gameId, gameId) || other.gameId == gameId) &&
             (identical(other.inviteCode, inviteCode) ||
                 other.inviteCode == inviteCode) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.maxParticipants, maxParticipants) ||
+                other.maxParticipants == maxParticipants) &&
+            (identical(
+                  other.locationRevealIntervalMinutes,
+                  locationRevealIntervalMinutes,
+                ) ||
+                other.locationRevealIntervalMinutes ==
+                    locationRevealIntervalMinutes));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, gameId, inviteCode, status);
+  int get hashCode => Object.hash(
+    runtimeType,
+    gameId,
+    inviteCode,
+    status,
+    maxParticipants,
+    locationRevealIntervalMinutes,
+  );
 
   /// Create a copy of CreateSessionResult
   /// with the given fields replaced by the non-null parameter values.
@@ -188,6 +251,8 @@ abstract class _CreateSessionResult implements CreateSessionResult {
     required final int gameId,
     required final String inviteCode,
     required final String status,
+    required final int maxParticipants,
+    required final int locationRevealIntervalMinutes,
   }) = _$CreateSessionResultImpl;
 
   /// 게임 세션 ID
@@ -201,6 +266,14 @@ abstract class _CreateSessionResult implements CreateSessionResult {
   /// 세션 상태 (예: "WAITING")
   @override
   String get status;
+
+  /// 최대 참가 인원
+  @override
+  int get maxParticipants;
+
+  /// 위치 공개 주기 (분)
+  @override
+  int get locationRevealIntervalMinutes;
 
   /// Create a copy of CreateSessionResult
   /// with the given fields replaced by the non-null parameter values.

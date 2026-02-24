@@ -17,6 +17,7 @@ import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../domain/entities/zone_info.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../widgets/session_creation_steps/step_0_select_area_content.dart';
@@ -198,13 +199,7 @@ class _SessionCreationFlowPageState
         );
       }
 
-      // 게임 참가 정보 설정 (방장은 기본적으로 POLICE 팀)
-      ref.read(gameParticipantNotifierProvider.notifier).setGameInfo(
-            gameId: result.gameId,
-            team: 'POLICE',
-          );
-
-      // 세션 생성 성공 → Draft 삭제 후 대기실로 이동
+      // 세션 생성 성공 → Draft 삭제
       try {
         await _storageService.clearDraft();
       } catch (e) {
@@ -212,9 +207,27 @@ class _SessionCreationFlowPageState
           debugPrint('⚠️ [SessionCreationFlow] Draft 삭제 실패 (무시): $e');
         }
       }
-      if (mounted) {
-        context.go(RoutePaths.waitingRoomWithId('${result.gameId}'));
-      }
+
+      if (!mounted) return;
+
+      // 게임 참가 정보 설정 (방장은 기본적으로 POLICE 팀)
+      // authNotifierProvider는 signInWithGoogle/Apple 직후 서버 닉네임으로 설정되므로
+      // 이 시점에 읽으면 정확한 게임 닉네임을 가져올 수 있음
+      final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
+      ref
+          .read(gameParticipantNotifierProvider.notifier)
+          .setGameInfo(
+            gameId: result.gameId,
+            nickname: myNickname,
+            team: 'POLICE',
+            maxParticipants: result.maxParticipants,
+            locationRevealIntervalMinutes: result.locationRevealIntervalMinutes,
+            isHost: true,
+          );
+
+      context.go(
+        '${RoutePaths.waitingRoomWithId('${result.gameId}')}?inviteCode=${result.inviteCode}&showInvite=true',
+      );
       return; // 네비게이션 후 setState 불필요
     } else if (sessionState is AsyncError) {
       if (kDebugMode) {

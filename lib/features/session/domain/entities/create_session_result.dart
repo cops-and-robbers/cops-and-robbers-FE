@@ -22,5 +22,11 @@ class CreateSessionResult with _$CreateSessionResult {
 
     /// 세션 상태 (예: "WAITING")
     required String status,
+
+    /// 최대 참가 인원
+    required int maxParticipants,
+
+    /// 위치 공개 주기 (분)
+    required int locationRevealIntervalMinutes,
   }) = _CreateSessionResult;
 }

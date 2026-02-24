@@ -93,7 +93,9 @@ Future<LeaveGameResponse?> leaveGame(Ref ref, int gameId) async {
   try {
     final dataSource = ref.read(sessionRemoteDataSourceProvider);
     final response = await dataSource.leaveGame(gameId);
-    debugPrint('[Session] ✅ 게임 퇴장 성공: gameId=$gameId, 남은 인원=${response.remainingCount}');
+    debugPrint(
+      '[Session] ✅ 게임 퇴장 성공: gameId=$gameId, 남은 인원=${response.remainingCount}',
+    );
     return response;
   } catch (e) {
     debugPrint('[Session] ❌ 게임 퇴장 실패: $e');
@@ -141,10 +143,17 @@ Future<bool> updateReady(Ref ref, int gameId, {required bool isReady}) async {
 /// 팀 변경 시 준비 상태가 해제됩니다.
 /// 성공 시 true, 실패 시 false를 반환합니다.
 @riverpod
-Future<bool> changeTeam(Ref ref, int gameId, {required String targetTeam}) async {
+Future<bool> changeTeam(
+  Ref ref,
+  int gameId, {
+  required String targetTeam,
+}) async {
   try {
     final dataSource = ref.read(sessionRemoteDataSourceProvider);
-    await dataSource.changeTeam(gameId, TeamChangeRequest(targetTeam: targetTeam));
+    await dataSource.changeTeam(
+      gameId,
+      TeamChangeRequest(targetTeam: targetTeam),
+    );
     debugPrint('[Session] ✅ 팀 변경 성공: gameId=$gameId, targetTeam=$targetTeam');
     return true;
   } catch (e) {
@@ -158,11 +167,18 @@ Future<bool> changeTeam(Ref ref, int gameId, {required String targetTeam}) async
 /// 초대 코드를 사용하여 게임 방에 참여합니다.
 /// 성공 시 JoinGameResponse, 실패 시 null을 반환합니다.
 @riverpod
-Future<JoinGameResponse?> joinGame(Ref ref, {required String inviteCode}) async {
+Future<JoinGameResponse?> joinGame(
+  Ref ref, {
+  required String inviteCode,
+}) async {
   try {
     final dataSource = ref.read(sessionRemoteDataSourceProvider);
-    final response = await dataSource.joinGame(JoinGameRequest(inviteCode: inviteCode));
-    debugPrint('[Session] ✅ 게임 참여 성공: gameId=${response.gameId}, participantId=${response.participantId}');
+    final response = await dataSource.joinGame(
+      JoinGameRequest(inviteCode: inviteCode),
+    );
+    debugPrint(
+      '[Session] ✅ 게임 참여 성공: gameId=${response.gameId}, participantId=${response.participantId}',
+    );
     return response;
   } catch (e) {
     debugPrint('[Session] ❌ 게임 참여 실패: $e');

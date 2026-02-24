@@ -24,6 +24,7 @@ class SvgIconButton extends StatelessWidget {
     this.containerSize = 56,
     this.iconSize = 32,
     this.borderRadius = 16,
+    this.iconColor,
   });
 
   /// SVG 에셋 경로
@@ -40,6 +41,9 @@ class SvgIconButton extends StatelessWidget {
 
   /// 모서리 반경 (기본값: 16)
   final double borderRadius;
+
+  /// 아이콘 색상 (null이면 SVG 원본 색상 사용)
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +69,9 @@ class SvgIconButton extends StatelessWidget {
             assetPath,
             width: iconSize.w,
             height: iconSize.w,
+            colorFilter: iconColor != null
+                ? ColorFilter.mode(iconColor!, BlendMode.srcIn)
+                : null,
           ),
         ),
       ),

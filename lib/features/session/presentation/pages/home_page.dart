@@ -15,6 +15,7 @@ import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 
 /// 홈 화면
@@ -34,82 +35,84 @@ class HomePage extends ConsumerWidget {
     }
   }
 
-  /// 방 참여 다이얼로그 표시
-  void _showJoinRoomDialog(BuildContext context, WidgetRef ref) {
-    final TextEditingController codeController = TextEditingController();
-    bool isLoading = false;
+  /// [임시] 게임 퇴장 다이얼로그
+  void _showLeaveGameDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
 
     AppDialog.show(
       context: context,
-      builder: (BuildContext dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('방 참여하기'),
-              content: TextField(
-                controller: codeController,
-                decoration: const InputDecoration(
-                  hintText: '초대 코드를 입력하세요',
-                  border: OutlineInputBorder(),
-                ),
-                textCapitalization: TextCapitalization.characters,
-                maxLength: 6,
-                enabled: !isLoading,
+      title: '게임 퇴장',
+      customContent: AppTextField(
+        controller: controller,
+        hintText: 'Game ID를 입력하세요',
+        keyboardType: TextInputType.number,
+      ),
+      cancelText: '취소',
+      confirmText: '퇴장',
+      validator: () => controller.text.trim().isNotEmpty,
+      onConfirm: () async {
+        final gameId = int.tryParse(controller.text.trim());
+        if (gameId == null || gameId < 1) return;
+
+        final result = await ref.read(leaveGameProvider(gameId).future);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                result != null ? '게임 $gameId 퇴장 완료' : '게임 $gameId 퇴장 실패',
               ),
-              actions: [
-                TextButton(
-                  onPressed: isLoading ? null : () => Navigator.of(dialogContext).pop(),
-                  child: const Text('취소'),
-                ),
-                TextButton(
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          final code = codeController.text.trim();
-                          if (code.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('초대 코드를 입력해주세요.')),
-                            );
-                            return;
-                          }
+            ),
+          );
+        }
+      },
+    );
+  }
 
-                          setState(() => isLoading = true);
+  /// 방 참여 다이얼로그 표시
+  void _showJoinRoomDialog(BuildContext context, WidgetRef ref) {
+    final codeController = TextEditingController();
 
-                          // 참여 API 호출
-                          final response = await ref.read(
-                            joinGameProvider(inviteCode: code).future,
-                          );
-
-                          if (response != null) {
-                            // 성공: 대기실로 이동
-                            if (dialogContext.mounted) {
-                              Navigator.of(dialogContext).pop();
-                            }
-                            if (context.mounted) {
-                              context.go(RoutePaths.waitingRoomWithId('${response.gameId}'));
-                            }
-                          } else {
-                            // 실패
-                            setState(() => isLoading = false);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('참여에 실패했습니다. 초대 코드를 확인해주세요.')),
-                              );
-                            }
-                          }
-                        },
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('참여'),
-                ),
-              ],
-            );
-          },
+    AppDialog.show(
+      context: context,
+      title: '방 참여하기',
+      customContent: AppTextField(
+        controller: codeController,
+        hintText: '참여코드를 입력하세요',
+        maxLength: 6,
+      ),
+      cancelText: '취소',
+      confirmText: '참여하기',
+      validator: () => codeController.text.trim().length == 6,
+      onConfirm: () async {
+        final code = codeController.text.trim();
+        final response = await ref.read(
+          joinGameProvider(inviteCode: code).future,
         );
+
+        if (response != null && context.mounted) {
+          final myNickname =
+              ref.read(authNotifierProvider).value?.nickname ?? '';
+          // TODO(로비 조회 API): 현재 joinGame 응답에는 gameId, participantId만 포함됨.
+          // 로비 조회 API 연동 후 아래 항목들도 설정 필요:
+          //   - maxParticipants: 팀별 최대 인원 계산에 사용 (현재 참가자는 기본값 10 적용)
+          //   - locationRevealIntervalMinutes: 게임 규칙 다이얼로그에 표시
+          //   - nickname: 현재는 authNotifierProvider에서 읽으나, 로비 API로 검증 가능
+          ref
+              .read(gameParticipantNotifierProvider.notifier)
+              .setGameInfo(
+                gameId: response.gameId,
+                nickname: myNickname,
+                participantId: response.participantId,
+                isHost: false,
+              );
+          context.go(
+            '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
+          );
+        } else if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('참여에 실패했습니다. 초대 코드를 확인해주세요.')),
+          );
+        }
       },
     );
   }
@@ -213,6 +216,35 @@ class HomePage extends ConsumerWidget {
                 backgroundColor: AppColors.black100,
                 foregroundColor: AppColors.black600,
                 showBorder: false,
+              ),
+              // ── [임시] 디버그 버튼들 ──
+              SizedBox(height: AppSpacing.vertical12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => _showLeaveGameDialog(context, ref),
+                    child: Text(
+                      '[임시] 퇴장',
+                      style: AppTextStyles.tag_12.copyWith(
+                        color: AppColors.black400,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: AppSpacing.horizontal16),
+                  GestureDetector(
+                    onTap: () =>
+                        context.go(RoutePaths.waitingRoomWithId('A1B2C3')),
+                    child: Text(
+                      '[임시] 대기실 UI',
+                      style: AppTextStyles.tag_12.copyWith(
+                        color: AppColors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: AppSpacing.vertical20),
             ],
