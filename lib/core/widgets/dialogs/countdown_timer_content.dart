@@ -57,9 +57,9 @@ class _CountdownTimerContentState extends State<CountdownTimerContent> {
     super.initState();
     _remainingSeconds = widget.duration.inSeconds;
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_remainingSeconds > 0) {
-        setState(() => _remainingSeconds--);
-      } else {
+      if (_remainingSeconds <= 0) return;
+      setState(() => _remainingSeconds--);
+      if (_remainingSeconds == 0) {
         _timer?.cancel();
         widget.onComplete?.call();
       }

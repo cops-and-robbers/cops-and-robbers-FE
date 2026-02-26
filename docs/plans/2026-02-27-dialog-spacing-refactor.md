@@ -193,10 +193,10 @@ git commit -m "refactor: AppDialog contentSpacing을 DialogSpacing 객체로 교
 
 ```dart
 // 변경 전:
-contentSpacing: AppSpacing.horizontal12,
+contentSpacing: AppSpacing.vertical12,
 
 // 변경 후:
-spacing: DialogSpacing(toContent: AppSpacing.horizontal12),
+spacing: DialogSpacing(toContent: AppSpacing.vertical12),
 ```
 
 import 추가 필요 시:

@@ -79,7 +79,9 @@ class _AppPopupState extends State<AppPopup> {
     super.initState();
     if (widget.autoCloseDuration != null) {
       _autoCloseTimer = Timer(widget.autoCloseDuration!, () {
-        if (mounted) Navigator.of(context).pop();
+        if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+          Navigator.of(context).pop();
+        }
       });
     }
   }
