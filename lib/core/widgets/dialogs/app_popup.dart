@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -14,39 +16,83 @@ import 'dialog_animation.dart';
 ///
 /// **사용 예시**:
 /// ```dart
+/// // 기본 팝업 (배경 터치로 닫기 가능)
 /// AppPopup.show(
 ///   context: context,
 ///   content: TimerWidget(),
 /// );
+///
+/// // 자동 닫힘 팝업 (barrierDismissible 자동 비활성화)
+/// await AppPopup.show(
+///   context: context,
+///   content: GameOverWidget(),
+///   autoCloseDuration: Duration(seconds: 5),
+/// );
+/// context.go('/game/result'); // 닫힌 후 이동
 /// ```
-class AppPopup extends StatelessWidget {
-  const AppPopup({super.key, required this.content});
+class AppPopup extends StatefulWidget {
+  const AppPopup({super.key, required this.content, this.autoCloseDuration});
 
   /// 팝업 콘텐츠 위젯
   final Widget content;
 
+  /// 자동 닫힘 시간 (null이면 자동 닫힘 없음)
+  final Duration? autoCloseDuration;
+
   /// 팝업 표시
+  ///
+  /// [autoCloseDuration]을 지정하면 해당 시간 후 자동으로 닫히며,
+  /// [barrierDismissible]은 자동으로 false가 됩니다 (배경 터치 닫기 차단).
   static Future<T?> show<T>({
     required BuildContext context,
     required Widget content,
     bool barrierDismissible = true,
+    Duration? autoCloseDuration,
   }) {
+    // autoCloseDuration 설정 시 배경 터치 닫기 자동 비활성화
+    final effectiveBarrierDismissible = autoCloseDuration != null
+        ? false
+        : barrierDismissible;
+
     return showGeneralDialog<T>(
       context: context,
-      barrierDismissible: barrierDismissible,
+      barrierDismissible: effectiveBarrierDismissible,
       barrierLabel: 'Popup',
       barrierColor: DialogAnimation.barrierColor,
       transitionDuration: DialogAnimation.duration,
       pageBuilder: (dialogContext, animation, secondaryAnimation) {
-        return AppPopup(content: content);
+        return AppPopup(content: content, autoCloseDuration: autoCloseDuration);
       },
       transitionBuilder: DialogAnimation.buildTransition,
     );
   }
 
   @override
+  State<AppPopup> createState() => _AppPopupState();
+}
+
+class _AppPopupState extends State<AppPopup> {
+  Timer? _autoCloseTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autoCloseDuration != null) {
+      _autoCloseTimer = Timer(widget.autoCloseDuration!, () {
+        if (mounted) Navigator.of(context).pop();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _autoCloseTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Center(
+    Widget popup = Center(
       child: Container(
         width: double.infinity,
         margin: AppPadding.horizontal36,
@@ -55,8 +101,14 @@ class AppPopup extends StatelessWidget {
           color: AppColors.white,
           borderRadius: AppRadius.xxlarge,
         ),
-        child: Material(color: Colors.transparent, child: content),
+        child: Material(color: Colors.transparent, child: widget.content),
       ),
     );
+
+    if (widget.autoCloseDuration != null) {
+      popup = PopScope(canPop: false, child: popup);
+    }
+
+    return popup;
   }
 }
