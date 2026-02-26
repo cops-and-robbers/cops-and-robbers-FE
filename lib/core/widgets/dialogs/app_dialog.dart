@@ -6,6 +6,7 @@ import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../buttons/app_button.dart';
 import 'dialog_animation.dart';
+import 'dialog_spacing.dart';
 
 /// 앱 전역에서 사용하는 공용 다이얼로그 컴포넌트
 ///
@@ -52,6 +53,14 @@ import 'dialog_animation.dart';
 ///   onConfirm: () => joinRoom(ctrl.text.trim()),
 /// );
 ///
+/// // spacing 커스터마이징 (특정 다이얼로그만 간격 조절)
+/// AppDialog.show(
+///   context: context,
+///   title: '게임 규칙',
+///   spacing: DialogSpacing(toContent: AppSpacing.vertical12),
+///   customContent: Column(...),
+/// );
+///
 /// // 간편 확인 (bool 반환)
 /// final result = await AppDialog.confirm(
 ///   context: context,
@@ -81,6 +90,7 @@ class AppDialog extends StatefulWidget {
     this.cancelColor,
     this.cancelTextColor,
     this.titleStyle,
+    this.spacing,
   });
 
   /// 제목 (선택) - heading_20, black. null이면 제목 영역 숨김
@@ -134,9 +144,31 @@ class AppDialog extends StatefulWidget {
   /// 제목 스타일 오버라이드 (미지정 시 heading_20, black)
   final TextStyle? titleStyle;
 
+  /// 다이얼로그 내부 섹션 간 간격 오버라이드 (미지정 시 기본값 적용)
+  final DialogSpacing? spacing;
+
   // ============================================
   // 정적 메서드
   // ============================================
+
+  /// showGeneralDialog 공용 래퍼
+  ///
+  /// [show]와 [confirm]이 공유하는 다이얼로그 표시 보일러플레이트를 추출합니다.
+  static Future<T?> _buildAndShow<T>({
+    required BuildContext context,
+    required bool barrierDismissible,
+    required Widget Function(BuildContext dialogContext) builder,
+  }) {
+    return showGeneralDialog<T>(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      barrierLabel: 'Dialog',
+      barrierColor: DialogAnimation.barrierColor,
+      transitionDuration: DialogAnimation.duration,
+      pageBuilder: (dialogContext, _, _) => builder(dialogContext),
+      transitionBuilder: DialogAnimation.buildTransition,
+    );
+  }
 
   /// 다이얼로그 표시
   ///
@@ -163,50 +195,46 @@ class AppDialog extends StatefulWidget {
     Color? cancelTextColor,
     TextStyle? titleStyle,
     bool Function()? validator,
+    DialogSpacing? spacing,
   }) {
     final dialogKey = GlobalKey<_AppDialogState>();
 
-    return showGeneralDialog<T>(
+    return _buildAndShow<T>(
       context: context,
       barrierDismissible: barrierDismissible,
-      barrierLabel: 'Dialog',
-      barrierColor: DialogAnimation.barrierColor,
-      transitionDuration: DialogAnimation.duration,
-      pageBuilder: (dialogContext, animation, secondaryAnimation) {
-        return AppDialog(
-          key: dialogKey,
-          title: title,
-          message: message,
-          confirmText: confirmText,
-          cancelText: cancelText,
-          isDestructive: isDestructive,
-          showButtons: showButtons,
-          customContent: customContent,
-          showAvatar: showAvatar,
-          avatarWidget: avatarWidget,
-          nickname: nickname,
-          confirmColor: confirmColor,
-          confirmTextColor: confirmTextColor,
-          cancelColor: cancelColor,
-          cancelTextColor: cancelTextColor,
-          titleStyle: titleStyle,
-          onConfirm: () {
-            if (validator != null && !validator()) {
-              dialogKey.currentState?.shake();
-              return;
-            }
-            Navigator.of(dialogContext).pop();
-            onConfirm?.call();
-          },
-          onCancel: onCancel != null
-              ? () {
-                  Navigator.of(dialogContext).pop();
-                  onCancel.call();
-                }
-              : () => Navigator.of(dialogContext).pop(),
-        );
-      },
-      transitionBuilder: DialogAnimation.buildTransition,
+      builder: (dialogContext) => AppDialog(
+        key: dialogKey,
+        title: title,
+        message: message,
+        confirmText: confirmText,
+        cancelText: cancelText,
+        isDestructive: isDestructive,
+        showButtons: showButtons,
+        customContent: customContent,
+        showAvatar: showAvatar,
+        avatarWidget: avatarWidget,
+        nickname: nickname,
+        confirmColor: confirmColor,
+        confirmTextColor: confirmTextColor,
+        cancelColor: cancelColor,
+        cancelTextColor: cancelTextColor,
+        titleStyle: titleStyle,
+        spacing: spacing,
+        onConfirm: () {
+          if (validator != null && !validator()) {
+            dialogKey.currentState?.shake();
+            return;
+          }
+          Navigator.of(dialogContext).pop();
+          onConfirm?.call();
+        },
+        onCancel: onCancel != null
+            ? () {
+                Navigator.of(dialogContext).pop();
+                onCancel.call();
+              }
+            : () => Navigator.of(dialogContext).pop(),
+      ),
     );
   }
 
@@ -227,33 +255,29 @@ class AppDialog extends StatefulWidget {
     Color? cancelColor,
     Color? cancelTextColor,
     TextStyle? titleStyle,
+    DialogSpacing? spacing,
   }) {
-    return showGeneralDialog<bool>(
+    return _buildAndShow<bool>(
       context: context,
       barrierDismissible: barrierDismissible,
-      barrierLabel: 'Dialog',
-      barrierColor: DialogAnimation.barrierColor,
-      transitionDuration: DialogAnimation.duration,
-      pageBuilder: (dialogContext, animation, secondaryAnimation) {
-        return AppDialog(
-          title: title,
-          message: message,
-          confirmText: confirmText,
-          cancelText: cancelText,
-          isDestructive: isDestructive,
-          showAvatar: showAvatar,
-          avatarWidget: avatarWidget,
-          nickname: nickname,
-          confirmColor: confirmColor,
-          confirmTextColor: confirmTextColor,
-          cancelColor: cancelColor,
-          cancelTextColor: cancelTextColor,
-          titleStyle: titleStyle,
-          onConfirm: () => Navigator.of(dialogContext).pop(true),
-          onCancel: () => Navigator.of(dialogContext).pop(false),
-        );
-      },
-      transitionBuilder: DialogAnimation.buildTransition,
+      builder: (dialogContext) => AppDialog(
+        title: title,
+        message: message,
+        confirmText: confirmText,
+        cancelText: cancelText,
+        isDestructive: isDestructive,
+        showAvatar: showAvatar,
+        avatarWidget: avatarWidget,
+        nickname: nickname,
+        confirmColor: confirmColor,
+        confirmTextColor: confirmTextColor,
+        cancelColor: cancelColor,
+        cancelTextColor: cancelTextColor,
+        titleStyle: titleStyle,
+        spacing: spacing,
+        onConfirm: () => Navigator.of(dialogContext).pop(true),
+        onCancel: () => Navigator.of(dialogContext).pop(false),
+      ),
     );
   }
 
@@ -327,8 +351,9 @@ class _AppDialogState extends State<AppDialog>
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     return AnimatedPadding(
-      padding: MediaQuery.viewInsetsOf(context),
+      padding: EdgeInsets.only(bottom: bottomInset * 0.4),
       duration: const Duration(milliseconds: 100),
       curve: Curves.decelerate,
       child: Center(
@@ -343,10 +368,10 @@ class _AppDialogState extends State<AppDialog>
               width: double.infinity,
               margin: AppPadding.horizontal36,
               padding: EdgeInsets.only(
-                top: 24.w,
-                left: 16.w,
-                right: 16.w,
-                bottom: 16.w,
+                top: AppSpacing.vertical24,
+                left: AppSpacing.horizontal12,
+                right: AppSpacing.horizontal12,
+                bottom: AppSpacing.vertical16,
               ),
               decoration: BoxDecoration(
                 color: AppColors.white,
@@ -360,24 +385,37 @@ class _AppDialogState extends State<AppDialog>
                     // 아바타 + 닉네임 (선택)
                     if (widget.showAvatar) ...[
                       _buildAvatarSection(),
-                      SizedBox(height: AppSpacing.vertical16),
+                      SizedBox(
+                        height:
+                            widget.spacing?.avatarToTitle ??
+                            AppSpacing.vertical16,
+                      ),
                     ],
 
                     // 제목
                     if (widget.title != null)
-                      Text(
-                        widget.title!,
-                        style:
-                            widget.titleStyle ??
-                            AppTextStyles.heading_20.copyWith(
-                              color: AppColors.black,
-                            ),
-                        textAlign: TextAlign.center,
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.horizontal4,
+                        ),
+                        child: Text(
+                          widget.title!,
+                          style:
+                              widget.titleStyle ??
+                              AppTextStyles.heading_20.copyWith(
+                                color: AppColors.black,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
 
                     // 메시지
                     if (widget.message != null) ...[
-                      SizedBox(height: AppSpacing.vertical16),
+                      SizedBox(
+                        height:
+                            widget.spacing?.titleToMessage ??
+                            AppSpacing.vertical12,
+                      ),
                       Text(
                         widget.message!,
                         style: AppTextStyles.paragraph_14.copyWith(
@@ -389,9 +427,17 @@ class _AppDialogState extends State<AppDialog>
 
                     // 커스텀 콘텐츠
                     if (widget.customContent != null) ...[
-                      SizedBox(height: AppSpacing.vertical12),
+                      SizedBox(
+                        height:
+                            widget.spacing?.toContent ??
+                            (widget.message != null
+                                ? AppSpacing.vertical12
+                                : AppSpacing.vertical20),
+                      ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6.w),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.horizontal6,
+                        ),
                         child: SizedBox(
                           width: double.infinity,
                           child: widget.customContent!,
@@ -401,8 +447,16 @@ class _AppDialogState extends State<AppDialog>
 
                     // 버튼들
                     if (widget.showButtons) ...[
-                      SizedBox(height: AppSpacing.vertical20),
-                      _buildButtons(),
+                      SizedBox(
+                        height:
+                            widget.spacing?.toButtons ?? AppSpacing.vertical20,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.horizontal4,
+                        ),
+                        child: _buildButtons(),
+                      ),
                     ],
                   ],
                 ),
