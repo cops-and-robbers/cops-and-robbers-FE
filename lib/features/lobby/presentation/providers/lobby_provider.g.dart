@@ -27,7 +27,7 @@ final lobbyStompDatasourceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef LobbyStompDatasourceRef = AutoDisposeProviderRef<LobbyStompDatasource>;
-String _$lobbyNotifierHash() => r'0e01eb7e4902b2d369972f4135cfa7b566c5fe3e';
+String _$lobbyNotifierHash() => r'b6cfde8e0433c08faadc05dec63c75afd5f01276';
 
 /// 로비 상태 관리 Notifier
 ///

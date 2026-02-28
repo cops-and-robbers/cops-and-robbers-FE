@@ -134,6 +134,9 @@ class LobbyNotifier extends _$LobbyNotifier {
     // 스트림 구독 설정
     _setupStreams();
 
+    // 구독 예약 (connected 시 자동 구독)
+    datasource.subscribeLobby(gameId);
+
     // STOMP 연결
     final wsUrl = ApiEndpoints.gameConnectionUrl;
     debugPrint('[LobbyNotifier] 🔗 STOMP 연결 시도: $wsUrl');
@@ -182,16 +185,12 @@ class LobbyNotifier extends _$LobbyNotifier {
       state = state.copyWith(connectionState: connState);
 
       if (connState == StompConnectionState.connected) {
-        // 연결 성공 → 로비 채널 구독 + 상태 초기화
+        // 연결 성공 → 상태 초기화 (구독은 onConnected()에서 자동 처리)
         _authRetryCount = 0;
         _reconnectCount = 0;
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
-
-        if (_gameId != null) {
-          datasource.subscribeLobby(_gameId!);
-        }
         state = state.copyWith(errorMessage: null);
       } else if (connState == StompConnectionState.disconnected) {
         // 예기치 않은 연결 종료 → 재연결 시도
@@ -274,7 +273,7 @@ class LobbyNotifier extends _$LobbyNotifier {
     final tokenProvider = ref.read(tokenProviderProvider);
     final accessToken = await tokenProvider.getAccessToken();
 
-    if (_intentionalDisconnect) return;
+    if (_intentionalDisconnect || _gameId == null) return;
 
     if (accessToken == null) {
       debugPrint('[LobbyNotifier] ❌ 재연결 토큰 획득 실패');
@@ -282,6 +281,7 @@ class LobbyNotifier extends _$LobbyNotifier {
       return;
     }
 
+    datasource.subscribeLobby(_gameId!);
     final wsUrl = ApiEndpoints.gameConnectionUrl;
     datasource.connect(wsUrl, accessToken);
   }
@@ -306,6 +306,8 @@ class LobbyNotifier extends _$LobbyNotifier {
       debugPrint('[LobbyNotifier] 🔄 인증 만료 - 토큰 갱신 시도');
 
       final tokenProvider = ref.read(tokenProviderProvider);
+      // await 전에 datasource 캡처 (await 후 ref 접근 방지)
+      final datasource = ref.read(lobbyStompDatasourceProvider);
       final newToken = await tokenProvider.refreshAccessTokenIfNeeded();
 
       if (_intentionalDisconnect || _gameId == null) return;
@@ -319,10 +321,12 @@ class LobbyNotifier extends _$LobbyNotifier {
         return;
       }
 
+      // 재연결 시작 후 이 연결이 실패하면 일반 재연결 정책이 이어받을 수 있도록 플래그 해제
       debugPrint('[LobbyNotifier] ✅ 토큰 갱신 성공 - 재연결 시도');
-      final datasource = ref.read(lobbyStompDatasourceProvider);
+      datasource.subscribeLobby(_gameId!);
       final wsUrl = ApiEndpoints.gameConnectionUrl;
       datasource.connect(wsUrl, newToken);
+      _isHandlingError = false;
     } else {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
