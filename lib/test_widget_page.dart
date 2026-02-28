@@ -10,7 +10,9 @@ import 'core/constants/spacing_and_radius.dart';
 import 'core/constants/text_styles.dart';
 import 'core/widgets/buttons/app_button.dart';
 import 'core/widgets/dialogs/app_dialog.dart';
+import 'core/widgets/dialogs/dialog_spacing.dart';
 import 'core/widgets/dialogs/app_popup.dart';
+import 'core/widgets/dialogs/countdown_timer_content.dart';
 import 'core/widgets/chips/action_chip.dart' as custom_chips;
 import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
@@ -95,7 +97,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: '기본 버튼 (검정)',
                   onPressed: () {
-                    _showSnackBar('기본 버튼 클릭!!');
+                    debugPrint('기본 버튼 클릭!');
                   },
                 ),
 
@@ -105,7 +107,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: '테두리 없는 버튼 (초록)',
                   onPressed: () {
-                    _showSnackBar('초록 버튼 클릭!');
+                    debugPrint('초록 버튼 클릭!');
                   },
                   showBorder: false,
                   backgroundColor: AppColors.green,
@@ -117,7 +119,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: '설정',
                   onPressed: () {
-                    _showSnackBar('설정 버튼 클릭!');
+                    debugPrint('설정 버튼 클릭!');
                   },
                   showBorder: false,
                   icon: Icon(
@@ -134,7 +136,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   showBorder: false,
                   text: '다음',
                   onPressed: () {
-                    _showSnackBar('다음 버튼 클릭!');
+                    debugPrint('다음 버튼 클릭!');
                   },
                   icon: Icon(
                     Icons.arrow_forward,
@@ -311,7 +313,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                         setState(() {
                           _isLoading = false;
                         });
-                        _showSnackBar('로그인 성공! (시뮬레이션)');
+                        debugPrint('로그인 성공! (시뮬레이션)');
                       }
                     });
                   },
@@ -510,7 +512,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 custom_chips.ActionChip(
                   text: '중복 확인',
                   onTap: () {
-                    _showSnackBar('중복확인 클릭!');
+                    debugPrint('중복확인 클릭!');
                   },
                 ),
                 SizedBox(height: AppSpacing.vertical12),
@@ -519,7 +521,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 custom_chips.ActionChip(
                   text: '확인',
                   onTap: () {
-                    _showSnackBar('확인 클릭!');
+                    debugPrint('확인 클릭!');
                   },
                   backgroundColor: AppColors.blue,
                   width: 80.w,
@@ -535,7 +537,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     custom_chips.ActionChip(
                       text: '설정',
                       onTap: () {
-                        _showSnackBar('설정 클릭!');
+                        debugPrint('설정 클릭!');
                       },
                     ),
                   ],
@@ -803,6 +805,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     AppDialog.show(
                       context: context,
                       title: '게임 규칙',
+                      spacing: DialogSpacing(toContent: AppSpacing.vertical12),
                       customContent: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -844,6 +847,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   onPressed: () {
                     AppPopup.show(
                       context: context,
+                      autoCloseDuration: const Duration(seconds: 10),
+                      barrierDismissible: false,
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -900,7 +905,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       isDestructive: true,
                     );
                     if (result == true && mounted) {
-                      _showSnackBar('삭제 확인!');
+                      debugPrint('삭제 확인!');
                     }
                   },
                   backgroundColor: AppColors.red,
@@ -939,29 +944,15 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
                 // 타이머 다이얼로그 (여유)
                 AppButton(
-                  text: '타이머 팝업 (여유)',
+                  text: '타이머 팝업 (여유) - 1분 자동닫힘',
                   onPressed: () {
                     AppPopup.show(
                       context: context,
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '04:59',
-                            style: AppTextStyles.semibold_44.copyWith(
-                              color: AppColors.black,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: AppSpacing.vertical12),
-                          Text(
-                            '도둑이 도망치는 중이에요!',
-                            style: AppTextStyles.paragraph_14_100.copyWith(
-                              color: AppColors.black600,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                      autoCloseDuration: const Duration(minutes: 1),
+                      barrierDismissible: false,
+                      content: const CountdownTimerContent(
+                        duration: Duration(minutes: 1),
+                        subtitle: '도둑이 도망치는 중이에요!',
                       ),
                     );
                   },
@@ -972,29 +963,15 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
                 // 타이머 다이얼로그 (1분 미만)
                 AppButton(
-                  text: '타이머 팝업 (1분 미만)',
+                  text: '타이머 팝업 (30초) - 빨간색',
                   onPressed: () {
                     AppPopup.show(
                       context: context,
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '00:59',
-                            style: AppTextStyles.semibold_44.copyWith(
-                              color: AppColors.red,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: AppSpacing.vertical12),
-                          Text(
-                            '도둑 잡을 준비 되셨나요?',
-                            style: AppTextStyles.paragraph_14_100.copyWith(
-                              color: AppColors.red800,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                      autoCloseDuration: const Duration(seconds: 30),
+                      barrierDismissible: false,
+                      content: const CountdownTimerContent(
+                        duration: Duration(seconds: 30),
+                        subtitle: '도둑 잡을 준비 되셨나요?',
                       ),
                     );
                   },
@@ -1112,17 +1089,5 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
       title,
       style: AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
     );
-  }
-
-  /// 스낵바 표시
-  void _showSnackBar(String message) {
-    // 스낵바 비활성화
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     content: Text(message),
-    //     duration: const Duration(seconds: 2),
-    //     backgroundColor: AppColors.green,
-    //   ),
-    // );
   }
 }

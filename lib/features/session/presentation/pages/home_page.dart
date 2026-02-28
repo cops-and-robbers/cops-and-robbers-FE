@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -14,12 +13,13 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../router/route_paths.dart';
+import '../../../../test_widget_page.dart';
 
 /// 홈 화면
 ///
 /// 게임 세션 생성 또는 참가를 선택할 수 있는 메인 화면입니다.
 /// 디자인: LOGO + 설정, 공지/역할 아이콘, 말풍선, 아바타, 방만들기/참여하기 버튼
-class HomePage extends ConsumerWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   /// 방 만들기 버튼 클릭 시
@@ -30,6 +30,39 @@ class HomePage extends ConsumerWidget {
     if (context.mounted) {
       context.go(RoutePaths.sessionCreationFlow);
     }
+  }
+
+  /// 개발자 도구 메뉴 표시
+  void _showDevMenu(BuildContext context) {
+    AppDialog.show(
+      context: context,
+      title: '개발자 도구',
+      showButtons: false,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.pending_actions),
+            title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              Navigator.pop(context);
+              context.push(RoutePaths.lifecycleTest);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.widgets),
+            title: Text('Test Widget', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TestWidgetPage()),
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   /// 방 참여 다이얼로그 표시
@@ -44,20 +77,40 @@ class HomePage extends ConsumerWidget {
         hintText: '참여코드를 입력하세요',
         maxLength: 6,
       ),
-      cancelText: '취소',
+      cancelText: '닫기',
       confirmText: '참여하기',
       validator: () => codeController.text.trim().length == 6,
       onConfirm: () {
         context.go(RoutePaths.waitingRoomWithId(codeController.text.trim()));
       },
-    );
+    ).whenComplete(() => codeController.dispose());
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
       resizeToAvoidBottomInset: false,
+
+      // floatingActionButton: kDebugMode
+      // ? FloatingActionButton(
+      //     mini: true,
+      //     backgroundColor: AppColors.black.withValues(alpha: 0.7),
+      //     foregroundColor: AppColors.white,
+      //     onPressed: () => _showDevMenu(context),
+      //     child: const Icon(Icons.bug_report),
+      //   )
+      // : null,
+
+      // 개발자 도구 버튼 (디자이너 확인용으로 릴리즈에서도 표시)
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        backgroundColor: AppColors.black.withValues(alpha: 0.7),
+        foregroundColor: AppColors.white,
+        onPressed: () => _showDevMenu(context),
+        child: const Icon(Icons.bug_report),
+      ),
+
       body: SafeArea(
         child: Padding(
           padding: AppPadding.horizontal20,
