@@ -4,258 +4,103 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
-import '../../../../core/network/websocket/stomp_connection.dart';
+import '../../../../core/network/websocket/base_stomp_datasource.dart';
 import '../models/chat_message_dto.dart';
 import '../models/chat_send_request.dart';
 
-export '../../../../core/network/websocket/stomp_connection.dart'
+export '../../../../core/network/websocket/base_stomp_datasource.dart'
     show StompConnectionState, StompErrorInfo;
 
 /// 채팅 STOMP DataSource
 ///
-/// STOMP 프로토콜을 통한 실시간 채팅 통신을 담당합니다.
-/// - 연결/해제
-/// - 전체 채팅 + 팀 채팅 구독
-/// - 메시지 발행
-/// - STOMP ERROR 처리 (401 인증 만료 등)
+/// [BaseStompDatasource]를 상속하여 채팅 전용 구독/발행을 구현합니다.
 ///
 /// 재연결 정책은 포함하지 않으며, 상위(ChatNotifier)에서 관리합니다.
-/// (B안: 자동 재연결 OFF, Notifier 단일 컨트롤)
-class ChatStompDatasource {
-  StompClient? _stompClient;
+class ChatStompDatasource extends BaseStompDatasource {
+  @override
+  String get logTag => 'ChatStomp';
 
-  /// 수신 메시지 스트림
   final _messageController = StreamController<ChatMessageDto>.broadcast();
   Stream<ChatMessageDto> get onMessage => _messageController.stream;
 
-  /// 연결 상태 스트림
-  final _connectionStateController =
-      StreamController<StompConnectionState>.broadcast();
-  Stream<StompConnectionState> get onConnectionState =>
-      _connectionStateController.stream;
+  int? _pendingGameId;
+  String? _pendingTeam;
 
-  /// STOMP ERROR 스트림
-  final _errorController = StreamController<StompErrorInfo>.broadcast();
-  Stream<StompErrorInfo> get onError => _errorController.stream;
-
-  /// 현재 연결 상태
-  StompConnectionState _currentState = StompConnectionState.disconnected;
-  StompConnectionState get currentState => _currentState;
-
-  /// 구독 해제 함수 보관
-  final List<StompUnsubscribe?> _subscriptions = [];
-
-  /// STOMP 서버에 연결
+  /// 전체 + 팀 채팅 구독 예약
   ///
-  /// [wsUrl] WebSocket URL (예: ws://{domain}/game-connection)
-  /// [accessToken] JWT Access Token (Bearer 인증)
-  ///
-  /// 현재는 Firebase ID Token을 사용하며,
-  /// 서버 JWT 도입 후에는 서버 발급 accessToken을 사용합니다.
-  void connect(String wsUrl, String accessToken) {
-    debugPrint('[ChatStomp] 🔄 connect() 호출 → $wsUrl');
-    // 기존 연결 정리
-    _unsubscribeAll();
-    _stompClient?.deactivate();
-    _stompClient = null;
-
-    _updateState(StompConnectionState.connecting);
-
-    _stompClient = StompClient(
-      config: StompConfig(
-        url: wsUrl,
-        webSocketConnectHeaders: {'Authorization': 'Bearer $accessToken'},
-        stompConnectHeaders: {'Authorization': 'Bearer $accessToken'},
-        onConnect: _onConnect,
-        onStompError: _onStompError,
-        onWebSocketError: _onWebSocketError,
-        onWebSocketDone: _onWebSocketDone,
-        onDisconnect: _onDisconnect,
-        // 자동 재연결 비활성화 - ChatNotifier가 재연결 정책을 관리
-        reconnectDelay: Duration.zero,
-      ),
-    );
-
-    _stompClient!.activate();
+  /// connected 상태면 즉시, 아니면 연결 성공 시 자동 구독.
+  void subscribeChat(int gameId, String team) {
+    _pendingGameId = gameId;
+    _pendingTeam = team;
+    if (currentState == StompConnectionState.connected) {
+      _doSubscribe();
+    }
   }
 
-  /// 전체 채팅 구독
-  ///
-  /// destination: /subscribe/game/{gameId}/chat/all
-  void subscribeAll(int gameId) {
-    if (_stompClient == null ||
-        _currentState != StompConnectionState.connected) {
-      debugPrint('[ChatStomp] ⚠️ subscribeAll 실패 - 연결되지 않음');
-      return;
-    }
-
-    final destination = '/subscribe/game/$gameId/chat/all';
-    final sub = _stompClient!.subscribe(
-      destination: destination,
-      callback: _handleMessage,
-    );
-    _subscriptions.add(sub);
-    debugPrint('[ChatStomp] ✅ 전체 채팅 구독 완료: $destination');
+  @override
+  void onConnected() {
+    _doSubscribe();
   }
 
-  /// 팀 채팅 구독
-  ///
-  /// destination: /subscribe/game/{gameId}/chat/{team}
-  /// [team] "police" 또는 "robber" (소문자)
-  void subscribeTeam(int gameId, String team) {
-    if (_stompClient == null ||
-        _currentState != StompConnectionState.connected) {
-      debugPrint('[ChatStomp] ⚠️ subscribeTeam 실패 - 연결되지 않음');
-      return;
-    }
+  void _doSubscribe() {
+    if (_pendingGameId == null || _pendingTeam == null) return;
+    final gameId = _pendingGameId!;
+    final team = _pendingTeam!;
 
-    final destination = '/subscribe/game/$gameId/chat/$team';
-    final sub = _stompClient!.subscribe(
-      destination: destination,
-      callback: _handleMessage,
+    final allDest = '/subscribe/game/$gameId/chat/all';
+    addSubscription(
+      stompClient!.subscribe(destination: allDest, callback: _handleMessage),
     );
-    _subscriptions.add(sub);
-    debugPrint('[ChatStomp] ✅ 팀 채팅 구독 완료: $destination');
+    debugPrint('[$logTag] ✅ 전체 채팅 구독: $allDest');
+
+    final teamDest = '/subscribe/game/$gameId/chat/$team';
+    addSubscription(
+      stompClient!.subscribe(destination: teamDest, callback: _handleMessage),
+    );
+    debugPrint('[$logTag] ✅ 팀 채팅 구독: $teamDest');
   }
 
   /// 채팅 메시지 발행
   ///
   /// destination: /publish/game/{gameId}/chat
   void publishChat(int gameId, String message, String scope) {
-    if (_stompClient == null ||
-        _currentState != StompConnectionState.connected) {
-      debugPrint('[ChatStomp] ⚠️ publishChat 실패 - 연결되지 않음');
+    if (stompClient == null || currentState != StompConnectionState.connected) {
+      debugPrint('[$logTag] ⚠️ publishChat 실패 - 연결되지 않음');
       return;
     }
 
     final request = ChatSendRequest(message: message, scope: scope);
     final destination = '/publish/game/$gameId/chat';
-
-    _stompClient!.send(
+    stompClient!.send(
       destination: destination,
       body: jsonEncode(request.toJson()),
     );
-    debugPrint('[ChatStomp] 메시지 전송: $message (scope: $scope) → $destination');
+    debugPrint('[$logTag] 메시지 전송: $message (scope: $scope) → $destination');
   }
 
-  /// 연결 해제
-  void disconnect() {
-    _unsubscribeAll();
-    _stompClient?.deactivate();
-    _stompClient = null;
-    _updateState(StompConnectionState.disconnected);
-    debugPrint('[ChatStomp] 연결 해제');
-  }
-
-  /// 리소스 정리
+  @override
   void dispose() {
-    debugPrint('[ChatStomp] ⚠️ dispose() 호출됨 - Provider가 해제되고 있음');
-    disconnect();
+    // _disposed = true 및 disconnect()는 super.dispose()에서 먼저 처리
+    super.dispose();
     _messageController.close();
-    _connectionStateController.close();
-    _errorController.close();
   }
-
-  // ============================================
-  // STOMP 콜백
-  // ============================================
-
-  void _onConnect(StompFrame frame) {
-    _updateState(StompConnectionState.connected);
-    debugPrint('[ChatStomp] ✅ STOMP 연결 성공');
-  }
-
-  void _onStompError(StompFrame frame) {
-    debugPrint('[ChatStomp] ❌ STOMP ERROR body: ${frame.body}');
-    debugPrint('[ChatStomp] STOMP ERROR headers: ${frame.headers}');
-    debugPrint('[ChatStomp] STOMP ERROR command: ${frame.command}');
-
-    StompErrorInfo? errorInfo;
-    if (frame.body != null && frame.body!.isNotEmpty) {
-      try {
-        final json = jsonDecode(frame.body!) as Map<String, dynamic>;
-        errorInfo = StompErrorInfo.fromJson(json);
-      } catch (e) {
-        debugPrint('[ChatStomp] ⚠️ STOMP ERROR body 파싱 실패: $e');
-        errorInfo = StompErrorInfo(
-          title: 'STOMP Error',
-          status: 0,
-          detail: frame.body ?? 'Unknown error',
-          instance: 'STOMP',
-        );
-      }
-    } else {
-      errorInfo = const StompErrorInfo(
-        title: 'STOMP Error',
-        status: 0,
-        detail: 'Unknown STOMP error',
-        instance: 'STOMP',
-      );
-    }
-
-    _updateState(StompConnectionState.error);
-    _errorController.add(errorInfo);
-
-    // 401 인증 만료 시 클라이언트 비활성화 (자동 재연결 방지)
-    if (errorInfo.isAuthExpired) {
-      debugPrint('[ChatStomp] 인증 만료 - 클라이언트 비활성화');
-      _unsubscribeAll();
-      _stompClient?.deactivate();
-      _stompClient = null;
-    }
-  }
-
-  void _onWebSocketError(dynamic error) {
-    debugPrint(
-      '[ChatStomp] ❌ WebSocket Error: $error (type: ${error.runtimeType})',
-    );
-    _updateState(StompConnectionState.error);
-  }
-
-  void _onWebSocketDone() {
-    debugPrint('[ChatStomp] WebSocket 연결 종료');
-    _updateState(StompConnectionState.disconnected);
-  }
-
-  void _onDisconnect(StompFrame frame) {
-    debugPrint('[ChatStomp] STOMP Disconnect');
-    _updateState(StompConnectionState.disconnected);
-  }
-
-  // ============================================
-  // 내부 메서드
-  // ============================================
 
   void _handleMessage(StompFrame frame) {
+    if (isDisposed) return;
     if (frame.body == null || frame.body!.isEmpty) return;
 
-    debugPrint('[ChatStomp] 📩 메시지 수신 raw: ${frame.body}');
+    debugPrint('[$logTag] 📩 메시지 수신 raw: ${frame.body}');
 
     try {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final dto = ChatMessageDto.fromJson(json);
       debugPrint(
-        '[ChatStomp] 📩 메시지 파싱 완료: sender=${dto.sender.nickname}, message=${dto.message}, scope=${dto.scope}',
+        '[$logTag] 📩 메시지 파싱 완료: sender=${dto.sender.nickname}, '
+        'message=${dto.message}, scope=${dto.scope}',
       );
       _messageController.add(dto);
     } catch (e) {
-      debugPrint('[ChatStomp] ❌ 메시지 파싱 실패: $e');
+      debugPrint('[$logTag] ❌ 메시지 파싱 실패: $e');
     }
-  }
-
-  void _unsubscribeAll() {
-    for (final unsubscribe in _subscriptions) {
-      if (unsubscribe != null) {
-        try {
-          unsubscribe(unsubscribeHeaders: {});
-        } catch (_) {}
-      }
-    }
-    _subscriptions.clear();
-  }
-
-  void _updateState(StompConnectionState newState) {
-    _currentState = newState;
-    _connectionStateController.add(newState);
   }
 }
