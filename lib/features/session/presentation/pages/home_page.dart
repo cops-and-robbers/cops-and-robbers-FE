@@ -55,6 +55,7 @@ class HomePage extends ConsumerWidget {
         if (gameId == null || gameId < 1) return;
 
         final result = await ref.read(leaveGameProvider(gameId).future);
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
