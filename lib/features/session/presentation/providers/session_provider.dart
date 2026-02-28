@@ -4,9 +4,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/datasources/session_remote_datasource.dart';
+import '../../data/models/game_settings_response.dart';
+import '../../data/models/in_game_participants_response.dart';
 import '../../data/models/join_game_request.dart';
 import '../../data/models/join_game_response.dart';
 import '../../data/models/leave_game_response.dart';
+import '../../data/models/lobby_info_response.dart';
 import '../../data/models/ready_request.dart';
 import '../../data/models/team_change_request.dart';
 import '../../data/repositories/session_repository_impl.dart';
@@ -185,3 +188,24 @@ Future<JoinGameResponse?> joinGame(
     return null;
   }
 }
+
+/// 로비 조회
+///
+/// 대기실 초기 상태(참가자 목록, myParticipantId, 게임 설정)를 반환합니다.
+@riverpod
+Future<LobbyInfoResponse> fetchLobbyInfo(Ref ref, int gameId) =>
+    ref.watch(sessionRemoteDataSourceProvider).fetchLobbyInfo(gameId);
+
+/// 게임 설정 조회
+///
+/// 게임 방의 기본 설정(라운드 시간, 위치 공개 주기 등)을 반환합니다.
+@riverpod
+Future<GameSettingsResponse> fetchGameSettings(Ref ref, int gameId) =>
+    ref.watch(sessionRemoteDataSourceProvider).fetchGameSettings(gameId);
+
+/// 인게임 참가자 목록 조회
+///
+/// 게임 진행 중 경찰/도둑 참가자 목록과 상태를 반환합니다.
+@riverpod
+Future<InGameParticipantsResponse> fetchGameParticipants(Ref ref, int gameId) =>
+    ref.watch(sessionRemoteDataSourceProvider).fetchGameParticipants(gameId);

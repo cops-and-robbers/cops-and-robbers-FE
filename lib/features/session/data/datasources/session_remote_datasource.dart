@@ -4,9 +4,12 @@ import 'package:retrofit/retrofit.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../models/create_session_response.dart';
 import '../models/game_create_request_model.dart';
+import '../models/game_settings_response.dart';
+import '../models/in_game_participants_response.dart';
 import '../models/join_game_request.dart';
 import '../models/join_game_response.dart';
 import '../models/leave_game_response.dart';
+import '../models/lobby_info_response.dart';
 import '../models/ready_request.dart';
 import '../models/team_change_request.dart';
 
@@ -102,4 +105,36 @@ abstract class SessionRemoteDataSource {
   /// - 409: 이미 다른 활성 게임에 참여 중
   @POST('/api/games/join')
   Future<JoinGameResponse> joinGame(@Body() JoinGameRequest request);
+
+  /// 로비 조회
+  ///
+  /// 대기실 초기 상태(참가자 목록, myParticipantId, 게임 설정)를 반환합니다.
+  ///
+  /// - 200: 조회 성공
+  /// - 401: 인증 실패
+  /// - 404: 게임 또는 참여 정보 없음
+  @GET('/api/games/{gameId}/lobby')
+  Future<LobbyInfoResponse> fetchLobbyInfo(@Path('gameId') int gameId);
+
+  /// 게임 설정 조회
+  ///
+  /// 게임 방의 기본 설정(라운드 시간, 위치 공개 주기 등)을 반환합니다.
+  ///
+  /// - 200: 조회 성공
+  /// - 401: 인증 실패
+  /// - 404: 게임 없음
+  @GET('/api/games/{gameId}')
+  Future<GameSettingsResponse> fetchGameSettings(@Path('gameId') int gameId);
+
+  /// 인게임 참가자 목록 조회
+  ///
+  /// 게임 진행 중 경찰/도둑 참가자 목록과 상태를 반환합니다.
+  ///
+  /// - 200: 조회 성공
+  /// - 401: 인증 실패
+  /// - 404: 게임 또는 참여 정보 없음
+  @GET('/api/games/{gameId}/participants')
+  Future<InGameParticipantsResponse> fetchGameParticipants(
+    @Path('gameId') int gameId,
+  );
 }

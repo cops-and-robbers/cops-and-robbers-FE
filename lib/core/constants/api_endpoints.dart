@@ -93,6 +93,16 @@ class ApiEndpoints {
   /// 게임 시작 (방장만 가능)
   static String startGame(int gameId) => '/api/games/$gameId/lobby/start';
 
+  /// 로비 조회
+  static String fetchLobbyInfo(int gameId) => '/api/games/$gameId/lobby';
+
+  /// 게임 설정 조회
+  static String fetchGameSettings(int gameId) => '/api/games/$gameId';
+
+  /// 인게임 참가자 목록 조회
+  static String fetchGameParticipants(int gameId) =>
+      '/api/games/$gameId/participants';
+
   // ============================================
   // System API - 게임 시스템 상호작용
   // ============================================

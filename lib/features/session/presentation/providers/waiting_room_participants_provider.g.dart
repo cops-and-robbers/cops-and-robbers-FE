@@ -7,12 +7,14 @@ part of 'waiting_room_participants_provider.dart';
 // **************************************************************************
 
 String _$waitingRoomParticipantsHash() =>
-    r'ddee6ddcdce124e97970f0a5b60f984f885a9123';
+    r'b2432ac9560d23154ee40af940e29b074bb0610e';
 
 /// 대기실 참가자 목록 관리 Notifier
 ///
 /// STOMP 로비 이벤트를 처리하여 참가자 목록을 실시간 관리합니다.
-/// TODO: REST API 초기 참가자 목록 조회 추가 예정
+/// TODO(전체 조회 API): REST API로 초기 참가자 목록을 조회하는 메서드 추가 필요.
+/// API 연동 후 흐름: connectAndSubscribe 완료 → REST 전체 조회 → initParticipants() 호출
+/// → 이후 STOMP 이벤트로 증분 업데이트
 ///
 /// Copied from [WaitingRoomParticipants].
 @ProviderFor(WaitingRoomParticipants)

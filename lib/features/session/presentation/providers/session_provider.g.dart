@@ -828,6 +828,449 @@ class _JoinGameProviderElement
   String get inviteCode => (origin as JoinGameProvider).inviteCode;
 }
 
+String _$fetchLobbyInfoHash() => r'78f09cd112324656cc77abd8cf20c9bee73df0e6';
+
+/// 로비 조회
+///
+/// 대기실 초기 상태(참가자 목록, myParticipantId, 게임 설정)를 반환합니다.
+///
+/// Copied from [fetchLobbyInfo].
+@ProviderFor(fetchLobbyInfo)
+const fetchLobbyInfoProvider = FetchLobbyInfoFamily();
+
+/// 로비 조회
+///
+/// 대기실 초기 상태(참가자 목록, myParticipantId, 게임 설정)를 반환합니다.
+///
+/// Copied from [fetchLobbyInfo].
+class FetchLobbyInfoFamily extends Family<AsyncValue<LobbyInfoResponse>> {
+  /// 로비 조회
+  ///
+  /// 대기실 초기 상태(참가자 목록, myParticipantId, 게임 설정)를 반환합니다.
+  ///
+  /// Copied from [fetchLobbyInfo].
+  const FetchLobbyInfoFamily();
+
+  /// 로비 조회
+  ///
+  /// 대기실 초기 상태(참가자 목록, myParticipantId, 게임 설정)를 반환합니다.
+  ///
+  /// Copied from [fetchLobbyInfo].
+  FetchLobbyInfoProvider call(int gameId) {
+    return FetchLobbyInfoProvider(gameId);
+  }
+
+  @override
+  FetchLobbyInfoProvider getProviderOverride(
+    covariant FetchLobbyInfoProvider provider,
+  ) {
+    return call(provider.gameId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'fetchLobbyInfoProvider';
+}
+
+/// 로비 조회
+///
+/// 대기실 초기 상태(참가자 목록, myParticipantId, 게임 설정)를 반환합니다.
+///
+/// Copied from [fetchLobbyInfo].
+class FetchLobbyInfoProvider
+    extends AutoDisposeFutureProvider<LobbyInfoResponse> {
+  /// 로비 조회
+  ///
+  /// 대기실 초기 상태(참가자 목록, myParticipantId, 게임 설정)를 반환합니다.
+  ///
+  /// Copied from [fetchLobbyInfo].
+  FetchLobbyInfoProvider(int gameId)
+    : this._internal(
+        (ref) => fetchLobbyInfo(ref as FetchLobbyInfoRef, gameId),
+        from: fetchLobbyInfoProvider,
+        name: r'fetchLobbyInfoProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$fetchLobbyInfoHash,
+        dependencies: FetchLobbyInfoFamily._dependencies,
+        allTransitiveDependencies:
+            FetchLobbyInfoFamily._allTransitiveDependencies,
+        gameId: gameId,
+      );
+
+  FetchLobbyInfoProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameId,
+  }) : super.internal();
+
+  final int gameId;
+
+  @override
+  Override overrideWith(
+    FutureOr<LobbyInfoResponse> Function(FetchLobbyInfoRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FetchLobbyInfoProvider._internal(
+        (ref) => create(ref as FetchLobbyInfoRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameId: gameId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<LobbyInfoResponse> createElement() {
+    return _FetchLobbyInfoProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchLobbyInfoProvider && other.gameId == gameId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FetchLobbyInfoRef on AutoDisposeFutureProviderRef<LobbyInfoResponse> {
+  /// The parameter `gameId` of this provider.
+  int get gameId;
+}
+
+class _FetchLobbyInfoProviderElement
+    extends AutoDisposeFutureProviderElement<LobbyInfoResponse>
+    with FetchLobbyInfoRef {
+  _FetchLobbyInfoProviderElement(super.provider);
+
+  @override
+  int get gameId => (origin as FetchLobbyInfoProvider).gameId;
+}
+
+String _$fetchGameSettingsHash() => r'3c2bf3cdecc828730224d794d1ecbe20c626de9c';
+
+/// 게임 설정 조회
+///
+/// 게임 방의 기본 설정(라운드 시간, 위치 공개 주기 등)을 반환합니다.
+///
+/// Copied from [fetchGameSettings].
+@ProviderFor(fetchGameSettings)
+const fetchGameSettingsProvider = FetchGameSettingsFamily();
+
+/// 게임 설정 조회
+///
+/// 게임 방의 기본 설정(라운드 시간, 위치 공개 주기 등)을 반환합니다.
+///
+/// Copied from [fetchGameSettings].
+class FetchGameSettingsFamily extends Family<AsyncValue<GameSettingsResponse>> {
+  /// 게임 설정 조회
+  ///
+  /// 게임 방의 기본 설정(라운드 시간, 위치 공개 주기 등)을 반환합니다.
+  ///
+  /// Copied from [fetchGameSettings].
+  const FetchGameSettingsFamily();
+
+  /// 게임 설정 조회
+  ///
+  /// 게임 방의 기본 설정(라운드 시간, 위치 공개 주기 등)을 반환합니다.
+  ///
+  /// Copied from [fetchGameSettings].
+  FetchGameSettingsProvider call(int gameId) {
+    return FetchGameSettingsProvider(gameId);
+  }
+
+  @override
+  FetchGameSettingsProvider getProviderOverride(
+    covariant FetchGameSettingsProvider provider,
+  ) {
+    return call(provider.gameId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'fetchGameSettingsProvider';
+}
+
+/// 게임 설정 조회
+///
+/// 게임 방의 기본 설정(라운드 시간, 위치 공개 주기 등)을 반환합니다.
+///
+/// Copied from [fetchGameSettings].
+class FetchGameSettingsProvider
+    extends AutoDisposeFutureProvider<GameSettingsResponse> {
+  /// 게임 설정 조회
+  ///
+  /// 게임 방의 기본 설정(라운드 시간, 위치 공개 주기 등)을 반환합니다.
+  ///
+  /// Copied from [fetchGameSettings].
+  FetchGameSettingsProvider(int gameId)
+    : this._internal(
+        (ref) => fetchGameSettings(ref as FetchGameSettingsRef, gameId),
+        from: fetchGameSettingsProvider,
+        name: r'fetchGameSettingsProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$fetchGameSettingsHash,
+        dependencies: FetchGameSettingsFamily._dependencies,
+        allTransitiveDependencies:
+            FetchGameSettingsFamily._allTransitiveDependencies,
+        gameId: gameId,
+      );
+
+  FetchGameSettingsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameId,
+  }) : super.internal();
+
+  final int gameId;
+
+  @override
+  Override overrideWith(
+    FutureOr<GameSettingsResponse> Function(FetchGameSettingsRef provider)
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FetchGameSettingsProvider._internal(
+        (ref) => create(ref as FetchGameSettingsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameId: gameId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<GameSettingsResponse> createElement() {
+    return _FetchGameSettingsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchGameSettingsProvider && other.gameId == gameId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FetchGameSettingsRef
+    on AutoDisposeFutureProviderRef<GameSettingsResponse> {
+  /// The parameter `gameId` of this provider.
+  int get gameId;
+}
+
+class _FetchGameSettingsProviderElement
+    extends AutoDisposeFutureProviderElement<GameSettingsResponse>
+    with FetchGameSettingsRef {
+  _FetchGameSettingsProviderElement(super.provider);
+
+  @override
+  int get gameId => (origin as FetchGameSettingsProvider).gameId;
+}
+
+String _$fetchGameParticipantsHash() =>
+    r'cd7001f98986bfde873eee5705b1f611070460b2';
+
+/// 인게임 참가자 목록 조회
+///
+/// 게임 진행 중 경찰/도둑 참가자 목록과 상태를 반환합니다.
+///
+/// Copied from [fetchGameParticipants].
+@ProviderFor(fetchGameParticipants)
+const fetchGameParticipantsProvider = FetchGameParticipantsFamily();
+
+/// 인게임 참가자 목록 조회
+///
+/// 게임 진행 중 경찰/도둑 참가자 목록과 상태를 반환합니다.
+///
+/// Copied from [fetchGameParticipants].
+class FetchGameParticipantsFamily
+    extends Family<AsyncValue<InGameParticipantsResponse>> {
+  /// 인게임 참가자 목록 조회
+  ///
+  /// 게임 진행 중 경찰/도둑 참가자 목록과 상태를 반환합니다.
+  ///
+  /// Copied from [fetchGameParticipants].
+  const FetchGameParticipantsFamily();
+
+  /// 인게임 참가자 목록 조회
+  ///
+  /// 게임 진행 중 경찰/도둑 참가자 목록과 상태를 반환합니다.
+  ///
+  /// Copied from [fetchGameParticipants].
+  FetchGameParticipantsProvider call(int gameId) {
+    return FetchGameParticipantsProvider(gameId);
+  }
+
+  @override
+  FetchGameParticipantsProvider getProviderOverride(
+    covariant FetchGameParticipantsProvider provider,
+  ) {
+    return call(provider.gameId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'fetchGameParticipantsProvider';
+}
+
+/// 인게임 참가자 목록 조회
+///
+/// 게임 진행 중 경찰/도둑 참가자 목록과 상태를 반환합니다.
+///
+/// Copied from [fetchGameParticipants].
+class FetchGameParticipantsProvider
+    extends AutoDisposeFutureProvider<InGameParticipantsResponse> {
+  /// 인게임 참가자 목록 조회
+  ///
+  /// 게임 진행 중 경찰/도둑 참가자 목록과 상태를 반환합니다.
+  ///
+  /// Copied from [fetchGameParticipants].
+  FetchGameParticipantsProvider(int gameId)
+    : this._internal(
+        (ref) => fetchGameParticipants(ref as FetchGameParticipantsRef, gameId),
+        from: fetchGameParticipantsProvider,
+        name: r'fetchGameParticipantsProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$fetchGameParticipantsHash,
+        dependencies: FetchGameParticipantsFamily._dependencies,
+        allTransitiveDependencies:
+            FetchGameParticipantsFamily._allTransitiveDependencies,
+        gameId: gameId,
+      );
+
+  FetchGameParticipantsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameId,
+  }) : super.internal();
+
+  final int gameId;
+
+  @override
+  Override overrideWith(
+    FutureOr<InGameParticipantsResponse> Function(
+      FetchGameParticipantsRef provider,
+    )
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FetchGameParticipantsProvider._internal(
+        (ref) => create(ref as FetchGameParticipantsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameId: gameId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<InGameParticipantsResponse> createElement() {
+    return _FetchGameParticipantsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchGameParticipantsProvider && other.gameId == gameId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FetchGameParticipantsRef
+    on AutoDisposeFutureProviderRef<InGameParticipantsResponse> {
+  /// The parameter `gameId` of this provider.
+  int get gameId;
+}
+
+class _FetchGameParticipantsProviderElement
+    extends AutoDisposeFutureProviderElement<InGameParticipantsResponse>
+    with FetchGameParticipantsRef {
+  _FetchGameParticipantsProviderElement(super.provider);
+
+  @override
+  int get gameId => (origin as FetchGameParticipantsProvider).gameId;
+}
+
 String _$sessionCreationNotifierHash() =>
     r'371323e1f00197619d881ff5dfd62103f3f7b80b';
 
