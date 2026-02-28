@@ -22,23 +22,37 @@ ChatStompDatasource chatStompDatasource(Ref ref) {
 
 /// 채팅 상태
 class ChatState {
-  final List<ChatMessageDto> messages;
+  /// scope == 'ALL' 메시지만 저장
+  final List<ChatMessageDto> allScopeMessages;
+
+  /// scope == 'TEAM' 메시지만 저장
+  final List<ChatMessageDto> teamScopeMessages;
+
   final StompConnectionState connectionState;
   final String? errorMessage;
 
   const ChatState({
-    this.messages = const [],
+    this.allScopeMessages = const [],
+    this.teamScopeMessages = const [],
     this.connectionState = StompConnectionState.disconnected,
     this.errorMessage,
   });
 
+  /// 전체 메시지 (더미 모드 등 호환용)
+  List<ChatMessageDto> get messages => [
+    ...allScopeMessages,
+    ...teamScopeMessages,
+  ];
+
   ChatState copyWith({
-    List<ChatMessageDto>? messages,
+    List<ChatMessageDto>? allScopeMessages,
+    List<ChatMessageDto>? teamScopeMessages,
     StompConnectionState? connectionState,
     String? errorMessage,
   }) {
     return ChatState(
-      messages: messages ?? this.messages,
+      allScopeMessages: allScopeMessages ?? this.allScopeMessages,
+      teamScopeMessages: teamScopeMessages ?? this.teamScopeMessages,
       connectionState: connectionState ?? this.connectionState,
       errorMessage: errorMessage,
     );
@@ -139,6 +153,9 @@ class ChatNotifier extends _$ChatNotifier {
 
     // 스트림 구독 설정
     _setupStreams();
+
+    // 구독 예약 (connected 시 자동 구독)
+    datasource.subscribeChat(gameId, team);
 
     // STOMP 연결
     final wsUrl = ApiEndpoints.gameConnectionUrl;
@@ -279,11 +296,20 @@ class ChatNotifier extends _$ChatNotifier {
       timestamp: DateTime.now().toIso8601String(),
       scope: scope,
     );
-    final updated = [...state.messages, msg];
-    final trimmed = updated.length > _maxMessages
-        ? updated.sublist(updated.length - _maxMessages)
-        : updated;
-    state = state.copyWith(messages: trimmed);
+
+    if (scope == 'TEAM') {
+      final updated = [...state.teamScopeMessages, msg];
+      final trimmed = updated.length > _maxMessages
+          ? updated.sublist(updated.length - _maxMessages)
+          : updated;
+      state = state.copyWith(teamScopeMessages: trimmed);
+    } else {
+      final updated = [...state.allScopeMessages, msg];
+      final trimmed = updated.length > _maxMessages
+          ? updated.sublist(updated.length - _maxMessages)
+          : updated;
+      state = state.copyWith(allScopeMessages: trimmed);
+    }
   }
 
   // ============================================
@@ -303,17 +329,12 @@ class ChatNotifier extends _$ChatNotifier {
       state = state.copyWith(connectionState: connState);
 
       if (connState == StompConnectionState.connected) {
-        // 연결 성공 → 채널 구독 + 상태 초기화
+        // 연결 성공 → 상태 초기화 (구독은 onConnected()에서 자동 처리)
         _authRetryCount = 0;
         _reconnectCount = 0;
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
-
-        if (_gameId != null && _team != null) {
-          datasource.subscribeAll(_gameId!);
-          datasource.subscribeTeam(_gameId!, _team!);
-        }
         state = state.copyWith(errorMessage: null);
       } else if (connState == StompConnectionState.disconnected) {
         // 예기치 않은 연결 종료 → 재연결 시도
@@ -323,13 +344,21 @@ class ChatNotifier extends _$ChatNotifier {
       }
     });
 
-    // 메시지 수신 구독 (최대 _maxMessages개 유지)
+    // 메시지 수신 구독 (scope별로 분류하여 최대 _maxMessages개 유지)
     _messageSub = datasource.onMessage.listen((message) {
-      final updated = [...state.messages, message];
-      final trimmed = updated.length > _maxMessages
-          ? updated.sublist(updated.length - _maxMessages)
-          : updated;
-      state = state.copyWith(messages: trimmed);
+      if (message.scope == 'TEAM') {
+        final updated = [...state.teamScopeMessages, message];
+        final trimmed = updated.length > _maxMessages
+            ? updated.sublist(updated.length - _maxMessages)
+            : updated;
+        state = state.copyWith(teamScopeMessages: trimmed);
+      } else {
+        final updated = [...state.allScopeMessages, message];
+        final trimmed = updated.length > _maxMessages
+            ? updated.sublist(updated.length - _maxMessages)
+            : updated;
+        state = state.copyWith(allScopeMessages: trimmed);
+      }
     });
 
     // STOMP 에러 구독
@@ -396,7 +425,7 @@ class ChatNotifier extends _$ChatNotifier {
     final tokenProvider = ref.read(tokenProviderProvider);
     final accessToken = await tokenProvider.getAccessToken();
 
-    if (_intentionalDisconnect) return;
+    if (_intentionalDisconnect || _gameId == null || _team == null) return;
 
     if (accessToken == null) {
       debugPrint('[ChatNotifier] ❌ 재연결 토큰 획득 실패');
@@ -405,6 +434,7 @@ class ChatNotifier extends _$ChatNotifier {
       return;
     }
 
+    datasource.subscribeChat(_gameId!, _team!);
     final wsUrl = ApiEndpoints.gameConnectionUrl;
     datasource.connect(wsUrl, accessToken);
   }
@@ -436,9 +466,11 @@ class ChatNotifier extends _$ChatNotifier {
       // 서버 JWT 도입 시 refreshAccessTokenIfNeeded()가 refresh API를 호출.
       // 현재는 Firebase의 forceRefresh를 사용.
       final tokenProvider = ref.read(tokenProviderProvider);
+      // await 전에 datasource 캡처 (await 후 ref 접근 방지)
+      final datasource = ref.read(chatStompDatasourceProvider);
       final newToken = await tokenProvider.refreshAccessTokenIfNeeded();
 
-      if (_intentionalDisconnect || _gameId == null) return;
+      if (_intentionalDisconnect || _gameId == null || _team == null) return;
 
       if (newToken == null) {
         debugPrint('[ChatNotifier] ❌ 토큰 갱신 실패 - 재로그인 필요');
@@ -450,10 +482,12 @@ class ChatNotifier extends _$ChatNotifier {
       }
 
       // 재연결 (스트림 재설정 불필요 - broadcast StreamController 유지)
+      // 재연결 시작 후 이 연결이 실패하면 일반 재연결 정책이 이어받을 수 있도록 플래그 해제
       debugPrint('[ChatNotifier] ✅ 토큰 갱신 성공 - 재연결 시도');
-      final datasource = ref.read(chatStompDatasourceProvider);
+      datasource.subscribeChat(_gameId!, _team!);
       final wsUrl = ApiEndpoints.gameConnectionUrl;
       datasource.connect(wsUrl, newToken);
+      _isHandlingError = false;
     } else {
       // 비-401 STOMP 에러: 에러 메시지 표시, 자동 재연결 안 함
       state = state.copyWith(

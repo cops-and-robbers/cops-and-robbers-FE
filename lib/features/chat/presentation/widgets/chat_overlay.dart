@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../data/datasources/chat_stomp_datasource.dart';
-import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_provider.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
@@ -81,13 +80,6 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     }
   }
 
-  List<ChatMessageDto> _filterMessages(
-    List<ChatMessageDto> messages,
-    String scope,
-  ) {
-    return messages.where((m) => m.scope == scope).toList();
-  }
-
   @override
   void dispose() {
     _sheetController.removeListener(_onSheetChanged);
@@ -156,18 +148,12 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                           },
                           children: [
                             ChatMessageList(
-                              messages: _filterMessages(
-                                chatState.messages,
-                                'ALL',
-                              ),
+                              messages: chatState.allScopeMessages,
                               myParticipantId: widget.myParticipantId,
                               myTeam: widget.myTeam,
                             ),
                             ChatMessageList(
-                              messages: _filterMessages(
-                                chatState.messages,
-                                'TEAM',
-                              ),
+                              messages: chatState.teamScopeMessages,
                               myParticipantId: widget.myParticipantId,
                               myTeam: widget.myTeam,
                             ),
