@@ -12,8 +12,12 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../router/route_paths.dart';
+import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
+    show StompConnectionState;
 import '../../../lobby/data/models/lobby_event_dto.dart';
 import '../../../lobby/presentation/providers/lobby_provider.dart';
+import '../../data/models/game_settings_response.dart';
+import '../../data/models/lobby_info_response.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../providers/waiting_room_participants_provider.dart';
@@ -54,6 +58,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   bool _isReady = false;
   bool _isUpdatingReady = false;
 
+  /// 참가자 초기화 중복 실행 방지
+  bool _isFetchingParticipants = false;
+
   /// 더미 모드 여부
   bool get _isDummyMode => int.tryParse(widget.sessionId) == null;
 
@@ -67,10 +74,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 로비 이벤트 구독 (dispose 시 명시적 해제)
   ProviderSubscription<LobbyState>? _lobbyEventSub;
 
+  /// dispose 여부 (microtask 큐에 남은 이벤트가 dispose 후 처리되는 것을 방지)
+  bool _isDisposed = false;
+
   /// 팀당 최대 인원 (maxParticipants 기반, 홀수 시 도둑 +1)
-  ///
-  /// TODO(로비 조회 API): 현재 참가자(isHost=false)는 joinGame 응답에 maxParticipants가 없어
-  /// 기본값 10이 적용됨. 로비 조회 API 연동 후 실제 값으로 교체 필요.
   int get _maxPolice {
     final max =
         ref.read(gameParticipantNotifierProvider)?.maxParticipants ?? 10;
@@ -88,13 +95,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // 페이지 전환 타이밍에 따라 이전 로비의 state가 남아있을 수 있으므로
-      // 연결 시작 전 반드시 먼저 초기화
-      // TODO(전체 조회 API): API 연동 후에는 이 clear()가 필요 없어지므로 제거하고
-      // API 응답으로 초기 참가자 목록을 채우도록 변경
-      ref.read(waitingRoomParticipantsProvider.notifier).clear();
-      _connectLobby();
       _listenLobbyEvents();
+      _connectLobby();
       if (widget.showInviteDialog && widget.inviteCode != null) {
         _showInviteCodeDialog();
       }
@@ -103,11 +105,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   @override
   void dispose() {
+    _isDisposed = true;
     _lobbyEventSub?.close();
     _lobbyEventSub = null;
     WidgetsBinding.instance.removeObserver(this);
-    ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
-    ref.read(waitingRoomParticipantsProvider.notifier).clear();
+    // ref.read()는 ConsumerStatefulElement.unmount() 이후 호출 불가.
+    // lobbyNotifierProvider / waitingRoomParticipantsProvider 모두 @riverpod
+    // (autoDispose)이므로 WaitingRoomPage가 사라지면 자동으로 정리됨.
     super.dispose();
   }
 
@@ -122,29 +126,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
   }
 
-  /// Lobby STOMP 연결 및 구독
-  ///
-  /// TODO(전체 조회 API): STOMP 연결 후 즉시 API를 호출하여 초기 상태를 세팅하도록 교체.
-  /// 교체 후에는 _listenLobbyEvents()의 "방장 participantId 자동 감지" 블록이
-  /// pInfo?.participantId != null 조건으로 자동 스킵되므로 별도 제거 없이 무해.
-  ///
-  /// 교체 코드 (async로 변경 필요):
-  /// ```dart
-  /// await ref.read(lobbyNotifierProvider.notifier).connectAndSubscribe(...);
-  ///
-  /// final result = await ref.read(fetchLobbyInfoProvider(gameId).future);
-  ///
-  /// ref.read(waitingRoomParticipantsProvider.notifier).initFromApi(
-  ///   participants: result.participants,
-  ///   hostParticipantId: result.hostParticipantId,
-  /// );
-  /// ref.read(gameParticipantNotifierProvider.notifier).initFromLobby(
-  ///   participantId: result.myParticipantId,
-  ///   maxParticipants: result.maxParticipants,
-  ///   locationRevealIntervalMinutes: result.locationRevealIntervalMinutes,
-  /// );
-  /// ```
-  void _connectLobby() {
+  /// Lobby STOMP 연결
+  Future<void> _connectLobby() async {
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) {
       // 숫자가 아닌 sessionId (임시 UI 확인용) → 더미 데이터 + 방장으로 세팅
@@ -160,22 +143,96 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       return;
     }
 
-    ref
+    // STOMP 연결 시작 (초기 참가자 목록은 connected 이벤트 시 로드)
+    await ref
         .read(lobbyNotifierProvider.notifier)
         .connectAndSubscribe(gameId: gameId, onGameStart: _onGameStartEvent);
+  }
+
+  /// REST API로 초기 참가자 목록 및 게임 설정 로드
+  ///
+  /// STOMP connected 이벤트 발생 시 호출하여 서버의 최신 상태를 가져옵니다.
+  /// 로비 조회와 게임 설정 조회를 병렬로 실행하며, 각각 독립적으로 에러를 처리합니다.
+  /// fetchGameSettings가 실패해도 참가자 목록은 정상 표시됩니다.
+  /// 재연결 루프에서 동시에 여러 번 호출되는 것을 방지하기 위해
+  /// [_isFetchingParticipants] 가드를 사용합니다.
+  Future<void> _fetchAndInitParticipants() async {
+    if (_isFetchingParticipants || _isDisposed) return;
+
+    final gameId = int.tryParse(widget.sessionId);
+    if (gameId == null) return;
+
+    _isFetchingParticipants = true;
+    try {
+      // 두 API를 병렬로 시작
+      final lobbyFuture = ref.read(fetchLobbyInfoProvider(gameId).future);
+      final settingsFuture = ref.read(fetchGameSettingsProvider(gameId).future);
+
+      // 각 API 독립 에러 처리 (한쪽 실패가 다른 쪽을 막지 않음)
+      LobbyInfoResponse? lobbyInfo;
+      GameSettingsResponse? settings;
+
+      try {
+        lobbyInfo = await lobbyFuture;
+      } catch (e) {
+        debugPrint('[WaitingRoomPage] 로비 조회 실패: $e');
+      }
+      try {
+        settings = await settingsFuture;
+      } catch (e) {
+        debugPrint('[WaitingRoomPage] 게임 설정 조회 실패: $e');
+      }
+
+      // await 후 위젯이 dispose됐을 수 있으므로 mounted로 이중 확인
+      if (_isDisposed || !mounted || lobbyInfo == null) return;
+
+      // 로비 참가자 목록에서 내 팀 추출 (서버 기준 정확한 팀)
+      final myPid = lobbyInfo.myParticipantId;
+      final myTeam = lobbyInfo.participants
+          .where((p) => p.participantId == myPid)
+          .map((p) => p.team)
+          .firstOrNull;
+
+      ref
+          .read(waitingRoomParticipantsProvider.notifier)
+          .initFromApi(
+            participants: lobbyInfo.participants,
+            hostParticipantId: lobbyInfo.hostParticipantId,
+          );
+
+      if (_isDisposed || !mounted) return;
+
+      ref
+          .read(gameParticipantNotifierProvider.notifier)
+          .initFromLobby(
+            participantId: myPid,
+            team: myTeam,
+            maxParticipants: settings?.maxParticipants,
+            locationRevealIntervalMinutes:
+                settings?.locationRevealIntervalMinutes,
+          );
+    } finally {
+      _isFetchingParticipants = false;
+    }
   }
 
   /// 로비 이벤트 → 참가자 목록 업데이트
   void _listenLobbyEvents() {
     _lobbyEventSub = ref.listenManual(lobbyNotifierProvider, (prev, next) {
+      // dispose 후 microtask 큐에 남은 이벤트 방어
+      if (_isDisposed) return;
+
+      // STOMP 연결 완료 시 REST API로 초기 참가자 목록 로드
+      // connectAndSubscribe()는 연결 시작만 하므로, 실제 connected 시점에 호출해야 함
+      if (next.connectionState == StompConnectionState.connected &&
+          prev?.connectionState != StompConnectionState.connected) {
+        _fetchAndInitParticipants();
+      }
+
       final event = next.lastEvent;
       if (event != null && event != prev?.lastEvent) {
-        // ── 방장 participantId 자동 감지 (전체 조회 API 연동 전 임시) ──
-        // 전체 조회 API 연동 후에는 pInfo?.participantId가 null이 아니므로 자동 스킵됨.
-        //
-        // 원리: 방장은 자신의 ENTER 이벤트를 받지 않아 participants 목록에 없음.
-        //       handleLobbyEvent() 호출 전 목록을 확인하여,
-        //       ENTER 없이 처음 등장하는 TEAM_UPDATE/READY_UPDATE 발신자 = 방장.
+        // 방장 participantId 보완 (로비 조회 API 응답 전 STOMP 이벤트가 먼저 도착할 때 방어)
+        // initFromLobby() 호출 후에는 participantId != null이므로 자동 스킵됨.
         final pInfo = ref.read(gameParticipantNotifierProvider);
         if (pInfo?.isHost == true && pInfo?.participantId == null) {
           if (event.type == LobbyEventType.teamUpdate ||
@@ -267,6 +324,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 팀 변경
   Future<void> _changeTeam(String targetTeam) async {
+    // 이미 같은 팀이면 무시
+    final currentTeam = ref.read(gameParticipantNotifierProvider)?.team;
+    if (currentTeam == targetTeam) return;
+
     // 더미 모드
     if (_isDummyMode) {
       ref
@@ -347,20 +408,27 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 방 나가기
   Future<void> _leaveRoom() async {
+    // ① STOMP 먼저 끊기 (EXIT 이벤트 자기 수신 방지)
+    _lobbyEventSub?.close();
+    _lobbyEventSub = null;
+    ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
+
+    // ② 그 다음 REST API 퇴장
     final gameId = int.tryParse(widget.sessionId);
     if (gameId != null) {
       await ref.read(leaveGameProvider(gameId).future);
     }
+
+    // ③ 상태 초기화
     ref.read(gameParticipantNotifierProvider.notifier).clear();
+    ref.read(waitingRoomParticipantsProvider.notifier).clear();
+
     if (mounted) {
       context.go(RoutePaths.home);
     }
   }
 
   /// 게임 규칙 다이얼로그
-  ///
-  /// TODO(로비 조회 API): 현재 참가자(isHost=false)는 locationRevealIntervalMinutes가 null.
-  /// 로비 조회 API 연동 후 실제 값이 채워지면 다이얼로그에 정상 표시됨.
   void _showGameRulesDialog() {
     final interval = ref
         .read(gameParticipantNotifierProvider)
@@ -430,9 +498,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   @override
   Widget build(BuildContext context) {
-    // lobby provider watch (autoDispose 방지)
-    ref.watch(lobbyNotifierProvider);
-
     final participantsState = ref.watch(waitingRoomParticipantsProvider);
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
@@ -518,11 +583,17 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // 초대코드 (정중앙)
-            Text(
-              widget.inviteCode ?? '',
-              style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-            ),
+            // 초대코드 (정중앙) — 탭 시 초대코드 모달 표시
+            if (widget.inviteCode != null)
+              GestureDetector(
+                onTap: _showInviteCodeDialog,
+                child: Text(
+                  widget.inviteCode!,
+                  style: AppTextStyles.heading_20.copyWith(
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
             // 좌측: 뒤로가기
             Align(
               alignment: Alignment.centerLeft,

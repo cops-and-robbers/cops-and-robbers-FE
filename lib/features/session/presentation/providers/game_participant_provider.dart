@@ -110,19 +110,20 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     }
   }
 
-  /// 전체 조회 API 응답으로 누락 정보 보완
+  /// 로비 조회 API 응답으로 정보 초기화
   ///
-  /// TODO(전체 조회 API): _connectLobby() 에서 API 응답 후 호출.
-  /// 이 메서드가 호출되면 _listenLobbyEvents()의 방장 participantId 자동 감지 블록은
-  /// participantId != null 조건에 의해 자동으로 스킵되어 제거하지 않아도 됨.
+  /// [participantId], [team]은 서버가 반환한 값으로 덮어씁니다.
+  /// [team]이 null이면 기존 팀을 유지합니다.
   void initFromLobby({
     required int participantId,
+    String? team,
     int? maxParticipants,
     int? locationRevealIntervalMinutes,
   }) {
     if (state == null) return;
     state = state!.copyWith(
       participantId: participantId,
+      team: team,
       maxParticipants: maxParticipants,
       locationRevealIntervalMinutes: locationRevealIntervalMinutes,
     );
