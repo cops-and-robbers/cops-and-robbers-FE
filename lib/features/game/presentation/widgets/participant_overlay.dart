@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
+import '../../../session/data/models/in_game_participants_response.dart';
+import '../../../session/presentation/providers/game_participant_provider.dart';
+import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/team_section.dart';
 
 /// 게임 중 참가자 목록 오버레이
@@ -10,104 +14,107 @@ import '../../../session/presentation/widgets/team_section.dart';
 /// 사람 버튼 클릭 시 지도 위에 표시되는 참가자 목록.
 /// 대기실과 동일한 TeamSection + ParticipantCard 스타일.
 /// 하단 우측에 지도 버튼으로 복귀.
-class ParticipantOverlay extends StatefulWidget {
+class ParticipantOverlay extends ConsumerStatefulWidget {
   const ParticipantOverlay({required this.onClose, super.key});
 
   final VoidCallback onClose;
 
   @override
-  State<ParticipantOverlay> createState() => _ParticipantOverlayState();
+  ConsumerState<ParticipantOverlay> createState() => _ParticipantOverlayState();
 }
 
-class _ParticipantOverlayState extends State<ParticipantOverlay> {
+class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
   bool _isPoliceExpanded = false;
   bool _isRobberExpanded = true;
 
-  // TODO: 게임 상태(GameParticipantProvider 또는 인게임 이벤트) 기반으로
-  //   실제 참가자 목록으로 교체. ConsumerStatefulWidget으로 전환 필요.
-  static final List<LobbyParticipantInfo> _dummyPolice = [
-    const LobbyParticipantInfo(
-      participantId: 1,
-      nickname: '경찰1',
-      team: 'POLICE',
-      isReady: true,
-    ),
-    const LobbyParticipantInfo(
-      participantId: 2,
-      nickname: '경찰2',
-      team: 'POLICE',
-      isReady: true,
-    ),
-    const LobbyParticipantInfo(
-      participantId: 3,
-      nickname: '경찰3',
-      team: 'POLICE',
-      isReady: true,
-    ),
-  ];
+  InGameParticipantsResponse? _participants;
 
-  static final List<LobbyParticipantInfo> _dummyRobber = [
-    const LobbyParticipantInfo(
-      participantId: 101,
-      nickname: '도둑1',
-      team: 'ROBBER',
-      isReady: true,
-    ),
-    const LobbyParticipantInfo(
-      participantId: 102,
-      nickname: '도둑2',
-      team: 'ROBBER',
-      isReady: true,
-    ),
-    const LobbyParticipantInfo(
-      participantId: 103,
-      nickname: '도둑3',
-      team: 'ROBBER',
-      isReady: true,
-    ),
-    const LobbyParticipantInfo(
-      participantId: 104,
-      nickname: '도둑4',
-      team: 'ROBBER',
-      isReady: true,
-    ),
-    const LobbyParticipantInfo(
-      participantId: 105,
-      nickname: '도둑5',
-      team: 'ROBBER',
-      isReady: true,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadParticipants());
+  }
+
+  Future<void> _loadParticipants() async {
+    if (!mounted) return;
+    final gameInfo = ref.read(gameParticipantNotifierProvider);
+    if (gameInfo == null) return;
+    try {
+      final result = await ref.read(
+        fetchGameParticipantsProvider(gameInfo.gameId).future,
+      );
+      if (!mounted) return;
+      setState(() => _participants = result);
+    } catch (e) {
+      debugPrint('[ParticipantOverlay] 참가자 조회 실패: $e');
+    }
+  }
+
+  /// [InGameParticipant] → [LobbyParticipantInfo] 변환
+  ///
+  /// - 경찰 (POLICE_WAITING): isReady: true
+  /// - 도둑 ALIVE: isReady: false (도주 중)
+  /// - 도둑 JAILED: isReady: true (레디 카드 색상으로 수감 표시)
+  LobbyParticipantInfo _toParticipantInfo(
+    InGameParticipant p, {
+    required bool isPolice,
+  }) {
+    final isReady = isPolice || p.status == 'JAILED';
+    return LobbyParticipantInfo(
+      participantId: p.participantId,
+      nickname: p.nickname,
+      team: isPolice ? 'POLICE' : 'ROBBER',
+      isReady: isReady,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(gameParticipantNotifierProvider);
+
+    final policeMembers =
+        _participants?.police
+            .map((p) => _toParticipantInfo(p, isPolice: true))
+            .toList() ??
+        const [];
+    final robberMembers =
+        _participants?.robbers
+            .map((p) => _toParticipantInfo(p, isPolice: false))
+            .toList() ??
+        const [];
+
+    // ALIVE 도둑 수 (도주 중)
+    final aliveCount =
+        _participants?.robbers.where((p) => p.status == 'ALIVE').length ?? 0;
+
     return Container(
       color: AppColors.white,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 경찰팀 섹션
+            // 경찰팀 섹션 (인원 카운트·빈 슬롯 미표시)
             TeamSection(
               team: 'POLICE',
-              // TODO: 인게임 게임 상태 기반 실제 경찰 참가자 목록으로 교체
-              members: _dummyPolice,
-              maxPerTeam: _dummyPolice.length,
+              members: policeMembers,
+              maxPerTeam: policeMembers.length,
               isExpanded: _isPoliceExpanded,
               onToggle: () =>
                   setState(() => _isPoliceExpanded = !_isPoliceExpanded),
+              badge: const SizedBox.shrink(),
             ),
             Divider(height: 1, color: AppColors.black200),
-            // 도둑팀 섹션 (도주 중 배지 표시)
+            // 도둑팀 섹션 (도주 중 배지 표시, 빈 슬롯 미표시)
             TeamSection(
               team: 'ROBBER',
-              // TODO: 인게임 이벤트 기반으로 실제 도둑 참가자 목록으로 교체
-              members: _dummyRobber,
-              maxPerTeam: _dummyRobber.length,
+              members: robberMembers,
+              maxPerTeam: robberMembers.length,
               isExpanded: _isRobberExpanded,
               onToggle: () =>
                   setState(() => _isRobberExpanded = !_isRobberExpanded),
-              badge: _buildRobberBadge(_dummyRobber.length),
+              badge: _participants != null
+                  ? _buildRobberBadge(aliveCount)
+                  : null,
             ),
           ],
         ),
@@ -123,7 +130,6 @@ class _ParticipantOverlayState extends State<ParticipantOverlay> {
         children: [
           const TextSpan(text: '현재 '),
           TextSpan(
-            // TODO: 인게임 이벤트 기반으로 실제 도주 중인 도둑 수 표시
             text: '$count명',
             style: AppTextStyles.tag_12.copyWith(
               color: AppColors.blue800,
