@@ -153,4 +153,7 @@ class AppRadius {
 
   /// 매우 매우 큰 라운드 (24px) - 다이얼로그 등
   static BorderRadius get xxlarge => BorderRadius.circular(24.r);
+
+  /// 완전 원형 (pill/stadium) - 플로팅 바, 태그 등
+  static BorderRadius get pill => BorderRadius.circular(9999.r);
 }
