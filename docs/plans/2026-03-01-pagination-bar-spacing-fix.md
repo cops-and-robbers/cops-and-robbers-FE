@@ -12,7 +12,7 @@
 
 ## 현재 구조 분석
 
-```
+```text
 Container (padding: all 16, borderRadius: 24px)
 └─ Row (mainAxisSize: min)
    ├─ _buildArrowButton: SizedBox(32x32) → Icon(16x16)  ← 8px 내부 여백
@@ -23,11 +23,11 @@ Container (padding: all 16, borderRadius: 24px)
 
 ### 중복 간격 포인트
 
-| 위치 | 현재 값 | 문제 |
-|------|---------|------|
-| Container padding | 16px all | OK (의도된 내부 패딩) |
-| Arrow SizedBox | 32x32 (icon 16x16) | **8px 내부 여백** → Container padding과 합산 시 24px |
-| PageButton margin | horizontal 4.w | OK (버튼 간 간격) |
+| 위치              | 현재 값            | 문제                                                 |
+| ----------------- | ------------------ | ---------------------------------------------------- |
+| Container padding | 16px all           | OK (의도된 내부 패딩)                                |
+| Arrow SizedBox    | 32x32 (icon 16x16) | **8px 내부 여백** → Container padding과 합산 시 24px |
+| PageButton margin | horizontal 4.w     | OK (버튼 간 간격)                                    |
 
 ### 해결 방향
 
@@ -36,12 +36,13 @@ Container (padding: all 16, borderRadius: 24px)
 
 ---
 
-## Task 1: _buildArrowButton SizedBox 축소 및 radius 변경
+## Task 1: \_buildArrowButton SizedBox 축소 및 radius 변경
 
 **Files:**
+
 - Modify: `lib/core/widgets/pagination_bar.dart`
 
-**Step 1: _buildArrowButton의 SizedBox를 28x28로 축소**
+**Step 1: \_buildArrowButton의 SizedBox를 28x28로 축소**
 
 ```dart
 // 변경 전

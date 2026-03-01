@@ -45,8 +45,10 @@ class _NoticesPageState extends State<NoticesPage> {
 
   /// 현재 페이지에 해당하는 공지사항 목록
   List<_NoticeItem> get _currentNotices {
-    final start = (_currentPage * _pageSize).clamp(0, _allNotices.length);
-    final end = (start + _pageSize).clamp(start, _allNotices.length);
+    final start = (_currentPage * _pageSize)
+        .clamp(0, _allNotices.length)
+        .toInt();
+    final end = (start + _pageSize).clamp(start, _allNotices.length).toInt();
     return _allNotices.sublist(start, end);
   }
 
