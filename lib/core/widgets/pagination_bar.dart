@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../constants/app_colors.dart';
 import '../constants/spacing_and_radius.dart';
@@ -41,38 +42,62 @@ class PaginationBar extends StatelessWidget {
 
     final pageNumbers = _buildPageNumbers();
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // ── 이전 페이지 버튼 (첫 페이지에서는 완전 숨김) ──
-        if (currentPage > 0)
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: AppSpacing.vertical12,
+        horizontal: AppSpacing.horizontal16,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: AppRadius.pill,
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(1, 1),
+            blurRadius: 8,
+            color: AppColors.black.withValues(alpha: 0.1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // ── 이전 페이지 버튼 ──
           _buildArrowButton(
-            icon: Icons.chevron_left,
+            isFlipped: false,
+            enabled: currentPage > 0,
             onTap: () => onPageChanged(currentPage - 1),
           ),
 
-        // ── 페이지 번호 목록 ──
-        ...pageNumbers.map((page) {
-          if (page == -1) {
-            // 생략 부호 (...)
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal4),
-              child: Text(
-                '···',
-                style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
-              ),
-            );
-          }
-          return _buildPageButton(page);
-        }),
+          // ── 페이지 번호 목록 ──
+          ...pageNumbers.map((page) {
+            if (page == -1) {
+              // 생략 부호 (...)
+              return Container(
+                width: 28.w,
+                height: 28.w,
+                margin: EdgeInsets.symmetric(horizontal: 4.w),
+                child: Center(
+                  child: Text(
+                    '···',
+                    style: AppTextStyles.paragraph14Semibold.copyWith(
+                      color: AppColors.black600,
+                    ),
+                  ),
+                ),
+              );
+            }
+            return _buildPageButton(page);
+          }),
 
-        // ── 다음 페이지 버튼 (마지막 페이지에서는 완전 숨김) ──
-        if (currentPage < totalPages - 1)
+          // ── 다음 페이지 버튼 ──
           _buildArrowButton(
-            icon: Icons.chevron_right,
+            isFlipped: true,
+            enabled: currentPage < totalPages - 1,
             onTap: () => onPageChanged(currentPage + 1),
           ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -83,21 +108,21 @@ class PaginationBar extends StatelessWidget {
   /// - 마지막 페이지: `1 ... n-2 n-1 n`
   /// - 그 외 전부: `... prev curr next ...` (슬라이딩 윈도우)
   List<int> _buildPageNumbers() {
-    if (totalPages <= 4) {
+    if (totalPages <= 5) {
       return List.generate(totalPages, (i) => i);
     }
 
-    // 첫 페이지: 첫 3개 + ... + 마지막
-    if (currentPage == 0) {
+    // 첫 2페이지: 첫 3개 + ... + 마지막
+    if (currentPage <= 1) {
       return [0, 1, 2, -1, totalPages - 1];
     }
 
-    // 마지막 페이지: 첫 + ... + 마지막 3개
-    if (currentPage == totalPages - 1) {
+    // 마지막 2페이지: 첫 + ... + 마지막 3개
+    if (currentPage >= totalPages - 2) {
       return [0, -1, totalPages - 3, totalPages - 2, totalPages - 1];
     }
 
-    // 그 외: 슬라이딩 윈도우 (현재 ± 1)
+    // 그 외: 슬라이딩 윈도우 (... prev curr next ...)
     final result = <int>[];
 
     if (currentPage - 1 > 0) result.add(-1);
@@ -116,10 +141,11 @@ class PaginationBar extends StatelessWidget {
     final isSelected = page == currentPage;
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: isSelected ? null : () => onPageChanged(page),
       child: Container(
-        width: 24.w,
-        height: 24.w,
+        width: 28.w,
+        height: 28.w,
         margin: EdgeInsets.symmetric(horizontal: 4.w),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -128,9 +154,11 @@ class PaginationBar extends StatelessWidget {
         child: Center(
           child: Text(
             '${page + 1}',
-            style: AppTextStyles.tag_12.copyWith(
-              color: isSelected ? AppColors.black : AppColors.black600,
-            ),
+            style: isSelected
+                ? AppTextStyles.paragraph14Semibold.copyWith(
+                    color: AppColors.black,
+                  )
+                : AppTextStyles.tag_12.copyWith(color: AppColors.black600),
           ),
         ),
       ),
@@ -138,16 +166,30 @@ class PaginationBar extends StatelessWidget {
   }
 
   /// 이전/다음 화살표 버튼
+  ///
+  /// [isFlipped]가 true이면 SVG를 수평 반전하여 "다음" 화살표로 사용.
   Widget _buildArrowButton({
-    required IconData icon,
+    required bool isFlipped,
+    required bool enabled,
     required VoidCallback onTap,
   }) {
+    final color = enabled ? AppColors.black600 : AppColors.black200;
+    final icon = SvgPicture.asset(
+      'assets/icons/icon_previous.svg',
+      width: 16.w,
+      height: 16.w,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    );
+
     return GestureDetector(
-      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      onTap: enabled ? onTap : null,
       child: SizedBox(
-        width: 32.w,
-        height: 32.w,
-        child: Icon(icon, size: 20.w, color: AppColors.black),
+        width: 28.w,
+        height: 28.w,
+        child: Center(
+          child: isFlipped ? Transform.flip(flipX: true, child: icon) : icon,
+        ),
       ),
     );
   }
