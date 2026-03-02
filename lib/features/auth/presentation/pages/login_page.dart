@@ -13,9 +13,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
-import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../router/route_paths.dart';
-import '../../../../test_widget_page.dart';
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
@@ -160,42 +158,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 
-  /// 개발자 도구 메뉴 표시
-  ///
-  /// 생명주기 테스트와 위젯 테스트 페이지로 이동할 수 있는 다이얼로그를 표시합니다.
-  /// 개발 모드(kDebugMode)에서만 동작합니다.
-  void _showDevMenu(BuildContext context) {
-    AppDialog.show(
-      context: context,
-      title: '개발자 도구',
-      showButtons: false,
-      customContent: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.pending_actions),
-            title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
-            onTap: () {
-              Navigator.pop(context);
-              context.push(RoutePaths.lifecycleTest);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.widgets),
-            title: Text('Test Widget', style: AppTextStyles.paragraph_14),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TestWidgetPage()),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -244,7 +206,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             Positioned(
               left: 0,
               right: 0,
-              bottom: 10.h,
+              bottom: Platform.isIOS ? 10.h : 30.h,
               child: Padding(
                 padding: AppPadding.horizontal20,
                 child: RichText(
@@ -280,25 +242,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ),
           ],
         ),
-      ),
-
-      // floatingActionButton: kDebugMode
-      // ? FloatingActionButton(
-      //     mini: true,
-      //     backgroundColor: AppColors.black.withValues(alpha: 0.7),
-      //     foregroundColor: AppColors.white,
-      //     onPressed: () => _showDevMenu(context),
-      //     child: const Icon(Icons.bug_report),
-      //   )
-      // : null,
-
-      // 개발자 도구 버튼 (디자이너 확인용으로 릴리즈에서도 표시)
-      floatingActionButton: FloatingActionButton(
-        mini: true,
-        backgroundColor: AppColors.black.withValues(alpha: 0.7),
-        foregroundColor: AppColors.white,
-        onPressed: () => _showDevMenu(context),
-        child: const Icon(Icons.bug_report),
       ),
     );
   }

@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2026-02-21T12:40:45Z",
-    "currentVersion": "1.2.17",
+    "lastUpdated": "2026-03-02T03:36:08Z",
+    "currentVersion": "1.2.20",
     "projectType": "flutter",
-    "totalReleases": 42
+    "totalReleases": 43
   },
   "releases": [
+    {
+      "version": "1.2.20",
+      "project_type": "flutter",
+      "date": "2026-03-02",
+      "pr_number": 106,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새 기능**\n  - 자동 닫힘 타이머 기능이 추가되어 팝업이 지정된 시간 후 자동으로 종료됩니다\n  - 카운트다운 타이머 위젯이 추가되어 팝업 내에서 남은 시간을 실시간으로 표시합니다\n  - 게임 세션의 구역과 설정을 독립적으로 수정할 수 있게 되었습니다\n\n* **개선 사항**\n  - 대화상자 내부 여백을 더 정교하게 조정할 수 있습니다\n  - 페이지네이션 버튼의 디자인과 간격이 개선되었습니다\n\n* **버그 수정**\n  - 로그인 화면의 불필요한 개발자 도구 메뉴가 제거되었습니다",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": []
+        },
+        "개선_사항": {
+          "title": "개선 사항",
+          "items": []
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": []
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.2.17",
       "project_type": "flutter",

@@ -21,6 +21,9 @@ class NoticesPage extends StatefulWidget {
 }
 
 class _NoticesPageState extends State<NoticesPage> {
+  /// 스크롤 위치 제어 (페이지 변경 시 상단 복귀)
+  final ScrollController _scrollController = ScrollController();
+
   /// 현재 펼쳐진 공지사항 인덱스 (-1이면 모두 접힌 상태)
   int _expandedIndex = -1;
 
@@ -42,13 +45,21 @@ class _NoticesPageState extends State<NoticesPage> {
 
   /// 현재 페이지에 해당하는 공지사항 목록
   List<_NoticeItem> get _currentNotices {
-    final start = _currentPage * _pageSize;
-    final end = (start + _pageSize).clamp(0, _allNotices.length);
+    final start = (_currentPage * _pageSize)
+        .clamp(0, _allNotices.length)
+        .toInt();
+    final end = (start + _pageSize).clamp(start, _allNotices.length).toInt();
     return _allNotices.sublist(start, end);
   }
 
   /// 전체 페이지 수
   int get _totalPages => (_allNotices.length / _pageSize).ceil();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,40 +78,52 @@ class _NoticesPageState extends State<NoticesPage> {
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
-      body: Column(
-        children: [
-          // ── 공지사항 목록 ──
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: AppPadding.horizontal20,
-                child: Column(
-                  children: [
-                    for (int i = 0; i < notices.length; i++)
-                      _buildNoticeItem(notice: notices[i], index: i),
-                  ],
+      body: Builder(
+        builder: (context) {
+          final bottomSafeArea = MediaQuery.paddingOf(context).bottom;
+          final paginationBottomOffset = AppSpacing.vertical16 + bottomSafeArea;
+
+          return Stack(
+            children: [
+              // ── 공지사항 목록 ──
+              SingleChildScrollView(
+                controller: _scrollController,
+                child: Padding(
+                  padding: AppPadding.horizontal20,
+                  child: Column(
+                    children: [
+                      for (int i = 0; i < notices.length; i++)
+                        _buildNoticeItem(notice: notices[i], index: i),
+                      // 하단 페이지네이션 바와 겹치지 않도록 여백 추가
+                      SizedBox(height: paginationBottomOffset + 60.h),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ),
 
-          // ── 페이지네이션 바 ──
-          if (_totalPages > 1)
-            Padding(
-              padding: EdgeInsets.only(bottom: AppSpacing.vertical4),
-              child: PaginationBar(
-                currentPage: _currentPage,
-                totalPages: _totalPages,
-                onPageChanged: (page) {
-                  setState(() {
-                    _currentPage = page;
-                    _expandedIndex = -1;
-                  });
-                },
-              ),
-            ),
-          SizedBox(height: AppSpacing.vertical40),
-        ],
+              // ── 플로팅 페이지네이션 바 ──
+              if (_totalPages > 1)
+                Positioned(
+                  bottom: paginationBottomOffset,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: PaginationBar(
+                      currentPage: _currentPage,
+                      totalPages: _totalPages,
+                      onPageChanged: (page) {
+                        setState(() {
+                          _currentPage = page;
+                          _expandedIndex = -1;
+                        });
+                        _scrollController.jumpTo(0);
+                      },
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
