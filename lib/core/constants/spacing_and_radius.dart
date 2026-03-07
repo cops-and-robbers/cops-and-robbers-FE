@@ -23,6 +23,9 @@ class AppSpacing {
   /// 좌우 4px 간격
   static double get horizontal4 => 4.w;
 
+  /// 좌우 6px 간격
+  static double get horizontal6 => 6.w;
+
   /// 좌우 8px 간격
   static double get horizontal8 => 8.w;
 
@@ -150,4 +153,7 @@ class AppRadius {
 
   /// 매우 매우 큰 라운드 (24px) - 다이얼로그 등
   static BorderRadius get xxlarge => BorderRadius.circular(24.r);
+
+  /// 완전 원형 (pill/stadium) - 플로팅 바, 태그 등
+  static BorderRadius get pill => BorderRadius.circular(9999.r);
 }

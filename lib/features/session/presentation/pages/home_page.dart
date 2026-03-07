@@ -14,6 +14,7 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../router/route_paths.dart';
+import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
@@ -35,37 +36,36 @@ class HomePage extends ConsumerWidget {
     }
   }
 
-  /// [임시] 게임 퇴장 다이얼로그
-  void _showLeaveGameDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
-
+  /// 개발자 도구 메뉴 표시
+  void _showDevMenu(BuildContext context) {
     AppDialog.show(
       context: context,
-      title: '게임 퇴장',
-      customContent: AppTextField(
-        controller: controller,
-        hintText: 'Game ID를 입력하세요',
-        keyboardType: TextInputType.number,
+      title: '개발자 도구',
+      showButtons: false,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.pending_actions),
+            title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              Navigator.pop(context);
+              context.push(RoutePaths.lifecycleTest);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.widgets),
+            title: Text('Test Widget', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TestWidgetPage()),
+              );
+            },
+          ),
+        ],
       ),
-      cancelText: '취소',
-      confirmText: '퇴장',
-      validator: () => controller.text.trim().isNotEmpty,
-      onConfirm: () async {
-        final gameId = int.tryParse(controller.text.trim());
-        if (gameId == null || gameId < 1) return;
-
-        final result = await ref.read(leaveGameProvider(gameId).future);
-
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                result != null ? '게임 $gameId 퇴장 완료' : '게임 $gameId 퇴장 실패',
-              ),
-            ),
-          );
-        }
-      },
     );
   }
 
@@ -81,7 +81,7 @@ class HomePage extends ConsumerWidget {
         hintText: '참여코드를 입력하세요',
         maxLength: 6,
       ),
-      cancelText: '취소',
+      cancelText: '닫기',
       confirmText: '참여하기',
       validator: () => codeController.text.trim().length == 6,
       onConfirm: () async {
@@ -115,7 +115,7 @@ class HomePage extends ConsumerWidget {
           );
         }
       },
-    );
+    ).whenComplete(() => codeController.dispose());
   }
 
   @override
@@ -123,6 +123,26 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       resizeToAvoidBottomInset: false,
+
+      // floatingActionButton: kDebugMode
+      // ? FloatingActionButton(
+      //     mini: true,
+      //     backgroundColor: AppColors.black.withValues(alpha: 0.7),
+      //     foregroundColor: AppColors.white,
+      //     onPressed: () => _showDevMenu(context),
+      //     child: const Icon(Icons.bug_report),
+      //   )
+      // : null,
+
+      // 개발자 도구 버튼 (디자이너 확인용으로 릴리즈에서도 표시)
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        backgroundColor: AppColors.black.withValues(alpha: 0.7),
+        foregroundColor: AppColors.white,
+        onPressed: () => _showDevMenu(context),
+        child: const Icon(Icons.bug_report),
+      ),
+
       body: SafeArea(
         child: Padding(
           padding: AppPadding.horizontal20,
@@ -217,35 +237,6 @@ class HomePage extends ConsumerWidget {
                 backgroundColor: AppColors.black100,
                 foregroundColor: AppColors.black600,
                 showBorder: false,
-              ),
-              // ── [임시] 디버그 버튼들 ──
-              SizedBox(height: AppSpacing.vertical12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () => _showLeaveGameDialog(context, ref),
-                    child: Text(
-                      '[임시] 퇴장',
-                      style: AppTextStyles.tag_12.copyWith(
-                        color: AppColors.black400,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.horizontal16),
-                  GestureDetector(
-                    onTap: () =>
-                        context.go(RoutePaths.waitingRoomWithId('A1B2C3')),
-                    child: Text(
-                      '[임시] 대기실 UI',
-                      style: AppTextStyles.tag_12.copyWith(
-                        color: AppColors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
               ),
               SizedBox(height: AppSpacing.vertical20),
             ],
