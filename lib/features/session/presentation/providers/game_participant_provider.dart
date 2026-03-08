@@ -24,6 +24,15 @@ class GameParticipantInfo {
   /// 위치 공개 주기 (분)
   final int? locationRevealIntervalMinutes;
 
+  /// 경찰 대기 시간 (분) — 게임 시작 후 경찰이 이동할 수 없는 시간
+  final int? policeWaitMinutes;
+
+  /// 라운드 제한 시간 (분) — 앱바 카운트다운 타이머용
+  final int? roundTimeMinutes;
+
+  /// 게임 시작 시각 (GAME_START 이벤트의 startTime, ISO 8601)
+  final String? gameStartTime;
+
   /// 방장 여부
   final bool isHost;
 
@@ -34,6 +43,9 @@ class GameParticipantInfo {
     this.participantId,
     this.maxParticipants,
     this.locationRevealIntervalMinutes,
+    this.policeWaitMinutes,
+    this.roundTimeMinutes,
+    this.gameStartTime,
     this.isHost = false,
   });
 
@@ -44,6 +56,9 @@ class GameParticipantInfo {
     int? participantId,
     int? maxParticipants,
     int? locationRevealIntervalMinutes,
+    int? policeWaitMinutes,
+    int? roundTimeMinutes,
+    String? gameStartTime,
     bool? isHost,
   }) {
     return GameParticipantInfo(
@@ -54,6 +69,9 @@ class GameParticipantInfo {
       maxParticipants: maxParticipants ?? this.maxParticipants,
       locationRevealIntervalMinutes:
           locationRevealIntervalMinutes ?? this.locationRevealIntervalMinutes,
+      policeWaitMinutes: policeWaitMinutes ?? this.policeWaitMinutes,
+      roundTimeMinutes: roundTimeMinutes ?? this.roundTimeMinutes,
+      gameStartTime: gameStartTime ?? this.gameStartTime,
       isHost: isHost ?? this.isHost,
     );
   }
@@ -89,6 +107,13 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     );
   }
 
+  /// 게임 시작 시각 저장 (GAME_START 이벤트 수신 시)
+  void setGameStartTime(String startTime) {
+    if (state != null) {
+      state = state!.copyWith(gameStartTime: startTime);
+    }
+  }
+
   /// 팀 변경 (대기실에서)
   void setTeam(String team) {
     if (state != null) {
@@ -119,6 +144,8 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     String? team,
     int? maxParticipants,
     int? locationRevealIntervalMinutes,
+    int? policeWaitMinutes,
+    int? roundTimeMinutes,
   }) {
     if (state == null) return;
     state = state!.copyWith(
@@ -126,6 +153,8 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       team: team,
       maxParticipants: maxParticipants,
       locationRevealIntervalMinutes: locationRevealIntervalMinutes,
+      policeWaitMinutes: policeWaitMinutes,
+      roundTimeMinutes: roundTimeMinutes,
     );
   }
 
