@@ -186,8 +186,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // await 후 위젯이 dispose됐을 수 있으므로 mounted로 이중 확인
       if (_isDisposed || !mounted || lobbyInfo == null) return;
 
-      // 로비 참가자 목록에서 내 팀 추출 (서버 기준 정확한 팀)
+      // 로비 참가자 목록에서 내 정보 추출
       final myPid = lobbyInfo.myParticipantId;
+      final isHost = myPid == lobbyInfo.hostParticipantId;
       final myTeam = lobbyInfo.participants
           .where((p) => p.participantId == myPid)
           .map((p) => p.team)
@@ -202,6 +203,20 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       if (_isDisposed || !mounted) return;
 
+      // 다시하기로 재진입 시 clear()로 state가 null이면 initFromLobby()가 early return함.
+      // 먼저 setGameInfo()로 state를 초기화하여 이후 initFromLobby()가 정상 동작하도록 보장.
+      if (ref.read(gameParticipantNotifierProvider) == null) {
+        final myNickname =
+            lobbyInfo.participants
+                .where((p) => p.participantId == myPid)
+                .map((p) => p.nickname)
+                .firstOrNull ??
+            '';
+        ref
+            .read(gameParticipantNotifierProvider.notifier)
+            .setGameInfo(gameId: gameId, nickname: myNickname, isHost: isHost);
+      }
+
       ref
           .read(gameParticipantNotifierProvider.notifier)
           .initFromLobby(
@@ -213,6 +228,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             policeWaitMinutes: settings?.policeWaitMinutes,
             roundTimeMinutes: settings?.roundDurationMinutes,
           );
+
+      // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
+      ref.read(gameParticipantNotifierProvider.notifier).setIsHost(isHost);
     } finally {
       _isFetchingParticipants = false;
     }
