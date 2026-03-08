@@ -10,13 +10,20 @@ class DeviceLocationService {
   DeviceLocationService._();
 
   /// 현재 위치 1회 조회
+  ///
+  /// [timeLimit] 내에 GPS 응답이 없으면 마지막 알려진 위치로 폴백.
+  /// 둘 다 없으면 null 반환.
   static Future<Position?> getCurrentPosition({
     LocationAccuracy accuracy = LocationAccuracy.high,
     Duration timeLimit = const Duration(seconds: 10),
-  }) {
-    return Geolocator.getCurrentPosition(
-      locationSettings: LocationSettings(accuracy: accuracy),
-    ).timeout(timeLimit);
+  }) async {
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(accuracy: accuracy),
+      ).timeout(timeLimit);
+    } catch (_) {
+      return Geolocator.getLastKnownPosition();
+    }
   }
 
   /// 실시간 위치 스트림
