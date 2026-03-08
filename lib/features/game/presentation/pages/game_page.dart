@@ -635,7 +635,8 @@ class _GamePageState extends ConsumerState<GamePage> {
       // policeWaitMinutes == 0이면 서버가 POLICE_MOVE_START를 보내지 않으므로
       // gameStartTime을 fallback으로 사용
       final policeWaitMinutes = participantInfo?.policeWaitMinutes;
-      final effectiveMoveStartTime = policeMoveStartTime ??
+      final effectiveMoveStartTime =
+          policeMoveStartTime ??
           (policeWaitMinutes == 0 ? gameStartTime : null);
       final base = lastReveal ?? effectiveMoveStartTime;
       if (base != null) nextRevealTime = base.add(Duration(minutes: interval));

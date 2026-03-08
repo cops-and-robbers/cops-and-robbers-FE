@@ -332,7 +332,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 /// loading → loading 또는 data(same) 전환은 무시하여 불필요한 리다이렉트를 방지합니다.
 class _GoRouterRefreshNotifier extends ChangeNotifier {
   _GoRouterRefreshNotifier(this._ref, this._provider) {
-    bool? _prevIsAuthenticated;
+    bool? prevIsAuthenticated;
     _ref.listen<AsyncValue<dynamic>>(_provider, (previous, next) {
       // loading 중이면 notify 생략 (중간 상태로 인한 오류 화면 방지)
       if (next.isLoading) return;
@@ -340,8 +340,8 @@ class _GoRouterRefreshNotifier extends ChangeNotifier {
       // 인증 여부(bool)만 비교하여 로그인/로그아웃 전환 시에만 notify
       // authNotifierProvider.build()가 새 객체를 생성해도 인증 여부가 같으면 무시
       final isAuthenticated = next.valueOrNull != null;
-      if (_prevIsAuthenticated == isAuthenticated) return;
-      _prevIsAuthenticated = isAuthenticated;
+      if (prevIsAuthenticated == isAuthenticated) return;
+      prevIsAuthenticated = isAuthenticated;
 
       notifyListeners();
     });

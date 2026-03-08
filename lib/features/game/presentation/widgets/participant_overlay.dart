@@ -91,8 +91,9 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
 
     // 경찰 대기 시간 중에는 체포 불가
     final isPoliceMoving = ref.read(gameEventNotifierProvider).isPoliceMoving;
-    final policeWaitMinutes =
-        ref.read(gameParticipantNotifierProvider)?.policeWaitMinutes;
+    final policeWaitMinutes = ref
+        .read(gameParticipantNotifierProvider)
+        ?.policeWaitMinutes;
     final canArrest = isPoliceMoving || policeWaitMinutes == 0;
     if (!canArrest) {
       ScaffoldMessenger.of(context).showSnackBar(

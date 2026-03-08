@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../../core/services/lifecycle/lifecycle_provider.dart';
+import '../../../../features/session/presentation/providers/game_participant_provider.dart';
+import '../../../../features/session/presentation/providers/session_provider.dart';
 import '../widgets/current_state_card.dart';
 import '../widgets/lifecycle_log_list.dart';
 
@@ -32,6 +34,9 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
   bool _isTrackingLocation = false;
   StreamSubscription<Position>? _positionSubscription;
 
+  final _gameIdController = TextEditingController();
+  bool _isLeaving = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +45,11 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
       ref.read(appLifecycleServiceProvider).activate();
       // 자동으로 백그라운드 위치 추적 시작
       _startBackgroundLocationTest();
+      // 현재 참가 중인 게임 ID 자동 입력
+      final gameId = ref.read(gameParticipantNotifierProvider)?.gameId;
+      if (gameId != null) {
+        _gameIdController.text = gameId.toString();
+      }
     });
   }
 
@@ -164,11 +174,49 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
 
   @override
   void dispose() {
-    // 위치 스트림 구독 취소 (메모리 누수 방지)
+    _gameIdController.dispose();
     _positionSubscription?.cancel();
-    // ✅ Provider가 자동으로 deactivate 및 dispose 처리
-    // ref.read() 호출 시 "ref after disposed" 에러 발생 방지
     super.dispose();
+  }
+
+  /// 1 ~ maxGameId 범위의 모든 방 나가기 API 순차 호출
+  Future<void> _forceLeaveGame() async {
+    final maxGameId = int.tryParse(_gameIdController.text.trim());
+    if (maxGameId == null || maxGameId <= 0) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('1 이상의 게임 ID를 입력하세요')));
+      return;
+    }
+
+    setState(() => _isLeaving = true);
+    int successCount = 0;
+    int failCount = 0;
+
+    try {
+      for (int gameId = 1; gameId <= maxGameId; gameId++) {
+        if (!mounted) break;
+        final result = await ref.read(leaveGameProvider(gameId).future);
+        if (result != null) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLeaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '완료: 성공 $successCount개 / 실패 $failCount개 (1~$maxGameId)',
+            ),
+            backgroundColor: successCount > 0 ? Colors.green : Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -244,6 +292,57 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
                       : 'Android: 알림 바에 알림 표시 확인',
                   style: const TextStyle(fontSize: 11, color: Colors.grey),
                   textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+
+          const Divider(height: 1),
+
+          // 방 나가기 API 강제 호출
+          Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.red.shade50,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  '방 나가기 API (강제 호출)',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _gameIdController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: '최대 게임 ID',
+                    hintText: '예: 42 → 1~42 모두 퇴장',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton.icon(
+                  onPressed: _isLeaving ? null : _forceLeaveGame,
+                  icon: _isLeaving
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.exit_to_app),
+                  label: Text(_isLeaving ? '처리 중...' : '방 나가기 실행'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ],
             ),
