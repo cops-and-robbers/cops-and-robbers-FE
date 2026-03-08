@@ -101,13 +101,15 @@ class _GamePageState extends ConsumerState<GamePage> {
   @override
   void dispose() {
     _locationTimer?.cancel();
-    // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연
+    // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
+    // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
+    // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
     final chatNotifier = _chatNotifier;
-    final gameEventNotifier = _gameEventNotifier;
+    final gameEventDatasource = _gameEventDatasource;
     final isDummy = widget.isDummy;
     Future.microtask(() {
       chatNotifier?.disconnectChat();
-      if (!isDummy) gameEventNotifier?.disconnect();
+      if (!isDummy) gameEventDatasource?.disconnect();
     });
     super.dispose();
   }
@@ -180,6 +182,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     while (mounted && DateTime.now().isBefore(deadline)) {
       final connState = ref.read(gameEventNotifierProvider).connectionState;
       if (connState == StompConnectionState.connected) break;
+      if (connState == StompConnectionState.error) return;
       await Future.delayed(const Duration(milliseconds: 300));
     }
     if (!mounted) return;
