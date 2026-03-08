@@ -114,6 +114,9 @@ class ApiEndpoints {
   static String escapeFromPrison(int gameId) =>
       '/api/games/$gameId/system/escape';
 
+  /// 맵 영역 조회 (플레이그라운드·감옥 중심 좌표 및 반경)
+  static String gameArea(int gameId) => '/api/games/$gameId/area';
+
   // ============================================
   // User API - 사용자 정보
   // ============================================
