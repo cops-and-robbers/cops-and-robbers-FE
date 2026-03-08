@@ -8,6 +8,8 @@ import '../../../session/data/models/in_game_participants_response.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/team_section.dart';
+import '../providers/game_event_provider.dart';
+import 'game_action_modal.dart';
 
 /// 게임 중 참가자 목록 오버레이
 ///
@@ -15,9 +17,24 @@ import '../../../session/presentation/widgets/team_section.dart';
 /// 대기실과 동일한 TeamSection + ParticipantCard 스타일.
 /// 하단 우측에 지도 버튼으로 복귀.
 class ParticipantOverlay extends ConsumerStatefulWidget {
-  const ParticipantOverlay({required this.onClose, super.key});
+  const ParticipantOverlay({
+    required this.onClose,
+    required this.gameId,
+    required this.myTeam,
+    required this.myParticipantId,
+    super.key,
+  });
 
   final VoidCallback onClose;
+
+  /// 게임 ID
+  final int gameId;
+
+  /// 현재 플레이어 팀 ("POLICE" 또는 "ROBBER")
+  final String myTeam;
+
+  /// 현재 플레이어 참가자 ID
+  final int myParticipantId;
 
   @override
   ConsumerState<ParticipantOverlay> createState() => _ParticipantOverlayState();
@@ -68,24 +85,111 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     );
   }
 
+  /// 경찰 역할 → ALIVE 도둑 카드 탭 시 체포 모달 표시
+  void _onRobberCardTap(LobbyParticipantInfo member) {
+    if (widget.myTeam != 'POLICE') return;
+
+    // 경찰 대기 시간 중에는 체포 불가
+    final isPoliceMoving = ref.read(gameEventNotifierProvider).isPoliceMoving;
+    final policeWaitMinutes =
+        ref.read(gameParticipantNotifierProvider)?.policeWaitMinutes;
+    final canArrest = isPoliceMoving || policeWaitMinutes == 0;
+    if (!canArrest) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('경찰 대기 시간 중에는 도둑을 체포할 수 없습니다.')),
+      );
+      return;
+    }
+
+    // JAILED 상태는 체포 불가
+    final participant = _participants?.robbers.firstWhere(
+      (p) => p.participantId == member.participantId,
+      orElse: () => InGameParticipant(
+        participantId: member.participantId,
+        nickname: member.nickname,
+        status: 'JAILED',
+      ),
+    );
+    if (participant?.status == 'JAILED') return;
+
+    GameActionModal.show(
+      context: context,
+      title: '해당 플레이어를 체포하셨나요?',
+      message: '',
+      confirmLabel: '네',
+      nickname: member.nickname,
+      onConfirm: () => ref
+          .read(gameEventNotifierProvider.notifier)
+          .arrestRobber(widget.gameId, member.participantId),
+    );
+  }
+
+  /// 도둑팀 카드 탭 통합 핸들러
+  ///
+  /// - 경찰 역할: ALIVE 도둑 체포 모달 표시
+  /// - 도둑 역할 + 본인 카드 + JAILED 상태: 탈옥 모달 표시
+  void _onRobberTeamCardTap(LobbyParticipantInfo member) {
+    if (widget.myTeam == 'POLICE') {
+      _onRobberCardTap(member);
+    } else {
+      // 도둑 역할: 본인 카드 + JAILED 상태일 때만 탈옥
+      if (member.participantId != widget.myParticipantId) return;
+      if (!member.isReady) return; // isReady == true이 JAILED 상태
+
+      GameActionModal.show(
+        context: context,
+        title: '탈옥',
+        message: '탈옥을 시도하시겠습니까?',
+        confirmLabel: '탈옥',
+        onConfirm: () => ref
+            .read(gameEventNotifierProvider.notifier)
+            .escape(widget.gameId, widget.myParticipantId),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.watch(gameParticipantNotifierProvider);
+
+    // 게임 이벤트 상태 구독 (체포/탈옥 상태 반영용)
+    final gameEventState = ref.watch(gameEventNotifierProvider);
+    final arrestedIds = gameEventState.arrestedParticipantIds;
+    // 탈옥 낙관적 업데이트 반영용 (STOMP 이벤트 도착 전 즉시 UI 반영)
+    final escapedIds = gameEventState.escapedParticipantIds;
+
+    // 체포 이벤트 수신 시 참가자 목록 갱신
+    ref.listen(gameEventNotifierProvider, (prev, next) {
+      if (prev?.arrestedParticipantIds != next.arrestedParticipantIds ||
+          prev?.escapedParticipantIds != next.escapedParticipantIds) {
+        _loadParticipants();
+      }
+    });
 
     final policeMembers =
         _participants?.police
             .map((p) => _toParticipantInfo(p, isPolice: true))
             .toList() ??
         const [];
+
+    // 체포/탈옥 낙관적 업데이트 + 서버 상태 통합 반영
+    // - isArrested: 체포 낙관적 업데이트 또는 API 상태 'JAILED'
+    // - isEscaped: 탈옥 낙관적 업데이트 (STOMP 이벤트 전 즉시 반영)
     final robberMembers =
-        _participants?.robbers
-            .map((p) => _toParticipantInfo(p, isPolice: false))
-            .toList() ??
+        _participants?.robbers.map((p) {
+          final isArrested = arrestedIds.contains(p.participantId);
+          final isEscaped = escapedIds.contains(p.participantId);
+          return LobbyParticipantInfo(
+            participantId: p.participantId,
+            nickname: p.nickname,
+            team: 'ROBBER',
+            isReady: (isArrested || p.status == 'JAILED') && !isEscaped,
+          );
+        }).toList() ??
         const [];
 
     // ALIVE 도둑 수 (도주 중)
-    final aliveCount =
-        _participants?.robbers.where((p) => p.status == 'ALIVE').length ?? 0;
+    final aliveCount = robberMembers.where((m) => !m.isReady).length;
 
     return Container(
       color: AppColors.white,
@@ -115,6 +219,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
               badge: _participants != null
                   ? _buildRobberBadge(aliveCount)
                   : null,
+              onMemberTap: _onRobberTeamCardTap,
             ),
           ],
         ),
