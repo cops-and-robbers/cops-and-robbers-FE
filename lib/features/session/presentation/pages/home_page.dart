@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,12 +12,14 @@ import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../router/route_paths.dart';
 import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/game_participant_provider.dart';
+import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
 
 /// 홈 화면
@@ -85,10 +88,24 @@ class HomePage extends ConsumerWidget {
       confirmText: '참여하기',
       validator: () => codeController.text.trim().length == 6,
       onConfirm: () async {
+        // AppDialog가 pop() 직후 이 콜백을 실행하므로,
+        // 다이얼로그 닫힘 애니메이션(250ms)이 완료되기 전에 context.go()가 호출되면
+        // Duplicate GlobalKeys 오류가 발생할 수 있습니다.
+        // pop() 호출 시각을 기록하여 필요한 나머지 시간만 대기합니다.
+        final dialogCloseStart = DateTime.now();
         final code = codeController.text.trim();
-        final response = await ref.read(
-          joinGameProvider(inviteCode: code).future,
-        );
+
+        JoinGameResponse? response;
+        try {
+          response = await ref.read(joinGameProvider(inviteCode: code).future);
+        } on DioException catch (e) {
+          if (e.response?.statusCode == 409 && context.mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('이미 참가 중인 게임입니다.')));
+          }
+          return;
+        }
 
         if (response != null && context.mounted) {
           final myNickname =
@@ -106,16 +123,39 @@ class HomePage extends ConsumerWidget {
                 participantId: response.participantId,
                 isHost: false,
               );
-          context.go(
-            '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
-          );
+          // 다이얼로그 닫힘 애니메이션 완료 + overlay cleanup frame 대기
+          // transitionDuration(250ms) 이후 Flutter는 다음 frame에서 OverlayEntry를
+          // 실제로 제거한다. 정확히 250ms에 context.go()를 호출하면 cleanup frame 전에
+          // GoRouter가 _Theater를 rebuild하여 Duplicate GlobalKey 충돌이 발생한다.
+          // +32ms(~2 frames)를 추가하여 cleanup이 완료된 이후에 네비게이션을 수행한다.
+          final elapsed = DateTime.now().difference(dialogCloseStart);
+          final remaining =
+              DialogAnimation.duration +
+              const Duration(milliseconds: 32) -
+              elapsed;
+          if (remaining > Duration.zero) {
+            await Future.delayed(remaining);
+          }
+          if (context.mounted) {
+            context.go(
+              '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
+            );
+          }
         } else if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('참여에 실패했습니다. 초대 코드를 확인해주세요.')),
           );
         }
       },
-    ).whenComplete(() => codeController.dispose());
+    ).whenComplete(() {
+      // 다이얼로그 닫힘 애니메이션(250ms) 완료 후 dispose
+      // whenComplete는 pop() 직후 실행되므로 즉시 dispose하면
+      // 아직 애니메이션 중인 AppTextField가 disposed controller를 참조해 에러 발생
+      Future.delayed(
+        DialogAnimation.duration + const Duration(milliseconds: 50),
+        codeController.dispose,
+      );
+    });
   }
 
   @override

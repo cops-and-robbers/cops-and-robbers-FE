@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -185,6 +186,8 @@ Future<JoinGameResponse?> joinGame(
     return response;
   } catch (e) {
     debugPrint('[Session] ❌ 게임 참여 실패: $e');
+    // 409: 이미 참가 중 → UI에서 구분 처리
+    if (e is DioException && e.response?.statusCode == 409) rethrow;
     return null;
   }
 }

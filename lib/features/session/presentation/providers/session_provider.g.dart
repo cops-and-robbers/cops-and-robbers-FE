@@ -681,7 +681,7 @@ class _ChangeTeamProviderElement extends AutoDisposeFutureProviderElement<bool>
   String get targetTeam => (origin as ChangeTeamProvider).targetTeam;
 }
 
-String _$joinGameHash() => r'd22225537b14797813b63c2242cd840e8559ada6';
+String _$joinGameHash() => r'94f2a6d59e219040b198bc5176a627c3e9a1dc7f';
 
 /// 게임 방 참여 기능
 ///
