@@ -7,6 +7,7 @@ import '../../../../../core/services/location/device_location_service.dart';
 ///
 /// - 기본 내 위치 마커 표시 (myLocationEnabled)
 /// - 초기 진입 시 현재 위치 1회 조회 후 카메라 이동
+/// - [updateAreaCircles]로 플레이그라운드·감옥 원 추가
 class GoogleMapView extends StatefulWidget {
   const GoogleMapView({super.key});
 
@@ -19,6 +20,9 @@ class GoogleMapViewState extends State<GoogleMapView> {
 
   // 위치 조회 실패 대비 fallback (어린이대공원)
   static const LatLng _fallback = LatLng(37.5480, 127.0810);
+
+  Set<Circle> _areaCircles = {};
+  Set<Circle> _robberCircles = {};
 
   @override
   void initState() {
@@ -60,6 +64,20 @@ class GoogleMapViewState extends State<GoogleMapView> {
     }
   }
 
+  /// 맵 영역 원(플레이그라운드·감옥) 업데이트
+  void updateAreaCircles(Set<Circle> circles) {
+    if (!mounted) return;
+    setState(() => _areaCircles = circles);
+    debugPrint('🗺️ GoogleMap: 영역 원 ${circles.length}개 업데이트');
+  }
+
+  /// 도둑 위치 빨간 원 업데이트 (LOCATION_REVEAL 이벤트 시 호출)
+  void updateRobberCircles(Set<Circle> circles) {
+    if (!mounted) return;
+    setState(() => _robberCircles = circles);
+    debugPrint('🗺️ GoogleMap: 도둑 위치 원 ${circles.length}개 업데이트');
+  }
+
   @override
   Widget build(BuildContext context) {
     debugPrint('🗺️ GoogleMapView build 호출');
@@ -88,6 +106,9 @@ class GoogleMapViewState extends State<GoogleMapView> {
 
         zoomControlsEnabled: false,
         compassEnabled: false,
+        circles: {..._areaCircles, ..._robberCircles},
+        // TODO: 다른 플레이어 실시간 위치 마커 표시 (백엔드 스펙 확정 후)
+        //       markers: _playerMarkers,
       );
     } catch (e, stack) {
       debugPrint('❌ GoogleMap 생성 실패: $e');
