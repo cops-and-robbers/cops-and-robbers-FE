@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 import '../../../../router/route_paths.dart';
 import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
     show StompConnectionState;
@@ -210,6 +210,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             maxParticipants: settings?.maxParticipants,
             locationRevealIntervalMinutes:
                 settings?.locationRevealIntervalMinutes,
+            policeWaitMinutes: settings?.policeWaitMinutes,
+            roundTimeMinutes: settings?.roundDurationMinutes,
           );
     } finally {
       _isFetchingParticipants = false;
@@ -314,6 +316,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final participantId = participantInfo?.participantId ?? 0;
     final mapType = _selectedMapType;
 
+    // startTime을 직접 추출 (GameStartData.fromJson은 message 필드 누락 시 예외 발생 가능)
+    final startTimeStr = event.data['startTime'] as String?;
+    if (startTimeStr != null) {
+      ref
+          .read(gameParticipantNotifierProvider.notifier)
+          .setGameStartTime(startTimeStr);
+    }
+
     final route =
         '${RoutePaths.gameWithId(widget.sessionId)}?mapType=$mapType&team=$team&pid=$participantId';
 
@@ -416,16 +426,19 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     // ② 그 다음 REST API 퇴장
     final gameId = int.tryParse(widget.sessionId);
     if (gameId != null) {
-      await ref.read(leaveGameProvider(gameId).future);
+      final result = await ref.read(leaveGameProvider(gameId).future);
+      if (result == null && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('퇴장 처리 중 오류가 발생했습니다.')));
+      }
     }
 
-    // ③ 상태 초기화
+    // ③ await 이후 위젯이 dispose됐을 수 있으므로 mounted 확인 후 상태 초기화
+    if (!mounted) return;
     ref.read(gameParticipantNotifierProvider.notifier).clear();
     ref.read(waitingRoomParticipantsProvider.notifier).clear();
-
-    if (mounted) {
-      context.go(RoutePaths.home);
-    }
+    context.go(RoutePaths.home);
   }
 
   /// 게임 규칙 다이얼로그
@@ -436,6 +449,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     AppDialog.show(
       context: context,
       title: '게임 규칙',
+      spacing: const DialogSpacing(toContent: 12),
       customContent: GameRulesContent(locationRevealIntervalMinutes: interval),
       confirmText: '확인했어요!',
       confirmColor: AppColors.blue,
@@ -446,34 +460,45 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 초대코드 모달 (방 생성 직후 표시)
   void _showInviteCodeDialog() {
     final code = widget.inviteCode!;
+    final messenger = ScaffoldMessenger.of(context);
 
     AppDialog.show(
       context: context,
       title: '초대코드를 생성했어요',
       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
-      customContent: Container(
-        height: 64.h,
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: AppColors.black100),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              code,
-              style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+      customContent: GestureDetector(
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: code));
+          messenger.clearSnackBars();
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text('코드가 복사되었습니다', style: AppTextStyles.paragraph_14),
+              duration: const Duration(seconds: 2),
             ),
-            SizedBox(width: 8.w),
-            GestureDetector(
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: code));
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('초대코드가 복사되었습니다')));
-              },
-              child: SvgPicture.asset(
+          );
+        },
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            vertical: AppSpacing.vertical20,
+            horizontal: AppSpacing.horizontal16,
+          ),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.black100),
+            borderRadius: AppRadius.medium,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                code,
+                style: AppTextStyles.heading_20.copyWith(
+                  color: AppColors.black,
+                ),
+              ),
+              SizedBox(width: AppSpacing.horizontal4),
+              SvgPicture.asset(
                 'assets/icons/icon_copy.svg',
                 width: 20.w,
                 height: 20.w,
@@ -482,8 +507,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                   BlendMode.srcIn,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       cancelText: '닫기',
@@ -491,7 +516,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       confirmColor: AppColors.blue,
       confirmTextColor: AppColors.white,
       onConfirm: () {
-        SharePlus.instance.share(ShareParams(text: '같이 경도해요! 초대코드: $code'));
+        shareText('경찰과 도둑 게임에 참여하세요!\n참여코드: $code', subject: '경찰과 도둑 초대코드');
       },
     );
   }
