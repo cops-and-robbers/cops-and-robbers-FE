@@ -15,61 +15,68 @@ class ParticipantCard extends StatelessWidget {
   const ParticipantCard({
     required this.participant,
     this.isHost = false,
+    this.onTap,
     super.key,
   });
 
   final LobbyParticipantInfo participant;
   final bool isHost;
 
+  /// 카드 탭 콜백 (null이면 탭 비활성화)
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // 아바타 영역 (72x84)
-        SizedBox(
-          width: 72.w,
-          height: 84.h,
-          child: Container(
-            decoration: BoxDecoration(
-              color: _avatarColor,
-              borderRadius: BorderRadius.circular(4.r),
-            ),
-            child: Center(
-              child: Icon(Icons.person, color: AppColors.white, size: 32.w),
-            ),
-          ),
-        ),
-        SizedBox(height: AppSpacing.vertical4),
-        // 닉네임 (방장은 왕관 아이콘)
-        SizedBox(
-          width: 72.w,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isHost) ...[
-                SvgPicture.asset(
-                  'assets/icons/icon_crown.svg',
-                  width: 12.w,
-                  height: 12.w,
-                ),
-                SizedBox(width: 4.w),
-              ],
-              Flexible(
-                child: Text(
-                  participant.nickname,
-                  style: AppTextStyles.tag_10.copyWith(
-                    color: AppColors.black800,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 아바타 영역 (72x84)
+          SizedBox(
+            width: 72.w,
+            height: 84.h,
+            child: Container(
+              decoration: BoxDecoration(
+                color: _avatarColor,
+                borderRadius: BorderRadius.circular(4.r),
               ),
-            ],
+              child: Center(
+                child: Icon(Icons.person, color: AppColors.white, size: 32.w),
+              ),
+            ),
           ),
-        ),
-      ],
+          SizedBox(height: AppSpacing.vertical4),
+          // 닉네임 (방장은 왕관 아이콘)
+          SizedBox(
+            width: 72.w,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isHost) ...[
+                  SvgPicture.asset(
+                    'assets/icons/icon_crown.svg',
+                    width: 12.w,
+                    height: 12.w,
+                  ),
+                  SizedBox(width: 4.w),
+                ],
+                Flexible(
+                  child: Text(
+                    participant.nickname,
+                    style: AppTextStyles.tag_10.copyWith(
+                      color: AppColors.black800,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

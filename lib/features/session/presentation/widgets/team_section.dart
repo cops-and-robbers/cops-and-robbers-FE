@@ -21,6 +21,7 @@ class TeamSection extends StatelessWidget {
     this.hostParticipantId,
     this.onEmptySlotTap,
     this.badge,
+    this.onMemberTap,
     super.key,
   });
 
@@ -49,6 +50,11 @@ class TeamSection extends StatelessWidget {
   ///
   /// 예: "현재 X명 도주 중!" 텍스트 (인게임 참가자 오버레이용)
   final Widget? badge;
+
+  /// 참가자 카드 탭 콜백 (null이면 탭 비활성화)
+  ///
+  /// 인게임 오버레이에서 체포/탈옥 액션 트리거에 사용됩니다.
+  final void Function(LobbyParticipantInfo)? onMemberTap;
 
   bool get _isPolice => team.toUpperCase() == 'POLICE';
 
@@ -149,6 +155,7 @@ class TeamSection extends StatelessWidget {
             return ParticipantCard(
               participant: member,
               isHost: member.participantId == hostParticipantId,
+              onTap: onMemberTap != null ? () => onMemberTap!(member) : null,
             );
           }
           return EmptySlotCard(onTap: onEmptySlotTap);
