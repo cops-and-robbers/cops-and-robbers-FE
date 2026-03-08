@@ -85,6 +85,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       // authNotifierProvider 사용: 즉시 반영되는 인증 상태
       // authStateProvider (Stream 기반)는 비동기 업데이트 지연 가능
       final authState = ref.read(authNotifierProvider);
+
+      // 인증 상태 로딩 중 (Firebase 토큰 갱신 등)이면 리다이렉트 보류
+      // → loading 중 null로 판단해 로그인으로 보내는 것을 방지
+      if (authState.isLoading) return null;
+
       final authUser = authState.value;
       final isAuthenticated = authUser != null;
 
@@ -121,28 +126,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         // 기존 회원 → 홈으로
         return RoutePaths.home;
       }
-
-      // ====================================================================
-      // 4. 세션 상태 체크 (게임 진행 중인 경우 강제 리다이렉트)
-      // ====================================================================
-      // TODO: Session Provider 구현 후 활성화
-      // if (currentSession != null) {
-      //   switch (currentSession.status) {
-      //     case SessionStatus.lobby:
-      //       if (!currentPath.startsWith('/waiting-room/')) {
-      //         return RoutePaths.waitingRoomWithId(currentSession.id);
-      //       }
-      //       break;
-      //     case SessionStatus.playing:
-      //     case SessionStatus.ended:
-      //       // playing 및 ended 상태 모두 game 화면 유지
-      //       // ended 상태에서는 GamePage 내부에서 결과 모달(Dialog)이 표시됨
-      //       if (!currentPath.startsWith('/game/')) {
-      //         return RoutePaths.gameWithId(currentSession.id);
-      //       }
-      //       break;
-      //   }
-      // }
 
       return null; // 리다이렉트 불필요
     },
@@ -345,12 +328,22 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 /// GoRouter용 Refresh Notifier
 ///
-/// StreamProvider의 상태 변경을 감지하여 GoRouter에게
-/// 리다이렉트 재실행을 트리거합니다.
+/// auth 상태가 실질적으로 변경될 때만 GoRouter에 리다이렉트 재실행을 트리거합니다.
+/// loading → loading 또는 data(same) 전환은 무시하여 불필요한 리다이렉트를 방지합니다.
 class _GoRouterRefreshNotifier extends ChangeNotifier {
   _GoRouterRefreshNotifier(this._ref, this._provider) {
+    bool? _prevIsAuthenticated;
     _ref.listen<AsyncValue<dynamic>>(_provider, (previous, next) {
-      notifyListeners(); // 상태 변경 시 GoRouter에 알림
+      // loading 중이면 notify 생략 (중간 상태로 인한 오류 화면 방지)
+      if (next.isLoading) return;
+
+      // 인증 여부(bool)만 비교하여 로그인/로그아웃 전환 시에만 notify
+      // authNotifierProvider.build()가 새 객체를 생성해도 인증 여부가 같으면 무시
+      final isAuthenticated = next.valueOrNull != null;
+      if (_prevIsAuthenticated == isAuthenticated) return;
+      _prevIsAuthenticated = isAuthenticated;
+
+      notifyListeners();
     });
   }
 
