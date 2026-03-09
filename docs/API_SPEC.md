@@ -15,21 +15,29 @@
    - [POST /api/auth/reissue - 토큰 재발급](#13-post-apiauthreissue---토큰-재발급)
 2. [Game API - 게임 방 생성 및 관리](#2-game-api---게임-방-생성-및-관리)
    - [POST /api/games - 게임 방 생성](#21-post-apigames---게임-방-생성)
-3. [Game Participant API - 게임 참여자 관리](#3-game-participant-api---게임-참여자-관리)
-   - [POST /api/games/join - 게임 방 참여](#31-post-apigamesjoin---게임-방-참여)
-   - [DELETE /api/games/{gameId}/leave - 게임 방 퇴장](#32-delete-apigamesgameidleave---게임-방-퇴장)
-4. [Lobby API - 게임 로비 상태 변경](#4-lobby-api---게임-로비-상태-변경)
-   - [PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경](#41-patch-apigamesgameidlobbyteam---로비-팀-변경)
-   - [PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경](#42-patch-apigamesgameidlobbyready---로비-준비-상태-변경)
-   - [POST /api/games/{gameId}/lobby/start - 게임 시작](#43-post-apigamesgameidlobbystart---게임-시작)
-5. [User API - 사용자 정보 및 프로필 관리](#5-user-api---사용자-정보-및-프로필-관리)
-   - [GET /api/user/me - 내 정보 조회](#51-get-apiuserme---내-정보-조회)
-   - [PATCH /api/user/me/nickname - 닉네임 변경](#52-patch-apiusermenickname---닉네임-변경)
-   - [GET /api/user/check-nickname - 닉네임 중복 확인](#53-get-apiusercheck-nickname---닉네임-중복-확인)
-6. [System API - 게임 시스템 상호작용](#6-system-api---게임-시스템-상호작용)
-   - [POST /api/games/{gameId}/system/arrest - 도둑 체포](#61-post-apigamesgameidsystemarrest---도둑-체포)
-   - [POST /api/games/{gameId}/system/escape - 도둑 탈옥](#62-post-apigamesgameidsystemescape---도둑-탈옥)
-7. [공통 스키마](#7-공통-스키마)
+   - [PUT /api/games/{gameId}/settings - 게임 설정 수정](#22-put-apigamesgameidsettings---게임-설정-수정)
+   - [GET /api/games/{gameId} - 게임 기본 설정 조회](#23-get-apigamesgameid---게임-기본-설정-조회)
+3. [Game Area API - 게임 맵 정보 조회](#3-game-area-api---게임-맵-정보-조회)
+   - [GET /api/games/{gameId}/area - 게임 맵 정보 조회](#31-get-apigamesgameidarea---게임-맵-정보-조회)
+   - [PUT /api/games/{gameId}/area - 게임 영역 수정](#32-put-apigamesgameidarea---게임-영역-수정)
+4. [Game Participant API - 게임 참여자 관리](#4-game-participant-api---게임-참여자-관리)
+   - [POST /api/games/join - 게임 방 참여](#41-post-apigamesjoin---게임-방-참여)
+   - [DELETE /api/games/{gameId}/leave - 게임 방 퇴장](#42-delete-apigamesgameidleave---게임-방-퇴장)
+   - [GET /api/games/{gameId}/participants - 게임 참가자 인게임 상태 목록 조회](#43-get-apigamesgameidparticipants---게임-참가자-인게임-상태-목록-조회)
+5. [Lobby API - 게임 로비 상태 변경](#5-lobby-api---게임-로비-상태-변경)
+   - [GET /api/games/{gameId}/lobby - 로비 조회](#51-get-apigamesgameidlobby---로비-조회)
+   - [PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경](#52-patch-apigamesgameidlobbyteam---로비-팀-변경)
+   - [PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경](#53-patch-apigamesgameidlobbyready---로비-준비-상태-변경)
+   - [POST /api/games/{gameId}/lobby/start - 게임 시작](#54-post-apigamesgameidlobbystart---게임-시작)
+6. [User API - 사용자 정보 및 프로필 관리](#6-user-api---사용자-정보-및-프로필-관리)
+   - [GET /api/user/me - 내 정보 조회](#61-get-apiuserme---내-정보-조회)
+   - [PATCH /api/user/me/nickname - 닉네임 변경](#62-patch-apiusermenickname---닉네임-변경)
+   - [GET /api/user/check-nickname - 닉네임 중복 확인](#63-get-apiusercheck-nickname---닉네임-중복-확인)
+   - [DELETE /api/user/me - 회원탈퇴](#64-delete-apiuserme---회원탈퇴)
+7. [System API - 게임 시스템 상호작용](#7-system-api---게임-시스템-상호작용)
+   - [POST /api/games/{gameId}/system/arrest - 도둑 체포](#71-post-apigamesgameidsystemarrest---도둑-체포)
+   - [POST /api/games/{gameId}/system/escape - 도둑 탈옥](#72-post-apigamesgameidsystemescape---도둑-탈옥)
+8. [공통 스키마](#8-공통-스키마)
 
 ---
 
@@ -217,7 +225,7 @@
 
 | 필드                                     | 타입                                        | 필수 | 설명                           |
 | ---------------------------------------- | ------------------------------------------- | ---- | ------------------------------ |
-| `area`                                   | [AreaRequest](#arearequest)                 | O    | 영역 설정                      |
+| `area`                                   | [GameAreaRequest](#gamearearequest)         | O    | 영역 설정                      |
 | `area.playgroundCenter`                  | [CoordinatesRequest](#coordinatesrequest)   | O    | 플레이그라운드 중심 좌표       |
 | `area.playgroundRadiusInMeters`          | integer (int32)                             | O    | 플레이그라운드 반경 (최소 10m) |
 | `area.jailCenter`                        | [CoordinatesRequest](#coordinatesrequest)   | O    | 감옥 중심 좌표                 |
@@ -312,9 +320,334 @@
 
 ---
 
-## 3. Game Participant API - 게임 참여자 관리
+### 2.2 PUT /api/games/{gameId}/settings - 게임 설정 수정
 
-### 3.1 POST /api/games/join - 게임 방 참여
+대기실에서 게임 규칙을 수정합니다.
+
+- **인증 필요**: Yes (JWT)
+- 방장만 호출 가능
+- 게임이 WAITING 상태일 때만 가능
+- 모든 설정 필드를 세트로 전송 (부분 수정 불가)
+- 위치 공개 주기 < 라운드 시간
+- 경찰 대기 시간 < 라운드 시간
+- **WebSocket**: 성공 시 대기실 구독자 전체에게 `SETTINGS_UPDATED` 이벤트가 브로드캐스트됩니다.
+
+#### Path Parameters
+
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
+
+#### Request Body (`application/json`)
+
+| 필드                            | 타입            | 필수 | 범위   | 설명                |
+| ------------------------------- | --------------- | ---- | ------ | ------------------- |
+| `roundDurationMinutes`          | integer (int32) | O    | 10~180 | 라운드 시간 (분)    |
+| `locationRevealIntervalMinutes` | integer (int32) | O    | 5~     | 위치 공개 주기 (분) |
+| `policeWaitMinutes`             | integer (int32) | O    | 0~     | 경찰 대기 시간 (분) |
+| `maxParticipants`               | integer (int32) | O    | 2~50   | 최대 참여 인원      |
+
+**요청 예시:**
+
+```json
+{
+  "roundDurationMinutes": 60,
+  "locationRevealIntervalMinutes": 10,
+  "policeWaitMinutes": 5,
+  "maxParticipants": 20
+}
+```
+
+#### Responses
+
+**200 - 설정 수정 성공**
+
+```json
+{
+  "roundDurationMinutes": 60,
+  "locationRevealIntervalMinutes": 10,
+  "policeWaitMinutes": 5,
+  "maxParticipants": 20
+}
+```
+
+**400 - 잘못된 요청**
+
+| 케이스                                  | title                      | detail                                              |
+| --------------------------------------- | -------------------------- | --------------------------------------------------- |
+| 위치 공개 주기가 라운드 시간 이상인 경우 | 유효하지 않은 위치 공개 주기 | `위치 공개 주기는 라운드 시간보다 짧아야 합니다.`   |
+| 게임이 대기 중이 아닌 경우              | 대기 중인 게임이 아님       | `대기 중인 게임에서만 설정을 변경할 수 있습니다.`   |
+
+```json
+{
+  "title": "유효하지 않은 위치 공개 주기",
+  "status": 400,
+  "detail": "위치 공개 주기는 라운드 시간보다 짧아야 합니다.",
+  "instance": "/api/games/1/settings"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/games/1/settings"
+}
+```
+
+**403 - 방장 권한 없음**
+
+```json
+{
+  "title": "호스트 권한 필요",
+  "status": 403,
+  "detail": "방장만 게임을 시작할 수 있습니다.",
+  "instance": "/api/games/1/settings"
+}
+```
+
+---
+
+### 2.3 GET /api/games/{gameId} - 게임 기본 설정 조회
+
+게임의 기본 설정 정보를 조회합니다.
+
+- **인증 필요**: Yes (JWT)
+- 대기 중(WAITING) 또는 진행 중(IN_PROGRESS) 상태에서만 조회 가능
+- 해당 게임의 참가자만 조회 가능
+
+#### Path Parameters
+
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
+
+#### Responses
+
+**200 - 게임 설정 조회 성공**
+
+```json
+{
+  "roundDurationMinutes": 30,
+  "locationRevealIntervalMinutes": 5,
+  "policeWaitMinutes": 3,
+  "maxParticipants": 10
+}
+```
+
+**400 - 비활성 게임**
+
+```json
+{
+  "title": "비활성 게임",
+  "status": 400,
+  "detail": "대기 중이거나 진행 중인 게임에서만 조회할 수 있습니다.",
+  "instance": "/api/games/1"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/games/1"
+}
+```
+
+**404 - 게임 또는 참가자 정보 없음**
+
+| 케이스                | title                 | detail                                    |
+| --------------------- | --------------------- | ----------------------------------------- |
+| 게임을 찾을 수 없음   | 게임을 찾을 수 없음   | `요청하신 게임 정보가 존재하지 않습니다.` |
+| 참가자를 찾을 수 없음 | 참가자를 찾을 수 없음 | `해당 게임에 참가하지 않은 사용자입니다.` |
+
+```json
+{
+  "title": "게임을 찾을 수 없음",
+  "status": 404,
+  "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+  "instance": "/api/games/999"
+}
+```
+
+---
+
+## 3. Game Area API - 게임 맵 정보 조회
+
+### 3.1 GET /api/games/{gameId}/area - 게임 맵 정보 조회
+
+플레이그라운드 및 감옥 영역 정보를 조회합니다.
+
+- **인증 필요**: Yes (JWT)
+- 게임이 대기 중(WAITING) 또는 진행 중(IN_PROGRESS) 상태에서만 조회 가능
+- 해당 게임의 참가자만 조회 가능
+
+#### Path Parameters
+
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
+
+#### Responses
+
+**200 - 맵 정보 조회 성공**
+
+```json
+{
+  "playgroundCenter": {
+    "latitude": 37.5665,
+    "longitude": 126.978
+  },
+  "playgroundRadiusInMeters": 1000,
+  "jailCenter": {
+    "latitude": 37.566,
+    "longitude": 126.977
+  },
+  "jailRadiusInMeters": 100
+}
+```
+
+**400 - 비활성 게임**
+
+```json
+{
+  "title": "비활성 게임",
+  "status": 400,
+  "detail": "대기 중이거나 진행 중인 게임에서만 조회할 수 있습니다.",
+  "instance": "/api/games/1/area"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/games/1/area"
+}
+```
+
+**404 - 게임 또는 참가자 정보 없음**
+
+| 케이스                | title                 | detail                                    |
+| --------------------- | --------------------- | ----------------------------------------- |
+| 게임을 찾을 수 없음   | 게임을 찾을 수 없음   | `요청하신 게임 정보가 존재하지 않습니다.` |
+| 참가자를 찾을 수 없음 | 참가자를 찾을 수 없음 | `해당 게임에 참가하지 않은 사용자입니다.` |
+
+```json
+{
+  "title": "게임을 찾을 수 없음",
+  "status": 404,
+  "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+  "instance": "/api/games/999/area"
+}
+```
+
+---
+
+### 3.2 PUT /api/games/{gameId}/area - 게임 영역 수정
+
+대기실에서 플레이그라운드 및 감옥 영역을 수정합니다.
+
+- **인증 필요**: Yes (JWT)
+- 방장만 호출 가능
+- 게임이 WAITING 상태일 때만 가능
+- 플레이그라운드와 감옥을 반드시 세트로 전송 (부분 수정 불가)
+- 감옥은 플레이그라운드 내부에 완전히 포함되어야 함
+- 감옥 반경 < 플레이그라운드 반경
+- **WebSocket**: 성공 시 대기실 구독자 전체에게 `AREA_UPDATED` 이벤트가 브로드캐스트됩니다.
+
+#### Path Parameters
+
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
+
+#### Request Body (`application/json`)
+
+| 필드                       | 타입                                      | 필수 | 설명                           |
+| -------------------------- | ----------------------------------------- | ---- | ------------------------------ |
+| `playgroundCenter`         | [CoordinatesRequest](#coordinatesrequest) | O    | 플레이그라운드 중심 좌표       |
+| `playgroundRadiusInMeters` | integer (int32)                           | O    | 플레이그라운드 반경 (최소 10m) |
+| `jailCenter`               | [CoordinatesRequest](#coordinatesrequest) | O    | 감옥 중심 좌표                 |
+| `jailRadiusInMeters`       | integer (int32)                           | O    | 감옥 반경 (최소 5m)            |
+
+**요청 예시:**
+
+```json
+{
+  "playgroundCenter": {
+    "latitude": 37.5665,
+    "longitude": 126.978
+  },
+  "playgroundRadiusInMeters": 1000,
+  "jailCenter": {
+    "latitude": 37.567,
+    "longitude": 126.9785
+  },
+  "jailRadiusInMeters": 100
+}
+```
+
+#### Responses
+
+**200 - 영역 수정 성공**
+
+```json
+{
+  "playgroundCenter": {
+    "latitude": 37.5665,
+    "longitude": 126.978
+  },
+  "playgroundRadiusInMeters": 1000,
+  "jailCenter": {
+    "latitude": 37.567,
+    "longitude": 126.9785
+  },
+  "jailRadiusInMeters": 100
+}
+```
+
+**400 - 잘못된 요청**
+
+| 케이스                          | title                 | detail                                              |
+| ------------------------------- | --------------------- | --------------------------------------------------- |
+| 감옥이 플레이그라운드 밖에 위치 | 감옥 영역 벗어남       | `감옥은 운동장 내부에 완전히 포함되어야 합니다.`    |
+| 게임이 대기 중이 아닌 경우      | 대기 중인 게임이 아님  | `대기 중인 게임에서만 설정을 변경할 수 있습니다.`   |
+
+```json
+{
+  "title": "감옥 영역 벗어남",
+  "status": 400,
+  "detail": "감옥은 운동장 내부에 완전히 포함되어야 합니다.",
+  "instance": "/api/games/1/area"
+}
+```
+
+**403 - 방장 권한 없음**
+
+```json
+{
+  "title": "호스트 권한 필요",
+  "status": 403,
+  "detail": "방장만 게임을 시작할 수 있습니다.",
+  "instance": "/api/games/1/area"
+}
+```
+
+---
+
+## 4. Game Participant API - 게임 참여자 관리
+
+### 4.1 POST /api/games/join - 게임 방 참여
 
 초대 코드를 사용하여 게임 방에 참여합니다. 이미 다른 활성 게임에 참여 중이거나, 게임이 이미 시작되었거나, 최대 참여 인원에 도달한 경우 참여할 수 없습니다.
 
@@ -387,7 +720,7 @@
 
 ---
 
-### 3.2 DELETE /api/games/{gameId}/leave - 게임 방 퇴장
+### 4.2 DELETE /api/games/{gameId}/leave - 게임 방 퇴장
 
 현재 참여 중인 게임 방에서 퇴장합니다. 방장이 퇴장하는 경우 가장 먼저 참여한 참여자에게 방장 권한이 이전됩니다. 마지막 참여자가 퇴장하면 게임 방이 자동으로 삭제됩니다.
 
@@ -450,9 +783,175 @@
 
 ---
 
-## 4. Lobby API - 게임 로비 상태 변경
+### 4.3 GET /api/games/{gameId}/participants - 게임 참가자 인게임 상태 목록 조회
 
-### 4.1 PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경
+경찰/도둑 팀별 참가자 목록과 상태를 조회합니다.
+
+- **인증 필요**: Yes (JWT)
+- 게임이 진행 중(IN_PROGRESS) 상태에서만 조회 가능
+- 해당 게임의 참가자만 조회 가능
+- 경찰 상태: `POLICE_WAITING`(대기 중), `ALIVE`(활성)
+- 도둑 상태: `ALIVE`(생존), `JAILED`(잡힘)
+
+#### Path Parameters
+
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
+
+#### Responses
+
+**200 - 참가자 목록 조회 성공**
+
+```json
+{
+  "police": [
+    {
+      "participantId": 1,
+      "nickname": "경찰1",
+      "status": "POLICE_WAITING"
+    },
+    {
+      "participantId": 2,
+      "nickname": "경찰2",
+      "status": "ALIVE"
+    }
+  ],
+  "robbers": [
+    {
+      "participantId": 3,
+      "nickname": "도둑1",
+      "status": "ALIVE"
+    },
+    {
+      "participantId": 4,
+      "nickname": "도둑2",
+      "status": "JAILED"
+    }
+  ]
+}
+```
+
+**400 - 게임 미진행**
+
+```json
+{
+  "title": "게임 진행 중 아님",
+  "status": 400,
+  "detail": "게임이 진행 중인 상태가 아닙니다.",
+  "instance": "/api/games/1/participants"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/games/1/participants"
+}
+```
+
+**404 - 게임 또는 참가자 정보 없음**
+
+| 케이스                | title                 | detail                                    |
+| --------------------- | --------------------- | ----------------------------------------- |
+| 게임을 찾을 수 없음   | 게임을 찾을 수 없음   | `요청하신 게임 정보가 존재하지 않습니다.` |
+| 참가자를 찾을 수 없음 | 참가자를 찾을 수 없음 | `해당 게임에 참가하지 않은 사용자입니다.` |
+
+```json
+{
+  "title": "게임을 찾을 수 없음",
+  "status": 404,
+  "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+  "instance": "/api/games/999/participants"
+}
+```
+
+---
+
+## 5. Lobby API - 게임 로비 상태 변경
+
+### 5.1 GET /api/games/{gameId}/lobby - 로비 조회
+
+대기 상태(WAITING)인 게임의 로비 정보를 조회합니다. 요청자의 참가자 ID, 방장 ID, 전체 참가자 목록을 반환합니다.
+
+- **인증 필요**: Yes (JWT)
+
+#### Path Parameters
+
+| 파라미터 | 타입            | 필수 | 설명    | 예시 |
+| -------- | --------------- | ---- | ------- | ---- |
+| `gameId` | integer (int64) | O    | 게임 ID | `1`  |
+
+#### Responses
+
+**200 - 로비 조회 성공**
+
+```json
+{
+  "myParticipantId": 2,
+  "hostParticipantId": 1,
+  "participants": [
+    {
+      "participantId": 1,
+      "nickname": "방장닉네임",
+      "team": "POLICE",
+      "isReady": true
+    },
+    {
+      "participantId": 2,
+      "nickname": "내닉네임",
+      "team": "ROBBER",
+      "isReady": false
+    }
+  ]
+}
+```
+
+**400 - 게임이 대기 상태가 아님**
+
+```json
+{
+  "title": "이미 시작된 게임",
+  "status": 400,
+  "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
+  "instance": "/api/games/1/lobby"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증 필요",
+  "status": 401,
+  "detail": "로그인이 필요한 서비스입니다.",
+  "instance": "/api/games/1/lobby"
+}
+```
+
+**404 - 게임 또는 참여 정보 없음**
+
+| 케이스                | title                 | detail                                    |
+| --------------------- | --------------------- | ----------------------------------------- |
+| 존재하지 않는 게임    | 게임을 찾을 수 없음   | `요청하신 게임 정보가 존재하지 않습니다.` |
+| 참가자를 찾을 수 없음 | 참가자를 찾을 수 없음 | `해당 게임에 참가하지 않은 사용자입니다.` |
+
+```json
+{
+  "title": "게임을 찾을 수 없음",
+  "status": 404,
+  "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+  "instance": "/api/games/999/lobby"
+}
+```
+
+---
+
+### 5.2 PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경
 
 대기 상태(WAITING)에서만 팀을 변경할 수 있습니다. 팀 변경 시 해당 유저의 준비 상태는 해제됩니다.
 
@@ -536,7 +1035,7 @@
 
 ---
 
-### 4.2 PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경
+### 5.3 PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경
 
 대기 상태(WAITING)에서만 준비 상태를 변경할 수 있습니다.
 
@@ -621,7 +1120,7 @@
 
 ---
 
-### 4.3 POST /api/games/{gameId}/lobby/start - 게임 시작
+### 5.4 POST /api/games/{gameId}/lobby/start - 게임 시작
 
 대기 중인 게임을 시작합니다.
 
@@ -688,9 +1187,9 @@
 
 ---
 
-## 5. User API - 사용자 정보 및 프로필 관리
+## 6. User API - 사용자 정보 및 프로필 관리
 
-### 5.1 GET /api/user/me - 내 정보 조회
+### 6.1 GET /api/user/me - 내 정보 조회
 
 로그인한 사용자의 상세 정보를 조회합니다. (일단은 테스트용)
 
@@ -723,7 +1222,7 @@
 
 ---
 
-### 5.2 PATCH /api/user/me/nickname - 닉네임 변경
+### 6.2 PATCH /api/user/me/nickname - 닉네임 변경
 
 로그인한 사용자의 닉네임을 변경합니다. (최대 10자, 중복 불가)
 
@@ -777,7 +1276,7 @@
 
 ---
 
-### 5.3 GET /api/user/check-nickname - 닉네임 중복 확인
+### 6.3 GET /api/user/check-nickname - 닉네임 중복 확인
 
 닉네임 변경 전, 해당 닉네임이 이미 사용 중인지 확인합니다. (쿼리 파라미터로 요청)
 
@@ -830,9 +1329,49 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ---
 
-## 6. System API - 게임 시스템 상호작용
+### 6.4 DELETE /api/user/me - 회원탈퇴
 
-### 6.1 POST /api/games/{gameId}/system/arrest - 도둑 체포
+로그인한 사용자의 사용자 정보를 삭제합니다.
+
+- **인증 필요**: Yes (JWT)
+
+#### Responses
+
+**200 - 탈퇴 성공**
+
+```json
+{
+  "message": "회원탈퇴가 완료되었습니다."
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증 실패",
+  "status": 401,
+  "detail": "유효하지 않은 토큰입니다.",
+  "instance": "/api/user/me"
+}
+```
+
+**409 - 진행 중인 게임이 있는 경우**
+
+```json
+{
+  "title": "회원탈퇴 불가",
+  "status": 409,
+  "detail": "진행 중인 게임 세션이 있어 탈퇴할 수 없습니다.",
+  "instance": "/api/user/me"
+}
+```
+
+---
+
+## 7. System API - 게임 시스템 상호작용
+
+### 7.1 POST /api/games/{gameId}/system/arrest - 도둑 체포
 
 경찰이 도둑을 체포합니다.
 
@@ -917,7 +1456,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ---
 
-### 6.2 POST /api/games/{gameId}/system/escape - 도둑 탈옥
+### 7.2 POST /api/games/{gameId}/system/escape - 도둑 탈옥
 
 수감된 도둑이 탈옥합니다.
 
@@ -979,7 +1518,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ---
 
-## 7. 공통 스키마
+## 8. 공통 스키마
 
 ### ErrorResponse
 
@@ -1051,10 +1590,10 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 | 필드       | 타입                                        | 필수 | 설명           |
 | ---------- | ------------------------------------------- | ---- | -------------- |
-| `area`     | [AreaRequest](#arearequest)                 | O    | 영역 설정      |
+| `area`     | [GameAreaRequest](#gamearearequest)         | O    | 영역 설정      |
 | `settings` | [GameSettingsRequest](#gamesettingsrequest) | O    | 게임 규칙 설정 |
 
-### AreaRequest
+### GameAreaRequest
 
 | 필드                       | 타입                                      | 필수 | 설명                           |
 | -------------------------- | ----------------------------------------- | ---- | ------------------------------ |
@@ -1070,6 +1609,15 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | `latitude`  | double | O    | -90 ~ 90   | 위도 |
 | `longitude` | double | O    | -180 ~ 180 | 경도 |
 
+### Coordinates
+
+응답에서 사용되는 좌표 객체입니다.
+
+| 필드        | 타입   | 설명 |
+| ----------- | ------ | ---- |
+| `latitude`  | double | 위도 |
+| `longitude` | double | 경도 |
+
 ### GameSettingsRequest
 
 | 필드                            | 타입            | 필수 | 범위   | 설명                |
@@ -1078,6 +1626,42 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | `locationRevealIntervalMinutes` | integer (int32) | O    | 5~     | 위치 공개 주기 (분) |
 | `policeWaitMinutes`             | integer (int32) | O    | 0~     | 경찰 대기 시간 (분) |
 | `maxParticipants`               | integer (int32) | O    | 2~50   | 최대 참여 인원      |
+
+### GameSettingsUpdateResponse
+
+| 필드                            | 타입            | 설명           |
+| ------------------------------- | --------------- | -------------- |
+| `roundDurationMinutes`          | integer (int32) | 라운드 시간    |
+| `locationRevealIntervalMinutes` | integer (int32) | 위치 공개 주기 |
+| `policeWaitMinutes`             | integer (int32) | 경찰 대기 시간 |
+| `maxParticipants`               | integer (int32) | 최대 참여 인원 |
+
+### GameInfoResponse
+
+| 필드                            | 타입            | 설명           |
+| ------------------------------- | --------------- | -------------- |
+| `roundDurationMinutes`          | integer (int32) | 라운드 시간    |
+| `locationRevealIntervalMinutes` | integer (int32) | 위치 공개 주기 |
+| `policeWaitMinutes`             | integer (int32) | 경찰 대기 시간 |
+| `maxParticipants`               | integer (int32) | 최대 참여 인원 |
+
+### GameAreaResponse
+
+| 필드                       | 타입                          | 설명                 |
+| -------------------------- | ----------------------------- | -------------------- |
+| `playgroundCenter`         | [Coordinates](#coordinates)   | 플레이그라운드 중심  |
+| `playgroundRadiusInMeters` | integer (int32)               | 플레이그라운드 반경  |
+| `jailCenter`               | [Coordinates](#coordinates)   | 감옥 중심            |
+| `jailRadiusInMeters`       | integer (int32)               | 감옥 반경            |
+
+### GameAreaUpdateResponse
+
+| 필드                       | 타입                          | 설명                 |
+| -------------------------- | ----------------------------- | -------------------- |
+| `playgroundCenter`         | [Coordinates](#coordinates)   | 플레이그라운드 중심  |
+| `playgroundRadiusInMeters` | integer (int32)               | 플레이그라운드 반경  |
+| `jailCenter`               | [Coordinates](#coordinates)   | 감옥 중심            |
+| `jailRadiusInMeters`       | integer (int32)               | 감옥 반경            |
 
 ### GameCreateResponse
 
@@ -1111,6 +1695,34 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | ---------------- | --------------- | ---------------- |
 | `leftUserId`     | integer (int64) | 퇴장한 사용자 ID |
 | `remainingCount` | integer (int32) | 남은 참여자 수   |
+
+### GameParticipantListResponse
+
+| 필드      | 타입                                          | 설명          |
+| --------- | --------------------------------------------- | ------------- |
+| `police`  | [ParticipantResponse](#participantresponse)[] | 경찰 팀 목록  |
+| `robbers` | [ParticipantResponse](#participantresponse)[] | 도둑 팀 목록  |
+
+### ParticipantResponse
+
+로비 및 인게임 참가자 정보에 공통으로 사용됩니다.
+
+| 필드            | 타입            | 설명                             |
+| --------------- | --------------- | -------------------------------- |
+| `participantId` | integer (int64) | 참가자 ID                        |
+| `nickname`      | string          | 닉네임                           |
+| `team`          | string          | 팀 (`POLICE` \| `ROBBER`)        |
+| `isReady`       | boolean         | 준비 상태 (로비에서 사용)        |
+
+> **참고**: 인게임 참가자 목록 조회 시 응답 예시에서는 `status` 필드(`POLICE_WAITING`, `ALIVE`, `JAILED`)가 사용됩니다. 스키마 정의와 Swagger 예시가 불일치하는 경우, 실제 서버 응답은 스키마 업데이트를 기다려야 합니다.
+
+### LobbyInfoResponse
+
+| 필드                | 타입                                          | 설명          |
+| ------------------- | --------------------------------------------- | ------------- |
+| `myParticipantId`   | integer (int64)                               | 나의 참가자 ID |
+| `hostParticipantId` | integer (int64)                               | 방장 참가자 ID |
+| `participants`      | [ParticipantResponse](#participantresponse)[] | 참가자 목록    |
 
 ### TeamChangeRequest
 
@@ -1159,3 +1771,9 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | `socialPlatform`     | string          | `KAKAO` \| `GOOGLE` \| `APPLE` |
 | `allowGamePush`      | boolean         | 게임 푸시 허용 여부            |
 | `allowMarketingPush` | boolean         | 마케팅 푸시 허용 여부          |
+
+### DeleteAccountResponse
+
+| 필드      | 타입   | 설명      |
+| --------- | ------ | --------- |
+| `message` | string | 결과 메시지 |
