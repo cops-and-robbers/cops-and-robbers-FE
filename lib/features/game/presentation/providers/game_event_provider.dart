@@ -266,7 +266,8 @@ class GameEventNotifier extends _$GameEventNotifier {
             gameId,
             ArrestRequestModel(robberParticipantId: robberParticipantId),
           );
-      // 실제 상태 확정은 STOMP ARREST 이벤트에서 처리
+      // API 성공 → 로딩 해제 (STOMP 이벤트에서 최종 상태 확정)
+      state = state.copyWith(isApiLoading: false);
     } catch (e) {
       debugPrint('[GameEventNotifier] ❌ 체포 요청 실패: $e');
       // 실패 시 낙관적 업데이트 rollback
@@ -292,7 +293,8 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     try {
       await ref.read(gameSystemApiProvider).escape(gameId);
-      // 실제 상태 확정은 STOMP ESCAPE 이벤트에서 처리
+      // API 성공 → 로딩 해제 (STOMP 이벤트에서 최종 상태 확정)
+      state = state.copyWith(isApiLoading: false);
     } catch (e) {
       debugPrint('[GameEventNotifier] ❌ 탈옥 요청 실패: $e');
       // 실패 시 낙관적 업데이트 rollback
