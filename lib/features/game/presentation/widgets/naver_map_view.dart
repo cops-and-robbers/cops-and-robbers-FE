@@ -95,8 +95,6 @@ class NaverMapViewState extends State<NaverMapView> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('🗺️ NaverMapView build 호출');
-
     try {
       return NaverMap(
         options: const NaverMapViewOptions(
