@@ -56,26 +56,34 @@ class GameEventStompDatasource extends BaseStompDatasource {
   /// 도둑 위치 서버 전송 (도둑 팀만 호출)
   void publishLocation(int gameId, double lat, double lng) {
     if (stompClient == null || currentState != StompConnectionState.connected) {
-      debugPrint('[$logTag] ⚠️ publishLocation 실패 - 연결되지 않음');
+      if (kDebugMode) {
+        debugPrint('[$logTag] ⚠️ publishLocation 실패 - 연결되지 않음');
+      }
       return;
     }
     stompClient!.send(
       destination: '/publish/game/$gameId/location',
       body: jsonEncode({'latitude': lat, 'longitude': lng}),
     );
-    debugPrint('[$logTag] 📤 위치 전송: ($lat, $lng)');
+    if (kDebugMode) {
+      debugPrint('[$logTag] 📤 위치 전송: ($lat, $lng)');
+    }
   }
 
   void _handleFrame(StompFrame frame) {
     if (isDisposed) return;
     if (frame.body == null || frame.body!.isEmpty) return;
 
-    debugPrint('[$logTag] 📩 이벤트 수신 raw: ${frame.body}');
+    if (kDebugMode) {
+      debugPrint('[$logTag] 📩 이벤트 수신 raw: ${frame.body}');
+    }
 
     try {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final event = GameEventModel.fromJson(json);
-      debugPrint('[$logTag] 📩 이벤트 파싱 완료: type=${event.type}');
+      if (kDebugMode) {
+        debugPrint('[$logTag] 📩 이벤트 파싱 완료: type=${event.type}');
+      }
       _eventController.add(event);
     } catch (e) {
       debugPrint('[$logTag] ❌ 이벤트 파싱 실패: $e');
