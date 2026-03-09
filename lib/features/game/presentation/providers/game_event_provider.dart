@@ -17,6 +17,9 @@ export '../../data/datasources/game_event_stomp_datasource.dart'
 
 part 'game_event_provider.g.dart';
 
+/// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체
+const _sentinel = Object();
+
 /// GameEventStompDatasource Provider (싱글톤)
 @riverpod
 GameEventStompDatasource gameEventStompDatasource(Ref ref) {
@@ -104,44 +107,62 @@ class GameEventState {
 
   GameEventState copyWith({
     StompConnectionState? connectionState,
-    String? errorMessage,
+    Object? errorMessage = _sentinel,
     Set<int>? arrestedParticipantIds,
     Set<int>? escapedParticipantIds,
     bool? isPoliceMoving,
-    int? remainingThieves,
-    String? lastArrestNickname,
-    String? lastEscapeNickname,
+    Object? remainingThieves = _sentinel,
+    Object? lastArrestNickname = _sentinel,
+    Object? lastEscapeNickname = _sentinel,
     bool? isGameOver,
-    String? winnerTeam,
-    String? gameOverReason,
-    int? gameResultId,
-    DateTime? gameStartTime,
-    DateTime? policeMoveStartTime,
-    DateTime? lastLocationRevealTime,
+    Object? winnerTeam = _sentinel,
+    Object? gameOverReason = _sentinel,
+    Object? gameResultId = _sentinel,
+    Object? gameStartTime = _sentinel,
+    Object? policeMoveStartTime = _sentinel,
+    Object? lastLocationRevealTime = _sentinel,
     bool? showLocationRevealBanner,
     bool? isApiLoading,
     Map<int, LatLngModel>? robberLocations,
-    bool clearError = false,
   }) {
     return GameEventState(
       connectionState: connectionState ?? this.connectionState,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
       arrestedParticipantIds:
           arrestedParticipantIds ?? this.arrestedParticipantIds,
       escapedParticipantIds:
           escapedParticipantIds ?? this.escapedParticipantIds,
       isPoliceMoving: isPoliceMoving ?? this.isPoliceMoving,
-      remainingThieves: remainingThieves ?? this.remainingThieves,
-      lastArrestNickname: lastArrestNickname ?? this.lastArrestNickname,
-      lastEscapeNickname: lastEscapeNickname ?? this.lastEscapeNickname,
+      remainingThieves: remainingThieves == _sentinel
+          ? this.remainingThieves
+          : remainingThieves as int?,
+      lastArrestNickname: lastArrestNickname == _sentinel
+          ? this.lastArrestNickname
+          : lastArrestNickname as String?,
+      lastEscapeNickname: lastEscapeNickname == _sentinel
+          ? this.lastEscapeNickname
+          : lastEscapeNickname as String?,
       isGameOver: isGameOver ?? this.isGameOver,
-      winnerTeam: winnerTeam ?? this.winnerTeam,
-      gameOverReason: gameOverReason ?? this.gameOverReason,
-      gameResultId: gameResultId ?? this.gameResultId,
-      gameStartTime: gameStartTime ?? this.gameStartTime,
-      policeMoveStartTime: policeMoveStartTime ?? this.policeMoveStartTime,
-      lastLocationRevealTime:
-          lastLocationRevealTime ?? this.lastLocationRevealTime,
+      winnerTeam: winnerTeam == _sentinel
+          ? this.winnerTeam
+          : winnerTeam as String?,
+      gameOverReason: gameOverReason == _sentinel
+          ? this.gameOverReason
+          : gameOverReason as String?,
+      gameResultId: gameResultId == _sentinel
+          ? this.gameResultId
+          : gameResultId as int?,
+      gameStartTime: gameStartTime == _sentinel
+          ? this.gameStartTime
+          : gameStartTime as DateTime?,
+      policeMoveStartTime: policeMoveStartTime == _sentinel
+          ? this.policeMoveStartTime
+          : policeMoveStartTime as DateTime?,
+      lastLocationRevealTime: lastLocationRevealTime == _sentinel
+          ? this.lastLocationRevealTime
+          : lastLocationRevealTime as DateTime?,
       showLocationRevealBanner:
           showLocationRevealBanner ?? this.showLocationRevealBanner,
       isApiLoading: isApiLoading ?? this.isApiLoading,
@@ -456,7 +477,7 @@ class GameEventNotifier extends _$GameEventNotifier {
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
-        state = state.copyWith(clearError: true);
+        state = state.copyWith(errorMessage: null);
       } else if (connState == StompConnectionState.disconnected) {
         if (!_intentionalDisconnect && !_isHandlingError) {
           _scheduleReconnect();

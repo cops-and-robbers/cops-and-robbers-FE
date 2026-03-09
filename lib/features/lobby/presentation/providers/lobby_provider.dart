@@ -11,6 +11,9 @@ import '../../data/models/lobby_event_dto.dart';
 
 part 'lobby_provider.g.dart';
 
+/// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체
+const _sentinel = Object();
+
 /// LobbyStompDatasource Provider (싱글톤)
 @riverpod
 LobbyStompDatasource lobbyStompDatasource(Ref ref) {
@@ -35,14 +38,17 @@ class LobbyState {
 
   LobbyState copyWith({
     StompConnectionState? connectionState,
-    String? errorMessage,
-    LobbyEventDto? lastEvent,
-    bool clearError = false,
+    Object? errorMessage = _sentinel,
+    Object? lastEvent = _sentinel,
   }) {
     return LobbyState(
       connectionState: connectionState ?? this.connectionState,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-      lastEvent: lastEvent ?? this.lastEvent,
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
+      lastEvent: lastEvent == _sentinel
+          ? this.lastEvent
+          : lastEvent as LobbyEventDto?,
     );
   }
 }
@@ -192,7 +198,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
-        state = state.copyWith(clearError: true);
+        state = state.copyWith(errorMessage: null);
       } else if (connState == StompConnectionState.disconnected) {
         // 예기치 않은 연결 종료 → 재연결 시도
         if (!_intentionalDisconnect && !_isHandlingError) {

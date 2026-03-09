@@ -12,6 +12,9 @@ import '../../data/models/chat_message_dto.dart';
 
 part 'chat_provider.g.dart';
 
+/// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체
+const _sentinel = Object();
+
 /// ChatStompDatasource Provider (싱글톤)
 @riverpod
 ChatStompDatasource chatStompDatasource(Ref ref) {
@@ -42,14 +45,15 @@ class ChatState {
     List<ChatMessageDto>? allScopeMessages,
     List<ChatMessageDto>? teamScopeMessages,
     StompConnectionState? connectionState,
-    String? errorMessage,
-    bool clearError = false,
+    Object? errorMessage = _sentinel,
   }) {
     return ChatState(
       allScopeMessages: allScopeMessages ?? this.allScopeMessages,
       teamScopeMessages: teamScopeMessages ?? this.teamScopeMessages,
       connectionState: connectionState ?? this.connectionState,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 }
@@ -335,7 +339,7 @@ class ChatNotifier extends _$ChatNotifier {
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
-        state = state.copyWith(clearError: true);
+        state = state.copyWith(errorMessage: null);
       } else if (connState == StompConnectionState.disconnected) {
         // 예기치 않은 연결 종료 → 재연결 시도
         if (!_intentionalDisconnect && !_isHandlingError) {
