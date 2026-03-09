@@ -353,13 +353,18 @@ class GameEventNotifier extends _$GameEventNotifier {
     final locationsList = (data['locations'] as List<dynamic>?) ?? [];
     Map<int, LatLngModel>? newLocations;
     if (locationsList.isNotEmpty) {
-      newLocations = {
-        for (final loc in locationsList)
-          (loc['participantId'] as num).toInt(): LatLngModel(
-            latitude: (loc['latitude'] as num).toDouble(),
-            longitude: (loc['longitude'] as num).toDouble(),
-          ),
-      };
+      final entries = <int, LatLngModel>{};
+      for (final loc in locationsList) {
+        final pid = (loc['participantId'] as num?)?.toInt();
+        final lat = (loc['latitude'] as num?)?.toDouble();
+        final lng = (loc['longitude'] as num?)?.toDouble();
+        if (pid != null && lat != null && lng != null) {
+          entries[pid] = LatLngModel(latitude: lat, longitude: lng);
+        }
+      }
+      if (entries.isNotEmpty) {
+        newLocations = entries;
+      }
     }
 
     final revealTime = DateTime.tryParse(timestamp) ?? DateTime.now();
@@ -401,7 +406,8 @@ class GameEventNotifier extends _$GameEventNotifier {
   void _handleEscape(Map<String, dynamic> data) {
     final escapedThieves = (data['escapedThieves'] as List?) ?? [];
     final escapedIds = escapedThieves
-        .map((e) => (e['participantId'] as num).toInt())
+        .map((e) => (e['participantId'] as num?)?.toInt())
+        .whereType<int>()
         .toSet();
     final firstNickname = escapedThieves.isNotEmpty
         ? escapedThieves.first['nickname'] as String?
