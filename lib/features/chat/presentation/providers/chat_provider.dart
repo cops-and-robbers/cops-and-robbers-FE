@@ -38,12 +38,6 @@ class ChatState {
     this.errorMessage,
   });
 
-  /// 전체 메시지 (더미 모드 등 호환용)
-  List<ChatMessageDto> get messages => [
-    ...allScopeMessages,
-    ...teamScopeMessages,
-  ];
-
   ChatState copyWith({
     List<ChatMessageDto>? allScopeMessages,
     List<ChatMessageDto>? teamScopeMessages,

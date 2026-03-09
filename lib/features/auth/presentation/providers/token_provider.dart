@@ -17,11 +17,6 @@ abstract class TokenProvider {
   /// STOMP 연결 시 Authorization 헤더에 사용됩니다.
   Future<String?> getAccessToken();
 
-  /// Refresh Token 획득
-  ///
-  /// 토큰 갱신이 필요할 때 사용됩니다.
-  Future<String?> getRefreshToken();
-
   /// Access Token 갱신 시도
   ///
   /// 토큰이 만료되었거나 401 응답을 받았을 때 호출합니다.
@@ -51,16 +46,6 @@ class ServerTokenProvider implements TokenProvider {
       return token;
     } catch (e) {
       debugPrint('[TokenProvider] ❌ getAccessToken 실패: $e');
-      return null;
-    }
-  }
-
-  @override
-  Future<String?> getRefreshToken() async {
-    try {
-      return await _tokenStorage.getRefreshToken();
-    } catch (e) {
-      debugPrint('[TokenProvider] ❌ getRefreshToken 실패: $e');
       return null;
     }
   }
