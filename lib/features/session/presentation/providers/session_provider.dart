@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/session_remote_datasource.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../data/models/in_game_participants_response.dart';

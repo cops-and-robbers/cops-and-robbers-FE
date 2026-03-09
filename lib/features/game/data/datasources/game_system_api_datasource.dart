@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/models/arrest_request_model.dart';
 import '../../data/models/arrest_response_model.dart';
 import '../../data/models/game_area_model.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/network/dio_client.dart';
 
 part 'game_system_api_datasource.g.dart';
 

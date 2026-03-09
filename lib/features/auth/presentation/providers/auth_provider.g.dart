@@ -6,28 +6,6 @@ part of 'auth_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$secureTokenStorageHash() =>
-    r'ec2a6ab4973e2476db2619c692e149e324a2cdab';
-
-/// SecureTokenStorage Provider
-///
-/// 앱 생애주기 동안 유지 (keepAlive) — 인터셉터 콜백에서 안전하게 접근 가능
-///
-/// Copied from [secureTokenStorage].
-@ProviderFor(secureTokenStorage)
-final secureTokenStorageProvider = Provider<SecureTokenStorage>.internal(
-  secureTokenStorage,
-  name: r'secureTokenStorageProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$secureTokenStorageHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SecureTokenStorageRef = ProviderRef<SecureTokenStorage>;
 String _$firebaseAuthDataSourceHash() =>
     r'95a0b0edd77b64b9889b799f7f261a1e504f76b6';
 
@@ -51,27 +29,6 @@ final firebaseAuthDataSourceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FirebaseAuthDataSourceRef = ProviderRef<FirebaseAuthDataSource>;
-String _$dioHash() => r'39aeecfc1d3bf21de375577db5bac9c73488f171';
-
-/// Dio Provider (AuthInterceptor 포함)
-///
-/// 앱 생애주기 동안 유지 (keepAlive) — HTTP 클라이언트는 dispose되면 안 됨
-///
-/// Copied from [dio].
-@ProviderFor(dio)
-final dioProvider = Provider<Dio>.internal(
-  dio,
-  name: r'dioProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$dioHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef DioRef = ProviderRef<Dio>;
 String _$authRemoteDataSourceHash() =>
     r'08fbc5fbf94c86964791b7f20b39f2504c0e8a74';
 
@@ -197,7 +154,7 @@ final authStateProvider = AutoDisposeStreamProvider<User?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthStateRef = AutoDisposeStreamProviderRef<User?>;
-String _$authNotifierHash() => r'2b66c30ed2617959b3e721b3deb14e8c32766ed3';
+String _$authNotifierHash() => r'13e92030bdc3520c493b83ed71684f9bcd4473a4';
 
 /// 인증 상태를 관리하는 Notifier
 ///

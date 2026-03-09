@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/storage/secure_token_storage.dart';
-import 'auth_provider.dart';
 
 part 'token_provider.g.dart';
 

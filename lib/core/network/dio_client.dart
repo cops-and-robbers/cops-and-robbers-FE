@@ -1,22 +1,58 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../config/env_config.dart';
 import '../storage/secure_token_storage.dart';
 import 'auth_interceptor.dart';
 
+part 'dio_client.g.dart';
+
+/// 강제 로그아웃 콜백 함수 타입
+typedef ForceLogoutFn = Future<void> Function();
+
+/// 강제 로그아웃 콜백 Provider
+///
+/// auth 모듈에서 구체적인 로그아웃 동작을 등록합니다.
+/// core 모듈이 feature 모듈에 의존하지 않기 위한 역전 패턴입니다.
+@Riverpod(keepAlive: true)
+class ForceLogoutCallbackNotifier extends _$ForceLogoutCallbackNotifier {
+  @override
+  ForceLogoutFn? build() => null;
+
+  /// 강제 로그아웃 콜백 등록
+  void register(ForceLogoutFn callback) {
+    state = callback;
+  }
+}
+
+/// Dio Provider (AuthInterceptor 포함)
+///
+/// 앱 생애주기 동안 유지 (keepAlive) — HTTP 클라이언트는 dispose되면 안 됨.
+/// [forceLogoutCallbackNotifier]를 통해 강제 로그아웃 동작을 외부에서 주입받습니다.
+@Riverpod(keepAlive: true)
+Dio dio(Ref ref) {
+  final tokenStorage = ref.watch(secureTokenStorageProvider);
+
+  return DioClient.create(
+    tokenStorage: tokenStorage,
+    onForceLogout: () async {
+      final callback = ref.read(forceLogoutCallbackNotifierProvider);
+      if (callback != null) {
+        await callback();
+      } else {
+        debugPrint('🚨 forceLogoutCallback 미등록 — 토큰만 삭제');
+        await tokenStorage.clearTokens();
+      }
+    },
+  );
+}
+
 /// Dio HTTP 클라이언트 설정
 ///
 /// 앱 전체에서 사용되는 Dio 인스턴스를 생성합니다.
 /// AuthInterceptor를 통해 JWT 토큰 자동 주입 및 재발급을 처리합니다.
-///
-/// **사용 예시**:
-/// ```dart
-/// final dio = DioClient.create(
-///   tokenStorage: secureTokenStorage,
-///   onForceLogout: () async { /* 강제 로그아웃 처리 */ },
-/// );
-/// ```
 class DioClient {
   // Private 생성자 - 인스턴스화 방지
   DioClient._();
