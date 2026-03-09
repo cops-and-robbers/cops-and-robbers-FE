@@ -342,7 +342,8 @@ class _GoRouterRefreshNotifier extends ChangeNotifier {
       final user = next.valueOrNull;
       final isAuthenticated = user != null;
       final isNewUser = user?.isNewUser as bool?;
-      if (prevIsAuthenticated == isAuthenticated && prevIsNewUser == isNewUser) {
+      if (prevIsAuthenticated == isAuthenticated &&
+          prevIsNewUser == isNewUser) {
         return;
       }
       prevIsAuthenticated = isAuthenticated;
