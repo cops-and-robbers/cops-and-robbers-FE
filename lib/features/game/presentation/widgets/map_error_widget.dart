@@ -6,11 +6,7 @@ import '../../../../core/constants/text_styles.dart';
 
 /// 지도 로드 실패 시 표시하는 공통 에러 위젯
 class MapErrorWidget extends StatelessWidget {
-  const MapErrorWidget({
-    super.key,
-    required this.mapName,
-    required this.error,
-  });
+  const MapErrorWidget({super.key, required this.mapName, required this.error});
 
   final String mapName;
   final Object error;

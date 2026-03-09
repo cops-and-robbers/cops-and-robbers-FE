@@ -309,9 +309,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       debugPrint('[GameEventNotifier] ❌ 체포 요청 실패: $e');
       if (_pendingArrestId == null) {
         // STOMP ARREST 이벤트가 이미 도착하여 체포 확정 → rollback 하지 않음
-        debugPrint(
-          '[GameEventNotifier] ℹ️ STOMP에서 이미 체포 확정됨 → rollback 생략',
-        );
+        debugPrint('[GameEventNotifier] ℹ️ STOMP에서 이미 체포 확정됨 → rollback 생략');
         state = state.copyWith(isApiLoading: false);
       } else {
         // STOMP 확인 없음 → 낙관적 업데이트 rollback
