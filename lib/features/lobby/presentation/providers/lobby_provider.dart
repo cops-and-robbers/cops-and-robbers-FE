@@ -334,6 +334,7 @@ class LobbyNotifier extends _$LobbyNotifier {
             ? errorInfo.detail
             : 'STOMP 에러가 발생했습니다.',
       );
+      _isHandlingError = false; // 비-인증 에러: WebSocket 종료 후 재연결 허용
     }
   }
 }

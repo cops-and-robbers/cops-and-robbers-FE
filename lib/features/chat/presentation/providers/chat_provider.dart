@@ -489,13 +489,14 @@ class ChatNotifier extends _$ChatNotifier {
       datasource.connect(wsUrl, newToken);
       _isHandlingError = false;
     } else {
-      // 비-401 STOMP 에러: 에러 메시지 표시, 자동 재연결 안 함
+      // 비-401 STOMP 에러: 에러 메시지 표시
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: errorInfo.detail.isNotEmpty
             ? errorInfo.detail
             : 'STOMP 에러가 발생했습니다.',
       );
+      _isHandlingError = false; // 비-인증 에러: WebSocket 종료 후 재연결 허용
     }
   }
 }
