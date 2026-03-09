@@ -187,6 +187,9 @@ class GameEventNotifier extends _$GameEventNotifier {
   int _reconnectCount = 0;
   static const _maxReconnectRetries = 5;
 
+  /// 현재 API 호출 중인 체포 대상 ID (race condition 방어)
+  int? _pendingArrestId;
+
   Timer? _reconnectTimer;
   Timer? _locationRevealBannerTimer;
   bool _intentionalDisconnect = false;
@@ -273,6 +276,9 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// STOMP ARREST 이벤트 도착 전 낙관적으로 [arrestedParticipantIds]에 즉시 추가.
   /// API 실패 시 rollback.
   Future<void> arrestRobber(int gameId, int robberParticipantId) async {
+    // race condition 방어: API 호출 중인 체포 대상 추적
+    _pendingArrestId = robberParticipantId;
+
     // 낙관적 업데이트: STOMP 이벤트 도착 전 즉시 UI 반영
     state = state.copyWith(
       arrestedParticipantIds: {
@@ -289,17 +295,27 @@ class GameEventNotifier extends _$GameEventNotifier {
             ArrestRequestModel(robberParticipantId: robberParticipantId),
           );
       // API 성공 → 로딩 해제 (STOMP 이벤트에서 최종 상태 확정)
+      _pendingArrestId = null;
       state = state.copyWith(isApiLoading: false);
     } catch (e) {
       debugPrint('[GameEventNotifier] ❌ 체포 요청 실패: $e');
-      // 실패 시 낙관적 업데이트 rollback
-      state = state.copyWith(
-        arrestedParticipantIds: state.arrestedParticipantIds.difference({
-          robberParticipantId,
-        }),
-        isApiLoading: false,
-        errorMessage: '체포 요청 실패',
-      );
+      if (_pendingArrestId == null) {
+        // STOMP ARREST 이벤트가 이미 도착하여 체포 확정 → rollback 하지 않음
+        debugPrint(
+          '[GameEventNotifier] ℹ️ STOMP에서 이미 체포 확정됨 → rollback 생략',
+        );
+        state = state.copyWith(isApiLoading: false);
+      } else {
+        // STOMP 확인 없음 → 낙관적 업데이트 rollback
+        _pendingArrestId = null;
+        state = state.copyWith(
+          arrestedParticipantIds: state.arrestedParticipantIds.difference({
+            robberParticipantId,
+          }),
+          isApiLoading: false,
+          errorMessage: '체포 요청 실패',
+        );
+      }
     }
   }
 
@@ -412,6 +428,11 @@ class GameEventNotifier extends _$GameEventNotifier {
     final robberNickname = robber?['nickname'] as String?;
     final remaining = (data['remainingThieves'] as num?)?.toInt();
     if (robberPid == null) return;
+
+    // race condition 방어: STOMP가 API 응답보다 먼저 도착한 경우 pending 해제
+    if (robberPid == _pendingArrestId) {
+      _pendingArrestId = null;
+    }
 
     state = state.copyWith(
       arrestedParticipantIds: {...state.arrestedParticipantIds, robberPid},
