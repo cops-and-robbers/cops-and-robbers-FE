@@ -37,10 +37,11 @@ class LobbyState {
     StompConnectionState? connectionState,
     String? errorMessage,
     LobbyEventDto? lastEvent,
+    bool clearError = false,
   }) {
     return LobbyState(
       connectionState: connectionState ?? this.connectionState,
-      errorMessage: errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastEvent: lastEvent ?? this.lastEvent,
     );
   }
@@ -191,7 +192,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
-        state = state.copyWith(errorMessage: null);
+        state = state.copyWith(clearError: true);
       } else if (connState == StompConnectionState.disconnected) {
         // 예기치 않은 연결 종료 → 재연결 시도
         if (!_intentionalDisconnect && !_isHandlingError) {
