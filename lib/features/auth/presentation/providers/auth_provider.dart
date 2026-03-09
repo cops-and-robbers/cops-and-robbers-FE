@@ -120,8 +120,14 @@ class AuthNotifier extends _$AuthNotifier {
 
       // Firebase + JWT 토큰 모두 존재 → 인증된 사용자
       // userId는 SecureTokenStorage에서 복원
+      final userId = await tokenStorage.getUserId();
+      if (userId == null) {
+        debugPrint('[AuthNotifier] userId 없음 → 미인증 처리');
+        return null;
+      }
+
       return AuthResultEntity(
-        userId: await tokenStorage.getUserId() ?? 0,
+        userId: userId,
         nickname: currentUser.displayName ?? '',
         isNewUser: false,
       );
