@@ -7,8 +7,8 @@ part 'arrest_response_model.g.dart';
 @freezed
 class ArrestResponseModel with _$ArrestResponseModel {
   const factory ArrestResponseModel({
-    @Default('') String robberNickname,
-    @Default(0) int remainingThieves,
+    required String robberNickname,
+    required int remainingThieves,
   }) = _ArrestResponseModel;
 
   factory ArrestResponseModel.fromJson(Map<String, dynamic> json) =>

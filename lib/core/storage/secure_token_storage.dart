@@ -60,16 +60,6 @@ class SecureTokenStorage {
     }
   }
 
-  /// Access Token만 저장
-  Future<void> saveAccessToken(String accessToken) async {
-    await _storage.write(key: _accessTokenKey, value: accessToken);
-  }
-
-  /// Refresh Token만 저장
-  Future<void> saveRefreshToken(String refreshToken) async {
-    await _storage.write(key: _refreshTokenKey, value: refreshToken);
-  }
-
   /// 사용자 ID 저장
   ///
   /// 로그인 성공 시 백엔드에서 반환한 userId를 저장합니다.

@@ -9,8 +9,8 @@ part of 'arrest_response_model.dart';
 _$ArrestResponseModelImpl _$$ArrestResponseModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$ArrestResponseModelImpl(
-  robberNickname: json['robberNickname'] as String? ?? '',
-  remainingThieves: (json['remainingThieves'] as num?)?.toInt() ?? 0,
+  robberNickname: json['robberNickname'] as String,
+  remainingThieves: (json['remainingThieves'] as num).toInt(),
 );
 
 Map<String, dynamic> _$$ArrestResponseModelImplToJson(

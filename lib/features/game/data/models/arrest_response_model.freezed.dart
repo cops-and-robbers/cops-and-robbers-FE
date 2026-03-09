@@ -120,18 +120,16 @@ class __$$ArrestResponseModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ArrestResponseModelImpl implements _ArrestResponseModel {
   const _$ArrestResponseModelImpl({
-    this.robberNickname = '',
-    this.remainingThieves = 0,
+    required this.robberNickname,
+    required this.remainingThieves,
   });
 
   factory _$ArrestResponseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ArrestResponseModelImplFromJson(json);
 
   @override
-  @JsonKey()
   final String robberNickname;
   @override
-  @JsonKey()
   final int remainingThieves;
 
   @override
@@ -174,8 +172,8 @@ class _$ArrestResponseModelImpl implements _ArrestResponseModel {
 
 abstract class _ArrestResponseModel implements ArrestResponseModel {
   const factory _ArrestResponseModel({
-    final String robberNickname,
-    final int remainingThieves,
+    required final String robberNickname,
+    required final int remainingThieves,
   }) = _$ArrestResponseModelImpl;
 
   factory _ArrestResponseModel.fromJson(Map<String, dynamic> json) =
