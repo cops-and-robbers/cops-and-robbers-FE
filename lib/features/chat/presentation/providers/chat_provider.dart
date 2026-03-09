@@ -95,6 +95,9 @@ class ChatNotifier extends _$ChatNotifier {
   /// 더미 모드 여부
   bool _isDummyMode = false;
 
+  /// 더미 모드 자동응답 타이머
+  Timer? _dummyReplyTimer;
+
   /// 메시지 리스트 최대 크기
   static const _maxMessages = 200;
 
@@ -108,6 +111,7 @@ class ChatNotifier extends _$ChatNotifier {
       _connectionSub?.cancel();
       _errorSub?.cancel();
       _reconnectTimer?.cancel();
+      _dummyReplyTimer?.cancel();
     });
     return const ChatState();
   }
@@ -212,7 +216,8 @@ class ChatNotifier extends _$ChatNotifier {
         team: _team?.toUpperCase() ?? 'POLICE',
       );
       // 상대방 자동 응답 (1초 후)
-      Future.delayed(const Duration(seconds: 1), () {
+      _dummyReplyTimer?.cancel();
+      _dummyReplyTimer = Timer(const Duration(seconds: 1), () {
         if (_isDummyMode) {
           _addDummyMessage(
             message: '${scope == 'TEAM' ? '[팀] ' : ''}응답 테스트 메시지!',
