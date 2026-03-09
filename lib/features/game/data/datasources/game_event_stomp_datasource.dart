@@ -84,7 +84,7 @@ class GameEventStompDatasource extends BaseStompDatasource {
 
   @override
   void dispose() {
-    _eventController.close();
     super.dispose();
+    _eventController.close();
   }
 }
