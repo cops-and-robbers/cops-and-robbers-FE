@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -21,7 +23,7 @@ class DeviceLocationService {
       return await Geolocator.getCurrentPosition(
         locationSettings: LocationSettings(accuracy: accuracy),
       ).timeout(timeLimit);
-    } catch (_) {
+    } on TimeoutException {
       return Geolocator.getLastKnownPosition();
     }
   }

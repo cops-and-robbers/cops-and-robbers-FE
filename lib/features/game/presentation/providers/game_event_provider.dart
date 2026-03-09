@@ -443,6 +443,7 @@ class GameEventNotifier extends _$GameEventNotifier {
 
       if (connState == StompConnectionState.connected) {
         _authRetryCount = 0;
+        _reconnectCount = 0;
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;

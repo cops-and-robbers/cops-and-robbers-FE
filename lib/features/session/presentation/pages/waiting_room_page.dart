@@ -330,8 +330,15 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// GAME_START 이벤트 수신 시 호출
   void _onGameStartEvent(LobbyEventDto event) {
     final participantInfo = ref.read(gameParticipantNotifierProvider);
-    final team = participantInfo?.team ?? 'POLICE';
-    final participantId = participantInfo?.participantId ?? 0;
+    if (participantInfo == null || participantInfo.participantId == null) {
+      debugPrint('[WaitingRoom] ⚠️ participantInfo 미준비 - 라우팅 지연');
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (!_isDisposed && mounted) _onGameStartEvent(event);
+      });
+      return;
+    }
+    final team = participantInfo.team;
+    final participantId = participantInfo.participantId!;
     final mapType = _selectedMapType;
 
     // startTime을 직접 추출 (GameStartData.fromJson은 message 필드 누락 시 예외 발생 가능)
@@ -400,6 +407,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     );
 
     if (success) {
+      if (!mounted) return;
       setState(() => _isReady = newReadyState);
     } else if (mounted) {
       ScaffoldMessenger.of(
@@ -407,6 +415,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ).showSnackBar(const SnackBar(content: Text('준비 상태 변경에 실패했습니다.')));
     }
 
+    if (!mounted) return;
     setState(() => _isUpdatingReady = false);
   }
 

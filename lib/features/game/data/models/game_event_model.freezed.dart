@@ -22,6 +22,7 @@ GameEventModel _$GameEventModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$GameEventModel {
   String get eventId => throw _privateConstructorUsedError;
+  @JsonKey(unknownEnumValue: GameEventType.unknown)
   GameEventType get type => throw _privateConstructorUsedError;
   String get timestamp => throw _privateConstructorUsedError;
   Map<String, dynamic> get data => throw _privateConstructorUsedError;
@@ -45,7 +46,7 @@ abstract class $GameEventModelCopyWith<$Res> {
   @useResult
   $Res call({
     String eventId,
-    GameEventType type,
+    @JsonKey(unknownEnumValue: GameEventType.unknown) GameEventType type,
     String timestamp,
     Map<String, dynamic> data,
   });
@@ -106,7 +107,7 @@ abstract class _$$GameEventModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String eventId,
-    GameEventType type,
+    @JsonKey(unknownEnumValue: GameEventType.unknown) GameEventType type,
     String timestamp,
     Map<String, dynamic> data,
   });
@@ -159,7 +160,7 @@ class __$$GameEventModelImplCopyWithImpl<$Res>
 class _$GameEventModelImpl implements _GameEventModel {
   const _$GameEventModelImpl({
     this.eventId = '',
-    required this.type,
+    @JsonKey(unknownEnumValue: GameEventType.unknown) required this.type,
     this.timestamp = '',
     final Map<String, dynamic> data = const {},
   }) : _data = data;
@@ -171,6 +172,7 @@ class _$GameEventModelImpl implements _GameEventModel {
   @JsonKey()
   final String eventId;
   @override
+  @JsonKey(unknownEnumValue: GameEventType.unknown)
   final GameEventType type;
   @override
   @JsonKey()
@@ -231,6 +233,7 @@ class _$GameEventModelImpl implements _GameEventModel {
 abstract class _GameEventModel implements GameEventModel {
   const factory _GameEventModel({
     final String eventId,
+    @JsonKey(unknownEnumValue: GameEventType.unknown)
     required final GameEventType type,
     final String timestamp,
     final Map<String, dynamic> data,
@@ -242,6 +245,7 @@ abstract class _GameEventModel implements GameEventModel {
   @override
   String get eventId;
   @override
+  @JsonKey(unknownEnumValue: GameEventType.unknown)
   GameEventType get type;
   @override
   String get timestamp;

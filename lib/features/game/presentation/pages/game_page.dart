@@ -82,7 +82,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
 
-  int get _gameId => int.tryParse(widget.sessionId) ?? 1;
+  int get _gameId => int.tryParse(widget.sessionId) ?? 0;
 
   @override
   void initState() {
@@ -448,10 +448,13 @@ class _GamePageState extends ConsumerState<GamePage> {
     ) {
       if (next == StompConnectionState.connected &&
           prev != StompConnectionState.connected &&
-          _lastSentPosition != null &&
           widget.team == 'ROBBER' &&
           !widget.isDummy) {
-        _sendPositionNow();
+        if (_lastSentPosition != null) {
+          _sendPositionNow();
+        } else if (_locationTimer == null) {
+          _startLocationSending();
+        }
       }
     });
 

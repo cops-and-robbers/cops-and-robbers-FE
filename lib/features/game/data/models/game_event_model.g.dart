@@ -9,7 +9,11 @@ part of 'game_event_model.dart';
 _$GameEventModelImpl _$$GameEventModelImplFromJson(Map<String, dynamic> json) =>
     _$GameEventModelImpl(
       eventId: json['eventId'] as String? ?? '',
-      type: $enumDecode(_$GameEventTypeEnumMap, json['type']),
+      type: $enumDecode(
+        _$GameEventTypeEnumMap,
+        json['type'],
+        unknownValue: GameEventType.unknown,
+      ),
       timestamp: json['timestamp'] as String? ?? '',
       data: json['data'] as Map<String, dynamic>? ?? const {},
     );

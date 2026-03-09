@@ -333,15 +333,20 @@ final routerProvider = Provider<GoRouter>((ref) {
 class _GoRouterRefreshNotifier extends ChangeNotifier {
   _GoRouterRefreshNotifier(this._ref, this._provider) {
     bool? prevIsAuthenticated;
+    bool? prevIsNewUser;
     _ref.listen<AsyncValue<dynamic>>(_provider, (previous, next) {
       // loading 중이면 notify 생략 (중간 상태로 인한 오류 화면 방지)
       if (next.isLoading) return;
 
-      // 인증 여부(bool)만 비교하여 로그인/로그아웃 전환 시에만 notify
-      // authNotifierProvider.build()가 새 객체를 생성해도 인증 여부가 같으면 무시
-      final isAuthenticated = next.valueOrNull != null;
-      if (prevIsAuthenticated == isAuthenticated) return;
+      // 인증 여부와 신규 회원 여부 모두 비교하여 변경 시에만 notify
+      final user = next.valueOrNull;
+      final isAuthenticated = user != null;
+      final isNewUser = user?.isNewUser as bool?;
+      if (prevIsAuthenticated == isAuthenticated && prevIsNewUser == isNewUser) {
+        return;
+      }
       prevIsAuthenticated = isAuthenticated;
+      prevIsNewUser = isNewUser;
 
       notifyListeners();
     });

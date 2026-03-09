@@ -110,6 +110,7 @@ abstract class BaseStompDatasource {
   // ============================================
 
   void _onConnect(StompFrame frame) {
+    if (_disposed) return;
     _updateState(StompConnectionState.connected);
     debugPrint('[$logTag] ✅ STOMP 연결 성공');
     onConnected();

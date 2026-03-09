@@ -32,6 +32,7 @@ enum GameEventType {
 class GameEventModel with _$GameEventModel {
   const factory GameEventModel({
     @Default('') String eventId,
+    @JsonKey(unknownEnumValue: GameEventType.unknown)
     required GameEventType type,
     @Default('') String timestamp,
     @Default({}) Map<String, dynamic> data,

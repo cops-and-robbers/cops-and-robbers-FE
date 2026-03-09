@@ -26,6 +26,9 @@ class ChatStompDatasource extends BaseStompDatasource {
   int? _pendingGameId;
   String? _pendingTeam;
 
+  StompUnsubscribe? _allSub;
+  StompUnsubscribe? _teamSub;
+
   /// 전체 + 팀 채팅 구독 예약
   ///
   /// connected 상태면 즉시, 아니면 연결 성공 시 자동 구독.
@@ -47,16 +50,23 @@ class ChatStompDatasource extends BaseStompDatasource {
     final gameId = _pendingGameId!;
     final team = _pendingTeam!;
 
+    _allSub?.call(unsubscribeHeaders: {});
+    _teamSub?.call(unsubscribeHeaders: {});
+
     final allDest = '/subscribe/game/$gameId/chat/all';
-    addSubscription(
-      stompClient!.subscribe(destination: allDest, callback: _handleMessage),
+    _allSub = stompClient!.subscribe(
+      destination: allDest,
+      callback: _handleMessage,
     );
+    addSubscription(_allSub);
     debugPrint('[$logTag] ✅ 전체 채팅 구독: $allDest');
 
     final teamDest = '/subscribe/game/$gameId/chat/$team';
-    addSubscription(
-      stompClient!.subscribe(destination: teamDest, callback: _handleMessage),
+    _teamSub = stompClient!.subscribe(
+      destination: teamDest,
+      callback: _handleMessage,
     );
+    addSubscription(_teamSub);
     debugPrint('[$logTag] ✅ 팀 채팅 구독: $teamDest');
   }
 
