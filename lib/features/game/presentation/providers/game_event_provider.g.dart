@@ -28,7 +28,7 @@ final gameEventStompDatasourceProvider =
 // ignore: unused_element
 typedef GameEventStompDatasourceRef =
     AutoDisposeProviderRef<GameEventStompDatasource>;
-String _$gameEventNotifierHash() => r'e221e1efd4ed31c97307ad0f0e72291df1272faa';
+String _$gameEventNotifierHash() => r'2a9afdf3622010807c9d68289558ff9816e8503e';
 
 /// 게임 이벤트 상태 관리 Notifier
 ///

@@ -8,6 +8,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/datasources/game_system_api_datasource.dart';
+import '../../data/models/arrest_request_model.dart';
 import '../../data/models/game_area_model.dart';
 import '../../data/models/game_event_model.dart';
 

@@ -1,36 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../data/models/arrest_request_model.dart';
+import '../../data/models/arrest_response_model.dart';
 import '../../data/models/game_area_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
-part 'game_system_api_datasource.freezed.dart';
 part 'game_system_api_datasource.g.dart';
-
-/// 체포 요청 바디
-@freezed
-class ArrestRequestModel with _$ArrestRequestModel {
-  const factory ArrestRequestModel({required int robberParticipantId}) =
-      _ArrestRequestModel;
-
-  factory ArrestRequestModel.fromJson(Map<String, dynamic> json) =>
-      _$ArrestRequestModelFromJson(json);
-}
-
-/// 체포 응답 바디
-@freezed
-class ArrestResponseModel with _$ArrestResponseModel {
-  const factory ArrestResponseModel({
-    @Default('') String robberNickname,
-    @Default(0) int remainingThieves,
-  }) = _ArrestResponseModel;
-
-  factory ArrestResponseModel.fromJson(Map<String, dynamic> json) =>
-      _$ArrestResponseModelFromJson(json);
-}
 
 /// 게임 시스템 REST API 클라이언트
 ///

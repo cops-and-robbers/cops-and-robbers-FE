@@ -3,34 +3,6 @@
 part of 'game_system_api_datasource.dart';
 
 // **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-_$ArrestRequestModelImpl _$$ArrestRequestModelImplFromJson(
-  Map<String, dynamic> json,
-) => _$ArrestRequestModelImpl(
-  robberParticipantId: (json['robberParticipantId'] as num).toInt(),
-);
-
-Map<String, dynamic> _$$ArrestRequestModelImplToJson(
-  _$ArrestRequestModelImpl instance,
-) => <String, dynamic>{'robberParticipantId': instance.robberParticipantId};
-
-_$ArrestResponseModelImpl _$$ArrestResponseModelImplFromJson(
-  Map<String, dynamic> json,
-) => _$ArrestResponseModelImpl(
-  robberNickname: json['robberNickname'] as String? ?? '',
-  remainingThieves: (json['remainingThieves'] as num?)?.toInt() ?? 0,
-);
-
-Map<String, dynamic> _$$ArrestResponseModelImplToJson(
-  _$ArrestResponseModelImpl instance,
-) => <String, dynamic>{
-  'robberNickname': instance.robberNickname,
-  'remainingThieves': instance.remainingThieves,
-};
-
-// **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
 
