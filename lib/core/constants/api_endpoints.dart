@@ -35,6 +35,13 @@ class ApiEndpoints {
   /// **Default**: `ws://localhost:8080/ws`
   static String get wsUrl => dotenv.env['WS_URL'] ?? 'ws://localhost:8080/ws';
 
+  /// 게임 소켓 연결 URL (STOMP over WebSocket)
+  ///
+  /// 채팅, 게임 이벤트 등 실시간 통신에 사용됩니다.
+  /// .env의 WS_URL을 직접 사용합니다.
+  ///
+  static String get gameConnectionUrl => wsUrl;
+
   /// Mock API 사용 여부 (.env에서 로드)
   /// Whether to use Mock API (loaded from .env)
   ///
@@ -86,6 +93,16 @@ class ApiEndpoints {
   /// 게임 시작 (방장만 가능)
   static String startGame(int gameId) => '/api/games/$gameId/lobby/start';
 
+  /// 로비 조회
+  static String fetchLobbyInfo(int gameId) => '/api/games/$gameId/lobby';
+
+  /// 게임 설정 조회
+  static String fetchGameSettings(int gameId) => '/api/games/$gameId';
+
+  /// 인게임 참가자 목록 조회
+  static String fetchGameParticipants(int gameId) =>
+      '/api/games/$gameId/participants';
+
   // ============================================
   // System API - 게임 시스템 상호작용
   // ============================================
@@ -96,6 +113,9 @@ class ApiEndpoints {
   /// 도둑 탈옥 (수감된 도둑만)
   static String escapeFromPrison(int gameId) =>
       '/api/games/$gameId/system/escape';
+
+  /// 맵 영역 조회 (플레이그라운드·감옥 중심 좌표 및 반경)
+  static String gameArea(int gameId) => '/api/games/$gameId/area';
 
   // ============================================
   // User API - 사용자 정보

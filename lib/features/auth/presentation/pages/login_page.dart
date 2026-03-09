@@ -5,15 +5,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
-import '../../../../router/route_paths.dart';
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
@@ -60,25 +57,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// Google 로그인 버튼 핸들러
   ///
   /// Google 로그인을 수행하고 에러 발생 시 SnackBar를 표시합니다.
+  /// 로그인 성공 후 네비게이션은 GoRouter의 redirect가 처리합니다.
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    // 로딩 시작
     setState(() => _isGoogleLoading = true);
 
     try {
-      // AuthNotifier로 로그인 수행 (Firebase + 백엔드)
       await ref.read(authNotifierProvider.notifier).signInWithGoogle();
-
-      if (!mounted) return;
-
-      // 로그인 성공 후 isNewUser에 따라 분기
-      _navigateAfterLogin();
+      // 네비게이션은 app_router.dart의 redirect가 처리
+      // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
     } catch (e) {
-      // AuthNotifier에서 rethrow한 에러를 여기서 처리
       if (!mounted) return;
       _showLoginError(scaffoldMessenger, '로그인 중 오류가 발생했습니다.');
     } finally {
-      // 로딩 종료 (에러 발생 시에도 반드시 실행)
       if (mounted) {
         setState(() => _isGoogleLoading = false);
       }
@@ -88,50 +79,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// Apple 로그인 버튼 핸들러
   ///
   /// Apple 로그인을 수행하고 에러 발생 시 SnackBar를 표시합니다.
+  /// 로그인 성공 후 네비게이션은 GoRouter의 redirect가 처리합니다.
   Future<void> _handleAppleSignIn(BuildContext context) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    // 로딩 시작
     setState(() => _isAppleLoading = true);
 
     try {
-      // AuthNotifier로 로그인 수행 (Firebase + 백엔드)
       await ref.read(authNotifierProvider.notifier).signInWithApple();
-
-      if (!mounted) return;
-
-      // 로그인 성공 후 isNewUser에 따라 분기
-      _navigateAfterLogin();
+      // 네비게이션은 app_router.dart의 redirect가 처리
+      // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
     } catch (e) {
-      // AuthNotifier에서 rethrow한 에러를 여기서 처리
       if (!mounted) return;
       _showLoginError(scaffoldMessenger, 'Apple 로그인 중 오류가 발생했습니다.');
     } finally {
-      // 로딩 종료 (에러 발생 시에도 반드시 실행)
       if (mounted) {
         setState(() => _isAppleLoading = false);
       }
-    }
-  }
-
-  /// 로그인 성공 후 네비게이션 분기
-  ///
-  /// - isNewUser == true → 닉네임 설정 페이지
-  /// - isNewUser == false → 홈 페이지
-  void _navigateAfterLogin() {
-    final authState = ref.read(authNotifierProvider);
-    final authResult = authState.value;
-
-    if (authResult != null && authResult.isNewUser) {
-      // 신규 회원: 닉네임 설정 페이지로 이동
-      context.go(
-        Uri(
-          path: RoutePaths.nicknameSetup,
-          queryParameters: {'nickname': authResult.nickname},
-        ).toString(),
-      );
-    } else {
-      // 기존 회원: 홈으로 이동
-      context.go(RoutePaths.home);
     }
   }
 

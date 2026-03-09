@@ -66,6 +66,8 @@ class SessionRepositoryImpl implements SessionRepository {
         gameId: response.gameId,
         inviteCode: response.inviteCode,
         status: response.status,
+        maxParticipants: response.maxParticipants,
+        locationRevealIntervalMinutes: response.locationRevealIntervalMinutes,
       );
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
