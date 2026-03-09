@@ -1,12 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/models/arrest_request_model.dart';
 import '../../data/models/arrest_response_model.dart';
 import '../../data/models/game_area_model.dart';
-import '../../../../core/network/dio_client.dart';
 
 part 'game_system_api_datasource.g.dart';
 
@@ -33,11 +30,4 @@ abstract class GameSystemApi {
   /// 맵 영역 조회
   @GET('/api/games/{gameId}/area')
   Future<GameAreaModel> getArea(@Path('gameId') int gameId);
-}
-
-/// GameSystemApi Provider
-@riverpod
-GameSystemApi gameSystemApi(Ref ref) {
-  final dio = ref.watch(dioProvider);
-  return GameSystemApi(dio);
 }

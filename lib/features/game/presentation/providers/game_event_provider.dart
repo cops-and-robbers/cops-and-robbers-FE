@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/datasources/game_system_api_datasource.dart';
@@ -26,6 +27,13 @@ GameEventStompDatasource gameEventStompDatasource(Ref ref) {
   final datasource = GameEventStompDatasource();
   ref.onDispose(() => datasource.dispose());
   return datasource;
+}
+
+/// GameSystemApi Provider
+@riverpod
+GameSystemApi gameSystemApi(Ref ref) {
+  final dio = ref.watch(dioProvider);
+  return GameSystemApi(dio);
 }
 
 /// 게임 이벤트 상태
