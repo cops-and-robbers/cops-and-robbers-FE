@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 import '../../../../../core/services/location/device_location_service.dart';
+import 'map_error_widget.dart';
 
 /// Naver Maps 기반 게임 지도 뷰
 ///
@@ -135,18 +136,7 @@ class NaverMapViewState extends State<NaverMapView> {
       debugPrint('Stack: $stack');
 
       // 에러 발생 시 대체 UI 표시
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            const Text('Naver Map 로드 실패'),
-            const SizedBox(height: 8),
-            Text('Error: $e', style: const TextStyle(fontSize: 12)),
-          ],
-        ),
-      );
+      return MapErrorWidget(mapName: 'Naver Map', error: e);
     }
   }
 }
