@@ -27,7 +27,7 @@ final chatStompDatasourceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ChatStompDatasourceRef = AutoDisposeProviderRef<ChatStompDatasource>;
-String _$chatNotifierHash() => r'785d5afdc6598ee355e6651ea61f4da8b47f9eec';
+String _$chatNotifierHash() => r'036b943f8ad851ab4441875b21956881478b32a5';
 
 /// 채팅 상태 관리 Notifier
 ///
