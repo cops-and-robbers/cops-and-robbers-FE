@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
@@ -398,7 +399,7 @@ class _GamePageState extends ConsumerState<GamePage> {
             style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppSpacing.vertical8),
           Text(
             reason == 'ALL_ARRESTED' ? '도둑이 모두 체포되었습니다!' : '제한 시간이 종료되었습니다!',
             style: AppTextStyles.paragraph_14.copyWith(
@@ -597,7 +598,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                     iconSize: 24,
                     iconColor: AppColors.blue,
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: AppSpacing.vertical8),
                   MyLocationButton(
                     onPressed: _moveToCurrentLocation,
                     isFocused: _isLocationFocused,
@@ -666,7 +667,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     return Container(
       height: 64.h,
       color: AppColors.white,
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      padding: AppPadding.horizontal24,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -714,12 +715,12 @@ class _GamePageState extends ConsumerState<GamePage> {
   /// 알림 배너 (353x44) — LOCATION_REVEAL 이벤트 수신 시 5초간 표시
   Widget _buildAlertBanner() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      padding: AppPadding.horizontal20,
       child: Container(
         height: 44.h,
         decoration: BoxDecoration(
           color: AppColors.red,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: AppRadius.large,
         ),
         padding: EdgeInsets.only(left: 16.w),
         child: Row(
@@ -733,7 +734,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                 BlendMode.srcIn,
               ),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: AppSpacing.horizontal8),
             Text(
               '현재 도둑의 위치가 공개됩니다!',
               style: AppTextStyles.paragraph14Semibold.copyWith(
