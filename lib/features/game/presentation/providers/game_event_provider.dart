@@ -284,6 +284,15 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// STOMP ARREST 이벤트 도착 전 낙관적으로 [arrestedParticipantIds]에 즉시 추가.
   /// API 실패 시 rollback.
   Future<void> arrestRobber(int gameId, int robberParticipantId) async {
+    // 재진입 방어: 이전 체포 요청 처리 중이면 무시
+    if (_pendingArrestId != null) {
+      debugPrint(
+        '[GameEventNotifier] ⚠️ 체포 요청 무시 — '
+        '이미 $_pendingArrestId 처리 중',
+      );
+      return;
+    }
+
     // race condition 방어: API 호출 중인 체포 대상 추적
     _pendingArrestId = robberParticipantId;
 
