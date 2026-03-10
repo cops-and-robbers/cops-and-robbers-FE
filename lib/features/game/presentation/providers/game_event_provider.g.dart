@@ -28,7 +28,26 @@ final gameEventStompDatasourceProvider =
 // ignore: unused_element
 typedef GameEventStompDatasourceRef =
     AutoDisposeProviderRef<GameEventStompDatasource>;
-String _$gameEventNotifierHash() => r'e221e1efd4ed31c97307ad0f0e72291df1272faa';
+String _$gameSystemApiHash() => r'938956ae90567392f9f0b3cd399bdeb312c631a6';
+
+/// GameSystemApi Provider
+///
+/// Copied from [gameSystemApi].
+@ProviderFor(gameSystemApi)
+final gameSystemApiProvider = AutoDisposeProvider<GameSystemApi>.internal(
+  gameSystemApi,
+  name: r'gameSystemApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$gameSystemApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef GameSystemApiRef = AutoDisposeProviderRef<GameSystemApi>;
+String _$gameEventNotifierHash() => r'4caa3d86216d179eb490b971ed14b6276dc9bd40';
 
 /// 게임 이벤트 상태 관리 Notifier
 ///

@@ -71,25 +71,50 @@ class AppPopup extends StatefulWidget {
   State<AppPopup> createState() => _AppPopupState();
 }
 
-class _AppPopupState extends State<AppPopup> {
+class _AppPopupState extends State<AppPopup> with WidgetsBindingObserver {
   Timer? _autoCloseTimer;
+  DateTime? _closeTime;
 
   @override
   void initState() {
     super.initState();
     if (widget.autoCloseDuration != null) {
-      _autoCloseTimer = Timer(widget.autoCloseDuration!, () {
-        if (mounted && ModalRoute.of(context)?.isCurrent == true) {
-          Navigator.of(context).pop();
-        }
-      });
+      WidgetsBinding.instance.addObserver(this);
+      _closeTime = DateTime.now().add(widget.autoCloseDuration!);
+      _scheduleClose();
     }
   }
 
   @override
   void dispose() {
+    if (widget.autoCloseDuration != null) {
+      WidgetsBinding.instance.removeObserver(this);
+    }
     _autoCloseTimer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _scheduleClose();
+    }
+  }
+
+  void _scheduleClose() {
+    _autoCloseTimer?.cancel();
+    final remaining = _closeTime!.difference(DateTime.now());
+    if (remaining <= Duration.zero) {
+      _popIfCurrent();
+    } else {
+      _autoCloseTimer = Timer(remaining, _popIfCurrent);
+    }
+  }
+
+  void _popIfCurrent() {
+    if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override

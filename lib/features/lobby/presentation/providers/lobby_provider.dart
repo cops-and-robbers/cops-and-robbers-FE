@@ -11,6 +11,9 @@ import '../../data/models/lobby_event_dto.dart';
 
 part 'lobby_provider.g.dart';
 
+/// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체
+const _sentinel = Object();
+
 /// LobbyStompDatasource Provider (싱글톤)
 @riverpod
 LobbyStompDatasource lobbyStompDatasource(Ref ref) {
@@ -35,13 +38,17 @@ class LobbyState {
 
   LobbyState copyWith({
     StompConnectionState? connectionState,
-    String? errorMessage,
-    LobbyEventDto? lastEvent,
+    Object? errorMessage = _sentinel,
+    Object? lastEvent = _sentinel,
   }) {
     return LobbyState(
       connectionState: connectionState ?? this.connectionState,
-      errorMessage: errorMessage,
-      lastEvent: lastEvent ?? this.lastEvent,
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
+      lastEvent: lastEvent == _sentinel
+          ? this.lastEvent
+          : lastEvent as LobbyEventDto?,
     );
   }
 }
@@ -334,6 +341,7 @@ class LobbyNotifier extends _$LobbyNotifier {
             ? errorInfo.detail
             : 'STOMP 에러가 발생했습니다.',
       );
+      _isHandlingError = false; // 비-인증 에러: WebSocket 종료 후 재연결 허용
     }
   }
 }

@@ -3,34 +3,6 @@
 part of 'game_system_api_datasource.dart';
 
 // **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-_$ArrestRequestModelImpl _$$ArrestRequestModelImplFromJson(
-  Map<String, dynamic> json,
-) => _$ArrestRequestModelImpl(
-  robberParticipantId: (json['robberParticipantId'] as num).toInt(),
-);
-
-Map<String, dynamic> _$$ArrestRequestModelImplToJson(
-  _$ArrestRequestModelImpl instance,
-) => <String, dynamic>{'robberParticipantId': instance.robberParticipantId};
-
-_$ArrestResponseModelImpl _$$ArrestResponseModelImplFromJson(
-  Map<String, dynamic> json,
-) => _$ArrestResponseModelImpl(
-  robberNickname: json['robberNickname'] as String? ?? '',
-  remainingThieves: (json['remainingThieves'] as num?)?.toInt() ?? 0,
-);
-
-Map<String, dynamic> _$$ArrestResponseModelImplToJson(
-  _$ArrestResponseModelImpl instance,
-) => <String, dynamic>{
-  'robberNickname': instance.robberNickname,
-  'remainingThieves': instance.remainingThieves,
-};
-
-// **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
 
@@ -148,29 +120,3 @@ class _GameSystemApi implements GameSystemApi {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
-
-// **************************************************************************
-// RiverpodGenerator
-// **************************************************************************
-
-String _$gameSystemApiHash() => r'938956ae90567392f9f0b3cd399bdeb312c631a6';
-
-/// GameSystemApi Provider
-///
-/// Copied from [gameSystemApi].
-@ProviderFor(gameSystemApi)
-final gameSystemApiProvider = AutoDisposeProvider<GameSystemApi>.internal(
-  gameSystemApi,
-  name: r'gameSystemApiProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$gameSystemApiHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GameSystemApiRef = AutoDisposeProviderRef<GameSystemApi>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

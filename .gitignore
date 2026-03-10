@@ -60,7 +60,6 @@ app.*.map.json
 .env
 /env.*
 /secrets.json
-.claude
 
 # Android (local build config)
 /android/local.properties

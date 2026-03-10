@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/services/location/device_location_service.dart';
+import 'map_error_widget.dart';
 
 /// Google Maps 기반 게임 지도 뷰
 ///
@@ -80,8 +81,6 @@ class GoogleMapViewState extends State<GoogleMapView> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('🗺️ GoogleMapView build 호출');
-
     try {
       return GoogleMap(
         initialCameraPosition: const CameraPosition(
@@ -115,18 +114,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
       debugPrint('Stack: $stack');
 
       // 에러 발생 시 대체 UI 표시
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            const Text('Google Map 로드 실패'),
-            const SizedBox(height: 8),
-            Text('Error: $e', style: const TextStyle(fontSize: 12)),
-          ],
-        ),
-      );
+      return MapErrorWidget(mapName: 'Google Map', error: e);
     }
   }
 }

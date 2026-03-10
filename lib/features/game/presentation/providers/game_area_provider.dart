@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../data/datasources/game_system_api_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import 'game_event_provider.dart';
 
 part 'game_area_provider.g.dart';
 

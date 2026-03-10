@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/storage/secure_token_storage.dart';
-import 'auth_provider.dart';
 
 part 'token_provider.g.dart';
 
@@ -16,11 +15,6 @@ abstract class TokenProvider {
   /// 유효한 토큰이 없으면 null을 반환합니다.
   /// STOMP 연결 시 Authorization 헤더에 사용됩니다.
   Future<String?> getAccessToken();
-
-  /// Refresh Token 획득
-  ///
-  /// 토큰 갱신이 필요할 때 사용됩니다.
-  Future<String?> getRefreshToken();
 
   /// Access Token 갱신 시도
   ///
@@ -51,16 +45,6 @@ class ServerTokenProvider implements TokenProvider {
       return token;
     } catch (e) {
       debugPrint('[TokenProvider] ❌ getAccessToken 실패: $e');
-      return null;
-    }
-  }
-
-  @override
-  Future<String?> getRefreshToken() async {
-    try {
-      return await _tokenStorage.getRefreshToken();
-    } catch (e) {
-      debugPrint('[TokenProvider] ❌ getRefreshToken 실패: $e');
       return null;
     }
   }

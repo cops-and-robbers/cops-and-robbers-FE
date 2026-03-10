@@ -1,9 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/session_remote_datasource.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../data/models/in_game_participants_response.dart';
@@ -92,104 +91,75 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
 /// 게임 방 퇴장 기능
 ///
 /// 대기실/게임 화면에서 나갈 때 서버에 퇴장을 알립니다.
+/// 실패 시 DioException을 rethrow합니다.
 @riverpod
-Future<LeaveGameResponse?> leaveGame(Ref ref, int gameId) async {
-  try {
-    final dataSource = ref.read(sessionRemoteDataSourceProvider);
-    final response = await dataSource.leaveGame(gameId);
-    debugPrint(
-      '[Session] ✅ 게임 퇴장 성공: gameId=$gameId, 남은 인원=${response.remainingCount}',
-    );
-    return response;
-  } catch (e) {
-    debugPrint('[Session] ❌ 게임 퇴장 실패: $e');
-    return null;
-  }
+Future<LeaveGameResponse> leaveGame(Ref ref, int gameId) async {
+  final dataSource = ref.read(sessionRemoteDataSourceProvider);
+  final response = await dataSource.leaveGame(gameId);
+  debugPrint(
+    '[Session] ✅ 게임 퇴장 성공: gameId=$gameId, 남은 인원=${response.remainingCount}',
+  );
+  return response;
 }
 
 /// 게임 시작 기능
 ///
 /// 방장이 게임을 시작합니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 @riverpod
-Future<bool> startGame(Ref ref, int gameId) async {
-  try {
-    final dataSource = ref.read(sessionRemoteDataSourceProvider);
-    await dataSource.startGame(gameId);
-    debugPrint('[Session] ✅ 게임 시작 성공: gameId=$gameId');
-    return true;
-  } catch (e) {
-    debugPrint('[Session] ❌ 게임 시작 실패: $e');
-    return false;
-  }
+Future<void> startGame(Ref ref, int gameId) async {
+  final dataSource = ref.read(sessionRemoteDataSourceProvider);
+  await dataSource.startGame(gameId);
+  debugPrint('[Session] ✅ 게임 시작 성공: gameId=$gameId');
 }
 
 /// 준비 상태 변경 기능
 ///
 /// 대기실에서 준비 상태를 변경합니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 @riverpod
-Future<bool> updateReady(Ref ref, int gameId, {required bool isReady}) async {
-  try {
-    final dataSource = ref.read(sessionRemoteDataSourceProvider);
-    await dataSource.updateReady(gameId, ReadyRequest(isReady: isReady));
-    debugPrint('[Session] ✅ 준비 상태 변경 성공: gameId=$gameId, isReady=$isReady');
-    return true;
-  } catch (e) {
-    debugPrint('[Session] ❌ 준비 상태 변경 실패: $e');
-    return false;
-  }
+Future<void> updateReady(Ref ref, int gameId, {required bool isReady}) async {
+  final dataSource = ref.read(sessionRemoteDataSourceProvider);
+  await dataSource.updateReady(gameId, ReadyRequest(isReady: isReady));
+  debugPrint('[Session] ✅ 준비 상태 변경 성공: gameId=$gameId, isReady=$isReady');
 }
 
 /// 팀 변경 기능
 ///
 /// 대기실에서 팀을 변경합니다.
 /// 팀 변경 시 준비 상태가 해제됩니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 @riverpod
-Future<bool> changeTeam(
+Future<void> changeTeam(
   Ref ref,
   int gameId, {
   required String targetTeam,
 }) async {
-  try {
-    final dataSource = ref.read(sessionRemoteDataSourceProvider);
-    await dataSource.changeTeam(
-      gameId,
-      TeamChangeRequest(targetTeam: targetTeam),
-    );
-    debugPrint('[Session] ✅ 팀 변경 성공: gameId=$gameId, targetTeam=$targetTeam');
-    return true;
-  } catch (e) {
-    debugPrint('[Session] ❌ 팀 변경 실패: $e');
-    return false;
-  }
+  final dataSource = ref.read(sessionRemoteDataSourceProvider);
+  await dataSource.changeTeam(
+    gameId,
+    TeamChangeRequest(targetTeam: targetTeam),
+  );
+  debugPrint('[Session] ✅ 팀 변경 성공: gameId=$gameId, targetTeam=$targetTeam');
 }
 
 /// 게임 방 참여 기능
 ///
 /// 초대 코드를 사용하여 게임 방에 참여합니다.
-/// 성공 시 JoinGameResponse, 실패 시 null을 반환합니다.
+/// 성공 시 JoinGameResponse를 반환하고, 실패 시 DioException을 rethrow합니다.
 @riverpod
 Future<JoinGameResponse?> joinGame(
   Ref ref, {
   required String inviteCode,
 }) async {
-  try {
-    final dataSource = ref.read(sessionRemoteDataSourceProvider);
-    final response = await dataSource.joinGame(
-      JoinGameRequest(inviteCode: inviteCode),
-    );
-    debugPrint(
-      '[Session] ✅ 게임 참여 성공: gameId=${response.gameId}, participantId=${response.participantId}',
-    );
-    return response;
-  } catch (e) {
-    debugPrint('[Session] ❌ 게임 참여 실패: $e');
-    // 409: 이미 참가 중 → UI에서 구분 처리
-    if (e is DioException && e.response?.statusCode == 409) rethrow;
-    return null;
-  }
+  final dataSource = ref.read(sessionRemoteDataSourceProvider);
+  final response = await dataSource.joinGame(
+    JoinGameRequest(inviteCode: inviteCode),
+  );
+  debugPrint(
+    '[Session] ✅ 게임 참여 성공: gameId=${response.gameId}, participantId=${response.participantId}',
+  );
+  return response;
 }
 
 /// 로비 조회

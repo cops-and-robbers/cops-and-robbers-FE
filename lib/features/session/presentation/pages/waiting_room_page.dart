@@ -1,9 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/network/api_error_response.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -374,14 +376,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
 
-    final success = await ref.read(
-      changeTeamProvider(gameId, targetTeam: targetTeam).future,
-    );
-
-    if (!success && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('팀 변경에 실패했습니다.')));
+    try {
+      await ref.read(changeTeamProvider(gameId, targetTeam: targetTeam).future);
+    } on DioException catch (e) {
+      if (mounted) {
+        final apiError = ApiErrorResponse.tryParse(e.response?.data);
+        final message = apiError?.detail ?? '팀 변경에 실패했습니다.';
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
     }
   }
 
@@ -402,17 +406,20 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     setState(() => _isUpdatingReady = true);
 
     final newReadyState = !_isReady;
-    final success = await ref.read(
-      updateReadyProvider(gameId, isReady: newReadyState).future,
-    );
-
-    if (success) {
+    try {
+      await ref.read(
+        updateReadyProvider(gameId, isReady: newReadyState).future,
+      );
       if (!mounted) return;
       setState(() => _isReady = newReadyState);
-    } else if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('준비 상태 변경에 실패했습니다.')));
+    } on DioException catch (e) {
+      if (mounted) {
+        final apiError = ApiErrorResponse.tryParse(e.response?.data);
+        final message = apiError?.detail ?? '준비 상태 변경에 실패했습니다.';
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
     }
 
     if (!mounted) return;
@@ -434,12 +441,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     if (gameId == null) return;
 
     // TODO: 지도 선택 UI 추가 시 _selectedMapType 변경
-    final success = await ref.read(startGameProvider(gameId).future);
-
-    if (!success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('게임 시작에 실패했습니다. 모든 참가자가 준비되었는지 확인해주세요.')),
-      );
+    try {
+      await ref.read(startGameProvider(gameId).future);
+    } on DioException catch (e) {
+      if (mounted) {
+        final apiError = ApiErrorResponse.tryParse(e.response?.data);
+        final message = apiError?.detail ?? '게임 시작에 실패했습니다.';
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
     }
   }
 
@@ -453,11 +464,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     // ② 그 다음 REST API 퇴장
     final gameId = int.tryParse(widget.sessionId);
     if (gameId != null) {
-      final result = await ref.read(leaveGameProvider(gameId).future);
-      if (result == null && mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('퇴장 처리 중 오류가 발생했습니다.')));
+      try {
+        await ref.read(leaveGameProvider(gameId).future);
+      } on DioException catch (e) {
+        if (mounted) {
+          final apiError = ApiErrorResponse.tryParse(e.response?.data);
+          final message = apiError?.detail ?? '퇴장 처리 중 오류가 발생했습니다.';
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
+        }
       }
     }
 

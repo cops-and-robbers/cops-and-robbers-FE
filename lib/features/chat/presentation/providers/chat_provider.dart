@@ -12,6 +12,9 @@ import '../../data/models/chat_message_dto.dart';
 
 part 'chat_provider.g.dart';
 
+/// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체
+const _sentinel = Object();
+
 /// ChatStompDatasource Provider (싱글톤)
 @riverpod
 ChatStompDatasource chatStompDatasource(Ref ref) {
@@ -38,23 +41,19 @@ class ChatState {
     this.errorMessage,
   });
 
-  /// 전체 메시지 (더미 모드 등 호환용)
-  List<ChatMessageDto> get messages => [
-    ...allScopeMessages,
-    ...teamScopeMessages,
-  ];
-
   ChatState copyWith({
     List<ChatMessageDto>? allScopeMessages,
     List<ChatMessageDto>? teamScopeMessages,
     StompConnectionState? connectionState,
-    String? errorMessage,
+    Object? errorMessage = _sentinel,
   }) {
     return ChatState(
       allScopeMessages: allScopeMessages ?? this.allScopeMessages,
       teamScopeMessages: teamScopeMessages ?? this.teamScopeMessages,
       connectionState: connectionState ?? this.connectionState,
-      errorMessage: errorMessage,
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 }
@@ -94,6 +93,9 @@ class ChatNotifier extends _$ChatNotifier {
   /// 더미 모드 여부
   bool _isDummyMode = false;
 
+  /// 더미 모드 자동응답 타이머
+  Timer? _dummyReplyTimer;
+
   /// 메시지 리스트 최대 크기
   static const _maxMessages = 200;
 
@@ -107,6 +109,7 @@ class ChatNotifier extends _$ChatNotifier {
       _connectionSub?.cancel();
       _errorSub?.cancel();
       _reconnectTimer?.cancel();
+      _dummyReplyTimer?.cancel();
     });
     return const ChatState();
   }
@@ -211,7 +214,8 @@ class ChatNotifier extends _$ChatNotifier {
         team: _team?.toUpperCase() ?? 'POLICE',
       );
       // 상대방 자동 응답 (1초 후)
-      Future.delayed(const Duration(seconds: 1), () {
+      _dummyReplyTimer?.cancel();
+      _dummyReplyTimer = Timer(const Duration(seconds: 1), () {
         if (_isDummyMode) {
           _addDummyMessage(
             message: '${scope == 'TEAM' ? '[팀] ' : ''}응답 테스트 메시지!',
@@ -489,13 +493,14 @@ class ChatNotifier extends _$ChatNotifier {
       datasource.connect(wsUrl, newToken);
       _isHandlingError = false;
     } else {
-      // 비-401 STOMP 에러: 에러 메시지 표시, 자동 재연결 안 함
+      // 비-401 STOMP 에러: 에러 메시지 표시
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: errorInfo.detail.isNotEmpty
             ? errorInfo.detail
             : 'STOMP 에러가 발생했습니다.',
       );
+      _isHandlingError = false; // 비-인증 에러: WebSocket 종료 후 재연결 허용
     }
   }
 }

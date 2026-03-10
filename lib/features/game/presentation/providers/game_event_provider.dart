@@ -5,9 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/datasources/game_system_api_datasource.dart';
+import '../../data/models/arrest_request_model.dart';
 import '../../data/models/game_area_model.dart';
 import '../../data/models/game_event_model.dart';
 
@@ -16,12 +18,22 @@ export '../../data/datasources/game_event_stomp_datasource.dart'
 
 part 'game_event_provider.g.dart';
 
+/// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체
+const _sentinel = Object();
+
 /// GameEventStompDatasource Provider (싱글톤)
 @riverpod
 GameEventStompDatasource gameEventStompDatasource(Ref ref) {
   final datasource = GameEventStompDatasource();
   ref.onDispose(() => datasource.dispose());
   return datasource;
+}
+
+/// GameSystemApi Provider
+@riverpod
+GameSystemApi gameSystemApi(Ref ref) {
+  final dio = ref.watch(dioProvider);
+  return GameSystemApi(dio);
 }
 
 /// 게임 이벤트 상태
@@ -103,44 +115,62 @@ class GameEventState {
 
   GameEventState copyWith({
     StompConnectionState? connectionState,
-    String? errorMessage,
+    Object? errorMessage = _sentinel,
     Set<int>? arrestedParticipantIds,
     Set<int>? escapedParticipantIds,
     bool? isPoliceMoving,
-    int? remainingThieves,
-    String? lastArrestNickname,
-    String? lastEscapeNickname,
+    Object? remainingThieves = _sentinel,
+    Object? lastArrestNickname = _sentinel,
+    Object? lastEscapeNickname = _sentinel,
     bool? isGameOver,
-    String? winnerTeam,
-    String? gameOverReason,
-    int? gameResultId,
-    DateTime? gameStartTime,
-    DateTime? policeMoveStartTime,
-    DateTime? lastLocationRevealTime,
+    Object? winnerTeam = _sentinel,
+    Object? gameOverReason = _sentinel,
+    Object? gameResultId = _sentinel,
+    Object? gameStartTime = _sentinel,
+    Object? policeMoveStartTime = _sentinel,
+    Object? lastLocationRevealTime = _sentinel,
     bool? showLocationRevealBanner,
     bool? isApiLoading,
     Map<int, LatLngModel>? robberLocations,
-    bool clearError = false,
   }) {
     return GameEventState(
       connectionState: connectionState ?? this.connectionState,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
       arrestedParticipantIds:
           arrestedParticipantIds ?? this.arrestedParticipantIds,
       escapedParticipantIds:
           escapedParticipantIds ?? this.escapedParticipantIds,
       isPoliceMoving: isPoliceMoving ?? this.isPoliceMoving,
-      remainingThieves: remainingThieves ?? this.remainingThieves,
-      lastArrestNickname: lastArrestNickname ?? this.lastArrestNickname,
-      lastEscapeNickname: lastEscapeNickname ?? this.lastEscapeNickname,
+      remainingThieves: remainingThieves == _sentinel
+          ? this.remainingThieves
+          : remainingThieves as int?,
+      lastArrestNickname: lastArrestNickname == _sentinel
+          ? this.lastArrestNickname
+          : lastArrestNickname as String?,
+      lastEscapeNickname: lastEscapeNickname == _sentinel
+          ? this.lastEscapeNickname
+          : lastEscapeNickname as String?,
       isGameOver: isGameOver ?? this.isGameOver,
-      winnerTeam: winnerTeam ?? this.winnerTeam,
-      gameOverReason: gameOverReason ?? this.gameOverReason,
-      gameResultId: gameResultId ?? this.gameResultId,
-      gameStartTime: gameStartTime ?? this.gameStartTime,
-      policeMoveStartTime: policeMoveStartTime ?? this.policeMoveStartTime,
-      lastLocationRevealTime:
-          lastLocationRevealTime ?? this.lastLocationRevealTime,
+      winnerTeam: winnerTeam == _sentinel
+          ? this.winnerTeam
+          : winnerTeam as String?,
+      gameOverReason: gameOverReason == _sentinel
+          ? this.gameOverReason
+          : gameOverReason as String?,
+      gameResultId: gameResultId == _sentinel
+          ? this.gameResultId
+          : gameResultId as int?,
+      gameStartTime: gameStartTime == _sentinel
+          ? this.gameStartTime
+          : gameStartTime as DateTime?,
+      policeMoveStartTime: policeMoveStartTime == _sentinel
+          ? this.policeMoveStartTime
+          : policeMoveStartTime as DateTime?,
+      lastLocationRevealTime: lastLocationRevealTime == _sentinel
+          ? this.lastLocationRevealTime
+          : lastLocationRevealTime as DateTime?,
       showLocationRevealBanner:
           showLocationRevealBanner ?? this.showLocationRevealBanner,
       isApiLoading: isApiLoading ?? this.isApiLoading,
@@ -164,6 +194,9 @@ class GameEventNotifier extends _$GameEventNotifier {
 
   int _reconnectCount = 0;
   static const _maxReconnectRetries = 5;
+
+  /// 현재 API 호출 중인 체포 대상 ID (race condition 방어)
+  int? _pendingArrestId;
 
   Timer? _reconnectTimer;
   Timer? _locationRevealBannerTimer;
@@ -251,6 +284,18 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// STOMP ARREST 이벤트 도착 전 낙관적으로 [arrestedParticipantIds]에 즉시 추가.
   /// API 실패 시 rollback.
   Future<void> arrestRobber(int gameId, int robberParticipantId) async {
+    // 재진입 방어: 이전 체포 요청 처리 중이면 무시
+    if (_pendingArrestId != null) {
+      debugPrint(
+        '[GameEventNotifier] ⚠️ 체포 요청 무시 — '
+        '이미 $_pendingArrestId 처리 중',
+      );
+      return;
+    }
+
+    // race condition 방어: API 호출 중인 체포 대상 추적
+    _pendingArrestId = robberParticipantId;
+
     // 낙관적 업데이트: STOMP 이벤트 도착 전 즉시 UI 반영
     state = state.copyWith(
       arrestedParticipantIds: {
@@ -266,17 +311,26 @@ class GameEventNotifier extends _$GameEventNotifier {
             gameId,
             ArrestRequestModel(robberParticipantId: robberParticipantId),
           );
-      // 실제 상태 확정은 STOMP ARREST 이벤트에서 처리
+      // API 성공 → 로딩 해제 (STOMP 이벤트에서 최종 상태 확정)
+      _pendingArrestId = null;
+      state = state.copyWith(isApiLoading: false);
     } catch (e) {
       debugPrint('[GameEventNotifier] ❌ 체포 요청 실패: $e');
-      // 실패 시 낙관적 업데이트 rollback
-      state = state.copyWith(
-        arrestedParticipantIds: state.arrestedParticipantIds.difference({
-          robberParticipantId,
-        }),
-        isApiLoading: false,
-        errorMessage: '체포 요청 실패',
-      );
+      if (_pendingArrestId == null) {
+        // STOMP ARREST 이벤트가 이미 도착하여 체포 확정 → rollback 하지 않음
+        debugPrint('[GameEventNotifier] ℹ️ STOMP에서 이미 체포 확정됨 → rollback 생략');
+        state = state.copyWith(isApiLoading: false);
+      } else {
+        // STOMP 확인 없음 → 낙관적 업데이트 rollback
+        _pendingArrestId = null;
+        state = state.copyWith(
+          arrestedParticipantIds: state.arrestedParticipantIds.difference({
+            robberParticipantId,
+          }),
+          isApiLoading: false,
+          errorMessage: '체포 요청 실패',
+        );
+      }
     }
   }
 
@@ -292,7 +346,8 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     try {
       await ref.read(gameSystemApiProvider).escape(gameId);
-      // 실제 상태 확정은 STOMP ESCAPE 이벤트에서 처리
+      // API 성공 → 로딩 해제 (STOMP 이벤트에서 최종 상태 확정)
+      state = state.copyWith(isApiLoading: false);
     } catch (e) {
       debugPrint('[GameEventNotifier] ❌ 탈옥 요청 실패: $e');
       // 실패 시 낙관적 업데이트 rollback
@@ -350,13 +405,18 @@ class GameEventNotifier extends _$GameEventNotifier {
     final locationsList = (data['locations'] as List<dynamic>?) ?? [];
     Map<int, LatLngModel>? newLocations;
     if (locationsList.isNotEmpty) {
-      newLocations = {
-        for (final loc in locationsList)
-          (loc['participantId'] as num).toInt(): LatLngModel(
-            latitude: (loc['latitude'] as num).toDouble(),
-            longitude: (loc['longitude'] as num).toDouble(),
-          ),
-      };
+      final entries = <int, LatLngModel>{};
+      for (final loc in locationsList) {
+        final pid = (loc['participantId'] as num?)?.toInt();
+        final lat = (loc['latitude'] as num?)?.toDouble();
+        final lng = (loc['longitude'] as num?)?.toDouble();
+        if (pid != null && lat != null && lng != null) {
+          entries[pid] = LatLngModel(latitude: lat, longitude: lng);
+        }
+      }
+      if (entries.isNotEmpty) {
+        newLocations = entries;
+      }
     }
 
     final revealTime = DateTime.tryParse(timestamp) ?? DateTime.now();
@@ -384,6 +444,11 @@ class GameEventNotifier extends _$GameEventNotifier {
     final remaining = (data['remainingThieves'] as num?)?.toInt();
     if (robberPid == null) return;
 
+    // race condition 방어: STOMP가 API 응답보다 먼저 도착한 경우 pending 해제
+    if (robberPid == _pendingArrestId) {
+      _pendingArrestId = null;
+    }
+
     state = state.copyWith(
       arrestedParticipantIds: {...state.arrestedParticipantIds, robberPid},
       remainingThieves: remaining,
@@ -398,7 +463,8 @@ class GameEventNotifier extends _$GameEventNotifier {
   void _handleEscape(Map<String, dynamic> data) {
     final escapedThieves = (data['escapedThieves'] as List?) ?? [];
     final escapedIds = escapedThieves
-        .map((e) => (e['participantId'] as num).toInt())
+        .map((e) => (e['participantId'] as num?)?.toInt())
+        .whereType<int>()
         .toSet();
     final firstNickname = escapedThieves.isNotEmpty
         ? escapedThieves.first['nickname'] as String?
@@ -447,7 +513,7 @@ class GameEventNotifier extends _$GameEventNotifier {
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
-        state = state.copyWith(clearError: true);
+        state = state.copyWith(errorMessage: null);
       } else if (connState == StompConnectionState.disconnected) {
         if (!_intentionalDisconnect && !_isHandlingError) {
           _scheduleReconnect();
