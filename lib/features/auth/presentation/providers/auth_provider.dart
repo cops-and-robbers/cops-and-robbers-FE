@@ -109,6 +109,11 @@ class AuthNotifier extends _$AuthNotifier {
       });
     });
 
+    // auto-dispose 시 keepAlive 콜백 해제 — 죽은 ref 접근 방지
+    ref.onDispose(() {
+      ref.read(forceLogoutCallbackNotifierProvider.notifier).unregister();
+    });
+
     // 초기 상태: Firebase Auth + JWT 토큰 모두 존재해야 인증된 것으로 판단
     final dataSource = ref.watch(firebaseAuthDataSourceProvider);
     final tokenStorage = ref.watch(secureTokenStorageProvider);

@@ -25,6 +25,11 @@ class ForceLogoutCallbackNotifier extends _$ForceLogoutCallbackNotifier {
   void register(ForceLogoutFn callback) {
     state = callback;
   }
+
+  /// 강제 로그아웃 콜백 해제
+  void unregister() {
+    state = null;
+  }
 }
 
 /// Dio Provider (AuthInterceptor 포함)
