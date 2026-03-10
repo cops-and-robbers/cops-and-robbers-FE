@@ -235,13 +235,13 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                 bottom: 16.h,
                 left: 20.w,
                 child: MyLocationButton(
-                onPressed: resetToCurrentLocation,
-                isFocused: _isLocationFocused,
-                containerSize: 40,
-                iconSize: 24,
-                focusedColor: widget.locationButtonColor ?? AppColors.blue,
-                unfocusedColor: _unfocusedLocationColor(),
-              ),
+                  onPressed: resetToCurrentLocation,
+                  isFocused: _isLocationFocused,
+                  containerSize: 40,
+                  iconSize: 24,
+                  focusedColor: widget.locationButtonColor ?? AppColors.blue,
+                  unfocusedColor: _unfocusedLocationColor(),
+                ),
               ),
 
               // Info card (우측하단 16, 20)
