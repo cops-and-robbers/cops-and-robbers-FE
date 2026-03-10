@@ -80,7 +80,7 @@ class Step2GameSettingsContent extends StatelessWidget {
         AppSlider(
           label: '경찰 시작 시간',
           value: policeWaitMinutes.toDouble(),
-          min: 0,
+          min: 1,
           max: 10,
           unit: '분',
           divisions: 10, // 0~10, 1분 단위
