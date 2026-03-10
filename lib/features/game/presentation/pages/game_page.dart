@@ -73,7 +73,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
   bool _isLocationFocused = true;
-  bool _isProgrammaticMove = false;
+  bool _isProgrammaticMove = true; // 초기 카메라 이동(onMapCreated) 보호
 
   /// dispose()에서 ref 사용 불가이므로 사전에 저장
   ChatNotifier? _chatNotifier;

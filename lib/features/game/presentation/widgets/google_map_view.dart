@@ -12,7 +12,7 @@ import 'map_error_widget.dart';
 class GoogleMapView extends StatefulWidget {
   const GoogleMapView({super.key, this.onCameraMoveStarted});
 
-  /// 사용자가 지도를 드래그하여 카메라 이동 시 호출
+  /// 카메라 이동 시작 시 호출 (사용자 드래그 및 programmatic 이동 모두 포함)
   final VoidCallback? onCameraMoveStarted;
 
   @override
