@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/network/api_error_response.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -65,11 +67,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     router.push(
                       '${RoutePaths.nicknameSetup}?nickname=$encodedNickname',
                     );
-                  } catch (_) {
+                  } on DioException catch (e) {
                     if (!mounted) return;
-                    messenger.showSnackBar(
-                      const SnackBar(content: Text('사용자 정보를 불러올 수 없습니다')),
+                    final apiError = ApiErrorResponse.tryParse(
+                      e.response?.data,
                     );
+                    final message = apiError?.detail ?? '사용자 정보를 불러올 수 없습니다';
+                    messenger.showSnackBar(SnackBar(content: Text(message)));
                   }
                 },
               ),

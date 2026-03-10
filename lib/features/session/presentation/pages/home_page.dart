@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/network/api_error_response.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -100,10 +101,12 @@ class HomePage extends ConsumerWidget {
         try {
           response = await ref.read(joinGameProvider(inviteCode: code).future);
         } on DioException catch (e) {
-          if (e.response?.statusCode == 409 && context.mounted) {
+          if (context.mounted) {
+            final apiError = ApiErrorResponse.tryParse(e.response?.data);
+            final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(const SnackBar(content: Text('이미 참가 중인 게임입니다.')));
+            ).showSnackBar(SnackBar(content: Text(message)));
           }
           return;
         }
@@ -142,10 +145,6 @@ class HomePage extends ConsumerWidget {
               '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
             );
           }
-        } else if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('참여에 실패했습니다. 초대 코드를 확인해주세요.')),
-          );
         }
       },
     ).whenComplete(() {

@@ -48,7 +48,7 @@ final sessionRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SessionRepositoryRef = AutoDisposeProviderRef<SessionRepository>;
-String _$leaveGameHash() => r'8268d00e87cadc7c29d14ef72de6dfad4300c248';
+String _$leaveGameHash() => r'9b80aaeda230ae5777cea0ae3d301b6470310dc3';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -74,6 +74,7 @@ class _SystemHash {
 /// 게임 방 퇴장 기능
 ///
 /// 대기실/게임 화면에서 나갈 때 서버에 퇴장을 알립니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [leaveGame].
 @ProviderFor(leaveGame)
@@ -82,12 +83,14 @@ const leaveGameProvider = LeaveGameFamily();
 /// 게임 방 퇴장 기능
 ///
 /// 대기실/게임 화면에서 나갈 때 서버에 퇴장을 알립니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [leaveGame].
-class LeaveGameFamily extends Family<AsyncValue<LeaveGameResponse?>> {
+class LeaveGameFamily extends Family<AsyncValue<LeaveGameResponse>> {
   /// 게임 방 퇴장 기능
   ///
   /// 대기실/게임 화면에서 나갈 때 서버에 퇴장을 알립니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [leaveGame].
   const LeaveGameFamily();
@@ -95,6 +98,7 @@ class LeaveGameFamily extends Family<AsyncValue<LeaveGameResponse?>> {
   /// 게임 방 퇴장 기능
   ///
   /// 대기실/게임 화면에서 나갈 때 서버에 퇴장을 알립니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [leaveGame].
   LeaveGameProvider call(int gameId) {
@@ -124,12 +128,14 @@ class LeaveGameFamily extends Family<AsyncValue<LeaveGameResponse?>> {
 /// 게임 방 퇴장 기능
 ///
 /// 대기실/게임 화면에서 나갈 때 서버에 퇴장을 알립니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [leaveGame].
-class LeaveGameProvider extends AutoDisposeFutureProvider<LeaveGameResponse?> {
+class LeaveGameProvider extends AutoDisposeFutureProvider<LeaveGameResponse> {
   /// 게임 방 퇴장 기능
   ///
   /// 대기실/게임 화면에서 나갈 때 서버에 퇴장을 알립니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [leaveGame].
   LeaveGameProvider(int gameId)
@@ -159,7 +165,7 @@ class LeaveGameProvider extends AutoDisposeFutureProvider<LeaveGameResponse?> {
 
   @override
   Override overrideWith(
-    FutureOr<LeaveGameResponse?> Function(LeaveGameRef provider) create,
+    FutureOr<LeaveGameResponse> Function(LeaveGameRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -176,7 +182,7 @@ class LeaveGameProvider extends AutoDisposeFutureProvider<LeaveGameResponse?> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<LeaveGameResponse?> createElement() {
+  AutoDisposeFutureProviderElement<LeaveGameResponse> createElement() {
     return _LeaveGameProviderElement(this);
   }
 
@@ -196,13 +202,13 @@ class LeaveGameProvider extends AutoDisposeFutureProvider<LeaveGameResponse?> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin LeaveGameRef on AutoDisposeFutureProviderRef<LeaveGameResponse?> {
+mixin LeaveGameRef on AutoDisposeFutureProviderRef<LeaveGameResponse> {
   /// The parameter `gameId` of this provider.
   int get gameId;
 }
 
 class _LeaveGameProviderElement
-    extends AutoDisposeFutureProviderElement<LeaveGameResponse?>
+    extends AutoDisposeFutureProviderElement<LeaveGameResponse>
     with LeaveGameRef {
   _LeaveGameProviderElement(super.provider);
 
@@ -210,12 +216,12 @@ class _LeaveGameProviderElement
   int get gameId => (origin as LeaveGameProvider).gameId;
 }
 
-String _$startGameHash() => r'2fdc7cf94b9603bb46bc939554ace327f6b5be31';
+String _$startGameHash() => r'088563a5006ad0f7e429592f6a2845617b447e3f';
 
 /// 게임 시작 기능
 ///
 /// 방장이 게임을 시작합니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [startGame].
 @ProviderFor(startGame)
@@ -224,14 +230,14 @@ const startGameProvider = StartGameFamily();
 /// 게임 시작 기능
 ///
 /// 방장이 게임을 시작합니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [startGame].
-class StartGameFamily extends Family<AsyncValue<bool>> {
+class StartGameFamily extends Family<AsyncValue<void>> {
   /// 게임 시작 기능
   ///
   /// 방장이 게임을 시작합니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [startGame].
   const StartGameFamily();
@@ -239,7 +245,7 @@ class StartGameFamily extends Family<AsyncValue<bool>> {
   /// 게임 시작 기능
   ///
   /// 방장이 게임을 시작합니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [startGame].
   StartGameProvider call(int gameId) {
@@ -269,14 +275,14 @@ class StartGameFamily extends Family<AsyncValue<bool>> {
 /// 게임 시작 기능
 ///
 /// 방장이 게임을 시작합니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [startGame].
-class StartGameProvider extends AutoDisposeFutureProvider<bool> {
+class StartGameProvider extends AutoDisposeFutureProvider<void> {
   /// 게임 시작 기능
   ///
   /// 방장이 게임을 시작합니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [startGame].
   StartGameProvider(int gameId)
@@ -305,7 +311,7 @@ class StartGameProvider extends AutoDisposeFutureProvider<bool> {
   final int gameId;
 
   @override
-  Override overrideWith(FutureOr<bool> Function(StartGameRef provider) create) {
+  Override overrideWith(FutureOr<void> Function(StartGameRef provider) create) {
     return ProviderOverride(
       origin: this,
       override: StartGameProvider._internal(
@@ -321,7 +327,7 @@ class StartGameProvider extends AutoDisposeFutureProvider<bool> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<bool> createElement() {
+  AutoDisposeFutureProviderElement<void> createElement() {
     return _StartGameProviderElement(this);
   }
 
@@ -341,12 +347,12 @@ class StartGameProvider extends AutoDisposeFutureProvider<bool> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin StartGameRef on AutoDisposeFutureProviderRef<bool> {
+mixin StartGameRef on AutoDisposeFutureProviderRef<void> {
   /// The parameter `gameId` of this provider.
   int get gameId;
 }
 
-class _StartGameProviderElement extends AutoDisposeFutureProviderElement<bool>
+class _StartGameProviderElement extends AutoDisposeFutureProviderElement<void>
     with StartGameRef {
   _StartGameProviderElement(super.provider);
 
@@ -354,12 +360,12 @@ class _StartGameProviderElement extends AutoDisposeFutureProviderElement<bool>
   int get gameId => (origin as StartGameProvider).gameId;
 }
 
-String _$updateReadyHash() => r'705482375b162db2578ea563d7a6afaaf07a4579';
+String _$updateReadyHash() => r'079ee77b3942105dd6e3dfd49a5e76f949543d99';
 
 /// 준비 상태 변경 기능
 ///
 /// 대기실에서 준비 상태를 변경합니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [updateReady].
 @ProviderFor(updateReady)
@@ -368,14 +374,14 @@ const updateReadyProvider = UpdateReadyFamily();
 /// 준비 상태 변경 기능
 ///
 /// 대기실에서 준비 상태를 변경합니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [updateReady].
-class UpdateReadyFamily extends Family<AsyncValue<bool>> {
+class UpdateReadyFamily extends Family<AsyncValue<void>> {
   /// 준비 상태 변경 기능
   ///
   /// 대기실에서 준비 상태를 변경합니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [updateReady].
   const UpdateReadyFamily();
@@ -383,7 +389,7 @@ class UpdateReadyFamily extends Family<AsyncValue<bool>> {
   /// 준비 상태 변경 기능
   ///
   /// 대기실에서 준비 상태를 변경합니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [updateReady].
   UpdateReadyProvider call(int gameId, {required bool isReady}) {
@@ -415,14 +421,14 @@ class UpdateReadyFamily extends Family<AsyncValue<bool>> {
 /// 준비 상태 변경 기능
 ///
 /// 대기실에서 준비 상태를 변경합니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [updateReady].
-class UpdateReadyProvider extends AutoDisposeFutureProvider<bool> {
+class UpdateReadyProvider extends AutoDisposeFutureProvider<void> {
   /// 준비 상태 변경 기능
   ///
   /// 대기실에서 준비 상태를 변경합니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [updateReady].
   UpdateReadyProvider(int gameId, {required bool isReady})
@@ -455,7 +461,7 @@ class UpdateReadyProvider extends AutoDisposeFutureProvider<bool> {
 
   @override
   Override overrideWith(
-    FutureOr<bool> Function(UpdateReadyRef provider) create,
+    FutureOr<void> Function(UpdateReadyRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -473,7 +479,7 @@ class UpdateReadyProvider extends AutoDisposeFutureProvider<bool> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<bool> createElement() {
+  AutoDisposeFutureProviderElement<void> createElement() {
     return _UpdateReadyProviderElement(this);
   }
 
@@ -496,7 +502,7 @@ class UpdateReadyProvider extends AutoDisposeFutureProvider<bool> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin UpdateReadyRef on AutoDisposeFutureProviderRef<bool> {
+mixin UpdateReadyRef on AutoDisposeFutureProviderRef<void> {
   /// The parameter `gameId` of this provider.
   int get gameId;
 
@@ -504,7 +510,7 @@ mixin UpdateReadyRef on AutoDisposeFutureProviderRef<bool> {
   bool get isReady;
 }
 
-class _UpdateReadyProviderElement extends AutoDisposeFutureProviderElement<bool>
+class _UpdateReadyProviderElement extends AutoDisposeFutureProviderElement<void>
     with UpdateReadyRef {
   _UpdateReadyProviderElement(super.provider);
 
@@ -514,13 +520,13 @@ class _UpdateReadyProviderElement extends AutoDisposeFutureProviderElement<bool>
   bool get isReady => (origin as UpdateReadyProvider).isReady;
 }
 
-String _$changeTeamHash() => r'2d6749b4f003699a212cd71b1b2e1b2177934888';
+String _$changeTeamHash() => r'2bd0e191c99c031ab98a34d63aa840fe6c19f39d';
 
 /// 팀 변경 기능
 ///
 /// 대기실에서 팀을 변경합니다.
 /// 팀 변경 시 준비 상태가 해제됩니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [changeTeam].
 @ProviderFor(changeTeam)
@@ -530,15 +536,15 @@ const changeTeamProvider = ChangeTeamFamily();
 ///
 /// 대기실에서 팀을 변경합니다.
 /// 팀 변경 시 준비 상태가 해제됩니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [changeTeam].
-class ChangeTeamFamily extends Family<AsyncValue<bool>> {
+class ChangeTeamFamily extends Family<AsyncValue<void>> {
   /// 팀 변경 기능
   ///
   /// 대기실에서 팀을 변경합니다.
   /// 팀 변경 시 준비 상태가 해제됩니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [changeTeam].
   const ChangeTeamFamily();
@@ -547,7 +553,7 @@ class ChangeTeamFamily extends Family<AsyncValue<bool>> {
   ///
   /// 대기실에서 팀을 변경합니다.
   /// 팀 변경 시 준비 상태가 해제됩니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [changeTeam].
   ChangeTeamProvider call(int gameId, {required String targetTeam}) {
@@ -580,15 +586,15 @@ class ChangeTeamFamily extends Family<AsyncValue<bool>> {
 ///
 /// 대기실에서 팀을 변경합니다.
 /// 팀 변경 시 준비 상태가 해제됩니다.
-/// 성공 시 true, 실패 시 false를 반환합니다.
+/// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [changeTeam].
-class ChangeTeamProvider extends AutoDisposeFutureProvider<bool> {
+class ChangeTeamProvider extends AutoDisposeFutureProvider<void> {
   /// 팀 변경 기능
   ///
   /// 대기실에서 팀을 변경합니다.
   /// 팀 변경 시 준비 상태가 해제됩니다.
-  /// 성공 시 true, 실패 시 false를 반환합니다.
+  /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [changeTeam].
   ChangeTeamProvider(int gameId, {required String targetTeam})
@@ -622,7 +628,7 @@ class ChangeTeamProvider extends AutoDisposeFutureProvider<bool> {
 
   @override
   Override overrideWith(
-    FutureOr<bool> Function(ChangeTeamRef provider) create,
+    FutureOr<void> Function(ChangeTeamRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -640,7 +646,7 @@ class ChangeTeamProvider extends AutoDisposeFutureProvider<bool> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<bool> createElement() {
+  AutoDisposeFutureProviderElement<void> createElement() {
     return _ChangeTeamProviderElement(this);
   }
 
@@ -663,7 +669,7 @@ class ChangeTeamProvider extends AutoDisposeFutureProvider<bool> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin ChangeTeamRef on AutoDisposeFutureProviderRef<bool> {
+mixin ChangeTeamRef on AutoDisposeFutureProviderRef<void> {
   /// The parameter `gameId` of this provider.
   int get gameId;
 
@@ -671,7 +677,7 @@ mixin ChangeTeamRef on AutoDisposeFutureProviderRef<bool> {
   String get targetTeam;
 }
 
-class _ChangeTeamProviderElement extends AutoDisposeFutureProviderElement<bool>
+class _ChangeTeamProviderElement extends AutoDisposeFutureProviderElement<void>
     with ChangeTeamRef {
   _ChangeTeamProviderElement(super.provider);
 
@@ -681,12 +687,12 @@ class _ChangeTeamProviderElement extends AutoDisposeFutureProviderElement<bool>
   String get targetTeam => (origin as ChangeTeamProvider).targetTeam;
 }
 
-String _$joinGameHash() => r'94f2a6d59e219040b198bc5176a627c3e9a1dc7f';
+String _$joinGameHash() => r'db8d682e07b47b40a727368e54342c43cf946a9f';
 
 /// 게임 방 참여 기능
 ///
 /// 초대 코드를 사용하여 게임 방에 참여합니다.
-/// 성공 시 JoinGameResponse, 실패 시 null을 반환합니다.
+/// 성공 시 JoinGameResponse를 반환하고, 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [joinGame].
 @ProviderFor(joinGame)
@@ -695,14 +701,14 @@ const joinGameProvider = JoinGameFamily();
 /// 게임 방 참여 기능
 ///
 /// 초대 코드를 사용하여 게임 방에 참여합니다.
-/// 성공 시 JoinGameResponse, 실패 시 null을 반환합니다.
+/// 성공 시 JoinGameResponse를 반환하고, 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [joinGame].
 class JoinGameFamily extends Family<AsyncValue<JoinGameResponse?>> {
   /// 게임 방 참여 기능
   ///
   /// 초대 코드를 사용하여 게임 방에 참여합니다.
-  /// 성공 시 JoinGameResponse, 실패 시 null을 반환합니다.
+  /// 성공 시 JoinGameResponse를 반환하고, 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [joinGame].
   const JoinGameFamily();
@@ -710,7 +716,7 @@ class JoinGameFamily extends Family<AsyncValue<JoinGameResponse?>> {
   /// 게임 방 참여 기능
   ///
   /// 초대 코드를 사용하여 게임 방에 참여합니다.
-  /// 성공 시 JoinGameResponse, 실패 시 null을 반환합니다.
+  /// 성공 시 JoinGameResponse를 반환하고, 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [joinGame].
   JoinGameProvider call({required String inviteCode}) {
@@ -740,14 +746,14 @@ class JoinGameFamily extends Family<AsyncValue<JoinGameResponse?>> {
 /// 게임 방 참여 기능
 ///
 /// 초대 코드를 사용하여 게임 방에 참여합니다.
-/// 성공 시 JoinGameResponse, 실패 시 null을 반환합니다.
+/// 성공 시 JoinGameResponse를 반환하고, 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [joinGame].
 class JoinGameProvider extends AutoDisposeFutureProvider<JoinGameResponse?> {
   /// 게임 방 참여 기능
   ///
   /// 초대 코드를 사용하여 게임 방에 참여합니다.
-  /// 성공 시 JoinGameResponse, 실패 시 null을 반환합니다.
+  /// 성공 시 JoinGameResponse를 반환하고, 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [joinGame].
   JoinGameProvider({required String inviteCode})
