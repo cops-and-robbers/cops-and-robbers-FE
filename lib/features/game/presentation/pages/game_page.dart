@@ -27,6 +27,7 @@ import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
+import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../widgets/game_timer_text.dart';
 import '../widgets/location_reveal_countdown.dart';
 import '../widgets/google_map_view.dart';
@@ -70,6 +71,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   final _naverMapKey = GlobalKey<NaverMapViewState>();
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
+  bool _isLocationFocused = true;
 
   /// dispose()에서 ref 사용 불가이므로 사전에 저장
   ChatNotifier? _chatNotifier;
@@ -232,10 +234,17 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   void _moveToCurrentLocation() {
+    setState(() => _isLocationFocused = true);
     if (widget.mapType == 'naver') {
       _naverMapKey.currentState?.moveCameraToCurrentLocation();
     } else {
       _googleMapKey.currentState?.moveCameraToCurrentLocation();
+    }
+  }
+
+  void _onMapCameraMoved() {
+    if (_isLocationFocused) {
+      setState(() => _isLocationFocused = false);
     }
   }
 
@@ -490,7 +499,10 @@ class _GamePageState extends ConsumerState<GamePage> {
           Positioned.fill(
             child: widget.mapType == 'naver'
                 ? NaverMapView(key: _naverMapKey)
-                : GoogleMapView(key: _googleMapKey),
+                : GoogleMapView(
+                    key: _googleMapKey,
+                    onCameraMoveStarted: _onMapCameraMoved,
+                  ),
           ),
 
           /// index 1: 참가자 목록 오버레이 (if/else로 개수 고정)
@@ -580,9 +592,9 @@ class _GamePageState extends ConsumerState<GamePage> {
                     iconColor: AppColors.blue,
                   ),
                   SizedBox(height: 8.h),
-                  SvgIconButton(
-                    assetPath: 'assets/icons/mage_location-fill.svg',
+                  MyLocationButton(
                     onPressed: _moveToCurrentLocation,
+                    isFocused: _isLocationFocused,
                     containerSize: 48,
                     iconSize: 24,
                   ),
