@@ -135,16 +135,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
     }
   }
 
-  /// 닉네임 설정/변경 완료 후 네비게이션
-  ///
-  /// - 설정에서 진입 (push): canPop == true → pop으로 설정 페이지로 복귀
-  /// - 첫 로그인 (redirect): canPop == false → go로 홈 이동
+  /// 닉네임 설정/변경 완료 후 홈으로 이동
   void _navigateAfterComplete() {
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.go(RoutePaths.home);
-    }
+    context.go(RoutePaths.home);
   }
 
   /// 확인 버튼 클릭 시 호출

@@ -137,8 +137,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         // 3. 기존 회원이 로그인/스플래시/닉네임설정 접근 시 → 홈으로
         // ====================================================================
         if (currentPath == RoutePaths.login ||
-            currentPath == RoutePaths.splash ||
-            currentPath == RoutePaths.nicknameSetup) {
+            currentPath == RoutePaths.splash) {
           return RoutePaths.home;
         }
 
