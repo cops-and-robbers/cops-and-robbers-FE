@@ -2,23 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/services/location/device_location_service.dart';
+import 'map_error_widget.dart';
 
 /// Google Maps 기반 게임 지도 뷰
 ///
 /// - 기본 내 위치 마커 표시 (myLocationEnabled)
 /// - 초기 진입 시 현재 위치 1회 조회 후 카메라 이동
+/// - [updateAreaCircles]로 플레이그라운드·감옥 원 추가
 class GoogleMapView extends StatefulWidget {
   const GoogleMapView({super.key});
 
   @override
-  State<GoogleMapView> createState() => _GoogleMapViewState();
+  State<GoogleMapView> createState() => GoogleMapViewState();
 }
 
-class _GoogleMapViewState extends State<GoogleMapView> {
+class GoogleMapViewState extends State<GoogleMapView> {
   GoogleMapController? _controller;
 
   // 위치 조회 실패 대비 fallback (어린이대공원)
   static const LatLng _fallback = LatLng(37.5480, 127.0810);
+
+  Set<Circle> _areaCircles = {};
+  Set<Circle> _robberCircles = {};
 
   @override
   void initState() {
@@ -35,7 +40,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     super.dispose();
   }
 
-  Future<void> _moveCameraToCurrentLocation() async {
+  Future<void> moveCameraToCurrentLocation() async {
     debugPrint('📍 GoogleMap: 현재 위치로 카메라 이동 시작');
     try {
       final pos = await DeviceLocationService.getCurrentPosition();
@@ -48,7 +53,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
       debugPrint('[지도/Google] 초기 위치: ${pos.latitude}, ${pos.longitude}');
 
       final target = LatLng(pos.latitude, pos.longitude);
-      _controller?.moveCamera(
+      await _controller?.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(target: target, zoom: 16),
         ),
@@ -60,10 +65,22 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     }
   }
 
+  /// 맵 영역 원(플레이그라운드·감옥) 업데이트
+  void updateAreaCircles(Set<Circle> circles) {
+    if (!mounted) return;
+    setState(() => _areaCircles = circles);
+    debugPrint('🗺️ GoogleMap: 영역 원 ${circles.length}개 업데이트');
+  }
+
+  /// 도둑 위치 빨간 원 업데이트 (LOCATION_REVEAL 이벤트 시 호출)
+  void updateRobberCircles(Set<Circle> circles) {
+    if (!mounted) return;
+    setState(() => _robberCircles = circles);
+    debugPrint('🗺️ GoogleMap: 도둑 위치 원 ${circles.length}개 업데이트');
+  }
+
   @override
   Widget build(BuildContext context) {
-    debugPrint('🗺️ GoogleMapView build 호출');
-
     try {
       return GoogleMap(
         initialCameraPosition: const CameraPosition(
@@ -74,7 +91,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
             _controller = controller;
-            _moveCameraToCurrentLocation();
+            moveCameraToCurrentLocation();
             debugPrint('✅ google map ready');
           } catch (e, stack) {
             debugPrint('❌ GoogleMap onMapCreated 에러: $e');
@@ -88,24 +105,16 @@ class _GoogleMapViewState extends State<GoogleMapView> {
 
         zoomControlsEnabled: false,
         compassEnabled: false,
+        circles: {..._areaCircles, ..._robberCircles},
+        // TODO: 다른 플레이어 실시간 위치 마커 표시 (백엔드 스펙 확정 후)
+        //       markers: _playerMarkers,
       );
     } catch (e, stack) {
       debugPrint('❌ GoogleMap 생성 실패: $e');
       debugPrint('Stack: $stack');
 
       // 에러 발생 시 대체 UI 표시
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            const Text('Google Map 로드 실패'),
-            const SizedBox(height: 8),
-            Text('Error: $e', style: const TextStyle(fontSize: 12)),
-          ],
-        ),
-      );
+      return MapErrorWidget(mapName: 'Google Map', error: e);
     }
   }
 }

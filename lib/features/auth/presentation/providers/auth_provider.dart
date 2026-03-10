@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,43 +22,12 @@ part 'auth_provider.g.dart';
 // Core Infrastructure Providers
 // ============================================================================
 
-/// SecureTokenStorage Provider
-///
-/// 앱 생애주기 동안 유지 (keepAlive) — 인터셉터 콜백에서 안전하게 접근 가능
-@Riverpod(keepAlive: true)
-SecureTokenStorage secureTokenStorage(Ref ref) {
-  return SecureTokenStorage();
-}
-
 /// FirebaseAuthDataSource Provider
 ///
 /// 앱 생애주기 동안 유지 (keepAlive) — 인터셉터 콜백에서 안전하게 접근 가능
 @Riverpod(keepAlive: true)
 FirebaseAuthDataSource firebaseAuthDataSource(Ref ref) {
   return FirebaseAuthDataSource();
-}
-
-/// Dio Provider (AuthInterceptor 포함)
-///
-/// 앱 생애주기 동안 유지 (keepAlive) — HTTP 클라이언트는 dispose되면 안 됨
-@Riverpod(keepAlive: true)
-Dio dio(Ref ref) {
-  final tokenStorage = ref.watch(secureTokenStorageProvider);
-
-  return DioClient.create(
-    tokenStorage: tokenStorage,
-    onForceLogout: () async {
-      // 강제 로그아웃: Firebase 로그아웃 + 토큰 삭제 + 상태 초기화
-      final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
-      await firebaseDataSource.signOut();
-      await tokenStorage.clearTokens();
-
-      // AuthNotifier 상태를 null로 초기화하여 GoRouter 리다이렉트 트리거
-      ref.read(authNotifierProvider.notifier).forceLogout();
-
-      debugPrint('🚨 강제 로그아웃 완료 (토큰 만료/재발급 실패)');
-    },
-  );
 }
 
 // ============================================================================
@@ -129,6 +97,23 @@ Stream<User?> authState(Ref ref) {
 class AuthNotifier extends _$AuthNotifier {
   @override
   FutureOr<AuthResultEntity?> build() async {
+    // 강제 로그아웃 콜백 등록 (core → auth 역전 패턴)
+    // Future.microtask로 지연: build() 중 다른 provider 수정 금지 (Riverpod 제약)
+    Future.microtask(() {
+      ref.read(forceLogoutCallbackNotifierProvider.notifier).register(() async {
+        final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
+        await firebaseDataSource.signOut();
+        await ref.read(secureTokenStorageProvider).clearTokens();
+        forceLogout();
+        debugPrint('🚨 강제 로그아웃 완료 (토큰 만료/재발급 실패)');
+      });
+    });
+
+    // auto-dispose 시 keepAlive 콜백 해제 — 죽은 ref 접근 방지
+    ref.onDispose(() {
+      ref.read(forceLogoutCallbackNotifierProvider.notifier).unregister();
+    });
+
     // 초기 상태: Firebase Auth + JWT 토큰 모두 존재해야 인증된 것으로 판단
     final dataSource = ref.watch(firebaseAuthDataSourceProvider);
     final tokenStorage = ref.watch(secureTokenStorageProvider);
@@ -143,8 +128,18 @@ class AuthNotifier extends _$AuthNotifier {
 
       // Firebase + JWT 토큰 모두 존재 → 인증된 사용자
       // userId는 SecureTokenStorage에서 복원
+      final userId = await tokenStorage.getUserId();
+      if (userId == null) {
+        debugPrint('[AuthNotifier] userId 없음 → 세션 초기화');
+        try {
+          await dataSource.signOut();
+        } catch (_) {}
+        await tokenStorage.clearTokens();
+        return null;
+      }
+
       return AuthResultEntity(
-        userId: await tokenStorage.getUserId() ?? 0,
+        userId: userId,
         nickname: currentUser.displayName ?? '',
         isNewUser: false,
       );

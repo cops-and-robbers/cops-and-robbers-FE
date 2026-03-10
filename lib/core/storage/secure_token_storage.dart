@@ -1,5 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'secure_token_storage.g.dart';
 
 /// JWT 토큰 보안 저장소
 ///
@@ -54,16 +58,6 @@ class SecureTokenStorage {
     if (kDebugMode) {
       debugPrint('✅ 토큰 저장 완료 (accessToken length: ${accessToken.length})');
     }
-  }
-
-  /// Access Token만 저장
-  Future<void> saveAccessToken(String accessToken) async {
-    await _storage.write(key: _accessTokenKey, value: accessToken);
-  }
-
-  /// Refresh Token만 저장
-  Future<void> saveRefreshToken(String refreshToken) async {
-    await _storage.write(key: _refreshTokenKey, value: refreshToken);
   }
 
   /// 사용자 ID 저장
@@ -123,4 +117,12 @@ class SecureTokenStorage {
     final accessToken = await getAccessToken();
     return accessToken != null;
   }
+}
+
+/// SecureTokenStorage Provider
+///
+/// 앱 생애주기 동안 유지 (keepAlive) — 인터셉터 콜백에서 안전하게 접근 가능
+@Riverpod(keepAlive: true)
+SecureTokenStorage secureTokenStorage(Ref ref) {
+  return SecureTokenStorage();
 }

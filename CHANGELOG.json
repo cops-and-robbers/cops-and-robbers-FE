@@ -1,11 +1,48 @@
 {
   "metadata": {
-    "lastUpdated": "2026-03-02T03:36:08Z",
-    "currentVersion": "1.2.20",
+    "lastUpdated": "2026-03-10T07:26:23Z",
+    "currentVersion": "1.2.22",
     "projectType": "flutter",
-    "totalReleases": 43
+    "totalReleases": 44
   },
   "releases": [
+    {
+      "version": "1.2.22",
+      "project_type": "flutter",
+      "date": "2026-03-10",
+      "pr_number": 110,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트\n\n* **새로운 기능**\n  * 실시간 게임 채팅 기능 추가 (전체/팀 채팅)\n  * 게임 이벤트 실시간 처리 및 알림\n  * 게임 맵에 도둑 위치 공개 카운트다운 표시\n  * 참가자 목록 오버레이 및 체포/도망 액션\n  * 게임 대기 화면 개선\n  * 초대 코드 공유 기능\n\n* **개선 사항**\n  * WebSocket 연결 안정성 및 자동 재연결 로직\n  * API 응답 처리 및 오류 관리 강화\n  * 게임 상태 동기화 개선\n  * 앱 라이프사이클 관리 최적화\n\n* **문서**\n  * WebSocket 이벤트 시스템 아키텍처 가이드 추가\n  * 타이머 로직 및 알고리즘 레퍼런스 문서 추가",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "실시간 게임 채팅 기능 추가 (전체/팀 채팅)",
+            "게임 이벤트 실시간 처리 및 알림",
+            "게임 맵에 도둑 위치 공개 카운트다운 표시",
+            "참가자 목록 오버레이 및 체포/도망 액션",
+            "게임 대기 화면 개선",
+            "초대 코드 공유 기능"
+          ]
+        },
+        "개선_사항": {
+          "title": "개선 사항",
+          "items": [
+            "WebSocket 연결 안정성 및 자동 재연결 로직",
+            "API 응답 처리 및 오류 관리 강화",
+            "게임 상태 동기화 개선",
+            "앱 라이프사이클 관리 최적화"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "WebSocket 이벤트 시스템 아키텍처 가이드 추가",
+            "타이머 로직 및 알고리즘 레퍼런스 문서 추가"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.2.20",
       "project_type": "flutter",

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -72,6 +73,7 @@ import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 /// - Deep Link 지원: URL로 직접 특정 페이지 접근
 /// - 404 에러 처리: errorBuilder로 잘못된 경로 처리
 final routerProvider = Provider<GoRouter>((ref) {
+  debugPrint('🔧 [routerProvider] GoRouter 생성 시작');
   return GoRouter(
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
@@ -79,72 +81,74 @@ final routerProvider = Provider<GoRouter>((ref) {
     // authNotifierProvider 사용: 즉시 반영되는 인증 상태
     refreshListenable: _GoRouterRefreshNotifier(ref, authNotifierProvider),
     redirect: (BuildContext context, GoRouterState state) {
-      // ====================================================================
-      // 실제 Provider에서 인증 상태 가져오기
-      // ====================================================================
-      // authNotifierProvider 사용: 즉시 반영되는 인증 상태
-      // authStateProvider (Stream 기반)는 비동기 업데이트 지연 가능
-      final authState = ref.read(authNotifierProvider);
-      final authUser = authState.value;
-      final isAuthenticated = authUser != null;
+      try {
+        // ====================================================================
+        // 실제 Provider에서 인증 상태 가져오기
+        // ====================================================================
+        // authNotifierProvider 사용: 즉시 반영되는 인증 상태
+        // authStateProvider (Stream 기반)는 비동기 업데이트 지연 가능
+        final authState = ref.read(authNotifierProvider);
 
-      final currentPath = state.uri.path;
+        debugPrint(
+          '🔀 [GoRouter redirect] path=${state.uri.path}, '
+          'authState=$authState',
+        );
 
-      // 인증이 불필요한 공개 경로 (Splash, Login, 개발자 도구)
-      final publicPaths = [
-        RoutePaths.splash,
-        RoutePaths.login,
-        RoutePaths.lifecycleTest, // 생명주기 테스트는 로그인 불필요
-      ];
+        // 인증 상태 로딩 중 (Firebase 토큰 갱신 등)이면 리다이렉트 보류
+        // → loading 중 null로 판단해 로그인으로 보내는 것을 방지
+        if (authState.isLoading) return null;
 
-      // ====================================================================
-      // 1. 인증 체크 - 로그인 필요한 페이지 보호
-      // ====================================================================
-      if (!isAuthenticated) {
-        // 스플래시, 로그인 페이지, 개발자 도구는 허용
-        if (publicPaths.contains(currentPath)) {
-          return null;
+        final authUser = authState.value;
+        final isAuthenticated = authUser != null;
+
+        final currentPath = state.uri.path;
+
+        // 인증이 불필요한 공개 경로 (Splash, Login, 개발자 도구)
+        final publicPaths = [
+          RoutePaths.splash,
+          RoutePaths.login,
+          if (kDebugMode) RoutePaths.lifecycleTest,
+        ];
+
+        // ====================================================================
+        // 1. 인증 체크 - 로그인 필요한 페이지 보호
+        // ====================================================================
+        if (!isAuthenticated) {
+          // 스플래시, 로그인 페이지, 개발자 도구는 허용
+          if (publicPaths.contains(currentPath)) {
+            return null;
+          }
+          // 그 외 모든 페이지는 로그인으로 리다이렉트
+          return RoutePaths.login;
         }
-        // 그 외 모든 페이지는 로그인으로 리다이렉트
-        return RoutePaths.login;
-      }
 
-      // ====================================================================
-      // 2. 인증된 사용자가 로그인/스플래시 페이지 접근 시
-      // ====================================================================
-      if (currentPath == RoutePaths.login || currentPath == RoutePaths.splash) {
-        // 신규 회원 → 닉네임 설정 페이지로
+        // ====================================================================
+        // 2. 신규 회원 → 닉네임 설정 페이지만 허용
+        // ====================================================================
         if (authUser.isNewUser) {
+          if (currentPath == RoutePaths.nicknameSetup) {
+            return null;
+          }
           final encodedNickname = Uri.encodeComponent(authUser.nickname);
           return '${RoutePaths.nicknameSetup}?nickname=$encodedNickname';
         }
-        // 기존 회원 → 홈으로
-        return RoutePaths.home;
+
+        // ====================================================================
+        // 3. 기존 회원이 로그인/스플래시/닉네임설정 접근 시 → 홈으로
+        // ====================================================================
+        if (currentPath == RoutePaths.login ||
+            currentPath == RoutePaths.splash ||
+            currentPath == RoutePaths.nicknameSetup) {
+          return RoutePaths.home;
+        }
+
+        return null; // 리다이렉트 불필요
+      } catch (e, stack) {
+        debugPrint('🚨 [GoRouter redirect] 예외 발생: $e');
+        debugPrint('🚨 [GoRouter redirect] 스택: $stack');
+        // 안전 실패: 보호 경로 우회 방지를 위해 로그인으로 리다이렉트
+        return RoutePaths.login;
       }
-
-      // ====================================================================
-      // 4. 세션 상태 체크 (게임 진행 중인 경우 강제 리다이렉트)
-      // ====================================================================
-      // TODO: Session Provider 구현 후 활성화
-      // if (currentSession != null) {
-      //   switch (currentSession.status) {
-      //     case SessionStatus.lobby:
-      //       if (!currentPath.startsWith('/waiting-room/')) {
-      //         return RoutePaths.waitingRoomWithId(currentSession.id);
-      //       }
-      //       break;
-      //     case SessionStatus.playing:
-      //     case SessionStatus.ended:
-      //       // playing 및 ended 상태 모두 game 화면 유지
-      //       // ended 상태에서는 GamePage 내부에서 결과 모달(Dialog)이 표시됨
-      //       if (!currentPath.startsWith('/game/')) {
-      //         return RoutePaths.gameWithId(currentSession.id);
-      //       }
-      //       break;
-      //   }
-      // }
-
-      return null; // 리다이렉트 불필요
     },
 
     routes: [
@@ -262,7 +266,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: RoutePaths.waitingRoomName,
         builder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
-          return WaitingRoomPage(sessionId: sessionId);
+          final inviteCode = state.uri.queryParameters['inviteCode'];
+          final showInviteDialog =
+              state.uri.queryParameters['showInvite'] == 'true';
+          return WaitingRoomPage(
+            sessionId: sessionId,
+            inviteCode: inviteCode,
+            showInviteDialog: showInviteDialog,
+          );
         },
       ),
 
@@ -272,24 +283,54 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
           final mapType = state.uri.queryParameters['mapType'] ?? 'google';
-          return GamePage(sessionId: sessionId, mapType: mapType);
+          final team = state.uri.queryParameters['team'] ?? 'POLICE';
+          // TODO: participantId는 로비 API 연동 후 실제 값으로 교체
+          final participantId =
+              int.tryParse(state.uri.queryParameters['pid'] ?? '') ?? 1;
+          final isDummy = state.uri.queryParameters['dummy'] == 'true';
+          return GamePage(
+            sessionId: sessionId,
+            mapType: mapType,
+            team: team,
+            participantId: participantId,
+            isDummy: isDummy,
+          );
         },
       ),
 
       // ====================================================================
-      // Developer Tools (개발/테스트용)
+      // Developer Tools (개발/테스트용 — 릴리스 빌드에서는 등록되지 않음)
       // ====================================================================
-      GoRoute(
-        path: RoutePaths.lifecycleTest,
-        name: RoutePaths.lifecycleTestName,
-        builder: (context, state) => const LifecycleTestPage(),
-      ),
+      if (kDebugMode)
+        GoRoute(
+          path: RoutePaths.lifecycleTest,
+          name: RoutePaths.lifecycleTestName,
+          builder: (context, state) => const LifecycleTestPage(),
+        ),
     ],
 
     // ====================================================================
     // Error Handling (404 Page)
     // ====================================================================
-    errorBuilder: (context, state) => Scaffold(
+    errorBuilder: (context, state) => _ErrorPage(path: state.uri.path),
+  );
+});
+
+// ============================================================================
+// 404 에러 페이지 (로그아웃 기능 포함)
+// ============================================================================
+
+/// 존재하지 않는 페이지 접근 시 표시되는 에러 페이지
+///
+/// 로그아웃 버튼을 통해 인증 상태를 초기화하고 로그인 화면으로 이동합니다.
+class _ErrorPage extends ConsumerWidget {
+  const _ErrorPage({required this.path});
+
+  final String path;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
       appBar: AppBar(
         title: Text('페이지를 찾을 수 없습니다', style: AppTextStyles.label_16),
         centerTitle: true,
@@ -305,21 +346,26 @@ final routerProvider = Provider<GoRouter>((ref) {
               Text('요청하신 페이지가 존재하지 않습니다.', style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical8),
               Text(
-                '경로: ${state.uri.path}',
+                '경로: $path',
                 style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
               ),
               SizedBox(height: AppSpacing.vertical24),
               ElevatedButton(
-                onPressed: () => context.go(RoutePaths.home),
-                child: Text('홈으로 돌아가기', style: AppTextStyles.paragraph_14),
+                onPressed: () async {
+                  await ref.read(authNotifierProvider.notifier).signOut();
+                  if (context.mounted) {
+                    context.go(RoutePaths.login);
+                  }
+                },
+                child: Text('로그아웃', style: AppTextStyles.paragraph_14),
               ),
             ],
           ),
         ),
       ),
-    ),
-  );
-});
+    );
+  }
+}
 
 // ============================================================================
 // GoRouter용 Refresh Notifier (StreamProvider 감지용)
@@ -327,12 +373,33 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 /// GoRouter용 Refresh Notifier
 ///
-/// StreamProvider의 상태 변경을 감지하여 GoRouter에게
-/// 리다이렉트 재실행을 트리거합니다.
+/// auth 상태가 실질적으로 변경될 때만 GoRouter에 리다이렉트 재실행을 트리거합니다.
+/// loading → loading 또는 data(same) 전환은 무시하여 불필요한 리다이렉트를 방지합니다.
 class _GoRouterRefreshNotifier extends ChangeNotifier {
   _GoRouterRefreshNotifier(this._ref, this._provider) {
+    debugPrint('🔧 [_GoRouterRefreshNotifier] 생성 시작');
+    bool? prevIsAuthenticated;
+    bool? prevIsNewUser;
     _ref.listen<AsyncValue<dynamic>>(_provider, (previous, next) {
-      notifyListeners(); // 상태 변경 시 GoRouter에 알림
+      debugPrint(
+        '🔧 [_GoRouterRefreshNotifier] listen callback: '
+        'prev=$previous, next=$next',
+      );
+      // loading 중이면 notify 생략 (중간 상태로 인한 오류 화면 방지)
+      if (next.isLoading) return;
+
+      // 인증 여부와 신규 회원 여부 모두 비교하여 변경 시에만 notify
+      final user = next.valueOrNull;
+      final isAuthenticated = user != null;
+      final isNewUser = user?.isNewUser as bool?;
+      if (prevIsAuthenticated == isAuthenticated &&
+          prevIsNewUser == isNewUser) {
+        return;
+      }
+      prevIsAuthenticated = isAuthenticated;
+      prevIsNewUser = isNewUser;
+
+      notifyListeners();
     });
   }
 
