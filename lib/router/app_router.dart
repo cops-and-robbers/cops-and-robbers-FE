@@ -123,16 +123,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
 
         // ====================================================================
-        // 2. 인증된 사용자가 로그인/스플래시 페이지 접근 시
+        // 2. 신규 회원 → 닉네임 설정 페이지만 허용
+        // ====================================================================
+        if (authUser.isNewUser) {
+          if (currentPath == RoutePaths.nicknameSetup) {
+            return null;
+          }
+          final encodedNickname = Uri.encodeComponent(authUser.nickname);
+          return '${RoutePaths.nicknameSetup}?nickname=$encodedNickname';
+        }
+
+        // ====================================================================
+        // 3. 기존 회원이 로그인/스플래시/닉네임설정 접근 시 → 홈으로
         // ====================================================================
         if (currentPath == RoutePaths.login ||
-            currentPath == RoutePaths.splash) {
-          // 신규 회원 → 닉네임 설정 페이지로
-          if (authUser.isNewUser) {
-            final encodedNickname = Uri.encodeComponent(authUser.nickname);
-            return '${RoutePaths.nicknameSetup}?nickname=$encodedNickname';
-          }
-          // 기존 회원 → 홈으로
+            currentPath == RoutePaths.splash ||
+            currentPath == RoutePaths.nicknameSetup) {
           return RoutePaths.home;
         }
 
