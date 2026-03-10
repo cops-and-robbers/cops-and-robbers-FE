@@ -559,7 +559,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       confirmColor: AppColors.blue,
       confirmTextColor: AppColors.white,
       onConfirm: () {
-        shareText('경찰과 도둑 게임에 참여하세요!\n참여코드: $code', subject: '경찰과 도둑 초대코드');
+        shareText(code);
       },
     );
   }

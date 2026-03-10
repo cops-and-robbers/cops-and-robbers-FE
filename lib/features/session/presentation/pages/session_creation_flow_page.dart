@@ -105,7 +105,7 @@ class _SessionCreationFlowPageState
         _maxParticipants = draft.maxParticipants ?? 10;
         _roundDurationMinutes = draft.roundDurationMinutes ?? 30;
         _locationShareMinutes = draft.locationShareMinutes ?? 5;
-        _policeWaitMinutes = draft.policeWaitMinutes ?? 5;
+        _policeWaitMinutes = (draft.policeWaitMinutes ?? 5).clamp(1, 10);
       });
     }
   }

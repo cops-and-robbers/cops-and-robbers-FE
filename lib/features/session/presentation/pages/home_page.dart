@@ -95,7 +95,7 @@ class HomePage extends ConsumerWidget {
         // Duplicate GlobalKeys 오류가 발생할 수 있습니다.
         // pop() 호출 시각을 기록하여 필요한 나머지 시간만 대기합니다.
         final dialogCloseStart = DateTime.now();
-        final code = codeController.text.trim();
+        final code = codeController.text.trim().toUpperCase();
 
         JoinGameResponse? response;
         try {
@@ -280,7 +280,11 @@ class HomePage extends ConsumerWidget {
                 foregroundColor: AppColors.black600,
                 showBorder: false,
               ),
-              SizedBox(height: AppSpacing.vertical20),
+              SizedBox(
+                height: defaultTargetPlatform == TargetPlatform.android
+                    ? AppSpacing.vertical32
+                    : AppSpacing.vertical20,
+              ),
             ],
           ),
         ),

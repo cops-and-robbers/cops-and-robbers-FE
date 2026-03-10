@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
@@ -27,6 +28,7 @@ import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
+import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../widgets/game_timer_text.dart';
 import '../widgets/location_reveal_countdown.dart';
 import '../widgets/google_map_view.dart';
@@ -70,6 +72,8 @@ class _GamePageState extends ConsumerState<GamePage> {
   final _naverMapKey = GlobalKey<NaverMapViewState>();
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
+  bool _isLocationFocused = true;
+  bool _isProgrammaticMove = true; // 초기 카메라 이동(onMapCreated) 보호
 
   /// dispose()에서 ref 사용 불가이므로 사전에 저장
   ChatNotifier? _chatNotifier;
@@ -232,10 +236,22 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   void _moveToCurrentLocation() {
+    _isProgrammaticMove = true;
+    setState(() => _isLocationFocused = true);
     if (widget.mapType == 'naver') {
       _naverMapKey.currentState?.moveCameraToCurrentLocation();
     } else {
       _googleMapKey.currentState?.moveCameraToCurrentLocation();
+    }
+  }
+
+  void _onMapCameraMoved() {
+    if (_isProgrammaticMove) {
+      _isProgrammaticMove = false;
+      return;
+    }
+    if (_isLocationFocused) {
+      setState(() => _isLocationFocused = false);
     }
   }
 
@@ -383,7 +399,7 @@ class _GamePageState extends ConsumerState<GamePage> {
             style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppSpacing.vertical8),
           Text(
             reason == 'ALL_ARRESTED' ? '도둑이 모두 체포되었습니다!' : '제한 시간이 종료되었습니다!',
             style: AppTextStyles.paragraph_14.copyWith(
@@ -490,7 +506,10 @@ class _GamePageState extends ConsumerState<GamePage> {
           Positioned.fill(
             child: widget.mapType == 'naver'
                 ? NaverMapView(key: _naverMapKey)
-                : GoogleMapView(key: _googleMapKey),
+                : GoogleMapView(
+                    key: _googleMapKey,
+                    onCameraMoveStarted: _onMapCameraMoved,
+                  ),
           ),
 
           /// index 1: 참가자 목록 오버레이 (if/else로 개수 고정)
@@ -579,10 +598,10 @@ class _GamePageState extends ConsumerState<GamePage> {
                     iconSize: 24,
                     iconColor: AppColors.blue,
                   ),
-                  SizedBox(height: 8.h),
-                  SvgIconButton(
-                    assetPath: 'assets/icons/mage_location-fill.svg',
+                  SizedBox(height: AppSpacing.vertical8),
+                  MyLocationButton(
                     onPressed: _moveToCurrentLocation,
+                    isFocused: _isLocationFocused,
                     containerSize: 48,
                     iconSize: 24,
                   ),
@@ -648,7 +667,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     return Container(
       height: 64.h,
       color: AppColors.white,
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      padding: AppPadding.horizontal24,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -696,12 +715,12 @@ class _GamePageState extends ConsumerState<GamePage> {
   /// 알림 배너 (353x44) — LOCATION_REVEAL 이벤트 수신 시 5초간 표시
   Widget _buildAlertBanner() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      padding: AppPadding.horizontal20,
       child: Container(
         height: 44.h,
         decoration: BoxDecoration(
           color: AppColors.red,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: AppRadius.large,
         ),
         padding: EdgeInsets.only(left: 16.w),
         child: Row(
@@ -715,7 +734,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                 BlendMode.srcIn,
               ),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: AppSpacing.horizontal8),
             Text(
               '현재 도둑의 위치가 공개됩니다!',
               style: AppTextStyles.paragraph14Semibold.copyWith(
