@@ -72,6 +72,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
   bool _isLocationFocused = true;
+  bool _isProgrammaticMove = false;
 
   /// dispose()에서 ref 사용 불가이므로 사전에 저장
   ChatNotifier? _chatNotifier;
@@ -234,6 +235,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   void _moveToCurrentLocation() {
+    _isProgrammaticMove = true;
     setState(() => _isLocationFocused = true);
     if (widget.mapType == 'naver') {
       _naverMapKey.currentState?.moveCameraToCurrentLocation();
@@ -243,6 +245,10 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   void _onMapCameraMoved() {
+    if (_isProgrammaticMove) {
+      _isProgrammaticMove = false;
+      return;
+    }
     if (_isLocationFocused) {
       setState(() => _isLocationFocused = false);
     }

@@ -114,6 +114,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   late ZoneShape _shape;
   bool _isInitialized = false;
   bool _isLocationFocused = true;
+  bool _isProgrammaticMove = false;
 
   // Fallback 위치 (어린이대공원)
   static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
@@ -156,6 +157,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
 
     // 3. 위젯이 여전히 마운트되어 있을 때만 상태 업데이트
     if (mounted) {
+      _isProgrammaticMove = true;
       setState(() {
         _isInitialized = true;
       });
@@ -401,6 +403,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   /// 반경 변경 처리
   /// Handle radius change
   void _onRadiusChanged(double newRadius) {
+    _isProgrammaticMove = true;
     setState(() {
       _currentRadius = newRadius;
       _shape.setRadius(newRadius);
@@ -447,8 +450,11 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
           2;
       final screenCenterLatLng = LatLng(centerLat, centerLng);
 
+      final wasProgrammatic = _isProgrammaticMove;
+      if (_isProgrammaticMove) _isProgrammaticMove = false;
+
       setState(() {
-        _isLocationFocused = false;
+        if (!wasProgrammatic) _isLocationFocused = false;
         _currentCenter = screenCenterLatLng;
         _shape.setCenter(screenCenterLatLng);
       });
@@ -479,6 +485,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       // 위젯이 마운트되어 있을 때만 중심 이동
       if (mounted) {
         // 구역 중심 업데이트
+        _isProgrammaticMove = true;
         setState(() {
           _isLocationFocused = true;
           _currentCenter = currentLocation;
