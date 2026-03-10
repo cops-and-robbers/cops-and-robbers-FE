@@ -280,7 +280,11 @@ class HomePage extends ConsumerWidget {
                 foregroundColor: AppColors.black600,
                 showBorder: false,
               ),
-              SizedBox(height: AppSpacing.vertical20),
+              SizedBox(
+                height: defaultTargetPlatform == TargetPlatform.android
+                    ? AppSpacing.vertical32
+                    : AppSpacing.vertical20,
+              ),
             ],
           ),
         ),
