@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -106,7 +107,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         final publicPaths = [
           RoutePaths.splash,
           RoutePaths.login,
-          RoutePaths.lifecycleTest, // 생명주기 테스트는 로그인 불필요
+          if (kDebugMode) RoutePaths.lifecycleTest,
         ];
 
         // ====================================================================
@@ -291,13 +292,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // ====================================================================
-      // Developer Tools (개발/테스트용)
+      // Developer Tools (개발/테스트용 — 릴리스 빌드에서는 등록되지 않음)
       // ====================================================================
-      GoRoute(
-        path: RoutePaths.lifecycleTest,
-        name: RoutePaths.lifecycleTestName,
-        builder: (context, state) => const LifecycleTestPage(),
-      ),
+      if (kDebugMode)
+        GoRoute(
+          path: RoutePaths.lifecycleTest,
+          name: RoutePaths.lifecycleTestName,
+          builder: (context, state) => const LifecycleTestPage(),
+        ),
     ],
 
     // ====================================================================
