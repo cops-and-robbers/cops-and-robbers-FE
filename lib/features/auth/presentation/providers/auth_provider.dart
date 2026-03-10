@@ -130,7 +130,11 @@ class AuthNotifier extends _$AuthNotifier {
       // userId는 SecureTokenStorage에서 복원
       final userId = await tokenStorage.getUserId();
       if (userId == null) {
-        debugPrint('[AuthNotifier] userId 없음 → 미인증 처리');
+        debugPrint('[AuthNotifier] userId 없음 → 세션 초기화');
+        try {
+          await dataSource.signOut();
+        } catch (_) {}
+        await tokenStorage.clearTokens();
         return null;
       }
 
