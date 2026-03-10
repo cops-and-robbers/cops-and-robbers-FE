@@ -48,28 +48,52 @@ class CountdownTimerContent extends StatefulWidget {
   State<CountdownTimerContent> createState() => _CountdownTimerContentState();
 }
 
-class _CountdownTimerContentState extends State<CountdownTimerContent> {
+class _CountdownTimerContentState extends State<CountdownTimerContent>
+    with WidgetsBindingObserver {
+  late final DateTime _endTime;
   late int _remainingSeconds;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _endTime = DateTime.now().add(widget.duration);
     _remainingSeconds = widget.duration.inSeconds;
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_remainingSeconds <= 0) return;
-      setState(() => _remainingSeconds--);
-      if (_remainingSeconds == 0) {
-        _timer?.cancel();
-        widget.onComplete?.call();
-      }
-    });
+    _startTimer();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _recalculate();
+    }
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _recalculate();
+    });
+  }
+
+  void _recalculate() {
+    final remaining = _endTime.difference(DateTime.now()).inSeconds;
+    final clamped = remaining < 0 ? 0 : remaining;
+    if (clamped != _remainingSeconds) {
+      setState(() => _remainingSeconds = clamped);
+    }
+    if (clamped == 0) {
+      _timer?.cancel();
+      widget.onComplete?.call();
+    }
   }
 
   bool get _isUrgent => _remainingSeconds < widget.urgentThreshold.inSeconds;

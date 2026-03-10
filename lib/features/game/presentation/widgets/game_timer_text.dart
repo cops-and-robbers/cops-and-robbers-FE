@@ -27,13 +27,15 @@ class GameTimerText extends StatefulWidget {
   State<GameTimerText> createState() => _GameTimerTextState();
 }
 
-class _GameTimerTextState extends State<GameTimerText> {
+class _GameTimerTextState extends State<GameTimerText>
+    with WidgetsBindingObserver {
   late Timer _timer;
   late Duration _remaining;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _remaining = _calcRemaining();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
@@ -44,8 +46,19 @@ class _GameTimerTextState extends State<GameTimerText> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      final r = _calcRemaining();
+      if (r != _remaining) {
+        setState(() => _remaining = r);
+      }
+    }
   }
 
   Duration _calcRemaining() {
