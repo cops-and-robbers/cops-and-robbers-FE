@@ -196,10 +196,10 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
     try {
       for (int gameId = 1; gameId <= maxGameId; gameId++) {
         if (!mounted) break;
-        final result = await ref.read(leaveGameProvider(gameId).future);
-        if (result != null) {
+        try {
+          await ref.read(leaveGameProvider(gameId).future);
           successCount++;
-        } else {
+        } catch (_) {
           failCount++;
         }
       }
