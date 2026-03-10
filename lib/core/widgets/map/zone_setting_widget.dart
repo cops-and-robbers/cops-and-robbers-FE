@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
+import '../buttons/my_location_button.dart';
 import '../../services/location/device_location_service.dart';
 import '../chips/info_radius_chip.dart';
 import '../inputs/app_slider.dart';
@@ -112,6 +113,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   late double _currentRadius;
   late ZoneShape _shape;
   bool _isInitialized = false;
+  bool _isLocationFocused = true;
 
   // Fallback 위치 (어린이대공원)
   static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
@@ -230,7 +232,14 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
               Positioned(
                 bottom: 16.h,
                 left: 20.w,
-                child: _buildMyLocationButton(),
+                child: MyLocationButton(
+                onPressed: resetToCurrentLocation,
+                isFocused: _isLocationFocused,
+                containerSize: 40,
+                iconSize: 24,
+                focusedColor: widget.locationButtonColor ?? AppColors.blue,
+                unfocusedColor: _unfocusedLocationColor(),
+              ),
               ),
 
               // Info card (우측하단 16, 20)
@@ -380,25 +389,13 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     );
   }
 
-  /// 내 위치 버튼 (40x40 컨테이너 + 24x24 아이콘)
-  /// My location button (40x40 container + 24x24 icon)
-  Widget _buildMyLocationButton() {
-    return GestureDetector(
-      onTap: resetToCurrentLocation,
-      child: Container(
-        width: 40.w,
-        height: 40.w,
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: AppRadius.large,
-        ),
-        child: Icon(
-          Icons.my_location,
-          size: 24.w,
-          color: widget.locationButtonColor ?? AppColors.blue,
-        ),
-      ),
-    );
+  /// locationButtonColor에 대응하는 unfocused 색상 반환
+  Color _unfocusedLocationColor() {
+    final color = widget.locationButtonColor;
+    if (color == AppColors.red || color == AppColors.red800) {
+      return AppColors.red500;
+    }
+    return AppColors.blue500;
   }
 
   /// 반경 변경 처리
@@ -451,6 +448,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       final screenCenterLatLng = LatLng(centerLat, centerLng);
 
       setState(() {
+        _isLocationFocused = false;
         _currentCenter = screenCenterLatLng;
         _shape.setCenter(screenCenterLatLng);
       });
@@ -482,6 +480,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       if (mounted) {
         // 구역 중심 업데이트
         setState(() {
+          _isLocationFocused = true;
           _currentCenter = currentLocation;
           _shape.setCenter(currentLocation);
         });
