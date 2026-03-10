@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../data/datasources/chat_stomp_datasource.dart';
 import '../providers/chat_provider.dart';
@@ -116,8 +117,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
           decoration: BoxDecoration(
             color: AppColors.black100,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.r),
-              topRight: Radius.circular(20.r),
+              topLeft: AppRadius.xl20.topLeft,
+              topRight: AppRadius.xl20.topRight,
             ),
             boxShadow: [
               BoxShadow(
@@ -165,7 +166,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                   ),
                 )
               else
-                SizedBox(height: 8.h),
+                SizedBox(height: AppSpacing.vertical8),
               // 입력바
               ChatInputBar(
                 onSend: _handleSend,
@@ -202,7 +203,12 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   Widget _buildTitle() {
     final title = _currentPage == 0 ? '전체 채팅' : '팀 채팅';
     return Padding(
-      padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 16.h, bottom: 8.h),
+      padding: EdgeInsets.only(
+        left: AppSpacing.horizontal24,
+        right: AppSpacing.horizontal24,
+        top: AppSpacing.vertical16,
+        bottom: AppSpacing.vertical8,
+      ),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(

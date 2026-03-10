@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 
 /// 채팅 입력 바 위젯
@@ -85,7 +86,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
         padding: EdgeInsets.only(left: 16.w, right: 8.w),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: AppRadius.large,
         ),
         child: Row(
           children: [
@@ -109,7 +110,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 onSubmitted: (_) => _handleSend(),
               ),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: AppSpacing.horizontal8),
             _buildSendButton(),
           ],
         ),

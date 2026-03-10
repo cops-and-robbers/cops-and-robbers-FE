@@ -20,15 +20,31 @@ class LocationRevealCountdown extends StatefulWidget {
       _LocationRevealCountdownState();
 }
 
-class _LocationRevealCountdownState extends State<LocationRevealCountdown> {
+class _LocationRevealCountdownState extends State<LocationRevealCountdown>
+    with WidgetsBindingObserver {
   late Timer _timer;
   Duration _remaining = Duration.zero;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _update();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _update());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _update();
+    }
   }
 
   @override
@@ -49,12 +65,6 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown> {
         _remaining = diff.isNegative ? Duration.zero : diff;
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
   }
 
   String get _formatted {

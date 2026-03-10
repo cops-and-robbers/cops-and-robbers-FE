@@ -12,12 +12,16 @@ import 'api_error_response.dart';
 /// 모든 API 요청에 Access Token을 자동으로 주입하고,
 /// 401 응답 시 Refresh Token으로 자동 재발급을 시도합니다.
 ///
+/// [QueuedInterceptor]를 사용하여 async 작업(토큰 조회, 재발급)이
+/// 완료될 때까지 후속 요청을 큐에 대기시킵니다.
+/// 일반 [Interceptor]는 async void 문제로 토큰 주입 전에 요청이 전송될 수 있습니다.
+///
 /// **동작 흐름**:
 /// 1. `onRequest`: Authorization 헤더에 Bearer Token 주입
 /// 2. `onError` (401): refreshToken으로 `/api/auth/reissue` 호출
 ///    - 성공: 새 토큰 저장 → 원래 요청 재시도
 ///    - 실패: 토큰 삭제 → 강제 로그아웃 콜백 실행
-class AuthInterceptor extends Interceptor {
+class AuthInterceptor extends QueuedInterceptor {
   final SecureTokenStorage _tokenStorage;
   final Dio _dio;
 
@@ -33,15 +37,6 @@ class AuthInterceptor extends Interceptor {
   /// 토큰 재발급 실패 시 호출됩니다.
   /// Presentation Layer에서 Firebase 로그아웃 + 로그인 화면 이동을 처리합니다.
   final Future<void> Function() onForceLogout;
-
-  /// 토큰 재발급 중복 방지 Lock
-  bool _isRefreshing = false;
-
-  /// 토큰 재발급 대기 큐
-  ///
-  /// 재발급 진행 중 들어온 401 요청들을 대기시키고,
-  /// 재발급 완료 후 일괄 재시도합니다.
-  final List<_RetryRequest> _pendingRequests = [];
 
   AuthInterceptor({
     required SecureTokenStorage tokenStorage,
@@ -69,7 +64,7 @@ class AuthInterceptor extends Interceptor {
   }
 
   // ============================================
-  // Interceptor Overrides
+  // QueuedInterceptor Overrides
   // ============================================
 
   @override
@@ -116,23 +111,6 @@ class AuthInterceptor extends Interceptor {
     }
 
     // 토큰 재발급 시도
-    if (_isRefreshing) {
-      // 이미 재발급 진행 중이면 대기 큐에 추가
-      final completer = Completer<Response>();
-      _pendingRequests.add(
-        _RetryRequest(requestOptions: err.requestOptions, completer: completer),
-      );
-      try {
-        final response = await completer.future;
-        return handler.resolve(response);
-      } catch (e) {
-        return handler.next(err);
-      }
-    }
-
-    // 재발급 시작
-    _isRefreshing = true;
-
     try {
       final refreshToken = await _tokenStorage.getRefreshToken();
 
@@ -148,9 +126,7 @@ class AuthInterceptor extends Interceptor {
         debugPrint(
           '   URL: ${_plainDio.options.baseUrl}${ApiEndpoints.reissue}',
         );
-        debugPrint(
-          '   refreshToken: ${refreshToken.length > 20 ? '${refreshToken.substring(0, 20)}...' : refreshToken}(${refreshToken.length}자)',
-        );
+        debugPrint('   refreshToken: $refreshToken');
       }
 
       final response = await _plainDio.post(
@@ -173,7 +149,6 @@ class AuthInterceptor extends Interceptor {
             debugPrint('❌ 토큰 재발급 응답 파싱 실패: tokens=$tokens');
           }
           await _handleForceLogout();
-          _rejectPendingRequests(err);
           return handler.next(err);
         }
 
@@ -187,9 +162,6 @@ class AuthInterceptor extends Interceptor {
           debugPrint('🔄 토큰 재발급 성공');
         }
 
-        // 대기 중인 요청들 재시도
-        _retryPendingRequests(newAccessToken);
-
         // 원래 요청 재시도
         final retryResponse = await _retryRequest(
           err.requestOptions,
@@ -199,7 +171,6 @@ class AuthInterceptor extends Interceptor {
       } else {
         // 재발급 실패
         await _handleForceLogout();
-        _rejectPendingRequests(err);
         return handler.next(err);
       }
     } catch (e) {
@@ -221,10 +192,7 @@ class AuthInterceptor extends Interceptor {
         }
       }
       await _handleForceLogout();
-      _rejectPendingRequests(err);
       return handler.next(err);
-    } finally {
-      _isRefreshing = false;
     }
   }
 
@@ -245,24 +213,6 @@ class AuthInterceptor extends Interceptor {
     return await _dio.fetch(requestOptions);
   }
 
-  /// 대기 중인 요청들을 새 토큰으로 재시도
-  void _retryPendingRequests(String newAccessToken) {
-    for (final request in _pendingRequests) {
-      _retryRequest(request.requestOptions, newAccessToken)
-          .then((response) => request.completer.complete(response))
-          .catchError((e) => request.completer.completeError(e));
-    }
-    _pendingRequests.clear();
-  }
-
-  /// 대기 중인 요청들을 에러로 거부
-  void _rejectPendingRequests(DioException err) {
-    for (final request in _pendingRequests) {
-      request.completer.completeError(err);
-    }
-    _pendingRequests.clear();
-  }
-
   /// 강제 로그아웃 처리
   ///
   /// 토큰 삭제 후 콜백을 통해 Firebase 로그아웃 및 화면 이동을 수행합니다.
@@ -273,12 +223,4 @@ class AuthInterceptor extends Interceptor {
     await _tokenStorage.clearTokens();
     await onForceLogout();
   }
-}
-
-/// 토큰 재발급 대기 요청
-class _RetryRequest {
-  final RequestOptions requestOptions;
-  final Completer<Response> completer;
-
-  _RetryRequest({required this.requestOptions, required this.completer});
 }

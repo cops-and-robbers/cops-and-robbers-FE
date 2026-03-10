@@ -10,7 +10,10 @@ import 'map_error_widget.dart';
 /// - 초기 진입 시 현재 위치 1회 조회 후 카메라 이동
 /// - [updateAreaCircles]로 플레이그라운드·감옥 원 추가
 class GoogleMapView extends StatefulWidget {
-  const GoogleMapView({super.key});
+  const GoogleMapView({super.key, this.onCameraMoveStarted});
+
+  /// 카메라 이동 시작 시 호출 (사용자 드래그 및 programmatic 이동 모두 포함)
+  final VoidCallback? onCameraMoveStarted;
 
   @override
   State<GoogleMapView> createState() => GoogleMapViewState();
@@ -98,6 +101,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
             debugPrint('Stack: $stack');
           }
         },
+
+        onCameraMoveStarted: widget.onCameraMoveStarted,
 
         // 기본 제공 내 위치 마커 상황에 따라 커스텀 마커 적용 예정
         myLocationEnabled: true,
