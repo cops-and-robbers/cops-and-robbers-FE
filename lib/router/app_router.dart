@@ -140,7 +140,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       } catch (e, stack) {
         debugPrint('🚨 [GoRouter redirect] 예외 발생: $e');
         debugPrint('🚨 [GoRouter redirect] 스택: $stack');
-        return null;
+        // 안전 실패: 보호 경로 우회 방지를 위해 로그인으로 리다이렉트
+        return RoutePaths.login;
       }
     },
 
