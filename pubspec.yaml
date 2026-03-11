@@ -18,25 +18,30 @@ dependencies:
   # Flutter SDK 기본 패키지
   flutter:
     sdk: flutter
+
   # iOS 스타일 아이콘 (Cupertino 디자인)
   cupertino_icons: ^1.0.8
   go_router: ^17.0.1 # 화면 라우팅 및 내비게이션
+
   # 상태 관리 및 데이터 모델
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
   freezed_annotation: ^2.4.4 # freezed 어노테이션 (불변 데이터 클래스)
   json_annotation: ^4.9.0 # JSON 직렬화 어노테이션
   shared_preferences: ^2.3.4 # 로컬 설정 저장 (테마, 온보딩 등)
+
   # 네트워크 & 인증
   dio: ^5.9.0 # HTTP 클라이언트
   retrofit: 4.7.3 # REST API 클라이언트 생성 (4.9.x logError 호환성 이슈로 고정)
   flutter_secure_storage: ^9.2.4 # 민감 데이터 안전 저장
   flutter_dotenv: ^6.0.0 # 환경 변수 관리 (.env 파일)
   uuid: ^4.5.2 # 앱 내 고유 식별자 생성
+
   # 소셜 로그인
   google_sign_in: ^6.2.3 # Google 소셜 로그인
   sign_in_with_apple: ^6.1.3 # Apple 소셜 로그인
   firebase_auth: ^6.1.3 # Firebase 인증
+
   # UI/UX 레이아웃
   flutter_screenutil: ^5.9.3 # 화면, 해상도 대응 유틸리티
   smooth_page_indicator: ^1.2.1 # 페이지 이동 인디케이터 UI (온보딩)
@@ -44,23 +49,29 @@ dependencies:
   flutter_svg: ^2.2.1 # 앱 아이콘
   showcaseview: ^5.0.1 # 튜토리얼
   animations: ^2.1.1 # 페이지 전환 애니메이션
+
   # 외부 링크
   url_launcher: ^6.3.2 # 외부 URL 브라우저 열기
   share_plus: ^12.0.1 # 네이티브 공유 시트
+
   # 지도
   google_maps_flutter: ^2.14.0 # Google Maps SDK (Flutter)
   flutter_naver_map: ^1.4.4 # Naver Map SDK (Flutter)
+
   # 위치 추적
   geolocator: ^14.0.2 # 위치 권한 및 실시간 위치 조회
+
   # 알림 & 실시간 통신
   firebase_core: ^4.1.0
   firebase_messaging: ^16.0.1 # 푸시 알림(Firebase Cloud Messaging)
   firebase_crashlytics: ^5.0.6 # 에러 리포팅 및 크래시 수집
   flutter_local_notifications: ^19.4.2 # 로컬 알림 생성 및 관리
   stomp_dart_client: ^3.0.1 # WebSocket 기반 실시간 통신
+
   # 기기 정보
   package_info_plus: ^9.0.0 # 앱 정보 수집 (버전 등)
   device_info_plus: ^10.1.2 # 기기 정보 수집 (FCM 기기 식별용)
+
 # --------------------------------------------
 # 개발 의존성 (개발/빌드 시에만 필요한 패키지)
 # --------------------------------------------
@@ -68,6 +79,7 @@ dev_dependencies:
   # Flutter 테스트 프레임워크
   flutter_test:
     sdk: flutter
+
   # 코드 품질 및 자동화 도구
   flutter_lints: ^6.0.0 # 추천 코드 린트 규칙
   build_runner: ^2.4.14 # 코드 자동 생성 툴
@@ -75,12 +87,15 @@ dev_dependencies:
   freezed: ^2.5.7 # freezed 코드 생성기 (불변 클래스)
   json_serializable: ^6.9.2 # JSON 직렬화 코드 생성기
   retrofit_generator: ^9.1.8 # REST API 클라이언트 코드 생성기
+
   # 앱 통합 관리 도구
   flutter_launcher_icons: ^0.14.4 # 앱 런처 아이콘 자동 생성
   change_app_package_name: ^1.5.0 # 앱 패키지명 변경 자동화
+
 # --------------------------------------------
 # Flutter 설정
 # --------------------------------------------
+
 flutter:
   uses-material-design: true
   assets:
@@ -116,6 +131,10 @@ flutter:
     - family: Pretendard-Black
       fonts:
         - asset: assets/fonts/Pretendard-Black.ttf
+    - family: Moneygraphy
+      fonts:
+        - asset: assets/fonts/Moneygraphy-Pixel.ttf
+
 flutter_launcher_icons:
   android: true
   ios: true

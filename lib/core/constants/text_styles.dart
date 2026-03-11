@@ -132,4 +132,44 @@ class AppTextStyles {
     height: 1.0, // 100% line height
     letterSpacing: -0.32,
   );
+
+  // ============================================
+  // Robber Styles (Moneygraphy)
+  // ============================================
+
+  /// Robber Heading (20px Moneygraphy)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get robber_heading => TextStyle(
+    fontFamily: 'Moneygraphy',
+    fontSize: 20.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
+  /// Robber SubHeading (18px Moneygraphy)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get robber_sub_heading => TextStyle(
+    fontFamily: 'Moneygraphy',
+    fontSize: 18.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
+  /// Robber Label (16px Moneygraphy)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get robber_label => TextStyle(
+    fontFamily: 'Moneygraphy',
+    fontSize: 16.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
+  /// Robber Paragraph (14px Moneygraphy)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get robber_paragraph => TextStyle(
+    fontFamily: 'Moneygraphy',
+    fontSize: 14.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
 }
