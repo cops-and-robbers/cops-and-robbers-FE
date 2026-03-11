@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
@@ -125,8 +126,13 @@ class AuthRepositoryImpl implements AuthRepository {
       // Firebase 로그인은 성공했지만 백엔드 호출 실패 시 Firebase 세션 정리
       await _cleanupFirebaseSession(provider);
       throw DioExceptionHandler.handle(e);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'ERROR_ABORTED_BY_USER') {
+        throw const AuthCancelledException();
+      }
+      throw AuthException(message: '로그인 중 오류가 발생했습니다.', originalException: e);
     } catch (e) {
-      // Firebase 에러 등 예상치 못한 에러
+      // 예상치 못한 에러
       if (e is AppException) rethrow;
 
       throw AuthException(message: '로그인 중 오류가 발생했습니다.', originalException: e);
