@@ -1,9 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/network/api_error_response.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -67,13 +66,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     router.push(
                       '${RoutePaths.nicknameSetup}?nickname=$encodedNickname',
                     );
-                  } on DioException catch (e) {
+                  } on AuthException {
+                    // 인터셉터에서 force logout 처리됨 — 추가 작업 불필요
+                    return;
+                  } on AppException catch (e) {
                     if (!mounted) return;
-                    final apiError = ApiErrorResponse.tryParse(
-                      e.response?.data,
-                    );
-                    final message = apiError?.detail ?? '사용자 정보를 불러올 수 없습니다';
-                    messenger.showSnackBar(SnackBar(content: Text(message)));
+                    messenger.showSnackBar(SnackBar(content: Text(e.message)));
                   }
                 },
               ),
