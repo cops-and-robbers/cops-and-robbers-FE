@@ -51,6 +51,12 @@ class AuthException extends AppException {
   });
 }
 
+/// 사용자가 로그인을 취소한 경우
+/// User cancelled the login process
+class AuthCancelledException extends AuthException {
+  const AuthCancelledException() : super(message: '로그인이 취소되었습니다.');
+}
+
 /// 검증 관련 예외
 /// Validation related exception
 class ValidationException extends AppException {
