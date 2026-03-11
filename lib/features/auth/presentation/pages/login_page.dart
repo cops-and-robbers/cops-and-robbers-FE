@@ -8,8 +8,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../providers/auth_provider.dart';
 
@@ -66,6 +66,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       await ref.read(authNotifierProvider.notifier).signInWithGoogle();
       // 네비게이션은 app_router.dart의 redirect가 처리
       // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
+    } on AuthCancelledException {
+      if (!mounted) return;
+      scaffoldMessenger.clearSnackBars();
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text('로그인이 취소되었습니다.', style: AppTextStyles.paragraph_14),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       _showLoginError(scaffoldMessenger, '로그인 중 오류가 발생했습니다.');
@@ -88,6 +97,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       await ref.read(authNotifierProvider.notifier).signInWithApple();
       // 네비게이션은 app_router.dart의 redirect가 처리
       // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
+    } on AuthCancelledException {
+      if (!mounted) return;
+      scaffoldMessenger.clearSnackBars();
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text('로그인이 취소되었습니다.', style: AppTextStyles.paragraph_14),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       _showLoginError(scaffoldMessenger, 'Apple 로그인 중 오류가 발생했습니다.');
