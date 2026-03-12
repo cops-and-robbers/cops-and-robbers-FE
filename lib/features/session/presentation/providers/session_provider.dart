@@ -4,8 +4,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/session_remote_datasource.dart';
+import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../data/models/in_game_participants_response.dart';
+import '../../../game/data/models/game_area_model.dart';
 import '../../data/models/join_game_request.dart';
 import '../../data/models/join_game_response.dart';
 import '../../data/models/leave_game_response.dart';
@@ -182,3 +184,44 @@ Future<GameSettingsResponse> fetchGameSettings(Ref ref, int gameId) =>
 @riverpod
 Future<InGameParticipantsResponse> fetchGameParticipants(Ref ref, int gameId) =>
     ref.watch(sessionRemoteDataSourceProvider).fetchGameParticipants(gameId);
+
+/// 게임 영역 조회
+///
+/// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+@riverpod
+Future<GameAreaModel> fetchGameArea(Ref ref, int gameId) =>
+    ref.watch(sessionRemoteDataSourceProvider).fetchGameArea(gameId);
+
+/// 게임 설정 수정
+///
+/// 성공 시 갱신된 [GameSettingsResponse]를 반환합니다.
+@riverpod
+Future<GameSettingsResponse> updateGameSettings(
+  Ref ref,
+  int gameId, {
+  required GameSettingsRequestModel request,
+}) async {
+  final dataSource = ref.read(sessionRemoteDataSourceProvider);
+  final response = await dataSource.updateGameSettings(gameId, request);
+  // 설정 캐시 무효화 → 다음 watch 시 재조회
+  ref.invalidate(fetchGameSettingsProvider(gameId));
+  debugPrint('[Session] ✅ 게임 설정 수정 성공: gameId=$gameId');
+  return response;
+}
+
+/// 게임 영역 수정
+///
+/// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+@riverpod
+Future<GameAreaModel> updateGameArea(
+  Ref ref,
+  int gameId, {
+  required AreaRequestModel request,
+}) async {
+  final dataSource = ref.read(sessionRemoteDataSourceProvider);
+  final response = await dataSource.updateGameArea(gameId, request);
+  // 영역 캐시 무효화 → 다음 watch 시 재조회
+  ref.invalidate(fetchGameAreaProvider(gameId));
+  debugPrint('[Session] ✅ 게임 영역 수정 성공: gameId=$gameId');
+  return response;
+}

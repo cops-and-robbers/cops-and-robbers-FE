@@ -1277,6 +1277,478 @@ class _FetchGameParticipantsProviderElement
   int get gameId => (origin as FetchGameParticipantsProvider).gameId;
 }
 
+String _$fetchGameAreaHash() => r'8729a1f2480e35f20d05aa88ecd8cb32c79597cd';
+
+/// 게임 영역 조회
+///
+/// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+///
+/// Copied from [fetchGameArea].
+@ProviderFor(fetchGameArea)
+const fetchGameAreaProvider = FetchGameAreaFamily();
+
+/// 게임 영역 조회
+///
+/// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+///
+/// Copied from [fetchGameArea].
+class FetchGameAreaFamily extends Family<AsyncValue<GameAreaModel>> {
+  /// 게임 영역 조회
+  ///
+  /// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+  ///
+  /// Copied from [fetchGameArea].
+  const FetchGameAreaFamily();
+
+  /// 게임 영역 조회
+  ///
+  /// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+  ///
+  /// Copied from [fetchGameArea].
+  FetchGameAreaProvider call(int gameId) {
+    return FetchGameAreaProvider(gameId);
+  }
+
+  @override
+  FetchGameAreaProvider getProviderOverride(
+    covariant FetchGameAreaProvider provider,
+  ) {
+    return call(provider.gameId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'fetchGameAreaProvider';
+}
+
+/// 게임 영역 조회
+///
+/// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+///
+/// Copied from [fetchGameArea].
+class FetchGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
+  /// 게임 영역 조회
+  ///
+  /// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+  ///
+  /// Copied from [fetchGameArea].
+  FetchGameAreaProvider(int gameId)
+    : this._internal(
+        (ref) => fetchGameArea(ref as FetchGameAreaRef, gameId),
+        from: fetchGameAreaProvider,
+        name: r'fetchGameAreaProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$fetchGameAreaHash,
+        dependencies: FetchGameAreaFamily._dependencies,
+        allTransitiveDependencies:
+            FetchGameAreaFamily._allTransitiveDependencies,
+        gameId: gameId,
+      );
+
+  FetchGameAreaProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameId,
+  }) : super.internal();
+
+  final int gameId;
+
+  @override
+  Override overrideWith(
+    FutureOr<GameAreaModel> Function(FetchGameAreaRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FetchGameAreaProvider._internal(
+        (ref) => create(ref as FetchGameAreaRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameId: gameId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<GameAreaModel> createElement() {
+    return _FetchGameAreaProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchGameAreaProvider && other.gameId == gameId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FetchGameAreaRef on AutoDisposeFutureProviderRef<GameAreaModel> {
+  /// The parameter `gameId` of this provider.
+  int get gameId;
+}
+
+class _FetchGameAreaProviderElement
+    extends AutoDisposeFutureProviderElement<GameAreaModel>
+    with FetchGameAreaRef {
+  _FetchGameAreaProviderElement(super.provider);
+
+  @override
+  int get gameId => (origin as FetchGameAreaProvider).gameId;
+}
+
+String _$updateGameSettingsHash() =>
+    r'fc8a363c99872fa74f42041899ad2e3bc60d6b0d';
+
+/// 게임 설정 수정
+///
+/// 성공 시 갱신된 [GameSettingsResponse]를 반환합니다.
+///
+/// Copied from [updateGameSettings].
+@ProviderFor(updateGameSettings)
+const updateGameSettingsProvider = UpdateGameSettingsFamily();
+
+/// 게임 설정 수정
+///
+/// 성공 시 갱신된 [GameSettingsResponse]를 반환합니다.
+///
+/// Copied from [updateGameSettings].
+class UpdateGameSettingsFamily
+    extends Family<AsyncValue<GameSettingsResponse>> {
+  /// 게임 설정 수정
+  ///
+  /// 성공 시 갱신된 [GameSettingsResponse]를 반환합니다.
+  ///
+  /// Copied from [updateGameSettings].
+  const UpdateGameSettingsFamily();
+
+  /// 게임 설정 수정
+  ///
+  /// 성공 시 갱신된 [GameSettingsResponse]를 반환합니다.
+  ///
+  /// Copied from [updateGameSettings].
+  UpdateGameSettingsProvider call(
+    int gameId, {
+    required GameSettingsRequestModel request,
+  }) {
+    return UpdateGameSettingsProvider(gameId, request: request);
+  }
+
+  @override
+  UpdateGameSettingsProvider getProviderOverride(
+    covariant UpdateGameSettingsProvider provider,
+  ) {
+    return call(provider.gameId, request: provider.request);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'updateGameSettingsProvider';
+}
+
+/// 게임 설정 수정
+///
+/// 성공 시 갱신된 [GameSettingsResponse]를 반환합니다.
+///
+/// Copied from [updateGameSettings].
+class UpdateGameSettingsProvider
+    extends AutoDisposeFutureProvider<GameSettingsResponse> {
+  /// 게임 설정 수정
+  ///
+  /// 성공 시 갱신된 [GameSettingsResponse]를 반환합니다.
+  ///
+  /// Copied from [updateGameSettings].
+  UpdateGameSettingsProvider(
+    int gameId, {
+    required GameSettingsRequestModel request,
+  }) : this._internal(
+         (ref) => updateGameSettings(
+           ref as UpdateGameSettingsRef,
+           gameId,
+           request: request,
+         ),
+         from: updateGameSettingsProvider,
+         name: r'updateGameSettingsProvider',
+         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+             ? null
+             : _$updateGameSettingsHash,
+         dependencies: UpdateGameSettingsFamily._dependencies,
+         allTransitiveDependencies:
+             UpdateGameSettingsFamily._allTransitiveDependencies,
+         gameId: gameId,
+         request: request,
+       );
+
+  UpdateGameSettingsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameId,
+    required this.request,
+  }) : super.internal();
+
+  final int gameId;
+  final GameSettingsRequestModel request;
+
+  @override
+  Override overrideWith(
+    FutureOr<GameSettingsResponse> Function(UpdateGameSettingsRef provider)
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: UpdateGameSettingsProvider._internal(
+        (ref) => create(ref as UpdateGameSettingsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameId: gameId,
+        request: request,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<GameSettingsResponse> createElement() {
+    return _UpdateGameSettingsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is UpdateGameSettingsProvider &&
+        other.gameId == gameId &&
+        other.request == request;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameId.hashCode);
+    hash = _SystemHash.combine(hash, request.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin UpdateGameSettingsRef
+    on AutoDisposeFutureProviderRef<GameSettingsResponse> {
+  /// The parameter `gameId` of this provider.
+  int get gameId;
+
+  /// The parameter `request` of this provider.
+  GameSettingsRequestModel get request;
+}
+
+class _UpdateGameSettingsProviderElement
+    extends AutoDisposeFutureProviderElement<GameSettingsResponse>
+    with UpdateGameSettingsRef {
+  _UpdateGameSettingsProviderElement(super.provider);
+
+  @override
+  int get gameId => (origin as UpdateGameSettingsProvider).gameId;
+  @override
+  GameSettingsRequestModel get request =>
+      (origin as UpdateGameSettingsProvider).request;
+}
+
+String _$updateGameAreaHash() => r'aa2152158972c2dab5cc25babc3ec5b8a444a5a2';
+
+/// 게임 영역 수정
+///
+/// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+///
+/// Copied from [updateGameArea].
+@ProviderFor(updateGameArea)
+const updateGameAreaProvider = UpdateGameAreaFamily();
+
+/// 게임 영역 수정
+///
+/// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+///
+/// Copied from [updateGameArea].
+class UpdateGameAreaFamily extends Family<AsyncValue<GameAreaModel>> {
+  /// 게임 영역 수정
+  ///
+  /// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+  ///
+  /// Copied from [updateGameArea].
+  const UpdateGameAreaFamily();
+
+  /// 게임 영역 수정
+  ///
+  /// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+  ///
+  /// Copied from [updateGameArea].
+  UpdateGameAreaProvider call(int gameId, {required AreaRequestModel request}) {
+    return UpdateGameAreaProvider(gameId, request: request);
+  }
+
+  @override
+  UpdateGameAreaProvider getProviderOverride(
+    covariant UpdateGameAreaProvider provider,
+  ) {
+    return call(provider.gameId, request: provider.request);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'updateGameAreaProvider';
+}
+
+/// 게임 영역 수정
+///
+/// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+///
+/// Copied from [updateGameArea].
+class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
+  /// 게임 영역 수정
+  ///
+  /// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+  ///
+  /// Copied from [updateGameArea].
+  UpdateGameAreaProvider(int gameId, {required AreaRequestModel request})
+    : this._internal(
+        (ref) =>
+            updateGameArea(ref as UpdateGameAreaRef, gameId, request: request),
+        from: updateGameAreaProvider,
+        name: r'updateGameAreaProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$updateGameAreaHash,
+        dependencies: UpdateGameAreaFamily._dependencies,
+        allTransitiveDependencies:
+            UpdateGameAreaFamily._allTransitiveDependencies,
+        gameId: gameId,
+        request: request,
+      );
+
+  UpdateGameAreaProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameId,
+    required this.request,
+  }) : super.internal();
+
+  final int gameId;
+  final AreaRequestModel request;
+
+  @override
+  Override overrideWith(
+    FutureOr<GameAreaModel> Function(UpdateGameAreaRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: UpdateGameAreaProvider._internal(
+        (ref) => create(ref as UpdateGameAreaRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameId: gameId,
+        request: request,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<GameAreaModel> createElement() {
+    return _UpdateGameAreaProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is UpdateGameAreaProvider &&
+        other.gameId == gameId &&
+        other.request == request;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameId.hashCode);
+    hash = _SystemHash.combine(hash, request.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin UpdateGameAreaRef on AutoDisposeFutureProviderRef<GameAreaModel> {
+  /// The parameter `gameId` of this provider.
+  int get gameId;
+
+  /// The parameter `request` of this provider.
+  AreaRequestModel get request;
+}
+
+class _UpdateGameAreaProviderElement
+    extends AutoDisposeFutureProviderElement<GameAreaModel>
+    with UpdateGameAreaRef {
+  _UpdateGameAreaProviderElement(super.provider);
+
+  @override
+  int get gameId => (origin as UpdateGameAreaProvider).gameId;
+  @override
+  AreaRequestModel get request => (origin as UpdateGameAreaProvider).request;
+}
+
 String _$sessionCreationNotifierHash() =>
     r'371323e1f00197619d881ff5dfd62103f3f7b80b';
 
