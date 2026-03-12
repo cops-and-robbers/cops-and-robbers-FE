@@ -199,14 +199,13 @@ class _GamePageState extends ConsumerState<GamePage> {
   /// 도둑 팀 GPS 위치 서버 전송 시작 (10초 주기, 10m 이상 변화 시만 전송)
   Future<void> _startLocationSending() async {
     // GPS 조회 (STOMP 연결 대기와 병렬 수행)
-    final Position? initial;
+    Position? initial;
     try {
       initial = await DeviceLocationService.getCurrentPosition();
     } catch (e) {
       debugPrint('[위치] 초기 위치 조회 실패: $e');
-      return;
     }
-    if (!mounted || initial == null) return;
+    if (!mounted) return;
 
     // STOMP가 아직 connecting 중이면 connected 될 때까지 대기 (최대 15초)
     const maxWait = Duration(seconds: 15);
@@ -219,13 +218,15 @@ class _GamePageState extends ConsumerState<GamePage> {
     }
     if (!mounted) return;
 
-    // 최초 위치 무조건 1번 전송 (STOMP connected 보장 후)
-    _gameEventDatasource?.publishLocation(
-      _gameId,
-      initial.latitude,
-      initial.longitude,
-    );
-    _lastSentPosition = initial;
+    // 최초 위치 전송 (best-effort: 초기 조회 실패 시 스킵)
+    if (initial != null) {
+      _gameEventDatasource?.publishLocation(
+        _gameId,
+        initial.latitude,
+        initial.longitude,
+      );
+      _lastSentPosition = initial;
+    }
 
     // 10초 주기 타이머: 현재 위치 조회 → 이전 위치와 비교 → 10m 이상 변화 시 전송
     // ⚠️ 포그라운드 전용: 백그라운드 전환 시 타이머 일시 정지됨.
