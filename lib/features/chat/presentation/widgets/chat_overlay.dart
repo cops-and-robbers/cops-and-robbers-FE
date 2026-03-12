@@ -100,12 +100,14 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         chatState.connectionState == StompConnectionState.connected;
 
     final screenHeight = MediaQuery.of(context).size.height;
-    // 축소 상태: 핸들(20) + 간격(8) + 입력바(64) + 하단(37) = 129
-    // 시각적: 상단12 + 핸들4 + 간격20 + 입력창48 + 하단45 = 129
-    final collapsedHeight = 20.h + 8.h + 64.h + 37.h;
+    // 시스템 네비게이션 바 높이 반영 (iOS 홈 인디케이터 / Android 네비바)
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    final bottomMargin = bottomPadding > 0 ? bottomPadding : 37.h;
+    // 축소 상태: 핸들(20) + 간격(8) + 입력바(64) + 하단
+    final collapsedHeight = 20.h + 8.h + 64.h + bottomMargin;
     _minSize = (collapsedHeight / screenHeight).clamp(0.1, 0.25);
-    // 확장 전환 임계값: 핸들(20) + 타이틀(42) + 인디케이터(18) + 입력바(64) + 하단(37)
-    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + 37.h;
+    // 확장 전환 임계값: 핸들(20) + 타이틀(42) + 인디케이터(18) + 입력바(64) + 하단
+    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + bottomMargin;
     _expandedThreshold = (expandedMinHeight / screenHeight).clamp(0.15, 0.35);
 
     return DraggableScrollableSheet(
@@ -180,8 +182,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 onFocusGain: _onInputFocused,
                 isDarkMode: widget.isDarkMode,
               ),
-              // 하단 여백 (입력바 bottom pad 8 + 37 = 45px from pill bottom)
-              SizedBox(height: 37.h),
+              // 하단 여백 (시스템 네비게이션 바 영역 반영)
+              SizedBox(height: bottomMargin),
             ],
           ),
         );
@@ -244,7 +246,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
             decoration: BoxDecoration(
               color: isActive
                   ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
-                  : (widget.isDarkMode ? AppColors.black600 : AppColors.black200),
+                  : (widget.isDarkMode
+                        ? AppColors.black600
+                        : AppColors.black200),
               shape: BoxShape.circle,
             ),
           );
