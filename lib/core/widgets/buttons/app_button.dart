@@ -80,6 +80,7 @@ class AppButton extends StatelessWidget {
     this.subtitle,
     this.subtitleColor,
     this.contentAlignment,
+    this.textStyle,
   });
 
   /// 버튼 텍스트 (필수)
@@ -135,6 +136,9 @@ class AppButton extends StatelessWidget {
 
   /// 버튼 내용 정렬 (기본: center, spaceBetween으로 좌우 정렬 가능)
   final MainAxisAlignment? contentAlignment;
+
+  /// 텍스트 스타일 오버라이드 (미지정 시 label_16)
+  final TextStyle? textStyle;
 
   // ============================================
   // 기본값 Getter 메서드
@@ -243,7 +247,7 @@ class AppButton extends StatelessWidget {
       // 기존: 단일 텍스트
       textWidget = Text(
         text,
-        style: AppTextStyles.label_16.copyWith(
+        style: (textStyle ?? AppTextStyles.label_16).copyWith(
           color: _effectiveForegroundColor,
         ),
       );
@@ -255,7 +259,7 @@ class AppButton extends StatelessWidget {
         children: [
           Text(
             text,
-            style: AppTextStyles.label_16.copyWith(
+            style: (textStyle ?? AppTextStyles.label_16).copyWith(
               color: _effectiveForegroundColor,
             ),
           ),
