@@ -22,33 +22,34 @@ import '../../domain/entities/zone_info.dart';
 /// )
 /// ```
 class ZoneListCard extends StatelessWidget {
-  const ZoneListCard({super.key, required this.zones, this.onZoneTap});
+  const ZoneListCard({super.key, required this.zones, this.onTap});
 
   /// 구역 정보 리스트
   final List<ZoneInfo> zones;
 
-  /// 구역 클릭 콜백
-  final void Function(String zoneId)? onZoneTap;
+  /// 카드 전체 탭 콜백 (호스트 전용 — 구역 수정 페이지 이동)
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
-      title: '구역',
-      titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSpacing.horizontal24,
-        vertical: AppSpacing.vertical20,
-      ),
-      child: Column(
-        children: [
-          for (int i = 0; i < zones.length; i++) ...[
-            if (i > 0) SizedBox(height: AppSpacing.vertical12),
-            _ZoneItem(
-              zone: zones[i],
-              onTap: onZoneTap != null ? () => onZoneTap!(zones[i].id) : null,
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: InfoCard(
+        title: '구역',
+        titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.horizontal24,
+          vertical: AppSpacing.vertical20,
+        ),
+        child: Column(
+          children: [
+            for (int i = 0; i < zones.length; i++) ...[
+              if (i > 0) SizedBox(height: AppSpacing.vertical12),
+              _ZoneItem(zone: zones[i]),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -56,37 +57,28 @@ class ZoneListCard extends StatelessWidget {
 
 /// 구역 아이템 (내부 위젯)
 class _ZoneItem extends StatelessWidget {
-  const _ZoneItem({required this.zone, this.onTap});
+  const _ZoneItem({required this.zone});
 
   final ZoneInfo zone;
-  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: AppRadius.medium,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            zone.name,
-            style: AppTextStyles.paragraph_14_100.copyWith(
-              color: AppColors.black800,
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          zone.name,
+          style: AppTextStyles.paragraph_14_100.copyWith(
+            color: AppColors.black800,
           ),
-          Row(
-            children: [
-              Text(
-                zone.displayDistance,
-                style: AppTextStyles.paragraph14Semibold.copyWith(
-                  color: AppColors.black,
-                ),
-              ),
-            ],
+        ),
+        Text(
+          zone.displayDistance,
+          style: AppTextStyles.paragraph14Semibold.copyWith(
+            color: AppColors.black,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

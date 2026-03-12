@@ -17,7 +17,6 @@ import 'zone_list_card.dart';
 ///   sessionCode: 'A1B2C3',
 ///   zones: [ZoneInfo(...)],
 ///   settings: SessionSettings(...),
-///   onZoneTap: (zoneId) => navigateToZone(zoneId),
 ///   onCodeCopy: () => showCopyMessage(),
 /// )
 /// ```
@@ -27,7 +26,6 @@ class SessionInfoView extends StatelessWidget {
     required this.sessionCode,
     required this.zones,
     required this.settings,
-    this.onZoneTap,
     this.onCodeCopy,
   });
 
@@ -39,9 +37,6 @@ class SessionInfoView extends StatelessWidget {
 
   /// 게임 설정
   final SessionSettings settings;
-
-  /// 구역 클릭 콜백
-  final void Function(String zoneId)? onZoneTap;
 
   /// 코드 복사 콜백
   final VoidCallback? onCodeCopy;
@@ -55,7 +50,7 @@ class SessionInfoView extends StatelessWidget {
       children: [
         SessionCodeCard(code: sessionCode, onCopy: onCodeCopy),
         SizedBox(height: AppSpacing.vertical16),
-        ZoneListCard(zones: zones, onZoneTap: onZoneTap),
+        ZoneListCard(zones: zones),
         SizedBox(height: AppSpacing.vertical8),
         SettingListCard(settings: settings),
       ],

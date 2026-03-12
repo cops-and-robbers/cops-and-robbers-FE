@@ -23,30 +23,40 @@ import '../../domain/entities/session_settings.dart';
 /// )
 /// ```
 class SettingListCard extends StatelessWidget {
-  const SettingListCard({super.key, required this.settings});
+  const SettingListCard({super.key, required this.settings, this.onTap});
 
   /// 게임 설정 정보
   final SessionSettings settings;
 
+  /// 설정 카드 탭 콜백 (호스트 전용 — 설정 수정 페이지 이동)
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
-      title: '설정',
-      titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
-      padding: EdgeInsets.symmetric(
-        vertical: AppSpacing.vertical20,
-        horizontal: AppSpacing.horizontal24,
-      ),
-      child: Column(
-        children: [
-          _SettingRow(label: '참여 인원', value: settings.maxPlayersDisplay),
-          SizedBox(height: AppSpacing.vertical12),
-          _SettingRow(label: '라운드 제한 시간', value: settings.roundTimeDisplay),
-          SizedBox(height: AppSpacing.vertical12),
-          _SettingRow(label: '위치 공유 간격', value: settings.locationShareDisplay),
-          SizedBox(height: AppSpacing.vertical12),
-          _SettingRow(label: '경찰 시작 시간', value: settings.policeStartDisplay),
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: InfoCard(
+        title: '설정',
+        titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
+        padding: EdgeInsets.symmetric(
+          vertical: AppSpacing.vertical20,
+          horizontal: AppSpacing.horizontal24,
+        ),
+        child: Column(
+          children: [
+            _SettingRow(label: '참여 인원', value: settings.maxPlayersDisplay),
+            SizedBox(height: AppSpacing.vertical12),
+            _SettingRow(label: '라운드 제한 시간', value: settings.roundTimeDisplay),
+            SizedBox(height: AppSpacing.vertical12),
+            _SettingRow(
+              label: '위치 공유 간격',
+              value: settings.locationShareDisplay,
+            ),
+            SizedBox(height: AppSpacing.vertical12),
+            _SettingRow(label: '경찰 시작 시간', value: settings.policeStartDisplay),
+          ],
+        ),
       ),
     );
   }
