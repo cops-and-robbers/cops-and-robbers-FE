@@ -662,7 +662,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                     isFocused: _isLocationFocused,
                     containerSize: 48,
                     iconSize: 24,
-                    focusedColor: _isDarkMode ? AppColors.green500 : null,
+                    focusedColor: _isDarkMode ? AppColors.green : null,
                     unfocusedColor: _isDarkMode ? AppColors.green500 : null,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
                   ),
