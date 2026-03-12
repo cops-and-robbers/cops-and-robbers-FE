@@ -114,7 +114,7 @@ class TeamSection extends StatelessWidget {
             Text(
               _teamName,
               style: isDarkMode
-                  ? AppTextStyles.robber_label.copyWith(color: AppColors.white)
+                  ? AppTextStyles.robberLabel.copyWith(color: AppColors.white)
                   : AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
             // 배지 또는 정원 카운트 (팀명에서 4~8px)

@@ -82,7 +82,7 @@ class _GameTimerTextState extends State<GameTimerText>
     return Text(
       _formatted,
       style: widget.isDarkMode
-          ? AppTextStyles.robber_heading.copyWith(color: AppColors.white)
+          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
           : AppTextStyles.heading_20.copyWith(color: AppColors.black),
     );
   }

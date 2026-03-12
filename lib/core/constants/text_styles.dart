@@ -139,7 +139,7 @@ class AppTextStyles {
 
   /// Robber Heading (20px Moneygraphy)
   /// Line Height: 100%, Letter Spacing: -0.32px
-  static TextStyle get robber_heading => TextStyle(
+  static TextStyle get robberHeading => TextStyle(
     fontFamily: 'Moneygraphy',
     fontSize: 20.sp,
     height: 1.0,
@@ -148,7 +148,7 @@ class AppTextStyles {
 
   /// Robber SubHeading (18px Moneygraphy)
   /// Line Height: 100%, Letter Spacing: -0.32px
-  static TextStyle get robber_sub_heading => TextStyle(
+  static TextStyle get robberSubHeading => TextStyle(
     fontFamily: 'Moneygraphy',
     fontSize: 18.sp,
     height: 1.0,
@@ -157,7 +157,7 @@ class AppTextStyles {
 
   /// Robber Label (16px Moneygraphy)
   /// Line Height: 100%, Letter Spacing: -0.32px
-  static TextStyle get robber_label => TextStyle(
+  static TextStyle get robberLabel => TextStyle(
     fontFamily: 'Moneygraphy',
     fontSize: 16.sp,
     height: 1.0,
@@ -166,7 +166,7 @@ class AppTextStyles {
 
   /// Robber Paragraph (14px Moneygraphy)
   /// Line Height: 100%, Letter Spacing: -0.32px
-  static TextStyle get robber_paragraph => TextStyle(
+  static TextStyle get robberParagraph => TextStyle(
     fontFamily: 'Moneygraphy',
     fontSize: 14.sp,
     height: 1.0,

@@ -77,7 +77,7 @@ class _PoliceStartCountdownState extends State<PoliceStartCountdown>
 
     return Text(
       '경찰 시작까지 $_formatted',
-      style: AppTextStyles.robber_label.copyWith(
+      style: AppTextStyles.robberLabel.copyWith(
         color: isUrgent ? AppColors.red : AppColors.green,
       ),
     );

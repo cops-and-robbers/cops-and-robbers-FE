@@ -1067,7 +1067,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       isDarkMode: true,
                       backgroundColor: AppColors.black,
                       title: '초대코드를 생성했어요',
-                      titleStyle: AppTextStyles.robber_heading.copyWith(
+                      titleStyle: AppTextStyles.robberHeading.copyWith(
                         color: AppColors.white,
                       ),
                       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
@@ -1111,7 +1111,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                             children: [
                               Text(
                                 sessionCode,
-                                style: AppTextStyles.robber_heading.copyWith(
+                                style: AppTextStyles.robberHeading.copyWith(
                                   color: AppColors.white,
                                 ),
                               ),

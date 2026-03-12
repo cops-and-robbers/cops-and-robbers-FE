@@ -522,7 +522,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       backgroundColor: isDark ? AppColors.black : null,
       title: '초대코드를 생성했어요',
       titleStyle: isDark
-          ? AppTextStyles.robber_heading.copyWith(color: AppColors.white)
+          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
           : null,
       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
       customContent: GestureDetector(
@@ -555,7 +555,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               Text(
                 code,
                 style: isDark
-                    ? AppTextStyles.robber_heading.copyWith(
+                    ? AppTextStyles.robberHeading.copyWith(
                         color: AppColors.white,
                       )
                     : AppTextStyles.heading_20.copyWith(color: AppColors.black),
@@ -695,7 +695,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               child: Text(
                 widget.inviteCode!,
                 style: isDark
-                    ? AppTextStyles.robber_heading.copyWith(
+                    ? AppTextStyles.robberHeading.copyWith(
                         color: AppColors.white,
                       )
                     : AppTextStyles.heading_20.copyWith(color: AppColors.black),
@@ -756,7 +756,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ? AppColors.black800
             : AppColors.black200,
         disabledForegroundColor: isDark ? AppColors.green : AppColors.black400,
-        textStyle: isDark ? AppTextStyles.robber_label : null,
+        textStyle: isDark ? AppTextStyles.robberLabel : null,
         showBorder: false,
       );
     }
@@ -767,7 +767,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         onPressed: _isUpdatingReady ? null : _toggleReady,
         backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
         foregroundColor: isDark ? AppColors.green : AppColors.blue,
-        textStyle: isDark ? AppTextStyles.robber_label : null,
+        textStyle: isDark ? AppTextStyles.robberLabel : null,
         showBorder: false,
         isLoading: _isUpdatingReady,
       );
@@ -778,7 +778,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       onPressed: _isUpdatingReady ? null : _toggleReady,
       backgroundColor: isDark ? AppColors.green : AppColors.blue,
       foregroundColor: isDark ? AppColors.black : AppColors.white,
-      textStyle: isDark ? AppTextStyles.robber_label : null,
+      textStyle: isDark ? AppTextStyles.robberLabel : null,
       showBorder: false,
       isLoading: _isUpdatingReady,
     );

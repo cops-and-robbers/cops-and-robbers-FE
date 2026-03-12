@@ -155,8 +155,8 @@ class AppDialog extends StatefulWidget {
   /// 다크 모드 버튼 기본값 활성화
   ///
   /// true일 때 명시적 색상 미지정 시:
-  /// - confirm: green 배경, robber_label + black 텍스트
-  /// - cancel: black900 배경, robber_label + black400 텍스트
+  /// - confirm: green 배경, robberLabel + black 텍스트
+  /// - cancel: black900 배경, robberLabel + black400 텍스트
   final bool isDarkMode;
 
   // ============================================
@@ -539,7 +539,7 @@ class _AppDialogState extends State<AppDialog>
               borderRadius: AppRadius.medium,
               showBorder: false,
               height: 48.h,
-              textStyle: widget.isDarkMode ? AppTextStyles.robber_label : null,
+              textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
             ),
           ),
           SizedBox(width: AppSpacing.horizontal8),
@@ -552,7 +552,7 @@ class _AppDialogState extends State<AppDialog>
               borderRadius: AppRadius.medium,
               showBorder: false,
               height: 48.h,
-              textStyle: widget.isDarkMode ? AppTextStyles.robber_label : null,
+              textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
             ),
           ),
         ],
@@ -569,7 +569,7 @@ class _AppDialogState extends State<AppDialog>
       showBorder: false,
       width: double.infinity,
       height: 48.h,
-      textStyle: widget.isDarkMode ? AppTextStyles.robber_label : null,
+      textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
     );
   }
 }

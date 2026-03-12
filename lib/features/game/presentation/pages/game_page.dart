@@ -747,7 +747,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                   : Text(
                       '--:--',
                       style: _isDarkMode
-                          ? AppTextStyles.robber_heading.copyWith(
+                          ? AppTextStyles.robberHeading.copyWith(
                               color: AppColors.white,
                             )
                           : AppTextStyles.heading_20.copyWith(

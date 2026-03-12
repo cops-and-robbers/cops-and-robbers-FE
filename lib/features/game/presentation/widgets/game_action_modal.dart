@@ -56,7 +56,7 @@ class GameActionModal {
       backgroundColor: isDarkMode ? AppColors.black : null,
       title: title,
       titleStyle: isDarkMode
-          ? AppTextStyles.robber_heading.copyWith(color: AppColors.white)
+          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
           : null,
       message: useAvatar ? null : message,
       confirmText: confirmLabel,

@@ -36,7 +36,7 @@ class GameRulesContent extends StatelessWidget {
       backgroundColor: isDarkMode ? AppColors.black : null,
       title: '게임 규칙',
       titleStyle: isDarkMode
-          ? AppTextStyles.robber_heading.copyWith(color: AppColors.white)
+          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
           : null,
       spacing: const DialogSpacing(toContent: 12),
       customContent: GameRulesContent(

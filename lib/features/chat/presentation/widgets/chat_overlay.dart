@@ -223,9 +223,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         child: Text(
           title,
           style: widget.isDarkMode
-              ? AppTextStyles.robber_sub_heading.copyWith(
-                  color: AppColors.white,
-                )
+              ? AppTextStyles.robberSubHeading.copyWith(color: AppColors.white)
               : AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
         ),
       ),
