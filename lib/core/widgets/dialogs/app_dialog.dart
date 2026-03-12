@@ -359,8 +359,8 @@ class _AppDialogState extends State<AppDialog>
       (widget.isDestructive
           ? AppColors.red
           : widget.isDarkMode
-              ? AppColors.green
-              : AppColors.black);
+          ? AppColors.green
+          : AppColors.black);
 
   /// 확인 버튼 텍스트색 (기본값 적용)
   Color get _resolvedConfirmTextColor =>
@@ -447,7 +447,9 @@ class _AppDialogState extends State<AppDialog>
                       Text(
                         widget.message!,
                         style: AppTextStyles.paragraph_14.copyWith(
-                          color: widget.isDarkMode ? AppColors.black400 : AppColors.black600,
+                          color: widget.isDarkMode
+                              ? AppColors.black400
+                              : AppColors.black600,
                         ),
                         textAlign: TextAlign.center,
                       ),
