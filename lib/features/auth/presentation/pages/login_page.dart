@@ -146,7 +146,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ? (authState.error as AuthException).message
         : fallbackMessage;
 
-    //TODO: 스낵바 나중에 디자인 만들어지면 바뀌어야함.
     messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
