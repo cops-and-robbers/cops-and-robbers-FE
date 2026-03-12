@@ -15,8 +15,22 @@ import '../../../../core/widgets/map/zone_setting_widget.dart';
 /// 지도에서 게임이 진행될 플레이그라운드 범위를 지정합니다.
 /// ZoneSettingWidget을 통해 중심점과 반경을 설정하고,
 /// 설정 완료 시 데이터를 로컬 저장소에 저장한 후 이전 페이지로 반환합니다.
+///
+/// **편집 모드**: [editInitialCenter]와 [editInitialRadius]가 제공되면
+/// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
+/// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
 class SetupPlaygroundPage extends StatefulWidget {
-  const SetupPlaygroundPage({super.key});
+  const SetupPlaygroundPage({
+    super.key,
+    this.editInitialCenter,
+    this.editInitialRadius,
+  });
+
+  /// 편집 모드 초기 중심 좌표 (null이면 생성 모드)
+  final LatLng? editInitialCenter;
+
+  /// 편집 모드 초기 반경 (미터)
+  final double? editInitialRadius;
 
   @override
   State<SetupPlaygroundPage> createState() => _SetupPlaygroundPageState();
@@ -52,15 +66,30 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
     _loadExistingData();
   }
 
+  /// 편집 모드 여부
+  bool get _isEditMode => widget.editInitialCenter != null;
+
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
+    // 편집 모드: 전달받은 초기값 사용
+    if (_isEditMode) {
+      if (mounted) {
+        setState(() {
+          _currentCenter = widget.editInitialCenter;
+          _currentRadius = widget.editInitialRadius ?? 500.0;
+          _isLoading = false;
+        });
+      }
+      return;
+    }
+
+    // 생성 모드: 로컬 저장소에서 복원
     final draft = await _storageService.loadDraft();
     if (mounted) {
       setState(() {
-        // 저장된 데이터가 있으면 복원, 없으면 null 유지
         _currentCenter = draft?.playgroundCenter;
         _currentRadius = draft?.playgroundRadiusInMeters ?? 500.0;
-        _isLoading = false; // 로딩 완료
+        _isLoading = false;
       });
     }
   }
@@ -83,8 +112,10 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
     final center = _currentCenter;
     if (center == null) return;
 
-    // 로컬 저장소에 저장
-    await _storageService.updatePlaygroundZone(center, _currentRadius);
+    // 생성 모드에서만 로컬 저장소에 저장
+    if (!_isEditMode) {
+      await _storageService.updatePlaygroundZone(center, _currentRadius);
+    }
 
     // 데이터 반환 (Map 형태)
     if (mounted) {
