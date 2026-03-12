@@ -9,10 +9,17 @@ import '../../../../core/constants/text_styles.dart';
 ///
 /// AppDialog.show의 customContent로 사용됩니다.
 class GameRulesContent extends StatelessWidget {
-  const GameRulesContent({this.locationRevealIntervalMinutes, super.key});
+  const GameRulesContent({
+    this.locationRevealIntervalMinutes,
+    this.isDarkMode = false,
+    super.key,
+  });
 
   /// 위치 공개 주기 (분). null이면 기본값 5 사용.
   final int? locationRevealIntervalMinutes;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -30,20 +37,19 @@ class GameRulesContent extends StatelessWidget {
   }
 
   Widget _buildRule({required String number, required InlineSpan content}) {
+    final textColor = isDarkMode ? AppColors.black400 : AppColors.black600;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           number,
-          style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black600),
+          style: AppTextStyles.paragraph_14.copyWith(color: textColor),
         ),
         SizedBox(width: AppSpacing.horizontal4),
         Expanded(
           child: Text.rich(
             TextSpan(children: [content]),
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
+            style: AppTextStyles.paragraph_14.copyWith(color: textColor),
           ),
         ),
       ],
@@ -83,22 +89,39 @@ class GameRulesContent extends StatelessWidget {
   }
 
   InlineSpan _highlight(String text) {
+    final highlightColor = isDarkMode
+        ? AppColors.green800.withValues(alpha: 0.3)
+        : AppColors.blue800.withValues(alpha: 0.3);
+    final textStyle = AppTextStyles.paragraph14Semibold.copyWith(
+      color: isDarkMode ? AppColors.black100 : AppColors.black800,
+      height: 1.4,
+    );
+
     return WidgetSpan(
       alignment: PlaceholderAlignment.baseline,
       baseline: TextBaseline.alphabetic,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 2.w),
-        decoration: BoxDecoration(
-          color: AppColors.blue800.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(2.r),
-        ),
-        child: Text(
-          text,
-          style: AppTextStyles.paragraph14Semibold.copyWith(
-            color: AppColors.black800,
-            height: 1.4,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // 하이라이트 배경 (3px 아래로)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 7.h,
+            bottom: 0,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: highlightColor,
+                borderRadius: BorderRadius.circular(2.r),
+              ),
+            ),
           ),
-        ),
+          // 텍스트 (위치 고정)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w),
+            child: Text(text, style: textStyle),
+          ),
+        ],
       ),
     );
   }

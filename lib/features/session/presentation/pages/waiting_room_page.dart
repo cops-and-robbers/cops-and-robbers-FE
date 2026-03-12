@@ -516,14 +516,23 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final interval = ref
         .read(gameParticipantNotifierProvider)
         ?.locationRevealIntervalMinutes;
+    final isDark = ref.read(roleThemeProvider);
     AppDialog.show(
       context: context,
+      isDarkMode: isDark,
+      backgroundColor: isDark ? AppColors.black : null,
       title: '게임 규칙',
+      titleStyle: isDark
+          ? AppTextStyles.robber_heading.copyWith(color: AppColors.white)
+          : null,
       spacing: const DialogSpacing(toContent: 12),
-      customContent: GameRulesContent(locationRevealIntervalMinutes: interval),
+      customContent: GameRulesContent(
+        locationRevealIntervalMinutes: interval,
+        isDarkMode: isDark,
+      ),
       confirmText: '확인했어요!',
-      confirmColor: AppColors.blue,
-      confirmTextColor: AppColors.white,
+      confirmColor: isDark ? null : AppColors.blue,
+      confirmTextColor: isDark ? null : AppColors.white,
     );
   }
 
