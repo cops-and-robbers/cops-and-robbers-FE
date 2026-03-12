@@ -1056,6 +1056,86 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 ),
                 SizedBox(height: AppSpacing.vertical12),
 
+                // 초대코드 다이얼로그 (다크 모드)
+                AppButton(
+                  text: '초대코드 다이얼로그 (다크 모드)',
+                  onPressed: () {
+                    const sessionCode = 'A1B2C3';
+                    final messenger = ScaffoldMessenger.of(context);
+                    AppDialog.show(
+                      context: context,
+                      isDarkMode: true,
+                      backgroundColor: AppColors.black,
+                      title: '초대코드를 생성했어요',
+                      titleStyle: AppTextStyles.robber_heading.copyWith(
+                        color: AppColors.white,
+                      ),
+                      message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
+                      cancelText: '닫기',
+                      confirmText: '공유하기',
+                      onConfirm: () {
+                        shareText(
+                          '경찰과 도둑 게임에 참여하세요!\n참여코드: $sessionCode',
+                          subject: '경찰과 도둑 초대코드',
+                        );
+                      },
+                      customContent: GestureDetector(
+                        onTap: () async {
+                          await Clipboard.setData(
+                            const ClipboardData(text: sessionCode),
+                          );
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '코드가 복사되었습니다',
+                                style: AppTextStyles.paragraph_14,
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            vertical: AppSpacing.vertical20,
+                            horizontal: AppSpacing.horizontal16,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.black800),
+                            borderRadius: AppRadius.medium,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                sessionCode,
+                                style: AppTextStyles.robber_heading.copyWith(
+                                  color: AppColors.white,
+                                ),
+                              ),
+                              SizedBox(width: AppSpacing.horizontal4),
+                              SvgPicture.asset(
+                                'assets/icons/icon_copy.svg',
+                                width: 20.w,
+                                height: 20.w,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.black500,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.black800,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
                 // 커스텀 타이틀 스타일
                 AppButton(
                   text: '커스텀 타이틀 스타일',
