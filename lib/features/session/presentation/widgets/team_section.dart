@@ -22,6 +22,7 @@ class TeamSection extends StatelessWidget {
     this.onEmptySlotTap,
     this.badge,
     this.onMemberTap,
+    this.isDarkMode = false,
     super.key,
   });
 
@@ -56,13 +57,23 @@ class TeamSection extends StatelessWidget {
   /// 인게임 오버레이에서 체포/탈옥 액션 트리거에 사용됩니다.
   final void Function(LobbyParticipantInfo)? onMemberTap;
 
+  /// 다크 모드 여부 (도둑팀 = 다크)
+  final bool isDarkMode;
+
   bool get _isPolice => team.toUpperCase() == 'POLICE';
 
   String get _teamName => _isPolice ? '경찰팀' : '도둑팀';
 
-  String get _iconPath => _isPolice
-      ? 'assets/icons/icon_police.svg'
-      : 'assets/icons/icon_robber.svg';
+  String get _iconPath {
+    if (_isPolice) {
+      return isDarkMode
+          ? 'assets/icons/icon_police_darkmode.svg'
+          : 'assets/icons/icon_police_lightmode.svg';
+    }
+    return isDarkMode
+        ? 'assets/icons/mdi_robber_darkmode.svg'
+        : 'assets/icons/mdi_robber_lightmode.svg';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,21 +107,21 @@ class TeamSection extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // 팀 아이콘 (28x28)
+            // 팀 아이콘 (28x28) — SVG에 색상 내장, colorFilter 불필요
             SvgPicture.asset(
               _iconPath,
               width: 28.w,
               height: 28.w,
-              colorFilter: ColorFilter.mode(
-                _isPolice ? AppColors.blue : AppColors.black900,
-                BlendMode.srcIn,
-              ),
             ),
             // 팀명 (아이콘에서 8px)
             SizedBox(width: 8.w),
             Text(
               _teamName,
-              style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+              style: isDarkMode
+                  ? AppTextStyles.robber_label.copyWith(
+                      color: AppColors.white,
+                    )
+                  : AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
             // 배지 또는 정원 카운트 (팀명에서 4~8px)
             if (badge != null) ...[
@@ -119,9 +130,9 @@ class TeamSection extends StatelessWidget {
             ] else ...[
               SizedBox(width: 4.w),
               Text(
-                '(${members.length}/$maxPerTeam)',
-                style: AppTextStyles.label_16.copyWith(
-                  color: AppColors.black400,
+                '현재 ${members.length}명',
+                style: AppTextStyles.tag_12.copyWith(
+                  color: isDarkMode ? AppColors.black400 : AppColors.black600,
                 ),
               ),
             ],
@@ -134,6 +145,12 @@ class TeamSection extends StatelessWidget {
                 'assets/icons/icon_down.svg',
                 width: 24.w,
                 height: 24.w,
+                colorFilter: isDarkMode
+                    ? const ColorFilter.mode(
+                        AppColors.black400,
+                        BlendMode.srcIn,
+                      )
+                    : null,
               ),
             ),
           ],
