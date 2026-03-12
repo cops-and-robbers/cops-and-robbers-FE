@@ -613,12 +613,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.black900 : AppColors.white,
+      appBar: _buildAppBar(isDark),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            // AppBar
-            _buildAppBar(isDark),
-
             // 팀 섹션 (스크롤 가능)
             Expanded(
               child: SingleChildScrollView(
@@ -668,14 +667,17 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ),
 
             // 하단 버튼
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.horizontal20,
-                AppSpacing.vertical12,
-                AppSpacing.horizontal20,
-                AppSpacing.vertical20,
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.horizontal20,
+                  AppSpacing.vertical12,
+                  AppSpacing.horizontal20,
+                  AppSpacing.vertical20,
+                ),
+                child: _buildBottomButton(isHost, isDark),
               ),
-              child: _buildBottomButton(isHost, isDark),
             ),
           ],
         ),
@@ -683,85 +685,72 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     );
   }
 
-  Widget _buildAppBar(bool isDark) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.w,
-        vertical: AppSpacing.vertical12,
-      ),
-      child: SizedBox(
-        height: 44.h,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // 초대코드 (정중앙) — 탭 시 초대코드 모달 표시
-            if (widget.inviteCode != null)
-              GestureDetector(
-                onTap: _showInviteCodeDialog,
-                child: Text(
-                  widget.inviteCode!,
-                  style: isDark
-                      ? AppTextStyles.robber_heading.copyWith(
-                          color: AppColors.white,
-                        )
-                      : AppTextStyles.heading_20.copyWith(
-                          color: AppColors.black,
-                        ),
-                ),
-              ),
-            // 좌측: 뒤로가기
-            Align(
-              alignment: Alignment.centerLeft,
-              child: GestureDetector(
-                onTap: _leaveRoom,
-                child: SvgPicture.asset(
-                  'assets/icons/icon_previous.svg',
-                  width: 24.w,
-                  height: 24.w,
-                  colorFilter: ColorFilter.mode(
-                    isDark ? AppColors.black200 : AppColors.black,
-                    BlendMode.srcIn,
-                  ),
-                ),
-              ),
+  PreferredSizeWidget _buildAppBar(bool isDark) {
+    return AppBar(
+      backgroundColor: isDark ? AppColors.black900 : AppColors.white,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: true,
+      leading: GestureDetector(
+        onTap: _leaveRoom,
+        behavior: HitTestBehavior.opaque,
+        child: Center(
+          child: SvgPicture.asset(
+            'assets/icons/icon_previous.svg',
+            width: 24.w,
+            height: 24.w,
+            colorFilter: ColorFilter.mode(
+              isDark ? AppColors.black200 : AppColors.black,
+              BlendMode.srcIn,
             ),
-            // 우측: 정보 + 설정
-            Align(
-              alignment: Alignment.centerRight,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    onTap: _showGameRulesDialog,
-                    child: SvgPicture.asset(
-                      'assets/icons/icon_info.svg',
-                      width: 24.w,
-                      height: 24.w,
-                      colorFilter: ColorFilter.mode(
-                        isDark ? AppColors.black200 : AppColors.black800,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.horizontal12),
-                  GestureDetector(
-                    onTap: () => context.push(RoutePaths.settings),
-                    child: SvgPicture.asset(
-                      'assets/icons/icon_settiing_2.svg',
-                      width: 24.w,
-                      height: 24.w,
-                      colorFilter: ColorFilter.mode(
-                        isDark ? AppColors.black200 : AppColors.black800,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
+      title: widget.inviteCode != null
+          ? GestureDetector(
+              onTap: _showInviteCodeDialog,
+              child: Text(
+                widget.inviteCode!,
+                style: isDark
+                    ? AppTextStyles.robber_heading.copyWith(
+                        color: AppColors.white,
+                      )
+                    : AppTextStyles.heading_20.copyWith(
+                        color: AppColors.black,
+                      ),
+              ),
+            )
+          : null,
+      actions: [
+        GestureDetector(
+          onTap: _showGameRulesDialog,
+          behavior: HitTestBehavior.opaque,
+          child: SvgPicture.asset(
+            'assets/icons/icon_info.svg',
+            width: 24.w,
+            height: 24.w,
+            colorFilter: ColorFilter.mode(
+              isDark ? AppColors.black200 : AppColors.black800,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+        SizedBox(width: AppSpacing.horizontal12),
+        GestureDetector(
+          onTap: () => context.push(RoutePaths.settings),
+          behavior: HitTestBehavior.opaque,
+          child: SvgPicture.asset(
+            'assets/icons/icon_settiing_2.svg',
+            width: 24.w,
+            height: 24.w,
+            colorFilter: ColorFilter.mode(
+              isDark ? AppColors.black200 : AppColors.black800,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+        SizedBox(width: 24.w),
+      ],
     );
   }
 
