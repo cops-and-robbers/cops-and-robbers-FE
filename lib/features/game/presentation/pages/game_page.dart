@@ -199,7 +199,13 @@ class _GamePageState extends ConsumerState<GamePage> {
   /// 도둑 팀 GPS 위치 서버 전송 시작 (10초 주기, 10m 이상 변화 시만 전송)
   Future<void> _startLocationSending() async {
     // GPS 조회 (STOMP 연결 대기와 병렬 수행)
-    final initial = await DeviceLocationService.getCurrentPosition();
+    final Position? initial;
+    try {
+      initial = await DeviceLocationService.getCurrentPosition();
+    } catch (e) {
+      debugPrint('[위치] 초기 위치 조회 실패: $e');
+      return;
+    }
     if (!mounted || initial == null) return;
 
     // STOMP가 아직 connecting 중이면 connected 될 때까지 대기 (최대 15초)
@@ -226,7 +232,13 @@ class _GamePageState extends ConsumerState<GamePage> {
     //    전체 백그라운드 지원은 flutter_background_service 구현 시 대응 예정.
     _locationTimer = Timer.periodic(const Duration(seconds: 10), (_) async {
       if (!mounted) return;
-      final pos = await DeviceLocationService.getCurrentPosition();
+      final Position? pos;
+      try {
+        pos = await DeviceLocationService.getCurrentPosition();
+      } catch (e) {
+        debugPrint('[위치] 위치 조회 실패 (백그라운드 복귀 등): $e');
+        return;
+      }
       if (!mounted || pos == null) return;
 
       final last = _lastSentPosition;
@@ -251,7 +263,13 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
   Future<void> _sendPositionNow() async {
-    final pos = await DeviceLocationService.getCurrentPosition();
+    final Position? pos;
+    try {
+      pos = await DeviceLocationService.getCurrentPosition();
+    } catch (e) {
+      debugPrint('[위치] 즉시 전송 위치 조회 실패: $e');
+      return;
+    }
     if (!mounted || pos == null) return;
     _gameEventDatasource?.publishLocation(_gameId, pos.latitude, pos.longitude);
     _lastSentPosition = pos;
