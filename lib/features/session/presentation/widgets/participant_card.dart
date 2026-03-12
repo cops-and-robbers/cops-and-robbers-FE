@@ -96,7 +96,10 @@ class ParticipantCard extends StatelessWidget {
 ///
 /// 대기실 팀 섹션 내 비어 있는 참가자 슬롯을 표시합니다.
 class EmptySlotCard extends StatelessWidget {
-  const EmptySlotCard({super.key});
+  const EmptySlotCard({this.isDarkMode = false, super.key});
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -108,13 +111,15 @@ class EmptySlotCard extends StatelessWidget {
           height: 84.h,
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.black100,
+              color: isDarkMode ? AppColors.black800 : AppColors.black100,
               borderRadius: BorderRadius.circular(4.r),
             ),
             child: Center(
               child: Text(
                 '대기 중',
-                style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
+                style: AppTextStyles.tag_12.copyWith(
+                  color: isDarkMode ? AppColors.black400 : AppColors.black400,
+                ),
               ),
             ),
           ),

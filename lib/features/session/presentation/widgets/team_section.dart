@@ -185,7 +185,10 @@ class TeamSection extends StatelessWidget {
           ),
           // 나머지 빈 슬롯 (탭 비활성화)
           if (emptyCount > 0)
-            ...List.generate(emptyCount, (_) => const EmptySlotCard()),
+            ...List.generate(
+              emptyCount,
+              (_) => EmptySlotCard(isDarkMode: isDarkMode),
+            ),
         ],
       ),
     );
