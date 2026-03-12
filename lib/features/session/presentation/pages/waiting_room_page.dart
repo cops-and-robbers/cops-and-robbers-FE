@@ -718,7 +718,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         ),
         SizedBox(width: AppSpacing.horizontal12),
         GestureDetector(
-          onTap: () => context.push(RoutePaths.settings),
+          onTap: () =>
+              context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
           behavior: HitTestBehavior.opaque,
           child: SvgPicture.asset(
             'assets/icons/icon_settiing_2.svg',
