@@ -19,7 +19,7 @@ class TeamSection extends StatelessWidget {
     required this.isExpanded,
     required this.onToggle,
     this.hostParticipantId,
-    this.onEmptySlotTap,
+    this.onAddSlotTap,
     this.badge,
     this.onMemberTap,
     this.isDarkMode = false,
@@ -44,8 +44,8 @@ class TeamSection extends StatelessWidget {
   /// 방장 participantId
   final int? hostParticipantId;
 
-  /// 빈 슬롯 탭 콜백 (더미 모드 팀 변경용)
-  final VoidCallback? onEmptySlotTap;
+  /// + 버튼 카드 탭 콜백 (팀 변경용)
+  final VoidCallback? onAddSlotTap;
 
   /// 팀명 옆 배지 위젯 (null이면 인원 카운트 표시)
   ///
@@ -108,19 +108,13 @@ class TeamSection extends StatelessWidget {
         child: Row(
           children: [
             // 팀 아이콘 (28x28) — SVG에 색상 내장, colorFilter 불필요
-            SvgPicture.asset(
-              _iconPath,
-              width: 28.w,
-              height: 28.w,
-            ),
+            SvgPicture.asset(_iconPath, width: 28.w, height: 28.w),
             // 팀명 (아이콘에서 8px)
             SizedBox(width: 8.w),
             Text(
               _teamName,
               style: isDarkMode
-                  ? AppTextStyles.robber_label.copyWith(
-                      color: AppColors.white,
-                    )
+                  ? AppTextStyles.robber_label.copyWith(color: AppColors.white)
                   : AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
             // 배지 또는 정원 카운트 (팀명에서 4~8px)
@@ -160,23 +154,39 @@ class TeamSection extends StatelessWidget {
   }
 
   Widget _buildParticipants() {
+    final hasAddSlot = onAddSlotTap != null;
+    final emptyCount = maxPerTeam - members.length - (hasAddSlot ? 1 : 0);
+    // 방장을 맨 앞으로 정렬
+    final sorted = [...members]
+      ..sort((a, b) {
+        if (a.participantId == hostParticipantId) return -1;
+        if (b.participantId == hostParticipantId) return 1;
+        return 0;
+      });
+
     return Padding(
       // 첫 카드 좌측 29px
       padding: EdgeInsets.only(left: 29.w, right: 24.w, bottom: 20.h),
       child: Wrap(
         spacing: 16.w, // 카드 간 가로 여백 16px
         runSpacing: 16.h, // 줄 간 세로 여백
-        children: List.generate(maxPerTeam, (index) {
-          if (index < members.length) {
-            final member = members[index];
-            return ParticipantCard(
+        children: [
+          // 첫 번째 칸: + 버튼 카드 (대기실에서만 표시)
+          if (hasAddSlot)
+            AddSlotCard(onTap: onAddSlotTap, isDarkMode: isDarkMode),
+          // 참가자 카드 (방장 우선)
+          ...sorted.map(
+            (member) => ParticipantCard(
               participant: member,
               isHost: member.participantId == hostParticipantId,
+              isDarkMode: isDarkMode,
               onTap: onMemberTap != null ? () => onMemberTap!(member) : null,
-            );
-          }
-          return EmptySlotCard(onTap: onEmptySlotTap);
-        }),
+            ),
+          ),
+          // 나머지 빈 슬롯 (탭 비활성화)
+          if (emptyCount > 0)
+            ...List.generate(emptyCount, (_) => const EmptySlotCard()),
+        ],
       ),
     );
   }

@@ -83,19 +83,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// dispose 여부 (microtask 큐에 남은 이벤트가 dispose 후 처리되는 것을 방지)
   bool _isDisposed = false;
 
-  /// 팀당 최대 인원 (maxParticipants 기반, 홀수 시 도둑 +1)
-  int get _maxPolice {
-    final max =
-        ref.read(gameParticipantNotifierProvider)?.maxParticipants ?? 10;
-    return max ~/ 2;
-  }
-
-  int get _maxRobber {
-    final max =
-        ref.read(gameParticipantNotifierProvider)?.maxParticipants ?? 10;
-    return (max + 1) ~/ 2;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -636,13 +623,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                     TeamSection(
                       team: 'POLICE',
                       members: policeMembers,
-                      maxPerTeam: _maxPolice,
+                      maxPerTeam: policeMembers.length + 1,
                       isExpanded: _isPoliceExpanded,
                       onToggle: () => setState(
                         () => _isPoliceExpanded = !_isPoliceExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
-                      onEmptySlotTap: !_isReady
+                      onAddSlotTap: !_isReady
                           ? () => _changeTeam('POLICE')
                           : null,
                       isDarkMode: isDark,
@@ -659,13 +646,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                     TeamSection(
                       team: 'ROBBER',
                       members: robberMembers,
-                      maxPerTeam: _maxRobber,
+                      maxPerTeam: robberMembers.length + 1,
                       isExpanded: _isRobberExpanded,
                       onToggle: () => setState(
                         () => _isRobberExpanded = !_isRobberExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
-                      onEmptySlotTap: !_isReady
+                      onAddSlotTap: !_isReady
                           ? () => _changeTeam('ROBBER')
                           : null,
                       isDarkMode: isDark,
@@ -724,9 +711,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                     ? AppTextStyles.robber_heading.copyWith(
                         color: AppColors.white,
                       )
-                    : AppTextStyles.heading_20.copyWith(
-                        color: AppColors.black,
-                      ),
+                    : AppTextStyles.heading_20.copyWith(color: AppColors.black),
               ),
             )
           : null,
@@ -780,7 +765,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         onPressed: allReady ? _startGame : null,
         backgroundColor: isDark ? AppColors.green : AppColors.blue,
         foregroundColor: isDark ? AppColors.black : AppColors.white,
-        disabledBackgroundColor: isDark ? AppColors.black800 : AppColors.black200,
+        disabledBackgroundColor: isDark
+            ? AppColors.black800
+            : AppColors.black200,
         disabledForegroundColor: isDark ? AppColors.green : AppColors.black400,
         textStyle: isDark ? AppTextStyles.robber_label : null,
         showBorder: false,

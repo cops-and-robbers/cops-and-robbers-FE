@@ -16,6 +16,7 @@ class ParticipantCard extends StatelessWidget {
     required this.participant,
     this.isHost = false,
     this.onTap,
+    this.isDarkMode = false,
     super.key,
   });
 
@@ -24,6 +25,9 @@ class ParticipantCard extends StatelessWidget {
 
   /// 카드 탭 콜백 (null이면 탭 비활성화)
   final VoidCallback? onTap;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +70,9 @@ class ParticipantCard extends StatelessWidget {
                   child: Text(
                     participant.nickname,
                     style: AppTextStyles.tag_10.copyWith(
-                      color: AppColors.black800,
+                      color: isDarkMode
+                          ? AppColors.black300
+                          : AppColors.black800,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -90,9 +96,48 @@ class ParticipantCard extends StatelessWidget {
 ///
 /// 대기실 팀 섹션 내 비어 있는 참가자 슬롯을 표시합니다.
 class EmptySlotCard extends StatelessWidget {
-  const EmptySlotCard({this.onTap, super.key});
+  const EmptySlotCard({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 72.w,
+          height: 84.h,
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.black100,
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Center(
+              child: Text(
+                '대기 중',
+                style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: AppSpacing.vertical4),
+        // 닉네임 영역 높이 맞춤용
+        SizedBox(width: 72.w, height: AppTextStyles.tag_10.fontSize),
+      ],
+    );
+  }
+}
+
+/// + 버튼 슬롯 카드 위젯
+///
+/// 대기실 팀 섹션 첫 번째 칸에 표시되며, 탭 시 해당 팀으로 변경합니다.
+class AddSlotCard extends StatelessWidget {
+  const AddSlotCard({this.onTap, this.isDarkMode = false, super.key});
+
+  /// 카드 탭 콜백 (팀 변경 트리거)
   final VoidCallback? onTap;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -106,14 +151,17 @@ class EmptySlotCard extends StatelessWidget {
             height: 84.h,
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.black100,
-                borderRadius: BorderRadius.circular(4.r),
+                color: isDarkMode ? AppColors.black800 : AppColors.black100,
+                borderRadius: BorderRadius.circular(8.r),
               ),
               child: Center(
-                child: Text(
-                  '대기 중',
-                  style: AppTextStyles.tag_12.copyWith(
-                    color: AppColors.black400,
+                child: SvgPicture.asset(
+                  'assets/icons/plus.svg',
+                  width: 17.w,
+                  height: 17.w,
+                  colorFilter: ColorFilter.mode(
+                    isDarkMode ? AppColors.black400 : AppColors.black300,
+                    BlendMode.srcIn,
                   ),
                 ),
               ),
