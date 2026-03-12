@@ -146,6 +146,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
         title: '탈옥',
         message: '탈옥을 시도하시겠습니까?',
         confirmLabel: '탈옥',
+        isDarkMode: widget.isDarkMode,
         onConfirm: () => ref
             .read(gameEventNotifierProvider.notifier)
             .escape(widget.gameId, widget.myParticipantId),
