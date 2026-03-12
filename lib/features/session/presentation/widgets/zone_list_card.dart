@@ -8,8 +8,8 @@ import '../../domain/entities/zone_info.dart';
 
 /// 구역 목록 카드
 ///
-/// 플레이그라운드, 감옥 등 구역 정보를 표시하고,
-/// 각 항목 클릭 시 해당 구역 설정 화면으로 이동합니다.
+/// 플레이그라운드, 감옥 등 구역 정보를 표시합니다.
+/// [onTap]이 제공되면 카드 전체를 탭하여 구역 설정 화면으로 이동할 수 있습니다.
 ///
 /// 사용 예시:
 /// ```dart
@@ -18,7 +18,7 @@ import '../../domain/entities/zone_info.dart';
 ///     ZoneInfo(id: '1', name: '플레이그라운드', radiusMeters: 400),
 ///     ZoneInfo(id: '2', name: '감옥', radiusMeters: 200),
 ///   ],
-///   onZoneTap: (zoneId) => navigateToZoneSetting(zoneId),
+///   onTap: () => navigateToZoneSetting(),
 /// )
 /// ```
 class ZoneListCard extends StatelessWidget {

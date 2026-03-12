@@ -298,7 +298,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.gameSettingsEditName,
                 pageBuilder: (context, state) {
                   final sessionId = state.pathParameters['sessionId']!;
-                  final settings = state.extra as GameSettingsResponse;
+                  final settings = state.extra as GameSettingsResponse?;
+                  if (settings == null) {
+                    // extra 누락 (딥링크 등 비정상 진입) → 이전 화면으로
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (context.mounted) Navigator.of(context).pop();
+                    });
+                    return buildDirectionalSlide(
+                      key: state.pageKey,
+                      isForward: true,
+                      child: const Scaffold(
+                        body: Center(child: CircularProgressIndicator()),
+                      ),
+                    );
+                  }
                   return buildDirectionalSlide(
                     key: state.pageKey,
                     child: GameSettingsEditPage(

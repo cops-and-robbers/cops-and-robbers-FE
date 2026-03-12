@@ -44,8 +44,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   /// 초기화하고 다시 설정하도록 합니다 (감옥이 새 플레이그라운드 밖에
   /// 위치할 수 있으므로).
   Future<void> _navigateToEditPlayground(GameAreaModel currentArea) async {
+    final router = GoRouter.of(context);
+
     // 1. 플레이그라운드 수정
-    final playgroundResult = await context.push<Map<String, dynamic>>(
+    final playgroundResult = await router.push<Map<String, dynamic>>(
       '/waiting-room/${widget.sessionId}/game-settings/edit-playground',
       extra: {
         'center': LatLng(
@@ -61,13 +63,18 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     final newPlaygroundCenter = playgroundResult['center'] as LatLng;
     final newPlaygroundRadius = playgroundResult['radius'] as double;
 
-    // 2. 감옥 재설정 (새 플레이그라운드 기준, 초기 감옥 위치 없음)
-    final prisonResult = await context.push<Map<String, dynamic>>(
+    // 2. 감옥 재설정 (새 플레이그라운드 기준, 기존 감옥 위치를 초기값으로 표시)
+    //    기존 감옥이 새 플레이그라운드 밖이면 _isJailInsidePlayground 검증에서 차단됨
+    final prisonResult = await router.push<Map<String, dynamic>>(
       '/waiting-room/${widget.sessionId}/game-settings/edit-prison',
       extra: {
+        'center': LatLng(
+          currentArea.jailCenter.latitude,
+          currentArea.jailCenter.longitude,
+        ),
+        'radius': currentArea.jailRadiusInMeters,
         'playgroundCenter': newPlaygroundCenter,
         'playgroundRadius': newPlaygroundRadius,
-        // center/radius를 전달하지 않아 감옥 초기 위치 없이 시작
       },
     );
 
