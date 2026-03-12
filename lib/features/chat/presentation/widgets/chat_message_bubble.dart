@@ -15,12 +15,16 @@ class ChatMessageBubble extends StatelessWidget {
     required this.message,
     required this.isMe,
     required this.myTeam,
+    this.isDarkMode = false,
     super.key,
   });
 
   final ChatMessageDto message;
   final bool isMe;
   final String myTeam;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   bool get _isSystemMessage =>
       message.sender.team.toUpperCase() == 'SYSTEM' ||
@@ -64,8 +68,8 @@ class ChatMessageBubble extends StatelessWidget {
             'assets/icons/Loudspeaker.svg',
             width: 16.w,
             height: 16.w,
-            colorFilter: const ColorFilter.mode(
-              AppColors.blue,
+            colorFilter: ColorFilter.mode(
+              isDarkMode ? AppColors.green : AppColors.blue,
               BlendMode.srcIn,
             ),
           ),
@@ -73,7 +77,9 @@ class ChatMessageBubble extends StatelessWidget {
           Flexible(
             child: Text(
               message.message,
-              style: AppTextStyles.paragraph_14.copyWith(color: AppColors.blue),
+              style: AppTextStyles.paragraph_14.copyWith(
+                color: isDarkMode ? AppColors.green : AppColors.blue,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -90,7 +96,9 @@ class ChatMessageBubble extends StatelessWidget {
           padding: EdgeInsets.only(bottom: 4.h, right: 4.w),
           child: Text(
             message.sender.nickname,
-            style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
+            style: AppTextStyles.tag_12.copyWith(
+              color: isDarkMode ? AppColors.black400 : AppColors.black600,
+            ),
           ),
         ),
         Row(
@@ -109,7 +117,7 @@ class ChatMessageBubble extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: 240.w),
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: isDarkMode ? AppColors.black : AppColors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(12.r),
                     topRight: Radius.circular(12.r),
@@ -120,7 +128,7 @@ class ChatMessageBubble extends StatelessWidget {
                 child: Text(
                   message.message,
                   style: AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black900,
+                    color: isDarkMode ? AppColors.white : AppColors.black900,
                   ),
                 ),
               ),
@@ -139,7 +147,9 @@ class ChatMessageBubble extends StatelessWidget {
           padding: EdgeInsets.only(bottom: 4.h, left: 4.w),
           child: Text(
             message.sender.nickname,
-            style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
+            style: AppTextStyles.tag_12.copyWith(
+              color: isDarkMode ? AppColors.black400 : AppColors.black600,
+            ),
           ),
         ),
         Row(
@@ -151,7 +161,7 @@ class ChatMessageBubble extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: 240.w),
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: isDarkMode ? AppColors.black : AppColors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(12.r),
                     topRight: Radius.circular(12.r),
@@ -162,7 +172,7 @@ class ChatMessageBubble extends StatelessWidget {
                 child: Text(
                   message.message,
                   style: AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black900,
+                    color: isDarkMode ? AppColors.white : AppColors.black900,
                   ),
                 ),
               ),

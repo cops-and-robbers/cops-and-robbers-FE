@@ -15,12 +15,16 @@ class ChatMessageList extends StatefulWidget {
     required this.messages,
     required this.myParticipantId,
     required this.myTeam,
+    this.isDarkMode = false,
     super.key,
   });
 
   final List<ChatMessageDto> messages;
   final int myParticipantId;
   final String myTeam;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   @override
   State<ChatMessageList> createState() => _ChatMessageListState();
@@ -80,6 +84,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
           message: message,
           isMe: isMe,
           myTeam: widget.myTeam,
+          isDarkMode: widget.isDarkMode,
         );
       },
     );

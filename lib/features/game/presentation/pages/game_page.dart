@@ -660,6 +660,7 @@ class _GamePageState extends ConsumerState<GamePage> {
             gameId: _gameId,
             myParticipantId: widget.participantId,
             myTeam: widget.team,
+            isDarkMode: _isDarkMode,
           ),
         ],
       ),
