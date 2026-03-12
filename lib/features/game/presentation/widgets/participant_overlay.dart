@@ -215,7 +215,9 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
             ),
             Divider(
               height: 1,
-              color: widget.isDarkMode ? AppColors.black800 : AppColors.black200,
+              color: widget.isDarkMode
+                  ? AppColors.black800
+                  : AppColors.black200,
             ),
             // 도둑팀 섹션 (도주 중 배지 표시, 빈 슬롯 미표시)
             TeamSection(
@@ -240,7 +242,9 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
   /// 도둑팀 헤더 배지: "현재 X명 도주 중!"
   Widget _buildRobberBadge(int count) {
     final badgeColor = widget.isDarkMode ? AppColors.green : AppColors.blue;
-    final badgeBoldColor = widget.isDarkMode ? AppColors.green800 : AppColors.blue800;
+    final badgeBoldColor = widget.isDarkMode
+        ? AppColors.green800
+        : AppColors.blue800;
     return RichText(
       text: TextSpan(
         style: AppTextStyles.tag_12.copyWith(color: badgeColor),

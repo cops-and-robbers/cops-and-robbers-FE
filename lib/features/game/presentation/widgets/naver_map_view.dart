@@ -102,7 +102,10 @@ class NaverMapViewState extends State<NaverMapView> {
     try {
       return NaverMap(
         options: NaverMapViewOptions(
-          initialCameraPosition: const NCameraPosition(target: _fallback, zoom: 15),
+          initialCameraPosition: const NCameraPosition(
+            target: _fallback,
+            zoom: 15,
+          ),
           mapType: widget.isDarkMode ? NMapType.navi : NMapType.basic,
           nightModeEnable: widget.isDarkMode,
           locationButtonEnable: false,
