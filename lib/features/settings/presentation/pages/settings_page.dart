@@ -10,6 +10,9 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/widgets/dialogs/dialog_animation.dart';
+import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
@@ -187,15 +190,104 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               _buildMenuItem(
                 text: '회원 탈퇴',
                 textColor: AppColors.black600,
-                onTap: () {
-                  // TODO: 회원 탈퇴 로직
-                },
+                onTap: () => _showDeleteAccountDialog(),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  /// 회원 탈퇴 확인 다이얼로그 표시
+  ///
+  /// "탈퇴하기" 또는 "delete" 입력 시에만 탈퇴 버튼이 동작합니다.
+  void _showDeleteAccountDialog() {
+    final controller = TextEditingController();
+
+    AppDialog.show(
+      context: context,
+      title: '회원 탈퇴',
+      message:
+          '탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다.\n\n계속하려면 "탈퇴하기" 또는 "delete"를 입력하세요.',
+      customContent: AppTextField(
+        controller: controller,
+        hintText: '탈퇴하기 또는 delete',
+      ),
+      cancelText: '취소',
+      confirmText: '탈퇴',
+      isDestructive: true,
+      validator: () {
+        final text = controller.text.trim();
+        return text == '탈퇴하기' || text.toLowerCase() == 'delete';
+      },
+      onConfirm: () => _executeDeleteAccount(),
+    ).whenComplete(() {
+      Future.delayed(
+        DialogAnimation.duration + const Duration(milliseconds: 50),
+        controller.dispose,
+      );
+    });
+  }
+
+  /// 회원 탈퇴 실행
+  ///
+  /// 로딩 팝업으로 터치를 차단하고,
+  /// 1. DELETE /api/user/me (백엔드 계정 삭제)
+  /// 2. AuthNotifier.cleanupAfterAccountDeletion() (로컬 정리 + 리다이렉트)
+  Future<void> _executeDeleteAccount() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    // 로딩 팝업 표시 (터치 차단)
+    AppPopup.show(
+      context: context,
+      barrierDismissible: false,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(color: AppColors.black),
+          SizedBox(height: AppSpacing.vertical16),
+          Text(
+            '탈퇴 처리 중...',
+            style: AppTextStyles.paragraph_14.copyWith(
+              color: AppColors.black600,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    try {
+      // 1. 백엔드 계정 삭제
+      await ref.read(deleteAccountUseCaseProvider).execute();
+      if (!mounted) return;
+
+      // 2. 로컬 정리 (Firebase signOut + 토큰 삭제 + state null)
+      await ref
+          .read(authNotifierProvider.notifier)
+          .cleanupAfterAccountDeletion();
+      if (!mounted) return;
+
+      // 3. 로그인 화면으로 이동 (탈퇴 완료 메시지 전달)
+      context.go('${RoutePaths.login}?accountDeleted=true');
+      return;
+    } on AuthException {
+      // AuthInterceptor에서 강제 로그아웃 처리됨
+      return;
+    } on AppException catch (e) {
+      // 로딩 팝업 닫기
+      if (navigator.canPop()) navigator.pop();
+      if (!mounted) return;
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(e.message, style: AppTextStyles.paragraph_14),
+          backgroundColor: AppColors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   /// 설정 메뉴 아이템 빌더

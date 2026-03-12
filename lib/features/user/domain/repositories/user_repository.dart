@@ -19,4 +19,10 @@ abstract class UserRepository {
   ///
   /// 현재 로그인한 사용자의 프로필 정보를 반환합니다.
   Future<UserProfileEntity> getMyProfile();
+
+  /// 회원 탈퇴
+  ///
+  /// 백엔드에서 사용자 계정을 삭제합니다.
+  /// 성공 시 로컬 정리(Firebase signOut, 토큰 삭제)는 호출자가 별도로 수행합니다.
+  Future<void> deleteAccount();
 }

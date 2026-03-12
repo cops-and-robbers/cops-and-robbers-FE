@@ -81,4 +81,22 @@ class UserRepositoryImpl implements UserRepository {
       );
     }
   }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      await _dataSource.deleteAccount();
+
+      if (kDebugMode) {
+        debugPrint('✅ 회원 탈퇴 성공');
+      }
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '회원 탈퇴 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
+    }
+  }
 }

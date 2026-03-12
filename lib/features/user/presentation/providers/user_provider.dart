@@ -5,6 +5,7 @@ import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/user_remote_datasource.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/repositories/user_repository.dart';
+import '../../domain/usecases/delete_account_usecase.dart';
 
 part 'user_provider.g.dart';
 
@@ -23,4 +24,14 @@ UserRemoteDataSource userRemoteDataSource(Ref ref) {
 @riverpod
 UserRepository userRepository(Ref ref) {
   return UserRepositoryImpl(ref.watch(userRemoteDataSourceProvider));
+}
+
+// ============================================================================
+// Domain Layer Providers (UseCases)
+// ============================================================================
+
+/// 회원 탈퇴 UseCase Provider
+@riverpod
+DeleteAccountUseCase deleteAccountUseCase(Ref ref) {
+  return DeleteAccountUseCase(repository: ref.watch(userRepositoryProvider));
 }

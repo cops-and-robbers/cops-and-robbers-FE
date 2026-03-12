@@ -124,6 +124,9 @@ class ApiEndpoints {
   /// 내 정보 조회
   static const String myPage = '/api/user/me';
 
+  /// 회원 탈퇴
+  static const String deleteAccount = '/api/user/me';
+
   /// 닉네임 변경
   static const String updateNickname = '/api/user/me/nickname';
 

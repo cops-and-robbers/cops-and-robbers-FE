@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -45,6 +46,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       ..onTap = () async => await launchExternalUrl(AppUrls.privacyPolicy);
     _termsRecognizer = TapGestureRecognizer()
       ..onTap = () async => await launchExternalUrl(AppUrls.termsOfService);
+
+    // 회원 탈퇴 완료 메시지 표시
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final accountDeleted = GoRouterState.of(
+        context,
+      ).uri.queryParameters['accountDeleted'];
+      if (accountDeleted == 'true') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('회원탈퇴가 완료되었습니다.', style: AppTextStyles.paragraph_14),
+            backgroundColor: AppColors.blue,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    });
   }
 
   @override
