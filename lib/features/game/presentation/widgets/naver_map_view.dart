@@ -10,7 +10,10 @@ import 'map_error_widget.dart';
 /// - 초기 진입 시 현재 위치 1회 조회 후 카메라 이동
 /// - [updateAreaOverlays]로 플레이그라운드·감옥 원 추가
 class NaverMapView extends StatefulWidget {
-  const NaverMapView({super.key});
+  const NaverMapView({super.key, this.isDarkMode = false});
+
+  /// 다크 모드 여부 (도둑팀 다크 스타일 적용)
+  final bool isDarkMode;
 
   @override
   State<NaverMapView> createState() => NaverMapViewState();
@@ -98,9 +101,10 @@ class NaverMapViewState extends State<NaverMapView> {
   Widget build(BuildContext context) {
     try {
       return NaverMap(
-        options: const NaverMapViewOptions(
-          initialCameraPosition: NCameraPosition(target: _fallback, zoom: 15),
-
+        options: NaverMapViewOptions(
+          initialCameraPosition: const NCameraPosition(target: _fallback, zoom: 15),
+          mapType: widget.isDarkMode ? NMapType.navi : NMapType.basic,
+          nightModeEnable: widget.isDarkMode,
           locationButtonEnable: false,
           indoorEnable: false,
         ),

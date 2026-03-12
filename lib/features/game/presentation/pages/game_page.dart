@@ -17,7 +17,6 @@ import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/countdown_timer_content.dart';
-import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 import '../../../../router/route_paths.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
 import '../../../chat/presentation/widgets/chat_overlay.dart';
@@ -88,6 +87,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   DateTime? _dummyStartTime;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
+  bool get _isDarkMode => widget.team == 'ROBBER';
 
   @override
   void initState() {
@@ -284,14 +284,10 @@ class _GamePageState extends ConsumerState<GamePage> {
     final interval = ref
         .read(gameParticipantNotifierProvider)
         ?.locationRevealIntervalMinutes;
-    AppDialog.show(
-      context: context,
-      title: '게임 규칙',
-      spacing: const DialogSpacing(toContent: 12),
-      customContent: GameRulesContent(locationRevealIntervalMinutes: interval),
-      confirmText: '확인했어요!',
-      confirmColor: AppColors.blue,
-      confirmTextColor: AppColors.white,
+    GameRulesContent.showAsDialog(
+      context,
+      isDarkMode: _isDarkMode,
+      locationRevealIntervalMinutes: interval,
     );
   }
 
@@ -530,10 +526,11 @@ class _GamePageState extends ConsumerState<GamePage> {
           /// index 0: 지도 (항상 존재)
           Positioned.fill(
             child: widget.mapType == 'naver'
-                ? NaverMapView(key: _naverMapKey)
+                ? NaverMapView(key: _naverMapKey, isDarkMode: _isDarkMode)
                 : GoogleMapView(
                     key: _googleMapKey,
                     onCameraMoveStarted: _onMapCameraMoved,
+                    isDarkMode: _isDarkMode,
                   ),
           ),
 
@@ -571,7 +568,7 @@ class _GamePageState extends ConsumerState<GamePage> {
               left: 0,
               right: 0,
               child: Container(
-                color: AppColors.white,
+                color: _isDarkMode ? AppColors.black900 : AppColors.white,
                 child: SafeArea(bottom: false, child: _buildAppBar()),
               ),
             )
@@ -623,6 +620,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                 containerSize: 48,
                 iconSize: 24,
                 iconColor: AppColors.blue,
+                backgroundColor: _isDarkMode ? AppColors.black : null,
               ),
             )
           else
@@ -636,7 +634,8 @@ class _GamePageState extends ConsumerState<GamePage> {
                     onPressed: () => setState(() => _showParticipants = true),
                     containerSize: 48,
                     iconSize: 24,
-                    iconColor: AppColors.blue,
+                    iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                    backgroundColor: _isDarkMode ? AppColors.black : null,
                   ),
                   SizedBox(height: AppSpacing.vertical8),
                   MyLocationButton(
@@ -644,6 +643,9 @@ class _GamePageState extends ConsumerState<GamePage> {
                     isFocused: _isLocationFocused,
                     containerSize: 48,
                     iconSize: 24,
+                    focusedColor: _isDarkMode ? AppColors.green500 : null,
+                    unfocusedColor: _isDarkMode ? AppColors.green500 : null,
+                    backgroundColor: _isDarkMode ? AppColors.black : null,
                   ),
                 ],
               ),
@@ -706,7 +708,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
     return Container(
       height: 64.h,
-      color: AppColors.white,
+      color: _isDarkMode ? AppColors.black900 : AppColors.white,
       padding: AppPadding.horizontal24,
       child: Stack(
         alignment: Alignment.center,
@@ -720,15 +722,23 @@ class _GamePageState extends ConsumerState<GamePage> {
                   ? GameTimerText(
                       startTime: gameStartTime,
                       totalDuration: totalDuration,
+                      isDarkMode: _isDarkMode,
                     )
                   : Text(
                       '--:--',
-                      style: AppTextStyles.heading_20.copyWith(
-                        color: AppColors.black,
-                      ),
+                      style: _isDarkMode
+                          ? AppTextStyles.robber_heading.copyWith(
+                              color: AppColors.white,
+                            )
+                          : AppTextStyles.heading_20.copyWith(
+                              color: AppColors.black,
+                            ),
                     ),
               SizedBox(height: 6.h),
-              LocationRevealCountdown(nextRevealTime: nextRevealTime),
+              LocationRevealCountdown(
+                nextRevealTime: nextRevealTime,
+                isDarkMode: _isDarkMode,
+              ),
             ],
           ),
           // 우측: info 버튼 (24x24)
@@ -740,8 +750,8 @@ class _GamePageState extends ConsumerState<GamePage> {
                 'assets/icons/icon_info.svg',
                 width: 24.w,
                 height: 24.w,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.black800,
+                colorFilter: ColorFilter.mode(
+                  _isDarkMode ? AppColors.black200 : AppColors.black800,
                   BlendMode.srcIn,
                 ),
               ),
