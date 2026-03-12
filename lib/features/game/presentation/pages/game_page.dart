@@ -34,6 +34,7 @@ import '../widgets/location_reveal_countdown.dart';
 import '../widgets/google_map_view.dart';
 import '../widgets/naver_map_view.dart';
 import '../widgets/participant_overlay.dart';
+import '../widgets/police_start_countdown.dart';
 
 /// 인게임 지도 화면
 ///
@@ -142,6 +143,27 @@ class _GamePageState extends ConsumerState<GamePage> {
         subtitle: '도둑이 도망치는 중이에요!',
       ),
     );
+  }
+
+  /// 도둑팀 전용: 경찰 시작 시각 계산
+  ///
+  /// gameStartTime + policeWaitMinutes. 경찰팀이거나 대기 시간이 없으면 null.
+  DateTime? _computePoliceStartTime() {
+    if (widget.team != 'ROBBER') return null;
+
+    final info = ref.read(gameParticipantNotifierProvider);
+    final waitMinutes = info?.policeWaitMinutes;
+    if (waitMinutes == null || waitMinutes <= 0) return null;
+
+    final startTimeStr = info?.gameStartTime;
+    final startTime = startTimeStr != null
+        ? DateTime.tryParse(startTimeStr)
+        : null;
+    // 더미 모드 시 _dummyStartTime 사용
+    final effectiveStartTime = _dummyStartTime ?? startTime;
+    if (effectiveStartTime == null) return null;
+
+    return effectiveStartTime.add(Duration(minutes: waitMinutes));
   }
 
   /// 채팅 연결 및 구독
@@ -457,6 +479,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       gameEventNotifierProvider.select((s) => s.showLocationRevealBanner),
     );
 
+    // 도둑팀 경찰 시작 카운트다운용 시각 계산
+    final policeStartTime = _computePoliceStartTime();
+
     // 재연결 감지 → 도둑 팀 위치 즉시 재전송
     ref.listen(gameEventNotifierProvider.select((s) => s.connectionState), (
       prev,
@@ -572,7 +597,22 @@ class _GamePageState extends ConsumerState<GamePage> {
           else
             const SizedBox.shrink(),
 
-          /// index 4: 우측 버튼 (if/else로 개수 고정)
+          /// index 4: 도둑팀 경찰 시작 카운트다운 (if/else로 개수 고정)
+          if (!_showParticipants && policeStartTime != null)
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.only(top: 64.h + 24.h),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: PoliceStartCountdown(policeStartTime: policeStartTime),
+                ),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+
+          /// index 5: 우측 버튼 (if/else로 개수 고정)
           if (_showParticipants)
             Positioned(
               right: 20.w,
@@ -609,11 +649,11 @@ class _GamePageState extends ConsumerState<GamePage> {
               ),
             ),
 
-          /// index 5: 하단 채팅 오버레이 (항상 마지막 고정)
+          /// index 6: 하단 채팅 오버레이 (항상 마지막 고정)
           ///
           /// Stack children 개수가 변하면 ChatOverlay의 index가 바뀌어
           /// Flutter가 기존 State를 dispose하고 새로 생성해버린다.
-          /// 위의 if/else 구조로 항상 index 5에 고정해 State를 보존한다.
+          /// 위의 if/else 구조로 항상 index 6에 고정해 State를 보존한다.
           ChatOverlay(
             gameId: _gameId,
             myParticipantId: widget.participantId,
