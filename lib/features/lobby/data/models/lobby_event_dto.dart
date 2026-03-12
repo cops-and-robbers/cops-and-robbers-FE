@@ -49,6 +49,12 @@ abstract class LobbyEventType {
 
   /// 게임 시작
   static const String gameStart = 'GAME_START';
+
+  /// 게임 설정 변경
+  static const String settingsUpdated = 'SETTINGS_UPDATED';
+
+  /// 게임 영역 변경
+  static const String areaUpdated = 'AREA_UPDATED';
 }
 
 /// GAME_START 이벤트 data
