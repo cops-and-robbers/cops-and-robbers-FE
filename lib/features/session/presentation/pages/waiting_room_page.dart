@@ -341,16 +341,28 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     return data;
   }
 
+  /// GAME_START 이벤트 재시도 최대 횟수 (300ms × 10 = 3초)
+  static const int _maxGameStartRetries = 10;
+  int _gameStartRetryCount = 0;
+
   /// GAME_START 이벤트 수신 시 호출
   void _onGameStartEvent(LobbyEventDto event) {
     final participantInfo = ref.read(gameParticipantNotifierProvider);
     if (participantInfo == null || participantInfo.participantId == null) {
-      debugPrint('[WaitingRoom] ⚠️ participantInfo 미준비 - 라우팅 지연');
+      _gameStartRetryCount++;
+      if (_gameStartRetryCount > _maxGameStartRetries) {
+        debugPrint('[WaitingRoom] ❌ participantInfo 준비 실패 - 최대 재시도 초과');
+        return;
+      }
+      debugPrint(
+        '[WaitingRoom] ⚠️ participantInfo 미준비 - 라우팅 지연 ($_gameStartRetryCount/$_maxGameStartRetries)',
+      );
       Future.delayed(const Duration(milliseconds: 300), () {
         if (!_isDisposed && mounted) _onGameStartEvent(event);
       });
       return;
     }
+    _gameStartRetryCount = 0;
     final team = participantInfo.team;
     final participantId = participantInfo.participantId!;
     final mapType = _selectedMapType;
@@ -433,10 +445,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       }
+    } finally {
+      if (mounted) {
+        setState(() => _isUpdatingReady = false);
+      }
     }
-
-    if (!mounted) return;
-    setState(() => _isUpdatingReady = false);
   }
 
   /// 게임 시작 (방장 전용)
