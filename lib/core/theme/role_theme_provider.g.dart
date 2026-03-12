@@ -6,7 +6,7 @@ part of 'role_theme_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$roleThemeHash() => r'dd990428dbc73ee1a5d86ca7b4b3e20047b66140';
+String _$roleThemeHash() => r'ad1a281f450f10625c60ac65db213b272a166489';
 
 /// 역할 기반 다크/라이트 모드 상태 관리
 ///
@@ -24,7 +24,7 @@ String _$roleThemeHash() => r'dd990428dbc73ee1a5d86ca7b4b3e20047b66140';
 ///
 /// Copied from [RoleTheme].
 @ProviderFor(RoleTheme)
-final roleThemeProvider = AutoDisposeNotifierProvider<RoleTheme, bool>.internal(
+final roleThemeProvider = NotifierProvider<RoleTheme, bool>.internal(
   RoleTheme.new,
   name: r'roleThemeProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -34,6 +34,6 @@ final roleThemeProvider = AutoDisposeNotifierProvider<RoleTheme, bool>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef _$RoleTheme = AutoDisposeNotifier<bool>;
+typedef _$RoleTheme = Notifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

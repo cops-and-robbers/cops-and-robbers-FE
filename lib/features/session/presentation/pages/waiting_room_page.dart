@@ -13,6 +13,7 @@ import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/dialog_spacing.dart';
+import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../router/route_paths.dart';
 import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
     show StompConnectionState;
@@ -97,6 +98,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
+      final team = ref.read(gameParticipantNotifierProvider)?.team;
+      ref.read(roleThemeProvider.notifier).setDarkMode(team == 'ROBBER');
+
       _listenLobbyEvents();
       _connectLobby();
       if (widget.showInviteDialog && widget.inviteCode != null) {
@@ -233,6 +238,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
       ref.read(gameParticipantNotifierProvider.notifier).setIsHost(isHost);
+
+      // 역할 기반 다크/라이트 모드 동기화
+      ref.read(roleThemeProvider.notifier).setDarkMode(myTeam == 'ROBBER');
     } finally {
       _isFetchingParticipants = false;
     }
@@ -295,6 +303,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               ref
                   .read(gameParticipantNotifierProvider.notifier)
                   .setTeam(newTeam);
+              ref
+                  .read(roleThemeProvider.notifier)
+                  .setDarkMode(newTeam == 'ROBBER');
             }
           }
         }
@@ -378,6 +389,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     try {
       await ref.read(changeTeamProvider(gameId, targetTeam: targetTeam).future);
+      ref.read(roleThemeProvider.notifier).setDarkMode(targetTeam == 'ROBBER');
     } on DioException catch (e) {
       if (mounted) {
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
@@ -504,10 +516,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   void _showInviteCodeDialog() {
     final code = widget.inviteCode!;
     final messenger = ScaffoldMessenger.of(context);
+    final isDark = ref.read(roleThemeProvider);
 
     AppDialog.show(
       context: context,
+      isDarkMode: isDark,
+      backgroundColor: isDark ? AppColors.black : null,
       title: '초대코드를 생성했어요',
+      titleStyle: isDark
+          ? AppTextStyles.robber_heading.copyWith(color: AppColors.white)
+          : null,
       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
       customContent: GestureDetector(
         onTap: () async {
@@ -527,7 +545,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             horizontal: AppSpacing.horizontal16,
           ),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.black100),
+            border: Border.all(
+              color: isDark ? AppColors.black800 : AppColors.black100,
+            ),
             borderRadius: AppRadius.medium,
           ),
           child: Row(
@@ -536,17 +556,19 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             children: [
               Text(
                 code,
-                style: AppTextStyles.heading_20.copyWith(
-                  color: AppColors.black,
-                ),
+                style: isDark
+                    ? AppTextStyles.robber_heading.copyWith(
+                        color: AppColors.white,
+                      )
+                    : AppTextStyles.heading_20.copyWith(color: AppColors.black),
               ),
               SizedBox(width: AppSpacing.horizontal4),
               SvgPicture.asset(
                 'assets/icons/icon_copy.svg',
                 width: 20.w,
                 height: 20.w,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.black300,
+                colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.black500 : AppColors.black300,
                   BlendMode.srcIn,
                 ),
               ),
@@ -556,8 +578,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ),
       cancelText: '닫기',
       confirmText: '공유하기',
-      confirmColor: AppColors.blue,
-      confirmTextColor: AppColors.white,
+      confirmColor: isDark ? null : AppColors.blue,
+      confirmTextColor: isDark ? null : AppColors.white,
       onConfirm: () {
         shareText(code);
       },

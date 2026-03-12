@@ -15,7 +15,7 @@ part 'role_theme_provider.g.dart';
 /// // 읽기
 /// final isDark = ref.watch(roleThemeProvider);
 /// ```
-@riverpod
+@Riverpod(keepAlive: true)
 class RoleTheme extends _$RoleTheme {
   @override
   bool build() => false;
