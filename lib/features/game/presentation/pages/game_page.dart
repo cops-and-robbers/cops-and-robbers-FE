@@ -17,7 +17,6 @@ import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/countdown_timer_content.dart';
-import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 import '../../../../router/route_paths.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
 import '../../../chat/presentation/widgets/chat_overlay.dart';
@@ -34,6 +33,7 @@ import '../widgets/location_reveal_countdown.dart';
 import '../widgets/google_map_view.dart';
 import '../widgets/naver_map_view.dart';
 import '../widgets/participant_overlay.dart';
+import '../widgets/police_start_countdown.dart';
 
 /// 인게임 지도 화면
 ///
@@ -87,6 +87,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   DateTime? _dummyStartTime;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
+  bool get _isDarkMode => widget.team == 'ROBBER';
 
   @override
   void initState() {
@@ -144,6 +145,27 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
+  /// 도둑팀 전용: 경찰 시작 시각 계산
+  ///
+  /// gameStartTime + policeWaitMinutes. 경찰팀이거나 대기 시간이 없으면 null.
+  DateTime? _computePoliceStartTime() {
+    if (widget.team != 'ROBBER') return null;
+
+    final info = ref.read(gameParticipantNotifierProvider);
+    final waitMinutes = info?.policeWaitMinutes;
+    if (waitMinutes == null || waitMinutes <= 0) return null;
+
+    final startTimeStr = info?.gameStartTime;
+    final startTime = startTimeStr != null
+        ? DateTime.tryParse(startTimeStr)
+        : null;
+    // 더미 모드 시 _dummyStartTime 사용
+    final effectiveStartTime = _dummyStartTime ?? startTime;
+    if (effectiveStartTime == null) return null;
+
+    return effectiveStartTime.add(Duration(minutes: waitMinutes));
+  }
+
   /// 채팅 연결 및 구독
   void _connectChat() {
     final team = widget.team.toLowerCase();
@@ -177,8 +199,13 @@ class _GamePageState extends ConsumerState<GamePage> {
   /// 도둑 팀 GPS 위치 서버 전송 시작 (10초 주기, 10m 이상 변화 시만 전송)
   Future<void> _startLocationSending() async {
     // GPS 조회 (STOMP 연결 대기와 병렬 수행)
-    final initial = await DeviceLocationService.getCurrentPosition();
-    if (!mounted || initial == null) return;
+    Position? initial;
+    try {
+      initial = await DeviceLocationService.getCurrentPosition();
+    } catch (e) {
+      debugPrint('[위치] 초기 위치 조회 실패: $e');
+    }
+    if (!mounted) return;
 
     // STOMP가 아직 connecting 중이면 connected 될 때까지 대기 (최대 15초)
     const maxWait = Duration(seconds: 15);
@@ -191,20 +218,28 @@ class _GamePageState extends ConsumerState<GamePage> {
     }
     if (!mounted) return;
 
-    // 최초 위치 무조건 1번 전송 (STOMP connected 보장 후)
-    _gameEventDatasource?.publishLocation(
-      _gameId,
-      initial.latitude,
-      initial.longitude,
-    );
-    _lastSentPosition = initial;
+    // 최초 위치 전송 (best-effort: 초기 조회 실패 시 스킵)
+    if (initial != null) {
+      _gameEventDatasource?.publishLocation(
+        _gameId,
+        initial.latitude,
+        initial.longitude,
+      );
+      _lastSentPosition = initial;
+    }
 
     // 10초 주기 타이머: 현재 위치 조회 → 이전 위치와 비교 → 10m 이상 변화 시 전송
     // ⚠️ 포그라운드 전용: 백그라운드 전환 시 타이머 일시 정지됨.
     //    전체 백그라운드 지원은 flutter_background_service 구현 시 대응 예정.
     _locationTimer = Timer.periodic(const Duration(seconds: 10), (_) async {
       if (!mounted) return;
-      final pos = await DeviceLocationService.getCurrentPosition();
+      final Position? pos;
+      try {
+        pos = await DeviceLocationService.getCurrentPosition();
+      } catch (e) {
+        debugPrint('[위치] 위치 조회 실패 (백그라운드 복귀 등): $e');
+        return;
+      }
       if (!mounted || pos == null) return;
 
       final last = _lastSentPosition;
@@ -229,7 +264,13 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
   Future<void> _sendPositionNow() async {
-    final pos = await DeviceLocationService.getCurrentPosition();
+    final Position? pos;
+    try {
+      pos = await DeviceLocationService.getCurrentPosition();
+    } catch (e) {
+      debugPrint('[위치] 즉시 전송 위치 조회 실패: $e');
+      return;
+    }
     if (!mounted || pos == null) return;
     _gameEventDatasource?.publishLocation(_gameId, pos.latitude, pos.longitude);
     _lastSentPosition = pos;
@@ -262,14 +303,10 @@ class _GamePageState extends ConsumerState<GamePage> {
     final interval = ref
         .read(gameParticipantNotifierProvider)
         ?.locationRevealIntervalMinutes;
-    AppDialog.show(
-      context: context,
-      title: '게임 규칙',
-      spacing: const DialogSpacing(toContent: 12),
-      customContent: GameRulesContent(locationRevealIntervalMinutes: interval),
-      confirmText: '확인했어요!',
-      confirmColor: AppColors.blue,
-      confirmTextColor: AppColors.white,
+    GameRulesContent.showAsDialog(
+      context,
+      isDarkMode: _isDarkMode,
+      locationRevealIntervalMinutes: interval,
     );
   }
 
@@ -457,6 +494,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       gameEventNotifierProvider.select((s) => s.showLocationRevealBanner),
     );
 
+    // 도둑팀 경찰 시작 카운트다운용 시각 계산
+    final policeStartTime = _computePoliceStartTime();
+
     // 재연결 감지 → 도둑 팀 위치 즉시 재전송
     ref.listen(gameEventNotifierProvider.select((s) => s.connectionState), (
       prev,
@@ -505,10 +545,11 @@ class _GamePageState extends ConsumerState<GamePage> {
           /// index 0: 지도 (항상 존재)
           Positioned.fill(
             child: widget.mapType == 'naver'
-                ? NaverMapView(key: _naverMapKey)
+                ? NaverMapView(key: _naverMapKey, isDarkMode: _isDarkMode)
                 : GoogleMapView(
                     key: _googleMapKey,
                     onCameraMoveStarted: _onMapCameraMoved,
+                    isDarkMode: _isDarkMode,
                   ),
           ),
 
@@ -516,7 +557,7 @@ class _GamePageState extends ConsumerState<GamePage> {
           if (_showParticipants)
             Positioned.fill(
               child: Container(
-                color: AppColors.white,
+                color: _isDarkMode ? AppColors.black900 : AppColors.white,
                 child: SafeArea(
                   bottom: false,
                   child: Column(
@@ -529,6 +570,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                           gameId: _gameId,
                           myTeam: widget.team,
                           myParticipantId: widget.participantId,
+                          isDarkMode: _isDarkMode,
                         ),
                       ),
                     ],
@@ -546,7 +588,7 @@ class _GamePageState extends ConsumerState<GamePage> {
               left: 0,
               right: 0,
               child: Container(
-                color: AppColors.white,
+                color: _isDarkMode ? AppColors.black900 : AppColors.white,
                 child: SafeArea(bottom: false, child: _buildAppBar()),
               ),
             )
@@ -572,7 +614,22 @@ class _GamePageState extends ConsumerState<GamePage> {
           else
             const SizedBox.shrink(),
 
-          /// index 4: 우측 버튼 (if/else로 개수 고정)
+          /// index 4: 도둑팀 경찰 시작 카운트다운 (if/else로 개수 고정)
+          if (!_showParticipants && policeStartTime != null)
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.only(top: 64.h + 24.h),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: PoliceStartCountdown(policeStartTime: policeStartTime),
+                ),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+
+          /// index 5: 우측 버튼 (if/else로 개수 고정)
           if (_showParticipants)
             Positioned(
               right: 20.w,
@@ -582,7 +639,8 @@ class _GamePageState extends ConsumerState<GamePage> {
                 onPressed: () => setState(() => _showParticipants = false),
                 containerSize: 48,
                 iconSize: 24,
-                iconColor: AppColors.blue,
+                iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                backgroundColor: _isDarkMode ? AppColors.black : null,
               ),
             )
           else
@@ -596,7 +654,8 @@ class _GamePageState extends ConsumerState<GamePage> {
                     onPressed: () => setState(() => _showParticipants = true),
                     containerSize: 48,
                     iconSize: 24,
-                    iconColor: AppColors.blue,
+                    iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                    backgroundColor: _isDarkMode ? AppColors.black : null,
                   ),
                   SizedBox(height: AppSpacing.vertical8),
                   MyLocationButton(
@@ -604,20 +663,24 @@ class _GamePageState extends ConsumerState<GamePage> {
                     isFocused: _isLocationFocused,
                     containerSize: 48,
                     iconSize: 24,
+                    focusedColor: _isDarkMode ? AppColors.green : null,
+                    unfocusedColor: _isDarkMode ? AppColors.green500 : null,
+                    backgroundColor: _isDarkMode ? AppColors.black : null,
                   ),
                 ],
               ),
             ),
 
-          /// index 5: 하단 채팅 오버레이 (항상 마지막 고정)
+          /// index 6: 하단 채팅 오버레이 (항상 마지막 고정)
           ///
           /// Stack children 개수가 변하면 ChatOverlay의 index가 바뀌어
           /// Flutter가 기존 State를 dispose하고 새로 생성해버린다.
-          /// 위의 if/else 구조로 항상 index 5에 고정해 State를 보존한다.
+          /// 위의 if/else 구조로 항상 index 6에 고정해 State를 보존한다.
           ChatOverlay(
             gameId: _gameId,
             myParticipantId: widget.participantId,
             myTeam: widget.team,
+            isDarkMode: _isDarkMode,
           ),
         ],
       ),
@@ -666,7 +729,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
     return Container(
       height: 64.h,
-      color: AppColors.white,
+      color: _isDarkMode ? AppColors.black900 : AppColors.white,
       padding: AppPadding.horizontal24,
       child: Stack(
         alignment: Alignment.center,
@@ -680,15 +743,23 @@ class _GamePageState extends ConsumerState<GamePage> {
                   ? GameTimerText(
                       startTime: gameStartTime,
                       totalDuration: totalDuration,
+                      isDarkMode: _isDarkMode,
                     )
                   : Text(
                       '--:--',
-                      style: AppTextStyles.heading_20.copyWith(
-                        color: AppColors.black,
-                      ),
+                      style: _isDarkMode
+                          ? AppTextStyles.robberHeading.copyWith(
+                              color: AppColors.white,
+                            )
+                          : AppTextStyles.heading_20.copyWith(
+                              color: AppColors.black,
+                            ),
                     ),
               SizedBox(height: 6.h),
-              LocationRevealCountdown(nextRevealTime: nextRevealTime),
+              LocationRevealCountdown(
+                nextRevealTime: nextRevealTime,
+                isDarkMode: _isDarkMode,
+              ),
             ],
           ),
           // 우측: info 버튼 (24x24)
@@ -700,8 +771,8 @@ class _GamePageState extends ConsumerState<GamePage> {
                 'assets/icons/icon_info.svg',
                 width: 24.w,
                 height: 24.w,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.black800,
+                colorFilter: ColorFilter.mode(
+                  _isDarkMode ? AppColors.black200 : AppColors.black800,
                   BlendMode.srcIn,
                 ),
               ),

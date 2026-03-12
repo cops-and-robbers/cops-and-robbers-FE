@@ -10,10 +10,17 @@ import '../../../../core/constants/text_styles.dart';
 /// [nextRevealTime]이 null이면 '--:--' 표시.
 /// 카운트다운이 0 이하가 되면 '00:00' 고정.
 class LocationRevealCountdown extends StatefulWidget {
-  const LocationRevealCountdown({super.key, this.nextRevealTime});
+  const LocationRevealCountdown({
+    super.key,
+    this.nextRevealTime,
+    this.isDarkMode = false,
+  });
 
   /// 다음 위치 공개 예정 시각
   final DateTime? nextRevealTime;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   @override
   State<LocationRevealCountdown> createState() =>
@@ -78,7 +85,9 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
   Widget build(BuildContext context) {
     return Text(
       '다음 도둑 위치 공개까지 $_formatted',
-      style: AppTextStyles.tag_12.copyWith(color: AppColors.red),
+      style: AppTextStyles.tag_12.copyWith(
+        color: widget.isDarkMode ? AppColors.black400 : AppColors.red,
+      ),
     );
   }
 }

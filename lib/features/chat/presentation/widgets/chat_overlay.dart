@@ -21,12 +21,16 @@ class ChatOverlay extends ConsumerStatefulWidget {
     required this.gameId,
     required this.myParticipantId,
     required this.myTeam,
+    this.isDarkMode = false,
     super.key,
   });
 
   final int gameId;
   final int myParticipantId;
   final String myTeam;
+
+  /// 다크 모드 여부 (도둑팀)
+  final bool isDarkMode;
 
   @override
   ConsumerState<ChatOverlay> createState() => _ChatOverlayState();
@@ -96,12 +100,14 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         chatState.connectionState == StompConnectionState.connected;
 
     final screenHeight = MediaQuery.of(context).size.height;
-    // 축소 상태: 핸들(20) + 간격(8) + 입력바(64) + 하단(37) = 129
-    // 시각적: 상단12 + 핸들4 + 간격20 + 입력창48 + 하단45 = 129
-    final collapsedHeight = 20.h + 8.h + 64.h + 37.h;
+    // 시스템 네비게이션 바 높이 반영 (iOS 홈 인디케이터 / Android 네비바)
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    final bottomMargin = bottomPadding > 0 ? bottomPadding : 37.h;
+    // 축소 상태: 핸들(20) + 간격(8) + 입력바(64) + 하단
+    final collapsedHeight = 20.h + 8.h + 64.h + bottomMargin;
     _minSize = (collapsedHeight / screenHeight).clamp(0.1, 0.25);
-    // 확장 전환 임계값: 핸들(20) + 타이틀(42) + 인디케이터(18) + 입력바(64) + 하단(37)
-    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + 37.h;
+    // 확장 전환 임계값: 핸들(20) + 타이틀(42) + 인디케이터(18) + 입력바(64) + 하단
+    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + bottomMargin;
     _expandedThreshold = (expandedMinHeight / screenHeight).clamp(0.15, 0.35);
 
     return DraggableScrollableSheet(
@@ -115,7 +121,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         return Container(
           clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
-            color: AppColors.black100,
+            color: widget.isDarkMode ? AppColors.black900 : AppColors.black100,
             borderRadius: BorderRadius.only(
               topLeft: AppRadius.xl20.topLeft,
               topRight: AppRadius.xl20.topRight,
@@ -152,11 +158,13 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                               messages: chatState.allScopeMessages,
                               myParticipantId: widget.myParticipantId,
                               myTeam: widget.myTeam,
+                              isDarkMode: widget.isDarkMode,
                             ),
                             ChatMessageList(
                               messages: chatState.teamScopeMessages,
                               myParticipantId: widget.myParticipantId,
                               myTeam: widget.myTeam,
+                              isDarkMode: widget.isDarkMode,
                             ),
                           ],
                         ),
@@ -172,9 +180,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 onSend: _handleSend,
                 enabled: isConnected,
                 onFocusGain: _onInputFocused,
+                isDarkMode: widget.isDarkMode,
               ),
-              // 하단 여백 (입력바 bottom pad 8 + 37 = 45px from pill bottom)
-              SizedBox(height: 37.h),
+              // 하단 여백 (시스템 네비게이션 바 영역 반영)
+              SizedBox(height: bottomMargin),
             ],
           ),
         );
@@ -191,7 +200,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
           width: 48.w,
           height: 4.h,
           decoration: BoxDecoration(
-            color: AppColors.black200,
+            color: widget.isDarkMode ? AppColors.black600 : AppColors.black200,
             borderRadius: BorderRadius.circular(2.r),
           ),
         ),
@@ -213,7 +222,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         alignment: Alignment.centerLeft,
         child: Text(
           title,
-          style: AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
+          style: widget.isDarkMode
+              ? AppTextStyles.robberSubHeading.copyWith(color: AppColors.white)
+              : AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
         ),
       ),
     );
@@ -231,7 +242,11 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
             height: 6.w,
             margin: EdgeInsets.symmetric(horizontal: 3.w),
             decoration: BoxDecoration(
-              color: isActive ? AppColors.blue : AppColors.black200,
+              color: isActive
+                  ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
+                  : (widget.isDarkMode
+                        ? AppColors.black600
+                        : AppColors.black200),
               shape: BoxShape.circle,
             ),
           );

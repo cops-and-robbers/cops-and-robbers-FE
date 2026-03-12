@@ -15,6 +15,7 @@ class GameTimerText extends StatefulWidget {
     super.key,
     required this.startTime,
     required this.totalDuration,
+    this.isDarkMode = false,
   });
 
   /// 게임 시작 시각
@@ -22,6 +23,9 @@ class GameTimerText extends StatefulWidget {
 
   /// 게임 총 제한 시간
   final Duration totalDuration;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   @override
   State<GameTimerText> createState() => _GameTimerTextState();
@@ -77,7 +81,9 @@ class _GameTimerTextState extends State<GameTimerText>
   Widget build(BuildContext context) {
     return Text(
       _formatted,
-      style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+      style: widget.isDarkMode
+          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
+          : AppTextStyles.heading_20.copyWith(color: AppColors.black),
     );
   }
 }
