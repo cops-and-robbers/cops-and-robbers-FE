@@ -100,7 +100,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 ),
                 decoration: InputDecoration(
                   hintText: widget.enabled ? '채팅을 입력하세요' : '연결 중...',
-                  hintStyle: AppTextStyles.paragraph_14.copyWith(
+                  hintStyle: AppTextStyles.label16Medium.copyWith(
                     color: AppColors.black400,
                   ),
                   border: InputBorder.none,
