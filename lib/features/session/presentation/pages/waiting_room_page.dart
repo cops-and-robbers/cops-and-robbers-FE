@@ -12,7 +12,6 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../router/route_paths.dart';
 import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
@@ -504,22 +503,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         .read(gameParticipantNotifierProvider)
         ?.locationRevealIntervalMinutes;
     final isDark = ref.read(roleThemeProvider);
-    AppDialog.show(
-      context: context,
+    GameRulesContent.showAsDialog(
+      context,
       isDarkMode: isDark,
-      backgroundColor: isDark ? AppColors.black : null,
-      title: '게임 규칙',
-      titleStyle: isDark
-          ? AppTextStyles.robber_heading.copyWith(color: AppColors.white)
-          : null,
-      spacing: const DialogSpacing(toContent: 12),
-      customContent: GameRulesContent(
-        locationRevealIntervalMinutes: interval,
-        isDarkMode: isDark,
-      ),
-      confirmText: '확인했어요!',
-      confirmColor: isDark ? null : AppColors.blue,
-      confirmTextColor: isDark ? null : AppColors.white,
+      locationRevealIntervalMinutes: interval,
     );
   }
 

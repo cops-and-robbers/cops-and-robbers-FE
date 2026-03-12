@@ -4,10 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 
 /// 게임 규칙 다이얼로그 내용 위젯
 ///
 /// AppDialog.show의 customContent로 사용됩니다.
+/// [showAsDialog]를 통해 다크모드 포함 다이얼로그를 한 줄로 호출할 수 있습니다.
 class GameRulesContent extends StatelessWidget {
   const GameRulesContent({
     this.locationRevealIntervalMinutes,
@@ -20,6 +23,31 @@ class GameRulesContent extends StatelessWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+
+  /// 게임 규칙 다이얼로그를 다크모드 포함하여 표시
+  static void showAsDialog(
+    BuildContext context, {
+    bool isDarkMode = false,
+    int? locationRevealIntervalMinutes,
+  }) {
+    AppDialog.show(
+      context: context,
+      isDarkMode: isDarkMode,
+      backgroundColor: isDarkMode ? AppColors.black : null,
+      title: '게임 규칙',
+      titleStyle: isDarkMode
+          ? AppTextStyles.robber_heading.copyWith(color: AppColors.white)
+          : null,
+      spacing: const DialogSpacing(toContent: 12),
+      customContent: GameRulesContent(
+        locationRevealIntervalMinutes: locationRevealIntervalMinutes,
+        isDarkMode: isDarkMode,
+      ),
+      confirmText: '확인했어요!',
+      confirmColor: isDarkMode ? null : AppColors.blue,
+      confirmTextColor: isDarkMode ? null : AppColors.white,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
