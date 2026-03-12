@@ -538,7 +538,7 @@ class _GamePageState extends ConsumerState<GamePage> {
           if (_showParticipants)
             Positioned.fill(
               child: Container(
-                color: AppColors.white,
+                color: _isDarkMode ? AppColors.black900 : AppColors.white,
                 child: SafeArea(
                   bottom: false,
                   child: Column(
@@ -551,6 +551,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                           gameId: _gameId,
                           myTeam: widget.team,
                           myParticipantId: widget.participantId,
+                          isDarkMode: _isDarkMode,
                         ),
                       ),
                     ],
@@ -619,7 +620,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                 onPressed: () => setState(() => _showParticipants = false),
                 containerSize: 48,
                 iconSize: 24,
-                iconColor: AppColors.blue,
+                iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                 backgroundColor: _isDarkMode ? AppColors.black : null,
               ),
             )
