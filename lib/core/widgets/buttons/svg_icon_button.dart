@@ -25,6 +25,7 @@ class SvgIconButton extends StatelessWidget {
     this.iconSize = 32,
     this.borderRadius = 16,
     this.iconColor,
+    this.backgroundColor,
   });
 
   /// SVG 에셋 경로
@@ -45,6 +46,9 @@ class SvgIconButton extends StatelessWidget {
   /// 아이콘 색상 (null이면 SVG 원본 색상 사용)
   final Color? iconColor;
 
+  /// 컨테이너 배경색 (null이면 AppColors.white)
+  final Color? backgroundColor;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -53,7 +57,7 @@ class SvgIconButton extends StatelessWidget {
         width: containerSize.w,
         height: containerSize.w,
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: backgroundColor ?? AppColors.white,
           borderRadius: BorderRadius.circular(borderRadius.r),
           boxShadow: [
             BoxShadow(

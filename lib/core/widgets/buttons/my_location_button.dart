@@ -14,8 +14,9 @@ class MyLocationButton extends StatelessWidget {
     required this.isFocused,
     this.containerSize = 48,
     this.iconSize = 24,
-    this.focusedColor = const Color(0xFF3F63D9),
-    this.unfocusedColor = const Color(0xFF9FB1EC),
+    this.focusedColor,
+    this.unfocusedColor,
+    this.backgroundColor,
   });
 
   /// 버튼 클릭 시 실행될 콜백 (현재 위치로 카메라 이동)
@@ -30,11 +31,14 @@ class MyLocationButton extends StatelessWidget {
   /// 아이콘 크기 (기본값: 24)
   final double iconSize;
 
-  /// 포커싱 시 아이콘 색상 (기본: AppColors.blue)
-  final Color focusedColor;
+  /// 포커싱 시 아이콘 색상 (null이면 SVG 원본 색상 사용)
+  final Color? focusedColor;
 
-  /// 포커싱 해제 시 아이콘 색상 (기본: AppColors.blue500)
-  final Color unfocusedColor;
+  /// 포커싱 해제 시 아이콘 색상 (null이면 SVG 원본 색상 사용)
+  final Color? unfocusedColor;
+
+  /// 컨테이너 배경색 (null이면 SvgIconButton 기본값 사용)
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +48,7 @@ class MyLocationButton extends StatelessWidget {
       containerSize: containerSize,
       iconSize: iconSize,
       iconColor: isFocused ? focusedColor : unfocusedColor,
+      backgroundColor: backgroundColor,
     );
   }
 }
