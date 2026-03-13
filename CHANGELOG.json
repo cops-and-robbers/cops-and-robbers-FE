@@ -1,11 +1,61 @@
 {
   "metadata": {
-    "lastUpdated": "2026-03-11T14:19:28Z",
-    "currentVersion": "1.2.24",
+    "lastUpdated": "2026-03-13T02:01:29Z",
+    "currentVersion": "1.2.26",
     "projectType": "flutter",
-    "totalReleases": 46
+    "totalReleases": 47
   },
   "releases": [
+    {
+      "version": "1.2.26",
+      "project_type": "flutter",
+      "date": "2026-03-13",
+      "pr_number": 120,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 새 기능\n* 게임 설정 및 구역 수정 페이지 추가\n* 회원탈퇴 기능 구현\n* 경찰 시작 카운트다운 타이머 추가\n* 플레이어 슬롯 관리 개선 (AddSlotCard 추가)\n* 역할별(경찰/도둑) 다크 모드 테마 지원\n\n## 개선 사항\n* 채팅 인터페이스 다크 모드 지원\n* API 문서 표준화된 오류 응답 추가\n* 초대 코드 다이얼로그 테마 적용\n* 위치 권한 확인 로직 추가\n* 새로운 Moneygraphy 폰트 추가",
+      "parsed_changes": {
+        "게임_설정_및_구역_수정_페이지_추가": {
+          "title": "게임 설정 및 구역 수정 페이지 추가",
+          "items": []
+        },
+        "회원탈퇴_기능_구현": {
+          "title": "회원탈퇴 기능 구현",
+          "items": []
+        },
+        "경찰_시작_카운트다운_타이머_추가": {
+          "title": "경찰 시작 카운트다운 타이머 추가",
+          "items": []
+        },
+        "플레이어_슬롯_관리_개선__addslotcard_추가": {
+          "title": "플레이어 슬롯 관리 개선 (AddSlotCard 추가)",
+          "items": []
+        },
+        "역할별_경찰_도둑__다크_모드_테마_지원": {
+          "title": "역할별(경찰/도둑) 다크 모드 테마 지원",
+          "items": []
+        },
+        "채팅_인터페이스_다크_모드_지원": {
+          "title": "채팅 인터페이스 다크 모드 지원",
+          "items": []
+        },
+        "api_문서_표준화된_오류_응답_추가": {
+          "title": "API 문서 표준화된 오류 응답 추가",
+          "items": []
+        },
+        "초대_코드_다이얼로그_테마_적용": {
+          "title": "초대 코드 다이얼로그 테마 적용",
+          "items": []
+        },
+        "위치_권한_확인_로직_추가": {
+          "title": "위치 권한 확인 로직 추가",
+          "items": []
+        },
+        "새로운_moneygraphy_폰트_추가": {
+          "title": "새로운 Moneygraphy 폰트 추가",
+          "items": []
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.2.24",
       "project_type": "flutter",
