@@ -251,9 +251,12 @@ class AuthNotifier extends _$AuthNotifier {
   /// **주의**: 백엔드 logout API는 호출하지 않습니다 (계정이 이미 삭제됨).
   Future<void> cleanupAfterAccountDeletion() async {
     final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
-    await firebaseDataSource.signOut();
-    await ref.read(secureTokenStorageProvider).clearTokens();
-    state = const AsyncValue.data(null);
+    try {
+      await firebaseDataSource.signOut();
+      await ref.read(secureTokenStorageProvider).clearTokens();
+    } finally {
+      state = const AsyncValue.data(null);
+    }
   }
 
   /// 강제 로그아웃 (AuthInterceptor에서 호출)

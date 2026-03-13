@@ -69,11 +69,12 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
   Future<void> _saveSettings() async {
     if (!_hasChanges || _isSaving) return;
 
+    final gameId = int.tryParse(widget.sessionId);
+    if (gameId == null) return;
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _isSaving = true);
 
     try {
-      final gameId = int.tryParse(widget.sessionId) ?? 0;
       await ref.read(
         updateGameSettingsProvider(
           gameId,

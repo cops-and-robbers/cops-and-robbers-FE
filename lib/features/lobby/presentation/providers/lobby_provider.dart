@@ -232,15 +232,15 @@ class LobbyNotifier extends _$LobbyNotifier {
     }
 
     // SETTINGS_UPDATED 이벤트 → 설정 캐시 무효화
-    if (event.type == LobbyEventType.settingsUpdated && _gameId != null) {
+    if (event.type == LobbyEventType.settingsUpdated) {
       debugPrint('[LobbyNotifier] ⚙️ 게임 설정 변경 이벤트 수신');
-      ref.invalidate(fetchGameSettingsProvider(_gameId!));
+      ref.invalidate(fetchGameSettingsProvider(event.gameId));
     }
 
     // AREA_UPDATED 이벤트 → 영역 캐시 무효화
-    if (event.type == LobbyEventType.areaUpdated && _gameId != null) {
+    if (event.type == LobbyEventType.areaUpdated) {
       debugPrint('[LobbyNotifier] 📍 게임 영역 변경 이벤트 수신');
-      ref.invalidate(fetchGameAreaProvider(_gameId!));
+      ref.invalidate(fetchGameAreaProvider(event.gameId));
     }
   }
 

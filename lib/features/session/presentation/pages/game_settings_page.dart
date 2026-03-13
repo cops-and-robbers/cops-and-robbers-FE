@@ -36,7 +36,7 @@ class GameSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
-  int get _gameId => int.tryParse(widget.sessionId) ?? 0;
+  int? get _gameId => int.tryParse(widget.sessionId);
 
   /// 플레이그라운드 수정 → 감옥 재설정 → area PUT API 호출
   ///
@@ -96,11 +96,13 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     required LatLng jailCenter,
     required double jailRadius,
   }) async {
+    final gameId = _gameId;
+    if (gameId == null) return;
     final messenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(
         updateGameAreaProvider(
-          _gameId,
+          gameId,
           request: AreaRequestModel(
             playgroundCenter: CoordinatesRequestModel(
               latitude: playgroundCenter.latitude,
@@ -142,11 +144,20 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final gameId = _gameId;
+    if (gameId == null) {
+      // sessionId 파싱 실패 → 이전 화면으로
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.pop();
+      });
+      return const Scaffold(body: SizedBox.shrink());
+    }
+
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
 
-    final settingsAsync = ref.watch(fetchGameSettingsProvider(_gameId));
-    final areaAsync = ref.watch(fetchGameAreaProvider(_gameId));
+    final settingsAsync = ref.watch(fetchGameSettingsProvider(gameId));
+    final areaAsync = ref.watch(fetchGameAreaProvider(gameId));
 
     return Scaffold(
       backgroundColor: AppColors.white,
