@@ -5,6 +5,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../models/create_session_response.dart';
 import '../models/game_create_request_model.dart';
 import '../models/game_settings_response.dart';
+import '../../../game/data/models/game_area_model.dart';
 import '../models/in_game_participants_response.dart';
 import '../models/join_game_request.dart';
 import '../models/join_game_response.dart';
@@ -136,5 +137,45 @@ abstract class SessionRemoteDataSource {
   @GET('/api/games/{gameId}/participants')
   Future<InGameParticipantsResponse> fetchGameParticipants(
     @Path('gameId') int gameId,
+  );
+
+  /// 게임 영역 조회
+  ///
+  /// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+  ///
+  /// - 200: 조회 성공
+  /// - 401: 인증 실패
+  /// - 404: 게임 없음
+  @GET('/api/games/{gameId}/area')
+  Future<GameAreaModel> fetchGameArea(@Path('gameId') int gameId);
+
+  /// 게임 설정 수정
+  ///
+  /// 라운드 시간, 위치 공개 주기, 경찰 대기 시간, 최대 참여 인원을 수정합니다.
+  ///
+  /// - 200: 수정 성공
+  /// - 400: 유효성 검증 실패
+  /// - 401: 인증 실패
+  /// - 403: 방장만 수정 가능
+  /// - 404: 게임 없음
+  @PUT('/api/games/{gameId}/settings')
+  Future<GameSettingsResponse> updateGameSettings(
+    @Path('gameId') int gameId,
+    @Body() GameSettingsRequestModel request,
+  );
+
+  /// 게임 영역 수정
+  ///
+  /// 플레이그라운드·감옥 중심 좌표 및 반경을 수정합니다.
+  ///
+  /// - 200: 수정 성공
+  /// - 400: 유효성 검증 실패
+  /// - 401: 인증 실패
+  /// - 403: 방장만 수정 가능
+  /// - 404: 게임 없음
+  @PUT('/api/games/{gameId}/area')
+  Future<GameAreaModel> updateGameArea(
+    @Path('gameId') int gameId,
+    @Body() AreaRequestModel request,
   );
 }

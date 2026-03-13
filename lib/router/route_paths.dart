@@ -80,6 +80,22 @@ class RoutePaths {
   /// 경로 파라미터: sessionId
   static const String game = '/game/:sessionId';
 
+  /// 게임 설정 화면 (대기실에서 접근)
+  /// 경로 파라미터: sessionId
+  static const String gameSettings = '/waiting-room/:sessionId/game-settings';
+
+  /// 게임 설정 수정 화면 (설정 슬라이더)
+  static const String gameSettingsEdit =
+      '/waiting-room/:sessionId/game-settings/edit-settings';
+
+  /// 플레이그라운드 구역 수정 화면
+  static const String gameSettingsPlayground =
+      '/waiting-room/:sessionId/game-settings/edit-playground';
+
+  /// 감옥 구역 수정 화면
+  static const String gameSettingsPrison =
+      '/waiting-room/:sessionId/game-settings/edit-prison';
+
   // ============================================================================
   // Note: 게임 종료 결과 화면 (F3.4)
   // ============================================================================
@@ -116,6 +132,10 @@ class RoutePaths {
   /// ```
   static String gameWithId(String sessionId) => '/game/$sessionId';
 
+  /// 특정 세션 ID로 게임 설정 경로 생성
+  static String gameSettingsWithId(String sessionId) =>
+      '/waiting-room/$sessionId/game-settings';
+
   // ============================================================================
   // Route Names (for named navigation)
   // ============================================================================
@@ -130,5 +150,9 @@ class RoutePaths {
   static const String gameName = 'game';
   static const String settingsName = 'settings';
   static const String noticesName = 'notices';
+  static const String gameSettingsName = 'gameSettings';
+  static const String gameSettingsEditName = 'gameSettingsEdit';
+  static const String gameSettingsPlaygroundName = 'gameSettingsPlayground';
+  static const String gameSettingsPrisonName = 'gameSettingsPrison';
   static const String lifecycleTestName = 'lifecycleTest';
 }
