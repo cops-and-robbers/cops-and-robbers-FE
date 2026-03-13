@@ -254,8 +254,11 @@ class AuthNotifier extends _$AuthNotifier {
   /// 탈퇴 완료 메시지 전달이 먼저 실행됩니다.
   Future<void> cleanupAfterAccountDeletion() async {
     final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
-    await firebaseDataSource.signOut();
-    await ref.read(secureTokenStorageProvider).clearTokens();
+    try {
+      await firebaseDataSource.signOut();
+    } finally {
+      await ref.read(secureTokenStorageProvider).clearTokens();
+    }
   }
 
   /// 강제 로그아웃 (AuthInterceptor에서 호출)
