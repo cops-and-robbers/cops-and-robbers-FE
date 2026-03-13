@@ -99,6 +99,12 @@ class ApiEndpoints {
   /// 게임 설정 조회
   static String fetchGameSettings(int gameId) => '/api/games/$gameId';
 
+  /// 게임 설정 수정
+  static String updateGameSettings(int gameId) => '/api/games/$gameId/settings';
+
+  /// 게임 영역 수정
+  static String updateGameArea(int gameId) => '/api/games/$gameId/area';
+
   /// 인게임 참가자 목록 조회
   static String fetchGameParticipants(int gameId) =>
       '/api/games/$gameId/participants';
@@ -123,6 +129,9 @@ class ApiEndpoints {
 
   /// 내 정보 조회
   static const String myPage = '/api/user/me';
+
+  /// 회원 탈퇴
+  static const String deleteAccount = '/api/user/me';
 
   /// 닉네임 변경
   static const String updateNickname = '/api/user/me/nickname';

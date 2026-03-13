@@ -22,6 +22,9 @@ import '../features/session/presentation/pages/session_creation_flow_page.dart';
 import '../features/session/presentation/pages/setup_playground_page.dart';
 import '../features/session/presentation/pages/setup_prison_page.dart';
 import '../features/session/presentation/pages/waiting_room_page.dart';
+import '../features/session/presentation/pages/game_settings_page.dart';
+import '../features/session/presentation/pages/game_settings_edit_page.dart';
+import '../features/session/data/models/game_settings_response.dart';
 import '../features/game/presentation/pages/game_page.dart';
 import '../features/notice/presentation/pages/notices_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
@@ -275,6 +278,88 @@ final routerProvider = Provider<GoRouter>((ref) {
             showInviteDialog: showInviteDialog,
           );
         },
+        routes: [
+          // 게임 설정 페이지
+          GoRoute(
+            path: 'game-settings',
+            name: RoutePaths.gameSettingsName,
+            pageBuilder: (context, state) {
+              final sessionId = state.pathParameters['sessionId']!;
+              return buildDirectionalSlide(
+                key: state.pageKey,
+                child: GameSettingsPage(sessionId: sessionId),
+                isForward: true,
+              );
+            },
+            routes: [
+              // 설정 수정 페이지 (슬라이더)
+              GoRoute(
+                path: 'edit-settings',
+                name: RoutePaths.gameSettingsEditName,
+                pageBuilder: (context, state) {
+                  final sessionId = state.pathParameters['sessionId']!;
+                  final settings = state.extra as GameSettingsResponse?;
+                  if (settings == null) {
+                    // extra 누락 (딥링크 등 비정상 진입) → 이전 화면으로
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (context.mounted) Navigator.of(context).pop();
+                    });
+                    return buildDirectionalSlide(
+                      key: state.pageKey,
+                      isForward: true,
+                      child: const Scaffold(
+                        body: Center(child: CircularProgressIndicator()),
+                      ),
+                    );
+                  }
+                  return buildDirectionalSlide(
+                    key: state.pageKey,
+                    child: GameSettingsEditPage(
+                      sessionId: sessionId,
+                      initialSettings: settings,
+                    ),
+                    isForward: true,
+                  );
+                },
+              ),
+              // 플레이그라운드 수정 페이지
+              GoRoute(
+                path: 'edit-playground',
+                name: RoutePaths.gameSettingsPlaygroundName,
+                pageBuilder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  return buildDirectionalSlide(
+                    key: state.pageKey,
+                    child: SetupPlaygroundPage(
+                      editInitialCenter: extra?['center'],
+                      editInitialRadius: extra?['radius'] as double?,
+                    ),
+                    isForward: true,
+                  );
+                },
+              ),
+              // 감옥 수정 페이지
+              GoRoute(
+                path: 'edit-prison',
+                name: RoutePaths.gameSettingsPrisonName,
+                pageBuilder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  return buildDirectionalSlide(
+                    key: state.pageKey,
+                    child: SetupPrisonPage(
+                      editInitialCenter: extra?['center'],
+                      editInitialRadius: extra?['radius'] as double?,
+                      editPlaygroundCenter: extra?['playgroundCenter'],
+                      editPlaygroundRadius:
+                          extra?['playgroundRadius'] as double?,
+                    ),
+                    isForward: true,
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
       ),
 
       GoRoute(

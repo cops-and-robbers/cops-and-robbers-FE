@@ -91,6 +91,8 @@ class AppDialog extends StatefulWidget {
     this.cancelTextColor,
     this.titleStyle,
     this.spacing,
+    this.backgroundColor,
+    this.isDarkMode = false,
   });
 
   /// 제목 (선택) - heading_20, black. null이면 제목 영역 숨김
@@ -147,6 +149,16 @@ class AppDialog extends StatefulWidget {
   /// 다이얼로그 내부 섹션 간 간격 오버라이드 (미지정 시 기본값 적용)
   final DialogSpacing? spacing;
 
+  /// 다이얼로그 배경색 (미지정 시 AppColors.white)
+  final Color? backgroundColor;
+
+  /// 다크 모드 버튼 기본값 활성화
+  ///
+  /// true일 때 명시적 색상 미지정 시:
+  /// - confirm: green 배경, robberLabel + black 텍스트
+  /// - cancel: black900 배경, robberLabel + black400 텍스트
+  final bool isDarkMode;
+
   // ============================================
   // 정적 메서드
   // ============================================
@@ -196,6 +208,8 @@ class AppDialog extends StatefulWidget {
     TextStyle? titleStyle,
     bool Function()? validator,
     DialogSpacing? spacing,
+    Color? backgroundColor,
+    bool isDarkMode = false,
   }) {
     final dialogKey = GlobalKey<_AppDialogState>();
 
@@ -220,6 +234,8 @@ class AppDialog extends StatefulWidget {
         cancelTextColor: cancelTextColor,
         titleStyle: titleStyle,
         spacing: spacing,
+        backgroundColor: backgroundColor,
+        isDarkMode: isDarkMode,
         onConfirm: () {
           if (validator != null && !validator()) {
             dialogKey.currentState?.shake();
@@ -256,6 +272,8 @@ class AppDialog extends StatefulWidget {
     Color? cancelTextColor,
     TextStyle? titleStyle,
     DialogSpacing? spacing,
+    Color? backgroundColor,
+    bool isDarkMode = false,
   }) {
     return _buildAndShow<bool>(
       context: context,
@@ -275,6 +293,8 @@ class AppDialog extends StatefulWidget {
         cancelTextColor: cancelTextColor,
         titleStyle: titleStyle,
         spacing: spacing,
+        backgroundColor: backgroundColor,
+        isDarkMode: isDarkMode,
         onConfirm: () => Navigator.of(dialogContext).pop(true),
         onCancel: () => Navigator.of(dialogContext).pop(false),
       ),
@@ -336,18 +356,26 @@ class _AppDialogState extends State<AppDialog>
   /// 확인 버튼 배경색 (기본값 적용)
   Color get _resolvedConfirmColor =>
       widget.confirmColor ??
-      (widget.isDestructive ? AppColors.red : AppColors.black);
+      (widget.isDestructive
+          ? AppColors.red
+          : widget.isDarkMode
+          ? AppColors.green
+          : AppColors.black);
 
   /// 확인 버튼 텍스트색 (기본값 적용)
   Color get _resolvedConfirmTextColor =>
-      widget.confirmTextColor ?? AppColors.white;
+      widget.confirmTextColor ??
+      (widget.isDarkMode ? AppColors.black : AppColors.white);
 
   /// 취소 버튼 배경색 (기본값 적용)
-  Color get _resolvedCancelColor => widget.cancelColor ?? AppColors.black100;
+  Color get _resolvedCancelColor =>
+      widget.cancelColor ??
+      (widget.isDarkMode ? AppColors.black900 : AppColors.black100);
 
   /// 취소 버튼 텍스트색 (기본값 적용)
   Color get _resolvedCancelTextColor =>
-      widget.cancelTextColor ?? AppColors.black600;
+      widget.cancelTextColor ??
+      (widget.isDarkMode ? AppColors.black400 : AppColors.black600);
 
   @override
   Widget build(BuildContext context) {
@@ -374,7 +402,7 @@ class _AppDialogState extends State<AppDialog>
                 bottom: AppSpacing.vertical16,
               ),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: widget.backgroundColor ?? AppColors.white,
                 borderRadius: AppRadius.xxlarge,
               ),
               child: Material(
@@ -419,7 +447,9 @@ class _AppDialogState extends State<AppDialog>
                       Text(
                         widget.message!,
                         style: AppTextStyles.paragraph_14.copyWith(
-                          color: AppColors.black600,
+                          color: widget.isDarkMode
+                              ? AppColors.black400
+                              : AppColors.black600,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -509,6 +539,7 @@ class _AppDialogState extends State<AppDialog>
               borderRadius: AppRadius.medium,
               showBorder: false,
               height: 48.h,
+              textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
             ),
           ),
           SizedBox(width: AppSpacing.horizontal8),
@@ -521,6 +552,7 @@ class _AppDialogState extends State<AppDialog>
               borderRadius: AppRadius.medium,
               showBorder: false,
               height: 48.h,
+              textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
             ),
           ),
         ],
@@ -537,6 +569,7 @@ class _AppDialogState extends State<AppDialog>
       showBorder: false,
       width: double.infinity,
       height: 48.h,
+      textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
     );
   }
 }

@@ -31,13 +31,21 @@ import 'dialog_animation.dart';
 /// context.go('/game/result'); // 닫힌 후 이동
 /// ```
 class AppPopup extends StatefulWidget {
-  const AppPopup({super.key, required this.content, this.autoCloseDuration});
+  const AppPopup({
+    super.key,
+    required this.content,
+    this.autoCloseDuration,
+    this.backgroundColor,
+  });
 
   /// 팝업 콘텐츠 위젯
   final Widget content;
 
   /// 자동 닫힘 시간 (null이면 자동 닫힘 없음)
   final Duration? autoCloseDuration;
+
+  /// 팝업 배경색 (미지정 시 AppColors.white)
+  final Color? backgroundColor;
 
   /// 팝업 표시
   ///
@@ -48,6 +56,7 @@ class AppPopup extends StatefulWidget {
     required Widget content,
     bool barrierDismissible = true,
     Duration? autoCloseDuration,
+    Color? backgroundColor,
   }) {
     // autoCloseDuration 설정 시 배경 터치 닫기 자동 비활성화
     final effectiveBarrierDismissible = autoCloseDuration != null
@@ -61,7 +70,11 @@ class AppPopup extends StatefulWidget {
       barrierColor: DialogAnimation.barrierColor,
       transitionDuration: DialogAnimation.duration,
       pageBuilder: (dialogContext, animation, secondaryAnimation) {
-        return AppPopup(content: content, autoCloseDuration: autoCloseDuration);
+        return AppPopup(
+          content: content,
+          autoCloseDuration: autoCloseDuration,
+          backgroundColor: backgroundColor,
+        );
       },
       transitionBuilder: DialogAnimation.buildTransition,
     );
@@ -125,7 +138,7 @@ class _AppPopupState extends State<AppPopup> with WidgetsBindingObserver {
         margin: AppPadding.horizontal36,
         padding: EdgeInsets.symmetric(vertical: 42.h, horizontal: 16.w),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: widget.backgroundColor ?? AppColors.white,
           borderRadius: AppRadius.xxlarge,
         ),
         child: Material(color: Colors.transparent, child: widget.content),

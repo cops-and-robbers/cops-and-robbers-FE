@@ -12,7 +12,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/dialogs/dialog_spacing.dart';
+import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../router/route_paths.dart';
 import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
     show StompConnectionState;
@@ -63,6 +63,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 참가자 초기화 중복 실행 방지
   bool _isFetchingParticipants = false;
 
+  /// 초대코드 다이얼로그 대기 여부 (API 응답 후 1회 표시)
+  bool _pendingInviteDialog = false;
+
   /// 더미 모드 여부
   bool get _isDummyMode => int.tryParse(widget.sessionId) == null;
 
@@ -79,29 +82,21 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// dispose 여부 (microtask 큐에 남은 이벤트가 dispose 후 처리되는 것을 방지)
   bool _isDisposed = false;
 
-  /// 팀당 최대 인원 (maxParticipants 기반, 홀수 시 도둑 +1)
-  int get _maxPolice {
-    final max =
-        ref.read(gameParticipantNotifierProvider)?.maxParticipants ?? 10;
-    return max ~/ 2;
-  }
-
-  int get _maxRobber {
-    final max =
-        ref.read(gameParticipantNotifierProvider)?.maxParticipants ?? 10;
-    return (max + 1) ~/ 2;
-  }
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
+      final team = ref.read(gameParticipantNotifierProvider)?.team;
+      ref.read(roleThemeProvider.notifier).setDarkMode(team == 'ROBBER');
+
+      // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
+      _pendingInviteDialog =
+          widget.showInviteDialog && widget.inviteCode != null;
+
       _listenLobbyEvents();
       _connectLobby();
-      if (widget.showInviteDialog && widget.inviteCode != null) {
-        _showInviteCodeDialog();
-      }
     });
   }
 
@@ -142,6 +137,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             participantId: _dummyMyId,
             isHost: true,
           );
+      // 더미 모드에서도 초대코드 다이얼로그 표시
+      if (_pendingInviteDialog && mounted) {
+        _pendingInviteDialog = false;
+        _showInviteCodeDialog();
+      }
       return;
     }
 
@@ -233,6 +233,15 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
       ref.read(gameParticipantNotifierProvider.notifier).setIsHost(isHost);
+
+      // 역할 기반 다크/라이트 모드 동기화
+      ref.read(roleThemeProvider.notifier).setDarkMode(myTeam == 'ROBBER');
+
+      // 방 생성 직후 초대코드 다이얼로그 표시 (팀 확정 후)
+      if (_pendingInviteDialog && mounted) {
+        _pendingInviteDialog = false;
+        _showInviteCodeDialog();
+      }
     } finally {
       _isFetchingParticipants = false;
     }
@@ -295,6 +304,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               ref
                   .read(gameParticipantNotifierProvider.notifier)
                   .setTeam(newTeam);
+              ref
+                  .read(roleThemeProvider.notifier)
+                  .setDarkMode(newTeam == 'ROBBER');
             }
           }
         }
@@ -329,16 +341,28 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     return data;
   }
 
+  /// GAME_START 이벤트 재시도 최대 횟수 (300ms × 10 = 3초)
+  static const int _maxGameStartRetries = 10;
+  int _gameStartRetryCount = 0;
+
   /// GAME_START 이벤트 수신 시 호출
   void _onGameStartEvent(LobbyEventDto event) {
     final participantInfo = ref.read(gameParticipantNotifierProvider);
     if (participantInfo == null || participantInfo.participantId == null) {
-      debugPrint('[WaitingRoom] ⚠️ participantInfo 미준비 - 라우팅 지연');
+      _gameStartRetryCount++;
+      if (_gameStartRetryCount > _maxGameStartRetries) {
+        debugPrint('[WaitingRoom] ❌ participantInfo 준비 실패 - 최대 재시도 초과');
+        return;
+      }
+      debugPrint(
+        '[WaitingRoom] ⚠️ participantInfo 미준비 - 라우팅 지연 ($_gameStartRetryCount/$_maxGameStartRetries)',
+      );
       Future.delayed(const Duration(milliseconds: 300), () {
         if (!_isDisposed && mounted) _onGameStartEvent(event);
       });
       return;
     }
+    _gameStartRetryCount = 0;
     final team = participantInfo.team;
     final participantId = participantInfo.participantId!;
     final mapType = _selectedMapType;
@@ -378,6 +402,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     try {
       await ref.read(changeTeamProvider(gameId, targetTeam: targetTeam).future);
+      ref.read(roleThemeProvider.notifier).setDarkMode(targetTeam == 'ROBBER');
     } on DioException catch (e) {
       if (mounted) {
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
@@ -420,10 +445,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       }
+    } finally {
+      if (mounted) {
+        setState(() => _isUpdatingReady = false);
+      }
     }
-
-    if (!mounted) return;
-    setState(() => _isUpdatingReady = false);
   }
 
   /// 게임 시작 (방장 전용)
@@ -489,14 +515,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final interval = ref
         .read(gameParticipantNotifierProvider)
         ?.locationRevealIntervalMinutes;
-    AppDialog.show(
-      context: context,
-      title: '게임 규칙',
-      spacing: const DialogSpacing(toContent: 12),
-      customContent: GameRulesContent(locationRevealIntervalMinutes: interval),
-      confirmText: '확인했어요!',
-      confirmColor: AppColors.blue,
-      confirmTextColor: AppColors.white,
+    final isDark = ref.read(roleThemeProvider);
+    GameRulesContent.showAsDialog(
+      context,
+      isDarkMode: isDark,
+      locationRevealIntervalMinutes: interval,
     );
   }
 
@@ -504,10 +527,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   void _showInviteCodeDialog() {
     final code = widget.inviteCode!;
     final messenger = ScaffoldMessenger.of(context);
+    final isDark = ref.read(roleThemeProvider);
 
     AppDialog.show(
       context: context,
+      isDarkMode: isDark,
+      backgroundColor: isDark ? AppColors.black : null,
       title: '초대코드를 생성했어요',
+      titleStyle: isDark
+          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
+          : null,
       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
       customContent: GestureDetector(
         onTap: () async {
@@ -527,7 +556,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             horizontal: AppSpacing.horizontal16,
           ),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.black100),
+            border: Border.all(
+              color: isDark ? AppColors.black800 : AppColors.black100,
+            ),
             borderRadius: AppRadius.medium,
           ),
           child: Row(
@@ -536,17 +567,19 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             children: [
               Text(
                 code,
-                style: AppTextStyles.heading_20.copyWith(
-                  color: AppColors.black,
-                ),
+                style: isDark
+                    ? AppTextStyles.robberHeading.copyWith(
+                        color: AppColors.white,
+                      )
+                    : AppTextStyles.heading_20.copyWith(color: AppColors.black),
               ),
               SizedBox(width: AppSpacing.horizontal4),
               SvgPicture.asset(
                 'assets/icons/icon_copy.svg',
                 width: 20.w,
                 height: 20.w,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.black300,
+                colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.black500 : AppColors.black300,
                   BlendMode.srcIn,
                 ),
               ),
@@ -556,8 +589,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ),
       cancelText: '닫기',
       confirmText: '공유하기',
-      confirmColor: AppColors.blue,
-      confirmTextColor: AppColors.white,
+      confirmColor: isDark ? null : AppColors.blue,
+      confirmTextColor: isDark ? null : AppColors.white,
       onConfirm: () {
         shareText(code);
       },
@@ -569,18 +602,18 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final participantsState = ref.watch(waitingRoomParticipantsProvider);
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
+    final isDark = ref.watch(roleThemeProvider);
 
     final policeMembers = participantsState.byTeam('POLICE');
     final robberMembers = participantsState.byTeam('ROBBER');
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: isDark ? AppColors.black900 : AppColors.white,
+      appBar: _buildAppBar(isDark),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            // AppBar
-            _buildAppBar(),
-
             // 팀 섹션 (스크롤 가능)
             Expanded(
               child: SingleChildScrollView(
@@ -590,34 +623,39 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                     TeamSection(
                       team: 'POLICE',
                       members: policeMembers,
-                      maxPerTeam: _maxPolice,
+                      maxPerTeam: policeMembers.length + 1,
                       isExpanded: _isPoliceExpanded,
                       onToggle: () => setState(
                         () => _isPoliceExpanded = !_isPoliceExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
-                      onEmptySlotTap: !_isReady
+                      onAddSlotTap: !_isReady
                           ? () => _changeTeam('POLICE')
                           : null,
+                      isDarkMode: isDark,
                     ),
                     // 구분선
                     Padding(
                       padding: AppPadding.horizontal20,
-                      child: Divider(height: 1, color: AppColors.black100),
+                      child: Divider(
+                        height: 1,
+                        color: isDark ? AppColors.black800 : AppColors.black100,
+                      ),
                     ),
                     // 도둑팀
                     TeamSection(
                       team: 'ROBBER',
                       members: robberMembers,
-                      maxPerTeam: _maxRobber,
+                      maxPerTeam: robberMembers.length + 1,
                       isExpanded: _isRobberExpanded,
                       onToggle: () => setState(
                         () => _isRobberExpanded = !_isRobberExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
-                      onEmptySlotTap: !_isReady
+                      onAddSlotTap: !_isReady
                           ? () => _changeTeam('ROBBER')
                           : null,
+                      isDarkMode: isDark,
                     ),
                   ],
                 ),
@@ -625,14 +663,17 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ),
 
             // 하단 버튼
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.horizontal20,
-                AppSpacing.vertical12,
-                AppSpacing.horizontal20,
-                AppSpacing.vertical20,
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.horizontal20,
+                  AppSpacing.vertical12,
+                  AppSpacing.horizontal20,
+                  AppSpacing.vertical20,
+                ),
+                child: _buildBottomButton(isHost, isDark),
               ),
-              child: _buildBottomButton(isHost),
             ),
           ],
         ),
@@ -640,85 +681,92 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     );
   }
 
-  Widget _buildAppBar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.w,
-        vertical: AppSpacing.vertical12,
-      ),
-      child: SizedBox(
-        height: 44.h,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // 초대코드 (정중앙) — 탭 시 초대코드 모달 표시
-            if (widget.inviteCode != null)
-              GestureDetector(
-                onTap: _showInviteCodeDialog,
-                child: Text(
-                  widget.inviteCode!,
-                  style: AppTextStyles.heading_20.copyWith(
-                    color: AppColors.black,
-                  ),
-                ),
-              ),
-            // 좌측: 뒤로가기
-            Align(
-              alignment: Alignment.centerLeft,
-              child: GestureDetector(
-                onTap: _leaveRoom,
-                child: SvgPicture.asset(
-                  'assets/icons/icon_previous.svg',
-                  width: 24.w,
-                  height: 24.w,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.black,
-                    BlendMode.srcIn,
-                  ),
-                ),
-              ),
+  PreferredSizeWidget _buildAppBar(bool isDark) {
+    return AppBar(
+      backgroundColor: isDark ? AppColors.black900 : AppColors.white,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: true,
+      leading: GestureDetector(
+        onTap: _leaveRoom,
+        behavior: HitTestBehavior.opaque,
+        child: Center(
+          child: SvgPicture.asset(
+            'assets/icons/icon_previous.svg',
+            width: 24.w,
+            height: 24.w,
+            colorFilter: ColorFilter.mode(
+              isDark ? AppColors.black200 : AppColors.black,
+              BlendMode.srcIn,
             ),
-            // 우측: 정보 + 설정
-            Align(
-              alignment: Alignment.centerRight,
+          ),
+        ),
+      ),
+      title: widget.inviteCode != null
+          ? GestureDetector(
+              onTap: _showInviteCodeDialog,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  GestureDetector(
-                    onTap: _showGameRulesDialog,
-                    child: SvgPicture.asset(
-                      'assets/icons/icon_info.svg',
-                      width: 24.w,
-                      height: 24.w,
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.black800,
-                        BlendMode.srcIn,
-                      ),
-                    ),
+                  Text(
+                    widget.inviteCode!,
+                    style: isDark
+                        ? AppTextStyles.robberHeading.copyWith(
+                            color: AppColors.white,
+                          )
+                        : AppTextStyles.heading_20.copyWith(
+                            color: AppColors.black,
+                          ),
                   ),
-                  SizedBox(width: AppSpacing.horizontal12),
-                  GestureDetector(
-                    onTap: () => context.push(RoutePaths.settings),
-                    child: SvgPicture.asset(
-                      'assets/icons/icon_settiing_2.svg',
-                      width: 24.w,
-                      height: 24.w,
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.black800,
-                        BlendMode.srcIn,
-                      ),
+                  SizedBox(width: AppSpacing.horizontal4),
+                  SvgPicture.asset(
+                    'assets/icons/icon_copy.svg',
+                    width: 20.w,
+                    height: 20.w,
+                    colorFilter: ColorFilter.mode(
+                      isDark ? AppColors.black500 : AppColors.black300,
+                      BlendMode.srcIn,
                     ),
                   ),
                 ],
               ),
+            )
+          : null,
+      actions: [
+        GestureDetector(
+          onTap: _showGameRulesDialog,
+          behavior: HitTestBehavior.opaque,
+          child: SvgPicture.asset(
+            'assets/icons/icon_info.svg',
+            width: 24.w,
+            height: 24.w,
+            colorFilter: ColorFilter.mode(
+              isDark ? AppColors.black200 : AppColors.black800,
+              BlendMode.srcIn,
             ),
-          ],
+          ),
         ),
-      ),
+        SizedBox(width: AppSpacing.horizontal12),
+        GestureDetector(
+          onTap: () =>
+              context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
+          behavior: HitTestBehavior.opaque,
+          child: SvgPicture.asset(
+            'assets/icons/icon_settiing_2.svg',
+            width: 24.w,
+            height: 24.w,
+            colorFilter: ColorFilter.mode(
+              isDark ? AppColors.black200 : AppColors.black800,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+        SizedBox(width: 24.w),
+      ],
     );
   }
 
-  Widget _buildBottomButton(bool isHost) {
+  Widget _buildBottomButton(bool isHost, bool isDark) {
     if (isHost) {
       final participantsState = ref.watch(waitingRoomParticipantsProvider);
       final hostPid = participantsState.hostParticipantId;
@@ -733,8 +781,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       return AppButton(
         text: '게임 시작',
         onPressed: allReady ? _startGame : null,
-        backgroundColor: allReady ? AppColors.blue : AppColors.black200,
-        foregroundColor: allReady ? AppColors.white : AppColors.black400,
+        backgroundColor: isDark ? AppColors.green : AppColors.blue,
+        foregroundColor: isDark ? AppColors.black : AppColors.white,
+        disabledBackgroundColor: isDark
+            ? AppColors.black800
+            : AppColors.black200,
+        disabledForegroundColor: isDark ? AppColors.green : AppColors.black400,
+        textStyle: isDark ? AppTextStyles.robberLabel : null,
         showBorder: false,
       );
     }
@@ -743,8 +796,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       return AppButton(
         text: '준비 완료',
         onPressed: _isUpdatingReady ? null : _toggleReady,
-        backgroundColor: AppColors.blue100,
-        foregroundColor: AppColors.blue,
+        backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
+        foregroundColor: isDark ? AppColors.green : AppColors.blue,
+        textStyle: isDark ? AppTextStyles.robberLabel : null,
         showBorder: false,
         isLoading: _isUpdatingReady,
       );
@@ -753,8 +807,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     return AppButton(
       text: '준비',
       onPressed: _isUpdatingReady ? null : _toggleReady,
-      backgroundColor: AppColors.blue,
-      foregroundColor: AppColors.white,
+      backgroundColor: isDark ? AppColors.green : AppColors.blue,
+      foregroundColor: isDark ? AppColors.black : AppColors.white,
+      textStyle: isDark ? AppTextStyles.robberLabel : null,
       showBorder: false,
       isLoading: _isUpdatingReady,
     );

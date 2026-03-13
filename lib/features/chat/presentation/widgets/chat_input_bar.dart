@@ -17,6 +17,7 @@ class ChatInputBar extends StatefulWidget {
     required this.onSend,
     required this.enabled,
     this.onFocusGain,
+    this.isDarkMode = false,
     super.key,
   });
 
@@ -28,6 +29,9 @@ class ChatInputBar extends StatefulWidget {
 
   /// 입력창 포커스 획득 시 콜백 (채팅창 자동 확장용)
   final VoidCallback? onFocusGain;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -80,12 +84,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
     return Container(
       // 화면 아래에서 45px 위에 위치 (SafeArea 포함하여 외부에서 처리)
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-      color: AppColors.black100,
+      color: widget.isDarkMode ? AppColors.black900 : AppColors.black100,
       child: Container(
         height: 48.h,
         padding: EdgeInsets.only(left: 16.w, right: 8.w),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: widget.isDarkMode ? AppColors.black : AppColors.white,
           borderRadius: AppRadius.large,
         ),
         child: Row(
@@ -96,12 +100,16 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 focusNode: _focusNode,
                 enabled: widget.enabled,
                 style: AppTextStyles.paragraph_14.copyWith(
-                  color: AppColors.black900,
+                  color: widget.isDarkMode
+                      ? AppColors.black200
+                      : AppColors.black900,
                 ),
                 decoration: InputDecoration(
                   hintText: widget.enabled ? '채팅을 입력하세요' : '연결 중...',
-                  hintStyle: AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black400,
+                  hintStyle: AppTextStyles.label16Medium.copyWith(
+                    color: widget.isDarkMode
+                        ? AppColors.black200
+                        : AppColors.black400,
                   ),
                   border: InputBorder.none,
                   isDense: true,
@@ -126,7 +134,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
         width: 32.w,
         height: 32.w,
         decoration: BoxDecoration(
-          color: _hasText ? AppColors.blue : AppColors.black200,
+          color: widget.isDarkMode
+              ? (_hasText ? AppColors.green : AppColors.black900)
+              : (_hasText ? AppColors.blue : AppColors.black200),
           shape: BoxShape.circle,
         ),
         child: Center(
@@ -136,8 +146,10 @@ class _ChatInputBarState extends State<ChatInputBar> {
               'assets/icons/icon_arrow.svg',
               width: 20.w,
               height: 20.w,
-              colorFilter: const ColorFilter.mode(
-                AppColors.white,
+              colorFilter: ColorFilter.mode(
+                widget.isDarkMode
+                    ? (_hasText ? AppColors.black : AppColors.black400)
+                    : AppColors.white,
                 BlendMode.srcIn,
               ),
             ),

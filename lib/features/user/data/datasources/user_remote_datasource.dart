@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../models/delete_account_response_model.dart';
 import '../models/my_page_response_model.dart';
 import '../models/nickname_check_response_model.dart';
 import '../models/nickname_update_request_model.dart';
@@ -15,6 +16,8 @@ part 'user_remote_datasource.g.dart';
 /// **엔드포인트**:
 /// - `GET /api/user/check-nickname` - 닉네임 중복 확인 (인증 불필요)
 /// - `PATCH /api/user/me/nickname` - 닉네임 변경 (JWT 필요)
+/// - `GET /api/user/me` - 내 정보 조회 (JWT 필요)
+/// - `DELETE /api/user/me` - 회원 탈퇴 (JWT 필요)
 @RestApi()
 abstract class UserRemoteDataSource {
   factory UserRemoteDataSource(Dio dio) = _UserRemoteDataSource;
@@ -48,4 +51,14 @@ abstract class UserRemoteDataSource {
   /// - 200: 사용자 정보 (MyPageResponseModel)
   @GET(ApiEndpoints.myPage)
   Future<MyPageResponseModel> getMyPage();
+
+  /// 회원 탈퇴
+  ///
+  /// 로그인한 사용자의 계정을 삭제합니다.
+  ///
+  /// - 200: 탈퇴 성공 (DeleteAccountResponseModel)
+  /// - 401: 인증 실패
+  /// - 409: 진행 중인 게임이 있는 경우
+  @DELETE(ApiEndpoints.deleteAccount)
+  Future<DeleteAccountResponseModel> deleteAccount();
 }

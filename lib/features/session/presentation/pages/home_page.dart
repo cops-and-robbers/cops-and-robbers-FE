@@ -6,7 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:geolocator/geolocator.dart';
+
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -31,14 +34,64 @@ import '../providers/session_provider.dart';
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
+  /// 위치 권한 확인 후 [onGranted] 실행
+  ///
+  /// 권한이 이미 허용된 경우 즉시 콜백 실행.
+  /// 미허용 시 안내 다이얼로그 → 확인 버튼으로 설정 이동.
+  Future<void> _ensureLocationPermission(
+    BuildContext context, {
+    required VoidCallback onGranted,
+  }) async {
+    // 이미 권한 있으면 바로 진행
+    final canAccess = await LocationPermissionService.canAccessLocation();
+    if (canAccess) {
+      onGranted();
+      return;
+    }
+
+    // 권한 없음 → 상태별 다이얼로그 메시지 분기
+    final serviceEnabled = await LocationPermissionService.isServiceEnabled();
+    if (!context.mounted) return;
+
+    final String title;
+    final String message;
+    if (!serviceEnabled) {
+      title = '위치 서비스가 꺼져 있습니다';
+      message = '이 게임은 위치 정보를 사용합니다.\n기기 설정에서 위치 서비스를 켜주세요.';
+    } else {
+      title = '위치 권한이 필요합니다';
+      message = '이 게임은 위치 정보를 사용합니다.\n설정에서 위치 권한을 허용해주세요.';
+    }
+
+    AppDialog.show(
+      context: context,
+      title: title,
+      message: message,
+      confirmText: '설정으로 이동',
+      cancelText: '취소',
+      onConfirm: () async {
+        if (!serviceEnabled) {
+          await Geolocator.openLocationSettings();
+        } else {
+          await Geolocator.openAppSettings();
+        }
+      },
+    );
+  }
+
   /// 방 만들기 버튼 클릭 시
   ///
-  /// 이전 세션 생성 임시 데이터를 초기화한 후 세션 생성 플로우로 이동합니다.
-  Future<void> _onCreateSession(BuildContext context) async {
-    await SessionDraftStorageService().clearDraft();
-    if (context.mounted) {
-      context.go(RoutePaths.sessionCreationFlow);
-    }
+  /// 위치 권한 확인 후 세션 생성 플로우로 이동합니다.
+  void _onCreateSession(BuildContext context) {
+    _ensureLocationPermission(
+      context,
+      onGranted: () async {
+        await SessionDraftStorageService().clearDraft();
+        if (context.mounted) {
+          context.go(RoutePaths.sessionCreationFlow);
+        }
+      },
+    );
   }
 
   /// 개발자 도구 메뉴 표시
@@ -76,6 +129,14 @@ class HomePage extends ConsumerWidget {
 
   /// 방 참여 다이얼로그 표시
   void _showJoinRoomDialog(BuildContext context, WidgetRef ref) {
+    _ensureLocationPermission(
+      context,
+      onGranted: () => _showJoinRoomDialogInternal(context, ref),
+    );
+  }
+
+  /// 방 참여 다이얼로그 (권한 확인 후 호출)
+  void _showJoinRoomDialogInternal(BuildContext context, WidgetRef ref) {
     final codeController = TextEditingController();
 
     AppDialog.show(

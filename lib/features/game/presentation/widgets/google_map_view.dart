@@ -10,10 +10,17 @@ import 'map_error_widget.dart';
 /// - 초기 진입 시 현재 위치 1회 조회 후 카메라 이동
 /// - [updateAreaCircles]로 플레이그라운드·감옥 원 추가
 class GoogleMapView extends StatefulWidget {
-  const GoogleMapView({super.key, this.onCameraMoveStarted});
+  const GoogleMapView({
+    super.key,
+    this.onCameraMoveStarted,
+    this.isDarkMode = false,
+  });
 
   /// 카메라 이동 시작 시 호출 (사용자 드래그 및 programmatic 이동 모두 포함)
   final VoidCallback? onCameraMoveStarted;
+
+  /// 다크 모드 여부 (도둑팀 다크 스타일 적용)
+  final bool isDarkMode;
 
   @override
   State<GoogleMapView> createState() => GoogleMapViewState();
@@ -90,6 +97,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
           target: _fallback,
           zoom: 15,
         ),
+        style: widget.isDarkMode ? _darkMapStyle : null,
         onMapCreated: (controller) {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
@@ -122,4 +130,25 @@ class GoogleMapViewState extends State<GoogleMapView> {
       return MapErrorWidget(mapName: 'Google Map', error: e);
     }
   }
+
+  /// Google Maps 다크 스타일 JSON
+  static const String _darkMapStyle = '''
+[
+  {"elementType":"geometry","stylers":[{"color":"#212121"}]},
+  {"elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+  {"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},
+  {"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},
+  {"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#757575"}]},
+  {"featureType":"poi","elementType":"geometry","stylers":[{"color":"#181818"}]},
+  {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#263c3f"}]},
+  {"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},
+  {"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#8a8a8a"}]},
+  {"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},
+  {"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},
+  {"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},
+  {"featureType":"transit","elementType":"geometry","stylers":[{"color":"#2f3948"}]},
+  {"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]},
+  {"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#3d3d3d"}]}
+]
+''';
 }

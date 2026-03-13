@@ -22,6 +22,7 @@ class ParticipantOverlay extends ConsumerStatefulWidget {
     required this.gameId,
     required this.myTeam,
     required this.myParticipantId,
+    this.isDarkMode = false,
     super.key,
   });
 
@@ -35,6 +36,9 @@ class ParticipantOverlay extends ConsumerStatefulWidget {
 
   /// 현재 플레이어 참가자 ID
   final int myParticipantId;
+
+  /// 다크 모드 여부 (도둑팀)
+  final bool isDarkMode;
 
   @override
   ConsumerState<ParticipantOverlay> createState() => _ParticipantOverlayState();
@@ -142,6 +146,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
         title: '탈옥',
         message: '탈옥을 시도하시겠습니까?',
         confirmLabel: '탈옥',
+        isDarkMode: widget.isDarkMode,
         onConfirm: () => ref
             .read(gameEventNotifierProvider.notifier)
             .escape(widget.gameId, widget.myParticipantId),
@@ -193,7 +198,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     final aliveCount = robberMembers.where((m) => !m.isReady).length;
 
     return Container(
-      color: AppColors.white,
+      color: widget.isDarkMode ? AppColors.black900 : AppColors.white,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,8 +212,14 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
               onToggle: () =>
                   setState(() => _isPoliceExpanded = !_isPoliceExpanded),
               badge: const SizedBox.shrink(),
+              isDarkMode: widget.isDarkMode,
             ),
-            Divider(height: 1, color: AppColors.black200),
+            Divider(
+              height: 1,
+              color: widget.isDarkMode
+                  ? AppColors.black800
+                  : AppColors.black200,
+            ),
             // 도둑팀 섹션 (도주 중 배지 표시, 빈 슬롯 미표시)
             TeamSection(
               team: 'ROBBER',
@@ -221,6 +232,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
                   ? _buildRobberBadge(aliveCount)
                   : null,
               onMemberTap: _onRobberTeamCardTap,
+              isDarkMode: widget.isDarkMode,
             ),
           ],
         ),
@@ -230,15 +242,19 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
 
   /// 도둑팀 헤더 배지: "현재 X명 도주 중!"
   Widget _buildRobberBadge(int count) {
+    final badgeColor = widget.isDarkMode ? AppColors.green : AppColors.blue;
+    final badgeBoldColor = widget.isDarkMode
+        ? AppColors.green800
+        : AppColors.blue800;
     return RichText(
       text: TextSpan(
-        style: AppTextStyles.tag_12.copyWith(color: AppColors.blue),
+        style: AppTextStyles.tag_12.copyWith(color: badgeColor),
         children: [
           const TextSpan(text: '현재 '),
           TextSpan(
             text: '$count명',
             style: AppTextStyles.tag_12.copyWith(
-              color: AppColors.blue800,
+              color: badgeBoldColor,
               fontWeight: FontWeight.w700,
             ),
           ),

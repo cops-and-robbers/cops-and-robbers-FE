@@ -4,15 +4,50 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 
 /// 게임 규칙 다이얼로그 내용 위젯
 ///
 /// AppDialog.show의 customContent로 사용됩니다.
+/// [showAsDialog]를 통해 다크모드 포함 다이얼로그를 한 줄로 호출할 수 있습니다.
 class GameRulesContent extends StatelessWidget {
-  const GameRulesContent({this.locationRevealIntervalMinutes, super.key});
+  const GameRulesContent({
+    this.locationRevealIntervalMinutes,
+    this.isDarkMode = false,
+    super.key,
+  });
 
   /// 위치 공개 주기 (분). null이면 기본값 5 사용.
   final int? locationRevealIntervalMinutes;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
+
+  /// 게임 규칙 다이얼로그를 다크모드 포함하여 표시
+  static void showAsDialog(
+    BuildContext context, {
+    bool isDarkMode = false,
+    int? locationRevealIntervalMinutes,
+  }) {
+    AppDialog.show(
+      context: context,
+      isDarkMode: isDarkMode,
+      backgroundColor: isDarkMode ? AppColors.black : null,
+      title: '게임 규칙',
+      titleStyle: isDarkMode
+          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
+          : null,
+      spacing: const DialogSpacing(toContent: 12),
+      customContent: GameRulesContent(
+        locationRevealIntervalMinutes: locationRevealIntervalMinutes,
+        isDarkMode: isDarkMode,
+      ),
+      confirmText: '확인했어요!',
+      confirmColor: isDarkMode ? null : AppColors.blue,
+      confirmTextColor: isDarkMode ? null : AppColors.white,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,20 +65,19 @@ class GameRulesContent extends StatelessWidget {
   }
 
   Widget _buildRule({required String number, required InlineSpan content}) {
+    final textColor = isDarkMode ? AppColors.black400 : AppColors.black600;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           number,
-          style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black600),
+          style: AppTextStyles.paragraph_14.copyWith(color: textColor),
         ),
         SizedBox(width: AppSpacing.horizontal4),
         Expanded(
           child: Text.rich(
             TextSpan(children: [content]),
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
+            style: AppTextStyles.paragraph_14.copyWith(color: textColor),
           ),
         ),
       ],
@@ -83,22 +117,39 @@ class GameRulesContent extends StatelessWidget {
   }
 
   InlineSpan _highlight(String text) {
+    final highlightColor = isDarkMode
+        ? AppColors.green800.withValues(alpha: 0.3)
+        : AppColors.blue800.withValues(alpha: 0.3);
+    final textStyle = AppTextStyles.paragraph14Semibold.copyWith(
+      color: isDarkMode ? AppColors.black100 : AppColors.black800,
+      height: 1.4,
+    );
+
     return WidgetSpan(
       alignment: PlaceholderAlignment.baseline,
       baseline: TextBaseline.alphabetic,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 2.w),
-        decoration: BoxDecoration(
-          color: AppColors.blue800.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(2.r),
-        ),
-        child: Text(
-          text,
-          style: AppTextStyles.paragraph14Semibold.copyWith(
-            color: AppColors.black800,
-            height: 1.4,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // 하이라이트 배경 (3px 아래로)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 7.h,
+            bottom: 0,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: highlightColor,
+                borderRadius: BorderRadius.circular(2.r),
+              ),
+            ),
           ),
-        ),
+          // 텍스트 (위치 고정)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w),
+            child: Text(text, style: textStyle),
+          ),
+        ],
       ),
     );
   }

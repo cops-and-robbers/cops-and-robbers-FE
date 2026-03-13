@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../auth/presentation/providers/token_provider.dart';
+import '../../../session/presentation/providers/session_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../data/datasources/lobby_stomp_datasource.dart';
 import '../../data/models/lobby_event_dto.dart';
@@ -228,6 +229,18 @@ class LobbyNotifier extends _$LobbyNotifier {
     if (event.type == LobbyEventType.gameStart) {
       debugPrint('[LobbyNotifier] 🎮 게임 시작 이벤트 수신!');
       _onGameStart?.call(event);
+    }
+
+    // SETTINGS_UPDATED 이벤트 → 설정 캐시 무효화
+    if (event.type == LobbyEventType.settingsUpdated) {
+      debugPrint('[LobbyNotifier] ⚙️ 게임 설정 변경 이벤트 수신');
+      ref.invalidate(fetchGameSettingsProvider(event.gameId));
+    }
+
+    // AREA_UPDATED 이벤트 → 영역 캐시 무효화
+    if (event.type == LobbyEventType.areaUpdated) {
+      debugPrint('[LobbyNotifier] 📍 게임 영역 변경 이벤트 수신');
+      ref.invalidate(fetchGameAreaProvider(event.gameId));
     }
   }
 
