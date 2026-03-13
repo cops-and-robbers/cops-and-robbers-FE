@@ -263,14 +263,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       await ref.read(deleteAccountUseCaseProvider).execute();
       if (!mounted) return;
 
-      // 2. 로컬 정리 (Firebase signOut + 토큰 삭제 + state null)
+      // 2. 로컬 정리 (Firebase signOut + 토큰 삭제)
       await ref
           .read(authNotifierProvider.notifier)
           .cleanupAfterAccountDeletion();
       if (!mounted) return;
 
-      // 3. 로그인 화면으로 이동 (탈퇴 완료 메시지 전달)
+      // 3. 로그인 화면으로 이동 (탈퇴 완료 메시지 전달) 후 state 초기화
       context.go('${RoutePaths.login}?accountDeleted=true');
+      ref.read(authNotifierProvider.notifier).forceLogout();
       return;
     } on AuthException {
       // AuthInterceptor에서 강제 로그아웃 처리됨

@@ -246,17 +246,16 @@ class AuthNotifier extends _$AuthNotifier {
   /// 회원 탈퇴 후 로컬 정리
   ///
   /// 백엔드 계정 삭제(`DELETE /api/user/me`) 성공 후 호출됩니다.
-  /// Firebase 세션 정리 + JWT 토큰 삭제 + state null 처리를 수행합니다.
+  /// Firebase 세션 정리 + JWT 토큰 삭제를 수행합니다.
   ///
-  /// **주의**: 백엔드 logout API는 호출하지 않습니다 (계정이 이미 삭제됨).
+  /// **주의**: state는 여기서 초기화하지 않습니다.
+  /// 호출부에서 `context.go(login?accountDeleted=true)` 후
+  /// [forceLogout]으로 state를 초기화해야 GoRouter 리다이렉트보다
+  /// 탈퇴 완료 메시지 전달이 먼저 실행됩니다.
   Future<void> cleanupAfterAccountDeletion() async {
     final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
-    try {
-      await firebaseDataSource.signOut();
-      await ref.read(secureTokenStorageProvider).clearTokens();
-    } finally {
-      state = const AsyncValue.data(null);
-    }
+    await firebaseDataSource.signOut();
+    await ref.read(secureTokenStorageProvider).clearTokens();
   }
 
   /// 강제 로그아웃 (AuthInterceptor에서 호출)
