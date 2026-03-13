@@ -705,13 +705,30 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       title: widget.inviteCode != null
           ? GestureDetector(
               onTap: _showInviteCodeDialog,
-              child: Text(
-                widget.inviteCode!,
-                style: isDark
-                    ? AppTextStyles.robberHeading.copyWith(
-                        color: AppColors.white,
-                      )
-                    : AppTextStyles.heading_20.copyWith(color: AppColors.black),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.inviteCode!,
+                    style: isDark
+                        ? AppTextStyles.robberHeading.copyWith(
+                            color: AppColors.white,
+                          )
+                        : AppTextStyles.heading_20.copyWith(
+                            color: AppColors.black,
+                          ),
+                  ),
+                  SizedBox(width: AppSpacing.horizontal4),
+                  SvgPicture.asset(
+                    'assets/icons/icon_copy.svg',
+                    width: 20.w,
+                    height: 20.w,
+                    colorFilter: ColorFilter.mode(
+                      isDark ? AppColors.black500 : AppColors.black300,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ],
               ),
             )
           : null,
