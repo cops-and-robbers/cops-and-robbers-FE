@@ -462,14 +462,10 @@ class GameEventNotifier extends _$GameEventNotifier {
   }
 
   void _handleEscape(Map<String, dynamic> data) {
-    final escapedThieves = (data['escapedThieves'] as List?) ?? [];
-    final escapedIds = escapedThieves
-        .map((e) => (e['participantId'] as num?)?.toInt())
-        .whereType<int>()
-        .toSet();
-    final firstNickname = escapedThieves.isNotEmpty
-        ? escapedThieves.first['nickname'] as String?
-        : null;
+    final escapedThief = data['escapedThief'] as Map<String, dynamic>?;
+    final escapedId = (escapedThief?['participantId'] as num?)?.toInt();
+    final escapedIds = escapedId != null ? {escapedId} : <int>{};
+    final firstNickname = escapedThief?['nickname'] as String?;
 
     state = state.copyWith(
       arrestedParticipantIds: state.arrestedParticipantIds.difference(
