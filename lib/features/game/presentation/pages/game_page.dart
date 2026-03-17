@@ -80,8 +80,9 @@ class _GamePageState extends ConsumerState<GamePage> {
   GameEventNotifier? _gameEventNotifier;
   GameEventStompDatasource? _gameEventDatasource;
 
-  Timer? _locationTimer;
+  StreamSubscription<Position>? _locationSubscription;
   Position? _lastSentPosition;
+  DateTime? _lastSentTime;
 
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
@@ -98,14 +99,12 @@ class _GamePageState extends ConsumerState<GamePage> {
       _connectGameEvents();
       _loadGameArea();
       _showPoliceTimerIfNeeded();
-      // TODO: GPS 위치 추적 서비스 시작 (백엔드 스펙 확정 후)
-      //       BackgroundLocationService.start(gameId: _gameId, ...)
     });
   }
 
   @override
   void dispose() {
-    _locationTimer?.cancel();
+    _locationSubscription?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
@@ -196,7 +195,11 @@ class _GamePageState extends ConsumerState<GamePage> {
     ref.read(gameAreaProvider(_gameId));
   }
 
-  /// 도둑 팀 GPS 위치 서버 전송 시작 (10초 주기, 10m 이상 변화 시만 전송)
+  /// 도둑 팀 GPS 위치 스트림 구독 및 서버 전송 시작
+  ///
+  /// distanceFilter 10m로 OS 레벨에서 필터링하고,
+  /// 추가로 5초 throttle을 적용하여 서버 부하를 제한한다.
+  /// 지속적 스트림 구독으로 OS 위치 인디케이터가 표시된다.
   Future<void> _startLocationSending() async {
     // GPS 조회 (STOMP 연결 대기와 병렬 수행)
     Position? initial;
@@ -226,40 +229,38 @@ class _GamePageState extends ConsumerState<GamePage> {
         initial.longitude,
       );
       _lastSentPosition = initial;
+      _lastSentTime = DateTime.now();
     }
 
-    // 10초 주기 타이머: 현재 위치 조회 → 이전 위치와 비교 → 10m 이상 변화 시 전송
-    // ⚠️ 포그라운드 전용: 백그라운드 전환 시 타이머 일시 정지됨.
-    //    전체 백그라운드 지원은 flutter_background_service 구현 시 대응 예정.
-    _locationTimer = Timer.periodic(const Duration(seconds: 10), (_) async {
-      if (!mounted) return;
-      final Position? pos;
-      try {
-        pos = await DeviceLocationService.getCurrentPosition();
-      } catch (e) {
-        debugPrint('[위치] 위치 조회 실패 (백그라운드 복귀 등): $e');
-        return;
-      }
-      if (!mounted || pos == null) return;
+    // 위치 스트림 구독: 10m 이상 이동 시 이벤트 발생, 5초 throttle 적용
+    _locationSubscription =
+        DeviceLocationService.getPositionStream(distanceFilter: 10).listen(
+          (pos) {
+            if (!mounted) return;
 
-      final last = _lastSentPosition;
-      if (last != null) {
-        final distance = Geolocator.distanceBetween(
-          last.latitude,
-          last.longitude,
-          pos.latitude,
-          pos.longitude,
+            // 5초 미만이면 전송 스킵 (서버 부하 제한)
+            final now = DateTime.now();
+            if (_lastSentTime != null &&
+                now.difference(_lastSentTime!).inSeconds < 5) {
+              return;
+            }
+
+            _gameEventDatasource?.publishLocation(
+              _gameId,
+              pos.latitude,
+              pos.longitude,
+            );
+            _lastSentPosition = pos;
+            _lastSentTime = now;
+          },
+          onError: (e) {
+            debugPrint('[위치] 위치 스트림 에러: $e');
+            _locationSubscription = null;
+          },
+          onDone: () {
+            _locationSubscription = null;
+          },
         );
-        if (distance < 10) return; // 10m 미만 변화 → 스킵
-      }
-
-      _gameEventDatasource?.publishLocation(
-        _gameId,
-        pos.latitude,
-        pos.longitude,
-      );
-      _lastSentPosition = pos;
-    });
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
@@ -508,7 +509,7 @@ class _GamePageState extends ConsumerState<GamePage> {
           !widget.isDummy) {
         if (_lastSentPosition != null) {
           _sendPositionNow();
-        } else if (_locationTimer == null) {
+        } else if (_locationSubscription == null) {
           _startLocationSending();
         }
       }
