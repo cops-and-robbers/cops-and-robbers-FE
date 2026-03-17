@@ -255,6 +255,10 @@ class _GamePageState extends ConsumerState<GamePage> {
           },
           onError: (e) {
             debugPrint('[위치] 위치 스트림 에러: $e');
+            _locationSubscription = null;
+          },
+          onDone: () {
+            _locationSubscription = null;
           },
         );
   }
