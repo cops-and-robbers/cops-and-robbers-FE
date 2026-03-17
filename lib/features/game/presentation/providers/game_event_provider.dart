@@ -451,6 +451,7 @@ class GameEventNotifier extends _$GameEventNotifier {
 
     state = state.copyWith(
       arrestedParticipantIds: {...state.arrestedParticipantIds, robberPid},
+      escapedParticipantIds: state.escapedParticipantIds.difference({robberPid}),
       remainingThieves: remaining,
       lastArrestNickname: robberNickname,
       isApiLoading: false,

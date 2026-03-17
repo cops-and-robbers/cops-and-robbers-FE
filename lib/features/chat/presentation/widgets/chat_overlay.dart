@@ -43,6 +43,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   int _currentPage = 0;
 
   bool _isExpanded = false;
+  double _sheetSize = 0;
 
   static const double _snap50 = 0.5;
   static const double _snap75 = 0.75;
@@ -57,10 +58,13 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   double _expandedThreshold = 0.25;
 
   void _onSheetChanged() {
-    final expanded = _sheetController.size > _expandedThreshold;
-    if (expanded != _isExpanded) {
-      setState(() => _isExpanded = expanded);
-      // 시트가 축소될 때 키보드(포커스) 해제
+    final size = _sheetController.size;
+    final expanded = size > _expandedThreshold;
+    if (expanded != _isExpanded || size != _sheetSize) {
+      setState(() {
+        _isExpanded = expanded;
+        _sheetSize = size;
+      });
       if (!expanded) {
         FocusScope.of(context).unfocus();
       }
@@ -191,17 +195,28 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     );
   }
 
-  /// 드래그 핸들 (48x4, 상단 12px)
   Widget _buildDragHandle() {
-    return Padding(
-      padding: EdgeInsets.only(top: 12.h, bottom: 4.h),
-      child: Center(
-        child: Container(
-          width: 48.w,
-          height: 4.h,
-          decoration: BoxDecoration(
-            color: widget.isDarkMode ? AppColors.black600 : AppColors.black200,
-            borderRadius: BorderRadius.circular(2.r),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        if (!_sheetController.isAttached) return;
+        final target = _sheetSize > _minSize + 0.01 ? _minSize : _snap50;
+        _sheetController.animateTo(
+          target,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 12.h),
+        child: Center(
+          child: Container(
+            width: 48.w,
+            height: 4.h,
+            decoration: BoxDecoration(
+              color: widget.isDarkMode ? AppColors.black600 : AppColors.black200,
+              borderRadius: BorderRadius.circular(2.r),
+            ),
           ),
         ),
       ),
