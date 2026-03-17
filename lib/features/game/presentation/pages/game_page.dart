@@ -759,6 +759,7 @@ class _GamePageState extends ConsumerState<GamePage> {
               SizedBox(height: 6.h),
               LocationRevealCountdown(
                 nextRevealTime: nextRevealTime,
+                intervalMinutes: interval,
                 isDarkMode: _isDarkMode,
               ),
             ],

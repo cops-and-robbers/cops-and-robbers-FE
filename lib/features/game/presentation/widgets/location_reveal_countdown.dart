@@ -8,16 +8,21 @@ import '../../../../core/constants/text_styles.dart';
 /// 다음 도둑 위치 공개까지 남은 시간을 MM:SS로 표시하는 위젯
 ///
 /// [nextRevealTime]이 null이면 '--:--' 표시.
-/// 카운트다운이 0 이하가 되면 '00:00' 고정.
+/// [intervalMinutes]가 지정되면 카운트다운이 0에 도달 시
+/// 자동으로 다음 주기로 순환한다.
 class LocationRevealCountdown extends StatefulWidget {
   const LocationRevealCountdown({
     super.key,
     this.nextRevealTime,
+    this.intervalMinutes,
     this.isDarkMode = false,
   });
 
   /// 다음 위치 공개 예정 시각
   final DateTime? nextRevealTime;
+
+  /// 위치 공개 간격 (분). 카운트다운 자동 순환에 사용.
+  final int? intervalMinutes;
 
   /// 다크 모드 여부
   final bool isDarkMode;
@@ -67,10 +72,22 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
     setState(() {
       if (widget.nextRevealTime == null) {
         _remaining = Duration.zero;
-      } else {
-        final diff = widget.nextRevealTime!.difference(DateTime.now());
-        _remaining = diff.isNegative ? Duration.zero : diff;
+        return;
       }
+
+      var target = widget.nextRevealTime!;
+
+      // intervalMinutes가 있으면 target이 과거일 때 다음 주기로 자동 순환
+      final interval = widget.intervalMinutes;
+      if (interval != null && interval > 0) {
+        final intervalDuration = Duration(minutes: interval);
+        while (target.isBefore(DateTime.now())) {
+          target = target.add(intervalDuration);
+        }
+      }
+
+      final diff = target.difference(DateTime.now());
+      _remaining = diff.isNegative ? Duration.zero : diff;
     });
   }
 
