@@ -104,48 +104,113 @@
               }
             }
           },
-          "400": {
-            "description": "잘못된 요청",
+          "403": {
+            "description": "403 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "위치 공개 주기가 라운드 시간 이상인 경우": {
-                    "description": "위치 공개 주기가 라운드 시간 이상인 경우",
+                  "호스트 권한 필요": {
+                    "summary": "호스트 권한 필요",
                     "value": {
-                      "title": "유효하지 않은 위치 공개 주기",
-                      "status": 400,
-                      "detail": "위치 공개 주기는 라운드 시간보다 짧아야 합니다.",
-                      "instance": "/api/games/1/settings"
-                    }
-                  },
-                  "게임이 대기 중이 아닌 경우": {
-                    "description": "게임이 대기 중이 아닌 경우",
-                    "value": {
-                      "title": "대기 중인 게임이 아님",
-                      "status": 400,
-                      "detail": "대기 중인 게임에서만 설정을 변경할 수 있습니다.",
-                      "instance": "/api/games/1/settings"
+                      "title": "호스트 권한 필요",
+                      "status": 403,
+                      "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/settings"
                     }
                   }
                 }
               }
             }
           },
-          "403": {
-            "description": "방장 권한 없음",
+          "400": {
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
-                "example": {
-                  "title": "호스트 권한 필요",
-                  "status": 403,
-                  "detail": "방장만 게임을 시작할 수 있습니다.",
-                  "instance": "/api/games/1/settings"
+                "examples": {
+                  "대기 중인 게임이 아님": {
+                    "summary": "대기 중인 게임이 아님",
+                    "value": {
+                      "title": "대기 중인 게임이 아님",
+                      "status": 400,
+                      "detail": "대기 중인 게임에서만 설정을 변경할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/settings"
+                    }
+                  },
+                  "유효하지 않은 위치 공개 주기": {
+                    "summary": "유효하지 않은 위치 공개 주기",
+                    "value": {
+                      "title": "유효하지 않은 위치 공개 주기",
+                      "status": 400,
+                      "detail": "위치 공개 주기는 라운드 시간보다 짧아야 합니다.",
+                      "instance": "/api/games/{gameId}/settings"
+                    }
+                  },
+                  "유효하지 않은 경찰 대기 시간": {
+                    "summary": "유효하지 않은 경찰 대기 시간",
+                    "value": {
+                      "title": "유효하지 않은 경찰 대기 시간",
+                      "status": 400,
+                      "detail": "경찰 대기 시간은 라운드 시간보다 짧아야 합니다.",
+                      "instance": "/api/games/{gameId}/settings"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/games/{gameId}/settings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/settings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/settings"
+                    }
+                  }
                 }
               }
             }
@@ -184,72 +249,43 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/GameAreaResponse"
-                },
-                "examples": {
-                  "맵 정보 조회 성공 예시": {
-                    "description": "맵 정보 조회 성공 예시",
-                    "value": {
-                      "playgroundCenter": {
-                        "latitude": 37.5665,
-                        "longitude": 126.978
-                      },
-                      "playgroundRadiusInMeters": 1000,
-                      "jailCenter": {
-                        "latitude": 37.566,
-                        "longitude": 126.977
-                      },
-                      "jailRadiusInMeters": 100
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "인증 실패",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
-                    "value": {
-                      "title": "인증 필요",
-                      "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/area"
-                    }
-                  }
                 }
               }
             }
           },
           "404": {
-            "description": "게임 또는 참가자 정보 없음",
+            "description": "404 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
                   "게임을 찾을 수 없음": {
-                    "description": "게임을 찾을 수 없음",
+                    "summary": "게임을 찾을 수 없음",
                     "value": {
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
-                      "instance": "/api/games/999/area"
+                      "instance": "/api/games/{gameId}/area"
                     }
                   },
                   "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
+                    "summary": "참가자를 찾을 수 없음",
                     "value": {
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1/area"
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  },
+                  "게임 구역을 찾을 수 없음": {
+                    "summary": "게임 구역을 찾을 수 없음",
+                    "value": {
+                      "title": "게임 구역을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임 구역을 찾을 수 없습니다.",
+                      "instance": "/api/games/{gameId}/area"
                     }
                   }
                 }
@@ -257,20 +293,62 @@
             }
           },
           "400": {
-            "description": "비활성 게임",
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
                   "비활성 게임": {
-                    "description": "비활성 게임",
+                    "summary": "비활성 게임",
                     "value": {
                       "title": "비활성 게임",
                       "status": 400,
                       "detail": "대기 중이거나 진행 중인 게임에서만 조회할 수 있습니다.",
-                      "instance": "/api/games/1/area"
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/area"
                     }
                   }
                 }
@@ -326,22 +404,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "방장 권한 없음",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "example": {
-                  "title": "호스트 권한 필요",
-                  "status": 403,
-                  "detail": "방장만 게임을 시작할 수 있습니다.",
-                  "instance": "/api/games/1/area"
-                }
-              }
-            }
-          },
           "200": {
             "description": "영역 수정 성공",
             "content": {
@@ -369,30 +431,111 @@
               }
             }
           },
-          "400": {
-            "description": "잘못된 요청",
+          "403": {
+            "description": "403 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "감옥이 플레이그라운드 밖에 위치": {
-                    "description": "감옥이 플레이그라운드 밖에 위치",
+                  "호스트 권한 필요": {
+                    "summary": "호스트 권한 필요",
                     "value": {
-                      "title": "감옥 영역 벗어남",
-                      "status": 400,
-                      "detail": "감옥은 운동장 내부에 완전히 포함되어야 합니다.",
-                      "instance": "/api/games/1/area"
+                      "title": "호스트 권한 필요",
+                      "status": 403,
+                      "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/area"
                     }
-                  },
-                  "게임이 대기 중이 아닌 경우": {
-                    "description": "게임이 대기 중이 아닌 경우",
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "대기 중인 게임이 아님": {
+                    "summary": "대기 중인 게임이 아님",
                     "value": {
                       "title": "대기 중인 게임이 아님",
                       "status": 400,
                       "detail": "대기 중인 게임에서만 설정을 변경할 수 있습니다.",
-                      "instance": "/api/games/1/area"
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  },
+                  "유효하지 않은 감옥 반지름": {
+                    "summary": "유효하지 않은 감옥 반지름",
+                    "value": {
+                      "title": "유효하지 않은 감옥 반지름",
+                      "status": 400,
+                      "detail": "감옥의 반지름이 운동장의 반지름보다 크거나 같을 수 없습니다.",
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  },
+                  "감옥 영역 벗어남": {
+                    "summary": "감옥 영역 벗어남",
+                    "value": {
+                      "title": "감옥 영역 벗어남",
+                      "status": 400,
+                      "detail": "감옥은 운동장 내부에 완전히 포함되어야 합니다.",
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/area"
                     }
                   }
                 }
@@ -450,27 +593,6 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "description": "인증 실패",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
-                    "value": {
-                      "title": "인증 필요",
-                      "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "201": {
             "description": "게임 방 생성 성공 (리소스 생성됨)",
             "content": {
@@ -497,46 +619,55 @@
             }
           },
           "400": {
-            "description": "잘못된 요청",
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "필수 필드 누락": {
-                    "description": "필수 필드 누락",
+                  "유효하지 않은 감옥 반지름": {
+                    "summary": "유효하지 않은 감옥 반지름",
                     "value": {
-                      "title": "유효하지 않은 입력값",
+                      "title": "유효하지 않은 감옥 반지름",
                       "status": 400,
-                      "detail": "area: 영역 설정은 필수입니다.",
+                      "detail": "감옥의 반지름이 운동장의 반지름보다 크거나 같을 수 없습니다.",
                       "instance": "/api/games"
                     }
                   },
-                  "감옥이 플레이그라운드 밖에 위치한 경우": {
-                    "description": "감옥이 플레이그라운드 밖에 위치한 경우",
+                  "감옥 영역 벗어남": {
+                    "summary": "감옥 영역 벗어남",
                     "value": {
-                      "title": "영역 설정 오류",
+                      "title": "감옥 영역 벗어남",
                       "status": 400,
-                      "detail": "감옥 영역이 플레이그라운드 영역 내에 포함되어야 합니다.",
+                      "detail": "감옥은 운동장 내부에 완전히 포함되어야 합니다.",
                       "instance": "/api/games"
                     }
                   },
-                  "위치 공개 주기가 라운드 시간보다 긴 경우": {
-                    "description": "위치 공개 주기가 라운드 시간보다 긴 경우",
+                  "유효하지 않은 위치 공개 주기": {
+                    "summary": "유효하지 않은 위치 공개 주기",
                     "value": {
-                      "title": "게임 설정 오류",
+                      "title": "유효하지 않은 위치 공개 주기",
                       "status": 400,
                       "detail": "위치 공개 주기는 라운드 시간보다 짧아야 합니다.",
                       "instance": "/api/games"
                     }
                   },
-                  "JSON 형식 오류": {
-                    "description": "JSON 형식 오류",
+                  "유효하지 않은 경찰 대기 시간": {
+                    "summary": "유효하지 않은 경찰 대기 시간",
                     "value": {
-                      "title": "잘못된 요청 본문",
+                      "title": "유효하지 않은 경찰 대기 시간",
                       "status": 400,
-                      "detail": "요청 본문의 형식이 잘못되었습니다.",
+                      "detail": "경찰 대기 시간은 라운드 시간보다 짧아야 합니다.",
+                      "instance": "/api/games"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
                       "instance": "/api/games"
                     }
                   }
@@ -545,19 +676,61 @@
             }
           },
           "409": {
-            "description": "이미 다른 활성 게임에 참여 중인 경우",
+            "description": "409 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "중복 게임 참여": {
-                    "description": "중복 게임 참여",
+                  "이미 참가 중인 게임": {
+                    "summary": "이미 참가 중인 게임",
                     "value": {
                       "title": "이미 참가 중인 게임",
                       "status": 409,
-                      "detail": "이미 게임에 참가하고 있습니다.",
+                      "detail": "이미 해당 게임에 참가하고 있습니다.",
+                      "instance": "/api/games"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/games"
                     }
                   }
@@ -593,54 +766,42 @@
           }
         ],
         "responses": {
+          "204": {
+            "description": "탈옥 성공"
+          },
           "400": {
-            "description": "잘못된 요청",
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
                   "게임 진행 중 아님": {
-                    "description": "게임 진행 중 아님",
+                    "summary": "게임 진행 중 아님",
                     "value": {
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
-                      "instance": "/api/games/1/system/escape"
+                      "instance": "/api/games/{gameId}/system/escape"
                     }
                   },
                   "수감되지 않음": {
-                    "description": "수감되지 않음",
+                    "summary": "수감되지 않음",
                     "value": {
                       "title": "수감되지 않음",
                       "status": 400,
                       "detail": "수감된 상태에서만 탈옥할 수 있습니다.",
-                      "instance": "/api/games/1/system/escape"
+                      "instance": "/api/games/{gameId}/system/escape"
                     }
-                  }
-                }
-              }
-            }
-          },
-          "204": {
-            "description": "탈옥 성공"
-          },
-          "401": {
-            "description": "인증 실패",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
                     "value": {
-                      "title": "인증 필요",
-                      "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/system/escape"
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/games/{gameId}/system/escape"
                     }
                   }
                 }
@@ -648,20 +809,71 @@
             }
           },
           "404": {
-            "description": "참가자 정보 없음",
+            "description": "404 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/system/escape"
+                    }
+                  },
                   "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
+                    "summary": "참가자를 찾을 수 없음",
                     "value": {
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1/system/escape"
+                      "instance": "/api/games/{gameId}/system/escape"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/system/escape"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/system/escape"
                     }
                   }
                 }
@@ -696,106 +908,95 @@
           }
         ],
         "requestBody": {
-          "description": "체포 요청 정보",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ArrestRequest"
-              },
-              "examples": {
-                "도둑 체포 요청": {
-                  "description": "도둑 체포 요청",
-                  "value": {
-                    "robberParticipantId": 102
-                  }
-                }
               }
             }
           },
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "잘못된 요청",
+          "200": {
+            "description": "체포 성공",
             "content": {
               "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
                   "게임 진행 중 아님": {
-                    "description": "게임 진행 중 아님",
+                    "summary": "게임 진행 중 아님",
                     "value": {
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
-                      "instance": "/api/games/1/system/arrest"
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
                   },
-                  "경찰이 아님": {
-                    "description": "경찰이 아님",
+                  "경찰만이 체포 가능": {
+                    "summary": "경찰만이 체포 가능",
                     "value": {
-                      "title": "경찰만 체포 가능",
+                      "title": "경찰만이 체포 가능",
                       "status": 400,
                       "detail": "경찰 팀만 도둑을 체포할 수 있습니다.",
-                      "instance": "/api/games/1/system/arrest"
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
                   },
                   "경찰 대기 시간": {
-                    "description": "경찰 대기 시간",
+                    "summary": "경찰 대기 시간",
                     "value": {
                       "title": "경찰 대기 시간",
                       "status": 400,
                       "detail": "경찰은 대기 시간 동안 도둑을 체포할 수 없습니다.",
-                      "instance": "/api/games/1/system/arrest"
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
                   },
-                  "대상이 도둑이 아님": {
-                    "description": "대상이 도둑이 아님",
+                  "도둑만을 체포 가능": {
+                    "summary": "도둑만을 체포 가능",
                     "value": {
-                      "title": "도둑만 체포 가능",
+                      "title": "도둑만을 체포 가능",
                       "status": 400,
                       "detail": "도둑 팀만 체포될 수 있습니다.",
-                      "instance": "/api/games/1/system/arrest"
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
                   },
                   "참가자 게임 불일치": {
-                    "description": "참가자 게임 불일치",
+                    "summary": "참가자 게임 불일치",
                     "value": {
                       "title": "참가자 게임 불일치",
                       "status": 400,
                       "detail": "경찰과 도둑이 서로 다른 게임에 참여하고 있습니다.",
-                      "instance": "/api/games/1/system/arrest"
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
                   },
-                  "이미 체포된 도둑": {
-                    "description": "이미 체포된 도둑",
+                  "이미 체포됨": {
+                    "summary": "이미 체포됨",
                     "value": {
                       "title": "이미 체포됨",
                       "status": 400,
                       "detail": "이미 수감된 도둑입니다.",
-                      "instance": "/api/games/1/system/arrest"
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "인증 실패",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
                     "value": {
-                      "title": "인증 필요",
-                      "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/system/arrest"
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
                   }
                 }
@@ -803,39 +1004,71 @@
             }
           },
           "404": {
-            "description": "참가자 정보 없음",
+            "description": "404 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/system/arrest"
+                    }
+                  },
                   "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
+                    "summary": "참가자를 찾을 수 없음",
                     "value": {
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1/system/arrest"
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
                   }
                 }
               }
             }
           },
-          "200": {
-            "description": "체포 성공",
+          "401": {
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArrestResponse"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "체포 성공 응답": {
-                    "description": "체포 성공 응답",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "robberNickname": "잡힌도둑",
-                      "remainingThieves": 2
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/system/arrest"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/system/arrest"
                     }
                   }
                 }
@@ -873,21 +1106,21 @@
           "204": {
             "description": "게임 시작 성공"
           },
-          "401": {
-            "description": "인증 실패",
+          "403": {
+            "description": "403 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  "호스트 권한 필요": {
+                    "summary": "호스트 권한 필요",
                     "value": {
-                      "title": "인증 필요",
-                      "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/lobby/start"
+                      "title": "호스트 권한 필요",
+                      "status": 403,
+                      "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/lobby/start"
                     }
                   }
                 }
@@ -895,56 +1128,47 @@
             }
           },
           "400": {
-            "description": "잘못된 요청",
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "방장이 아님": {
-                    "description": "방장이 아님",
-                    "value": {
-                      "title": "권한 없음",
-                      "status": 400,
-                      "detail": "게임을 시작할 수 있는 권한이 없습니다. (방장만 가능)",
-                      "instance": "/api/games/1/lobby/start"
-                    }
-                  },
                   "팀 구성 오류": {
-                    "description": "팀 구성 오류",
+                    "summary": "팀 구성 오류",
                     "value": {
                       "title": "팀 구성 오류",
                       "status": 400,
-                      "detail": "경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다.",
-                      "instance": "/api/games/1/lobby/start"
+                      "detail": "게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다.",
+                      "instance": "/api/games/{gameId}/lobby/start"
                     }
                   },
-                  "모든 참가자가 준비하지 않음": {
-                    "description": "모든 참가자가 준비하지 않음",
+                  "준비 미완료": {
+                    "summary": "준비 미완료",
                     "value": {
-                      "title": "준비되지 않은 참가자 존재",
+                      "title": "준비 미완료",
                       "status": 400,
                       "detail": "모든 참가자가 준비 상태여야 게임을 시작할 수 있습니다.",
-                      "instance": "/api/games/1/lobby/start"
+                      "instance": "/api/games/{gameId}/lobby/start"
                     }
                   },
-                  "게임이 이미 시작됨": {
-                    "description": "게임이 이미 시작됨",
+                  "이미 시작된 게임": {
+                    "summary": "이미 시작된 게임",
                     "value": {
                       "title": "이미 시작된 게임",
                       "status": 400,
                       "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
-                      "instance": "/api/games/1/lobby/start"
+                      "instance": "/api/games/{gameId}/lobby/start"
                     }
                   },
                   "로비 조작 불가": {
-                    "description": "로비 조작 불가",
+                    "summary": "로비 조작 불가",
                     "value": {
                       "title": "로비 조작 불가",
                       "status": 400,
                       "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
-                      "instance": "/api/games/1/lobby/start"
+                      "instance": "/api/games/{gameId}/lobby/start"
                     }
                   }
                 }
@@ -952,29 +1176,71 @@
             }
           },
           "404": {
-            "description": "게임 또는 참여 정보 없음",
+            "description": "404 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "존재하지 않는 게임": {
-                    "description": "존재하지 않는 게임",
-                    "value": {
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임을 찾을 수 없습니다.",
-                      "instance": "/api/games/999/lobby/start"
-                    }
-                  },
                   "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
+                    "summary": "참가자를 찾을 수 없음",
                     "value": {
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1/lobby/start"
+                      "instance": "/api/games/{gameId}/lobby/start"
+                    }
+                  },
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/lobby/start"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/lobby/start"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/lobby/start"
                     }
                   }
                 }
@@ -996,39 +1262,40 @@
         "description": "초대 코드를 사용하여 게임 방에 참여합니다. 이미 다른 활성 게임에 참여 중이거나, 게임이 이미 시작되었거나, 최대 참여 인원에 도달한 경우 참여할 수 없습니다.",
         "operationId": "joinGame",
         "requestBody": {
-          "description": "게임 참여 요청",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/GameJoinRequest"
-              },
-              "examples": {
-                "정상 요청 예시": {
-                  "description": "정상 요청 예시",
-                  "value": {
-                    "inviteCode": "ABC123"
-                  }
-                }
               }
             }
           },
           "required": true
         },
         "responses": {
-          "409": {
-            "description": "이미 다른 활성 게임에 참여 중인 경우",
+          "200": {
+            "description": "게임 참여 성공",
             "content": {
               "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameJoinResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409 Error",
+            "content": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "중복 게임 참여": {
-                    "description": "중복 게임 참여",
+                  "이미 참가 중인 게임": {
+                    "summary": "이미 참가 중인 게임",
                     "value": {
                       "title": "이미 참가 중인 게임",
                       "status": 409,
-                      "detail": "이미 게임에 참가하고 있습니다.",
+                      "detail": "이미 해당 게임에 참가하고 있습니다.",
                       "instance": "/api/games/join"
                     }
                   }
@@ -1037,46 +1304,46 @@
             }
           },
           "400": {
-            "description": "잘못된 요청",
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "초대 코드 누락": {
-                    "description": "초대 코드 누락",
+                  "이미 시작된 게임": {
+                    "summary": "이미 시작된 게임",
                     "value": {
-                      "title": "유효하지 않은 입력값",
-                      "status": 400,
-                      "detail": "inviteCode: 초대 코드는 필수입니다.",
-                      "instance": "/api/games/join"
-                    }
-                  },
-                  "게임이 이미 시작됨": {
-                    "description": "게임이 이미 시작됨",
-                    "value": {
-                      "title": "게임 참여 불가",
+                      "title": "이미 시작된 게임",
                       "status": 400,
                       "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
                       "instance": "/api/games/join"
                     }
                   },
-                  "최대 참여 인원 초과": {
-                    "description": "최대 참여 인원 초과",
+                  "게임 인원 초과": {
+                    "summary": "게임 인원 초과",
                     "value": {
-                      "title": "게임 참여 불가",
+                      "title": "게임 인원 초과",
                       "status": 400,
-                      "detail": "게임 방의 최대 참여 인원에 도달했습니다.",
+                      "detail": "게임에 참가할 수 있는 최대 인원을 초과했습니다.",
                       "instance": "/api/games/join"
                     }
                   },
-                  "잘못된 초대 코드": {
-                    "description": "잘못된 초대 코드",
+                  "초대 코드 오류": {
+                    "summary": "초대 코드 오류",
                     "value": {
                       "title": "초대 코드 오류",
                       "status": 400,
                       "detail": "입력하신 초대 코드가 유효하지 않습니다.",
+                      "instance": "/api/games/join"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
                       "instance": "/api/games/join"
                     }
                   }
@@ -1085,19 +1352,19 @@
             }
           },
           "401": {
-            "description": "인증 실패",
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "title": "인증 필요",
+                      "title": "인증되지 않은 요청",
                       "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
+                      "detail": "로그인이 필요합니다.",
                       "instance": "/api/games/join"
                     }
                   }
@@ -1105,19 +1372,21 @@
               }
             }
           },
-          "200": {
-            "description": "게임 참여 성공",
+          "500": {
+            "description": "500 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameJoinResponse"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "게임 참여 성공 예시": {
-                    "description": "게임 참여 성공 예시",
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
                     "value": {
-                      "gameId": 1,
-                      "participantId": 2
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/join"
                     }
                   }
                 }
@@ -1158,27 +1427,6 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "description": "Refresh Token 검증 실패",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "유효하지 않은 Refresh Token": {
-                    "description": "유효하지 않은 Refresh Token",
-                    "value": {
-                      "title": "토큰 재발급 실패",
-                      "status": 401,
-                      "detail": "유효하지 않거나 만료된 Refresh Token입니다.",
-                      "instance": "/api/auth/reissue"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "200": {
             "description": "토큰 재발급 성공",
             "content": {
@@ -1200,20 +1448,71 @@
               }
             }
           },
-          "400": {
-            "description": "잘못된 요청",
+          "401": {
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "Refresh Token 누락": {
-                    "description": "Refresh Token 누락",
+                  "로그인 만료": {
+                    "summary": "로그인 만료",
+                    "value": {
+                      "title": "로그인 만료",
+                      "status": 401,
+                      "detail": "로그인이 만료되었습니다. 다시 로그인해주세요.",
+                      "instance": "/api/auth/reissue"
+                    }
+                  },
+                  "유효하지 않은 인증 정보": {
+                    "summary": "유효하지 않은 인증 정보",
+                    "value": {
+                      "title": "유효하지 않은 인증 정보",
+                      "status": 401,
+                      "detail": "인증 정보가 올바르지 않습니다. 다시 로그인해주세요.",
+                      "instance": "/api/auth/reissue"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
                     "value": {
                       "title": "유효하지 않은 입력값",
                       "status": 400,
-                      "detail": "refreshToken: Refresh Token은 필수입니다.",
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/auth/reissue"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/auth/reissue"
                     }
                   }
@@ -1252,6 +1551,48 @@
         "responses": {
           "204": {
             "description": "로그아웃 성공 (항상 204 응답)"
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/auth/logout"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/auth/logout"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1286,30 +1627,6 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "신규 회원 가입 및 로그인 성공 (회원 리소스 생성)",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                },
-                "examples": {
-                  "신규 회원 가입 성공 예시": {
-                    "description": "신규 회원 가입 성공 예시",
-                    "value": {
-                      "userId": 2,
-                      "nickname": "집요한괴도4053",
-                      "tokens": {
-                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njg0OTg2MTB9...",
-                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
-                      },
-                      "isNewUser": true
-                    }
-                  }
-                }
-              }
-            }
-          },
           "200": {
             "description": "기존 회원 로그인 성공",
             "content": {
@@ -1334,30 +1651,24 @@
               }
             }
           },
-          "400": {
-            "description": "잘못된 요청",
+          "201": {
+            "description": "신규 회원 가입 및 로그인 성공 (회원 리소스 생성)",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/LoginResponse"
                 },
                 "examples": {
-                  "필수 요청 필드가 누락된 경우": {
-                    "description": "필수 요청 필드가 누락된 경우",
+                  "신규 회원 가입 성공 예시": {
+                    "description": "신규 회원 가입 성공 예시",
                     "value": {
-                      "title": "유효하지 않은 입력값",
-                      "status": 400,
-                      "detail": "idToken: 소셜 인증 토큰(ID Token)은 필수입니다.",
-                      "instance": "/api/auth/login"
-                    }
-                  },
-                  "JSON 형식 오류": {
-                    "description": "JSON 형식 오류",
-                    "value": {
-                      "title": "잘못된 요청 본문",
-                      "status": 400,
-                      "detail": "요청 본문의 형식이 잘못되었습니다.",
-                      "instance": "/api/auth/login"
+                      "userId": 2,
+                      "nickname": "집요한괴도4053",
+                      "tokens": {
+                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njg0OTg2MTB9...",
+                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
+                      },
+                      "isNewUser": true
                     }
                   }
                 }
@@ -1365,19 +1676,70 @@
             }
           },
           "401": {
-            "description": "소셜 ID Token 검증 실패",
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "유효하지 않은 ID Token": {
-                    "description": "유효하지 않은 ID Token",
+                  "Firebase 인증 실패": {
+                    "summary": "Firebase 인증 실패",
                     "value": {
-                      "title": "소셜 로그인 실패",
+                      "title": "Firebase 인증 실패",
                       "status": 401,
-                      "detail": "유효하지 않은 소셜 인증 토큰입니다.",
+                      "detail": "유효하지 않은 Firebase 토큰입니다.",
+                      "instance": "/api/auth/login"
+                    }
+                  },
+                  "Firebase 인증 만료": {
+                    "summary": "Firebase 인증 만료",
+                    "value": {
+                      "title": "Firebase 인증 만료",
+                      "status": 401,
+                      "detail": "Firebase 토큰이 만료되었습니다. 다시 인증해주세요.",
+                      "instance": "/api/auth/login"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/auth/login"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/auth/login"
                     }
                   }
@@ -1395,19 +1757,10 @@
         "description": "로그인한 사용자의 닉네임을 변경합니다. (최대 10자, 중복 불가)",
         "operationId": "updateNickname",
         "requestBody": {
-          "description": "닉네임 변경 요청",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/NicknameUpdateRequest"
-              },
-              "examples": {
-                "정상 요청": {
-                  "description": "정상 요청",
-                  "value": {
-                    "nickname": "날렵한경찰123"
-                  }
-                }
               }
             }
           },
@@ -1417,29 +1770,20 @@
           "204": {
             "description": "변경 성공 (응답 본문 없음), 현재 유저 본인의 닉네임으로 변경 요청했을 시 또한 204 응답"
           },
-          "400": {
-            "description": "유효성 검사 실패 (길이, 공백 등)",
+          "409": {
+            "description": "409 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "길이 초과 (10자)": {
-                    "description": "길이 초과 (10자)",
+                  "닉네임 중복": {
+                    "summary": "닉네임 중복",
                     "value": {
-                      "title": "유효하지 않은 입력값",
-                      "status": 400,
-                      "detail": "nickname: 닉네임은 최대 10자까지 가능합니다.",
-                      "instance": "/api/user/me/nickname"
-                    }
-                  },
-                  "공백 입력": {
-                    "description": "공백 입력",
-                    "value": {
-                      "title": "유효하지 않은 입력값",
-                      "status": 400,
-                      "detail": "nickname: 닉네임은 필수 입력 항목입니다.",
+                      "title": "닉네임 중복",
+                      "status": 409,
+                      "detail": "이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.",
                       "instance": "/api/user/me/nickname"
                     }
                   }
@@ -1447,20 +1791,62 @@
               }
             }
           },
-          "409": {
-            "description": "닉네임 중복 예외",
+          "400": {
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "이미 존재하는 닉네임": {
-                    "description": "이미 존재하는 닉네임",
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
                     "value": {
-                      "title": "닉네임 중복",
-                      "status": 409,
-                      "detail": "이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.",
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/user/me/nickname"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/user/me/nickname"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/user/me/nickname"
                     }
                   }
@@ -1491,97 +1877,82 @@
           }
         ],
         "requestBody": {
-          "description": "팀 변경 요청",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TeamChangeRequest"
-              },
-              "examples": {
-                "경찰로 변경": {
-                  "description": "경찰로 변경",
-                  "value": {
-                    "targetTeam": "POLICE"
-                  }
-                },
-                "도둑으로 변경": {
-                  "description": "도둑으로 변경",
-                  "value": {
-                    "targetTeam": "ROBBER"
-                  }
-                }
               }
             }
           },
           "required": true
         },
         "responses": {
-          "404": {
-            "description": "게임 또는 참여 정보 없음",
+          "204": {
+            "description": "팀 변경 성공"
+          },
+          "400": {
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "존재하지 않는 게임": {
-                    "description": "존재하지 않는 게임",
+                  "이미 시작된 게임": {
+                    "summary": "이미 시작된 게임",
                     "value": {
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임을 찾을 수 없습니다.",
-                      "instance": "/api/games/999/lobby/team"
+                      "title": "이미 시작된 게임",
+                      "status": 400,
+                      "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/lobby/team"
                     }
                   },
-                  "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
+                  "로비 조작 불가": {
+                    "summary": "로비 조작 불가",
                     "value": {
-                      "title": "참가자를 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1/lobby/team"
+                      "title": "로비 조작 불가",
+                      "status": 400,
+                      "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/lobby/team"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/games/{gameId}/lobby/team"
                     }
                   }
                 }
               }
             }
           },
-          "204": {
-            "description": "팀 변경 성공"
-          },
-          "400": {
-            "description": "잘못된 요청",
+          "404": {
+            "description": "404 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "요청 바디 검증 실패": {
-                    "description": "요청 바디 검증 실패",
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
                     "value": {
-                      "title": "유효하지 않은 입력값",
-                      "status": 400,
-                      "detail": "targetTeam: 팀은 필수입니다.",
-                      "instance": "/api/games/1/lobby/team"
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}/lobby/team"
                     }
                   },
-                  "게임이 이미 시작됨": {
-                    "description": "게임이 이미 시작됨",
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
                     "value": {
-                      "title": "이미 시작된 게임",
-                      "status": 400,
-                      "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
-                      "instance": "/api/games/1/lobby/team"
-                    }
-                  },
-                  "로비 조작 불가": {
-                    "description": "로비 조작 불가",
-                    "value": {
-                      "title": "로비 조작 불가",
-                      "status": 400,
-                      "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
-                      "instance": "/api/games/1/lobby/team"
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/lobby/team"
                     }
                   }
                 }
@@ -1589,20 +1960,41 @@
             }
           },
           "401": {
-            "description": "인증 실패",
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "title": "인증 필요",
+                      "title": "인증되지 않은 요청",
                       "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/lobby/team"
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/lobby/team"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/lobby/team"
                     }
                   }
                 }
@@ -1637,46 +2029,61 @@
           }
         ],
         "requestBody": {
-          "description": "준비 상태 변경 요청",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ReadyUpdateRequest"
-              },
-              "examples": {
-                "준비 상태 ON": {
-                  "description": "준비 상태 ON",
-                  "value": {
-                    "isReady": true
-                  }
-                },
-                "준비 상태 OFF": {
-                  "description": "준비 상태 OFF",
-                  "value": {
-                    "isReady": false
-                  }
-                }
               }
             }
           },
           "required": true
         },
         "responses": {
-          "401": {
-            "description": "인증 실패",
+          "204": {
+            "description": "준비 상태 변경 성공"
+          },
+          "400": {
+            "description": "400 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  "방장 레디 해제 불가": {
+                    "summary": "방장 레디 해제 불가",
                     "value": {
-                      "title": "인증 필요",
-                      "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/lobby/ready"
+                      "title": "방장 레디 해제 불가",
+                      "status": 400,
+                      "detail": "방장은 항상 준비 상태여야 합니다.",
+                      "instance": "/api/games/{gameId}/lobby/ready"
+                    }
+                  },
+                  "이미 시작된 게임": {
+                    "summary": "이미 시작된 게임",
+                    "value": {
+                      "title": "이미 시작된 게임",
+                      "status": 400,
+                      "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/lobby/ready"
+                    }
+                  },
+                  "로비 조작 불가": {
+                    "summary": "로비 조작 불가",
+                    "value": {
+                      "title": "로비 조작 불가",
+                      "status": 400,
+                      "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/lobby/ready"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/games/{gameId}/lobby/ready"
                     }
                   }
                 }
@@ -1684,85 +2091,76 @@
             }
           },
           "404": {
-            "description": "게임 또는 참여 정보 없음",
+            "description": "404 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "존재하지 않는 게임": {
-                    "description": "존재하지 않는 게임",
-                    "value": {
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임을 찾을 수 없습니다.",
-                      "instance": "/api/games/999/lobby/ready"
-                    }
-                  },
                   "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
+                    "summary": "참가자를 찾을 수 없음",
                     "value": {
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1/lobby/ready"
+                      "instance": "/api/games/{gameId}/lobby/ready"
+                    }
+                  },
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/lobby/ready"
                     }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "잘못된 요청",
+          "401": {
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "요청 바디 검증 실패": {
-                    "description": "요청 바디 검증 실패",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "title": "유효하지 않은 입력값",
-                      "status": 400,
-                      "detail": "isReady: 준비 여부는 필수입니다.",
-                      "instance": "/api/games/1/lobby/ready"
-                    }
-                  },
-                  "방장 레디 해제 불가": {
-                    "description": "방장 레디 해제 불가",
-                    "value": {
-                      "title": "방장 레디 해제 불가",
-                      "status": 400,
-                      "detail": "방장은 항상 준비 상태여야 합니다.",
-                      "instance": "/api/games/1/lobby/ready"
-                    }
-                  },
-                  "게임이 이미 시작됨": {
-                    "description": "게임이 이미 시작됨",
-                    "value": {
-                      "title": "이미 시작된 게임",
-                      "status": 400,
-                      "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
-                      "instance": "/api/games/1/lobby/ready"
-                    }
-                  },
-                  "로비 조작 불가": {
-                    "description": "로비 조작 불가",
-                    "value": {
-                      "title": "로비 조작 불가",
-                      "status": 400,
-                      "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
-                      "instance": "/api/games/1/lobby/ready"
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/lobby/ready"
                     }
                   }
                 }
               }
             }
           },
-          "204": {
-            "description": "준비 상태 변경 성공"
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/lobby/ready"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1785,36 +2183,45 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/MyPageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "내 정보 조회 예시": {
-                    "description": "내 정보 조회 예시",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "userId": 7,
-                      "nickname": "민첩한괴도5308",
-                      "socialPlatform": "KAKAO",
-                      "allowGamePush": true,
-                      "allowMarketingPush": false
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/user/me"
                     }
                   }
                 }
               }
             }
           },
-          "401": {
-            "description": "인증 실패 (토큰 없음/만료)",
+          "500": {
+            "description": "500 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 실패": {
-                    "description": "인증 실패",
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
                     "value": {
-                      "title": "인증 실패",
-                      "status": 401,
-                      "detail": "유효하지 않은 토큰입니다.",
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/user/me"
                     }
                   }
@@ -1836,32 +2243,24 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/DeleteAccountResponse"
-                },
-                "examples": {
-                  "회원 탈퇴 예시": {
-                    "description": "회원 탈퇴 예시",
-                    "value": {
-                      "message": "회원탈퇴가 완료되었습니다."
-                    }
-                  }
                 }
               }
             }
           },
-          "401": {
-            "description": "인증 실패 (토큰 없음/만료)",
+          "409": {
+            "description": "409 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 실패": {
-                    "description": "인증 실패",
+                  "회원 탈퇴 불가": {
+                    "summary": "회원 탈퇴 불가",
                     "value": {
-                      "title": "인증 실패",
-                      "status": 401,
-                      "detail": "유효하지 않은 토큰입니다.",
+                      "title": "회원 탈퇴 불가",
+                      "status": 409,
+                      "detail": "진행 중인 게임 세션이 있어 탈퇴할 수 없습니다.",
                       "instance": "/api/user/me"
                     }
                   }
@@ -1869,20 +2268,41 @@
               }
             }
           },
-          "409": {
-            "description": "진행 중인 게임이 있는 경우",
+          "401": {
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "회원탈퇴 불가": {
-                    "description": "회원탈퇴 불가",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "title": "회원탈퇴 불가",
+                      "title": "인증되지 않은 요청",
                       "status": 401,
-                      "detail": "진행 중인 게임 세션이 있어 탈퇴할 수 없습니다.",
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/user/me"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/user/me"
                     }
                   }
@@ -1918,40 +2338,45 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/NicknameCheckResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "사용 중인 닉네임 (중복)": {
-                    "description": "사용 중인 닉네임 (중복)",
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
                     "value": {
-                      "isAvailable": false,
-                      "message": "이미 사용 중인 닉네임입니다."
-                    }
-                  },
-                  "사용 가능한 닉네임": {
-                    "description": "사용 가능한 닉네임",
-                    "value": {
-                      "isAvailable": true,
-                      "message": "사용 가능한 닉네임 입니다!"
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/user/check-nickname"
                     }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "파라미터 누락",
+          "500": {
+            "description": "500 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "닉네임 파라미터 누락": {
-                    "description": "닉네임 파라미터 누락",
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
                     "value": {
-                      "title": "잘못된 요청",
-                      "status": 400,
-                      "detail": "Required request parameter 'nickname' for method parameter type String is not present",
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/user/check-nickname"
                     }
                   }
@@ -2003,21 +2428,51 @@
               }
             }
           },
-          "400": {
-            "description": "비활성 게임",
+          "404": {
+            "description": "404 Error",
             "content": {
-              "*/*": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}"
+                    }
+                  },
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
                   "비활성 게임": {
-                    "description": "비활성 게임",
+                    "summary": "비활성 게임",
                     "value": {
                       "title": "비활성 게임",
                       "status": 400,
                       "detail": "대기 중이거나 진행 중인 게임에서만 조회할 수 있습니다.",
-                      "instance": "/api/games/1"
+                      "instance": "/api/games/{gameId}"
                     }
                   }
                 }
@@ -2025,50 +2480,41 @@
             }
           },
           "401": {
-            "description": "인증 실패",
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "title": "인증 필요",
+                      "title": "인증되지 않은 요청",
                       "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1"
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}"
                     }
                   }
                 }
               }
             }
           },
-          "404": {
-            "description": "게임 또는 참가자 정보 없음",
+          "500": {
+            "description": "500 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "게임을 찾을 수 없음": {
-                    "description": "게임을 찾을 수 없음",
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
                     "value": {
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
-                      "instance": "/api/games/999"
-                    }
-                  },
-                  "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
-                    "value": {
-                      "title": "참가자를 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1"
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}"
                     }
                   }
                 }
@@ -2103,21 +2549,61 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "게임 미진행",
+          "200": {
+            "description": "참가자 목록 조회 성공",
             "content": {
               "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameParticipantListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "게임 미진행": {
-                    "description": "게임 미진행",
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/participants"
+                    }
+                  },
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}/participants"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임 진행 중 아님": {
+                    "summary": "게임 진행 중 아님",
                     "value": {
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
-                      "instance": "/api/games/1/participants"
+                      "instance": "/api/games/{gameId}/participants"
                     }
                   }
                 }
@@ -2125,91 +2611,41 @@
             }
           },
           "401": {
-            "description": "인증 실패",
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "title": "인증 필요",
+                      "title": "인증되지 않은 요청",
                       "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/participants"
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/participants"
                     }
                   }
                 }
               }
             }
           },
-          "200": {
-            "description": "참가자 목록 조회 성공",
+          "500": {
+            "description": "500 Error",
             "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/GameParticipantListResponse"
-                },
-                "examples": {
-                  "참가자 목록 조회 성공 예시": {
-                    "description": "참가자 목록 조회 성공 예시",
-                    "value": {
-                      "police": [
-                        {
-                          "participantId": 1,
-                          "nickname": "경찰1",
-                          "status": "POLICE_WAITING"
-                        },
-                        {
-                          "participantId": 2,
-                          "nickname": "경찰2",
-                          "status": "ALIVE"
-                        }
-                      ],
-                      "robbers": [
-                        {
-                          "participantId": 3,
-                          "nickname": "도둑1",
-                          "status": "ALIVE"
-                        },
-                        {
-                          "participantId": 4,
-                          "nickname": "도둑2",
-                          "status": "JAILED"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "게임 또는 참가자 정보 없음",
-            "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "게임을 찾을 수 없음": {
-                    "description": "게임을 찾을 수 없음",
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
                     "value": {
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
-                      "instance": "/api/games/999/participants"
-                    }
-                  },
-                  "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
-                    "value": {
-                      "title": "참가자를 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1/participants"
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/participants"
                     }
                   }
                 }
@@ -2244,63 +2680,61 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "게임 또는 참여 정보 없음",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "존재하지 않는 게임": {
-                    "description": "존재하지 않는 게임",
-                    "value": {
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
-                      "instance": "/api/games/999/lobby"
-                    }
-                  },
-                  "참가자를 찾을 수 없음": {
-                    "description": "참가자를 찾을 수 없음",
-                    "value": {
-                      "title": "참가자를 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/1/lobby"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "200": {
             "description": "로비 조회 성공",
             "content": {
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/LobbyInfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "로비 조회 성공": {
-                    "description": "로비 조회 성공",
+                  "이미 시작된 게임": {
+                    "summary": "이미 시작된 게임",
                     "value": {
-                      "myParticipantId": 2,
-                      "hostParticipantId": 1,
-                      "participants": [
-                        {
-                          "participantId": 1,
-                          "nickname": "방장닉네임",
-                          "team": "POLICE",
-                          "isReady": true
-                        },
-                        {
-                          "participantId": 2,
-                          "nickname": "내닉네임",
-                          "team": "ROBBER",
-                          "isReady": false
-                        }
-                      ]
+                      "title": "이미 시작된 게임",
+                      "status": 400,
+                      "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/lobby"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}/lobby"
+                    }
+                  },
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/lobby"
                     }
                   }
                 }
@@ -2308,41 +2742,41 @@
             }
           },
           "401": {
-            "description": "인증 실패",
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "title": "인증 필요",
+                      "title": "인증되지 않은 요청",
                       "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/lobby"
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/lobby"
                     }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "게임이 대기 상태가 아님",
+          "500": {
+            "description": "500 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "게임이 이미 시작됨": {
-                    "description": "게임이 이미 시작됨",
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
                     "value": {
-                      "title": "이미 시작된 게임",
-                      "status": 400,
-                      "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
-                      "instance": "/api/games/1/lobby"
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/lobby"
                     }
                   }
                 }
@@ -2383,20 +2817,34 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/GameLeaveResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "일반 참여자 퇴장": {
-                    "description": "일반 참여자 퇴장",
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
                     "value": {
-                      "leftUserId": 2,
-                      "remainingCount": 5
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/leave"
                     }
                   },
-                  "마지막 참여자 퇴장 (방 삭제)": {
-                    "description": "마지막 참여자 퇴장 (방 삭제)",
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
                     "value": {
-                      "leftUserId": 1,
-                      "remainingCount": 0
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}/leave"
                     }
                   }
                 }
@@ -2404,50 +2852,41 @@
             }
           },
           "401": {
-            "description": "인증 실패",
+            "description": "401 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증 토큰 없음 또는 만료": {
-                    "description": "인증 토큰 없음 또는 만료",
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
                     "value": {
-                      "title": "인증 필요",
+                      "title": "인증되지 않은 요청",
                       "status": 401,
-                      "detail": "로그인이 필요한 서비스입니다.",
-                      "instance": "/api/games/1/leave"
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/leave"
                     }
                   }
                 }
               }
             }
           },
-          "404": {
-            "description": "게임 또는 참여 정보를 찾을 수 없음",
+          "500": {
+            "description": "500 Error",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "존재하지 않는 게임": {
-                    "description": "존재하지 않는 게임",
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
                     "value": {
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임을 찾을 수 없습니다.",
-                      "instance": "/api/games/999/leave"
-                    }
-                  },
-                  "참여하지 않은 게임": {
-                    "description": "참여하지 않은 게임",
-                    "value": {
-                      "title": "참여 정보를 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임에 참여하고 있지 않습니다.",
-                      "instance": "/api/games/1/leave"
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/leave"
                     }
                   }
                 }
@@ -2465,6 +2904,33 @@
   },
   "components": {
     "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "에러 제목",
+            "example": "유효하지 않은 입력값"
+          },
+          "status": {
+            "type": "integer",
+            "description": "HTTP 상태 코드",
+            "format": "int32",
+            "example": 400
+          },
+          "detail": {
+            "type": "string",
+            "description": "에러 상세 내용",
+            "example": "입력값이 유효성 검사를 통과하지 못했습니다."
+          },
+          "instance": {
+            "type": "string",
+            "description": "에러 발생 URI",
+            "example": "/api/games/1"
+          }
+        },
+        "description": "에러 응답"
+      },
       "GameSettingsRequest": {
         "required": [
           "locationRevealIntervalMinutes",
@@ -2478,62 +2944,61 @@
             "maximum": 180,
             "minimum": 10,
             "type": "integer",
-            "format": "int32"
+            "description": "라운드 시간(분)",
+            "format": "int32",
+            "example": 30
           },
           "locationRevealIntervalMinutes": {
             "minimum": 5,
             "type": "integer",
-            "format": "int32"
+            "description": "위치 공개 주기(분)",
+            "format": "int32",
+            "example": 5
           },
           "policeWaitMinutes": {
-            "minimum": 0,
+            "minimum": 1,
             "type": "integer",
-            "format": "int32"
+            "description": "경찰 대기 시간(분)",
+            "format": "int32",
+            "example": 3
           },
           "maxParticipants": {
             "maximum": 50,
             "minimum": 2,
             "type": "integer",
-            "format": "int32"
+            "description": "최대 참가 인원",
+            "format": "int32",
+            "example": 10
           }
-        }
+        },
+        "description": "게임 세부 설정 정보"
       },
       "GameSettingsUpdateResponse": {
         "type": "object",
         "properties": {
           "roundDurationMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "라운드 시간(분)",
+            "format": "int32",
+            "example": 60
           },
           "locationRevealIntervalMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "위치 공개 주기(분)",
+            "format": "int32",
+            "example": 10
           },
           "policeWaitMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "경찰 대기 시간(분)",
+            "format": "int32",
+            "example": 5
           },
           "maxParticipants": {
             "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "instance": {
-            "type": "string"
+            "description": "최대 참가 인원",
+            "format": "int32",
+            "example": 20
           }
         }
       },
@@ -2547,7 +3012,9 @@
             "minimum": -90,
             "exclusiveMinimum": false,
             "type": "number",
-            "format": "double"
+            "description": "위도",
+            "format": "double",
+            "example": 37.5665
           },
           "longitude": {
             "maximum": 180,
@@ -2555,9 +3022,12 @@
             "minimum": -180,
             "exclusiveMinimum": false,
             "type": "number",
-            "format": "double"
+            "description": "경도",
+            "format": "double",
+            "example": 126.978
           }
-        }
+        },
+        "description": "감옥 중심 좌표"
       },
       "GameAreaRequest": {
         "required": [
@@ -2574,7 +3044,9 @@
           "playgroundRadiusInMeters": {
             "minimum": 10,
             "type": "integer",
-            "format": "int32"
+            "description": "플레이그라운드 반경(m)",
+            "format": "int32",
+            "example": 1000
           },
           "jailCenter": {
             "$ref": "#/components/schemas/CoordinatesRequest"
@@ -2582,22 +3054,30 @@
           "jailRadiusInMeters": {
             "minimum": 5,
             "type": "integer",
-            "format": "int32"
+            "description": "감옥 반경(m)",
+            "format": "int32",
+            "example": 100
           }
-        }
+        },
+        "description": "영역 설정 정보"
       },
       "Coordinates": {
         "type": "object",
         "properties": {
           "latitude": {
             "type": "number",
-            "format": "double"
+            "description": "위도",
+            "format": "double",
+            "example": 37.5665
           },
           "longitude": {
             "type": "number",
-            "format": "double"
+            "description": "경도",
+            "format": "double",
+            "example": 126.978
           }
-        }
+        },
+        "description": "감옥 중심 좌표"
       },
       "GameAreaUpdateResponse": {
         "type": "object",
@@ -2607,14 +3087,18 @@
           },
           "playgroundRadiusInMeters": {
             "type": "integer",
-            "format": "int32"
+            "description": "플레이그라운드 반경(m)",
+            "format": "int32",
+            "example": 1000
           },
           "jailCenter": {
             "$ref": "#/components/schemas/Coordinates"
           },
           "jailRadiusInMeters": {
             "type": "integer",
-            "format": "int32"
+            "description": "감옥 반경(m)",
+            "format": "int32",
+            "example": 100
           }
         }
       },
@@ -2635,32 +3119,47 @@
         "properties": {
           "gameId": {
             "type": "integer",
-            "format": "int64"
+            "description": "게임 ID",
+            "format": "int64",
+            "example": 1
           },
           "inviteCode": {
-            "type": "string"
+            "type": "string",
+            "description": "초대 코드",
+            "example": "ABC123"
           },
           "status": {
-            "type": "string"
+            "type": "string",
+            "description": "게임 상태",
+            "example": "WAITING"
           },
           "roundDurationMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "라운드 시간(분)",
+            "format": "int32",
+            "example": 30
           },
           "locationRevealIntervalMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "위치 공개 주기(분)",
+            "format": "int32",
+            "example": 5
           },
           "policeWaitMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "경찰 대기 시간(분)",
+            "format": "int32",
+            "example": 3
           },
           "maxParticipants": {
             "type": "integer",
-            "format": "int32"
+            "description": "최대 참가 인원",
+            "format": "int32",
+            "example": 10
           },
           "createdAt": {
             "type": "string",
+            "description": "생성 시각",
             "format": "date-time"
           }
         }
@@ -2671,7 +3170,9 @@
         "properties": {
           "robberParticipantId": {
             "type": "integer",
-            "format": "int64"
+            "description": "체포할 도둑 참가자 ID",
+            "format": "int64",
+            "example": 102
           }
         }
       },
@@ -2679,11 +3180,15 @@
         "type": "object",
         "properties": {
           "robberNickname": {
-            "type": "string"
+            "type": "string",
+            "description": "체포된 도둑 닉네임",
+            "example": "잡힌도둑"
           },
           "remainingThieves": {
             "type": "integer",
-            "format": "int32"
+            "description": "남은 도둑 수",
+            "format": "int32",
+            "example": 2
           }
         }
       },
@@ -2692,7 +3197,9 @@
         "type": "object",
         "properties": {
           "inviteCode": {
-            "type": "string"
+            "type": "string",
+            "description": "게임 초대 코드",
+            "example": "ABC123"
           }
         }
       },
@@ -2701,11 +3208,15 @@
         "properties": {
           "gameId": {
             "type": "integer",
-            "format": "int64"
+            "description": "게임 ID",
+            "format": "int64",
+            "example": 1
           },
           "participantId": {
             "type": "integer",
-            "format": "int64"
+            "description": "참가자 ID",
+            "format": "int64",
+            "example": 2
           }
         }
       },
@@ -2714,7 +3225,9 @@
         "type": "object",
         "properties": {
           "refreshToken": {
-            "type": "string"
+            "type": "string",
+            "description": "리프레시 토큰",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
           }
         }
       },
@@ -2730,19 +3243,26 @@
         "type": "object",
         "properties": {
           "accessToken": {
-            "type": "string"
+            "type": "string",
+            "description": "액세스 토큰",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9..."
           },
           "refreshToken": {
-            "type": "string"
+            "type": "string",
+            "description": "리프레시 토큰",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
           }
-        }
+        },
+        "description": "JWT 토큰 정보"
       },
       "LogoutRequest": {
         "required": ["refreshToken"],
         "type": "object",
         "properties": {
           "refreshToken": {
-            "type": "string"
+            "type": "string",
+            "description": "리프레시 토큰",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
           }
         }
       },
@@ -2758,20 +3278,30 @@
         "properties": {
           "socialPlatform": {
             "type": "string",
+            "description": "소셜 플랫폼",
+            "example": "KAKAO",
             "enum": ["KAKAO", "GOOGLE", "APPLE"]
           },
           "idToken": {
-            "type": "string"
+            "type": "string",
+            "description": "소셜 인증 ID 토큰",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
           },
           "fcmToken": {
-            "type": "string"
+            "type": "string",
+            "description": "FCM 디바이스 토큰",
+            "example": "fcm-device-token-here"
           },
           "deviceType": {
             "type": "string",
+            "description": "기기 타입",
+            "example": "IOS",
             "enum": ["IOS", "ANDROID"]
           },
           "deviceId": {
-            "type": "string"
+            "type": "string",
+            "description": "디바이스 고유 ID",
+            "example": "unique-device-id-123"
           }
         }
       },
@@ -2780,16 +3310,22 @@
         "properties": {
           "userId": {
             "type": "integer",
-            "format": "int64"
+            "description": "유저 ID",
+            "format": "int64",
+            "example": 1
           },
           "nickname": {
-            "type": "string"
+            "type": "string",
+            "description": "닉네임",
+            "example": "민첩한괴도5308"
           },
           "tokens": {
             "$ref": "#/components/schemas/Tokens"
           },
           "isNewUser": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "신규 회원 여부",
+            "example": false
           }
         }
       },
@@ -2800,7 +3336,9 @@
           "nickname": {
             "maxLength": 10,
             "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "description": "변경할 닉네임",
+            "example": "날렵한경찰123"
           }
         }
       },
@@ -2810,6 +3348,8 @@
         "properties": {
           "targetTeam": {
             "type": "string",
+            "description": "변경할 팀",
+            "example": "POLICE",
             "enum": ["POLICE", "ROBBER"]
           }
         }
@@ -2819,7 +3359,9 @@
         "type": "object",
         "properties": {
           "isReady": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "준비 상태",
+            "example": true
           }
         }
       },
@@ -2828,20 +3370,30 @@
         "properties": {
           "userId": {
             "type": "integer",
-            "format": "int64"
+            "description": "유저 ID",
+            "format": "int64",
+            "example": 7
           },
           "nickname": {
-            "type": "string"
+            "type": "string",
+            "description": "닉네임",
+            "example": "민첩한괴도5308"
           },
           "socialPlatform": {
             "type": "string",
+            "description": "소셜 플랫폼",
+            "example": "KAKAO",
             "enum": ["KAKAO", "GOOGLE", "APPLE"]
           },
           "allowGamePush": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "게임 알림 수신 여부",
+            "example": true
           },
           "allowMarketingPush": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "마케팅 알림 수신 여부",
+            "example": false
           }
         }
       },
@@ -2849,10 +3401,14 @@
         "type": "object",
         "properties": {
           "isAvailable": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "닉네임 사용 가능 여부",
+            "example": false
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "결과 메시지",
+            "example": "이미 사용 중인 닉네임입니다."
           }
         }
       },
@@ -2861,19 +3417,27 @@
         "properties": {
           "roundDurationMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "라운드 시간(분)",
+            "format": "int32",
+            "example": 30
           },
           "locationRevealIntervalMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "위치 공개 주기(분)",
+            "format": "int32",
+            "example": 5
           },
           "policeWaitMinutes": {
             "type": "integer",
-            "format": "int32"
+            "description": "경찰 대기 시간(분)",
+            "format": "int32",
+            "example": 3
           },
           "maxParticipants": {
             "type": "integer",
-            "format": "int32"
+            "description": "최대 참가 인원",
+            "format": "int32",
+            "example": 10
           }
         }
       },
@@ -2882,55 +3446,93 @@
         "properties": {
           "police": {
             "type": "array",
+            "description": "경찰 참가자 목록",
             "items": {
-              "$ref": "#/components/schemas/ParticipantResponse"
+              "$ref": "#/components/schemas/InGameParticipantResponse"
             }
           },
           "robbers": {
             "type": "array",
+            "description": "도둑 참가자 목록",
             "items": {
-              "$ref": "#/components/schemas/ParticipantResponse"
+              "$ref": "#/components/schemas/InGameParticipantResponse"
             }
           }
         }
       },
-      "ParticipantResponse": {
+      "InGameParticipantResponse": {
         "type": "object",
         "properties": {
           "participantId": {
             "type": "integer",
-            "format": "int64"
+            "description": "참가자 ID",
+            "format": "int64",
+            "example": 1
           },
           "nickname": {
-            "type": "string"
-          },
-          "team": {
             "type": "string",
-            "enum": ["POLICE", "ROBBER"]
+            "description": "닉네임",
+            "example": "경찰1"
           },
-          "isReady": {
-            "type": "boolean"
+          "status": {
+            "type": "string",
+            "description": "상태",
+            "example": "POLICE_WAITING"
           }
-        }
+        },
+        "description": "인게임 참가자 정보"
       },
       "LobbyInfoResponse": {
         "type": "object",
         "properties": {
           "myParticipantId": {
             "type": "integer",
-            "format": "int64"
+            "description": "내 참가자 ID",
+            "format": "int64",
+            "example": 2
           },
           "hostParticipantId": {
             "type": "integer",
-            "format": "int64"
+            "description": "방장 참가자 ID",
+            "format": "int64",
+            "example": 1
           },
           "participants": {
             "type": "array",
+            "description": "참가자 목록",
             "items": {
-              "$ref": "#/components/schemas/ParticipantResponse"
+              "$ref": "#/components/schemas/LobbyParticipantResponse"
             }
           }
         }
+      },
+      "LobbyParticipantResponse": {
+        "type": "object",
+        "properties": {
+          "participantId": {
+            "type": "integer",
+            "description": "참가자 ID",
+            "format": "int64",
+            "example": 1
+          },
+          "nickname": {
+            "type": "string",
+            "description": "닉네임",
+            "example": "방장닉네임"
+          },
+          "team": {
+            "type": "string",
+            "description": "팀",
+            "example": "POLICE",
+            "enum": ["POLICE", "ROBBER"]
+          },
+          "isReady": {
+            "type": "boolean",
+            "description": "준비 여부",
+            "example": true
+          }
+        },
+        "description": "로비 참가자 정보"
       },
       "GameAreaResponse": {
         "type": "object",
@@ -2940,14 +3542,18 @@
           },
           "playgroundRadiusInMeters": {
             "type": "integer",
-            "format": "int32"
+            "description": "플레이그라운드 반경(m)",
+            "format": "int32",
+            "example": 1000
           },
           "jailCenter": {
             "$ref": "#/components/schemas/Coordinates"
           },
           "jailRadiusInMeters": {
             "type": "integer",
-            "format": "int32"
+            "description": "감옥 반경(m)",
+            "format": "int32",
+            "example": 100
           }
         }
       },
@@ -2955,7 +3561,9 @@
         "type": "object",
         "properties": {
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "결과 메시지",
+            "example": "회원탈퇴가 완료되었습니다."
           }
         }
       },
@@ -2964,11 +3572,15 @@
         "properties": {
           "leftUserId": {
             "type": "integer",
-            "format": "int64"
+            "description": "퇴장한 유저 ID",
+            "format": "int64",
+            "example": 2
           },
           "remainingCount": {
             "type": "integer",
-            "format": "int32"
+            "description": "남은 참가자 수",
+            "format": "int32",
+            "example": 5
           }
         }
       }
