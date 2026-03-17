@@ -233,31 +233,30 @@ class _GamePageState extends ConsumerState<GamePage> {
     }
 
     // 위치 스트림 구독: 10m 이상 이동 시 이벤트 발생, 5초 throttle 적용
-    _locationSubscription = DeviceLocationService.getPositionStream(
-      distanceFilter: 10,
-    ).listen(
-      (pos) {
-        if (!mounted) return;
+    _locationSubscription =
+        DeviceLocationService.getPositionStream(distanceFilter: 10).listen(
+          (pos) {
+            if (!mounted) return;
 
-        // 5초 미만이면 전송 스킵 (서버 부하 제한)
-        final now = DateTime.now();
-        if (_lastSentTime != null &&
-            now.difference(_lastSentTime!).inSeconds < 5) {
-          return;
-        }
+            // 5초 미만이면 전송 스킵 (서버 부하 제한)
+            final now = DateTime.now();
+            if (_lastSentTime != null &&
+                now.difference(_lastSentTime!).inSeconds < 5) {
+              return;
+            }
 
-        _gameEventDatasource?.publishLocation(
-          _gameId,
-          pos.latitude,
-          pos.longitude,
+            _gameEventDatasource?.publishLocation(
+              _gameId,
+              pos.latitude,
+              pos.longitude,
+            );
+            _lastSentPosition = pos;
+            _lastSentTime = now;
+          },
+          onError: (e) {
+            debugPrint('[위치] 위치 스트림 에러: $e');
+          },
         );
-        _lastSentPosition = pos;
-        _lastSentTime = now;
-      },
-      onError: (e) {
-        debugPrint('[위치] 위치 스트림 에러: $e');
-      },
-    );
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
