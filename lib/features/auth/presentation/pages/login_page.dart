@@ -10,8 +10,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
-import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
+import '../../../settings/presentation/pages/legal_document_page.dart';
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
@@ -43,9 +43,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     _privacyRecognizer = TapGestureRecognizer()
-      ..onTap = () async => await launchExternalUrl(AppUrls.privacyPolicy);
+      ..onTap = () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const LegalDocumentPage(
+                title: '개인정보 처리방침',
+                assetPath: 'assets/legal/privacy_policy.json',
+                externalUrl: AppUrls.privacyPolicy,
+              ),
+            ),
+          );
     _termsRecognizer = TapGestureRecognizer()
-      ..onTap = () async => await launchExternalUrl(AppUrls.termsOfService);
+      ..onTap = () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const LegalDocumentPage(
+                title: '이용약관',
+                assetPath: 'assets/legal/terms_of_service.json',
+                externalUrl: AppUrls.termsOfService,
+              ),
+            ),
+          );
 
     // 회원 탈퇴 완료 메시지 표시
     WidgetsBinding.instance.addPostFrameCallback((_) {

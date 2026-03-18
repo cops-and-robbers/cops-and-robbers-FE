@@ -9,7 +9,6 @@ import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
-import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
@@ -18,6 +17,7 @@ import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
+import 'legal_document_page.dart';
 
 /// 설정 페이지
 ///
@@ -148,8 +148,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               // ── 개인정보 처리방침 ──
               _buildMenuItem(
                 text: '개인정보 처리방침',
-                onTap: () async =>
-                    await launchExternalUrl(AppUrls.privacyPolicy),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentPage(
+                      title: '개인정보 처리방침',
+                      assetPath: 'assets/legal/privacy_policy.json',
+                      externalUrl: AppUrls.privacyPolicy,
+                    ),
+                  ),
+                ),
               ),
 
               const Divider(color: AppColors.black100, height: 1),
@@ -157,8 +164,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               // ── 이용약관 ──
               _buildMenuItem(
                 text: '이용약관',
-                onTap: () async =>
-                    await launchExternalUrl(AppUrls.termsOfService),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentPage(
+                      title: '이용약관',
+                      assetPath: 'assets/legal/terms_of_service.json',
+                      externalUrl: AppUrls.termsOfService,
+                    ),
+                  ),
+                ),
               ),
 
               const Divider(color: AppColors.black100, height: 1),

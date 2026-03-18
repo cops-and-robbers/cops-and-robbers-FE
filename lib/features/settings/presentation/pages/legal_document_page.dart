@@ -1,0 +1,202 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
+import '../../../../core/utils/url_launcher_util.dart';
+import '../../../../core/widgets/buttons/previous_button.dart';
+
+/// 이용약관/개인정보처리방침 등 법적 문서 열람 페이지
+///
+/// assets/legal/ 디렉토리의 JSON 파일을 로드하여 표시합니다.
+/// [assetPath]로 JSON 파일 경로를, [title]로 앱바 제목을 지정합니다.
+class LegalDocumentPage extends StatefulWidget {
+  const LegalDocumentPage({
+    super.key,
+    required this.title,
+    required this.assetPath,
+    this.externalUrl,
+  });
+
+  /// 앱바에 표시할 제목
+  final String title;
+
+  /// JSON 파일 경로 (예: 'assets/legal/terms_of_service.json')
+  final String assetPath;
+
+  /// 외부 링크 URL (앱바 우측 버튼용, null이면 버튼 숨김)
+  final String? externalUrl;
+
+  @override
+  State<LegalDocumentPage> createState() => _LegalDocumentPageState();
+}
+
+class _LegalDocumentPageState extends State<LegalDocumentPage> {
+  Map<String, dynamic>? _document;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDocument();
+  }
+
+  Future<void> _loadDocument() async {
+    try {
+      final jsonString = await rootBundle.loadString(widget.assetPath);
+      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          _document = data;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('[LegalDocumentPage] JSON 로드 실패: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
+        centerTitle: true,
+        title: Text(
+          widget.title,
+          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+        ),
+        actions: [
+          if (widget.externalUrl != null)
+            IconButton(
+              onPressed: () => launchExternalUrl(widget.externalUrl!),
+              icon: Icon(
+                Icons.open_in_new,
+                size: 20.w,
+                color: AppColors.black600,
+              ),
+            ),
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _document == null
+              ? Center(
+                  child: Text(
+                    '문서를 불러올 수 없습니다.',
+                    style: AppTextStyles.paragraph_14.copyWith(
+                      color: AppColors.black600,
+                    ),
+                  ),
+                )
+              : SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.horizontal24,
+                    vertical: AppSpacing.vertical16,
+                  ),
+                  child: _buildSections(),
+                ),
+    );
+  }
+
+  Widget _buildSections() {
+    final sections =
+        (_document!['sections'] as List<dynamic>?) ?? [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < sections.length; i++) ...[
+          if (i > 0) SizedBox(height: 24.h),
+          _buildSection(sections[i] as Map<String, dynamic>),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSection(Map<String, dynamic> section) {
+    final heading = section['heading'] as String? ?? '';
+    final content = section['content'] as String? ?? '';
+    final items = (section['items'] as List<dynamic>?) ?? [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 조항 제목
+        if (heading.isNotEmpty) ...[
+          Text(
+            heading,
+            style: AppTextStyles.paragraph14Semibold.copyWith(
+              color: AppColors.black,
+            ),
+          ),
+          SizedBox(height: 8.h),
+        ],
+
+        // 본문
+        if (content.isNotEmpty)
+          Text(
+            content,
+            style: AppTextStyles.tag_12.copyWith(color: AppColors.black800),
+          ),
+
+        // 항목 목록
+        if (items.isNotEmpty) ...[
+          if (content.isNotEmpty) SizedBox(height: 8.h),
+          for (final item in items) _buildItem(item as Map<String, dynamic>),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildItem(Map<String, dynamic> item) {
+    final text = item['text'] as String? ?? '';
+    final subItems = (item['subItems'] as List<dynamic>?) ?? [];
+
+    return Padding(
+      padding: EdgeInsets.only(top: 4.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 항목 텍스트
+          Text(
+            text,
+            style: AppTextStyles.tag_12.copyWith(color: AppColors.black800),
+          ),
+
+          // 하위 항목
+          if (subItems.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(left: 16.w, top: 4.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final subItem in subItems)
+                    Padding(
+                      padding: EdgeInsets.only(top: 2.h),
+                      child: Text(
+                        subItem.toString(),
+                        style: AppTextStyles.tag_12.copyWith(
+                          color: AppColors.black800,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
