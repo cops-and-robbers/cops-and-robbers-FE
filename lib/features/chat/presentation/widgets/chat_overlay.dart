@@ -104,8 +104,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
 
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
     final bottomMargin = bottomPadding > 0 ? bottomPadding : 37.h;
-    final collapsedHeight = 28.h + 8.h + 64.h + bottomMargin;
-    final expandedMinHeight = 28.h + 42.h + 18.h + 64.h + bottomMargin;
+    final collapsedHeight = 20.h + 8.h + 64.h + bottomMargin;
+    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + bottomMargin;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -199,7 +199,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                           ),
                         )
                       else
-                        SizedBox(height: AppSpacing.vertical8),
+                        const Expanded(child: SizedBox.shrink()),
                       ChatInputBar(
                         onSend: _handleSend,
                         enabled: isConnected,
