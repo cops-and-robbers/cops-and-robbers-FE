@@ -464,7 +464,7 @@ class _GamePageState extends ConsumerState<GamePage> {
         color: isWin ? AppColors.blue : AppColors.red,
       ),
       cancelText: '홈으로',
-      confirmText: '다시하기',
+      confirmText: '한 번 더',
       confirmColor: AppColors.blue,
       confirmTextColor: AppColors.white,
       barrierDismissible: false,
