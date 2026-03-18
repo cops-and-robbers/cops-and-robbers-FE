@@ -1627,30 +1627,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "기존 회원 로그인 성공",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                },
-                "examples": {
-                  "기존 회원 로그인 성공 예시": {
-                    "description": "기존 회원 로그인 성공 예시",
-                    "value": {
-                      "userId": 1,
-                      "nickname": "민첩한괴도5308",
-                      "tokens": {
-                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
-                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
-                      },
-                      "isNewUser": false
-                    }
-                  }
-                }
-              }
-            }
-          },
           "201": {
             "description": "신규 회원 가입 및 로그인 성공 (회원 리소스 생성)",
             "content": {
@@ -1669,6 +1645,30 @@
                         "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
                       },
                       "isNewUser": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "기존 회원 로그인 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "examples": {
+                  "기존 회원 로그인 성공 예시": {
+                    "description": "기존 회원 로그인 성공 예시",
+                    "value": {
+                      "userId": 1,
+                      "nickname": "민첩한괴도5308",
+                      "tokens": {
+                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
+                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
+                      },
+                      "isNewUser": false
                     }
                   }
                 }
@@ -1770,6 +1770,27 @@
           "204": {
             "description": "변경 성공 (응답 본문 없음), 현재 유저 본인의 닉네임으로 변경 요청했을 시 또한 204 응답"
           },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 회원": {
+                    "summary": "존재하지 않는 회원",
+                    "value": {
+                      "title": "존재하지 않는 회원",
+                      "status": 401,
+                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "instance": "/api/user/me/nickname"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "409": {
             "description": "409 Error",
             "content": {
@@ -1805,27 +1826,6 @@
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
-                      "instance": "/api/user/me/nickname"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "401 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증되지 않은 요청": {
-                    "summary": "인증되지 않은 요청",
-                    "value": {
-                      "title": "인증되지 않은 요청",
-                      "status": 401,
-                      "detail": "로그인이 필요합니다.",
                       "instance": "/api/user/me/nickname"
                     }
                   }
@@ -2195,12 +2195,12 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "인증되지 않은 요청": {
-                    "summary": "인증되지 않은 요청",
+                  "존재하지 않는 회원": {
+                    "summary": "존재하지 않는 회원",
                     "value": {
-                      "title": "인증되지 않은 요청",
+                      "title": "존재하지 않는 회원",
                       "status": 401,
-                      "detail": "로그인이 필요합니다.",
+                      "detail": "해당 유저을 찾을 수 없습니다.",
                       "instance": "/api/user/me"
                     }
                   }
@@ -2247,6 +2247,27 @@
               }
             }
           },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 회원": {
+                    "summary": "존재하지 않는 회원",
+                    "value": {
+                      "title": "존재하지 않는 회원",
+                      "status": 401,
+                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "instance": "/api/user/me"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "409": {
             "description": "409 Error",
             "content": {
@@ -2261,27 +2282,6 @@
                       "title": "회원 탈퇴 불가",
                       "status": 409,
                       "detail": "진행 중인 게임 세션이 있어 탈퇴할 수 없습니다.",
-                      "instance": "/api/user/me"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "401 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증되지 않은 요청": {
-                    "summary": "인증되지 않은 요청",
-                    "value": {
-                      "title": "인증되지 않은 요청",
-                      "status": 401,
-                      "detail": "로그인이 필요합니다.",
                       "instance": "/api/user/me"
                     }
                   }
@@ -2304,6 +2304,68 @@
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/user/me"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/me/game": {
+      "get": {
+        "tags": ["User"],
+        "summary": "참여 중인 게임 정보 조회",
+        "description": "로그인한 사용자가 현재 참여 중인 게임 정보를 조회합니다. isParticipating으로 참여 여부를 확인할 수 있으며, 참여 중인 게임이 없으면 participation이 null로 반환됩니다.",
+        "operationId": "getUserGameInfo",
+        "responses": {
+          "200": {
+            "description": "조회 성공 (참여 중인 게임이 없으면 participationInfo null 반환)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGameInfoResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/user/me/game"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/user/me/game"
                     }
                   }
                 }
@@ -3397,6 +3459,43 @@
           }
         }
       },
+      "UserGameInfoResponse": {
+        "type": "object",
+        "properties": {
+          "isParticipating": {
+            "type": "boolean",
+            "description": "게임 참여 여부",
+            "example": true
+          },
+          "participationInfo": {
+            "$ref": "#/components/schemas/UserGameParticipationResponse"
+          }
+        }
+      },
+      "UserGameParticipationResponse": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "integer",
+            "description": "게임 ID",
+            "format": "int64",
+            "example": 3
+          },
+          "participantId": {
+            "type": "integer",
+            "description": "참가자 ID",
+            "format": "int64",
+            "example": 12
+          },
+          "gameStatus": {
+            "type": "string",
+            "description": "게임 상태",
+            "example": "WAITING",
+            "enum": ["WAITING", "IN_PROGRESS", "FINISHED", "CANCELED"]
+          }
+        },
+        "description": "유저 게임 참여 정보"
+      },
       "NicknameCheckResponse": {
         "type": "object",
         "properties": {
@@ -3496,6 +3595,11 @@
             "description": "방장 참가자 ID",
             "format": "int64",
             "example": 1
+          },
+          "inviteCode": {
+            "type": "string",
+            "description": "초대 코드",
+            "example": "ABC123"
           },
           "participants": {
             "type": "array",
