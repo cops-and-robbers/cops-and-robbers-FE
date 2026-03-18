@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../auth/presentation/providers/token_provider.dart';
+import '../../../session/presentation/providers/game_participant_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../data/datasources/lobby_stomp_datasource.dart';
@@ -231,10 +232,23 @@ class LobbyNotifier extends _$LobbyNotifier {
       _onGameStart?.call(event);
     }
 
-    // SETTINGS_UPDATED 이벤트 → 설정 캐시 무효화
+    // SETTINGS_UPDATED 이벤트 → 설정 캐시 무효화 + 참가자 정보 갱신
     if (event.type == LobbyEventType.settingsUpdated) {
       debugPrint('[LobbyNotifier] ⚙️ 게임 설정 변경 이벤트 수신');
       ref.invalidate(fetchGameSettingsProvider(event.gameId));
+
+      // 최신 설정을 fetch하여 gameParticipantNotifier도 동기화
+      ref.read(fetchGameSettingsProvider(event.gameId).future).then((settings) {
+        ref.read(gameParticipantNotifierProvider.notifier).updateSettings(
+              maxParticipants: settings.maxParticipants,
+              locationRevealIntervalMinutes:
+                  settings.locationRevealIntervalMinutes,
+              policeWaitMinutes: settings.policeWaitMinutes,
+              roundTimeMinutes: settings.roundDurationMinutes,
+            );
+      }).catchError((e) {
+        debugPrint('[LobbyNotifier] ⚠️ 설정 동기화 실패: $e');
+      });
     }
 
     // AREA_UPDATED 이벤트 → 영역 캐시 무효화
