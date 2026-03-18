@@ -78,7 +78,6 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         .sendMessage(gameId: widget.gameId, message: message, scope: scope);
   }
 
-  /// 입력창 포커스 시 채팅창을 50%로 자동 확장
   void _onInputFocused() {
     if (_sheetController.isAttached && _sheetController.size < _snap50) {
       _sheetController.animateTo(
@@ -103,93 +102,112 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     final isConnected =
         chatState.connectionState == StompConnectionState.connected;
 
-    final screenHeight = MediaQuery.of(context).size.height;
-    // 시스템 네비게이션 바 높이 반영 (iOS 홈 인디케이터 / Android 네비바)
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
     final bottomMargin = bottomPadding > 0 ? bottomPadding : 37.h;
-    // 축소 상태: 핸들(20) + 간격(8) + 입력바(64) + 하단
-    final collapsedHeight = 20.h + 8.h + 64.h + bottomMargin;
-    _minSize = (collapsedHeight / screenHeight).clamp(0.1, 0.25);
-    // 확장 전환 임계값: 핸들(20) + 타이틀(42) + 인디케이터(18) + 입력바(64) + 하단
-    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + bottomMargin;
-    _expandedThreshold = (expandedMinHeight / screenHeight).clamp(0.15, 0.35);
+    final collapsedHeight = 28.h + 8.h + 64.h + bottomMargin;
+    final expandedMinHeight = 28.h + 42.h + 18.h + 64.h + bottomMargin;
 
-    return DraggableScrollableSheet(
-      controller: _sheetController,
-      initialChildSize: _minSize,
-      minChildSize: _minSize,
-      maxChildSize: _snap75,
-      snap: true,
-      snapSizes: const [_snap50, _snap75],
-      builder: (context, scrollController) {
-        return Container(
-          clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-            color: widget.isDarkMode ? AppColors.black900 : AppColors.black100,
-            borderRadius: BorderRadius.only(
-              topLeft: AppRadius.xl20.topLeft,
-              topRight: AppRadius.xl20.topRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                offset: const Offset(0, -2),
-                blurRadius: 10,
-                color: Colors.black.withValues(alpha: 0.1),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableHeight = constraints.maxHeight;
+        _minSize = (collapsedHeight / availableHeight).clamp(0.1, 0.25);
+        _expandedThreshold =
+            (expandedMinHeight / availableHeight).clamp(0.15, 0.35);
+
+        return Stack(
+          children: [
+            if (_isExpanded)
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  if (_sheetController.isAttached) {
+                    _sheetController.animateTo(
+                      _minSize,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                },
               ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // 드래그 핸들
-              SingleChildScrollView(
-                controller: scrollController,
-                physics: const ClampingScrollPhysics(),
-                child: _buildDragHandle(),
-              ),
-              if (_isExpanded)
-                Expanded(
-                  child: Column(
-                    children: [
-                      _buildTitle(),
-                      Expanded(
-                        child: PageView(
-                          controller: _pageController,
-                          onPageChanged: (page) {
-                            setState(() => _currentPage = page);
-                          },
-                          children: [
-                            ChatMessageList(
-                              messages: chatState.allScopeMessages,
-                              myParticipantId: widget.myParticipantId,
-                              myTeam: widget.myTeam,
-                              isDarkMode: widget.isDarkMode,
-                            ),
-                            ChatMessageList(
-                              messages: chatState.teamScopeMessages,
-                              myParticipantId: widget.myParticipantId,
-                              myTeam: widget.myTeam,
-                              isDarkMode: widget.isDarkMode,
-                            ),
-                          ],
-                        ),
+            DraggableScrollableSheet(
+              controller: _sheetController,
+              initialChildSize: _minSize,
+              minChildSize: _minSize,
+              maxChildSize: _snap75,
+              snap: true,
+              snapSizes: const [_snap50, _snap75],
+              builder: (context, scrollController) {
+                return Container(
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    color: widget.isDarkMode
+                        ? AppColors.black900
+                        : AppColors.black100,
+                    borderRadius: BorderRadius.only(
+                      topLeft: AppRadius.xl20.topLeft,
+                      topRight: AppRadius.xl20.topRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: const Offset(0, -2),
+                        blurRadius: 10,
+                        color: Colors.black.withValues(alpha: 0.1),
                       ),
-                      _buildPageIndicator(),
                     ],
                   ),
-                )
-              else
-                SizedBox(height: AppSpacing.vertical8),
-              // 입력바
-              ChatInputBar(
-                onSend: _handleSend,
-                enabled: isConnected,
-                onFocusGain: _onInputFocused,
-                isDarkMode: widget.isDarkMode,
-              ),
-              // 하단 여백 (시스템 네비게이션 바 영역 반영)
-              SizedBox(height: bottomMargin),
-            ],
-          ),
+                  child: Column(
+                    children: [
+                      SingleChildScrollView(
+                        controller: scrollController,
+                        physics: const ClampingScrollPhysics(),
+                        child: _buildDragHandle(),
+                      ),
+                      if (_isExpanded)
+                        Expanded(
+                          child: Column(
+                            children: [
+                              _buildTitle(),
+                              Expanded(
+                                child: PageView(
+                                  controller: _pageController,
+                                  onPageChanged: (page) {
+                                    setState(() => _currentPage = page);
+                                  },
+                                  children: [
+                                    ChatMessageList(
+                                      messages: chatState.allScopeMessages,
+                                      myParticipantId: widget.myParticipantId,
+                                      myTeam: widget.myTeam,
+                                      isDarkMode: widget.isDarkMode,
+                                    ),
+                                    ChatMessageList(
+                                      messages: chatState.teamScopeMessages,
+                                      myParticipantId: widget.myParticipantId,
+                                      myTeam: widget.myTeam,
+                                      isDarkMode: widget.isDarkMode,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              _buildPageIndicator(),
+                            ],
+                          ),
+                        )
+                      else
+                        SizedBox(height: AppSpacing.vertical8),
+                      ChatInputBar(
+                        onSend: _handleSend,
+                        enabled: isConnected,
+                        onFocusGain: _onInputFocused,
+                        isDarkMode: widget.isDarkMode,
+                      ),
+                      SizedBox(height: bottomMargin),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
         );
       },
     );
@@ -223,7 +241,6 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     );
   }
 
-  /// 타이틀 (18px, 좌측 24px, 상단에서 36px)
   Widget _buildTitle() {
     final title = _currentPage == 0 ? '전체 채팅' : '팀 채팅';
     return Padding(
@@ -260,8 +277,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
               color: isActive
                   ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
                   : (widget.isDarkMode
-                        ? AppColors.black600
-                        : AppColors.black200),
+                      ? AppColors.black600
+                      : AppColors.black200),
               shape: BoxShape.circle,
             ),
           );
