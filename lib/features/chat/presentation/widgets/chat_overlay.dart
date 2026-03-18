@@ -59,11 +59,11 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
 
   void _onSheetChanged() {
     final size = _sheetController.size;
+    _sheetSize = size;
     final expanded = size > _expandedThreshold;
-    if (expanded != _isExpanded || size != _sheetSize) {
+    if (expanded != _isExpanded) {
       setState(() {
         _isExpanded = expanded;
-        _sheetSize = size;
       });
       if (!expanded) {
         FocusScope.of(context).unfocus();
