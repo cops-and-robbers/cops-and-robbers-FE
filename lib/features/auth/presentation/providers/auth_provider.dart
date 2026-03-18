@@ -15,6 +15,7 @@ import '../../domain/usecases/sign_in_with_apple_usecase.dart';
 import '../../domain/usecases/sign_in_with_google_usecase.dart';
 import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/utils/firebase_auth_error_handler.dart';
+import '../pages/login_page.dart';
 import '../../../session/presentation/pages/home_page.dart';
 
 part 'auth_provider.g.dart';
@@ -219,6 +220,7 @@ class AuthNotifier extends _$AuthNotifier {
       final useCase = ref.read(signOutUseCaseProvider);
       await useCase.execute();
       HomePage.resetSafetyNotice();
+      LoginPage.resetAgeVerification();
       state = const AsyncValue.data(null);
     } catch (e, stack) {
       state = AsyncValue.error(
@@ -269,6 +271,7 @@ class AuthNotifier extends _$AuthNotifier {
   /// GoRouter가 로그인 화면으로 리다이렉트하도록 합니다.
   void forceLogout() {
     HomePage.resetSafetyNotice();
+    LoginPage.resetAgeVerification();
     state = const AsyncValue.data(null);
   }
 }

@@ -23,6 +23,9 @@ import '../providers/auth_provider.dart';
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
+  /// 연령 확인 상태 초기화 (로그아웃 시 호출)
+  static void resetAgeVerification() => _LoginPageState._ageVerified = false;
+
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
 }
@@ -33,6 +36,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   /// Apple 로그인 로딩 상태
   bool _isAppleLoading = false;
+
+  /// 만 14세 미만 선택 시 로그인 차단
+  bool _isUnder14 = false;
+
+  /// 연령 확인 다이얼로그 표시 여부 (로그인 세션 단위 1회)
+  static bool _ageVerified = false;
 
   /// 개인정보 처리방침 탭 인식기
   late final TapGestureRecognizer _privacyRecognizer;
@@ -81,8 +90,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         );
       }
 
-      // 만 14세 이상 연령 확인 다이얼로그
-      _showAgeVerificationDialog();
+      // 만 14세 이상 연령 확인 다이얼로그 (세션 단위 1회)
+      if (!_ageVerified) _showAgeVerificationDialog();
     });
   }
 
@@ -95,7 +104,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       confirmText: '네',
       cancelText: '아니요',
       barrierDismissible: false,
-      onCancel: () => exit(0),
+      onConfirm: () {
+        _ageVerified = true;
+      },
+      onCancel: () {
+        if (mounted) setState(() => _isUnder14 = true);
+      },
     );
   }
 
@@ -214,7 +228,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                   // Google 로그인 버튼
                   GoogleLoginButton(
-                    onPressed: _isAppleLoading
+                    onPressed: _isUnder14 || _isAppleLoading
                         ? null
                         : () => _handleGoogleSignIn(context),
                     isLoading: _isGoogleLoading,
@@ -224,10 +238,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   if (Platform.isIOS) ...[
                     SizedBox(height: AppSpacing.vertical12),
                     AppleLoginButton(
-                      onPressed: _isGoogleLoading
+                      onPressed: _isUnder14 || _isGoogleLoading
                           ? null
                           : () => _handleAppleSignIn(context),
                       isLoading: _isAppleLoading,
+                    ),
+                  ],
+
+                  // 만 14세 미만 안내
+                  if (_isUnder14) ...[
+                    SizedBox(height: AppSpacing.vertical12),
+                    Text(
+                      '만 14세 미만은 서비스를 이용할 수 없습니다.',
+                      style: AppTextStyles.tag_12.copyWith(
+                        color: AppColors.red,
+                      ),
                     ),
                   ],
                 ],

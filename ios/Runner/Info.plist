@@ -42,7 +42,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>게임 중 백그라운드에서도 도둑 위치를 경찰 팀에게 공유하고, 구역 이탈을 감지하기 위해 위치 정보를 사용합니다. 위치는 게임 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.</string>
+	<string>게임 중 도둑 위치를 경찰 팀에게 공유하고, 구역 이탈을 감지하기 위해 위치 정보를 사용합니다. 위치는 게임 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>게임 중 도둑 위치를 경찰 팀에게 공유하고, 구역 이탈을 감지하기 위해 위치 정보를 사용합니다. 위치는 게임 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.</string>
 	<key>NSUserNotificationsUsageDescription</key>
