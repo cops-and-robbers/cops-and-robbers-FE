@@ -451,7 +451,9 @@ class GameEventNotifier extends _$GameEventNotifier {
 
     state = state.copyWith(
       arrestedParticipantIds: {...state.arrestedParticipantIds, robberPid},
-      escapedParticipantIds: state.escapedParticipantIds.difference({robberPid}),
+      escapedParticipantIds: state.escapedParticipantIds.difference(
+        {robberPid},
+      ),
       remainingThieves: remaining,
       lastArrestNickname: robberNickname,
       isApiLoading: false,
@@ -463,19 +465,20 @@ class GameEventNotifier extends _$GameEventNotifier {
 
   void _handleEscape(Map<String, dynamic> data) {
     final escapedThief = data['escapedThief'] as Map<String, dynamic>?;
-    final escapedId = (escapedThief?['participantId'] as num?)?.toInt();
-    final escapedIds = escapedId != null ? {escapedId} : <int>{};
-    final firstNickname = escapedThief?['nickname'] as String?;
+    if (escapedThief == null) return;
+    final escapedId = (escapedThief['participantId'] as num?)?.toInt();
+    if (escapedId == null) return;
+    final firstNickname = escapedThief['nickname'] as String?;
 
     state = state.copyWith(
       arrestedParticipantIds: state.arrestedParticipantIds.difference(
-        escapedIds,
+        {escapedId},
       ),
-      escapedParticipantIds: {...state.escapedParticipantIds, ...escapedIds},
+      escapedParticipantIds: {...state.escapedParticipantIds, escapedId},
       lastEscapeNickname: firstNickname,
       isApiLoading: false,
     );
-    debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedIds');
+    debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedId');
   }
 
   void _handleGameOver(Map<String, dynamic> data) {

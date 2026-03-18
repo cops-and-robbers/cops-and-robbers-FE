@@ -232,7 +232,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
             width: 48.w,
             height: 4.h,
             decoration: BoxDecoration(
-              color: widget.isDarkMode ? AppColors.black600 : AppColors.black200,
+              color: widget.isDarkMode
+                  ? AppColors.black600
+                  : AppColors.black200,
               borderRadius: BorderRadius.circular(2.r),
             ),
           ),
@@ -277,8 +279,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
               color: isActive
                   ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
                   : (widget.isDarkMode
-                      ? AppColors.black600
-                      : AppColors.black200),
+                        ? AppColors.black600
+                        : AppColors.black200),
               shape: BoxShape.circle,
             ),
           );
