@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +8,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -83,7 +85,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
               // ── 알림 섹션 ──
               Padding(
-                padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical16),
+                padding: EdgeInsets.symmetric(
+                  vertical: AppSpacing.vertical16,
+                  horizontal: AppSpacing.horizontal4,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -107,17 +112,25 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ],
                       ),
                     ),
-                    Switch(
+                    CupertinoSwitch(
                       value: _notificationEnabled,
                       onChanged: (value) {
                         setState(() => _notificationEnabled = value);
                         // TODO: 알림 설정 저장 로직
                       },
-                      activeThumbColor: AppColors.white,
                       activeTrackColor: AppColors.black,
                     ),
                   ],
                 ),
+              ),
+
+              const Divider(color: AppColors.black100, height: 1),
+
+              // ── 위치 권한 관리 ──
+              _buildMenuItem(
+                text: '위치 권한 관리',
+                subtitle: '기기 설정에서 위치 권한을 변경할 수 있어요',
+                onTap: () => LocationPermissionService.openAppSettings(),
               ),
 
               const Divider(color: AppColors.black100, height: 1),
@@ -302,7 +315,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical16),
+        padding: EdgeInsets.symmetric(
+          vertical: AppSpacing.vertical16,
+          horizontal: AppSpacing.horizontal4,
+        ),
         child: SizedBox(
           width: double.infinity,
           child: Column(

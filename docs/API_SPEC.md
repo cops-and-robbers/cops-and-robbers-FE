@@ -34,6 +34,7 @@
    - [PATCH /api/user/me/nickname - 닉네임 변경](#62-patch-apiusermenickname---닉네임-변경)
    - [GET /api/user/check-nickname - 닉네임 중복 확인](#63-get-apiusercheck-nickname---닉네임-중복-확인)
    - [DELETE /api/user/me - 회원탈퇴](#64-delete-apiuserme---회원탈퇴)
+   - [GET /api/user/me/game - 참여 중인 게임 정보 조회](#65-get-apiusermegame---참여-중인-게임-정보-조회)
 7. [System API - 게임 시스템 상호작용](#7-system-api---게임-시스템-상호작용)
    - [POST /api/games/{gameId}/system/arrest - 도둑 체포](#71-post-apigamesgameidsystemarrest---도둑-체포)
    - [POST /api/games/{gameId}/system/escape - 도둑 탈옥](#72-post-apigamesgameidsystemescape---도둑-탈옥)
@@ -1369,6 +1370,49 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ---
 
+### 6.5 GET /api/user/me/game - 참여 중인 게임 정보 조회
+
+로그인한 사용자가 현재 참여 중인 게임 정보를 조회합니다. `isParticipating`으로 참여 여부를 확인할 수 있으며, 참여 중인 게임이 없으면 `participationInfo`가 null로 반환됩니다.
+
+- **인증 필요**: Yes (JWT)
+
+#### Responses
+
+**200 - 조회 성공 (참여 중인 게임이 있는 경우)**
+
+```json
+{
+  "isParticipating": true,
+  "participationInfo": {
+    "gameId": 3,
+    "participantId": 12,
+    "gameStatus": "WAITING"
+  }
+}
+```
+
+**200 - 조회 성공 (참여 중인 게임이 없는 경우)**
+
+```json
+{
+  "isParticipating": false,
+  "participationInfo": null
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증되지 않은 요청",
+  "status": 401,
+  "detail": "로그인이 필요합니다.",
+  "instance": "/api/user/me/game"
+}
+```
+
+---
+
 ## 7. System API - 게임 시스템 상호작용
 
 ### 7.1 POST /api/games/{gameId}/system/arrest - 도둑 체포
@@ -1718,10 +1762,11 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ### LobbyInfoResponse
 
-| 필드                | 타입                                          | 설명          |
-| ------------------- | --------------------------------------------- | ------------- |
+| 필드                | 타입                                          | 설명           |
+| ------------------- | --------------------------------------------- | -------------- |
 | `myParticipantId`   | integer (int64)                               | 나의 참가자 ID |
 | `hostParticipantId` | integer (int64)                               | 방장 참가자 ID |
+| `inviteCode`        | string                                        | 초대 코드      |
 | `participants`      | [ParticipantResponse](#participantresponse)[] | 참가자 목록    |
 
 ### TeamChangeRequest
@@ -1771,6 +1816,21 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | `socialPlatform`     | string          | `KAKAO` \| `GOOGLE` \| `APPLE` |
 | `allowGamePush`      | boolean         | 게임 푸시 허용 여부            |
 | `allowMarketingPush` | boolean         | 마케팅 푸시 허용 여부          |
+
+### UserGameInfoResponse
+
+| 필드               | 타입                                                              | 설명                                    |
+| ------------------ | ----------------------------------------------------------------- | --------------------------------------- |
+| `isParticipating`  | boolean                                                           | 게임 참여 여부                          |
+| `participationInfo`| [UserGameParticipationResponse](#usergameparticipationresponse)    | 참여 정보 (참여 중이 아니면 null)       |
+
+### UserGameParticipationResponse
+
+| 필드            | 타입            | 설명                                                    |
+| --------------- | --------------- | ------------------------------------------------------- |
+| `gameId`        | integer (int64) | 게임 ID                                                 |
+| `participantId` | integer (int64) | 참가자 ID                                               |
+| `gameStatus`    | string          | 게임 상태 (`WAITING` \| `IN_PROGRESS` \| `FINISHED` \| `CANCELED`) |
 
 ### DeleteAccountResponse
 

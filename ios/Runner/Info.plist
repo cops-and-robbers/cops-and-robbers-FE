@@ -42,18 +42,15 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>실시간 위치 기반 게임 플레이를 위해 사용됩니다. 게임 중 전화나 메시지를 받아도 게임 연결이 유지됩니다.(필수권한)</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>게임 중 백그라운드에서도 위치를 추적하여 실시간 게임 플레이를 제공합니다. 전화나 메시지를 받아도 게임이 계속됩니다.(필수권한)</string>
+	<string>게임 중 도둑 위치를 경찰 팀에게 공유하고, 구역 이탈을 감지하기 위해 위치 정보를 사용합니다. 위치는 게임 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.</string>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>알림을 받으려면 권한이 필요합니다.</string>
+	<string>게임 초대, 게임 시작, 체포 알림 등 게임 진행에 필요한 알림을 받기 위해 사용됩니다.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
 		<string>remote-notification</string>
-		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

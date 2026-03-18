@@ -13,14 +13,8 @@
 
     <!-- 위치 권한 (게임 중 위치 추적용) -->
     <!-- Location permission for real-time location tracking -->
-    <!-- Foreground Service 사용으로 ACCESS_BACKGROUND_LOCATION 불필요 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <!-- 포그라운드 서비스 권한 (백그라운드 위치 추적용) -->
-    <!-- Foreground service permission for background location tracking -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <application
         android:label="경찰과도둑"

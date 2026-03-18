@@ -57,10 +57,12 @@ class HomePage extends ConsumerWidget {
     final String message;
     if (!serviceEnabled) {
       title = '위치 서비스가 꺼져 있습니다';
-      message = '이 게임은 위치 정보를 사용합니다.\n기기 설정에서 위치 서비스를 켜주세요.';
+      message =
+          '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다.\n기기 설정에서 위치 서비스를 켜주세요.';
     } else {
-      title = '위치 권한이 필요합니다';
-      message = '이 게임은 위치 정보를 사용합니다.\n설정에서 위치 권한을 허용해주세요.';
+      title = '위치 권한 안내';
+      message =
+          '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다.\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다.';
     }
 
     AppDialog.show(

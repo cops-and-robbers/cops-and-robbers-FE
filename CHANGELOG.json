@@ -1,11 +1,43 @@
 {
   "metadata": {
-    "lastUpdated": "2026-03-13T02:01:29Z",
-    "currentVersion": "1.2.26",
+    "lastUpdated": "2026-03-18T14:30:59Z",
+    "currentVersion": "1.2.34",
     "projectType": "flutter",
-    "totalReleases": 47
+    "totalReleases": 48
   },
   "releases": [
+    {
+      "version": "1.2.34",
+      "project_type": "flutter",
+      "date": "2026-03-18",
+      "pr_number": 131,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새로운 기능**\n  * 게임 참여 상태 확인 API 추가\n\n* **기능 개선**\n  * 채팅 오버레이 사용성 개선\n  * 위치 추적 메커니즘 최적화\n  * 앱 설정에서 위치 권한 관리 기능 추가\n\n* **변경 사항**\n  * 위치 권한 안내 메시지 업데이트\n  * 백그라운드 위치 추적 관련 기능 제거\n  * 버전 1.2.34로 업데이트",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "게임 참여 상태 확인 API 추가"
+          ]
+        },
+        "기능_개선": {
+          "title": "기능 개선",
+          "items": [
+            "채팅 오버레이 사용성 개선",
+            "위치 추적 메커니즘 최적화",
+            "앱 설정에서 위치 권한 관리 기능 추가"
+          ]
+        },
+        "변경_사항": {
+          "title": "변경 사항",
+          "items": [
+            "위치 권한 안내 메시지 업데이트",
+            "백그라운드 위치 추적 관련 기능 제거",
+            "버전 1.2.34로 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.2.26",
       "project_type": "flutter",

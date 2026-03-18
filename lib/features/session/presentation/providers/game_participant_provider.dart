@@ -158,6 +158,22 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     );
   }
 
+  /// 게임 설정 업데이트 (SETTINGS_UPDATED 이벤트 시)
+  void updateSettings({
+    int? maxParticipants,
+    int? locationRevealIntervalMinutes,
+    int? policeWaitMinutes,
+    int? roundTimeMinutes,
+  }) {
+    if (state == null) return;
+    state = state!.copyWith(
+      maxParticipants: maxParticipants,
+      locationRevealIntervalMinutes: locationRevealIntervalMinutes,
+      policeWaitMinutes: policeWaitMinutes,
+      roundTimeMinutes: roundTimeMinutes,
+    );
+  }
+
   /// 정보 초기화 (게임 종료/퇴장 시)
   void clear() {
     state = null;

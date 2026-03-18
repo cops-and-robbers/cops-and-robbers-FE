@@ -138,10 +138,7 @@ class GameRulesContent extends StatelessWidget {
             top: 7.h,
             bottom: 0,
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: highlightColor,
-                borderRadius: BorderRadius.circular(2.r),
-              ),
+              decoration: BoxDecoration(color: highlightColor),
             ),
           ),
           // 텍스트 (위치 고정)

@@ -311,55 +311,6 @@ _client.send(
 
 ---
 
-## 백그라운드 위치 추적 (Background Location Tracking)
-
-### 개요
-
-게임 중 사용자가 전화, 카톡, 화면 잠금 등으로 앱을 나가도 위치 추적과 서버 통신이 계속되어야 합니다.
-
-**문제:**
-- 백그라운드 전환 → WebSocket 끊김 → 위치 전송 중단 → 다른 플레이어가 순간이동처럼 보임
-
-**해결:**
-- **Foreground Service (Android)**: 알림을 표시하며 백그라운드에서 계속 실행
-- **Background Modes (iOS)**: 위치 추적 모드로 백그라운드 실행 허용
-
-### 주요 패키지
-
-```yaml
-flutter_background_service: ^5.0.0  # 백그라운드 서비스 관리
-```
-
-### 사용법
-
-```dart
-// 게임 시작 시
-await BackgroundLocationService.start(
-  gameId: sessionId,
-  userId: currentUserId,
-  wsUrl: EnvConfig.wsUrl,
-);
-
-// 게임 종료 시
-await BackgroundLocationService.stop();
-```
-
-### 사용자 경험
-
-**Android:**
-- 알림바에 "게임 진행 중 🎮" 표시 (Foreground Service)
-- 배터리 소모: 30분 게임 시 약 5-10%
-
-**iOS:**
-- 상태바에 파란색 배경 또는 위치 아이콘 표시
-- 배터리 소모: 30분 게임 시 약 5-10%
-
-### 상세 문서
-
-전체 구현 가이드는 [docs/BACKGROUND_LOCATION_SERVICE.md](docs/BACKGROUND_LOCATION_SERVICE.md)를 참고하세요.
-
----
-
 ## 환경 설정 (.env)
 
 **필수 파일:** 프로젝트 루트에 `.env` 파일 생성
