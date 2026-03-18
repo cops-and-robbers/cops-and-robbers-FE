@@ -11,6 +11,7 @@ import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../settings/presentation/pages/legal_document_page.dart';
 import '../providers/auth_provider.dart';
 
@@ -63,9 +64,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ),
           );
 
-    // 회원 탈퇴 완료 메시지 표시
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+
+      // 회원 탈퇴 완료 메시지 표시
       final accountDeleted = GoRouterState.of(
         context,
       ).uri.queryParameters['accountDeleted'];
@@ -78,7 +80,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           ),
         );
       }
+
+      // 만 14세 이상 연령 확인 다이얼로그
+      _showAgeVerificationDialog();
     });
+  }
+
+  /// 만 14세 이상 연령 확인 다이얼로그
+  void _showAgeVerificationDialog() {
+    AppDialog.show(
+      context: context,
+      title: '만 14세 이상이신가요?',
+      message:
+          '경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요.',
+      confirmText: '네',
+      cancelText: '아니요',
+      barrierDismissible: false,
+      onCancel: () => exit(0),
+    );
   }
 
   @override
