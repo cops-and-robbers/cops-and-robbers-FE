@@ -238,17 +238,22 @@ class LobbyNotifier extends _$LobbyNotifier {
       ref.invalidate(fetchGameSettingsProvider(event.gameId));
 
       // 최신 설정을 fetch하여 gameParticipantNotifier도 동기화
-      ref.read(fetchGameSettingsProvider(event.gameId).future).then((settings) {
-        ref.read(gameParticipantNotifierProvider.notifier).updateSettings(
-              maxParticipants: settings.maxParticipants,
-              locationRevealIntervalMinutes:
-                  settings.locationRevealIntervalMinutes,
-              policeWaitMinutes: settings.policeWaitMinutes,
-              roundTimeMinutes: settings.roundDurationMinutes,
-            );
-      }).catchError((e) {
-        debugPrint('[LobbyNotifier] ⚠️ 설정 동기화 실패: $e');
-      });
+      ref
+          .read(fetchGameSettingsProvider(event.gameId).future)
+          .then((settings) {
+            ref
+                .read(gameParticipantNotifierProvider.notifier)
+                .updateSettings(
+                  maxParticipants: settings.maxParticipants,
+                  locationRevealIntervalMinutes:
+                      settings.locationRevealIntervalMinutes,
+                  policeWaitMinutes: settings.policeWaitMinutes,
+                  roundTimeMinutes: settings.roundDurationMinutes,
+                );
+          })
+          .catchError((e) {
+            debugPrint('[LobbyNotifier] ⚠️ 설정 동기화 실패: $e');
+          });
     }
 
     // AREA_UPDATED 이벤트 → 영역 캐시 무효화
