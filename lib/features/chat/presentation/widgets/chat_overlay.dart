@@ -111,8 +111,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       builder: (context, constraints) {
         final availableHeight = constraints.maxHeight;
         _minSize = (collapsedHeight / availableHeight).clamp(0.1, 0.25);
-        _expandedThreshold =
-            (expandedMinHeight / availableHeight).clamp(0.15, 0.35);
+        _expandedThreshold = (expandedMinHeight / availableHeight).clamp(
+          0.15,
+          0.35,
+        );
 
         return Stack(
           children: [

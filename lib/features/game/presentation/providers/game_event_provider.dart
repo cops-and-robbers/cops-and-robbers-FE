@@ -451,9 +451,9 @@ class GameEventNotifier extends _$GameEventNotifier {
 
     state = state.copyWith(
       arrestedParticipantIds: {...state.arrestedParticipantIds, robberPid},
-      escapedParticipantIds: state.escapedParticipantIds.difference(
-        {robberPid},
-      ),
+      escapedParticipantIds: state.escapedParticipantIds.difference({
+        robberPid,
+      }),
       remainingThieves: remaining,
       lastArrestNickname: robberNickname,
       isApiLoading: false,
@@ -471,9 +471,9 @@ class GameEventNotifier extends _$GameEventNotifier {
     final firstNickname = escapedThief['nickname'] as String?;
 
     state = state.copyWith(
-      arrestedParticipantIds: state.arrestedParticipantIds.difference(
-        {escapedId},
-      ),
+      arrestedParticipantIds: state.arrestedParticipantIds.difference({
+        escapedId,
+      }),
       escapedParticipantIds: {...state.escapedParticipantIds, escapedId},
       lastEscapeNickname: firstNickname,
       isApiLoading: false,
