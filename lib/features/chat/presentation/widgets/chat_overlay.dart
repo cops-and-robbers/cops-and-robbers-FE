@@ -119,17 +119,20 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         return Stack(
           children: [
             if (_isExpanded)
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  if (_sheetController.isAttached) {
-                    _sheetController.animateTo(
-                      _minSize,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeOut,
-                    );
-                  }
-                },
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    if (_sheetController.isAttached) {
+                      _sheetController.animateTo(
+                        _minSize,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    }
+                  },
+                  child: const SizedBox.expand(),
+                ),
               ),
             DraggableScrollableSheet(
               controller: _sheetController,
