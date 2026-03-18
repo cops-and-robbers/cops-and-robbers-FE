@@ -21,6 +21,7 @@ class InfoCard extends StatelessWidget {
     super.key,
     this.title,
     this.titleStyle,
+    this.titleTrailing,
     this.padding,
     this.backgroundColor,
     this.borderRadius,
@@ -35,6 +36,9 @@ class InfoCard extends StatelessWidget {
 
   /// 제목 텍스트 스타일
   final TextStyle? titleStyle;
+
+  /// 제목 우측 위젯 (화살표 아이콘 등)
+  final Widget? titleTrailing;
 
   /// 카드 내부 패딩
   final EdgeInsets? padding;
@@ -76,7 +80,13 @@ class InfoCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (title != null) ...[
-            Text(title!, style: titleStyle),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(title!, style: titleStyle),
+                if (titleTrailing != null) titleTrailing!,
+              ],
+            ),
             SizedBox(height: AppSpacing.vertical16),
           ],
           child,
