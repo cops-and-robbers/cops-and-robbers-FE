@@ -45,24 +45,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.initState();
     _privacyRecognizer = TapGestureRecognizer()
       ..onTap = () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const LegalDocumentPage(
-                title: '개인정보 처리방침',
-                assetPath: 'assets/legal/privacy_policy.json',
-                externalUrl: AppUrls.privacyPolicy,
-              ),
-            ),
-          );
+        MaterialPageRoute(
+          builder: (_) => const LegalDocumentPage(
+            title: '개인정보 처리방침',
+            assetPath: 'assets/legal/privacy_policy.json',
+            externalUrl: AppUrls.privacyPolicy,
+          ),
+        ),
+      );
     _termsRecognizer = TapGestureRecognizer()
       ..onTap = () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const LegalDocumentPage(
-                title: '이용약관',
-                assetPath: 'assets/legal/terms_of_service.json',
-                externalUrl: AppUrls.termsOfService,
-              ),
-            ),
-          );
+        MaterialPageRoute(
+          builder: (_) => const LegalDocumentPage(
+            title: '이용약관',
+            assetPath: 'assets/legal/terms_of_service.json',
+            externalUrl: AppUrls.termsOfService,
+          ),
+        ),
+      );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -91,8 +91,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     AppDialog.show(
       context: context,
       title: '만 14세 이상이신가요?',
-      message:
-          '경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요.',
+      message: '경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요.',
       confirmText: '네',
       cancelText: '아니요',
       barrierDismissible: false,

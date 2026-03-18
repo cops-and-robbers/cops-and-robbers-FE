@@ -92,27 +92,26 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _document == null
-              ? Center(
-                  child: Text(
-                    '문서를 불러올 수 없습니다.',
-                    style: AppTextStyles.paragraph_14.copyWith(
-                      color: AppColors.black600,
-                    ),
-                  ),
-                )
-              : SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSpacing.horizontal24,
-                    vertical: AppSpacing.vertical16,
-                  ),
-                  child: _buildSections(),
+          ? Center(
+              child: Text(
+                '문서를 불러올 수 없습니다.',
+                style: AppTextStyles.paragraph_14.copyWith(
+                  color: AppColors.black600,
                 ),
+              ),
+            )
+          : SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.horizontal24,
+                vertical: AppSpacing.vertical16,
+              ),
+              child: _buildSections(),
+            ),
     );
   }
 
   Widget _buildSections() {
-    final sections =
-        (_document!['sections'] as List<dynamic>?) ?? [];
+    final sections = (_document!['sections'] as List<dynamic>?) ?? [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
