@@ -231,7 +231,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         );
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12.h),
+        padding: EdgeInsets.only(top: 12.h, bottom: 4.h),
         child: Center(
           child: Container(
             width: 48.w,
