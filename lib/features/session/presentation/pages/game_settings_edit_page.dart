@@ -7,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../data/models/game_create_request_model.dart';
@@ -71,7 +72,6 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
 
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
-    final messenger = ScaffoldMessenger.of(context);
     setState(() => _isSaving = true);
 
     try {
@@ -94,13 +94,10 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
       final errorMsg =
           ApiErrorResponse.tryParse(e.response?.data)?.detail ??
           '설정 저장에 실패했습니다.';
-      messenger.clearSnackBars();
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(errorMsg, style: AppTextStyles.paragraph_14),
-          backgroundColor: AppColors.red,
-          duration: const Duration(seconds: 2),
-        ),
+      AppSnackbar.show(
+        context,
+        message: errorMsg,
+        backgroundColor: AppColors.red,
       );
     } finally {
       if (mounted) {

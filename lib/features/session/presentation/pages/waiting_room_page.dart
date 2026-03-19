@@ -12,6 +12,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../router/route_paths.dart';
 import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
@@ -407,9 +408,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (mounted) {
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
         final message = apiError?.detail ?? '팀 변경에 실패했습니다.';
-        ScaffoldMessenger.of(
+        AppSnackbar.show(
           context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+          message: message,
+          backgroundColor: AppColors.red,
+        );
       }
     }
   }
@@ -441,9 +444,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (mounted) {
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
         final message = apiError?.detail ?? '준비 상태 변경에 실패했습니다.';
-        ScaffoldMessenger.of(
+        AppSnackbar.show(
           context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+          message: message,
+          backgroundColor: AppColors.red,
+        );
       }
     } finally {
       if (mounted) {
@@ -473,9 +478,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (mounted) {
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
         final message = apiError?.detail ?? '게임 시작에 실패했습니다.';
-        ScaffoldMessenger.of(
+        AppSnackbar.show(
           context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+          message: message,
+          backgroundColor: AppColors.red,
+        );
       }
     }
   }
@@ -496,9 +503,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         if (mounted) {
           final apiError = ApiErrorResponse.tryParse(e.response?.data);
           final message = apiError?.detail ?? '퇴장 처리 중 오류가 발생했습니다.';
-          ScaffoldMessenger.of(
+          AppSnackbar.show(
             context,
-          ).showSnackBar(SnackBar(content: Text(message)));
+            message: message,
+            backgroundColor: AppColors.red,
+          );
         }
       }
     }
@@ -526,7 +535,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 초대코드 모달 (방 생성 직후 표시)
   void _showInviteCodeDialog() {
     final code = widget.inviteCode!;
-    final messenger = ScaffoldMessenger.of(context);
     final isDark = ref.read(roleThemeProvider);
 
     AppDialog.show(
@@ -541,12 +549,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       customContent: GestureDetector(
         onTap: () async {
           await Clipboard.setData(ClipboardData(text: code));
-          messenger.clearSnackBars();
-          messenger.showSnackBar(
-            SnackBar(
-              content: Text('코드가 복사되었습니다', style: AppTextStyles.paragraph_14),
-              duration: const Duration(seconds: 2),
-            ),
+          if (!mounted) return;
+          AppSnackbar.show(
+            context,
+            message: '코드가 복사되었습니다',
+            iconPath: 'assets/icons/icon_copy.svg',
           );
         },
         child: Container(

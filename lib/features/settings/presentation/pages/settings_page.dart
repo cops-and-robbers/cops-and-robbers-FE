@@ -12,6 +12,7 @@ import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../router/route_paths.dart';
@@ -59,7 +60,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 text: '닉네임 변경',
                 onTap: () async {
                   final router = GoRouter.of(context);
-                  final messenger = ScaffoldMessenger.of(context);
                   try {
                     final profile = await ref
                         .read(userRepositoryProvider)
@@ -76,7 +76,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     return;
                   } on AppException catch (e) {
                     if (!mounted) return;
-                    messenger.showSnackBar(SnackBar(content: Text(e.message)));
+                    AppSnackbar.show(
+                      context,
+                      message: e.message,
+                      backgroundColor: AppColors.red,
+                    );
                   }
                 },
               ),
@@ -182,7 +186,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 text: '로그아웃',
                 textColor: AppColors.red,
                 onTap: () async {
-                  final messenger = ScaffoldMessenger.of(context);
                   final result = await AppDialog.confirm(
                     context: context,
                     title: '로그아웃',
@@ -194,18 +197,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     await ref.read(authNotifierProvider.notifier).signOut();
                     if (!mounted) return;
                     final authState = ref.read(authNotifierProvider);
-                    messenger.clearSnackBars();
-                    messenger.showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          authState.hasError ? '로그아웃에 실패했습니다' : '로그아웃되었습니다',
-                          style: AppTextStyles.paragraph_14,
-                        ),
-                        backgroundColor: authState.hasError
-                            ? AppColors.red
-                            : AppColors.blue,
-                        duration: const Duration(seconds: 2),
-                      ),
+                    AppSnackbar.show(
+                      context,
+                      message: authState.hasError
+                          ? '로그아웃에 실패했습니다'
+                          : '로그아웃되었습니다',
+                      backgroundColor: authState.hasError
+                          ? AppColors.red
+                          : AppColors.blue,
                     );
                   }
                 },
@@ -263,7 +262,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   /// 1. DELETE /api/user/me (백엔드 계정 삭제)
   /// 2. AuthNotifier.cleanupAfterAccountDeletion() (로컬 정리 + 리다이렉트)
   Future<void> _executeDeleteAccount() async {
-    final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
     // 로딩 팝업 표시 (터치 차단)
@@ -307,13 +305,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       // 로딩 팝업 닫기
       if (navigator.canPop()) navigator.pop();
       if (!mounted) return;
-      messenger.clearSnackBars();
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(e.message, style: AppTextStyles.paragraph_14),
-          backgroundColor: AppColors.red,
-          duration: const Duration(seconds: 2),
-        ),
+      AppSnackbar.show(
+        context,
+        message: e.message,
+        backgroundColor: AppColors.red,
       );
     }
   }

@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 
 /// 세션 코드 표시 및 복사 카드
 ///
@@ -34,11 +35,10 @@ class SessionCodeCard extends StatelessWidget {
     onCopy?.call();
 
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('코드가 복사되었습니다'),
-          duration: Duration(seconds: 2),
-        ),
+      AppSnackbar.show(
+        context,
+        message: '코드가 복사되었습니다',
+        iconPath: 'assets/icons/icon_copy.svg',
       );
     }
   }

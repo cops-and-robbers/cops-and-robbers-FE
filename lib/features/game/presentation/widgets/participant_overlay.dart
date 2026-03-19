@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
 import '../../../session/data/models/in_game_participants_response.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
@@ -100,9 +101,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
         ?.policeWaitMinutes;
     final canArrest = isPoliceMoving || policeWaitMinutes == 0;
     if (!canArrest) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('경찰 대기 시간 중에는 도둑을 체포할 수 없습니다.')),
-      );
+      AppSnackbar.show(context, message: '경찰 대기 시간 중에는 도둑을 체포할 수 없습니다.');
       return;
     }
 

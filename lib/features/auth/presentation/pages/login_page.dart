@@ -12,6 +12,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../settings/presentation/pages/legal_document_page.dart';
 import '../providers/auth_provider.dart';
 
@@ -81,12 +82,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         context,
       ).uri.queryParameters['accountDeleted'];
       if (accountDeleted == 'true') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('회원탈퇴가 완료되었습니다.', style: AppTextStyles.paragraph_14),
-            backgroundColor: AppColors.blue,
-            duration: const Duration(seconds: 2),
-          ),
+        AppSnackbar.show(
+          context,
+          message: '회원탈퇴가 완료되었습니다.',
+          backgroundColor: AppColors.blue,
         );
       }
 
@@ -125,7 +124,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// Google 로그인을 수행하고 에러 발생 시 SnackBar를 표시합니다.
   /// 로그인 성공 후 네비게이션은 GoRouter의 redirect가 처리합니다.
   Future<void> _handleGoogleSignIn(BuildContext context) async {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     setState(() => _isGoogleLoading = true);
 
     try {
@@ -134,16 +132,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
     } on AuthCancelledException {
       if (!mounted) return;
-      scaffoldMessenger.clearSnackBars();
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-          content: Text('로그인이 취소되었습니다.', style: AppTextStyles.paragraph_14),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      AppSnackbar.show(context, message: '로그인이 취소되었습니다.');
     } catch (e) {
       if (!mounted) return;
-      _showLoginError(scaffoldMessenger, '로그인 중 오류가 발생했습니다.');
+      _showLoginError('로그인 중 오류가 발생했습니다.');
     } finally {
       if (mounted) {
         setState(() => _isGoogleLoading = false);
@@ -156,7 +148,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// Apple 로그인을 수행하고 에러 발생 시 SnackBar를 표시합니다.
   /// 로그인 성공 후 네비게이션은 GoRouter의 redirect가 처리합니다.
   Future<void> _handleAppleSignIn(BuildContext context) async {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     setState(() => _isAppleLoading = true);
 
     try {
@@ -165,16 +156,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
     } on AuthCancelledException {
       if (!mounted) return;
-      scaffoldMessenger.clearSnackBars();
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-          content: Text('로그인이 취소되었습니다.', style: AppTextStyles.paragraph_14),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      AppSnackbar.show(context, message: '로그인이 취소되었습니다.');
     } catch (e) {
       if (!mounted) return;
-      _showLoginError(scaffoldMessenger, 'Apple 로그인 중 오류가 발생했습니다.');
+      _showLoginError('Apple 로그인 중 오류가 발생했습니다.');
     } finally {
       if (mounted) {
         setState(() => _isAppleLoading = false);
@@ -183,10 +168,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   /// 로그인 에러 SnackBar 표시
-  void _showLoginError(
-    ScaffoldMessengerState messenger,
-    String fallbackMessage,
-  ) {
+  void _showLoginError(String fallbackMessage) {
     final authState = ref.read(authNotifierProvider);
 
     final errorMessage =
@@ -194,13 +176,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ? (authState.error as AuthException).message
         : fallbackMessage;
 
-    messenger.clearSnackBars();
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(errorMessage, style: AppTextStyles.paragraph_14),
-        backgroundColor: AppColors.red,
-        duration: const Duration(seconds: 2),
-      ),
+    AppSnackbar.show(
+      context,
+      message: errorMessage,
+      backgroundColor: AppColors.red,
     );
   }
 
