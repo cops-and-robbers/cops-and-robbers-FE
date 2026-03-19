@@ -8,6 +8,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/chips/action_chip.dart' as custom_chip;
 import '../../../../core/widgets/inputs/app_text_field.dart';
@@ -129,9 +130,11 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
         _validationState = NicknameValidationState.error;
       });
 
-      ScaffoldMessenger.of(
+      AppSnackbar.show(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+        message: e.message,
+        backgroundColor: AppColors.red,
+      );
     }
   }
 
@@ -187,9 +190,11 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
         _isLoading = false;
       });
 
-      ScaffoldMessenger.of(
+      AppSnackbar.show(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+        message: e.message,
+        backgroundColor: AppColors.red,
+      );
     }
   }
 
