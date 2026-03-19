@@ -1,11 +1,44 @@
 {
   "metadata": {
-    "lastUpdated": "2026-03-18T14:30:59Z",
-    "currentVersion": "1.2.34",
+    "lastUpdated": "2026-03-19T00:30:58Z",
+    "currentVersion": "1.2.35",
     "projectType": "flutter",
-    "totalReleases": 48
+    "totalReleases": 49
   },
   "releases": [
+    {
+      "version": "1.2.35",
+      "project_type": "flutter",
+      "date": "2026-03-19",
+      "pr_number": 134,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새로운 기능**\n  * 사용자 보호를 위한 14세 이상 나이 확인 기능 추가\n  * 게임 시작 시 일일 안전 공지 알림 추가\n  * 개인정보처리방침 및 이용약관을 앱 내에서 직접 열람 가능하도록 개선\n  * 설정 카드 항목에 시각적 표시 아이콘 추가\n\n* **문서**\n  * 개인정보처리방침 및 이용약관 문서 통합\n  * iOS 위치 권한 사용 설명 추가\n\n* **기타**\n  * 앱 버전 v1.2.35로 업데이트\n  * 게임 오버 화면 버튼 텍스트 개선",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "사용자 보호를 위한 14세 이상 나이 확인 기능 추가",
+            "게임 시작 시 일일 안전 공지 알림 추가",
+            "개인정보처리방침 및 이용약관을 앱 내에서 직접 열람 가능하도록 개선",
+            "설정 카드 항목에 시각적 표시 아이콘 추가"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "개인정보처리방침 및 이용약관 문서 통합",
+            "iOS 위치 권한 사용 설명 추가"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "앱 버전 v1.2.35로 업데이트",
+            "게임 오버 화면 버튼 텍스트 개선"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.2.34",
       "project_type": "flutter",

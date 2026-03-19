@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:geolocator/geolocator.dart';
 
@@ -33,6 +34,72 @@ import '../providers/session_provider.dart';
 /// 디자인: LOGO + 설정, 공지/역할 아이콘, 말풍선, 아바타, 방만들기/참여하기 버튼
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
+
+  static const _safetyNoticePrefKey = 'safety_notice_dismissed_date';
+  static bool _safetyNoticeShown = false;
+
+  /// 안전 안내 다이얼로그 상태 초기화 (로그아웃/강제 로그아웃 시 호출)
+  static Future<void> resetSafetyNotice() async {
+    _safetyNoticeShown = false;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_safetyNoticePrefKey);
+  }
+
+  /// 안전 안내 다이얼로그 표시 (오늘 처음 홈 진입 시)
+  Future<void> _showSafetyNoticeIfNeeded(BuildContext context) async {
+    if (_safetyNoticeShown) return;
+    _safetyNoticeShown = true;
+
+    final prefs = await SharedPreferences.getInstance();
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    final dismissedDate = prefs.getString(_safetyNoticePrefKey);
+    if (dismissedDate == today) return;
+    if (!context.mounted) return;
+
+    bool doNotShowToday = false;
+
+    AppDialog.show(
+      context: context,
+      title: '주변을 확인하며 이용해 주세요',
+      message: '게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요',
+      confirmText: '확인했어요!',
+      barrierDismissible: false,
+      customContent: StatefulBuilder(
+        builder: (context, setState) {
+          return GestureDetector(
+            onTap: () => setState(() => doNotShowToday = !doNotShowToday),
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: EdgeInsets.only(top: AppSpacing.vertical8),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    doNotShowToday
+                        ? 'assets/icons/check_circle_true.svg'
+                        : 'assets/icons/check_circle_false.svg',
+                    width: 16.w,
+                    height: 16.w,
+                  ),
+                  SizedBox(width: AppSpacing.horizontal8),
+                  Text(
+                    '오늘은 다시 보지 않기',
+                    style: AppTextStyles.tag_12.copyWith(
+                      color: AppColors.black600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+      onConfirm: () {
+        if (doNotShowToday) {
+          prefs.setString(_safetyNoticePrefKey, today);
+        }
+      },
+    );
+  }
 
   /// 위치 권한 확인 후 [onGranted] 실행
   ///
@@ -223,6 +290,13 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 홈 진입 시 안전 안내 다이얼로그 표시 (static flag로 1회만 등록)
+    if (!_safetyNoticeShown) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) _showSafetyNoticeIfNeeded(context);
+      });
+    }
+
     return Scaffold(
       backgroundColor: AppColors.white,
       resizeToAvoidBottomInset: false,
