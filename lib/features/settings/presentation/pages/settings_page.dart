@@ -77,6 +77,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   } on AppException catch (e) {
                     if (!mounted) return;
                     AppSnackbar.show(
+                      // ignore: use_build_context_synchronously
                       context,
                       message: e.message,
                       backgroundColor: AppColors.red,
@@ -198,6 +199,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     if (!mounted) return;
                     final authState = ref.read(authNotifierProvider);
                     AppSnackbar.show(
+                      // ignore: use_build_context_synchronously
                       context,
                       message: authState.hasError
                           ? '로그아웃에 실패했습니다'

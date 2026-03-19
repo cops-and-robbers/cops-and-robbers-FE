@@ -132,6 +132,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
     } on AuthCancelledException {
       if (!mounted) return;
+      // ignore: use_build_context_synchronously
       AppSnackbar.show(context, message: '로그인이 취소되었습니다.');
     } catch (e) {
       if (!mounted) return;
@@ -156,6 +157,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
     } on AuthCancelledException {
       if (!mounted) return;
+      // ignore: use_build_context_synchronously
       AppSnackbar.show(context, message: '로그인이 취소되었습니다.');
     } catch (e) {
       if (!mounted) return;
