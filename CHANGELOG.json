@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2026-03-19T00:30:58Z",
-    "currentVersion": "1.2.35",
+    "lastUpdated": "2026-03-19T07:35:55Z",
+    "currentVersion": "1.2.36",
     "projectType": "flutter",
-    "totalReleases": 49
+    "totalReleases": 50
   },
   "releases": [
+    {
+      "version": "1.2.36",
+      "project_type": "flutter",
+      "date": "2026-03-19",
+      "pr_number": 138,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **버그 수정**\n  * Android 애플리케이션 네트워크 보안 설정 강화\n\n* **기타**\n  * 앱 버전을 1.2.36으로 업데이트",
+      "parsed_changes": {
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "Android 애플리케이션 네트워크 보안 설정 강화"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "앱 버전을 1.2.36으로 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.2.35",
       "project_type": "flutter",
