@@ -1,4 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -39,6 +43,20 @@ class SettingListCard extends StatelessWidget {
       child: InfoCard(
         title: '설정',
         titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
+        titleTrailing: onTap != null
+            ? Transform.rotate(
+                angle: math.pi,
+                child: SvgPicture.asset(
+                  'assets/icons/icon_previous.svg',
+                  width: 16.w,
+                  height: 16.w,
+                  colorFilter: const ColorFilter.mode(
+                    AppColors.black300,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              )
+            : null,
         padding: EdgeInsets.symmetric(
           vertical: AppSpacing.vertical20,
           horizontal: AppSpacing.horizontal24,
