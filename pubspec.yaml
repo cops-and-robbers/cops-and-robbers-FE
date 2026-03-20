@@ -88,6 +88,7 @@ flutter:
     - assets/fonts/
     - assets/icons/
     - assets/legal/
+    - assets/messages/
     - .env
   fonts:
     - family: Pretendard-Thin
