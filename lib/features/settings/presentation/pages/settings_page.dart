@@ -210,8 +210,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   );
                   if (result != true || !mounted) return;
 
-                  // ignore: use_build_context_synchronously
                   await AppPopup.showRandomLoading(
+                    // ignore: use_build_context_synchronously
                     context: context,
                     category: LoadingCategory.logout,
                   );
