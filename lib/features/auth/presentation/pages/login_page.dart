@@ -10,6 +10,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -81,11 +82,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final accountDeleted = GoRouterState.of(
         context,
       ).uri.queryParameters['accountDeleted'];
+      // 강제 로그아웃 사유 메시지 (토큰 재발급 실패 등)
+      final forceLogoutMessage = ref.read(forceLogoutMessageProvider);
+      if (forceLogoutMessage != null) {
+        ref.read(forceLogoutMessageProvider.notifier).state = null;
+      }
+
       if (accountDeleted == 'true') {
         AppSnackbar.show(
           context,
           message: '회원탈퇴가 완료되었습니다.',
           backgroundColor: AppColors.blue,
+        );
+      } else if (forceLogoutMessage != null) {
+        AppSnackbar.show(
+          context,
+          message: forceLogoutMessage,
+          backgroundColor: AppColors.red,
         );
       }
 

@@ -36,7 +36,8 @@ class AuthInterceptor extends QueuedInterceptor {
   ///
   /// 토큰 재발급 실패 시 호출됩니다.
   /// Presentation Layer에서 Firebase 로그아웃 + 로그인 화면 이동을 처리합니다.
-  final Future<void> Function() onForceLogout;
+  /// [message]: 백엔드 에러 메시지 (RFC 7807 detail) — 로그인 화면에서 스낵바로 표시
+  final Future<void> Function({String? message}) onForceLogout;
 
   AuthInterceptor({
     required SecureTokenStorage tokenStorage,
@@ -95,7 +96,8 @@ class AuthInterceptor extends QueuedInterceptor {
 
     // reissue API 자체가 401이면 강제 로그아웃
     if (err.requestOptions.path.contains(ApiEndpoints.reissue)) {
-      await _handleForceLogout();
+      final apiError = ApiErrorResponse.tryParse(err.response?.data);
+      await _handleForceLogout(message: apiError?.detail);
       return handler.next(err);
     }
 
@@ -174,6 +176,7 @@ class AuthInterceptor extends QueuedInterceptor {
         return handler.next(err);
       }
     } catch (e) {
+      String? errorDetail;
       if (kDebugMode) {
         if (e is DioException) {
           debugPrint('❌ [Reissue] 토큰 재발급 실패');
@@ -186,12 +189,15 @@ class AuthInterceptor extends QueuedInterceptor {
             debugPrint('   RFC7807 title: ${apiError.title}');
             debugPrint('   RFC7807 detail: ${apiError.detail}');
             debugPrint('   RFC7807 instance: ${apiError.instance}');
+            errorDetail = apiError.detail;
           }
         } else {
           debugPrint('❌ [Reissue] 토큰 재발급 실패 (non-Dio): $e');
         }
+      } else if (e is DioException) {
+        errorDetail = ApiErrorResponse.tryParse(e.response?.data)?.detail;
       }
-      await _handleForceLogout();
+      await _handleForceLogout(message: errorDetail);
       return handler.next(err);
     }
   }
@@ -216,11 +222,12 @@ class AuthInterceptor extends QueuedInterceptor {
   /// 강제 로그아웃 처리
   ///
   /// 토큰 삭제 후 콜백을 통해 Firebase 로그아웃 및 화면 이동을 수행합니다.
-  Future<void> _handleForceLogout() async {
+  /// [message]: 백엔드 에러 메시지 — 로그인 화면에서 스낵바로 표시
+  Future<void> _handleForceLogout({String? message}) async {
     if (kDebugMode) {
-      debugPrint('🚨 강제 로그아웃 실행');
+      debugPrint('🚨 강제 로그아웃 실행${message != null ? ' (사유: $message)' : ''}');
     }
     await _tokenStorage.clearTokens();
-    await onForceLogout();
+    await onForceLogout(message: message);
   }
 }
