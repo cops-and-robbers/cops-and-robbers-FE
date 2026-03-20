@@ -102,12 +102,20 @@ class AuthNotifier extends _$AuthNotifier {
     // 강제 로그아웃 콜백 등록 (core → auth 역전 패턴)
     // Future.microtask로 지연: build() 중 다른 provider 수정 금지 (Riverpod 제약)
     Future.microtask(() {
-      ref.read(forceLogoutCallbackNotifierProvider.notifier).register(() async {
+      ref.read(forceLogoutCallbackNotifierProvider.notifier).register(({
+        String? message,
+      }) async {
         final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
         await firebaseDataSource.signOut();
         await ref.read(secureTokenStorageProvider).clearTokens();
+        if (message != null) {
+          ref.read(forceLogoutMessageProvider.notifier).state = message;
+        }
         forceLogout();
-        debugPrint('🚨 강제 로그아웃 완료 (토큰 만료/재발급 실패)');
+        debugPrint(
+          '🚨 강제 로그아웃 완료 (토큰 만료/재발급 실패)'
+          '${message != null ? ' 사유: $message' : ''}',
+        );
       });
     });
 

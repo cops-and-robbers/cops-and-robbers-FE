@@ -11,6 +11,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
@@ -60,11 +61,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 text: '닉네임 변경',
                 onTap: () async {
                   final router = GoRouter.of(context);
+                  final navigator = Navigator.of(context);
+
+                  await AppPopup.showRandomLoading(
+                    context: context,
+                    category: LoadingCategory.loadProfile,
+                  );
+
                   try {
                     final profile = await ref
                         .read(userRepositoryProvider)
                         .getMyProfile();
                     if (!mounted) return;
+                    // 로딩 팝업 닫기
+                    if (navigator.canPop()) navigator.pop();
                     final encodedNickname = Uri.encodeComponent(
                       profile.nickname,
                     );
@@ -72,9 +82,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       '${RoutePaths.nicknameSetup}?nickname=$encodedNickname',
                     );
                   } on AuthException {
-                    // 인터셉터에서 force logout 처리됨 — 추가 작업 불필요
+                    // 로딩 팝업 닫기 + 인터셉터에서 force logout 처리됨
+                    if (navigator.canPop()) navigator.pop();
                     return;
                   } on AppException catch (e) {
+                    // 로딩 팝업 닫기
+                    if (navigator.canPop()) navigator.pop();
                     if (!mounted) return;
                     AppSnackbar.show(
                       // ignore: use_build_context_synchronously
@@ -187,6 +200,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 text: '로그아웃',
                 textColor: AppColors.red,
                 onTap: () async {
+                  final navigator = Navigator.of(context);
                   final result = await AppDialog.confirm(
                     context: context,
                     title: '로그아웃',
@@ -194,21 +208,29 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     confirmText: '로그아웃',
                     isDestructive: true,
                   );
-                  if (result == true && mounted) {
-                    await ref.read(authNotifierProvider.notifier).signOut();
-                    if (!mounted) return;
-                    final authState = ref.read(authNotifierProvider);
-                    AppSnackbar.show(
-                      // ignore: use_build_context_synchronously
-                      context,
-                      message: authState.hasError
-                          ? '로그아웃에 실패했습니다'
-                          : '로그아웃되었습니다',
-                      backgroundColor: authState.hasError
-                          ? AppColors.red
-                          : AppColors.blue,
-                    );
-                  }
+                  if (result != true || !mounted) return;
+
+                  await AppPopup.showRandomLoading(
+                    // ignore: use_build_context_synchronously
+                    context: context,
+                    category: LoadingCategory.logout,
+                  );
+
+                  await ref.read(authNotifierProvider.notifier).signOut();
+                  if (!mounted) return;
+
+                  // 로딩 팝업 닫기
+                  if (navigator.canPop()) navigator.pop();
+
+                  final authState = ref.read(authNotifierProvider);
+                  AppSnackbar.show(
+                    // ignore: use_build_context_synchronously
+                    context,
+                    message: authState.hasError ? '로그아웃에 실패했습니다' : '로그아웃되었습니다',
+                    backgroundColor: authState.hasError
+                        ? AppColors.red
+                        : AppColors.blue,
+                  );
                 },
               ),
 
@@ -266,23 +288,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Future<void> _executeDeleteAccount() async {
     final navigator = Navigator.of(context);
 
-    // 로딩 팝업 표시 (터치 차단)
-    AppPopup.show(
+    await AppPopup.showRandomLoading(
       context: context,
-      barrierDismissible: false,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(color: AppColors.black),
-          SizedBox(height: AppSpacing.vertical16),
-          Text(
-            '탈퇴 처리 중...',
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
-          ),
-        ],
-      ),
+      category: LoadingCategory.deleteAccount,
     );
 
     try {
