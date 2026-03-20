@@ -10,7 +10,15 @@ import 'auth_interceptor.dart';
 part 'dio_client.g.dart';
 
 /// 강제 로그아웃 콜백 함수 타입
-typedef ForceLogoutFn = Future<void> Function();
+///
+/// [message]: reissue 실패 시 백엔드에서 전달된 에러 메시지 (RFC 7807 detail)
+typedef ForceLogoutFn = Future<void> Function({String? message});
+
+/// 강제 로그아웃 시 사용자에게 표시할 메시지
+///
+/// reissue 실패 시 백엔드 에러 detail을 저장합니다.
+/// 로그인 화면에서 1회 소비(consume) 후 null로 초기화됩니다.
+final forceLogoutMessageProvider = StateProvider<String?>((ref) => null);
 
 /// 강제 로그아웃 콜백 Provider
 ///
@@ -42,10 +50,10 @@ Dio dio(Ref ref) {
 
   return DioClient.create(
     tokenStorage: tokenStorage,
-    onForceLogout: () async {
+    onForceLogout: ({String? message}) async {
       final callback = ref.read(forceLogoutCallbackNotifierProvider);
       if (callback != null) {
-        await callback();
+        await callback(message: message);
       } else {
         debugPrint('🚨 forceLogoutCallback 미등록 — 토큰만 삭제');
         await tokenStorage.clearTokens();
@@ -68,7 +76,7 @@ class DioClient {
   /// [onForceLogout]: 토큰 재발급 실패 시 호출되는 강제 로그아웃 콜백
   static Dio create({
     required SecureTokenStorage tokenStorage,
-    required Future<void> Function() onForceLogout,
+    required Future<void> Function({String? message}) onForceLogout,
   }) {
     final baseOptions = BaseOptions(
       baseUrl: EnvConfig.apiBaseUrl,

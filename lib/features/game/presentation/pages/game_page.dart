@@ -429,20 +429,27 @@ class _GamePageState extends ConsumerState<GamePage> {
     await AppPopup.show(
       context: context,
       autoCloseDuration: const Duration(seconds: 3),
+      backgroundColor: _isDarkMode ? AppColors.black : null,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             '게임 종료',
-            style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+            style: _isDarkMode
+                ? AppTextStyles.robberHeading.copyWith(color: AppColors.green)
+                : AppTextStyles.heading_20.copyWith(color: AppColors.black),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: AppSpacing.vertical8),
           Text(
             reason == 'ALL_ARRESTED' ? '도둑이 모두 체포되었습니다!' : '제한 시간이 종료되었습니다!',
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
+            style: _isDarkMode
+                ? AppTextStyles.paragraph_14_100.copyWith(
+                    color: AppColors.black400,
+                  )
+                : AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black600,
+                  ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -460,13 +467,21 @@ class _GamePageState extends ConsumerState<GamePage> {
       context: context,
       title: isWin ? '승리!' : '패배...',
       message: '$winnerTeamLabel의 승리입니다!',
-      titleStyle: AppTextStyles.heading_20.copyWith(
-        color: isWin ? AppColors.blue : AppColors.red,
-      ),
+      titleStyle:
+          (_isDarkMode
+                  ? AppTextStyles.robberHeading24
+                  : AppTextStyles.heading_20)
+              .copyWith(
+                color: _isDarkMode
+                    ? AppColors.green
+                    : (isWin ? AppColors.blue : AppColors.red),
+              ),
       cancelText: '홈으로',
       confirmText: '한 번 더',
-      confirmColor: AppColors.blue,
-      confirmTextColor: AppColors.white,
+      isDarkMode: _isDarkMode,
+      backgroundColor: _isDarkMode ? AppColors.black : null,
+      confirmColor: _isDarkMode ? null : AppColors.blue,
+      confirmTextColor: _isDarkMode ? null : AppColors.white,
       barrierDismissible: false,
       onCancel: () {
         // 방 나가기 API (fire-and-forget) + 상태 초기화 후 홈 이동

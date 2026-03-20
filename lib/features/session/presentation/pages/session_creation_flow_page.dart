@@ -8,6 +8,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
@@ -169,6 +172,12 @@ class _SessionCreationFlowPageState
     }
 
     setState(() => _isLoading = true);
+    final navigator = Navigator.of(context);
+
+    await AppPopup.showRandomLoading(
+      context: context,
+      category: LoadingCategory.createRoom,
+    );
 
     await ref
         .read(sessionCreationNotifierProvider.notifier)
@@ -186,6 +195,9 @@ class _SessionCreationFlowPageState
         );
 
     if (!mounted) return;
+
+    // 로딩 팝업 닫기
+    if (navigator.canPop()) navigator.pop();
 
     final sessionState = ref.read(sessionCreationNotifierProvider);
 
@@ -236,8 +248,10 @@ class _SessionCreationFlowPageState
 
       if (mounted) {
         final errorMessage = _getErrorMessage(sessionState.error!);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        AppSnackbar.show(
+          context,
+          message: errorMessage,
+          backgroundColor: AppColors.red,
         );
       }
     }

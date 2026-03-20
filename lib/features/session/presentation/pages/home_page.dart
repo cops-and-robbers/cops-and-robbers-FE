@@ -18,7 +18,10 @@ import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../router/route_paths.dart';
@@ -227,18 +230,31 @@ class HomePage extends ConsumerWidget {
         final dialogCloseStart = DateTime.now();
         final code = codeController.text.trim().toUpperCase();
 
+        await AppPopup.showRandomLoading(
+          context: context,
+          category: LoadingCategory.joinRoom,
+        );
+
         JoinGameResponse? response;
         try {
           response = await ref.read(joinGameProvider(inviteCode: code).future);
         } on DioException catch (e) {
           if (context.mounted) {
+            Navigator.of(context).pop(); // 로딩 팝업 닫기
             final apiError = ApiErrorResponse.tryParse(e.response?.data);
             final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
-            ScaffoldMessenger.of(
+            AppSnackbar.show(
               context,
-            ).showSnackBar(SnackBar(content: Text(message)));
+              message: message,
+              backgroundColor: AppColors.red,
+            );
           }
           return;
+        }
+
+        // 로딩 팝업 닫기
+        if (context.mounted) {
+          Navigator.of(context).pop();
         }
 
         if (response != null && context.mounted) {

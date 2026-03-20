@@ -137,6 +137,15 @@ class AppTextStyles {
   // Robber Styles (Moneygraphy)
   // ============================================
 
+  /// Robber Heading 24 (24px Moneygraphy)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get robberHeading24 => TextStyle(
+    fontFamily: 'Moneygraphy',
+    fontSize: 24.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
   /// Robber Heading (20px Moneygraphy)
   /// Line Height: 100%, Letter Spacing: -0.32px
   static TextStyle get robberHeading => TextStyle(

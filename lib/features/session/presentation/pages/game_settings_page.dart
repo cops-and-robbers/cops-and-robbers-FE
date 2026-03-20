@@ -8,6 +8,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../game/data/models/game_area_model.dart';
 import '../../data/models/game_create_request_model.dart';
@@ -98,7 +101,13 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   }) async {
     final gameId = _gameId;
     if (gameId == null) return;
-    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    await AppPopup.showRandomLoading(
+      context: context,
+      category: LoadingCategory.updateArea,
+    );
+
     try {
       await ref.read(
         updateGameAreaProvider(
@@ -117,19 +126,18 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
           ),
         ).future,
       );
+      if (navigator.canPop()) navigator.pop();
       debugPrint('[GameSettingsPage] ✅ 영역 수정 성공');
     } on DioException catch (e) {
+      if (navigator.canPop()) navigator.pop();
       if (!mounted) return;
       final errorMsg =
           ApiErrorResponse.tryParse(e.response?.data)?.detail ??
           '영역 저장에 실패했습니다.';
-      messenger.clearSnackBars();
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(errorMsg, style: AppTextStyles.paragraph_14),
-          backgroundColor: AppColors.red,
-          duration: const Duration(seconds: 2),
-        ),
+      AppSnackbar.show(
+        context,
+        message: errorMsg,
+        backgroundColor: AppColors.red,
       );
     }
   }

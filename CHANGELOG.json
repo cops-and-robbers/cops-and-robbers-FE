@@ -1,11 +1,42 @@
 {
   "metadata": {
-    "lastUpdated": "2026-03-19T07:35:55Z",
-    "currentVersion": "1.2.36",
+    "lastUpdated": "2026-03-20T06:33:25Z",
+    "currentVersion": "1.2.38",
     "projectType": "flutter",
-    "totalReleases": 50
+    "totalReleases": 51
   },
   "releases": [
+    {
+      "version": "1.2.38",
+      "project_type": "flutter",
+      "date": "2026-03-20",
+      "pr_number": 143,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트\n\n* **새 기능**\n  * 작업별 다양한 로딩 메시지로 향상된 사용자 피드백 제공\n  * 새로운 알림창 시스템으로 개선된 알림 표시\n\n* **개선사항**\n  * 오류 발생 시 상세한 메시지 표시\n  * 로그아웃 및 인증 오류 처리 개선\n  * 게임 화면 다크모드 테마 개선\n\n* **기타**\n  * 앱 버전 업데이트 (v1.2.36 → v1.2.38)",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": [
+            "작업별 다양한 로딩 메시지로 향상된 사용자 피드백 제공",
+            "새로운 알림창 시스템으로 개선된 알림 표시"
+          ]
+        },
+        "개선사항": {
+          "title": "개선사항",
+          "items": [
+            "오류 발생 시 상세한 메시지 표시",
+            "로그아웃 및 인증 오류 처리 개선",
+            "게임 화면 다크모드 테마 개선"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "앱 버전 업데이트 (v1.2.36 → v1.2.38)"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.2.36",
       "project_type": "flutter",
