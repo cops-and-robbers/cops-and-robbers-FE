@@ -13,6 +13,7 @@ import 'core/widgets/dialogs/app_dialog.dart';
 import 'core/widgets/dialogs/dialog_spacing.dart';
 import 'core/widgets/dialogs/app_popup.dart';
 import 'core/widgets/dialogs/countdown_timer_content.dart';
+import 'core/services/loading_message_service.dart';
 import 'core/widgets/chips/action_chip.dart' as custom_chips;
 import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
@@ -1132,6 +1133,23 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     );
                   },
                   backgroundColor: AppColors.black800,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 랜덤 로딩 팝업 테스트
+                AppButton(
+                  text: '랜덤 로딩 팝업 (2초)',
+                  onPressed: () async {
+                    final navigator = Navigator.of(context);
+                    await AppPopup.showRandomLoading(
+                      context: context,
+                      category: LoadingCategory.joinRoom,
+                    );
+                    await Future.delayed(const Duration(seconds: 2));
+                    if (navigator.canPop()) navigator.pop();
+                  },
+                  backgroundColor: AppColors.black600,
                   showBorder: false,
                 ),
                 SizedBox(height: AppSpacing.vertical12),
