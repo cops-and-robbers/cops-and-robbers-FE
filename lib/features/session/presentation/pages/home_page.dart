@@ -86,7 +86,7 @@ class HomePage extends ConsumerWidget {
                   SizedBox(width: AppSpacing.horizontal8),
                   Text(
                     '오늘은 다시 보지 않기',
-                    style: AppTextStyles.tag_12.copyWith(
+                    style: AppTextStyles.paragraph_14_100.copyWith(
                       color: AppColors.black600,
                     ),
                   ),
