@@ -7,6 +7,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
@@ -73,6 +75,12 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
     setState(() => _isSaving = true);
+    final navigator = Navigator.of(context);
+
+    await AppPopup.showRandomLoading(
+      context: context,
+      category: LoadingCategory.saveSettings,
+    );
 
     try {
       await ref.read(
@@ -88,8 +96,10 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
       );
 
       if (!mounted) return;
-      context.pop();
+      if (navigator.canPop()) navigator.pop(); // 로딩 팝업 닫기
+      context.pop(); // 설정 수정 페이지 닫기
     } on DioException catch (e) {
+      if (navigator.canPop()) navigator.pop(); // 로딩 팝업 닫기
       if (!mounted) return;
       final errorMsg =
           ApiErrorResponse.tryParse(e.response?.data)?.detail ??
