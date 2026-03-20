@@ -465,7 +465,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
     AppDialog.show(
       context: context,
-      title: isWin ? '승리!' : '패배...',
+      title: isWin ? '승리' : '패배',
       message: '$winnerTeamLabel의 승리입니다!',
       titleStyle:
           (_isDarkMode
