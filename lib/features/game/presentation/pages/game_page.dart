@@ -496,8 +496,8 @@ class _GamePageState extends ConsumerState<GamePage> {
       }
     });
 
-    final showBanner = ref.watch(
-      gameEventNotifierProvider.select((s) => s.showLocationRevealBanner),
+    final bannerMessage = ref.watch(
+      gameEventNotifierProvider.select((s) => s.bannerMessage),
     );
 
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
@@ -595,14 +595,14 @@ class _GamePageState extends ConsumerState<GamePage> {
           /// showBanner가 true일 때만 배너 표시.
           /// if/else로 항상 동일한 개수의 children을 유지해
           /// ChatOverlay가 항상 동일한 index(5)에 위치하도록 보장함.
-          if (!_showParticipants && showBanner)
+          if (!_showParticipants && bannerMessage != null)
             SafeArea(
               bottom: false,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 64.h + 8.h),
-                  _buildAlertBanner(),
+                  _buildAlertBanner(bannerMessage),
                 ],
               ),
             )
@@ -779,8 +779,8 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
-  /// 알림 배너 (353x44) — LOCATION_REVEAL 이벤트 수신 시 5초간 표시
-  Widget _buildAlertBanner() {
+  /// 알림 배너 (353x44) — 게임 이벤트 수신 시 5초간 표시
+  Widget _buildAlertBanner(String message) {
     return Padding(
       padding: AppPadding.horizontal20,
       child: Container(
@@ -803,7 +803,7 @@ class _GamePageState extends ConsumerState<GamePage> {
             ),
             SizedBox(width: AppSpacing.horizontal8),
             Text(
-              '현재 도둑의 위치가 공개됩니다!',
+              message,
               style: AppTextStyles.paragraph14Semibold.copyWith(
                 color: AppColors.white,
               ),

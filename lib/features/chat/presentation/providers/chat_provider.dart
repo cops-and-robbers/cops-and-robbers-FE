@@ -235,6 +235,27 @@ class ChatNotifier extends _$ChatNotifier {
     datasource.publishChat(gameId, message.trim(), scope);
   }
 
+  /// 게임 이벤트 기반 시스템 메시지를 전체 채팅에 추가합니다.
+  void addSystemMessage({required int gameId, required String message}) {
+    final msg = ChatMessageDto(
+      id: const Uuid().v4(),
+      gameId: gameId,
+      sender: const ChatSenderDto(
+        participantId: 0,
+        nickname: '시스템',
+        team: 'SYSTEM',
+      ),
+      message: message,
+      timestamp: DateTime.now().toIso8601String(),
+      scope: 'ALL',
+    );
+    final updated = [...state.allScopeMessages, msg];
+    final trimmed = updated.length > _maxMessages
+        ? updated.sublist(updated.length - _maxMessages)
+        : updated;
+    state = state.copyWith(allScopeMessages: trimmed);
+  }
+
   // ============================================
   // 더미 모드 (서버 미연동 시 UI 테스트용)
   // ============================================
