@@ -55,6 +55,9 @@ class WaitingRoomPage extends ConsumerStatefulWidget {
 
 class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     with WidgetsBindingObserver {
+  /// 초대 코드 (API 응답 후 업데이트 가능)
+  String? _inviteCode;
+
   /// 팀 섹션 펼침 상태
   bool _isPoliceExpanded = false;
   bool _isRobberExpanded = false;
@@ -84,6 +87,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   @override
   void initState() {
     super.initState();
+    _inviteCode = widget.inviteCode;
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
@@ -91,8 +95,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ref.read(roleThemeProvider.notifier).setDarkMode(team == 'ROBBER');
 
       // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
-      _pendingInviteDialog =
-          widget.showInviteDialog && widget.inviteCode != null;
+      _pendingInviteDialog = widget.showInviteDialog && _inviteCode != null;
 
       _listenLobbyEvents();
       _connectLobby();
@@ -186,6 +189,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       // await 후 위젯이 dispose됐을 수 있으므로 mounted로 이중 확인
       if (_isDisposed || !mounted || lobbyInfo == null) return;
+
+      // 재접속 시 inviteCode를 API에서 가져와 AppBar에 표시
+      final fetchedCode = lobbyInfo.inviteCode;
+      if (_inviteCode == null && fetchedCode != null) {
+        setState(() => _inviteCode = fetchedCode);
+      }
 
       // 로비 참가자 목록에서 내 정보 추출
       final myPid = lobbyInfo.myParticipantId;
@@ -546,7 +555,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 초대코드 모달 (방 생성 직후 표시)
   void _showInviteCodeDialog() {
-    final code = widget.inviteCode!;
+    final code = _inviteCode!;
     final isDark = ref.read(roleThemeProvider);
 
     AppDialog.show(
@@ -721,14 +730,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           ),
         ),
       ),
-      title: widget.inviteCode != null
+      title: _inviteCode != null
           ? GestureDetector(
               onTap: _showInviteCodeDialog,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    widget.inviteCode!,
+                    _inviteCode!,
                     style: isDark
                         ? AppTextStyles.robberHeading.copyWith(
                             color: AppColors.white,

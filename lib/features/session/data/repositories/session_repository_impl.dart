@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../domain/entities/create_session_result.dart';
+import '../../domain/entities/user_game_status_entity.dart';
 import '../../domain/repositories/session_repository.dart';
 import '../datasources/session_remote_datasource.dart';
 import '../models/game_create_request_model.dart';
@@ -74,6 +75,31 @@ class SessionRepositoryImpl implements SessionRepository {
     } catch (e) {
       throw ServerException(
         message: '게임 방 생성 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<UserGameStatusEntity> getMyActiveGame() async {
+    try {
+      final response = await _dataSource.getMyActiveGame();
+      return UserGameStatusEntity(
+        isParticipating: response.isParticipating,
+        participationInfo: response.participationInfo == null
+            ? null
+            : UserGameParticipationEntity(
+                gameId: response.participationInfo!.gameId,
+                participantId: response.participationInfo!.participantId,
+                gameStatus: response.participationInfo!.gameStatus,
+                team: response.participationInfo!.team,
+              ),
+      );
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다.',
         originalException: e,
       );
     }

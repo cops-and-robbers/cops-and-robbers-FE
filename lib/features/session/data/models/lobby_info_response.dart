@@ -30,6 +30,9 @@ class LobbyInfoResponse with _$LobbyInfoResponse {
 
     /// 전체 참가자 목록
     required List<LobbyParticipantInfo> participants,
+
+    /// 초대 코드 (재접속 시 AppBar 표시용)
+    String? inviteCode,
   }) = _LobbyInfoResponse;
 
   factory LobbyInfoResponse.fromJson(Map<String, dynamic> json) =>

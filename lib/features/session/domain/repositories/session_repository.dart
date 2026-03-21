@@ -1,4 +1,5 @@
 import '../entities/create_session_result.dart';
+import '../entities/user_game_status_entity.dart';
 
 /// Session Repository 인터페이스
 ///
@@ -25,4 +26,11 @@ abstract class SessionRepository {
     required int policeWaitMinutes,
     required int maxParticipants,
   });
+
+  /// 참여 중인 게임 정보 조회
+  ///
+  /// Throws:
+  /// - [AuthException]: 인증 실패 (401)
+  /// - [ServerException]: 서버 오류
+  Future<UserGameStatusEntity> getMyActiveGame();
 }
