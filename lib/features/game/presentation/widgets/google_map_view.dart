@@ -1,13 +1,16 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/services/location/device_location_service.dart';
 import 'map_error_widget.dart';
 
 /// Google Maps 기반 게임 지도 뷰
 ///
-/// - 기본 내 위치 마커 표시 (myLocationEnabled)
-/// - 초기 진입 시 현재 위치 1회 조회 후 카메라 이동
+/// - 팀 색상 커스텀 내 위치 마커 (경찰: 파랑, 도둑: 초록)
+/// - 방향 인디케이터 삼각형 (heading 방향을 가리킴)
 /// - [updateAreaCircles]로 플레이그라운드·감옥 원 추가
 class GoogleMapView extends StatefulWidget {
   const GoogleMapView({
@@ -16,10 +19,7 @@ class GoogleMapView extends StatefulWidget {
     this.isDarkMode = false,
   });
 
-  /// 카메라 이동 시작 시 호출 (사용자 드래그 및 programmatic 이동 모두 포함)
   final VoidCallback? onCameraMoveStarted;
-
-  /// 다크 모드 여부 (도둑팀 다크 스타일 적용)
   final bool isDarkMode;
 
   @override
@@ -29,11 +29,21 @@ class GoogleMapView extends StatefulWidget {
 class GoogleMapViewState extends State<GoogleMapView> {
   GoogleMapController? _controller;
 
-  // 위치 조회 실패 대비 fallback (어린이대공원)
   static const LatLng _fallback = LatLng(37.5480, 127.0810);
 
   Set<Circle> _areaCircles = {};
-  Set<Circle> _robberCircles = {};
+
+  // 내 위치 + 방향 통합 마커
+  Marker? _locationMarker;
+
+  // 사전 로드된 BitmapDescriptor (내 위치 통합 마커)
+  BitmapDescriptor? _policeMarker;
+  BitmapDescriptor? _robberMarker;
+
+  // 도둑 공개 위치 마커
+  BitmapDescriptor? _redRobberDot;
+  BitmapDescriptor? _greenRobberDot;
+  Set<Marker> _robberMarkers = {};
 
   @override
   void initState() {
@@ -41,6 +51,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
     debugPrint('========================================');
     debugPrint('🗺️ GoogleMapView initState 시작');
     debugPrint('========================================');
+    _preloadIcons();
   }
 
   @override
@@ -49,6 +60,106 @@ class GoogleMapViewState extends State<GoogleMapView> {
     _controller?.dispose();
     super.dispose();
   }
+
+  // ---------------------------------------------------------------------------
+  // 아이콘 사전 로드
+  // ---------------------------------------------------------------------------
+
+  /// 방향 화살표 + 위치 원을 단일 비트맵으로 통합한 BitmapDescriptor 생성
+  ///
+  /// 비율 (dp 기준):
+  ///  - 원: 12×12
+  ///  - 화살표: 8×5 (이미지 TOP = heading 방향)
+  ///  - 원 테두리 ~ 화살표 밑변 간격: 2
+  ///  - 전체 이미지: 12(W) × 19(H)
+  ///
+  /// anchor = (0.5, 13/19) → 원 중심(y=13)이 마커 좌표에 고정.
+  /// rotation = heading → 화살표가 이동 방향을 가리킴.
+  Future<BitmapDescriptor> _createLocationMarkerDescriptor(Color color) async {
+    final dpr =
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+
+    const dotDiameter = 12.0;
+    const arrowW = 8.0;
+    const arrowH = 5.0;
+    const gap = 2.0;
+    const imgW = dotDiameter; // 12
+    const imgH = arrowH + gap + dotDiameter; // 19
+
+    final physW = (imgW * dpr).round();
+    final physH = (imgH * dpr).round();
+    final s = dpr;
+
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    final fillPaint = Paint()..color = color;
+
+    // 화살표 (삼각형): 이미지 TOP → heading 방향
+    final arrowPath = Path()
+      ..moveTo(imgW / 2 * s, 0) // 꼭짓점 (중앙 상단)
+      ..lineTo((imgW - arrowW) / 2 * s, arrowH * s) // 좌하단
+      ..lineTo((imgW + arrowW) / 2 * s, arrowH * s) // 우하단
+      ..close();
+    canvas.drawPath(arrowPath, fillPaint);
+
+    // 원 (위치 점): 화살표 아래 gap만큼 떨어진 위치
+    final cx = imgW / 2 * s;
+    final cy = (arrowH + gap + dotDiameter / 2) * s; // = 13 * dpr
+    canvas.drawCircle(Offset(cx, cy), dotDiameter / 2 * s, fillPaint);
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(physW, physH);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+
+    return BitmapDescriptor.bytes(
+      bytes!.buffer.asUint8List(),
+      imagePixelRatio: dpr,
+    );
+  }
+
+  /// 도둑 공개 위치용 고정 크기 dot BitmapDescriptor 생성
+  ///
+  /// 내 위치 원과 동일한 12dp.
+  Future<BitmapDescriptor> _createRobberDotDescriptor(Color color) async {
+    final dpr =
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+
+    const diameter = 12.0;
+    final physSize = (diameter * dpr).round();
+    final s = dpr;
+    final center = Offset(diameter / 2 * s, diameter / 2 * s);
+
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+
+    canvas.drawCircle(center, diameter / 2 * s, Paint()..color = color);
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(physSize, physSize);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+
+    return BitmapDescriptor.bytes(
+      bytes!.buffer.asUint8List(),
+      imagePixelRatio: dpr,
+    );
+  }
+
+  /// 모든 마커 아이콘 사전 로드
+  Future<void> _preloadIcons() async {
+    try {
+      _policeMarker = await _createLocationMarkerDescriptor(AppColors.blue);
+      _robberMarker = await _createLocationMarkerDescriptor(AppColors.green);
+      _redRobberDot = await _createRobberDotDescriptor(AppColors.red);
+      _greenRobberDot = await _createRobberDotDescriptor(AppColors.green);
+      debugPrint('✅ GoogleMapView: 마커 아이콘 로드 완료');
+    } catch (e) {
+      debugPrint('❌ GoogleMapView: 마커 아이콘 로드 실패 - $e');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // 공개 메서드
+  // ---------------------------------------------------------------------------
 
   Future<void> moveCameraToCurrentLocation() async {
     debugPrint('📍 GoogleMap: 현재 위치로 카메라 이동 시작');
@@ -62,10 +173,9 @@ class GoogleMapViewState extends State<GoogleMapView> {
 
       debugPrint('[지도/Google] 초기 위치: ${pos.latitude}, ${pos.longitude}');
 
-      final target = LatLng(pos.latitude, pos.longitude);
       await _controller?.animateCamera(
         CameraUpdate.newCameraPosition(
-          CameraPosition(target: target, zoom: 16),
+          CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: 16),
         ),
       );
       debugPrint('✅ GoogleMap: 카메라 이동 완료');
@@ -75,22 +185,78 @@ class GoogleMapViewState extends State<GoogleMapView> {
     }
   }
 
-  /// 맵 영역 원(플레이그라운드·감옥) 업데이트
   void updateAreaCircles(Set<Circle> circles) {
     if (!mounted) return;
     setState(() => _areaCircles = circles);
     debugPrint('🗺️ GoogleMap: 영역 원 ${circles.length}개 업데이트');
   }
 
-  /// 도둑 위치 빨간 원 업데이트 (LOCATION_REVEAL 이벤트 시 호출)
-  void updateRobberCircles(Set<Circle> circles) {
-    if (!mounted) return;
-    setState(() => _robberCircles = circles);
-    debugPrint('🗺️ GoogleMap: 도둑 위치 원 ${circles.length}개 업데이트');
+  /// 도둑 공개 위치 마커 업데이트
+  ///
+  /// [isPolice] true → 빨간 dot, false → 초록 dot.
+  void updateRobberMarkers(
+    Map<int, LatLng> locations, {
+    required bool isPolice,
+  }) {
+    final icon = isPolice ? _redRobberDot : _greenRobberDot;
+    if (icon == null || !mounted) return;
+
+    setState(() {
+      _robberMarkers = locations.entries
+          .map(
+            (e) => Marker(
+              markerId: MarkerId('robber_${e.key}'),
+              position: e.value,
+              icon: icon,
+              anchor: const Offset(0.5, 0.5),
+              flat: true,
+              consumeTapEvents: false,
+              zIndexInt: 0,
+            ),
+          )
+          .toSet();
+    });
+    debugPrint('🗺️ GoogleMap: 도둑 위치 마커 ${locations.length}개 업데이트');
   }
+
+  /// 내 위치 + 방향 통합 마커 업데이트
+  ///
+  /// 단일 비트맵(화살표 + 원)을 rotation=heading으로 회전시켜
+  /// 화살표가 이동 방향을 가리키도록 함.
+  ///
+  /// anchor = (0.5, 13/19): 이미지 높이 19dp 중 원 중심 y=13dp → 13/19
+  /// → 원 중심이 [position] 좌표에 고정.
+  ///
+  /// [position] 현재 위치, [heading] 방향각(0=북, 시계방향), [isPolice] 팀 여부
+  void updateHeadingMarker(LatLng position, double heading, bool isPolice) {
+    final icon = isPolice ? _policeMarker : _robberMarker;
+    if (icon == null || !mounted) return;
+
+    setState(() {
+      _locationMarker = Marker(
+        markerId: const MarkerId('player_location'),
+        position: position,
+        icon: icon,
+        rotation: heading.isNaN ? 0.0 : heading,
+        anchor: const Offset(0.5, 13 / 19),
+        flat: false,
+        consumeTapEvents: false,
+        zIndexInt: 1,
+      );
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
+    final markers = <Marker>{
+      if (_locationMarker != null) _locationMarker!,
+      ..._robberMarkers,
+    };
+
     try {
       return GoogleMap(
         initialCameraPosition: const CameraPosition(
@@ -112,21 +278,18 @@ class GoogleMapViewState extends State<GoogleMapView> {
 
         onCameraMoveStarted: widget.onCameraMoveStarted,
 
-        // 기본 제공 내 위치 마커 상황에 따라 커스텀 마커 적용 예정
-        myLocationEnabled: true,
+        // 기본 파란 점 비활성화 → 팀 컬러 통합 마커(_locationMarker)로 대체
+        myLocationEnabled: false,
         myLocationButtonEnabled: false,
 
         zoomControlsEnabled: false,
         compassEnabled: false,
-        circles: {..._areaCircles, ..._robberCircles},
-        // TODO: 다른 플레이어 실시간 위치 마커 표시 (백엔드 스펙 확정 후)
-        //       markers: _playerMarkers,
+        circles: _areaCircles,
+        markers: markers,
       );
     } catch (e, stack) {
       debugPrint('❌ GoogleMap 생성 실패: $e');
       debugPrint('Stack: $stack');
-
-      // 에러 발생 시 대체 UI 표시
       return MapErrorWidget(mapName: 'Google Map', error: e);
     }
   }
