@@ -460,8 +460,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     if (_isCheckingGameStatus || widget.isDummy) return;
     _isCheckingGameStatus = true;
     try {
-      final status =
-          await ref.read(getMyActiveGameUsecaseProvider).execute();
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
       if (!mounted) return;
 
       final info = status.participationInfo;
