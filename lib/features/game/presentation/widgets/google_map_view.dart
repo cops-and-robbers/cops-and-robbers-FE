@@ -112,9 +112,12 @@ class GoogleMapViewState extends State<GoogleMapView> {
     final picture = recorder.endRecording();
     final image = await picture.toImage(physW, physH);
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    if (bytes == null) {
+      throw StateError('마커 비트맵 인코딩 실패 (toByteData returned null)');
+    }
 
     return BitmapDescriptor.bytes(
-      bytes!.buffer.asUint8List(),
+      bytes.buffer.asUint8List(),
       imagePixelRatio: dpr,
     );
   }
@@ -139,9 +142,12 @@ class GoogleMapViewState extends State<GoogleMapView> {
     final picture = recorder.endRecording();
     final image = await picture.toImage(physSize, physSize);
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    if (bytes == null) {
+      throw StateError('마커 비트맵 인코딩 실패 (toByteData returned null)');
+    }
 
     return BitmapDescriptor.bytes(
-      bytes!.buffer.asUint8List(),
+      bytes.buffer.asUint8List(),
       imagePixelRatio: dpr,
     );
   }
