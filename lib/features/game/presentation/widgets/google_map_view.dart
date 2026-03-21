@@ -45,6 +45,10 @@ class GoogleMapViewState extends State<GoogleMapView> {
   BitmapDescriptor? _greenRobberDot;
   Set<Marker> _robberMarkers = {};
 
+  // 아이콘 로드 전 수신된 업데이트 캐시
+  ({LatLng position, double heading, bool isPolice})? _pendingHeading;
+  ({Map<int, LatLng> locations, bool isPolice})? _pendingRobbers;
+
   @override
   void initState() {
     super.initState();
@@ -83,8 +87,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
     const arrowW = 8.0;
     const arrowH = 5.0;
     const gap = 2.0;
-    const imgW = dotDiameter; // 12
-    const imgH = arrowH + gap + dotDiameter; // 19
+    const imgW = dotDiameter;
+    const imgH = arrowH + gap + dotDiameter;
 
     final physW = (imgW * dpr).round();
     final physH = (imgH * dpr).round();
@@ -94,17 +98,15 @@ class GoogleMapViewState extends State<GoogleMapView> {
     final canvas = Canvas(recorder);
     final fillPaint = Paint()..color = color;
 
-    // 화살표 (삼각형): 이미지 TOP → heading 방향
     final arrowPath = Path()
-      ..moveTo(imgW / 2 * s, 0) // 꼭짓점 (중앙 상단)
-      ..lineTo((imgW - arrowW) / 2 * s, arrowH * s) // 좌하단
-      ..lineTo((imgW + arrowW) / 2 * s, arrowH * s) // 우하단
+      ..moveTo(imgW / 2 * s, 0)
+      ..lineTo((imgW - arrowW) / 2 * s, arrowH * s)
+      ..lineTo((imgW + arrowW) / 2 * s, arrowH * s)
       ..close();
     canvas.drawPath(arrowPath, fillPaint);
 
-    // 원 (위치 점): 화살표 아래 gap만큼 떨어진 위치
     final cx = imgW / 2 * s;
-    final cy = (arrowH + gap + dotDiameter / 2) * s; // = 13 * dpr
+    final cy = (arrowH + gap + dotDiameter / 2) * s;
     canvas.drawCircle(Offset(cx, cy), dotDiameter / 2 * s, fillPaint);
 
     final picture = recorder.endRecording();
@@ -145,6 +147,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
   }
 
   /// 모든 마커 아이콘 사전 로드
+  ///
+  /// 로드 완료 후 대기 중인 캐시가 있으면 즉시 적용한다.
   Future<void> _preloadIcons() async {
     try {
       _policeMarker = await _createLocationMarkerDescriptor(AppColors.blue);
@@ -152,8 +156,20 @@ class GoogleMapViewState extends State<GoogleMapView> {
       _redRobberDot = await _createRobberDotDescriptor(AppColors.red);
       _greenRobberDot = await _createRobberDotDescriptor(AppColors.green);
       debugPrint('✅ GoogleMapView: 마커 아이콘 로드 완료');
+      _applyPendingUpdates();
     } catch (e) {
       debugPrint('❌ GoogleMapView: 마커 아이콘 로드 실패 - $e');
+    }
+  }
+
+  void _applyPendingUpdates() {
+    if (_pendingHeading case final p?) {
+      _pendingHeading = null;
+      updateHeadingMarker(p.position, p.heading, p.isPolice);
+    }
+    if (_pendingRobbers case final p?) {
+      _pendingRobbers = null;
+      updateRobberMarkers(p.locations, isPolice: p.isPolice);
     }
   }
 
@@ -199,7 +215,10 @@ class GoogleMapViewState extends State<GoogleMapView> {
     required bool isPolice,
   }) {
     final icon = isPolice ? _redRobberDot : _greenRobberDot;
-    if (icon == null || !mounted) return;
+    if (icon == null || !mounted) {
+      _pendingRobbers = (locations: locations, isPolice: isPolice);
+      return;
+    }
 
     setState(() {
       _robberMarkers = locations.entries
@@ -230,7 +249,14 @@ class GoogleMapViewState extends State<GoogleMapView> {
   /// [position] 현재 위치, [heading] 방향각(0=북, 시계방향), [isPolice] 팀 여부
   void updateHeadingMarker(LatLng position, double heading, bool isPolice) {
     final icon = isPolice ? _policeMarker : _robberMarker;
-    if (icon == null || !mounted) return;
+    if (icon == null || !mounted) {
+      _pendingHeading = (
+        position: position,
+        heading: heading,
+        isPolice: isPolice,
+      );
+      return;
+    }
 
     setState(() {
       _locationMarker = Marker(

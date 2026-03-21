@@ -193,9 +193,9 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   /// 도둑 팀 GPS 위치 스트림 구독 및 서버 전송 시작
   ///
-  /// distanceFilter 10m로 OS 레벨에서 필터링하고,
+  /// distanceFilter 5m로 OS 레벨에서 필터링하고,
   /// 추가로 5초 throttle을 적용하여 서버 부하를 제한한다.
-  /// 지속적 스트림 구독으로 OS 위치 인디케이터가 표시된다.
+  /// 방향 갱신은 [_startHeadingTracking]의 별도 스트림이 담당한다.
   Future<void> _startLocationSending() async {
     // GPS 조회 (STOMP 연결 대기와 병렬 수행)
     Position? initial;
@@ -226,17 +226,13 @@ class _GamePageState extends ConsumerState<GamePage> {
       );
       _lastSentPosition = initial;
       _lastSentTime = DateTime.now();
-      _updateHeadingMarker(initial);
     }
 
-    // 위치 스트림 구독: 10m 이상 이동 시 이벤트 발생, 5초 throttle 적용
+    // 위치 스트림 구독: 5m 이상 이동 시 이벤트 발생, 5초 throttle 적용
     _locationSubscription =
-        DeviceLocationService.getPositionStream(distanceFilter: 10).listen(
+        DeviceLocationService.getPositionStream(distanceFilter: 5).listen(
           (pos) {
             if (!mounted) return;
-
-            // heading은 throttle 없이 항상 갱신
-            _updateHeadingMarker(pos);
 
             // 5초 미만이면 서버 전송 스킵 (서버 부하 제한)
             final now = DateTime.now();
@@ -263,16 +259,15 @@ class _GamePageState extends ConsumerState<GamePage> {
         );
   }
 
-  /// 경찰 팀 전용 heading 추적 스트림 시작 (서버 전송 없음)
+  /// 방향 인디케이터 실시간 갱신 스트림 시작 (양 팀 공통, 서버 전송 없음)
   void _startHeadingTracking() {
-    if (widget.team == 'POLICE' && !widget.isDummy) {
-      _headingSubscription =
-          DeviceLocationService.getPositionStream(distanceFilter: 5).listen((
-            pos,
-          ) {
-            if (mounted) _updateHeadingMarker(pos);
-          });
-    }
+    if (widget.isDummy) return;
+    _headingSubscription =
+        DeviceLocationService.getPositionStream(distanceFilter: 0).listen((
+          pos,
+        ) {
+          if (mounted) _updateHeadingMarker(pos);
+        });
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
@@ -488,15 +483,11 @@ class _GamePageState extends ConsumerState<GamePage> {
       }
     });
 
-    // LOCATION_REVEAL 수신 시 모든 팀에게 도둑 위치 원 표시
-    // 경찰: 빨간 원, 도둑: 초록 원
     ref.listen(gameEventNotifierProvider.select((s) => s.robberLocations), (
       prev,
       next,
     ) {
-      if (next.isNotEmpty) {
-        _updateRobberMarkers(next);
-      }
+      _updateRobberMarkers(next);
     });
 
     // 게임 맵 영역 로드 완료 시 지도에 원 추가
