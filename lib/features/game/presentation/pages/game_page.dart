@@ -11,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -65,6 +66,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
+  bool _isCheckingGameStatus = false;
   bool _isLocationFocused = true;
   bool _isProgrammaticMove = true; // 초기 카메라 이동(onMapCreated) 보호
 
@@ -450,8 +452,44 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
+  /// resumed 복귀 시 게임 종료 여부 확인
+  ///
+  /// 백그라운드 중 게임이 끝났을 경우 홈으로 이동,
+  /// 대기실로 돌아간 경우 로비로 이동합니다.
+  Future<void> _checkGameStatusOnResume() async {
+    if (_isCheckingGameStatus || widget.isDummy) return;
+    _isCheckingGameStatus = true;
+    try {
+      final status =
+          await ref.read(getMyActiveGameUsecaseProvider).execute();
+      if (!mounted) return;
+
+      final info = status.participationInfo;
+
+      if (!status.isParticipating || info == null) {
+        // 게임 종료 → 홈
+        context.go(RoutePaths.home);
+      } else if (info.gameStatus == 'WAITING') {
+        // 대기실 상태 → 로비로 복귀
+        context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
+      }
+      // IN_PROGRESS → 현재 게임 화면 유지
+    } catch (_) {
+      // API 실패 시 현재 화면 유지 (무시)
+    } finally {
+      _isCheckingGameStatus = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // resumed 복귀 시 게임 종료 여부 확인
+    ref.listen(lifecycleStateProvider, (_, next) {
+      if (next.valueOrNull == AppLifecycleState.resumed) {
+        _checkGameStatusOnResume();
+      }
+    });
+
     // 게임 이벤트 감지 → 게임 종료 다이얼로그
     ref.listen(gameEventNotifierProvider, (prev, next) {
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
