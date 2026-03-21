@@ -18,24 +18,19 @@ class EnvConfig {
     await dotenv.load(fileName: '.env');
   }
 
-  // API URL
+  /// 백엔드 API 기본 URL. 환경변수 `API_BASE_URL` 미설정 시 `http://localhost:8080`.
   static String get apiBaseUrl {
     return dotenv.env['API_BASE_URL'] ?? 'http://localhost:8080';
   }
 
-  // WebSocket URL
+  /// WebSocket 연결 URL. 환경변수 `WS_URL` 미설정 시 `ws://localhost:8080/ws`.
   static String get webSocketUrl {
     return dotenv.env['WS_URL'] ?? 'ws://localhost:8080/ws';
   }
 
-  // Mock API 사용 여부
+  /// Mock API 사용 여부. 환경변수 `USE_MOCK_API`가 `'true'` 또는 `'1'`이면 활성화.
   static bool get useMockApi {
     final value = dotenv.env['USE_MOCK_API']?.toLowerCase();
     return value == 'true' || value == '1';
-  }
-
-  // Naver Map Client ID (네이버 지도 SDK 초기화 시 사용)
-  static String get naverMapClientId {
-    return dotenv.env['NAVER_MAP_CLIENT_ID'] ?? '';
   }
 }
