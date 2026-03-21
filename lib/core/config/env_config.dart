@@ -33,9 +33,4 @@ class EnvConfig {
     final value = dotenv.env['USE_MOCK_API']?.toLowerCase();
     return value == 'true' || value == '1';
   }
-
-  // Naver Map Client ID (네이버 지도 SDK 초기화 시 사용)
-  static String get naverMapClientId {
-    return dotenv.env['NAVER_MAP_CLIENT_ID'] ?? '';
-  }
 }

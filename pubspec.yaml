@@ -49,7 +49,6 @@ dependencies:
   share_plus: ^12.0.1 # 네이티브 공유 시트
   # 지도
   google_maps_flutter: ^2.14.0 # Google Maps SDK (Flutter)
-  flutter_naver_map: ^1.4.4 # Naver Map SDK (Flutter)
   # 위치 추적
   geolocator: ^14.0.2 # 위치 권한 및 실시간 위치 조회
   # 알림 & 실시간 통신

@@ -75,10 +75,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 더미 모드에서 "나"의 participantId
   static const _dummyMyId = 3;
 
-  /// 선택된 지도 타입 (방장이 게임 시작 시 사용)
-  // TODO: 지도 선택 UI 추가 시 변경 가능하도록
-  final String _selectedMapType = 'google';
-
   /// 로비 이벤트 구독 (dispose 시 명시적 해제)
   ProviderSubscription<LobbyState>? _lobbyEventSub;
 
@@ -368,7 +364,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _gameStartRetryCount = 0;
     final team = participantInfo.team;
     final participantId = participantInfo.participantId!;
-    final mapType = _selectedMapType;
 
     // startTime을 직접 추출 (GameStartData.fromJson은 message 필드 누락 시 예외 발생 가능)
     final startTimeStr = event.data['startTime'] as String?;
@@ -379,7 +374,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
 
     final route =
-        '${RoutePaths.gameWithId(widget.sessionId)}?mapType=$mapType&team=$team&pid=$participantId';
+        '${RoutePaths.gameWithId(widget.sessionId)}?team=$team&pid=$participantId';
 
     if (mounted) {
       context.go(route);
@@ -472,7 +467,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     if (_isDummyMode) {
       if (mounted) {
         context.go(
-          '${RoutePaths.gameWithId('1')}?mapType=$_selectedMapType&team=POLICE&pid=$_dummyMyId&dummy=true',
+          '${RoutePaths.gameWithId('1')}?team=POLICE&pid=$_dummyMyId&dummy=true',
         );
       }
       return;
@@ -487,7 +482,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       category: LoadingCategory.startGame,
     );
 
-    // TODO: 지도 선택 UI 추가 시 _selectedMapType 변경
     try {
       await ref.read(startGameProvider(gameId).future);
       if (navigator.canPop()) navigator.pop();
