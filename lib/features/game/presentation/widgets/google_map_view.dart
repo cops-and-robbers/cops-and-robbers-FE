@@ -34,6 +34,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
   Set<Circle> _areaCircles = {};
   Set<Polygon> _areaPolygons = {};
 
+  double _minZoom = 12.0;
+
   // 내 위치 + 방향 통합 마커
   Marker? _locationMarker;
 
@@ -208,6 +210,19 @@ class GoogleMapViewState extends State<GoogleMapView> {
     }
   }
 
+  void updateMinZoom(double playgroundRadiusInMeters) {
+    if (!mounted) return;
+    setState(() => _minZoom = _minZoomForRadius(playgroundRadiusInMeters));
+  }
+
+  static double _minZoomForRadius(double radiusInMeters) =>
+      switch (radiusInMeters) {
+        <= 200 => 15.0,
+        <= 500 => 14.0,
+        <= 1000 => 13.0,
+        _ => 12.0,
+      };
+
   void updateAreaCircles(Set<Circle> circles) {
     if (!mounted) return;
     setState(() => _areaCircles = circles);
@@ -321,6 +336,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
         myLocationEnabled: false,
         myLocationButtonEnabled: false,
 
+        minMaxZoomPreference: MinMaxZoomPreference(_minZoom, 20),
         zoomControlsEnabled: false,
         compassEnabled: false,
         circles: _areaCircles,
