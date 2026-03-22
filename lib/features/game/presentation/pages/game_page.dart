@@ -401,7 +401,7 @@ class _GamePageState extends ConsumerState<GamePage> {
         polygonId: const PolygonId('outside_overlay'),
         points: outerBounds,
         holes: [hole],
-        fillColor: Colors.black.withValues(alpha: 0.4),
+        fillColor: AppColors.black.withValues(alpha: 0.4),
         strokeWidth: 0,
         consumeTapEvents: false,
       ),
