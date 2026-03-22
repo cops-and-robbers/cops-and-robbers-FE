@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -30,6 +31,14 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
+
+class _UpperCaseFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) => newValue.copyWith(text: newValue.text.toUpperCase());
+}
 
 /// 홈 화면
 ///
@@ -218,6 +227,7 @@ class HomePage extends ConsumerWidget {
         controller: codeController,
         hintText: '참여코드를 입력하세요',
         maxLength: 6,
+        inputFormatters: [_UpperCaseFormatter()],
       ),
       cancelText: '닫기',
       confirmText: '참여하기',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constants/app_colors.dart';
@@ -90,6 +91,7 @@ class AppTextField extends StatelessWidget {
     this.maxLength,
     this.prefixIcon,
     this.suffixIcon,
+    this.inputFormatters,
   });
 
   /// Hint 텍스트 (Placeholder)
@@ -170,6 +172,9 @@ class AppTextField extends StatelessWidget {
   /// 뒤쪽 아이콘 위젯
   final Widget? suffixIcon;
 
+  /// 입력 포매터 목록 (대문자 변환 등)
+  final List<TextInputFormatter>? inputFormatters;
+
   // ============================================
   // 기본값 Getter 메서드
   // ============================================
@@ -237,6 +242,7 @@ class AppTextField extends StatelessWidget {
         maxLines: maxLines,
         minLines: minLines,
         maxLength: maxLength,
+        inputFormatters: inputFormatters,
         style: AppTextStyles.label16Medium.copyWith(color: _effectiveTextColor),
         decoration: InputDecoration(
           hintText: hintText,

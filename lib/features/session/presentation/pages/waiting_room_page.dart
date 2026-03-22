@@ -69,6 +69,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 참가자 초기화 중복 실행 방지
   bool _isFetchingParticipants = false;
 
+  /// resumed 시 게임 상태 확인 중복 실행 방지
+  bool _isCheckingGameStatus = false;
+
   /// 초대코드 다이얼로그 대기 여부 (API 응답 후 1회 표시)
   bool _pendingInviteDialog = false;
 
@@ -116,12 +119,82 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.detached) {
+    if (state == AppLifecycleState.resumed) {
+      _checkStatusOnResume();
+    } else if (state == AppLifecycleState.detached) {
       // 앱 종료 시 best-effort로 퇴장 시도
       final gameId = int.tryParse(widget.sessionId);
       if (gameId != null) {
         ref.read(leaveGameProvider(gameId).future);
       }
+    }
+  }
+
+  /// resumed 복귀 시 게임 상태 확인 후 화면 분기 또는 소켓 재연결
+  ///
+  /// - 게임 시작됨 → 게임 화면으로 이동
+  /// - 강퇴/게임 종료 → 홈으로 이동
+  /// - 여전히 대기 중 → 소켓이 끊겼으면 재연결
+  Future<void> _checkStatusOnResume() async {
+    if (_isCheckingGameStatus || _isDummyMode) return;
+    _isCheckingGameStatus = true;
+    try {
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
+      if (_isDisposed || !mounted) return;
+
+      final info = status.participationInfo;
+
+      if (!status.isParticipating || info == null) {
+        // 강퇴 또는 게임 종료 → 홈
+        ref.read(gameParticipantNotifierProvider.notifier).clear();
+        ref.read(waitingRoomParticipantsProvider.notifier).clear();
+        context.go(RoutePaths.home);
+      } else if (info.gameStatus == 'IN_PROGRESS') {
+        // 게임 시작됨 → 게임 설정 재조회로 gameStartTime 확보 후 게임 화면으로 이동
+        final gameId = int.tryParse(widget.sessionId);
+        if (gameId != null) {
+          try {
+            ref.invalidate(fetchGameSettingsProvider(gameId));
+            final settings = await ref.read(
+              fetchGameSettingsProvider(gameId).future,
+            );
+            if (!_isDisposed && mounted && settings.gameStartTime != null) {
+              ref
+                  .read(gameParticipantNotifierProvider.notifier)
+                  .setGameStartTime(settings.gameStartTime!);
+            }
+          } catch (_) {
+            // 실패해도 게임 화면으로 이동은 계속 진행
+          }
+        }
+        if (_isDisposed || !mounted) return;
+        final team = info.team;
+        final participantId = info.participantId;
+        context.go(
+          '${RoutePaths.gameWithId(info.gameId.toString())}?team=$team&pid=$participantId',
+        );
+      } else {
+        // WAITING → 로비 소켓 재연결 (필요한 경우에만)
+        _reconnectLobbyIfNeeded();
+      }
+    } catch (_) {
+      // API 실패 시 현재 화면 유지 (무시)
+    } finally {
+      _isCheckingGameStatus = false;
+    }
+  }
+
+  /// resumed 복귀 시 로비 소켓 재연결 (필요한 경우에만)
+  void _reconnectLobbyIfNeeded() {
+    final gameId = int.tryParse(widget.sessionId);
+    if (gameId == null) return;
+
+    final connState = ref.read(lobbyNotifierProvider).connectionState;
+    if (connState != StompConnectionState.connected &&
+        connState != StompConnectionState.connecting) {
+      ref
+          .read(lobbyNotifierProvider.notifier)
+          .connectAndSubscribe(gameId: gameId, onGameStart: _onGameStartEvent);
     }
   }
 
@@ -657,6 +730,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                         () => _isPoliceExpanded = !_isPoliceExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
+                      myParticipantId: participantInfo?.participantId,
                       onAddSlotTap: !_isReady
                           ? () => _changeTeam('POLICE')
                           : null,
@@ -680,6 +754,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                         () => _isRobberExpanded = !_isRobberExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
+                      myParticipantId: participantInfo?.participantId,
                       onAddSlotTap: !_isReady
                           ? () => _changeTeam('ROBBER')
                           : null,

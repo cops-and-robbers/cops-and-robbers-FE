@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../data/datasources/chat_stomp_datasource.dart';
+import '../../../game/presentation/providers/game_event_provider.dart';
 import '../providers/chat_provider.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
@@ -41,6 +41,12 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       DraggableScrollableController();
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
+  DateTime? _lastHandledGameStart;
+  DateTime? _lastHandledPoliceMove;
+  DateTime? _lastHandledLocationReveal;
+  bool _lastHandledIsGameOver = false;
 
   bool _isExpanded = false;
   double _sheetSize = 0;
@@ -98,6 +104,61 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
 
   @override
   Widget build(BuildContext context) {
+    // 게임 이벤트 → 전체채팅 시스템 메시지 주입
+    ref.listen(gameEventNotifierProvider.select((s) => s.gameStartTime), (
+      prev,
+      next,
+    ) {
+      if (next != null && next != _lastHandledGameStart) {
+        _lastHandledGameStart = next;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: widget.gameId,
+              message: '게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!',
+            );
+      }
+    });
+
+    ref.listen(gameEventNotifierProvider.select((s) => s.policeMoveStartTime), (
+      prev,
+      next,
+    ) {
+      if (next != null && next != _lastHandledPoliceMove) {
+        _lastHandledPoliceMove = next;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(gameId: widget.gameId, message: '경찰이 출동합니다!');
+      }
+    });
+
+    ref.listen(
+      gameEventNotifierProvider.select((s) => s.lastLocationRevealTime),
+      (prev, next) {
+        if (next != null && next != _lastHandledLocationReveal) {
+          _lastHandledLocationReveal = next;
+          ref
+              .read(chatNotifierProvider.notifier)
+              .addSystemMessage(
+                gameId: widget.gameId,
+                message: '현재 도둑의 위치가 공개됩니다!',
+              );
+        }
+      },
+    );
+
+    ref.listen(gameEventNotifierProvider.select((s) => s.isGameOver), (
+      prev,
+      next,
+    ) {
+      if (next == true && !_lastHandledIsGameOver) {
+        _lastHandledIsGameOver = true;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(gameId: widget.gameId, message: '게임이 종료되었습니다!');
+      }
+    });
+
     final chatState = ref.watch(chatNotifierProvider);
     final isConnected =
         chatState.connectionState == StompConnectionState.connected;
@@ -156,7 +217,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                       BoxShadow(
                         offset: const Offset(0, -2),
                         blurRadius: 10,
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: AppColors.black.withValues(alpha: 0.1),
                       ),
                     ],
                   ),

@@ -19,6 +19,7 @@ class TeamSection extends StatelessWidget {
     required this.isExpanded,
     required this.onToggle,
     this.hostParticipantId,
+    this.myParticipantId,
     this.onAddSlotTap,
     this.badge,
     this.onMemberTap,
@@ -43,6 +44,9 @@ class TeamSection extends StatelessWidget {
 
   /// 방장 participantId
   final int? hostParticipantId;
+
+  /// 현재 사용자 participantId (닉네임 볼드 처리용)
+  final int? myParticipantId;
 
   /// + 버튼 카드 탭 콜백 (팀 변경용)
   final VoidCallback? onAddSlotTap;
@@ -179,6 +183,7 @@ class TeamSection extends StatelessWidget {
             (member) => ParticipantCard(
               participant: member,
               isHost: member.participantId == hostParticipantId,
+              isMe: member.participantId == myParticipantId,
               isDarkMode: isDarkMode,
               onTap: onMemberTap != null ? () => onMemberTap!(member) : null,
             ),

@@ -15,6 +15,7 @@ class ParticipantCard extends StatelessWidget {
   const ParticipantCard({
     required this.participant,
     this.isHost = false,
+    this.isMe = false,
     this.onTap,
     this.isDarkMode = false,
     super.key,
@@ -22,6 +23,9 @@ class ParticipantCard extends StatelessWidget {
 
   final LobbyParticipantInfo participant;
   final bool isHost;
+
+  /// 현재 사용자 여부 (닉네임 볼드 처리)
+  final bool isMe;
 
   /// 카드 탭 콜백 (null이면 탭 비활성화)
   final VoidCallback? onTap;
@@ -73,6 +77,7 @@ class ParticipantCard extends StatelessWidget {
                       color: isDarkMode
                           ? AppColors.black300
                           : AppColors.black800,
+                      fontFamily: isMe ? 'Pretendard-SemiBold' : null,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,

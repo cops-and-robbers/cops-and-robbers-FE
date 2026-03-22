@@ -7,7 +7,8 @@ import '../../../../core/constants/text_styles.dart';
 
 /// 다음 도둑 위치 공개까지 남은 시간을 MM:SS로 표시하는 위젯
 ///
-/// [nextRevealTime]이 null이면 '--:--' 표시.
+/// [nextRevealTime]이 null이면 [intervalMinutes]가 유효할 경우 '{interval}:00' 표시,
+/// 그렇지 않으면 '--:--' 표시.
 /// [intervalMinutes]가 지정되면 카운트다운이 0에 도달 시
 /// 자동으로 다음 주기로 순환한다.
 class LocationRevealCountdown extends StatefulWidget {
@@ -92,7 +93,11 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
   }
 
   String get _formatted {
-    if (widget.nextRevealTime == null) return '--:--';
+    if (widget.nextRevealTime == null) {
+      final interval = widget.intervalMinutes;
+      if (interval == null || interval <= 0) return '--:--';
+      return '${interval.remainder(60).toString().padLeft(2, '0')}:00';
+    }
     final m = _remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
     final s = _remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$m:$s';

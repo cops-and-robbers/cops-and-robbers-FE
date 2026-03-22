@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,6 +96,7 @@ class _GamePageState extends ConsumerState<GamePage> {
       _connectGameEvents();
       _loadGameArea();
       _showPoliceTimerIfNeeded();
+      _initSettingsFromApiIfNeeded();
     });
   }
 
@@ -139,6 +141,59 @@ class _GamePageState extends ConsumerState<GamePage> {
         subtitle: '도둑이 도망치는 중이에요!',
       ),
     );
+  }
+
+  /// 게임 설정 API 보완 초기화
+  ///
+  /// splash 재접속 등으로 [gameParticipantNotifierProvider] 상태가 없거나
+  /// 설정값이 누락된 경우 `GET /api/games/{gameId}` API로 보완합니다.
+  /// 로비를 거친 정상 진입 경로에서는 이미 설정값이 있으므로 early return됩니다.
+  Future<void> _initSettingsFromApiIfNeeded() async {
+    if (widget.isDummy) return;
+
+    final info = ref.read(gameParticipantNotifierProvider);
+    if (info?.roundTimeMinutes != null) return; // 이미 초기화됨
+
+    try {
+      final settings = await ref.read(
+        fetchGameSettingsProvider(_gameId).future,
+      );
+      if (!mounted) return;
+
+      // state가 null이면 (splash 재접속) 기본값으로 초기화
+      if (ref.read(gameParticipantNotifierProvider) == null) {
+        ref
+            .read(gameParticipantNotifierProvider.notifier)
+            .setGameInfo(
+              gameId: _gameId,
+              nickname: '',
+              team: widget.team,
+              participantId: widget.participantId,
+            );
+      }
+
+      ref
+          .read(gameParticipantNotifierProvider.notifier)
+          .initFromLobby(
+            participantId: widget.participantId,
+            maxParticipants: settings.maxParticipants,
+            locationRevealIntervalMinutes:
+                settings.locationRevealIntervalMinutes,
+            policeWaitMinutes: settings.policeWaitMinutes,
+            roundTimeMinutes: settings.roundDurationMinutes,
+          );
+
+      if (settings.gameStartTime != null) {
+        ref
+            .read(gameParticipantNotifierProvider.notifier)
+            .setGameStartTime(settings.gameStartTime!);
+      }
+
+      // 설정 로드 후 경찰 타이머 재확인 (첫 호출 시 설정 없어 early return됐을 수 있음)
+      if (mounted) _showPoliceTimerIfNeeded();
+    } catch (_) {
+      // 실패해도 게임 진행에는 영향 없음 (타이머만 미표시)
+    }
   }
 
   /// 도둑팀 전용: 경찰 시작 시각 계산
@@ -195,7 +250,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   /// 도둑 팀 GPS 위치 스트림 구독 및 서버 전송 시작
   ///
-  /// distanceFilter 5m로 OS 레벨에서 필터링하고,
+  /// distanceFilter 10m로 OS 레벨에서 필터링하고,
   /// 추가로 5초 throttle을 적용하여 서버 부하를 제한한다.
   /// 방향 갱신은 [_startHeadingTracking]의 별도 스트림이 담당한다.
   Future<void> _startLocationSending() async {
@@ -230,9 +285,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       _lastSentTime = DateTime.now();
     }
 
-    // 위치 스트림 구독: 5m 이상 이동 시 이벤트 발생, 5초 throttle 적용
+    // 위치 스트림 구독: 10m 이상 이동 시 이벤트 발생, 5초 throttle 적용
     _locationSubscription =
-        DeviceLocationService.getPositionStream(distanceFilter: 5).listen(
+        DeviceLocationService.getPositionStream(distanceFilter: 10).listen(
           (pos) {
             if (!mounted) return;
 
@@ -353,6 +408,60 @@ class _GamePageState extends ConsumerState<GamePage> {
     };
   }
 
+  /// 위경도 원을 [points]개 꼭짓점 다각형으로 근사
+  List<LatLng> _approximateCircle(
+    LatLng center,
+    double radiusMeters, {
+    int points = 64,
+  }) {
+    const earthRadius = 6371000.0;
+    return List.generate(points, (i) {
+      final angle = i * 2 * math.pi / points;
+      final latOffset = (radiusMeters / earthRadius) * (180 / math.pi);
+      final lngOffset =
+          (radiusMeters / earthRadius) *
+          (180 / math.pi) /
+          math.cos(center.latitude * math.pi / 180);
+      return LatLng(
+        center.latitude + latOffset * math.cos(angle),
+        center.longitude + lngOffset * math.sin(angle),
+      );
+    });
+  }
+
+  /// 플레이그라운드 외부 영역 반투명 오버레이 폴리곤 생성
+  Set<Polygon> _buildOutsideOverlay(GameAreaModel area) {
+    final clat = area.playgroundCenter.latitude;
+    final clng = area.playgroundCenter.longitude;
+    const delta = 2.0;
+    final outerBounds = [
+      LatLng(clat + delta, clng - delta),
+      LatLng(clat + delta, clng + delta),
+      LatLng(clat - delta, clng + delta),
+      LatLng(clat - delta, clng - delta),
+    ];
+
+    final center = LatLng(
+      area.playgroundCenter.latitude,
+      area.playgroundCenter.longitude,
+    );
+    final hole = _approximateCircle(
+      center,
+      area.playgroundRadiusInMeters,
+    ).reversed.toList();
+
+    return {
+      Polygon(
+        polygonId: const PolygonId('outside_overlay'),
+        points: outerBounds,
+        holes: [hole],
+        fillColor: AppColors.black.withValues(alpha: 0.4),
+        strokeWidth: 0,
+        consumeTapEvents: false,
+      ),
+    };
+  }
+
   /// LOCATION_REVEAL 수신 시 도둑 위치 마커 갱신
   ///
   /// 경찰팀에게는 빨간 dot, 도둑팀에게는 초록 dot으로 표시한다.
@@ -452,6 +561,27 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
+  /// resumed 복귀 시 소켓 재연결 (필요한 경우에만)
+  ///
+  /// OS가 백그라운드에서 WebSocket을 끊거나, 지수 백오프 5회 소진 후
+  /// dead 상태로 방치된 경우를 복구합니다.
+  void _reconnectSocketsIfNeeded() {
+    if (widget.isDummy) return;
+
+    final chatState = ref.read(chatNotifierProvider).connectionState;
+    if (chatState != StompConnectionState.connected &&
+        chatState != StompConnectionState.connecting) {
+      final team = widget.team.toLowerCase();
+      _chatNotifier?.connectAndSubscribe(gameId: _gameId, team: team);
+    }
+
+    final gameEventState = ref.read(gameEventNotifierProvider).connectionState;
+    if (gameEventState != StompConnectionState.connected &&
+        gameEventState != StompConnectionState.connecting) {
+      _gameEventNotifier?.connectAndSubscribe(_gameId);
+    }
+  }
+
   /// resumed 복귀 시 게임 종료 여부 확인
   ///
   /// 백그라운드 중 게임이 끝났을 경우 홈으로 이동,
@@ -486,6 +616,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     ref.listen(lifecycleStateProvider, (_, next) {
       if (next.valueOrNull == AppLifecycleState.resumed) {
         _checkGameStatusOnResume();
+        _reconnectSocketsIfNeeded();
       }
     });
 
@@ -496,8 +627,8 @@ class _GamePageState extends ConsumerState<GamePage> {
       }
     });
 
-    final showBanner = ref.watch(
-      gameEventNotifierProvider.select((s) => s.showLocationRevealBanner),
+    final bannerMessage = ref.watch(
+      gameEventNotifierProvider.select((s) => s.bannerMessage),
     );
 
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
@@ -532,6 +663,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       next.whenData((area) {
         _googleMapKey.currentState?.updateAreaCircles(
           _buildGoogleCircles(area),
+        );
+        _googleMapKey.currentState?.updateAreaPolygons(
+          _buildOutsideOverlay(area),
         );
       });
     });
@@ -595,14 +729,14 @@ class _GamePageState extends ConsumerState<GamePage> {
           /// showBanner가 true일 때만 배너 표시.
           /// if/else로 항상 동일한 개수의 children을 유지해
           /// ChatOverlay가 항상 동일한 index(5)에 위치하도록 보장함.
-          if (!_showParticipants && showBanner)
+          if (!_showParticipants && bannerMessage != null)
             SafeArea(
               bottom: false,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 64.h + 8.h),
-                  _buildAlertBanner(),
+                  _buildAlertBanner(bannerMessage),
                 ],
               ),
             )
@@ -779,18 +913,18 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
-  /// 알림 배너 (353x44) — LOCATION_REVEAL 이벤트 수신 시 5초간 표시
-  Widget _buildAlertBanner() {
+  /// 알림 배너 (353x44) — 게임 이벤트 수신 시 5초간 표시
+  Widget _buildAlertBanner(String message) {
     return Padding(
       padding: AppPadding.horizontal20,
       child: Container(
-        height: 44.h,
         decoration: BoxDecoration(
           color: AppColors.red,
           borderRadius: AppRadius.large,
         ),
-        padding: EdgeInsets.only(left: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SvgPicture.asset(
               'assets/icons/Loudspeaker.svg',
@@ -802,10 +936,14 @@ class _GamePageState extends ConsumerState<GamePage> {
               ),
             ),
             SizedBox(width: AppSpacing.horizontal8),
-            Text(
-              '현재 도둑의 위치가 공개됩니다!',
-              style: AppTextStyles.paragraph14Semibold.copyWith(
-                color: AppColors.white,
+            Expanded(
+              child: Text(
+                message,
+                style: AppTextStyles.paragraph14Semibold.copyWith(
+                  color: AppColors.white,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
