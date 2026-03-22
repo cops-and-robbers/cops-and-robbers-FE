@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,7 +8,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/services/loading_message_service.dart';
@@ -33,8 +32,6 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
-  bool _notificationEnabled = true;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,44 +98,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
               const Divider(color: AppColors.black100, height: 1),
 
-              // ── 알림 섹션 ──
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: AppSpacing.vertical16,
-                  horizontal: AppSpacing.horizontal4,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '알림',
-                            style: AppTextStyles.label_16.copyWith(
-                              color: AppColors.black,
-                            ),
-                          ),
-                          SizedBox(height: AppSpacing.vertical8),
-                          Text(
-                            '게임 중 알림을 제외한 기타 알림의 설정이에요',
-                            style: AppTextStyles.tag_12.copyWith(
-                              color: AppColors.black600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    CupertinoSwitch(
-                      value: _notificationEnabled,
-                      onChanged: (value) {
-                        setState(() => _notificationEnabled = value);
-                        // TODO: 알림 설정 저장 로직
-                      },
-                      activeTrackColor: AppColors.black,
-                    ),
-                  ],
+              // ── 알림 설정 ──
+              _buildMenuItem(
+                text: '알림 설정',
+                subtitle: '기기 설정에서 알림 권한을 변경할 수 있어요',
+                onTap: () => AppSettings.openAppSettings(
+                  type: AppSettingsType.notification,
                 ),
               ),
 
@@ -148,7 +113,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               _buildMenuItem(
                 text: '위치 권한 관리',
                 subtitle: '기기 설정에서 위치 권한을 변경할 수 있어요',
-                onTap: () => LocationPermissionService.openAppSettings(),
+                onTap: () =>
+                    AppSettings.openAppSettings(type: AppSettingsType.location),
               ),
 
               const Divider(color: AppColors.black100, height: 1),

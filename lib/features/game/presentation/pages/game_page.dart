@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,11 +8,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -28,10 +30,10 @@ import '../../data/models/game_area_model.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
+import '../widgets/arrest_lock_overlay.dart';
 import '../widgets/game_timer_text.dart';
 import '../widgets/location_reveal_countdown.dart';
 import '../widgets/google_map_view.dart';
-import '../widgets/naver_map_view.dart';
 import '../widgets/participant_overlay.dart';
 import '../widgets/police_start_countdown.dart';
 
@@ -41,7 +43,6 @@ import '../widgets/police_start_countdown.dart';
 class GamePage extends ConsumerStatefulWidget {
   const GamePage({
     required this.sessionId,
-    required this.mapType,
     required this.team,
     required this.participantId,
     this.isDummy = false,
@@ -50,9 +51,6 @@ class GamePage extends ConsumerStatefulWidget {
 
   /// 게임 세션 ID
   final String sessionId;
-
-  /// 지도 타입 ('google' 또는 'naver')
-  final String mapType;
 
   /// 플레이어 팀 ('POLICE' 또는 'ROBBER')
   final String team;
@@ -69,9 +67,9 @@ class GamePage extends ConsumerStatefulWidget {
 
 class _GamePageState extends ConsumerState<GamePage> {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
-  final _naverMapKey = GlobalKey<NaverMapViewState>();
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
+  bool _isCheckingGameStatus = false;
   bool _isLocationFocused = true;
   bool _isProgrammaticMove = true; // 초기 카메라 이동(onMapCreated) 보호
 
@@ -81,8 +79,15 @@ class _GamePageState extends ConsumerState<GamePage> {
   GameEventStompDatasource? _gameEventDatasource;
 
   StreamSubscription<Position>? _locationSubscription;
+  StreamSubscription<Position>? _headingSubscription; // POLICE 전용 heading 스트림
   Position? _lastSentPosition;
   DateTime? _lastSentTime;
+
+  // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
+  DateTime? _lastHandledGameStart;
+  DateTime? _lastHandledPoliceMove;
+  DateTime? _lastHandledLocationReveal;
+  bool _lastHandledIsGameOver = false;
 
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
@@ -99,12 +104,14 @@ class _GamePageState extends ConsumerState<GamePage> {
       _connectGameEvents();
       _loadGameArea();
       _showPoliceTimerIfNeeded();
+      _initSettingsFromApiIfNeeded();
     });
   }
 
   @override
   void dispose() {
     _locationSubscription?.cancel();
+    _headingSubscription?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
@@ -142,6 +149,61 @@ class _GamePageState extends ConsumerState<GamePage> {
         subtitle: '도둑이 도망치는 중이에요!',
       ),
     );
+  }
+
+  /// 게임 설정 API 보완 초기화
+  ///
+  /// splash 재접속 등으로 [gameParticipantNotifierProvider] 상태가 없거나
+  /// 설정값이 누락된 경우 `GET /api/games/{gameId}` API로 보완합니다.
+  /// 로비를 거친 정상 진입 경로에서는 이미 설정값이 있으므로 early return됩니다.
+  Future<void> _initSettingsFromApiIfNeeded() async {
+    if (widget.isDummy) return;
+
+    final info = ref.read(gameParticipantNotifierProvider);
+    if (info?.roundTimeMinutes != null) return; // 이미 초기화됨
+
+    try {
+      final settings = await ref.read(
+        fetchGameSettingsProvider(_gameId).future,
+      );
+      if (!mounted) return;
+
+      // state가 null이면 (splash 재접속) 기본값으로 초기화
+      if (ref.read(gameParticipantNotifierProvider) == null) {
+        ref
+            .read(gameParticipantNotifierProvider.notifier)
+            .setGameInfo(
+              gameId: _gameId,
+              nickname: '',
+              team: widget.team,
+              participantId: widget.participantId,
+            );
+      }
+
+      ref
+          .read(gameParticipantNotifierProvider.notifier)
+          .initFromLobby(
+            participantId: widget.participantId,
+            maxParticipants: settings.maxParticipants,
+            locationRevealIntervalMinutes:
+                settings.locationRevealIntervalMinutes,
+            policeWaitMinutes: settings.policeWaitMinutes,
+            roundTimeMinutes: settings.roundDurationMinutes,
+          );
+
+      if (!mounted) return;
+
+      if (settings.gameStartTime != null) {
+        ref
+            .read(gameParticipantNotifierProvider.notifier)
+            .setGameStartTime(settings.gameStartTime!);
+      }
+
+      // 설정 로드 후 경찰 타이머 재확인 (첫 호출 시 설정 없어 early return됐을 수 있음)
+      if (mounted) _showPoliceTimerIfNeeded();
+    } catch (_) {
+      // 실패해도 게임 진행에는 영향 없음 (타이머만 미표시)
+    }
   }
 
   /// 도둑팀 전용: 경찰 시작 시각 계산
@@ -187,6 +249,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     _gameEventDatasource = ref.read(gameEventStompDatasourceProvider);
     _gameEventNotifier!.connectAndSubscribe(_gameId);
     if (widget.team == 'ROBBER') _startLocationSending();
+    _startHeadingTracking();
   }
 
   /// 게임 맵 영역 로드 (FutureProvider 트리거)
@@ -199,7 +262,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   ///
   /// distanceFilter 10m로 OS 레벨에서 필터링하고,
   /// 추가로 5초 throttle을 적용하여 서버 부하를 제한한다.
-  /// 지속적 스트림 구독으로 OS 위치 인디케이터가 표시된다.
+  /// 방향 갱신은 [_startHeadingTracking]의 별도 스트림이 담당한다.
   Future<void> _startLocationSending() async {
     // GPS 조회 (STOMP 연결 대기와 병렬 수행)
     Position? initial;
@@ -238,7 +301,14 @@ class _GamePageState extends ConsumerState<GamePage> {
           (pos) {
             if (!mounted) return;
 
-            // 5초 미만이면 전송 스킵 (서버 부하 제한)
+            if (ref
+                .read(gameEventNotifierProvider)
+                .arrestedParticipantIds
+                .contains(widget.participantId)) {
+              return;
+            }
+
+            // 5초 미만이면 서버 전송 스킵 (서버 부하 제한)
             final now = DateTime.now();
             if (_lastSentTime != null &&
                 now.difference(_lastSentTime!).inSeconds < 5) {
@@ -263,8 +333,25 @@ class _GamePageState extends ConsumerState<GamePage> {
         );
   }
 
+  /// 방향 인디케이터 실시간 갱신 스트림 시작 (양 팀 공통, 서버 전송 없음)
+  void _startHeadingTracking() {
+    if (widget.isDummy) return;
+    _headingSubscription =
+        DeviceLocationService.getPositionStream(distanceFilter: 0).listen((
+          pos,
+        ) {
+          if (mounted) _updateHeadingMarker(pos);
+        });
+  }
+
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
   Future<void> _sendPositionNow() async {
+    if (ref
+        .read(gameEventNotifierProvider)
+        .arrestedParticipantIds
+        .contains(widget.participantId)) {
+      return;
+    }
     final Position? pos;
     try {
       pos = await DeviceLocationService.getCurrentPosition();
@@ -280,11 +367,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   void _moveToCurrentLocation() {
     _isProgrammaticMove = true;
     setState(() => _isLocationFocused = true);
-    if (widget.mapType == 'naver') {
-      _naverMapKey.currentState?.moveCameraToCurrentLocation();
-    } else {
-      _googleMapKey.currentState?.moveCameraToCurrentLocation();
-    }
+    _googleMapKey.currentState?.moveCameraToCurrentLocation();
   }
 
   void _onMapCameraMoved() {
@@ -308,6 +391,16 @@ class _GamePageState extends ConsumerState<GamePage> {
       context,
       isDarkMode: _isDarkMode,
       locationRevealIntervalMinutes: interval,
+    );
+  }
+
+  /// 방향 인디케이터 마커 갱신 (Google Maps)
+  void _updateHeadingMarker(Position pos) {
+    final isPolice = widget.team == 'POLICE';
+    _googleMapKey.currentState?.updateHeadingMarker(
+      LatLng(pos.latitude, pos.longitude),
+      pos.heading,
+      isPolice,
     );
   }
 
@@ -338,77 +431,71 @@ class _GamePageState extends ConsumerState<GamePage> {
     };
   }
 
-  /// 맵 영역 원 빌드 (Naver Map용)
-  Set<NCircleOverlay> _buildNaverOverlays(GameAreaModel area) {
+  /// 위경도 원을 [points]개 꼭짓점 다각형으로 근사
+  List<LatLng> _approximateCircle(
+    LatLng center,
+    double radiusMeters, {
+    int points = 64,
+  }) {
+    const earthRadius = 6371000.0;
+    return List.generate(points, (i) {
+      final angle = i * 2 * math.pi / points;
+      final latOffset = (radiusMeters / earthRadius) * (180 / math.pi);
+      final lngOffset =
+          (radiusMeters / earthRadius) *
+          (180 / math.pi) /
+          math.cos(center.latitude * math.pi / 180);
+      return LatLng(
+        center.latitude + latOffset * math.cos(angle),
+        center.longitude + lngOffset * math.sin(angle),
+      );
+    });
+  }
+
+  /// 플레이그라운드 외부 영역 반투명 오버레이 폴리곤 생성
+  Set<Polygon> _buildOutsideOverlay(GameAreaModel area) {
+    final clat = area.playgroundCenter.latitude;
+    final clng = area.playgroundCenter.longitude;
+    const delta = 2.0;
+    final outerBounds = [
+      LatLng(clat + delta, clng - delta),
+      LatLng(clat + delta, clng + delta),
+      LatLng(clat - delta, clng + delta),
+      LatLng(clat - delta, clng - delta),
+    ];
+
+    final center = LatLng(
+      area.playgroundCenter.latitude,
+      area.playgroundCenter.longitude,
+    );
+    final hole = _approximateCircle(
+      center,
+      area.playgroundRadiusInMeters,
+    ).reversed.toList();
+
     return {
-      NCircleOverlay(
-        id: 'playground',
-        center: NLatLng(
-          area.playgroundCenter.latitude,
-          area.playgroundCenter.longitude,
-        ),
-        radius: area.playgroundRadiusInMeters,
-        color: Colors.transparent,
-        outlineColor: AppColors.blue800,
-        outlineWidth: 2,
-      ),
-      NCircleOverlay(
-        id: 'jail',
-        center: NLatLng(area.jailCenter.latitude, area.jailCenter.longitude),
-        radius: area.jailRadiusInMeters,
-        color: Colors.transparent,
-        outlineColor: AppColors.red500,
-        outlineWidth: 2,
+      Polygon(
+        polygonId: const PolygonId('outside_overlay'),
+        points: outerBounds,
+        holes: [hole],
+        fillColor: AppColors.black.withValues(alpha: 0.4),
+        strokeWidth: 0,
+        consumeTapEvents: false,
       ),
     };
   }
 
-  /// LOCATION_REVEAL 수신 시 도둑 위치 원 갱신
+  /// LOCATION_REVEAL 수신 시 도둑 위치 마커 갱신
+  ///
+  /// 경찰팀에게는 빨간 dot, 도둑팀에게는 초록 dot으로 표시한다.
   void _updateRobberMarkers(Map<int, LatLngModel> locations) {
-    if (widget.mapType == 'naver') {
-      _naverMapKey.currentState?.updateRobberOverlays(
-        _buildNaverRobberOverlays(locations),
-      );
-    } else {
-      _googleMapKey.currentState?.updateRobberCircles(
-        _buildGoogleRobberCircles(locations),
-      );
-    }
-  }
-
-  /// 도둑 위치 빨간 원 빌드 (Google Map용)
-  Set<Circle> _buildGoogleRobberCircles(Map<int, LatLngModel> locations) {
-    return locations.entries
-        .map(
-          (e) => Circle(
-            circleId: CircleId('robber_${e.key}'),
-            center: LatLng(e.value.latitude, e.value.longitude),
-            radius: 15,
-            fillColor: AppColors.red,
-            strokeColor: AppColors.red,
-            strokeWidth: 0,
-            consumeTapEvents: false,
-          ),
-        )
-        .toSet();
-  }
-
-  /// 도둑 위치 빨간 원 빌드 (Naver Map용)
-  Set<NCircleOverlay> _buildNaverRobberOverlays(
-    Map<int, LatLngModel> locations,
-  ) {
-    return locations.entries
-        .map(
-          (e) => NCircleOverlay(
-            id: 'robber_${e.key}',
-            center: NLatLng(e.value.latitude, e.value.longitude),
-            radius: 15,
-            color: AppColors.red,
-            outlineColor: AppColors.red,
-            outlineWidth: 0,
-          ),
-        )
-        .toSet();
+    final latLngs = locations.map(
+      (id, model) => MapEntry(id, LatLng(model.latitude, model.longitude)),
+    );
+    _googleMapKey.currentState?.updateRobberMarkers(
+      latLngs,
+      isPolice: widget.team == 'POLICE',
+    );
   }
 
   /// 게임 종료 → 결과 팝업 2단계 시퀀스
@@ -465,7 +552,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
     AppDialog.show(
       context: context,
-      title: isWin ? '승리!' : '패배...',
+      title: isWin ? '승리' : '패배',
       message: '$winnerTeamLabel의 승리입니다!',
       titleStyle:
           (_isDarkMode
@@ -497,8 +584,70 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
+  /// resumed 복귀 시 소켓 재연결 (필요한 경우에만)
+  ///
+  /// OS가 백그라운드에서 WebSocket을 끊거나, 지수 백오프 5회 소진 후
+  /// dead 상태로 방치된 경우를 복구합니다.
+  void _reconnectSocketsIfNeeded() {
+    if (widget.isDummy) return;
+
+    final chatState = ref.read(chatNotifierProvider).connectionState;
+    if (chatState != StompConnectionState.connected &&
+        chatState != StompConnectionState.connecting) {
+      final team = widget.team.toLowerCase();
+      _chatNotifier?.connectAndSubscribe(gameId: _gameId, team: team);
+    }
+
+    final gameEventState = ref.read(gameEventNotifierProvider).connectionState;
+    if (gameEventState != StompConnectionState.connected &&
+        gameEventState != StompConnectionState.connecting) {
+      _gameEventNotifier?.connectAndSubscribe(_gameId);
+    }
+
+    // 도둑 팀: 위치 전송 스트림이 끊겼으면 재시작
+    if (widget.team == 'ROBBER' && _locationSubscription == null) {
+      _startLocationSending();
+    }
+  }
+
+  /// resumed 복귀 시 게임 종료 여부 확인
+  ///
+  /// 백그라운드 중 게임이 끝났을 경우 홈으로 이동,
+  /// 대기실로 돌아간 경우 로비로 이동합니다.
+  Future<void> _checkGameStatusOnResume() async {
+    if (_isCheckingGameStatus || widget.isDummy) return;
+    _isCheckingGameStatus = true;
+    try {
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
+      if (!mounted) return;
+
+      final info = status.participationInfo;
+
+      if (!status.isParticipating || info == null) {
+        // 게임 종료 → 홈
+        context.go(RoutePaths.home);
+      } else if (info.gameStatus == 'WAITING') {
+        // 대기실 상태 → 로비로 복귀
+        context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
+      }
+      // IN_PROGRESS → 현재 게임 화면 유지
+    } catch (_) {
+      // API 실패 시 현재 화면 유지 (무시)
+    } finally {
+      _isCheckingGameStatus = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // resumed 복귀 시 게임 종료 여부 확인
+    ref.listen(lifecycleStateProvider, (_, next) {
+      if (next.valueOrNull == AppLifecycleState.resumed) {
+        _checkGameStatusOnResume();
+        _reconnectSocketsIfNeeded();
+      }
+    });
+
     // 게임 이벤트 감지 → 게임 종료 다이얼로그
     ref.listen(gameEventNotifierProvider, (prev, next) {
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
@@ -506,9 +655,80 @@ class _GamePageState extends ConsumerState<GamePage> {
       }
     });
 
-    final showBanner = ref.watch(
-      gameEventNotifierProvider.select((s) => s.showLocationRevealBanner),
+    // 게임 이벤트 → 전체채팅 시스템 메시지 주입 (chat feature와 game feature를 중재)
+    ref.listen(gameEventNotifierProvider.select((s) => s.gameStartTime), (
+      prev,
+      next,
+    ) {
+      if (next != null && next != _lastHandledGameStart) {
+        _lastHandledGameStart = next;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: _gameId,
+              message: GameEventMessages.gameStart,
+            );
+      }
+    });
+
+    ref.listen(gameEventNotifierProvider.select((s) => s.policeMoveStartTime), (
+      prev,
+      next,
+    ) {
+      if (next != null && next != _lastHandledPoliceMove) {
+        _lastHandledPoliceMove = next;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: _gameId,
+              message: GameEventMessages.policeMove,
+            );
+      }
+    });
+
+    ref.listen(
+      gameEventNotifierProvider.select((s) => s.lastLocationRevealTime),
+      (prev, next) {
+        if (next != null && next != _lastHandledLocationReveal) {
+          _lastHandledLocationReveal = next;
+          ref
+              .read(chatNotifierProvider.notifier)
+              .addSystemMessage(
+                gameId: _gameId,
+                message: GameEventMessages.locationReveal,
+              );
+        }
+      },
     );
+
+    ref.listen(gameEventNotifierProvider.select((s) => s.isGameOver), (
+      prev,
+      next,
+    ) {
+      if (next == true && !_lastHandledIsGameOver) {
+        _lastHandledIsGameOver = true;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: _gameId,
+              message: GameEventMessages.gameOver,
+            );
+      }
+    });
+
+    final bannerMessage = ref.watch(
+      gameEventNotifierProvider.select((s) => s.bannerMessage),
+    );
+
+    final isArrestedNow =
+        widget.team == 'ROBBER' &&
+        ref.watch(
+          gameEventNotifierProvider.select(
+            (s) =>
+                s.arrestedParticipantIds.contains(widget.participantId) &&
+                !s.escapedParticipantIds.contains(widget.participantId),
+          ),
+        );
 
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
     final policeStartTime = _computePoliceStartTime();
@@ -530,43 +750,39 @@ class _GamePageState extends ConsumerState<GamePage> {
       }
     });
 
-    // LOCATION_REVEAL 수신 시 경찰 팀에게 도둑 위치 원 표시
     ref.listen(gameEventNotifierProvider.select((s) => s.robberLocations), (
       prev,
       next,
     ) {
-      if (widget.team == 'POLICE' && next.isNotEmpty) {
-        _updateRobberMarkers(next);
-      }
+      _updateRobberMarkers(next);
     });
 
     // 게임 맵 영역 로드 완료 시 지도에 원 추가
     ref.listen(gameAreaProvider(_gameId), (prev, next) {
       next.whenData((area) {
-        if (widget.mapType == 'naver') {
-          _naverMapKey.currentState?.updateAreaOverlays(
-            _buildNaverOverlays(area),
-          );
-        } else {
-          _googleMapKey.currentState?.updateAreaCircles(
-            _buildGoogleCircles(area),
-          );
-        }
+        _googleMapKey.currentState?.updateMinZoom(
+          area.playgroundRadiusInMeters,
+        );
+        _googleMapKey.currentState?.updateAreaCircles(
+          _buildGoogleCircles(area),
+        );
+        _googleMapKey.currentState?.updateAreaPolygons(
+          _buildOutsideOverlay(area),
+        );
       });
     });
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           /// index 0: 지도 (항상 존재)
           Positioned.fill(
-            child: widget.mapType == 'naver'
-                ? NaverMapView(key: _naverMapKey, isDarkMode: _isDarkMode)
-                : GoogleMapView(
-                    key: _googleMapKey,
-                    onCameraMoveStarted: _onMapCameraMoved,
-                    isDarkMode: _isDarkMode,
-                  ),
+            child: GoogleMapView(
+              key: _googleMapKey,
+              onCameraMoveStarted: _onMapCameraMoved,
+              isDarkMode: _isDarkMode,
+            ),
           ),
 
           /// index 1: 참가자 목록 오버레이 (if/else로 개수 고정)
@@ -612,18 +828,14 @@ class _GamePageState extends ConsumerState<GamePage> {
             const SizedBox.shrink(),
 
           /// index 3: 알림 배너 (if/else로 개수 고정)
-          ///
-          /// showBanner가 true일 때만 배너 표시.
-          /// if/else로 항상 동일한 개수의 children을 유지해
-          /// ChatOverlay가 항상 동일한 index(5)에 위치하도록 보장함.
-          if (!_showParticipants && showBanner)
+          if (!_showParticipants && bannerMessage != null)
             SafeArea(
               bottom: false,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 64.h + 8.h),
-                  _buildAlertBanner(),
+                  _buildAlertBanner(bannerMessage),
                 ],
               ),
             )
@@ -687,11 +899,20 @@ class _GamePageState extends ConsumerState<GamePage> {
               ),
             ),
 
-          /// index 6: 하단 채팅 오버레이 (항상 마지막 고정)
+          /// index 6: 체포 잠금 오버레이 (if/else로 개수 고정, 도둑팀 체포 시 표시)
+          if (isArrestedNow)
+            ArrestLockOverlay(
+              gameId: _gameId,
+              myParticipantId: widget.participantId,
+            )
+          else
+            const SizedBox.shrink(),
+
+          /// index 7: 하단 채팅 오버레이 (항상 마지막 고정)
           ///
           /// Stack children 개수가 변하면 ChatOverlay의 index가 바뀌어
           /// Flutter가 기존 State를 dispose하고 새로 생성해버린다.
-          /// 위의 if/else 구조로 항상 index 6에 고정해 State를 보존한다.
+          /// 위의 if/else 구조로 항상 index 7에 고정해 State를 보존한다.
           ChatOverlay(
             gameId: _gameId,
             myParticipantId: widget.participantId,
@@ -733,12 +954,18 @@ class _GamePageState extends ConsumerState<GamePage> {
 
     DateTime? nextRevealTime;
     if (interval != null && interval > 0) {
-      // policeWaitMinutes == 0이면 서버가 POLICE_MOVE_START를 보내지 않으므로
-      // gameStartTime을 fallback으로 사용
+      // 경찰 이동 시작 시각 fallback 우선순위:
+      // 1. STOMP POLICE_MOVE_START 이벤트 시각
+      // 2. gameStartTime + policeWaitMinutes (재접속 시 STOMP 미수신 대비)
+      // 3. policeWaitMinutes == 0이면 gameStartTime 직접 사용
       final policeWaitMinutes = participantInfo?.policeWaitMinutes;
       final effectiveMoveStartTime =
           policeMoveStartTime ??
-          (policeWaitMinutes == 0 ? gameStartTime : null);
+          (policeWaitMinutes != null &&
+                  policeWaitMinutes > 0 &&
+                  gameStartTime != null
+              ? gameStartTime.add(Duration(minutes: policeWaitMinutes))
+              : (policeWaitMinutes == 0 ? gameStartTime : null));
       final base = lastReveal ?? effectiveMoveStartTime;
       if (base != null) nextRevealTime = base.add(Duration(minutes: interval));
     }
@@ -779,18 +1006,25 @@ class _GamePageState extends ConsumerState<GamePage> {
               ),
             ],
           ),
-          // 우측: info 버튼 (24x24)
+          // 우측: info 버튼 (터치 영역 48x48)
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: _showGameRulesDialog,
-              child: SvgPicture.asset(
-                'assets/icons/icon_info.svg',
-                width: 24.w,
-                height: 24.w,
-                colorFilter: ColorFilter.mode(
-                  _isDarkMode ? AppColors.black200 : AppColors.black800,
-                  BlendMode.srcIn,
+              behavior: HitTestBehavior.opaque,
+              child: SizedBox(
+                width: 48.w,
+                height: 48.w,
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/icons/icon_info.svg',
+                    width: 24.w,
+                    height: 24.w,
+                    colorFilter: ColorFilter.mode(
+                      _isDarkMode ? AppColors.black200 : AppColors.black800,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -800,18 +1034,18 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
-  /// 알림 배너 (353x44) — LOCATION_REVEAL 이벤트 수신 시 5초간 표시
-  Widget _buildAlertBanner() {
+  /// 알림 배너 (353x44) — 게임 이벤트 수신 시 5초간 표시
+  Widget _buildAlertBanner(String message) {
     return Padding(
       padding: AppPadding.horizontal20,
       child: Container(
-        height: 44.h,
         decoration: BoxDecoration(
           color: AppColors.red,
           borderRadius: AppRadius.large,
         ),
-        padding: EdgeInsets.only(left: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SvgPicture.asset(
               'assets/icons/Loudspeaker.svg',
@@ -823,10 +1057,14 @@ class _GamePageState extends ConsumerState<GamePage> {
               ),
             ),
             SizedBox(width: AppSpacing.horizontal8),
-            Text(
-              '현재 도둑의 위치가 공개됩니다!',
-              style: AppTextStyles.paragraph14Semibold.copyWith(
-                color: AppColors.white,
+            Expanded(
+              child: Text(
+                message,
+                style: AppTextStyles.paragraph14Semibold.copyWith(
+                  color: AppColors.white,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

@@ -17,6 +17,7 @@ import '../../data/models/team_change_request.dart';
 import '../../data/repositories/session_repository_impl.dart';
 import '../../domain/entities/create_session_result.dart';
 import '../../domain/repositories/session_repository.dart';
+import '../../domain/usecases/get_my_active_game_usecase.dart';
 
 part 'session_provider.g.dart';
 
@@ -39,6 +40,14 @@ SessionRemoteDataSource sessionRemoteDataSource(Ref ref) {
 @riverpod
 SessionRepository sessionRepository(Ref ref) {
   return SessionRepositoryImpl(ref.watch(sessionRemoteDataSourceProvider));
+}
+
+/// GetMyActiveGameUsecase Provider
+@riverpod
+GetMyActiveGameUsecase getMyActiveGameUsecase(Ref ref) {
+  return GetMyActiveGameUsecase(
+    repository: ref.watch(sessionRepositoryProvider),
+  );
 }
 
 // ============================================================================

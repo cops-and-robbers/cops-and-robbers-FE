@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
@@ -83,8 +84,8 @@ class GameEventState {
   /// 마지막 도둑 위치 공개 시각 (LOCATION_REVEAL 이벤트 수신 시 설정)
   final DateTime? lastLocationRevealTime;
 
-  /// 도둑 위치 공개 알림 배너 표시 여부 (5초 후 자동 해제)
-  final bool showLocationRevealBanner;
+  /// 배너 메시지 (null이면 숨김, 5초 후 자동 해제)
+  final String? bannerMessage;
 
   /// arrest/escape API 호출 중 여부
   final bool isApiLoading;
@@ -108,7 +109,7 @@ class GameEventState {
     this.gameStartTime,
     this.policeMoveStartTime,
     this.lastLocationRevealTime,
-    this.showLocationRevealBanner = false,
+    this.bannerMessage,
     this.isApiLoading = false,
     this.robberLocations = const {},
   });
@@ -129,7 +130,7 @@ class GameEventState {
     Object? gameStartTime = _sentinel,
     Object? policeMoveStartTime = _sentinel,
     Object? lastLocationRevealTime = _sentinel,
-    bool? showLocationRevealBanner,
+    Object? bannerMessage = _sentinel,
     bool? isApiLoading,
     Map<int, LatLngModel>? robberLocations,
   }) {
@@ -171,8 +172,9 @@ class GameEventState {
       lastLocationRevealTime: lastLocationRevealTime == _sentinel
           ? this.lastLocationRevealTime
           : lastLocationRevealTime as DateTime?,
-      showLocationRevealBanner:
-          showLocationRevealBanner ?? this.showLocationRevealBanner,
+      bannerMessage: bannerMessage == _sentinel
+          ? this.bannerMessage
+          : bannerMessage as String?,
       isApiLoading: isApiLoading ?? this.isApiLoading,
       robberLocations: robberLocations ?? this.robberLocations,
     );
@@ -361,6 +363,14 @@ class GameEventNotifier extends _$GameEventNotifier {
     }
   }
 
+  /// 배너를 5초 후 자동 해제하는 타이머 시작
+  void _startBannerTimer() {
+    _locationRevealBannerTimer?.cancel();
+    _locationRevealBannerTimer = Timer(const Duration(seconds: 5), () {
+      if (!_isDisposed) state = state.copyWith(bannerMessage: null);
+    });
+  }
+
   // ============================================================
   // 이벤트 처리
   // ============================================================
@@ -377,11 +387,13 @@ class GameEventNotifier extends _$GameEventNotifier {
         _handleStart(event.data);
       case GameEventType.policeMoveStart:
         final moveStartTime =
-            DateTime.tryParse(event.timestamp) ?? DateTime.now();
+            _parseTimestamp(event.timestamp) ?? DateTime.now();
         state = state.copyWith(
           isPoliceMoving: true,
           policeMoveStartTime: moveStartTime,
+          bannerMessage: GameEventMessages.policeMove,
         );
+        _startBannerTimer();
       case GameEventType.locationReveal:
       case GameEventType.robberLocationReveal:
         _handleLocationReveal(event.data, event.timestamp);
@@ -392,10 +404,12 @@ class GameEventNotifier extends _$GameEventNotifier {
 
   void _handleStart(Map<String, dynamic> data) {
     final startTimeStr = data['startTime'] as String?;
-    final startTime = startTimeStr != null
-        ? DateTime.tryParse(startTimeStr)
-        : null;
-    state = state.copyWith(gameStartTime: startTime ?? DateTime.now());
+    final startTime = _parseTimestamp(startTimeStr);
+    state = state.copyWith(
+      gameStartTime: startTime ?? DateTime.now(),
+      bannerMessage: GameEventMessages.gameStart,
+    );
+    _startBannerTimer();
     debugPrint(
       '[GameEventNotifier] ✅ START 이벤트 → 게임 시작 시각: ${state.gameStartTime}',
     );
@@ -419,18 +433,13 @@ class GameEventNotifier extends _$GameEventNotifier {
       }
     }
 
-    final revealTime = DateTime.tryParse(timestamp) ?? DateTime.now();
-    _locationRevealBannerTimer?.cancel();
+    final revealTime = _parseTimestamp(timestamp) ?? DateTime.now();
     state = state.copyWith(
       lastLocationRevealTime: revealTime,
-      showLocationRevealBanner: true,
+      bannerMessage: GameEventMessages.locationReveal,
       robberLocations: newLocations ?? state.robberLocations,
     );
-    _locationRevealBannerTimer = Timer(const Duration(seconds: 5), () {
-      if (!_isDisposed) {
-        state = state.copyWith(showLocationRevealBanner: false);
-      }
-    });
+    _startBannerTimer();
     debugPrint(
       '[GameEventNotifier] ✅ LOCATION_REVEAL 이벤트 수신 '
       '(도둑 ${newLocations?.length ?? 0}명)',
@@ -491,6 +500,19 @@ class GameEventNotifier extends _$GameEventNotifier {
     debugPrint(
       '[GameEventNotifier] ✅ GAME_OVER 이벤트 → winner: ${state.winnerTeam}',
     );
+  }
+
+  // ============================================================
+  // 유틸리티
+  // ============================================================
+
+  static DateTime? _parseTimestamp(String? raw) {
+    if (raw == null) return null;
+    final normalized = raw.replaceFirstMapped(
+      RegExp(r'(\.\d{1,6})\d*'),
+      (m) => m.group(1)!,
+    );
+    return DateTime.tryParse(normalized);
   }
 
   // ============================================================

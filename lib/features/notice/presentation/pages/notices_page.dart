@@ -93,7 +93,11 @@ class _NoticesPageState extends State<NoticesPage> {
                   child: Column(
                     children: [
                       for (int i = 0; i < notices.length; i++)
-                        _buildNoticeItem(notice: notices[i], index: i),
+                        _buildNoticeItem(
+                          notice: notices[i],
+                          index: i,
+                          isLast: i == notices.length - 1,
+                        ),
                       // 하단 페이지네이션 바와 겹치지 않도록 여백 추가
                       SizedBox(height: paginationBottomOffset + 60.h),
                     ],
@@ -129,7 +133,11 @@ class _NoticesPageState extends State<NoticesPage> {
   }
 
   /// 공지사항 아이템 (아코디언)
-  Widget _buildNoticeItem({required _NoticeItem notice, required int index}) {
+  Widget _buildNoticeItem({
+    required _NoticeItem notice,
+    required int index,
+    bool isLast = false,
+  }) {
     final isExpanded = _expandedIndex == index;
 
     return Column(
@@ -196,7 +204,7 @@ class _NoticesPageState extends State<NoticesPage> {
           ),
         ),
 
-        const Divider(color: AppColors.black100, height: 1),
+        if (!isLast) const Divider(color: AppColors.black100, height: 1),
       ],
     );
   }

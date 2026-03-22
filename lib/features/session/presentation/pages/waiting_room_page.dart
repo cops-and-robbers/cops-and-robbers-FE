@@ -55,6 +55,9 @@ class WaitingRoomPage extends ConsumerStatefulWidget {
 
 class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     with WidgetsBindingObserver {
+  /// 초대 코드 (API 응답 후 업데이트 가능)
+  String? _inviteCode;
+
   /// 팀 섹션 펼침 상태
   bool _isPoliceExpanded = false;
   bool _isRobberExpanded = false;
@@ -66,6 +69,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 참가자 초기화 중복 실행 방지
   bool _isFetchingParticipants = false;
 
+  /// resumed 시 게임 상태 확인 중복 실행 방지
+  bool _isCheckingGameStatus = false;
+
   /// 초대코드 다이얼로그 대기 여부 (API 응답 후 1회 표시)
   bool _pendingInviteDialog = false;
 
@@ -74,10 +80,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 더미 모드에서 "나"의 participantId
   static const _dummyMyId = 3;
-
-  /// 선택된 지도 타입 (방장이 게임 시작 시 사용)
-  // TODO: 지도 선택 UI 추가 시 변경 가능하도록
-  final String _selectedMapType = 'google';
 
   /// 로비 이벤트 구독 (dispose 시 명시적 해제)
   ProviderSubscription<LobbyState>? _lobbyEventSub;
@@ -88,6 +90,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   @override
   void initState() {
     super.initState();
+    _inviteCode = widget.inviteCode;
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
@@ -95,8 +98,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ref.read(roleThemeProvider.notifier).setDarkMode(team == 'ROBBER');
 
       // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
-      _pendingInviteDialog =
-          widget.showInviteDialog && widget.inviteCode != null;
+      _pendingInviteDialog = widget.showInviteDialog && _inviteCode != null;
 
       _listenLobbyEvents();
       _connectLobby();
@@ -117,12 +119,82 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.detached) {
+    if (state == AppLifecycleState.resumed) {
+      _checkStatusOnResume();
+    } else if (state == AppLifecycleState.detached) {
       // 앱 종료 시 best-effort로 퇴장 시도
       final gameId = int.tryParse(widget.sessionId);
       if (gameId != null) {
         ref.read(leaveGameProvider(gameId).future);
       }
+    }
+  }
+
+  /// resumed 복귀 시 게임 상태 확인 후 화면 분기 또는 소켓 재연결
+  ///
+  /// - 게임 시작됨 → 게임 화면으로 이동
+  /// - 강퇴/게임 종료 → 홈으로 이동
+  /// - 여전히 대기 중 → 소켓이 끊겼으면 재연결
+  Future<void> _checkStatusOnResume() async {
+    if (_isCheckingGameStatus || _isDummyMode) return;
+    _isCheckingGameStatus = true;
+    try {
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
+      if (_isDisposed || !mounted) return;
+
+      final info = status.participationInfo;
+
+      if (!status.isParticipating || info == null) {
+        // 강퇴 또는 게임 종료 → 홈
+        ref.read(gameParticipantNotifierProvider.notifier).clear();
+        ref.read(waitingRoomParticipantsProvider.notifier).clear();
+        context.go(RoutePaths.home);
+      } else if (info.gameStatus == 'IN_PROGRESS') {
+        // 게임 시작됨 → 게임 설정 재조회로 gameStartTime 확보 후 게임 화면으로 이동
+        final gameId = int.tryParse(widget.sessionId);
+        if (gameId != null) {
+          try {
+            ref.invalidate(fetchGameSettingsProvider(gameId));
+            final settings = await ref.read(
+              fetchGameSettingsProvider(gameId).future,
+            );
+            if (!_isDisposed && mounted && settings.gameStartTime != null) {
+              ref
+                  .read(gameParticipantNotifierProvider.notifier)
+                  .setGameStartTime(settings.gameStartTime!);
+            }
+          } catch (_) {
+            // 실패해도 게임 화면으로 이동은 계속 진행
+          }
+        }
+        if (_isDisposed || !mounted) return;
+        final team = info.team;
+        final participantId = info.participantId;
+        context.go(
+          '${RoutePaths.gameWithId(info.gameId.toString())}?team=$team&pid=$participantId',
+        );
+      } else {
+        // WAITING → 로비 소켓 재연결 (필요한 경우에만)
+        _reconnectLobbyIfNeeded();
+      }
+    } catch (_) {
+      // API 실패 시 현재 화면 유지 (무시)
+    } finally {
+      _isCheckingGameStatus = false;
+    }
+  }
+
+  /// resumed 복귀 시 로비 소켓 재연결 (필요한 경우에만)
+  void _reconnectLobbyIfNeeded() {
+    final gameId = int.tryParse(widget.sessionId);
+    if (gameId == null) return;
+
+    final connState = ref.read(lobbyNotifierProvider).connectionState;
+    if (connState != StompConnectionState.connected &&
+        connState != StompConnectionState.connecting) {
+      ref
+          .read(lobbyNotifierProvider.notifier)
+          .connectAndSubscribe(gameId: gameId, onGameStart: _onGameStartEvent);
     }
   }
 
@@ -190,6 +262,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       // await 후 위젯이 dispose됐을 수 있으므로 mounted로 이중 확인
       if (_isDisposed || !mounted || lobbyInfo == null) return;
+
+      // 재접속 시 inviteCode를 API에서 가져와 AppBar에 표시
+      final fetchedCode = lobbyInfo.inviteCode;
+      if (_inviteCode == null && fetchedCode != null) {
+        setState(() => _inviteCode = fetchedCode);
+      }
 
       // 로비 참가자 목록에서 내 정보 추출
       final myPid = lobbyInfo.myParticipantId;
@@ -368,7 +446,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _gameStartRetryCount = 0;
     final team = participantInfo.team;
     final participantId = participantInfo.participantId!;
-    final mapType = _selectedMapType;
 
     // startTime을 직접 추출 (GameStartData.fromJson은 message 필드 누락 시 예외 발생 가능)
     final startTimeStr = event.data['startTime'] as String?;
@@ -379,7 +456,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
 
     final route =
-        '${RoutePaths.gameWithId(widget.sessionId)}?mapType=$mapType&team=$team&pid=$participantId';
+        '${RoutePaths.gameWithId(widget.sessionId)}?team=$team&pid=$participantId';
 
     if (mounted) {
       context.go(route);
@@ -472,7 +549,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     if (_isDummyMode) {
       if (mounted) {
         context.go(
-          '${RoutePaths.gameWithId('1')}?mapType=$_selectedMapType&team=POLICE&pid=$_dummyMyId&dummy=true',
+          '${RoutePaths.gameWithId('1')}?team=POLICE&pid=$_dummyMyId&dummy=true',
         );
       }
       return;
@@ -487,7 +564,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       category: LoadingCategory.startGame,
     );
 
-    // TODO: 지도 선택 UI 추가 시 _selectedMapType 변경
     try {
       await ref.read(startGameProvider(gameId).future);
       if (navigator.canPop()) navigator.pop();
@@ -552,7 +628,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 초대코드 모달 (방 생성 직후 표시)
   void _showInviteCodeDialog() {
-    final code = widget.inviteCode!;
+    final code = _inviteCode!;
     final isDark = ref.read(roleThemeProvider);
 
     AppDialog.show(
@@ -654,6 +730,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                         () => _isPoliceExpanded = !_isPoliceExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
+                      myParticipantId: participantInfo?.participantId,
                       onAddSlotTap: !_isReady
                           ? () => _changeTeam('POLICE')
                           : null,
@@ -677,6 +754,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                         () => _isRobberExpanded = !_isRobberExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
+                      myParticipantId: participantInfo?.participantId,
                       onAddSlotTap: !_isReady
                           ? () => _changeTeam('ROBBER')
                           : null,
@@ -727,14 +805,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           ),
         ),
       ),
-      title: widget.inviteCode != null
+      title: _inviteCode != null
           ? GestureDetector(
               onTap: _showInviteCodeDialog,
-              child: Row(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    widget.inviteCode!,
+                    _inviteCode!,
                     style: isDark
                         ? AppTextStyles.robberHeading.copyWith(
                             color: AppColors.white,
@@ -743,15 +821,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             color: AppColors.black,
                           ),
                   ),
-                  SizedBox(width: AppSpacing.horizontal4),
-                  SvgPicture.asset(
-                    'assets/icons/icon_copy.svg',
-                    width: 20.w,
-                    height: 20.w,
-                    colorFilter: ColorFilter.mode(
-                      isDark ? AppColors.black500 : AppColors.black300,
-                      BlendMode.srcIn,
-                    ),
+                  SizedBox(height: 2.h),
+                  Container(
+                    width: _inviteCode!.length * 12.w + 4.w,
+                    height: 2.h,
+                    color: isDark ? AppColors.white : AppColors.black,
                   ),
                 ],
               ),
@@ -761,32 +835,43 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         GestureDetector(
           onTap: _showGameRulesDialog,
           behavior: HitTestBehavior.opaque,
-          child: SvgPicture.asset(
-            'assets/icons/icon_info.svg',
-            width: 24.w,
-            height: 24.w,
-            colorFilter: ColorFilter.mode(
-              isDark ? AppColors.black200 : AppColors.black800,
-              BlendMode.srcIn,
+          child: SizedBox(
+            width: 48.w,
+            height: 48.w,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/icons/icon_info.svg',
+                width: 24.w,
+                height: 24.w,
+                colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.black200 : AppColors.black800,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
           ),
         ),
-        SizedBox(width: AppSpacing.horizontal12),
         GestureDetector(
           onTap: () =>
               context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
           behavior: HitTestBehavior.opaque,
-          child: SvgPicture.asset(
-            'assets/icons/icon_settiing_2.svg',
-            width: 24.w,
-            height: 24.w,
-            colorFilter: ColorFilter.mode(
-              isDark ? AppColors.black200 : AppColors.black800,
-              BlendMode.srcIn,
+          child: SizedBox(
+            width: 48.w,
+            height: 48.w,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/icons/icon_settiing_2.svg',
+                width: 24.w,
+                height: 24.w,
+                colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.black200 : AppColors.black800,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
           ),
         ),
-        SizedBox(width: 24.w),
+        SizedBox(width: 12.w),
       ],
     );
   }

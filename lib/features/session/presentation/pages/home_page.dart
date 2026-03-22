@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -30,6 +31,14 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
+
+class _UpperCaseFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) => newValue.copyWith(text: newValue.text.toUpperCase());
+}
 
 /// 홈 화면
 ///
@@ -86,7 +95,7 @@ class HomePage extends ConsumerWidget {
                   SizedBox(width: AppSpacing.horizontal8),
                   Text(
                     '오늘은 다시 보지 않기',
-                    style: AppTextStyles.tag_12.copyWith(
+                    style: AppTextStyles.paragraph_14_100.copyWith(
                       color: AppColors.black600,
                     ),
                   ),
@@ -218,6 +227,7 @@ class HomePage extends ConsumerWidget {
         controller: codeController,
         hintText: '참여코드를 입력하세요',
         maxLength: 6,
+        inputFormatters: [_UpperCaseFormatter()],
       ),
       cancelText: '닫기',
       confirmText: '참여하기',
@@ -363,13 +373,21 @@ class HomePage extends ConsumerWidget {
                       onTap: () {
                         context.push(RoutePaths.settings);
                       },
-                      child: SvgPicture.asset(
-                        'assets/icons/icon_setting_1.svg',
-                        width: 24.w,
-                        height: 24.h,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.black800,
-                          BlendMode.srcIn,
+                      behavior: HitTestBehavior.opaque,
+                      child: SizedBox(
+                        width: 48.w,
+                        height: 48.w,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: SvgPicture.asset(
+                            'assets/icons/icon_setting_1.svg',
+                            width: 24.w,
+                            height: 24.w,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.black800,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -397,7 +415,7 @@ class HomePage extends ConsumerWidget {
                         SvgIconButton(
                           assetPath: 'assets/icons/Top_hat.svg',
                           onPressed: () {
-                            // TODO: 역할 선택 또는 테마 관련 기능
+                            AppSnackbar.show(context, message: '준비중입니다');
                           },
                         ),
                       ],

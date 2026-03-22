@@ -29,6 +29,7 @@
    - [PATCH /api/games/{gameId}/lobby/team - 로비 팀 변경](#52-patch-apigamesgameidlobbyteam---로비-팀-변경)
    - [PATCH /api/games/{gameId}/lobby/ready - 로비 준비 상태 변경](#53-patch-apigamesgameidlobbyready---로비-준비-상태-변경)
    - [POST /api/games/{gameId}/lobby/start - 게임 시작](#54-post-apigamesgameidlobbystart---게임-시작)
+   - [DELETE /api/games/{gameId}/lobby/{participantId} - 멤버 강제 퇴장](#55-delete-apigamesgameidlobbyparticipantid---멤버-강제-퇴장)
 6. [User API - 사용자 정보 및 프로필 관리](#6-user-api---사용자-정보-및-프로필-관리)
    - [GET /api/user/me - 내 정보 조회](#61-get-apiuserme---내-정보-조회)
    - [PATCH /api/user/me/nickname - 닉네임 변경](#62-patch-apiusermenickname---닉네임-변경)
@@ -120,11 +121,16 @@
 
 **401 - 소셜 ID Token 검증 실패**
 
+| 케이스              | title              | detail                                            |
+| ------------------- | ------------------ | ------------------------------------------------- |
+| Firebase 인증 실패  | Firebase 인증 실패 | `유효하지 않은 Firebase 토큰입니다.`              |
+| Firebase 인증 만료  | Firebase 인증 만료 | `Firebase 토큰이 만료되었습니다. 다시 인증해주세요.` |
+
 ```json
 {
-  "title": "소셜 로그인 실패",
+  "title": "Firebase 인증 실패",
   "status": 401,
-  "detail": "유효하지 않은 소셜 인증 토큰입니다.",
+  "detail": "유효하지 않은 Firebase 토큰입니다.",
   "instance": "/api/auth/login"
 }
 ```
@@ -203,11 +209,16 @@
 
 **401 - Refresh Token 검증 실패**
 
+| 케이스                 | title                  | detail                                              |
+| ---------------------- | ---------------------- | --------------------------------------------------- |
+| 로그인 만료            | 로그인 만료            | `로그인이 만료되었습니다. 다시 로그인해주세요.`     |
+| 유효하지 않은 인증 정보 | 유효하지 않은 인증 정보 | `인증 정보가 올바르지 않습니다. 다시 로그인해주세요.` |
+
 ```json
 {
-  "title": "토큰 재발급 실패",
+  "title": "로그인 만료",
   "status": 401,
-  "detail": "유효하지 않거나 만료된 Refresh Token입니다.",
+  "detail": "로그인이 만료되었습니다. 다시 로그인해주세요.",
   "instance": "/api/auth/reissue"
 }
 ```
@@ -234,7 +245,7 @@
 | `settings`                               | [GameSettingsRequest](#gamesettingsrequest) | O    | 게임 규칙 설정                 |
 | `settings.roundDurationMinutes`          | integer (int32)                             | O    | 라운드 시간 (10~180분)         |
 | `settings.locationRevealIntervalMinutes` | integer (int32)                             | O    | 위치 공개 주기 (최소 5분)      |
-| `settings.policeWaitMinutes`             | integer (int32)                             | O    | 경찰 대기 시간 (최소 0분)      |
+| `settings.policeWaitMinutes`             | integer (int32)                             | O    | 경찰 대기 시간 (최소 1분)      |
 | `settings.maxParticipants`               | integer (int32)                             | O    | 최대 참여 인원 (2~50명)        |
 
 **요청 예시:**
@@ -345,7 +356,7 @@
 | ------------------------------- | --------------- | ---- | ------ | ------------------- |
 | `roundDurationMinutes`          | integer (int32) | O    | 10~180 | 라운드 시간 (분)    |
 | `locationRevealIntervalMinutes` | integer (int32) | O    | 5~     | 위치 공개 주기 (분) |
-| `policeWaitMinutes`             | integer (int32) | O    | 0~     | 경찰 대기 시간 (분) |
+| `policeWaitMinutes`             | integer (int32) | O    | 1~     | 경찰 대기 시간 (분) |
 | `maxParticipants`               | integer (int32) | O    | 2~50   | 최대 참여 인원      |
 
 **요청 예시:**
@@ -430,12 +441,28 @@
 
 **200 - 게임 설정 조회 성공**
 
+대기 중 (WAITING):
+
 ```json
 {
   "roundDurationMinutes": 30,
   "locationRevealIntervalMinutes": 5,
   "policeWaitMinutes": 3,
-  "maxParticipants": 10
+  "maxParticipants": 10,
+  "isStarted": false
+}
+```
+
+진행 중 (IN_PROGRESS):
+
+```json
+{
+  "roundDurationMinutes": 30,
+  "locationRevealIntervalMinutes": 5,
+  "policeWaitMinutes": 3,
+  "maxParticipants": 10,
+  "isStarted": true,
+  "gameStartTime": "2026-03-21T15:30:00"
 }
 ```
 
@@ -1188,6 +1215,81 @@
 
 ---
 
+### 5.5 DELETE /api/games/{gameId}/lobby/{participantId} - 멤버 강제 퇴장
+
+방장이 대기실의 특정 참가자를 강제 퇴장합니다. 방장 본인은 강제 퇴장할 수 없습니다.
+
+- **인증 필요**: Yes (JWT)
+- 방장(Host)만 강제 퇴장 가능
+
+#### Path Parameters
+
+| 파라미터        | 타입            | 필수 | 설명                 | 예시 |
+| --------------- | --------------- | ---- | -------------------- | ---- |
+| `gameId`        | integer (int64) | O    | 게임 ID              | `1`  |
+| `participantId` | integer (int64) | O    | 강제 퇴장할 참가자 ID | `2`  |
+
+#### Responses
+
+**204 - 강제 퇴장 성공** (응답 본문 없음)
+
+**400 - 잘못된 요청**
+
+| 케이스              | title            | detail                                                   |
+| ------------------- | ---------------- | -------------------------------------------------------- |
+| 자기 자신 강퇴 불가 | 자기 자신 강퇴 불가 | `방장은 자기 자신을 강퇴할 수 없습니다.`               |
+| 게임이 이미 시작됨  | 이미 시작된 게임 | `이미 시작된 게임에는 참여할 수 없습니다.`               |
+| 로비 조작 불가      | 로비 조작 불가   | `게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.` |
+
+```json
+{
+  "title": "자기 자신 강퇴 불가",
+  "status": 400,
+  "detail": "방장은 자기 자신을 강퇴할 수 없습니다.",
+  "instance": "/api/games/1/lobby/2"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증되지 않은 요청",
+  "status": 401,
+  "detail": "로그인이 필요합니다.",
+  "instance": "/api/games/1/lobby/2"
+}
+```
+
+**403 - 방장 권한 없음**
+
+```json
+{
+  "title": "호스트 권한 필요",
+  "status": 403,
+  "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
+  "instance": "/api/games/1/lobby/2"
+}
+```
+
+**404 - 게임 또는 참가자 정보 없음**
+
+| 케이스                | title                 | detail                                    |
+| --------------------- | --------------------- | ----------------------------------------- |
+| 존재하지 않는 게임    | 게임을 찾을 수 없음   | `요청하신 게임 정보가 존재하지 않습니다.` |
+| 참가자를 찾을 수 없음 | 참가자를 찾을 수 없음 | `해당 게임에 참가하지 않은 사용자입니다.` |
+
+```json
+{
+  "title": "게임을 찾을 수 없음",
+  "status": 404,
+  "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+  "instance": "/api/games/999/lobby/2"
+}
+```
+
+---
+
 ## 6. User API - 사용자 정보 및 프로필 관리
 
 ### 6.1 GET /api/user/me - 내 정보 조회
@@ -1386,7 +1488,8 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
   "participationInfo": {
     "gameId": 3,
     "participantId": 12,
-    "gameStatus": "WAITING"
+    "gameStatus": "WAITING",
+    "team": "POLICE"
   }
 }
 ```
@@ -1668,7 +1771,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | ------------------------------- | --------------- | ---- | ------ | ------------------- |
 | `roundDurationMinutes`          | integer (int32) | O    | 10~180 | 라운드 시간 (분)    |
 | `locationRevealIntervalMinutes` | integer (int32) | O    | 5~     | 위치 공개 주기 (분) |
-| `policeWaitMinutes`             | integer (int32) | O    | 0~     | 경찰 대기 시간 (분) |
+| `policeWaitMinutes`             | integer (int32) | O    | 1~     | 경찰 대기 시간 (분) |
 | `maxParticipants`               | integer (int32) | O    | 2~50   | 최대 참여 인원      |
 
 ### GameSettingsUpdateResponse
@@ -1682,12 +1785,14 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ### GameInfoResponse
 
-| 필드                            | 타입            | 설명           |
-| ------------------------------- | --------------- | -------------- |
-| `roundDurationMinutes`          | integer (int32) | 라운드 시간    |
-| `locationRevealIntervalMinutes` | integer (int32) | 위치 공개 주기 |
-| `policeWaitMinutes`             | integer (int32) | 경찰 대기 시간 |
-| `maxParticipants`               | integer (int32) | 최대 참여 인원 |
+| 필드                            | 타입               | 설명                                |
+| ------------------------------- | ------------------ | ----------------------------------- |
+| `roundDurationMinutes`          | integer (int32)    | 라운드 시간                         |
+| `locationRevealIntervalMinutes` | integer (int32)    | 위치 공개 주기                      |
+| `policeWaitMinutes`             | integer (int32)    | 경찰 대기 시간                      |
+| `maxParticipants`               | integer (int32)    | 최대 참여 인원                      |
+| `isStarted`                     | boolean            | 게임 시작 여부                      |
+| `gameStartTime`                 | string (date-time) | 게임 시작 시간 (진행 중일 때만 포함) |
 
 ### GameAreaResponse
 
@@ -1742,32 +1847,40 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ### GameParticipantListResponse
 
-| 필드      | 타입                                          | 설명          |
-| --------- | --------------------------------------------- | ------------- |
-| `police`  | [ParticipantResponse](#participantresponse)[] | 경찰 팀 목록  |
-| `robbers` | [ParticipantResponse](#participantresponse)[] | 도둑 팀 목록  |
+| 필드      | 타입                                                        | 설명          |
+| --------- | ----------------------------------------------------------- | ------------- |
+| `police`  | [InGameParticipantResponse](#ingameparticipantresponse)[]   | 경찰 팀 목록  |
+| `robbers` | [InGameParticipantResponse](#ingameparticipantresponse)[]   | 도둑 팀 목록  |
 
-### ParticipantResponse
+### LobbyParticipantResponse
 
-로비 및 인게임 참가자 정보에 공통으로 사용됩니다.
+로비 참가자 정보입니다.
 
 | 필드            | 타입            | 설명                             |
 | --------------- | --------------- | -------------------------------- |
 | `participantId` | integer (int64) | 참가자 ID                        |
 | `nickname`      | string          | 닉네임                           |
 | `team`          | string          | 팀 (`POLICE` \| `ROBBER`)        |
-| `isReady`       | boolean         | 준비 상태 (로비에서 사용)        |
+| `isReady`       | boolean         | 준비 여부                        |
 
-> **참고**: 인게임 참가자 목록 조회 시 응답 예시에서는 `status` 필드(`POLICE_WAITING`, `ALIVE`, `JAILED`)가 사용됩니다. 스키마 정의와 Swagger 예시가 불일치하는 경우, 실제 서버 응답은 스키마 업데이트를 기다려야 합니다.
+### InGameParticipantResponse
+
+인게임 참가자 정보입니다.
+
+| 필드            | 타입            | 설명                                           |
+| --------------- | --------------- | ---------------------------------------------- |
+| `participantId` | integer (int64) | 참가자 ID                                      |
+| `nickname`      | string          | 닉네임                                         |
+| `status`        | string          | 상태 (`POLICE_WAITING` \| `ALIVE` \| `JAILED`) |
 
 ### LobbyInfoResponse
 
-| 필드                | 타입                                          | 설명           |
-| ------------------- | --------------------------------------------- | -------------- |
-| `myParticipantId`   | integer (int64)                               | 나의 참가자 ID |
-| `hostParticipantId` | integer (int64)                               | 방장 참가자 ID |
-| `inviteCode`        | string                                        | 초대 코드      |
-| `participants`      | [ParticipantResponse](#participantresponse)[] | 참가자 목록    |
+| 필드                | 타입                                                        | 설명           |
+| ------------------- | ----------------------------------------------------------- | -------------- |
+| `myParticipantId`   | integer (int64)                                             | 나의 참가자 ID |
+| `hostParticipantId` | integer (int64)                                             | 방장 참가자 ID |
+| `inviteCode`        | string                                                      | 초대 코드      |
+| `participants`      | [LobbyParticipantResponse](#lobbyparticipantresponse)[]     | 참가자 목록    |
 
 ### TeamChangeRequest
 
@@ -1831,6 +1944,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | `gameId`        | integer (int64) | 게임 ID                                                 |
 | `participantId` | integer (int64) | 참가자 ID                                               |
 | `gameStatus`    | string          | 게임 상태 (`WAITING` \| `IN_PROGRESS` \| `FINISHED` \| `CANCELED`) |
+| `team`          | string          | 팀 (`POLICE` \| `ROBBER`)                               |
 
 ### DeleteAccountResponse
 

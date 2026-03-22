@@ -14,6 +14,7 @@ _$LobbyInfoResponseImpl _$$LobbyInfoResponseImplFromJson(
   participants: (json['participants'] as List<dynamic>)
       .map((e) => LobbyParticipantInfo.fromJson(e as Map<String, dynamic>))
       .toList(),
+  inviteCode: json['inviteCode'] as String?,
 );
 
 Map<String, dynamic> _$$LobbyInfoResponseImplToJson(
@@ -22,4 +23,5 @@ Map<String, dynamic> _$$LobbyInfoResponseImplToJson(
   'myParticipantId': instance.myParticipantId,
   'hostParticipantId': instance.hostParticipantId,
   'participants': instance.participants.map((e) => e.toJson()).toList(),
+  'inviteCode': instance.inviteCode,
 };

@@ -15,7 +15,8 @@ enum LoadingCategory {
   saveSettings('save_settings'),
   loadProfile('load_profile'),
   logout('logout'),
-  deleteAccount('delete_account');
+  deleteAccount('delete_account'),
+  reconnect('reconnect');
 
   const LoadingCategory(this.jsonKey);
 

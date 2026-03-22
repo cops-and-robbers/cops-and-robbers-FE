@@ -138,4 +138,7 @@ class ApiEndpoints {
 
   /// 닉네임 중복 확인
   static const String checkNickname = '/api/user/check-nickname';
+
+  /// 참여 중인 게임 정보 조회
+  static const String myActiveGame = '/api/user/me/game';
 }

@@ -137,11 +137,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
 
         // ====================================================================
-        // 3. 기존 회원이 로그인/스플래시 접근 시 → 홈으로
+        // 3. 기존 회원이 로그인 접근 시 → 홈으로
         //    (닉네임설정은 설정 페이지에서 닉네임 변경 시 접근 가능)
         // ====================================================================
-        if (currentPath == RoutePaths.login ||
-            currentPath == RoutePaths.splash) {
+        // splash는 SplashPage에서 직접 게임 상태 체크 후 분기하므로 제외
+        if (currentPath == RoutePaths.login) {
           return RoutePaths.home;
         }
 
@@ -367,15 +367,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: RoutePaths.gameName,
         builder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
-          final mapType = state.uri.queryParameters['mapType'] ?? 'google';
           final team = state.uri.queryParameters['team'] ?? 'POLICE';
-          // TODO: participantId는 로비 API 연동 후 실제 값으로 교체
           final participantId =
               int.tryParse(state.uri.queryParameters['pid'] ?? '') ?? 1;
           final isDummy = state.uri.queryParameters['dummy'] == 'true';
           return GamePage(
             sessionId: sessionId,
-            mapType: mapType,
             team: team,
             participantId: participantId,
             isDummy: isDummy,

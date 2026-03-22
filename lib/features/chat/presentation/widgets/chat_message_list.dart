@@ -16,6 +16,7 @@ class ChatMessageList extends StatefulWidget {
     required this.myParticipantId,
     required this.myTeam,
     this.isDarkMode = false,
+    this.onOverscrollDown,
     super.key,
   });
 
@@ -25,6 +26,9 @@ class ChatMessageList extends StatefulWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+
+  /// 리스트 끝에서 아래로 overscroll 시 콜백 (바텀시트 닫기용)
+  final VoidCallback? onOverscrollDown;
 
   @override
   State<ChatMessageList> createState() => _ChatMessageListState();
@@ -38,22 +42,21 @@ class _ChatMessageListState extends State<ChatMessageList> {
     super.didUpdateWidget(oldWidget);
     if (widget.messages.length > oldWidget.messages.length) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToBottom();
+        _scrollToBottomIfNear();
       });
     }
   }
 
-  void _scrollToBottom() {
+  /// 사용자가 하단 근처에 있을 때만 최신 메시지로 부드럽게 이동
+  void _scrollToBottomIfNear() {
     if (!_scrollController.hasClients) return;
-    final position = _scrollController.position;
-    final isNearBottom = position.maxScrollExtent - position.pixels < 100;
-    if (isNearBottom) {
-      _scrollController.animateTo(
-        position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    }
+    final pixels = _scrollController.position.pixels;
+    if (pixels > 100) return;
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -73,20 +76,31 @@ class _ChatMessageListState extends State<ChatMessageList> {
       );
     }
 
-    return ListView.builder(
-      controller: _scrollController,
-      padding: EdgeInsets.symmetric(vertical: 8.h),
-      itemCount: widget.messages.length,
-      itemBuilder: (context, index) {
-        final message = widget.messages[index];
-        final isMe = message.sender.participantId == widget.myParticipantId;
-        return ChatMessageBubble(
-          message: message,
-          isMe: isMe,
-          myTeam: widget.myTeam,
-          isDarkMode: widget.isDarkMode,
-        );
+    return NotificationListener<OverscrollNotification>(
+      onNotification: (notification) {
+        // reverse: true에서 아래로 스와이프 시 overscroll < 0
+        if (notification.overscroll < 0 && widget.onOverscrollDown != null) {
+          widget.onOverscrollDown!();
+          return true;
+        }
+        return false;
       },
+      child: ListView.builder(
+        controller: _scrollController,
+        reverse: true,
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        itemCount: widget.messages.length,
+        itemBuilder: (context, index) {
+          final message = widget.messages[widget.messages.length - 1 - index];
+          final isMe = message.sender.participantId == widget.myParticipantId;
+          return ChatMessageBubble(
+            message: message,
+            isMe: isMe,
+            myTeam: widget.myTeam,
+            isDarkMode: widget.isDarkMode,
+          );
+        },
+      ),
     );
   }
 }

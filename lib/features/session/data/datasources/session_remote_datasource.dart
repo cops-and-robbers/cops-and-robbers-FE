@@ -13,6 +13,7 @@ import '../models/leave_game_response.dart';
 import '../models/lobby_info_response.dart';
 import '../models/ready_request.dart';
 import '../models/team_change_request.dart';
+import '../models/user_game_status_model.dart';
 
 part 'session_remote_datasource.g.dart';
 
@@ -178,4 +179,14 @@ abstract class SessionRemoteDataSource {
     @Path('gameId') int gameId,
     @Body() AreaRequestModel request,
   );
+
+  /// 참여 중인 게임 정보 조회
+  ///
+  /// 로그인한 사용자가 현재 참여 중인 게임 정보를 반환합니다.
+  /// 참여 중인 게임이 없으면 [UserGameStatusModel.participationInfo]가 null.
+  ///
+  /// - 200: 조회 성공
+  /// - 401: 인증 실패
+  @GET('/api/user/me/game')
+  Future<UserGameStatusModel> getMyActiveGame();
 }

@@ -33,6 +33,9 @@ mixin _$GameSettingsResponse {
   /// 최대 참가자 수
   int get maxParticipants => throw _privateConstructorUsedError;
 
+  /// 게임 시작 시각 (ISO 8601, IN_PROGRESS 상태일 때만 non-null)
+  String? get gameStartTime => throw _privateConstructorUsedError;
+
   /// Serializes this GameSettingsResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -55,6 +58,7 @@ abstract class $GameSettingsResponseCopyWith<$Res> {
     int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
+    String? gameStartTime,
   });
 }
 
@@ -80,6 +84,7 @@ class _$GameSettingsResponseCopyWithImpl<
     Object? locationRevealIntervalMinutes = null,
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
+    Object? gameStartTime = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -99,6 +104,10 @@ class _$GameSettingsResponseCopyWithImpl<
                 ? _value.maxParticipants
                 : maxParticipants // ignore: cast_nullable_to_non_nullable
                       as int,
+            gameStartTime: freezed == gameStartTime
+                ? _value.gameStartTime
+                : gameStartTime // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -119,6 +128,7 @@ abstract class _$$GameSettingsResponseImplCopyWith<$Res>
     int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
+    String? gameStartTime,
   });
 }
 
@@ -140,6 +150,7 @@ class __$$GameSettingsResponseImplCopyWithImpl<$Res>
     Object? locationRevealIntervalMinutes = null,
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
+    Object? gameStartTime = freezed,
   }) {
     return _then(
       _$GameSettingsResponseImpl(
@@ -159,6 +170,10 @@ class __$$GameSettingsResponseImplCopyWithImpl<$Res>
             ? _value.maxParticipants
             : maxParticipants // ignore: cast_nullable_to_non_nullable
                   as int,
+        gameStartTime: freezed == gameStartTime
+            ? _value.gameStartTime
+            : gameStartTime // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -172,6 +187,7 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
     required this.locationRevealIntervalMinutes,
     required this.policeWaitMinutes,
     required this.maxParticipants,
+    this.gameStartTime,
   });
 
   factory _$GameSettingsResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -193,9 +209,13 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
   @override
   final int maxParticipants;
 
+  /// 게임 시작 시각 (ISO 8601, IN_PROGRESS 상태일 때만 non-null)
+  @override
+  final String? gameStartTime;
+
   @override
   String toString() {
-    return 'GameSettingsResponse(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
+    return 'GameSettingsResponse(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, gameStartTime: $gameStartTime)';
   }
 
   @override
@@ -214,7 +234,9 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
             (identical(other.policeWaitMinutes, policeWaitMinutes) ||
                 other.policeWaitMinutes == policeWaitMinutes) &&
             (identical(other.maxParticipants, maxParticipants) ||
-                other.maxParticipants == maxParticipants));
+                other.maxParticipants == maxParticipants) &&
+            (identical(other.gameStartTime, gameStartTime) ||
+                other.gameStartTime == gameStartTime));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -225,6 +247,7 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
     locationRevealIntervalMinutes,
     policeWaitMinutes,
     maxParticipants,
+    gameStartTime,
   );
 
   /// Create a copy of GameSettingsResponse
@@ -251,6 +274,7 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
     required final int locationRevealIntervalMinutes,
     required final int policeWaitMinutes,
     required final int maxParticipants,
+    final String? gameStartTime,
   }) = _$GameSettingsResponseImpl;
 
   factory _GameSettingsResponse.fromJson(Map<String, dynamic> json) =
@@ -271,6 +295,10 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
   /// 최대 참가자 수
   @override
   int get maxParticipants;
+
+  /// 게임 시작 시각 (ISO 8601, IN_PROGRESS 상태일 때만 non-null)
+  @override
+  String? get gameStartTime;
 
   /// Create a copy of GameSettingsResponse
   /// with the given fields replaced by the non-null parameter values.

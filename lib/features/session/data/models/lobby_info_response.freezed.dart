@@ -31,6 +31,9 @@ mixin _$LobbyInfoResponse {
   List<LobbyParticipantInfo> get participants =>
       throw _privateConstructorUsedError;
 
+  /// 초대 코드 (재접속 시 AppBar 표시용)
+  String? get inviteCode => throw _privateConstructorUsedError;
+
   /// Serializes this LobbyInfoResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -52,6 +55,7 @@ abstract class $LobbyInfoResponseCopyWith<$Res> {
     int myParticipantId,
     int hostParticipantId,
     List<LobbyParticipantInfo> participants,
+    String? inviteCode,
   });
 }
 
@@ -73,6 +77,7 @@ class _$LobbyInfoResponseCopyWithImpl<$Res, $Val extends LobbyInfoResponse>
     Object? myParticipantId = null,
     Object? hostParticipantId = null,
     Object? participants = null,
+    Object? inviteCode = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -88,6 +93,10 @@ class _$LobbyInfoResponseCopyWithImpl<$Res, $Val extends LobbyInfoResponse>
                 ? _value.participants
                 : participants // ignore: cast_nullable_to_non_nullable
                       as List<LobbyParticipantInfo>,
+            inviteCode: freezed == inviteCode
+                ? _value.inviteCode
+                : inviteCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -107,6 +116,7 @@ abstract class _$$LobbyInfoResponseImplCopyWith<$Res>
     int myParticipantId,
     int hostParticipantId,
     List<LobbyParticipantInfo> participants,
+    String? inviteCode,
   });
 }
 
@@ -127,6 +137,7 @@ class __$$LobbyInfoResponseImplCopyWithImpl<$Res>
     Object? myParticipantId = null,
     Object? hostParticipantId = null,
     Object? participants = null,
+    Object? inviteCode = freezed,
   }) {
     return _then(
       _$LobbyInfoResponseImpl(
@@ -142,6 +153,10 @@ class __$$LobbyInfoResponseImplCopyWithImpl<$Res>
             ? _value._participants
             : participants // ignore: cast_nullable_to_non_nullable
                   as List<LobbyParticipantInfo>,
+        inviteCode: freezed == inviteCode
+            ? _value.inviteCode
+            : inviteCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -154,6 +169,7 @@ class _$LobbyInfoResponseImpl implements _LobbyInfoResponse {
     required this.myParticipantId,
     required this.hostParticipantId,
     required final List<LobbyParticipantInfo> participants,
+    this.inviteCode,
   }) : _participants = participants;
 
   factory _$LobbyInfoResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -178,9 +194,13 @@ class _$LobbyInfoResponseImpl implements _LobbyInfoResponse {
     return EqualUnmodifiableListView(_participants);
   }
 
+  /// 초대 코드 (재접속 시 AppBar 표시용)
+  @override
+  final String? inviteCode;
+
   @override
   String toString() {
-    return 'LobbyInfoResponse(myParticipantId: $myParticipantId, hostParticipantId: $hostParticipantId, participants: $participants)';
+    return 'LobbyInfoResponse(myParticipantId: $myParticipantId, hostParticipantId: $hostParticipantId, participants: $participants, inviteCode: $inviteCode)';
   }
 
   @override
@@ -195,7 +215,9 @@ class _$LobbyInfoResponseImpl implements _LobbyInfoResponse {
             const DeepCollectionEquality().equals(
               other._participants,
               _participants,
-            ));
+            ) &&
+            (identical(other.inviteCode, inviteCode) ||
+                other.inviteCode == inviteCode));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -205,6 +227,7 @@ class _$LobbyInfoResponseImpl implements _LobbyInfoResponse {
     myParticipantId,
     hostParticipantId,
     const DeepCollectionEquality().hash(_participants),
+    inviteCode,
   );
 
   /// Create a copy of LobbyInfoResponse
@@ -229,6 +252,7 @@ abstract class _LobbyInfoResponse implements LobbyInfoResponse {
     required final int myParticipantId,
     required final int hostParticipantId,
     required final List<LobbyParticipantInfo> participants,
+    final String? inviteCode,
   }) = _$LobbyInfoResponseImpl;
 
   factory _LobbyInfoResponse.fromJson(Map<String, dynamic> json) =
@@ -245,6 +269,10 @@ abstract class _LobbyInfoResponse implements LobbyInfoResponse {
   /// 전체 참가자 목록
   @override
   List<LobbyParticipantInfo> get participants;
+
+  /// 초대 코드 (재접속 시 AppBar 표시용)
+  @override
+  String? get inviteCode;
 
   /// Create a copy of LobbyInfoResponse
   /// with the given fields replaced by the non-null parameter values.

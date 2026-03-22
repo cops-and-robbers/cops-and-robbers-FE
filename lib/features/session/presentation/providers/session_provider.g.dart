@@ -48,6 +48,28 @@ final sessionRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SessionRepositoryRef = AutoDisposeProviderRef<SessionRepository>;
+String _$getMyActiveGameUsecaseHash() =>
+    r'3d3eb93d35009ced66ae7f303ae358b276e7f731';
+
+/// GetMyActiveGameUsecase Provider
+///
+/// Copied from [getMyActiveGameUsecase].
+@ProviderFor(getMyActiveGameUsecase)
+final getMyActiveGameUsecaseProvider =
+    AutoDisposeProvider<GetMyActiveGameUsecase>.internal(
+      getMyActiveGameUsecase,
+      name: r'getMyActiveGameUsecaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$getMyActiveGameUsecaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef GetMyActiveGameUsecaseRef =
+    AutoDisposeProviderRef<GetMyActiveGameUsecase>;
 String _$leaveGameHash() => r'9b80aaeda230ae5777cea0ae3d301b6470310dc3';
 
 /// Copied from Dart SDK

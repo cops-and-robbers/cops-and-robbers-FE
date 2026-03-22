@@ -10,6 +10,9 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../data/datasources/chat_stomp_datasource.dart';
 import '../../data/models/chat_message_dto.dart';
 
+export '../../data/datasources/chat_stomp_datasource.dart'
+    show StompConnectionState;
+
 part 'chat_provider.g.dart';
 
 /// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체
@@ -233,6 +236,27 @@ class ChatNotifier extends _$ChatNotifier {
 
     final datasource = ref.read(chatStompDatasourceProvider);
     datasource.publishChat(gameId, message.trim(), scope);
+  }
+
+  /// 게임 이벤트 기반 시스템 메시지를 전체 채팅에 추가합니다.
+  void addSystemMessage({required int gameId, required String message}) {
+    final msg = ChatMessageDto(
+      id: const Uuid().v4(),
+      gameId: gameId,
+      sender: const ChatSenderDto(
+        participantId: 0,
+        nickname: '시스템',
+        team: 'SYSTEM',
+      ),
+      message: message,
+      timestamp: DateTime.now().toIso8601String(),
+      scope: 'ALL',
+    );
+    final updated = [...state.allScopeMessages, msg];
+    final trimmed = updated.length > _maxMessages
+        ? updated.sublist(updated.length - _maxMessages)
+        : updated;
+    state = state.copyWith(allScopeMessages: trimmed);
   }
 
   // ============================================
