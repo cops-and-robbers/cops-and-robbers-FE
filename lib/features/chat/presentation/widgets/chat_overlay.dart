@@ -131,8 +131,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     final safeBottomMargin = bottomPadding > 0 ? bottomPadding : 37.h;
     final isKeyboardClosing =
         _prevKeyboardHeight > 0 && keyboardHeight < _prevKeyboardHeight;
-    final bottomMargin =
-        (isKeyboardOpen && !isKeyboardClosing) ? keyboardHeight : safeBottomMargin;
+    final bottomMargin = (isKeyboardOpen && !isKeyboardClosing)
+        ? keyboardHeight
+        : safeBottomMargin;
     final collapsedHeight = 20.h + 8.h + 64.h + safeBottomMargin;
     final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + safeBottomMargin;
 
@@ -146,8 +147,6 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         );
 
         // 키보드가 줄어들기 시작하면 시트를 50%로 내리기 시작
-        final isKeyboardClosing =
-            _prevKeyboardHeight > 0 && keyboardHeight < _prevKeyboardHeight;
         if (isKeyboardClosing && !_isCollapsingFromKeyboard) {
           _isCollapsingFromKeyboard = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -165,10 +164,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         _prevKeyboardHeight = keyboardHeight;
 
         // 키보드 열림: 시트 75% 고정, 닫히는 중/후: 기본 minSize
-        final effectiveMinSize =
-            (isKeyboardOpen && !_isCollapsingFromKeyboard)
-                ? _snap75
-                : _minSize;
+        final effectiveMinSize = (isKeyboardOpen && !_isCollapsingFromKeyboard)
+            ? _snap75
+            : _minSize;
         final effectiveSnap50 = _snap50;
         final effectiveSnap75 = _snap75;
 
@@ -205,8 +203,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                     _pointerDy += event.delta.dy;
                     if (!_isExpanded || _pointerDy < 40) return;
                     // 포인터가 입력바 영역에 있는지 확인
-                    final box = _inputBarKey.currentContext
-                        ?.findRenderObject() as RenderBox?;
+                    final box =
+                        _inputBarKey.currentContext?.findRenderObject()
+                            as RenderBox?;
                     if (box == null) return;
                     final inputBarTop = box.localToGlobal(Offset.zero).dy;
                     if (event.position.dy >= inputBarTop) {
@@ -215,81 +214,81 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                     }
                   },
                   child: Container(
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                    color: widget.isDarkMode
-                        ? AppColors.black900
-                        : AppColors.black100,
-                    borderRadius: BorderRadius.only(
-                      topLeft: AppRadius.xl20.topLeft,
-                      topRight: AppRadius.xl20.topRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: const Offset(0, -2),
-                        blurRadius: 10,
-                        color: AppColors.black.withValues(alpha: 0.1),
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      color: widget.isDarkMode
+                          ? AppColors.black900
+                          : AppColors.black100,
+                      borderRadius: BorderRadius.only(
+                        topLeft: AppRadius.xl20.topLeft,
+                        topRight: AppRadius.xl20.topRight,
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      SingleChildScrollView(
-                        controller: scrollController,
-                        physics: const ClampingScrollPhysics(),
-                        child: _buildDragHandle(),
-                      ),
-                      if (_isExpanded)
-                        Expanded(
-                          child: Column(
-                            children: [
-                              _buildTitle(),
-                              Expanded(
-                                child: PageView(
-                                  controller: _pageController,
-                                  onPageChanged: (page) {
-                                    setState(() => _currentPage = page);
-                                  },
-                                  children: [
-                                    ChatMessageList(
-                                      messages: chatState.allScopeMessages,
-                                      myParticipantId: widget.myParticipantId,
-                                      myTeam: widget.myTeam,
-                                      isDarkMode: widget.isDarkMode,
-                                      onOverscrollDown: _collapseSheet,
-                                    ),
-                                    ChatMessageList(
-                                      messages: chatState.teamScopeMessages,
-                                      myParticipantId: widget.myParticipantId,
-                                      myTeam: widget.myTeam,
-                                      isDarkMode: widget.isDarkMode,
-                                      onOverscrollDown: _collapseSheet,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              _buildPageIndicator(),
-                            ],
-                          ),
-                        )
-                      else
-                        const Expanded(child: SizedBox.shrink()),
-                      GestureDetector(
-                        key: _inputBarKey,
-                        onVerticalDragUpdate: _onVerticalDragDown,
-                        child: ChatInputBar(
-                          onSend: _handleSend,
-                          enabled: isConnected,
-                          onFocusGain: _onInputFocused,
-                          isDarkMode: widget.isDarkMode,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0, -2),
+                          blurRadius: 10,
+                          color: AppColors.black.withValues(alpha: 0.1),
                         ),
-                      ),
-                      GestureDetector(
-                        onVerticalDragUpdate: _onVerticalDragDown,
-                        child: SizedBox(height: bottomMargin),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        SingleChildScrollView(
+                          controller: scrollController,
+                          physics: const ClampingScrollPhysics(),
+                          child: _buildDragHandle(),
+                        ),
+                        if (_isExpanded)
+                          Expanded(
+                            child: Column(
+                              children: [
+                                _buildTitle(),
+                                Expanded(
+                                  child: PageView(
+                                    controller: _pageController,
+                                    onPageChanged: (page) {
+                                      setState(() => _currentPage = page);
+                                    },
+                                    children: [
+                                      ChatMessageList(
+                                        messages: chatState.allScopeMessages,
+                                        myParticipantId: widget.myParticipantId,
+                                        myTeam: widget.myTeam,
+                                        isDarkMode: widget.isDarkMode,
+                                        onOverscrollDown: _collapseSheet,
+                                      ),
+                                      ChatMessageList(
+                                        messages: chatState.teamScopeMessages,
+                                        myParticipantId: widget.myParticipantId,
+                                        myTeam: widget.myTeam,
+                                        isDarkMode: widget.isDarkMode,
+                                        onOverscrollDown: _collapseSheet,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                _buildPageIndicator(),
+                              ],
+                            ),
+                          )
+                        else
+                          const Expanded(child: SizedBox.shrink()),
+                        GestureDetector(
+                          key: _inputBarKey,
+                          onVerticalDragUpdate: _onVerticalDragDown,
+                          child: ChatInputBar(
+                            onSend: _handleSend,
+                            enabled: isConnected,
+                            onFocusGain: _onInputFocused,
+                            isDarkMode: widget.isDarkMode,
+                          ),
+                        ),
+                        GestureDetector(
+                          onVerticalDragUpdate: _onVerticalDragDown,
+                          child: SizedBox(height: bottomMargin),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
