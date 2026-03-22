@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'secure_token_storage.g.dart';
 
@@ -116,6 +117,33 @@ class SecureTokenStorage {
   Future<bool> hasTokens() async {
     final accessToken = await getAccessToken();
     return accessToken != null;
+  }
+
+  // ============================================
+  // 재설치 감지 및 Keychain 초기화 (iOS)
+  // ============================================
+
+  static const String _freshInstallKey = 'has_run_before';
+
+  /// 앱 재설치 시 이전 토큰을 삭제
+  ///
+  /// iOS에서는 앱을 삭제해도 Keychain 데이터가 남아있어
+  /// 재설치 시 만료된 토큰으로 인증을 시도할 수 있습니다.
+  /// Android에서는 앱 삭제 시 EncryptedSharedPreferences도 함께 삭제되므로
+  /// 실질적으로 no-op이지만, 플랫폼 분기 없이 동일하게 처리합니다.
+  /// SharedPreferences는 양 플랫폼 모두 앱 삭제 시 제거되므로
+  /// 플래그 부재 = 신규 설치로 판단하여 토큰을 초기화합니다.
+  Future<void> clearTokensIfReinstalled() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasRunBefore = prefs.getBool(_freshInstallKey) ?? false;
+
+    if (!hasRunBefore) {
+      await clearTokens();
+      await prefs.setBool(_freshInstallKey, true);
+      if (kDebugMode) {
+        debugPrint('🔄 재설치 감지 — Keychain 토큰 초기화 완료');
+      }
+    }
   }
 }
 

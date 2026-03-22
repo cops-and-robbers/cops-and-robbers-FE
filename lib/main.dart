@@ -9,12 +9,17 @@ import 'package:cops_and_robbers/core/config/env_config.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
+import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
 
 void main() async {
   // Flutter 엔진 초기화 보장
   // Ensure Flutter engine is initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 재설치 시 이전 토큰 초기화 (iOS: Keychain 잔존 토큰 삭제, Android: 자동 삭제되므로 no-op)
+  // Clear stale tokens on fresh install (iOS: Keychain persists after uninstall, Android: no-op)
+  await SecureTokenStorage().clearTokensIfReinstalled();
 
   // 환경 변수 초기화 (API URL, WebSocket URL 등)
   // Initialize environment variables (API URL, WebSocket URL, etc.)
