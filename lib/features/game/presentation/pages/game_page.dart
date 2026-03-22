@@ -961,7 +961,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       final policeWaitMinutes = participantInfo?.policeWaitMinutes;
       final effectiveMoveStartTime =
           policeMoveStartTime ??
-          (policeWaitMinutes != null && policeWaitMinutes > 0 && gameStartTime != null
+          (policeWaitMinutes != null &&
+                  policeWaitMinutes > 0 &&
+                  gameStartTime != null
               ? gameStartTime.add(Duration(minutes: policeWaitMinutes))
               : (policeWaitMinutes == 0 ? gameStartTime : null));
       final base = lastReveal ?? effectiveMoveStartTime;

@@ -113,9 +113,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               _buildMenuItem(
                 text: '위치 권한 관리',
                 subtitle: '기기 설정에서 위치 권한을 변경할 수 있어요',
-                onTap: () => AppSettings.openAppSettings(
-                  type: AppSettingsType.location,
-                ),
+                onTap: () =>
+                    AppSettings.openAppSettings(type: AppSettingsType.location),
               ),
 
               const Divider(color: AppColors.black100, height: 1),
