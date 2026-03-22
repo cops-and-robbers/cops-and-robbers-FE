@@ -808,7 +808,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       title: _inviteCode != null
           ? GestureDetector(
               onTap: _showInviteCodeDialog,
-              child: Row(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
@@ -821,15 +821,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             color: AppColors.black,
                           ),
                   ),
-                  SizedBox(width: AppSpacing.horizontal4),
-                  SvgPicture.asset(
-                    'assets/icons/icon_copy.svg',
-                    width: 20.w,
-                    height: 20.w,
-                    colorFilter: ColorFilter.mode(
-                      isDark ? AppColors.black500 : AppColors.black300,
-                      BlendMode.srcIn,
-                    ),
+                  SizedBox(height: 2.h),
+                  Container(
+                    width: _inviteCode!.length * 12.w + 4.w,
+                    height: 2.h,
+                    color: isDark ? AppColors.white : AppColors.black,
                   ),
                 ],
               ),
