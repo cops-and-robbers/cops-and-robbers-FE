@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
@@ -390,7 +391,7 @@ class GameEventNotifier extends _$GameEventNotifier {
         state = state.copyWith(
           isPoliceMoving: true,
           policeMoveStartTime: moveStartTime,
-          bannerMessage: '경찰이 출동합니다!',
+          bannerMessage: GameEventMessages.policeMove,
         );
         _startBannerTimer();
       case GameEventType.locationReveal:
@@ -406,7 +407,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     final startTime = _parseTimestamp(startTimeStr);
     state = state.copyWith(
       gameStartTime: startTime ?? DateTime.now(),
-      bannerMessage: '게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!',
+      bannerMessage: GameEventMessages.gameStart,
     );
     _startBannerTimer();
     debugPrint(
@@ -435,7 +436,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     final revealTime = _parseTimestamp(timestamp) ?? DateTime.now();
     state = state.copyWith(
       lastLocationRevealTime: revealTime,
-      bannerMessage: '현재 도둑의 위치가 공개됩니다!',
+      bannerMessage: GameEventMessages.locationReveal,
       robberLocations: newLocations ?? state.robberLocations,
     );
     _startBannerTimer();
