@@ -133,6 +133,15 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  /// Tag Bold - 강조 태그 (10px Bold)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get tag10Bold => TextStyle(
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 10.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
   // ============================================
   // Robber Styles (Moneygraphy)
   // ============================================
