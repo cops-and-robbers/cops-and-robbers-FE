@@ -47,7 +47,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
   void _scrollToBottomIfNear() {
     if (!_scrollController.hasClients) return;
     final pixels = _scrollController.position.pixels;
-    if (pixels < 100) return;
+    if (pixels > 100) return;
     _scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 200),
