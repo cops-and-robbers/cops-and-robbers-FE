@@ -250,7 +250,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   /// 도둑 팀 GPS 위치 스트림 구독 및 서버 전송 시작
   ///
-  /// distanceFilter 5m로 OS 레벨에서 필터링하고,
+  /// distanceFilter 10m로 OS 레벨에서 필터링하고,
   /// 추가로 5초 throttle을 적용하여 서버 부하를 제한한다.
   /// 방향 갱신은 [_startHeadingTracking]의 별도 스트림이 담당한다.
   Future<void> _startLocationSending() async {
@@ -285,9 +285,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       _lastSentTime = DateTime.now();
     }
 
-    // 위치 스트림 구독: 5m 이상 이동 시 이벤트 발생, 5초 throttle 적용
+    // 위치 스트림 구독: 10m 이상 이동 시 이벤트 발생, 5초 throttle 적용
     _locationSubscription =
-        DeviceLocationService.getPositionStream(distanceFilter: 5).listen(
+        DeviceLocationService.getPositionStream(distanceFilter: 10).listen(
           (pos) {
             if (!mounted) return;
 
@@ -918,13 +918,13 @@ class _GamePageState extends ConsumerState<GamePage> {
     return Padding(
       padding: AppPadding.horizontal20,
       child: Container(
-        height: 44.h,
         decoration: BoxDecoration(
           color: AppColors.red,
           borderRadius: AppRadius.large,
         ),
-        padding: EdgeInsets.only(left: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SvgPicture.asset(
               'assets/icons/Loudspeaker.svg',
@@ -936,10 +936,14 @@ class _GamePageState extends ConsumerState<GamePage> {
               ),
             ),
             SizedBox(width: AppSpacing.horizontal8),
-            Text(
-              message,
-              style: AppTextStyles.paragraph14Semibold.copyWith(
-                color: AppColors.white,
+            Expanded(
+              child: Text(
+                message,
+                style: AppTextStyles.paragraph14Semibold.copyWith(
+                  color: AppColors.white,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
