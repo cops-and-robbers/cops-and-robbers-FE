@@ -129,7 +129,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     final isKeyboardOpen = keyboardHeight > 0;
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
     final safeBottomMargin = bottomPadding > 0 ? bottomPadding : 37.h;
-    final bottomMargin = isKeyboardOpen ? keyboardHeight : safeBottomMargin;
+    final isKeyboardClosing =
+        _prevKeyboardHeight > 0 && keyboardHeight < _prevKeyboardHeight;
+    final bottomMargin =
+        (isKeyboardOpen && !isKeyboardClosing) ? keyboardHeight : safeBottomMargin;
     final collapsedHeight = 20.h + 8.h + 64.h + safeBottomMargin;
     final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + safeBottomMargin;
 
