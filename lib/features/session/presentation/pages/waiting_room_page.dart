@@ -730,6 +730,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                         () => _isPoliceExpanded = !_isPoliceExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
+                      myParticipantId: participantInfo?.participantId,
                       onAddSlotTap: !_isReady
                           ? () => _changeTeam('POLICE')
                           : null,
@@ -753,6 +754,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                         () => _isRobberExpanded = !_isRobberExpanded,
                       ),
                       hostParticipantId: participantsState.hostParticipantId,
+                      myParticipantId: participantInfo?.participantId,
                       onAddSlotTap: !_isReady
                           ? () => _changeTeam('ROBBER')
                           : null,
