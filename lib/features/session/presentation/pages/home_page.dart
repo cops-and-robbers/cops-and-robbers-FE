@@ -415,7 +415,7 @@ class HomePage extends ConsumerWidget {
                         SvgIconButton(
                           assetPath: 'assets/icons/Top_hat.svg',
                           onPressed: () {
-                            // TODO: 역할 선택 또는 테마 관련 기능
+                            AppSnackbar.show(context, message: '준비중입니다');
                           },
                         ),
                       ],
