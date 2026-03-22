@@ -14,6 +14,7 @@ _$GameSettingsResponseImpl _$$GameSettingsResponseImplFromJson(
       .toInt(),
   policeWaitMinutes: (json['policeWaitMinutes'] as num).toInt(),
   maxParticipants: (json['maxParticipants'] as num).toInt(),
+  gameStartTime: json['gameStartTime'] as String?,
 );
 
 Map<String, dynamic> _$$GameSettingsResponseImplToJson(
@@ -23,4 +24,5 @@ Map<String, dynamic> _$$GameSettingsResponseImplToJson(
   'locationRevealIntervalMinutes': instance.locationRevealIntervalMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
+  'gameStartTime': instance.gameStartTime,
 };

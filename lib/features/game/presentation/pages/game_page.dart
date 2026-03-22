@@ -96,6 +96,7 @@ class _GamePageState extends ConsumerState<GamePage> {
       _connectGameEvents();
       _loadGameArea();
       _showPoliceTimerIfNeeded();
+      _initSettingsFromApiIfNeeded();
     });
   }
 
@@ -140,6 +141,59 @@ class _GamePageState extends ConsumerState<GamePage> {
         subtitle: '도둑이 도망치는 중이에요!',
       ),
     );
+  }
+
+  /// 게임 설정 API 보완 초기화
+  ///
+  /// splash 재접속 등으로 [gameParticipantNotifierProvider] 상태가 없거나
+  /// 설정값이 누락된 경우 `GET /api/games/{gameId}` API로 보완합니다.
+  /// 로비를 거친 정상 진입 경로에서는 이미 설정값이 있으므로 early return됩니다.
+  Future<void> _initSettingsFromApiIfNeeded() async {
+    if (widget.isDummy) return;
+
+    final info = ref.read(gameParticipantNotifierProvider);
+    if (info?.roundTimeMinutes != null) return; // 이미 초기화됨
+
+    try {
+      final settings = await ref.read(
+        fetchGameSettingsProvider(_gameId).future,
+      );
+      if (!mounted) return;
+
+      // state가 null이면 (splash 재접속) 기본값으로 초기화
+      if (ref.read(gameParticipantNotifierProvider) == null) {
+        ref
+            .read(gameParticipantNotifierProvider.notifier)
+            .setGameInfo(
+              gameId: _gameId,
+              nickname: '',
+              team: widget.team,
+              participantId: widget.participantId,
+            );
+      }
+
+      ref
+          .read(gameParticipantNotifierProvider.notifier)
+          .initFromLobby(
+            participantId: widget.participantId,
+            maxParticipants: settings.maxParticipants,
+            locationRevealIntervalMinutes:
+                settings.locationRevealIntervalMinutes,
+            policeWaitMinutes: settings.policeWaitMinutes,
+            roundTimeMinutes: settings.roundDurationMinutes,
+          );
+
+      if (settings.gameStartTime != null) {
+        ref
+            .read(gameParticipantNotifierProvider.notifier)
+            .setGameStartTime(settings.gameStartTime!);
+      }
+
+      // 설정 로드 후 경찰 타이머 재확인 (첫 호출 시 설정 없어 early return됐을 수 있음)
+      if (mounted) _showPoliceTimerIfNeeded();
+    } catch (_) {
+      // 실패해도 게임 진행에는 영향 없음 (타이머만 미표시)
+    }
   }
 
   /// 도둑팀 전용: 경찰 시작 시각 계산
@@ -507,6 +561,27 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
+  /// resumed 복귀 시 소켓 재연결 (필요한 경우에만)
+  ///
+  /// OS가 백그라운드에서 WebSocket을 끊거나, 지수 백오프 5회 소진 후
+  /// dead 상태로 방치된 경우를 복구합니다.
+  void _reconnectSocketsIfNeeded() {
+    if (widget.isDummy) return;
+
+    final chatState = ref.read(chatNotifierProvider).connectionState;
+    if (chatState != StompConnectionState.connected &&
+        chatState != StompConnectionState.connecting) {
+      final team = widget.team.toLowerCase();
+      _chatNotifier?.connectAndSubscribe(gameId: _gameId, team: team);
+    }
+
+    final gameEventState = ref.read(gameEventNotifierProvider).connectionState;
+    if (gameEventState != StompConnectionState.connected &&
+        gameEventState != StompConnectionState.connecting) {
+      _gameEventNotifier?.connectAndSubscribe(_gameId);
+    }
+  }
+
   /// resumed 복귀 시 게임 종료 여부 확인
   ///
   /// 백그라운드 중 게임이 끝났을 경우 홈으로 이동,
@@ -541,6 +616,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     ref.listen(lifecycleStateProvider, (_, next) {
       if (next.valueOrNull == AppLifecycleState.resumed) {
         _checkGameStatusOnResume();
+        _reconnectSocketsIfNeeded();
       }
     });
 

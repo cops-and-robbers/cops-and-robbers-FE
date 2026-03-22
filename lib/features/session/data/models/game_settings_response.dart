@@ -12,7 +12,8 @@ part 'game_settings_response.g.dart';
 ///   "roundDurationMinutes": 30,
 ///   "locationRevealIntervalMinutes": 2,
 ///   "policeWaitMinutes": 3,
-///   "maxParticipants": 10
+///   "maxParticipants": 10,
+///   "gameStartTime": "2026-03-21T15:30:00"
 /// }
 /// ```
 @freezed
@@ -29,6 +30,9 @@ class GameSettingsResponse with _$GameSettingsResponse {
 
     /// 최대 참가자 수
     required int maxParticipants,
+
+    /// 게임 시작 시각 (ISO 8601, IN_PROGRESS 상태일 때만 non-null)
+    String? gameStartTime,
   }) = _GameSettingsResponse;
 
   factory GameSettingsResponse.fromJson(Map<String, dynamic> json) =>
