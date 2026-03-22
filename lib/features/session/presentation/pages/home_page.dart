@@ -373,13 +373,21 @@ class HomePage extends ConsumerWidget {
                       onTap: () {
                         context.push(RoutePaths.settings);
                       },
-                      child: SvgPicture.asset(
-                        'assets/icons/icon_setting_1.svg',
-                        width: 24.w,
-                        height: 24.h,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.black800,
-                          BlendMode.srcIn,
+                      behavior: HitTestBehavior.opaque,
+                      child: SizedBox(
+                        width: 48.w,
+                        height: 48.w,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: SvgPicture.asset(
+                            'assets/icons/icon_setting_1.svg',
+                            width: 24.w,
+                            height: 24.w,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.black800,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                         ),
                       ),
                     ),

@@ -835,32 +835,43 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         GestureDetector(
           onTap: _showGameRulesDialog,
           behavior: HitTestBehavior.opaque,
-          child: SvgPicture.asset(
-            'assets/icons/icon_info.svg',
-            width: 24.w,
-            height: 24.w,
-            colorFilter: ColorFilter.mode(
-              isDark ? AppColors.black200 : AppColors.black800,
-              BlendMode.srcIn,
+          child: SizedBox(
+            width: 48.w,
+            height: 48.w,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/icons/icon_info.svg',
+                width: 24.w,
+                height: 24.w,
+                colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.black200 : AppColors.black800,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
           ),
         ),
-        SizedBox(width: AppSpacing.horizontal12),
         GestureDetector(
           onTap: () =>
               context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
           behavior: HitTestBehavior.opaque,
-          child: SvgPicture.asset(
-            'assets/icons/icon_settiing_2.svg',
-            width: 24.w,
-            height: 24.w,
-            colorFilter: ColorFilter.mode(
-              isDark ? AppColors.black200 : AppColors.black800,
-              BlendMode.srcIn,
+          child: SizedBox(
+            width: 48.w,
+            height: 48.w,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/icons/icon_settiing_2.svg',
+                width: 24.w,
+                height: 24.w,
+                colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.black200 : AppColors.black800,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
           ),
         ),
-        SizedBox(width: 24.w),
+        SizedBox(width: 12.w),
       ],
     );
   }

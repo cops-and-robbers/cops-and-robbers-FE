@@ -1006,18 +1006,25 @@ class _GamePageState extends ConsumerState<GamePage> {
               ),
             ],
           ),
-          // 우측: info 버튼 (24x24)
+          // 우측: info 버튼 (터치 영역 48x48)
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: _showGameRulesDialog,
-              child: SvgPicture.asset(
-                'assets/icons/icon_info.svg',
-                width: 24.w,
-                height: 24.w,
-                colorFilter: ColorFilter.mode(
-                  _isDarkMode ? AppColors.black200 : AppColors.black800,
-                  BlendMode.srcIn,
+              behavior: HitTestBehavior.opaque,
+              child: SizedBox(
+                width: 48.w,
+                height: 48.w,
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/icons/icon_info.svg',
+                    width: 24.w,
+                    height: 24.w,
+                    colorFilter: ColorFilter.mode(
+                      _isDarkMode ? AppColors.black200 : AppColors.black800,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
               ),
             ),
