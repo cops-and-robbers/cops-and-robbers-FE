@@ -195,7 +195,11 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
               minChildSize: effectiveMinSize,
               maxChildSize: effectiveSnap75,
               snap: true,
-              snapSizes: [effectiveSnap50, effectiveSnap75],
+              snapSizes: [
+                if (effectiveSnap50 > effectiveMinSize &&
+                    effectiveSnap50 < effectiveSnap75)
+                  effectiveSnap50,
+              ],
               builder: (context, scrollController) {
                 return Listener(
                   onPointerDown: (_) => _pointerDy = 0,
