@@ -42,6 +42,12 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
+  // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
+  DateTime? _lastHandledGameStart;
+  DateTime? _lastHandledPoliceMove;
+  DateTime? _lastHandledLocationReveal;
+  bool _lastHandledIsGameOver = false;
+
   bool _isExpanded = false;
   double _sheetSize = 0;
 
@@ -103,7 +109,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       prev,
       next,
     ) {
-      if (prev != next && next != null) {
+      if (next != null && next != _lastHandledGameStart) {
+        _lastHandledGameStart = next;
         ref
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(
@@ -117,7 +124,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       prev,
       next,
     ) {
-      if (prev != next && next != null) {
+      if (next != null && next != _lastHandledPoliceMove) {
+        _lastHandledPoliceMove = next;
         ref
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(gameId: widget.gameId, message: '경찰이 출동합니다!');
@@ -127,7 +135,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     ref.listen(
       gameEventNotifierProvider.select((s) => s.lastLocationRevealTime),
       (prev, next) {
-        if (prev != next && next != null) {
+        if (next != null && next != _lastHandledLocationReveal) {
+          _lastHandledLocationReveal = next;
           ref
               .read(chatNotifierProvider.notifier)
               .addSystemMessage(
@@ -142,7 +151,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       prev,
       next,
     ) {
-      if (next == true && prev != true) {
+      if (next == true && !_lastHandledIsGameOver) {
+        _lastHandledIsGameOver = true;
         ref
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(gameId: widget.gameId, message: '게임이 종료되었습니다!');
@@ -207,7 +217,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                       BoxShadow(
                         offset: const Offset(0, -2),
                         blurRadius: 10,
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: AppColors.black.withValues(alpha: 0.1),
                       ),
                     ],
                   ),
