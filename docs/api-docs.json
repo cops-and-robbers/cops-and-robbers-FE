@@ -2477,13 +2477,25 @@
                   "$ref": "#/components/schemas/GameInfoResponse"
                 },
                 "examples": {
-                  "게임 설정 조회 성공 예시": {
-                    "description": "게임 설정 조회 성공 예시",
+                  "대기 중 (WAITING)": {
+                    "description": "대기 중 (WAITING)",
                     "value": {
                       "roundDurationMinutes": 30,
                       "locationRevealIntervalMinutes": 5,
                       "policeWaitMinutes": 3,
-                      "maxParticipants": 10
+                      "maxParticipants": 10,
+                      "isStarted": false
+                    }
+                  },
+                  "진행 중 (IN_PROGRESS)": {
+                    "description": "진행 중 (IN_PROGRESS)",
+                    "value": {
+                      "roundDurationMinutes": 30,
+                      "locationRevealIntervalMinutes": 5,
+                      "policeWaitMinutes": 3,
+                      "maxParticipants": 10,
+                      "isStarted": true,
+                      "gameStartTime": "2026-03-21T15:30:00"
                     }
                   }
                 }
@@ -2839,6 +2851,180 @@
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/games/{gameId}/lobby"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/games/{gameId}/lobby/{participantId}": {
+      "delete": {
+        "tags": ["Lobby"],
+        "summary": "멤버 강제 퇴장",
+        "description": "방장이 대기실의 특정 참가자를 강제 퇴장합니다. 방장 본인은 강제 퇴장할 수 없습니다.",
+        "operationId": "kickMember",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "게임 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "participantId",
+            "in": "path",
+            "description": "강제 퇴장할 참가자 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "강제 퇴장 성공"
+          },
+          "403": {
+            "description": "403 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "호스트 권한 필요": {
+                    "summary": "호스트 권한 필요",
+                    "value": {
+                      "title": "호스트 권한 필요",
+                      "status": 403,
+                      "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/lobby/{participantId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "자기 자신 강퇴 불가": {
+                    "summary": "자기 자신 강퇴 불가",
+                    "value": {
+                      "title": "자기 자신 강퇴 불가",
+                      "status": 400,
+                      "detail": "방장은 자기 자신을 강퇴할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/lobby/{participantId}"
+                    }
+                  },
+                  "이미 시작된 게임": {
+                    "summary": "이미 시작된 게임",
+                    "value": {
+                      "title": "이미 시작된 게임",
+                      "status": 400,
+                      "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/lobby/{participantId}"
+                    }
+                  },
+                  "로비 조작 불가": {
+                    "summary": "로비 조작 불가",
+                    "value": {
+                      "title": "로비 조작 불가",
+                      "status": 400,
+                      "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/lobby/{participantId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}/lobby/{participantId}"
+                    }
+                  },
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/lobby/{participantId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/lobby/{participantId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/lobby/{participantId}"
                     }
                   }
                 }
@@ -3492,6 +3678,12 @@
             "description": "게임 상태",
             "example": "WAITING",
             "enum": ["WAITING", "IN_PROGRESS", "FINISHED", "CANCELED"]
+          },
+          "team": {
+            "type": "string",
+            "description": "팀",
+            "example": "POLICE",
+            "enum": ["POLICE", "ROBBER"]
           }
         },
         "description": "유저 게임 참여 정보"
@@ -3537,6 +3729,16 @@
             "description": "최대 참가 인원",
             "format": "int32",
             "example": 10
+          },
+          "isStarted": {
+            "type": "boolean",
+            "description": "게임 시작 여부",
+            "example": false
+          },
+          "gameStartTime": {
+            "type": "string",
+            "description": "게임 시작 시간 (진행 중일 때만 포함)",
+            "format": "date-time"
           }
         }
       },
