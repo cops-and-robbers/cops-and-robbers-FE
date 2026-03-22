@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../game/presentation/providers/game_event_provider.dart';
 import '../providers/chat_provider.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
@@ -40,16 +39,13 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   final DraggableScrollableController _sheetController =
       DraggableScrollableController();
   final PageController _pageController = PageController();
+  final GlobalKey _inputBarKey = GlobalKey();
   int _currentPage = 0;
 
-  // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
-  DateTime? _lastHandledGameStart;
-  DateTime? _lastHandledPoliceMove;
-  DateTime? _lastHandledLocationReveal;
-  bool _lastHandledIsGameOver = false;
-
   bool _isExpanded = false;
+  bool _wasKeyboardOpen = false;
   double _sheetSize = 0;
+  double _pointerDy = 0; // 포인터 누적 이동량 (아래 = 양수)
 
   static const double _snap50 = 0.5;
   static const double _snap75 = 0.75;
@@ -94,6 +90,26 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     }
   }
 
+  /// 시트 접기 (키보드 닫기 + 시트 최소화)
+  void _collapseSheet() {
+    FocusScope.of(context).unfocus();
+    if (_sheetController.isAttached) {
+      _sheetController.animateTo(
+        _minSize,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  /// 시트 영역 아래로 스와이프 시 시트 닫기 (카톡 스타일)
+  void _onVerticalDragDown(DragUpdateDetails details) {
+    // 아래 방향 스와이프만 처리
+    if (details.delta.dy > 0 && _isExpanded) {
+      _collapseSheet();
+    }
+  }
+
   @override
   void dispose() {
     _sheetController.removeListener(_onSheetChanged);
@@ -104,69 +120,17 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    // 게임 이벤트 → 전체채팅 시스템 메시지 주입
-    ref.listen(gameEventNotifierProvider.select((s) => s.gameStartTime), (
-      prev,
-      next,
-    ) {
-      if (next != null && next != _lastHandledGameStart) {
-        _lastHandledGameStart = next;
-        ref
-            .read(chatNotifierProvider.notifier)
-            .addSystemMessage(
-              gameId: widget.gameId,
-              message: '게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!',
-            );
-      }
-    });
-
-    ref.listen(gameEventNotifierProvider.select((s) => s.policeMoveStartTime), (
-      prev,
-      next,
-    ) {
-      if (next != null && next != _lastHandledPoliceMove) {
-        _lastHandledPoliceMove = next;
-        ref
-            .read(chatNotifierProvider.notifier)
-            .addSystemMessage(gameId: widget.gameId, message: '경찰이 출동합니다!');
-      }
-    });
-
-    ref.listen(
-      gameEventNotifierProvider.select((s) => s.lastLocationRevealTime),
-      (prev, next) {
-        if (next != null && next != _lastHandledLocationReveal) {
-          _lastHandledLocationReveal = next;
-          ref
-              .read(chatNotifierProvider.notifier)
-              .addSystemMessage(
-                gameId: widget.gameId,
-                message: '현재 도둑의 위치가 공개됩니다!',
-              );
-        }
-      },
-    );
-
-    ref.listen(gameEventNotifierProvider.select((s) => s.isGameOver), (
-      prev,
-      next,
-    ) {
-      if (next == true && !_lastHandledIsGameOver) {
-        _lastHandledIsGameOver = true;
-        ref
-            .read(chatNotifierProvider.notifier)
-            .addSystemMessage(gameId: widget.gameId, message: '게임이 종료되었습니다!');
-      }
-    });
-
     final chatState = ref.watch(chatNotifierProvider);
     final isConnected =
         chatState.connectionState == StompConnectionState.connected;
 
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final isKeyboardOpen = keyboardHeight > 0;
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
-    final bottomMargin = bottomPadding > 0 ? bottomPadding : 37.h;
-    final collapsedHeight = 20.h + 8.h + 64.h + bottomMargin;
-    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + bottomMargin;
+    final safeBottomMargin = bottomPadding > 0 ? bottomPadding : 37.h;
+    final bottomMargin = isKeyboardOpen ? keyboardHeight : safeBottomMargin;
+    final collapsedHeight = 20.h + 8.h + 64.h + safeBottomMargin;
+    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + safeBottomMargin;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -177,6 +141,17 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
           0.35,
         );
 
+        // 키보드 열림: 시트 75% 고정, 닫힘: 기본 minSize
+        final effectiveMinSize = isKeyboardOpen ? _snap75 : _minSize;
+        final effectiveSnap50 = _snap50;
+        final effectiveSnap75 = _snap75;
+
+        // 키보드 닫힘 전환 감지 → 시트를 50%로 즉시 이동
+        if (_wasKeyboardOpen && !isKeyboardOpen && _sheetController.isAttached) {
+          _sheetController.jumpTo(_snap50);
+        }
+        _wasKeyboardOpen = isKeyboardOpen;
+
         return Stack(
           children: [
             if (_isExpanded)
@@ -184,6 +159,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
+                    FocusScope.of(context).unfocus();
                     if (_sheetController.isAttached) {
                       _sheetController.animateTo(
                         _minSize,
@@ -197,13 +173,28 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
               ),
             DraggableScrollableSheet(
               controller: _sheetController,
-              initialChildSize: _minSize,
-              minChildSize: _minSize,
-              maxChildSize: _snap75,
+              initialChildSize: effectiveMinSize,
+              minChildSize: effectiveMinSize,
+              maxChildSize: effectiveSnap75,
               snap: true,
-              snapSizes: const [_snap50, _snap75],
+              snapSizes: [effectiveSnap50, effectiveSnap75],
               builder: (context, scrollController) {
-                return Container(
+                return Listener(
+                  onPointerDown: (_) => _pointerDy = 0,
+                  onPointerMove: (event) {
+                    _pointerDy += event.delta.dy;
+                    if (!_isExpanded || _pointerDy < 40) return;
+                    // 포인터가 입력바 영역에 있는지 확인
+                    final box = _inputBarKey.currentContext
+                        ?.findRenderObject() as RenderBox?;
+                    if (box == null) return;
+                    final inputBarTop = box.localToGlobal(Offset.zero).dy;
+                    if (event.position.dy >= inputBarTop) {
+                      _pointerDy = 0; // 중복 호출 방지
+                      _collapseSheet();
+                    }
+                  },
+                  child: Container(
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
                     color: widget.isDarkMode
@@ -245,12 +236,14 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                       myParticipantId: widget.myParticipantId,
                                       myTeam: widget.myTeam,
                                       isDarkMode: widget.isDarkMode,
+                                      onOverscrollDown: _collapseSheet,
                                     ),
                                     ChatMessageList(
                                       messages: chatState.teamScopeMessages,
                                       myParticipantId: widget.myParticipantId,
                                       myTeam: widget.myTeam,
                                       isDarkMode: widget.isDarkMode,
+                                      onOverscrollDown: _collapseSheet,
                                     ),
                                   ],
                                 ),
@@ -261,14 +254,22 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                         )
                       else
                         const Expanded(child: SizedBox.shrink()),
-                      ChatInputBar(
-                        onSend: _handleSend,
-                        enabled: isConnected,
-                        onFocusGain: _onInputFocused,
-                        isDarkMode: widget.isDarkMode,
+                      GestureDetector(
+                        key: _inputBarKey,
+                        onVerticalDragUpdate: _onVerticalDragDown,
+                        child: ChatInputBar(
+                          onSend: _handleSend,
+                          enabled: isConnected,
+                          onFocusGain: _onInputFocused,
+                          isDarkMode: widget.isDarkMode,
+                        ),
                       ),
-                      SizedBox(height: bottomMargin),
+                      GestureDetector(
+                        onVerticalDragUpdate: _onVerticalDragDown,
+                        child: SizedBox(height: bottomMargin),
+                      ),
                     ],
+                  ),
                   ),
                 );
               },
