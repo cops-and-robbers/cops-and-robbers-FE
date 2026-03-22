@@ -43,9 +43,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   int _currentPage = 0;
 
   bool _isExpanded = false;
-  bool _wasKeyboardOpen = false;
+  bool _isCollapsingFromKeyboard = false;
   double _sheetSize = 0;
   double _pointerDy = 0; // 포인터 누적 이동량 (아래 = 양수)
+  double _prevKeyboardHeight = 0;
 
   static const double _snap50 = 0.5;
   static const double _snap75 = 0.75;
@@ -141,16 +142,32 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
           0.35,
         );
 
-        // 키보드 열림: 시트 75% 고정, 닫힘: 기본 minSize
-        final effectiveMinSize = isKeyboardOpen ? _snap75 : _minSize;
+        // 키보드가 줄어들기 시작하면 시트를 50%로 내리기 시작
+        final isKeyboardClosing =
+            _prevKeyboardHeight > 0 && keyboardHeight < _prevKeyboardHeight;
+        if (isKeyboardClosing && !_isCollapsingFromKeyboard) {
+          _isCollapsingFromKeyboard = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_sheetController.isAttached &&
+                _sheetController.size > _snap50) {
+              _sheetController.animateTo(
+                _snap50,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
+        if (!isKeyboardOpen) _isCollapsingFromKeyboard = false;
+        _prevKeyboardHeight = keyboardHeight;
+
+        // 키보드 열림: 시트 75% 고정, 닫히는 중/후: 기본 minSize
+        final effectiveMinSize =
+            (isKeyboardOpen && !_isCollapsingFromKeyboard)
+                ? _snap75
+                : _minSize;
         final effectiveSnap50 = _snap50;
         final effectiveSnap75 = _snap75;
-
-        // 키보드 닫힘 전환 감지 → 시트를 50%로 즉시 이동
-        if (_wasKeyboardOpen && !isKeyboardOpen && _sheetController.isAttached) {
-          _sheetController.jumpTo(_snap50);
-        }
-        _wasKeyboardOpen = isKeyboardOpen;
 
         return Stack(
           children: [
