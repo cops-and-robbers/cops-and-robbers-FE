@@ -386,7 +386,7 @@ class GameEventNotifier extends _$GameEventNotifier {
         _handleStart(event.data);
       case GameEventType.policeMoveStart:
         final moveStartTime =
-            DateTime.tryParse(event.timestamp) ?? DateTime.now();
+            _parseTimestamp(event.timestamp) ?? DateTime.now();
         state = state.copyWith(
           isPoliceMoving: true,
           policeMoveStartTime: moveStartTime,
@@ -403,9 +403,7 @@ class GameEventNotifier extends _$GameEventNotifier {
 
   void _handleStart(Map<String, dynamic> data) {
     final startTimeStr = data['startTime'] as String?;
-    final startTime = startTimeStr != null
-        ? DateTime.tryParse(startTimeStr)
-        : null;
+    final startTime = _parseTimestamp(startTimeStr);
     state = state.copyWith(
       gameStartTime: startTime ?? DateTime.now(),
       bannerMessage: '게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!',
@@ -434,7 +432,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       }
     }
 
-    final revealTime = DateTime.tryParse(timestamp) ?? DateTime.now();
+    final revealTime = _parseTimestamp(timestamp) ?? DateTime.now();
     state = state.copyWith(
       lastLocationRevealTime: revealTime,
       bannerMessage: '현재 도둑의 위치가 공개됩니다!',
@@ -501,6 +499,19 @@ class GameEventNotifier extends _$GameEventNotifier {
     debugPrint(
       '[GameEventNotifier] ✅ GAME_OVER 이벤트 → winner: ${state.winnerTeam}',
     );
+  }
+
+  // ============================================================
+  // 유틸리티
+  // ============================================================
+
+  static DateTime? _parseTimestamp(String? raw) {
+    if (raw == null) return null;
+    final normalized = raw.replaceFirstMapped(
+      RegExp(r'(\.\d{1,6})\d*'),
+      (m) => m.group(1)!,
+    );
+    return DateTime.tryParse(normalized);
   }
 
   // ============================================================

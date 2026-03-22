@@ -29,6 +29,7 @@ import '../../data/models/game_area_model.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
+import '../widgets/arrest_lock_overlay.dart';
 import '../widgets/game_timer_text.dart';
 import '../widgets/location_reveal_countdown.dart';
 import '../widgets/google_map_view.dart';
@@ -291,6 +292,13 @@ class _GamePageState extends ConsumerState<GamePage> {
           (pos) {
             if (!mounted) return;
 
+            if (ref
+                .read(gameEventNotifierProvider)
+                .arrestedParticipantIds
+                .contains(widget.participantId)) {
+              return;
+            }
+
             // 5초 미만이면 서버 전송 스킵 (서버 부하 제한)
             final now = DateTime.now();
             if (_lastSentTime != null &&
@@ -329,6 +337,12 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
   Future<void> _sendPositionNow() async {
+    if (ref
+        .read(gameEventNotifierProvider)
+        .arrestedParticipantIds
+        .contains(widget.participantId)) {
+      return;
+    }
     final Position? pos;
     try {
       pos = await DeviceLocationService.getCurrentPosition();
@@ -631,6 +645,16 @@ class _GamePageState extends ConsumerState<GamePage> {
       gameEventNotifierProvider.select((s) => s.bannerMessage),
     );
 
+    final isArrestedNow =
+        widget.team == 'ROBBER' &&
+        ref.watch(
+          gameEventNotifierProvider.select(
+            (s) =>
+                s.arrestedParticipantIds.contains(widget.participantId) &&
+                !s.escapedParticipantIds.contains(widget.participantId),
+          ),
+        );
+
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
     final policeStartTime = _computePoliceStartTime();
 
@@ -725,10 +749,6 @@ class _GamePageState extends ConsumerState<GamePage> {
             const SizedBox.shrink(),
 
           /// index 3: 알림 배너 (if/else로 개수 고정)
-          ///
-          /// showBanner가 true일 때만 배너 표시.
-          /// if/else로 항상 동일한 개수의 children을 유지해
-          /// ChatOverlay가 항상 동일한 index(5)에 위치하도록 보장함.
           if (!_showParticipants && bannerMessage != null)
             SafeArea(
               bottom: false,
@@ -800,11 +820,20 @@ class _GamePageState extends ConsumerState<GamePage> {
               ),
             ),
 
-          /// index 6: 하단 채팅 오버레이 (항상 마지막 고정)
+          /// index 6: 체포 잠금 오버레이 (if/else로 개수 고정, 도둑팀 체포 시 표시)
+          if (isArrestedNow)
+            ArrestLockOverlay(
+              gameId: _gameId,
+              myParticipantId: widget.participantId,
+            )
+          else
+            const SizedBox.shrink(),
+
+          /// index 7: 하단 채팅 오버레이 (항상 마지막 고정)
           ///
           /// Stack children 개수가 변하면 ChatOverlay의 index가 바뀌어
           /// Flutter가 기존 State를 dispose하고 새로 생성해버린다.
-          /// 위의 if/else 구조로 항상 index 6에 고정해 State를 보존한다.
+          /// 위의 if/else 구조로 항상 index 7에 고정해 State를 보존한다.
           ChatOverlay(
             gameId: _gameId,
             myParticipantId: widget.participantId,
