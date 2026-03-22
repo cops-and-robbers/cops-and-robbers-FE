@@ -391,10 +391,10 @@ class _GamePageState extends ConsumerState<GamePage> {
       area.playgroundCenter.latitude,
       area.playgroundCenter.longitude,
     );
-    final hole =
-        _approximateCircle(center, area.playgroundRadiusInMeters)
-            .reversed
-            .toList();
+    final hole = _approximateCircle(
+      center,
+      area.playgroundRadiusInMeters,
+    ).reversed.toList();
 
     return {
       Polygon(
