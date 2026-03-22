@@ -32,7 +32,11 @@ class ChatMessageBubble extends StatelessWidget {
 
   String get _formattedTime {
     try {
-      final dt = DateTime.parse(message.timestamp);
+      final normalized = message.timestamp.replaceFirstMapped(
+        RegExp(r'(\.\d{1,6})\d*'),
+        (m) => m.group(1)!,
+      );
+      final dt = DateTime.parse(normalized);
       return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
     } catch (_) {
       return '';
