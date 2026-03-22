@@ -96,7 +96,7 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
     if (widget.nextRevealTime == null) {
       final interval = widget.intervalMinutes;
       if (interval == null || interval <= 0) return '--:--';
-      return '${interval.remainder(60).toString().padLeft(2, '0')}:00';
+      return '${interval.toString().padLeft(2, '0')}:00';
     }
     final m = _remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
     final s = _remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
