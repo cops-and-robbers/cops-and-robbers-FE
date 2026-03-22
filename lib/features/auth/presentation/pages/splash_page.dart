@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../router/route_paths.dart';
 import '../../domain/entities/auth_result_entity.dart';
@@ -29,6 +30,7 @@ class SplashPage extends ConsumerStatefulWidget {
 
 class _SplashPageState extends ConsumerState<SplashPage> {
   bool _isReconnecting = false;
+  String _reconnectMessage = '다시 현장으로 복귀 중...';
 
   @override
   void initState() {
@@ -75,7 +77,16 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       }
 
       // 재참여 상황 → LoadingPage 전환 후 이동
-      if (mounted) setState(() => _isReconnecting = true);
+      final message = await LoadingMessageService.getMessage(
+        LoadingCategory.reconnect,
+        fallback: '다시 현장으로 복귀 중...',
+      );
+      if (mounted) {
+        setState(() {
+          _reconnectMessage = message;
+          _isReconnecting = true;
+        });
+      }
       await Future.delayed(const Duration(milliseconds: 300));
       if (!mounted) return;
 
@@ -114,10 +125,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   Widget build(BuildContext context) {
     if (_isReconnecting) {
-      return const LoadingPage(
-        message: '다시 현장으로 복귀 중...',
-        subtitle: '잠시만 기다려주세요',
-      );
+      return LoadingPage(message: _reconnectMessage, subtitle: '잠시만 기다려주세요');
     }
     return const Scaffold(body: Center(child: Text('Splash')));
   }
