@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/lifecycle/lifecycle_provider.dart';
@@ -81,6 +82,12 @@ class _GamePageState extends ConsumerState<GamePage> {
   StreamSubscription<Position>? _headingSubscription; // POLICE 전용 heading 스트림
   Position? _lastSentPosition;
   DateTime? _lastSentTime;
+
+  // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
+  DateTime? _lastHandledGameStart;
+  DateTime? _lastHandledPoliceMove;
+  DateTime? _lastHandledLocationReveal;
+  bool _lastHandledIsGameOver = false;
 
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
@@ -183,6 +190,8 @@ class _GamePageState extends ConsumerState<GamePage> {
             policeWaitMinutes: settings.policeWaitMinutes,
             roundTimeMinutes: settings.roundDurationMinutes,
           );
+
+      if (!mounted) return;
 
       if (settings.gameStartTime != null) {
         ref
@@ -594,6 +603,11 @@ class _GamePageState extends ConsumerState<GamePage> {
         gameEventState != StompConnectionState.connecting) {
       _gameEventNotifier?.connectAndSubscribe(_gameId);
     }
+
+    // 도둑 팀: 위치 전송 스트림이 끊겼으면 재시작
+    if (widget.team == 'ROBBER' && _locationSubscription == null) {
+      _startLocationSending();
+    }
   }
 
   /// resumed 복귀 시 게임 종료 여부 확인
@@ -638,6 +652,67 @@ class _GamePageState extends ConsumerState<GamePage> {
     ref.listen(gameEventNotifierProvider, (prev, next) {
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
         _showGameOverDialog(next.winnerTeam, next.gameOverReason);
+      }
+    });
+
+    // 게임 이벤트 → 전체채팅 시스템 메시지 주입 (chat feature와 game feature를 중재)
+    ref.listen(gameEventNotifierProvider.select((s) => s.gameStartTime), (
+      prev,
+      next,
+    ) {
+      if (next != null && next != _lastHandledGameStart) {
+        _lastHandledGameStart = next;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: _gameId,
+              message: GameEventMessages.gameStart,
+            );
+      }
+    });
+
+    ref.listen(gameEventNotifierProvider.select((s) => s.policeMoveStartTime), (
+      prev,
+      next,
+    ) {
+      if (next != null && next != _lastHandledPoliceMove) {
+        _lastHandledPoliceMove = next;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: _gameId,
+              message: GameEventMessages.policeMove,
+            );
+      }
+    });
+
+    ref.listen(
+      gameEventNotifierProvider.select((s) => s.lastLocationRevealTime),
+      (prev, next) {
+        if (next != null && next != _lastHandledLocationReveal) {
+          _lastHandledLocationReveal = next;
+          ref
+              .read(chatNotifierProvider.notifier)
+              .addSystemMessage(
+                gameId: _gameId,
+                message: GameEventMessages.locationReveal,
+              );
+        }
+      },
+    );
+
+    ref.listen(gameEventNotifierProvider.select((s) => s.isGameOver), (
+      prev,
+      next,
+    ) {
+      if (next == true && !_lastHandledIsGameOver) {
+        _lastHandledIsGameOver = true;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: _gameId,
+              message: GameEventMessages.gameOver,
+            );
       }
     });
 
@@ -698,6 +773,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     });
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           /// index 0: 지도 (항상 존재)
@@ -878,12 +954,18 @@ class _GamePageState extends ConsumerState<GamePage> {
 
     DateTime? nextRevealTime;
     if (interval != null && interval > 0) {
-      // policeWaitMinutes == 0이면 서버가 POLICE_MOVE_START를 보내지 않으므로
-      // gameStartTime을 fallback으로 사용
+      // 경찰 이동 시작 시각 fallback 우선순위:
+      // 1. STOMP POLICE_MOVE_START 이벤트 시각
+      // 2. gameStartTime + policeWaitMinutes (재접속 시 STOMP 미수신 대비)
+      // 3. policeWaitMinutes == 0이면 gameStartTime 직접 사용
       final policeWaitMinutes = participantInfo?.policeWaitMinutes;
       final effectiveMoveStartTime =
           policeMoveStartTime ??
-          (policeWaitMinutes == 0 ? gameStartTime : null);
+          (policeWaitMinutes != null &&
+                  policeWaitMinutes > 0 &&
+                  gameStartTime != null
+              ? gameStartTime.add(Duration(minutes: policeWaitMinutes))
+              : (policeWaitMinutes == 0 ? gameStartTime : null));
       final base = lastReveal ?? effectiveMoveStartTime;
       if (base != null) nextRevealTime = base.add(Duration(minutes: interval));
     }

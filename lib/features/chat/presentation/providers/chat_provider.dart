@@ -10,6 +10,9 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../data/datasources/chat_stomp_datasource.dart';
 import '../../data/models/chat_message_dto.dart';
 
+export '../../data/datasources/chat_stomp_datasource.dart'
+    show StompConnectionState;
+
 part 'chat_provider.g.dart';
 
 /// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체

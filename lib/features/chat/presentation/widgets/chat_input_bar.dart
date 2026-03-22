@@ -64,10 +64,16 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   void _handleSend() {
     final text = _controller.text.trim();
-    if (text.isEmpty || !widget.enabled) return;
+    if (text.isEmpty || !widget.enabled) {
+      // 입력이 없을 때만 키보드 닫기
+      if (text.isEmpty) _focusNode.unfocus();
+      return;
+    }
 
     widget.onSend(text);
     _controller.clear();
+    // 전송 후 포커스 유지 (키보드 열린 상태 유지)
+    _focusNode.requestFocus();
   }
 
   @override

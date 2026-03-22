@@ -73,12 +73,15 @@ class ParticipantCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     participant.nickname,
-                    style: AppTextStyles.tag_10.copyWith(
-                      color: isDarkMode
-                          ? AppColors.black300
-                          : AppColors.black800,
-                      fontFamily: isMe ? 'Pretendard-SemiBold' : null,
-                    ),
+                    style:
+                        (isMe ? AppTextStyles.tag10Bold : AppTextStyles.tag_10)
+                            .copyWith(
+                              color: isMe
+                                  ? AppColors.black600
+                                  : (isDarkMode
+                                        ? AppColors.black300
+                                        : AppColors.black800),
+                            ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
