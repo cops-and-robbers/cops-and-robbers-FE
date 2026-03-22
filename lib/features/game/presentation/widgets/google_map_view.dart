@@ -32,6 +32,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
   static const LatLng _fallback = LatLng(37.5480, 127.0810);
 
   Set<Circle> _areaCircles = {};
+  Set<Polygon> _areaPolygons = {};
 
   // 내 위치 + 방향 통합 마커
   Marker? _locationMarker;
@@ -213,6 +214,12 @@ class GoogleMapViewState extends State<GoogleMapView> {
     debugPrint('🗺️ GoogleMap: 영역 원 ${circles.length}개 업데이트');
   }
 
+  /// 플레이그라운드 외부 오버레이 폴리곤 업데이트
+  void updateAreaPolygons(Set<Polygon> polygons) {
+    if (!mounted) return;
+    setState(() => _areaPolygons = polygons);
+  }
+
   /// 도둑 공개 위치 마커 업데이트
   ///
   /// [isPolice] true → 빨간 dot, false → 초록 dot.
@@ -317,6 +324,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
         zoomControlsEnabled: false,
         compassEnabled: false,
         circles: _areaCircles,
+        polygons: _areaPolygons,
         markers: markers,
       );
     } catch (e, stack) {

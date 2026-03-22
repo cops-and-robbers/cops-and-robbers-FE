@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -353,6 +354,60 @@ class _GamePageState extends ConsumerState<GamePage> {
     };
   }
 
+  /// 위경도 원을 [points]개 꼭짓점 다각형으로 근사
+  List<LatLng> _approximateCircle(
+    LatLng center,
+    double radiusMeters, {
+    int points = 64,
+  }) {
+    const earthRadius = 6371000.0;
+    return List.generate(points, (i) {
+      final angle = i * 2 * math.pi / points;
+      final latOffset = (radiusMeters / earthRadius) * (180 / math.pi);
+      final lngOffset =
+          (radiusMeters / earthRadius) *
+          (180 / math.pi) /
+          math.cos(center.latitude * math.pi / 180);
+      return LatLng(
+        center.latitude + latOffset * math.cos(angle),
+        center.longitude + lngOffset * math.sin(angle),
+      );
+    });
+  }
+
+  /// 플레이그라운드 외부 영역 반투명 오버레이 폴리곤 생성
+  Set<Polygon> _buildOutsideOverlay(GameAreaModel area) {
+    final clat = area.playgroundCenter.latitude;
+    final clng = area.playgroundCenter.longitude;
+    const delta = 2.0;
+    final outerBounds = [
+      LatLng(clat + delta, clng - delta),
+      LatLng(clat + delta, clng + delta),
+      LatLng(clat - delta, clng + delta),
+      LatLng(clat - delta, clng - delta),
+    ];
+
+    final center = LatLng(
+      area.playgroundCenter.latitude,
+      area.playgroundCenter.longitude,
+    );
+    final hole =
+        _approximateCircle(center, area.playgroundRadiusInMeters)
+            .reversed
+            .toList();
+
+    return {
+      Polygon(
+        polygonId: const PolygonId('outside_overlay'),
+        points: outerBounds,
+        holes: [hole],
+        fillColor: Colors.black.withValues(alpha: 0.4),
+        strokeWidth: 0,
+        consumeTapEvents: false,
+      ),
+    };
+  }
+
   /// LOCATION_REVEAL 수신 시 도둑 위치 마커 갱신
   ///
   /// 경찰팀에게는 빨간 dot, 도둑팀에게는 초록 dot으로 표시한다.
@@ -532,6 +587,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       next.whenData((area) {
         _googleMapKey.currentState?.updateAreaCircles(
           _buildGoogleCircles(area),
+        );
+        _googleMapKey.currentState?.updateAreaPolygons(
+          _buildOutsideOverlay(area),
         );
       });
     });
