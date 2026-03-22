@@ -823,7 +823,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                   ),
                   SizedBox(height: 2.h),
                   Container(
-                    width: _inviteCode!.length * 12.w + 4.w,
+                    width: _inviteCode!.length * 12.w + 8.w,
                     height: 2.h,
                     color: isDark ? AppColors.white : AppColors.black,
                   ),
@@ -838,7 +838,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           child: SizedBox(
             width: 48.w,
             height: 48.w,
-            child: Center(
+            child: Align(
+              alignment: Alignment.centerRight,
               child: SvgPicture.asset(
                 'assets/icons/icon_info.svg',
                 width: 24.w,
