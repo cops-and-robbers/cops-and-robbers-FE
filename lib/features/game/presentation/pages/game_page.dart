@@ -685,6 +685,9 @@ class _GamePageState extends ConsumerState<GamePage> {
     // 게임 맵 영역 로드 완료 시 지도에 원 추가
     ref.listen(gameAreaProvider(_gameId), (prev, next) {
       next.whenData((area) {
+        _googleMapKey.currentState?.updateMinZoom(
+          area.playgroundRadiusInMeters,
+        );
         _googleMapKey.currentState?.updateAreaCircles(
           _buildGoogleCircles(area),
         );

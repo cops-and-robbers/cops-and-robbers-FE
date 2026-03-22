@@ -34,6 +34,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
   Set<Circle> _areaCircles = {};
   Set<Polygon> _areaPolygons = {};
 
+  double _minZoom = 12.0;
+
   // 내 위치 + 방향 통합 마커
   Marker? _locationMarker;
 
@@ -208,6 +210,24 @@ class GoogleMapViewState extends State<GoogleMapView> {
     }
   }
 
+  /// 플레이그라운드 반경(미터)에 따라 지도 최소 줌 레벨을 갱신합니다.
+  ///
+  /// [playgroundRadiusInMeters] 게임 구역 반경 (단위: 미터).
+  /// 반경이 클수록 낮은 최소 줌이 적용되어 더 넓은 범위를 볼 수 있습니다.
+  void updateMinZoom(double playgroundRadiusInMeters) {
+    if (!mounted) return;
+    setState(() => _minZoom = _minZoomForRadius(playgroundRadiusInMeters));
+  }
+
+  /// 플레이그라운드 반경(미터)으로부터 최소 줌 레벨을 계산합니다.
+  static double _minZoomForRadius(double radiusInMeters) =>
+      switch (radiusInMeters) {
+        <= 200 => 15.0,
+        <= 500 => 14.0,
+        <= 1000 => 13.0,
+        _ => 12.0,
+      };
+
   void updateAreaCircles(Set<Circle> circles) {
     if (!mounted) return;
     setState(() => _areaCircles = circles);
@@ -321,6 +341,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
         myLocationEnabled: false,
         myLocationButtonEnabled: false,
 
+        minMaxZoomPreference: MinMaxZoomPreference(_minZoom, 20),
         zoomControlsEnabled: false,
         compassEnabled: false,
         circles: _areaCircles,
