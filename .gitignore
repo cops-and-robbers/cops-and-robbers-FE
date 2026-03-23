@@ -60,6 +60,8 @@ app.*.map.json
 .env
 /env.*
 /secrets.json
+.agents/
+skills-lock.json
 
 # Android (local build config)
 /android/local.properties
