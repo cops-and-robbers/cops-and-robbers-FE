@@ -1,11 +1,34 @@
 {
   "metadata": {
-    "lastUpdated": "2026-03-23T10:55:53Z",
-    "currentVersion": "1.3.6",
+    "lastUpdated": "2026-03-23T15:44:34Z",
+    "currentVersion": "1.3.7",
     "projectType": "flutter",
-    "totalReleases": 54
+    "totalReleases": 55
   },
   "releases": [
+    {
+      "version": "1.3.7",
+      "project_type": "flutter",
+      "date": "2026-03-23",
+      "pr_number": 176,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트 v1.3.7\n\n* **버그 수정**\n  * 위치 서비스 비활성화 시 설정 화면 자동 실행 제거\n\n* **UI 개선**\n  * 대기실의 팀 섹션이 기본적으로 확장되도록 변경\n  * 네비게이션 아이콘 업데이트",
+      "parsed_changes": {
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "위치 서비스 비활성화 시 설정 화면 자동 실행 제거"
+          ]
+        },
+        "ui_개선": {
+          "title": "UI 개선",
+          "items": [
+            "대기실의 팀 섹션이 기본적으로 확장되도록 변경",
+            "네비게이션 아이콘 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.3.6",
       "project_type": "flutter",
