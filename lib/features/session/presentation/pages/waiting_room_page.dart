@@ -59,8 +59,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   String? _inviteCode;
 
   /// 팀 섹션 펼침 상태
-  bool _isPoliceExpanded = false;
-  bool _isRobberExpanded = false;
+  bool _isPoliceExpanded = true;
+  bool _isRobberExpanded = true;
 
   /// 준비 상태
   bool _isReady = false;
@@ -786,21 +786,29 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   PreferredSizeWidget _buildAppBar(bool isDark) {
     return AppBar(
+      leadingWidth: 62.w,
       backgroundColor: isDark ? AppColors.black900 : AppColors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
-      leading: GestureDetector(
-        onTap: _leaveRoom,
-        behavior: HitTestBehavior.opaque,
-        child: Center(
-          child: SvgPicture.asset(
-            'assets/icons/icon_previous.svg',
-            width: 24.w,
-            height: 24.w,
-            colorFilter: ColorFilter.mode(
-              isDark ? AppColors.black200 : AppColors.black,
-              BlendMode.srcIn,
+      leading: Padding(
+        padding: EdgeInsets.only(left: 18.w),
+        child: SizedBox(
+          width: 44.w,
+          height: 44.w,
+          child: GestureDetector(
+            onTap: _leaveRoom,
+            behavior: HitTestBehavior.opaque,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/icons/icon_exit.svg',
+                width: 24.w,
+                height: 24.w,
+                colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.black200 : AppColors.black800,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
           ),
         ),
