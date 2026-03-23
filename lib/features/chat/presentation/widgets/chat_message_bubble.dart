@@ -38,18 +38,7 @@ class ChatMessageBubble extends StatelessWidget {
       message.sender.team.toUpperCase() == 'SYSTEM' ||
       message.sender.participantId == 0;
 
-  String get _formattedTime {
-    try {
-      final normalized = message.timestamp.replaceFirstMapped(
-        RegExp(r'(\.\d{1,6})\d*'),
-        (m) => m.group(1)!,
-      );
-      final dt = DateTime.parse(normalized).add(const Duration(hours: 9));
-      return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
-    } catch (_) {
-      return '';
-    }
-  }
+  String get _formattedTime => message.formattedTimeKst;
 
   @override
   Widget build(BuildContext context) {

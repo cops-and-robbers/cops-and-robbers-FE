@@ -63,8 +63,8 @@ class _ChatMessageListState extends State<ChatMessageList> {
   /// 두 메시지가 같은 그룹인지 판별 (같은 sender + 같은 분)
   bool _isSameGroup(ChatMessageDto a, ChatMessageDto b) {
     if (a.sender.participantId != b.sender.participantId) return false;
-    final dtA = _parseTimestamp(a.timestamp);
-    final dtB = _parseTimestamp(b.timestamp);
+    final dtA = a.kstDateTime;
+    final dtB = b.kstDateTime;
     if (dtA == null || dtB == null) return false;
     return dtA.year == dtB.year &&
         dtA.month == dtB.month &&
@@ -75,22 +75,10 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
   /// 두 메시지의 날짜가 다른지 판별
   bool _isDifferentDate(ChatMessageDto a, ChatMessageDto b) {
-    final dtA = _parseTimestamp(a.timestamp);
-    final dtB = _parseTimestamp(b.timestamp);
+    final dtA = a.kstDateTime;
+    final dtB = b.kstDateTime;
     if (dtA == null || dtB == null) return false;
     return dtA.year != dtB.year || dtA.month != dtB.month || dtA.day != dtB.day;
-  }
-
-  DateTime? _parseTimestamp(String timestamp) {
-    try {
-      final normalized = timestamp.replaceFirstMapped(
-        RegExp(r'(\.\d{1,6})\d*'),
-        (m) => m.group(1)!,
-      );
-      return DateTime.parse(normalized).add(const Duration(hours: 9));
-    } catch (_) {
-      return null;
-    }
   }
 
   @override
@@ -150,7 +138,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
           return Column(
             children: [
-              if (showDateDivider) _buildDateDivider(message.timestamp),
+              if (showDateDivider) _buildDateDivider(message.kstDateTime),
               ChatMessageBubble(
                 message: message,
                 isMe: isMe,
@@ -167,8 +155,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
   }
 
   /// 날짜 구분선 위젯
-  Widget _buildDateDivider(String timestamp) {
-    final dt = _parseTimestamp(timestamp);
+  Widget _buildDateDivider(DateTime? dt) {
     if (dt == null) return const SizedBox.shrink();
 
     const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
