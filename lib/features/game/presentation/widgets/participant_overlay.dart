@@ -110,7 +110,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     final isWaitTimeOver =
         policeWaitMinutes != null &&
         gameStartTime != null &&
-        DateTime.now().isAfter(
+        !DateTime.now().isBefore(
           gameStartTime.add(Duration(minutes: policeWaitMinutes)),
         );
 
