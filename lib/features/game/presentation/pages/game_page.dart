@@ -384,6 +384,9 @@ class _GamePageState extends ConsumerState<GamePage> {
   ///
   /// 대기실과 동일한 GameRulesContent를 표시합니다.
   void _showGameRulesDialog() {
+    // 다이얼로그 열기 전 포커스 해제 — 다이얼로그 닫힘 시
+    // 채팅 입력 TextField로 포커스가 복원되어 시트가 올라오는 현상 방지
+    FocusScope.of(context).unfocus();
     final interval = ref
         .read(gameParticipantNotifierProvider)
         ?.locationRevealIntervalMinutes;
@@ -973,7 +976,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     return Container(
       height: 64.h,
       color: _isDarkMode ? AppColors.black900 : AppColors.white,
-      padding: AppPadding.horizontal24,
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal12),
       child: Stack(
         alignment: Alignment.center,
         children: [

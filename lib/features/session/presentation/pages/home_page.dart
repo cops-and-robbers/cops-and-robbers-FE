@@ -406,7 +406,7 @@ class HomePage extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         SvgIconButton(
-                          assetPath: 'assets/icons/Loudspeaker.svg',
+                          assetPath: 'assets/icons/icon_notice.svg',
                           onPressed: () {
                             context.push(RoutePaths.notices);
                           },

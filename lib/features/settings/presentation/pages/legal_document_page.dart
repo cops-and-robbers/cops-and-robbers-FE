@@ -147,7 +147,10 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
         if (content.isNotEmpty)
           Text(
             content,
-            style: AppTextStyles.tag_12.copyWith(color: AppColors.black800),
+            style: AppTextStyles.tag_12.copyWith(
+              color: AppColors.black800,
+              height: 1.4,
+            ),
           ),
 
         // 항목 목록
@@ -171,7 +174,10 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
           // 항목 텍스트
           Text(
             text,
-            style: AppTextStyles.tag_12.copyWith(color: AppColors.black800),
+            style: AppTextStyles.tag_12.copyWith(
+              color: AppColors.black800,
+              height: 1.4,
+            ),
           ),
 
           // 하위 항목
@@ -188,6 +194,7 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
                         subItem.toString(),
                         style: AppTextStyles.tag_12.copyWith(
                           color: AppColors.black800,
+                          height: 1.4,
                         ),
                       ),
                     ),
