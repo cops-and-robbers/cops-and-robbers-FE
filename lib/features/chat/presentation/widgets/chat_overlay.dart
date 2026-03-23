@@ -68,7 +68,14 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       setState(() {
         _isExpanded = expanded;
       });
-      if (!expanded) {
+      if (expanded) {
+        // 펼쳐질 때: PageView 재생성 후 이전 페이지 복원
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_pageController.hasClients && _currentPage != 0) {
+            _pageController.jumpToPage(_currentPage);
+          }
+        });
+      } else {
         FocusScope.of(context).unfocus();
       }
     }
