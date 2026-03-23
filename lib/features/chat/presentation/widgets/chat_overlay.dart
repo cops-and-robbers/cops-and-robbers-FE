@@ -48,6 +48,11 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   double _pointerDy = 0; // 포인터 누적 이동량 (아래 = 양수)
   double _prevKeyboardHeight = 0;
 
+  /// 사용자가 입력바 영역을 실제로 터치했는지 여부.
+  /// 다이얼로그 닫힘 등으로 포커스가 프로그래매틱하게 복원될 때
+  /// 시트가 올라오는 현상을 방지합니다.
+  bool _inputBarTouched = false;
+
   static const double _snap50 = 0.5;
   static const double _snap75 = 0.75;
 
@@ -89,6 +94,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   void _onInputFocused() {
+    // 사용자가 실제로 입력바를 터치한 경우에만 시트 확장.
+    // 다이얼로그 닫힘 등으로 포커스가 프로그래매틱하게 복원되면 무시.
+    if (!_inputBarTouched) return;
+    _inputBarTouched = false;
     if (_sheetController.isAttached && _sheetController.size < _snap50) {
       _sheetController.animateTo(
         _snap50,
@@ -167,7 +176,24 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
             }
           });
         }
-        if (!isKeyboardOpen) _isCollapsingFromKeyboard = false;
+        if (!isKeyboardOpen) {
+          _isCollapsingFromKeyboard = false;
+
+          // 키보드가 열려있다가 완전히 닫힌 경우 → 시트를 _minSize로 복귀
+          // (다이얼로그 등으로 포커스를 잃어 키보드가 닫힌 경우 대응)
+          if (_prevKeyboardHeight > 0) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (_sheetController.isAttached &&
+                  _sheetController.size > _minSize + 0.01) {
+                _sheetController.animateTo(
+                  _minSize,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                );
+              }
+            });
+          }
+        }
         _prevKeyboardHeight = keyboardHeight;
 
         // 키보드 열림: 시트 75% 고정, 닫히는 중/후: 기본 minSize
@@ -284,14 +310,17 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                           )
                         else
                           const Expanded(child: SizedBox.shrink()),
-                        GestureDetector(
-                          key: _inputBarKey,
-                          onVerticalDragUpdate: _onVerticalDragDown,
-                          child: ChatInputBar(
-                            onSend: _handleSend,
-                            enabled: isConnected,
-                            onFocusGain: _onInputFocused,
-                            isDarkMode: widget.isDarkMode,
+                        Listener(
+                          onPointerDown: (_) => _inputBarTouched = true,
+                          child: GestureDetector(
+                            key: _inputBarKey,
+                            onVerticalDragUpdate: _onVerticalDragDown,
+                            child: ChatInputBar(
+                              onSend: _handleSend,
+                              enabled: isConnected,
+                              onFocusGain: _onInputFocused,
+                              isDarkMode: widget.isDarkMode,
+                            ),
                           ),
                         ),
                         GestureDetector(
