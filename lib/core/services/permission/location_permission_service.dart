@@ -7,24 +7,23 @@ import 'package:geolocator/geolocator.dart';
 /// - 위치 서비스(GPS) 활성화 여부 확인
 /// - 위치 권한 상태 확인 및 요청
 /// - 게임 진입 전 위치 접근 가능 여부 판단
-/// - 권한 미충족 시 설정 화면 이동까지 처리
+/// - 권한 미충족 시 false 반환 (설정 화면 이동은 호출 측에서 안내 UI로 처리)
 class LocationPermissionService {
   LocationPermissionService._();
 
   /// 게임 진입 전 위치 권한 확보 플로우
   ///
   /// 흐름:
-  /// 1. 위치 서비스 OFF → 위치 서비스 설정 화면 이동
+  /// 1. 위치 서비스 OFF → false 반환
   /// 2. 권한 denied → 권한 요청
-  /// 3. deniedForever → 앱 설정 화면 이동
+  /// 3. deniedForever → false 반환
   /// 4. 허용 시 true 반환
   static Future<bool> ensurePermission() async {
     try {
       // 1. 위치 서비스 확인
       final serviceEnabled = await isServiceEnabled();
       if (!serviceEnabled) {
-        debugPrint('[위치] ❌ 위치 서비스 꺼짐 → 위치 설정 화면 이동');
-        await Geolocator.openLocationSettings();
+        debugPrint('[위치] ❌ 위치 서비스 꺼짐');
         return false;
       }
 
@@ -37,10 +36,9 @@ class LocationPermissionService {
         permission = await requestPermission();
       }
 
-      // 4. 영구 거부 → 앱 설정 이동
+      // 4. 영구 거부
       if (permission == LocationPermission.deniedForever) {
-        debugPrint('[위치] ❌ 위치 권한 영구 거부 → 앱 설정 화면 이동');
-        await Geolocator.openAppSettings();
+        debugPrint('[위치] ❌ 위치 권한 영구 거부');
         return false;
       }
 
