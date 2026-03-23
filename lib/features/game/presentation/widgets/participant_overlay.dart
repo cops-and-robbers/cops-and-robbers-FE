@@ -95,11 +95,27 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     if (widget.myTeam != 'POLICE') return;
 
     // 경찰 대기 시간 중에는 체포 불가
-    final isPoliceMoving = ref.read(gameEventNotifierProvider).isPoliceMoving;
-    final policeWaitMinutes = ref
-        .read(gameParticipantNotifierProvider)
-        ?.policeWaitMinutes;
-    final canArrest = isPoliceMoving || policeWaitMinutes == 0;
+    // 1차: STOMP POLICE_MOVE_START 이벤트 수신 여부
+    // 2차: gameStartTime + policeWaitMinutes 시간 비교 (재연결 fallback)
+    final gameEventState = ref.read(gameEventNotifierProvider);
+    final participantInfo = ref.read(gameParticipantNotifierProvider);
+    final isPoliceMoving = gameEventState.isPoliceMoving;
+    final policeWaitMinutes = participantInfo?.policeWaitMinutes;
+
+    // 시간 기반 판단: gameStartTime + policeWaitMinutes < now
+    final gameStartTimeStr = participantInfo?.gameStartTime;
+    final gameStartTime =
+        gameEventState.gameStartTime ??
+        (gameStartTimeStr != null ? DateTime.tryParse(gameStartTimeStr) : null);
+    final isWaitTimeOver =
+        policeWaitMinutes != null &&
+        gameStartTime != null &&
+        DateTime.now().isAfter(
+          gameStartTime.add(Duration(minutes: policeWaitMinutes)),
+        );
+
+    final canArrest =
+        isPoliceMoving || isWaitTimeOver || policeWaitMinutes == 0;
     if (!canArrest) {
       AppSnackbar.show(context, message: '경찰 대기 시간 중에는 도둑을 체포할 수 없습니다.');
       return;
