@@ -786,23 +786,28 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   PreferredSizeWidget _buildAppBar(bool isDark) {
     return AppBar(
+      leadingWidth: 62.w,
       backgroundColor: isDark ? AppColors.black900 : AppColors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
       leading: Padding(
         padding: EdgeInsets.only(left: 18.w),
-        child: GestureDetector(
-          onTap: _leaveRoom,
-          behavior: HitTestBehavior.opaque,
-          child: Center(
-            child: SvgPicture.asset(
-              'assets/icons/icon_exit.svg',
-              width: 24.w,
-              height: 24.w,
-              colorFilter: ColorFilter.mode(
-                isDark ? AppColors.black200 : AppColors.black800,
-                BlendMode.srcIn,
+        child: SizedBox(
+          width: 44.w,
+          height: 44.w,
+          child: GestureDetector(
+            onTap: _leaveRoom,
+            behavior: HitTestBehavior.opaque,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/icons/icon_exit.svg',
+                width: 24.w,
+                height: 24.w,
+                colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.black200 : AppColors.black800,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
           ),
