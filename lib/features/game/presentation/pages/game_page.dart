@@ -973,7 +973,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     return Container(
       height: 64.h,
       color: _isDarkMode ? AppColors.black900 : AppColors.white,
-      padding: AppPadding.horizontal24,
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal12),
       child: Stack(
         alignment: Alignment.center,
         children: [

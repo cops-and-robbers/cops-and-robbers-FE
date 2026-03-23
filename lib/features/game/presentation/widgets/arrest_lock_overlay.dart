@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../providers/game_event_provider.dart';
@@ -72,7 +73,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                         SizedBox(height: 8.h),
                         Text(
                           '체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!',
-                          style: AppTextStyles.robberParagraph.copyWith(
+                          style: AppTextStyles.paragraph_14.copyWith(
                             color: AppColors.black300,
                           ),
                           textAlign: TextAlign.center,
@@ -85,6 +86,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                       text: '탈옥 완료',
                       width: 288.w,
                       height: 48.h,
+                      borderRadius: AppRadius.medium,
                       backgroundColor: AppColors.green,
                       foregroundColor: AppColors.black,
                       showBorder: false,
