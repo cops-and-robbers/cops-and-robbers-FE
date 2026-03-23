@@ -59,8 +59,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   String? _inviteCode;
 
   /// 팀 섹션 펼침 상태
-  bool _isPoliceExpanded = false;
-  bool _isRobberExpanded = false;
+  bool _isPoliceExpanded = true;
+  bool _isRobberExpanded = true;
 
   /// 준비 상태
   bool _isReady = false;
