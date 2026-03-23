@@ -618,24 +618,39 @@ class _GamePageState extends ConsumerState<GamePage> {
   /// 백그라운드 중 게임이 끝났을 경우 홈으로 이동,
   /// 대기실로 돌아간 경우 로비로 이동합니다.
   Future<void> _checkGameStatusOnResume() async {
+    debugPrint(
+      '[GamePage] _checkGameStatusOnResume 호출 '
+      '(isChecking=$_isCheckingGameStatus, isDummy=${widget.isDummy})',
+    );
     if (_isCheckingGameStatus || widget.isDummy) return;
     _isCheckingGameStatus = true;
     try {
       final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
-      if (!mounted) return;
+      debugPrint(
+        '[GamePage] API 응답: isParticipating=${status.isParticipating}, '
+        'gameStatus=${status.participationInfo?.gameStatus}',
+      );
+      if (!mounted) {
+        debugPrint('[GamePage] mounted=false, return');
+        return;
+      }
 
       final info = status.participationInfo;
 
       if (!status.isParticipating || info == null) {
         // 게임 종료 → 홈
+        debugPrint('[GamePage] 게임 종료 감지 → 홈 이동');
         context.go(RoutePaths.home);
       } else if (info.gameStatus == 'WAITING') {
         // 대기실 상태 → 로비로 복귀
+        debugPrint('[GamePage] WAITING 감지 → 로비 이동');
         context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
+      } else {
+        debugPrint('[GamePage] IN_PROGRESS → 현재 화면 유지');
       }
-      // IN_PROGRESS → 현재 게임 화면 유지
-    } catch (_) {
-      // API 실패 시 현재 화면 유지 (무시)
+    } catch (e) {
+      // API 실패 시 현재 화면 유지
+      debugPrint('[GamePage] _checkGameStatusOnResume 에러: $e');
     } finally {
       _isCheckingGameStatus = false;
     }
