@@ -46,7 +46,7 @@ extension ChatMessageTimestamp on ChatMessageDto {
         _microRegex,
         (m) => m.group(1)!,
       );
-      return DateTime.parse(normalized).add(const Duration(hours: 9));
+      return DateTime.parse(normalized).toUtc().toLocal();
     } catch (_) {
       return null;
     }
