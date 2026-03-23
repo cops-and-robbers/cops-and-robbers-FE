@@ -91,12 +91,23 @@ class _ChatMessageListState extends State<ChatMessageList> {
         padding: EdgeInsets.symmetric(vertical: 8.h),
         itemCount: widget.messages.length,
         itemBuilder: (context, index) {
-          final message = widget.messages[widget.messages.length - 1 - index];
+          final msgIndex = widget.messages.length - 1 - index;
+          final message = widget.messages[msgIndex];
           final isMe = message.sender.participantId == widget.myParticipantId;
+
+          // 이전 메시지(시간순 기준)와 같은 sender면 닉네임 숨김
+          final prevMessage = msgIndex > 0
+              ? widget.messages[msgIndex - 1]
+              : null;
+          final showNickname =
+              prevMessage == null ||
+              prevMessage.sender.participantId != message.sender.participantId;
+
           return ChatMessageBubble(
             message: message,
             isMe: isMe,
             myTeam: widget.myTeam,
+            showNickname: showNickname,
             isDarkMode: widget.isDarkMode,
           );
         },

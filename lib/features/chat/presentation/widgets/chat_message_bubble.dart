@@ -15,6 +15,7 @@ class ChatMessageBubble extends StatelessWidget {
     required this.message,
     required this.isMe,
     required this.myTeam,
+    this.showNickname = true,
     this.isDarkMode = false,
     super.key,
   });
@@ -22,6 +23,9 @@ class ChatMessageBubble extends StatelessWidget {
   final ChatMessageDto message;
   final bool isMe;
   final String myTeam;
+
+  /// 닉네임 표시 여부 (같은 사람이 연속 메시지 시 숨김)
+  final bool showNickname;
 
   /// 다크 모드 여부
   final bool isDarkMode;
@@ -96,15 +100,16 @@ class ChatMessageBubble extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Padding(
-          padding: EdgeInsets.only(bottom: 4.h, right: 4.w),
-          child: Text(
-            message.sender.nickname,
-            style: AppTextStyles.tag_12.copyWith(
-              color: isDarkMode ? AppColors.black400 : AppColors.black600,
+        if (showNickname)
+          Padding(
+            padding: EdgeInsets.only(bottom: 4.h, right: 4.w),
+            child: Text(
+              message.sender.nickname,
+              style: AppTextStyles.tag_12.copyWith(
+                color: isDarkMode ? AppColors.black400 : AppColors.black600,
+              ),
             ),
           ),
-        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -147,15 +152,16 @@ class ChatMessageBubble extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.only(bottom: 4.h, left: 4.w),
-          child: Text(
-            message.sender.nickname,
-            style: AppTextStyles.tag_12.copyWith(
-              color: isDarkMode ? AppColors.black400 : AppColors.black600,
+        if (showNickname)
+          Padding(
+            padding: EdgeInsets.only(bottom: 4.h, left: 4.w),
+            child: Text(
+              message.sender.nickname,
+              style: AppTextStyles.tag_12.copyWith(
+                color: isDarkMode ? AppColors.black400 : AppColors.black600,
+              ),
             ),
           ),
-        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
