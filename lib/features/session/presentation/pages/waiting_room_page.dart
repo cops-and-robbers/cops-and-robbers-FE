@@ -790,17 +790,20 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
-      leading: GestureDetector(
-        onTap: _leaveRoom,
-        behavior: HitTestBehavior.opaque,
-        child: Center(
-          child: SvgPicture.asset(
-            'assets/icons/icon_previous.svg',
-            width: 24.w,
-            height: 24.w,
-            colorFilter: ColorFilter.mode(
-              isDark ? AppColors.black200 : AppColors.black,
-              BlendMode.srcIn,
+      leading: Padding(
+        padding: EdgeInsets.only(left: 18.w),
+        child: GestureDetector(
+          onTap: _leaveRoom,
+          behavior: HitTestBehavior.opaque,
+          child: Center(
+            child: SvgPicture.asset(
+              'assets/icons/icon_exit.svg',
+              width: 24.w,
+              height: 24.w,
+              colorFilter: ColorFilter.mode(
+                isDark ? AppColors.black200 : AppColors.black800,
+                BlendMode.srcIn,
+              ),
             ),
           ),
         ),
