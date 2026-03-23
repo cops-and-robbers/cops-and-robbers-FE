@@ -16,6 +16,7 @@ class ChatMessageBubble extends StatelessWidget {
     required this.isMe,
     required this.myTeam,
     this.showNickname = true,
+    this.showTime = true,
     this.isDarkMode = false,
     super.key,
   });
@@ -24,8 +25,11 @@ class ChatMessageBubble extends StatelessWidget {
   final bool isMe;
   final String myTeam;
 
-  /// 닉네임 표시 여부 (같은 사람이 연속 메시지 시 숨김)
+  /// 닉네임 표시 여부 (그룹 첫 메시지만 true)
   final bool showNickname;
+
+  /// 시간 표시 여부 (그룹 마지막 메시지만 true)
+  final bool showTime;
 
   /// 다크 모드 여부
   final bool isDarkMode;
@@ -40,7 +44,7 @@ class ChatMessageBubble extends StatelessWidget {
         RegExp(r'(\.\d{1,6})\d*'),
         (m) => m.group(1)!,
       );
-      final dt = DateTime.parse(normalized);
+      final dt = DateTime.parse(normalized).add(const Duration(hours: 9));
       return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
     } catch (_) {
       return '';
@@ -57,8 +61,8 @@ class ChatMessageBubble extends StatelessWidget {
       padding: EdgeInsets.only(
         left: isMe ? 16.w : 24.w,
         right: isMe ? 24.w : 16.w,
-        top: 4.h,
-        bottom: 4.h,
+        top: showNickname ? 8.h : 2.h,
+        bottom: 2.h,
       ),
       child: isMe ? _buildMyMessage() : _buildOtherMessage(),
     );
@@ -114,13 +118,16 @@ class ChatMessageBubble extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Padding(
-              padding: EdgeInsets.only(right: 4.w, bottom: 2.h),
-              child: Text(
-                _formattedTime,
-                style: AppTextStyles.tag_10.copyWith(color: AppColors.black400),
+            if (showTime)
+              Padding(
+                padding: EdgeInsets.only(right: 4.w, bottom: 2.h),
+                child: Text(
+                  _formattedTime,
+                  style: AppTextStyles.tag_10.copyWith(
+                    color: AppColors.black400,
+                  ),
+                ),
               ),
-            ),
             Flexible(
               child: Container(
                 constraints: BoxConstraints(maxWidth: 240.w),
@@ -187,13 +194,16 @@ class ChatMessageBubble extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 4.w, bottom: 2.h),
-              child: Text(
-                _formattedTime,
-                style: AppTextStyles.tag_10.copyWith(color: AppColors.black400),
+            if (showTime)
+              Padding(
+                padding: EdgeInsets.only(left: 4.w, bottom: 2.h),
+                child: Text(
+                  _formattedTime,
+                  style: AppTextStyles.tag_10.copyWith(
+                    color: AppColors.black400,
+                  ),
+                ),
               ),
-            ),
           ],
         ),
       ],

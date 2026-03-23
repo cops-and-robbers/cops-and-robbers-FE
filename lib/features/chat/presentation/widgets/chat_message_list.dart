@@ -10,6 +10,7 @@ import 'chat_message_bubble.dart';
 ///
 /// 채팅 메시지들을 스크롤 가능한 리스트로 표시합니다.
 /// 새 메시지가 추가되면 자동으로 하단으로 스크롤됩니다.
+/// 카카오톡 스타일 그룹핑: 같은 발신자 + 같은 분(minute) 기준.
 class ChatMessageList extends StatefulWidget {
   const ChatMessageList({
     required this.messages,
@@ -59,6 +60,39 @@ class _ChatMessageListState extends State<ChatMessageList> {
     );
   }
 
+  /// 두 메시지가 같은 그룹인지 판별 (같은 sender + 같은 분)
+  bool _isSameGroup(ChatMessageDto a, ChatMessageDto b) {
+    if (a.sender.participantId != b.sender.participantId) return false;
+    final dtA = _parseTimestamp(a.timestamp);
+    final dtB = _parseTimestamp(b.timestamp);
+    if (dtA == null || dtB == null) return false;
+    return dtA.year == dtB.year &&
+        dtA.month == dtB.month &&
+        dtA.day == dtB.day &&
+        dtA.hour == dtB.hour &&
+        dtA.minute == dtB.minute;
+  }
+
+  /// 두 메시지의 날짜가 다른지 판별
+  bool _isDifferentDate(ChatMessageDto a, ChatMessageDto b) {
+    final dtA = _parseTimestamp(a.timestamp);
+    final dtB = _parseTimestamp(b.timestamp);
+    if (dtA == null || dtB == null) return false;
+    return dtA.year != dtB.year || dtA.month != dtB.month || dtA.day != dtB.day;
+  }
+
+  DateTime? _parseTimestamp(String timestamp) {
+    try {
+      final normalized = timestamp.replaceFirstMapped(
+        RegExp(r'(\.\d{1,6})\d*'),
+        (m) => m.group(1)!,
+      );
+      return DateTime.parse(normalized).add(const Duration(hours: 9));
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -95,22 +129,80 @@ class _ChatMessageListState extends State<ChatMessageList> {
           final message = widget.messages[msgIndex];
           final isMe = message.sender.participantId == widget.myParticipantId;
 
-          // 이전 메시지(시간순 기준)와 같은 sender면 닉네임 숨김
           final prevMessage = msgIndex > 0
               ? widget.messages[msgIndex - 1]
               : null;
-          final showNickname =
-              prevMessage == null ||
-              prevMessage.sender.participantId != message.sender.participantId;
+          final nextMessage = msgIndex < widget.messages.length - 1
+              ? widget.messages[msgIndex + 1]
+              : null;
 
-          return ChatMessageBubble(
-            message: message,
-            isMe: isMe,
-            myTeam: widget.myTeam,
-            showNickname: showNickname,
-            isDarkMode: widget.isDarkMode,
+          // 그룹 첫 메시지: 닉네임 표시
+          final showNickname =
+              prevMessage == null || !_isSameGroup(prevMessage, message);
+
+          // 그룹 마지막 메시지: 시간 표시
+          final showTime =
+              nextMessage == null || !_isSameGroup(message, nextMessage);
+
+          // 날짜 구분선: 이전 메시지와 날짜가 다르면 표시
+          final showDateDivider =
+              prevMessage == null || _isDifferentDate(prevMessage, message);
+
+          return Column(
+            children: [
+              if (showDateDivider) _buildDateDivider(message.timestamp),
+              ChatMessageBubble(
+                message: message,
+                isMe: isMe,
+                myTeam: widget.myTeam,
+                showNickname: showNickname,
+                showTime: showTime,
+                isDarkMode: widget.isDarkMode,
+              ),
+            ],
           );
         },
+      ),
+    );
+  }
+
+  /// 날짜 구분선 위젯
+  Widget _buildDateDivider(String timestamp) {
+    final dt = _parseTimestamp(timestamp);
+    if (dt == null) return const SizedBox.shrink();
+
+    const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
+    final weekday = weekdays[dt.weekday - 1];
+    final label = '${dt.year}년 ${dt.month}월 ${dt.day}일 $weekday요일';
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 12.h),
+      child: Row(
+        children: [
+          Expanded(
+            child: Divider(
+              color: widget.isDarkMode
+                  ? AppColors.black800
+                  : AppColors.black200,
+              height: 1,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            child: Text(
+              label,
+              style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
+            ),
+          ),
+          Expanded(
+            child: Divider(
+              color: widget.isDarkMode
+                  ? AppColors.black800
+                  : AppColors.black200,
+              height: 1,
+            ),
+          ),
+        ],
       ),
     );
   }
