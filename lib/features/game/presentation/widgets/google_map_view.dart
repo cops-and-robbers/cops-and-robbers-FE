@@ -298,7 +298,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
         icon: icon,
         rotation: heading.isNaN ? 0.0 : heading,
         anchor: const Offset(0.5, 13 / 19),
-        flat: false,
+        flat: true,
         consumeTapEvents: false,
         zIndexInt: 1,
       );

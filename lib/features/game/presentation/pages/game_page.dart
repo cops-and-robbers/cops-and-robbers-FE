@@ -611,6 +611,11 @@ class _GamePageState extends ConsumerState<GamePage> {
     if (widget.team == 'ROBBER' && _locationSubscription == null) {
       _startLocationSending();
     }
+
+    // 양 팀: heading 스트림이 끊겼으면 재시작 (백그라운드 복귀 시 복구)
+    if (_headingSubscription == null) {
+      _startHeadingTracking();
+    }
   }
 
   /// resumed 복귀 시 게임 종료 여부 확인
@@ -879,7 +884,7 @@ class _GamePageState extends ConsumerState<GamePage> {
           if (_showParticipants)
             Positioned(
               right: 20.w,
-              bottom: 145.h,
+              bottom: 157.h,
               child: SvgIconButton(
                 assetPath: 'assets/icons/icon_map.svg',
                 onPressed: () => setState(() => _showParticipants = false),
@@ -892,7 +897,7 @@ class _GamePageState extends ConsumerState<GamePage> {
           else
             Positioned(
               right: 20.w,
-              bottom: 145.h,
+              bottom: 157.h,
               child: Column(
                 children: [
                   SvgIconButton(
