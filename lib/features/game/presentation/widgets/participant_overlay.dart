@@ -132,6 +132,9 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     );
     if (participant?.status == 'JAILED') return;
 
+    // 모달 닫힘 시 채팅 입력 TextField로 포커스가 복원되어
+    // 채팅 시트가 올라오는 현상 방지
+    FocusScope.of(context).unfocus();
     GameActionModal.show(
       context: context,
       title: '해당 플레이어를 체포하셨나요?',
@@ -156,6 +159,9 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
       if (member.participantId != widget.myParticipantId) return;
       if (!member.isReady) return; // isReady == true이 JAILED 상태
 
+      // 모달 닫힘 시 채팅 입력 TextField로 포커스가 복원되어
+      // 채팅 시트가 올라오는 현상 방지
+      FocusScope.of(context).unfocus();
       GameActionModal.show(
         context: context,
         title: '탈옥',
