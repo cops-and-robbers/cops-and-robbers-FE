@@ -44,6 +44,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
 
   bool _isExpanded = false;
   bool _isCollapsingFromKeyboard = false;
+  bool _collapseScheduled = false;
   double _sheetSize = 0;
   double _pointerDy = 0; // 포인터 누적 이동량 (아래 = 양수)
   double _prevKeyboardHeight = 0;
@@ -108,7 +109,12 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   /// 시트 접기 (키보드 닫기 + 시트 최소화)
+  ///
+  /// 드래그·오버스크롤 등에서 매 프레임 호출될 수 있으므로
+  /// [_collapseScheduled] 플래그로 중복 호출을 방지합니다.
   void _collapseSheet() {
+    if (_collapseScheduled) return;
+    _collapseScheduled = true;
     FocusScope.of(context).unfocus();
     if (_sheetController.isAttached) {
       _sheetController.animateTo(
@@ -117,14 +123,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         curve: Curves.easeOut,
       );
     }
-  }
-
-  /// 시트 영역 아래로 스와이프 시 시트 닫기 (카톡 스타일)
-  void _onVerticalDragDown(DragUpdateDetails details) {
-    // 아래 방향 스와이프만 처리
-    if (details.delta.dy > 0 && _isExpanded) {
-      _collapseSheet();
-    }
+    Future.delayed(
+      const Duration(milliseconds: 350),
+      () => _collapseScheduled = false,
+    );
   }
 
   @override
@@ -314,7 +316,6 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                           onPointerDown: (_) => _inputBarTouched = true,
                           child: GestureDetector(
                             key: _inputBarKey,
-                            onVerticalDragUpdate: _onVerticalDragDown,
                             child: ChatInputBar(
                               onSend: _handleSend,
                               enabled: isConnected,
@@ -323,10 +324,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                             ),
                           ),
                         ),
-                        GestureDetector(
-                          onVerticalDragUpdate: _onVerticalDragDown,
-                          child: SizedBox(height: bottomMargin),
-                        ),
+                        SizedBox(height: bottomMargin),
                       ],
                     ),
                   ),
