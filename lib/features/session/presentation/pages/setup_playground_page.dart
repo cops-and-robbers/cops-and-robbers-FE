@@ -193,7 +193,7 @@ class _SetupPlaygroundPageState extends State<SetupPlaygroundPage> {
                 initialCenter: _currentCenter,
                 initialRadius: _currentRadius,
                 minRadius: 100,
-                maxRadius: 2000,
+                maxRadius: 1000,
                 // 플레이그라운드 색상 (파란색 계열)
                 centerColor: AppColors.blue,
                 borderColor: AppColors.blue800,

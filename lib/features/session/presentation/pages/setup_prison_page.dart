@@ -253,7 +253,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 initialCenter: _currentCenter,
                 initialRadius: _currentRadius,
                 minRadius: 5,
-                maxRadius: 500,
+                maxRadius: 300,
                 // 감옥 색상 (빨간색 계열)
                 centerColor: AppColors.red,
                 borderColor: AppColors.red800,
