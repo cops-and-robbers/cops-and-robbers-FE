@@ -879,7 +879,7 @@ class _GamePageState extends ConsumerState<GamePage> {
           if (_showParticipants)
             Positioned(
               right: 20.w,
-              bottom: 145.h,
+              bottom: 157.h,
               child: SvgIconButton(
                 assetPath: 'assets/icons/icon_map.svg',
                 onPressed: () => setState(() => _showParticipants = false),
@@ -892,7 +892,7 @@ class _GamePageState extends ConsumerState<GamePage> {
           else
             Positioned(
               right: 20.w,
-              bottom: 145.h,
+              bottom: 157.h,
               child: Column(
                 children: [
                   SvgIconButton(
