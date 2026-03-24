@@ -17,6 +17,7 @@ class ChatInputBar extends StatefulWidget {
     required this.onSend,
     required this.enabled,
     this.onFocusGain,
+    this.onFocusLost,
     this.onInputTap,
     this.isDarkMode = false,
     super.key,
@@ -30,6 +31,9 @@ class ChatInputBar extends StatefulWidget {
 
   /// 입력창 포커스 획득 시 콜백 (채팅창 자동 확장용)
   final VoidCallback? onFocusGain;
+
+  /// 입력창 포커스 상실 시 콜백
+  final VoidCallback? onFocusLost;
 
   /// TextField 직접 탭 시 콜백 (전송 버튼·패딩 탭과 구별)
   final VoidCallback? onInputTap;
@@ -56,6 +60,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
   void _onFocusChanged() {
     if (_focusNode.hasFocus) {
       widget.onFocusGain?.call();
+    } else {
+      widget.onFocusLost?.call();
     }
   }
 

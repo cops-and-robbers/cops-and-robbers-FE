@@ -318,6 +318,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                             onSend: _handleSend,
                             enabled: isConnected,
                             onFocusGain: _onInputFocused,
+                            onFocusLost: () => _inputBarTouched = false,
                             onInputTap: () => _inputBarTouched = true,
                             isDarkMode: widget.isDarkMode,
                           ),

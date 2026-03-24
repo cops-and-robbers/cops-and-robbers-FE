@@ -171,6 +171,9 @@ class AppDialog extends StatefulWidget {
     required bool barrierDismissible,
     required Widget Function(BuildContext dialogContext) builder,
   }) {
+    // 다이얼로그 열기 전 포커스 해제 — 다이얼로그 닫힘(pop) 시
+    // 이전 route의 TextField로 포커스가 자동 복원되는 것을 방지
+    FocusScope.of(context).unfocus();
     return showGeneralDialog<T>(
       context: context,
       barrierDismissible: barrierDismissible,
