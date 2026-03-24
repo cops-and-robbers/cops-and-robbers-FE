@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../data/datasources/chat_stomp_datasource.dart';
 import '../providers/chat_provider.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
