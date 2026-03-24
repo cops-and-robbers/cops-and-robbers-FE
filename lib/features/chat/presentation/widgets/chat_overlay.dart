@@ -312,16 +312,14 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                           )
                         else
                           const Expanded(child: SizedBox.shrink()),
-                        Listener(
-                          onPointerDown: (_) => _inputBarTouched = true,
-                          child: GestureDetector(
-                            key: _inputBarKey,
-                            child: ChatInputBar(
-                              onSend: _handleSend,
-                              enabled: isConnected,
-                              onFocusGain: _onInputFocused,
-                              isDarkMode: widget.isDarkMode,
-                            ),
+                        GestureDetector(
+                          key: _inputBarKey,
+                          child: ChatInputBar(
+                            onSend: _handleSend,
+                            enabled: isConnected,
+                            onFocusGain: _onInputFocused,
+                            onInputTap: () => _inputBarTouched = true,
+                            isDarkMode: widget.isDarkMode,
                           ),
                         ),
                         SizedBox(height: bottomMargin),
