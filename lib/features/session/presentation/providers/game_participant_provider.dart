@@ -36,6 +36,9 @@ class GameParticipantInfo {
   /// 방장 여부
   final bool isHost;
 
+  /// 방장 participantId (참가자 오버레이 정렬용)
+  final int? hostParticipantId;
+
   const GameParticipantInfo({
     required this.gameId,
     required this.team,
@@ -47,6 +50,7 @@ class GameParticipantInfo {
     this.roundTimeMinutes,
     this.gameStartTime,
     this.isHost = false,
+    this.hostParticipantId,
   });
 
   GameParticipantInfo copyWith({
@@ -60,6 +64,7 @@ class GameParticipantInfo {
     int? roundTimeMinutes,
     String? gameStartTime,
     bool? isHost,
+    int? hostParticipantId,
   }) {
     return GameParticipantInfo(
       gameId: gameId ?? this.gameId,
@@ -73,6 +78,7 @@ class GameParticipantInfo {
       roundTimeMinutes: roundTimeMinutes ?? this.roundTimeMinutes,
       gameStartTime: gameStartTime ?? this.gameStartTime,
       isHost: isHost ?? this.isHost,
+      hostParticipantId: hostParticipantId ?? this.hostParticipantId,
     );
   }
 }
@@ -146,6 +152,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     int? locationRevealIntervalMinutes,
     int? policeWaitMinutes,
     int? roundTimeMinutes,
+    int? hostParticipantId,
   }) {
     if (state == null) return;
     state = state!.copyWith(
@@ -155,7 +162,15 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       locationRevealIntervalMinutes: locationRevealIntervalMinutes,
       policeWaitMinutes: policeWaitMinutes,
       roundTimeMinutes: roundTimeMinutes,
+      hostParticipantId: hostParticipantId,
     );
+  }
+
+  /// 방장 participantId 설정 (HOST_CHANGED 이벤트 시)
+  void setHostParticipantId(int hostParticipantId) {
+    if (state != null) {
+      state = state!.copyWith(hostParticipantId: hostParticipantId);
+    }
   }
 
   /// 게임 설정 업데이트 (SETTINGS_UPDATED 이벤트 시)

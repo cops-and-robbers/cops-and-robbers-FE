@@ -77,9 +77,11 @@ class ParticipantCard extends StatelessWidget {
                         (isMe ? AppTextStyles.tag10Bold : AppTextStyles.tag_10)
                             .copyWith(
                               color: isMe
-                                  ? AppColors.black600
+                                  ? (isDarkMode
+                                        ? AppColors.black100
+                                        : AppColors.black600)
                                   : (isDarkMode
-                                        ? AppColors.black300
+                                        ? AppColors.black100
                                         : AppColors.black800),
                             ),
                     overflow: TextOverflow.ellipsis,

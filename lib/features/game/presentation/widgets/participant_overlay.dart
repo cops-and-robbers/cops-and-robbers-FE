@@ -177,7 +177,8 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(gameParticipantNotifierProvider);
+    final gameInfo = ref.watch(gameParticipantNotifierProvider);
+    final hostParticipantId = gameInfo?.hostParticipantId;
 
     // 게임 이벤트 상태 구독 (체포/탈옥 상태 반영용)
     final gameEventState = ref.watch(gameEventNotifierProvider);
@@ -232,6 +233,8 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
               isExpanded: _isPoliceExpanded,
               onToggle: () =>
                   setState(() => _isPoliceExpanded = !_isPoliceExpanded),
+              hostParticipantId: hostParticipantId,
+              myParticipantId: widget.myParticipantId,
               badge: const SizedBox.shrink(),
               isDarkMode: widget.isDarkMode,
             ),
@@ -249,6 +252,8 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
               isExpanded: _isRobberExpanded,
               onToggle: () =>
                   setState(() => _isRobberExpanded = !_isRobberExpanded),
+              hostParticipantId: hostParticipantId,
+              myParticipantId: widget.myParticipantId,
               badge: _participants != null
                   ? _buildRobberBadge(aliveCount)
                   : null,
