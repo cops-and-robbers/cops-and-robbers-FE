@@ -310,6 +310,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                 settings?.locationRevealIntervalMinutes,
             policeWaitMinutes: settings?.policeWaitMinutes,
             roundTimeMinutes: settings?.roundDurationMinutes,
+            hostParticipantId: lobbyInfo.hostParticipantId,
           );
 
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
@@ -400,6 +401,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ref
                 .read(gameParticipantNotifierProvider.notifier)
                 .setIsHost(myPid == newHostId);
+            ref
+                .read(gameParticipantNotifierProvider.notifier)
+                .setHostParticipantId(newHostId);
             // hostParticipantId도 동기화
             ref
                 .read(waitingRoomParticipantsProvider.notifier)
