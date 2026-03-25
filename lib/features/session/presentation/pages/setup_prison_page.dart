@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
@@ -21,7 +23,7 @@ import '../../../../core/widgets/map/zone_setting_widget.dart';
 /// **편집 모드**: [editInitialCenter]와 [editInitialRadius]가 제공되면
 /// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
 /// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
-class SetupPrisonPage extends StatefulWidget {
+class SetupPrisonPage extends ConsumerStatefulWidget {
   const SetupPrisonPage({
     super.key,
     this.editInitialCenter,
@@ -43,10 +45,10 @@ class SetupPrisonPage extends StatefulWidget {
   final double? editPlaygroundRadius;
 
   @override
-  State<SetupPrisonPage> createState() => _SetupPrisonPageState();
+  ConsumerState<SetupPrisonPage> createState() => _SetupPrisonPageState();
 }
 
-class _SetupPrisonPageState extends State<SetupPrisonPage> {
+class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
   // ============================================
   // State Variables
   // ============================================
@@ -142,7 +144,11 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
 
     // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({'center': center, 'radius': _currentRadius});
+      context.pop({
+        'lat': center.latitude,
+        'lng': center.longitude,
+        'radius': _currentRadius,
+      });
     }
   }
 
@@ -189,20 +195,26 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = _isEditMode && ref.watch(roleThemeProvider);
+    final bgColor = isDark ? AppColors.black900 : AppColors.white;
+    final textColor = isDark ? AppColors.white : AppColors.black;
+    final titleStyle = isDark
+        ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
+        : AppTextStyles.heading_20.copyWith(color: AppColors.black);
+
     // 로딩 중일 때는 로딩 인디케이터 표시
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppColors.white,
+        backgroundColor: bgColor,
         appBar: AppBar(
-          title: Text(
-            '감옥',
-            style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-          ),
-          backgroundColor: AppColors.white,
+          title: Text('감옥', style: titleStyle),
+          backgroundColor: bgColor,
           elevation: 0,
-          iconTheme: const IconThemeData(color: AppColors.black800),
           centerTitle: true,
-          leading: PreviousButton(onPressed: () => context.pop()),
+          leading: PreviousButton(
+            onPressed: () => context.pop(),
+            color: isDark ? AppColors.black200 : AppColors.black800,
+          ),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -210,19 +222,16 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
 
     // 로딩 완료 후 정상 UI 렌더링
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text(
-          '감옥',
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
-        backgroundColor: AppColors.white,
+        title: Text('감옥', style: titleStyle),
+        backgroundColor: bgColor,
         elevation: 0,
-        iconTheme: const IconThemeData(
-          color: AppColors.black800, // 뒤로가기 아이콘 색상
-        ),
         centerTitle: true,
-        leading: PreviousButton(onPressed: () => context.pop()),
+        leading: PreviousButton(
+          onPressed: () => context.pop(),
+          color: isDark ? AppColors.black200 : AppColors.black800,
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -237,9 +246,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '도둑을 잡아둘 감옥의 위치와 크기를 설정해요',
-                  style: AppTextStyles.label16Medium.copyWith(
-                    color: AppColors.black,
-                  ),
+                  style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),
             ),
@@ -253,7 +260,7 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 initialCenter: _currentCenter,
                 initialRadius: _currentRadius,
                 minRadius: 5,
-                maxRadius: 500,
+                maxRadius: 300,
                 // 감옥 색상 (빨간색 계열)
                 centerColor: AppColors.red,
                 borderColor: AppColors.red800,
@@ -263,6 +270,8 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
                 locationButtonColor: AppColors.red,
                 referenceZone: _buildPlaygroundReferenceZone(),
                 onZoneChanged: _onZoneChanged,
+                isDarkMode: isDark,
+                valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
               ),
             ),
 

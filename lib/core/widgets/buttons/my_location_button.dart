@@ -17,6 +17,7 @@ class MyLocationButton extends StatelessWidget {
     this.focusedColor,
     this.unfocusedColor,
     this.backgroundColor,
+    this.isDarkMode = false,
   });
 
   /// 버튼 클릭 시 실행될 콜백 (현재 위치로 카메라 이동)
@@ -40,6 +41,9 @@ class MyLocationButton extends StatelessWidget {
   /// 컨테이너 배경색 (null이면 SvgIconButton 기본값 사용)
   final Color? backgroundColor;
 
+  /// 다크 모드 여부 (그림자 색상 전환)
+  final bool isDarkMode;
+
   @override
   Widget build(BuildContext context) {
     return SvgIconButton(
@@ -49,6 +53,7 @@ class MyLocationButton extends StatelessWidget {
       iconSize: iconSize,
       iconColor: isFocused ? focusedColor : unfocusedColor,
       backgroundColor: backgroundColor,
+      isDarkMode: isDarkMode,
     );
   }
 }

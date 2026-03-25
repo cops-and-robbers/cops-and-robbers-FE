@@ -18,6 +18,7 @@ class Step2GameSettingsContent extends StatelessWidget {
     required this.onRoundDurationChanged,
     required this.onLocationShareChanged,
     required this.onPoliceWaitChanged,
+    this.isDarkMode = false,
   });
 
   // ============================================
@@ -42,12 +43,16 @@ class Step2GameSettingsContent extends StatelessWidget {
   /// 경찰 대기 시간 변경 콜백
   final ValueChanged<int> onPoliceWaitChanged;
 
+  /// 다크 모드 여부
+  final bool isDarkMode;
+
   // ============================================
   // Build Methods
   // ============================================
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('🔍 Step2 isDarkMode: $isDarkMode');
     return Column(
       children: [
         // 라운드 제한 시간
@@ -59,6 +64,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           unit: '분',
           divisions: 170, // 10~180, 1분 단위
           onChanged: (value) => onRoundDurationChanged(value.toInt()),
+          isDarkMode: isDarkMode,
         ),
 
         SizedBox(height: AppSpacing.vertical8),
@@ -72,6 +78,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           unit: '분',
           divisions: 25, // 5~30, 1분 단위
           onChanged: (value) => onLocationShareChanged(value.toInt()),
+          isDarkMode: isDarkMode,
         ),
 
         SizedBox(height: AppSpacing.vertical8),
@@ -87,6 +94,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           displayPrefix: "도둑 시작 후 ",
           displaySuffix: " 뒤",
           onChanged: (value) => onPoliceWaitChanged(value.toInt()),
+          isDarkMode: isDarkMode,
         ),
       ],
     );

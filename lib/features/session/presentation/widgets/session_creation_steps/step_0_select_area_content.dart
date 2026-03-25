@@ -54,7 +54,7 @@ class Step0SelectAreaContent extends StatelessWidget {
     final result = await context.pushNamed('setupPlaygroundFromFlow');
 
     if (result is Map<String, dynamic>) {
-      final center = result['center'] as LatLng;
+      final center = LatLng(result['lat'] as double, result['lng'] as double);
       final radius = result['radius'] as double;
       onPlaygroundSet(center, radius);
     }
@@ -65,7 +65,7 @@ class Step0SelectAreaContent extends StatelessWidget {
     final result = await context.pushNamed('setupPrisonFromFlow');
 
     if (result is Map<String, dynamic>) {
-      final center = result['center'] as LatLng;
+      final center = LatLng(result['lat'] as double, result['lng'] as double);
       final radius = result['radius'] as double;
       onPrisonSet(center, radius);
     }

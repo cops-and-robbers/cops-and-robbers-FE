@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/network/api_error_response.dart';
@@ -12,11 +13,11 @@ import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/inputs/app_slider.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../providers/session_provider.dart';
 import '../widgets/session_creation_steps/step_1_participant_settings_content.dart';
-import '../widgets/session_creation_steps/step_2_game_settings_content.dart';
 
 /// 게임 설정 수정 페이지
 ///
@@ -118,18 +119,24 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = ref.watch(roleThemeProvider);
+    final bgColor = isDark ? AppColors.black900 : AppColors.white;
+    final titleStyle = isDark
+        ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
+        : AppTextStyles.heading_20.copyWith(color: AppColors.black);
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: bgColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: PreviousButton(onPressed: () => context.pop()),
-        centerTitle: true,
-        title: Text(
-          '설정 수정',
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+        leading: PreviousButton(
+          onPressed: () => context.pop(),
+          color: isDark ? AppColors.black200 : AppColors.black800,
         ),
+        centerTitle: true,
+        title: Text('설정 수정', style: titleStyle),
       ),
       body: SafeArea(
         child: Column(
@@ -146,21 +153,97 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                       Step1ParticipantSettingsContent(
                         maxParticipants: _maxParticipants,
                         onChanged: (v) => setState(() => _maxParticipants = v),
+                        isDarkMode: isDark,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
 
-                      // Step 2: 게임 규칙 설정
-                      Step2GameSettingsContent(
-                        roundDurationMinutes: _roundDurationMinutes,
-                        locationShareMinutes: _locationShareMinutes,
-                        policeWaitMinutes: _policeWaitMinutes,
-                        onRoundDurationChanged: (v) =>
-                            setState(() => _roundDurationMinutes = v),
-                        onLocationShareChanged: (v) =>
-                            setState(() => _locationShareMinutes = v),
-                        onPoliceWaitChanged: (v) =>
-                            setState(() => _policeWaitMinutes = v),
+                      // Step 2: 게임 규칙 설정 (인라인)
+                      AppSlider(
+                        label: '라운드 제한 시간',
+                        value: _roundDurationMinutes.toDouble(),
+                        min: 10,
+                        max: 180,
+                        unit: '분',
+                        divisions: 170,
+                        onChanged: (v) =>
+                            setState(() => _roundDurationMinutes = v.toInt()),
+                        isDarkMode: isDark,
+                        backgroundColor: isDark
+                            ? AppColors.black900
+                            : AppColors.white,
+                        activeTrackColor: isDark
+                            ? AppColors.green800
+                            : AppColors.black800,
+                        thumbColor: isDark ? AppColors.green : AppColors.black,
+                        inactiveTrackColor: isDark
+                            ? AppColors.black800
+                            : AppColors.black100,
+                        valueColor: isDark ? AppColors.white : null,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
+                      ),
+
+                      SizedBox(height: AppSpacing.vertical8),
+
+                      AppSlider(
+                        label: '위치 공유 간격',
+                        value: _locationShareMinutes.toDouble(),
+                        min: 5,
+                        max: 30,
+                        unit: '분',
+                        divisions: 25,
+                        onChanged: (v) =>
+                            setState(() => _locationShareMinutes = v.toInt()),
+                        isDarkMode: isDark,
+                        backgroundColor: isDark
+                            ? AppColors.black900
+                            : AppColors.white,
+                        activeTrackColor: isDark
+                            ? AppColors.green800
+                            : AppColors.black800,
+                        thumbColor: isDark ? AppColors.green : AppColors.black,
+                        inactiveTrackColor: isDark
+                            ? AppColors.black800
+                            : AppColors.black100,
+                        valueColor: isDark ? AppColors.white : null,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
+                      ),
+
+                      SizedBox(height: AppSpacing.vertical8),
+
+                      AppSlider(
+                        label: '경찰 시작 시간',
+                        value: _policeWaitMinutes.toDouble(),
+                        min: 1,
+                        max: 10,
+                        unit: '분',
+                        divisions: 9,
+                        displayPrefix: '도둑 시작 후 ',
+                        displaySuffix: ' 뒤',
+                        onChanged: (v) =>
+                            setState(() => _policeWaitMinutes = v.toInt()),
+                        isDarkMode: isDark,
+                        backgroundColor: isDark
+                            ? AppColors.black900
+                            : AppColors.white,
+                        activeTrackColor: isDark
+                            ? AppColors.green800
+                            : AppColors.black800,
+                        thumbColor: isDark ? AppColors.green : AppColors.black,
+                        inactiveTrackColor: isDark
+                            ? AppColors.black800
+                            : AppColors.black100,
+                        valueColor: isDark ? AppColors.white : null,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
                       ),
                     ],
                   ),
@@ -174,7 +257,15 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
               child: AppButton(
                 text: _isSaving ? '저장 중...' : '저장',
                 onPressed: _hasChanges && !_isSaving ? _saveSettings : null,
-                backgroundColor: AppColors.blue,
+                backgroundColor: isDark ? AppColors.green : AppColors.blue,
+                foregroundColor: isDark ? AppColors.black : AppColors.white,
+                disabledBackgroundColor: isDark
+                    ? AppColors.black800
+                    : AppColors.black200,
+                disabledForegroundColor: isDark
+                    ? AppColors.green
+                    : AppColors.black400,
+                textStyle: isDark ? AppTextStyles.robberLabel : null,
                 showBorder: false,
               ),
             ),

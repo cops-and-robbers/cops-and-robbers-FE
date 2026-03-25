@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/inputs/app_slider.dart';
 
 /// 세션 생성 Step 1: 인원 설정 컨텐츠
@@ -12,6 +13,8 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
     super.key,
     required this.maxParticipants,
     required this.onChanged,
+    this.isDarkMode = false,
+    this.valueTextStyle,
   });
 
   // ============================================
@@ -23,6 +26,12 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
 
   /// 값 변경 콜백
   final ValueChanged<int> onChanged;
+
+  /// 다크 모드 여부
+  final bool isDarkMode;
+
+  /// 값 텍스트 스타일 (null이면 기본 스타일)
+  final TextStyle? valueTextStyle;
 
   // ============================================
   // Build Methods
@@ -38,6 +47,9 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
       unit: '명',
       divisions: 48, // 2~50, 1명 단위
       onChanged: (value) => onChanged(value.toInt()),
+      isDarkMode: isDarkMode,
+      valueColor: isDarkMode ? AppColors.white : null,
+      valueTextStyle: valueTextStyle,
     );
   }
 }

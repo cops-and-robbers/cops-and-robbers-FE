@@ -16,6 +16,7 @@ import '../../../game/data/models/game_area_model.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../domain/entities/session_settings.dart';
+import '../../../../core/theme/role_theme_provider.dart';
 import '../../domain/entities/zone_info.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
@@ -53,17 +54,18 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     final playgroundResult = await router.push<Map<String, dynamic>>(
       '/waiting-room/${widget.sessionId}/game-settings/edit-playground',
       extra: {
-        'center': LatLng(
-          currentArea.playgroundCenter.latitude,
-          currentArea.playgroundCenter.longitude,
-        ),
+        'lat': currentArea.playgroundCenter.latitude,
+        'lng': currentArea.playgroundCenter.longitude,
         'radius': currentArea.playgroundRadiusInMeters,
       },
     );
 
     if (playgroundResult == null || !mounted) return;
 
-    final newPlaygroundCenter = playgroundResult['center'] as LatLng;
+    final newPlaygroundCenter = LatLng(
+      playgroundResult['lat'] as double,
+      playgroundResult['lng'] as double,
+    );
     final newPlaygroundRadius = playgroundResult['radius'] as double;
 
     // 2. 감옥 재설정 (새 플레이그라운드 기준, 기존 감옥 위치를 초기값으로 표시)
@@ -71,12 +73,11 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     final prisonResult = await router.push<Map<String, dynamic>>(
       '/waiting-room/${widget.sessionId}/game-settings/edit-prison',
       extra: {
-        'center': LatLng(
-          currentArea.jailCenter.latitude,
-          currentArea.jailCenter.longitude,
-        ),
+        'lat': currentArea.jailCenter.latitude,
+        'lng': currentArea.jailCenter.longitude,
         'radius': currentArea.jailRadiusInMeters,
-        'playgroundCenter': newPlaygroundCenter,
+        'playgroundLat': newPlaygroundCenter.latitude,
+        'playgroundLng': newPlaygroundCenter.longitude,
         'playgroundRadius': newPlaygroundRadius,
       },
     );
@@ -87,7 +88,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     await _updateArea(
       playgroundCenter: newPlaygroundCenter,
       playgroundRadius: newPlaygroundRadius,
-      jailCenter: prisonResult['center'] as LatLng,
+      jailCenter: LatLng(
+        prisonResult['lat'] as double,
+        prisonResult['lng'] as double,
+      ),
       jailRadius: prisonResult['radius'] as double,
     );
   }
@@ -163,21 +167,31 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
+    final isDark = ref.watch(roleThemeProvider);
 
     final settingsAsync = ref.watch(fetchGameSettingsProvider(gameId));
     final areaAsync = ref.watch(fetchGameAreaProvider(gameId));
 
+    final bgColor = isDark ? AppColors.black900 : AppColors.white;
+    final textColor = isDark ? AppColors.white : AppColors.black;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: bgColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: PreviousButton(onPressed: () => context.pop()),
+        leading: PreviousButton(
+          onPressed: () => context.pop(),
+          color: isDark ? AppColors.black200 : AppColors.black800,
+        ),
         centerTitle: true,
         title: Text(
           '게임 설정',
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+          style: AppTextStyles.heading_20.copyWith(color: textColor),
+        ),
+        iconTheme: IconThemeData(
+          color: isDark ? AppColors.white : AppColors.black800,
         ),
       ),
       body: SingleChildScrollView(
@@ -189,7 +203,8 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
               // ── 구역 섹션 ──
               areaAsync.when(
-                data: (area) => _buildZoneSection(area, isHost: isHost),
+                data: (area) =>
+                    _buildZoneSection(area, isHost: isHost, isDark: isDark),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
                   '구역 정보를 불러올 수 없습니다.',
@@ -203,8 +218,11 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
               // ── 설정 섹션 ──
               settingsAsync.when(
-                data: (settings) =>
-                    _buildSettingsSection(settings, isHost: isHost),
+                data: (settings) => _buildSettingsSection(
+                  settings,
+                  isHost: isHost,
+                  isDark: isDark,
+                ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
                   '설정 정보를 불러올 수 없습니다.',
@@ -222,11 +240,30 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     );
   }
 
+  /// 구역 프리뷰 페이지로 이동 (비방장용)
+  void _navigateToZonePreview(GameAreaModel area) {
+    context.push(
+      '/waiting-room/${widget.sessionId}/game-settings/zone-preview',
+      extra: {
+        'playgroundLat': area.playgroundCenter.latitude,
+        'playgroundLng': area.playgroundCenter.longitude,
+        'playgroundRadius': area.playgroundRadiusInMeters,
+        'jailLat': area.jailCenter.latitude,
+        'jailLng': area.jailCenter.longitude,
+        'jailRadius': area.jailRadiusInMeters,
+      },
+    );
+  }
+
   /// 구역 카드 빌드 (Step 3 UI 재사용)
   ///
   /// 호스트: 구역 탭 → 수정 페이지로 이동
-  /// 비호스트: 읽기 전용
-  Widget _buildZoneSection(GameAreaModel area, {required bool isHost}) {
+  /// 비호스트: 구역 탭 → 읽기전용 프리뷰 페이지로 이동
+  Widget _buildZoneSection(
+    GameAreaModel area, {
+    required bool isHost,
+    required bool isDark,
+  }) {
     final zones = [
       ZoneInfo(
         id: 'playground',
@@ -242,7 +279,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
     return ZoneListCard(
       zones: zones,
-      onTap: isHost ? () => _navigateToEditPlayground(area) : null,
+      onTap: isHost
+          ? () => _navigateToEditPlayground(area)
+          : () => _navigateToZonePreview(area),
+      isDarkMode: isDark,
     );
   }
 
@@ -253,6 +293,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   Widget _buildSettingsSection(
     GameSettingsResponse settings, {
     required bool isHost,
+    required bool isDark,
   }) {
     final sessionSettings = SessionSettings(
       maxPlayers: settings.maxParticipants,
@@ -264,6 +305,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     return SettingListCard(
       settings: sessionSettings,
       onTap: isHost ? () => _navigateToEditSettings(settings) : null,
+      isDarkMode: isDark,
     );
   }
 }
