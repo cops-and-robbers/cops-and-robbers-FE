@@ -146,7 +146,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (currentPath == RoutePaths.login) {
           final destination = ref.read(postLoginDestinationProvider);
           if (destination != null) {
-            debugPrint('🎯 [GoRouter redirect] postLoginDestination 소비: $destination');
+            debugPrint(
+              '🎯 [GoRouter redirect] postLoginDestination 소비: $destination',
+            );
             ref.read(postLoginDestinationProvider.notifier).state = null;
             return destination;
           }

@@ -183,7 +183,7 @@ class AuthNotifier extends _$AuthNotifier {
         'WAITING' => RoutePaths.waitingRoomWithId(info.gameId.toString()),
         'IN_PROGRESS' =>
           '${RoutePaths.gameWithId(info.gameId.toString())}'
-          '?team=${info.team}&pid=${info.participantId}',
+              '?team=${info.team}&pid=${info.participantId}',
         _ => null,
       };
 
