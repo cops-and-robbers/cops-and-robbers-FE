@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../core/constants/app_colors.dart';
 import '../core/constants/spacing_and_radius.dart';
@@ -21,6 +22,7 @@ import '../features/session/presentation/pages/home_page.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
 import '../features/session/presentation/pages/setup_playground_page.dart';
 import '../features/session/presentation/pages/setup_prison_page.dart';
+import '../features/session/presentation/pages/zone_preview_page.dart';
 import '../features/session/presentation/pages/waiting_room_page.dart';
 import '../features/session/presentation/pages/game_settings_page.dart';
 import '../features/session/presentation/pages/game_settings_edit_page.dart';
@@ -137,11 +139,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
 
         // ====================================================================
-        // 3. 기존 회원이 로그인 접근 시 → 홈으로
+        // 3. 기존 회원이 로그인 접근 시 → 활성 게임 복귀 또는 홈으로
+        //    로그인 성공 시 활성 게임이 있으면 대기실/게임으로 직접 이동
         //    (닉네임설정은 설정 페이지에서 닉네임 변경 시 접근 가능)
         // ====================================================================
-        // splash는 SplashPage에서 직접 게임 상태 체크 후 분기하므로 제외
         if (currentPath == RoutePaths.login) {
+          final destination = ref.read(postLoginDestinationProvider);
+          if (destination != null) {
+            debugPrint(
+              '🎯 [GoRouter redirect] postLoginDestination 소비: $destination',
+            );
+            ref.read(postLoginDestinationProvider.notifier).state = null;
+            return destination;
+          }
           return RoutePaths.home;
         }
 
@@ -328,10 +338,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.gameSettingsPlaygroundName,
                 pageBuilder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>?;
+                  final lat = extra?['lat'] as double?;
+                  final lng = extra?['lng'] as double?;
                   return buildDirectionalSlide(
                     key: state.pageKey,
                     child: SetupPlaygroundPage(
-                      editInitialCenter: extra?['center'],
+                      editInitialCenter: lat != null && lng != null
+                          ? LatLng(lat, lng)
+                          : null,
                       editInitialRadius: extra?['radius'] as double?,
                     ),
                     isForward: true,
@@ -344,14 +358,65 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.gameSettingsPrisonName,
                 pageBuilder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>?;
+                  final lat = extra?['lat'] as double?;
+                  final lng = extra?['lng'] as double?;
+                  final pgLat = extra?['playgroundLat'] as double?;
+                  final pgLng = extra?['playgroundLng'] as double?;
                   return buildDirectionalSlide(
                     key: state.pageKey,
                     child: SetupPrisonPage(
-                      editInitialCenter: extra?['center'],
+                      editInitialCenter: lat != null && lng != null
+                          ? LatLng(lat, lng)
+                          : null,
                       editInitialRadius: extra?['radius'] as double?,
-                      editPlaygroundCenter: extra?['playgroundCenter'],
+                      editPlaygroundCenter: pgLat != null && pgLng != null
+                          ? LatLng(pgLat, pgLng)
+                          : null,
                       editPlaygroundRadius:
                           extra?['playgroundRadius'] as double?,
+                    ),
+                    isForward: true,
+                  );
+                },
+              ),
+              // 구역 읽기전용 프리뷰 페이지
+              GoRoute(
+                path: 'zone-preview',
+                name: RoutePaths.gameSettingsZonePreviewName,
+                pageBuilder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  final pgLat = extra?['playgroundLat'] as double?;
+                  final pgLng = extra?['playgroundLng'] as double?;
+                  final jLat = extra?['jailLat'] as double?;
+                  final jLng = extra?['jailLng'] as double?;
+
+                  // 필수 좌표가 없으면 빈 페이지 (비정상 접근 방어)
+                  if (pgLat == null ||
+                      pgLng == null ||
+                      jLat == null ||
+                      jLng == null) {
+                    return buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: Scaffold(
+                        appBar: AppBar(
+                          leading: BackButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                        body: const Center(child: Text('구역 정보를 불러올 수 없습니다.')),
+                      ),
+                      isForward: true,
+                    );
+                  }
+
+                  return buildDirectionalSlide(
+                    key: state.pageKey,
+                    child: ZonePreviewPage(
+                      playgroundCenter: LatLng(pgLat, pgLng),
+                      playgroundRadius:
+                          extra?['playgroundRadius'] as double? ?? 500,
+                      jailCenter: LatLng(jLat, jLng),
+                      jailRadius: extra?['jailRadius'] as double? ?? 100,
                     ),
                     isForward: true,
                   );

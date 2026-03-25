@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/services/location/device_location_service.dart';
 import 'map_error_widget.dart';
 
@@ -322,7 +323,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
           target: _fallback,
           zoom: 15,
         ),
-        style: widget.isDarkMode ? _darkMapStyle : null,
+        style: widget.isDarkMode ? MapStyles.dark : null,
         onMapCreated: (controller) {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
@@ -354,25 +355,4 @@ class GoogleMapViewState extends State<GoogleMapView> {
       return MapErrorWidget(mapName: 'Google Map', error: e);
     }
   }
-
-  /// Google Maps 다크 스타일 JSON
-  static const String _darkMapStyle = '''
-[
-  {"elementType":"geometry","stylers":[{"color":"#212121"}]},
-  {"elementType":"labels.icon","stylers":[{"visibility":"off"}]},
-  {"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},
-  {"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},
-  {"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#757575"}]},
-  {"featureType":"poi","elementType":"geometry","stylers":[{"color":"#181818"}]},
-  {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#263c3f"}]},
-  {"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},
-  {"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#8a8a8a"}]},
-  {"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},
-  {"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},
-  {"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},
-  {"featureType":"transit","elementType":"geometry","stylers":[{"color":"#2f3948"}]},
-  {"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]},
-  {"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#3d3d3d"}]}
-]
-''';
 }

@@ -26,13 +26,21 @@ import '../../domain/entities/zone_info.dart';
 /// )
 /// ```
 class ZoneListCard extends StatelessWidget {
-  const ZoneListCard({super.key, required this.zones, this.onTap});
+  const ZoneListCard({
+    super.key,
+    required this.zones,
+    this.onTap,
+    this.isDarkMode = false,
+  });
 
   /// 구역 정보 리스트
   final List<ZoneInfo> zones;
 
   /// 카드 전체 탭 콜백 (호스트 전용 — 구역 수정 페이지 이동)
   final VoidCallback? onTap;
+
+  /// 다크 모드 여부 (도둑팀)
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +49,9 @@ class ZoneListCard extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: InfoCard(
         title: '구역',
-        titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
+        titleStyle: AppTextStyles.label_16.copyWith(
+          color: isDarkMode ? AppColors.white : AppColors.black,
+        ),
         titleTrailing: onTap != null
             ? Transform.rotate(
                 angle: math.pi,
@@ -49,13 +59,15 @@ class ZoneListCard extends StatelessWidget {
                   'assets/icons/icon_previous.svg',
                   width: 16.w,
                   height: 16.w,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.black300,
+                  colorFilter: ColorFilter.mode(
+                    isDarkMode ? AppColors.black400 : AppColors.black300,
                     BlendMode.srcIn,
                   ),
                 ),
               )
             : null,
+        backgroundColor: isDarkMode ? AppColors.black900 : null,
+        borderColor: isDarkMode ? AppColors.black800 : null,
         padding: EdgeInsets.symmetric(
           horizontal: AppSpacing.horizontal24,
           vertical: AppSpacing.vertical20,
@@ -64,7 +76,7 @@ class ZoneListCard extends StatelessWidget {
           children: [
             for (int i = 0; i < zones.length; i++) ...[
               if (i > 0) SizedBox(height: AppSpacing.vertical12),
-              _ZoneItem(zone: zones[i]),
+              _ZoneItem(zone: zones[i], isDarkMode: isDarkMode),
             ],
           ],
         ),
@@ -75,9 +87,10 @@ class ZoneListCard extends StatelessWidget {
 
 /// 구역 아이템 (내부 위젯)
 class _ZoneItem extends StatelessWidget {
-  const _ZoneItem({required this.zone});
+  const _ZoneItem({required this.zone, this.isDarkMode = false});
 
   final ZoneInfo zone;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -87,13 +100,13 @@ class _ZoneItem extends StatelessWidget {
         Text(
           zone.name,
           style: AppTextStyles.paragraph_14_100.copyWith(
-            color: AppColors.black800,
+            color: isDarkMode ? AppColors.black200 : AppColors.black800,
           ),
         ),
         Text(
           zone.displayDistance,
           style: AppTextStyles.paragraph14Semibold.copyWith(
-            color: AppColors.black,
+            color: isDarkMode ? AppColors.white : AppColors.black,
           ),
         ),
       ],

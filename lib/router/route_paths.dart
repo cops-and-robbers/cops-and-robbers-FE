@@ -154,5 +154,6 @@ class RoutePaths {
   static const String gameSettingsEditName = 'gameSettingsEdit';
   static const String gameSettingsPlaygroundName = 'gameSettingsPlayground';
   static const String gameSettingsPrisonName = 'gameSettingsPrison';
+  static const String gameSettingsZonePreviewName = 'gameSettingsZonePreview';
   static const String lifecycleTestName = 'lifecycleTest';
 }

@@ -17,8 +17,6 @@ class ChatInputBar extends StatefulWidget {
     required this.onSend,
     required this.enabled,
     this.onFocusGain,
-    this.onFocusLost,
-    this.onInputTap,
     this.isDarkMode = false,
     super.key,
   });
@@ -32,12 +30,6 @@ class ChatInputBar extends StatefulWidget {
   /// 입력창 포커스 획득 시 콜백 (채팅창 자동 확장용)
   final VoidCallback? onFocusGain;
 
-  /// 입력창 포커스 상실 시 콜백
-  final VoidCallback? onFocusLost;
-
-  /// TextField 직접 탭 시 콜백 (전송 버튼·패딩 탭과 구별)
-  final VoidCallback? onInputTap;
-
   /// 다크 모드 여부
   final bool isDarkMode;
 
@@ -50,6 +42,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
   final FocusNode _focusNode = FocusNode();
   bool _hasText = false;
 
+  /// 사용자가 TextField를 직접 탭했는지 여부
+  bool _userTapped = false;
+
   @override
   void initState() {
     super.initState();
@@ -59,10 +54,25 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   void _onFocusChanged() {
     if (_focusNode.hasFocus) {
+      if (!_userTapped) {
+        // 다이얼로그 닫힘 등 프로그래매틱 포커스 복원 → 즉시 해제
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _focusNode.hasFocus && !_userTapped) {
+            _focusNode.unfocus();
+          }
+        });
+        return;
+      }
       widget.onFocusGain?.call();
     } else {
-      widget.onFocusLost?.call();
+      // 포커스 상실 시 플래그 리셋
+      _userTapped = false;
     }
+  }
+
+  /// TextField 직접 탭 시 플래그 설정
+  void _onInputTap() {
+    _userTapped = true;
   }
 
   void _onTextChanged() {
@@ -74,16 +84,10 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   void _handleSend() {
     final text = _controller.text.trim();
-    if (text.isEmpty || !widget.enabled) {
-      // 입력이 없을 때만 키보드 닫기
-      if (text.isEmpty) _focusNode.unfocus();
-      return;
-    }
+    if (text.isEmpty || !widget.enabled) return;
 
     widget.onSend(text);
     _controller.clear();
-    // 전송 후 포커스 유지 (키보드 열린 상태 유지)
-    _focusNode.requestFocus();
   }
 
   @override
@@ -111,28 +115,31 @@ class _ChatInputBarState extends State<ChatInputBar> {
         child: Row(
           children: [
             Expanded(
-              child: TextField(
-                controller: _controller,
-                focusNode: _focusNode,
-                enabled: widget.enabled,
-                style: AppTextStyles.paragraph_14.copyWith(
-                  color: widget.isDarkMode
-                      ? AppColors.black200
-                      : AppColors.black900,
-                ),
-                decoration: InputDecoration(
-                  hintText: widget.enabled ? '채팅을 입력하세요' : '연결 중...',
-                  hintStyle: AppTextStyles.label16Medium.copyWith(
+              child: Listener(
+                onPointerDown: (_) => _userTapped = true,
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  enabled: widget.enabled,
+                  style: AppTextStyles.paragraph_14.copyWith(
                     color: widget.isDarkMode
                         ? AppColors.black200
-                        : AppColors.black400,
+                        : AppColors.black900,
                   ),
-                  border: InputBorder.none,
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                  decoration: InputDecoration(
+                    hintText: widget.enabled ? '채팅을 입력하세요' : '연결 중...',
+                    hintStyle: AppTextStyles.label16Medium.copyWith(
+                      color: widget.isDarkMode
+                          ? AppColors.black200
+                          : AppColors.black400,
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                  ),
+                  onTap: _onInputTap,
+                  onSubmitted: (_) => _handleSend(),
                 ),
-                onTap: widget.onInputTap,
-                onSubmitted: (_) => _handleSend(),
               ),
             ),
             SizedBox(width: AppSpacing.horizontal8),

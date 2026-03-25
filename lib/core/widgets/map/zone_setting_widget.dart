@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/map_styles.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../buttons/my_location_button.dart';
 import '../../services/location/device_location_service.dart';
@@ -49,6 +50,8 @@ class ZoneSettingWidget extends StatefulWidget {
     this.referenceZone,
     this.mapHeight,
     this.initialCenter,
+    this.isDarkMode = false,
+    this.valueTextStyle,
   });
 
   /// 초기 반경 (미터)
@@ -103,6 +106,12 @@ class ZoneSettingWidget extends StatefulWidget {
   /// Initial center (null = current location)
   final LatLng? initialCenter;
 
+  /// 다크 모드 여부 (지도 스타일, 버튼 전환)
+  final bool isDarkMode;
+
+  /// 값 텍스트 스타일 (InfoRadiusChip에 전달, null이면 기본 스타일)
+  final TextStyle? valueTextStyle;
+
   @override
   State<ZoneSettingWidget> createState() => ZoneSettingWidgetState();
 }
@@ -115,6 +124,10 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   bool _isInitialized = false;
   bool _isLocationFocused = true;
   bool _isProgrammaticMove = false;
+  bool _isRadiusChipEditing = false;
+
+  /// InfoRadiusChip 기본 높이 (40.h)
+  double get _effectiveChipHeight => 40.h;
 
   // Fallback 위치 (어린이대공원)
   static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
@@ -241,12 +254,21 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                   iconSize: 24,
                   focusedColor: widget.locationButtonColor ?? AppColors.blue,
                   unfocusedColor: _unfocusedLocationColor(),
+                  backgroundColor: widget.isDarkMode ? AppColors.black : null,
+                  isDarkMode: widget.isDarkMode,
                 ),
               ),
 
-              // Info card (우측하단 16, 20)
-              Positioned(
-                bottom: 16.h,
+              // Info card (편집 중: 우측 상단 / 기본: 우측 하단)
+              // mapHeight 기준으로 top 값을 계산 (AnimatedPositioned는 null↔값 전환 시 보간 불가)
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                top: _isRadiusChipEditing
+                    ? 16.h
+                    : (widget.mapHeight ?? 360.h) -
+                          16.h -
+                          (_effectiveChipHeight),
                 right: 20.w,
                 child: _buildRadiusIndicator(),
               ),
@@ -279,6 +301,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                 target: _currentCenter,
                 zoom: _calculateZoom(_currentRadius),
               ),
+              style: widget.isDarkMode ? MapStyles.dark : null,
               onMapCreated: (controller) {
                 _mapController = controller;
                 debugPrint('✅ ZoneSettingWidget: Google Map 생성 완료');
@@ -350,7 +373,9 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       showContainer: false,
       activeTrackColor: widget.borderColor ?? AppColors.blue800,
       thumbColor: widget.centerColor ?? AppColors.blue,
-      inactiveTrackColor: widget.inactiveTrackColor ?? AppColors.blue100,
+      inactiveTrackColor: widget.isDarkMode
+          ? AppColors.black800
+          : (widget.inactiveTrackColor ?? AppColors.blue100),
       onChanged: _onRadiusChanged,
     );
   }
@@ -373,6 +398,15 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
           widget.radiusChipBackgroundColor ??
           widget.centerColor ??
           AppColors.blue,
+      editable: true,
+      minValue: widget.minRadius,
+      maxValue: widget.maxRadius,
+      onValueChanged: _onRadiusChanged,
+      onEditingChanged: (editing) {
+        setState(() => _isRadiusChipEditing = editing);
+      },
+      isDarkMode: widget.isDarkMode,
+      valueTextStyle: widget.valueTextStyle,
     );
   }
 

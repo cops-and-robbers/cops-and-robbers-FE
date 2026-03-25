@@ -15,6 +15,8 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
+import '../../../../core/services/permission/location_permission_messages.dart';
+import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
@@ -65,11 +67,13 @@ class GamePage extends ConsumerStatefulWidget {
   ConsumerState<GamePage> createState() => _GamePageState();
 }
 
-class _GamePageState extends ConsumerState<GamePage> {
+class _GamePageState extends ConsumerState<GamePage>
+    with WidgetsBindingObserver {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
   bool _isCheckingGameStatus = false;
+  bool _isLocationPermissionDenied = false;
   bool _isLocationFocused = true;
   bool _isProgrammaticMove = true; // 초기 카메라 이동(onMapCreated) 보호
 
@@ -99,17 +103,105 @@ class _GamePageState extends ConsumerState<GamePage> {
   void initState() {
     super.initState();
     if (widget.isDummy) _dummyStartTime = DateTime.now();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _connectChat();
-      _connectGameEvents();
-      _loadGameArea();
-      _showPoliceTimerIfNeeded();
-      _initSettingsFromApiIfNeeded();
+      _ensureLocationAndInit();
     });
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkLocationPermissionOnResume();
+    }
+  }
+
+  /// 위치 권한 확인 후 게임 초기화
+  ///
+  /// 위치 권한이 없으면 권한 요청 다이얼로그를 표시하고,
+  /// 허용될 때까지 게임 초기화(위치 스트림, STOMP 연결 등)를 보류합니다.
+  Future<void> _ensureLocationAndInit() async {
+    final canAccess = await LocationPermissionService.canAccessLocation();
+    if (!mounted) return;
+
+    if (canAccess) {
+      _initGameConnections();
+      return;
+    }
+
+    // 권한 없음 → 상태 업데이트 + 다이얼로그 표시
+    setState(() => _isLocationPermissionDenied = true);
+    await _showLocationPermissionDialog();
+  }
+
+  /// 위치 권한 요청 다이얼로그
+  ///
+  /// 설정에서 권한을 허용하고 돌아오면 재확인 후 게임 초기화를 진행합니다.
+  Future<void> _showLocationPermissionDialog() async {
+    final serviceEnabled = await LocationPermissionService.isServiceEnabled();
+    if (!mounted) return;
+
+    final text = await LocationPermissionMessages.getText(
+      isServiceDisabled: !serviceEnabled,
+      context: LocationPermissionContext.game,
+    );
+    if (!mounted) return;
+
+    // 게임 중에는 나갈 수 없으므로 설정 이동 버튼만 제공
+    AppDialog.show(
+      context: context,
+      title: text.title,
+      message: text.message,
+      confirmText: '설정으로 이동',
+      barrierDismissible: false,
+      isDarkMode: _isDarkMode,
+      onConfirm: () async {
+        if (!serviceEnabled) {
+          await LocationPermissionService.openLocationSettings();
+        } else {
+          await LocationPermissionService.openAppSettings();
+        }
+        if (mounted) await _ensureLocationAndInit();
+      },
+    );
+  }
+
+  /// 게임 연결 및 초기화 (위치 권한 확보 후 실행)
+  void _initGameConnections() {
+    if (_isLocationPermissionDenied) {
+      setState(() => _isLocationPermissionDenied = false);
+    }
+    _connectChat();
+    _connectGameEvents();
+    _loadGameArea();
+    _showPoliceTimerIfNeeded();
+    _initSettingsFromApiIfNeeded();
+  }
+
+  /// 앱 포그라운드 복귀 시 위치 권한 재확인
+  ///
+  /// 게임 중 설정에서 위치 권한을 끄고 돌아온 경우,
+  /// 위치 스트림을 중단하고 권한 요청 다이얼로그를 표시합니다.
+  /// 권한 허용 후에는 앱 재시작이 필요합니다.
+  Future<void> _checkLocationPermissionOnResume() async {
+    if (_isLocationPermissionDenied) return;
+
+    final canAccess = await LocationPermissionService.canAccessLocation();
+    if (!mounted || canAccess) return;
+
+    // 위치 스트림 중단
+    _locationSubscription?.cancel();
+    _locationSubscription = null;
+    _headingSubscription?.cancel();
+    _headingSubscription = null;
+
+    setState(() => _isLocationPermissionDenied = true);
+    await _showLocationPermissionDialog();
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _locationSubscription?.cancel();
     _headingSubscription?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
@@ -794,6 +886,14 @@ class _GamePageState extends ConsumerState<GamePage> {
         );
       });
     });
+
+    // 위치 권한 미허용 → 다이얼로그가 표시되는 동안 빈 화면
+    if (_isLocationPermissionDenied) {
+      return Scaffold(
+        backgroundColor: _isDarkMode ? AppColors.black800 : AppColors.white,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
