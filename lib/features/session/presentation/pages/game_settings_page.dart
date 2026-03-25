@@ -53,17 +53,18 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     final playgroundResult = await router.push<Map<String, dynamic>>(
       '/waiting-room/${widget.sessionId}/game-settings/edit-playground',
       extra: {
-        'center': LatLng(
-          currentArea.playgroundCenter.latitude,
-          currentArea.playgroundCenter.longitude,
-        ),
+        'lat': currentArea.playgroundCenter.latitude,
+        'lng': currentArea.playgroundCenter.longitude,
         'radius': currentArea.playgroundRadiusInMeters,
       },
     );
 
     if (playgroundResult == null || !mounted) return;
 
-    final newPlaygroundCenter = playgroundResult['center'] as LatLng;
+    final newPlaygroundCenter = LatLng(
+      playgroundResult['lat'] as double,
+      playgroundResult['lng'] as double,
+    );
     final newPlaygroundRadius = playgroundResult['radius'] as double;
 
     // 2. 감옥 재설정 (새 플레이그라운드 기준, 기존 감옥 위치를 초기값으로 표시)
@@ -71,12 +72,11 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     final prisonResult = await router.push<Map<String, dynamic>>(
       '/waiting-room/${widget.sessionId}/game-settings/edit-prison',
       extra: {
-        'center': LatLng(
-          currentArea.jailCenter.latitude,
-          currentArea.jailCenter.longitude,
-        ),
+        'lat': currentArea.jailCenter.latitude,
+        'lng': currentArea.jailCenter.longitude,
         'radius': currentArea.jailRadiusInMeters,
-        'playgroundCenter': newPlaygroundCenter,
+        'playgroundLat': newPlaygroundCenter.latitude,
+        'playgroundLng': newPlaygroundCenter.longitude,
         'playgroundRadius': newPlaygroundRadius,
       },
     );
@@ -87,7 +87,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     await _updateArea(
       playgroundCenter: newPlaygroundCenter,
       playgroundRadius: newPlaygroundRadius,
-      jailCenter: prisonResult['center'] as LatLng,
+      jailCenter: LatLng(
+        prisonResult['lat'] as double,
+        prisonResult['lng'] as double,
+      ),
       jailRadius: prisonResult['radius'] as double,
     );
   }
@@ -222,10 +225,25 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     );
   }
 
+  /// 구역 프리뷰 페이지로 이동 (비방장용)
+  void _navigateToZonePreview(GameAreaModel area) {
+    context.push(
+      '/waiting-room/${widget.sessionId}/game-settings/zone-preview',
+      extra: {
+        'playgroundLat': area.playgroundCenter.latitude,
+        'playgroundLng': area.playgroundCenter.longitude,
+        'playgroundRadius': area.playgroundRadiusInMeters,
+        'jailLat': area.jailCenter.latitude,
+        'jailLng': area.jailCenter.longitude,
+        'jailRadius': area.jailRadiusInMeters,
+      },
+    );
+  }
+
   /// 구역 카드 빌드 (Step 3 UI 재사용)
   ///
   /// 호스트: 구역 탭 → 수정 페이지로 이동
-  /// 비호스트: 읽기 전용
+  /// 비호스트: 구역 탭 → 읽기전용 프리뷰 페이지로 이동
   Widget _buildZoneSection(GameAreaModel area, {required bool isHost}) {
     final zones = [
       ZoneInfo(
@@ -242,7 +260,9 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
     return ZoneListCard(
       zones: zones,
-      onTap: isHost ? () => _navigateToEditPlayground(area) : null,
+      onTap: isHost
+          ? () => _navigateToEditPlayground(area)
+          : () => _navigateToZonePreview(area),
     );
   }
 

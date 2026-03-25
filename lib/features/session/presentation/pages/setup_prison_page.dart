@@ -142,7 +142,11 @@ class _SetupPrisonPageState extends State<SetupPrisonPage> {
 
     // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({'center': center, 'radius': _currentRadius});
+      context.pop({
+        'lat': center.latitude,
+        'lng': center.longitude,
+        'radius': _currentRadius,
+      });
     }
   }
 

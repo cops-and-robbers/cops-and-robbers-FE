@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../core/constants/app_colors.dart';
 import '../core/constants/spacing_and_radius.dart';
@@ -21,6 +22,7 @@ import '../features/session/presentation/pages/home_page.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
 import '../features/session/presentation/pages/setup_playground_page.dart';
 import '../features/session/presentation/pages/setup_prison_page.dart';
+import '../features/session/presentation/pages/zone_preview_page.dart';
 import '../features/session/presentation/pages/waiting_room_page.dart';
 import '../features/session/presentation/pages/game_settings_page.dart';
 import '../features/session/presentation/pages/game_settings_edit_page.dart';
@@ -328,10 +330,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.gameSettingsPlaygroundName,
                 pageBuilder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>?;
+                  final lat = extra?['lat'] as double?;
+                  final lng = extra?['lng'] as double?;
                   return buildDirectionalSlide(
                     key: state.pageKey,
                     child: SetupPlaygroundPage(
-                      editInitialCenter: extra?['center'],
+                      editInitialCenter: lat != null && lng != null
+                          ? LatLng(lat, lng)
+                          : null,
                       editInitialRadius: extra?['radius'] as double?,
                     ),
                     isForward: true,
@@ -344,14 +350,45 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.gameSettingsPrisonName,
                 pageBuilder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>?;
+                  final lat = extra?['lat'] as double?;
+                  final lng = extra?['lng'] as double?;
+                  final pgLat = extra?['playgroundLat'] as double?;
+                  final pgLng = extra?['playgroundLng'] as double?;
                   return buildDirectionalSlide(
                     key: state.pageKey,
                     child: SetupPrisonPage(
-                      editInitialCenter: extra?['center'],
+                      editInitialCenter: lat != null && lng != null
+                          ? LatLng(lat, lng)
+                          : null,
                       editInitialRadius: extra?['radius'] as double?,
-                      editPlaygroundCenter: extra?['playgroundCenter'],
+                      editPlaygroundCenter: pgLat != null && pgLng != null
+                          ? LatLng(pgLat, pgLng)
+                          : null,
                       editPlaygroundRadius:
                           extra?['playgroundRadius'] as double?,
+                    ),
+                    isForward: true,
+                  );
+                },
+              ),
+              // 구역 읽기전용 프리뷰 페이지
+              GoRoute(
+                path: 'zone-preview',
+                name: RoutePaths.gameSettingsZonePreviewName,
+                pageBuilder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  final pgLat = extra?['playgroundLat'] as double? ?? 0;
+                  final pgLng = extra?['playgroundLng'] as double? ?? 0;
+                  final jLat = extra?['jailLat'] as double? ?? 0;
+                  final jLng = extra?['jailLng'] as double? ?? 0;
+                  return buildDirectionalSlide(
+                    key: state.pageKey,
+                    child: ZonePreviewPage(
+                      playgroundCenter: LatLng(pgLat, pgLng),
+                      playgroundRadius:
+                          extra?['playgroundRadius'] as double? ?? 500,
+                      jailCenter: LatLng(jLat, jLng),
+                      jailRadius: extra?['jailRadius'] as double? ?? 100,
                     ),
                     isForward: true,
                   );
