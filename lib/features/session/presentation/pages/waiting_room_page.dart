@@ -724,11 +724,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     AppDialog.show(
       context: context,
       isDarkMode: isDark,
-      backgroundColor: isDark ? AppColors.black : null,
       title: '초대코드를 생성했어요',
-      titleStyle: isDark
-          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
-          : null,
       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
       customContent: GestureDetector(
         onTap: () async {
