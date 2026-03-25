@@ -46,8 +46,7 @@ class LocationPermissionMessages {
     final section = _cache?[key] as Map<String, dynamic>?;
 
     final title = section?['title'] as String? ?? '위치 권한 안내';
-    final message =
-        section?[context.jsonKey] as String? ?? '위치 권한을 허용해주세요.';
+    final message = section?[context.jsonKey] as String? ?? '위치 권한을 허용해주세요.';
 
     return LocationPermissionDialogText(title: title, message: message);
   }
