@@ -155,21 +155,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   ///
   /// 대기방에서 설정으로 이동해 위치 권한을 끄고 돌아온 경우,
   /// 권한 요청 다이얼로그를 표시합니다.
+  /// 앱 포그라운드 복귀 시 위치 권한 재확인
+  ///
+  /// 대기방에서 설정으로 이동해 위치 권한을 끄고 돌아온 경우,
+  /// 권한 요청 다이얼로그를 표시합니다.
+  /// 권한 허용 후에는 앱 재시작이 필요합니다.
   Future<void> _checkLocationPermissionOnResume() async {
-    final canAccess = await LocationPermissionService.canAccessLocation();
-    if (!mounted) return;
-
-    if (canAccess) {
-      // 권한 복구됨 → 다이얼로그 닫고 대기방 초기화
-      if (_isLocationPermissionDenied) {
-        Navigator.of(context).popUntil((route) => route is! DialogRoute);
-        _initWaitingRoom();
-      }
-      return;
-    }
-
-    // 이미 다이얼로그 표시 중이면 중복 방지
     if (_isLocationPermissionDenied) return;
+
+    final canAccess = await LocationPermissionService.canAccessLocation();
+    if (!mounted || canAccess) return;
 
     setState(() => _isLocationPermissionDenied = true);
     await _showLocationPermissionDialog();
