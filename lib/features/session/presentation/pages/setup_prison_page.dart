@@ -271,6 +271,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                 referenceZone: _buildPlaygroundReferenceZone(),
                 onZoneChanged: _onZoneChanged,
                 isDarkMode: isDark,
+                valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
               ),
             ),
 

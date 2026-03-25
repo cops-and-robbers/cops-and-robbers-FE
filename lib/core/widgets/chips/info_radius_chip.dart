@@ -53,6 +53,7 @@ class InfoRadiusChip extends StatefulWidget {
     this.onValueChanged,
     this.onEditingChanged,
     this.isDarkMode = false,
+    this.valueTextStyle,
   });
 
   /// prefix 텍스트 (예: "반경")
@@ -96,6 +97,9 @@ class InfoRadiusChip extends StatefulWidget {
 
   /// 다크 모드 여부 (value 텍스트 스타일 전환)
   final bool isDarkMode;
+
+  /// 값 텍스트 스타일 (null이면 AppTextStyles.label_16 사용)
+  final TextStyle? valueTextStyle;
 
   @override
   State<InfoRadiusChip> createState() => _InfoRadiusChipState();
@@ -270,12 +274,11 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
 
   /// 읽기 전용 value 텍스트
   Widget _buildValueText() {
-    final baseStyle = widget.isDarkMode
-        ? AppTextStyles.robberLabel
-        : AppTextStyles.label_16;
     return Text(
       widget.value,
-      style: baseStyle.copyWith(color: _effectiveValueColor),
+      style: (widget.valueTextStyle ?? AppTextStyles.label_16).copyWith(
+        color: _effectiveValueColor,
+      ),
     );
   }
 
@@ -292,11 +295,9 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
         keyboardType: const TextInputType.numberWithOptions(decimal: false),
         textAlign: TextAlign.right,
         maxLength: maxDigits,
-        style:
-            (widget.isDarkMode
-                    ? AppTextStyles.robberLabel
-                    : AppTextStyles.label_16)
-                .copyWith(color: _effectiveValueColor),
+        style: (widget.valueTextStyle ?? AppTextStyles.label_16).copyWith(
+          color: _effectiveValueColor,
+        ),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         decoration: const InputDecoration(
           isDense: true,

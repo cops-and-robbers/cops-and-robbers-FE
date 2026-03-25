@@ -51,6 +51,7 @@ class ZoneSettingWidget extends StatefulWidget {
     this.mapHeight,
     this.initialCenter,
     this.isDarkMode = false,
+    this.valueTextStyle,
   });
 
   /// 초기 반경 (미터)
@@ -107,6 +108,9 @@ class ZoneSettingWidget extends StatefulWidget {
 
   /// 다크 모드 여부 (지도 스타일, 버튼 전환)
   final bool isDarkMode;
+
+  /// 값 텍스트 스타일 (InfoRadiusChip에 전달, null이면 기본 스타일)
+  final TextStyle? valueTextStyle;
 
   @override
   State<ZoneSettingWidget> createState() => ZoneSettingWidgetState();
@@ -402,6 +406,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
         setState(() => _isRadiusChipEditing = editing);
       },
       isDarkMode: widget.isDarkMode,
+      valueTextStyle: widget.valueTextStyle,
     );
   }
 

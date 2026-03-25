@@ -14,6 +14,7 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
     required this.maxParticipants,
     required this.onChanged,
     this.isDarkMode = false,
+    this.valueTextStyle,
   });
 
   // ============================================
@@ -28,6 +29,9 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+
+  /// 값 텍스트 스타일 (null이면 기본 스타일)
+  final TextStyle? valueTextStyle;
 
   // ============================================
   // Build Methods
@@ -45,6 +49,7 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
       onChanged: (value) => onChanged(value.toInt()),
       isDarkMode: isDarkMode,
       valueColor: isDarkMode ? AppColors.white : null,
+      valueTextStyle: valueTextStyle,
     );
   }
 }

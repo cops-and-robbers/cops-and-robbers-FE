@@ -154,6 +154,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         maxParticipants: _maxParticipants,
                         onChanged: (v) => setState(() => _maxParticipants = v),
                         isDarkMode: isDark,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
@@ -180,6 +183,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                             ? AppColors.black800
                             : AppColors.black100,
                         valueColor: isDark ? AppColors.white : null,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
@@ -205,6 +211,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                             ? AppColors.black800
                             : AppColors.black100,
                         valueColor: isDark ? AppColors.white : null,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
@@ -232,6 +241,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                             ? AppColors.black800
                             : AppColors.black100,
                         valueColor: isDark ? AppColors.white : null,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
                       ),
                     ],
                   ),

@@ -115,6 +115,7 @@ class AppSlider extends StatelessWidget {
     this.valueColor,
     this.minMaxColor,
     this.isDarkMode = false,
+    this.valueTextStyle,
   });
 
   /// 라벨 텍스트 (예: '최대 인원', '반경')
@@ -194,6 +195,9 @@ class AppSlider extends StatelessWidget {
 
   /// 다크 모드 여부 (텍스트 스타일 및 기본 색상 전환)
   final bool isDarkMode;
+
+  /// 값 텍스트 스타일 (null이면 AppTextStyles.label_16 사용)
+  final TextStyle? valueTextStyle;
 
   // ============================================
   // 기본값 Getter 메서드
@@ -353,37 +357,32 @@ class AppSlider extends StatelessWidget {
                   color: isDarkMode ? AppColors.black200 : AppColors.black800,
                 ),
               ),
-            // 값 부분 (label_16 / robberLabel + thumbColor)
+            // 값 부분 (valueTextStyle ?? label_16 + thumbColor)
             TextSpan(
               text: '${value.toInt()}$unit',
-              style:
-                  (isDarkMode
-                          ? AppTextStyles.robberLabel
-                          : AppTextStyles.label_16)
-                      .copyWith(color: valueColor ?? _effectiveThumbColor),
+              style: (valueTextStyle ?? AppTextStyles.label_16).copyWith(
+                color: valueColor ?? _effectiveThumbColor,
+              ),
             ),
-            // 뒤 추가 텍스트 (label_16 / robberLabel + thumbColor)
+            // 뒤 추가 텍스트 (valueTextStyle ?? label_16 + thumbColor)
             if (displaySuffix != null)
               TextSpan(
                 text: ' $displaySuffix',
-                style:
-                    (isDarkMode
-                            ? AppTextStyles.robberLabel
-                            : AppTextStyles.label_16)
-                        .copyWith(color: valueColor ?? _effectiveThumbColor),
+                style: (valueTextStyle ?? AppTextStyles.label_16).copyWith(
+                  color: valueColor ?? _effectiveThumbColor,
+                ),
               ),
           ],
         ),
       );
     }
 
-    // 기본 형식 (label_16 / robberLabel + thumbColor)
-    final valueStyle = isDarkMode
-        ? AppTextStyles.robberLabel
-        : AppTextStyles.label_16;
+    // 기본 형식 (valueTextStyle ?? label_16 + thumbColor)
     return Text(
       '${value.toInt()}$unit',
-      style: valueStyle.copyWith(color: _effectiveValueColor),
+      style: (valueTextStyle ?? AppTextStyles.label_16).copyWith(
+        color: _effectiveValueColor,
+      ),
     );
   }
 

@@ -209,6 +209,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                 locationButtonColor: AppColors.blue,
                 onZoneChanged: _onZoneChanged,
                 isDarkMode: isDark,
+                valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
               ),
             ),
 
