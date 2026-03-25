@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -293,6 +294,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
           controller: _nicknameController,
           maxLength: 10,
           textColor: _isNicknameChanged ? null : AppColors.black600,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]')),
+          ],
           onChanged: (value) {
             // 입력값이 변경되면 검증 상태 초기화 + 버튼 상태 갱신
             setState(() {
