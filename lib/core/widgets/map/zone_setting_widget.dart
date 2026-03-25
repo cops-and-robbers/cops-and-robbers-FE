@@ -115,6 +115,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   bool _isInitialized = false;
   bool _isLocationFocused = true;
   bool _isProgrammaticMove = false;
+  bool _isRadiusChipEditing = false;
 
   // Fallback 위치 (어린이대공원)
   static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
@@ -244,9 +245,12 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                 ),
               ),
 
-              // Info card (우측하단 16, 20)
-              Positioned(
-                bottom: 16.h,
+              // Info card (편집 중: 우측 상단 / 기본: 우측 하단)
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                top: _isRadiusChipEditing ? 16.h : null,
+                bottom: _isRadiusChipEditing ? null : 16.h,
                 right: 20.w,
                 child: _buildRadiusIndicator(),
               ),
@@ -373,6 +377,13 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
           widget.radiusChipBackgroundColor ??
           widget.centerColor ??
           AppColors.blue,
+      editable: true,
+      minValue: widget.minRadius,
+      maxValue: widget.maxRadius,
+      onValueChanged: _onRadiusChanged,
+      onEditingChanged: (editing) {
+        setState(() => _isRadiusChipEditing = editing);
+      },
     );
   }
 
