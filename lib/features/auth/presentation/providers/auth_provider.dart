@@ -15,6 +15,10 @@ import '../../domain/usecases/sign_in_with_apple_usecase.dart';
 import '../../domain/usecases/sign_in_with_google_usecase.dart';
 import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/utils/firebase_auth_error_handler.dart';
+// NOTE: Cross-feature dependency — 로그인 후 활성 게임 복원을 위해 session provider 참조
+// (splash_page.dart와 동일한 패턴)
+import '../../../session/presentation/providers/session_provider.dart';
+import '../../../../router/route_paths.dart';
 import '../pages/login_page.dart';
 import '../../../session/presentation/pages/home_page.dart';
 
@@ -78,6 +82,12 @@ SignOutUseCase signOutUseCase(Ref ref) {
 // ============================================================================
 // Presentation Layer Providers
 // ============================================================================
+
+/// 로그인 성공 후 이동할 목적지 (활성 게임 복원용, 1회성)
+///
+/// 로그인 성공 시 활성 게임이 있으면 해당 경로를 저장하고,
+/// GoRouter redirect에서 소비한 뒤 null로 초기화합니다.
+final postLoginDestinationProvider = StateProvider<String?>((ref) => null);
 
 /// Firebase Auth State를 실시간으로 제공하는 StreamProvider
 ///
@@ -158,6 +168,34 @@ class AuthNotifier extends _$AuthNotifier {
     return null;
   }
 
+  /// 활성 게임 상태를 조회하여 로그인 후 목적지를 결정합니다.
+  ///
+  /// - WAITING → 대기실 경로
+  /// - IN_PROGRESS → 게임 경로 (team, pid 포함)
+  /// - 참여 중인 게임 없음 또는 API 실패 → null (홈 fallback)
+  Future<void> _resolvePostLoginDestination() async {
+    try {
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
+      if (!status.isParticipating || status.participationInfo == null) return;
+
+      final info = status.participationInfo!;
+      final destination = switch (info.gameStatus) {
+        'WAITING' => RoutePaths.waitingRoomWithId(info.gameId.toString()),
+        'IN_PROGRESS' =>
+          '${RoutePaths.gameWithId(info.gameId.toString())}'
+          '?team=${info.team}&pid=${info.participantId}',
+        _ => null,
+      };
+
+      if (destination != null) {
+        ref.read(postLoginDestinationProvider.notifier).state = destination;
+        debugPrint('🎯 AuthNotifier: 로그인 후 목적지 설정 → $destination');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AuthNotifier: 활성 게임 조회 실패 (홈 fallback) - $e');
+    }
+  }
+
   /// Google 로그인 수행
   ///
   /// UseCase를 통해 Firebase 로그인 → 백엔드 로그인 → 토큰 저장을 수행합니다.
@@ -168,6 +206,12 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       final useCase = ref.read(signInWithGoogleUseCaseProvider);
       final result = await useCase.execute();
+
+      // 기존 회원: 활성 게임 체크 → 목적지 결정 (state 설정 전)
+      if (!result.isNewUser) {
+        await _resolvePostLoginDestination();
+      }
+
       state = AsyncValue.data(result);
     } on FirebaseAuthException catch (e) {
       state = AsyncValue.error(
@@ -198,6 +242,12 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       final useCase = ref.read(signInWithAppleUseCaseProvider);
       final result = await useCase.execute();
+
+      // 기존 회원: 활성 게임 체크 → 목적지 결정 (state 설정 전)
+      if (!result.isNewUser) {
+        await _resolvePostLoginDestination();
+      }
+
       state = AsyncValue.data(result);
     } on FirebaseAuthException catch (e) {
       state = AsyncValue.error(
