@@ -139,11 +139,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
 
         // ====================================================================
-        // 3. 기존 회원이 로그인 접근 시 → 홈으로
+        // 3. 기존 회원이 로그인 접근 시 → 활성 게임 복귀 또는 홈으로
+        //    로그인 성공 시 활성 게임이 있으면 대기실/게임으로 직접 이동
         //    (닉네임설정은 설정 페이지에서 닉네임 변경 시 접근 가능)
         // ====================================================================
-        // splash는 SplashPage에서 직접 게임 상태 체크 후 분기하므로 제외
         if (currentPath == RoutePaths.login) {
+          final destination = ref.read(postLoginDestinationProvider);
+          if (destination != null) {
+            debugPrint('🎯 [GoRouter redirect] postLoginDestination 소비: $destination');
+            ref.read(postLoginDestinationProvider.notifier).state = null;
+            return destination;
+          }
           return RoutePaths.home;
         }
 
