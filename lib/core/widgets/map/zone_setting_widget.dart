@@ -255,7 +255,9 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                 curve: Curves.easeInOut,
                 top: _isRadiusChipEditing
                     ? 16.h
-                    : (widget.mapHeight ?? 360.h) - 16.h - (_effectiveChipHeight),
+                    : (widget.mapHeight ?? 360.h) -
+                          16.h -
+                          (_effectiveChipHeight),
                 right: 20.w,
                 child: _buildRadiusIndicator(),
               ),
