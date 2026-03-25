@@ -127,7 +127,7 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
         centerTitle: true,
         leading: PreviousButton(
           onPressed: () => Navigator.of(context).pop(),
-          color: isDark ? AppColors.black400 : AppColors.black800,
+          color: isDark ? AppColors.black200 : AppColors.black800,
         ),
       ),
       body: SafeArea(

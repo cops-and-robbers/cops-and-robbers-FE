@@ -114,6 +114,7 @@ class AppSlider extends StatelessWidget {
     this.labelColor,
     this.valueColor,
     this.minMaxColor,
+    this.isDarkMode = false,
   });
 
   /// 라벨 텍스트 (예: '최대 인원', '반경')
@@ -191,33 +192,39 @@ class AppSlider extends StatelessWidget {
   /// 최소/최대 라벨 색상 (기본: AppColors.black600)
   final Color? minMaxColor;
 
+  /// 다크 모드 여부 (텍스트 스타일 및 기본 색상 전환)
+  final bool isDarkMode;
+
   // ============================================
   // 기본값 Getter 메서드
   // ============================================
 
-  /// 활성 트랙 색상 (기본: AppColors.black800)
+  /// 활성 트랙 색상 (기본: AppColors.black800, 다크: AppColors.green800)
   Color get _effectiveActiveTrackColor {
-    return activeTrackColor ?? AppColors.black800;
+    return activeTrackColor ??
+        (isDarkMode ? AppColors.green800 : AppColors.black800);
   }
 
-  /// 헤드(Thumb) 색상 (기본: AppColors.black)
+  /// 헤드(Thumb) 색상 (기본: AppColors.black, 다크: AppColors.green)
   Color get _effectiveThumbColor {
-    return thumbColor ?? AppColors.black;
+    return thumbColor ?? (isDarkMode ? AppColors.green : AppColors.black);
   }
 
-  /// 비활성 트랙 색상 (기본: AppColors.black100)
+  /// 비활성 트랙 색상 (기본: AppColors.black100, 다크: AppColors.black800)
   Color get _effectiveInactiveTrackColor {
-    return inactiveTrackColor ?? AppColors.black100;
+    return inactiveTrackColor ??
+        (isDarkMode ? AppColors.black800 : AppColors.black100);
   }
 
-  /// 배경색 (기본: AppColors.white)
+  /// 배경색 (기본: AppColors.white, 다크: AppColors.black900)
   Color get _effectiveBackgroundColor {
-    return backgroundColor ?? AppColors.white;
+    return backgroundColor ??
+        (isDarkMode ? AppColors.black900 : AppColors.white);
   }
 
-  /// 라벨 색상 (기본: AppColors.black)
+  /// 라벨 색상 (기본: AppColors.black, 다크: AppColors.white)
   Color get _effectiveLabelColor {
-    return labelColor ?? AppColors.black;
+    return labelColor ?? (isDarkMode ? AppColors.white : AppColors.black);
   }
 
   /// 값 표시 색상 (기본: thumbColor)
@@ -225,9 +232,10 @@ class AppSlider extends StatelessWidget {
     return valueColor ?? _effectiveThumbColor;
   }
 
-  /// 최소/최대 라벨 색상 (기본: AppColors.black600)
+  /// 최소/최대 라벨 색상 (기본: AppColors.black600, 다크: AppColors.black400)
   Color get _effectiveMinMaxColor {
-    return minMaxColor ?? AppColors.black600;
+    return minMaxColor ??
+        (isDarkMode ? AppColors.black400 : AppColors.black600);
   }
 
   /// 트랙 높이 (showContainer에 따라 다름)
@@ -257,6 +265,9 @@ class AppSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(
+      '🔍 AppSlider "$label" isDarkMode: $isDarkMode, bg: $_effectiveBackgroundColor',
+    );
     // 컨테이너 없는 최소 스타일 (지도 오버레이용 - 슬라이더만)
     if (!showContainer) {
       return SizedBox(width: width, child: _buildSlider());
@@ -269,7 +280,10 @@ class AppSlider extends StatelessWidget {
       decoration: BoxDecoration(
         color: _effectiveBackgroundColor,
         borderRadius: AppRadius.xl20, // 20px 라운드
-        border: Border.all(color: AppColors.black100, width: 1.0),
+        border: Border.all(
+          color: isDarkMode ? AppColors.black800 : AppColors.black100,
+          width: 1.0,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,33 +350,40 @@ class AppSlider extends StatelessWidget {
               TextSpan(
                 text: '$displayPrefix ',
                 style: AppTextStyles.paragraph_14_100.copyWith(
-                  color: AppColors.black800,
+                  color: isDarkMode ? AppColors.black200 : AppColors.black800,
                 ),
               ),
-            // 값 부분 (label_16 + thumbColor)
+            // 값 부분 (label_16 / robberLabel + thumbColor)
             TextSpan(
               text: '${value.toInt()}$unit',
-              style: AppTextStyles.label_16.copyWith(
-                color: valueColor ?? _effectiveThumbColor,
-              ),
+              style:
+                  (isDarkMode
+                          ? AppTextStyles.robberLabel
+                          : AppTextStyles.label_16)
+                      .copyWith(color: valueColor ?? _effectiveThumbColor),
             ),
-            // 뒤 추가 텍스트 (label_16 + thumbColor)
+            // 뒤 추가 텍스트 (label_16 / robberLabel + thumbColor)
             if (displaySuffix != null)
               TextSpan(
                 text: ' $displaySuffix',
-                style: AppTextStyles.label_16.copyWith(
-                  color: valueColor ?? _effectiveThumbColor,
-                ),
+                style:
+                    (isDarkMode
+                            ? AppTextStyles.robberLabel
+                            : AppTextStyles.label_16)
+                        .copyWith(color: valueColor ?? _effectiveThumbColor),
               ),
           ],
         ),
       );
     }
 
-    // 기본 형식 (label_16 + thumbColor)
+    // 기본 형식 (label_16 / robberLabel + thumbColor)
+    final valueStyle = isDarkMode
+        ? AppTextStyles.robberLabel
+        : AppTextStyles.label_16;
     return Text(
       '${value.toInt()}$unit',
-      style: AppTextStyles.label_16.copyWith(color: _effectiveValueColor),
+      style: valueStyle.copyWith(color: _effectiveValueColor),
     );
   }
 

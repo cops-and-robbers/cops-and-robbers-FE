@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/map_styles.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../buttons/my_location_button.dart';
 import '../../services/location/device_location_service.dart';
@@ -49,6 +50,7 @@ class ZoneSettingWidget extends StatefulWidget {
     this.referenceZone,
     this.mapHeight,
     this.initialCenter,
+    this.isDarkMode = false,
   });
 
   /// 초기 반경 (미터)
@@ -102,6 +104,9 @@ class ZoneSettingWidget extends StatefulWidget {
   /// 초기 중심점 (null이면 현재 위치)
   /// Initial center (null = current location)
   final LatLng? initialCenter;
+
+  /// 다크 모드 여부 (지도 스타일, 버튼 전환)
+  final bool isDarkMode;
 
   @override
   State<ZoneSettingWidget> createState() => ZoneSettingWidgetState();
@@ -245,6 +250,8 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                   iconSize: 24,
                   focusedColor: widget.locationButtonColor ?? AppColors.blue,
                   unfocusedColor: _unfocusedLocationColor(),
+                  backgroundColor: widget.isDarkMode ? AppColors.black : null,
+                  isDarkMode: widget.isDarkMode,
                 ),
               ),
 
@@ -290,6 +297,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                 target: _currentCenter,
                 zoom: _calculateZoom(_currentRadius),
               ),
+              style: widget.isDarkMode ? MapStyles.dark : null,
               onMapCreated: (controller) {
                 _mapController = controller;
                 debugPrint('✅ ZoneSettingWidget: Google Map 생성 완료');
@@ -361,7 +369,9 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       showContainer: false,
       activeTrackColor: widget.borderColor ?? AppColors.blue800,
       thumbColor: widget.centerColor ?? AppColors.blue,
-      inactiveTrackColor: widget.inactiveTrackColor ?? AppColors.blue100,
+      inactiveTrackColor: widget.isDarkMode
+          ? AppColors.black800
+          : (widget.inactiveTrackColor ?? AppColors.blue100),
       onChanged: _onRadiusChanged,
     );
   }
@@ -391,6 +401,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       onEditingChanged: (editing) {
         setState(() => _isRadiusChipEditing = editing);
       },
+      isDarkMode: widget.isDarkMode,
     );
   }
 

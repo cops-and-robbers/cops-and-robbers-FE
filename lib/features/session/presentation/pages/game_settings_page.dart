@@ -183,7 +183,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
         elevation: 0,
         leading: PreviousButton(
           onPressed: () => context.pop(),
-          color: isDark ? AppColors.black400 : AppColors.black800,
+          color: isDark ? AppColors.black200 : AppColors.black800,
         ),
         centerTitle: true,
         title: Text(
