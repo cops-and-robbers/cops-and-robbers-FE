@@ -173,11 +173,20 @@ class _GamePageState extends ConsumerState<GamePage> {
   /// 게임 중 설정에서 위치 권한을 끄고 돌아온 경우,
   /// 위치 스트림을 중단하고 권한 요청 다이얼로그를 표시합니다.
   Future<void> _checkLocationPermissionOnResume() async {
-    // 이미 권한 미허용 상태면 중복 체크 불필요
-    if (_isLocationPermissionDenied) return;
-
     final canAccess = await LocationPermissionService.canAccessLocation();
-    if (!mounted || canAccess) return;
+    if (!mounted) return;
+
+    if (canAccess) {
+      // 권한 복구됨 → 다이얼로그 닫고 게임 재초기화
+      if (_isLocationPermissionDenied) {
+        Navigator.of(context).popUntil((route) => route is! DialogRoute);
+        _initGameConnections();
+      }
+      return;
+    }
+
+    // 이미 다이얼로그 표시 중이면 중복 방지
+    if (_isLocationPermissionDenied) return;
 
     // 위치 스트림 중단
     _locationSubscription?.cancel();
