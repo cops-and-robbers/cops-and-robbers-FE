@@ -67,7 +67,8 @@ class GamePage extends ConsumerStatefulWidget {
   ConsumerState<GamePage> createState() => _GamePageState();
 }
 
-class _GamePageState extends ConsumerState<GamePage> {
+class _GamePageState extends ConsumerState<GamePage>
+    with WidgetsBindingObserver {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
@@ -102,9 +103,17 @@ class _GamePageState extends ConsumerState<GamePage> {
   void initState() {
     super.initState();
     if (widget.isDummy) _dummyStartTime = DateTime.now();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _ensureLocationAndInit();
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkLocationPermissionOnResume();
+    }
   }
 
   /// 위치 권한 확인 후 게임 초기화
@@ -195,6 +204,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _locationSubscription?.cancel();
     _headingSubscription?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
@@ -748,10 +758,9 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    // resumed 복귀 시 위치 권한 재확인 + 게임 종료 여부 확인
+    // resumed 복귀 시 게임 종료 여부 확인
     ref.listen(lifecycleStateProvider, (_, next) {
       if (next.valueOrNull == AppLifecycleState.resumed) {
-        _checkLocationPermissionOnResume();
         _checkGameStatusOnResume();
         _reconnectSocketsIfNeeded();
       }
