@@ -15,6 +15,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
+import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -131,23 +132,16 @@ class _GamePageState extends ConsumerState<GamePage> {
     final serviceEnabled = await LocationPermissionService.isServiceEnabled();
     if (!mounted) return;
 
-    final String title;
-    final String message;
-    if (!serviceEnabled) {
-      title = '위치 서비스가 꺼져 있습니다';
-      message = '게임에 복귀하려면 위치 서비스를 켜주세요.\n'
-          '위치 정보는 게임 참가자에게만 공유됩니다.';
-    } else {
-      title = '위치 권한이 필요합니다';
-      message = '게임에 복귀하려면 위치 권한을 허용해주세요.\n'
-          '위치 정보는 게임 참가자에게만 공유되며,\n'
-          '게임 종료 시 즉시 중단됩니다.';
-    }
+    final text = await LocationPermissionMessages.getText(
+      isServiceDisabled: !serviceEnabled,
+      context: LocationPermissionContext.game,
+    );
+    if (!mounted) return;
 
     AppDialog.show(
       context: context,
-      title: title,
-      message: message,
+      title: text.title,
+      message: text.message,
       confirmText: '설정으로 이동',
       cancelText: '나가기',
       barrierDismissible: false,
@@ -157,7 +151,6 @@ class _GamePageState extends ConsumerState<GamePage> {
         } else {
           await LocationPermissionService.openAppSettings();
         }
-        // 설정에서 돌아오면 재확인
         if (mounted) await _ensureLocationAndInit();
       },
       onCancel: () {

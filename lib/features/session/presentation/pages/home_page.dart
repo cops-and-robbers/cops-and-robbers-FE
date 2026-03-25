@@ -8,9 +8,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:geolocator/geolocator.dart';
-
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -132,29 +131,23 @@ class HomePage extends ConsumerWidget {
     final serviceEnabled = await LocationPermissionService.isServiceEnabled();
     if (!context.mounted) return;
 
-    final String title;
-    final String message;
-    if (!serviceEnabled) {
-      title = '위치 서비스가 꺼져 있습니다';
-      message =
-          '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다.\n기기 설정에서 위치 서비스를 켜주세요.';
-    } else {
-      title = '위치 권한 안내';
-      message =
-          '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다.\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다.';
-    }
+    final text = await LocationPermissionMessages.getText(
+      isServiceDisabled: !serviceEnabled,
+      context: LocationPermissionContext.home,
+    );
+    if (!context.mounted) return;
 
     AppDialog.show(
       context: context,
-      title: title,
-      message: message,
+      title: text.title,
+      message: text.message,
       confirmText: '설정으로 이동',
       cancelText: '취소',
       onConfirm: () async {
         if (!serviceEnabled) {
-          await Geolocator.openLocationSettings();
+          await LocationPermissionService.openLocationSettings();
         } else {
-          await Geolocator.openAppSettings();
+          await LocationPermissionService.openAppSettings();
         }
       },
     );

@@ -16,6 +16,7 @@ import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/theme/role_theme_provider.dart';
+import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../router/route_paths.dart';
 import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
@@ -123,23 +124,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final serviceEnabled = await LocationPermissionService.isServiceEnabled();
     if (!mounted) return;
 
-    final String title;
-    final String message;
-    if (!serviceEnabled) {
-      title = '위치 서비스가 꺼져 있습니다';
-      message = '게임 참가를 위해 위치 서비스를 켜주세요.\n'
-          '위치 정보는 게임 참가자에게만 공유됩니다.';
-    } else {
-      title = '위치 권한이 필요합니다';
-      message = '게임 참가를 위해 위치 권한을 허용해주세요.\n'
-          '위치 정보는 게임 참가자에게만 공유되며,\n'
-          '게임 종료 시 즉시 중단됩니다.';
-    }
+    final text = await LocationPermissionMessages.getText(
+      isServiceDisabled: !serviceEnabled,
+      context: LocationPermissionContext.waitingRoom,
+    );
+    if (!mounted) return;
 
     AppDialog.show(
       context: context,
-      title: title,
-      message: message,
+      title: text.title,
+      message: text.message,
       confirmText: '설정으로 이동',
       cancelText: '나가기',
       barrierDismissible: false,
