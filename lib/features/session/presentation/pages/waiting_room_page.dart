@@ -130,6 +130,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     );
     if (!mounted) return;
 
+    final isDark = ref.read(roleThemeProvider);
+
     AppDialog.show(
       context: context,
       title: text.title,
@@ -137,6 +139,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       confirmText: '설정으로 이동',
       cancelText: '나가기',
       barrierDismissible: false,
+      isDarkMode: isDark,
       onConfirm: () async {
         if (!serviceEnabled) {
           await LocationPermissionService.openLocationSettings();

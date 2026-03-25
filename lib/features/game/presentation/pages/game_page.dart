@@ -154,6 +154,7 @@ class _GamePageState extends ConsumerState<GamePage>
       message: text.message,
       confirmText: '설정으로 이동',
       barrierDismissible: false,
+      isDarkMode: _isDarkMode,
       onConfirm: () async {
         if (!serviceEnabled) {
           await LocationPermissionService.openLocationSettings();
