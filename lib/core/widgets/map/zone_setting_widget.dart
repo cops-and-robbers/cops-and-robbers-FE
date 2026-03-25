@@ -117,6 +117,9 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   bool _isProgrammaticMove = false;
   bool _isRadiusChipEditing = false;
 
+  /// InfoRadiusChip 기본 높이 (40.h)
+  double get _effectiveChipHeight => 40.h;
+
   // Fallback 위치 (어린이대공원)
   static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
 
@@ -246,11 +249,13 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
               ),
 
               // Info card (편집 중: 우측 상단 / 기본: 우측 하단)
+              // mapHeight 기준으로 top 값을 계산 (AnimatedPositioned는 null↔값 전환 시 보간 불가)
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeInOut,
-                top: _isRadiusChipEditing ? 16.h : null,
-                bottom: _isRadiusChipEditing ? null : 16.h,
+                top: _isRadiusChipEditing
+                    ? 16.h
+                    : (widget.mapHeight ?? 360.h) - 16.h - (_effectiveChipHeight),
                 right: 20.w,
                 child: _buildRadiusIndicator(),
               ),

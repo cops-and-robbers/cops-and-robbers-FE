@@ -173,7 +173,7 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
     });
   }
 
-  /// 입력값 디바운싱 (500ms 후 부모에 반영)
+  /// 입력값 디바운싱 (100ms 후 부모에 반영)
   void _onTextChanged(String text) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 100), () {
@@ -182,15 +182,17 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
   }
 
   /// 현재 입력값을 클램핑 후 부모에 반영
+  ///
+  /// 빈 입력이거나 파싱 실패 시 minValue로 클램핑합니다.
   void _applyCurrentInput() {
     final inputText = _textController.text.trim();
-    final parsed = double.tryParse(inputText);
-    if (parsed != null && widget.onValueChanged != null) {
-      final min = widget.minValue ?? 0;
-      final max = widget.maxValue ?? double.infinity;
-      final clamped = parsed.clamp(min, max);
-      widget.onValueChanged!(clamped);
-    }
+    if (inputText.isEmpty || widget.onValueChanged == null) return;
+
+    final min = widget.minValue ?? 0;
+    final max = widget.maxValue ?? double.infinity;
+    final parsed = double.tryParse(inputText) ?? min;
+    final clamped = parsed.clamp(min, max);
+    widget.onValueChanged!(clamped);
   }
 
   /// value 문자열에서 미터 값을 추출
@@ -205,9 +207,6 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
   }
 
   /// 입력값 제출 및 편집 모드 종료
-  ///
-  /// [fromSubmit]이 true이면 키보드 done 키에서 호출된 것이므로
-  /// 포커스 해제 후 콜백이 중복 호출되지 않도록 가드합니다.
   void _completeEditing() {
     if (!_isEditing) return; // 중복 호출 방지
 
@@ -275,19 +274,24 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
 
   /// 편집 모드 TextField (동일한 스타일, 투명 배경)
   Widget _buildTextField() {
+    // maxValue 자릿수 기반 maxLength 계산 (예: 1000 → 4자리)
+    final maxDigits = (widget.maxValue ?? 9999).toInt().toString().length;
+
     return SizedBox(
-      width: 50.w,
+      width: 56.w,
       child: TextField(
         controller: _textController,
         focusNode: _focusNode,
         keyboardType: const TextInputType.numberWithOptions(decimal: false),
         textAlign: TextAlign.right,
+        maxLength: maxDigits,
         style: AppTextStyles.label_16.copyWith(color: _effectiveValueColor),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         decoration: const InputDecoration(
           isDense: true,
           contentPadding: EdgeInsets.zero,
           border: InputBorder.none,
+          counterText: '',
         ),
         onChanged: _onTextChanged,
         onSubmitted: (_) => _completeEditing(),

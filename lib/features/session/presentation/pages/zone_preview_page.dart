@@ -182,7 +182,6 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
                       ..._playgroundZone.toMapOverlay(),
                       ..._jailZone.toMapOverlay(),
                     },
-                    markers: const {},
                     gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
                       Factory<PanGestureRecognizer>(
                         () => PanGestureRecognizer(),

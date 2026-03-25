@@ -377,10 +377,23 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.gameSettingsZonePreviewName,
                 pageBuilder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>?;
-                  final pgLat = extra?['playgroundLat'] as double? ?? 0;
-                  final pgLng = extra?['playgroundLng'] as double? ?? 0;
-                  final jLat = extra?['jailLat'] as double? ?? 0;
-                  final jLng = extra?['jailLng'] as double? ?? 0;
+                  final pgLat = extra?['playgroundLat'] as double?;
+                  final pgLng = extra?['playgroundLng'] as double?;
+                  final jLat = extra?['jailLat'] as double?;
+                  final jLng = extra?['jailLng'] as double?;
+
+                  // 필수 좌표가 없으면 빈 페이지 (비정상 접근 방어)
+                  if (pgLat == null ||
+                      pgLng == null ||
+                      jLat == null ||
+                      jLng == null) {
+                    return buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const Scaffold(body: SizedBox.shrink()),
+                      isForward: true,
+                    );
+                  }
+
                   return buildDirectionalSlide(
                     key: state.pageKey,
                     child: ZonePreviewPage(
