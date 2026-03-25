@@ -16,6 +16,7 @@ import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/theme/role_theme_provider.dart';
+import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../router/route_paths.dart';
 import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
     show StompConnectionState;
@@ -78,6 +79,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 더미 모드 여부
   bool get _isDummyMode => int.tryParse(widget.sessionId) == null;
 
+  /// 위치 권한 미허용 상태
+  bool _isLocationPermissionDenied = false;
+
   /// 더미 모드에서 "나"의 participantId
   static const _dummyMyId = 3;
 
@@ -93,16 +97,81 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _inviteCode = widget.inviteCode;
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
-      final team = ref.read(gameParticipantNotifierProvider)?.team;
-      ref.read(roleThemeProvider.notifier).setDarkMode(team == 'ROBBER');
-
-      // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
-      _pendingInviteDialog = widget.showInviteDialog && _inviteCode != null;
-
-      _listenLobbyEvents();
-      _connectLobby();
+      _ensureLocationAndInit();
     });
+  }
+
+  /// 위치 권한 확인 후 대기방 초기화
+  ///
+  /// 위치 권한이 없으면 권한 요청 다이얼로그를 표시하고,
+  /// 허용될 때까지 로비 연결을 보류합니다.
+  Future<void> _ensureLocationAndInit() async {
+    final canAccess = await LocationPermissionService.canAccessLocation();
+    if (!mounted) return;
+
+    if (canAccess) {
+      _initWaitingRoom();
+      return;
+    }
+
+    setState(() => _isLocationPermissionDenied = true);
+    await _showLocationPermissionDialog();
+  }
+
+  /// 위치 권한 요청 다이얼로그
+  Future<void> _showLocationPermissionDialog() async {
+    final serviceEnabled = await LocationPermissionService.isServiceEnabled();
+    if (!mounted) return;
+
+    final String title;
+    final String message;
+    if (!serviceEnabled) {
+      title = '위치 서비스가 꺼져 있습니다';
+      message = '게임 참가를 위해 위치 서비스를 켜주세요.\n'
+          '위치 정보는 게임 참가자에게만 공유됩니다.';
+    } else {
+      title = '위치 권한이 필요합니다';
+      message = '게임 참가를 위해 위치 권한을 허용해주세요.\n'
+          '위치 정보는 게임 참가자에게만 공유되며,\n'
+          '게임 종료 시 즉시 중단됩니다.';
+    }
+
+    AppDialog.show(
+      context: context,
+      title: title,
+      message: message,
+      confirmText: '설정으로 이동',
+      cancelText: '나가기',
+      barrierDismissible: false,
+      onConfirm: () async {
+        if (!serviceEnabled) {
+          await LocationPermissionService.openLocationSettings();
+        } else {
+          await LocationPermissionService.openAppSettings();
+        }
+        if (mounted) await _ensureLocationAndInit();
+      },
+      onCancel: () {
+        if (mounted) context.go(RoutePaths.home);
+      },
+    );
+  }
+
+  /// 대기방 초기화 (위치 권한 확보 후 실행)
+  void _initWaitingRoom() {
+    if (_isLocationPermissionDenied) {
+      setState(() => _isLocationPermissionDenied = false);
+    }
+
+    // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
+    final team = ref.read(gameParticipantNotifierProvider)?.team;
+    ref.read(roleThemeProvider.notifier).setDarkMode(team == 'ROBBER');
+
+    // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
+    _pendingInviteDialog = widget.showInviteDialog && _inviteCode != null;
+
+    _listenLobbyEvents();
+    _connectLobby();
   }
 
   @override
@@ -711,6 +780,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     final policeMembers = participantsState.byTeam('POLICE');
     final robberMembers = participantsState.byTeam('ROBBER');
+
+    // 위치 권한 미허용 → 다이얼로그가 표시되는 동안 빈 화면
+    if (_isLocationPermissionDenied) {
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.black900 : AppColors.white,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.black900 : AppColors.white,
