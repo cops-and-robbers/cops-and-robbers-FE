@@ -9,7 +9,6 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
-import '../../../../core/widgets/chips/info_radius_chip.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
 
 /// 구역 읽기전용 프리뷰 페이지
@@ -93,14 +92,6 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
     _ => 13.0,
   };
 
-  /// 반경을 표시 문자열로 변환
-  String _formatRadius(double radius) {
-    if (radius >= 1000) {
-      return '${(radius / 1000).toStringAsFixed(2)}km';
-    }
-    return '${radius.toInt()}m';
-  }
-
   /// 플레이그라운드 중심으로 카메라 이동
   Future<void> _moveToPlaygroundCenter() async {
     _isProgrammaticMove = true;
@@ -131,6 +122,7 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
         leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
       ),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             SizedBox(height: AppSpacing.vertical20),
@@ -151,9 +143,8 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
 
             SizedBox(height: AppSpacing.vertical20),
 
-            // 지도 영역
-            SizedBox(
-              height: 360.h,
+            // 지도 영역 (남은 공간 전체)
+            Expanded(
               child: Stack(
                 children: [
                   // Google Map
@@ -196,10 +187,10 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
                     compassEnabled: false,
                   ),
 
-                  // 구역 중심 버튼 (좌측 하단)
+                  // 구역 중심 버튼 (우측 하단)
                   Positioned(
-                    bottom: 16.h,
-                    left: 20.w,
+                    bottom: 80.h,
+                    right: 40.w,
                     child: MyLocationButton(
                       onPressed: _moveToPlaygroundCenter,
                       isFocused: _isCentered,
@@ -209,33 +200,9 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
                       unfocusedColor: AppColors.blue500,
                     ),
                   ),
-
-                  // 플레이그라운드 반경 칩 (우측, 감옥 칩 위)
-                  Positioned(
-                    bottom: 16.h + 40.h + 8.h, // MyLocationButton 위에 간격 8px
-                    right: 20.w,
-                    child: InfoRadiusChip(
-                      prefix: '구역',
-                      value: _formatRadius(widget.playgroundRadius),
-                      backgroundColor: AppColors.blue,
-                    ),
-                  ),
-
-                  // 감옥 반경 칩 (우측 하단)
-                  Positioned(
-                    bottom: 16.h,
-                    right: 20.w,
-                    child: InfoRadiusChip(
-                      prefix: '감옥',
-                      value: _formatRadius(widget.jailRadius),
-                      backgroundColor: AppColors.red,
-                    ),
-                  ),
                 ],
               ),
             ),
-
-            SizedBox(height: AppSpacing.vertical20),
           ],
         ),
       ),
