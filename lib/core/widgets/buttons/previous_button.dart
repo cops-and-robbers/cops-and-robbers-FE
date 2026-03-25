@@ -14,13 +14,21 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// )
 /// ```
 class PreviousButton extends StatelessWidget {
-  const PreviousButton({super.key, required this.onPressed, this.size = 24});
+  const PreviousButton({
+    super.key,
+    required this.onPressed,
+    this.size = 24,
+    this.color,
+  });
 
   /// 버튼 클릭 시 실행될 콜백
   final VoidCallback onPressed;
 
   /// 아이콘 크기 (기본값: 24)
   final double size;
+
+  /// 아이콘 색상 (null이면 SVG 원본 색상 사용)
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +37,9 @@ class PreviousButton extends StatelessWidget {
         'assets/icons/icon_previous.svg',
         width: size,
         height: size,
+        colorFilter: color != null
+            ? ColorFilter.mode(color!, BlendMode.srcIn)
+            : null,
       ),
       onPressed: onPressed,
     );

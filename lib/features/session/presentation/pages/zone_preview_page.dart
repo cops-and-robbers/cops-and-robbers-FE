@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
@@ -15,7 +17,7 @@ import '../../../../core/widgets/map/models/circle_zone_shape.dart';
 ///
 /// 플레이그라운드와 감옥 구역을 지도 위에 동시에 표시합니다.
 /// 비방장 참가자가 현재 설정된 구역을 확인하는 용도입니다.
-class ZonePreviewPage extends StatefulWidget {
+class ZonePreviewPage extends ConsumerStatefulWidget {
   const ZonePreviewPage({
     super.key,
     required this.playgroundCenter,
@@ -37,10 +39,10 @@ class ZonePreviewPage extends StatefulWidget {
   final double jailRadius;
 
   @override
-  State<ZonePreviewPage> createState() => _ZonePreviewPageState();
+  ConsumerState<ZonePreviewPage> createState() => _ZonePreviewPageState();
 }
 
-class _ZonePreviewPageState extends State<ZonePreviewPage> {
+class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
   GoogleMapController? _mapController;
   bool _isCentered = true;
   bool _isProgrammaticMove = true;
@@ -108,18 +110,24 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = ref.watch(roleThemeProvider);
+    final bgColor = isDark ? AppColors.black900 : AppColors.white;
+    final textColor = isDark ? AppColors.white : AppColors.black;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: Text(
-          '구역 확인',
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+          '게임 구역',
+          style: AppTextStyles.heading_20.copyWith(color: textColor),
         ),
-        backgroundColor: AppColors.white,
+        backgroundColor: bgColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.black800),
         centerTitle: true,
-        leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
+        leading: PreviousButton(
+          onPressed: () => Navigator.of(context).pop(),
+          color: isDark ? AppColors.black400 : AppColors.black800,
+        ),
       ),
       body: SafeArea(
         bottom: false,
@@ -134,9 +142,7 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '현재 설정된 게임 구역이에요',
-                  style: AppTextStyles.label16Medium.copyWith(
-                    color: AppColors.black,
-                  ),
+                  style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),
             ),
@@ -153,6 +159,7 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
                       target: widget.playgroundCenter,
                       zoom: _calculateZoom(widget.playgroundRadius),
                     ),
+                    style: isDark ? _darkMapStyle : null,
                     minMaxZoomPreference: MinMaxZoomPreference(
                       _minZoomForRadius(widget.playgroundRadius),
                       null,
@@ -189,15 +196,19 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
 
                   // 구역 중심 버튼 (우측 하단)
                   Positioned(
-                    bottom: 80.h,
-                    right: 40.w,
+                    bottom: 55.h,
+                    right: 20.w,
                     child: MyLocationButton(
                       onPressed: _moveToPlaygroundCenter,
                       isFocused: _isCentered,
-                      containerSize: 40,
-                      iconSize: 24,
-                      focusedColor: AppColors.blue,
-                      unfocusedColor: AppColors.blue500,
+                      containerSize: 56,
+                      iconSize: 32,
+                      focusedColor: isDark ? AppColors.green : AppColors.blue,
+                      unfocusedColor: isDark
+                          ? AppColors.green800
+                          : AppColors.blue500,
+                      backgroundColor: isDark ? AppColors.black : null,
+                      isDarkMode: isDark,
                     ),
                   ),
                 ],
@@ -208,4 +219,27 @@ class _ZonePreviewPageState extends State<ZonePreviewPage> {
       ),
     );
   }
+
+  /// Google Maps 다크 스타일 JSON
+  static const String _darkMapStyle = '''
+[
+  {"elementType":"geometry","stylers":[{"color":"#242424"}]},
+  {"elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+  {"elementType":"labels.text.fill","stylers":[{"color":"#9a9a9a"}]},
+  {"elementType":"labels.text.stroke","stylers":[{"color":"#242424"}]},
+  {"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#757575"}]},
+  {"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"color":"#2e2e2e"}]},
+  {"featureType":"poi","elementType":"geometry","stylers":[{"color":"#2e2e2e"}]},
+  {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#263c3f"}]},
+  {"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#4a4a4a"}]},
+  {"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#9a9a9a"}]},
+  {"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#555555"}]},
+  {"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#5a5a5a"}]},
+  {"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#6a6a6a"}]},
+  {"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#7a7a7a"}]},
+  {"featureType":"transit","elementType":"geometry","stylers":[{"color":"#354150"}]},
+  {"featureType":"water","elementType":"geometry","stylers":[{"color":"#17263c"}]},
+  {"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#506a8a"}]}
+]
+''';
 }

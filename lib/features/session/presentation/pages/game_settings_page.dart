@@ -17,6 +17,7 @@ import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../domain/entities/zone_info.dart';
+import '../../../../core/theme/role_theme_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../widgets/setting_list_card.dart';
@@ -166,21 +167,31 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
+    final isDark = ref.watch(roleThemeProvider);
 
     final settingsAsync = ref.watch(fetchGameSettingsProvider(gameId));
     final areaAsync = ref.watch(fetchGameAreaProvider(gameId));
 
+    final bgColor = isDark ? AppColors.black900 : AppColors.white;
+    final textColor = isDark ? AppColors.white : AppColors.black;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: bgColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: PreviousButton(onPressed: () => context.pop()),
+        leading: PreviousButton(
+          onPressed: () => context.pop(),
+          color: isDark ? AppColors.black400 : AppColors.black800,
+        ),
         centerTitle: true,
         title: Text(
           '게임 설정',
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+          style: AppTextStyles.heading_20.copyWith(color: textColor),
+        ),
+        iconTheme: IconThemeData(
+          color: isDark ? AppColors.white : AppColors.black800,
         ),
       ),
       body: SingleChildScrollView(
@@ -192,7 +203,8 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
               // ── 구역 섹션 ──
               areaAsync.when(
-                data: (area) => _buildZoneSection(area, isHost: isHost),
+                data: (area) =>
+                    _buildZoneSection(area, isHost: isHost, isDark: isDark),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
                   '구역 정보를 불러올 수 없습니다.',
@@ -206,8 +218,11 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
               // ── 설정 섹션 ──
               settingsAsync.when(
-                data: (settings) =>
-                    _buildSettingsSection(settings, isHost: isHost),
+                data: (settings) => _buildSettingsSection(
+                  settings,
+                  isHost: isHost,
+                  isDark: isDark,
+                ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
                   '설정 정보를 불러올 수 없습니다.',
@@ -244,7 +259,11 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   ///
   /// 호스트: 구역 탭 → 수정 페이지로 이동
   /// 비호스트: 구역 탭 → 읽기전용 프리뷰 페이지로 이동
-  Widget _buildZoneSection(GameAreaModel area, {required bool isHost}) {
+  Widget _buildZoneSection(
+    GameAreaModel area, {
+    required bool isHost,
+    required bool isDark,
+  }) {
     final zones = [
       ZoneInfo(
         id: 'playground',
@@ -263,6 +282,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
       onTap: isHost
           ? () => _navigateToEditPlayground(area)
           : () => _navigateToZonePreview(area),
+      isDarkMode: isDark,
     );
   }
 
@@ -273,6 +293,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   Widget _buildSettingsSection(
     GameSettingsResponse settings, {
     required bool isHost,
+    required bool isDark,
   }) {
     final sessionSettings = SessionSettings(
       maxPlayers: settings.maxParticipants,
@@ -284,6 +305,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     return SettingListCard(
       settings: sessionSettings,
       onTap: isHost ? () => _navigateToEditSettings(settings) : null,
+      isDarkMode: isDark,
     );
   }
 }

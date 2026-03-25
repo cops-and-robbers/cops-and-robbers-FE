@@ -26,6 +26,7 @@ class SvgIconButton extends StatelessWidget {
     this.borderRadius = 16,
     this.iconColor,
     this.backgroundColor,
+    this.isDarkMode = false,
   });
 
   /// SVG 에셋 경로
@@ -49,6 +50,9 @@ class SvgIconButton extends StatelessWidget {
   /// 컨테이너 배경색 (null이면 AppColors.white)
   final Color? backgroundColor;
 
+  /// 다크 모드 여부 (그림자 색상 전환)
+  final bool isDarkMode;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -64,7 +68,9 @@ class SvgIconButton extends StatelessWidget {
               offset: const Offset(1, 1),
               blurRadius: 8,
               spreadRadius: 0,
-              color: Colors.black.withValues(alpha: 0.1),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.2)
+                  : Colors.black.withValues(alpha: 0.2),
             ),
           ],
         ),

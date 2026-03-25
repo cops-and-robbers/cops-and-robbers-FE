@@ -27,13 +27,21 @@ import '../../domain/entities/session_settings.dart';
 /// )
 /// ```
 class SettingListCard extends StatelessWidget {
-  const SettingListCard({super.key, required this.settings, this.onTap});
+  const SettingListCard({
+    super.key,
+    required this.settings,
+    this.onTap,
+    this.isDarkMode = false,
+  });
 
   /// 게임 설정 정보
   final SessionSettings settings;
 
   /// 설정 카드 탭 콜백 (호스트 전용 — 설정 수정 페이지 이동)
   final VoidCallback? onTap;
+
+  /// 다크 모드 여부 (도둑팀)
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +50,9 @@ class SettingListCard extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: InfoCard(
         title: '설정',
-        titleStyle: AppTextStyles.label_16.copyWith(color: AppColors.black),
+        titleStyle: AppTextStyles.label_16.copyWith(
+          color: isDarkMode ? AppColors.white : AppColors.black,
+        ),
         titleTrailing: onTap != null
             ? Transform.rotate(
                 angle: math.pi,
@@ -50,29 +60,44 @@ class SettingListCard extends StatelessWidget {
                   'assets/icons/icon_previous.svg',
                   width: 16.w,
                   height: 16.w,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.black300,
+                  colorFilter: ColorFilter.mode(
+                    isDarkMode ? AppColors.black400 : AppColors.black300,
                     BlendMode.srcIn,
                   ),
                 ),
               )
             : null,
+        backgroundColor: isDarkMode ? AppColors.black900 : null,
+        borderColor: isDarkMode ? AppColors.black800 : null,
         padding: EdgeInsets.symmetric(
           vertical: AppSpacing.vertical20,
           horizontal: AppSpacing.horizontal24,
         ),
         child: Column(
           children: [
-            _SettingRow(label: '참여 인원', value: settings.maxPlayersDisplay),
+            _SettingRow(
+              label: '참여 인원',
+              value: settings.maxPlayersDisplay,
+              isDarkMode: isDarkMode,
+            ),
             SizedBox(height: AppSpacing.vertical12),
-            _SettingRow(label: '라운드 제한 시간', value: settings.roundTimeDisplay),
+            _SettingRow(
+              label: '라운드 제한 시간',
+              value: settings.roundTimeDisplay,
+              isDarkMode: isDarkMode,
+            ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
               label: '위치 공유 간격',
               value: settings.locationShareDisplay,
+              isDarkMode: isDarkMode,
             ),
             SizedBox(height: AppSpacing.vertical12),
-            _SettingRow(label: '경찰 시작 시간', value: settings.policeStartDisplay),
+            _SettingRow(
+              label: '경찰 시작 시간',
+              value: settings.policeStartDisplay,
+              isDarkMode: isDarkMode,
+            ),
           ],
         ),
       ),
@@ -82,10 +107,15 @@ class SettingListCard extends StatelessWidget {
 
 /// 설정 행 (내부 위젯)
 class _SettingRow extends StatelessWidget {
-  const _SettingRow({required this.label, required this.value});
+  const _SettingRow({
+    required this.label,
+    required this.value,
+    this.isDarkMode = false,
+  });
 
   final String label;
   final String value;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -95,13 +125,13 @@ class _SettingRow extends StatelessWidget {
         Text(
           label,
           style: AppTextStyles.paragraph_14_100.copyWith(
-            color: AppColors.black800,
+            color: isDarkMode ? AppColors.black200 : AppColors.black800,
           ),
         ),
         Text(
           value,
           style: AppTextStyles.paragraph14Semibold.copyWith(
-            color: AppColors.black,
+            color: isDarkMode ? AppColors.white : AppColors.black,
           ),
         ),
       ],
