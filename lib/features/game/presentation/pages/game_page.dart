@@ -182,10 +182,6 @@ class _GamePageState extends ConsumerState<GamePage>
   ///
   /// 게임 중 설정에서 위치 권한을 끄고 돌아온 경우,
   /// 위치 스트림을 중단하고 권한 요청 다이얼로그를 표시합니다.
-  /// 앱 포그라운드 복귀 시 위치 권한 재확인
-  ///
-  /// 게임 중 설정에서 위치 권한을 끄고 돌아온 경우,
-  /// 위치 스트림을 중단하고 권한 요청 다이얼로그를 표시합니다.
   /// 권한 허용 후에는 앱 재시작이 필요합니다.
   Future<void> _checkLocationPermissionOnResume() async {
     if (_isLocationPermissionDenied) return;

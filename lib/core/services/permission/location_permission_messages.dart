@@ -51,13 +51,6 @@ class LocationPermissionMessages {
     return LocationPermissionDialogText(title: title, message: message);
   }
 
-  /// 버튼 텍스트 반환
-  static Future<String> getButtonText(String key) async {
-    _cache ??= await _load();
-    final buttons = _cache?['buttons'] as Map<String, dynamic>?;
-    return buttons?[key] as String? ?? key;
-  }
-
   /// JSON 파일 로드
   static Future<Map<String, dynamic>> _load() async {
     try {
