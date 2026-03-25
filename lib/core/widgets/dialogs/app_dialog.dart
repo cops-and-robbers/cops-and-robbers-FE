@@ -405,7 +405,9 @@ class _AppDialogState extends State<AppDialog>
                 bottom: AppSpacing.vertical16,
               ),
               decoration: BoxDecoration(
-                color: widget.backgroundColor ?? AppColors.white,
+                color:
+                    widget.backgroundColor ??
+                    (widget.isDarkMode ? AppColors.black : AppColors.white),
                 borderRadius: AppRadius.xxlarge,
               ),
               child: Material(
@@ -433,9 +435,13 @@ class _AppDialogState extends State<AppDialog>
                           widget.title!,
                           style:
                               widget.titleStyle ??
-                              AppTextStyles.heading_20.copyWith(
-                                color: AppColors.black,
-                              ),
+                              (widget.isDarkMode
+                                  ? AppTextStyles.robberHeading.copyWith(
+                                      color: AppColors.white,
+                                    )
+                                  : AppTextStyles.heading_20.copyWith(
+                                      color: AppColors.black,
+                                    )),
                           textAlign: TextAlign.center,
                         ),
                       ),

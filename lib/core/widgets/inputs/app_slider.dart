@@ -269,9 +269,6 @@ class AppSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
-      '🔍 AppSlider "$label" isDarkMode: $isDarkMode, bg: $_effectiveBackgroundColor',
-    );
     // 컨테이너 없는 최소 스타일 (지도 오버레이용 - 슬라이더만)
     if (!showContainer) {
       return SizedBox(width: width, child: _buildSlider());
