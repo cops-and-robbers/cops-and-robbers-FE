@@ -151,6 +151,20 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     );
   }
 
+  /// 앱 포그라운드 복귀 시 위치 권한 재확인
+  ///
+  /// 대기방에서 설정으로 이동해 위치 권한을 끄고 돌아온 경우,
+  /// 권한 요청 다이얼로그를 표시합니다.
+  Future<void> _checkLocationPermissionOnResume() async {
+    if (_isLocationPermissionDenied) return;
+
+    final canAccess = await LocationPermissionService.canAccessLocation();
+    if (!mounted || canAccess) return;
+
+    setState(() => _isLocationPermissionDenied = true);
+    await _showLocationPermissionDialog();
+  }
+
   /// 대기방 초기화 (위치 권한 확보 후 실행)
   void _initWaitingRoom() {
     if (_isLocationPermissionDenied) {
@@ -183,6 +197,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      _checkLocationPermissionOnResume();
       _checkStatusOnResume();
     } else if (state == AppLifecycleState.detached) {
       // 앱 종료 시 best-effort로 퇴장 시도
