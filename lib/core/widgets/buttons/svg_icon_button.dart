@@ -69,8 +69,8 @@ class SvgIconButton extends StatelessWidget {
               blurRadius: 8,
               spreadRadius: 0,
               color: isDarkMode
-                  ? Colors.white.withValues(alpha: 0.2)
-                  : Colors.black.withValues(alpha: 0.1),
+                  ? AppColors.white.withValues(alpha: 0.2)
+                  : AppColors.black.withValues(alpha: 0.1),
             ),
           ],
         ),

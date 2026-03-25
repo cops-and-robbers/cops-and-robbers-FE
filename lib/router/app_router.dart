@@ -389,7 +389,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                       jLng == null) {
                     return buildDirectionalSlide(
                       key: state.pageKey,
-                      child: const Scaffold(body: SizedBox.shrink()),
+                      child: Scaffold(
+                        appBar: AppBar(
+                          leading: BackButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                        body: const Center(child: Text('구역 정보를 불러올 수 없습니다.')),
+                      ),
                       isForward: true,
                     );
                   }
