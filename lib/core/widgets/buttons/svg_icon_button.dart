@@ -70,7 +70,7 @@ class SvgIconButton extends StatelessWidget {
               spreadRadius: 0,
               color: isDarkMode
                   ? Colors.white.withValues(alpha: 0.2)
-                  : Colors.black.withValues(alpha: 0.2),
+                  : Colors.black.withValues(alpha: 0.1),
             ),
           ],
         ),
