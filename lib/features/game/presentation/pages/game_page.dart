@@ -138,12 +138,12 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
     if (!mounted) return;
 
+    // 게임 중에는 나갈 수 없으므로 설정 이동 버튼만 제공
     AppDialog.show(
       context: context,
       title: text.title,
       message: text.message,
       confirmText: '설정으로 이동',
-      cancelText: '나가기',
       barrierDismissible: false,
       onConfirm: () async {
         if (!serviceEnabled) {
@@ -152,9 +152,6 @@ class _GamePageState extends ConsumerState<GamePage> {
           await LocationPermissionService.openAppSettings();
         }
         if (mounted) await _ensureLocationAndInit();
-      },
-      onCancel: () {
-        if (mounted) context.go(RoutePaths.home);
       },
     );
   }

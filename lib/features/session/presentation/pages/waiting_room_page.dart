@@ -146,7 +146,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         if (mounted) await _ensureLocationAndInit();
       },
       onCancel: () {
-        if (mounted) context.go(RoutePaths.home);
+        if (mounted) _leaveRoom();
       },
     );
   }
