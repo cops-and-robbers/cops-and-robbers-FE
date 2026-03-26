@@ -34,7 +34,6 @@ import '../providers/game_event_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
-import '../widgets/game_action_modal.dart';
 import '../widgets/qr_display_dialog.dart';
 import '../widgets/qr_scanner_page.dart';
 import '../widgets/game_timer_text.dart';
@@ -991,8 +990,6 @@ class _GamePageState extends ConsumerState<GamePage>
               bottom: 157.h,
               child: Column(
                 children: [
-                  _buildQrButton(),
-                  SizedBox(height: AppSpacing.vertical8),
                   SvgIconButton(
                     assetPath: 'assets/icons/icon_map.svg',
                     onPressed: () => setState(() => _showParticipants = false),
@@ -1001,6 +998,8 @@ class _GamePageState extends ConsumerState<GamePage>
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
                   ),
+                  SizedBox(height: AppSpacing.vertical8),
+                  _buildQrButton(),
                 ],
               ),
             )
@@ -1101,41 +1100,15 @@ class _GamePageState extends ConsumerState<GamePage>
       return;
     }
 
-    // 닉네임 조회
-    final nickname = await _findRobberNickname(participantId);
-
-    if (!mounted) return;
-    FocusScope.of(context).unfocus();
-    GameActionModal.show(
-      context: context,
-      title: '해당 플레이어를 체포하셨나요?',
-      message: '',
-      confirmLabel: '네',
-      nickname: nickname,
-      onConfirm: () => ref
-          .read(gameEventNotifierProvider.notifier)
-          .arrestRobber(_gameId, participantId),
-    );
+    // QR 스캔 = 대면 확인 완료 → 즉시 체포
+    ref
+        .read(gameEventNotifierProvider.notifier)
+        .arrestRobber(_gameId, participantId);
   }
 
   /// 도둑: 자신의 QR 코드 표시
   void _showMyQrCode() {
     QrDisplayDialog.show(context: context, participantId: widget.participantId);
-  }
-
-  /// 참가자 목록에서 도둑 닉네임 조회
-  Future<String?> _findRobberNickname(int participantId) async {
-    try {
-      final participants = await ref.read(
-        fetchGameParticipantsProvider(_gameId).future,
-      );
-      return participants.robbers
-          .where((r) => r.participantId == participantId)
-          .map((r) => r.nickname)
-          .firstOrNull;
-    } catch (_) {
-      return null;
-    }
   }
 
   /// 상단 앱바 (흰색 배경, 높이 64px)
