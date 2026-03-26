@@ -16,6 +16,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- 카메라 권한 (QR 코드 스캔으로 체포) -->
+    <!-- Camera permission for QR code scanning to arrest robbers -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:label="경찰과도둑"
         android:name="${applicationName}"

@@ -45,6 +45,8 @@
 	<string>게임 중 도둑 위치를 경찰 팀에게 공유하고, 구역 이탈을 감지하기 위해 위치 정보를 사용합니다. 위치는 게임 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>게임 중 도둑 위치를 경찰 팀에게 공유하고, 구역 이탈을 감지하기 위해 위치 정보를 사용합니다. 위치는 게임 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>도둑을 체포하기 위해 QR코드를 스캔합니다.</string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>게임 초대, 게임 시작, 체포 알림 등 게임 진행에 필요한 알림을 받기 위해 사용됩니다.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
