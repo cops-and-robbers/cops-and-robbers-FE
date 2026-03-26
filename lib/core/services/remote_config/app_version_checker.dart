@@ -37,7 +37,7 @@ class AppVersionChecker {
   /// 버전 체크 실행
   ///
   /// Remote Config 값과 현재 앱 버전을 비교하여 결과를 반환한다.
-  /// Remote Config가 초기화되지 않았거나 에러 발생 시 [VersionCheckResult.upToDate]를 반환한다.
+  /// 예외 발생 시 호출자가 처리해야 한다 (SplashPage에서 catch 후 fail-open).
   static Future<VersionCheckResult> check() async {
     final config = RemoteConfigService.instance;
 

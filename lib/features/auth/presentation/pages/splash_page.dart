@@ -65,6 +65,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // Remote Config 실패 시 앱 정상 진행 (fail-open)
     }
 
+    if (!mounted) return;
+
     // auth 초기화 완료를 Riverpod future로 대기 (최대 5초)
     final AuthResultEntity? authUser;
     try {
