@@ -24,6 +24,7 @@ class QrScannerPage extends StatefulWidget {
 class _QrScannerPageState extends State<QrScannerPage> {
   final MobileScannerController _controller = MobileScannerController();
   bool _hasScanned = false;
+  bool _hasShownPermissionDialog = false;
 
   @override
   void dispose() {
@@ -88,7 +89,10 @@ class _QrScannerPageState extends State<QrScannerPage> {
               // 카메라 권한 거부 시
               if (error.errorCode == MobileScannerErrorCode.permissionDenied) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (mounted) _showPermissionDeniedDialog();
+                  if (mounted && !_hasShownPermissionDialog) {
+                    _hasShownPermissionDialog = true;
+                    _showPermissionDeniedDialog();
+                  }
                 });
               }
               return Center(
