@@ -32,7 +32,11 @@ import '../../data/models/game_area_model.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
+import '../widgets/game_action_modal.dart';
+import '../widgets/qr_display_dialog.dart';
+import '../widgets/qr_scanner_page.dart';
 import '../widgets/game_timer_text.dart';
 import '../widgets/location_reveal_countdown.dart';
 import '../widgets/google_map_view.dart';
@@ -985,13 +989,19 @@ class _GamePageState extends ConsumerState<GamePage>
             Positioned(
               right: 20.w,
               bottom: 157.h,
-              child: SvgIconButton(
-                assetPath: 'assets/icons/icon_map.svg',
-                onPressed: () => setState(() => _showParticipants = false),
-                containerSize: 48,
-                iconSize: 24,
-                iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                backgroundColor: _isDarkMode ? AppColors.black : null,
+              child: Column(
+                children: [
+                  _buildQrButton(),
+                  SizedBox(height: AppSpacing.vertical8),
+                  SvgIconButton(
+                    assetPath: 'assets/icons/icon_map.svg',
+                    onPressed: () => setState(() => _showParticipants = false),
+                    containerSize: 48,
+                    iconSize: 24,
+                    iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                    backgroundColor: _isDarkMode ? AppColors.black : null,
+                  ),
+                ],
               ),
             )
           else
@@ -1045,6 +1055,87 @@ class _GamePageState extends ConsumerState<GamePage>
         ],
       ),
     );
+  }
+
+  /// QR 버튼 (경찰: 스캔, 도둑: QR 표시)
+  Widget _buildQrButton() {
+    return SvgIconButton(
+      assetPath: widget.team == 'POLICE'
+          ? 'assets/icons/icon_qr_scan.svg'
+          : 'assets/icons/icon_qr_code.svg',
+      onPressed: widget.team == 'POLICE' ? _openQrScanner : _showMyQrCode,
+      containerSize: 48,
+      iconSize: 24,
+      iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+      backgroundColor: _isDarkMode ? AppColors.black : null,
+    );
+  }
+
+  /// 경찰: QR 스캐너를 열어 도둑을 체포
+  Future<void> _openQrScanner() async {
+    final gameEventState = ref.read(gameEventNotifierProvider);
+    final participantInfo = ref.read(gameParticipantNotifierProvider);
+
+    // 경찰 대기 시간 가드
+    if (!gameEventState.canPoliceArrest(participantInfo: participantInfo)) {
+      AppSnackbar.show(context, message: '경찰 대기 시간 중에는 도둑을 체포할 수 없습니다.');
+      return;
+    }
+
+    final participantId = await Navigator.push<int>(
+      context,
+      MaterialPageRoute(builder: (_) => const QrScannerPage()),
+    );
+    if (participantId == null || !mounted) return;
+
+    // 이미 체포된 도둑 체크
+    final arrestedIds = ref
+        .read(gameEventNotifierProvider)
+        .arrestedParticipantIds;
+    final escapedIds = ref
+        .read(gameEventNotifierProvider)
+        .escapedParticipantIds;
+    if (arrestedIds.contains(participantId) &&
+        !escapedIds.contains(participantId)) {
+      AppSnackbar.show(context, message: '이미 체포된 도둑입니다.');
+      return;
+    }
+
+    // 닉네임 조회
+    final nickname = await _findRobberNickname(participantId);
+
+    if (!mounted) return;
+    FocusScope.of(context).unfocus();
+    GameActionModal.show(
+      context: context,
+      title: '해당 플레이어를 체포하셨나요?',
+      message: '',
+      confirmLabel: '네',
+      nickname: nickname,
+      onConfirm: () => ref
+          .read(gameEventNotifierProvider.notifier)
+          .arrestRobber(_gameId, participantId),
+    );
+  }
+
+  /// 도둑: 자신의 QR 코드 표시
+  void _showMyQrCode() {
+    QrDisplayDialog.show(context: context, participantId: widget.participantId);
+  }
+
+  /// 참가자 목록에서 도둑 닉네임 조회
+  Future<String?> _findRobberNickname(int participantId) async {
+    try {
+      final participants = await ref.read(
+        fetchGameParticipantsProvider(_gameId).future,
+      );
+      return participants.robbers
+          .where((r) => r.participantId == participantId)
+          .map((r) => r.nickname)
+          .firstOrNull;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// 상단 앱바 (흰색 배경, 높이 64px)

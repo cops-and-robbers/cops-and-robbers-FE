@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../../core/constants/text_styles.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
 import '../../../session/data/models/in_game_participants_response.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
@@ -94,29 +94,10 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
   void _onRobberCardTap(LobbyParticipantInfo member) {
     if (widget.myTeam != 'POLICE') return;
 
-    // 경찰 대기 시간 중에는 체포 불가
-    // 1차: STOMP POLICE_MOVE_START 이벤트 수신 여부
-    // 2차: gameStartTime + policeWaitMinutes 시간 비교 (재연결 fallback)
     final gameEventState = ref.read(gameEventNotifierProvider);
     final participantInfo = ref.read(gameParticipantNotifierProvider);
-    final isPoliceMoving = gameEventState.isPoliceMoving;
-    final policeWaitMinutes = participantInfo?.policeWaitMinutes;
 
-    // 시간 기반 판단: gameStartTime + policeWaitMinutes < now
-    final gameStartTimeStr = participantInfo?.gameStartTime;
-    final gameStartTime =
-        gameEventState.gameStartTime ??
-        (gameStartTimeStr != null ? DateTime.tryParse(gameStartTimeStr) : null);
-    final isWaitTimeOver =
-        policeWaitMinutes != null &&
-        gameStartTime != null &&
-        !DateTime.now().isBefore(
-          gameStartTime.add(Duration(minutes: policeWaitMinutes)),
-        );
-
-    final canArrest =
-        isPoliceMoving || isWaitTimeOver || policeWaitMinutes == 0;
-    if (!canArrest) {
+    if (!gameEventState.canPoliceArrest(participantInfo: participantInfo)) {
       AppSnackbar.show(context, message: '경찰 대기 시간 중에는 도둑을 체포할 수 없습니다.');
       return;
     }
@@ -132,8 +113,6 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     );
     if (participant?.status == 'JAILED') return;
 
-    // 모달 닫힘 시 채팅 입력 TextField로 포커스가 복원되어
-    // 채팅 시트가 올라오는 현상 방지
     FocusScope.of(context).unfocus();
     GameActionModal.show(
       context: context,
