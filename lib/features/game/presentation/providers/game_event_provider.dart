@@ -13,6 +13,7 @@ import '../../data/datasources/game_system_api_datasource.dart';
 import '../../data/models/arrest_request_model.dart';
 import '../../data/models/game_area_model.dart';
 import '../../data/models/game_event_model.dart';
+import '../../../session/presentation/providers/game_participant_provider.dart';
 
 export '../../data/datasources/game_event_stomp_datasource.dart'
     show StompConnectionState;
@@ -92,6 +93,27 @@ class GameEventState {
 
   /// LOCATION_REVEAL 수신 시 갱신되는 도둑 위치 목록 (participantId → 위치)
   final Map<int, LatLngModel> robberLocations;
+
+  /// 경찰이 현재 체포 가능한 상태인지 판단
+  ///
+  /// STOMP `POLICE_MOVE_START` 수신 여부, 게임 시작 시각 + 경찰 대기 시간 비교,
+  /// 대기 시간 0분인 경우를 종합적으로 판단한다.
+  bool canPoliceArrest({required GameParticipantInfo? participantInfo}) {
+    if (isPoliceMoving) return true;
+    final policeWaitMinutes = participantInfo?.policeWaitMinutes;
+    if (policeWaitMinutes == 0) return true;
+
+    final gameStartTimeStr = participantInfo?.gameStartTime;
+    final effectiveStartTime =
+        gameStartTime ??
+        (gameStartTimeStr != null ? DateTime.tryParse(gameStartTimeStr) : null);
+
+    return policeWaitMinutes != null &&
+        effectiveStartTime != null &&
+        !DateTime.now().isBefore(
+          effectiveStartTime.add(Duration(minutes: policeWaitMinutes)),
+        );
+  }
 
   const GameEventState({
     this.connectionState = StompConnectionState.disconnected,
