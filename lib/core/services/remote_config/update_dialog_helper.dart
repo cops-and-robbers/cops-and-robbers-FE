@@ -13,6 +13,7 @@ import 'app_version_checker.dart';
 /// - [VersionCheckResult.maintenance]: 점검 페이지로 이동 (앱 차단)
 /// - [VersionCheckResult.forceUpdate]: 강제 업데이트 페이지로 이동 (앱 차단)
 /// - [VersionCheckResult.optionalUpdate]: 선택 업데이트 다이얼로그 표시
+/// - [VersionCheckResult.recommendUpdate]: 권고 업데이트 다이얼로그 표시
 class UpdateDialogHelper {
   UpdateDialogHelper._();
 
@@ -38,10 +39,29 @@ class UpdateDialogHelper {
       case VersionCheckResult.optionalUpdate:
         await _showOptionalUpdateDialog(context);
         return true;
+
+      case VersionCheckResult.recommendUpdate:
+        await _showRecommendUpdateDialog(context);
+        return true;
     }
   }
 
-  /// 선택 업데이트 다이얼로그 ("나중에" 가능)
+  /// 권고 업데이트 다이얼로그 (최신 버전 안내, "나중에" 가능)
+  static Future<void> _showRecommendUpdateDialog(BuildContext context) {
+    return AppDialog.show(
+      context: context,
+      title: '새 버전 안내',
+      message: '더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?',
+      confirmText: '업데이트',
+      cancelText: '나중에',
+      barrierDismissible: true,
+      onConfirm: () {
+        launchExternalUrl(AppConfig.storeUrl);
+      },
+    );
+  }
+
+  /// 선택 업데이트 다이얼로그 (minimum_version 미만, "나중에" 가능)
   static Future<void> _showOptionalUpdateDialog(BuildContext context) {
     return AppDialog.show(
       context: context,

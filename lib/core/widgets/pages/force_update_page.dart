@@ -33,8 +33,8 @@ class ForceUpdatePage extends StatelessWidget {
                     children: [
                       Image.asset(
                         'assets/app_icon_512.png',
-                        width: 120.w,
-                        height: 120.w,
+                        width: 223.w,
+                        height: 260.w,
                       ),
                       SizedBox(height: AppSpacing.vertical24),
                       Text(
@@ -44,10 +44,10 @@ class ForceUpdatePage extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: AppSpacing.vertical8),
+                      SizedBox(height: AppSpacing.vertical16),
                       Text(
-                        '새로운 버전이 출시되었어요.\n업데이트 후 이용해 주세요.',
-                        style: AppTextStyles.paragraph_14.copyWith(
+                        '새로운 버전이 출시되었어요\n업데이트 후 이용해 주세요!',
+                        style: AppTextStyles.subHeading_18.copyWith(
                           color: AppColors.black600,
                         ),
                         textAlign: TextAlign.center,

@@ -12,6 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 /// - `latest_version` (String): 최신 버전 (권고 업데이트용)
 /// - `force_update` (bool): 강제 업데이트 여부
 /// - `maintenance` (bool): 서버 점검 모드
+/// - `maintenance_message` (String): 점검 안내 메시지 (시간 등)
 class RemoteConfigService {
   RemoteConfigService._();
 
@@ -47,6 +48,7 @@ class RemoteConfigService {
       'latest_version': '1.0.0',
       'force_update': false,
       'maintenance': false,
+      'maintenance_message': '',
     });
 
     // 서버에서 최신 값 가져오기
@@ -71,6 +73,7 @@ class RemoteConfigService {
       debugPrint('   latest_version:  $latestVersion');
       debugPrint('   force_update:    $forceUpdate');
       debugPrint('   maintenance:     $maintenance');
+      debugPrint('   maintenance_msg: $maintenanceMessage');
       debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     }
   }
@@ -86,4 +89,8 @@ class RemoteConfigService {
 
   /// 서버 점검 모드 여부
   bool get maintenance => _remoteConfig.getBool('maintenance');
+
+  /// 점검 안내 메시지 (시간 등, 빈 문자열이면 기본 메시지 사용)
+  String get maintenanceMessage =>
+      _remoteConfig.getString('maintenance_message');
 }

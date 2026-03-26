@@ -11,8 +11,11 @@ enum VersionCheckResult {
   /// 강제 업데이트 필요 (앱 사용 차단)
   forceUpdate,
 
-  /// 선택 업데이트 가능 (사용자가 "나중에" 선택 가능)
+  /// 선택 업데이트 가능 — minimum_version 미만 (사용자가 "나중에" 선택 가능)
   optionalUpdate,
+
+  /// 권고 업데이트 — latest_version 미만 (최신은 아니지만 사용 가능)
+  recommendUpdate,
 
   /// 최신 버전 (업데이트 불필요)
   upToDate,
@@ -26,7 +29,8 @@ enum VersionCheckResult {
 /// 체크 순서:
 /// 1. maintenance == true → [VersionCheckResult.maintenance]
 /// 2. 현재 버전 < minimum_version → force_update에 따라 forceUpdate 또는 optionalUpdate
-/// 3. 그 외 → [VersionCheckResult.upToDate]
+/// 3. 현재 버전 < latest_version → [VersionCheckResult.recommendUpdate]
+/// 4. 그 외 → [VersionCheckResult.upToDate]
 class AppVersionChecker {
   AppVersionChecker._();
 
@@ -52,6 +56,12 @@ class AppVersionChecker {
       return config.forceUpdate
           ? VersionCheckResult.forceUpdate
           : VersionCheckResult.optionalUpdate;
+    }
+
+    // 4. 권고 업데이트 체크 (최신 버전보다 낮은 경우)
+    final latestVersion = config.latestVersion;
+    if (_isVersionLower(currentVersion, latestVersion)) {
+      return VersionCheckResult.recommendUpdate;
     }
 
     return VersionCheckResult.upToDate;
