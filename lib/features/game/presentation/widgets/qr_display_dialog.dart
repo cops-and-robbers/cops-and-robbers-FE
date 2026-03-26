@@ -41,7 +41,10 @@ class QrDisplayDialog extends StatelessWidget {
       backgroundColor: AppColors.black,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.xxlarge),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.horizontal24,
+          vertical: AppSpacing.vertical28,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

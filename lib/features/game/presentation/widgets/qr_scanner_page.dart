@@ -128,7 +128,10 @@ class _QrScannerPageState extends State<QrScannerPage> {
           // 닫기 버튼 (좌상단)
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.only(left: 16.w, top: 16.h),
+              padding: EdgeInsets.only(
+                left: AppSpacing.horizontal16,
+                top: AppSpacing.vertical16,
+              ),
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: Icon(Icons.close, color: AppColors.white, size: 28.w),
