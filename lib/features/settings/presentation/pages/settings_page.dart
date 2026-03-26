@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/errors/app_exception.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -208,6 +210,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 textColor: AppColors.black600,
                 onTap: () => _showDeleteAccountDialog(),
               ),
+
+              // ── 앱 버전 ──
+              SizedBox(height: AppSpacing.vertical32),
+              Center(
+                child: FutureBuilder<PackageInfo>(
+                  future: PackageInfo.fromPlatform(),
+                  builder: (context, snapshot) {
+                    final version = snapshot.data?.version ?? '';
+                    return Text(
+                      'v$version',
+                      style: AppTextStyles.paragraph14Semibold.copyWith(
+                        color: AppColors.black300,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: AppSpacing.vertical24),
             ],
           ),
         ),

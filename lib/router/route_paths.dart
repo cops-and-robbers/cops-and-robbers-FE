@@ -104,6 +104,16 @@ class RoutePaths {
   // 사용자가 게임 맥락을 유지한 상태에서 결과를 확인할 수 있도록 합니다.
 
   // ============================================================================
+  // System Status Routes (점검/업데이트)
+  // ============================================================================
+
+  /// 서버 점검 중 페이지
+  static const String maintenance = '/maintenance';
+
+  /// 강제 업데이트 페이지
+  static const String forceUpdate = '/force-update';
+
+  // ============================================================================
   // Developer Tools (개발/테스트용)
   // ============================================================================
 
@@ -155,5 +165,7 @@ class RoutePaths {
   static const String gameSettingsPlaygroundName = 'gameSettingsPlayground';
   static const String gameSettingsPrisonName = 'gameSettingsPrison';
   static const String gameSettingsZonePreviewName = 'gameSettingsZonePreview';
+  static const String maintenanceName = 'maintenance';
+  static const String forceUpdateName = 'forceUpdate';
   static const String lifecycleTestName = 'lifecycleTest';
 }
