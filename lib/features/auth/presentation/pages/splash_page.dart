@@ -10,6 +10,9 @@ import '../../../../router/route_paths.dart';
 import '../../domain/entities/auth_result_entity.dart';
 import '../providers/auth_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
+import '../../../../core/services/remote_config/remote_config_service.dart';
+import '../../../../core/services/remote_config/app_version_checker.dart';
+import '../../../../core/services/remote_config/update_dialog_helper.dart';
 
 /// 앱 시작 시 초기 화면
 ///
@@ -41,6 +44,26 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   Future<void> _navigateToNextScreen() async {
     final startTime = DateTime.now();
     const minDelay = Duration(seconds: 2);
+
+    // ================================================================
+    // Remote Config: 점검 모드 및 앱 버전 체크
+    // ================================================================
+    try {
+      await RemoteConfigService.instance.initialize();
+      final versionResult = await AppVersionChecker.check();
+
+      if (!mounted) return;
+
+      final canProceed = await UpdateDialogHelper.handleResult(
+        context,
+        versionResult,
+      );
+
+      if (!mounted || !canProceed) return; // 점검/강제 업데이트 → 앱 차단
+    } catch (e) {
+      debugPrint('⚠️ SplashPage: Remote Config 체크 실패, 앱 진행: $e');
+      // Remote Config 실패 시 앱 정상 진행 (fail-open)
+    }
 
     // auth 초기화 완료를 Riverpod future로 대기 (최대 5초)
     final AuthResultEntity? authUser;
