@@ -31,6 +31,8 @@ import '../features/game/presentation/pages/game_page.dart';
 import '../features/notice/presentation/pages/notices_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
+import '../core/widgets/pages/maintenance_page.dart';
+import '../core/widgets/pages/force_update_page.dart';
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
 ///
@@ -112,6 +114,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         final publicPaths = [
           RoutePaths.splash,
           RoutePaths.login,
+          RoutePaths.maintenance,
+          RoutePaths.forceUpdate,
           if (kDebugMode) RoutePaths.lifecycleTest,
         ];
 
@@ -443,6 +447,23 @@ final routerProvider = Provider<GoRouter>((ref) {
             isDummy: isDummy,
           );
         },
+      ),
+
+      // ====================================================================
+      // System Status Routes (인증 불필요)
+      // ====================================================================
+      GoRoute(
+        path: RoutePaths.maintenance,
+        name: RoutePaths.maintenanceName,
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const MaintenancePage()),
+      ),
+
+      GoRoute(
+        path: RoutePaths.forceUpdate,
+        name: RoutePaths.forceUpdateName,
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const ForceUpdatePage()),
       ),
 
       // ====================================================================

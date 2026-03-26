@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 1.3.12+145
+version: 1.3.14+147
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -53,6 +53,7 @@ dependencies:
   geolocator: ^14.0.2 # 위치 권한 및 실시간 위치 조회
   # 알림 & 실시간 통신
   firebase_core: ^4.1.0
+  firebase_remote_config: ^6.3.0 # 앱 버전 관리 및 점검 모드 (Remote Config)
   firebase_messaging: ^16.0.1 # 푸시 알림(Firebase Cloud Messaging)
   firebase_crashlytics: ^5.0.6 # 에러 리포팅 및 크래시 수집
   flutter_local_notifications: ^19.4.2 # 로컬 알림 생성 및 관리
