@@ -5,7 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_provider.dart';
+import 'chat_context_menu.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
 
@@ -65,7 +67,13 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       setState(() {
         _isExpanded = expanded;
       });
-      if (!expanded) {
+      if (expanded) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(_currentPage);
+          }
+        });
+      } else {
         FocusScope.of(context).unfocus();
       }
     }
@@ -86,6 +94,22 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         curve: Curves.easeOut,
       );
     }
+  }
+
+  void _handleMessageLongPress(
+    ChatMessageDto message,
+    BuildContext bubbleContext,
+    bool isMe,
+  ) {
+    ChatContextMenu.show(
+      context: bubbleContext,
+      message: message,
+      isMe: isMe,
+      isDarkMode: widget.isDarkMode,
+      onBlock: (participantId) {
+        ref.read(chatNotifierProvider.notifier).blockUser(participantId);
+      },
+    );
   }
 
   @override
@@ -180,12 +204,20 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                       myParticipantId: widget.myParticipantId,
                                       myTeam: widget.myTeam,
                                       isDarkMode: widget.isDarkMode,
+                                      onMessageLongPress:
+                                          _handleMessageLongPress,
+                                      blockedParticipantIds:
+                                          chatState.blockedParticipantIds,
                                     ),
                                     ChatMessageList(
                                       messages: chatState.teamScopeMessages,
                                       myParticipantId: widget.myParticipantId,
                                       myTeam: widget.myTeam,
                                       isDarkMode: widget.isDarkMode,
+                                      onMessageLongPress:
+                                          _handleMessageLongPress,
+                                      blockedParticipantIds:
+                                          chatState.blockedParticipantIds,
                                     ),
                                   ],
                                 ),
