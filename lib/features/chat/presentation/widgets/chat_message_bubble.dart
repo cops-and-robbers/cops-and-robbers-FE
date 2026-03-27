@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/content_filter/profanity_filter.dart';
 import '../../data/models/chat_message_dto.dart';
 
 /// 채팅 메시지 버블 위젯
@@ -43,6 +44,8 @@ class ChatMessageBubble extends StatelessWidget {
       message.sender.participantId == 0;
 
   String get _formattedTime => message.formattedTimeKst;
+
+  String get _filteredMessage => ProfanityFilter.filter(message.message);
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +141,7 @@ class ChatMessageBubble extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  message.message,
+                  _filteredMessage,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: isDarkMode ? AppColors.white : AppColors.black900,
                   ),
@@ -183,7 +186,7 @@ class ChatMessageBubble extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  message.message,
+                  _filteredMessage,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: isDarkMode ? AppColors.white : AppColors.black900,
                   ),
