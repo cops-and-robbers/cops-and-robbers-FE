@@ -58,7 +58,7 @@ class ChatContextMenu extends StatefulWidget {
     return showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.transparent,
+      barrierColor: AppColors.white.withValues(alpha: 0),
       transitionDuration: Duration.zero,
       pageBuilder: (dialogContext, _, _) => ChatContextMenu._(
         message: message,
@@ -188,7 +188,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     final screenSize = MediaQuery.of(context).size;
 
     return Material(
-      color: Colors.transparent,
+      color: AppColors.white.withValues(alpha: 0),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -196,7 +196,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
           GestureDetector(
             onTap: _dismiss,
             child: Container(
-              color: Colors.black.withValues(alpha: 0.4),
+              color: AppColors.black.withValues(alpha: 0.4),
             ),
           ),
 
@@ -369,7 +369,7 @@ class _ReportCategoryMenu extends StatelessWidget {
           return GestureDetector(
             onTap: () => onCategorySelected(category),
             child: Container(
-              color: Colors.transparent,
+              color: AppColors.white.withValues(alpha: 0),
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               child: Text(
                 category.label,
@@ -398,13 +398,6 @@ class _MenuContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16.r),
@@ -439,7 +432,7 @@ class _MenuItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        color: Colors.transparent,
+        color: AppColors.white.withValues(alpha: 0),
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         child: Row(
           mainAxisSize: MainAxisSize.min,
