@@ -21,17 +21,17 @@ import '../../domain/constants/report_categories.dart';
 class ChatContextMenu extends StatefulWidget {
   const ChatContextMenu._({
     required this.message,
-    required this.messageWidget,
     required this.isMe,
-    required this.messageRect,
+    required this.messageTop,
     required this.onBlock,
     required this.callerContext,
   });
 
   final ChatMessageDto message;
-  final Widget messageWidget;
   final bool isMe;
-  final Rect messageRect;
+
+  /// 롱프레스된 메시지 버블의 화면 상단으로부터의 y좌표
+  final double messageTop;
   final void Function(int participantId) onBlock;
 
   /// dismiss 후에도 유효한 호출자 context (Snackbar/Dialog 표시용)
@@ -40,21 +40,18 @@ class ChatContextMenu extends StatefulWidget {
   /// 채팅 메시지 롱프레스 컨텍스트 메뉴를 표시합니다.
   ///
   /// [message] 대상 채팅 메시지 DTO
-  /// [messageWidget] 오버레이 위에 표시할 메시지 버블 위젯
   /// [isMe] 내 메시지 여부 (true면 복사하기만 표시)
   /// [onBlock] 차단 콜백 — `participantId`를 전달합니다
   static Future<void> show({
     required BuildContext context,
     required ChatMessageDto message,
-    required Widget messageWidget,
     required bool isMe,
     required void Function(int participantId) onBlock,
   }) {
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return Future.value();
 
-    final offset = renderBox.localToGlobal(Offset.zero);
-    final messageRect = offset & renderBox.size;
+    final globalOffset = renderBox.localToGlobal(Offset.zero);
 
     return showGeneralDialog(
       context: context,
@@ -63,9 +60,8 @@ class ChatContextMenu extends StatefulWidget {
       transitionDuration: Duration.zero,
       pageBuilder: (dialogContext, _, _) => ChatContextMenu._(
         message: message,
-        messageWidget: messageWidget,
         isMe: isMe,
-        messageRect: messageRect,
+        messageTop: globalOffset.dy,
         onBlock: onBlock,
         callerContext: context,
       ),
@@ -151,22 +147,13 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
-    final margin = 16.w;
 
-    // 메뉴 왼쪽 위치: 메시지 좌측 정렬, 화면 밖으로 나가지 않게 clamp
-    final menuLeft = widget.messageRect.left.clamp(
-      margin,
-      screenSize.width - 204.w - margin,
-    );
-
-    // 메뉴 bottom = 메시지 위쪽 AppSpacing.vertical8 간격
-    // bottom은 화면 하단으로부터의 거리
+    // 메뉴 bottom: 메시지 상단으로부터 AppSpacing.vertical8 위
     final menuBottom =
-        screenSize.height - widget.messageRect.top + AppSpacing.vertical8;
+        screenSize.height - widget.messageTop + AppSpacing.vertical8;
 
-    // 메뉴 최대 높이: 메시지 위 공간 - 상단 마진
-    final maxMenuHeight =
-        widget.messageRect.top - AppSpacing.vertical8 - 16.h;
+    // 메뉴 최대 높이: 화면 상단 여백 확보
+    final maxMenuHeight = widget.messageTop - AppSpacing.vertical8 - 16.h;
 
     return Material(
       color: AppColors.white.withValues(alpha: 0),
@@ -180,21 +167,14 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             ),
           ),
 
-          // 원래 위치에 메시지 버블 표시
+          // 메뉴 (좌우 마진 24, bottom 기준으로 위로 확장)
           Positioned(
-            left: widget.messageRect.left,
-            top: widget.messageRect.top,
-            width: widget.messageRect.width,
-            height: widget.messageRect.height,
-            child: widget.messageWidget,
-          ),
-
-          // 메뉴 (bottom 기준으로 위로 자연스럽게 확장)
-          Positioned(
-            left: menuLeft,
+            left: 24.w,
             bottom: menuBottom,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: maxMenuHeight),
+              constraints: BoxConstraints(
+                maxHeight: maxMenuHeight > 0 ? maxMenuHeight : 200.h,
+              ),
               child: _mode == _MenuMode.actions
                   ? _ActionMenu(
                       isMe: widget.isMe,
