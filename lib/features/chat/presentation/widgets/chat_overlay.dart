@@ -65,7 +65,13 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       setState(() {
         _isExpanded = expanded;
       });
-      if (!expanded) {
+      if (expanded) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(_currentPage);
+          }
+        });
+      } else {
         FocusScope.of(context).unfocus();
       }
     }
