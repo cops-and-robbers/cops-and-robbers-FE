@@ -9,7 +9,6 @@ import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_provider.dart';
 import 'chat_context_menu.dart';
 import 'chat_input_bar.dart';
-import 'chat_message_bubble.dart';
 import 'chat_message_list.dart';
 
 /// 채팅 오버레이 위젯
@@ -105,14 +104,6 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     ChatContextMenu.show(
       context: bubbleContext,
       message: message,
-      messageWidget: ChatMessageBubble(
-        message: message,
-        isMe: isMe,
-        myTeam: widget.myTeam,
-        showNickname: false,
-        showTime: false,
-        isDarkMode: widget.isDarkMode,
-      ),
       isMe: isMe,
       onBlock: (participantId) {
         ref.read(chatNotifierProvider.notifier).blockUser(participantId);
@@ -212,16 +203,20 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                       myParticipantId: widget.myParticipantId,
                                       myTeam: widget.myTeam,
                                       isDarkMode: widget.isDarkMode,
-                                      onMessageLongPress: _handleMessageLongPress,
-                                      blockedParticipantIds: chatState.blockedParticipantIds,
+                                      onMessageLongPress:
+                                          _handleMessageLongPress,
+                                      blockedParticipantIds:
+                                          chatState.blockedParticipantIds,
                                     ),
                                     ChatMessageList(
                                       messages: chatState.teamScopeMessages,
                                       myParticipantId: widget.myParticipantId,
                                       myTeam: widget.myTeam,
                                       isDarkMode: widget.isDarkMode,
-                                      onMessageLongPress: _handleMessageLongPress,
-                                      blockedParticipantIds: chatState.blockedParticipantIds,
+                                      onMessageLongPress:
+                                          _handleMessageLongPress,
+                                      blockedParticipantIds:
+                                          chatState.blockedParticipantIds,
                                     ),
                                   ],
                                 ),

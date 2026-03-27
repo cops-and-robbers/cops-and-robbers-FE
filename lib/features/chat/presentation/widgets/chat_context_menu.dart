@@ -21,7 +21,6 @@ import '../../domain/constants/report_categories.dart';
 class ChatContextMenu extends StatefulWidget {
   const ChatContextMenu._({
     required this.message,
-    required this.messageWidget,
     required this.isMe,
     required this.messageRect,
     required this.onBlock,
@@ -29,7 +28,6 @@ class ChatContextMenu extends StatefulWidget {
   });
 
   final ChatMessageDto message;
-  final Widget messageWidget;
   final bool isMe;
   final Rect messageRect;
   final void Function(int participantId) onBlock;
@@ -40,13 +38,11 @@ class ChatContextMenu extends StatefulWidget {
   /// 채팅 메시지 롱프레스 컨텍스트 메뉴를 표시합니다.
   ///
   /// [message] 대상 채팅 메시지 DTO
-  /// [messageWidget] 오버레이 위에 그대로 표시할 메시지 위젯
   /// [isMe] 내 메시지 여부 (true면 복사하기만 표시)
   /// [onBlock] 차단 콜백 — `participantId`를 전달합니다
   static Future<void> show({
     required BuildContext context,
     required ChatMessageDto message,
-    required Widget messageWidget,
     required bool isMe,
     required void Function(int participantId) onBlock,
   }) {
@@ -63,7 +59,6 @@ class ChatContextMenu extends StatefulWidget {
       transitionDuration: Duration.zero,
       pageBuilder: (dialogContext, _, _) => ChatContextMenu._(
         message: message,
-        messageWidget: messageWidget,
         isMe: isMe,
         messageRect: messageRect,
         onBlock: onBlock,
@@ -170,7 +165,8 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     if (left < marginW) left = marginW;
 
     // 항상 메시지 위에 배치 (AppSpacing.vertical8 간격)
-    double top = widget.messageRect.top - menuSize.height - AppSpacing.vertical8;
+    double top =
+        widget.messageRect.top - menuSize.height - AppSpacing.vertical8;
 
     // 위쪽 여백 보장
     if (top < marginH) top = marginH;
@@ -190,18 +186,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
           // 어두운 배경 오버레이
           GestureDetector(
             onTap: _dismiss,
-            child: Container(
-              color: AppColors.black.withValues(alpha: 0.4),
-            ),
-          ),
-
-          // 원래 위치에 메시지 위젯 표시
-          Positioned(
-            left: widget.messageRect.left,
-            top: widget.messageRect.top,
-            width: widget.messageRect.width,
-            height: widget.messageRect.height,
-            child: widget.messageWidget,
+            child: Container(color: AppColors.black.withValues(alpha: 0.4)),
           ),
 
           // 메뉴 컨테이너 (크기 측정 후 위치 결정)
@@ -216,9 +201,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
                     onReport: _onReportTap,
                     onBlock: _onBlockWithSnackbar,
                   )
-                : _ReportCategoryMenu(
-                    onCategorySelected: _onCategorySelected,
-                  ),
+                : _ReportCategoryMenu(onCategorySelected: _onCategorySelected),
           ),
         ],
       ),
@@ -253,8 +236,7 @@ class _MenuPositionerState extends State<_MenuPositioner> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final renderBox =
-          _key.currentContext?.findRenderObject() as RenderBox?;
+      final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox != null) {
         setState(() => _menuSize = renderBox.size);
       }
@@ -270,10 +252,7 @@ class _MenuPositionerState extends State<_MenuPositioner> {
       return Positioned(
         left: -9999,
         top: -9999,
-        child: Container(
-          key: _key,
-          child: widget.child,
-        ),
+        child: Container(key: _key, child: widget.child),
       );
     }
 
@@ -285,10 +264,7 @@ class _MenuPositionerState extends State<_MenuPositioner> {
     return Positioned(
       left: position.dx,
       top: position.dy,
-      child: Container(
-        key: _key,
-        child: widget.child,
-      ),
+      child: Container(key: _key, child: widget.child),
     );
   }
 }
@@ -357,7 +333,9 @@ class _ReportCategoryMenu extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
           child: Text(
             '신고 유형 선택',
-            style: AppTextStyles.label_16,
+            style: AppTextStyles.paragraph14Semibold.copyWith(
+              color: AppColors.black,
+            ),
           ),
         ),
         ...List.generate(categories.length * 2 - 1, (index) {
