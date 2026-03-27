@@ -120,20 +120,23 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: AppPadding.horizontal24,
+          padding: AppPadding.horizontal20,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: AppSpacing.vertical20),
 
               // 라벨
-              Text(
-                widget.label,
-                style: AppTextStyles.label_16.copyWith(
-                  color: isDark ? AppColors.white : AppColors.black,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w),
+                child: Text(
+                  widget.label,
+                  style: AppTextStyles.label_16.copyWith(
+                    color: isDark ? AppColors.white : AppColors.black,
+                  ),
                 ),
               ),
-              SizedBox(height: AppSpacing.vertical12),
+              SizedBox(height: AppSpacing.vertical16),
 
               // 입력 필드 (Expanded로 남은 공간 차지, 스크롤 가능)
               Expanded(
