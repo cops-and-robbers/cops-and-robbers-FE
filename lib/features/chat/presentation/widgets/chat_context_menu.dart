@@ -21,6 +21,7 @@ import '../../domain/constants/report_categories.dart';
 class ChatContextMenu extends StatefulWidget {
   const ChatContextMenu._({
     required this.message,
+    required this.messageWidget,
     required this.isMe,
     required this.messageRect,
     required this.onBlock,
@@ -28,6 +29,7 @@ class ChatContextMenu extends StatefulWidget {
   });
 
   final ChatMessageDto message;
+  final Widget messageWidget;
   final bool isMe;
   final Rect messageRect;
   final void Function(int participantId) onBlock;
@@ -38,11 +40,13 @@ class ChatContextMenu extends StatefulWidget {
   /// 채팅 메시지 롱프레스 컨텍스트 메뉴를 표시합니다.
   ///
   /// [message] 대상 채팅 메시지 DTO
+  /// [messageWidget] 오버레이 위에 표시할 메시지 버블 위젯
   /// [isMe] 내 메시지 여부 (true면 복사하기만 표시)
   /// [onBlock] 차단 콜백 — `participantId`를 전달합니다
   static Future<void> show({
     required BuildContext context,
     required ChatMessageDto message,
+    required Widget messageWidget,
     required bool isMe,
     required void Function(int participantId) onBlock,
   }) {
@@ -59,6 +63,7 @@ class ChatContextMenu extends StatefulWidget {
       transitionDuration: Duration.zero,
       pageBuilder: (dialogContext, _, _) => ChatContextMenu._(
         message: message,
+        messageWidget: messageWidget,
         isMe: isMe,
         messageRect: messageRect,
         onBlock: onBlock,
@@ -187,6 +192,15 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
           GestureDetector(
             onTap: _dismiss,
             child: Container(color: AppColors.black.withValues(alpha: 0.4)),
+          ),
+
+          // 원래 위치에 메시지 버블 표시
+          Positioned(
+            left: widget.messageRect.left,
+            top: widget.messageRect.top,
+            width: widget.messageRect.width,
+            height: widget.messageRect.height,
+            child: widget.messageWidget,
           ),
 
           // 메뉴 컨테이너 (크기 측정 후 위치 결정)
@@ -445,4 +459,3 @@ class _MenuDivider extends StatelessWidget {
     );
   }
 }
-
