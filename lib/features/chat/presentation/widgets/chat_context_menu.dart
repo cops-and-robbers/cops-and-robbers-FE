@@ -115,7 +115,8 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       confirmText: '신고하기',
       isDestructive: true,
       isDarkMode: isDark,
-      cancelTextColor: isDark ? AppColors.white : null,
+      cancelTextColor: isDark ? AppColors.black400 : AppColors.black600,
+      confirmTextColor: isDark ? AppColors.white : null,
       customContent: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
