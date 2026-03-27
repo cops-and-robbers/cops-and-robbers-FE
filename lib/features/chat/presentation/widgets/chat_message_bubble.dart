@@ -132,8 +132,10 @@ class ChatMessageBubble extends StatelessWidget {
                       : null,
                   child: Container(
                     constraints: BoxConstraints(maxWidth: 240.w),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 8.h,
+                    ),
                     decoration: BoxDecoration(
                       color: isDarkMode ? AppColors.black : AppColors.white,
                       borderRadius: BorderRadius.only(
@@ -146,7 +148,9 @@ class ChatMessageBubble extends StatelessWidget {
                     child: Text(
                       _filteredMessage,
                       style: AppTextStyles.paragraph_14.copyWith(
-                        color: isDarkMode ? AppColors.white : AppColors.black900,
+                        color: isDarkMode
+                            ? AppColors.white
+                            : AppColors.black900,
                       ),
                     ),
                   ),
@@ -185,8 +189,10 @@ class ChatMessageBubble extends StatelessWidget {
                       : null,
                   child: Container(
                     constraints: BoxConstraints(maxWidth: 240.w),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 8.h,
+                    ),
                     decoration: BoxDecoration(
                       color: isDarkMode ? AppColors.black : AppColors.white,
                       borderRadius: BorderRadius.only(
@@ -199,7 +205,9 @@ class ChatMessageBubble extends StatelessWidget {
                     child: Text(
                       _filteredMessage,
                       style: AppTextStyles.paragraph_14.copyWith(
-                        color: isDarkMode ? AppColors.white : AppColors.black900,
+                        color: isDarkMode
+                            ? AppColors.white
+                            : AppColors.black900,
                       ),
                     ),
                   ),

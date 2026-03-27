@@ -364,7 +364,7 @@ class _ReportCategoryMenu extends StatelessWidget {
     return _MenuContainer(
       children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 4.h),
           child: Text(
             '신고 유형 선택',
             style: AppTextStyles.paragraph14Semibold.copyWith(

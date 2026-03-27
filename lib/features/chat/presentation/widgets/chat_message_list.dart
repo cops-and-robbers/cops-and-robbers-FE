@@ -34,7 +34,8 @@ class ChatMessageList extends StatefulWidget {
   final VoidCallback? onOverscrollDown;
 
   /// 메시지 롱프레스 콜백 (메시지, BuildContext, isMe 전달)
-  final void Function(ChatMessageDto message, BuildContext context, bool isMe)? onMessageLongPress;
+  final void Function(ChatMessageDto message, BuildContext context, bool isMe)?
+  onMessageLongPress;
 
   /// 차단된 유저 ID 목록 (해당 유저 메시지 숨김)
   final Set<int> blockedParticipantIds;
@@ -101,9 +102,11 @@ class _ChatMessageListState extends State<ChatMessageList> {
     final filteredMessages = widget.blockedParticipantIds.isEmpty
         ? widget.messages
         : widget.messages
-              .where((m) => !widget.blockedParticipantIds.contains(
-                    m.sender.participantId,
-                  ))
+              .where(
+                (m) => !widget.blockedParticipantIds.contains(
+                  m.sender.participantId,
+                ),
+              )
               .toList();
 
     if (filteredMessages.isEmpty) {
@@ -165,10 +168,10 @@ class _ChatMessageListState extends State<ChatMessageList> {
                 isDarkMode: widget.isDarkMode,
                 onLongPress: widget.onMessageLongPress != null
                     ? (bubbleContext) => widget.onMessageLongPress!(
-                          message,
-                          bubbleContext,
-                          isMe,
-                        )
+                        message,
+                        bubbleContext,
+                        isMe,
+                      )
                     : null,
               ),
             ],
