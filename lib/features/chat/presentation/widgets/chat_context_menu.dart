@@ -8,6 +8,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/content_filter/profanity_filter.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../../domain/constants/report_categories.dart';
@@ -108,6 +109,32 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 
     final isDark = widget.isDarkMode;
 
+    // 기타(직접 작성): 신고 작성 페이지로 이동
+    if (category == ReportCategory.other) {
+      Navigator.of(widget.callerContext).push(
+        MaterialPageRoute<void>(
+          builder: (_) => TextSubmitPage(
+            title: '신고하기',
+            label: '신고 내용',
+            hintText: '신고 사유를 자세히 작성해 주세요\n(상황 또는 대화 내용을 포함해 주세요)',
+            submitText: '신고하기',
+            isDestructive: true,
+            isDarkMode: isDark,
+            onSubmit: (text) {
+              // TODO: 신고 API 호출 (category: other, content: text)
+              Navigator.of(widget.callerContext).pop();
+              AppSnackbar.show(
+                widget.callerContext,
+                message: '신고가 접수되었어요',
+              );
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
+    // 나머지 카테고리: 확인 다이얼로그
     AppDialog.show(
       context: widget.callerContext,
       title: '해당 유저를 신고할까요?',
