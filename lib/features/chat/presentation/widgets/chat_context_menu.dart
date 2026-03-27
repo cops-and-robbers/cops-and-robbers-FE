@@ -148,50 +148,36 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     );
   }
 
-  /// 메뉴 컨테이너를 화면에 배치할 위치를 계산합니다.
-  ///
-  /// 항상 메시지 위쪽에 AppSpacing.vertical8 간격으로 배치합니다.
-  /// 화면 경계에서 16.w / 16.h 마진을 보장합니다.
-  Offset _calculateMenuPosition({
-    required Size menuSize,
-    required Size screenSize,
-  }) {
-    final marginW = 16.w;
-    final marginH = 16.h;
-
-    // 메시지 왼쪽 가장자리에 정렬
-    double left = widget.messageRect.left;
-
-    // 메뉴가 오른쪽 화면 밖으로 나가면 클램프
-    if (left + menuSize.width > screenSize.width - marginW) {
-      left = screenSize.width - marginW - menuSize.width;
-    }
-    // 왼쪽 여백 보장
-    if (left < marginW) left = marginW;
-
-    // 항상 메시지 위에 배치 (AppSpacing.vertical8 간격)
-    double top =
-        widget.messageRect.top - menuSize.height - AppSpacing.vertical8;
-
-    // 위쪽 여백 보장
-    if (top < marginH) top = marginH;
-
-    return Offset(left, top);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.sizeOf(context);
+    final margin = 16.w;
+
+    // 메뉴 왼쪽 위치: 메시지 좌측 정렬, 화면 밖으로 나가지 않게 clamp
+    final menuLeft = widget.messageRect.left.clamp(
+      margin,
+      screenSize.width - 204.w - margin,
+    );
+
+    // 메뉴 bottom = 메시지 위쪽 AppSpacing.vertical8 간격
+    // bottom은 화면 하단으로부터의 거리
+    final menuBottom =
+        screenSize.height - widget.messageRect.top + AppSpacing.vertical8;
+
+    // 메뉴 최대 높이: 메시지 위 공간 - 상단 마진
+    final maxMenuHeight =
+        widget.messageRect.top - AppSpacing.vertical8 - 16.h;
 
     return Material(
       color: AppColors.white.withValues(alpha: 0),
       child: Stack(
-        fit: StackFit.expand,
         children: [
           // 어두운 배경 오버레이
-          GestureDetector(
-            onTap: _dismiss,
-            child: Container(color: AppColors.black.withValues(alpha: 0.4)),
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _dismiss,
+              child: Container(color: AppColors.black.withValues(alpha: 0.4)),
+            ),
           ),
 
           // 원래 위치에 메시지 버블 표시
@@ -203,82 +189,26 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             child: widget.messageWidget,
           ),
 
-          // 메뉴 컨테이너 (크기 측정 후 위치 결정)
-          _MenuPositioner(
-            key: ValueKey(_mode),
-            screenSize: screenSize,
-            calculatePosition: _calculateMenuPosition,
-            child: _mode == _MenuMode.actions
-                ? _ActionMenu(
-                    isMe: widget.isMe,
-                    onCopy: _onCopy,
-                    onReport: _onReportTap,
-                    onBlock: _onBlockWithSnackbar,
-                  )
-                : _ReportCategoryMenu(onCategorySelected: _onCategorySelected),
+          // 메뉴 (bottom 기준으로 위로 자연스럽게 확장)
+          Positioned(
+            left: menuLeft,
+            bottom: menuBottom,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: maxMenuHeight),
+              child: _mode == _MenuMode.actions
+                  ? _ActionMenu(
+                      isMe: widget.isMe,
+                      onCopy: _onCopy,
+                      onReport: _onReportTap,
+                      onBlock: _onBlockWithSnackbar,
+                    )
+                  : _ReportCategoryMenu(
+                      onCategorySelected: _onCategorySelected,
+                    ),
+            ),
           ),
         ],
       ),
-    );
-  }
-}
-
-/// 메뉴 위젯의 크기를 측정한 뒤 올바른 위치에 배치하는 헬퍼 위젯
-class _MenuPositioner extends StatefulWidget {
-  const _MenuPositioner({
-    super.key,
-    required this.screenSize,
-    required this.calculatePosition,
-    required this.child,
-  });
-
-  final Size screenSize;
-  final Offset Function({required Size menuSize, required Size screenSize})
-  calculatePosition;
-  final Widget child;
-
-  @override
-  State<_MenuPositioner> createState() => _MenuPositionerState();
-}
-
-class _MenuPositionerState extends State<_MenuPositioner> {
-  Size? _menuSize;
-  final _key = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
-      if (renderBox != null) {
-        setState(() => _menuSize = renderBox.size);
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final menuSize = _menuSize;
-
-    if (menuSize == null) {
-      // 첫 프레임: 화면 밖에 숨겨서 크기 측정
-      return Positioned(
-        left: -9999,
-        top: -9999,
-        child: Container(key: _key, child: widget.child),
-      );
-    }
-
-    final position = widget.calculatePosition(
-      menuSize: menuSize,
-      screenSize: widget.screenSize,
-    );
-
-    return Positioned(
-      left: position.dx,
-      top: position.dy,
-      child: Container(key: _key, child: widget.child),
     );
   }
 }
@@ -390,10 +320,12 @@ class _MenuContainer extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: children,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          ),
         ),
       ),
     );
