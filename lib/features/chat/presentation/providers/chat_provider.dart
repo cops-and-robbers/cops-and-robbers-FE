@@ -36,12 +36,14 @@ class ChatState {
 
   final StompConnectionState connectionState;
   final String? errorMessage;
+  final Set<int> blockedParticipantIds;
 
   const ChatState({
     this.allScopeMessages = const [],
     this.teamScopeMessages = const [],
     this.connectionState = StompConnectionState.disconnected,
     this.errorMessage,
+    this.blockedParticipantIds = const {},
   });
 
   ChatState copyWith({
@@ -49,6 +51,7 @@ class ChatState {
     List<ChatMessageDto>? teamScopeMessages,
     StompConnectionState? connectionState,
     Object? errorMessage = _sentinel,
+    Set<int>? blockedParticipantIds,
   }) {
     return ChatState(
       allScopeMessages: allScopeMessages ?? this.allScopeMessages,
@@ -57,6 +60,8 @@ class ChatState {
       errorMessage: errorMessage == _sentinel
           ? this.errorMessage
           : errorMessage as String?,
+      blockedParticipantIds:
+          blockedParticipantIds ?? this.blockedParticipantIds,
     );
   }
 }
@@ -257,6 +262,15 @@ class ChatNotifier extends _$ChatNotifier {
         ? updated.sublist(updated.length - _maxMessages)
         : updated;
     state = state.copyWith(allScopeMessages: trimmed);
+  }
+
+  /// 유저 차단 (현재 게임 세션 동안만 유지)
+  ///
+  /// 차단된 유저의 메시지는 ChatMessageList에서 필터링됩니다.
+  void blockUser(int participantId) {
+    state = state.copyWith(
+      blockedParticipantIds: {...state.blockedParticipantIds, participantId},
+    );
   }
 
   // ============================================
