@@ -319,7 +319,7 @@ class _ActionMenu extends StatelessWidget {
         _MenuItem(
           iconPath: 'assets/icons/icon_copy.svg',
           label: '복사하기',
-          textColor: AppColors.black900,
+          textColor: AppColors.black,
           onTap: onCopy,
         ),
         if (!isMe) ...[
@@ -335,7 +335,7 @@ class _ActionMenu extends StatelessWidget {
           _MenuItem(
             iconPath: 'assets/icons/icon_block.svg',
             label: '차단하기',
-            textColor: AppColors.black900,
+            textColor: AppColors.black,
             onTap: onBlock,
           ),
         ],
@@ -374,7 +374,7 @@ class _ReportCategoryMenu extends StatelessWidget {
               child: Text(
                 category.label,
                 style: AppTextStyles.label16Medium.copyWith(
-                  color: AppColors.black900,
+                  color: AppColors.black,
                 ),
               ),
             ),
