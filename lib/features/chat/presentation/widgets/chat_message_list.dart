@@ -18,6 +18,8 @@ class ChatMessageList extends StatefulWidget {
     required this.myTeam,
     this.isDarkMode = false,
     this.onOverscrollDown,
+    this.onMessageLongPress,
+    this.blockedParticipantIds = const {},
     super.key,
   });
 
@@ -30,6 +32,12 @@ class ChatMessageList extends StatefulWidget {
 
   /// 리스트 끝에서 아래로 overscroll 시 콜백 (바텀시트 닫기용)
   final VoidCallback? onOverscrollDown;
+
+  /// 메시지 롱프레스 콜백 (메시지, BuildContext, isMe 전달)
+  final void Function(ChatMessageDto message, BuildContext context, bool isMe)? onMessageLongPress;
+
+  /// 차단된 유저 ID 목록 (해당 유저 메시지 숨김)
+  final Set<int> blockedParticipantIds;
 
   @override
   State<ChatMessageList> createState() => _ChatMessageListState();
@@ -89,7 +97,16 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.messages.isEmpty) {
+    // 차단된 유저 메시지 필터링
+    final filteredMessages = widget.blockedParticipantIds.isEmpty
+        ? widget.messages
+        : widget.messages
+              .where((m) => !widget.blockedParticipantIds.contains(
+                    m.sender.participantId,
+                  ))
+              .toList();
+
+    if (filteredMessages.isEmpty) {
       return Center(
         child: Text(
           '채팅을 시작해보세요',
@@ -111,17 +128,17 @@ class _ChatMessageListState extends State<ChatMessageList> {
         controller: _scrollController,
         reverse: true,
         padding: EdgeInsets.symmetric(vertical: 8.h),
-        itemCount: widget.messages.length,
+        itemCount: filteredMessages.length,
         itemBuilder: (context, index) {
-          final msgIndex = widget.messages.length - 1 - index;
-          final message = widget.messages[msgIndex];
+          final msgIndex = filteredMessages.length - 1 - index;
+          final message = filteredMessages[msgIndex];
           final isMe = message.sender.participantId == widget.myParticipantId;
 
           final prevMessage = msgIndex > 0
-              ? widget.messages[msgIndex - 1]
+              ? filteredMessages[msgIndex - 1]
               : null;
-          final nextMessage = msgIndex < widget.messages.length - 1
-              ? widget.messages[msgIndex + 1]
+          final nextMessage = msgIndex < filteredMessages.length - 1
+              ? filteredMessages[msgIndex + 1]
               : null;
 
           // 그룹 첫 메시지: 닉네임 표시
@@ -139,13 +156,24 @@ class _ChatMessageListState extends State<ChatMessageList> {
           return Column(
             children: [
               if (showDateDivider) _buildDateDivider(message.kstDateTime),
-              ChatMessageBubble(
-                message: message,
-                isMe: isMe,
-                myTeam: widget.myTeam,
-                showNickname: showNickname,
-                showTime: showTime,
-                isDarkMode: widget.isDarkMode,
+              Builder(
+                builder: (bubbleContext) {
+                  return ChatMessageBubble(
+                    message: message,
+                    isMe: isMe,
+                    myTeam: widget.myTeam,
+                    showNickname: showNickname,
+                    showTime: showTime,
+                    isDarkMode: widget.isDarkMode,
+                    onLongPress: widget.onMessageLongPress != null
+                        ? () => widget.onMessageLongPress!(
+                              message,
+                              bubbleContext,
+                              isMe,
+                            )
+                        : null,
+                  );
+                },
               ),
             ],
           );

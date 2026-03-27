@@ -18,6 +18,7 @@ class ChatMessageBubble extends StatelessWidget {
     this.showNickname = true,
     this.showTime = true,
     this.isDarkMode = false,
+    this.onLongPress,
     super.key,
   });
 
@@ -34,6 +35,9 @@ class ChatMessageBubble extends StatelessWidget {
   /// 다크 모드 여부
   final bool isDarkMode;
 
+  /// 메시지 롱프레스 콜백
+  final VoidCallback? onLongPress;
+
   bool get _isSystemMessage =>
       message.sender.team.toUpperCase() == 'SYSTEM' ||
       message.sender.participantId == 0;
@@ -46,14 +50,17 @@ class ChatMessageBubble extends StatelessWidget {
       return _buildSystemMessage();
     }
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: isMe ? 16.w : 24.w,
-        right: isMe ? 24.w : 16.w,
-        top: showNickname ? 8.h : 2.h,
-        bottom: 2.h,
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: isMe ? 16.w : 24.w,
+          right: isMe ? 24.w : 16.w,
+          top: showNickname ? 8.h : 2.h,
+          bottom: 2.h,
+        ),
+        child: isMe ? _buildMyMessage() : _buildOtherMessage(),
       ),
-      child: isMe ? _buildMyMessage() : _buildOtherMessage(),
     );
   }
 
