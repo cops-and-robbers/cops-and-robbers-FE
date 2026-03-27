@@ -123,10 +123,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             onSubmit: (text) {
               // TODO: 신고 API 호출 (category: other, content: text)
               Navigator.of(widget.callerContext).pop();
-              AppSnackbar.show(
-                widget.callerContext,
-                message: '신고가 접수되었어요',
-              );
+              AppSnackbar.show(widget.callerContext, message: '신고가 접수되었어요');
             },
           ),
         ),

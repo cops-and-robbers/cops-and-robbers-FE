@@ -136,10 +136,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         onSubmit: (text) {
                           // TODO: 버그 제보 API 호출
                           Navigator.of(context).pop();
-                          AppSnackbar.show(
-                            context,
-                            message: '버그 제보가 접수되었어요',
-                          );
+                          AppSnackbar.show(context, message: '버그 제보가 접수되었어요');
                         },
                       ),
                     ),
