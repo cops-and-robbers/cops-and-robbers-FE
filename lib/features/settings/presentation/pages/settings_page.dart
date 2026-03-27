@@ -20,6 +20,7 @@ import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
+import '../../../../core/widgets/pages/text_submit_page.dart';
 import 'legal_document_page.dart';
 
 /// 설정 페이지
@@ -125,7 +126,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               _buildMenuItem(
                 text: '버그 제보',
                 onTap: () {
-                  // TODO: 버그 제보 페이지 이동
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => TextSubmitPage(
+                        title: '버그 제보',
+                        label: '버그 내용',
+                        hintText: '발생한 버그를 자세히 설명해 주세요\n(상황, 기기 정보 등을 포함해 주세요)',
+                        submitText: '제보하기',
+                        onSubmit: (text) {
+                          // TODO: 버그 제보 API 호출
+                          Navigator.of(context).pop();
+                          AppSnackbar.show(
+                            context,
+                            message: '버그 제보가 접수되었어요',
+                          );
+                        },
+                      ),
+                    ),
+                  );
                 },
               ),
 
