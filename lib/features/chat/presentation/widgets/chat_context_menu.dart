@@ -228,11 +228,15 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             child: _mode == _MenuMode.actions
                 ? _ActionMenu(
                     isMe: widget.isMe,
+                    isDarkMode: widget.isDarkMode,
                     onCopy: _onCopy,
                     onReport: _onReportTap,
                     onBlock: _onBlockWithSnackbar,
                   )
-                : _ReportCategoryMenu(onCategorySelected: _onCategorySelected),
+                : _ReportCategoryMenu(
+                    isDarkMode: widget.isDarkMode,
+                    onCategorySelected: _onCategorySelected,
+                  ),
           ),
         ],
       ),
@@ -307,12 +311,14 @@ class _MenuPositionerState extends State<_MenuPositioner> {
 class _ActionMenu extends StatelessWidget {
   const _ActionMenu({
     required this.isMe,
+    required this.isDarkMode,
     required this.onCopy,
     required this.onReport,
     required this.onBlock,
   });
 
   final bool isMe;
+  final bool isDarkMode;
   final VoidCallback onCopy;
   final VoidCallback onReport;
   final VoidCallback onBlock;
@@ -320,29 +326,33 @@ class _ActionMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _MenuContainer(
+      isDarkMode: isDarkMode,
       children: [
         _MenuItem(
           iconPath: 'assets/icons/icon_copy.svg',
           label: '복사하기',
-          textColor: AppColors.black,
-          iconColor: AppColors.black800,
+          textColor: isDarkMode ? AppColors.white : AppColors.black,
+          iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,
+          isDarkMode: isDarkMode,
           onTap: onCopy,
         ),
         if (!isMe) ...[
-          _MenuDivider(),
+          _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
             iconPath: 'assets/icons/icon_siren.svg',
             label: '신고하기',
             textColor: AppColors.red,
             iconColor: AppColors.red900,
+            isDarkMode: isDarkMode,
             onTap: onReport,
           ),
-          _MenuDivider(),
+          _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
             iconPath: 'assets/icons/icon_block.svg',
             label: '차단하기',
-            textColor: AppColors.black,
-            iconColor: AppColors.black800,
+            textColor: isDarkMode ? AppColors.white : AppColors.black,
+            iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,
+            isDarkMode: isDarkMode,
             onTap: onBlock,
           ),
         ],
@@ -353,8 +363,12 @@ class _ActionMenu extends StatelessWidget {
 
 /// 신고 카테고리 선택 메뉴
 class _ReportCategoryMenu extends StatelessWidget {
-  const _ReportCategoryMenu({required this.onCategorySelected});
+  const _ReportCategoryMenu({
+    required this.isDarkMode,
+    required this.onCategorySelected,
+  });
 
+  final bool isDarkMode;
   final void Function(ReportCategory category) onCategorySelected;
 
   @override
@@ -362,29 +376,32 @@ class _ReportCategoryMenu extends StatelessWidget {
     final categories = ReportCategory.values;
 
     return _MenuContainer(
+      isDarkMode: isDarkMode,
       children: [
         Padding(
           padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 4.h),
           child: Text(
             '신고 유형 선택',
-            style: AppTextStyles.paragraph14Semibold.copyWith(
-              color: AppColors.black,
-            ),
+            style: (isDarkMode
+                    ? AppTextStyles.robberParagraph
+                    : AppTextStyles.paragraph14Semibold)
+                .copyWith(color: isDarkMode ? AppColors.white : AppColors.black),
           ),
         ),
         ...List.generate(categories.length * 2 - 1, (index) {
-          if (index.isOdd) return _MenuDivider();
+          if (index.isOdd) return _MenuDivider(isDarkMode: isDarkMode);
           final category = categories[index ~/ 2];
           return GestureDetector(
             onTap: () => onCategorySelected(category),
             child: Container(
-              color: AppColors.white,
+              color: isDarkMode ? AppColors.black : AppColors.white,
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
               child: Text(
                 category.label,
-                style: AppTextStyles.label16Medium.copyWith(
-                  color: AppColors.black,
-                ),
+                style: (isDarkMode
+                        ? AppTextStyles.robberLabel
+                        : AppTextStyles.label16Medium)
+                    .copyWith(color: isDarkMode ? AppColors.white : AppColors.black),
               ),
             ),
           );
@@ -396,16 +413,17 @@ class _ReportCategoryMenu extends StatelessWidget {
 
 /// 메뉴 컨테이너 — 흰 배경, 라운드 코너
 class _MenuContainer extends StatelessWidget {
-  const _MenuContainer({required this.children});
+  const _MenuContainer({required this.children, this.isDarkMode = false});
 
   final List<Widget> children;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 204.w,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDarkMode ? AppColors.black : AppColors.white,
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: ClipRRect(
@@ -427,6 +445,7 @@ class _MenuItem extends StatelessWidget {
     required this.label,
     required this.textColor,
     this.iconColor,
+    this.isDarkMode = false,
     required this.onTap,
   });
 
@@ -434,6 +453,7 @@ class _MenuItem extends StatelessWidget {
   final String label;
   final Color textColor;
   final Color? iconColor;
+  final bool isDarkMode;
   final VoidCallback onTap;
 
   @override
@@ -441,7 +461,7 @@ class _MenuItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        color: AppColors.white,
+        color: isDarkMode ? AppColors.black : AppColors.white,
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -458,7 +478,10 @@ class _MenuItem extends StatelessWidget {
             SizedBox(width: 10.w),
             Text(
               label,
-              style: AppTextStyles.label_16.copyWith(color: textColor),
+              style: (isDarkMode
+                      ? AppTextStyles.robberLabel
+                      : AppTextStyles.label_16)
+                  .copyWith(color: textColor),
             ),
           ],
         ),
@@ -469,11 +492,15 @@ class _MenuItem extends StatelessWidget {
 
 /// 메뉴 구분선
 class _MenuDivider extends StatelessWidget {
+  const _MenuDivider({this.isDarkMode = false});
+
+  final bool isDarkMode;
+
   @override
   Widget build(BuildContext context) {
     return Divider(
       height: 1,
-      color: AppColors.black100,
+      color: isDarkMode ? AppColors.black800 : AppColors.black100,
       indent: 0,
       endIndent: 0,
     );
