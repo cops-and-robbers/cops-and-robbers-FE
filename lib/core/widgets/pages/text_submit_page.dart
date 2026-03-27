@@ -106,10 +106,9 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
         centerTitle: true,
         title: Text(
           widget.title,
-          style: (isDark
-                  ? AppTextStyles.robberSubHeading
-                  : AppTextStyles.subHeading_18)
-              .copyWith(color: isDark ? AppColors.white : AppColors.black),
+          style:
+              (isDark ? AppTextStyles.robberHeading : AppTextStyles.heading_20)
+                  .copyWith(color: isDark ? AppColors.white : AppColors.black),
         ),
         leading: Padding(
           padding: EdgeInsets.only(left: 4.w),
@@ -130,10 +129,9 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
               // 라벨
               Text(
                 widget.label,
-                style: (isDark
-                        ? AppTextStyles.robberLabel
-                        : AppTextStyles.label_16)
-                    .copyWith(color: isDark ? AppColors.white : AppColors.black),
+                style: AppTextStyles.label_16.copyWith(
+                  color: isDark ? AppColors.white : AppColors.black,
+                ),
               ),
               SizedBox(height: AppSpacing.vertical12),
 
@@ -155,8 +153,8 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
                     filled: true,
                     fillColor: isDark ? AppColors.black900 : AppColors.white,
                     contentPadding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.horizontal20,
-                      vertical: AppSpacing.vertical16,
+                      horizontal: AppSpacing.horizontal24,
+                      vertical: AppSpacing.vertical20,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: AppRadius.xlarge,
