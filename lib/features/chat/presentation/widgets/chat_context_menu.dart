@@ -183,10 +183,15 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 어두운 배경 오버레이
+          // 어두운 배경 오버레이 (메시지 영역만 투명하게 cutout)
           GestureDetector(
             onTap: _dismiss,
-            child: Container(color: AppColors.black.withValues(alpha: 0.4)),
+            child: CustomPaint(
+              size: screenSize,
+              painter: _OverlayCutoutPainter(
+                cutoutRect: widget.messageRect,
+              ),
+            ),
           ),
 
           // 메뉴 컨테이너 (크기 측정 후 위치 결정)
@@ -444,4 +449,25 @@ class _MenuDivider extends StatelessWidget {
       endIndent: 16.w,
     );
   }
+}
+
+/// 메시지 영역만 투명하게 뚫린 어두운 오버레이
+class _OverlayCutoutPainter extends CustomPainter {
+  const _OverlayCutoutPainter({required this.cutoutRect});
+
+  final Rect cutoutRect;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = AppColors.black.withValues(alpha: 0.4);
+    final path = Path()
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..addRect(cutoutRect)
+      ..fillType = PathFillType.evenOdd;
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _OverlayCutoutPainter oldDelegate) =>
+      oldDelegate.cutoutRect != cutoutRect;
 }
