@@ -190,12 +190,12 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
                 backgroundColor: widget.isDestructive
                     ? AppColors.red
                     : (isDark ? AppColors.green : AppColors.black),
-                foregroundColor: widget.isDestructive
-                    ? AppColors.white
-                    : (isDark ? AppColors.black : AppColors.white),
+                foregroundColor: AppColors.white,
                 borderRadius: AppRadius.xlarge,
                 showBorder: false,
-                textStyle: isDark ? AppTextStyles.robberLabel : null,
+                textStyle: isDark
+                    ? AppTextStyles.robberLabel
+                    : AppTextStyles.label_16,
               ),
               SizedBox(height: AppSpacing.vertical16),
             ],
