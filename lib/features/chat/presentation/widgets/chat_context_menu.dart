@@ -232,9 +232,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
                     onReport: _onReportTap,
                     onBlock: _onBlockWithSnackbar,
                   )
-                : _ReportCategoryMenu(
-                    onCategorySelected: _onCategorySelected,
-                  ),
+                : _ReportCategoryMenu(onCategorySelected: _onCategorySelected),
           ),
         ],
       ),
@@ -253,7 +251,7 @@ class _MenuPositioner extends StatefulWidget {
 
   final Size screenSize;
   final Offset Function({required Size menuSize, required Size screenSize})
-      calculatePosition;
+  calculatePosition;
   final Widget child;
 
   @override
@@ -269,8 +267,7 @@ class _MenuPositionerState extends State<_MenuPositioner> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final renderBox =
-          _key.currentContext?.findRenderObject() as RenderBox?;
+      final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox != null) {
         setState(() => _menuSize = renderBox.size);
       }
@@ -367,7 +364,7 @@ class _ReportCategoryMenu extends StatelessWidget {
     return _MenuContainer(
       children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
           child: Text(
             '신고 유형 선택',
             style: AppTextStyles.paragraph14Semibold.copyWith(
@@ -381,8 +378,8 @@ class _ReportCategoryMenu extends StatelessWidget {
           return GestureDetector(
             onTap: () => onCategorySelected(category),
             child: Container(
-              color: AppColors.white.withValues(alpha: 0),
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              color: AppColors.white,
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
               child: Text(
                 category.label,
                 style: AppTextStyles.label16Medium.copyWith(
@@ -444,8 +441,8 @@ class _MenuItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        color: AppColors.white.withValues(alpha: 0),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        color: AppColors.white,
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -477,8 +474,8 @@ class _MenuDivider extends StatelessWidget {
     return Divider(
       height: 1,
       color: AppColors.black100,
-      indent: 16.w,
-      endIndent: 16.w,
+      indent: 0,
+      endIndent: 0,
     );
   }
 }
