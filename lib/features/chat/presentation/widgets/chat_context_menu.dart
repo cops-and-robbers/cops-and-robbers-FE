@@ -382,10 +382,13 @@ class _ReportCategoryMenu extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 4.h),
           child: Text(
             '신고 유형 선택',
-            style: (isDarkMode
-                    ? AppTextStyles.robberParagraph
-                    : AppTextStyles.paragraph14Semibold)
-                .copyWith(color: isDarkMode ? AppColors.white : AppColors.black),
+            style:
+                (isDarkMode
+                        ? AppTextStyles.robberParagraph
+                        : AppTextStyles.paragraph14Semibold)
+                    .copyWith(
+                      color: isDarkMode ? AppColors.white : AppColors.black,
+                    ),
           ),
         ),
         ...List.generate(categories.length * 2 - 1, (index) {
@@ -398,10 +401,9 @@ class _ReportCategoryMenu extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
               child: Text(
                 category.label,
-                style: (isDarkMode
-                        ? AppTextStyles.robberLabel
-                        : AppTextStyles.label16Medium)
-                    .copyWith(color: isDarkMode ? AppColors.white : AppColors.black),
+                style: AppTextStyles.label16Medium.copyWith(
+                  color: isDarkMode ? AppColors.white : AppColors.black,
+                ),
               ),
             ),
           );
@@ -462,7 +464,7 @@ class _MenuItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         color: isDarkMode ? AppColors.black : AppColors.white,
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -475,13 +477,14 @@ class _MenuItem extends StatelessWidget {
                 BlendMode.srcIn,
               ),
             ),
-            SizedBox(width: 10.w),
+            SizedBox(width: 8.w),
             Text(
               label,
-              style: (isDarkMode
-                      ? AppTextStyles.robberLabel
-                      : AppTextStyles.label_16)
-                  .copyWith(color: textColor),
+              style:
+                  (isDarkMode
+                          ? AppTextStyles.robberLabel
+                          : AppTextStyles.label_16)
+                      .copyWith(color: textColor),
             ),
           ],
         ),
