@@ -154,8 +154,9 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
                           color: AppColors.black400,
                         ),
                         filled: true,
-                        fillColor:
-                            isDark ? AppColors.black900 : AppColors.white,
+                        fillColor: isDark
+                            ? AppColors.black900
+                            : AppColors.white,
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: AppSpacing.horizontal24,
                           vertical: AppSpacing.vertical20,

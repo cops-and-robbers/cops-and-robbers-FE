@@ -131,7 +131,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       builder: (_) => TextSubmitPage(
                         title: '버그 제보',
                         label: '버그 내용',
-                        hintText: '발생한 버그를 자세히 설명해 주세요\n(상황, 기기 정보 등을 포함해 주세요)',
+                        hintText:
+                            '어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)',
                         submitText: '제보하기',
                         onSubmit: (text) {
                           // TODO: 버그 제보 API 호출
