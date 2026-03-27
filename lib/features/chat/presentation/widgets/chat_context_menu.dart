@@ -106,12 +106,15 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
   void _onCategorySelected(ReportCategory category) {
     _dismiss();
 
+    final isDark = widget.isDarkMode;
+
     AppDialog.show(
       context: widget.callerContext,
       title: '해당 유저를 신고할까요?',
       cancelText: '취소',
       confirmText: '신고하기',
       isDestructive: true,
+      isDarkMode: isDark,
       customContent: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
@@ -119,7 +122,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             TextSpan(
               text: '선택한 신고 사유: ',
               style: AppTextStyles.paragraph_14.copyWith(
-                color: AppColors.black600,
+                color: isDark ? AppColors.black400 : AppColors.black600,
               ),
             ),
             TextSpan(
@@ -131,7 +134,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             TextSpan(
               text: '\n신고된 내용은 검토 후 조치할게요',
               style: AppTextStyles.paragraph_14.copyWith(
-                color: AppColors.black600,
+                color: isDark ? AppColors.black400 : AppColors.black600,
               ),
             ),
           ],
