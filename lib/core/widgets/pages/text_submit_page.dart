@@ -153,22 +153,28 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
                       color: isDark ? AppColors.black400 : AppColors.black400,
                     ),
                     filled: true,
-                    fillColor: isDark ? AppColors.black : AppColors.black100,
+                    fillColor: isDark ? AppColors.black900 : AppColors.white,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: AppSpacing.horizontal20,
                       vertical: AppSpacing.vertical16,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: AppRadius.xlarge,
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark ? AppColors.black800 : AppColors.black100,
+                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: AppRadius.xlarge,
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark ? AppColors.black800 : AppColors.black100,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: AppRadius.xlarge,
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark ? AppColors.black800 : AppColors.black100,
+                      ),
                     ),
                   ),
                 ),
