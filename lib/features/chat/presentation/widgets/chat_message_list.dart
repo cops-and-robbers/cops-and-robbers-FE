@@ -156,24 +156,20 @@ class _ChatMessageListState extends State<ChatMessageList> {
           return Column(
             children: [
               if (showDateDivider) _buildDateDivider(message.kstDateTime),
-              Builder(
-                builder: (bubbleContext) {
-                  return ChatMessageBubble(
-                    message: message,
-                    isMe: isMe,
-                    myTeam: widget.myTeam,
-                    showNickname: showNickname,
-                    showTime: showTime,
-                    isDarkMode: widget.isDarkMode,
-                    onLongPress: widget.onMessageLongPress != null
-                        ? () => widget.onMessageLongPress!(
-                              message,
-                              bubbleContext,
-                              isMe,
-                            )
-                        : null,
-                  );
-                },
+              ChatMessageBubble(
+                message: message,
+                isMe: isMe,
+                myTeam: widget.myTeam,
+                showNickname: showNickname,
+                showTime: showTime,
+                isDarkMode: widget.isDarkMode,
+                onLongPress: widget.onMessageLongPress != null
+                    ? (bubbleContext) => widget.onMessageLongPress!(
+                          message,
+                          bubbleContext,
+                          isMe,
+                        )
+                    : null,
               ),
             ],
           );

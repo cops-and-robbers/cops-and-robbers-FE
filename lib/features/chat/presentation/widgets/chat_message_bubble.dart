@@ -36,8 +36,8 @@ class ChatMessageBubble extends StatelessWidget {
   /// 다크 모드 여부
   final bool isDarkMode;
 
-  /// 메시지 롱프레스 콜백
-  final VoidCallback? onLongPress;
+  /// 메시지 롱프레스 콜백 (버블 Container의 BuildContext 전달)
+  final void Function(BuildContext bubbleContext)? onLongPress;
 
   bool get _isSystemMessage =>
       message.sender.team.toUpperCase() == 'SYSTEM' ||
@@ -53,17 +53,14 @@ class ChatMessageBubble extends StatelessWidget {
       return _buildSystemMessage();
     }
 
-    return GestureDetector(
-      onLongPress: onLongPress,
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: isMe ? 16.w : 24.w,
-          right: isMe ? 24.w : 16.w,
-          top: showNickname ? 8.h : 2.h,
-          bottom: 2.h,
-        ),
-        child: isMe ? _buildMyMessage() : _buildOtherMessage(),
+    return Padding(
+      padding: EdgeInsets.only(
+        left: isMe ? 16.w : 24.w,
+        right: isMe ? 24.w : 16.w,
+        top: showNickname ? 8.h : 2.h,
+        bottom: 2.h,
       ),
+      child: isMe ? _buildMyMessage() : _buildOtherMessage(),
     );
   }
 
@@ -128,22 +125,30 @@ class ChatMessageBubble extends StatelessWidget {
                 ),
               ),
             Flexible(
-              child: Container(
-                constraints: BoxConstraints(maxWidth: 240.w),
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: isDarkMode ? AppColors.black : AppColors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12.r),
-                    topRight: Radius.circular(12.r),
-                    bottomLeft: Radius.circular(12.r),
-                    bottomRight: Radius.circular(4.r),
-                  ),
-                ),
-                child: Text(
-                  _filteredMessage,
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: isDarkMode ? AppColors.white : AppColors.black900,
+              child: Builder(
+                builder: (bubbleCtx) => GestureDetector(
+                  onLongPress: onLongPress != null
+                      ? () => onLongPress!(bubbleCtx)
+                      : null,
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 240.w),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    decoration: BoxDecoration(
+                      color: isDarkMode ? AppColors.black : AppColors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12.r),
+                        topRight: Radius.circular(12.r),
+                        bottomLeft: Radius.circular(12.r),
+                        bottomRight: Radius.circular(4.r),
+                      ),
+                    ),
+                    child: Text(
+                      _filteredMessage,
+                      style: AppTextStyles.paragraph_14.copyWith(
+                        color: isDarkMode ? AppColors.white : AppColors.black900,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -173,22 +178,30 @@ class ChatMessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Flexible(
-              child: Container(
-                constraints: BoxConstraints(maxWidth: 240.w),
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: isDarkMode ? AppColors.black : AppColors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12.r),
-                    topRight: Radius.circular(12.r),
-                    bottomLeft: Radius.circular(4.r),
-                    bottomRight: Radius.circular(12.r),
-                  ),
-                ),
-                child: Text(
-                  _filteredMessage,
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: isDarkMode ? AppColors.white : AppColors.black900,
+              child: Builder(
+                builder: (bubbleCtx) => GestureDetector(
+                  onLongPress: onLongPress != null
+                      ? () => onLongPress!(bubbleCtx)
+                      : null,
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 240.w),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    decoration: BoxDecoration(
+                      color: isDarkMode ? AppColors.black : AppColors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12.r),
+                        topRight: Radius.circular(12.r),
+                        bottomLeft: Radius.circular(4.r),
+                        bottomRight: Radius.circular(12.r),
+                      ),
+                    ),
+                    child: Text(
+                      _filteredMessage,
+                      style: AppTextStyles.paragraph_14.copyWith(
+                        color: isDarkMode ? AppColors.white : AppColors.black900,
+                      ),
+                    ),
                   ),
                 ),
               ),
