@@ -24,6 +24,7 @@ class ChatContextMenu extends StatefulWidget {
     required this.isMe,
     required this.messageRect,
     required this.onBlock,
+    required this.callerContext,
   });
 
   final ChatMessageDto message;
@@ -31,6 +32,9 @@ class ChatContextMenu extends StatefulWidget {
   final bool isMe;
   final Rect messageRect;
   final void Function(int participantId) onBlock;
+
+  /// dismiss 후에도 유효한 호출자 context (Snackbar/Dialog 표시용)
+  final BuildContext callerContext;
 
   /// 채팅 메시지 롱프레스 컨텍스트 메뉴를 표시합니다.
   ///
@@ -62,6 +66,7 @@ class ChatContextMenu extends StatefulWidget {
         isMe: isMe,
         messageRect: messageRect,
         onBlock: onBlock,
+        callerContext: context,
       ),
     );
   }
@@ -77,12 +82,11 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 
   void _dismiss() => Navigator.of(context).pop();
 
-  Future<void> _onCopy() async {
-    await Clipboard.setData(ClipboardData(text: widget.message.message));
+  void _onCopy() {
+    Clipboard.setData(ClipboardData(text: widget.message.message));
     _dismiss();
-    if (!mounted) return;
     AppSnackbar.show(
-      context,
+      widget.callerContext,
       message: '메시지가 복사되었어요',
       iconPath: 'assets/icons/icon_copy.svg',
     );
@@ -93,22 +97,20 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
   }
 
   void _onBlockWithSnackbar() {
-    final capturedContext = context;
     _dismiss();
     widget.onBlock(widget.message.sender.participantId);
     AppSnackbar.show(
-      capturedContext,
+      widget.callerContext,
       message: '해당 유저를 차단했어요',
       iconPath: 'assets/icons/icon_block.svg',
     );
   }
 
   void _onCategorySelected(ReportCategory category) {
-    final capturedContext = context;
     _dismiss();
 
     AppDialog.show(
-      context: capturedContext,
+      context: widget.callerContext,
       title: '해당 유저를 신고할까요?',
       cancelText: '취소',
       confirmText: '신고하기',
@@ -140,7 +142,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       ),
       onConfirm: () {
         // TODO: 신고 API 호출
-        AppSnackbar.show(capturedContext, message: '신고가 접수되었어요');
+        AppSnackbar.show(widget.callerContext, message: '신고가 접수되었어요');
       },
     );
   }
