@@ -135,57 +135,60 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
               ),
               SizedBox(height: AppSpacing.vertical12),
 
-              // 입력 필드 (최소 300.h, 텍스트 길어지면 아래로 확장)
-              ConstrainedBox(
-                constraints: BoxConstraints(minHeight: 300.h),
-                child: TextField(
-                  controller: _controller,
-                  maxLines: null,
-                  minLines: 7,
-                  textAlignVertical: TextAlignVertical.top,
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: isDark ? AppColors.white : AppColors.black,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: widget.hintText,
-                    hintStyle: AppTextStyles.paragraph_14.copyWith(
-                      color: AppColors.black400,
-                    ),
-                    filled: true,
-                    fillColor: isDark ? AppColors.black900 : AppColors.white,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.horizontal24,
-                      vertical: AppSpacing.vertical20,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: AppRadius.xlarge,
-                      borderSide: BorderSide(
-                        color: isDark
-                            ? AppColors.black800
-                            : AppColors.black100,
+              // 입력 필드 (Expanded로 남은 공간 차지, 스크롤 가능)
+              Expanded(
+                child: SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: 300.h),
+                    child: TextField(
+                      controller: _controller,
+                      maxLines: null,
+                      minLines: 7,
+                      textAlignVertical: TextAlignVertical.top,
+                      style: AppTextStyles.paragraph_14.copyWith(
+                        color: isDark ? AppColors.white : AppColors.black,
                       ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: AppRadius.xlarge,
-                      borderSide: BorderSide(
-                        color: isDark
-                            ? AppColors.black800
-                            : AppColors.black100,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: AppRadius.xlarge,
-                      borderSide: BorderSide(
-                        color: isDark
-                            ? AppColors.black800
-                            : AppColors.black100,
+                      decoration: InputDecoration(
+                        hintText: widget.hintText,
+                        hintStyle: AppTextStyles.paragraph_14.copyWith(
+                          color: AppColors.black400,
+                        ),
+                        filled: true,
+                        fillColor:
+                            isDark ? AppColors.black900 : AppColors.white,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.horizontal24,
+                          vertical: AppSpacing.vertical20,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: AppRadius.xlarge,
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? AppColors.black800
+                                : AppColors.black100,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: AppRadius.xlarge,
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? AppColors.black800
+                                : AppColors.black100,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: AppRadius.xlarge,
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? AppColors.black800
+                                : AppColors.black100,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-
-              const Spacer(),
 
               // 제출 버튼 (하단 고정)
               AppButton(
