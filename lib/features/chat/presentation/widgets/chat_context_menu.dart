@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/content_filter/profanity_filter.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../data/models/chat_message_dto.dart';
@@ -22,36 +23,34 @@ class ChatContextMenu extends StatefulWidget {
   const ChatContextMenu._({
     required this.message,
     required this.isMe,
-    required this.messageTop,
+    required this.isDarkMode,
+    required this.messageRect,
     required this.onBlock,
     required this.callerContext,
   });
 
   final ChatMessageDto message;
   final bool isMe;
-
-  /// 롱프레스된 메시지 버블의 화면 상단으로부터의 y좌표
-  final double messageTop;
+  final bool isDarkMode;
+  final Rect messageRect;
   final void Function(int participantId) onBlock;
 
   /// dismiss 후에도 유효한 호출자 context (Snackbar/Dialog 표시용)
   final BuildContext callerContext;
 
   /// 채팅 메시지 롱프레스 컨텍스트 메뉴를 표시합니다.
-  ///
-  /// [message] 대상 채팅 메시지 DTO
-  /// [isMe] 내 메시지 여부 (true면 복사하기만 표시)
-  /// [onBlock] 차단 콜백 — `participantId`를 전달합니다
   static Future<void> show({
     required BuildContext context,
     required ChatMessageDto message,
     required bool isMe,
+    required bool isDarkMode,
     required void Function(int participantId) onBlock,
   }) {
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return Future.value();
 
-    final globalOffset = renderBox.localToGlobal(Offset.zero);
+    final offset = renderBox.localToGlobal(Offset.zero);
+    final messageRect = offset & renderBox.size;
 
     return showGeneralDialog(
       context: context,
@@ -61,7 +60,8 @@ class ChatContextMenu extends StatefulWidget {
       pageBuilder: (dialogContext, _, _) => ChatContextMenu._(
         message: message,
         isMe: isMe,
-        messageTop: globalOffset.dy,
+        isDarkMode: isDarkMode,
+        messageRect: messageRect,
         onBlock: onBlock,
         callerContext: context,
       ),
@@ -144,51 +144,164 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     );
   }
 
+  /// 메뉴 위치 계산: 항상 메시지 위, AppSpacing.vertical8 간격
+  Offset _calculateMenuPosition({
+    required Size menuSize,
+    required Size screenSize,
+  }) {
+    final marginW = 16.w;
+    final marginH = 16.h;
+
+    double left = widget.messageRect.left;
+    if (left + menuSize.width > screenSize.width - marginW) {
+      left = screenSize.width - marginW - menuSize.width;
+    }
+    if (left < marginW) left = marginW;
+
+    double top =
+        widget.messageRect.top - menuSize.height - AppSpacing.vertical8;
+    if (top < marginH) top = marginH;
+
+    return Offset(left, top);
+  }
+
+  /// 버블 Container를 직접 빌드 (ChatMessageBubble의 Padding 없이)
+  Widget _buildBubble() {
+    final filteredMessage = ProfanityFilter.filter(widget.message.message);
+    final borderRadius = widget.isMe
+        ? BorderRadius.only(
+            topLeft: Radius.circular(12.r),
+            topRight: Radius.circular(12.r),
+            bottomLeft: Radius.circular(12.r),
+            bottomRight: Radius.circular(4.r),
+          )
+        : BorderRadius.only(
+            topLeft: Radius.circular(12.r),
+            topRight: Radius.circular(12.r),
+            bottomLeft: Radius.circular(4.r),
+            bottomRight: Radius.circular(12.r),
+          );
+
+    return Container(
+      constraints: BoxConstraints(maxWidth: 240.w),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: widget.isDarkMode ? AppColors.black : AppColors.white,
+        borderRadius: borderRadius,
+      ),
+      child: Text(
+        filteredMessage,
+        style: AppTextStyles.paragraph_14.copyWith(
+          color: widget.isDarkMode ? AppColors.white : AppColors.black900,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
 
-    // 메뉴 bottom: 메시지 상단으로부터 AppSpacing.vertical8 위
-    final menuBottom =
-        screenSize.height - widget.messageTop + AppSpacing.vertical8;
-
-    // 메뉴 최대 높이: 화면 상단 여백 확보
-    final maxMenuHeight = widget.messageTop - AppSpacing.vertical8 - 16.h;
-
     return Material(
       color: AppColors.white.withValues(alpha: 0),
       child: Stack(
+        fit: StackFit.expand,
         children: [
           // 어두운 배경 오버레이
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: _dismiss,
-              child: Container(color: AppColors.black.withValues(alpha: 0.4)),
-            ),
+          GestureDetector(
+            onTap: _dismiss,
+            child: Container(color: AppColors.black.withValues(alpha: 0.4)),
           ),
 
-          // 메뉴 (좌우 마진 24, bottom 기준으로 위로 확장)
+          // 원래 위치에 버블 표시 (Padding 없이 Container만)
           Positioned(
-            left: 24.w,
-            bottom: menuBottom,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: maxMenuHeight > 0 ? maxMenuHeight : 200.h,
-              ),
-              child: _mode == _MenuMode.actions
-                  ? _ActionMenu(
-                      isMe: widget.isMe,
-                      onCopy: _onCopy,
-                      onReport: _onReportTap,
-                      onBlock: _onBlockWithSnackbar,
-                    )
-                  : _ReportCategoryMenu(
-                      onCategorySelected: _onCategorySelected,
-                    ),
-            ),
+            left: widget.messageRect.left,
+            top: widget.messageRect.top,
+            child: _buildBubble(),
+          ),
+
+          // 메뉴 (크기 측정 후 위치 결정)
+          _MenuPositioner(
+            key: ValueKey(_mode),
+            screenSize: screenSize,
+            calculatePosition: _calculateMenuPosition,
+            child: _mode == _MenuMode.actions
+                ? _ActionMenu(
+                    isMe: widget.isMe,
+                    onCopy: _onCopy,
+                    onReport: _onReportTap,
+                    onBlock: _onBlockWithSnackbar,
+                  )
+                : _ReportCategoryMenu(
+                    onCategorySelected: _onCategorySelected,
+                  ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// 메뉴 위젯의 크기를 측정한 뒤 올바른 위치에 배치하는 헬퍼 위젯
+class _MenuPositioner extends StatefulWidget {
+  const _MenuPositioner({
+    super.key,
+    required this.screenSize,
+    required this.calculatePosition,
+    required this.child,
+  });
+
+  final Size screenSize;
+  final Offset Function({required Size menuSize, required Size screenSize})
+      calculatePosition;
+  final Widget child;
+
+  @override
+  State<_MenuPositioner> createState() => _MenuPositionerState();
+}
+
+class _MenuPositionerState extends State<_MenuPositioner> {
+  Size? _menuSize;
+  final _key = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final renderBox =
+          _key.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        setState(() => _menuSize = renderBox.size);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final menuSize = _menuSize;
+
+    if (menuSize == null) {
+      // 첫 프레임: 투명하게 숨겨서 크기 측정
+      return Positioned(
+        left: 0,
+        top: 0,
+        child: Opacity(
+          opacity: 0,
+          child: Container(key: _key, child: widget.child),
+        ),
+      );
+    }
+
+    final position = widget.calculatePosition(
+      menuSize: menuSize,
+      screenSize: widget.screenSize,
+    );
+
+    return Positioned(
+      left: position.dx,
+      top: position.dy,
+      child: Container(key: _key, child: widget.child),
     );
   }
 }
@@ -284,7 +397,7 @@ class _ReportCategoryMenu extends StatelessWidget {
   }
 }
 
-/// 메뉴 컨테이너 — 흰 배경, 라운드 코너, 그림자
+/// 메뉴 컨테이너 — 흰 배경, 라운드 코너
 class _MenuContainer extends StatelessWidget {
   const _MenuContainer({required this.children});
 
@@ -300,12 +413,10 @@ class _MenuContainer extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16.r),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: children,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
         ),
       ),
     );

@@ -105,6 +105,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       context: bubbleContext,
       message: message,
       isMe: isMe,
+      isDarkMode: widget.isDarkMode,
       onBlock: (participantId) {
         ref.read(chatNotifierProvider.notifier).blockUser(participantId);
       },
