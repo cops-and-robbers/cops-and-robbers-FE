@@ -232,6 +232,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 /// 메뉴 위젯의 크기를 측정한 뒤 올바른 위치에 배치하는 헬퍼 위젯
 class _MenuPositioner extends StatefulWidget {
   const _MenuPositioner({
+    super.key,
     required this.screenSize,
     required this.calculatePosition,
     required this.child,
