@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -149,15 +150,14 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 
   /// 메뉴 컨테이너를 화면에 배치할 위치를 계산합니다.
   ///
-  /// 메시지 아래에 우선 배치하며, 공간이 부족하면 위에 배치합니다.
+  /// 항상 메시지 위쪽에 AppSpacing.vertical8 간격으로 배치합니다.
   /// 화면 경계에서 16.w / 16.h 마진을 보장합니다.
   Offset _calculateMenuPosition({
     required Size menuSize,
     required Size screenSize,
   }) {
-    const margin = 16.0;
-    final marginW = margin.w;
-    final marginH = margin.h;
+    final marginW = 16.w;
+    final marginH = 16.h;
 
     // 메시지 왼쪽 가장자리에 정렬
     double left = widget.messageRect.left;
@@ -169,13 +169,8 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     // 왼쪽 여백 보장
     if (left < marginW) left = marginW;
 
-    // 메시지 아래 배치 시도
-    double top = widget.messageRect.bottom + marginH;
-
-    // 아래 공간 부족하면 위에 배치
-    if (top + menuSize.height > screenSize.height - marginH) {
-      top = widget.messageRect.top - menuSize.height - marginH;
-    }
+    // 항상 메시지 위에 배치 (AppSpacing.vertical8 간격)
+    double top = widget.messageRect.top - menuSize.height - AppSpacing.vertical8;
 
     // 위쪽 여백 보장
     if (top < marginH) top = marginH;
