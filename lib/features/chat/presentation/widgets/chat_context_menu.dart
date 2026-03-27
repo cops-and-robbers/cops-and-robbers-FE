@@ -501,8 +501,8 @@ class _MenuDivider extends StatelessWidget {
     return Divider(
       height: 1,
       color: isDarkMode ? AppColors.black800 : AppColors.black100,
-      indent: 0,
-      endIndent: 0,
+      indent: 20.w,
+      endIndent: 20.w,
     );
   }
 }
