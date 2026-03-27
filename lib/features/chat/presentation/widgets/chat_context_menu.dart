@@ -183,16 +183,10 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 어두운 배경 오버레이 (메시지 영역만 투명하게 cutout)
+          // 어두운 배경 오버레이
           GestureDetector(
             onTap: _dismiss,
-            child: CustomPaint(
-              size: screenSize,
-              painter: _OverlayCutoutPainter(
-                cutoutRect: widget.messageRect,
-                isMe: widget.isMe,
-              ),
-            ),
+            child: Container(color: AppColors.black.withValues(alpha: 0.4)),
           ),
 
           // 메뉴 컨테이너 (크기 측정 후 위치 결정)
@@ -452,45 +446,3 @@ class _MenuDivider extends StatelessWidget {
   }
 }
 
-/// 메시지 버블 모양으로 투명하게 뚫린 어두운 오버레이
-class _OverlayCutoutPainter extends CustomPainter {
-  const _OverlayCutoutPainter({
-    required this.cutoutRect,
-    required this.isMe,
-  });
-
-  final Rect cutoutRect;
-  final bool isMe;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = AppColors.black.withValues(alpha: 0.4);
-
-    // 버블 borderRadius에 맞춘 RRect cutout
-    final bubbleRadius = isMe
-        ? BorderRadius.only(
-            topLeft: Radius.circular(12.r),
-            topRight: Radius.circular(12.r),
-            bottomLeft: Radius.circular(12.r),
-            bottomRight: Radius.circular(4.r),
-          )
-        : BorderRadius.only(
-            topLeft: Radius.circular(12.r),
-            topRight: Radius.circular(12.r),
-            bottomLeft: Radius.circular(4.r),
-            bottomRight: Radius.circular(12.r),
-          );
-
-    final rrect = bubbleRadius.toRRect(cutoutRect);
-
-    final path = Path()
-      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..addRRect(rrect)
-      ..fillType = PathFillType.evenOdd;
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _OverlayCutoutPainter oldDelegate) =>
-      oldDelegate.cutoutRect != cutoutRect || oldDelegate.isMe != isMe;
-}
