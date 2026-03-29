@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/services/content_filter/profanity_filter.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -196,7 +195,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 
   /// 버블 Container를 직접 빌드 (ChatMessageBubble의 Padding 없이)
   Widget _buildBubble() {
-    final filteredMessage = ProfanityFilter.filter(widget.message.message);
+    final filteredMessage = widget.message.filteredMessage;
     final borderRadius = widget.isMe
         ? BorderRadius.only(
             topLeft: Radius.circular(12.r),

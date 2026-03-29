@@ -151,7 +151,7 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
                           ),
                         ),
                         TextSpan(
-                          text: widget.message.message,
+                          text: widget.message.filteredMessage,
                           style: AppTextStyles.paragraph_14.copyWith(
                             color: messageColor,
                           ),
