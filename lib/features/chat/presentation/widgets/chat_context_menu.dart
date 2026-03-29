@@ -177,8 +177,8 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     required Size menuSize,
     required Size screenSize,
   }) {
-    final marginW = 16.w;
-    final marginH = 16.h;
+    final marginW = AppSpacing.horizontal16;
+    final marginH = AppSpacing.vertical16;
 
     double left = widget.messageRect.left;
     if (left + menuSize.width > screenSize.width - marginW) {
@@ -407,7 +407,12 @@ class _ReportCategoryMenu extends StatelessWidget {
       isDarkMode: isDarkMode,
       children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 4.h),
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.horizontal20,
+            AppSpacing.vertical16,
+            AppSpacing.horizontal20,
+            AppSpacing.vertical4,
+          ),
           child: Text(
             '신고 유형 선택',
             style:
@@ -426,7 +431,10 @@ class _ReportCategoryMenu extends StatelessWidget {
             onTap: () => onCategorySelected(category),
             child: Container(
               color: isDarkMode ? AppColors.black : AppColors.white,
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.horizontal20,
+                vertical: AppSpacing.vertical16,
+              ),
               child: Text(
                 category.label,
                 style: AppTextStyles.label16Medium.copyWith(
@@ -454,10 +462,10 @@ class _MenuContainer extends StatelessWidget {
       width: 204.w,
       decoration: BoxDecoration(
         color: isDarkMode ? AppColors.black : AppColors.white,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: AppRadius.xlarge,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: AppRadius.xlarge,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -492,7 +500,10 @@ class _MenuItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         color: isDarkMode ? AppColors.black : AppColors.white,
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.horizontal20,
+          vertical: AppSpacing.vertical16,
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -505,7 +516,7 @@ class _MenuItem extends StatelessWidget {
                 BlendMode.srcIn,
               ),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: AppSpacing.horizontal8),
             Text(
               label,
               style:

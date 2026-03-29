@@ -128,7 +128,9 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
 
               // 라벨
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.w),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.horizontal4,
+                ),
                 child: Text(
                   widget.label,
                   style: AppTextStyles.label_16.copyWith(

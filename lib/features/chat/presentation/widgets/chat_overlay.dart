@@ -214,7 +214,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                       BoxShadow(
                         offset: const Offset(0, -2),
                         blurRadius: 10,
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: AppColors.black.withValues(alpha: 0.1),
                       ),
                     ],
                   ),
@@ -318,7 +318,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         );
       },
       child: Padding(
-        padding: EdgeInsets.only(top: 12.h, bottom: 4.h),
+        padding: EdgeInsets.only(
+          top: AppSpacing.vertical12,
+          bottom: AppSpacing.vertical4,
+        ),
         child: Center(
           child: Container(
             width: 48.w,
