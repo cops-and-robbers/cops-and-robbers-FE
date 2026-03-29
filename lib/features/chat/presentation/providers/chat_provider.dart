@@ -121,7 +121,7 @@ class ChatNotifier extends _$ChatNotifier {
   /// UI 가시성 상태 (ChatOverlay가 통보)
   bool _isSheetExpanded = false;
   int _currentVisiblePage = 0; // 0 = ALL, 1 = TEAM
-  int _myParticipantId = 0;
+  int _myParticipantId = -1;
 
   /// 더미 모드 여부
   bool _isDummyMode = false;
@@ -224,7 +224,7 @@ class ChatNotifier extends _$ChatNotifier {
 
     _isSheetExpanded = false;
     _currentVisiblePage = 0;
-    _myParticipantId = 0;
+    _myParticipantId = -1;
     state = const ChatState();
   }
 

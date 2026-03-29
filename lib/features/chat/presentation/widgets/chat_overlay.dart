@@ -262,7 +262,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                   ],
                                 ),
                               ),
-                              _buildPageIndicator(),
+                              _buildPageIndicator(chatState),
                             ],
                           ),
                         )
@@ -356,8 +356,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     );
   }
 
-  Widget _buildPageIndicator() {
-    final chatState = ref.watch(chatNotifierProvider);
+  Widget _buildPageIndicator(ChatState chatState) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
