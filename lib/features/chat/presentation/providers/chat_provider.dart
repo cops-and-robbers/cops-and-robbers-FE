@@ -503,7 +503,8 @@ class ChatNotifier extends _$ChatNotifier {
     }
 
     final isTeamMessage = message.scope == 'TEAM';
-    final isCurrentlyViewing = _isSheetExpanded &&
+    final isCurrentlyViewing =
+        _isSheetExpanded &&
         (isTeamMessage ? _currentVisiblePage == 1 : _currentVisiblePage == 0);
 
     // 현재 보고 있는 탭이면 읽음 처리 (카운트 증가 안 함)
@@ -518,8 +519,8 @@ class ChatNotifier extends _$ChatNotifier {
     } else {
       // 전체 채팅: 현재 팀 프리뷰가 표시 중이면 전체 채팅 프리뷰로 교체하지 않음
       final currentPreview = state.lastPreviewMessage;
-      final shouldUpdatePreview = currentPreview == null ||
-          currentPreview.scope != 'TEAM';
+      final shouldUpdatePreview =
+          currentPreview == null || currentPreview.scope != 'TEAM';
       state = state.copyWith(
         unreadAllCount: state.unreadAllCount + 1,
         lastPreviewMessage: shouldUpdatePreview ? message : currentPreview,

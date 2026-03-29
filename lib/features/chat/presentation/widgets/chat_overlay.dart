@@ -57,9 +57,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     _sheetController.addListener(_onSheetChanged);
     // notifier에 본인 participantId 전달 (프리뷰 필터링용)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(chatNotifierProvider.notifier).setMyParticipantId(
-        widget.myParticipantId,
-      );
+      ref
+          .read(chatNotifierProvider.notifier)
+          .setMyParticipantId(widget.myParticipantId);
     });
   }
 
@@ -236,7 +236,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                   onPageChanged: (page) {
                                     setState(() => _currentPage = page);
                                     // notifier에 현재 페이지 통보
-                                    ref.read(chatNotifierProvider.notifier).updateCurrentPage(page);
+                                    ref
+                                        .read(chatNotifierProvider.notifier)
+                                        .updateCurrentPage(page);
                                   },
                                   children: [
                                     ChatMessageList(
@@ -291,9 +293,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 child: ChatPreviewCard(
                   message: chatState.lastPreviewMessage!,
                   isDarkMode: widget.isDarkMode,
-                  onTap: () => _handlePreviewTap(
-                    chatState.lastPreviewMessage!,
-                  ),
+                  onTap: () => _handlePreviewTap(chatState.lastPreviewMessage!),
                   onDismissed: () {
                     ref.read(chatNotifierProvider.notifier).dismissPreview();
                   },
@@ -376,9 +376,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 margin: EdgeInsets.symmetric(horizontal: 3.w),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? (widget.isDarkMode
-                            ? AppColors.green
-                            : AppColors.blue)
+                      ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
                       : (widget.isDarkMode
                             ? AppColors.black600
                             : AppColors.black200),
