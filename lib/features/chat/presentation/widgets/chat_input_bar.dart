@@ -18,6 +18,8 @@ class ChatInputBar extends StatefulWidget {
     required this.enabled,
     this.onFocusGain,
     this.isDarkMode = false,
+    this.unreadAllCount = 0,
+    this.unreadTeamCount = 0,
     super.key,
   });
 
@@ -32,6 +34,12 @@ class ChatInputBar extends StatefulWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+
+  /// 전체 채팅 읽지 않은 메시지 수
+  final int unreadAllCount;
+
+  /// 팀 채팅 읽지 않은 메시지 수
+  final int unreadTeamCount;
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -82,6 +90,18 @@ class _ChatInputBarState extends State<ChatInputBar> {
     }
   }
 
+  /// 읽지 않은 메시지 힌트 텍스트 생성
+  String? _buildUnreadHint() {
+    final all = widget.unreadAllCount;
+    final team = widget.unreadTeamCount;
+    if (all == 0 && team == 0) return null;
+
+    final parts = <String>[];
+    if (all > 0) parts.add('전체 $all개');
+    if (team > 0) parts.add('팀 $team개');
+    return '안 읽은 메시지 ${parts.join(' · ')}';
+  }
+
   void _handleSend() {
     final text = _controller.text.trim();
     if (text.isEmpty || !widget.enabled) return;
@@ -127,7 +147,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
                         : AppColors.black900,
                   ),
                   decoration: InputDecoration(
-                    hintText: widget.enabled ? '채팅을 입력하세요' : '연결 중...',
+                    hintText: !widget.enabled
+                        ? '연결 중...'
+                        : _buildUnreadHint() ?? '채팅을 입력하세요',
                     hintStyle: AppTextStyles.label16Medium.copyWith(
                       color: widget.isDarkMode
                           ? AppColors.black200

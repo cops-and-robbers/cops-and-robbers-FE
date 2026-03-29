@@ -10,6 +10,7 @@ import '../providers/chat_provider.dart';
 import 'chat_context_menu.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
+import 'chat_preview_card.dart';
 
 /// 채팅 오버레이 위젯
 ///
@@ -54,6 +55,12 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   void initState() {
     super.initState();
     _sheetController.addListener(_onSheetChanged);
+    // notifier에 본인 participantId 전달 (프리뷰 필터링용)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(chatNotifierProvider.notifier).setMyParticipantId(
+        widget.myParticipantId,
+      );
+    });
   }
 
   double _minSize = 0.18;
@@ -67,6 +74,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       setState(() {
         _isExpanded = expanded;
       });
+      // notifier에 시트 상태 통보
+      ref.read(chatNotifierProvider.notifier).updateSheetExpanded(expanded);
       if (expanded) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_pageController.hasClients) {
@@ -110,6 +119,35 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         ref.read(chatNotifierProvider.notifier).blockUser(participantId);
       },
     );
+  }
+
+  void _handlePreviewTap(ChatMessageDto message) {
+    final notifier = ref.read(chatNotifierProvider.notifier);
+    notifier.onPreviewTapped();
+
+    // 해당 스코프 탭으로 이동
+    final targetPage = message.scope == 'TEAM' ? 1 : 0;
+    setState(() => _currentPage = targetPage);
+
+    // 시트 펼치기
+    if (_sheetController.isAttached && _sheetController.size < _snap50) {
+      _sheetController.animateTo(
+        _snap50,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+
+    // 탭 이동
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(
+        targetPage,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+
+    notifier.updateCurrentPage(targetPage);
   }
 
   @override
@@ -197,6 +235,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                   controller: _pageController,
                                   onPageChanged: (page) {
                                     setState(() => _currentPage = page);
+                                    // notifier에 현재 페이지 통보
+                                    ref.read(chatNotifierProvider.notifier).updateCurrentPage(page);
                                   },
                                   children: [
                                     ChatMessageList(
@@ -233,6 +273,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                         enabled: isConnected,
                         onFocusGain: _onInputFocused,
                         isDarkMode: widget.isDarkMode,
+                        unreadAllCount: chatState.unreadAllCount,
+                        unreadTeamCount: chatState.unreadTeamCount,
                       ),
                       SizedBox(height: bottomMargin),
                     ],
@@ -240,6 +282,23 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 );
               },
             ),
+            // 프리뷰 카드: DraggableScrollableSheet 바깥에 배치 (clip 방지)
+            if (chatState.lastPreviewMessage != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: bottomMargin + 64.h + 4.h,
+                child: ChatPreviewCard(
+                  message: chatState.lastPreviewMessage!,
+                  isDarkMode: widget.isDarkMode,
+                  onTap: () => _handlePreviewTap(
+                    chatState.lastPreviewMessage!,
+                  ),
+                  onDismissed: () {
+                    ref.read(chatNotifierProvider.notifier).dismissPreview();
+                  },
+                ),
+              ),
           ],
         );
       },
@@ -298,24 +357,50 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   Widget _buildPageIndicator() {
+    final chatState = ref.watch(chatNotifierProvider);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(2, (index) {
           final isActive = index == _currentPage;
-          return Container(
-            width: 6.w,
-            height: 6.w,
-            margin: EdgeInsets.symmetric(horizontal: 3.w),
-            decoration: BoxDecoration(
-              color: isActive
-                  ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
-                  : (widget.isDarkMode
-                        ? AppColors.black600
-                        : AppColors.black200),
-              shape: BoxShape.circle,
-            ),
+          final hasUnread = index == 0
+              ? chatState.unreadAllCount > 0
+              : chatState.unreadTeamCount > 0;
+
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 6.w,
+                height: 6.w,
+                margin: EdgeInsets.symmetric(horizontal: 3.w),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? (widget.isDarkMode
+                            ? AppColors.green
+                            : AppColors.blue)
+                      : (widget.isDarkMode
+                            ? AppColors.black600
+                            : AppColors.black200),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              // 읽지 않은 메시지 빨간 점
+              if (hasUnread && !isActive)
+                Positioned(
+                  top: -2.h,
+                  right: 0,
+                  child: Container(
+                    width: 5.w,
+                    height: 5.w,
+                    decoration: const BoxDecoration(
+                      color: AppColors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
           );
         }),
       ),
