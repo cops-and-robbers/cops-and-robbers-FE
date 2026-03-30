@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../data/models/chat_message_dto.dart';
 
 /// 채팅 메시지 버블 위젯
@@ -40,7 +41,7 @@ class ChatMessageBubble extends StatelessWidget {
   final void Function(BuildContext bubbleContext)? onLongPress;
 
   bool get _isSystemMessage =>
-      message.sender.team.toUpperCase() == 'SYSTEM' ||
+      message.sender.team.toUpperCase() == ChatTeam.system ||
       message.sender.participantId == 0;
 
   String get _formattedTime => message.formattedTimeKst;
