@@ -59,8 +59,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   /// ChatInputBar 고정 높이
   static const double _inputBarHeight = 64;
 
-  /// 드래그 핸들 영역 높이 (handle + 상하 패딩)
-  static const double _dragHandleHeight = 20;
+  /// 드래그 핸들 터치 영역 높이 (시각적 핸들 4pt + 상하 여백)
+  static const double _dragHandleHeight = 28;
 
   /// 제목 + 하단 패딩 높이
   static const double _titleAreaHeight = 60;
@@ -333,6 +333,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   Widget _buildDragHandle() {
+    // 터치 영역을 48pt로 확보하여 드래그/탭 조작성 향상
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -344,11 +345,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
           curve: Curves.easeOut,
         );
       },
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: AppSpacing.vertical12,
-          bottom: AppSpacing.vertical4,
-        ),
+      child: SizedBox(
+        height: 28.h,
         child: Center(
           child: Container(
             width: 48.w,

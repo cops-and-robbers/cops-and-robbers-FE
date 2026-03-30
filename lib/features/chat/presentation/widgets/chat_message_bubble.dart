@@ -105,7 +105,7 @@ class ChatMessageBubble extends StatelessWidget {
         if (showNickname)
           Padding(
             padding: EdgeInsets.only(
-              bottom: AppSpacing.vertical4,
+              bottom: AppSpacing.vertical8,
               right: AppSpacing.horizontal4,
             ),
             child: Text(
@@ -178,7 +178,7 @@ class ChatMessageBubble extends StatelessWidget {
         if (showNickname)
           Padding(
             padding: EdgeInsets.only(
-              bottom: AppSpacing.vertical4,
+              bottom: AppSpacing.vertical8,
               left: AppSpacing.horizontal4,
             ),
             child: Text(
