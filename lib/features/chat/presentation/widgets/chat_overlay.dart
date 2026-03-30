@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_provider.dart';
 import 'chat_context_menu.dart';
@@ -51,6 +52,22 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   static const double _snap50 = 0.5;
   static const double _snap75 = 0.75;
 
+  // 레이아웃 계산용 상수 (screenutil 적용 전 논리값)
+  /// SafeArea가 없는 기기(iPhone SE 등)의 기본 하단 여백
+  static const double _fallbackBottomPadding = 37;
+
+  /// ChatInputBar 고정 높이
+  static const double _inputBarHeight = 64;
+
+  /// 드래그 핸들 영역 높이 (handle + 상하 패딩)
+  static const double _dragHandleHeight = 20;
+
+  /// 제목 + 하단 패딩 높이
+  static const double _titleAreaHeight = 60;
+
+  /// 프리뷰 카드와 입력바 사이 간격
+  static const double _previewGap = 4;
+
   @override
   void initState() {
     super.initState();
@@ -89,7 +106,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   void _handleSend(String message) {
-    final scope = _currentPage == 0 ? 'ALL' : 'TEAM';
+    final scope = _currentPage == 0 ? ChatScope.all : ChatScope.team;
     ref
         .read(chatNotifierProvider.notifier)
         .sendMessage(gameId: widget.gameId, message: message, scope: scope);
@@ -126,7 +143,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     notifier.onPreviewTapped();
 
     // 해당 스코프 탭으로 이동
-    final targetPage = message.scope == 'TEAM' ? 1 : 0;
+    final targetPage = message.scope == ChatScope.team ? 1 : 0;
     setState(() => _currentPage = targetPage);
 
     // 시트 펼치기
@@ -169,12 +186,22 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     final isKeyboardClosing =
         _prevKeyboardHeight > 0 && keyboardHeight < _prevKeyboardHeight;
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
-    final safeBottomMargin = (bottomPadding > 0 ? bottomPadding : 37.h) + 12.h;
+    final safeBottomMargin =
+        (bottomPadding > 0 ? bottomPadding : _fallbackBottomPadding.h) +
+        AppSpacing.vertical12;
     final bottomMargin = (isKeyboardOpen && !isKeyboardClosing)
         ? keyboardHeight
         : safeBottomMargin;
-    final collapsedHeight = 20.h + 8.h + 64.h + safeBottomMargin;
-    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + safeBottomMargin;
+    final collapsedHeight =
+        _dragHandleHeight.h +
+        AppSpacing.vertical8 +
+        _inputBarHeight.h +
+        safeBottomMargin;
+    final expandedMinHeight =
+        _dragHandleHeight.h +
+        _titleAreaHeight.h +
+        _inputBarHeight.h +
+        safeBottomMargin;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -289,7 +316,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: bottomMargin + 64.h + 4.h,
+                bottom: bottomMargin + _inputBarHeight.h + _previewGap.h,
                 child: ChatPreviewCard(
                   message: chatState.lastPreviewMessage!,
                   isDarkMode: widget.isDarkMode,
@@ -361,7 +388,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
 
   Widget _buildPageIndicator(ChatState chatState) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6.h),
+      padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(2, (index) {

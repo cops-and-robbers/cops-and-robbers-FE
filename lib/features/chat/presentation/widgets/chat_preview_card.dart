@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../data/models/chat_message_dto.dart';
 
 /// 새 채팅 메시지 프리뷰 카드
@@ -82,7 +83,7 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
 
   @override
   Widget build(BuildContext context) {
-    final isTeamScope = widget.message.scope == 'TEAM';
+    final isTeamScope = widget.message.scope == ChatScope.team;
     final dark = widget.isDarkMode;
 
     final bgColor = dark ? AppColors.black900 : AppColors.white;
@@ -104,8 +105,8 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
             ? const Duration(milliseconds: 300)
             : const Duration(milliseconds: 200),
         onEnd: () {
-          // 페이드아웃 완료 후 dismissed 콜백
-          if (!_visible) {
+          // 페이드아웃 완료 후 dismissed 콜백 (위젯 dispose 경합 방어)
+          if (!_visible && mounted) {
             widget.onDismissed();
           }
         },
@@ -126,12 +127,12 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
                 // [전체] 또는 [팀] 스코프 배지
                 Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 10.w,
-                    vertical: 4.h,
+                    horizontal: AppSpacing.horizontal8,
+                    vertical: AppSpacing.vertical4,
                   ),
                   decoration: BoxDecoration(
                     color: badgeBg,
-                    borderRadius: BorderRadius.circular(6.r),
+                    borderRadius: AppRadius.medium,
                   ),
                   child: Text(
                     isTeamScope ? '팀' : '전체',
