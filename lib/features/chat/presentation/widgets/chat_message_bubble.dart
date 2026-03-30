@@ -156,9 +156,7 @@ class ChatMessageBubble extends StatelessWidget {
                     child: Text(
                       message.filteredMessage,
                       style: AppTextStyles.paragraph_14.copyWith(
-                        color: isDarkMode
-                            ? AppColors.white
-                            : AppColors.black900,
+                        color: isDarkMode ? AppColors.white : AppColors.black,
                       ),
                     ),
                   ),
@@ -216,9 +214,7 @@ class ChatMessageBubble extends StatelessWidget {
                     child: Text(
                       message.filteredMessage,
                       style: AppTextStyles.paragraph_14.copyWith(
-                        color: isDarkMode
-                            ? AppColors.white
-                            : AppColors.black900,
+                        color: isDarkMode ? AppColors.white : AppColors.black,
                       ),
                     ),
                   ),
