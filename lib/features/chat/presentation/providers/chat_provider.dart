@@ -291,7 +291,8 @@ class ChatNotifier extends _$ChatNotifier {
     final trimmed = updated.length > _maxMessages
         ? updated.sublist(updated.length - _maxMessages)
         : updated;
-    state = state.copyWith(allScopeMessages: trimmed);
+    // 공지는 unread 카운트에 포함하지 않고 프리뷰만 표시
+    state = state.copyWith(allScopeMessages: trimmed, lastPreviewMessage: msg);
   }
 
   /// 유저 차단 (현재 게임 세션 동안만 유지)
