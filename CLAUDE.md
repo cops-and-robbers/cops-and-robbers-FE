@@ -24,7 +24,7 @@
 flutter pub get
 
 # 코드 생성 (Riverpod, Freezed, Retrofit) — 필수!
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 
 # 테스트 / 린트
 flutter test

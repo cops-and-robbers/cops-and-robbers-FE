@@ -69,8 +69,12 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
     });
   }
 
+  /// 탭으로 닫힌 경우 onDismissed 중복 호출 방지
+  bool _tappedByUser = false;
+
   void _handleTap() {
     _autoDismissTimer?.cancel();
+    _tappedByUser = true;
     widget.onTap();
     setState(() => _visible = false);
   }
@@ -105,8 +109,8 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
             ? const Duration(milliseconds: 300)
             : const Duration(milliseconds: 200),
         onEnd: () {
-          // 페이드아웃 완료 후 dismissed 콜백 (위젯 dispose 경합 방어)
-          if (!_visible && mounted) {
+          // 페이드아웃 완료 후 dismissed 콜백 (탭 시에는 onTap에서 이미 처리됨)
+          if (!_visible && mounted && !_tappedByUser) {
             widget.onDismissed();
           }
         },
