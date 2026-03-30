@@ -55,6 +55,7 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
     // 메시지가 바뀌면 타이머 리셋 + 다시 보이기
     if (oldWidget.message.id != widget.message.id) {
       _autoDismissTimer?.cancel();
+      _tappedByUser = false;
       setState(() => _visible = true);
       _startAutoDismiss();
     }
