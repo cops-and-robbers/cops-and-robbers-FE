@@ -320,6 +320,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 child: ChatPreviewCard(
                   message: chatState.lastPreviewMessage!,
                   isDarkMode: widget.isDarkMode,
+                  unreadCount:
+                      chatState.unreadAllCount + chatState.unreadTeamCount,
                   onTap: () => _handlePreviewTap(chatState.lastPreviewMessage!),
                   onDismissed: () {
                     ref.read(chatNotifierProvider.notifier).dismissPreview();
