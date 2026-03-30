@@ -119,6 +119,15 @@ class AppTextStyles {
   /// Callout / Tag - 작은 라벨, 태그 (12px Medium)
   /// Line Height: 140%, Letter Spacing: -0.32px
 
+  /// Tag SemiBold - 강조 태그, 배지 (12px SemiBold)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get tag12Semibold => TextStyle(
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 12.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
   static TextStyle get tag_12 => TextStyle(
     fontFamily: 'Pretendard-Medium',
     fontSize: 12.sp,

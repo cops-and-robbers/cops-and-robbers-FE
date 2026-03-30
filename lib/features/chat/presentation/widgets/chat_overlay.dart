@@ -5,11 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_provider.dart';
 import 'chat_context_menu.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
+import 'chat_preview_card.dart';
 
 /// 채팅 오버레이 위젯
 ///
@@ -50,10 +52,32 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   static const double _snap50 = 0.5;
   static const double _snap75 = 0.75;
 
+  // 레이아웃 계산용 상수 (screenutil 적용 전 논리값)
+  /// SafeArea가 없는 기기(iPhone SE 등)의 기본 하단 여백
+  static const double _fallbackBottomPadding = 37;
+
+  /// ChatInputBar 고정 높이
+  static const double _inputBarHeight = 64;
+
+  /// 드래그 핸들 터치 영역 높이 (시각적 핸들 4pt + 상하 여백)
+  static const double _dragHandleHeight = 28;
+
+  /// 제목 + 하단 패딩 높이
+  static const double _titleAreaHeight = 60;
+
+  /// 프리뷰 카드와 입력바 사이 간격
+  static const double _previewGap = 4;
+
   @override
   void initState() {
     super.initState();
     _sheetController.addListener(_onSheetChanged);
+    // notifier에 본인 participantId 전달 (프리뷰 필터링용)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(chatNotifierProvider.notifier)
+          .setMyParticipantId(widget.myParticipantId);
+    });
   }
 
   double _minSize = 0.18;
@@ -67,6 +91,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       setState(() {
         _isExpanded = expanded;
       });
+      // notifier에 시트 상태 통보
+      ref.read(chatNotifierProvider.notifier).updateSheetExpanded(expanded);
       if (expanded) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_pageController.hasClients) {
@@ -80,7 +106,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   void _handleSend(String message) {
-    final scope = _currentPage == 0 ? 'ALL' : 'TEAM';
+    final scope = _currentPage == 0 ? ChatScope.all : ChatScope.team;
     ref
         .read(chatNotifierProvider.notifier)
         .sendMessage(gameId: widget.gameId, message: message, scope: scope);
@@ -112,6 +138,35 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     );
   }
 
+  void _handlePreviewTap(ChatMessageDto message) {
+    final notifier = ref.read(chatNotifierProvider.notifier);
+    notifier.onPreviewTapped();
+
+    // 해당 스코프 탭으로 이동
+    final targetPage = message.scope == ChatScope.team ? 1 : 0;
+    setState(() => _currentPage = targetPage);
+
+    // 시트 펼치기
+    if (_sheetController.isAttached && _sheetController.size < _snap50) {
+      _sheetController.animateTo(
+        _snap50,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+
+    // 탭 이동
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(
+        targetPage,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+
+    notifier.updateCurrentPage(targetPage);
+  }
+
   @override
   void dispose() {
     _sheetController.removeListener(_onSheetChanged);
@@ -131,12 +186,22 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     final isKeyboardClosing =
         _prevKeyboardHeight > 0 && keyboardHeight < _prevKeyboardHeight;
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
-    final safeBottomMargin = (bottomPadding > 0 ? bottomPadding : 37.h) + 12.h;
+    final safeBottomMargin =
+        (bottomPadding > 0 ? bottomPadding : _fallbackBottomPadding.h) +
+        AppSpacing.vertical12;
     final bottomMargin = (isKeyboardOpen && !isKeyboardClosing)
         ? keyboardHeight
         : safeBottomMargin;
-    final collapsedHeight = 20.h + 8.h + 64.h + safeBottomMargin;
-    final expandedMinHeight = 20.h + 42.h + 18.h + 64.h + safeBottomMargin;
+    final collapsedHeight =
+        _dragHandleHeight.h +
+        AppSpacing.vertical8 +
+        _inputBarHeight.h +
+        safeBottomMargin;
+    final expandedMinHeight =
+        _dragHandleHeight.h +
+        _titleAreaHeight.h +
+        _inputBarHeight.h +
+        safeBottomMargin;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -176,7 +241,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                       BoxShadow(
                         offset: const Offset(0, -2),
                         blurRadius: 10,
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: AppColors.black.withValues(alpha: 0.1),
                       ),
                     ],
                   ),
@@ -197,6 +262,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                   controller: _pageController,
                                   onPageChanged: (page) {
                                     setState(() => _currentPage = page);
+                                    // notifier에 현재 페이지 통보
+                                    ref
+                                        .read(chatNotifierProvider.notifier)
+                                        .updateCurrentPage(page);
                                   },
                                   children: [
                                     ChatMessageList(
@@ -222,7 +291,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                   ],
                                 ),
                               ),
-                              _buildPageIndicator(),
+                              _buildPageIndicator(chatState),
                             ],
                           ),
                         )
@@ -233,6 +302,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                         enabled: isConnected,
                         onFocusGain: _onInputFocused,
                         isDarkMode: widget.isDarkMode,
+                        unreadAllCount: chatState.unreadAllCount,
+                        unreadTeamCount: chatState.unreadTeamCount,
                       ),
                       SizedBox(height: bottomMargin),
                     ],
@@ -240,6 +311,23 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 );
               },
             ),
+            // 프리뷰 카드: DraggableScrollableSheet 바깥에 배치 (clip 방지)
+            if (chatState.lastPreviewMessage != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: bottomMargin + _inputBarHeight.h + _previewGap.h,
+                child: ChatPreviewCard(
+                  message: chatState.lastPreviewMessage!,
+                  isDarkMode: widget.isDarkMode,
+                  unreadCount:
+                      chatState.unreadAllCount + chatState.unreadTeamCount,
+                  onTap: () => _handlePreviewTap(chatState.lastPreviewMessage!),
+                  onDismissed: () {
+                    ref.read(chatNotifierProvider.notifier).dismissPreview();
+                  },
+                ),
+              ),
           ],
         );
       },
@@ -247,6 +335,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   Widget _buildDragHandle() {
+    // 터치 영역을 48pt로 확보하여 드래그/탭 조작성 향상
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -258,8 +347,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
           curve: Curves.easeOut,
         );
       },
-      child: Padding(
-        padding: EdgeInsets.only(top: 12.h, bottom: 4.h),
+      child: SizedBox(
+        height: 28.h,
         child: Center(
           child: Container(
             width: 48.w,
@@ -297,25 +386,48 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     );
   }
 
-  Widget _buildPageIndicator() {
+  Widget _buildPageIndicator(ChatState chatState) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6.h),
+      padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(2, (index) {
           final isActive = index == _currentPage;
-          return Container(
-            width: 6.w,
-            height: 6.w,
-            margin: EdgeInsets.symmetric(horizontal: 3.w),
-            decoration: BoxDecoration(
-              color: isActive
-                  ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
-                  : (widget.isDarkMode
-                        ? AppColors.black600
-                        : AppColors.black200),
-              shape: BoxShape.circle,
-            ),
+          final hasUnread = index == 0
+              ? chatState.unreadAllCount > 0
+              : chatState.unreadTeamCount > 0;
+
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 6.w,
+                height: 6.w,
+                margin: EdgeInsets.symmetric(horizontal: 3.w),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
+                      : (widget.isDarkMode
+                            ? AppColors.black600
+                            : AppColors.black200),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              // 읽지 않은 메시지 빨간 점
+              if (hasUnread && !isActive)
+                Positioned(
+                  top: -2.h,
+                  right: 0,
+                  child: Container(
+                    width: 5.w,
+                    height: 5.w,
+                    decoration: const BoxDecoration(
+                      color: AppColors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
           );
         }),
       ),

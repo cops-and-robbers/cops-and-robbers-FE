@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../data/datasources/chat_stomp_datasource.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../data/models/chat_message_dto.dart';
 
 export '../../data/datasources/chat_stomp_datasource.dart'
@@ -38,12 +39,24 @@ class ChatState {
   final String? errorMessage;
   final Set<int> blockedParticipantIds;
 
+  /// 전체 채팅 읽지 않은 메시지 수
+  final int unreadAllCount;
+
+  /// 팀 채팅 읽지 않은 메시지 수
+  final int unreadTeamCount;
+
+  /// 프리뷰 카드에 표시할 최신 메시지 (null이면 프리뷰 숨김)
+  final ChatMessageDto? lastPreviewMessage;
+
   const ChatState({
     this.allScopeMessages = const [],
     this.teamScopeMessages = const [],
     this.connectionState = StompConnectionState.disconnected,
     this.errorMessage,
     this.blockedParticipantIds = const {},
+    this.unreadAllCount = 0,
+    this.unreadTeamCount = 0,
+    this.lastPreviewMessage,
   });
 
   ChatState copyWith({
@@ -52,6 +65,9 @@ class ChatState {
     StompConnectionState? connectionState,
     Object? errorMessage = _sentinel,
     Set<int>? blockedParticipantIds,
+    int? unreadAllCount,
+    int? unreadTeamCount,
+    Object? lastPreviewMessage = _sentinel,
   }) {
     return ChatState(
       allScopeMessages: allScopeMessages ?? this.allScopeMessages,
@@ -62,6 +78,11 @@ class ChatState {
           : errorMessage as String?,
       blockedParticipantIds:
           blockedParticipantIds ?? this.blockedParticipantIds,
+      unreadAllCount: unreadAllCount ?? this.unreadAllCount,
+      unreadTeamCount: unreadTeamCount ?? this.unreadTeamCount,
+      lastPreviewMessage: lastPreviewMessage == _sentinel
+          ? this.lastPreviewMessage
+          : lastPreviewMessage as ChatMessageDto?,
     );
   }
 }
@@ -97,6 +118,12 @@ class ChatNotifier extends _$ChatNotifier {
   /// 현재 게임/팀 정보 (재연결용)
   int? _gameId;
   String? _team;
+
+  /// UI 가시성 상태 (ChatOverlay가 통보)
+  bool _isSheetExpanded = false;
+  int _currentVisiblePage = 0; // 0 = ALL, 1 = TEAM
+  /// null이면 아직 초기화되지 않은 상태 (프리뷰 필터링 비활성)
+  int? _myParticipantId;
 
   /// 더미 모드 여부
   bool _isDummyMode = false;
@@ -197,6 +224,9 @@ class ChatNotifier extends _$ChatNotifier {
     final datasource = ref.read(chatStompDatasourceProvider);
     datasource.disconnect();
 
+    _isSheetExpanded = false;
+    _currentVisiblePage = 0;
+    _myParticipantId = null;
     state = const ChatState();
   }
 
@@ -219,20 +249,20 @@ class ChatNotifier extends _$ChatNotifier {
         scope: scope,
         participantId: _dummyMyPid,
         nickname: '나',
-        team: _team?.toUpperCase() ?? 'POLICE',
+        team: _team?.toUpperCase() ?? ChatTeam.police,
       );
       // 상대방 자동 응답 (1초 후)
       _dummyReplyTimer?.cancel();
       _dummyReplyTimer = Timer(const Duration(seconds: 1), () {
         if (_isDummyMode) {
           _addDummyMessage(
-            message: '${scope == 'TEAM' ? '[팀] ' : ''}응답 테스트 메시지!',
+            message: '${scope == ChatScope.team ? '[팀] ' : ''}응답 테스트 메시지!',
             scope: scope,
             participantId: 999,
-            nickname: scope == 'TEAM' ? '팀원닉네임' : '상대닉네임',
-            team: scope == 'TEAM'
-                ? (_team?.toUpperCase() ?? 'POLICE')
-                : 'ROBBER',
+            nickname: scope == ChatScope.team ? '팀원닉네임' : '상대닉네임',
+            team: scope == ChatScope.team
+                ? (_team?.toUpperCase() ?? ChatTeam.police)
+                : ChatTeam.robber,
           );
         }
       });
@@ -251,17 +281,18 @@ class ChatNotifier extends _$ChatNotifier {
       sender: const ChatSenderDto(
         participantId: 0,
         nickname: '시스템',
-        team: 'SYSTEM',
+        team: ChatTeam.system,
       ),
       message: message,
       timestamp: DateTime.now().toIso8601String(),
-      scope: 'ALL',
+      scope: ChatScope.all,
     );
     final updated = [...state.allScopeMessages, msg];
     final trimmed = updated.length > _maxMessages
         ? updated.sublist(updated.length - _maxMessages)
         : updated;
-    state = state.copyWith(allScopeMessages: trimmed);
+    // 공지는 unread 카운트에 포함하지 않고 프리뷰만 표시
+    state = state.copyWith(allScopeMessages: trimmed, lastPreviewMessage: msg);
   }
 
   /// 유저 차단 (현재 게임 세션 동안만 유지)
@@ -271,6 +302,57 @@ class ChatNotifier extends _$ChatNotifier {
     state = state.copyWith(
       blockedParticipantIds: {...state.blockedParticipantIds, participantId},
     );
+  }
+
+  /// ChatOverlay가 시트 펼침/접힘 상태 변경 시 호출
+  void updateSheetExpanded(bool expanded) {
+    _isSheetExpanded = expanded;
+    if (expanded) {
+      _markCurrentPageAsRead();
+    }
+  }
+
+  /// ChatOverlay가 탭 스와이프 시 호출
+  void updateCurrentPage(int page) {
+    _currentVisiblePage = page;
+    if (_isSheetExpanded) {
+      _markCurrentPageAsRead();
+    }
+  }
+
+  /// 본인 participantId 설정 (프리뷰 필터링용)
+  void setMyParticipantId(int pid) {
+    _myParticipantId = pid;
+  }
+
+  /// 프리뷰 카드 탭 시 호출
+  void onPreviewTapped() {
+    final msg = state.lastPreviewMessage;
+    if (msg == null) return;
+
+    if (msg.scope == ChatScope.team) {
+      state = state.copyWith(unreadTeamCount: 0, lastPreviewMessage: null);
+    } else {
+      state = state.copyWith(unreadAllCount: 0, lastPreviewMessage: null);
+    }
+  }
+
+  /// 프리뷰 카드 자동 퇴장 완료 시 호출
+  void dismissPreview() {
+    state = state.copyWith(lastPreviewMessage: null);
+  }
+
+  /// 현재 보고 있는 페이지의 읽지 않은 카운트를 0으로 초기화
+  void _markCurrentPageAsRead() {
+    if (_currentVisiblePage == 0) {
+      if (state.unreadAllCount > 0) {
+        state = state.copyWith(unreadAllCount: 0);
+      }
+    } else {
+      if (state.unreadTeamCount > 0) {
+        state = state.copyWith(unreadTeamCount: 0);
+      }
+    }
   }
 
   // ============================================
@@ -291,28 +373,28 @@ class ChatNotifier extends _$ChatNotifier {
     // 초기 더미 메시지
     _addDummyMessage(
       message: '제한 시간은 30분입니다.',
-      scope: 'ALL',
+      scope: ChatScope.all,
       participantId: 0,
       nickname: '시스템',
-      team: 'SYSTEM',
+      team: ChatTeam.system,
     );
     _addDummyMessage(
       message: '게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!',
-      scope: 'ALL',
+      scope: ChatScope.all,
       participantId: 0,
       nickname: '시스템',
-      team: 'SYSTEM',
+      team: ChatTeam.system,
     );
     _addDummyMessage(
       message: '도둑 잘 도망쳐 봐요~',
-      scope: 'ALL',
+      scope: ChatScope.all,
       participantId: 10,
       nickname: '닉네임',
-      team: 'POLICE',
+      team: ChatTeam.police,
     );
     _addDummyMessage(
       message: '이겨봅시다!',
-      scope: 'TEAM',
+      scope: ChatScope.team,
       participantId: 11,
       nickname: '닉네임',
       team: team.toUpperCase(),
@@ -339,7 +421,7 @@ class ChatNotifier extends _$ChatNotifier {
       scope: scope,
     );
 
-    if (scope == 'TEAM') {
+    if (scope == ChatScope.team) {
       final updated = [...state.teamScopeMessages, msg];
       final trimmed = updated.length > _maxMessages
           ? updated.sublist(updated.length - _maxMessages)
@@ -352,6 +434,7 @@ class ChatNotifier extends _$ChatNotifier {
           : updated;
       state = state.copyWith(allScopeMessages: trimmed);
     }
+    _handleUnreadUpdate(msg);
   }
 
   // ============================================
@@ -388,7 +471,7 @@ class ChatNotifier extends _$ChatNotifier {
 
     // 메시지 수신 구독 (scope별로 분류하여 최대 _maxMessages개 유지)
     _messageSub = datasource.onMessage.listen((message) {
-      if (message.scope == 'TEAM') {
+      if (message.scope == ChatScope.team) {
         final updated = [...state.teamScopeMessages, message];
         final trimmed = updated.length > _maxMessages
             ? updated.sublist(updated.length - _maxMessages)
@@ -401,6 +484,7 @@ class ChatNotifier extends _$ChatNotifier {
             : updated;
         state = state.copyWith(allScopeMessages: trimmed);
       }
+      _handleUnreadUpdate(message);
     });
 
     // STOMP 에러 구독
@@ -409,6 +493,43 @@ class ChatNotifier extends _$ChatNotifier {
       _isHandlingError = true;
       _handleStompError(errorInfo);
     });
+  }
+
+  /// 새 메시지 수신 시 읽지 않은 카운트 증가 + 프리뷰 메시지 설정
+  void _handleUnreadUpdate(ChatMessageDto message) {
+    // 내가 보낸 메시지는 무시 (participantId 미설정 시 필터링 안 함)
+    final myPid = _myParticipantId;
+    if (myPid != null && message.sender.participantId == myPid) return;
+
+    // 차단된 사용자 메시지는 무시
+    if (state.blockedParticipantIds.contains(message.sender.participantId)) {
+      return;
+    }
+
+    final isTeamMessage = message.scope == ChatScope.team;
+    final isCurrentlyViewing =
+        _isSheetExpanded &&
+        (isTeamMessage ? _currentVisiblePage == 1 : _currentVisiblePage == 0);
+
+    // 현재 보고 있는 탭이면 읽음 처리 (카운트 증가 안 함)
+    if (isCurrentlyViewing) return;
+
+    // 카운트 증가
+    if (isTeamMessage) {
+      state = state.copyWith(
+        unreadTeamCount: state.unreadTeamCount + 1,
+        lastPreviewMessage: message,
+      );
+    } else {
+      // 전체 채팅: 현재 팀 프리뷰가 표시 중이면 전체 채팅 프리뷰로 교체하지 않음
+      final currentPreview = state.lastPreviewMessage;
+      final shouldUpdatePreview =
+          currentPreview == null || currentPreview.scope != ChatScope.team;
+      state = state.copyWith(
+        unreadAllCount: state.unreadAllCount + 1,
+        lastPreviewMessage: shouldUpdatePreview ? message : currentPreview,
+      );
+    }
   }
 
   // ============================================

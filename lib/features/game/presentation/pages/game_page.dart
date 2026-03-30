@@ -91,7 +91,6 @@ class _GamePageState extends ConsumerState<GamePage>
   DateTime? _lastSentTime;
 
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
-  DateTime? _lastHandledGameStart;
   DateTime? _lastHandledPoliceMove;
   DateTime? _lastHandledLocationReveal;
   bool _lastHandledIsGameOver = false;
@@ -774,21 +773,6 @@ class _GamePageState extends ConsumerState<GamePage>
     });
 
     // 게임 이벤트 → 전체채팅 시스템 메시지 주입 (chat feature와 game feature를 중재)
-    ref.listen(gameEventNotifierProvider.select((s) => s.gameStartTime), (
-      prev,
-      next,
-    ) {
-      if (next != null && next != _lastHandledGameStart) {
-        _lastHandledGameStart = next;
-        ref
-            .read(chatNotifierProvider.notifier)
-            .addSystemMessage(
-              gameId: _gameId,
-              message: GameEventMessages.gameStart,
-            );
-      }
-    });
-
     ref.listen(gameEventNotifierProvider.select((s) => s.policeMoveStartTime), (
       prev,
       next,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../data/models/chat_message_dto.dart';
 import 'chat_message_bubble.dart';
@@ -130,7 +130,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
       child: ListView.builder(
         controller: _scrollController,
         reverse: true,
-        padding: EdgeInsets.symmetric(vertical: 8.h),
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical8),
         itemCount: filteredMessages.length,
         itemBuilder: (context, index) {
           final msgIndex = filteredMessages.length - 1 - index;
@@ -190,7 +190,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
     final label = '${dt.year}년 ${dt.month}월 ${dt.day}일 $weekday요일';
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 12.h),
+      padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical12),
       child: Row(
         children: [
           Expanded(
@@ -202,7 +202,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal12),
             child: Text(
               label,
               style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
