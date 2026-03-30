@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -123,11 +124,17 @@ class _ChatInputBarState extends State<ChatInputBar> {
   Widget build(BuildContext context) {
     return Container(
       // 화면 아래에서 45px 위에 위치 (SafeArea 포함하여 외부에서 처리)
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal20,
+        vertical: AppSpacing.vertical8,
+      ),
       color: widget.isDarkMode ? AppColors.black900 : AppColors.black100,
       child: Container(
         height: 48.h,
-        padding: EdgeInsets.only(left: 16.w, right: 8.w),
+        padding: EdgeInsets.only(
+          left: AppSpacing.horizontal16,
+          right: AppSpacing.horizontal8,
+        ),
         decoration: BoxDecoration(
           color: widget.isDarkMode ? AppColors.black : AppColors.white,
           borderRadius: AppRadius.large,
@@ -141,6 +148,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   controller: _controller,
                   focusNode: _focusNode,
                   enabled: widget.enabled,
+                  maxLength: 300,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: widget.isDarkMode
                         ? AppColors.black200
@@ -155,6 +164,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                           ? AppColors.black200
                           : AppColors.black400,
                     ),
+                    counterText: '',
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 8.h),
