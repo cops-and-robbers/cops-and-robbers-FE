@@ -3,8 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/services/content_filter/profanity_filter.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../data/models/chat_message_dto.dart';
 
 /// 채팅 메시지 버블 위젯
@@ -40,12 +41,10 @@ class ChatMessageBubble extends StatelessWidget {
   final void Function(BuildContext bubbleContext)? onLongPress;
 
   bool get _isSystemMessage =>
-      message.sender.team.toUpperCase() == 'SYSTEM' ||
+      message.sender.team.toUpperCase() == ChatTeam.system ||
       message.sender.participantId == 0;
 
   String get _formattedTime => message.formattedTimeKst;
-
-  String get _filteredMessage => ProfanityFilter.filter(message.message);
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +54,9 @@ class ChatMessageBubble extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(
-        left: isMe ? 16.w : 24.w,
-        right: isMe ? 24.w : 16.w,
-        top: showNickname ? 8.h : 2.h,
+        left: isMe ? AppSpacing.horizontal16 : AppSpacing.horizontal24,
+        right: isMe ? AppSpacing.horizontal24 : AppSpacing.horizontal16,
+        top: showNickname ? AppSpacing.vertical8 : 2.h,
         bottom: 2.h,
       ),
       child: isMe ? _buildMyMessage() : _buildOtherMessage(),
@@ -67,7 +66,10 @@ class ChatMessageBubble extends StatelessWidget {
   /// 시스템 메시지 (중앙 정렬, 파란색 텍스트 + Loudspeaker 16x16)
   Widget _buildSystemMessage() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal16,
+        vertical: 6.h,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -81,7 +83,7 @@ class ChatMessageBubble extends StatelessWidget {
               BlendMode.srcIn,
             ),
           ),
-          SizedBox(width: 4.w),
+          SizedBox(width: AppSpacing.horizontal4),
           Flexible(
             child: Text(
               message.message,
@@ -102,7 +104,10 @@ class ChatMessageBubble extends StatelessWidget {
       children: [
         if (showNickname)
           Padding(
-            padding: EdgeInsets.only(bottom: 4.h, right: 4.w),
+            padding: EdgeInsets.only(
+              bottom: AppSpacing.vertical8,
+              right: AppSpacing.horizontal4,
+            ),
             child: Text(
               message.sender.nickname,
               style: AppTextStyles.tag_12.copyWith(
@@ -116,7 +121,10 @@ class ChatMessageBubble extends StatelessWidget {
           children: [
             if (showTime)
               Padding(
-                padding: EdgeInsets.only(right: 4.w, bottom: 2.h),
+                padding: EdgeInsets.only(
+                  right: AppSpacing.horizontal4,
+                  bottom: 2.h,
+                ),
                 child: Text(
                   _formattedTime,
                   style: AppTextStyles.tag_10.copyWith(
@@ -133,8 +141,8 @@ class ChatMessageBubble extends StatelessWidget {
                   child: Container(
                     constraints: BoxConstraints(maxWidth: 240.w),
                     padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 8.h,
+                      horizontal: AppSpacing.horizontal12,
+                      vertical: AppSpacing.vertical8,
                     ),
                     decoration: BoxDecoration(
                       color: isDarkMode ? AppColors.black : AppColors.white,
@@ -146,11 +154,9 @@ class ChatMessageBubble extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      _filteredMessage,
+                      message.filteredMessage,
                       style: AppTextStyles.paragraph_14.copyWith(
-                        color: isDarkMode
-                            ? AppColors.white
-                            : AppColors.black900,
+                        color: isDarkMode ? AppColors.white : AppColors.black,
                       ),
                     ),
                   ),
@@ -169,7 +175,10 @@ class ChatMessageBubble extends StatelessWidget {
       children: [
         if (showNickname)
           Padding(
-            padding: EdgeInsets.only(bottom: 4.h, left: 4.w),
+            padding: EdgeInsets.only(
+              bottom: AppSpacing.vertical8,
+              left: AppSpacing.horizontal4,
+            ),
             child: Text(
               message.sender.nickname,
               style: AppTextStyles.tag_12.copyWith(
@@ -190,8 +199,8 @@ class ChatMessageBubble extends StatelessWidget {
                   child: Container(
                     constraints: BoxConstraints(maxWidth: 240.w),
                     padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 8.h,
+                      horizontal: AppSpacing.horizontal12,
+                      vertical: AppSpacing.vertical8,
                     ),
                     decoration: BoxDecoration(
                       color: isDarkMode ? AppColors.black : AppColors.white,
@@ -203,11 +212,9 @@ class ChatMessageBubble extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      _filteredMessage,
+                      message.filteredMessage,
                       style: AppTextStyles.paragraph_14.copyWith(
-                        color: isDarkMode
-                            ? AppColors.white
-                            : AppColors.black900,
+                        color: isDarkMode ? AppColors.white : AppColors.black,
                       ),
                     ),
                   ),
@@ -216,7 +223,10 @@ class ChatMessageBubble extends StatelessWidget {
             ),
             if (showTime)
               Padding(
-                padding: EdgeInsets.only(left: 4.w, bottom: 2.h),
+                padding: EdgeInsets.only(
+                  left: AppSpacing.horizontal4,
+                  bottom: 2.h,
+                ),
                 child: Text(
                   _formattedTime,
                   style: AppTextStyles.tag_10.copyWith(

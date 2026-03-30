@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -18,6 +19,8 @@ class ChatInputBar extends StatefulWidget {
     required this.enabled,
     this.onFocusGain,
     this.isDarkMode = false,
+    this.unreadAllCount = 0,
+    this.unreadTeamCount = 0,
     super.key,
   });
 
@@ -32,6 +35,12 @@ class ChatInputBar extends StatefulWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+
+  /// 전체 채팅 읽지 않은 메시지 수
+  final int unreadAllCount;
+
+  /// 팀 채팅 읽지 않은 메시지 수
+  final int unreadTeamCount;
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -82,6 +91,18 @@ class _ChatInputBarState extends State<ChatInputBar> {
     }
   }
 
+  /// 읽지 않은 메시지 힌트 텍스트 생성
+  String? _buildUnreadHint() {
+    final all = widget.unreadAllCount;
+    final team = widget.unreadTeamCount;
+    if (all == 0 && team == 0) return null;
+
+    final parts = <String>[];
+    if (all > 0) parts.add('전체 $all개');
+    if (team > 0) parts.add('팀 $team개');
+    return '안 읽은 메시지 ${parts.join(' · ')}';
+  }
+
   void _handleSend() {
     final text = _controller.text.trim();
     if (text.isEmpty || !widget.enabled) return;
@@ -103,11 +124,17 @@ class _ChatInputBarState extends State<ChatInputBar> {
   Widget build(BuildContext context) {
     return Container(
       // 화면 아래에서 45px 위에 위치 (SafeArea 포함하여 외부에서 처리)
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal20,
+        vertical: AppSpacing.vertical8,
+      ),
       color: widget.isDarkMode ? AppColors.black900 : AppColors.black100,
       child: Container(
         height: 48.h,
-        padding: EdgeInsets.only(left: 16.w, right: 8.w),
+        padding: EdgeInsets.only(
+          left: AppSpacing.horizontal16,
+          right: AppSpacing.horizontal8,
+        ),
         decoration: BoxDecoration(
           color: widget.isDarkMode ? AppColors.black : AppColors.white,
           borderRadius: AppRadius.large,
@@ -121,18 +148,23 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   controller: _controller,
                   focusNode: _focusNode,
                   enabled: widget.enabled,
+                  maxLength: 300,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: widget.isDarkMode
                         ? AppColors.black200
                         : AppColors.black900,
                   ),
                   decoration: InputDecoration(
-                    hintText: widget.enabled ? '채팅을 입력하세요' : '연결 중...',
+                    hintText: !widget.enabled
+                        ? '연결 중...'
+                        : _buildUnreadHint() ?? '채팅을 입력하세요',
                     hintStyle: AppTextStyles.label16Medium.copyWith(
                       color: widget.isDarkMode
                           ? AppColors.black200
                           : AppColors.black400,
                     ),
+                    counterText: '',
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 8.h),

@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/services/content_filter/profanity_filter.dart';
+
 part 'chat_message_dto.freezed.dart';
 part 'chat_message_dto.g.dart';
 
@@ -58,6 +60,15 @@ extension ChatMessageTimestamp on ChatMessageDto {
     if (dt == null) return '';
     return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
+}
+
+/// 채팅 메시지 비속어 필터링 확장
+///
+/// [ProfanityFilter]를 통해 마스킹된 메시지 텍스트를 제공합니다.
+/// 원본 [message] 필드는 보존됩니다.
+extension ChatMessageFiltered on ChatMessageDto {
+  /// 욕설/금칙어가 마스킹된 메시지 텍스트
+  String get filteredMessage => ProfanityFilter.filter(message);
 }
 
 /// 채팅 발신자 정보 DTO
