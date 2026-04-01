@@ -21,7 +21,7 @@ abstract final class VibrationPatterns {
   // 대기방 — 게임 시작 (리듬 패턴)
   // ═══════════════════════════════════════════════════════════════════════
 
-  static const List<int> gameStartPattern = [0, 200, 100, 200, 100, 400];
+  static const List<int> gameStartPattern = [0, 200, 100, 200, 100, 500];
   static const List<int> gameStartIntensities = [0, 200, 0, 200, 0, 255];
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -49,13 +49,13 @@ abstract final class VibrationPatterns {
   // 인게임 — 영역 이탈 경고 (반복 패턴)
   // ═══════════════════════════════════════════════════════════════════════
 
-  static const List<int> zoneExitPattern = [0, 300, 200, 300, 200, 300];
+  static const List<int> zoneExitPattern = [0, 300, 100, 300, 100, 300];
   static const List<int> zoneExitIntensities = [0, 255, 0, 255, 0, 255];
 
   // ═══════════════════════════════════════════════════════════════════════
   // 인게임 — 게임 종료 (리듬 패턴)
   // ═══════════════════════════════════════════════════════════════════════
 
-  static const List<int> gameEndPattern = [0, 150, 100, 150, 100, 500];
-  static const List<int> gameEndIntensities = [0, 150, 0, 150, 0, 255];
+  static const List<int> gameEndPattern = [0, 200, 100, 200, 100, 500];
+  static const List<int> gameEndIntensities = [0, 200, 0, 200, 0, 255];
 }
