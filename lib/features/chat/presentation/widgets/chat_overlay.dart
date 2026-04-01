@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/constants/chat_constants.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../data/models/chat_message_dto.dart';
+import '../providers/chat_notification_provider.dart';
 import '../providers/chat_provider.dart';
 import 'chat_context_menu.dart';
 import 'chat_input_bar.dart';
@@ -62,8 +66,11 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   /// 드래그 핸들 터치 영역 높이 (시각적 핸들 4pt + 상하 여백)
   static const double _dragHandleHeight = 28;
 
-  /// 제목 + 하단 패딩 높이
-  static const double _titleAreaHeight = 60;
+  /// 제목 영역 높이 (벨 아이콘 48 + 상단 16 + 하단 8)
+  static const double _titleAreaHeight = 72;
+
+  /// 페이지 인디케이터 높이 (dot 6 + vertical 패딩)
+  static const double _pageIndicatorHeight = 18;
 
   /// 프리뷰 카드와 입력바 사이 간격
   static const double _previewGap = 4;
@@ -200,6 +207,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     final expandedMinHeight =
         _dragHandleHeight.h +
         _titleAreaHeight.h +
+        _pageIndicatorHeight.h +
         _inputBarHeight.h +
         safeBottomMargin;
 
@@ -311,8 +319,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                 );
               },
             ),
-            // 프리뷰 카드: DraggableScrollableSheet 바깥에 배치 (clip 방지)
-            if (chatState.lastPreviewMessage != null)
+            // 프리뷰 카드: 알림 ON + 메시지 존재 시에만 표시
+            if (ref.watch(chatNotificationEnabledProvider) &&
+                chatState.lastPreviewMessage != null)
               Positioned(
                 left: 0,
                 right: 0,
@@ -367,23 +376,68 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
 
   Widget _buildTitle() {
     final title = _currentPage == 0 ? '전체 채팅' : '팀 채팅';
+    final isNotificationOn = ref.watch(chatNotificationEnabledProvider);
+
     return Padding(
       padding: EdgeInsets.only(
         left: AppSpacing.horizontal24,
-        right: AppSpacing.horizontal24,
+        right: AppSpacing.horizontal12,
         top: AppSpacing.vertical16,
         bottom: AppSpacing.vertical8,
       ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: widget.isDarkMode
-              ? AppTextStyles.robberSubHeading.copyWith(color: AppColors.white)
-              : AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
-        ),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: widget.isDarkMode
+                ? AppTextStyles.robberSubHeading.copyWith(
+                    color: AppColors.white,
+                  )
+                : AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
+          ),
+          const Spacer(),
+          // 채팅 알림 토글 (진동 + 프리뷰 on/off)
+          GestureDetector(
+            onTap: () {
+              VibrationService.instance().buttonTap();
+              final current = ref.read(chatNotificationEnabledProvider);
+              ref.read(chatNotificationEnabledProvider.notifier).state =
+                  !current;
+              // OFF 전환 시 잔여 프리뷰 즉시 제거
+              if (current) {
+                ref.read(chatNotifierProvider.notifier).dismissPreview();
+              }
+            },
+            behavior: HitTestBehavior.opaque,
+            child: SizedBox(
+              width: 48.w,
+              height: 48.w,
+              child: Center(
+                child: SvgPicture.asset(
+                  isNotificationOn
+                      ? 'assets/icons/icon_bell_on.svg'
+                      : 'assets/icons/icon_bell_off.svg',
+                  width: 24.w,
+                  height: 24.w,
+                  colorFilter: ColorFilter.mode(
+                    _bellIconColor(isNotificationOn),
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  /// 벨 아이콘 색상 — 다크/라이트 × on/off 조합
+  Color _bellIconColor(bool isOn) {
+    if (widget.isDarkMode) {
+      return isOn ? AppColors.green : AppColors.green500;
+    }
+    return isOn ? AppColors.blue : AppColors.blue500;
   }
 
   Widget _buildPageIndicator(ChatState chatState) {

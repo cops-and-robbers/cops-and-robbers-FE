@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/vibration_service.dart';
+import 'chat_notification_provider.dart';
 import '../../data/datasources/chat_stomp_datasource.dart';
 import '../../../../core/constants/chat_constants.dart';
 import '../../data/models/chat_message_dto.dart';
@@ -515,24 +516,32 @@ class ChatNotifier extends _$ChatNotifier {
     // 현재 보고 있는 탭이면 읽음 처리 (카운트 증가 안 함)
     if (isCurrentlyViewing) return;
 
-    // 채팅 수신 진동 (on/off 설정 내부에서 체크)
-    VibrationService.instance().messageReceived();
+    // 알림 on/off 확인 (진동 + 프리뷰 제어, 카운트는 항상 증가)
+    final isNotificationOn = ref.read(chatNotificationEnabledProvider);
 
-    // 카운트 증가
+    // 카운트 증가 + 알림 ON일 때만 프리뷰 설정
     if (isTeamMessage) {
       state = state.copyWith(
         unreadTeamCount: state.unreadTeamCount + 1,
-        lastPreviewMessage: message,
+        lastPreviewMessage: isNotificationOn
+            ? message
+            : state.lastPreviewMessage,
       );
     } else {
       // 전체 채팅: 현재 팀 프리뷰가 표시 중이면 전체 채팅 프리뷰로 교체하지 않음
       final currentPreview = state.lastPreviewMessage;
       final shouldUpdatePreview =
-          currentPreview == null || currentPreview.scope != ChatScope.team;
+          isNotificationOn &&
+          (currentPreview == null || currentPreview.scope != ChatScope.team);
       state = state.copyWith(
         unreadAllCount: state.unreadAllCount + 1,
         lastPreviewMessage: shouldUpdatePreview ? message : currentPreview,
       );
+    }
+
+    // 알림 ON일 때만 진동
+    if (isNotificationOn) {
+      VibrationService.instance().messageReceived();
     }
   }
 

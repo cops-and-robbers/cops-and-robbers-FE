@@ -101,7 +101,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
     final parts = <String>[];
     if (all > 0) parts.add('전체 $all개');
     if (team > 0) parts.add('팀 $team개');
-    return '안 읽은 메시지 ${parts.join(' · ')}';
+    return '안 읽은 메시지 [${parts.join(' · ')}]';
   }
 
   void _handleSend() {
