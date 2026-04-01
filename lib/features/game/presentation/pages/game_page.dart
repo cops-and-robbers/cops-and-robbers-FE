@@ -23,6 +23,7 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/countdown_timer_content.dart';
 import '../../../../router/route_paths.dart';
+import '../../../chat/presentation/providers/chat_notification_provider.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
 import '../../../chat/presentation/widgets/chat_overlay.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
@@ -636,6 +637,8 @@ class _GamePageState extends ConsumerState<GamePage>
   Future<void> _showGameOverDialog(String? winnerTeam, String? reason) async {
     if (_gameOverDialogShown) return;
     _gameOverDialogShown = true;
+    // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
+    ref.invalidate(chatNotificationEnabledProvider);
     // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단)
     ref.read(gameEventNotifierProvider.notifier).disconnect();
     // 혹시 열려있는 다른 팝업/다이얼로그 모두 닫기
@@ -798,6 +801,18 @@ class _GamePageState extends ConsumerState<GamePage>
         _reconnectSocketsIfNeeded();
       }
     });
+
+    // 체포 이벤트 감지 → 열려있는 다이얼로그(QR 등) 닫기
+    ref.listen(
+      gameEventNotifierProvider.select((s) => s.arrestedParticipantIds),
+      (prev, next) {
+        if (prev == null) return;
+        final newlyArrested = next.difference(prev);
+        if (newlyArrested.contains(widget.participantId) && mounted) {
+          Navigator.of(context).popUntil((route) => route is! PopupRoute);
+        }
+      },
+    );
 
     // 게임 이벤트 감지 → 게임 종료 다이얼로그
     ref.listen(gameEventNotifierProvider, (prev, next) {

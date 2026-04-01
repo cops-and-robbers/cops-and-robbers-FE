@@ -116,7 +116,7 @@ class _QrScannerPageState extends State<QrScannerPage> {
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Text(
-                  '도둑의 QR코드를 스캔하세요',
+                  '도둑의 수배 QR을 스캔하세요',
                   style: AppTextStyles.heading_20.copyWith(
                     color: AppColors.white,
                   ),
