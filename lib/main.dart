@@ -9,6 +9,7 @@ import 'package:cops_and_robbers/core/config/env_config.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
+import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
 
@@ -112,8 +113,13 @@ void main() async {
   }
 
   // ============================================================
-  // 3. 로컬 알림 서비스 초기화 (Firebase와 독립적)
-  // 3. Initialize local notifications (independent from Firebase)
+  // 3. 진동 서비스 초기화 (디바이스 지원 여부 캐싱)
+  // ============================================================
+  await VibrationService.instance().init();
+
+  // ============================================================
+  // 4. 로컬 알림 서비스 초기화 (Firebase와 독립적)
+  // 4. Initialize local notifications (independent from Firebase)
   // ============================================================
   LocalNotificationsService? localNotificationsService;
   try {
@@ -128,8 +134,8 @@ void main() async {
   }
 
   // ============================================================
-  // 4. FCM 서비스 초기화 (Firebase + 로컬 알림 필요)
-  // 4. Initialize FCM (requires Firebase + Local notifications)
+  // 5. FCM 서비스 초기화 (Firebase + 로컬 알림 필요)
+  // 5. Initialize FCM (requires Firebase + Local notifications)
   // ============================================================
   if (isFirebaseInitialized && localNotificationsService != null) {
     try {
