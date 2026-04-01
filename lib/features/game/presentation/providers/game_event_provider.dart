@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
@@ -462,6 +463,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       robberLocations: newLocations ?? state.robberLocations,
     );
     _startBannerTimer();
+    VibrationService.instance().locationRevealed();
     debugPrint(
       '[GameEventNotifier] ✅ LOCATION_REVEAL 이벤트 수신 '
       '(도둑 ${newLocations?.length ?? 0}명)',
@@ -489,6 +491,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       lastArrestNickname: robberNickname,
       isApiLoading: false,
     );
+    VibrationService.instance().arrested();
     debugPrint(
       '[GameEventNotifier] ✅ ARREST 이벤트 → robberPid: $robberPid, 남은: $remaining',
     );
@@ -509,6 +512,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       lastEscapeNickname: firstNickname,
       isApiLoading: false,
     );
+    VibrationService.instance().escaped();
     debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedId');
   }
 
@@ -519,6 +523,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       gameOverReason: data['reason'] as String?,
       gameResultId: (data['gameResultId'] as num?)?.toInt(),
     );
+    VibrationService.instance().gameEnd();
     debugPrint(
       '[GameEventNotifier] ✅ GAME_OVER 이벤트 → winner: ${state.winnerTeam}',
     );

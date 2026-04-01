@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../data/datasources/chat_stomp_datasource.dart';
 import '../../../../core/constants/chat_constants.dart';
 import '../../data/models/chat_message_dto.dart';
@@ -513,6 +514,9 @@ class ChatNotifier extends _$ChatNotifier {
 
     // 현재 보고 있는 탭이면 읽음 처리 (카운트 증가 안 함)
     if (isCurrentlyViewing) return;
+
+    // 채팅 수신 진동 (on/off 설정 내부에서 체크)
+    VibrationService.instance().messageReceived();
 
     // 카운트 증가
     if (isTeamMessage) {

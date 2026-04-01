@@ -14,6 +14,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
@@ -592,6 +593,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 준비 상태 토글
   Future<void> _toggleReady() async {
+    VibrationService.instance().buttonTap();
     // 더미 모드: 로컬에서 즉시 토글
     if (_isDummyMode) {
       ref
@@ -632,6 +634,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 게임 시작 (방장 전용)
   Future<void> _startGame() async {
+    VibrationService.instance().buttonTap();
     if (_isDummyMode) {
       if (mounted) {
         context.go(
@@ -724,6 +727,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
       customContent: GestureDetector(
         onTap: () async {
+          VibrationService.instance().buttonTap();
           await Clipboard.setData(ClipboardData(text: code));
           if (!mounted) return;
           AppSnackbar.show(

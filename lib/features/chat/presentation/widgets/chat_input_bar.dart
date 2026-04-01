@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/vibration_service.dart';
 
 /// 채팅 입력 바 위젯
 ///
@@ -107,6 +108,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
     final text = _controller.text.trim();
     if (text.isEmpty || !widget.enabled) return;
 
+    VibrationService.instance().buttonTap();
     widget.onSend(text);
     _controller.clear();
   }

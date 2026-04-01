@@ -17,6 +17,7 @@ import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
@@ -97,6 +98,9 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
+
+  /// 영역 이탈 상태 (중복 진동 방지)
+  bool _isOutsideZone = false;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => widget.team == 'ROBBER';
@@ -428,14 +432,44 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 방향 인디케이터 실시간 갱신 스트림 시작 (양 팀 공통, 서버 전송 없음)
+  /// 추가로 플레이그라운드 영역 이탈 감지 → 진동 피드백 제공
   void _startHeadingTracking() {
     if (widget.isDummy) return;
     _headingSubscription =
         DeviceLocationService.getPositionStream(distanceFilter: 0).listen((
           pos,
         ) {
-          if (mounted) _updateHeadingMarker(pos);
+          if (mounted) {
+            _updateHeadingMarker(pos);
+            _checkZoneExit(pos);
+          }
         });
+  }
+
+  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 1회
+  void _checkZoneExit(Position pos) {
+    // 게임 종료 또는 체포 상태에서는 진동 불필요
+    if (_gameOverDialogShown) return;
+    final gameState = ref.read(gameEventNotifierProvider);
+    if (gameState.arrestedParticipantIds.contains(widget.participantId)) return;
+
+    final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
+    if (area == null) return;
+
+    final distance = Geolocator.distanceBetween(
+      area.playgroundCenter.latitude,
+      area.playgroundCenter.longitude,
+      pos.latitude,
+      pos.longitude,
+    );
+
+    final isOutside = distance > area.playgroundRadiusInMeters;
+
+    // 안 → 밖 전환 시에만 진동 (반복 진동 방지)
+    if (isOutside && !_isOutsideZone) {
+      VibrationService.instance().zoneExit();
+    }
+    _isOutsideZone = isOutside;
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
