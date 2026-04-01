@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 
 import '../constants/vibration_patterns.dart';
@@ -21,12 +20,6 @@ class VibrationService {
   bool _hasCustomVibrationsSupport = false;
   bool _initialized = false;
 
-  /// 채팅 진동 on/off 캐싱 (SharedPreferences 매번 조회 방지)
-  bool _isChatVibrationEnabled = true;
-
-  /// SharedPreferences 키 — 채팅 진동 on/off
-  static const String _chatVibrationKey = 'chat_vibration_enabled';
-
   /// 초기화 — 앱 시작 시 1회 호출
   Future<void> init() async {
     if (_initialized) return;
@@ -36,10 +29,6 @@ class VibrationService {
       _hasAmplitudeControl = await Vibration.hasAmplitudeControl();
       _hasCustomVibrationsSupport =
           await Vibration.hasCustomVibrationsSupport();
-
-      // 채팅 진동 설정값 캐싱
-      final prefs = await SharedPreferences.getInstance();
-      _isChatVibrationEnabled = prefs.getBool(_chatVibrationKey) ?? true;
     } catch (e) {
       // 초기화 실패 시 진동 비활성 (앱 실행에는 영향 없음)
       debugPrint('[Vibration] ❌ 초기화 실패: $e');
@@ -105,25 +94,11 @@ class VibrationService {
   // 채팅
   // ═══════════════════════════════════════════════════════════════════════
 
-  /// 채팅 진동 on/off 여부 (캐싱된 값)
-  bool get isChatVibrationEnabled => _isChatVibrationEnabled;
-
-  /// 채팅 진동 on/off 설정 (캐시 + SharedPreferences 동시 갱신)
-  Future<void> setChatVibrationEnabled(bool enabled) async {
-    _isChatVibrationEnabled = enabled;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_chatVibrationKey, enabled);
-  }
-
-  /// 채팅 메시지 수신 진동 (on/off 캐시 체크)
-  void messageReceived() {
-    if (!_isChatVibrationEnabled) return;
-
-    _vibrateSingle(
-      VibrationPatterns.messageReceivedDuration,
-      VibrationPatterns.messageReceivedAmplitude,
-    );
-  }
+  /// 채팅 메시지 수신 진동 (호출자가 on/off 판단)
+  void messageReceived() => _vibrateSingle(
+    VibrationPatterns.messageReceivedDuration,
+    VibrationPatterns.messageReceivedAmplitude,
+  );
 
   // ═══════════════════════════════════════════════════════════════════════
   // 대기방
