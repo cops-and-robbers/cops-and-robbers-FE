@@ -910,26 +910,28 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       title: _inviteCode != null
           ? GestureDetector(
               onTap: _showInviteCodeDialog,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _inviteCode!,
-                    style: isDark
-                        ? AppTextStyles.robberHeading.copyWith(
-                            color: AppColors.white,
-                          )
-                        : AppTextStyles.heading_20.copyWith(
-                            color: AppColors.black,
-                          ),
-                  ),
-                  SizedBox(height: 2.h),
-                  Container(
-                    width: _inviteCode!.length * 12.w + 8.w,
-                    height: 2.h,
-                    color: isDark ? AppColors.white : AppColors.black,
-                  ),
-                ],
+              child: IntrinsicWidth(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _inviteCode!,
+                      style: isDark
+                          ? AppTextStyles.robberHeading.copyWith(
+                              color: AppColors.white,
+                            )
+                          : AppTextStyles.heading_20.copyWith(
+                              color: AppColors.black,
+                            ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Container(
+                      width: double.infinity,
+                      height: 2.h,
+                      color: isDark ? AppColors.white : AppColors.black,
+                    ),
+                  ],
+                ),
               ),
             )
           : null,
