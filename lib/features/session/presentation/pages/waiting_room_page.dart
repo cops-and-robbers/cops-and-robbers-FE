@@ -732,68 +732,49 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         mainAxisSize: MainAxisSize.min,
         children: [
           // QR 코드 이미지 — 초대코드를 JSON 형태로 인코딩
-          Container(
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: AppRadius.xlarge,
-            ),
-            child: QrImageView(
-              data: jsonEncode({'inviteCode': code}),
-              version: QrVersions.auto,
-              size: 200.w,
-              backgroundColor: AppColors.white,
-            ),
+          QrImageView(
+            data: jsonEncode({'inviteCode': code}),
+            version: QrVersions.auto,
+            size: 220.w,
+            backgroundColor: AppColors.white,
           ),
-          SizedBox(height: AppSpacing.vertical16),
+          // 초대코드 + 복사 아이콘
           GestureDetector(
-        onTap: () async {
-          VibrationService.instance().buttonTap();
-          await Clipboard.setData(ClipboardData(text: code));
-          if (!mounted) return;
-          AppSnackbar.show(
-            context,
-            message: '코드가 복사되었습니다',
-            iconPath: 'assets/icons/icon_copy.svg',
-          );
-        },
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            vertical: AppSpacing.vertical20,
-            horizontal: AppSpacing.horizontal16,
-          ),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: isDark ? AppColors.black800 : AppColors.black100,
-            ),
-            borderRadius: AppRadius.medium,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                code,
-                style: isDark
-                    ? AppTextStyles.robberHeading.copyWith(
-                        color: AppColors.white,
-                      )
-                    : AppTextStyles.heading_20.copyWith(color: AppColors.black),
-              ),
-              SizedBox(width: AppSpacing.horizontal4),
-              SvgPicture.asset(
-                'assets/icons/icon_copy.svg',
-                width: 20.w,
-                height: 20.w,
-                colorFilter: ColorFilter.mode(
-                  isDark ? AppColors.black500 : AppColors.black300,
-                  BlendMode.srcIn,
+            onTap: () async {
+              VibrationService.instance().buttonTap();
+              await Clipboard.setData(ClipboardData(text: code));
+              if (!mounted) return;
+              AppSnackbar.show(
+                context,
+                message: '코드가 복사되었습니다',
+                iconPath: 'assets/icons/icon_copy.svg',
+              );
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  code,
+                  style: isDark
+                      ? AppTextStyles.robberLabel.copyWith(
+                          color: AppColors.white,
+                        )
+                      : AppTextStyles.label_16.copyWith(color: AppColors.black),
                 ),
-              ),
-            ],
-          ),
-        ),
+                SizedBox(width: AppSpacing.horizontal4),
+                SvgPicture.asset(
+                  'assets/icons/icon_copy.svg',
+                  width: 20.w,
+                  height: 20.w,
+                  colorFilter: ColorFilter.mode(
+                    isDark ? AppColors.black500 : AppColors.black300,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
