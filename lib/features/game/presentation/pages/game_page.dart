@@ -1080,22 +1080,7 @@ class _GamePageState extends ConsumerState<GamePage>
           else
             const SizedBox.shrink(),
 
-          /// index 3: 알림 배너 (if/else로 개수 고정)
-          if (!_showParticipants && bannerMessage != null)
-            SafeArea(
-              bottom: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 64.h + 8.h),
-                  MarqueeAlertBanner(message: bannerMessage),
-                ],
-              ),
-            )
-          else
-            const SizedBox.shrink(),
-
-          /// index 4: 도둑팀 경찰 시작 카운트다운 (if/else로 개수 고정)
+          /// index 3: 도둑팀 경찰 시작 카운트다운 (if/else로 개수 고정)
           if (!_showParticipants && policeStartTime != null)
             SafeArea(
               bottom: false,
@@ -1105,6 +1090,21 @@ class _GamePageState extends ConsumerState<GamePage>
                   alignment: Alignment.topCenter,
                   child: PoliceStartCountdown(policeStartTime: policeStartTime),
                 ),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+
+          /// index 4: 알림 배너 (if/else로 개수 고정, 카운트다운보다 위에 표시)
+          if (!_showParticipants && bannerMessage != null)
+            SafeArea(
+              bottom: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 64.h + 8.h),
+                  MarqueeAlertBanner(message: bannerMessage),
+                ],
               ),
             )
           else
