@@ -42,8 +42,8 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
   // ── 마퀴 (텍스트 우→좌 반복) ──
   late AnimationController _marqueeController;
 
-  /// displayDuration 동안 마퀴 반복 횟수
-  static const int _marqueeRepeats = 2;
+  /// 마퀴 1사이클 시간 (초)
+  static const int _cycleSeconds = 8;
 
   /// 텍스트 스타일 (라이트: paragraph14Semibold, 다크: robberParagraph)
   TextStyle get _textStyle =>
@@ -81,7 +81,7 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
     // 마퀴 — 항상 우→좌 반복 (1사이클 6초)
     _marqueeController = AnimationController(
       vsync: this,
-      duration: widget.displayDuration ~/ _marqueeRepeats,
+      duration: Duration(seconds: _cycleSeconds),
     )..repeat();
   }
 
