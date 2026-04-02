@@ -96,7 +96,8 @@ class _GamePageState extends ConsumerState<GamePage>
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
   DateTime? _lastHandledPoliceMove;
   DateTime? _lastHandledLocationReveal;
-  bool _lastHandledIsGameOver = false;
+  int _lastHandledArrestCount = 0;
+  int _lastHandledEscapeCount = 0;
 
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
@@ -183,7 +184,17 @@ class _GamePageState extends ConsumerState<GamePage>
     _connectGameEvents();
     _loadGameArea();
     _showPoliceTimerIfNeeded();
-    _initSettingsFromApiIfNeeded();
+    _initSettingsAndStartMessages();
+  }
+
+  /// 게임 설정 로드 후 게임 시작 시스템 메시지 발송
+  ///
+  /// 정상 진입(로비 경유): participantInfo에 이미 설정이 있으므로 즉시 판단.
+  /// terminate 재접속: API로 설정 로드 후 gameStartTime 기반으로 판단.
+  Future<void> _initSettingsAndStartMessages() async {
+    await _initSettingsFromApiIfNeeded();
+    if (!mounted) return;
+    _sendGameStartSystemMessages();
   }
 
   /// 앱 포그라운드 복귀 시 위치 권한 재확인
@@ -350,6 +361,55 @@ class _GamePageState extends ConsumerState<GamePage>
     _gameEventNotifier!.connectAndSubscribe(_gameId);
     if (widget.team == 'ROBBER') _startLocationSending();
     _startHeadingTracking();
+
+    // 게임 시작 시스템 채팅 4단계 시퀀스는 _initSettingsFromApiIfNeeded 완료 후 호출
+    // (START 이벤트는 로비 STOMP에서 수신되므로 게임 이벤트 STOMP로는 오지 않음.
+    //  terminate 재접속 시 participantInfo가 아직 null이므로 설정 로드 후 판단해야 함)
+  }
+
+  /// 게임 시작 시 전체채팅에 4단계 시스템 메시지를 5초 간격으로 순차 주입
+  ///
+  /// 한번에 보내면 preview와 배너에 마지막 메시지만 보이므로 텀을 둔다.
+  /// 재입장 시에는 이미 시스템 메시지가 존재하므로 중복 발송하지 않는다.
+  void _sendGameStartSystemMessages() {
+    // 재입장 감지: 게임 시작 후 20초 이상 경과했으면 스킵
+    // (앱 재시작 시 인메모리 채팅 state가 초기화되므로 경과 시간으로 판단)
+    final participantInfo = ref.read(gameParticipantNotifierProvider);
+    final startTimeStr = participantInfo?.gameStartTime;
+    if (startTimeStr != null) {
+      final startTime = DateTime.tryParse(startTimeStr);
+      if (startTime != null &&
+          DateTime.now().difference(startTime).inSeconds > 20) {
+        return;
+      }
+    }
+
+    final gameDuration = participantInfo?.roundTimeMinutes;
+
+    final messages = <String>[
+      if (gameDuration != null) GameEventMessages.gameStartTime(gameDuration),
+      GameEventMessages.gameStartReady,
+      GameEventMessages.gameStartReportTip,
+      GameEventMessages.gameStartGo,
+    ];
+
+    for (var i = 0; i < messages.length; i++) {
+      final message = messages[i];
+      if (i == 0) {
+        // 첫 메시지는 즉시 발송
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(gameId: _gameId, message: message);
+      } else {
+        // 이후 메시지는 5초 간격으로 발송
+        Timer(Duration(milliseconds: 5000 * i), () {
+          if (!mounted) return;
+          ref
+              .read(chatNotifierProvider.notifier)
+              .addSystemMessage(gameId: _gameId, message: message);
+        });
+      }
+    }
   }
 
   /// 게임 맵 영역 로드 (FutureProvider 트리거)
@@ -853,20 +913,50 @@ class _GamePageState extends ConsumerState<GamePage>
       },
     );
 
-    ref.listen(gameEventNotifierProvider.select((s) => s.isGameOver), (
-      prev,
-      next,
-    ) {
-      if (next == true && !_lastHandledIsGameOver) {
-        _lastHandledIsGameOver = true;
-        ref
-            .read(chatNotifierProvider.notifier)
-            .addSystemMessage(
-              gameId: _gameId,
-              message: GameEventMessages.gameOver,
-            );
-      }
-    });
+    // 체포 이벤트 → 전체채팅 시스템 메시지 (인스턴스 변수로 중복 방지)
+    ref.listen(
+      gameEventNotifierProvider.select(
+        (s) => (
+          s.lastArrestNickname,
+          s.lastArrestPoliceNickname,
+          s.arrestedParticipantIds.length,
+        ),
+      ),
+      (prev, next) {
+        final (robberNick, policeNick, count) = next;
+        if (robberNick != null && count > _lastHandledArrestCount) {
+          _lastHandledArrestCount = count;
+          ref
+              .read(chatNotifierProvider.notifier)
+              .addSystemMessage(
+                gameId: _gameId,
+                message: GameEventMessages.arrestNotice(
+                  policeNick ?? '경찰',
+                  robberNick,
+                ),
+              );
+        }
+      },
+    );
+
+    // 탈옥 이벤트 → 전체채팅 시스템 메시지 (인스턴스 변수로 중복 방지)
+    ref.listen(
+      gameEventNotifierProvider.select(
+        (s) => (s.lastEscapeNickname, s.escapedParticipantIds.length),
+      ),
+      (prev, next) {
+        final (_, count) = next;
+        if (count > _lastHandledEscapeCount) {
+          _lastHandledEscapeCount = count;
+          ref
+              .read(chatNotifierProvider.notifier)
+              .addSystemMessage(
+                gameId: _gameId,
+                message: GameEventMessages.escapeNotice,
+              );
+        }
+      },
+    );
 
     final bannerMessage = ref.watch(
       gameEventNotifierProvider.select((s) => s.bannerMessage),

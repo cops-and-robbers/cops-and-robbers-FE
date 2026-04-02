@@ -62,6 +62,9 @@ class GameEventState {
   /// 가장 최근 체포된 도둑 닉네임 (ARREST 이벤트 다이얼로그용)
   final String? lastArrestNickname;
 
+  /// 가장 최근 체포한 경찰 닉네임 (ARREST 이벤트 공지용)
+  final String? lastArrestPoliceNickname;
+
   /// 가장 최근 탈옥한 도둑 닉네임 (ESCAPE 이벤트 다이얼로그용, 복수 탈옥 시 첫 번째)
   final String? lastEscapeNickname;
 
@@ -124,6 +127,7 @@ class GameEventState {
     this.isPoliceMoving = false,
     this.remainingThieves,
     this.lastArrestNickname,
+    this.lastArrestPoliceNickname,
     this.lastEscapeNickname,
     this.isGameOver = false,
     this.winnerTeam,
@@ -145,6 +149,7 @@ class GameEventState {
     bool? isPoliceMoving,
     Object? remainingThieves = _sentinel,
     Object? lastArrestNickname = _sentinel,
+    Object? lastArrestPoliceNickname = _sentinel,
     Object? lastEscapeNickname = _sentinel,
     bool? isGameOver,
     Object? winnerTeam = _sentinel,
@@ -173,6 +178,9 @@ class GameEventState {
       lastArrestNickname: lastArrestNickname == _sentinel
           ? this.lastArrestNickname
           : lastArrestNickname as String?,
+      lastArrestPoliceNickname: lastArrestPoliceNickname == _sentinel
+          ? this.lastArrestPoliceNickname
+          : lastArrestPoliceNickname as String?,
       lastEscapeNickname: lastEscapeNickname == _sentinel
           ? this.lastEscapeNickname
           : lastEscapeNickname as String?,
@@ -430,7 +438,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     final startTime = _parseTimestamp(startTimeStr);
     state = state.copyWith(
       gameStartTime: startTime ?? DateTime.now(),
-      bannerMessage: GameEventMessages.gameStart,
+      bannerMessage: GameEventMessages.gameStartGo,
     );
     _startBannerTimer();
     debugPrint(
@@ -477,6 +485,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     final remaining = (data['remainingThieves'] as num?)?.toInt();
     if (robberPid == null) return;
 
+    // 경찰 정보 파싱
+    final police = data['police'] as Map<String, dynamic>?;
+    final policeNickname = police?['nickname'] as String?;
+
     // race condition 방어: STOMP가 API 응답보다 먼저 도착한 경우 pending 해제
     if (robberPid == _pendingArrestId) {
       _pendingArrestId = null;
@@ -489,8 +501,14 @@ class GameEventNotifier extends _$GameEventNotifier {
       }),
       remainingThieves: remaining,
       lastArrestNickname: robberNickname,
+      lastArrestPoliceNickname: policeNickname,
       isApiLoading: false,
+      bannerMessage: GameEventMessages.arrestNotice(
+        policeNickname ?? '경찰',
+        robberNickname ?? '도둑',
+      ),
     );
+    _startBannerTimer();
     VibrationService.instance().arrested();
     debugPrint(
       '[GameEventNotifier] ✅ ARREST 이벤트 → robberPid: $robberPid, 남은: $remaining',
@@ -511,7 +529,9 @@ class GameEventNotifier extends _$GameEventNotifier {
       escapedParticipantIds: {...state.escapedParticipantIds, escapedId},
       lastEscapeNickname: firstNickname,
       isApiLoading: false,
+      bannerMessage: GameEventMessages.escapeNotice,
     );
+    _startBannerTimer();
     VibrationService.instance().escaped();
     debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedId');
   }
