@@ -12,6 +12,7 @@ import '../../../../core/constants/text_styles.dart';
 class MarqueeAlertBanner extends StatefulWidget {
   const MarqueeAlertBanner({
     required this.message,
+    this.isDarkMode = false,
     this.displayDuration = const Duration(seconds: 8),
     this.fadeOutDuration = const Duration(milliseconds: 800),
     this.slideInDuration = const Duration(milliseconds: 300),
@@ -19,6 +20,7 @@ class MarqueeAlertBanner extends StatefulWidget {
   });
 
   final String message;
+  final bool isDarkMode;
   final Duration displayDuration;
   final Duration fadeOutDuration;
   final Duration slideInDuration;
@@ -40,13 +42,15 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
   // ── 마퀴 (텍스트 우→좌 반복) ──
   late AnimationController _marqueeController;
 
-  /// 마퀴 1사이클 시간 (초)
-  static const double _cycleSeconds = 6.0;
+  /// displayDuration 동안 마퀴 반복 횟수
+  static const int _marqueeRepeats = 2;
 
-  /// 텍스트 스타일 (측정과 렌더링 동일)
-  static final _textStyle = AppTextStyles.paragraph14Semibold.copyWith(
-    color: AppColors.white,
-  );
+  /// 텍스트 스타일 (라이트: paragraph14Semibold, 다크: robberParagraph)
+  TextStyle get _textStyle =>
+      (widget.isDarkMode
+              ? AppTextStyles.robberParagraph
+              : AppTextStyles.paragraph14Semibold)
+          .copyWith(color: AppColors.white);
 
   @override
   void initState() {
@@ -77,7 +81,7 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
     // 마퀴 — 항상 우→좌 반복 (1사이클 6초)
     _marqueeController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: _cycleSeconds.toInt()),
+      duration: widget.displayDuration ~/ _marqueeRepeats,
     )..repeat();
   }
 
@@ -134,21 +138,24 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
                 ),
                 SizedBox(width: AppSpacing.horizontal8),
                 Expanded(
-                  child: Builder(builder: (context) {
-                    final textHeight =
-                        _measureTextSize(widget.message).height;
-                    return SizedBox(
-                      height: textHeight,
-                      child: ClipRect(
-                        child: OverflowBox(
-                          maxWidth: double.infinity,
-                          maxHeight: textHeight,
-                          alignment: Alignment.centerLeft,
-                          child: _buildMarquee(),
+                  child: Builder(
+                    builder: (context) {
+                      final textHeight = _measureTextSize(
+                        widget.message,
+                      ).height;
+                      return SizedBox(
+                        height: textHeight,
+                        child: ClipRect(
+                          child: OverflowBox(
+                            maxWidth: double.infinity,
+                            maxHeight: textHeight,
+                            alignment: Alignment.centerLeft,
+                            child: _buildMarquee(),
+                          ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
@@ -173,10 +180,7 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
       builder: (context, child) {
         final offset =
             containerWidth - (totalDistance * _marqueeController.value);
-        return Transform.translate(
-          offset: Offset(offset, 0),
-          child: child,
-        );
+        return Transform.translate(offset: Offset(offset, 0), child: child);
       },
       child: Text(
         widget.message,

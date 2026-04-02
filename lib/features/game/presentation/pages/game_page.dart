@@ -1103,7 +1103,10 @@ class _GamePageState extends ConsumerState<GamePage>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 64.h + 8.h),
-                  MarqueeAlertBanner(message: bannerMessage),
+                  MarqueeAlertBanner(
+                    message: bannerMessage,
+                    isDarkMode: _isDarkMode,
+                  ),
                 ],
               ),
             )

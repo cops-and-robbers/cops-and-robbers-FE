@@ -403,7 +403,8 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// 배너를 5초 후 자동 해제하는 타이머 시작
   void _startBannerTimer() {
     _locationRevealBannerTimer?.cancel();
-    _locationRevealBannerTimer = Timer(const Duration(seconds: 8), () {
+    // 배너 위젯의 displayDuration(8초) + fadeOutDuration(800ms) 이후 제거
+    _locationRevealBannerTimer = Timer(const Duration(milliseconds: 8800), () {
       if (!_isDisposed) state = state.copyWith(bannerMessage: null);
     });
   }
