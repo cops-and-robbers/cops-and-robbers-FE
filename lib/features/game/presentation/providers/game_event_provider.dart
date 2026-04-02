@@ -65,6 +65,12 @@ class GameEventState {
   /// 가장 최근 체포한 경찰 닉네임 (ARREST 이벤트 공지용)
   final String? lastArrestPoliceNickname;
 
+  /// STOMP 확정 체포 이벤트 카운터 (시스템 채팅 dedup용, optimistic 미포함)
+  final int arrestEventCount;
+
+  /// STOMP 확정 탈옥 이벤트 카운터 (시스템 채팅 dedup용, optimistic 미포함)
+  final int escapeEventCount;
+
   /// 가장 최근 탈옥한 도둑 닉네임 (ESCAPE 이벤트 다이얼로그용, 복수 탈옥 시 첫 번째)
   final String? lastEscapeNickname;
 
@@ -128,6 +134,8 @@ class GameEventState {
     this.remainingThieves,
     this.lastArrestNickname,
     this.lastArrestPoliceNickname,
+    this.arrestEventCount = 0,
+    this.escapeEventCount = 0,
     this.lastEscapeNickname,
     this.isGameOver = false,
     this.winnerTeam,
@@ -150,6 +158,8 @@ class GameEventState {
     Object? remainingThieves = _sentinel,
     Object? lastArrestNickname = _sentinel,
     Object? lastArrestPoliceNickname = _sentinel,
+    int? arrestEventCount,
+    int? escapeEventCount,
     Object? lastEscapeNickname = _sentinel,
     bool? isGameOver,
     Object? winnerTeam = _sentinel,
@@ -181,6 +191,8 @@ class GameEventState {
       lastArrestPoliceNickname: lastArrestPoliceNickname == _sentinel
           ? this.lastArrestPoliceNickname
           : lastArrestPoliceNickname as String?,
+      arrestEventCount: arrestEventCount ?? this.arrestEventCount,
+      escapeEventCount: escapeEventCount ?? this.escapeEventCount,
       lastEscapeNickname: lastEscapeNickname == _sentinel
           ? this.lastEscapeNickname
           : lastEscapeNickname as String?,
@@ -509,6 +521,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       remainingThieves: remaining,
       lastArrestNickname: robberNickname,
       lastArrestPoliceNickname: policeNickname,
+      arrestEventCount: state.arrestEventCount + 1,
       isApiLoading: false,
       // 배너는 plain Text이므로 아이콘 마커를 strip
       bannerMessage: GameEventMessages.arrestNotice(
@@ -536,6 +549,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       }),
       escapedParticipantIds: {...state.escapedParticipantIds, escapedId},
       lastEscapeNickname: firstNickname,
+      escapeEventCount: state.escapeEventCount + 1,
       isApiLoading: false,
       bannerMessage: GameEventMessages.escapeNotice,
     );

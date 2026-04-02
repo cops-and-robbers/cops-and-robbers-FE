@@ -916,50 +916,41 @@ class _GamePageState extends ConsumerState<GamePage>
       },
     );
 
-    // 체포 이벤트 → 전체채팅 시스템 메시지 (인스턴스 변수로 중복 방지)
-    ref.listen(
-      gameEventNotifierProvider.select(
-        (s) => (
-          s.lastArrestNickname,
-          s.lastArrestPoliceNickname,
-          s.arrestedParticipantIds.length,
-        ),
-      ),
-      (prev, next) {
-        final (robberNick, policeNick, count) = next;
-        if (robberNick != null && count > _lastHandledArrestCount) {
-          _lastHandledArrestCount = count;
-          ref
-              .read(chatNotifierProvider.notifier)
-              .addSystemMessage(
-                gameId: _gameId,
-                message: GameEventMessages.arrestNotice(
-                  policeNick ?? '경찰',
-                  robberNick,
-                ),
-              );
-        }
-      },
-    );
+    // 체포 이벤트 → 전체채팅 시스템 메시지 (STOMP 확정 카운터 기반 dedup)
+    ref.listen(gameEventNotifierProvider.select((s) => s.arrestEventCount), (
+      prev,
+      next,
+    ) {
+      if (next > _lastHandledArrestCount) {
+        _lastHandledArrestCount = next;
+        final s = ref.read(gameEventNotifierProvider);
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: _gameId,
+              message: GameEventMessages.arrestNotice(
+                s.lastArrestPoliceNickname ?? '경찰',
+                s.lastArrestNickname ?? '도둑',
+              ),
+            );
+      }
+    });
 
-    // 탈옥 이벤트 → 전체채팅 시스템 메시지 (인스턴스 변수로 중복 방지)
-    ref.listen(
-      gameEventNotifierProvider.select(
-        (s) => (s.lastEscapeNickname, s.escapedParticipantIds.length),
-      ),
-      (prev, next) {
-        final (_, count) = next;
-        if (count > _lastHandledEscapeCount) {
-          _lastHandledEscapeCount = count;
-          ref
-              .read(chatNotifierProvider.notifier)
-              .addSystemMessage(
-                gameId: _gameId,
-                message: GameEventMessages.escapeNotice,
-              );
-        }
-      },
-    );
+    // 탈옥 이벤트 → 전체채팅 시스템 메시지 (STOMP 확정 카운터 기반 dedup)
+    ref.listen(gameEventNotifierProvider.select((s) => s.escapeEventCount), (
+      prev,
+      next,
+    ) {
+      if (next > _lastHandledEscapeCount) {
+        _lastHandledEscapeCount = next;
+        ref
+            .read(chatNotifierProvider.notifier)
+            .addSystemMessage(
+              gameId: _gameId,
+              message: GameEventMessages.escapeNotice,
+            );
+      }
+    });
 
     final bannerMessage = ref.watch(
       gameEventNotifierProvider.select((s) => s.bannerMessage),
