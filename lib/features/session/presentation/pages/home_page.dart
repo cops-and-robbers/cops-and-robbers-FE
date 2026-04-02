@@ -236,8 +236,7 @@ class HomePage extends ConsumerWidget {
       if (context.mounted) {
         Navigator.of(context).pop(); // 로딩 팝업 닫기
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message =
-            apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
+        final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
         AppSnackbar.show(
           context,
           message: message,
@@ -251,8 +250,7 @@ class HomePage extends ConsumerWidget {
     if (context.mounted) Navigator.of(context).pop();
 
     if (response != null && context.mounted) {
-      final myNickname =
-          ref.read(authNotifierProvider).value?.nickname ?? '';
+      final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
       // TODO(로비 조회 API): 현재 joinGame 응답에는 gameId, participantId만 포함됨.
       // 로비 조회 API 연동 후 아래 항목들도 설정 필요:
       //   - maxParticipants, locationRevealIntervalMinutes, nickname
@@ -267,9 +265,7 @@ class HomePage extends ConsumerWidget {
       // 다이얼로그 닫힘 애니메이션 완료 + overlay cleanup frame 대기
       final elapsed = DateTime.now().difference(dialogCloseStart);
       final remaining =
-          DialogAnimation.duration +
-          const Duration(milliseconds: 32) -
-          elapsed;
+          DialogAnimation.duration + const Duration(milliseconds: 32) - elapsed;
       if (remaining > Duration.zero) await Future.delayed(remaining);
       if (context.mounted) {
         context.go(
@@ -303,8 +299,7 @@ class HomePage extends ConsumerWidget {
                   title: '초대코드 QR을 스캔하세요',
                   onParse: (rawValue) {
                     try {
-                      final json =
-                          jsonDecode(rawValue) as Map<String, dynamic>;
+                      final json = jsonDecode(rawValue) as Map<String, dynamic>;
                       final code = json['inviteCode'];
                       if (code is String && code.length == 6) return code;
                       return null;
@@ -320,7 +315,7 @@ class HomePage extends ConsumerWidget {
             _joinRoom(context, ref, inviteCode);
           },
           child: Padding(
-            padding: EdgeInsets.only(right: 12.w),
+            padding: EdgeInsets.only(right: 16.w),
             child: SvgPicture.asset(
               'assets/icons/icon_camera.svg',
               width: 24.w,

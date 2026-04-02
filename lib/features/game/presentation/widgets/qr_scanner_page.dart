@@ -14,11 +14,7 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 /// [onParse] 콜백으로 QR 원본 문자열을 파싱하고,
 /// non-null 결과 시 `Navigator.pop(context, result)`로 반환한다.
 class QrScannerPage<T> extends StatefulWidget {
-  const QrScannerPage({
-    super.key,
-    required this.title,
-    required this.onParse,
-  });
+  const QrScannerPage({super.key, required this.title, required this.onParse});
 
   /// 상단에 표시할 안내 텍스트
   final String title;
