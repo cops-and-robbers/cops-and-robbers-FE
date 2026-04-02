@@ -14,7 +14,7 @@ abstract final class GameEventMessages {
   static const gameStartReady = '잠시 후 게임이 시작됩니다. 모든 플레이어는 준비하세요!';
 
   /// START 3단계 — 신고/차단 안내
-  static const gameStartReportTip = '게임 중 채팅을 길게 눌러 불편한 유저를\n신고 및 차단할 수 있습니다.';
+  static const gameStartReportTip = '게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.';
 
   /// START 4단계 — 게임 시작 확정
   static const gameStartGo = '게임 시작! 행운을 빕니다!';
