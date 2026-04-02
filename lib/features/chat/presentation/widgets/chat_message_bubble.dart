@@ -85,17 +85,69 @@ class ChatMessageBubble extends StatelessWidget {
           ),
           SizedBox(width: AppSpacing.horizontal4),
           Flexible(
-            child: Text(
-              message.message,
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: isDarkMode ? AppColors.green : AppColors.blue,
-              ),
+            child: RichText(
               textAlign: TextAlign.center,
+              text: TextSpan(
+                children: _parseSystemMessageSpans(message.message),
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  /// 시스템 메시지 텍스트에 포함된 아이콘 마커를 파싱하여 InlineSpan 리스트로 변환
+  ///
+  /// `@icon_police`, `@icon_robber` 마커를 SVG WidgetSpan으로 치환한다.
+  /// 마커가 없는 일반 시스템 메시지는 텍스트만 반환한다.
+  List<InlineSpan> _parseSystemMessageSpans(String text) {
+    final style = AppTextStyles.paragraph_14.copyWith(
+      color: isDarkMode ? AppColors.green : AppColors.blue,
+    );
+    final iconRegex = RegExp(r'@icon_(police|robber)');
+    final spans = <InlineSpan>[];
+    var lastEnd = 0;
+
+    for (final match in iconRegex.allMatches(text)) {
+      // 마커 앞 텍스트
+      if (match.start > lastEnd) {
+        spans.add(
+          TextSpan(text: text.substring(lastEnd, match.start), style: style),
+        );
+      }
+      // 아이콘 WidgetSpan (원본 SVG 색상 유지 — colorFilter 미적용)
+      final isPolice = match.group(1) == 'police';
+      final iconPath = isPolice
+          ? (isDarkMode
+                ? 'assets/icons/icon_police_darkmode.svg'
+                : 'assets/icons/icon_police_lightmode.svg')
+          : (isDarkMode
+                ? 'assets/icons/mdi_robber_darkmode.svg'
+                : 'assets/icons/mdi_robber_lightmode.svg');
+      spans.add(
+        WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          child: Padding(
+            padding: EdgeInsets.only(right: 2.w),
+            child: SvgPicture.asset(iconPath, width: 16.w, height: 16.w),
+          ),
+        ),
+      );
+      lastEnd = match.end;
+    }
+
+    // 마지막 남은 텍스트
+    if (lastEnd < text.length) {
+      spans.add(TextSpan(text: text.substring(lastEnd), style: style));
+    }
+
+    // 마커가 없었으면 전체 텍스트 반환
+    if (spans.isEmpty) {
+      spans.add(TextSpan(text: text, style: style));
+    }
+
+    return spans;
   }
 
   Widget _buildMyMessage() {
