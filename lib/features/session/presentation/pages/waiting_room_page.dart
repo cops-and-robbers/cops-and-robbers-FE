@@ -732,12 +732,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         mainAxisSize: MainAxisSize.min,
         children: [
           // QR 코드 이미지 — 초대코드를 JSON 형태로 인코딩
-          QrImageView(
-            data: jsonEncode({'inviteCode': code}),
-            version: QrVersions.auto,
-            size: 220.w,
-            backgroundColor: AppColors.white,
+          ClipRRect(
+            borderRadius: AppRadius.xxlarge,
+            child: QrImageView(
+              data: jsonEncode({'inviteCode': code}),
+              version: QrVersions.auto,
+              size: 220.w,
+              backgroundColor: isDark ? AppColors.white : AppColors.black100,
+            ),
           ),
+          SizedBox(height: AppSpacing.vertical12),
           // 초대코드 + 복사 아이콘
           GestureDetector(
             onTap: () async {
