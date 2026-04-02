@@ -8,6 +8,7 @@ import '../../../auth/presentation/providers/token_provider.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../data/datasources/lobby_stomp_datasource.dart';
 import '../../data/models/lobby_event_dto.dart';
 
@@ -226,8 +227,15 @@ class LobbyNotifier extends _$LobbyNotifier {
     // 상태 업데이트
     state = state.copyWith(lastEvent: event);
 
+    // ENTER / EXIT 이벤트 → 입장/퇴장 진동
+    if (event.type == LobbyEventType.enter ||
+        event.type == LobbyEventType.exit) {
+      VibrationService.instance().playerJoinLeave();
+    }
+
     // GAME_START 이벤트 처리
     if (event.type == LobbyEventType.gameStart) {
+      VibrationService.instance().gameStart();
       debugPrint('[LobbyNotifier] 🎮 게임 시작 이벤트 수신!');
       _onGameStart?.call(event);
     }

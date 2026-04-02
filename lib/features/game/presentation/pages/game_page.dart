@@ -17,11 +17,13 @@ import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/countdown_timer_content.dart';
 import '../../../../router/route_paths.dart';
+import '../../../chat/presentation/providers/chat_notification_provider.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
 import '../../../chat/presentation/widgets/chat_overlay.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
@@ -97,6 +99,9 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
+
+  /// 영역 이탈 상태 (중복 진동 방지)
+  bool _isOutsideZone = false;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => widget.team == 'ROBBER';
@@ -428,14 +433,44 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 방향 인디케이터 실시간 갱신 스트림 시작 (양 팀 공통, 서버 전송 없음)
+  /// 추가로 플레이그라운드 영역 이탈 감지 → 진동 피드백 제공
   void _startHeadingTracking() {
     if (widget.isDummy) return;
     _headingSubscription =
         DeviceLocationService.getPositionStream(distanceFilter: 0).listen((
           pos,
         ) {
-          if (mounted) _updateHeadingMarker(pos);
+          if (mounted) {
+            _updateHeadingMarker(pos);
+            _checkZoneExit(pos);
+          }
         });
+  }
+
+  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 1회
+  void _checkZoneExit(Position pos) {
+    // 게임 종료 또는 체포 상태에서는 진동 불필요
+    if (_gameOverDialogShown) return;
+    final gameState = ref.read(gameEventNotifierProvider);
+    if (gameState.arrestedParticipantIds.contains(widget.participantId)) return;
+
+    final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
+    if (area == null) return;
+
+    final distance = Geolocator.distanceBetween(
+      area.playgroundCenter.latitude,
+      area.playgroundCenter.longitude,
+      pos.latitude,
+      pos.longitude,
+    );
+
+    final isOutside = distance > area.playgroundRadiusInMeters;
+
+    // 안 → 밖 전환 시에만 진동 (반복 진동 방지)
+    if (isOutside && !_isOutsideZone) {
+      VibrationService.instance().zoneExit();
+    }
+    _isOutsideZone = isOutside;
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
@@ -602,6 +637,8 @@ class _GamePageState extends ConsumerState<GamePage>
   Future<void> _showGameOverDialog(String? winnerTeam, String? reason) async {
     if (_gameOverDialogShown) return;
     _gameOverDialogShown = true;
+    // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
+    ref.invalidate(chatNotificationEnabledProvider);
     // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단)
     ref.read(gameEventNotifierProvider.notifier).disconnect();
     // 혹시 열려있는 다른 팝업/다이얼로그 모두 닫기
@@ -764,6 +801,18 @@ class _GamePageState extends ConsumerState<GamePage>
         _reconnectSocketsIfNeeded();
       }
     });
+
+    // 체포 이벤트 감지 → 열려있는 다이얼로그(QR 등) 닫기
+    ref.listen(
+      gameEventNotifierProvider.select((s) => s.arrestedParticipantIds),
+      (prev, next) {
+        if (prev == null) return;
+        final newlyArrested = next.difference(prev);
+        if (newlyArrested.contains(widget.participantId) && mounted) {
+          Navigator.of(context).popUntil((route) => route is! PopupRoute);
+        }
+      },
+    );
 
     // 게임 이벤트 감지 → 게임 종료 다이얼로그
     ref.listen(gameEventNotifierProvider, (prev, next) {

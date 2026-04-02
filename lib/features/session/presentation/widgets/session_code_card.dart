@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../../../../core/services/vibration_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -47,7 +49,7 @@ class SessionCodeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        HapticFeedback.mediumImpact();
+        VibrationService.instance().buttonTap();
         _copyToClipboard(context);
       },
       borderRadius: AppRadius.xl20,

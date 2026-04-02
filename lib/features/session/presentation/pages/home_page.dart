@@ -15,6 +15,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -157,6 +158,7 @@ class HomePage extends ConsumerWidget {
   ///
   /// 위치 권한 확인 후 세션 생성 플로우로 이동합니다.
   void _onCreateSession(BuildContext context) {
+    VibrationService.instance().buttonTap();
     _ensureLocationPermission(
       context,
       onGranted: () async {
