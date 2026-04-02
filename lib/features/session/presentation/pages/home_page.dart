@@ -234,7 +234,6 @@ class HomePage extends ConsumerWidget {
       response = await ref.read(joinGameProvider(inviteCode: code).future);
     } on DioException catch (e) {
       if (context.mounted) {
-        Navigator.of(context).pop(); // 로딩 팝업 닫기
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
         final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
         AppSnackbar.show(
@@ -244,10 +243,20 @@ class HomePage extends ConsumerWidget {
         );
       }
       return;
+    } catch (_) {
+      // 예상치 못한 예외 (FormatException, StateError 등)
+      if (context.mounted) {
+        AppSnackbar.show(
+          context,
+          message: '참여에 실패했습니다. 다시 시도해주세요.',
+          backgroundColor: AppColors.red,
+        );
+      }
+      return;
+    } finally {
+      // 로딩 팝업 닫기 — 성공/실패 무관하게 보장
+      if (context.mounted) Navigator.of(context).pop();
     }
-
-    // 로딩 팝업 닫기
-    if (context.mounted) Navigator.of(context).pop();
 
     if (response != null && context.mounted) {
       final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
