@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -725,7 +728,25 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       isDarkMode: isDark,
       title: '초대코드를 생성했어요',
       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
-      customContent: GestureDetector(
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // QR 코드 이미지 — 초대코드를 JSON 형태로 인코딩
+          Container(
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: AppRadius.xlarge,
+            ),
+            child: QrImageView(
+              data: jsonEncode({'inviteCode': code}),
+              version: QrVersions.auto,
+              size: 200.w,
+              backgroundColor: AppColors.white,
+            ),
+          ),
+          SizedBox(height: AppSpacing.vertical16),
+          GestureDetector(
         onTap: () async {
           VibrationService.instance().buttonTap();
           await Clipboard.setData(ClipboardData(text: code));
@@ -773,6 +794,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ],
           ),
         ),
+          ),
+        ],
       ),
       cancelText: '닫기',
       confirmText: '공유하기',
