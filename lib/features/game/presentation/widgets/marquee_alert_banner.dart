@@ -133,7 +133,23 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
                   ),
                 ),
                 SizedBox(width: AppSpacing.horizontal8),
-                Expanded(child: ClipRect(child: _buildMarquee())),
+                Expanded(
+                  child: Builder(builder: (context) {
+                    final textHeight =
+                        _measureTextSize(widget.message).height;
+                    return SizedBox(
+                      height: textHeight,
+                      child: ClipRect(
+                        child: OverflowBox(
+                          maxWidth: double.infinity,
+                          maxHeight: textHeight,
+                          alignment: Alignment.centerLeft,
+                          child: _buildMarquee(),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
               ],
             ),
           ),
@@ -143,20 +159,24 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
   }
 
   /// 텍스트가 우측 밖에서 시작 → 좌측 밖으로 나감 → 반복
+  ///
+  /// 부모: Expanded → ClipRect → OverflowBox(maxWidth: infinity)
+  /// OverflowBox가 레이아웃 제약을 해제하여 텍스트 전체 렌더링,
+  /// ClipRect가 컨테이너 밖은 시각적으로 클리핑한다.
   Widget _buildMarquee() {
+    final containerWidth = 1.sw - 40.w - 32.w - 20.w - 8.w;
+    final textWidth = _measureTextWidth(widget.message);
+    final totalDistance = containerWidth + textWidth;
+
     return AnimatedBuilder(
       animation: _marqueeController,
       builder: (context, child) {
-        // 텍스트 영역 너비 계산 (Expanded 내부)
-        final containerWidth = 1.sw - 40.w - 32.w - 20.w - 8.w;
-        final textWidth = _measureTextWidth(widget.message);
-
-        // 이동 범위: 컨테이너 우측 밖(+containerWidth) → 좌측 밖(-textWidth)
-        final totalDistance = containerWidth + textWidth;
         final offset =
             containerWidth - (totalDistance * _marqueeController.value);
-
-        return Transform.translate(offset: Offset(offset, 0), child: child);
+        return Transform.translate(
+          offset: Offset(offset, 0),
+          child: child,
+        );
       },
       child: Text(
         widget.message,
@@ -167,14 +187,16 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
     );
   }
 
-  double _measureTextWidth(String text) {
+  Size _measureTextSize(String text) {
     final painter = TextPainter(
       text: TextSpan(text: text, style: _textStyle),
       maxLines: 1,
       textDirection: TextDirection.ltr,
     )..layout();
-    final width = painter.size.width;
+    final size = painter.size;
     painter.dispose();
-    return width;
+    return size;
   }
+
+  double _measureTextWidth(String text) => _measureTextSize(text).width;
 }
