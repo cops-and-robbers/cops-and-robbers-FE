@@ -394,10 +394,16 @@ class GameEventNotifier extends _$GameEventNotifier {
     }
   }
 
+  /// 외부에서 배너 메시지를 설정 (게임 시작 시퀀스 등 STOMP 외 이벤트용)
+  void setBannerMessage(String message) {
+    state = state.copyWith(bannerMessage: message);
+    _startBannerTimer();
+  }
+
   /// 배너를 5초 후 자동 해제하는 타이머 시작
   void _startBannerTimer() {
     _locationRevealBannerTimer?.cancel();
-    _locationRevealBannerTimer = Timer(const Duration(seconds: 5), () {
+    _locationRevealBannerTimer = Timer(const Duration(seconds: 8), () {
       if (!_isDisposed) state = state.copyWith(bannerMessage: null);
     });
   }
@@ -503,10 +509,11 @@ class GameEventNotifier extends _$GameEventNotifier {
       lastArrestNickname: robberNickname,
       lastArrestPoliceNickname: policeNickname,
       isApiLoading: false,
+      // 배너는 plain Text이므로 아이콘 마커를 strip
       bannerMessage: GameEventMessages.arrestNotice(
         policeNickname ?? '경찰',
         robberNickname ?? '도둑',
-      ),
+      ).replaceAll(RegExp(r'@icon_(police|robber)\s*'), ''),
     );
     _startBannerTimer();
     VibrationService.instance().arrested();

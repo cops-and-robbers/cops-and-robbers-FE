@@ -43,6 +43,7 @@ import '../widgets/game_timer_text.dart';
 import '../widgets/location_reveal_countdown.dart';
 import '../widgets/google_map_view.dart';
 import '../widgets/participant_overlay.dart';
+import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
 
 /// 인게임 지도 화면
@@ -396,17 +397,19 @@ class _GamePageState extends ConsumerState<GamePage>
     for (var i = 0; i < messages.length; i++) {
       final message = messages[i];
       if (i == 0) {
-        // 첫 메시지는 즉시 발송
+        // 첫 메시지는 즉시 발송 (채팅 + 배너)
         ref
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(gameId: _gameId, message: message);
+        _gameEventNotifier?.setBannerMessage(message);
       } else {
         // 이후 메시지는 5초 간격으로 발송
-        Timer(Duration(milliseconds: 5000 * i), () {
+        Timer(Duration(milliseconds: 10000 * i), () {
           if (!mounted) return;
           ref
               .read(chatNotifierProvider.notifier)
               .addSystemMessage(gameId: _gameId, message: message);
+          _gameEventNotifier?.setBannerMessage(message);
         });
       }
     }
@@ -1085,7 +1088,7 @@ class _GamePageState extends ConsumerState<GamePage>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 64.h + 8.h),
-                  _buildAlertBanner(bannerMessage),
+                  MarqueeAlertBanner(message: bannerMessage),
                 ],
               ),
             )
@@ -1356,45 +1359,6 @@ class _GamePageState extends ConsumerState<GamePage>
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  /// 알림 배너 (353x44) — 게임 이벤트 수신 시 5초간 표시
-  Widget _buildAlertBanner(String message) {
-    return Padding(
-      padding: AppPadding.horizontal20,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.red,
-          borderRadius: AppRadius.large,
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/icons/Loudspeaker.svg',
-              width: 20.w,
-              height: 20.w,
-              colorFilter: const ColorFilter.mode(
-                AppColors.white,
-                BlendMode.srcIn,
-              ),
-            ),
-            SizedBox(width: AppSpacing.horizontal8),
-            Expanded(
-              child: Text(
-                message,
-                style: AppTextStyles.paragraph14Semibold.copyWith(
-                  color: AppColors.white,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
