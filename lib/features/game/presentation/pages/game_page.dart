@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -1116,7 +1117,22 @@ class _GamePageState extends ConsumerState<GamePage>
 
     final participantId = await Navigator.push<int>(
       context,
-      MaterialPageRoute(builder: (_) => const QrScannerPage()),
+      MaterialPageRoute(
+        builder: (_) => QrScannerPage<int>(
+          title: '도둑의 수배 QR을 스캔하세요',
+          onParse: (rawValue) {
+            try {
+              final json = jsonDecode(rawValue) as Map<String, dynamic>;
+              final pid = json['pid'];
+              if (pid is int) return pid;
+              if (pid is num) return pid.toInt();
+              return null;
+            } catch (_) {
+              return null;
+            }
+          },
+        ),
+      ),
     );
     if (participantId == null || !mounted) return;
 

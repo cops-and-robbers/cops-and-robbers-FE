@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../router/route_paths.dart';
 import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../game/presentation/widgets/qr_scanner_page.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
@@ -211,6 +214,76 @@ class HomePage extends ConsumerWidget {
     );
   }
 
+  /// 초대 코드로 방 참여 (API 호출 → 대기실 이동)
+  ///
+  /// 다이얼로그 수동 입력과 QR 스캔 양쪽에서 공용으로 호출됩니다.
+  Future<void> _joinRoom(
+    BuildContext context,
+    WidgetRef ref,
+    String code,
+  ) async {
+    final dialogCloseStart = DateTime.now();
+
+    await AppPopup.showRandomLoading(
+      context: context,
+      category: LoadingCategory.joinRoom,
+    );
+
+    JoinGameResponse? response;
+    try {
+      response = await ref.read(joinGameProvider(inviteCode: code).future);
+    } on DioException catch (e) {
+      if (context.mounted) {
+        final apiError = ApiErrorResponse.tryParse(e.response?.data);
+        final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
+        AppSnackbar.show(
+          context,
+          message: message,
+          backgroundColor: AppColors.red,
+        );
+      }
+      return;
+    } catch (_) {
+      // 예상치 못한 예외 (FormatException, StateError 등)
+      if (context.mounted) {
+        AppSnackbar.show(
+          context,
+          message: '참여에 실패했습니다. 다시 시도해주세요.',
+          backgroundColor: AppColors.red,
+        );
+      }
+      return;
+    } finally {
+      // 로딩 팝업 닫기 — 성공/실패 무관하게 보장
+      if (context.mounted) Navigator.of(context).pop();
+    }
+
+    if (response != null && context.mounted) {
+      final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
+      // TODO(로비 조회 API): 현재 joinGame 응답에는 gameId, participantId만 포함됨.
+      // 로비 조회 API 연동 후 아래 항목들도 설정 필요:
+      //   - maxParticipants, locationRevealIntervalMinutes, nickname
+      ref
+          .read(gameParticipantNotifierProvider.notifier)
+          .setGameInfo(
+            gameId: response.gameId,
+            nickname: myNickname,
+            participantId: response.participantId,
+            isHost: false,
+          );
+      // 다이얼로그 닫힘 애니메이션 완료 + overlay cleanup frame 대기
+      final elapsed = DateTime.now().difference(dialogCloseStart);
+      final remaining =
+          DialogAnimation.duration + const Duration(milliseconds: 32) - elapsed;
+      if (remaining > Duration.zero) await Future.delayed(remaining);
+      if (context.mounted) {
+        context.go(
+          '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
+        );
+      }
+    }
+  }
+
   /// 방 참여 다이얼로그 (권한 확인 후 호출)
   void _showJoinRoomDialogInternal(BuildContext context, WidgetRef ref) {
     final codeController = TextEditingController();
@@ -223,80 +296,53 @@ class HomePage extends ConsumerWidget {
         hintText: '참여코드를 입력하세요',
         maxLength: 6,
         inputFormatters: [_UpperCaseFormatter()],
+        suffixIcon: GestureDetector(
+          onTap: () async {
+            // 다이얼로그 닫기 → QR 스캐너 열기 → 코드 파싱 → 방 참여
+            Navigator.of(context).pop();
+
+            final inviteCode = await Navigator.push<String>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => QrScannerPage<String>(
+                  title: '초대코드 QR을 스캔하세요',
+                  onParse: (rawValue) {
+                    try {
+                      final json = jsonDecode(rawValue) as Map<String, dynamic>;
+                      final code = json['inviteCode'];
+                      if (code is String && code.length == 6) return code;
+                      return null;
+                    } catch (_) {
+                      return null;
+                    }
+                  },
+                ),
+              ),
+            );
+
+            if (inviteCode == null || !context.mounted) return;
+            _joinRoom(context, ref, inviteCode);
+          },
+          child: Padding(
+            padding: EdgeInsets.only(right: 16.w),
+            child: SvgPicture.asset(
+              'assets/icons/icon_camera.svg',
+              width: 24.w,
+              height: 24.w,
+              colorFilter: const ColorFilter.mode(
+                AppColors.black300,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+        ),
       ),
       cancelText: '닫기',
       confirmText: '참여하기',
       validator: () => codeController.text.trim().length == 6,
       onConfirm: () async {
-        // AppDialog가 pop() 직후 이 콜백을 실행하므로,
-        // 다이얼로그 닫힘 애니메이션(250ms)이 완료되기 전에 context.go()가 호출되면
-        // Duplicate GlobalKeys 오류가 발생할 수 있습니다.
-        // pop() 호출 시각을 기록하여 필요한 나머지 시간만 대기합니다.
-        final dialogCloseStart = DateTime.now();
         final code = codeController.text.trim().toUpperCase();
-
-        await AppPopup.showRandomLoading(
-          context: context,
-          category: LoadingCategory.joinRoom,
-        );
-
-        JoinGameResponse? response;
-        try {
-          response = await ref.read(joinGameProvider(inviteCode: code).future);
-        } on DioException catch (e) {
-          if (context.mounted) {
-            Navigator.of(context).pop(); // 로딩 팝업 닫기
-            final apiError = ApiErrorResponse.tryParse(e.response?.data);
-            final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
-            AppSnackbar.show(
-              context,
-              message: message,
-              backgroundColor: AppColors.red,
-            );
-          }
-          return;
-        }
-
-        // 로딩 팝업 닫기
-        if (context.mounted) {
-          Navigator.of(context).pop();
-        }
-
-        if (response != null && context.mounted) {
-          final myNickname =
-              ref.read(authNotifierProvider).value?.nickname ?? '';
-          // TODO(로비 조회 API): 현재 joinGame 응답에는 gameId, participantId만 포함됨.
-          // 로비 조회 API 연동 후 아래 항목들도 설정 필요:
-          //   - maxParticipants: 팀별 최대 인원 계산에 사용 (현재 참가자는 기본값 10 적용)
-          //   - locationRevealIntervalMinutes: 게임 규칙 다이얼로그에 표시
-          //   - nickname: 현재는 authNotifierProvider에서 읽으나, 로비 API로 검증 가능
-          ref
-              .read(gameParticipantNotifierProvider.notifier)
-              .setGameInfo(
-                gameId: response.gameId,
-                nickname: myNickname,
-                participantId: response.participantId,
-                isHost: false,
-              );
-          // 다이얼로그 닫힘 애니메이션 완료 + overlay cleanup frame 대기
-          // transitionDuration(250ms) 이후 Flutter는 다음 frame에서 OverlayEntry를
-          // 실제로 제거한다. 정확히 250ms에 context.go()를 호출하면 cleanup frame 전에
-          // GoRouter가 _Theater를 rebuild하여 Duplicate GlobalKey 충돌이 발생한다.
-          // +32ms(~2 frames)를 추가하여 cleanup이 완료된 이후에 네비게이션을 수행한다.
-          final elapsed = DateTime.now().difference(dialogCloseStart);
-          final remaining =
-              DialogAnimation.duration +
-              const Duration(milliseconds: 32) -
-              elapsed;
-          if (remaining > Duration.zero) {
-            await Future.delayed(remaining);
-          }
-          if (context.mounted) {
-            context.go(
-              '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
-            );
-          }
-        }
+        await _joinRoom(context, ref, code);
       },
     ).whenComplete(() {
       // 다이얼로그 닫힘 애니메이션(250ms) 완료 후 dispose

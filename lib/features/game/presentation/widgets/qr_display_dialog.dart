@@ -49,7 +49,7 @@ class QrDisplayDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '수배 번호',
+              '수배 QR',
               style: AppTextStyles.robberHeading.copyWith(
                 color: AppColors.green,
               ),
@@ -73,7 +73,7 @@ class QrDisplayDialog extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical20),
 
             Text(
-              '경찰에게 QR코드를 보여주세요',
+              '경찰에게 QR을 보여주세요',
               style: AppTextStyles.paragraph_14.copyWith(
                 color: AppColors.black300,
               ),
