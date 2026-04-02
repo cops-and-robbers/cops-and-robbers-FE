@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -14,6 +17,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
@@ -592,6 +596,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 준비 상태 토글
   Future<void> _toggleReady() async {
+    VibrationService.instance().buttonTap();
     // 더미 모드: 로컬에서 즉시 토글
     if (_isDummyMode) {
       ref
@@ -632,6 +637,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 게임 시작 (방장 전용)
   Future<void> _startGame() async {
+    VibrationService.instance().buttonTap();
     if (_isDummyMode) {
       if (mounted) {
         context.go(
@@ -722,53 +728,59 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       isDarkMode: isDark,
       title: '초대코드를 생성했어요',
       message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
-      customContent: GestureDetector(
-        onTap: () async {
-          await Clipboard.setData(ClipboardData(text: code));
-          if (!mounted) return;
-          AppSnackbar.show(
-            context,
-            message: '코드가 복사되었습니다',
-            iconPath: 'assets/icons/icon_copy.svg',
-          );
-        },
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            vertical: AppSpacing.vertical20,
-            horizontal: AppSpacing.horizontal16,
-          ),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: isDark ? AppColors.black800 : AppColors.black100,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // QR 코드 이미지 — 초대코드를 JSON 형태로 인코딩
+          ClipRRect(
+            borderRadius: AppRadius.xxlarge,
+            child: QrImageView(
+              data: jsonEncode({'inviteCode': code}),
+              version: QrVersions.auto,
+              size: 220.w,
+              backgroundColor: isDark ? AppColors.white : AppColors.black100,
             ),
-            borderRadius: AppRadius.medium,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                code,
-                style: isDark
-                    ? AppTextStyles.robberHeading.copyWith(
-                        color: AppColors.white,
-                      )
-                    : AppTextStyles.heading_20.copyWith(color: AppColors.black),
-              ),
-              SizedBox(width: AppSpacing.horizontal4),
-              SvgPicture.asset(
-                'assets/icons/icon_copy.svg',
-                width: 20.w,
-                height: 20.w,
-                colorFilter: ColorFilter.mode(
-                  isDark ? AppColors.black500 : AppColors.black300,
-                  BlendMode.srcIn,
+          SizedBox(height: AppSpacing.vertical12),
+          // 초대코드 + 복사 아이콘
+          GestureDetector(
+            onTap: () async {
+              VibrationService.instance().buttonTap();
+              await Clipboard.setData(ClipboardData(text: code));
+              if (!mounted) return;
+              AppSnackbar.show(
+                context,
+                message: '코드가 복사되었습니다',
+                iconPath: 'assets/icons/icon_copy.svg',
+              );
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  code,
+                  style: isDark
+                      ? AppTextStyles.robberLabel.copyWith(
+                          color: AppColors.white,
+                        )
+                      : AppTextStyles.label_16.copyWith(color: AppColors.black),
                 ),
-              ),
-            ],
+                SizedBox(width: AppSpacing.horizontal4),
+                SvgPicture.asset(
+                  'assets/icons/icon_copy.svg',
+                  width: 20.w,
+                  height: 20.w,
+                  colorFilter: ColorFilter.mode(
+                    isDark ? AppColors.black500 : AppColors.black300,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
       cancelText: '닫기',
       confirmText: '공유하기',
@@ -906,26 +918,28 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       title: _inviteCode != null
           ? GestureDetector(
               onTap: _showInviteCodeDialog,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _inviteCode!,
-                    style: isDark
-                        ? AppTextStyles.robberHeading.copyWith(
-                            color: AppColors.white,
-                          )
-                        : AppTextStyles.heading_20.copyWith(
-                            color: AppColors.black,
-                          ),
-                  ),
-                  SizedBox(height: 2.h),
-                  Container(
-                    width: _inviteCode!.length * 12.w + 8.w,
-                    height: 2.h,
-                    color: isDark ? AppColors.white : AppColors.black,
-                  ),
-                ],
+              child: IntrinsicWidth(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _inviteCode!,
+                      style: isDark
+                          ? AppTextStyles.robberHeading.copyWith(
+                              color: AppColors.white,
+                            )
+                          : AppTextStyles.heading_20.copyWith(
+                              color: AppColors.black,
+                            ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Container(
+                      width: double.infinity,
+                      height: 2.h,
+                      color: isDark ? AppColors.white : AppColors.black,
+                    ),
+                  ],
+                ),
               ),
             )
           : null,
