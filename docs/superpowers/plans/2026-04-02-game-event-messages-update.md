@@ -126,7 +126,7 @@ abstract final class GameEventMessages {
 
 - [ ] **Step 2: 정적 분석 확인**
 
-Run: `cd /Users/luca/workspace/Flutter_Project/cops_and_robbers && flutter analyze lib/core/constants/game_event_messages.dart`
+Run: `flutter analyze lib/core/constants/game_event_messages.dart`
 Expected: 에러 없음 (단, 사용처에서 삭제된 `gameStart`/`gameOver` 참조 에러는 Task 2에서 수정)
 
 - [ ] **Step 3: 커밋**
@@ -240,7 +240,7 @@ void _handleEscape(Map<String, dynamic> data) {
 
 - [ ] **Step 6: 정적 분석 확인**
 
-Run: `cd /Users/luca/workspace/Flutter_Project/cops_and_robbers && flutter analyze lib/features/game/presentation/providers/game_event_provider.dart`
+Run: `flutter analyze lib/features/game/presentation/providers/game_event_provider.dart`
 Expected: 에러 없음
 
 - [ ] **Step 7: 커밋**
@@ -342,7 +342,7 @@ ref.listen(gameEventNotifierProvider.select((s) => s.gameStartTime), (prev, next
 
 - [ ] **Step 5: 정적 분석 확인**
 
-Run: `cd /Users/luca/workspace/Flutter_Project/cops_and_robbers && flutter analyze lib/features/game/presentation/pages/game_page.dart`
+Run: `flutter analyze lib/features/game/presentation/pages/game_page.dart`
 Expected: 에러 없음
 
 - [ ] **Step 6: 커밋**
@@ -455,7 +455,7 @@ Widget _buildSystemMessage() {
 
 - [ ] **Step 3: 정적 분석 확인**
 
-Run: `cd /Users/luca/workspace/Flutter_Project/cops_and_robbers && flutter analyze lib/features/chat/presentation/widgets/chat_message_bubble.dart`
+Run: `flutter analyze lib/features/chat/presentation/widgets/chat_message_bubble.dart`
 Expected: 에러 없음
 
 - [ ] **Step 4: 커밋**
