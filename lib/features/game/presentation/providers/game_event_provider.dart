@@ -521,7 +521,10 @@ class GameEventNotifier extends _$GameEventNotifier {
       remainingThieves: remaining,
       lastArrestNickname: robberNickname,
       lastArrestPoliceNickname: policeNickname,
-      arrestEventCount: state.arrestEventCount + 1,
+      // 닉네임이 있을 때만 카운터 증가 (시스템 채팅 dedup용)
+      arrestEventCount: (robberNickname != null && policeNickname != null)
+          ? state.arrestEventCount + 1
+          : state.arrestEventCount,
       isApiLoading: false,
       // 배너는 plain Text이므로 아이콘 마커를 strip
       bannerMessage: GameEventMessages.arrestNotice(
