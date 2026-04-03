@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -819,52 +820,58 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           children: [
             // 팀 섹션 (스크롤 가능)
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // 경찰팀
-                    TeamSection(
-                      team: 'POLICE',
-                      members: policeMembers,
-                      maxPerTeam: policeMembers.length + 1,
-                      isExpanded: _isPoliceExpanded,
-                      onToggle: () => setState(
-                        () => _isPoliceExpanded = !_isPoliceExpanded,
+              child: participantsState.participants.isEmpty
+                  ? ShimmerParticipantSkeleton(isDarkMode: isDark)
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // 경찰팀
+                          TeamSection(
+                            team: 'POLICE',
+                            members: policeMembers,
+                            maxPerTeam: policeMembers.length + 1,
+                            isExpanded: _isPoliceExpanded,
+                            onToggle: () => setState(
+                              () => _isPoliceExpanded = !_isPoliceExpanded,
+                            ),
+                            hostParticipantId:
+                                participantsState.hostParticipantId,
+                            myParticipantId: participantInfo?.participantId,
+                            onAddSlotTap: !_isReady
+                                ? () => _changeTeam('POLICE')
+                                : null,
+                            isDarkMode: isDark,
+                          ),
+                          // 구분선
+                          Padding(
+                            padding: AppPadding.horizontal20,
+                            child: Divider(
+                              height: 1,
+                              color: isDark
+                                  ? AppColors.black800
+                                  : AppColors.black100,
+                            ),
+                          ),
+                          // 도둑팀
+                          TeamSection(
+                            team: 'ROBBER',
+                            members: robberMembers,
+                            maxPerTeam: robberMembers.length + 1,
+                            isExpanded: _isRobberExpanded,
+                            onToggle: () => setState(
+                              () => _isRobberExpanded = !_isRobberExpanded,
+                            ),
+                            hostParticipantId:
+                                participantsState.hostParticipantId,
+                            myParticipantId: participantInfo?.participantId,
+                            onAddSlotTap: !_isReady
+                                ? () => _changeTeam('ROBBER')
+                                : null,
+                            isDarkMode: isDark,
+                          ),
+                        ],
                       ),
-                      hostParticipantId: participantsState.hostParticipantId,
-                      myParticipantId: participantInfo?.participantId,
-                      onAddSlotTap: !_isReady
-                          ? () => _changeTeam('POLICE')
-                          : null,
-                      isDarkMode: isDark,
                     ),
-                    // 구분선
-                    Padding(
-                      padding: AppPadding.horizontal20,
-                      child: Divider(
-                        height: 1,
-                        color: isDark ? AppColors.black800 : AppColors.black100,
-                      ),
-                    ),
-                    // 도둑팀
-                    TeamSection(
-                      team: 'ROBBER',
-                      members: robberMembers,
-                      maxPerTeam: robberMembers.length + 1,
-                      isExpanded: _isRobberExpanded,
-                      onToggle: () => setState(
-                        () => _isRobberExpanded = !_isRobberExpanded,
-                      ),
-                      hostParticipantId: participantsState.hostParticipantId,
-                      myParticipantId: participantInfo?.participantId,
-                      onAddSlotTap: !_isReady
-                          ? () => _changeTeam('ROBBER')
-                          : null,
-                      isDarkMode: isDark,
-                    ),
-                  ],
-                ),
-              ),
             ),
 
             // 하단 버튼

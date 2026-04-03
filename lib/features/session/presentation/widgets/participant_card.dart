@@ -97,7 +97,6 @@ class ParticipantCard extends StatelessWidget {
   }
 
   Color get _avatarColor {
-    if (isHost) return AppColors.black600;
     return participant.isReady ? AppColors.black600 : AppColors.black300;
   }
 }

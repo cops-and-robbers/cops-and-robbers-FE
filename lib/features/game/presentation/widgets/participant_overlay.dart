@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
@@ -197,6 +198,14 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
 
     // ALIVE 도둑 수 (도주 중)
     final aliveCount = robberMembers.where((m) => !m.isReady).length;
+
+    // 참가자 데이터 로딩 중 → shimmer 스켈레톤 표시
+    if (_participants == null) {
+      return Container(
+        color: widget.isDarkMode ? AppColors.black900 : AppColors.white,
+        child: ShimmerParticipantSkeleton(isDarkMode: widget.isDarkMode),
+      );
+    }
 
     return Container(
       color: widget.isDarkMode ? AppColors.black900 : AppColors.white,
