@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,6 +40,7 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
   // ── 페이드 아웃 (배너 퇴장) ──
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
+  Timer? _fadeOutTimer;
 
   // ── 마퀴 (텍스트 우→좌 반복) ──
   late AnimationController _marqueeController;
@@ -92,18 +95,23 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
       _slideController.forward(from: 0);
       _fadeController.reset();
       _scheduleFadeOut();
-      _marqueeController.forward(from: 0);
+      // repeat 모드 유지 (forward는 1회 재생으로 바뀌므로 repeat 재호출)
+      _marqueeController
+        ..reset()
+        ..repeat();
     }
   }
 
   void _scheduleFadeOut() {
-    Future.delayed(widget.displayDuration, () {
+    _fadeOutTimer?.cancel();
+    _fadeOutTimer = Timer(widget.displayDuration, () {
       if (mounted) _fadeController.forward();
     });
   }
 
   @override
   void dispose() {
+    _fadeOutTimer?.cancel();
     _slideController.dispose();
     _fadeController.dispose();
     _marqueeController.dispose();

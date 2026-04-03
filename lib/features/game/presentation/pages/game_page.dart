@@ -368,9 +368,9 @@ class _GamePageState extends ConsumerState<GamePage>
     //  terminate 재접속 시 participantInfo가 아직 null이므로 설정 로드 후 판단해야 함)
   }
 
-  /// 게임 시작 시 전체채팅에 4단계 시스템 메시지를 5초 간격으로 순차 주입
+  /// 게임 시작 시 전체채팅에 4단계 시스템 메시지를 10초 간격으로 순차 주입
   ///
-  /// 한번에 보내면 preview와 배너에 마지막 메시지만 보이므로 텀을 둔다.
+  /// 한번에 보내면 배너에 마지막 메시지만 보이므로 텀을 둔다.
   /// 재입장 시에는 이미 시스템 메시지가 존재하므로 중복 발송하지 않는다.
   void _sendGameStartSystemMessages() {
     // 재입장 감지: 게임 시작 후 20초 이상 경과했으면 스킵

@@ -49,7 +49,7 @@ class ChatMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (_isSystemMessage) {
-      return _buildSystemMessage();
+      return _buildSystemMessage(context);
     }
 
     return Padding(
@@ -64,7 +64,7 @@ class ChatMessageBubble extends StatelessWidget {
   }
 
   /// 시스템 메시지 (중앙 정렬, 파란색 텍스트 + Loudspeaker 16x16)
-  Widget _buildSystemMessage() {
+  Widget _buildSystemMessage(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: AppSpacing.horizontal16,
@@ -87,6 +87,7 @@ class ChatMessageBubble extends StatelessWidget {
           Flexible(
             child: RichText(
               textAlign: TextAlign.center,
+              textScaler: MediaQuery.textScalerOf(context),
               text: TextSpan(
                 children: _parseSystemMessageSpans(message.message),
               ),
