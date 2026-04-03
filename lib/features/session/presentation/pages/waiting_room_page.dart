@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shimmer/shimmer.dart';
+import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -821,7 +821,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             // 팀 섹션 (스크롤 가능)
             Expanded(
               child: participantsState.participants.isEmpty
-                  ? _buildShimmerSkeleton(isDark)
+                  ? ShimmerParticipantSkeleton(isDarkMode: isDark)
                   : SingleChildScrollView(
                       child: Column(
                         children: [
@@ -1042,83 +1042,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       textStyle: isDark ? AppTextStyles.robberLabel : null,
       showBorder: false,
       isLoading: _isUpdatingReady,
-    );
-  }
-
-  /// 참가자 로딩 중 shimmer 스켈레톤
-  Widget _buildShimmerSkeleton(bool isDark) {
-    final baseColor = isDark ? AppColors.black800 : AppColors.black100;
-    final highlightColor = isDark ? AppColors.black600 : AppColors.black200;
-
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      child: Padding(
-        padding: AppPadding.horizontal20.copyWith(
-          top: AppSpacing.vertical16,
-          bottom: AppSpacing.vertical16,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 경찰팀 헤더 스켈레톤
-            Container(
-              width: 80.w,
-              height: AppSpacing.vertical16,
-              decoration: BoxDecoration(
-                color: baseColor,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-            ),
-            SizedBox(height: AppSpacing.vertical16),
-            _buildCardSkeletonRow(baseColor),
-            SizedBox(height: AppSpacing.vertical24),
-            // 도둑팀 헤더 스켈레톤
-            Container(
-              width: 80.w,
-              height: AppSpacing.vertical16,
-              decoration: BoxDecoration(
-                color: baseColor,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-            ),
-            SizedBox(height: AppSpacing.vertical16),
-            _buildCardSkeletonRow(baseColor),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// 카드 스켈레톤 한 줄 (4개)
-  Widget _buildCardSkeletonRow(Color color) {
-    return Row(
-      children: List.generate(4, (i) {
-        return Padding(
-          padding: EdgeInsets.only(right: i < 3 ? AppSpacing.horizontal12 : 0),
-          child: Column(
-            children: [
-              Container(
-                width: 72.w,
-                height: 84.h,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-              ),
-              SizedBox(height: AppSpacing.vertical4),
-              Container(
-                width: 48.w,
-                height: 10.h,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(2.r),
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
     );
   }
 }

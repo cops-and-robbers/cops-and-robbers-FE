@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
@@ -205,7 +203,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     if (_participants == null) {
       return Container(
         color: widget.isDarkMode ? AppColors.black900 : AppColors.white,
-        child: _buildShimmerSkeleton(),
+        child: ShimmerParticipantSkeleton(isDarkMode: widget.isDarkMode),
       );
     }
 
@@ -253,92 +251,6 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
           ],
         ),
       ),
-    );
-  }
-
-  /// 참가자 로딩 중 shimmer 스켈레톤
-  ///
-  /// ParticipantCard와 동일한 크기(72x84 아바타 + 닉네임)의 플레이스홀더를
-  /// 팀별 2행으로 표시한다.
-  Widget _buildShimmerSkeleton() {
-    final baseColor = widget.isDarkMode
-        ? AppColors.black800
-        : AppColors.black100;
-    final highlightColor = widget.isDarkMode
-        ? AppColors.black600
-        : AppColors.black200;
-
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      child: Padding(
-        padding: AppPadding.horizontal20.copyWith(
-          top: AppSpacing.vertical16,
-          bottom: AppSpacing.vertical16,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 경찰팀 헤더 스켈레톤
-            Container(
-              width: 80.w,
-              height: AppSpacing.vertical16,
-              decoration: BoxDecoration(
-                color: baseColor,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-            ),
-            SizedBox(height: AppSpacing.vertical16),
-            _buildCardSkeletonRow(baseColor),
-            SizedBox(height: AppSpacing.vertical24),
-            // 도둑팀 헤더 스켈레톤
-            Container(
-              width: 80.w,
-              height: AppSpacing.vertical16,
-              decoration: BoxDecoration(
-                color: baseColor,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-            ),
-            SizedBox(height: AppSpacing.vertical16),
-            _buildCardSkeletonRow(baseColor),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// 카드 스켈레톤 한 줄 (4개)
-  Widget _buildCardSkeletonRow(Color color) {
-    return Row(
-      children: List.generate(4, (i) {
-        return Padding(
-          padding: EdgeInsets.only(right: i < 3 ? AppSpacing.horizontal12 : 0),
-          child: Column(
-            children: [
-              // 아바타 플레이스홀더 (72x84)
-              Container(
-                width: 72.w,
-                height: 84.h,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-              ),
-              SizedBox(height: AppSpacing.vertical4),
-              // 닉네임 플레이스홀더
-              Container(
-                width: 48.w,
-                height: 10.h,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(2.r),
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
     );
   }
 
