@@ -78,7 +78,7 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
     ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
     _scheduleFadeOut();
 
-    // 마퀴 — 항상 우→좌 반복 (1사이클 6초)
+    // 마퀴 — 항상 우→좌 반복 (1사이클 _cycleSeconds초)
     _marqueeController = AnimationController(
       vsync: this,
       duration: Duration(seconds: _cycleSeconds),
