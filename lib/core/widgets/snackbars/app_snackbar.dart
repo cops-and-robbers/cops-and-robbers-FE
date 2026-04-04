@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 
 /// 앱 전역 커스텀 스낵바
@@ -39,6 +40,7 @@ class AppSnackbar {
     String? iconPath,
     double? iconSize,
     Duration duration = const Duration(seconds: 3),
+    bool isDarkMode = false,
   }) {
     dismiss();
 
@@ -49,6 +51,7 @@ class AppSnackbar {
         iconPath: iconPath,
         iconSize: iconSize,
         duration: duration,
+        isDarkMode: isDarkMode,
         onDismissed: () {
           _currentEntry?.remove();
           _currentEntry = null;
@@ -80,6 +83,7 @@ class _SnackbarOverlay extends StatefulWidget {
     this.iconSize,
     required this.duration,
     required this.onDismissed,
+    this.isDarkMode = false,
   });
 
   final String message;
@@ -88,6 +92,7 @@ class _SnackbarOverlay extends StatefulWidget {
   final double? iconSize;
   final Duration duration;
   final VoidCallback onDismissed;
+  final bool isDarkMode;
 
   @override
   State<_SnackbarOverlay> createState() => _SnackbarOverlayState();
@@ -137,8 +142,8 @@ class _SnackbarOverlayState extends State<_SnackbarOverlay>
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: 20.w,
-      right: 20.w,
+      left: AppSpacing.horizontal20,
+      right: AppSpacing.horizontal20,
       bottom: 105.h,
       child: SlideTransition(
         position: _slideAnimation,
@@ -147,10 +152,15 @@ class _SnackbarOverlayState extends State<_SnackbarOverlay>
           child: Material(
             color: Colors.transparent,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.horizontal16,
+                vertical: 14.h,
+              ),
               decoration: BoxDecoration(
-                color: widget.backgroundColor ?? AppColors.black600,
-                borderRadius: BorderRadius.circular(12.r),
+                color:
+                    widget.backgroundColor ??
+                    (widget.isDarkMode ? AppColors.black : AppColors.black600),
+                borderRadius: AppRadius.large,
               ),
               child: Row(
                 children: [
@@ -163,7 +173,7 @@ class _SnackbarOverlayState extends State<_SnackbarOverlay>
                       BlendMode.srcIn,
                     ),
                   ),
-                  SizedBox(width: 8.w),
+                  SizedBox(width: AppSpacing.horizontal8),
                   Expanded(
                     child: Text(
                       widget.message,

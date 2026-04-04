@@ -134,8 +134,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
       child: Container(
         height: 48.h,
         padding: EdgeInsets.only(
-          left: AppSpacing.horizontal16,
-          right: AppSpacing.horizontal8,
+          left: AppSpacing.horizontal20,
+          right: AppSpacing.horizontal12,
         ),
         decoration: BoxDecoration(
           color: widget.isDarkMode ? AppColors.black : AppColors.white,
@@ -176,7 +176,6 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 ),
               ),
             ),
-            SizedBox(width: AppSpacing.horizontal8),
             _buildSendButton(),
           ],
         ),

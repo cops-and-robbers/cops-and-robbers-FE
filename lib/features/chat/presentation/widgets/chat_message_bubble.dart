@@ -44,6 +44,22 @@ class ChatMessageBubble extends StatelessWidget {
       message.sender.team.toUpperCase() == ChatTeam.system ||
       message.sender.participantId == 0;
 
+  /// 발신자 직업 아이콘 경로 (시스템 메시지는 null)
+  String? get _roleIconPath {
+    final team = message.sender.team.toUpperCase();
+    if (team == ChatTeam.police) {
+      return isDarkMode
+          ? 'assets/icons/icon_police_darkmode.svg'
+          : 'assets/icons/icon_police_lightmode.svg';
+    }
+    if (team == ChatTeam.robber) {
+      return isDarkMode
+          ? 'assets/icons/mdi_robber_darkmode.svg'
+          : 'assets/icons/mdi_robber_lightmode.svg';
+    }
+    return null;
+  }
+
   String get _formattedTime => message.formattedTimeKst;
 
   @override
@@ -152,6 +168,8 @@ class ChatMessageBubble extends StatelessWidget {
   }
 
   Widget _buildMyMessage() {
+    // getter 반복 호출 방지 — null 체크와 실제 사용을 동일 인스턴스로 보장
+    final roleIconPath = _roleIconPath;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -161,11 +179,20 @@ class ChatMessageBubble extends StatelessWidget {
               bottom: AppSpacing.vertical8,
               right: AppSpacing.horizontal4,
             ),
-            child: Text(
-              message.sender.nickname,
-              style: AppTextStyles.tag_12.copyWith(
-                color: isDarkMode ? AppColors.black400 : AppColors.black600,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (roleIconPath != null) ...[
+                  SvgPicture.asset(roleIconPath, width: 12.w, height: 12.w),
+                  SizedBox(width: AppSpacing.horizontal4),
+                ],
+                Text(
+                  message.sender.nickname,
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: isDarkMode ? AppColors.black400 : AppColors.black600,
+                  ),
+                ),
+              ],
             ),
           ),
         Row(
@@ -223,6 +250,8 @@ class ChatMessageBubble extends StatelessWidget {
   }
 
   Widget _buildOtherMessage() {
+    // getter 반복 호출 방지 — null 체크와 실제 사용을 동일 인스턴스로 보장
+    final roleIconPath = _roleIconPath;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -232,11 +261,20 @@ class ChatMessageBubble extends StatelessWidget {
               bottom: AppSpacing.vertical8,
               left: AppSpacing.horizontal4,
             ),
-            child: Text(
-              message.sender.nickname,
-              style: AppTextStyles.tag_12.copyWith(
-                color: isDarkMode ? AppColors.black400 : AppColors.black600,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (roleIconPath != null) ...[
+                  SvgPicture.asset(roleIconPath, width: 12.w, height: 12.w),
+                  SizedBox(width: AppSpacing.horizontal4),
+                ],
+                Text(
+                  message.sender.nickname,
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: isDarkMode ? AppColors.black400 : AppColors.black600,
+                  ),
+                ),
+              ],
             ),
           ),
         Row(
