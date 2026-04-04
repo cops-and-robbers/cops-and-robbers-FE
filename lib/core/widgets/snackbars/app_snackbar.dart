@@ -39,6 +39,7 @@ class AppSnackbar {
     String? iconPath,
     double? iconSize,
     Duration duration = const Duration(seconds: 3),
+    bool isDarkMode = false,
   }) {
     dismiss();
 
@@ -49,6 +50,7 @@ class AppSnackbar {
         iconPath: iconPath,
         iconSize: iconSize,
         duration: duration,
+        isDarkMode: isDarkMode,
         onDismissed: () {
           _currentEntry?.remove();
           _currentEntry = null;
@@ -80,6 +82,7 @@ class _SnackbarOverlay extends StatefulWidget {
     this.iconSize,
     required this.duration,
     required this.onDismissed,
+    this.isDarkMode = false,
   });
 
   final String message;
@@ -88,6 +91,7 @@ class _SnackbarOverlay extends StatefulWidget {
   final double? iconSize;
   final Duration duration;
   final VoidCallback onDismissed;
+  final bool isDarkMode;
 
   @override
   State<_SnackbarOverlay> createState() => _SnackbarOverlayState();
@@ -149,7 +153,9 @@ class _SnackbarOverlayState extends State<_SnackbarOverlay>
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               decoration: BoxDecoration(
-                color: widget.backgroundColor ?? AppColors.black600,
+                color:
+                    widget.backgroundColor ??
+                    (widget.isDarkMode ? AppColors.black : AppColors.black600),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Row(
