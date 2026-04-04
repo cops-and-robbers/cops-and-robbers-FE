@@ -174,6 +174,18 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     notifier.updateCurrentPage(targetPage);
   }
 
+  /// 시트 바깥 영역 탭 시 최소 크기로 접기
+  void _collapseSheet() {
+    FocusScope.of(context).unfocus();
+    if (_sheetController.isAttached) {
+      _sheetController.animateTo(
+        _minSize,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   @override
   void dispose() {
     _sheetController.removeListener(_onSheetChanged);
