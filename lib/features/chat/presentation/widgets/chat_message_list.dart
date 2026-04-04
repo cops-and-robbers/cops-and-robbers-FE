@@ -96,6 +96,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
   /// 최신 메시지(최하단)로 스크롤 이동
   void _scrollToBottom() {
+    if (!_scrollController.hasClients) return;
     _scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 300),
