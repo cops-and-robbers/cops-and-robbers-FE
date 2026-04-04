@@ -239,6 +239,14 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
 
         return Stack(
           children: [
+            // 시트 바깥 영역 탭 → 시트 접기 (키보드 닫힌 + 펼쳐진 상태에서만)
+            if (_isExpanded && !isKeyboardOpen)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: _collapseSheet,
+                  behavior: HitTestBehavior.opaque,
+                ),
+              ),
             DraggableScrollableSheet(
               controller: _sheetController,
               initialChildSize: effectiveMinSize,
