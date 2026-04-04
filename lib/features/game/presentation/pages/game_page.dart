@@ -32,6 +32,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import '../../domain/zone_exit_detector.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
@@ -103,8 +104,14 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
 
-  /// 영역 이탈 상태 (중복 진동 방지)
-  bool _isOutsideZone = false;
+  /// 구역 이탈/복귀 상태 전환 감지기
+  late final ZoneExitDetector _zoneExitDetector = ZoneExitDetector(
+    onExitZone: () {
+      VibrationService.instance().zoneExit();
+      _showZoneExitPopup();
+    },
+    onEnterZone: _dismissZoneExitPopup,
+  );
 
   /// 이탈 경고 팝업 표시 중 여부 (중복 팝업 방지)
   bool _isZoneExitPopupShown = false;
@@ -531,20 +538,9 @@ class _GamePageState extends ConsumerState<GamePage>
       pos.longitude,
     );
 
-    final isOutside = distance > area.playgroundRadiusInMeters;
-
-    // 안 → 밖 전환: 진동 + 팝업
-    if (isOutside && !_isOutsideZone) {
-      VibrationService.instance().zoneExit();
-      _showZoneExitPopup();
-    }
-
-    // 밖 → 안 전환: 팝업 닫기
-    if (!isOutside && _isOutsideZone) {
-      _dismissZoneExitPopup();
-    }
-
-    _isOutsideZone = isOutside;
+    _zoneExitDetector.update(
+      isOutside: distance > area.playgroundRadiusInMeters,
+    );
   }
 
   /// 구역 이탈 경고 팝업 표시
