@@ -106,6 +106,9 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 영역 이탈 상태 (중복 진동 방지)
   bool _isOutsideZone = false;
 
+  /// 이탈 경고 팝업 표시 중 여부 (중복 팝업 방지)
+  bool _isZoneExitPopupShown = false;
+
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => widget.team == 'ROBBER';
 
@@ -511,9 +514,9 @@ class _GamePageState extends ConsumerState<GamePage>
         });
   }
 
-  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 1회
+  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 + 경고 팝업
   void _checkZoneExit(Position pos) {
-    // 게임 종료 또는 체포 상태에서는 진동 불필요
+    // 게임 종료 또는 체포 상태에서는 불필요
     if (_gameOverDialogShown) return;
     final gameState = ref.read(gameEventNotifierProvider);
     if (gameState.arrestedParticipantIds.contains(widget.participantId)) return;
@@ -530,11 +533,60 @@ class _GamePageState extends ConsumerState<GamePage>
 
     final isOutside = distance > area.playgroundRadiusInMeters;
 
-    // 안 → 밖 전환 시에만 진동 (반복 진동 방지)
+    // 안 → 밖 전환: 진동 + 팝업
     if (isOutside && !_isOutsideZone) {
       VibrationService.instance().zoneExit();
+      _showZoneExitPopup();
     }
+
+    // 밖 → 안 전환: 팝업 닫기
+    if (!isOutside && _isOutsideZone) {
+      _dismissZoneExitPopup();
+    }
+
     _isOutsideZone = isOutside;
+  }
+
+  /// 구역 이탈 경고 팝업 표시
+  void _showZoneExitPopup() {
+    if (_isZoneExitPopupShown || !mounted) return;
+    _isZoneExitPopupShown = true;
+    AppPopup.show(
+      context: context,
+      barrierDismissible: false,
+      backgroundColor: _isDarkMode ? AppColors.black : null,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '플레이그라운드를 벗어났어요!',
+            style:
+                (_isDarkMode
+                        ? AppTextStyles.robberHeading
+                        : AppTextStyles.heading_20)
+                    .copyWith(color: AppColors.red),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: AppSpacing.vertical12),
+          Text(
+            '구역 안으로 돌아와서 진행해 주세요',
+            style: AppTextStyles.paragraph_14_100.copyWith(
+              color: AppColors.red800,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ).then((_) {
+      // 팝업이 닫히면 (pop 등) 플래그 초기화
+      _isZoneExitPopupShown = false;
+    });
+  }
+
+  /// 구역 이탈 경고 팝업 닫기
+  void _dismissZoneExitPopup() {
+    if (!_isZoneExitPopupShown || !mounted) return;
+    Navigator.of(context).pop();
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
