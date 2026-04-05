@@ -32,6 +32,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import '../../domain/zone_exit_detector.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
@@ -103,8 +104,20 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
 
-  /// 영역 이탈 상태 (중복 진동 방지)
-  bool _isOutsideZone = false;
+  /// 구역 이탈/복귀 상태 전환 감지기
+  late final ZoneExitDetector _zoneExitDetector = ZoneExitDetector(
+    onExitZone: () {
+      VibrationService.instance().zoneExit();
+      _showZoneExitPopup();
+    },
+    onEnterZone: _dismissZoneExitPopup,
+  );
+
+  /// 이탈 경고 팝업 표시 중 여부 (중복 팝업 방지)
+  bool _isZoneExitPopupShown = false;
+
+  /// 이탈 경고 팝업의 다이얼로그 context (removeRoute용)
+  BuildContext? _zoneExitPopupContext;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => widget.team == 'ROBBER';
@@ -511,9 +524,9 @@ class _GamePageState extends ConsumerState<GamePage>
         });
   }
 
-  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 1회
+  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 + 경고 팝업
   void _checkZoneExit(Position pos) {
-    // 게임 종료 또는 체포 상태에서는 진동 불필요
+    // 게임 종료 또는 체포 상태에서는 불필요
     if (_gameOverDialogShown) return;
     final gameState = ref.read(gameEventNotifierProvider);
     if (gameState.arrestedParticipantIds.contains(widget.participantId)) return;
@@ -528,13 +541,66 @@ class _GamePageState extends ConsumerState<GamePage>
       pos.longitude,
     );
 
-    final isOutside = distance > area.playgroundRadiusInMeters;
+    _zoneExitDetector.update(
+      isOutside: distance > area.playgroundRadiusInMeters,
+    );
+  }
 
-    // 안 → 밖 전환 시에만 진동 (반복 진동 방지)
-    if (isOutside && !_isOutsideZone) {
-      VibrationService.instance().zoneExit();
-    }
-    _isOutsideZone = isOutside;
+  /// 구역 이탈 경고 팝업 표시
+  void _showZoneExitPopup() {
+    if (_isZoneExitPopupShown || !mounted) return;
+    _isZoneExitPopupShown = true;
+    AppPopup.show(
+      context: context,
+      barrierDismissible: false,
+      backgroundColor: _isDarkMode ? AppColors.black : null,
+      content: Builder(
+        builder: (popupContext) {
+          // 다이얼로그 context를 캡처하여 removeRoute에 사용
+          _zoneExitPopupContext = popupContext;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '플레이그라운드를 벗어났어요!',
+                style:
+                    (_isDarkMode
+                            ? AppTextStyles.robberHeading
+                            : AppTextStyles.heading_20)
+                        .copyWith(color: AppColors.red),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: AppSpacing.vertical12),
+              Text(
+                '구역 안으로 돌아와서 진행해 주세요',
+                style: AppTextStyles.paragraph_14_100.copyWith(
+                  color: AppColors.red800,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          );
+        },
+      ),
+    ).whenComplete(() {
+      // 팝업이 닫히면 (어떤 경로든) 참조 정리
+      _zoneExitPopupContext = null;
+      _isZoneExitPopupShown = false;
+    });
+  }
+
+  /// 구역 이탈 경고 팝업 닫기
+  ///
+  /// removeRoute로 해당 다이얼로그 라우트만 정확히 제거하여,
+  /// 위에 다른 팝업(재연결 로딩 등)이 쌓여 있어도 안전하게 동작한다.
+  void _dismissZoneExitPopup() {
+    final popupCtx = _zoneExitPopupContext;
+    if (!_isZoneExitPopupShown || popupCtx == null || !popupCtx.mounted) return;
+
+    final route = ModalRoute.of(popupCtx);
+    if (route == null) return;
+
+    Navigator.of(context).removeRoute(route);
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
