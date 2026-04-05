@@ -28,6 +28,12 @@ void main() {
       expect(DeepLinkConfig.isDeepLink(uri), isFalse);
     });
 
+    test('isDeepLink는 http 스킴의 URI를 false로 판별한다', () {
+      final uri = Uri.parse('http://example.com/room?code=ABC123');
+
+      expect(DeepLinkConfig.isDeepLink(uri), isFalse);
+    });
+
     test('isRoomInvite는 /room 경로를 true로 판별한다', () {
       final uri = Uri.parse('https://example.com/room?code=ABC123');
 

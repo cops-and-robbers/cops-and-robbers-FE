@@ -15,8 +15,8 @@ class DeepLinkConfig {
   static String roomInviteUrl(String inviteCode) =>
       '$scheme://$host/room?code=$inviteCode';
 
-  /// 이 앱의 딥링크인지 호스트로 판별
-  static bool isDeepLink(Uri uri) => uri.host == host;
+  /// 이 앱의 딥링크인지 scheme + 호스트로 판별
+  static bool isDeepLink(Uri uri) => uri.scheme == scheme && uri.host == host;
 
   /// 방 초대 딥링크인지 경로로 판별
   static bool isRoomInvite(Uri uri) => uri.path == '/room';
