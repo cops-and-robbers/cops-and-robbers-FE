@@ -8,5 +8,10 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<!-- TODO: 도메인 확정 시 applinks: 뒤의 도메인 변경 -->
+		<string>applinks:example.com</string>
+	</array>
 </dict>
 </plist>
