@@ -1,11 +1,35 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-05T12:32:07Z",
-    "currentVersion": "1.3.23",
+    "lastUpdated": "2026-04-05T14:08:37Z",
+    "currentVersion": "1.3.27",
     "projectType": "flutter",
-    "totalReleases": 65
+    "totalReleases": 66
   },
   "releases": [
+    {
+      "version": "1.3.27",
+      "project_type": "flutter",
+      "date": "2026-04-05",
+      "pr_number": 220,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **Documentation**\n  * 릴리스 버전 정보 최신화\n\n* **Chores**\n  * 애플리케이션 버전을 1.3.27로 업그레이드\n  * iOS 26 플랫폼 호환성 지원 추가\n  * 빌드 식별자 및 배포 메타데이터 업데이트",
+      "parsed_changes": {
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "릴리스 버전 정보 최신화"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전을 1.3.27로 업그레이드",
+            "iOS 26 플랫폼 호환성 지원 추가",
+            "빌드 식별자 및 배포 메타데이터 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.3.23",
       "project_type": "flutter",
