@@ -13,6 +13,8 @@ import '../../../../core/network/api_error_response.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+// TODO: 딥링크 도메인 확정 후 주석 해제
+// import '../../../../core/constants/deep_link_config.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -788,6 +790,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       confirmColor: isDark ? null : AppColors.blue,
       confirmTextColor: isDark ? null : AppColors.white,
       onConfirm: () {
+        // TODO: 딥링크 도메인 확정 후 아래 주석 해제하고 기존 코드 삭제
+        // shareText(
+        //   DeepLinkConfig.roomInviteUrl(code),
+        //   subject: '경찰과도둑 초대',
+        // );
         shareText(code);
       },
     );
