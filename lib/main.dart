@@ -179,22 +179,26 @@ class MyApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<MyApp> {
   DeepLinkHandler? _deepLinkHandler;
 
+  /// Cold Start 시 인증 미완료 상태에서 수신된 딥링크를 보관
+  String? _pendingInviteCode;
+
   @override
   void initState() {
     super.initState();
     _initDeepLinks();
+    _listenAuthForPendingDeepLink();
   }
 
   /// 딥링크 핸들러 초기화
   ///
   /// 방 초대 딥링크 수신 시 기존 joinGameProvider로 방 참가 후 대기실로 이동.
-  /// 인증되지 않은 상태에서는 무시 (go_router redirect가 로그인으로 보냄).
+  /// 인증되지 않은 상태에서는 pending으로 보관 후 인증 완료 시 재처리.
   void _initDeepLinks() {
     _deepLinkHandler = DeepLinkHandler(
       onDeepLink: (result) {
         switch (result) {
           case RoomInviteResult(:final inviteCode):
-            debugPrint('[DeepLink] 🎯 방 초대코드 수신: $inviteCode');
+            debugPrint('[DeepLink] 🎯 방 초대코드 수신');
             _handleRoomInvite(inviteCode);
         }
       },
@@ -202,15 +206,33 @@ class _MyAppState extends ConsumerState<MyApp> {
     _deepLinkHandler!.init();
   }
 
+  /// 인증 상태 변경 감지 → pending 딥링크 재처리
+  void _listenAuthForPendingDeepLink() {
+    ref.listenManual(authNotifierProvider, (previous, next) {
+      // 인증 완료 + pending 딥링크가 있으면 재처리
+      if (_pendingInviteCode != null &&
+          !next.isLoading &&
+          !next.hasError &&
+          next.value != null) {
+        final code = _pendingInviteCode!;
+        _pendingInviteCode = null;
+        debugPrint('[DeepLink] 🔄 인증 완료 — pending 딥링크 재처리');
+        _handleRoomInvite(code);
+      }
+    });
+  }
+
   /// 방 초대 딥링크 처리
   ///
   /// 인증 상태 확인 후 방 참가 API 호출 → 대기실로 이동.
+  /// 인증 미완료 시 pending으로 보관.
   Future<void> _handleRoomInvite(String inviteCode) async {
     final authState = ref.read(authNotifierProvider);
 
-    // 로그인 안 된 상태면 무시 (로그인 화면 유지)
-    if (authState.isLoading || authState.value == null) {
-      debugPrint('[DeepLink] ⚠️ 미인증 상태 — 딥링크 무시');
+    // 로그인 안 됨 / 로딩 중 / 에러 상태면 pending 보관
+    if (authState.isLoading || authState.hasError || authState.value == null) {
+      debugPrint('[DeepLink] ⏳ 미인증 상태 — pending 보관');
+      _pendingInviteCode = inviteCode;
       return;
     }
 
@@ -230,6 +252,8 @@ class _MyAppState extends ConsumerState<MyApp> {
       }
     } catch (e) {
       debugPrint('[DeepLink] ❌ 방 참가 실패: $e');
+      // 딥링크로 진입했으나 참가 실패 → 홈으로 이동하여 사용자가 상태를 인지하도록
+      router.go(RoutePaths.home);
     }
   }
 
