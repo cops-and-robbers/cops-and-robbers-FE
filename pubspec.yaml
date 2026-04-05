@@ -64,6 +64,7 @@ dependencies:
   package_info_plus: ^9.0.0 # 앱 정보 수집 (버전 등)
   device_info_plus: ^10.1.2 # 기기 정보 수집 (FCM 기기 식별용)
   app_settings: ^7.0.0
+  app_links: ^6.4.1 # 딥링크 URI 수신 (Cold Start + 실행 중)
   # QR 코드 (체포 시스템)
   qr_flutter: ^4.1.0 # QR 코드 생성 (도둑 QR 표시)
   mobile_scanner: ^7.2.0 # QR 코드 스캔 (경찰 체포용)
