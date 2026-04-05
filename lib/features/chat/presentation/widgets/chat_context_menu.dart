@@ -86,6 +86,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       widget.callerContext,
       message: '메시지가 복사되었어요',
       iconPath: 'assets/icons/icon_copy.svg',
+      isDarkMode: widget.isDarkMode,
     );
   }
 
@@ -100,6 +101,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       widget.callerContext,
       message: '해당 유저를 차단했어요',
       iconPath: 'assets/icons/icon_block.svg',
+      isDarkMode: widget.isDarkMode,
     );
   }
 
@@ -122,7 +124,11 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             onSubmit: (text) {
               // TODO: 신고 API 호출 (category: other, content: text)
               Navigator.of(widget.callerContext).pop();
-              AppSnackbar.show(widget.callerContext, message: '신고가 접수되었어요');
+              AppSnackbar.show(
+                widget.callerContext,
+                message: '신고가 접수되었어요',
+                isDarkMode: isDark,
+              );
             },
           ),
         ),
@@ -167,7 +173,11 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       ),
       onConfirm: () {
         // TODO: 신고 API 호출
-        AppSnackbar.show(widget.callerContext, message: '신고가 접수되었어요');
+        AppSnackbar.show(
+          widget.callerContext,
+          message: '신고가 접수되었어요',
+          isDarkMode: isDark,
+        );
       },
     );
   }

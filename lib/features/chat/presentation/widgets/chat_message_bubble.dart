@@ -44,12 +44,28 @@ class ChatMessageBubble extends StatelessWidget {
       message.sender.team.toUpperCase() == ChatTeam.system ||
       message.sender.participantId == 0;
 
+  /// 발신자 직업 아이콘 경로 (시스템 메시지는 null)
+  String? get _roleIconPath {
+    final team = message.sender.team.toUpperCase();
+    if (team == ChatTeam.police) {
+      return isDarkMode
+          ? 'assets/icons/icon_police_darkmode.svg'
+          : 'assets/icons/icon_police_lightmode.svg';
+    }
+    if (team == ChatTeam.robber) {
+      return isDarkMode
+          ? 'assets/icons/mdi_robber_darkmode.svg'
+          : 'assets/icons/mdi_robber_lightmode.svg';
+    }
+    return null;
+  }
+
   String get _formattedTime => message.formattedTimeKst;
 
   @override
   Widget build(BuildContext context) {
     if (_isSystemMessage) {
-      return _buildSystemMessage();
+      return _buildSystemMessage(context);
     }
 
     return Padding(
@@ -64,7 +80,7 @@ class ChatMessageBubble extends StatelessWidget {
   }
 
   /// 시스템 메시지 (중앙 정렬, 파란색 텍스트 + Loudspeaker 16x16)
-  Widget _buildSystemMessage() {
+  Widget _buildSystemMessage(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: AppSpacing.horizontal16,
@@ -85,12 +101,12 @@ class ChatMessageBubble extends StatelessWidget {
           ),
           SizedBox(width: AppSpacing.horizontal4),
           Flexible(
-            child: Text(
-              message.message,
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: isDarkMode ? AppColors.green : AppColors.blue,
-              ),
+            child: RichText(
               textAlign: TextAlign.center,
+              textScaler: MediaQuery.textScalerOf(context),
+              text: TextSpan(
+                children: _parseSystemMessageSpans(message.message),
+              ),
             ),
           ),
         ],
@@ -98,7 +114,62 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
+  /// 시스템 메시지 텍스트에 포함된 아이콘 마커를 파싱하여 InlineSpan 리스트로 변환
+  ///
+  /// `@icon_police`, `@icon_robber` 마커를 SVG WidgetSpan으로 치환한다.
+  /// 마커가 없는 일반 시스템 메시지는 텍스트만 반환한다.
+  List<InlineSpan> _parseSystemMessageSpans(String text) {
+    final style = AppTextStyles.paragraph_14.copyWith(
+      color: isDarkMode ? AppColors.green : AppColors.blue,
+    );
+    final iconRegex = RegExp(r'@icon_(police|robber)');
+    final spans = <InlineSpan>[];
+    var lastEnd = 0;
+
+    for (final match in iconRegex.allMatches(text)) {
+      // 마커 앞 텍스트
+      if (match.start > lastEnd) {
+        spans.add(
+          TextSpan(text: text.substring(lastEnd, match.start), style: style),
+        );
+      }
+      // 아이콘 WidgetSpan (원본 SVG 색상 유지 — colorFilter 미적용)
+      final isPolice = match.group(1) == 'police';
+      final iconPath = isPolice
+          ? (isDarkMode
+                ? 'assets/icons/icon_police_darkmode.svg'
+                : 'assets/icons/icon_police_lightmode.svg')
+          : (isDarkMode
+                ? 'assets/icons/mdi_robber_darkmode.svg'
+                : 'assets/icons/mdi_robber_lightmode.svg');
+      spans.add(
+        WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          child: Padding(
+            padding: EdgeInsets.only(right: 2.w),
+            child: SvgPicture.asset(iconPath, width: 16.w, height: 16.w),
+          ),
+        ),
+      );
+      lastEnd = match.end;
+    }
+
+    // 마지막 남은 텍스트
+    if (lastEnd < text.length) {
+      spans.add(TextSpan(text: text.substring(lastEnd), style: style));
+    }
+
+    // 마커가 없었으면 전체 텍스트 반환
+    if (spans.isEmpty) {
+      spans.add(TextSpan(text: text, style: style));
+    }
+
+    return spans;
+  }
+
   Widget _buildMyMessage() {
+    // getter 반복 호출 방지 — null 체크와 실제 사용을 동일 인스턴스로 보장
+    final roleIconPath = _roleIconPath;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -108,11 +179,20 @@ class ChatMessageBubble extends StatelessWidget {
               bottom: AppSpacing.vertical8,
               right: AppSpacing.horizontal4,
             ),
-            child: Text(
-              message.sender.nickname,
-              style: AppTextStyles.tag_12.copyWith(
-                color: isDarkMode ? AppColors.black400 : AppColors.black600,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (roleIconPath != null) ...[
+                  SvgPicture.asset(roleIconPath, width: 12.w, height: 12.w),
+                  SizedBox(width: AppSpacing.horizontal4),
+                ],
+                Text(
+                  message.sender.nickname,
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: isDarkMode ? AppColors.black400 : AppColors.black600,
+                  ),
+                ),
+              ],
             ),
           ),
         Row(
@@ -170,6 +250,8 @@ class ChatMessageBubble extends StatelessWidget {
   }
 
   Widget _buildOtherMessage() {
+    // getter 반복 호출 방지 — null 체크와 실제 사용을 동일 인스턴스로 보장
+    final roleIconPath = _roleIconPath;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -179,11 +261,20 @@ class ChatMessageBubble extends StatelessWidget {
               bottom: AppSpacing.vertical8,
               left: AppSpacing.horizontal4,
             ),
-            child: Text(
-              message.sender.nickname,
-              style: AppTextStyles.tag_12.copyWith(
-                color: isDarkMode ? AppColors.black400 : AppColors.black600,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (roleIconPath != null) ...[
+                  SvgPicture.asset(roleIconPath, width: 12.w, height: 12.w),
+                  SizedBox(width: AppSpacing.horizontal4),
+                ],
+                Text(
+                  message.sender.nickname,
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: isDarkMode ? AppColors.black400 : AppColors.black600,
+                  ),
+                ),
+              ],
             ),
           ),
         Row(

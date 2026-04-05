@@ -9,6 +9,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../domain/input_focus_guard.dart';
 
 /// 채팅 입력 바 위젯
 ///
@@ -52,8 +53,18 @@ class _ChatInputBarState extends State<ChatInputBar> {
   final FocusNode _focusNode = FocusNode();
   bool _hasText = false;
 
-  /// 사용자가 TextField를 직접 탭했는지 여부
-  bool _userTapped = false;
+  /// 사용자 탭 vs 프로그래매틱 포커스 복원 구분
+  late final InputFocusGuard _focusGuard = InputFocusGuard(
+    onAllowFocus: () => widget.onFocusGain?.call(),
+    onRejectFocus: () {
+      // 다이얼로그 닫힘 등 프로그래매틱 포커스 복원 → 즉시 해제
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _focusNode.hasFocus && !_focusGuard.isUserTapped) {
+          _focusNode.unfocus();
+        }
+      });
+    },
+  );
 
   @override
   void initState() {
@@ -64,25 +75,10 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   void _onFocusChanged() {
     if (_focusNode.hasFocus) {
-      if (!_userTapped) {
-        // 다이얼로그 닫힘 등 프로그래매틱 포커스 복원 → 즉시 해제
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && _focusNode.hasFocus && !_userTapped) {
-            _focusNode.unfocus();
-          }
-        });
-        return;
-      }
-      widget.onFocusGain?.call();
+      _focusGuard.handleFocusGained();
     } else {
-      // 포커스 상실 시 플래그 리셋
-      _userTapped = false;
+      _focusGuard.handleFocusLost();
     }
-  }
-
-  /// TextField 직접 탭 시 플래그 설정
-  void _onInputTap() {
-    _userTapped = true;
   }
 
   void _onTextChanged() {
@@ -134,8 +130,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
       child: Container(
         height: 48.h,
         padding: EdgeInsets.only(
-          left: AppSpacing.horizontal16,
-          right: AppSpacing.horizontal8,
+          left: AppSpacing.horizontal20,
+          right: AppSpacing.horizontal12,
         ),
         decoration: BoxDecoration(
           color: widget.isDarkMode ? AppColors.black : AppColors.white,
@@ -145,7 +141,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
           children: [
             Expanded(
               child: Listener(
-                onPointerDown: (_) => _userTapped = true,
+                onPointerDown: (_) => _focusGuard.markUserTapped(),
                 child: TextField(
                   controller: _controller,
                   focusNode: _focusNode,
@@ -171,12 +167,11 @@ class _ChatInputBarState extends State<ChatInputBar> {
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 8.h),
                   ),
-                  onTap: _onInputTap,
+                  onTap: _focusGuard.markUserTapped,
                   onSubmitted: (_) => _handleSend(),
                 ),
               ),
             ),
-            SizedBox(width: AppSpacing.horizontal8),
             _buildSendButton(),
           ],
         ),

@@ -1,4 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -47,6 +51,15 @@ class ChatMessageList extends StatefulWidget {
 class _ChatMessageListState extends State<ChatMessageList> {
   final ScrollController _scrollController = ScrollController();
 
+  /// 스크롤 하단 이동 FAB 표시 여부 (위로 200px 이상 스크롤 시 true)
+  bool _showScrollToBottom = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
   @override
   void didUpdateWidget(ChatMessageList oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -65,6 +78,28 @@ class _ChatMessageListState extends State<ChatMessageList> {
     _scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
+  /// 스크롤 위치에 따라 FAB 표시 여부 갱신
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    // reverse: true → pixels 0 = 최하단, 위로 스크롤하면 pixels 증가
+    final shouldShow = _scrollController.position.pixels > 200;
+    if (shouldShow != _showScrollToBottom) {
+      setState(() {
+        _showScrollToBottom = shouldShow;
+      });
+    }
+  }
+
+  /// 최신 메시지(최하단)로 스크롤 이동
+  void _scrollToBottom() {
+    if (!_scrollController.hasClients) return;
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
   }
@@ -92,6 +127,8 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
   @override
   void dispose() {
+    // 메모리 누수 방지: dispose 전에 리스너 먼저 제거
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
@@ -118,66 +155,117 @@ class _ChatMessageListState extends State<ChatMessageList> {
       );
     }
 
-    return NotificationListener<OverscrollNotification>(
-      onNotification: (notification) {
-        // reverse: true에서 아래로 스와이프 시 overscroll < 0
-        if (notification.overscroll < 0 && widget.onOverscrollDown != null) {
-          widget.onOverscrollDown!();
-          return true;
-        }
-        return false;
-      },
-      child: ListView.builder(
-        controller: _scrollController,
-        reverse: true,
-        padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical8),
-        itemCount: filteredMessages.length,
-        itemBuilder: (context, index) {
-          final msgIndex = filteredMessages.length - 1 - index;
-          final message = filteredMessages[msgIndex];
-          final isMe = message.sender.participantId == widget.myParticipantId;
+    return Stack(
+      children: [
+        NotificationListener<OverscrollNotification>(
+          onNotification: (notification) {
+            // reverse: true에서 아래로 스와이프 시 overscroll < 0
+            if (notification.overscroll < 0 &&
+                widget.onOverscrollDown != null) {
+              widget.onOverscrollDown!();
+              return true;
+            }
+            return false;
+          },
+          child: ListView.builder(
+            controller: _scrollController,
+            reverse: true,
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical8),
+            itemCount: filteredMessages.length,
+            itemBuilder: (context, index) {
+              final msgIndex = filteredMessages.length - 1 - index;
+              final message = filteredMessages[msgIndex];
+              final isMe =
+                  message.sender.participantId == widget.myParticipantId;
 
-          final prevMessage = msgIndex > 0
-              ? filteredMessages[msgIndex - 1]
-              : null;
-          final nextMessage = msgIndex < filteredMessages.length - 1
-              ? filteredMessages[msgIndex + 1]
-              : null;
+              final prevMessage = msgIndex > 0
+                  ? filteredMessages[msgIndex - 1]
+                  : null;
+              final nextMessage = msgIndex < filteredMessages.length - 1
+                  ? filteredMessages[msgIndex + 1]
+                  : null;
 
-          // 그룹 첫 메시지: 닉네임 표시
-          final showNickname =
-              prevMessage == null || !_isSameGroup(prevMessage, message);
+              // 그룹 첫 메시지: 닉네임 표시
+              final showNickname =
+                  prevMessage == null || !_isSameGroup(prevMessage, message);
 
-          // 그룹 마지막 메시지: 시간 표시
-          final showTime =
-              nextMessage == null || !_isSameGroup(message, nextMessage);
+              // 그룹 마지막 메시지: 시간 표시
+              final showTime =
+                  nextMessage == null || !_isSameGroup(message, nextMessage);
 
-          // 날짜 구분선: 이전 메시지와 날짜가 다르면 표시
-          final showDateDivider =
-              prevMessage == null || _isDifferentDate(prevMessage, message);
+              // 날짜 구분선: 이전 메시지와 날짜가 다르면 표시
+              final showDateDivider =
+                  prevMessage == null || _isDifferentDate(prevMessage, message);
 
-          return Column(
-            children: [
-              if (showDateDivider) _buildDateDivider(message.kstDateTime),
-              ChatMessageBubble(
-                message: message,
-                isMe: isMe,
-                myTeam: widget.myTeam,
-                showNickname: showNickname,
-                showTime: showTime,
-                isDarkMode: widget.isDarkMode,
-                onLongPress: widget.onMessageLongPress != null
-                    ? (bubbleContext) => widget.onMessageLongPress!(
-                        message,
-                        bubbleContext,
-                        isMe,
-                      )
-                    : null,
+              return Column(
+                children: [
+                  if (showDateDivider) _buildDateDivider(message.kstDateTime),
+                  ChatMessageBubble(
+                    message: message,
+                    isMe: isMe,
+                    myTeam: widget.myTeam,
+                    showNickname: showNickname,
+                    showTime: showTime,
+                    isDarkMode: widget.isDarkMode,
+                    onLongPress: widget.onMessageLongPress != null
+                        ? (bubbleContext) => widget.onMessageLongPress!(
+                            message,
+                            bubbleContext,
+                            isMe,
+                          )
+                        : null,
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        // 스크롤 하단 이동 FAB — 채팅 입력바 위 32, 우측 24
+        if (_showScrollToBottom)
+          Positioned(
+            right: 24.w,
+            bottom: 8.h,
+            child: Semantics(
+              label: '최신 메시지로 이동',
+              button: true,
+              child: GestureDetector(
+                onTap: _scrollToBottom,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: 40.w,
+                  height: 40.w,
+                  decoration: BoxDecoration(
+                    color: widget.isDarkMode
+                        ? AppColors.black
+                        : AppColors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: widget.isDarkMode
+                          ? AppColors.black800
+                          : AppColors.black200,
+                    ),
+                  ),
+                  child: Center(
+                    child: Transform.rotate(
+                      angle: 3 * math.pi / 2,
+                      child: SvgPicture.asset(
+                        'assets/icons/icon_previous.svg',
+                        width: 24.w,
+                        height: 24.w,
+                        colorFilter: ColorFilter.mode(
+                          widget.isDarkMode
+                              ? AppColors.black400
+                              : AppColors.black600,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ],
-          );
-        },
-      ),
+            ),
+          ),
+      ],
     );
   }
 

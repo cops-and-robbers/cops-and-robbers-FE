@@ -97,7 +97,6 @@ class ParticipantCard extends StatelessWidget {
   }
 
   Color get _avatarColor {
-    if (isHost) return AppColors.black600;
     return participant.isReady ? AppColors.black600 : AppColors.black300;
   }
 }
@@ -171,11 +170,11 @@ class AddSlotCard extends StatelessWidget {
               ),
               child: Center(
                 child: SvgPicture.asset(
-                  'assets/icons/plus.svg',
-                  width: 17.w,
-                  height: 17.w,
+                  'assets/icons/icon_change.svg',
+                  width: 24.w,
+                  height: 24.w,
                   colorFilter: ColorFilter.mode(
-                    isDarkMode ? AppColors.black400 : AppColors.black300,
+                    isDarkMode ? AppColors.black600 : AppColors.black400,
                     BlendMode.srcIn,
                   ),
                 ),
