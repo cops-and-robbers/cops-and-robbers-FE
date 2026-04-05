@@ -12,6 +12,10 @@ import 'package:cops_and_robbers/core/services/permission/location_permission_se
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
+import 'package:cops_and_robbers/core/deep_link/deep_link_handler.dart';
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/session/presentation/providers/session_provider.dart';
+import 'package:cops_and_robbers/router/route_paths.dart';
 
 void main() async {
   // Flutter 엔진 초기화 보장
@@ -163,13 +167,80 @@ void main() async {
   );
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key, this.isFirebaseInitialized = true});
 
   final bool isFirebaseInitialized;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  DeepLinkHandler? _deepLinkHandler;
+
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinks();
+  }
+
+  /// 딥링크 핸들러 초기화
+  ///
+  /// 방 초대 딥링크 수신 시 기존 joinGameProvider로 방 참가 후 대기실로 이동.
+  /// 인증되지 않은 상태에서는 무시 (go_router redirect가 로그인으로 보냄).
+  void _initDeepLinks() {
+    _deepLinkHandler = DeepLinkHandler(
+      onDeepLink: (result) {
+        switch (result) {
+          case RoomInviteResult(:final inviteCode):
+            debugPrint('[DeepLink] 🎯 방 초대코드 수신: $inviteCode');
+            _handleRoomInvite(inviteCode);
+        }
+      },
+    );
+    _deepLinkHandler!.init();
+  }
+
+  /// 방 초대 딥링크 처리
+  ///
+  /// 인증 상태 확인 후 방 참가 API 호출 → 대기실로 이동.
+  Future<void> _handleRoomInvite(String inviteCode) async {
+    final authState = ref.read(authNotifierProvider);
+
+    // 로그인 안 된 상태면 무시 (로그인 화면 유지)
+    if (authState.isLoading || authState.value == null) {
+      debugPrint('[DeepLink] ⚠️ 미인증 상태 — 딥링크 무시');
+      return;
+    }
+
+    final router = ref.read(routerProvider);
+
+    try {
+      final response = await ref.read(
+        joinGameProvider(inviteCode: inviteCode).future,
+      );
+
+      if (response != null) {
+        debugPrint('[DeepLink] ✅ 방 참가 성공: gameId=${response.gameId}');
+        router.go(
+          '${RoutePaths.waitingRoomWithId('${response.gameId}')}'
+          '?inviteCode=$inviteCode',
+        );
+      }
+    } catch (e) {
+      debugPrint('[DeepLink] ❌ 방 참가 실패: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _deepLinkHandler?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
 
     return ScreenUtilInit(
