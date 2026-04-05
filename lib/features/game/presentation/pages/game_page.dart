@@ -116,6 +116,9 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 이탈 경고 팝업 표시 중 여부 (중복 팝업 방지)
   bool _isZoneExitPopupShown = false;
 
+  /// 이탈 경고 팝업의 다이얼로그 context (removeRoute용)
+  BuildContext? _zoneExitPopupContext;
+
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => widget.team == 'ROBBER';
 
@@ -551,38 +554,53 @@ class _GamePageState extends ConsumerState<GamePage>
       context: context,
       barrierDismissible: false,
       backgroundColor: _isDarkMode ? AppColors.black : null,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '플레이그라운드를 벗어났어요!',
-            style:
-                (_isDarkMode
-                        ? AppTextStyles.robberHeading
-                        : AppTextStyles.heading_20)
-                    .copyWith(color: AppColors.red),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppSpacing.vertical12),
-          Text(
-            '구역 안으로 돌아와서 진행해 주세요',
-            style: AppTextStyles.paragraph_14_100.copyWith(
-              color: AppColors.red800,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      content: Builder(
+        builder: (popupContext) {
+          // 다이얼로그 context를 캡처하여 removeRoute에 사용
+          _zoneExitPopupContext = popupContext;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '플레이그라운드를 벗어났어요!',
+                style:
+                    (_isDarkMode
+                            ? AppTextStyles.robberHeading
+                            : AppTextStyles.heading_20)
+                        .copyWith(color: AppColors.red),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: AppSpacing.vertical12),
+              Text(
+                '구역 안으로 돌아와서 진행해 주세요',
+                style: AppTextStyles.paragraph_14_100.copyWith(
+                  color: AppColors.red800,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          );
+        },
       ),
-    ).then((_) {
-      // 팝업이 닫히면 (pop 등) 플래그 초기화
+    ).whenComplete(() {
+      // 팝업이 닫히면 (어떤 경로든) 참조 정리
+      _zoneExitPopupContext = null;
       _isZoneExitPopupShown = false;
     });
   }
 
   /// 구역 이탈 경고 팝업 닫기
+  ///
+  /// removeRoute로 해당 다이얼로그 라우트만 정확히 제거하여,
+  /// 위에 다른 팝업(재연결 로딩 등)이 쌓여 있어도 안전하게 동작한다.
   void _dismissZoneExitPopup() {
-    if (!_isZoneExitPopupShown || !mounted) return;
-    Navigator.of(context).pop();
+    final popupCtx = _zoneExitPopupContext;
+    if (!_isZoneExitPopupShown || popupCtx == null || !popupCtx.mounted) return;
+
+    final route = ModalRoute.of(popupCtx);
+    if (route == null) return;
+
+    Navigator.of(context).removeRoute(route);
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
