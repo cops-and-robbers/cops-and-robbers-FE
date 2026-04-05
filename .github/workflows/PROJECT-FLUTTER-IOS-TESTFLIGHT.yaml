@@ -313,6 +313,17 @@ jobs:
             exit 1
           fi
 
+      - name: Install iOS 26 platform (if needed)
+        run: |
+          # Xcode 26부터 iOS platform이 별도 다운로드 방식
+          if ! xcrun simctl list runtimes 2>/dev/null | grep -q "iOS 26"; then
+            echo "📥 iOS 26 platform 설치 중..."
+            xcodebuild -downloadPlatform iOS
+            echo "✅ iOS 26 platform 설치 완료"
+          else
+            echo "✅ iOS 26 platform 이미 설치됨"
+          fi
+
       - name: Download project files
         uses: actions/download-artifact@v4
         with:
