@@ -1131,6 +1131,7 @@ class _GamePageState extends ConsumerState<GamePage>
             );
             _isReconnectModalShown = true;
             ReconnectModal.show(
+              // ignore: use_build_context_synchronously
               context: context,
               isDarkMode: _isDarkMode,
               stateNotifier: _reconnectStateNotifier!,

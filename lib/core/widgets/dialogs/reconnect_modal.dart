@@ -51,7 +51,7 @@ class ReconnectModal extends StatelessWidget {
       barrierLabel: 'ReconnectModal',
       barrierColor: DialogAnimation.barrierColor,
       transitionDuration: DialogAnimation.duration,
-      pageBuilder: (ctx, _, __) => ReconnectModal(
+      pageBuilder: (ctx, anim, secondaryAnim) => ReconnectModal(
         isDarkMode: isDarkMode,
         onReconnect: onReconnect,
         stateNotifier: stateNotifier,

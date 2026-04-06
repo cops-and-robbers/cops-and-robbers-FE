@@ -481,6 +481,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               final isDarkMode = ref.read(roleThemeProvider);
               _reconnectStateNotifier = ValueNotifier(connState);
               _isReconnectModalShown = true;
+              // ignore: use_build_context_synchronously
               ReconnectModal.show(
                 context: context,
                 isDarkMode: isDarkMode,
