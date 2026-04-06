@@ -73,10 +73,10 @@ class Step2GameSettingsContent extends StatelessWidget {
         AppSlider(
           label: '위치 공유 간격',
           value: locationShareMinutes.toDouble(),
-          min: 5,
+          min: 1,
           max: 30,
           unit: '분',
-          divisions: 25, // 5~30, 1분 단위
+          divisions: 29, // 1~30, 1분 단위
           onChanged: (value) => onLocationShareChanged(value.toInt()),
           isDarkMode: isDarkMode,
         ),
