@@ -428,6 +428,41 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
   }
 
+  /// 재연결 모달 표시
+  ///
+  /// 이미 표시 중이거나 끊김/에러 상태가 아니면 스킵.
+  /// 모달 닫힘 후 여전히 끊겨 있으면 자신을 재귀 호출하여 재표시.
+  void _showReconnectModal(StompConnectionState connState) {
+    if (_isDisposed ||
+        _isReconnectModalShown ||
+        !mounted ||
+        (connState != StompConnectionState.disconnected &&
+            connState != StompConnectionState.error))
+      return;
+
+    final isDark = ref.read(roleThemeProvider);
+    _reconnectStateNotifier = ValueNotifier(connState);
+    _isReconnectModalShown = true;
+    ReconnectModal.show(
+      context: context,
+      isDarkMode: isDark,
+      stateNotifier: _reconnectStateNotifier!,
+      onReconnect: () {
+        ref.read(lobbyNotifierProvider.notifier).manualReconnect();
+      },
+    ).then((_) {
+      if (_isDisposed) return;
+      _isReconnectModalShown = false;
+      _reconnectStateNotifier?.dispose();
+      _reconnectStateNotifier = null;
+
+      // 닫힘 애니메이션 중 새로운 끊김이 발생했을 때 재표시
+      // (닫힘 ~250ms 동안 disconnected 이벤트가 소비되어 리스너가 놓치는 케이스 대응)
+      if (!mounted) return;
+      _showReconnectModal(ref.read(lobbyNotifierProvider).connectionState);
+    });
+  }
+
   /// 로비 이벤트 → 참가자 목록 업데이트
   void _listenLobbyEvents() {
     _lobbyEventSub = ref.listenManual(lobbyNotifierProvider, (prev, next) {
@@ -454,49 +489,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               mounted) {
             Navigator.of(context).pop();
           }
-        } else if ((next.connectionState == StompConnectionState.disconnected ||
-                next.connectionState == StompConnectionState.error) &&
-            mounted) {
-          final isDark = ref.read(roleThemeProvider);
-          _reconnectStateNotifier = ValueNotifier(next.connectionState);
-          _isReconnectModalShown = true;
-          ReconnectModal.show(
-            context: context,
-            isDarkMode: isDark,
-            stateNotifier: _reconnectStateNotifier!,
-            onReconnect: () {
-              ref.read(lobbyNotifierProvider.notifier).manualReconnect();
-            },
-          ).then((_) {
-            if (_isDisposed) return;
-            _isReconnectModalShown = false;
-            _reconnectStateNotifier?.dispose();
-            _reconnectStateNotifier = null;
-
-            // 닫힘 애니메이션 중 새로운 끊김이 발생했을 때 재표시
-            if (!mounted) return;
-            final connState = ref.read(lobbyNotifierProvider).connectionState;
-            if (connState == StompConnectionState.disconnected ||
-                connState == StompConnectionState.error) {
-              final isDarkMode = ref.read(roleThemeProvider);
-              _reconnectStateNotifier = ValueNotifier(connState);
-              _isReconnectModalShown = true;
-              // ignore: use_build_context_synchronously
-              ReconnectModal.show(
-                context: context,
-                isDarkMode: isDarkMode,
-                stateNotifier: _reconnectStateNotifier!,
-                onReconnect: () {
-                  ref.read(lobbyNotifierProvider.notifier).manualReconnect();
-                },
-              ).then((_) {
-                if (_isDisposed) return;
-                _isReconnectModalShown = false;
-                _reconnectStateNotifier?.dispose();
-                _reconnectStateNotifier = null;
-              });
-            }
-          });
+        } else {
+          _showReconnectModal(next.connectionState);
         }
       }
 

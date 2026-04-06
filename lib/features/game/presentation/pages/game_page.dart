@@ -1056,11 +1056,12 @@ class _GamePageState extends ConsumerState<GamePage>
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
     final policeStartTime = _computePoliceStartTime();
 
-    // 재연결 감지 → 도둑 팀 위치 즉시 재전송
+    // 재연결 감지 → 도둑 팀 위치 즉시 재전송 + 재연결 모달 표시/닫기
     ref.listen(gameEventNotifierProvider.select((s) => s.connectionState), (
       prev,
       next,
     ) {
+      // 재연결 성공 → 도둑 팀 위치 즉시 재전송
       if (next == StompConnectionState.connected &&
           prev != StompConnectionState.connected &&
           widget.team == 'ROBBER' &&
@@ -1071,13 +1072,7 @@ class _GamePageState extends ConsumerState<GamePage>
           _startLocationSending();
         }
       }
-    });
 
-    // 연결 끊김/에러 → 재연결 모달 표시 / 재연결 성공 → 모달 자동 닫기
-    ref.listen(gameEventNotifierProvider.select((s) => s.connectionState), (
-      prev,
-      next,
-    ) {
       // 최초 연결 성공 추적 (초기 연결 실패 시엔 모달 미표시)
       if (next == StompConnectionState.connected) {
         _hasGameEventConnectedOnce = true;
