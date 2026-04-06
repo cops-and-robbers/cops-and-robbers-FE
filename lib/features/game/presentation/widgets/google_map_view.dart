@@ -17,14 +17,10 @@ class GoogleMapView extends StatefulWidget {
     super.key,
     this.onCameraMoveStarted,
     this.isDarkMode = false,
-    this.mapId,
   });
 
   final VoidCallback? onCameraMoveStarted;
   final bool isDarkMode;
-
-  /// Google Cloud Map Styling ID — null이면 JSON 스타일 또는 기본 스타일 사용
-  final String? mapId;
 
   @override
   State<GoogleMapView> createState() => GoogleMapViewState();
@@ -218,11 +214,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
           target: _fallback,
           zoom: 15,
         ),
-        // mapId가 있으면 Cloud 스타일 사용 (JSON style과 상호 배타적)
-        cloudMapId: widget.mapId,
-        style: widget.mapId == null && widget.isDarkMode
-            ? MapStyles.dark
-            : null,
+        // 도둑 팀: 기기 설정 무관하게 항상 어두운 스타일 강제
+        style: widget.isDarkMode ? MapStyles.dark : null,
         onMapCreated: (controller) {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
