@@ -33,4 +33,10 @@ class EnvConfig {
     final value = dotenv.env['USE_MOCK_API']?.toLowerCase();
     return value == 'true' || value == '1';
   }
+
+  /// 도둑 팀 지도 Cloud Map ID. 미설정 시 null → JSON 다크 스타일 폴백.
+  static String? get googleMapsRobberMapId {
+    final value = dotenv.env['GOOGLE_MAPS_ROBBER_MAP_ID'];
+    return (value == null || value.isEmpty) ? null : value;
+  }
 }

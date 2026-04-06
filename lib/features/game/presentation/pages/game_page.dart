@@ -35,6 +35,7 @@ import '../../data/models/game_area_model.dart';
 import '../../domain/zone_exit_detector.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
+import '../../../../core/config/env_config.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
@@ -518,7 +519,6 @@ class _GamePageState extends ConsumerState<GamePage>
           pos,
         ) {
           if (mounted) {
-            _updateHeadingMarker(pos);
             _checkZoneExit(pos);
           }
         });
@@ -653,16 +653,6 @@ class _GamePageState extends ConsumerState<GamePage>
       context,
       isDarkMode: _isDarkMode,
       locationRevealIntervalMinutes: interval,
-    );
-  }
-
-  /// 방향 인디케이터 마커 갱신 (Google Maps)
-  void _updateHeadingMarker(Position pos) {
-    final isPolice = widget.team == 'POLICE';
-    _googleMapKey.currentState?.updateHeadingMarker(
-      LatLng(pos.latitude, pos.longitude),
-      pos.heading,
-      isPolice,
     );
   }
 
@@ -1098,6 +1088,7 @@ class _GamePageState extends ConsumerState<GamePage>
               key: _googleMapKey,
               onCameraMoveStarted: _onMapCameraMoved,
               isDarkMode: _isDarkMode,
+              mapId: _isDarkMode ? EnvConfig.googleMapsRobberMapId : null,
             ),
           ),
 
