@@ -39,7 +39,9 @@
 7. [System API - 게임 시스템 상호작용](#7-system-api---게임-시스템-상호작용)
    - [POST /api/games/{gameId}/system/arrest - 도둑 체포](#71-post-apigamesgameidsystemarrest---도둑-체포)
    - [POST /api/games/{gameId}/system/escape - 도둑 탈옥](#72-post-apigamesgameidsystemescape---도둑-탈옥)
-8. [공통 스키마](#8-공통-스키마)
+8. [Report API - 신고](#8-report-api---신고)
+   - [POST /api/report/chat - 채팅 신고](#81-post-apireportchat---채팅-신고)
+9. [공통 스키마](#9-공통-스키마)
 
 ---
 
@@ -57,7 +59,7 @@
 | ---------------- | ------ | ---- | ---------------------------------------- |
 | `socialPlatform` | string | O    | 소셜 플랫폼 (`KAKAO`, `GOOGLE`, `APPLE`) |
 | `idToken`        | string | O    | 소셜 인증 토큰 (ID Token)                |
-| `fcmToken`       | string | O    | FCM 디바이스 토큰                        |
+| `fcmToken`       | string | -    | FCM 디바이스 토큰 (선택, nullable)       |
 | `deviceType`     | string | O    | 디바이스 타입 (`IOS`, `ANDROID`)         |
 | `deviceId`       | string | O    | 고유 디바이스 ID                         |
 
@@ -244,7 +246,7 @@
 | `area.jailRadiusInMeters`                | integer (int32)                             | O    | 감옥 반경 (최소 5m)            |
 | `settings`                               | [GameSettingsRequest](#gamesettingsrequest) | O    | 게임 규칙 설정                 |
 | `settings.roundDurationMinutes`          | integer (int32)                             | O    | 라운드 시간 (10~180분)         |
-| `settings.locationRevealIntervalMinutes` | integer (int32)                             | O    | 위치 공개 주기 (최소 5분)      |
+| `settings.locationRevealIntervalMinutes` | integer (int32)                             | O    | 위치 공개 주기 (최소 1분)      |
 | `settings.policeWaitMinutes`             | integer (int32)                             | O    | 경찰 대기 시간 (최소 1분)      |
 | `settings.maxParticipants`               | integer (int32)                             | O    | 최대 참여 인원 (2~50명)        |
 
@@ -355,7 +357,7 @@
 | 필드                            | 타입            | 필수 | 범위   | 설명                |
 | ------------------------------- | --------------- | ---- | ------ | ------------------- |
 | `roundDurationMinutes`          | integer (int32) | O    | 10~180 | 라운드 시간 (분)    |
-| `locationRevealIntervalMinutes` | integer (int32) | O    | 5~     | 위치 공개 주기 (분) |
+| `locationRevealIntervalMinutes` | integer (int32) | O    | 1~     | 위치 공개 주기 (분) |
 | `policeWaitMinutes`             | integer (int32) | O    | 1~     | 경찰 대기 시간 (분) |
 | `maxParticipants`               | integer (int32) | O    | 2~50   | 최대 참여 인원      |
 
@@ -1474,7 +1476,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ### 6.5 GET /api/user/me/game - 참여 중인 게임 정보 조회
 
-로그인한 사용자가 현재 참여 중인 게임 정보를 조회합니다. `isParticipating`으로 참여 여부를 확인할 수 있으며, 참여 중인 게임이 없으면 `participationInfo`가 null로 반환됩니다.
+로그인한 사용자가 현재 참여 중인 게임 정보를 조회합니다. `isParticipating`으로 참여 여부를 확인할 수 있으며, 참여 중인 게임이 없으면 `participationInfo`가 null로 반환됩니다. 생성 후 24시간이 지난 대기 중(WAITING) 로비는 자동으로 삭제되며 `isParticipating=false`로 응답합니다.
 
 - **인증 필요**: Yes (JWT)
 
@@ -1665,7 +1667,107 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 
 ---
 
-## 8. 공통 스키마
+## 8. Report API - 신고
+
+### 8.1 POST /api/report/chat - 채팅 신고
+
+채팅 메시지를 신고합니다.
+
+- **인증 필요**: Yes (JWT)
+
+#### Request Body (`application/json`)
+
+| 필드                    | 타입            | 필수 | 설명                                                                                                  |
+| ----------------------- | --------------- | ---- | ----------------------------------------------------------------------------------------------------- |
+| `gameId`                | integer (int64) | O    | 게임 ID                                                                                               |
+| `reportedParticipantId` | integer (int64) | O    | 신고 대상 참가자 ID                                                                                   |
+| `messageContent`        | string          | O    | 신고된 메시지 내용                                                                                    |
+| `reportType`            | string          | O    | 신고 유형 (`FISHING` \| `VERBAL_ABUSE` \| `IMPERSONATION` \| `SPAM` \| `CHEATING` \| `DEMORALIZATION` \| `ETC`) |
+| `etcReason`             | string          | -    | 기타 사유 (신고 유형이 `ETC`일 때 필수, 최대 300자)                                                   |
+
+**요청 예시:**
+
+```json
+{
+  "gameId": 3,
+  "reportedParticipantId": 12,
+  "messageContent": "나쁜 말",
+  "reportType": "VERBAL_ABUSE"
+}
+```
+
+#### Responses
+
+**201 - 신고 성공** (응답 본문 없음)
+
+**400 - 잘못된 요청**
+
+| 케이스              | title                      | detail                              |
+| ------------------- | -------------------------- | ----------------------------------- |
+| 게임 진행 중 아님   | 게임 진행 중 아님          | 게임이 진행 중인 상태가 아닙니다.   |
+| 본인 신고 불가      | 본인을 신고할 수 없습니다. | 본인을 신고할 수 없습니다.          |
+
+```json
+{
+  "title": "게임 진행 중 아님",
+  "status": 400,
+  "detail": "게임이 진행 중인 상태가 아닙니다.",
+  "instance": "/api/report/chat"
+}
+```
+
+**401 - 인증 실패**
+
+```json
+{
+  "title": "인증되지 않은 요청",
+  "status": 401,
+  "detail": "로그인이 필요합니다.",
+  "instance": "/api/report/chat"
+}
+```
+
+**404 - 리소스 없음**
+
+| 케이스             | title                        | detail                                   |
+| ------------------ | ---------------------------- | ---------------------------------------- |
+| 참가자 미존재      | 참가자를 찾을 수 없음        | 해당 게임에 참가하지 않은 사용자입니다.   |
+| 신고 대상 미존재   | 신고 대상을 찾을 수 없습니다. | 해당 게임에 존재하지 않는 참가자입니다.  |
+
+```json
+{
+  "title": "참가자를 찾을 수 없음",
+  "status": 404,
+  "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+  "instance": "/api/report/chat"
+}
+```
+
+**409 - 중복 신고**
+
+```json
+{
+  "title": "이미 신고한 사용자입니다.",
+  "status": 409,
+  "detail": "해당 게임에서 이미 신고한 사용자입니다.",
+  "instance": "/api/report/chat"
+}
+```
+
+**500 - 서버 오류**
+
+```json
+{
+  "title": "알 수 없는 오류",
+  "status": 500,
+  "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+  "instance": "/api/report/chat"
+}
+```
+
+---
+
+## 9. 공통 스키마
 
 ### ErrorResponse
 
@@ -1695,7 +1797,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | ---------------- | ------ | ---- | ------------------------------ |
 | `socialPlatform` | string | O    | `KAKAO` \| `GOOGLE` \| `APPLE` |
 | `idToken`        | string | O    | 소셜 인증 토큰                 |
-| `fcmToken`       | string | O    | FCM 디바이스 토큰              |
+| `fcmToken`       | string | -    | FCM 디바이스 토큰 (선택, nullable) |
 | `deviceType`     | string | O    | `IOS` \| `ANDROID`             |
 | `deviceId`       | string | O    | 고유 디바이스 ID               |
 
@@ -1770,7 +1872,7 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | 필드                            | 타입            | 필수 | 범위   | 설명                |
 | ------------------------------- | --------------- | ---- | ------ | ------------------- |
 | `roundDurationMinutes`          | integer (int32) | O    | 10~180 | 라운드 시간 (분)    |
-| `locationRevealIntervalMinutes` | integer (int32) | O    | 5~     | 위치 공개 주기 (분) |
+| `locationRevealIntervalMinutes` | integer (int32) | O    | 1~     | 위치 공개 주기 (분) |
 | `policeWaitMinutes`             | integer (int32) | O    | 1~     | 경찰 대기 시간 (분) |
 | `maxParticipants`               | integer (int32) | O    | 2~50   | 최대 참여 인원      |
 
@@ -1951,3 +2053,13 @@ GET /api/user/check-nickname?nickname=민첩한괴도5308
 | 필드      | 타입   | 설명      |
 | --------- | ------ | --------- |
 | `message` | string | 결과 메시지 |
+
+### ReportRequest
+
+| 필드                    | 타입            | 필수 | 설명                                                                                                  |
+| ----------------------- | --------------- | ---- | ----------------------------------------------------------------------------------------------------- |
+| `gameId`                | integer (int64) | O    | 게임 ID                                                                                               |
+| `reportedParticipantId` | integer (int64) | O    | 신고 대상 참가자 ID                                                                                   |
+| `messageContent`        | string          | O    | 신고된 메시지 내용                                                                                    |
+| `reportType`            | string          | O    | 신고 유형 (`FISHING` \| `VERBAL_ABUSE` \| `IMPERSONATION` \| `SPAM` \| `CHEATING` \| `DEMORALIZATION` \| `ETC`) |
+| `etcReason`             | string          | -    | 기타 사유 (신고 유형이 `ETC`일 때 필수, 최대 300자)                                                   |

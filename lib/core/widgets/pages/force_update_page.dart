@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constants/app_colors.dart';
-import '../../constants/app_config.dart';
+import '../../constants/app_urls.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../../utils/url_launcher_util.dart';
@@ -58,7 +58,7 @@ class ForceUpdatePage extends StatelessWidget {
               ),
               AppButton(
                 text: '업데이트',
-                onPressed: () => launchExternalUrl(AppConfig.storeUrl),
+                onPressed: () => launchExternalUrl(AppUrls.storeUrl),
                 showBorder: false,
               ),
             ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../router/route_paths.dart';
-import '../../constants/app_config.dart';
+import '../../constants/app_urls.dart';
 import '../../utils/url_launcher_util.dart';
 import '../../widgets/dialogs/app_dialog.dart';
 import 'app_version_checker.dart';
@@ -56,7 +56,7 @@ class UpdateDialogHelper {
       cancelText: '나중에',
       barrierDismissible: true,
       onConfirm: () {
-        launchExternalUrl(AppConfig.storeUrl);
+        launchExternalUrl(AppUrls.storeUrl);
       },
     );
   }
@@ -71,7 +71,7 @@ class UpdateDialogHelper {
       cancelText: '나중에',
       barrierDismissible: true,
       onConfirm: () {
-        launchExternalUrl(AppConfig.storeUrl);
+        launchExternalUrl(AppUrls.storeUrl);
       },
     );
   }
