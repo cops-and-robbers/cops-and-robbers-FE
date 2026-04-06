@@ -141,6 +141,7 @@ jobs:
           cat << 'EOF' > ${{ env.ENV_FILE_PATH }}
           ${{ secrets.ENV_FILE || secrets.ENV }}
           EOF
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID }}" >> ${{ env.ENV_FILE_PATH }}
           echo "✅ ${{ env.ENV_FILE_PATH }} file created"
 
       - name: Create Secrets.xcconfig file
@@ -334,6 +335,7 @@ jobs:
           EOF
             echo "✅ ${{ env.ENV_FILE_PATH }} file created (fallback)"
           fi
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID }}" >> ${{ env.ENV_FILE_PATH }}
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
