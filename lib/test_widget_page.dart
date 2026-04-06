@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/utils/share_util.dart';
+import 'package:go_router/go_router.dart';
+
+import 'router/route_paths.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'core/constants/app_colors.dart';
@@ -1169,6 +1172,32 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     );
                   },
                   backgroundColor: AppColors.blue800,
+                  showBorder: false,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // 페이지 이동 테스트 (점검/강제 업데이트)
+                // ============================================
+                _buildSectionTitle('페이지 이동 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 점검 페이지 이동
+                AppButton(
+                  text: '점검 페이지 (Maintenance)',
+                  onPressed: () => context.go(RoutePaths.maintenance),
+                  backgroundColor: AppColors.black800,
+                  showBorder: false,
+                ),
+
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 강제 업데이트 페이지 이동
+                AppButton(
+                  text: '강제 업데이트 페이지 (Force Update)',
+                  onPressed: () => context.go(RoutePaths.forceUpdate),
+                  backgroundColor: AppColors.black800,
                   showBorder: false,
                 ),
 
