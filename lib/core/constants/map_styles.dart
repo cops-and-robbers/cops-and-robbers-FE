@@ -2,7 +2,7 @@
 ///
 /// 다크/라이트 모드 등 지도 스타일 JSON을 관리합니다.
 abstract final class MapStyles {
-  /// 도둑 팀 지도 스타일 — 야간 도시 컨셉, 공원 등 가독성 확보
+  /// 도둑 팀 지도 JSON 폴백 스타일 — Map ID 미설정 시 사용 (야간 도시 컨셉)
   static const String dark = '''
 [
   {"elementType":"geometry","stylers":[{"color":"#1a1a2e"}]},
