@@ -1,6 +1,8 @@
 /// 환경 변수 설정 관리
 library;
 
+import 'dart:io' show Platform;
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// 환경 변수 설정 클래스
@@ -34,9 +36,12 @@ class EnvConfig {
     return value == 'true' || value == '1';
   }
 
-  /// 도둑 팀 지도 Cloud Map ID. 미설정 시 null → JSON 다크 스타일 폴백.
+  /// 도둑 팀 지도 Cloud Map ID (플랫폼별). 미설정 시 null → JSON 다크 스타일 폴백.
   static String? get googleMapsRobberMapId {
-    final value = dotenv.env['GOOGLE_MAPS_ROBBER_MAP_ID'];
+    final key = Platform.isIOS
+        ? 'GOOGLE_MAPS_ROBBER_MAP_ID_IOS'
+        : 'GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID';
+    final value = dotenv.env[key];
     return (value == null || value.isEmpty) ? null : value;
   }
 }

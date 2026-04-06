@@ -353,7 +353,8 @@ jobs:
           cat << 'EOF' > ${{ env.ENV_FILE_PATH }}
           ${{ secrets.ENV_FILE || secrets.ENV }}
           EOF
-          echo "GOOGLE_MAPS_ROBBER_MAP_ID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID }}" >> ${{ env.ENV_FILE_PATH }}
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> ${{ env.ENV_FILE_PATH }}
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> ${{ env.ENV_FILE_PATH }}
           echo "✅ ${{ env.ENV_FILE_PATH }} file created"
 
       # Android Native Config 생성 (Google Maps API Key)

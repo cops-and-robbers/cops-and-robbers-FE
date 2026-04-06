@@ -42,7 +42,8 @@ jobs:
           cat > .env << 'EOF'
           ${{ secrets.ENV_FILE || secrets.ENV }}
           EOF
-          echo "GOOGLE_MAPS_ROBBER_MAP_ID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID }}" >> .env
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> .env
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> .env
 
       # 5. iOS Native Config 생성 (Google Maps API Key)
       - name: Setup iOS Secrets (Google Maps)
