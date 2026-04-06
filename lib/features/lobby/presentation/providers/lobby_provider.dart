@@ -154,6 +154,20 @@ class LobbyNotifier extends _$LobbyNotifier {
     datasource.connect(wsUrl, accessToken);
   }
 
+  /// 수동 재연결 — 재시도 카운터를 초기화하고 즉시 연결 시도
+  ///
+  /// 사용자가 재연결 버튼을 탭했을 때 호출합니다.
+  /// 기존 자동 재연결 백오프와 달리 딜레이 없이 즉시 시도합니다.
+  Future<void> manualReconnect() async {
+    if (_gameId == null) return;
+    _reconnectCount = 0; // 재시도 카운터 초기화 → 이후 자동 재연결 5회 재활성화
+    _intentionalDisconnect = false;
+    _isHandlingError = false;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    await _attemptReconnect();
+  }
+
   /// 로비 연결 해제
   void disconnectLobby() {
     _intentionalDisconnect = true;
