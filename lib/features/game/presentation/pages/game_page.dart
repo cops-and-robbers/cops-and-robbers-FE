@@ -22,6 +22,7 @@ import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/widgets/dialogs/reconnect_modal.dart';
 import '../../../../core/widgets/dialogs/countdown_timer_content.dart';
 import '../../../../router/route_paths.dart';
 import '../../../chat/presentation/providers/chat_notification_provider.dart';
@@ -118,6 +119,16 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 이탈 경고 팝업의 다이얼로그 context (removeRoute용)
   BuildContext? _zoneExitPopupContext;
+
+  /// 재연결 모달 표시 중 여부 (중복 표시 방지)
+  bool _isReconnectModalShown = false;
+
+  /// 게임 이벤트 STOMP 최초 연결 성공 여부
+  /// (초기 연결 실패는 모달 대신 기존 에러 처리에 위임)
+  bool _hasGameEventConnectedOnce = false;
+
+  /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
+  ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => widget.team == 'ROBBER';
@@ -240,6 +251,8 @@ class _GamePageState extends ConsumerState<GamePage>
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
+    _reconnectStateNotifier?.dispose();
+    _reconnectStateNotifier = null;
     final chatNotifier = _chatNotifier;
     final gameEventDatasource = _gameEventDatasource;
     final isDummy = widget.isDummy;
@@ -548,7 +561,9 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 구역 이탈 경고 팝업 표시
   void _showZoneExitPopup() {
-    if (_isZoneExitPopupShown || !mounted) return;
+    // 재연결 모달이 떠 있을 때는 구역 이탈 팝업 스킵
+    // (연결 끊김 중에는 구역 판단이 무의미하고, 스택 충돌로 재연결 모달이 닫히지 않는 버그 방지)
+    if (_isZoneExitPopupShown || _isReconnectModalShown || !mounted) return;
     _isZoneExitPopupShown = true;
     AppPopup.show(
       context: context,
@@ -1055,6 +1070,80 @@ class _GamePageState extends ConsumerState<GamePage>
         } else if (_locationSubscription == null) {
           _startLocationSending();
         }
+      }
+    });
+
+    // 연결 끊김/에러 → 재연결 모달 표시 / 재연결 성공 → 모달 자동 닫기
+    ref.listen(gameEventNotifierProvider.select((s) => s.connectionState), (
+      prev,
+      next,
+    ) {
+      // 최초 연결 성공 추적 (초기 연결 실패 시엔 모달 미표시)
+      if (next == StompConnectionState.connected) {
+        _hasGameEventConnectedOnce = true;
+      }
+
+      if (!_hasGameEventConnectedOnce || widget.isDummy) return;
+
+      // 모달이 이미 떠 있을 때: 상태 업데이트 + 연결 성공 시 닫기
+      if (_isReconnectModalShown) {
+        _reconnectStateNotifier?.value = next;
+        if (next == StompConnectionState.connected && mounted) {
+          Navigator.of(context).pop();
+        }
+        return;
+      }
+
+      // 끊김/에러 발생 → 모달 신규 표시 (게임 종료 후는 제외)
+      final isGameOver = ref.read(gameEventNotifierProvider).isGameOver;
+      if ((next == StompConnectionState.disconnected ||
+              next == StompConnectionState.error) &&
+          !isGameOver &&
+          mounted) {
+        // 구역 이탈 팝업이 떠 있으면 먼저 닫음
+        // (재연결 모달이 스택 하단에 깔리면 pop()이 잘못된 다이얼로그를 닫는 버그 방지)
+        _dismissZoneExitPopup();
+        _reconnectStateNotifier = ValueNotifier(next);
+        _isReconnectModalShown = true;
+        ReconnectModal.show(
+          context: context,
+          isDarkMode: _isDarkMode,
+          stateNotifier: _reconnectStateNotifier!,
+          onReconnect: () {
+            ref.read(gameEventNotifierProvider.notifier).manualReconnect();
+          },
+        ).then((_) {
+          // 모달이 닫힌 후 플래그 정리
+          _isReconnectModalShown = false;
+          _reconnectStateNotifier?.dispose();
+          _reconnectStateNotifier = null;
+
+          // 닫힘 애니메이션 중 새로운 끊김이 발생했을 때 재표시
+          // (닫힘 ~250ms 동안 disconnected 이벤트가 소비되어 리스너가 놓치는 케이스 대응)
+          if (!mounted) return;
+          final currentState = ref.read(gameEventNotifierProvider);
+          if ((currentState.connectionState ==
+                      StompConnectionState.disconnected ||
+                  currentState.connectionState == StompConnectionState.error) &&
+              !currentState.isGameOver) {
+            _reconnectStateNotifier = ValueNotifier(
+              currentState.connectionState,
+            );
+            _isReconnectModalShown = true;
+            ReconnectModal.show(
+              context: context,
+              isDarkMode: _isDarkMode,
+              stateNotifier: _reconnectStateNotifier!,
+              onReconnect: () {
+                ref.read(gameEventNotifierProvider.notifier).manualReconnect();
+              },
+            ).then((_) {
+              _isReconnectModalShown = false;
+              _reconnectStateNotifier?.dispose();
+              _reconnectStateNotifier = null;
+            });
+          }
+        });
       }
     });
 

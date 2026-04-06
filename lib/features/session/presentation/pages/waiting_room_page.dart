@@ -17,6 +17,7 @@ import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/widgets/dialogs/reconnect_modal.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -96,6 +97,15 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// dispose 여부 (microtask 큐에 남은 이벤트가 dispose 후 처리되는 것을 방지)
   bool _isDisposed = false;
+
+  /// 재연결 모달 표시 중 여부 (중복 표시 방지)
+  bool _isReconnectModalShown = false;
+
+  /// 로비 STOMP 최초 연결 성공 여부
+  bool _hasLobbyConnectedOnce = false;
+
+  /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
+  ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
 
   @override
   void initState() {
@@ -194,6 +204,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   @override
   void dispose() {
     _isDisposed = true;
+    _reconnectStateNotifier?.dispose();
+    _reconnectStateNotifier = null;
     _lobbyEventSub?.close();
     _lobbyEventSub = null;
     WidgetsBinding.instance.removeObserver(this);
@@ -427,6 +439,64 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (next.connectionState == StompConnectionState.connected &&
           prev?.connectionState != StompConnectionState.connected) {
         _fetchAndInitParticipants();
+      }
+
+      // 최초 연결 성공 추적 (초기 연결 실패 시엔 모달 미표시)
+      if (next.connectionState == StompConnectionState.connected) {
+        _hasLobbyConnectedOnce = true;
+      }
+
+      // 연결 끊김/에러 → 재연결 모달 표시 / 재연결 성공 → 모달 자동 닫기
+      if (_hasLobbyConnectedOnce) {
+        if (_isReconnectModalShown) {
+          _reconnectStateNotifier?.value = next.connectionState;
+          if (next.connectionState == StompConnectionState.connected &&
+              mounted) {
+            Navigator.of(context).pop();
+          }
+        } else if ((next.connectionState == StompConnectionState.disconnected ||
+                next.connectionState == StompConnectionState.error) &&
+            mounted) {
+          final isDark = ref.read(roleThemeProvider);
+          _reconnectStateNotifier = ValueNotifier(next.connectionState);
+          _isReconnectModalShown = true;
+          ReconnectModal.show(
+            context: context,
+            isDarkMode: isDark,
+            stateNotifier: _reconnectStateNotifier!,
+            onReconnect: () {
+              ref.read(lobbyNotifierProvider.notifier).manualReconnect();
+            },
+          ).then((_) {
+            if (_isDisposed) return;
+            _isReconnectModalShown = false;
+            _reconnectStateNotifier?.dispose();
+            _reconnectStateNotifier = null;
+
+            // 닫힘 애니메이션 중 새로운 끊김이 발생했을 때 재표시
+            if (!mounted) return;
+            final connState = ref.read(lobbyNotifierProvider).connectionState;
+            if (connState == StompConnectionState.disconnected ||
+                connState == StompConnectionState.error) {
+              final isDarkMode = ref.read(roleThemeProvider);
+              _reconnectStateNotifier = ValueNotifier(connState);
+              _isReconnectModalShown = true;
+              ReconnectModal.show(
+                context: context,
+                isDarkMode: isDarkMode,
+                stateNotifier: _reconnectStateNotifier!,
+                onReconnect: () {
+                  ref.read(lobbyNotifierProvider.notifier).manualReconnect();
+                },
+              ).then((_) {
+                if (_isDisposed) return;
+                _isReconnectModalShown = false;
+                _reconnectStateNotifier?.dispose();
+                _reconnectStateNotifier = null;
+              });
+            }
+          });
+        }
       }
 
       final event = next.lastEvent;
