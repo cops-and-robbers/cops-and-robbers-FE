@@ -12,9 +12,11 @@ import 'core/constants/app_colors.dart';
 import 'core/constants/spacing_and_radius.dart';
 import 'core/constants/text_styles.dart';
 import 'core/widgets/buttons/app_button.dart';
+import 'core/network/websocket/stomp_connection.dart';
 import 'core/widgets/dialogs/app_dialog.dart';
 import 'core/widgets/dialogs/dialog_spacing.dart';
 import 'core/widgets/dialogs/app_popup.dart';
+import 'core/widgets/dialogs/reconnect_modal.dart';
 import 'core/widgets/dialogs/countdown_timer_content.dart';
 import 'core/services/loading_message_service.dart';
 import 'core/widgets/chips/action_chip.dart' as custom_chips;
@@ -1172,6 +1174,74 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     );
                   },
                   backgroundColor: AppColors.blue800,
+                  showBorder: false,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // ReconnectModal 테스트
+                // ============================================
+                _buildSectionTitle('ReconnectModal 테스트'),
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  '"재연결" 탭 → 2초 스피너 → 모달 자동 닫힘',
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black400,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 경찰팀 (light 테마, 파란 버튼)
+                AppButton(
+                  text: '재연결 모달 — 경찰 (light)',
+                  onPressed: () {
+                    final notifier = ValueNotifier(
+                      StompConnectionState.disconnected,
+                    );
+                    final nav = Navigator.of(context);
+                    ReconnectModal.show(
+                      context: context,
+                      isDarkMode: false,
+                      stateNotifier: notifier,
+                      onReconnect: () {
+                        // connecting 상태 → 2초 후 connected 처리 후 모달 닫기
+                        notifier.value = StompConnectionState.connecting;
+                        Future.delayed(const Duration(seconds: 2), () {
+                          if (nav.canPop()) nav.pop();
+                          notifier.dispose();
+                        });
+                      },
+                    );
+                  },
+                  backgroundColor: AppColors.blue,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                // 도둑팀 (dark 테마, 초록 버튼)
+                AppButton(
+                  text: '재연결 모달 — 도둑 (dark)',
+                  onPressed: () {
+                    final notifier = ValueNotifier(
+                      StompConnectionState.disconnected,
+                    );
+                    final nav = Navigator.of(context);
+                    ReconnectModal.show(
+                      context: context,
+                      isDarkMode: true,
+                      stateNotifier: notifier,
+                      onReconnect: () {
+                        notifier.value = StompConnectionState.connecting;
+                        Future.delayed(const Duration(seconds: 2), () {
+                          if (nav.canPop()) nav.pop();
+                          notifier.dispose();
+                        });
+                      },
+                    );
+                  },
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
                   showBorder: false,
                 ),
 
