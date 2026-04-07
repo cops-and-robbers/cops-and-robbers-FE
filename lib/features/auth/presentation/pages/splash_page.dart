@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../router/route_paths.dart';
+import '../../../session/domain/entities/user_game_status_entity.dart';
 import '../../domain/entities/auth_result_entity.dart';
 import '../providers/auth_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
@@ -88,9 +90,9 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       return;
     }
 
-    // 인증 확인 → 게임 상태 API 호출과 남은 딜레이를 병렬 실행
+    // 인증 확인 → 게임 상태 API 호출(재시도 포함)과 남은 딜레이를 병렬 실행
     try {
-      final statusFuture = ref.read(getMyActiveGameUsecaseProvider).execute();
+      final statusFuture = _fetchActiveGameWithRetry();
       await _waitRemaining(startTime, minDelay);
       final status = await statusFuture;
 
@@ -144,6 +146,29 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     final remaining = minDelay - elapsed;
     if (remaining > Duration.zero) {
       await Future.delayed(remaining);
+    }
+  }
+
+  /// 활성 게임 조회 (DioException 시 최대 [maxRetries]회 재시도)
+  ///
+  /// 콜드 스타트 시 네트워크 스택이 아직 준비되지 않아
+  /// 첫 번째 API 호출이 실패할 수 있으므로 재시도로 보완합니다.
+  Future<UserGameStatusEntity> _fetchActiveGameWithRetry({
+    int maxRetries = 2,
+  }) async {
+    var attempt = 0;
+    while (true) {
+      try {
+        return await ref.read(getMyActiveGameUsecaseProvider).execute();
+      } on DioException catch (e) {
+        attempt++;
+        if (attempt > maxRetries) rethrow;
+        debugPrint(
+          '⚠️ SplashPage: 게임 상태 조회 실패 ($attempt/$maxRetries), '
+          '1초 후 재시도 - ${e.type}',
+        );
+        await Future.delayed(const Duration(seconds: 1));
+      }
     }
   }
 
