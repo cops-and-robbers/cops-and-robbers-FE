@@ -154,6 +154,45 @@ class LobbyNotifier extends _$LobbyNotifier {
     datasource.connect(wsUrl, accessToken);
   }
 
+  /// 수동 재연결 — 재시도 카운터를 초기화하고 즉시 연결 시도
+  ///
+  /// 사용자가 재연결 버튼을 탭했을 때 호출합니다.
+  /// 기존 자동 재연결 백오프와 달리 딜레이 없이 즉시 시도합니다.
+  Future<void> manualReconnect() async {
+    if (_gameId == null) return;
+    _reconnectCount = 0; // 재시도 카운터 초기화 → 이후 자동 재연결 5회 재활성화
+    _intentionalDisconnect = false;
+    _isHandlingError = false;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    await _attemptReconnect();
+  }
+
+  /// [DEBUG 전용] 재연결 횟수를 소진한 것처럼 강제로 error 상태로 전환
+  ///
+  /// 재연결 모달이 떠있을 때 수동 재연결만 가능한 상황을 테스트합니다.
+  Future<void> debugForceReconnectExhausted() async {
+    assert(kDebugMode, 'debugForceReconnectExhausted는 debug 빌드 전용입니다');
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    _reconnectCount = _maxReconnectRetries + 1; // 자동 재연결 차단
+    _intentionalDisconnect = true; // 스트림 콜백의 _scheduleReconnect 억제
+    ref.read(lobbyStompDatasourceProvider).disconnect();
+    // disconnect() → stream listener → state = disconnected (동기) 이후
+    // 마이크로태스크에서 error로 덮어씌워 최종 상태를 error로 확정
+    await Future.microtask(() {
+      try {
+        state = state.copyWith(
+          connectionState: StompConnectionState.error,
+          errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+        );
+        _intentionalDisconnect = false; // 수동 재연결(manualReconnect)은 허용
+      } catch (_) {
+        // notifier가 이미 dispose된 경우 무시
+      }
+    });
+  }
+
   /// 로비 연결 해제
   void disconnectLobby() {
     _intentionalDisconnect = true;

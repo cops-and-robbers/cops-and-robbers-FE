@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +23,7 @@ import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/widgets/dialogs/reconnect_modal.dart';
 import '../../../../core/widgets/dialogs/countdown_timer_content.dart';
 import '../../../../router/route_paths.dart';
 import '../../../chat/presentation/providers/chat_notification_provider.dart';
@@ -107,10 +109,19 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 구역 이탈/복귀 상태 전환 감지기
   late final ZoneExitDetector _zoneExitDetector = ZoneExitDetector(
     onExitZone: () {
+      if (_isReconnectModalShown) {
+        // 재연결 모달 중 이탈 → 모달 닫힘 후 재평가(_processPendingZoneExit)
+        _pendingZoneExit = true;
+        return;
+      }
       VibrationService.instance().zoneExit();
       _showZoneExitPopup();
     },
-    onEnterZone: _dismissZoneExitPopup,
+    onEnterZone: () {
+      // 구역 복귀 시 보류 플래그도 함께 초기화
+      _pendingZoneExit = false;
+      _dismissZoneExitPopup();
+    },
   );
 
   /// 이탈 경고 팝업 표시 중 여부 (중복 팝업 방지)
@@ -118,6 +129,20 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 이탈 경고 팝업의 다이얼로그 context (removeRoute용)
   BuildContext? _zoneExitPopupContext;
+
+  /// 재연결 모달 표시 중 여부 (중복 표시 방지)
+  bool _isReconnectModalShown = false;
+
+  /// 재연결 모달 중 발생한 구역 이탈 보류 플래그
+  /// (모달 닫힘 후 여전히 구역 밖이면 팝업 및 진동 처리)
+  bool _pendingZoneExit = false;
+
+  /// 게임 이벤트 STOMP 최초 연결 성공 여부
+  /// (초기 연결 실패는 모달 대신 기존 에러 처리에 위임)
+  bool _hasGameEventConnectedOnce = false;
+
+  /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
+  ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => widget.team == 'ROBBER';
@@ -240,6 +265,8 @@ class _GamePageState extends ConsumerState<GamePage>
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
+    _reconnectStateNotifier?.dispose();
+    _reconnectStateNotifier = null;
     final chatNotifier = _chatNotifier;
     final gameEventDatasource = _gameEventDatasource;
     final isDummy = widget.isDummy;
@@ -548,7 +575,9 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 구역 이탈 경고 팝업 표시
   void _showZoneExitPopup() {
-    if (_isZoneExitPopupShown || !mounted) return;
+    // 재연결 모달이 떠 있을 때는 구역 이탈 팝업 스킵
+    // (연결 끊김 중에는 구역 판단이 무의미하고, 스택 충돌로 재연결 모달이 닫히지 않는 버그 방지)
+    if (_isZoneExitPopupShown || _isReconnectModalShown || !mounted) return;
     _isZoneExitPopupShown = true;
     AppPopup.show(
       context: context,
@@ -591,16 +620,67 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 구역 이탈 경고 팝업 닫기
   ///
-  /// removeRoute로 해당 다이얼로그 라우트만 정확히 제거하여,
-  /// 위에 다른 팝업(재연결 로딩 등)이 쌓여 있어도 안전하게 동작한다.
+  /// dialog context에서 직접 pop.
+  /// removeRoute는 _history.firstWhere(!isComplete) 필터로 "Bad state: No element" 크래시 위험.
+  /// GoRouter의 onPopPage는 GoRouter 비관리 route(dialog)를 통과시키므로 안전하다.
   void _dismissZoneExitPopup() {
     final popupCtx = _zoneExitPopupContext;
     if (!_isZoneExitPopupShown || popupCtx == null || !popupCtx.mounted) return;
 
-    final route = ModalRoute.of(popupCtx);
-    if (route == null) return;
+    Navigator.of(popupCtx).pop();
+  }
 
-    Navigator.of(context).removeRoute(route);
+  /// 재연결 모달 닫힘 후 보류된 구역 이탈 처리
+  ///
+  /// 모달 중 발생한 이탈(_pendingZoneExit)이 있고
+  /// 여전히 구역 밖(_zoneExitDetector.isOutside)이면 팝업·진동을 실행한다.
+  /// 복귀했다면 플래그만 초기화하고 아무것도 하지 않는다.
+  void _processPendingZoneExit() {
+    if (!_pendingZoneExit) return;
+    _pendingZoneExit = false;
+    if (_zoneExitDetector.isOutside && mounted) {
+      VibrationService.instance().zoneExit();
+      _showZoneExitPopup();
+    }
+  }
+
+  /// 재연결 모달 표시 헬퍼 — 중복 표시 방지 및 N회 연속 끊김 재귀 처리
+  ///
+  /// 모달 .then() 콜백에서 재귀 호출하므로, 닫힘 애니메이션(~250ms) 중
+  /// 발생한 끊김도 놓치지 않고 다시 표시할 수 있습니다.
+  void _showReconnectModalIfNeeded() {
+    // 게임 종료 다이얼로그 시퀀스 시작 후에는 재연결 모달 표시 금지
+    // (_gameOverDialogShown은 disconnect()보다 먼저 세팅되므로 isGameOver 리셋 영향 없음)
+    if (!mounted || _isReconnectModalShown || _gameOverDialogShown) return;
+
+    final currentState = ref.read(gameEventNotifierProvider);
+    if (currentState.isGameOver ||
+        (currentState.connectionState != StompConnectionState.disconnected &&
+            currentState.connectionState != StompConnectionState.error)) {
+      _processPendingZoneExit();
+      return;
+    }
+
+    // 구역 이탈 팝업이 떠 있으면 먼저 닫음
+    // (재연결 모달이 스택 하단에 깔리면 pop()이 잘못된 다이얼로그를 닫는 버그 방지)
+    _dismissZoneExitPopup();
+    _reconnectStateNotifier = ValueNotifier(currentState.connectionState);
+    _isReconnectModalShown = true;
+    ReconnectModal.show(
+      context: context,
+      isDarkMode: _isDarkMode,
+      stateNotifier: _reconnectStateNotifier!,
+      onReconnect: () {
+        // dispose 후 모달이 화면에 남은 경우 ref 접근 크래시 방지
+        if (!mounted) return;
+        ref.read(gameEventNotifierProvider.notifier).manualReconnect();
+      },
+    ).then((_) {
+      _isReconnectModalShown = false;
+      _reconnectStateNotifier?.dispose();
+      _reconnectStateNotifier = null;
+      _showReconnectModalIfNeeded();
+    });
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
@@ -1041,11 +1121,12 @@ class _GamePageState extends ConsumerState<GamePage>
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
     final policeStartTime = _computePoliceStartTime();
 
-    // 재연결 감지 → 도둑 팀 위치 즉시 재전송
+    // 재연결 감지 → 도둑 팀 위치 즉시 재전송 + 재연결 모달 표시/닫기
     ref.listen(gameEventNotifierProvider.select((s) => s.connectionState), (
       prev,
       next,
     ) {
+      // 재연결 성공 → 도둑 팀 위치 즉시 재전송
       if (next == StompConnectionState.connected &&
           prev != StompConnectionState.connected &&
           widget.team == 'ROBBER' &&
@@ -1055,6 +1136,25 @@ class _GamePageState extends ConsumerState<GamePage>
         } else if (_locationSubscription == null) {
           _startLocationSending();
         }
+      }
+
+      // 최초 연결 성공 추적 (초기 연결 실패 시엔 모달 미표시)
+      if (next == StompConnectionState.connected) {
+        _hasGameEventConnectedOnce = true;
+      }
+
+      if (!_hasGameEventConnectedOnce || widget.isDummy) return;
+
+      // 모달이 이미 떠 있을 때: 상태 업데이트 → ReconnectModal이 스스로 닫힘
+      if (_isReconnectModalShown) {
+        _reconnectStateNotifier?.value = next;
+        return;
+      }
+
+      // 끊김/에러 발생 → 모달 신규 표시 (게임 종료 후는 제외)
+      if (next == StompConnectionState.disconnected ||
+          next == StompConnectionState.error) {
+        _showReconnectModalIfNeeded();
       }
     });
 
@@ -1243,6 +1343,67 @@ class _GamePageState extends ConsumerState<GamePage>
             myParticipantId: widget.participantId,
             myTeam: widget.team,
             isDarkMode: _isDarkMode,
+          ),
+
+          /// index 8: [DEBUG] 개발자 도구 버튼 (if/else로 개수 고정)
+          ///
+          /// 홈 페이지 FloatingActionButton 패턴과 동일하게 단일 버그 아이콘으로 진입.
+          /// release 빌드에서는 kDebugMode = false로 dead-code 제거됨.
+          if (kDebugMode)
+            Positioned(
+              left: 12.w,
+              bottom: 157.h,
+              child: FloatingActionButton(
+                heroTag: 'game_debug',
+                mini: true,
+                backgroundColor: AppColors.black.withValues(alpha: 0.7),
+                foregroundColor: AppColors.white,
+                onPressed: widget.isDummy ? null : () => _showDebugMenu(),
+                child: const Icon(Icons.bug_report),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+        ],
+      ),
+    );
+  }
+
+  /// [DEBUG 전용] 개발자 도구 메뉴 표시
+  ///
+  /// 홈 페이지 _showDevMenu와 동일한 패턴 — AppDialog + ListTile 구조.
+  void _showDebugMenu() {
+    AppDialog.show(
+      context: context,
+      title: '개발자 도구',
+      showButtons: false,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.wifi_off),
+            title: Text('끊김 시뮬레이션 (자동 재연결)', style: AppTextStyles.paragraph_14),
+            subtitle: Text('모달 잠깐 뜨다 닫힘', style: AppTextStyles.tag_12),
+            onTap: () {
+              Navigator.pop(context);
+              debugPrint('[GamePage][DEBUG] 🔌 끊김 시뮬레이션 (자동 재연결)');
+              ref.read(gameEventStompDatasourceProvider).disconnect();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.signal_wifi_off),
+            title: Text('재연결 실패 시뮬레이션', style: AppTextStyles.paragraph_14),
+            subtitle: Text(
+              '5회 소진 → 모달 유지 + 수동 재연결',
+              style: AppTextStyles.tag_12,
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              debugPrint('[GamePage][DEBUG] ❌ 재연결 실패 시뮬레이션 (error 상태)');
+              ref
+                  .read(gameEventNotifierProvider.notifier)
+                  .debugForceReconnectExhausted();
+            },
           ),
         ],
       ),
