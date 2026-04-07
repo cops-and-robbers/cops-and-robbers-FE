@@ -168,6 +168,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
           '1초 후 재시도 - ${e.type}',
         );
         await Future.delayed(const Duration(seconds: 1));
+        if (!mounted) rethrow;
       }
     }
   }
