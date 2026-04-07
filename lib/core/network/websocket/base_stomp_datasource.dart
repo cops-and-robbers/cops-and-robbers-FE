@@ -189,6 +189,8 @@ abstract class BaseStompDatasource {
 
   void _updateState(StompConnectionState newState) {
     if (_disposed) return;
+    // 동일 상태 중복 emit 방지 — STOMP 종료 시 disconnected가 여러 번 오는 케이스 방어
+    if (_currentState == newState) return;
     _currentState = newState;
     _connectionStateController.add(newState);
   }

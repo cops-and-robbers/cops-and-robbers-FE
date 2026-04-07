@@ -420,6 +420,34 @@ class GameEventNotifier extends _$GameEventNotifier {
     }
   }
 
+  /// [DEBUG 전용] 자동 재연결 횟수 소진 상태 강제 시뮬레이션
+  ///
+  /// 실기기에서 화면을 끈 채로 재연결 5회 실패하는 상황을 재현합니다.
+  /// 수동 재연결 버튼 및 장시간 모달 유지 흐름을 테스트할 때 사용합니다.
+  ///
+  /// broadcast stream은 add() 호출 시 동기 전달되므로, disconnect()가 유발하는
+  /// disconnected 이벤트가 stream listener를 통해 state를 덮어쓰기 전에
+  /// _intentionalDisconnect로 _scheduleReconnect를 막고, 이후 마이크로태스크에서
+  /// error 상태로 최종 설정합니다.
+  Future<void> debugForceReconnectExhausted() async {
+    assert(kDebugMode, 'debugForceReconnectExhausted는 debug 빌드 전용입니다');
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    _reconnectCount = _maxReconnectRetries + 1; // 자동 재연결 차단
+    _intentionalDisconnect = true; // 스트림 콜백의 _scheduleReconnect 호출 억제
+    ref.read(gameEventStompDatasourceProvider).disconnect();
+    // disconnect() → stream listener → state = disconnected (동기) 이후
+    // 마이크로태스크에서 error로 덮어씌워 최종 상태를 error로 확정
+    await Future.microtask(() {
+      if (_isDisposed) return;
+      state = state.copyWith(
+        connectionState: StompConnectionState.error,
+        errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+      );
+      _intentionalDisconnect = false; // 수동 재연결(manualReconnect)은 허용
+    });
+  }
+
   /// 외부에서 배너 메시지를 설정 (게임 시작 시퀀스 등 STOMP 외 이벤트용)
   void setBannerMessage(String message) {
     state = state.copyWith(bannerMessage: message);

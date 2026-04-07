@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -1360,6 +1361,67 @@ class _GamePageState extends ConsumerState<GamePage>
             myParticipantId: widget.participantId,
             myTeam: widget.team,
             isDarkMode: _isDarkMode,
+          ),
+
+          /// index 8: [DEBUG] 개발자 도구 버튼 (if/else로 개수 고정)
+          ///
+          /// 홈 페이지 FloatingActionButton 패턴과 동일하게 단일 버그 아이콘으로 진입.
+          /// release 빌드에서는 kDebugMode = false로 dead-code 제거됨.
+          if (kDebugMode)
+            Positioned(
+              left: 12.w,
+              bottom: 157.h,
+              child: FloatingActionButton(
+                heroTag: 'game_debug',
+                mini: true,
+                backgroundColor: AppColors.black.withValues(alpha: 0.7),
+                foregroundColor: AppColors.white,
+                onPressed: widget.isDummy ? null : () => _showDebugMenu(),
+                child: const Icon(Icons.bug_report),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+        ],
+      ),
+    );
+  }
+
+  /// [DEBUG 전용] 개발자 도구 메뉴 표시
+  ///
+  /// 홈 페이지 _showDevMenu와 동일한 패턴 — AppDialog + ListTile 구조.
+  void _showDebugMenu() {
+    AppDialog.show(
+      context: context,
+      title: '개발자 도구',
+      showButtons: false,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.wifi_off),
+            title: Text('끊김 시뮬레이션 (자동 재연결)', style: AppTextStyles.paragraph_14),
+            subtitle: Text('모달 잠깐 뜨다 닫힘', style: AppTextStyles.tag_12),
+            onTap: () {
+              Navigator.pop(context);
+              debugPrint('[GamePage][DEBUG] 🔌 끊김 시뮬레이션 (자동 재연결)');
+              ref.read(gameEventStompDatasourceProvider).disconnect();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.signal_wifi_off),
+            title: Text('재연결 실패 시뮬레이션', style: AppTextStyles.paragraph_14),
+            subtitle: Text(
+              '5회 소진 → 모달 유지 + 수동 재연결',
+              style: AppTextStyles.tag_12,
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              debugPrint('[GamePage][DEBUG] ❌ 재연결 실패 시뮬레이션 (error 상태)');
+              ref
+                  .read(gameEventNotifierProvider.notifier)
+                  .debugForceReconnectExhausted();
+            },
           ),
         ],
       ),
