@@ -69,6 +69,9 @@ class ReconnectModal extends StatelessWidget {
   Color get _textColor => isDarkMode ? AppColors.black400 : AppColors.black600;
   Color get _buttonBg => isDarkMode ? AppColors.green : AppColors.blue;
   Color get _buttonFg => isDarkMode ? AppColors.black : AppColors.white;
+  Color get _buttonDisabledBg =>
+      isDarkMode ? AppColors.green500 : AppColors.blue500;
+  Color get _buttonDisabledFg => _buttonFg;
 
   // ============================================================
   // 빌드
@@ -124,6 +127,8 @@ class ReconnectModal extends StatelessWidget {
                     onPressed: isConnecting ? null : onReconnect,
                     backgroundColor: _buttonBg,
                     foregroundColor: _buttonFg,
+                    disabledBackgroundColor: _buttonDisabledBg,
+                    disabledForegroundColor: _buttonDisabledFg,
                     borderRadius: AppRadius.medium,
                     showBorder: false,
                     width: double.infinity,
