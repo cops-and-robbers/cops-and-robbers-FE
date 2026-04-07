@@ -66,7 +66,7 @@ void main() {
     test('maxRetries 초과 시 DioException을 rethrow', () async {
       var callCount = 0;
 
-      expect(
+      await expectLater(
         () => fetchWithRetry<String>(
           action: () async {
             callCount++;
@@ -80,12 +80,15 @@ void main() {
         ),
         throwsA(isA<DioException>()),
       );
+
+      // 1차 + 재시도 2회 = 총 3회 호출
+      expect(callCount, equals(3));
     });
 
     test('DioException이 아닌 에러는 재시도하지 않고 즉시 throw', () async {
       var callCount = 0;
 
-      expect(
+      await expectLater(
         () => fetchWithRetry<String>(
           action: () async {
             callCount++;
@@ -98,7 +101,6 @@ void main() {
       );
 
       // FormatException은 재시도 안 함 → 1회만 호출
-      await Future.delayed(Duration.zero); // microtask 처리
       expect(callCount, equals(1));
     });
 
