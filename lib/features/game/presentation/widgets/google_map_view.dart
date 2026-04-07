@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -52,10 +53,19 @@ class GoogleMapViewState extends State<GoogleMapView> {
   Map<int, LatLng> _robberLocations = {};
   bool _robberIsPolice = false;
 
-  // 페이드 깜빡임 애니메이션 (등장 시 3회, 1사이클 ≈ 1200ms)
+  // 도둑별 발자국 회전 각도
+  final _random = Random();
+
+  /// 현재 화면에 표시 중인 회전값 (페이드 아웃 시 사용)
+  Map<int, double> _robberRotations = {};
+
+  /// 다음 페이드 인 시 적용할 회전값 — alpha=0 순간에 _robberRotations로 교체
+  Map<int, double> _pendingRotations = {};
+
+  // 페이드 깜빡임 애니메이션 (등장 시 3회, 1사이클 = 1400ms)
   Timer? _blinkTimer;
   static const _blinkCycles = 3;
-  static const _fadeStepInterval = Duration(milliseconds: 100);
+  static const _fadeStepInterval = Duration(milliseconds: 140);
 
   // 아이콘 로드 전 수신된 업데이트 캐시
   ({Map<int, LatLng> locations, bool isPolice})? _pendingRobbers;
@@ -215,24 +225,38 @@ class GoogleMapViewState extends State<GoogleMapView> {
       return;
     }
 
+    // 첫 등장 여부 확인 (locations 갱신 전에 판단)
+    final isFirstAppearance = _robberLocations.isEmpty;
+
     _blinkTimer?.cancel();
     _blinkTimer = null;
     _robberLocations = locations;
     _robberIsPolice = isPolice;
 
+    // 새 랜덤 회전값을 pending으로 준비
+    _pendingRotations = {
+      for (final id in locations.keys) id: _random.nextDouble() * 360,
+    };
+    // 첫 등장: 즉시 적용 (기존에 보이는 마커 없으므로 교체 불필요)
+    // 갱신: alpha=0 순간에 교체 (페이드 아웃 후 보이지 않을 때 회전)
+    if (isFirstAppearance) _robberRotations = Map.from(_pendingRotations);
+
     debugPrint('🗺️ GoogleMap: 도둑 위치 마커 ${locations.length}개 업데이트');
-    _startFadeAnimation();
+    _startFadeAnimation(rotationApplied: isFirstAppearance);
   }
 
-  /// 1사이클(≈1200ms): 페이드 아웃 → 완전 비표시 → 페이드 인 → 완전 표시
+  /// 1사이클(1400ms): 페이드 아웃 → 완전 비표시 → 페이드 인 → 완전 표시
   /// [_blinkCycles]회 반복 후 영구 표시
-  void _startFadeAnimation() {
+  ///
+  /// [rotationApplied] 첫 등장 시 true — 이미 _robberRotations에 새 값이 적용돼 있음.
+  ///                   갱신 시 false — alpha=0 첫 도달 시 _pendingRotations로 교체.
+  void _startFadeAnimation({required bool rotationApplied}) {
     const cycle = [
-      0.6, 0.2, 0.0, // 페이드 아웃  (3 × 100ms = 300ms)
-      0.0, 0.0, 0.0, // 완전 비표시  (3 × 100ms = 300ms)
-      0.4, 0.8, 1.0, // 페이드 인    (3 × 100ms = 300ms)
-      1.0, 1.0, 1.0, // 완전 표시    (3 × 100ms = 300ms)
-    ]; // 1사이클 = 12 × 100ms = 1200ms
+      0.6, 0.2, 0.0, // 페이드 아웃  (3 × 140ms = 420ms)
+      0.0, 0.0, // 완전 비표시  (2 × 140ms = 280ms)
+      0.4, 0.8, 1.0, // 페이드 인    (3 × 140ms = 420ms)
+      1.0, 1.0, // 완전 표시    (2 × 140ms = 280ms)
+    ]; // 1사이클 = 10 × 140ms = 1400ms
 
     final sequence = <double>[for (var i = 0; i < _blinkCycles; i++) ...cycle];
 
@@ -250,7 +274,13 @@ class GoogleMapViewState extends State<GoogleMapView> {
         _setRobberAlpha(1.0);
         return;
       }
-      _setRobberAlpha(sequence[step++]);
+      final alpha = sequence[step++];
+      // 마커가 완전히 사라진 첫 순간에 새 회전값 교체 → 페이드 인 시 이미 회전된 상태
+      if (!rotationApplied && alpha == 0.0) {
+        _robberRotations = Map.from(_pendingRotations);
+        rotationApplied = true;
+      }
+      _setRobberAlpha(alpha);
     });
   }
 
@@ -266,6 +296,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
               position: e.value,
               icon: icon,
               alpha: alpha,
+              rotation: _robberRotations[e.key] ?? 0,
               anchor: const Offset(0.5, 0.5),
               flat: true,
               consumeTapEvents: false,
