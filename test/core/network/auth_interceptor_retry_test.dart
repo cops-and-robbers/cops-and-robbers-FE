@@ -23,11 +23,13 @@ void main() {
           onRequest: (options, handler) {
             loggedPaths.add(options.path);
             // 200 응답으로 resolve (실제 네트워크 호출 없음)
-            handler.resolve(Response(
-              requestOptions: options,
-              statusCode: 200,
-              data: {'test': true},
-            ));
+            handler.resolve(
+              Response(
+                requestOptions: options,
+                statusCode: 200,
+                data: {'test': true},
+              ),
+            );
           },
         ),
       );
@@ -60,10 +62,7 @@ void main() {
 
       // copyWith로 새 객체를 만들어야 원본이 변하지 않음
       final retry = original.copyWith(
-        headers: {
-          ...original.headers,
-          'Authorization': 'Bearer new-token',
-        },
+        headers: {...original.headers, 'Authorization': 'Bearer new-token'},
       );
 
       // 원본 헤더는 변하지 않아야 함
