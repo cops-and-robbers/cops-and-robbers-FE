@@ -620,16 +620,14 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 구역 이탈 경고 팝업 닫기
   ///
-  /// removeRoute로 해당 다이얼로그 라우트만 정확히 제거하여,
-  /// 위에 다른 팝업(재연결 로딩 등)이 쌓여 있어도 안전하게 동작한다.
+  /// dialog context에서 직접 pop.
+  /// removeRoute는 _history.firstWhere(!isComplete) 필터로 "Bad state: No element" 크래시 위험.
+  /// GoRouter의 onPopPage는 GoRouter 비관리 route(dialog)를 통과시키므로 안전하다.
   void _dismissZoneExitPopup() {
     final popupCtx = _zoneExitPopupContext;
     if (!_isZoneExitPopupShown || popupCtx == null || !popupCtx.mounted) return;
 
-    final route = ModalRoute.of(popupCtx);
-    if (route == null) return;
-
-    Navigator.of(context).removeRoute(route);
+    Navigator.of(popupCtx).pop();
   }
 
   /// 재연결 모달 닫힘 후 보류된 구역 이탈 처리
@@ -1147,12 +1145,9 @@ class _GamePageState extends ConsumerState<GamePage>
 
       if (!_hasGameEventConnectedOnce || widget.isDummy) return;
 
-      // 모달이 이미 떠 있을 때: 상태 업데이트 + 연결 성공 시 닫기
+      // 모달이 이미 떠 있을 때: 상태 업데이트 → ReconnectModal이 스스로 닫힘
       if (_isReconnectModalShown) {
         _reconnectStateNotifier?.value = next;
-        if (next == StompConnectionState.connected && mounted) {
-          Navigator.of(context).pop();
-        }
         return;
       }
 
