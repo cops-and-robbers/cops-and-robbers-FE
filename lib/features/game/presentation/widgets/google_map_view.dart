@@ -124,15 +124,20 @@ class GoogleMapViewState extends State<GoogleMapView> {
 
     final picture = recorder.endRecording();
     final image = await picture.toImage(physSize, physSize);
-    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    if (bytes == null) {
-      throw StateError('마커 비트맵 인코딩 실패 (toByteData returned null)');
-    }
+    picture.dispose(); // ui.Picture는 toImage 후 불필요 — 즉시 해제
 
-    return BitmapDescriptor.bytes(
-      bytes.buffer.asUint8List(),
-      imagePixelRatio: dpr,
-    );
+    try {
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytes == null) {
+        throw StateError('마커 비트맵 인코딩 실패 (toByteData returned null)');
+      }
+      return BitmapDescriptor.bytes(
+        bytes.buffer.asUint8List(),
+        imagePixelRatio: dpr,
+      );
+    } finally {
+      image.dispose(); // ui.Image는 네이티브 리소스 — 예외 여부 무관하게 해제
+    }
   }
 
   /// 도둑 공개 위치 마커 아이콘 사전 로드
