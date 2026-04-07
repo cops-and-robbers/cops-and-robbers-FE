@@ -47,6 +47,8 @@ jobs:
           cat << 'EOF' > .env
           ${{ secrets.ENV_FILE || secrets.ENV }}
           EOF
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> .env
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> .env
           echo "✅ .env file created"
 
       - name: Set up Flutter
@@ -178,6 +180,8 @@ jobs:
           cat << 'EOF' > .env
           ${{ secrets.ENV_FILE || secrets.ENV }}
           EOF
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> .env
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> .env
           echo "✅ .env 파일 생성됨 (크기: $(wc -c < .env) bytes)"
 
       # Android Native Config 생성 (Google Maps API Key)

@@ -193,10 +193,10 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                       AppSlider(
                         label: '위치 공유 간격',
                         value: _locationShareMinutes.toDouble(),
-                        min: 5,
+                        min: 1,
                         max: 30,
                         unit: '분',
-                        divisions: 25,
+                        divisions: 29,
                         onChanged: (v) =>
                             setState(() => _locationShareMinutes = v.toInt()),
                         isDarkMode: isDark,

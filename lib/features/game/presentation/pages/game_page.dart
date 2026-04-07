@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -545,7 +546,6 @@ class _GamePageState extends ConsumerState<GamePage>
           pos,
         ) {
           if (mounted) {
-            _updateHeadingMarker(pos);
             _checkZoneExit(pos);
           }
         });
@@ -733,16 +733,6 @@ class _GamePageState extends ConsumerState<GamePage>
       context,
       isDarkMode: _isDarkMode,
       locationRevealIntervalMinutes: interval,
-    );
-  }
-
-  /// 방향 인디케이터 마커 갱신 (Google Maps)
-  void _updateHeadingMarker(Position pos) {
-    final isPolice = widget.team == 'POLICE';
-    _googleMapKey.currentState?.updateHeadingMarker(
-      LatLng(pos.latitude, pos.longitude),
-      pos.heading,
-      isPolice,
     );
   }
 
@@ -1198,6 +1188,7 @@ class _GamePageState extends ConsumerState<GamePage>
               key: _googleMapKey,
               onCameraMoveStarted: _onMapCameraMoved,
               isDarkMode: _isDarkMode,
+              mapId: _isDarkMode ? EnvConfig.googleMapsRobberMapId : null,
             ),
           ),
 
