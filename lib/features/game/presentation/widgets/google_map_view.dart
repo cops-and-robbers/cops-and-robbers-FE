@@ -141,14 +141,24 @@ class GoogleMapViewState extends State<GoogleMapView> {
   }
 
   /// 도둑 공개 위치 마커 아이콘 사전 로드
+  ///
+  /// SVG 렌더링 실패 시 기본 마커로 폴백하여 [_pendingRobbers]가 막히지 않도록 보장.
   Future<void> _preloadIcons() async {
     try {
       _redRobberMarker = await _createShoeprintDescriptor(AppColors.red);
       _greenRobberMarker = await _createShoeprintDescriptor(AppColors.green);
       debugPrint('✅ GoogleMapView: 발자국 마커 아이콘 로드 완료');
-      _applyPendingUpdates();
     } catch (e) {
-      debugPrint('❌ GoogleMapView: 마커 아이콘 로드 실패 - $e');
+      // SVG 로드 실패 시 기본 마커로 대체 — null 상태로 두면 pendingRobbers가 영구 대기
+      debugPrint('❌ GoogleMapView: 마커 아이콘 로드 실패, 기본 마커 사용 - $e');
+      _redRobberMarker ??= BitmapDescriptor.defaultMarkerWithHue(
+        BitmapDescriptor.hueRed,
+      );
+      _greenRobberMarker ??= BitmapDescriptor.defaultMarkerWithHue(
+        BitmapDescriptor.hueGreen,
+      );
+    } finally {
+      _applyPendingUpdates();
     }
   }
 
