@@ -100,7 +100,6 @@ class DioClient {
       // 1. 인증 인터셉터 (토큰 주입 + 자동 재발급)
       AuthInterceptor(
         tokenStorage: tokenStorage,
-        dio: dio,
         plainDio: plainDio,
         onForceLogout: onForceLogout,
       ),

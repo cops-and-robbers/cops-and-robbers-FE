@@ -1,12 +1,15 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../router/route_paths.dart';
+import '../../../session/domain/entities/user_game_status_entity.dart';
 import '../../domain/entities/auth_result_entity.dart';
 import '../providers/auth_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
@@ -88,9 +91,9 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       return;
     }
 
-    // 인증 확인 → 게임 상태 API 호출과 남은 딜레이를 병렬 실행
+    // 인증 확인 → 게임 상태 API 호출(재시도 포함)과 남은 딜레이를 병렬 실행
     try {
-      final statusFuture = ref.read(getMyActiveGameUsecaseProvider).execute();
+      final statusFuture = _fetchActiveGameWithRetry();
       await _waitRemaining(startTime, minDelay);
       final status = await statusFuture;
 
@@ -131,7 +134,13 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       }
 
       context.go(RoutePaths.home);
+    } on DioException catch (e) {
+      // 네트워크 에러 → 모달로 재시도 유도 (홈으로 보내지 않음)
+      debugPrint('⚠️ SplashPage: 네트워크 에러, 재시도 모달 표시 - ${e.type}');
+      await _waitRemaining(startTime, minDelay);
+      if (mounted) await _showNetworkErrorDialog();
     } catch (e) {
+      // 비네트워크 에러 (파싱 등) → 기존대로 홈 fallback
       debugPrint('⚠️ SplashPage: 게임 상태 조회 실패, 홈으로 이동 - $e');
       await _waitRemaining(startTime, minDelay);
       if (mounted) context.go(RoutePaths.home);
@@ -144,6 +153,46 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     final remaining = minDelay - elapsed;
     if (remaining > Duration.zero) {
       await Future.delayed(remaining);
+    }
+  }
+
+  /// 네트워크 에러 시 재시도 모달 표시
+  ///
+  /// 모달의 "재시도" 버튼을 누르면 [_navigateToNextScreen]을 처음부터 재실행합니다.
+  Future<void> _showNetworkErrorDialog() async {
+    await AppDialog.show(
+      context: context,
+      title: '네트워크 연결 실패',
+      message: '인터넷 연결을 확인한 후\n다시 시도해주세요',
+      confirmText: '재시도',
+      barrierDismissible: false,
+      onConfirm: () {
+        if (mounted) _navigateToNextScreen();
+      },
+    );
+  }
+
+  /// 활성 게임 조회 (DioException 시 최대 [maxRetries]회 재시도)
+  ///
+  /// 콜드 스타트 시 네트워크 스택이 아직 준비되지 않아
+  /// 첫 번째 API 호출이 실패할 수 있으므로 재시도로 보완합니다.
+  Future<UserGameStatusEntity> _fetchActiveGameWithRetry({
+    int maxRetries = 2,
+  }) async {
+    var attempt = 0;
+    while (true) {
+      try {
+        return await ref.read(getMyActiveGameUsecaseProvider).execute();
+      } on DioException catch (e) {
+        attempt++;
+        if (attempt > maxRetries) rethrow;
+        debugPrint(
+          '⚠️ SplashPage: 게임 상태 조회 실패 ($attempt/$maxRetries), '
+          '1초 후 재시도 - ${e.type}',
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        if (!mounted) rethrow;
+      }
     }
   }
 
