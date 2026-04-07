@@ -15,10 +15,13 @@
 ### 핵심 기능
 
 - 🗺️ **실시간 위치 추적**: GPS 기반 30명 동시 참가자 위치 동기화
-- ⚡ **WebSocket 실시간 통신**: 게임 이벤트 즉각 전달 (체포, 위치 공개 등)
-- 👥 **팀별 전용 채팅**: 경찰/도둑 팀 전략 소통 채널
+- ⚡ **WebSocket 실시간 통신**: STOMP 프로토콜 기반 게임 이벤트 즉각 전달 + 자동 재연결
+- 👥 **팀별 전용 채팅**: 경찰/도둑 팀 전략 소통 채널 (답장, 신고, 비속어 필터링)
 - 🎮 **자동화된 게임 진행**: 수동 개입 없이 규칙 기반 자동 판정
-- 📍 **구역 이탈 감지**: 플레이그라운드/감옥 경계 자동 모니터링
+- 📍 **구역 이탈 감지**: 플레이그라운드/감옥 경계 자동 모니터링 + 경고 팝업
+- 🔐 **소셜 로그인**: Google / Apple 로그인 + Firebase 인증 + JWT 토큰 관리
+- 📲 **QR 초대 시스템**: QR 코드 생성·스캔으로 간편한 게임 참가
+- 🔧 **원격 운영 관리**: Firebase Remote Config로 점검 모드 / 강제 업데이트 제어
 
 ---
 
@@ -35,7 +38,7 @@
 
 ```bash
 # 1. 저장소 클론
-git clone https://github.com/your-org/cops_and_robbers.git
+git clone https://github.com/cops-and-robbers/cops-and-robbers-FE.git
 cd cops_and_robbers
 
 # 2. 의존성 설치
@@ -45,7 +48,7 @@ flutter pub get
 cp .env.example .env
 
 # 4. 코드 생성 (Freezed, Riverpod, Retrofit)
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 
 # 5. 앱 실행
 flutter run
@@ -141,22 +144,38 @@ Presentation → Domain → Data
 ```
 lib/
 ├── core/                          # 공통 인프라
-│   ├── constants/                 # 앱 전역 상수
+│   ├── constants/                 # 앱 전역 상수 (색상, 설정값, URL)
 │   ├── config/                    # 환경 설정 (EnvConfig)
-│   ├── network/                   # 네트워크 레이어 (Dio)
-│   ├── realtime/                  # 실시간 통신 (WebSocket, STOMP)
-│   ├── logging/                   # 로깅 시스템 (Logger, ErrorReporter)
-│   ├── services/                  # 범용 서비스 (FCM, Storage)
+│   ├── converters/                # 타입 변환 유틸리티
+│   ├── network/                   # 네트워크 레이어 (Dio, AuthInterceptor)
+│   │   └── websocket/             # WebSocket 관리 (연결, 재연결)
+│   ├── realtime/                  # 실시간 통신 (STOMP 프로토콜)
+│   ├── services/                  # 범용 서비스
+│   │   ├── content_filter/        # 채팅 비속어 필터링
+│   │   ├── device/                # 기기 정보
+│   │   ├── fcm/                   # Firebase Cloud Messaging
+│   │   ├── lifecycle/             # 앱 생명주기 관리
+│   │   ├── location/              # GPS 위치 추적
+│   │   ├── permission/            # 권한 관리
+│   │   ├── remote_config/         # Firebase Remote Config
+│   │   └── storage/               # 로컬 저장소
+│   ├── storage/                   # SecureStorage (JWT 토큰)
+│   ├── theme/                     # 테마, 색상, 타이포그래피
+│   ├── errors/                    # 에러 정의 (Exception, AppException)
 │   ├── utils/                     # 유틸리티 함수 및 Extension
-│   ├── errors/                    # 에러 정의 (Exception, Failure)
 │   └── widgets/                   # 공통 UI 위젯
 │
 ├── features/                      # Feature 모듈 (기능 중심)
-│   ├── auth/                      # Google 로그인 및 인증
-│   ├── session/                   # F1: 게임 세션 관리
+│   ├── auth/                      # 소셜 로그인 (Google/Apple) + 인증
+│   ├── user/                      # 사용자 프로필 (닉네임 설정/변경)
+│   ├── session/                   # F1: 게임 세션 관리 (대기실, 팀 선택)
 │   ├── game/                      # F2+F3: 게임 로직 + 지도/위치 (통합)
-│   ├── chat/                      # F4: 팀별 채팅
-│   └── notification/              # F4: 알림 시스템
+│   ├── chat/                      # F4: 팀별 채팅 (답장, 신고, 필터링)
+│   ├── notification/              # F4: 알림 시스템 (FCM + 로컬)
+│   ├── lobby/                     # 로비 화면
+│   ├── notice/                    # 공지사항
+│   ├── settings/                  # 설정 (알림, 계정, 앱 정보)
+│   └── lifecycle_test/            # 개발용 테스트 페이지
 │
 ├── router/                        # 라우팅 설정
 └── main.dart                      # 앱 진입점
@@ -188,8 +207,8 @@ lib/
 ### 네트워킹
 
 - **Dio 5.9.0** - HTTP 클라이언트
-- **Retrofit 4.7.2** - REST API 인터페이스 생성
-- **stomp_dart_client 2.0.0** - WebSocket STOMP 프로토콜
+- **Retrofit 4.7.3** - REST API 인터페이스 생성 (pinned)
+- **stomp_dart_client 3.0.1** - WebSocket STOMP 프로토콜
 - **web_socket_channel 3.0.0** - WebSocket 채널 관리
 
 ### 위치 서비스
@@ -207,11 +226,24 @@ lib/
 - **Firebase Cloud Messaging** - 푸시 알림
 - **Flutter Local Notifications** - 로컬 알림
 
+### 인증
+
+- **Firebase Auth 6.1.3** - Firebase 기반 인증
+- **Google Sign-In 6.2.3** - Google 소셜 로그인
+- **Sign in with Apple 6.1.3** - Apple 소셜 로그인
+
 ### UI/UX
 
 - **flutter_screenutil 5.9.3** - 반응형 화면 대응
 - **google_fonts** - 폰트 관리
 - **flutter_svg 2.2.1** - SVG 아이콘
+
+### Firebase 서비스
+
+- **Firebase Auth** - 소셜 로그인 인증
+- **Firebase Cloud Messaging** - 푸시 알림
+- **Firebase Remote Config** - 점검 모드 / 강제 업데이트
+- **Firebase Crashlytics** - 에러 리포팅 및 모니터링
 
 ### 개발 도구
 
@@ -246,7 +278,7 @@ lib/
 
 3. **코드 생성**:
    ```bash
-   flutter pub run build_runner build --delete-conflicting-outputs
+   dart run build_runner build --delete-conflicting-outputs
    ```
 
 4. **테스트**:
@@ -273,10 +305,10 @@ lib/
 
 ```bash
 # 1회 생성 (개발 중 주로 사용)
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 
 # Watch 모드 (파일 변경 시 자동 생성)
-flutter pub run build_runner watch --delete-conflicting-outputs
+dart run build_runner watch --delete-conflicting-outputs
 ```
 
 ### 코드 생성이 필요한 시점
@@ -314,6 +346,12 @@ genhtml coverage/lcov.info -o coverage/html
 | [03_CODE_CONVENTIONS.md](docs/03_CODE_CONVENTIONS.md) | 코딩 규칙, 네이밍 컨벤션, 에러 처리 패턴 | 코드 작성 전 또는 코드 리뷰 전 |
 | [04_CODE_GENERATION_GUIDE.md](docs/04_CODE_GENERATION_GUIDE.md) | Riverpod, Freezed, Retrofit 코드 생성 가이드 | 코드 생성 방법이나 패턴을 모를 때 |
 | [경찰과도둑_PRD_2.md](docs/경찰과도둑_PRD_2.md) | 제품 요구사항 문서 (PRD) | 비즈니스 요구사항 확인이 필요할 때 |
+| [05_GOOGLE_MAPS_SETUP.md](docs/05_GOOGLE_MAPS_SETUP.md) | Google Maps 설정 가이드 | 지도 관련 설정이 필요할 때 |
+| [06_API_INTEGRATION_GUIDE.md](docs/06_API_INTEGRATION_GUIDE.md) | API 연동 가이드 | 새 API 엔드포인트를 연동할 때 |
+| [07_CICD_GUIDE.md](docs/07_CICD_GUIDE.md) | CI/CD 자동화 가이드 | 배포 파이프라인 이해 시 |
+| [08_TIMER_ARCHITECTURE.md](docs/08_TIMER_ARCHITECTURE.md) | 타이머 아키텍처 | 게임 타이머 로직 수정 시 |
+| [09_WEBSOCKET_EVENT.md](docs/09_WEBSOCKET_EVENT.md) | WebSocket STOMP 이벤트 | 실시간 통신 구조 파악 시 |
+| [API_SPEC.md](docs/API_SPEC.md) | REST API 명세 | 백엔드 API 연동 시 |
 
 ### 신규 개발자 온보딩 순서
 
@@ -334,7 +372,7 @@ genhtml coverage/lcov.info -o coverage/html
 
 **해결**:
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### 2. 환경 변수 로드 실패
@@ -380,7 +418,7 @@ void main() async {
 # 기존 생성 파일 삭제 후 재생성
 flutter clean
 flutter pub get
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ---
@@ -422,8 +460,7 @@ test(game): 게임 로직 단위 테스트 추가
 
 ## 📧 연락처
 
-- **이슈 제보**: [GitHub Issues](https://github.com/your-org/cops_and_robbers/issues)
-- **프로젝트 관리자**: [your-email@example.com](mailto:your-email@example.com)
+- **이슈 제보**: [GitHub Issues](https://github.com/cops-and-robbers/cops-and-robbers-FE/issues)
 
 ---
 
