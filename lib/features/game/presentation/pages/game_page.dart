@@ -651,7 +651,9 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 모달 .then() 콜백에서 재귀 호출하므로, 닫힘 애니메이션(~250ms) 중
   /// 발생한 끊김도 놓치지 않고 다시 표시할 수 있습니다.
   void _showReconnectModalIfNeeded() {
-    if (!mounted || _isReconnectModalShown) return;
+    // 게임 종료 다이얼로그 시퀀스 시작 후에는 재연결 모달 표시 금지
+    // (_gameOverDialogShown은 disconnect()보다 먼저 세팅되므로 isGameOver 리셋 영향 없음)
+    if (!mounted || _isReconnectModalShown || _gameOverDialogShown) return;
 
     final currentState = ref.read(gameEventNotifierProvider);
     if (currentState.isGameOver ||
@@ -671,6 +673,8 @@ class _GamePageState extends ConsumerState<GamePage>
       isDarkMode: _isDarkMode,
       stateNotifier: _reconnectStateNotifier!,
       onReconnect: () {
+        // dispose 후 모달이 화면에 남은 경우 ref 접근 크래시 방지
+        if (!mounted) return;
         ref.read(gameEventNotifierProvider.notifier).manualReconnect();
       },
     ).then((_) {
