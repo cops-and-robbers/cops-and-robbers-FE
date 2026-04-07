@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../router/route_paths.dart';
@@ -133,7 +134,13 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       }
 
       context.go(RoutePaths.home);
+    } on DioException catch (e) {
+      // 네트워크 에러 → 모달로 재시도 유도 (홈으로 보내지 않음)
+      debugPrint('⚠️ SplashPage: 네트워크 에러, 재시도 모달 표시 - ${e.type}');
+      await _waitRemaining(startTime, minDelay);
+      if (mounted) await _showNetworkErrorDialog();
     } catch (e) {
+      // 비네트워크 에러 (파싱 등) → 기존대로 홈 fallback
       debugPrint('⚠️ SplashPage: 게임 상태 조회 실패, 홈으로 이동 - $e');
       await _waitRemaining(startTime, minDelay);
       if (mounted) context.go(RoutePaths.home);
@@ -147,6 +154,22 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (remaining > Duration.zero) {
       await Future.delayed(remaining);
     }
+  }
+
+  /// 네트워크 에러 시 재시도 모달 표시
+  ///
+  /// 모달의 "재시도" 버튼을 누르면 [_navigateToNextScreen]을 처음부터 재실행합니다.
+  Future<void> _showNetworkErrorDialog() async {
+    await AppDialog.show(
+      context: context,
+      title: '네트워크 연결 실패',
+      message: '인터넷 연결을 확인한 후\n다시 시도해주세요',
+      confirmText: '재시도',
+      barrierDismissible: false,
+      onConfirm: () {
+        if (mounted) _navigateToNextScreen();
+      },
+    );
   }
 
   /// 활성 게임 조회 (DioException 시 최대 [maxRetries]회 재시도)
