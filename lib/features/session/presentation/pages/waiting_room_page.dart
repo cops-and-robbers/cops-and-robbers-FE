@@ -437,8 +437,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         _isReconnectModalShown ||
         !mounted ||
         (connState != StompConnectionState.disconnected &&
-            connState != StompConnectionState.error))
+            connState != StompConnectionState.error)) {
       return;
+    }
 
     final isDark = ref.read(roleThemeProvider);
     _reconnectStateNotifier = ValueNotifier(connState);

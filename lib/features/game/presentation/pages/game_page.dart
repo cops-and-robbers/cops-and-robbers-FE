@@ -108,10 +108,19 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 구역 이탈/복귀 상태 전환 감지기
   late final ZoneExitDetector _zoneExitDetector = ZoneExitDetector(
     onExitZone: () {
+      if (_isReconnectModalShown) {
+        // 재연결 모달 중 이탈 → 모달 닫힘 후 재평가(_processPendingZoneExit)
+        _pendingZoneExit = true;
+        return;
+      }
       VibrationService.instance().zoneExit();
       _showZoneExitPopup();
     },
-    onEnterZone: _dismissZoneExitPopup,
+    onEnterZone: () {
+      // 구역 복귀 시 보류 플래그도 함께 초기화
+      _pendingZoneExit = false;
+      _dismissZoneExitPopup();
+    },
   );
 
   /// 이탈 경고 팝업 표시 중 여부 (중복 팝업 방지)
@@ -122,6 +131,10 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 재연결 모달 표시 중 여부 (중복 표시 방지)
   bool _isReconnectModalShown = false;
+
+  /// 재연결 모달 중 발생한 구역 이탈 보류 플래그
+  /// (모달 닫힘 후 여전히 구역 밖이면 팝업 및 진동 처리)
+  bool _pendingZoneExit = false;
 
   /// 게임 이벤트 STOMP 최초 연결 성공 여부
   /// (초기 연결 실패는 모달 대신 기존 에러 처리에 위임)
@@ -616,6 +629,20 @@ class _GamePageState extends ConsumerState<GamePage>
     if (route == null) return;
 
     Navigator.of(context).removeRoute(route);
+  }
+
+  /// 재연결 모달 닫힘 후 보류된 구역 이탈 처리
+  ///
+  /// 모달 중 발생한 이탈(_pendingZoneExit)이 있고
+  /// 여전히 구역 밖(_zoneExitDetector.isOutside)이면 팝업·진동을 실행한다.
+  /// 복귀했다면 플래그만 초기화하고 아무것도 하지 않는다.
+  void _processPendingZoneExit() {
+    if (!_pendingZoneExit) return;
+    _pendingZoneExit = false;
+    if (_zoneExitDetector.isOutside && mounted) {
+      VibrationService.instance().zoneExit();
+      _showZoneExitPopup();
+    }
   }
 
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
@@ -1137,7 +1164,12 @@ class _GamePageState extends ConsumerState<GamePage>
               _isReconnectModalShown = false;
               _reconnectStateNotifier?.dispose();
               _reconnectStateNotifier = null;
+              // 재연결 완료 후 보류된 구역 이탈 처리
+              if (mounted) _processPendingZoneExit();
             });
+          } else {
+            // 재시도 없이 모달이 완전히 닫힌 경우 보류된 구역 이탈 처리
+            _processPendingZoneExit();
           }
         });
       }
