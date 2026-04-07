@@ -210,13 +210,14 @@ class AuthInterceptor extends QueuedInterceptor {
   ///
   /// [_isRetry] extra 플래그를 설정하여 재시도 요청이
   /// 다시 401을 받을 경우 무한 루프를 방지합니다.
+  /// [_plainDio]를 사용하여 QueuedInterceptor 큐 교착 상태를 방지합니다.
   Future<Response> _retryRequest(
     RequestOptions requestOptions,
     String newAccessToken,
   ) async {
     requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
     requestOptions.extra['_isRetry'] = true;
-    return await _dio.fetch(requestOptions);
+    return await _plainDio.fetch(requestOptions);
   }
 
   /// 강제 로그아웃 처리
