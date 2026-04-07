@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart'; // SvgStringLoader + vg const re-export
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -41,9 +44,18 @@ class GoogleMapViewState extends State<GoogleMapView> {
   double _minZoom = 12.0;
 
   // 도둑 공개 위치 마커
-  BitmapDescriptor? _redRobberDot;
-  BitmapDescriptor? _greenRobberDot;
+  BitmapDescriptor? _redRobberMarker;
+  BitmapDescriptor? _greenRobberMarker;
   Set<Marker> _robberMarkers = {};
+
+  // 페이드 애니메이션용 마커 원본 데이터 (alpha 재계산 시 사용)
+  Map<int, LatLng> _robberLocations = {};
+  bool _robberIsPolice = false;
+
+  // 페이드 깜빡임 애니메이션 (등장 시 3회, 1사이클 ≈ 1200ms)
+  Timer? _blinkTimer;
+  static const _blinkCycles = 3;
+  static const _fadeStepInterval = Duration(milliseconds: 100);
 
   // 아이콘 로드 전 수신된 업데이트 캐시
   ({Map<int, LatLng> locations, bool isPolice})? _pendingRobbers;
@@ -61,6 +73,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
   @override
   void dispose() {
     debugPrint('🗺️ GoogleMapView dispose');
+    _blinkTimer?.cancel();
     _controller?.dispose();
     super.dispose();
   }
@@ -69,22 +82,35 @@ class GoogleMapViewState extends State<GoogleMapView> {
   // 아이콘 사전 로드
   // ---------------------------------------------------------------------------
 
-  /// 도둑 공개 위치용 고정 크기 dot BitmapDescriptor 생성
+  /// 발자국(shoeprint) SVG 기반 도둑 공개 위치 마커 BitmapDescriptor 생성
   ///
-  /// 내장 위치 마커와 시각적으로 구분되도록 12dp 원형 사용.
-  Future<BitmapDescriptor> _createRobberDotDescriptor(Color color) async {
+  /// SVG fill 색상을 교체한 뒤 flutter_svg로 렌더링하여 PNG 바이트로 변환.
+  /// [color] 경찰 시점: AppColors.red / 도둑 시점: AppColors.green
+  Future<BitmapDescriptor> _createShoeprintDescriptor(Color color) async {
     final dpr =
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    const diameter = 12.0;
-    final physSize = (diameter * dpr).round();
-    final s = dpr;
-    final center = Offset(diameter / 2 * s, diameter / 2 * s);
+    const size = 28.0;
+    final physSize = (size * dpr).round();
 
+    // SVG 로드 후 fill 색상 교체 (#080A0C → 타겟 색상)
+    final svgString = await rootBundle.loadString('assets/icons/shoeprint.svg');
+    final hex =
+        '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+    final colorized = svgString.replaceAll('fill="#080A0C"', 'fill="$hex"');
+
+    // flutter_svg → vector_graphics Picture 생성
+    final pictureInfo = await vg.loadPicture(SvgStringLoader(colorized), null);
+
+    // 물리 픽셀 크기로 스케일 조정 후 캔버스에 렌더링
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-
-    canvas.drawCircle(center, diameter / 2 * s, Paint()..color = color);
+    canvas.scale(
+      physSize / pictureInfo.size.width,
+      physSize / pictureInfo.size.height,
+    );
+    canvas.drawPicture(pictureInfo.picture);
+    pictureInfo.picture.dispose();
 
     final picture = recorder.endRecording();
     final image = await picture.toImage(physSize, physSize);
@@ -102,9 +128,9 @@ class GoogleMapViewState extends State<GoogleMapView> {
   /// 도둑 공개 위치 마커 아이콘 사전 로드
   Future<void> _preloadIcons() async {
     try {
-      _redRobberDot = await _createRobberDotDescriptor(AppColors.red);
-      _greenRobberDot = await _createRobberDotDescriptor(AppColors.green);
-      debugPrint('✅ GoogleMapView: 마커 아이콘 로드 완료');
+      _redRobberMarker = await _createShoeprintDescriptor(AppColors.red);
+      _greenRobberMarker = await _createShoeprintDescriptor(AppColors.green);
+      debugPrint('✅ GoogleMapView: 발자국 마커 아이콘 로드 완료');
       _applyPendingUpdates();
     } catch (e) {
       debugPrint('❌ GoogleMapView: 마커 아이콘 로드 실패 - $e');
@@ -178,24 +204,68 @@ class GoogleMapViewState extends State<GoogleMapView> {
 
   /// 도둑 공개 위치 마커 업데이트
   ///
-  /// [isPolice] true → 빨간 dot, false → 초록 dot.
+  /// 새 위치를 받으면 페이드 깜빡임 [_blinkCycles]회 후 영구 표시.
+  /// [isPolice] true → 빨간 발자국, false → 초록 발자국.
   void updateRobberMarkers(
     Map<int, LatLng> locations, {
     required bool isPolice,
   }) {
-    final icon = isPolice ? _redRobberDot : _greenRobberDot;
-    if (icon == null || !mounted) {
+    if (_redRobberMarker == null || !mounted) {
       _pendingRobbers = (locations: locations, isPolice: isPolice);
       return;
     }
 
+    _blinkTimer?.cancel();
+    _blinkTimer = null;
+    _robberLocations = locations;
+    _robberIsPolice = isPolice;
+
+    debugPrint('🗺️ GoogleMap: 도둑 위치 마커 ${locations.length}개 업데이트');
+    _startFadeAnimation();
+  }
+
+  /// 1사이클(≈1200ms): 페이드 아웃 → 완전 비표시 → 페이드 인 → 완전 표시
+  /// [_blinkCycles]회 반복 후 영구 표시
+  void _startFadeAnimation() {
+    const cycle = [
+      0.6, 0.2, 0.0, // 페이드 아웃  (3 × 100ms = 300ms)
+      0.0, 0.0, 0.0, // 완전 비표시  (3 × 100ms = 300ms)
+      0.4, 0.8, 1.0, // 페이드 인    (3 × 100ms = 300ms)
+      1.0, 1.0, 1.0, // 완전 표시    (3 × 100ms = 300ms)
+    ]; // 1사이클 = 12 × 100ms = 1200ms
+
+    final sequence = <double>[for (var i = 0; i < _blinkCycles; i++) ...cycle];
+
+    int step = 0;
+    _setRobberAlpha(1.0);
+
+    _blinkTimer = Timer.periodic(_fadeStepInterval, (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (step >= sequence.length) {
+        timer.cancel();
+        _blinkTimer = null;
+        _setRobberAlpha(1.0);
+        return;
+      }
+      _setRobberAlpha(sequence[step++]);
+    });
+  }
+
+  /// [alpha]를 적용한 도둑 마커 세트를 빌드하여 setState로 반영
+  void _setRobberAlpha(double alpha) {
+    final icon = _robberIsPolice ? _redRobberMarker : _greenRobberMarker;
+    if (icon == null || !mounted) return;
     setState(() {
-      _robberMarkers = locations.entries
+      _robberMarkers = _robberLocations.entries
           .map(
             (e) => Marker(
               markerId: MarkerId('robber_${e.key}'),
               position: e.value,
               icon: icon,
+              alpha: alpha,
               anchor: const Offset(0.5, 0.5),
               flat: true,
               consumeTapEvents: false,
@@ -204,7 +274,6 @@ class GoogleMapViewState extends State<GoogleMapView> {
           )
           .toSet();
     });
-    debugPrint('🗺️ GoogleMap: 도둑 위치 마커 ${locations.length}개 업데이트');
   }
 
   // ---------------------------------------------------------------------------
