@@ -53,9 +53,13 @@ class HomePage extends ConsumerWidget {
   static const _safetyNoticePrefKey = 'safety_notice_dismissed_date';
   static bool _safetyNoticeShown = false;
 
+  /// 홈 진입 시 활성 게임 체크 완료 여부 (세션당 1회)
+  static bool _activeGameChecked = false;
+
   /// 안전 안내 다이얼로그 상태 초기화 (로그아웃/강제 로그아웃 시 호출)
   static Future<void> resetSafetyNotice() async {
     _safetyNoticeShown = false;
+    _activeGameChecked = false;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_safetyNoticePrefKey);
   }
@@ -114,6 +118,39 @@ class HomePage extends ConsumerWidget {
         }
       },
     );
+  }
+
+  /// 활성 게임 존재 시 자동 리다이렉트 (스플래시 실패 안전망)
+  Future<void> _checkActiveGameAndRedirect(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    if (_activeGameChecked) return;
+    _activeGameChecked = true;
+
+    try {
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
+
+      if (!context.mounted) return;
+      if (!status.isParticipating || status.participationInfo == null) return;
+
+      final info = status.participationInfo!;
+
+      if (info.gameStatus == 'WAITING') {
+        context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
+        return;
+      }
+
+      if (info.gameStatus == 'IN_PROGRESS') {
+        context.go(
+          '${RoutePaths.gameWithId(info.gameId.toString())}'
+          '?team=${info.team}&pid=${info.participantId}',
+        );
+        return;
+      }
+    } catch (e) {
+      debugPrint('⚠️ HomePage: 활성 게임 체크 실패 (홈 유지) - $e');
+    }
   }
 
   /// 위치 권한 확인 후 [onGranted] 실행
@@ -361,6 +398,13 @@ class HomePage extends ConsumerWidget {
     if (!_safetyNoticeShown) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) _showSafetyNoticeIfNeeded(context);
+      });
+    }
+
+    // 활성 게임 안전망: 스플래시 실패 시 홈에서 재확인 (세션당 1회)
+    if (!_activeGameChecked) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) _checkActiveGameAndRedirect(context, ref);
       });
     }
 

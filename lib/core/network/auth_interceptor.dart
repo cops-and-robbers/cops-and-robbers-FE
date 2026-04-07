@@ -23,9 +23,8 @@ import 'api_error_response.dart';
 ///    - 실패: 토큰 삭제 → 강제 로그아웃 콜백 실행
 class AuthInterceptor extends QueuedInterceptor {
   final SecureTokenStorage _tokenStorage;
-  final Dio _dio;
 
-  /// 토큰 재발급 전용 Dio (인터셉터 없음)
+  /// 토큰 재발급 및 재시도 전용 Dio (인터셉터 없음)
   ///
   /// reissue API 호출 시 AuthInterceptor를 타지 않도록
   /// 별도의 plain Dio 인스턴스를 사용합니다.
@@ -41,11 +40,9 @@ class AuthInterceptor extends QueuedInterceptor {
 
   AuthInterceptor({
     required SecureTokenStorage tokenStorage,
-    required Dio dio,
     required Dio plainDio,
     required this.onForceLogout,
   }) : _tokenStorage = tokenStorage,
-       _dio = dio,
        _plainDio = plainDio;
 
   // ============================================
