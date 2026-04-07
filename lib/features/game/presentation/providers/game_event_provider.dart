@@ -248,6 +248,7 @@ class GameEventNotifier extends _$GameEventNotifier {
   bool _intentionalDisconnect = false;
   bool _isHandlingError = false;
   bool _isDisposed = false;
+  bool _isManualReconnecting = false; // 수동 재연결 중복 호출 방지
   int? _gameId;
 
   @override
@@ -307,13 +308,19 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// 사용자가 재연결 버튼을 탭했을 때 호출합니다.
   /// 기존 자동 재연결 백오프와 달리 딜레이 없이 즉시 시도합니다.
   Future<void> manualReconnect() async {
-    if (_gameId == null) return;
-    _reconnectCount = 0; // 재시도 카운터 초기화 → 이후 자동 재연결 5회 재활성화
-    _intentionalDisconnect = false;
-    _isHandlingError = false;
-    _reconnectTimer?.cancel();
-    _reconnectTimer = null;
-    await _attemptReconnect();
+    // UI의 isConnecting 비활성화 외에 메서드 레벨에서도 중복 호출 차단
+    if (_isManualReconnecting || _gameId == null) return;
+    _isManualReconnecting = true;
+    try {
+      _reconnectCount = 0; // 재시도 카운터 초기화 → 이후 자동 재연결 5회 재활성화
+      _intentionalDisconnect = false;
+      _isHandlingError = false;
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
+      await _attemptReconnect();
+    } finally {
+      _isManualReconnecting = false;
+    }
   }
 
   /// 의도적 연결 해제

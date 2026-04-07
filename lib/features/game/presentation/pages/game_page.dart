@@ -646,6 +646,41 @@ class _GamePageState extends ConsumerState<GamePage>
     }
   }
 
+  /// 재연결 모달 표시 헬퍼 — 중복 표시 방지 및 N회 연속 끊김 재귀 처리
+  ///
+  /// 모달 .then() 콜백에서 재귀 호출하므로, 닫힘 애니메이션(~250ms) 중
+  /// 발생한 끊김도 놓치지 않고 다시 표시할 수 있습니다.
+  void _showReconnectModalIfNeeded() {
+    if (!mounted || _isReconnectModalShown) return;
+
+    final currentState = ref.read(gameEventNotifierProvider);
+    if (currentState.isGameOver ||
+        (currentState.connectionState != StompConnectionState.disconnected &&
+            currentState.connectionState != StompConnectionState.error)) {
+      _processPendingZoneExit();
+      return;
+    }
+
+    // 구역 이탈 팝업이 떠 있으면 먼저 닫음
+    // (재연결 모달이 스택 하단에 깔리면 pop()이 잘못된 다이얼로그를 닫는 버그 방지)
+    _dismissZoneExitPopup();
+    _reconnectStateNotifier = ValueNotifier(currentState.connectionState);
+    _isReconnectModalShown = true;
+    ReconnectModal.show(
+      context: context,
+      isDarkMode: _isDarkMode,
+      stateNotifier: _reconnectStateNotifier!,
+      onReconnect: () {
+        ref.read(gameEventNotifierProvider.notifier).manualReconnect();
+      },
+    ).then((_) {
+      _isReconnectModalShown = false;
+      _reconnectStateNotifier?.dispose();
+      _reconnectStateNotifier = null;
+      _showReconnectModalIfNeeded();
+    });
+  }
+
   /// 현재 위치를 거리 무관하게 즉시 1회 전송
   Future<void> _sendPositionNow() async {
     if (ref
@@ -1118,61 +1153,9 @@ class _GamePageState extends ConsumerState<GamePage>
       }
 
       // 끊김/에러 발생 → 모달 신규 표시 (게임 종료 후는 제외)
-      final isGameOver = ref.read(gameEventNotifierProvider).isGameOver;
-      if ((next == StompConnectionState.disconnected ||
-              next == StompConnectionState.error) &&
-          !isGameOver &&
-          mounted) {
-        // 구역 이탈 팝업이 떠 있으면 먼저 닫음
-        // (재연결 모달이 스택 하단에 깔리면 pop()이 잘못된 다이얼로그를 닫는 버그 방지)
-        _dismissZoneExitPopup();
-        _reconnectStateNotifier = ValueNotifier(next);
-        _isReconnectModalShown = true;
-        ReconnectModal.show(
-          context: context,
-          isDarkMode: _isDarkMode,
-          stateNotifier: _reconnectStateNotifier!,
-          onReconnect: () {
-            ref.read(gameEventNotifierProvider.notifier).manualReconnect();
-          },
-        ).then((_) {
-          // 모달이 닫힌 후 플래그 정리
-          _isReconnectModalShown = false;
-          _reconnectStateNotifier?.dispose();
-          _reconnectStateNotifier = null;
-
-          // 닫힘 애니메이션 중 새로운 끊김이 발생했을 때 재표시
-          // (닫힘 ~250ms 동안 disconnected 이벤트가 소비되어 리스너가 놓치는 케이스 대응)
-          if (!mounted) return;
-          final currentState = ref.read(gameEventNotifierProvider);
-          if ((currentState.connectionState ==
-                      StompConnectionState.disconnected ||
-                  currentState.connectionState == StompConnectionState.error) &&
-              !currentState.isGameOver) {
-            _reconnectStateNotifier = ValueNotifier(
-              currentState.connectionState,
-            );
-            _isReconnectModalShown = true;
-            ReconnectModal.show(
-              // ignore: use_build_context_synchronously
-              context: context,
-              isDarkMode: _isDarkMode,
-              stateNotifier: _reconnectStateNotifier!,
-              onReconnect: () {
-                ref.read(gameEventNotifierProvider.notifier).manualReconnect();
-              },
-            ).then((_) {
-              _isReconnectModalShown = false;
-              _reconnectStateNotifier?.dispose();
-              _reconnectStateNotifier = null;
-              // 재연결 완료 후 보류된 구역 이탈 처리
-              if (mounted) _processPendingZoneExit();
-            });
-          } else {
-            // 재시도 없이 모달이 완전히 닫힌 경우 보류된 구역 이탈 처리
-            _processPendingZoneExit();
-          }
-        });
+      if (next == StompConnectionState.disconnected ||
+          next == StompConnectionState.error) {
+        _showReconnectModalIfNeeded();
       }
     });
 
