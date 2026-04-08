@@ -72,7 +72,7 @@ class _SessionCreationFlowPageState
 
   // Step 2: 게임 설정
   int _roundDurationMinutes = 30;
-  int _locationShareMinutes = 5;
+  int _locationShareMinutes = 1;
   int _policeWaitMinutes = 5;
 
   // ============================================
@@ -108,7 +108,7 @@ class _SessionCreationFlowPageState
         _prisonRadiusMeters = draft.jailRadiusInMeters;
         _maxParticipants = draft.maxParticipants ?? 10;
         _roundDurationMinutes = draft.roundDurationMinutes ?? 30;
-        _locationShareMinutes = draft.locationShareMinutes ?? 5;
+        _locationShareMinutes = draft.locationShareMinutes ?? 1;
         _policeWaitMinutes = (draft.policeWaitMinutes ?? 5).clamp(1, 10);
       });
     }

@@ -23,9 +23,8 @@ import 'api_error_response.dart';
 ///    - 실패: 토큰 삭제 → 강제 로그아웃 콜백 실행
 class AuthInterceptor extends QueuedInterceptor {
   final SecureTokenStorage _tokenStorage;
-  final Dio _dio;
 
-  /// 토큰 재발급 전용 Dio (인터셉터 없음)
+  /// 토큰 재발급 및 재시도 전용 Dio (인터셉터 없음)
   ///
   /// reissue API 호출 시 AuthInterceptor를 타지 않도록
   /// 별도의 plain Dio 인스턴스를 사용합니다.
@@ -41,11 +40,9 @@ class AuthInterceptor extends QueuedInterceptor {
 
   AuthInterceptor({
     required SecureTokenStorage tokenStorage,
-    required Dio dio,
     required Dio plainDio,
     required this.onForceLogout,
   }) : _tokenStorage = tokenStorage,
-       _dio = dio,
        _plainDio = plainDio;
 
   // ============================================
@@ -208,15 +205,19 @@ class AuthInterceptor extends QueuedInterceptor {
 
   /// 원래 요청을 새 토큰으로 재시도
   ///
-  /// [_isRetry] extra 플래그를 설정하여 재시도 요청이
-  /// 다시 401을 받을 경우 무한 루프를 방지합니다.
+  /// [_plainDio]를 사용하여 QueuedInterceptor 큐 교착 상태를 방지합니다.
+  /// _plainDio에는 AuthInterceptor가 없으므로 무한 루프 위험 없음.
   Future<Response> _retryRequest(
     RequestOptions requestOptions,
     String newAccessToken,
   ) async {
-    requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
-    requestOptions.extra['_isRetry'] = true;
-    return await _dio.fetch(requestOptions);
+    final retryOptions = requestOptions.copyWith(
+      headers: {
+        ...requestOptions.headers,
+        'Authorization': 'Bearer $newAccessToken',
+      },
+    );
+    return await _plainDio.fetch(retryOptions);
   }
 
   /// 강제 로그아웃 처리

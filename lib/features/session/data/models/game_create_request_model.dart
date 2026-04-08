@@ -91,7 +91,7 @@ class GameSettingsRequestModel with _$GameSettingsRequestModel {
     /// 라운드 시간 (10~180분)
     required int roundDurationMinutes,
 
-    /// 위치 공개 주기 (최소 5분)
+    /// 위치 공개 주기 (최소 1분)
     required int locationRevealIntervalMinutes,
 
     /// 경찰 대기 시간 (최소 0분)

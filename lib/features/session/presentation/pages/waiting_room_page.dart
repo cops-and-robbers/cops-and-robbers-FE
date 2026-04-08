@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +18,7 @@ import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/widgets/dialogs/reconnect_modal.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -96,6 +98,15 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// dispose 여부 (microtask 큐에 남은 이벤트가 dispose 후 처리되는 것을 방지)
   bool _isDisposed = false;
+
+  /// 재연결 모달 표시 중 여부 (중복 표시 방지)
+  bool _isReconnectModalShown = false;
+
+  /// 로비 STOMP 최초 연결 성공 여부
+  bool _hasLobbyConnectedOnce = false;
+
+  /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
+  ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
 
   @override
   void initState() {
@@ -194,6 +205,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   @override
   void dispose() {
     _isDisposed = true;
+    _reconnectStateNotifier?.dispose();
+    _reconnectStateNotifier = null;
     _lobbyEventSub?.close();
     _lobbyEventSub = null;
     WidgetsBinding.instance.removeObserver(this);
@@ -416,6 +429,81 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
   }
 
+  /// 재연결 모달 표시
+  ///
+  /// 이미 표시 중이거나 끊김/에러 상태가 아니면 스킵.
+  /// 모달 닫힘 후 여전히 끊겨 있으면 자신을 재귀 호출하여 재표시.
+  /// [DEBUG 전용] 개발자 도구 메뉴 — 로비 연결 끊김 시뮬레이션
+  void _showDebugMenu() {
+    AppDialog.show(
+      context: context,
+      title: '개발자 도구',
+      showButtons: false,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.wifi_off),
+            title: Text('끊김 시뮬레이션 (자동 재연결)', style: AppTextStyles.paragraph_14),
+            subtitle: Text('재연결 모달 잠깐 뜨다 닫힘', style: AppTextStyles.tag_12),
+            onTap: () {
+              Navigator.pop(context);
+              debugPrint('[WaitingRoom][DEBUG] 🔌 끊김 시뮬레이션 (자동 재연결)');
+              ref.read(lobbyStompDatasourceProvider).disconnect();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.signal_wifi_off),
+            title: Text('재연결 실패 시뮬레이션', style: AppTextStyles.paragraph_14),
+            subtitle: Text(
+              '5회 소진 → 모달 유지 + 수동 재연결',
+              style: AppTextStyles.tag_12,
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              debugPrint('[WaitingRoom][DEBUG] ❌ 재연결 실패 시뮬레이션 (error 상태)');
+              ref
+                  .read(lobbyNotifierProvider.notifier)
+                  .debugForceReconnectExhausted();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReconnectModal(StompConnectionState connState) {
+    if (_isDisposed ||
+        _isReconnectModalShown ||
+        !mounted ||
+        (connState != StompConnectionState.disconnected &&
+            connState != StompConnectionState.error)) {
+      return;
+    }
+
+    final isDark = ref.read(roleThemeProvider);
+    _reconnectStateNotifier = ValueNotifier(connState);
+    _isReconnectModalShown = true;
+    ReconnectModal.show(
+      context: context,
+      isDarkMode: isDark,
+      stateNotifier: _reconnectStateNotifier!,
+      onReconnect: () {
+        ref.read(lobbyNotifierProvider.notifier).manualReconnect();
+      },
+    ).then((_) {
+      if (_isDisposed) return;
+      _isReconnectModalShown = false;
+      _reconnectStateNotifier?.dispose();
+      _reconnectStateNotifier = null;
+
+      // 닫힘 애니메이션 중 새로운 끊김이 발생했을 때 재표시
+      // (닫힘 ~250ms 동안 disconnected 이벤트가 소비되어 리스너가 놓치는 케이스 대응)
+      if (!mounted) return;
+      _showReconnectModal(ref.read(lobbyNotifierProvider).connectionState);
+    });
+  }
+
   /// 로비 이벤트 → 참가자 목록 업데이트
   void _listenLobbyEvents() {
     _lobbyEventSub = ref.listenManual(lobbyNotifierProvider, (prev, next) {
@@ -427,6 +515,21 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (next.connectionState == StompConnectionState.connected &&
           prev?.connectionState != StompConnectionState.connected) {
         _fetchAndInitParticipants();
+      }
+
+      // 최초 연결 성공 추적 (초기 연결 실패 시엔 모달 미표시)
+      if (next.connectionState == StompConnectionState.connected) {
+        _hasLobbyConnectedOnce = true;
+      }
+
+      // 연결 끊김/에러 → 재연결 모달 표시
+      // 재연결 성공 → stateNotifier 업데이트 → ReconnectModal이 스스로 닫힘
+      if (_hasLobbyConnectedOnce) {
+        if (_isReconnectModalShown) {
+          _reconnectStateNotifier?.value = next.connectionState;
+        } else {
+          _showReconnectModal(next.connectionState);
+        }
       }
 
       final event = next.lastEvent;
@@ -814,6 +917,17 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     return Scaffold(
       backgroundColor: isDark ? AppColors.black900 : AppColors.white,
       appBar: _buildAppBar(isDark),
+      // [DEBUG] 개발자 도구 버튼 — release에서는 kDebugMode=false로 dead-code 제거
+      floatingActionButton: kDebugMode
+          ? FloatingActionButton(
+              heroTag: 'waiting_room_debug',
+              mini: true,
+              backgroundColor: AppColors.black.withValues(alpha: 0.7),
+              foregroundColor: AppColors.white,
+              onPressed: _showDebugMenu,
+              child: const Icon(Icons.bug_report),
+            )
+          : null,
       body: SafeArea(
         top: false,
         child: Column(
