@@ -175,10 +175,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  /// 항목 간 구분선 (h=1, 좌우 패딩 내부)
+  /// 항목 간 구분선 (h=1, 좌우 20px)
   Widget _buildItemDivider() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal24),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal20),
       child: const Divider(color: AppColors.black100, height: 1),
     );
   }
