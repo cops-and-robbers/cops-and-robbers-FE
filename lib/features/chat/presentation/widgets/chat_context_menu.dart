@@ -11,7 +11,7 @@ import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../data/models/chat_message_dto.dart';
-import '../../domain/constants/report_categories.dart';
+import '../../../report/domain/constants/report_categories.dart';
 
 /// 채팅 메시지 롱프레스 시 표시되는 컨텍스트 메뉴 오버레이
 ///
@@ -43,7 +43,8 @@ class ChatContextMenu extends StatefulWidget {
     required String messageContent,
     required int reportedParticipantId,
     String? etcReason,
-  }) onReport;
+  })
+  onReport;
 
   /// dismiss 후에도 유효한 호출자 context (Snackbar/Dialog 표시용)
   final BuildContext callerContext;
@@ -60,7 +61,8 @@ class ChatContextMenu extends StatefulWidget {
       required String messageContent,
       required int reportedParticipantId,
       String? etcReason,
-    }) onReport,
+    })
+    onReport,
   }) {
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return Future.value();

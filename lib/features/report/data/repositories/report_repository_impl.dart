@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
-import '../../../chat/domain/constants/report_categories.dart';
+import '../../domain/constants/report_categories.dart';
 import '../../domain/repositories/report_repository.dart';
 import '../datasources/report_remote_datasource.dart';
 import '../models/report_request_model.dart';

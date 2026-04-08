@@ -1,4 +1,4 @@
-import '../../../chat/domain/constants/report_categories.dart';
+import '../constants/report_categories.dart';
 
 /// Report Repository 인터페이스
 ///

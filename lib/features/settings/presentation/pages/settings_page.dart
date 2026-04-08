@@ -335,6 +335,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           hintText: '어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)',
           submitText: '제보하기',
           onSubmit: (text) {
+            // TODO: 버그 제보 API 연동 (백엔드 API 미구현 상태)
             Navigator.of(context).pop();
             AppSnackbar.show(context, message: '버그 제보가 접수되었어요');
           },
