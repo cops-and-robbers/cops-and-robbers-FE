@@ -91,6 +91,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               onTap: () =>
                   AppSettings.openAppSettings(type: AppSettingsType.location),
             ),
+            SizedBox(height: AppSpacing.vertical4),
 
             _buildSectionDivider(),
 
@@ -127,7 +128,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 ),
               ),
             ),
-
+            SizedBox(height: AppSpacing.vertical4),
             _buildSectionDivider(),
 
             // ══════════════════════════════════════════
@@ -272,7 +273,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                   ),
                   if (subtitle != null) ...[
-                    SizedBox(height: AppSpacing.vertical4),
+                    SizedBox(height: AppSpacing.vertical8),
                     Text(
                       subtitle,
                       style: AppTextStyles.tag_12.copyWith(
