@@ -141,4 +141,11 @@ class ApiEndpoints {
 
   /// 참여 중인 게임 정보 조회
   static const String myActiveGame = '/api/user/me/game';
+
+  // ============================================
+  // Report API - 신고
+  // ============================================
+
+  /// 채팅 신고
+  static const String reportChat = '/api/report/chat';
 }
