@@ -163,7 +163,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       padding: EdgeInsets.only(
         left: AppSpacing.horizontal24,
         right: AppSpacing.horizontal24,
-        top: AppSpacing.vertical16,
+        top: AppSpacing.vertical24,
         bottom: AppSpacing.vertical4,
       ),
       child: Text(
