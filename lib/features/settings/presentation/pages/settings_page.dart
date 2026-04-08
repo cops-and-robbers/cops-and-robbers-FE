@@ -308,20 +308,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     try {
       final profile = await ref.read(userRepositoryProvider).getMyProfile();
       if (!mounted) return;
-      if (navigator.canPop()) navigator.pop();
       final encodedNickname = Uri.encodeComponent(profile.nickname);
       router.push('${RoutePaths.nicknameSetup}?nickname=$encodedNickname');
     } on AuthException {
-      if (navigator.canPop()) navigator.pop();
       return;
     } on AppException catch (e) {
-      if (navigator.canPop()) navigator.pop();
       if (!mounted) return;
       AppSnackbar.show(
         context,
         message: e.message,
         backgroundColor: AppColors.red,
       );
+    } finally {
+      // 로딩 팝업 종료 보장
+      if (navigator.canPop()) navigator.pop();
     }
   }
 
