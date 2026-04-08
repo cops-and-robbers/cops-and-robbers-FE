@@ -74,15 +74,19 @@ class ApiEndpoints {
   // Game Participant API - 게임 참여자 관리
   // ============================================
 
-  /// 게임 방 참여
-  static String joinGame(int gameId) => '/api/games/$gameId/participants';
+  /// 게임 방 참여 (초대 코드를 body로 전달)
+  static const String joinGame = '/api/games/join';
 
   /// 게임 방 퇴장
-  static String leaveGame(int gameId) => '/api/games/$gameId/participants';
+  static String leaveGame(int gameId) => '/api/games/$gameId/leave';
 
   // ============================================
   // Lobby API - 게임 로비 상태 변경
   // ============================================
+
+  /// 멤버 강제 퇴장 (방장 전용)
+  static String kickMember(int gameId, int participantId) =>
+      '/api/games/$gameId/lobby/$participantId';
 
   /// 로비 팀 변경
   static String changeTeam(int gameId) => '/api/games/$gameId/lobby/team';
@@ -141,4 +145,11 @@ class ApiEndpoints {
 
   /// 참여 중인 게임 정보 조회
   static const String myActiveGame = '/api/user/me/game';
+
+  // ============================================
+  // Report API - 신고
+  // ============================================
+
+  /// 채팅 신고
+  static const String reportChat = '/api/report/chat';
 }

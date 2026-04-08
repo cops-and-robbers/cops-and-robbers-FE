@@ -730,7 +730,7 @@ mixin _$GameSettingsRequestModel {
   /// 라운드 시간 (10~180분)
   int get roundDurationMinutes => throw _privateConstructorUsedError;
 
-  /// 위치 공개 주기 (최소 5분)
+  /// 위치 공개 주기 (최소 1분)
   int get locationRevealIntervalMinutes => throw _privateConstructorUsedError;
 
   /// 경찰 대기 시간 (최소 0분)
@@ -891,7 +891,7 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
   @override
   final int roundDurationMinutes;
 
-  /// 위치 공개 주기 (최소 5분)
+  /// 위치 공개 주기 (최소 1분)
   @override
   final int locationRevealIntervalMinutes;
 
@@ -969,7 +969,7 @@ abstract class _GameSettingsRequestModel implements GameSettingsRequestModel {
   @override
   int get roundDurationMinutes;
 
-  /// 위치 공개 주기 (최소 5분)
+  /// 위치 공개 주기 (최소 1분)
   @override
   int get locationRevealIntervalMinutes;
 
