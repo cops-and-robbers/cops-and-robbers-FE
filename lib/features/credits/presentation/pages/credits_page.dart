@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../domain/credit_member.dart';
 import '../widgets/credit_card_widget.dart';
 import 'credit_detail_page.dart';
@@ -23,9 +24,9 @@ class CreditsPage extends StatelessWidget {
         backgroundColor: AppColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.white),
+        leading: PreviousButton(
           onPressed: () => Navigator.of(context).pop(),
+          color: AppColors.white,
         ),
       ),
       body: SafeArea(

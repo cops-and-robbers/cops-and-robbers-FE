@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../domain/credit_member.dart';
 
 /// 크레딧 멤버 상세 페이지
@@ -24,9 +25,9 @@ class CreditDetailPage extends StatelessWidget {
         backgroundColor: AppColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.white),
+        leading: PreviousButton(
           onPressed: () => Navigator.of(context).pop(),
+          color: AppColors.white,
         ),
       ),
       body: SafeArea(

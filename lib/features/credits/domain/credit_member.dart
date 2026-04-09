@@ -55,64 +55,58 @@ class CreditMember {
 }
 
 /// 크레딧에 표시할 멤버 목록
+///
+/// TODO: 소셜 링크 URL을 실제 값으로 교체 필요
 const List<CreditMember> creditMembers = [
   CreditMember(
-    name: '멤버1',
+    name: '홍의민',
+    role: 'Frontend',
+    profileAsset: 'assets/credits/member1.png',
+    links: [
+      SocialLink(type: SocialType.github, url: 'https://github.com/EM-H20'),
+    ],
+  ),
+  CreditMember(
+    name: '박찬빈',
+    role: 'Frontend',
+    profileAsset: 'assets/credits/member2.png',
+    links: [
+      SocialLink(type: SocialType.github, url: 'https://github.com/chanbin'),
+    ],
+  ),
+  CreditMember(
+    name: '이창희',
     role: 'Backend',
-    profileAsset: 'assets/images/credits/member1.png',
+    profileAsset: 'assets/credits/member3.png',
     links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/member1'),
+      SocialLink(type: SocialType.github, url: 'https://github.com/changhee'),
     ],
   ),
   CreditMember(
-    name: '멤버2',
+    name: '정상희',
     role: 'Backend',
-    profileAsset: 'assets/images/credits/member2.png',
+    profileAsset: 'assets/credits/member4.png',
     links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/member2'),
-      SocialLink(
-        type: SocialType.linkedin,
-        url: 'https://linkedin.com/in/member2',
-      ),
+      SocialLink(type: SocialType.github, url: 'https://github.com/sanghee'),
     ],
   ),
   CreditMember(
-    name: '멤버3',
-    role: 'Flutter',
-    profileAsset: 'assets/images/credits/member3.png',
+    name: '황혜림',
+    role: 'Backend',
+    profileAsset: 'assets/credits/member5.png',
     links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/member3'),
+      SocialLink(type: SocialType.github, url: 'https://github.com/hyerim'),
     ],
   ),
   CreditMember(
-    name: '멤버4',
-    role: 'Flutter',
-    profileAsset: 'assets/images/credits/member4.png',
-    links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/member4'),
-      SocialLink(
-        type: SocialType.email,
-        url: 'mailto:member4@example.com',
-      ),
-    ],
-  ),
-  CreditMember(
-    name: '멤버5',
+    name: '윤지희',
     role: 'Design',
-    profileAsset: 'assets/images/credits/member5.png',
+    profileAsset: 'assets/credits/member6.png',
     links: [
       SocialLink(
         type: SocialType.instagram,
-        url: 'https://instagram.com/member5',
+        url: 'https://instagram.com/jihee',
       ),
-    ],
-  ),
-  CreditMember(
-    name: '멤버6',
-    role: 'PM',
-    profileAsset: 'assets/images/credits/member6.png',
-    links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/member6'),
     ],
   ),
 ];
