@@ -107,3 +107,25 @@ const List<CreditMember> creditMembers = [
     ],
   ),
 ];
+
+/// 도움 준 사람 정보
+class CreditHelper {
+  const CreditHelper({
+    required this.name,
+    required this.role,
+  });
+
+  final String name;
+  final String role;
+}
+
+/// 도움 준 사람들 목록
+///
+/// TODO: 실제 이름/역할로 교체 필요
+const List<CreditHelper> creditHelpers = [
+  CreditHelper(name: '서창희', role: '멘토'),
+  CreditHelper(name: '김영수', role: 'QA'),
+  CreditHelper(name: '이지은', role: '기획 자문'),
+  CreditHelper(name: '박준혁', role: '인프라'),
+  CreditHelper(name: '최민정', role: 'QA'),
+];
