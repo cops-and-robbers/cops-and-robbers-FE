@@ -633,8 +633,42 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           }
         }
 
+        // 강퇴 이벤트 — 본인이면 다이얼로그 + 홈 이동, 타인이면 스낵바
+        if (event.type == LobbyEventType.kicked) {
+          _handleKickedEvent(event.data, myPid);
+        }
       }
     });
+  }
+
+  /// KICKED 이벤트 처리 — 본인 강퇴 시 다이얼로그, 타인 강퇴 시 스낵바
+  Future<void> _handleKickedEvent(
+    Map<String, dynamic> data,
+    int? myPid,
+  ) async {
+    final kickedPid = data['kickedParticipantId'] as int?;
+    final kickedNickname = data['nickname'] as String? ?? '';
+
+    if (kickedPid == myPid) {
+      // 강퇴당한 본인 → 다이얼로그 + 홈 이동
+      if (!mounted) return;
+      await AppDialog.show(
+        context: context,
+        title: '방에서 내보내졌어요',
+        message: '다시 참가하려면 초대코드를 입력해야 해요',
+        isDarkMode: ref.read(roleThemeProvider),
+      );
+      if (!mounted) return;
+      ref.read(gameParticipantNotifierProvider.notifier).clear();
+      GoRouter.of(context).go(RoutePaths.home);
+    } else {
+      // 다른 유저 강퇴 → 스낵바
+      if (!mounted) return;
+      AppSnackbar.show(
+        context,
+        message: '$kickedNickname님이 내보내졌어요',
+      );
+    }
   }
 
   /// 이벤트 data에서 participant 정보 추출
