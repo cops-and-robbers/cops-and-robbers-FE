@@ -157,8 +157,8 @@ class CreditHelper {
 ///
 /// TODO: 실제 이름/역할로 교체 필요
 const List<CreditHelper> creditHelpers = [
-  CreditHelper(name: '서창희', role: '멘토'),
-  CreditHelper(name: '김영수', role: 'QA'),
+  CreditHelper(name: '정상희', role: '사장?'),
+  CreditHelper(name: '황혜림', role: '부사장..?'),
   CreditHelper(name: '이지은', role: '기획 자문'),
   CreditHelper(name: '박준혁', role: '인프라'),
   CreditHelper(name: '최민정', role: 'QA'),
