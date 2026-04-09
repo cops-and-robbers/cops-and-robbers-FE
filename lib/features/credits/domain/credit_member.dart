@@ -1,28 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 /// 소셜 링크 타입
 ///
-/// 각 타입별 표시 라벨과 아이콘을 제공한다.
+/// SVG 아이콘이 있는 타입은 svgAsset 경로 제공, 없는 타입은 FontAwesome IconData 제공.
 enum SocialType {
   github,
   instagram,
+  discord,
+  linkedin,
+  youtube,
   email,
-  linkedin;
+  website;
 
   /// UI에 표시할 라벨
   String get label => switch (this) {
     SocialType.github => 'GitHub',
     SocialType.instagram => 'Instagram',
-    SocialType.email => 'Email',
+    SocialType.discord => 'Discord',
     SocialType.linkedin => 'LinkedIn',
+    SocialType.youtube => 'YouTube',
+    SocialType.email => 'Email',
+    SocialType.website => 'Website',
   };
 
-  /// SVG 아이콘 대신 Material Icon 사용 (소셜 SVG 미보유)
+  /// SVG 에셋 경로 (null이면 FontAwesome IconData 사용)
+  String? get svgAsset => switch (this) {
+    SocialType.github => 'assets/icons/github.svg',
+    SocialType.instagram => 'assets/icons/instagram.svg',
+    SocialType.discord => 'assets/icons/discord.svg',
+    SocialType.linkedin => 'assets/icons/linkedin.svg',
+    SocialType.youtube => 'assets/icons/youtube.svg',
+    SocialType.email => null,
+    SocialType.website => null,
+  };
+
+  /// FontAwesome fallback 아이콘 (SVG가 없는 타입용)
   IconData get iconData => switch (this) {
-    SocialType.github => Icons.code,
-    SocialType.instagram => Icons.camera_alt,
-    SocialType.email => Icons.email,
-    SocialType.linkedin => Icons.work,
+    SocialType.email => IconData(
+      FontAwesomeIcons.envelope.codePoint,
+      fontFamily: 'FontAwesomeSolid',
+      fontPackage: 'font_awesome_flutter',
+    ),
+    SocialType.website => IconData(
+      FontAwesomeIcons.globe.codePoint,
+      fontFamily: 'FontAwesomeSolid',
+      fontPackage: 'font_awesome_flutter',
+    ),
+    // SVG 아이콘이 있는 타입은 iconData를 사용하지 않음
+    _ => Icons.link,
   };
 }
 
@@ -61,6 +87,12 @@ const List<CreditMember> creditMembers = [
     profileAsset: 'assets/credits/member1.png',
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/EM-H20'),
+      SocialLink(type: SocialType.instagram, url: 'https://instagram.com/'),
+      SocialLink(type: SocialType.discord, url: 'https://discord.com/'),
+      SocialLink(type: SocialType.linkedin, url: 'https://linkedin.com/in/'),
+      SocialLink(type: SocialType.youtube, url: 'https://youtube.com/'),
+      SocialLink(type: SocialType.email, url: 'mailto:example@email.com'),
+      SocialLink(type: SocialType.website, url: 'https://example.com/'),
     ],
   ),
   CreditMember(
@@ -69,6 +101,7 @@ const List<CreditMember> creditMembers = [
     profileAsset: 'assets/credits/member2.png',
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/chanbin'),
+      SocialLink(type: SocialType.linkedin, url: 'https://linkedin.com/in/'),
     ],
   ),
   CreditMember(
@@ -77,6 +110,7 @@ const List<CreditMember> creditMembers = [
     profileAsset: 'assets/credits/member3.png',
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/changhee'),
+      SocialLink(type: SocialType.website, url: 'https://blog.example.com/'),
     ],
   ),
   CreditMember(
@@ -85,6 +119,7 @@ const List<CreditMember> creditMembers = [
     profileAsset: 'assets/credits/member4.png',
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/sanghee'),
+      SocialLink(type: SocialType.instagram, url: 'https://instagram.com/'),
     ],
   ),
   CreditMember(
@@ -93,6 +128,7 @@ const List<CreditMember> creditMembers = [
     profileAsset: 'assets/credits/member5.png',
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/hyerim'),
+      SocialLink(type: SocialType.linkedin, url: 'https://linkedin.com/in/'),
     ],
   ),
   CreditMember(
@@ -100,9 +136,10 @@ const List<CreditMember> creditMembers = [
     role: 'Design',
     profileAsset: 'assets/credits/member6.png',
     links: [
+      SocialLink(type: SocialType.instagram, url: 'https://instagram.com/'),
       SocialLink(
-        type: SocialType.instagram,
-        url: 'https://instagram.com/jihee',
+        type: SocialType.website,
+        url: 'https://portfolio.example.com/',
       ),
     ],
   ),
@@ -110,10 +147,7 @@ const List<CreditMember> creditMembers = [
 
 /// 도움 준 사람 정보
 class CreditHelper {
-  const CreditHelper({
-    required this.name,
-    required this.role,
-  });
+  const CreditHelper({required this.name, required this.role});
 
   final String name;
   final String role;

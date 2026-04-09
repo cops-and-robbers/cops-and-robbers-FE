@@ -23,7 +23,7 @@ class CreditsPage extends StatelessWidget {
       backgroundColor: AppColors.black,
       appBar: AppBar(
         backgroundColor: AppColors.black,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.black,
         elevation: 0,
         leading: PreviousButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -33,6 +33,7 @@ class CreditsPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            SizedBox(height: AppSpacing.vertical40),
             // 타이틀
             Text(
               'Made with ❤️',
@@ -46,10 +47,10 @@ class CreditsPage extends StatelessWidget {
                 color: AppColors.black400,
               ),
             ),
-            SizedBox(height: AppSpacing.vertical24),
+            SizedBox(height: AppSpacing.vertical32),
             // 멤버 카드 가로 스크롤 목록
             SizedBox(
-              height: 240.h,
+              height: 260.h,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: AppPadding.horizontal20,

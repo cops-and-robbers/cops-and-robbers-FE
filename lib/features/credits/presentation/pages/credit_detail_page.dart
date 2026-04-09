@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -23,7 +24,7 @@ class CreditDetailPage extends StatelessWidget {
       backgroundColor: AppColors.black,
       appBar: AppBar(
         backgroundColor: AppColors.black,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.black,
         elevation: 0,
         leading: PreviousButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -35,10 +36,10 @@ class CreditDetailPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Hero 프로필 이미지 (카드보다 큰 140.w)
+              // Hero 프로필 이미지 (카드보다 큰 160.w)
               Hero(
                 tag: 'credit_${member.name}',
-                child: _buildProfileImage(140.w),
+                child: _buildProfileImage(150.w),
               ),
               SizedBox(height: AppSpacing.vertical24),
               // 이름
@@ -59,18 +60,16 @@ class CreditDetailPage extends StatelessWidget {
               SizedBox(height: AppSpacing.vertical32),
               // 소셜 링크 버튼 목록
               if (member.links.isNotEmpty)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: member.links
-                      .map(
-                        (link) => Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: AppSpacing.horizontal8,
-                          ),
-                          child: _buildSocialButton(link),
-                        ),
-                      )
-                      .toList(),
+                Padding(
+                  padding: AppPadding.horizontal24,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: AppSpacing.horizontal12,
+                    runSpacing: AppSpacing.vertical12,
+                    children: member.links
+                        .map((link) => _buildSocialButton(link))
+                        .toList(),
+                  ),
                 ),
             ],
           ),
@@ -121,7 +120,11 @@ class CreditDetailPage extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(link.type.iconData, size: 18.w, color: AppColors.white),
+            // SVG 아이콘이 있으면 SVG, 없으면 FontAwesome Icon
+            if (link.type.svgAsset != null)
+              SvgPicture.asset(link.type.svgAsset!, width: 20.w, height: 20.w)
+            else
+              Icon(link.type.iconData, size: 18.w, color: AppColors.white),
             SizedBox(width: AppSpacing.horizontal6),
             Text(
               link.type.label,

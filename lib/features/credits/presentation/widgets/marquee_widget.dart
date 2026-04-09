@@ -5,11 +5,7 @@ import 'package:flutter/material.dart';
 /// 자식 위젯을 두 벌 복제하여 이음새 없는 루프를 구현한다.
 /// [speed]는 초당 이동 픽셀 수 (기본 30.0).
 class MarqueeWidget extends StatefulWidget {
-  const MarqueeWidget({
-    super.key,
-    required this.child,
-    this.speed = 30.0,
-  });
+  const MarqueeWidget({super.key, required this.child, this.speed = 30.0});
 
   final Widget child;
 
@@ -74,12 +70,7 @@ class _MarqueeWidgetState extends State<MarqueeWidget> {
       scrollDirection: Axis.horizontal,
       // 사용자 수동 스크롤 방지
       physics: const NeverScrollableScrollPhysics(),
-      child: Row(
-        children: [
-          widget.child,
-          widget.child,
-        ],
-      ),
+      child: Row(children: [widget.child, widget.child]),
     );
   }
 }

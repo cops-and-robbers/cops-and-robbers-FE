@@ -41,7 +41,7 @@ class CreditCardWidget extends StatelessWidget {
             // 프로필 이미지 (Hero로 상세 페이지와 연결)
             Hero(
               tag: 'credit_${member.name}',
-              child: _buildProfileImage(100.w),
+              child: _buildProfileImage(110.w),
             ),
             SizedBox(height: AppSpacing.vertical16),
             // 이름
