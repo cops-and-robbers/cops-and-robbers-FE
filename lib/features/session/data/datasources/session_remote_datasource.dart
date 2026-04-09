@@ -180,6 +180,20 @@ abstract class SessionRemoteDataSource {
     @Body() AreaRequestModel request,
   );
 
+  /// 멤버 강제 퇴장 (방장 전용)
+  ///
+  /// 대기실에서 특정 참가자를 강제 퇴장시킵니다.
+  ///
+  /// - 204: 강제 퇴장 성공
+  /// - 400: 자기 자신 강퇴 불가 / 이미 시작된 게임
+  /// - 403: 방장 권한 필요
+  /// - 404: 게임 또는 참가자 없음
+  @DELETE('/api/games/{gameId}/lobby/{participantId}')
+  Future<void> kickMember(
+    @Path('gameId') int gameId,
+    @Path('participantId') int participantId,
+  );
+
   /// 참여 중인 게임 정보 조회
   ///
   /// 로그인한 사용자가 현재 참여 중인 게임 정보를 반환합니다.
