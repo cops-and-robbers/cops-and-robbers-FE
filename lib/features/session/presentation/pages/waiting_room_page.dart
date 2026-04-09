@@ -11,6 +11,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -505,6 +506,37 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   }
 
   /// 로비 이벤트 → 참가자 목록 업데이트
+  /// 강퇴 확인 다이얼로그 → API 호출
+  Future<void> _showKickDialog(LobbyParticipantInfo member) async {
+    final isDark = ref.read(roleThemeProvider);
+    final confirmed = await AppDialog.confirm(
+      context: context,
+      title: '${member.nickname}님을 내보낼까요?',
+      message: '강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요',
+      cancelText: '취소',
+      confirmText: '내보내기',
+      isDestructive: true,
+      isDarkMode: isDark,
+    );
+    if (confirmed != true || !mounted) return;
+
+    final gameId = ref.read(gameParticipantNotifierProvider)?.gameId;
+    if (gameId == null) return;
+
+    try {
+      await ref.read(
+        kickMemberProvider(
+          gameId: gameId,
+          participantId: member.participantId,
+        ).future,
+      );
+    } on DioException catch (e) {
+      if (!mounted) return;
+      final message = DioExceptionHandler.handle(e).message;
+      AppSnackbar.show(context, message: message, backgroundColor: AppColors.red);
+    }
+  }
+
   void _listenLobbyEvents() {
     _lobbyEventSub = ref.listenManual(lobbyNotifierProvider, (prev, next) {
       // dispose 후 microtask 큐에 남은 이벤트 방어
@@ -600,6 +632,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                 .setHost(newHostId);
           }
         }
+
       }
     });
   }
@@ -954,6 +987,15 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('POLICE')
                                 : null,
+                            // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
+                            onMemberTap: isHost
+                                ? (member) {
+                                    final myPid =
+                                        participantInfo?.participantId;
+                                    if (member.participantId == myPid) return;
+                                    _showKickDialog(member);
+                                  }
+                                : null,
                             isDarkMode: isDark,
                           ),
                           // 구분선
@@ -980,6 +1022,15 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             myParticipantId: participantInfo?.participantId,
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('ROBBER')
+                                : null,
+                            // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
+                            onMemberTap: isHost
+                                ? (member) {
+                                    final myPid =
+                                        participantInfo?.participantId;
+                                    if (member.participantId == myPid) return;
+                                    _showKickDialog(member);
+                                  }
                                 : null,
                             isDarkMode: isDark,
                           ),
