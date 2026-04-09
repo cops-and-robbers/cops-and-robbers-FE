@@ -515,6 +515,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       cancelText: '취소',
       confirmText: '내보내기',
       isDestructive: true,
+      confirmTextColor: AppColors.white,
       isDarkMode: isDark,
     );
     if (confirmed != true || !mounted) return;
@@ -532,7 +533,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     } on DioException catch (e) {
       if (!mounted) return;
       final message = DioExceptionHandler.handle(e).message;
-      AppSnackbar.show(context, message: message, backgroundColor: AppColors.red);
+      AppSnackbar.show(
+        context,
+        message: message,
+        backgroundColor: AppColors.red,
+      );
     } catch (_) {
       if (!mounted) return;
       AppSnackbar.show(
@@ -648,10 +653,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   }
 
   /// KICKED 이벤트 처리 — 본인 강퇴 시 다이얼로그, 타인 강퇴 시 스낵바
-  Future<void> _handleKickedEvent(
-    Map<String, dynamic> data,
-    int? myPid,
-  ) async {
+  Future<void> _handleKickedEvent(Map<String, dynamic> data, int? myPid) async {
     final kickedPid = data['kickedParticipantId'] as int?;
     final kickedNickname = data['nickname'] as String? ?? '';
 
@@ -673,10 +675,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     } else {
       // 다른 유저 강퇴 → 스낵바
       if (!mounted) return;
-      AppSnackbar.show(
-        context,
-        message: '$kickedNickname님이 내보내졌어요',
-      );
+      AppSnackbar.show(context, message: '$kickedNickname님이 내보내졌어요');
     }
   }
 
