@@ -237,10 +237,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       onTap: _onVersionTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: AppSpacing.vertical16,
-        horizontal: AppSpacing.horizontal24,
-      ),
+        padding: EdgeInsets.symmetric(
+          vertical: AppSpacing.vertical16,
+          horizontal: AppSpacing.horizontal24,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
