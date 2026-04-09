@@ -15,6 +15,7 @@ class Step3InviteCodeContent extends StatelessWidget {
     super.key,
     required this.zones,
     required this.settings,
+    this.settingSummaryKey,
   });
 
   // ============================================
@@ -27,6 +28,9 @@ class Step3InviteCodeContent extends StatelessWidget {
   /// 게임 설정 정보
   final SessionSettings settings;
 
+  /// 튜토리얼 하이라이트용 — 설정 요약 영역 전체
+  final GlobalKey? settingSummaryKey;
+
   // ============================================
   // Build Methods
   // ============================================
@@ -34,6 +38,7 @@ class Step3InviteCodeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      key: settingSummaryKey,
       children: [
         ZoneListCard(zones: zones),
         SizedBox(height: AppSpacing.vertical8),

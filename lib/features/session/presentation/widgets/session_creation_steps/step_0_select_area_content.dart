@@ -21,6 +21,8 @@ class Step0SelectAreaContent extends StatelessWidget {
     required this.prisonRadiusMeters,
     required this.onPlaygroundSet,
     required this.onPrisonSet,
+    this.playgroundKey,
+    this.prisonKey,
   });
 
   // ============================================
@@ -44,6 +46,12 @@ class Step0SelectAreaContent extends StatelessWidget {
 
   /// 감옥 설정 완료 콜백
   final Function(LatLng center, double radius) onPrisonSet;
+
+  /// 튜토리얼 하이라이트용 — 플레이그라운드 버튼
+  final GlobalKey? playgroundKey;
+
+  /// 튜토리얼 하이라이트용 — 감옥 버튼
+  final GlobalKey? prisonKey;
 
   // ============================================
   // Event Handlers
@@ -84,6 +92,7 @@ class Step0SelectAreaContent extends StatelessWidget {
       children: [
         // 플레이그라운드 버튼 (항상 노출)
         ZoneSettingButton(
+          key: playgroundKey,
           zoneType: ZoneType.playground,
           title: '플레이그라운드',
           radiusMeters: playgroundRadiusMeters,
@@ -94,6 +103,7 @@ class Step0SelectAreaContent extends StatelessWidget {
         if (isPlaygroundSet) ...[
           SizedBox(height: AppSpacing.vertical8),
           ZoneSettingButton(
+            key: prisonKey,
             zoneType: ZoneType.prison,
             title: '감옥',
             radiusMeters: prisonRadiusMeters,

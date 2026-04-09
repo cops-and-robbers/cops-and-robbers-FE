@@ -17,7 +17,10 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
+import '../../../../core/services/tutorial/tutorial_keys.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -47,25 +50,73 @@ class _UpperCaseFormatter extends TextInputFormatter {
 ///
 /// 게임 세션 생성 또는 참가를 선택할 수 있는 메인 화면입니다.
 /// 디자인: LOGO + 설정, 공지/역할 아이콘, 말풍선, 아바타, 방만들기/참여하기 버튼
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
+  /// 안전 안내 다이얼로그 상태 초기화 (로그아웃/강제 로그아웃 시 호출)
+  static Future<void> resetSafetyNotice() async {
+    _HomePageState._safetyNoticeShown = false;
+    _HomePageState._activeGameChecked = false;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_HomePageState._safetyNoticePrefKey);
+  }
+
+  @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
   static const _safetyNoticePrefKey = 'safety_notice_dismissed_date';
+
+  // static으로 유지해야 앱 생명주기 동안 홈 재진입 시에도 값이 보존됨
   static bool _safetyNoticeShown = false;
 
   /// 홈 진입 시 활성 게임 체크 완료 여부 (세션당 1회)
   static bool _activeGameChecked = false;
 
-  /// 안전 안내 다이얼로그 상태 초기화 (로그아웃/강제 로그아웃 시 호출)
-  static Future<void> resetSafetyNotice() async {
-    _safetyNoticeShown = false;
-    _activeGameChecked = false;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_safetyNoticePrefKey);
+  // 튜토리얼 대상 버튼을 특정하기 위한 GlobalKey
+  final _tutorialKeyCreateRoom = GlobalKey();
+  final _tutorialKeyJoinRoom = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _showTutorialIfNeeded();
+      if (mounted) _showSafetyNoticeIfNeeded();
+      if (mounted) _checkActiveGameAndRedirect();
+    });
+  }
+
+  /// 홈 튜토리얼 표시 (최초 1회)
+  Future<void> _showTutorialIfNeeded() async {
+    final completed = await TutorialService.isCompleted(TutorialKeys.home);
+    if (completed || !mounted) return;
+
+    // 위젯 렌더링 완료 대기
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: [
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyCreateRoom,
+          description: '새로운 게임을 만들 수 있어요',
+          align: TutorialAlign.top,
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyJoinRoom,
+          description: '초대 코드를 입력하면 게임에 참가할 수 있어요',
+          align: TutorialAlign.top,
+        ),
+      ],
+      onFinish: () => TutorialService.markCompleted(TutorialKeys.home),
+    );
   }
 
   /// 안전 안내 다이얼로그 표시 (오늘 처음 홈 진입 시)
-  Future<void> _showSafetyNoticeIfNeeded(BuildContext context) async {
+  Future<void> _showSafetyNoticeIfNeeded() async {
     if (_safetyNoticeShown) return;
     _safetyNoticeShown = true;
 
@@ -73,7 +124,7 @@ class HomePage extends ConsumerWidget {
     final today = DateTime.now().toIso8601String().substring(0, 10);
     final dismissedDate = prefs.getString(_safetyNoticePrefKey);
     if (dismissedDate == today) return;
-    if (!context.mounted) return;
+    if (!mounted) return;
 
     bool doNotShowToday = false;
 
@@ -121,17 +172,14 @@ class HomePage extends ConsumerWidget {
   }
 
   /// 활성 게임 존재 시 자동 리다이렉트 (스플래시 실패 안전망)
-  Future<void> _checkActiveGameAndRedirect(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> _checkActiveGameAndRedirect() async {
     if (_activeGameChecked) return;
     _activeGameChecked = true;
 
     try {
       final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
 
-      if (!context.mounted) return;
+      if (!mounted) return;
       if (!status.isParticipating || status.participationInfo == null) return;
 
       final info = status.participationInfo!;
@@ -157,8 +205,7 @@ class HomePage extends ConsumerWidget {
   ///
   /// 권한이 이미 허용된 경우 즉시 콜백 실행.
   /// 미허용 시 안내 다이얼로그 → 확인 버튼으로 설정 이동.
-  Future<void> _ensureLocationPermission(
-    BuildContext context, {
+  Future<void> _ensureLocationPermission({
     required VoidCallback onGranted,
   }) async {
     // 이미 권한 있으면 바로 진행
@@ -170,13 +217,13 @@ class HomePage extends ConsumerWidget {
 
     // 권한 없음 → 상태별 다이얼로그 메시지 분기
     final serviceEnabled = await LocationPermissionService.isServiceEnabled();
-    if (!context.mounted) return;
+    if (!mounted) return;
 
     final text = await LocationPermissionMessages.getText(
       isServiceDisabled: !serviceEnabled,
       context: LocationPermissionContext.home,
     );
-    if (!context.mounted) return;
+    if (!mounted) return;
 
     AppDialog.show(
       context: context,
@@ -197,13 +244,12 @@ class HomePage extends ConsumerWidget {
   /// 방 만들기 버튼 클릭 시
   ///
   /// 위치 권한 확인 후 세션 생성 플로우로 이동합니다.
-  void _onCreateSession(BuildContext context) {
+  void _onCreateSession() {
     VibrationService.instance().buttonTap();
     _ensureLocationPermission(
-      context,
       onGranted: () async {
         await SessionDraftStorageService().clearDraft();
-        if (context.mounted) {
+        if (mounted) {
           context.go(RoutePaths.sessionCreationFlow);
         }
       },
@@ -211,7 +257,7 @@ class HomePage extends ConsumerWidget {
   }
 
   /// 개발자 도구 메뉴 표시
-  void _showDevMenu(BuildContext context) {
+  void _showDevMenu() {
     AppDialog.show(
       context: context,
       title: '개발자 도구',
@@ -244,21 +290,16 @@ class HomePage extends ConsumerWidget {
   }
 
   /// 방 참여 다이얼로그 표시
-  void _showJoinRoomDialog(BuildContext context, WidgetRef ref) {
+  void _showJoinRoomDialog() {
     _ensureLocationPermission(
-      context,
-      onGranted: () => _showJoinRoomDialogInternal(context, ref),
+      onGranted: () => _showJoinRoomDialogInternal(),
     );
   }
 
   /// 초대 코드로 방 참여 (API 호출 → 대기실 이동)
   ///
   /// 다이얼로그 수동 입력과 QR 스캔 양쪽에서 공용으로 호출됩니다.
-  Future<void> _joinRoom(
-    BuildContext context,
-    WidgetRef ref,
-    String code,
-  ) async {
+  Future<void> _joinRoom(String code) async {
     final dialogCloseStart = DateTime.now();
 
     await AppPopup.showRandomLoading(
@@ -270,7 +311,7 @@ class HomePage extends ConsumerWidget {
     try {
       response = await ref.read(joinGameProvider(inviteCode: code).future);
     } on DioException catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
         final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
         AppSnackbar.show(
@@ -282,7 +323,7 @@ class HomePage extends ConsumerWidget {
       return;
     } catch (_) {
       // 예상치 못한 예외 (FormatException, StateError 등)
-      if (context.mounted) {
+      if (mounted) {
         AppSnackbar.show(
           context,
           message: '참여에 실패했습니다. 다시 시도해주세요.',
@@ -292,10 +333,10 @@ class HomePage extends ConsumerWidget {
       return;
     } finally {
       // 로딩 팝업 닫기 — 성공/실패 무관하게 보장
-      if (context.mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop();
     }
 
-    if (response != null && context.mounted) {
+    if (response != null && mounted) {
       final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
       // TODO(로비 조회 API): 현재 joinGame 응답에는 gameId, participantId만 포함됨.
       // 로비 조회 API 연동 후 아래 항목들도 설정 필요:
@@ -313,7 +354,7 @@ class HomePage extends ConsumerWidget {
       final remaining =
           DialogAnimation.duration + const Duration(milliseconds: 32) - elapsed;
       if (remaining > Duration.zero) await Future.delayed(remaining);
-      if (context.mounted) {
+      if (mounted) {
         context.go(
           '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
         );
@@ -322,7 +363,7 @@ class HomePage extends ConsumerWidget {
   }
 
   /// 방 참여 다이얼로그 (권한 확인 후 호출)
-  void _showJoinRoomDialogInternal(BuildContext context, WidgetRef ref) {
+  void _showJoinRoomDialogInternal() {
     final codeController = TextEditingController();
 
     AppDialog.show(
@@ -357,8 +398,8 @@ class HomePage extends ConsumerWidget {
               ),
             );
 
-            if (inviteCode == null || !context.mounted) return;
-            _joinRoom(context, ref, inviteCode);
+            if (inviteCode == null || !mounted) return;
+            _joinRoom(inviteCode);
           },
           child: Padding(
             padding: EdgeInsets.only(right: 16.w),
@@ -379,7 +420,7 @@ class HomePage extends ConsumerWidget {
       validator: () => codeController.text.trim().length == 6,
       onConfirm: () async {
         final code = codeController.text.trim().toUpperCase();
-        await _joinRoom(context, ref, code);
+        await _joinRoom(code);
       },
     ).whenComplete(() {
       // 다이얼로그 닫힘 애니메이션(250ms) 완료 후 dispose
@@ -393,21 +434,7 @@ class HomePage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // 홈 진입 시 안전 안내 다이얼로그 표시 (static flag로 1회만 등록)
-    if (!_safetyNoticeShown) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) _showSafetyNoticeIfNeeded(context);
-      });
-    }
-
-    // 활성 게임 안전망: 스플래시 실패 시 홈에서 재확인 (세션당 1회)
-    if (!_activeGameChecked) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) _checkActiveGameAndRedirect(context, ref);
-      });
-    }
-
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
       resizeToAvoidBottomInset: false,
@@ -428,7 +455,7 @@ class HomePage extends ConsumerWidget {
               mini: true,
               backgroundColor: AppColors.black.withValues(alpha: 0.7),
               foregroundColor: AppColors.white,
-              onPressed: () => _showDevMenu(context),
+              onPressed: _showDevMenu,
               child: const Icon(Icons.bug_report),
             )
           : null,
@@ -524,14 +551,16 @@ class HomePage extends ConsumerWidget {
 
               // ── Bottom Buttons ──
               AppButton(
+                key: _tutorialKeyCreateRoom,
                 text: '방 만들기',
-                onPressed: () => _onCreateSession(context),
+                onPressed: _onCreateSession,
                 showBorder: false,
               ),
               SizedBox(height: AppSpacing.vertical12),
               AppButton(
+                key: _tutorialKeyJoinRoom,
                 text: '방 참여하기',
-                onPressed: () => _showJoinRoomDialog(context, ref),
+                onPressed: _showJoinRoomDialog,
                 backgroundColor: AppColors.black100,
                 foregroundColor: AppColors.black600,
                 showBorder: false,

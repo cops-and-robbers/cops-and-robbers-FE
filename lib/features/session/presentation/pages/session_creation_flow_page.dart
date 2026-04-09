@@ -8,6 +8,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/services/tutorial/tutorial_keys.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
+import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -61,6 +64,19 @@ class _SessionCreationFlowPageState
   int _currentStep = 0;
   bool _isLoading = false;
 
+  // ============================================
+  // Tutorial GlobalKeys
+  // ============================================
+
+  // Step 0
+  final _tutorialKeyPlayground = GlobalKey();
+  // Step 1
+  // Step 2
+  final _tutorialKeyRoundDuration = GlobalKey();
+  final _tutorialKeyLocationShare = GlobalKey();
+  final _tutorialKeyPoliceWait = GlobalKey();
+  // Step 3
+
   // Step 0: 구역 선택
   LatLng? _playgroundCenter;
   double? _playgroundRadiusMeters;
@@ -85,12 +101,83 @@ class _SessionCreationFlowPageState
     _pageController = PageController();
     _storageService = SessionDraftStorageService();
     _loadDraftData();
+    // Step 0 튜토리얼은 첫 프레임 렌더링 후 표시
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showStepTutorial(0);
+    });
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  // ============================================
+  // Tutorial
+  // ============================================
+
+  /// 단계별 튜토리얼 표시
+  ///
+  /// 이미 완료된 단계는 건너뜁니다.
+  /// 페이지 전환 애니메이션(300ms) 완료 후 렌더링이 안정될 때까지 추가 대기합니다.
+  Future<void> _showStepTutorial(int step) async {
+    final String key;
+
+    switch (step) {
+      case 0:
+        key = TutorialKeys.createStep0;
+      case 2:
+        key = TutorialKeys.createStep2;
+      default:
+        return;
+    }
+
+    final completed = await TutorialService.isCompleted(key);
+    if (completed || !mounted) return;
+
+    // 페이지 전환 애니메이션(300ms) + 렌더링 안정 대기
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    final targets = _buildTutorialTargets(step);
+    if (targets.isEmpty) return;
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: targets,
+      onFinish: () => TutorialService.markCompleted(key),
+    );
+  }
+
+  /// 단계별 튜토리얼 타겟 목록 생성
+  List<TutorialTarget> _buildTutorialTargets(int step) {
+    switch (step) {
+      case 0:
+        return [
+          AppTutorialStyle.target(
+            keyTarget: _tutorialKeyPlayground,
+            description: '게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요',
+          ),
+        ];
+      case 2:
+        return [
+          AppTutorialStyle.target(
+            keyTarget: _tutorialKeyRoundDuration,
+            description: '한 라운드의 제한 시간이에요',
+          ),
+          AppTutorialStyle.target(
+            keyTarget: _tutorialKeyLocationShare,
+            description: '도둑 위치가 경찰에게 공개되는 주기에요',
+          ),
+          AppTutorialStyle.target(
+            keyTarget: _tutorialKeyPoliceWait,
+            description: '게임 시작 후 경찰이 출발할 때까지 기다리는 시간이에요',
+          ),
+        ];
+      default:
+        return [];
+    }
   }
 
   // ============================================
@@ -447,6 +534,10 @@ class _SessionCreationFlowPageState
       physics: const NeverScrollableScrollPhysics(), // 스와이프 비활성화 (버튼으로만 이동)
       onPageChanged: (index) {
         setState(() => _currentStep = index);
+        // Step 0은 initState에서 처리, 1~3은 페이지 전환 완료 후 트리거
+        if (index > 0) {
+          _showStepTutorial(index);
+        }
       },
       children: [
         // Step 0: 구역 선택
@@ -458,6 +549,7 @@ class _SessionCreationFlowPageState
             prisonRadiusMeters: _prisonRadiusMeters,
             onPlaygroundSet: _onPlaygroundSet,
             onPrisonSet: _onPrisonSet,
+            playgroundKey: _tutorialKeyPlayground,
           ),
         ),
 
@@ -478,6 +570,9 @@ class _SessionCreationFlowPageState
             onRoundDurationChanged: _onRoundDurationChanged,
             onLocationShareChanged: _onLocationShareChanged,
             onPoliceWaitChanged: _onPoliceWaitChanged,
+            roundDurationKey: _tutorialKeyRoundDuration,
+            locationShareKey: _tutorialKeyLocationShare,
+            policeWaitKey: _tutorialKeyPoliceWait,
           ),
         ),
 

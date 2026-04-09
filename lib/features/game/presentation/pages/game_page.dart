@@ -13,6 +13,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/services/tutorial/tutorial_keys.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
+import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -81,6 +84,14 @@ class GamePage extends ConsumerStatefulWidget {
 class _GamePageState extends ConsumerState<GamePage>
     with WidgetsBindingObserver {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
+
+  // 튜토리얼 하이라이트 대상 키
+  final _tutorialKeyMap = GlobalKey();
+  final _tutorialKeyTimer = GlobalKey();
+  final _tutorialKeyParticipants = GlobalKey();
+  final _tutorialKeyChat = GlobalKey();
+  final _tutorialKeyQrButton = GlobalKey();
+
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
   bool _isCheckingGameStatus = false;
@@ -225,6 +236,50 @@ class _GamePageState extends ConsumerState<GamePage>
     _loadGameArea();
     _showPoliceTimerIfNeeded();
     _initSettingsAndStartMessages();
+
+    // 게임 초기화 완료 후 튜토리얼 (첫 진입 시 1회만)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showTutorialIfNeeded();
+    });
+  }
+
+  /// 게임 화면 튜토리얼 표시 (미완료 시 1회만 실행)
+  Future<void> _showTutorialIfNeeded() async {
+    final completed = await TutorialService.isCompleted(TutorialKeys.game);
+    if (completed || !mounted) return;
+
+    // 지도/UI 위젯 렌더링 완료 대기
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: [
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyMap,
+          description: '게임 맵이에요. 내 위치와 구역이 표시돼요',
+          shape: TutorialShape.roundedRect,
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyTimer,
+          description: '남은 게임 시간이에요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyParticipants,
+          description: '현재 참가자 상태를 확인할 수 있어요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyChat,
+          description: '팀원과 채팅할 수 있어요',
+          align: TutorialAlign.top,
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyQrButton,
+          description: '상대방의 QR을 스캔하여 체포/탈옥해요',
+        ),
+      ],
+      onFinish: () => TutorialService.markCompleted(TutorialKeys.game),
+    );
   }
 
   /// 게임 설정 로드 후 게임 시작 시스템 메시지 발송
@@ -1184,11 +1239,14 @@ class _GamePageState extends ConsumerState<GamePage>
         children: [
           /// index 0: 지도 (항상 존재)
           Positioned.fill(
-            child: GoogleMapView(
-              key: _googleMapKey,
-              onCameraMoveStarted: _onMapCameraMoved,
-              isDarkMode: _isDarkMode,
-              mapId: _isDarkMode ? EnvConfig.googleMapsRobberMapId : null,
+            child: SizedBox(
+              key: _tutorialKeyMap,
+              child: GoogleMapView(
+                key: _googleMapKey,
+                onCameraMoveStarted: _onMapCameraMoved,
+                isDarkMode: _isDarkMode,
+                mapId: _isDarkMode ? EnvConfig.googleMapsRobberMapId : null,
+              ),
             ),
           ),
 
@@ -1294,6 +1352,7 @@ class _GamePageState extends ConsumerState<GamePage>
               child: Column(
                 children: [
                   SvgIconButton(
+                    key: _tutorialKeyParticipants,
                     assetPath: 'assets/icons/icon_person.svg',
                     onPressed: () => setState(() => _showParticipants = true),
                     containerSize: 48,
@@ -1330,6 +1389,7 @@ class _GamePageState extends ConsumerState<GamePage>
           /// Flutter가 기존 State를 dispose하고 새로 생성해버린다.
           /// 위의 if/else 구조로 항상 index 7에 고정해 State를 보존한다.
           ChatOverlay(
+            key: _tutorialKeyChat,
             gameId: _gameId,
             myParticipantId: widget.participantId,
             myTeam: widget.team,
@@ -1404,6 +1464,7 @@ class _GamePageState extends ConsumerState<GamePage>
   /// QR 버튼 (경찰: 스캔, 도둑: QR 표시)
   Widget _buildQrButton() {
     return SvgIconButton(
+      key: _tutorialKeyQrButton,
       assetPath: widget.team == 'POLICE'
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
@@ -1526,6 +1587,7 @@ class _GamePageState extends ConsumerState<GamePage>
         children: [
           // 중앙: 타이머 + 서브 타이머
           Column(
+            key: _tutorialKeyTimer,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // START 이벤트 수신 후 경과 시간 표시
