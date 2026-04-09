@@ -505,7 +505,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     });
   }
 
-  /// 로비 이벤트 → 참가자 목록 업데이트
   /// 강퇴 확인 다이얼로그 → API 호출
   Future<void> _showKickDialog(LobbyParticipantInfo member) async {
     final isDark = ref.read(roleThemeProvider);
@@ -534,6 +533,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (!mounted) return;
       final message = DioExceptionHandler.handle(e).message;
       AppSnackbar.show(context, message: message, backgroundColor: AppColors.red);
+    } catch (_) {
+      if (!mounted) return;
+      AppSnackbar.show(
+        context,
+        message: '강퇴 처리 중 오류가 발생했어요',
+        backgroundColor: AppColors.red,
+      );
     }
   }
 
@@ -648,6 +654,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   ) async {
     final kickedPid = data['kickedParticipantId'] as int?;
     final kickedNickname = data['nickname'] as String? ?? '';
+
+    // null == null 오인식 방어
+    if (kickedPid == null || myPid == null) return;
 
     if (kickedPid == myPid) {
       // 강퇴당한 본인 → 다이얼로그 + 홈 이동
