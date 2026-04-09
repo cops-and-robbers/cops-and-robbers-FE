@@ -119,6 +119,8 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
         _handleUpdate(event.data);
       case LobbyEventType.hostChanged:
         _handleHostChanged(event.data);
+      case LobbyEventType.kicked:
+        _handleKicked(event.data);
       default:
         break;
     }
@@ -217,6 +219,17 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
     if (newHostId != null) {
       state = state.copyWith(hostParticipantId: newHostId);
     }
+  }
+
+  void _handleKicked(Map<String, dynamic> data) {
+    // 서버 KICKED data: { "kickedParticipantId": 3, "nickname": "도둑1" }
+    final pid = data['kickedParticipantId'] as int?;
+    if (pid == null) return;
+    state = state.copyWith(
+      participants: state.participants
+          .where((p) => p.participantId != pid)
+          .toList(),
+    );
   }
 
   /// [임시] 더미 참가자 준비 상태 토글
