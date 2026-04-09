@@ -7,6 +7,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../domain/credit_member.dart';
 import '../widgets/credit_card_widget.dart';
+import '../widgets/marquee_widget.dart';
 import 'credit_detail_page.dart';
 
 /// 크레딧 페이지
@@ -32,7 +33,6 @@ class CreditsPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: AppSpacing.vertical40),
             // 타이틀
             Text(
               'Made with ❤️',
@@ -46,7 +46,7 @@ class CreditsPage extends StatelessWidget {
                 color: AppColors.black400,
               ),
             ),
-            SizedBox(height: AppSpacing.vertical40),
+            SizedBox(height: AppSpacing.vertical24),
             // 멤버 카드 가로 스크롤 목록
             SizedBox(
               height: 240.h,
@@ -69,6 +69,43 @@ class CreditsPage extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+            ),
+            // 하단으로 밀어내기
+            const Spacer(),
+            // Special Thanks 마키 텍스트
+            Padding(
+              padding: EdgeInsets.only(bottom: AppSpacing.vertical32),
+              child: Column(
+                children: [
+                  Text(
+                    'Special Thanks',
+                    style: AppTextStyles.tag_12.copyWith(
+                      color: AppColors.black600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: AppSpacing.vertical12),
+                  MarqueeWidget(
+                    child: Row(
+                      children: creditHelpers
+                          .map(
+                            (helper) => Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: AppSpacing.horizontal16,
+                              ),
+                              child: Text(
+                                '${helper.name} (${helper.role})',
+                                style: AppTextStyles.paragraph_14.copyWith(
+                                  color: AppColors.black500,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
