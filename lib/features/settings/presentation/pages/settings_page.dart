@@ -41,6 +41,27 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
+  /// 히든 크레딧 페이지 진입을 위한 탭 카운터
+  int _versionTapCount = 0;
+  DateTime? _lastVersionTap;
+
+  /// 앱 버전 5탭 → 크레딧 페이지 진입
+  void _onVersionTap() {
+    final now = DateTime.now();
+    // 마지막 탭으로부터 2초 초과 시 카운터 리셋
+    if (_lastVersionTap != null &&
+        now.difference(_lastVersionTap!).inSeconds > 2) {
+      _versionTapCount = 0;
+    }
+    _lastVersionTap = now;
+    _versionTapCount++;
+
+    if (_versionTapCount >= 5) {
+      _versionTapCount = 0;
+      context.push(RoutePaths.credits);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,32 +231,37 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   /// 앱 버전 항목 (좌: "앱 버전", 우: "v1.x.x")
+  /// 5회 연속 탭 시 히든 크레딧 페이지로 이동
   Widget _buildVersionItem() {
-    return Padding(
+    return GestureDetector(
+      onTap: _onVersionTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
       padding: EdgeInsets.symmetric(
         vertical: AppSpacing.vertical16,
         horizontal: AppSpacing.horizontal24,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '앱 버전',
-            style: AppTextStyles.label_16.copyWith(color: AppColors.black),
-          ),
-          FutureBuilder<PackageInfo>(
-            future: PackageInfo.fromPlatform(),
-            builder: (context, snapshot) {
-              final version = snapshot.data?.version ?? '';
-              return Text(
-                'v$version',
-                style: AppTextStyles.paragraph14Semibold.copyWith(
-                  color: AppColors.black300,
-                ),
-              );
-            },
-          ),
-        ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '앱 버전',
+              style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+            ),
+            FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                final version = snapshot.data?.version ?? '';
+                return Text(
+                  'v$version',
+                  style: AppTextStyles.paragraph14Semibold.copyWith(
+                    color: AppColors.black300,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

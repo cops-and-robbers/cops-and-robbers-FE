@@ -57,6 +57,9 @@ class RoutePaths {
   /// 공지사항 화면
   static const String notices = '/home/notices';
 
+  /// 크레딧 페이지 (히든)
+  static const String credits = '/home/settings/credits';
+
   // ============================================================================
   // Session Creation Flow Routes (PRD F1.1)
   // ============================================================================
@@ -160,6 +163,7 @@ class RoutePaths {
   static const String gameName = 'game';
   static const String settingsName = 'settings';
   static const String noticesName = 'notices';
+  static const String creditsName = 'credits';
   static const String gameSettingsName = 'gameSettings';
   static const String gameSettingsEditName = 'gameSettingsEdit';
   static const String gameSettingsPlaygroundName = 'gameSettingsPlayground';
