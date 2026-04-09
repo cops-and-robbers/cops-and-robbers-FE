@@ -96,6 +96,7 @@ flutter:
     - assets/icons/
     - assets/legal/
     - assets/messages/
+    - assets/credits/
     - .env
   fonts:
     - family: Pretendard-Thin

@@ -44,15 +44,17 @@ class CreditDetailPage extends StatelessWidget {
               // 이름
               Text(
                 member.name,
-                style:
-                    AppTextStyles.heading_24.copyWith(color: AppColors.white),
+                style: AppTextStyles.heading_24.copyWith(
+                  color: AppColors.white,
+                ),
               ),
               SizedBox(height: AppSpacing.vertical8),
               // 역할
               Text(
                 member.role,
-                style:
-                    AppTextStyles.label_16.copyWith(color: AppColors.black400),
+                style: AppTextStyles.label_16.copyWith(
+                  color: AppColors.black400,
+                ),
               ),
               SizedBox(height: AppSpacing.vertical32),
               // 소셜 링크 버튼 목록
@@ -60,12 +62,14 @@ class CreditDetailPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: member.links
-                      .map((link) => Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: AppSpacing.horizontal8,
-                            ),
-                            child: _buildSocialButton(link),
-                          ))
+                      .map(
+                        (link) => Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppSpacing.horizontal8,
+                          ),
+                          child: _buildSocialButton(link),
+                        ),
+                      )
                       .toList(),
                 ),
             ],
@@ -117,11 +121,7 @@ class CreditDetailPage extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              link.type.iconData,
-              size: 18.w,
-              color: AppColors.white,
-            ),
+            Icon(link.type.iconData, size: 18.w, color: AppColors.white),
             SizedBox(width: AppSpacing.horizontal6),
             Text(
               link.type.label,

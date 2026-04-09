@@ -11,27 +11,24 @@ enum SocialType {
 
   /// UI에 표시할 라벨
   String get label => switch (this) {
-        SocialType.github => 'GitHub',
-        SocialType.instagram => 'Instagram',
-        SocialType.email => 'Email',
-        SocialType.linkedin => 'LinkedIn',
-      };
+    SocialType.github => 'GitHub',
+    SocialType.instagram => 'Instagram',
+    SocialType.email => 'Email',
+    SocialType.linkedin => 'LinkedIn',
+  };
 
   /// SVG 아이콘 대신 Material Icon 사용 (소셜 SVG 미보유)
   IconData get iconData => switch (this) {
-        SocialType.github => Icons.code,
-        SocialType.instagram => Icons.camera_alt,
-        SocialType.email => Icons.email,
-        SocialType.linkedin => Icons.work,
-      };
+    SocialType.github => Icons.code,
+    SocialType.instagram => Icons.camera_alt,
+    SocialType.email => Icons.email,
+    SocialType.linkedin => Icons.work,
+  };
 }
 
 /// 소셜 링크 정보
 class SocialLink {
-  const SocialLink({
-    required this.type,
-    required this.url,
-  });
+  const SocialLink({required this.type, required this.url});
 
   final SocialType type;
   final String url;
