@@ -17,29 +17,31 @@ void main() {
 
   /// 3명의 참가자로 초기화하는 헬퍼
   void initThreeParticipants() {
-    container.read(waitingRoomParticipantsProvider.notifier).initFromApi(
-      participants: const [
-        LobbyParticipantInfo(
-          participantId: 1,
-          nickname: '경찰1',
-          team: 'POLICE',
-          isReady: true,
-        ),
-        LobbyParticipantInfo(
-          participantId: 2,
-          nickname: '도둑1',
-          team: 'ROBBER',
-          isReady: true,
-        ),
-        LobbyParticipantInfo(
-          participantId: 3,
-          nickname: '도둑2',
-          team: 'ROBBER',
-          isReady: false,
-        ),
-      ],
-      hostParticipantId: 1,
-    );
+    container
+        .read(waitingRoomParticipantsProvider.notifier)
+        .initFromApi(
+          participants: const [
+            LobbyParticipantInfo(
+              participantId: 1,
+              nickname: '경찰1',
+              team: 'POLICE',
+              isReady: true,
+            ),
+            LobbyParticipantInfo(
+              participantId: 2,
+              nickname: '도둑1',
+              team: 'ROBBER',
+              isReady: true,
+            ),
+            LobbyParticipantInfo(
+              participantId: 3,
+              nickname: '도둑2',
+              team: 'ROBBER',
+              isReady: false,
+            ),
+          ],
+          hostParticipantId: 1,
+        );
   }
 
   group('KICKED 이벤트 핸들러', () {
@@ -63,10 +65,7 @@ void main() {
       // assert: 2명만 남음
       final state = container.read(waitingRoomParticipantsProvider);
       expect(state.participants.length, equals(2));
-      expect(
-        state.participants.any((p) => p.participantId == 2),
-        isFalse,
-      );
+      expect(state.participants.any((p) => p.participantId == 2), isFalse);
     });
 
     test('존재하지 않는 participantId면 목록이 변경되지 않는다', () {
@@ -115,17 +114,19 @@ void main() {
 
     test('마지막 참가자를 kick하면 빈 목록이 된다', () {
       // arrange: 1명만 초기화
-      container.read(waitingRoomParticipantsProvider.notifier).initFromApi(
-        participants: const [
-          LobbyParticipantInfo(
-            participantId: 1,
-            nickname: '혼자남은유저',
-            team: 'POLICE',
-            isReady: false,
-          ),
-        ],
-        hostParticipantId: 1,
-      );
+      container
+          .read(waitingRoomParticipantsProvider.notifier)
+          .initFromApi(
+            participants: const [
+              LobbyParticipantInfo(
+                participantId: 1,
+                nickname: '혼자남은유저',
+                team: 'POLICE',
+                isReady: false,
+              ),
+            ],
+            hostParticipantId: 1,
+          );
 
       // act
       container

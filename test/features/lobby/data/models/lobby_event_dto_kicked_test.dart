@@ -15,10 +15,7 @@ void main() {
         'gameId': 42,
         'type': 'KICKED',
         'timestamp': '2026-04-09T15:30:00',
-        'data': {
-          'kickedParticipantId': 7,
-          'nickname': '강퇴대상',
-        },
+        'data': {'kickedParticipantId': 7, 'nickname': '강퇴대상'},
       };
 
       final dto = LobbyEventDto.fromJson(json);
