@@ -19,6 +19,9 @@ class Step2GameSettingsContent extends StatelessWidget {
     required this.onLocationShareChanged,
     required this.onPoliceWaitChanged,
     this.isDarkMode = false,
+    this.roundDurationKey,
+    this.locationShareKey,
+    this.policeWaitKey,
   });
 
   // ============================================
@@ -46,6 +49,15 @@ class Step2GameSettingsContent extends StatelessWidget {
   /// 다크 모드 여부
   final bool isDarkMode;
 
+  /// 튜토리얼 하이라이트용 — 라운드 제한 시간 슬라이더
+  final GlobalKey? roundDurationKey;
+
+  /// 튜토리얼 하이라이트용 — 위치 공유 간격 슬라이더
+  final GlobalKey? locationShareKey;
+
+  /// 튜토리얼 하이라이트용 — 경찰 시작 시간 슬라이더
+  final GlobalKey? policeWaitKey;
+
   // ============================================
   // Build Methods
   // ============================================
@@ -57,6 +69,7 @@ class Step2GameSettingsContent extends StatelessWidget {
       children: [
         // 라운드 제한 시간
         AppSlider(
+          key: roundDurationKey,
           label: '라운드 제한 시간',
           value: roundDurationMinutes.toDouble(),
           min: 10,
@@ -71,6 +84,7 @@ class Step2GameSettingsContent extends StatelessWidget {
 
         // 위치 공유 간격
         AppSlider(
+          key: locationShareKey,
           label: '위치 공유 간격',
           value: locationShareMinutes.toDouble(),
           min: 1,
@@ -85,6 +99,7 @@ class Step2GameSettingsContent extends StatelessWidget {
 
         // 경찰 시작 시간 (도둑 시작 후)
         AppSlider(
+          key: policeWaitKey,
           label: '경찰 시작 시간',
           value: policeWaitMinutes.toDouble(),
           min: 1,
