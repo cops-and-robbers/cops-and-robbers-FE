@@ -483,7 +483,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         ),
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyGameRules,
-          description: '게임 규칙을 확인할 수 있어요',
+          description: '게임 설정을 확인할 수 있어요',
         ),
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyReadyButton,
