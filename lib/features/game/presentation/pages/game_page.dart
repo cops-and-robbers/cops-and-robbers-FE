@@ -233,12 +233,12 @@ class _GamePageState extends ConsumerState<GamePage>
     _connectChat();
     _connectGameEvents();
     _loadGameArea();
+    _showPoliceTimerIfNeeded();
     _initSettingsAndStartMessages();
 
-    // 튜토리얼 완료 후 경찰 타이머 표시 (겹침 방지)
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _showTutorialIfNeeded();
-      if (mounted) _showPoliceTimerIfNeeded();
+    // 게임 초기화 완료 후 튜토리얼 (첫 진입 시 1회만)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showTutorialIfNeeded();
     });
   }
 
