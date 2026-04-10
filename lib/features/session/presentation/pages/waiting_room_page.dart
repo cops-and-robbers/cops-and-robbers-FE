@@ -110,8 +110,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   bool _hasLobbyConnectedOnce = false;
 
   // ── 튜토리얼용 GlobalKey ──────────────────────────────────────────────────
-  /// 팀 변경 버튼 (AddSlotCard)
-  final _tutorialKeyAddSlot = GlobalKey();
+  /// 팀 변경 버튼 (경찰팀 AddSlotCard)
+  final _tutorialKeyAddSlotPolice = GlobalKey();
+
+  /// 팀 변경 버튼 (도둑팀 AddSlotCard)
+  final _tutorialKeyAddSlotRobber = GlobalKey();
 
   /// 준비 완료 / 게임 시작 버튼
   final _tutorialKeyReadyButton = GlobalKey();
@@ -466,14 +469,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       context: context,
       targets: [
         AppTutorialStyle.target(
-          keyTarget: _tutorialKeyAddSlot,
-          description: '이 버튼을 눌러 원하는 팀으로 이동할 수 있어요',
-          align: TutorialAlign.bottom,
+          keyTarget: _tutorialKeyAddSlotPolice,
+          description: '이 버튼을 눌러 경찰팀으로 이동할 수 있어요',
         ),
         AppTutorialStyle.target(
-          keyTarget: _tutorialKeyReadyButton,
-          description: '준비가 되면 눌러주세요',
-          align: TutorialAlign.top,
+          keyTarget: _tutorialKeyAddSlotRobber,
+          description: '이 버튼을 눌러 도둑팀으로 이동할 수 있어요',
+          align: TutorialAlign.bottom,
         ),
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyInviteCode,
@@ -482,6 +484,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyGameRules,
           description: '게임 규칙을 확인할 수 있어요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyReadyButton,
+          description: '준비가 되면 눌러주세요',
+          align: TutorialAlign.top,
         ),
       ],
       onFinish: () => TutorialService.markCompleted(TutorialKeys.waitingRoom),
@@ -1087,6 +1094,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('POLICE')
                                 : null,
+                            addSlotKey: _tutorialKeyAddSlotPolice,
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
                                 ? (member) {
@@ -1123,7 +1131,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('ROBBER')
                                 : null,
-                            addSlotKey: _tutorialKeyAddSlot,
+                            addSlotKey: _tutorialKeyAddSlotRobber,
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
                                 ? (member) {

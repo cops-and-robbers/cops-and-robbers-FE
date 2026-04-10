@@ -116,7 +116,6 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
         _playgroundRadius = draft?.playgroundRadiusInMeters;
         _isLoading = false;
       });
-
     }
   }
 

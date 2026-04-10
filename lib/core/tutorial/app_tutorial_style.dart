@@ -83,7 +83,9 @@ class TutorialTarget {
           align: _mapAlign(align),
           builder: (context, controller) {
             return Padding(
-              padding: padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding:
+                  padding ??
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
                 description,
                 style: AppTextStyles.paragraph_14.copyWith(

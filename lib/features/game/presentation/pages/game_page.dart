@@ -86,10 +86,9 @@ class _GamePageState extends ConsumerState<GamePage>
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
 
   // 튜토리얼 하이라이트 대상 키
-  final _tutorialKeyMap = GlobalKey();
   final _tutorialKeyTimer = GlobalKey();
   final _tutorialKeyParticipants = GlobalKey();
-  final _tutorialKeyChat = GlobalKey();
+  final _tutorialKeyMapReturn = GlobalKey();
   final _tutorialKeyQrButton = GlobalKey();
 
   bool _showParticipants = false;
@@ -234,12 +233,12 @@ class _GamePageState extends ConsumerState<GamePage>
     _connectChat();
     _connectGameEvents();
     _loadGameArea();
-    _showPoliceTimerIfNeeded();
     _initSettingsAndStartMessages();
 
-    // 게임 초기화 완료 후 튜토리얼 (첫 진입 시 1회만)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showTutorialIfNeeded();
+    // 튜토리얼 완료 후 경찰 타이머 표시 (겹침 방지)
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _showTutorialIfNeeded();
+      if (mounted) _showPoliceTimerIfNeeded();
     });
   }
 
@@ -256,29 +255,46 @@ class _GamePageState extends ConsumerState<GamePage>
       context: context,
       targets: [
         AppTutorialStyle.target(
-          keyTarget: _tutorialKeyMap,
-          description: '게임 맵이에요. 내 위치와 구역이 표시돼요',
-          shape: TutorialShape.roundedRect,
-        ),
-        AppTutorialStyle.target(
           keyTarget: _tutorialKeyTimer,
           description: '남은 게임 시간이에요',
         ),
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyParticipants,
-          description: '현재 참가자 상태를 확인할 수 있어요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyChat,
-          description: '팀원과 채팅할 수 있어요',
-          align: TutorialAlign.top,
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyQrButton,
-          description: '상대방의 QR을 스캔하여 체포/탈옥해요',
+          description: '참가자 목록과 QR 체포/탈옥은 여기서 확인해요',
         ),
       ],
       onFinish: () => TutorialService.markCompleted(TutorialKeys.game),
+    );
+  }
+
+  /// 참가자 목록 화면 튜토리얼 (지도 복귀 + QR 안내)
+  Future<void> _showParticipantsTutorialIfNeeded() async {
+    final completed = await TutorialService.isCompleted(
+      TutorialKeys.gameParticipants,
+    );
+    if (completed || !mounted) return;
+
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    final targets = [
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyMapReturn,
+        description: '지도 화면으로 돌아갈 수 있어요',
+      ),
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyQrButton,
+        description: widget.team == 'POLICE'
+            ? '도둑 참가자 카드를 누르거나 QR을 스캔해서 체포해요'
+            : '잡히면 경찰에게 QR을 보여주고, 경찰이 스캔하면 체포돼요',
+      ),
+    ];
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: targets,
+      onFinish: () =>
+          TutorialService.markCompleted(TutorialKeys.gameParticipants),
     );
   }
 
@@ -1239,14 +1255,11 @@ class _GamePageState extends ConsumerState<GamePage>
         children: [
           /// index 0: 지도 (항상 존재)
           Positioned.fill(
-            child: SizedBox(
-              key: _tutorialKeyMap,
-              child: GoogleMapView(
-                key: _googleMapKey,
-                onCameraMoveStarted: _onMapCameraMoved,
-                isDarkMode: _isDarkMode,
-                mapId: _isDarkMode ? EnvConfig.googleMapsRobberMapId : null,
-              ),
+            child: GoogleMapView(
+              key: _googleMapKey,
+              onCameraMoveStarted: _onMapCameraMoved,
+              isDarkMode: _isDarkMode,
+              mapId: _isDarkMode ? EnvConfig.googleMapsRobberMapId : null,
             ),
           ),
 
@@ -1333,6 +1346,7 @@ class _GamePageState extends ConsumerState<GamePage>
               child: Column(
                 children: [
                   SvgIconButton(
+                    key: _tutorialKeyMapReturn,
                     assetPath: 'assets/icons/icon_map.svg',
                     onPressed: () => setState(() => _showParticipants = false),
                     containerSize: 48,
@@ -1354,7 +1368,10 @@ class _GamePageState extends ConsumerState<GamePage>
                   SvgIconButton(
                     key: _tutorialKeyParticipants,
                     assetPath: 'assets/icons/icon_person.svg',
-                    onPressed: () => setState(() => _showParticipants = true),
+                    onPressed: () {
+                      setState(() => _showParticipants = true);
+                      _showParticipantsTutorialIfNeeded();
+                    },
                     containerSize: 48,
                     iconSize: 24,
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
@@ -1389,7 +1406,6 @@ class _GamePageState extends ConsumerState<GamePage>
           /// Flutter가 기존 State를 dispose하고 새로 생성해버린다.
           /// 위의 if/else 구조로 항상 index 7에 고정해 State를 보존한다.
           ChatOverlay(
-            key: _tutorialKeyChat,
             gameId: _gameId,
             myParticipantId: widget.participantId,
             myTeam: widget.team,

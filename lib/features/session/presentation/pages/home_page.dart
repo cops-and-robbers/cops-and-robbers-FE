@@ -291,9 +291,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   /// 방 참여 다이얼로그 표시
   void _showJoinRoomDialog() {
-    _ensureLocationPermission(
-      onGranted: () => _showJoinRoomDialogInternal(),
-    );
+    _ensureLocationPermission(onGranted: () => _showJoinRoomDialogInternal());
   }
 
   /// 초대 코드로 방 참여 (API 호출 → 대기실 이동)

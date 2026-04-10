@@ -8,6 +8,7 @@ class TutorialKeys {
   static const createStep2 = 'tutorial_create_step2';
   static const waitingRoom = 'tutorial_waiting_room';
   static const game = 'tutorial_game';
+  static const gameParticipants = 'tutorial_game_participants';
 
   /// 전체 키 목록 (초기화 시 사용)
   static const all = [
@@ -17,5 +18,6 @@ class TutorialKeys {
     createStep2,
     waitingRoom,
     game,
+    gameParticipants,
   ];
 }
