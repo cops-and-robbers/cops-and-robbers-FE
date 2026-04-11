@@ -533,6 +533,42 @@ class _GamePageState extends ConsumerState<GamePage>
     ref.read(gameAreaProvider(_gameId));
   }
 
+  /// WebSocket 재연결 성공 후 게임 상태 동기화
+  ///
+  /// STOMP는 끊김 구간의 이벤트를 재전송하지 않으므로,
+  /// 재연결 시 서버 참가자 목록을 직접 조회해 체포 현황과 남은 도둑 수를 보정합니다.
+  Future<void> _syncGameStateOnReconnect() async {
+    if (widget.isDummy || !mounted) return;
+
+    try {
+      // autoDispose provider이므로 ref.refresh로 최신 데이터 보장
+      final result = await ref.refresh(
+        fetchGameParticipantsProvider(_gameId).future,
+      );
+
+      if (!mounted) return;
+
+      // 서버 응답에서 수감 중인 도둑 ID 집합과 생존 도둑 수 추출
+      final arrestedIds = result.robbers
+          .where((p) => p.status == 'JAILED')
+          .map((p) => p.participantId)
+          .toSet();
+      final remainingThieves = result.robbers
+          .where((p) => p.status == 'ALIVE')
+          .length;
+
+      ref
+          .read(gameEventNotifierProvider.notifier)
+          .syncFromParticipants(
+            arrestedIds: arrestedIds,
+            remainingThieves: remainingThieves,
+          );
+    } catch (e) {
+      // 동기화 실패 시 게임 진행에 지장을 주지 않도록 예외를 삼킴
+      debugPrint('[GamePage] ⚠️ 재연결 후 상태 동기화 실패 (무시): $e');
+    }
+  }
+
   /// 도둑 팀 GPS 위치 스트림 구독 및 서버 전송 시작
   ///
   /// distanceFilter 10m로 OS 레벨에서 필터링하고,
@@ -1187,15 +1223,20 @@ class _GamePageState extends ConsumerState<GamePage>
       prev,
       next,
     ) {
-      // 재연결 성공 → 도둑 팀 위치 즉시 재전송
+      // 재연결 성공 → 게임 상태 동기화 + 도둑 팀 위치 즉시 재전송
       if (next == StompConnectionState.connected &&
-          prev != StompConnectionState.connected &&
-          widget.team == 'ROBBER' &&
-          !widget.isDummy) {
-        if (_lastSentPosition != null) {
-          _sendPositionNow();
-        } else if (_locationSubscription == null) {
-          _startLocationSending();
+          prev != StompConnectionState.connected) {
+        // 끊김 구간 동안 누락된 체포·탈옥 이벤트를 서버 조회로 보정
+        if (_hasGameEventConnectedOnce) {
+          _syncGameStateOnReconnect();
+        }
+
+        if (widget.team == 'ROBBER' && !widget.isDummy) {
+          if (_lastSentPosition != null) {
+            _sendPositionNow();
+          } else if (_locationSubscription == null) {
+            _startLocationSending();
+          }
         }
       }
 
