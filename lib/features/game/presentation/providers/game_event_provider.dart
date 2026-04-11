@@ -657,6 +657,8 @@ class GameEventNotifier extends _$GameEventNotifier {
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
         state = state.copyWith(errorMessage: null);
+        // 재연결 후 누락된 도둑 발자국 복구
+        if (_gameId != null) _fetchLastRobberLocations(_gameId!);
       } else if (connState == StompConnectionState.disconnected) {
         if (!_intentionalDisconnect && !_isHandlingError) {
           _scheduleReconnect();
@@ -670,6 +672,32 @@ class GameEventNotifier extends _$GameEventNotifier {
       _isHandlingError = true;
       _handleStompError(errorInfo);
     });
+  }
+
+  /// 재연결 후 마지막으로 공개된 도둑 위치를 조회하여 발자국 복구
+  ///
+  /// STOMP 연결 유실 중 LOCATION_REVEAL 이벤트를 놓쳤을 때 호출.
+  /// 빈 배열(아직 공개 전)이면 상태 변경 없이 무시.
+  Future<void> _fetchLastRobberLocations(int gameId) async {
+    try {
+      final locations = await ref
+          .read(gameSystemApiProvider)
+          .getRobberLastLocations(gameId);
+      if (locations.isEmpty) return;
+
+      final entries = {
+        for (final loc in locations)
+          loc.participantId: LatLngModel(
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+          ),
+      };
+      state = state.copyWith(robberLocations: entries);
+      debugPrint('[GameEventNotifier] 📍 재연결 후 도둑 위치 복구: ${entries.length}명');
+    } catch (e) {
+      // 위치 복구 실패는 치명적이지 않으므로 조용히 처리
+      debugPrint('[GameEventNotifier] ⚠️ 마지막 위치 조회 실패: $e');
+    }
   }
 
   void _scheduleReconnect() {
