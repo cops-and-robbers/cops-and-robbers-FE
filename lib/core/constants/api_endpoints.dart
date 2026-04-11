@@ -127,6 +127,10 @@ class ApiEndpoints {
   /// 맵 영역 조회 (플레이그라운드·감옥 중심 좌표 및 반경)
   static String gameArea(int gameId) => '/api/games/$gameId/area';
 
+  /// 가장 최근 공개된 도둑 위치 목록 조회 (재연결 후 발자국 복구용)
+  static String robberLastLocations(int gameId) =>
+      '/api/games/$gameId/robbers/location';
+
   // ============================================
   // User API - 사용자 정보
   // ============================================

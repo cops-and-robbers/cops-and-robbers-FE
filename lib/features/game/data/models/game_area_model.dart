@@ -15,6 +15,23 @@ class LatLngModel with _$LatLngModel {
       _$LatLngModelFromJson(json);
 }
 
+/// 도둑 마지막 공개 위치 DTO
+///
+/// `GET /api/games/{gameId}/robbers/location` 응답 항목.
+/// 재연결 후 누락된 LOCATION_REVEAL 이벤트 복구에 사용합니다.
+@freezed
+class RobberLocationModel with _$RobberLocationModel {
+  const factory RobberLocationModel({
+    required int participantId,
+    required String nickname,
+    required double latitude,
+    required double longitude,
+  }) = _RobberLocationModel;
+
+  factory RobberLocationModel.fromJson(Map<String, dynamic> json) =>
+      _$RobberLocationModelFromJson(json);
+}
+
 /// 게임 맵 영역 DTO
 ///
 /// `GET /api/games/{gameId}/area` 응답.
