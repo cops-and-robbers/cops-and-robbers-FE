@@ -455,6 +455,34 @@ class GameEventNotifier extends _$GameEventNotifier {
     });
   }
 
+  /// WebSocket 재연결 후 서버 참가자 상태로 게임 상태를 동기화
+  ///
+  /// STOMP는 끊김 구간의 이벤트를 재전송하지 않으므로, 재연결 시
+  /// GET /api/games/{gameId}/participants 응답으로 누락된 체포·탈옥 상태를 보정합니다.
+  ///
+  /// [arrestedIds] - 서버 응답 기준 현재 수감 중인 도둑 participantId 집합
+  /// [remainingThieves] - 서버 응답 기준 현재 생존(ALIVE) 도둑 수
+  void syncFromParticipants({
+    required Set<int> arrestedIds,
+    required int remainingThieves,
+  }) {
+    if (_isDisposed) return;
+
+    debugPrint(
+      '[GameEventNotifier] 🔄 재연결 후 상태 동기화 — '
+      '수감: $arrestedIds, 남은 도둑: $remainingThieves',
+    );
+
+    // 기존 상태와 병합: 서버 기준 수감자를 우선 적용하되,
+    // 이미 escape 처리된 참가자는 수감 집합에서 제외
+    final mergedArrested = arrestedIds.difference(state.escapedParticipantIds);
+
+    state = state.copyWith(
+      arrestedParticipantIds: mergedArrested,
+      remainingThieves: remainingThieves,
+    );
+  }
+
   /// 외부에서 배너 메시지를 설정 (게임 시작 시퀀스 등 STOMP 외 이벤트용)
   void setBannerMessage(String message) {
     state = state.copyWith(bannerMessage: message);
