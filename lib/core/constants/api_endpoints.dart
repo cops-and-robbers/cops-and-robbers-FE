@@ -45,8 +45,8 @@ class ApiEndpoints {
   /// Mock API 사용 여부 (.env에서 로드)
   /// Whether to use Mock API (loaded from .env)
   ///
-  /// **기본값**: `true`
-  /// **Default**: `true`
+  /// **기본값**: `false`
+  /// **Default**: `false`
   static bool get useMockApi =>
       dotenv.env['USE_MOCK_API']?.toLowerCase() == 'true';
 
