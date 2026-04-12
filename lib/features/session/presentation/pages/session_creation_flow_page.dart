@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -335,6 +336,12 @@ class _SessionCreationFlowPageState
         debugPrint('❌ [SessionCreationFlow] 세션 생성 실패: ${sessionState.error}');
       }
 
+      // 409: 이미 참가 중인 게임 → 해당 게임으로 자동 이동 시도
+      if (_is409Conflict(sessionState.error) && mounted) {
+        await _redirectToActiveGame();
+        return;
+      }
+
       if (mounted) {
         final errorMessage = _getErrorMessage(sessionState.error!);
         AppSnackbar.show(
@@ -359,6 +366,59 @@ class _SessionCreationFlowPageState
       return error.message;
     }
     return '게임 방 생성에 실패했습니다. 다시 시도해주세요.';
+  }
+
+  /// 에러가 409 Conflict인지 확인
+  ///
+  /// DioExceptionHandler가 변환한 AppException의 originalException에서
+  /// HTTP 상태 코드를 추출합니다.
+  bool _is409Conflict(Object? error) {
+    if (error is AppException && error.originalException is DioException) {
+      final dioError = error.originalException as DioException;
+      return dioError.response?.statusCode == 409;
+    }
+    return false;
+  }
+
+  /// 409 에러 시 활성 게임으로 자동 이동
+  ///
+  /// `/api/user/me/game` 조회 → 게임 상태에 따라 대기실/게임 화면 이동.
+  /// 조회 실패 시 fallback 스낵바를 표시하고 로딩 상태를 복원합니다.
+  Future<void> _redirectToActiveGame() async {
+    try {
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
+      if (!mounted) return;
+
+      if (!status.isParticipating || status.participationInfo == null) {
+        AppSnackbar.show(
+          context,
+          message: '이미 참가 중인 게임이 있습니다.',
+          backgroundColor: AppColors.red,
+        );
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      final info = status.participationInfo!;
+
+      if (info.gameStatus == 'WAITING') {
+        context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
+      } else if (info.gameStatus == 'IN_PROGRESS') {
+        context.go(
+          '${RoutePaths.gameWithId(info.gameId.toString())}'
+          '?team=${info.team}&pid=${info.participantId}',
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        AppSnackbar.show(
+          context,
+          message: '이미 참가 중인 게임이 있습니다.',
+          backgroundColor: AppColors.red,
+        );
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   // ============================================
