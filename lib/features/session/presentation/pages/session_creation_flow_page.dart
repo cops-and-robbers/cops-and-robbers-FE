@@ -408,6 +408,16 @@ class _SessionCreationFlowPageState
           '${RoutePaths.gameWithId(info.gameId.toString())}'
           '?team=${info.team}&pid=${info.participantId}',
         );
+      } else {
+        debugPrint(
+          '⚠️ 알 수 없는 게임 상태: ${info.gameStatus} (gameId=${info.gameId})',
+        );
+        AppSnackbar.show(
+          context,
+          message: '알 수 없는 게임 상태입니다.',
+          backgroundColor: AppColors.red,
+        );
+        setState(() => _isLoading = false);
       }
     } catch (_) {
       if (mounted) {
