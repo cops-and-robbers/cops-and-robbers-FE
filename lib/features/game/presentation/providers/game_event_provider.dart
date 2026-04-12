@@ -678,12 +678,26 @@ class GameEventNotifier extends _$GameEventNotifier {
   ///
   /// STOMP 연결 유실 중 LOCATION_REVEAL 이벤트를 놓쳤을 때 호출.
   /// 빈 배열(아직 공개 전)이면 상태 변경 없이 무시.
+  /// await 중 dispose되거나 새 LOCATION_REVEAL이 도착한 경우 덮어쓰지 않음.
   Future<void> _fetchLastRobberLocations(int gameId) async {
+    // fetch 시작 시점의 reveal 타임스탬프 캡처 (race condition 방지)
+    final preRevealTime = state.lastLocationRevealTime;
     try {
       final locations = await ref
           .read(gameSystemApiProvider)
           .getRobberLastLocations(gameId);
+
+      // dispose 후 state 접근 방지
+      if (_isDisposed) return;
       if (locations.isEmpty) return;
+
+      // await 중 새 LOCATION_REVEAL 이벤트가 도착했으면 fetch 결과를 무시
+      if (state.lastLocationRevealTime != preRevealTime) {
+        debugPrint(
+          '[GameEventNotifier] ⏭️ 도둑 위치 복구 생략 (새 LOCATION_REVEAL 수신됨)',
+        );
+        return;
+      }
 
       final entries = {
         for (final loc in locations)
