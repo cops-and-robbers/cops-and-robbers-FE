@@ -473,12 +473,13 @@ class GameEventNotifier extends _$GameEventNotifier {
       '수감: $arrestedIds, 남은 도둑: $remainingThieves',
     );
 
-    // 기존 상태와 병합: 서버 기준 수감자를 우선 적용하되,
-    // 이미 escape 처리된 참가자는 수감 집합에서 제외
-    final mergedArrested = arrestedIds.difference(state.escapedParticipantIds);
-
+    // 서버가 진실의 원천. 끊김 구간에 탈옥→재체포가 발생해도
+    // 서버의 JAILED 목록을 그대로 반영하고, escaped 집합은 현재 수감자와 겹치지 않게 정리한다.
     state = state.copyWith(
-      arrestedParticipantIds: mergedArrested,
+      arrestedParticipantIds: arrestedIds,
+      escapedParticipantIds: state.escapedParticipantIds.difference(
+        arrestedIds,
+      ),
       remainingThieves: remainingThieves,
     );
   }
