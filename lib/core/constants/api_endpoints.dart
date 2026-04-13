@@ -45,8 +45,8 @@ class ApiEndpoints {
   /// Mock API 사용 여부 (.env에서 로드)
   /// Whether to use Mock API (loaded from .env)
   ///
-  /// **기본값**: `true`
-  /// **Default**: `true`
+  /// **기본값**: `false`
+  /// **Default**: `false`
   static bool get useMockApi =>
       dotenv.env['USE_MOCK_API']?.toLowerCase() == 'true';
 
@@ -126,6 +126,10 @@ class ApiEndpoints {
 
   /// 맵 영역 조회 (플레이그라운드·감옥 중심 좌표 및 반경)
   static String gameArea(int gameId) => '/api/games/$gameId/area';
+
+  /// 가장 최근 공개된 도둑 위치 목록 조회 (재연결 후 발자국 복구용)
+  static String robberLastLocations(int gameId) =>
+      '/api/games/$gameId/robbers/location';
 
   // ============================================
   // User API - 사용자 정보
