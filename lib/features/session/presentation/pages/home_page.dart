@@ -201,6 +201,56 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
+  /// 409 "이미 참가 중인 게임" 에러 시 해당 게임으로 자동 이동
+  ///
+  /// `/api/user/me/game` 조회 → 게임 상태에 따라 대기실/게임 화면 이동.
+  /// 조회 실패 시 fallback 스낵바를 표시합니다.
+  Future<void> _redirectToActiveGame() async {
+    try {
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
+      if (!mounted) return;
+
+      if (!status.isParticipating || status.participationInfo == null) {
+        // 서버 상태 불일치 — 참가 중인 게임이 없음
+        AppSnackbar.show(
+          context,
+          message: '이미 참가 중인 게임이 있습니다.',
+          backgroundColor: AppColors.red,
+        );
+        return;
+      }
+
+      final info = status.participationInfo!;
+
+      if (info.gameStatus == 'WAITING') {
+        context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
+      } else if (info.gameStatus == 'IN_PROGRESS') {
+        context.go(
+          '${RoutePaths.gameWithId(info.gameId.toString())}'
+          '?team=${info.team}&pid=${info.participantId}',
+        );
+      } else {
+        debugPrint(
+          '⚠️ 알 수 없는 게임 상태: ${info.gameStatus} (gameId=${info.gameId})',
+        );
+        AppSnackbar.show(
+          context,
+          message: '알 수 없는 게임 상태입니다.',
+          backgroundColor: AppColors.red,
+        );
+      }
+    } catch (_) {
+      // 활성 게임 조회도 실패 → fallback 스낵바
+      if (mounted) {
+        AppSnackbar.show(
+          context,
+          message: '이미 참가 중인 게임이 있습니다.',
+          backgroundColor: AppColors.red,
+        );
+      }
+    }
+  }
+
   /// 위치 권한 확인 후 [onGranted] 실행
   ///
   /// 권한이 이미 허용된 경우 즉시 콜백 실행.
@@ -309,6 +359,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     try {
       response = await ref.read(joinGameProvider(inviteCode: code).future);
     } on DioException catch (e) {
+      // 409: 이미 참가 중인 게임 → 해당 게임으로 자동 이동 시도
+      if (e.response?.statusCode == 409 && mounted) {
+        await _redirectToActiveGame();
+        return;
+      }
       if (mounted) {
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
         final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
