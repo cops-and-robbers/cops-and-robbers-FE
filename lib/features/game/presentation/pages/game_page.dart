@@ -541,6 +541,11 @@ class _GamePageState extends ConsumerState<GamePage>
     if (widget.isDummy || !mounted) return;
 
     try {
+      // sync 요청 직전 상태 snapshot — sync 창에 STOMP가 추가한 변화 추적용
+      final before = ref.read(gameEventNotifierProvider);
+      final arrestedBefore = before.arrestedParticipantIds;
+      final escapedBefore = before.escapedParticipantIds;
+
       // autoDispose provider이므로 ref.refresh로 최신 데이터 보장
       final result = await ref.refresh(
         fetchGameParticipantsProvider(_gameId).future,
@@ -548,19 +553,44 @@ class _GamePageState extends ConsumerState<GamePage>
 
       if (!mounted) return;
 
-      // 서버 응답에서 수감 중인 도둑 ID 집합과 생존 도둑 수 추출
-      final arrestedIds = result.robbers
+      // sync 요청~응답 사이에 STOMP가 반영한 ID delta 계산
+      // HTTP 응답(서버 snapshot)은 요청 시점 기준이라, 그 동안 STOMP로 들어온
+      // 신규 체포/탈옥을 덮어쓰지 않도록 delta를 별도로 추출해 layer한다.
+      final after = ref.read(gameEventNotifierProvider);
+      final stompNewArrests = after.arrestedParticipantIds.difference(
+        arrestedBefore,
+      );
+      final stompNewEscapes = after.escapedParticipantIds.difference(
+        escapedBefore,
+      );
+
+      // 서버 snapshot 기반 수감자 집합
+      final serverArrested = result.robbers
           .where((p) => p.status == 'JAILED')
           .map((p) => p.participantId)
           .toSet();
-      final remainingThieves = result.robbers
+
+      // 서버 snapshot 위에 sync 창 delta layer:
+      //   - STOMP가 새로 체포한 사람은 추가
+      //   - STOMP가 새로 탈옥시킨 사람은 제외
+      final finalArrested = serverArrested
+          .union(stompNewArrests)
+          .difference(stompNewEscapes);
+
+      // 서버 기준 생존 수에 sync 창 delta를 반영 (음수 clamp)
+      final serverAlive = result.robbers
           .where((p) => p.status == 'ALIVE')
           .length;
+      final remainingThieves =
+          (serverAlive - stompNewArrests.length + stompNewEscapes.length).clamp(
+            0,
+            1 << 31,
+          );
 
       ref
           .read(gameEventNotifierProvider.notifier)
           .syncFromParticipants(
-            arrestedIds: arrestedIds,
+            arrestedIds: finalArrested,
             remainingThieves: remainingThieves,
           );
     } catch (e) {
