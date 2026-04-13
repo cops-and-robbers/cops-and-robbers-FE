@@ -577,14 +577,14 @@ class _GamePageState extends ConsumerState<GamePage>
           .union(stompNewArrests)
           .difference(stompNewEscapes);
 
-      // 서버 기준 생존 수에 sync 창 delta를 반영 (음수 clamp)
+      // 서버 기준 생존 수에 sync 창 delta를 반영 (0 ~ 전체 도둑 수 범위로 clamp)
       final serverAlive = result.robbers
           .where((p) => p.status == 'ALIVE')
           .length;
       final remainingThieves =
           (serverAlive - stompNewArrests.length + stompNewEscapes.length).clamp(
             0,
-            1 << 31,
+            result.robbers.length,
           );
 
       ref
@@ -1256,9 +1256,11 @@ class _GamePageState extends ConsumerState<GamePage>
       // 재연결 성공 → 게임 상태 동기화 + 도둑 팀 위치 즉시 재전송
       if (next == StompConnectionState.connected &&
           prev != StompConnectionState.connected) {
-        // 끊김 구간 동안 누락된 체포·탈옥 이벤트를 서버 조회로 보정
+        // 끊김 구간 동안 누락된 체포·탈옥 이벤트를 서버 조회로 보정.
+        // 의도적으로 await하지 않음 — 아래 도둑 팀 위치 즉시 재전송이
+        // HTTP 응답을 기다리다 지연되지 않도록. 에러는 메서드 내부 try-catch에서 처리.
         if (_hasGameEventConnectedOnce) {
-          _syncGameStateOnReconnect();
+          unawaited(_syncGameStateOnReconnect());
         }
 
         if (widget.team == 'ROBBER' && !widget.isDummy) {
