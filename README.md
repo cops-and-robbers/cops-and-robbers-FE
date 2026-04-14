@@ -4,7 +4,7 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.9.2+-blue.svg)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-3.9.2+-0175C2.svg)](https://dart.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Source--Available%20(ELv2%20based)-orange.svg)](LICENSE)
 
 ---
 
@@ -454,7 +454,7 @@ test(game): 게임 로직 단위 테스트 추가
 
 ## 📝 라이선스
 
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
+이 프로젝트는 **Cops and Robbers Source Available License v1.0** 하에 배포됩니다. 해당 라이선스는 [Elastic License 2.0 (ELv2)](https://www.elastic.co/licensing/elastic-license)를 기반으로 작성되었으며, 소스 코드는 공개되지만 상업적 호스팅/재배포 등 일부 사용이 제한됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
 
 ---
 

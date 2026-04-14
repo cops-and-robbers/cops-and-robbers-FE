@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
+import '../../../credits/presentation/pages/credits_page.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import 'legal_document_page.dart';
 
@@ -42,6 +44,48 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
+  /// 히든 크레딧 페이지 진입을 위한 탭 카운터
+  int _versionTapCount = 0;
+  DateTime? _lastVersionTap;
+
+  /// 앱 버전 5탭 → 크레딧 페이지 진입
+  void _onVersionTap() {
+    final now = DateTime.now();
+    // 마지막 탭으로부터 2초 초과 시 카운터 리셋
+    if (_lastVersionTap != null &&
+        now.difference(_lastVersionTap!).inSeconds > 2) {
+      _versionTapCount = 0;
+    }
+    _lastVersionTap = now;
+    _versionTapCount++;
+
+    if (_versionTapCount >= 5) {
+      _versionTapCount = 0;
+      // 이스터에그 발견 — 페이드 + 블러 애니메이션으로 크레딧 페이지 진입
+      Navigator.of(context).push(
+        PageRouteBuilder<void>(
+          transitionDuration: const Duration(milliseconds: 500),
+          reverseTransitionDuration: const Duration(milliseconds: 300),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const CreditsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return AnimatedBuilder(
+              animation: animation,
+              builder: (context, _) {
+                // 블러: 10 → 0 (선명해짐)
+                final blur = (1 - animation.value) * 10;
+                return BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+                  child: Opacity(opacity: animation.value, child: child),
+                );
+              },
+            );
+          },
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,32 +257,37 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   /// 앱 버전 항목 (좌: "앱 버전", 우: "v1.x.x")
+  /// 5회 연속 탭 시 히든 크레딧 페이지로 이동
   Widget _buildVersionItem() {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: AppSpacing.vertical16,
-        horizontal: AppSpacing.horizontal24,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '앱 버전',
-            style: AppTextStyles.label_16.copyWith(color: AppColors.black),
-          ),
-          FutureBuilder<PackageInfo>(
-            future: PackageInfo.fromPlatform(),
-            builder: (context, snapshot) {
-              final version = snapshot.data?.version ?? '';
-              return Text(
-                'v$version',
-                style: AppTextStyles.paragraph14Semibold.copyWith(
-                  color: AppColors.black300,
-                ),
-              );
-            },
-          ),
-        ],
+    return GestureDetector(
+      onTap: _onVersionTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: AppSpacing.vertical16,
+          horizontal: AppSpacing.horizontal24,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '앱 버전',
+              style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+            ),
+            FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                final version = snapshot.data?.version ?? '';
+                return Text(
+                  'v$version',
+                  style: AppTextStyles.paragraph14Semibold.copyWith(
+                    color: AppColors.black300,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

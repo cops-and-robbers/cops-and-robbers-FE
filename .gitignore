@@ -68,3 +68,6 @@ skills-lock.json
 
 # iOS (API Keys)
 /ios/Flutter/Secrets.xcconfig
+
+# Claude
+.superpowers/
