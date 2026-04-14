@@ -11,6 +11,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -35,6 +36,9 @@ import '../../data/models/lobby_info_response.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../providers/waiting_room_participants_provider.dart';
+import '../../../../core/services/tutorial/tutorial_keys.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
+import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../widgets/game_rules_content.dart';
 import '../widgets/team_section.dart';
 
@@ -104,6 +108,23 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 로비 STOMP 최초 연결 성공 여부
   bool _hasLobbyConnectedOnce = false;
+
+  // ── 튜토리얼용 GlobalKey ──────────────────────────────────────────────────
+  /// 팀 변경 버튼 (경찰팀 AddSlotCard)
+  final _tutorialKeyAddSlotPolice = GlobalKey();
+
+  /// 팀 변경 버튼 (도둑팀 AddSlotCard)
+  final _tutorialKeyAddSlotRobber = GlobalKey();
+
+  /// 준비 완료 / 게임 시작 버튼
+  final _tutorialKeyReadyButton = GlobalKey();
+
+  /// 앱바 초대 코드 영역
+  final _tutorialKeyInviteCode = GlobalKey();
+
+  /// 앱바 게임 규칙 버튼
+  final _tutorialKeyGameRules = GlobalKey();
+  // ─────────────────────────────────────────────────────────────────────────
 
   /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
   ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
@@ -420,13 +441,58 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ref.read(roleThemeProvider.notifier).setDarkMode(myTeam == 'ROBBER');
 
       // 방 생성 직후 초대코드 다이얼로그 표시 (팀 확정 후)
+      // 다이얼로그 닫힌 후 튜토리얼 트리거 (겹침 방지)
       if (_pendingInviteDialog && mounted) {
         _pendingInviteDialog = false;
-        _showInviteCodeDialog();
+        await _showInviteCodeDialog();
+      }
+
+      // 참가자 목록 로딩 완료 후 튜토리얼 트리거
+      if (mounted) {
+        _showTutorialIfNeeded();
       }
     } finally {
       _isFetchingParticipants = false;
     }
+  }
+
+  /// 대기실 튜토리얼 (최초 1회)
+  ///
+  /// 참가자 데이터가 로딩된 이후에 호출되므로 UI가 완전히 구성된 상태에서 실행됩니다.
+  Future<void> _showTutorialIfNeeded() async {
+    final completed = await TutorialService.isCompleted(
+      TutorialKeys.waitingRoom,
+    );
+    if (completed || !mounted) return;
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: [
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyAddSlotPolice,
+          description: '이 버튼을 눌러 경찰팀으로 이동할 수 있어요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyAddSlotRobber,
+          description: '이 버튼을 눌러 도둑팀으로 이동할 수 있어요',
+          align: TutorialAlign.bottom,
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyInviteCode,
+          description: '친구에게 초대 코드를 공유할 수 있어요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyGameRules,
+          description: '게임 설정을 확인할 수 있어요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyReadyButton,
+          description: '준비가 되면 눌러주세요',
+          align: TutorialAlign.top,
+        ),
+      ],
+      onFinish: () => TutorialService.markCompleted(TutorialKeys.waitingRoom),
+    );
   }
 
   /// 재연결 모달 표시
@@ -504,7 +570,49 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     });
   }
 
-  /// 로비 이벤트 → 참가자 목록 업데이트
+  /// 강퇴 확인 다이얼로그 → API 호출
+  Future<void> _showKickDialog(LobbyParticipantInfo member) async {
+    final isDark = ref.read(roleThemeProvider);
+    final confirmed = await AppDialog.confirm(
+      context: context,
+      title: '${member.nickname}님을 내보낼까요?',
+      message: '강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요',
+      cancelText: '취소',
+      confirmText: '내보내기',
+      isDestructive: true,
+      confirmTextColor: AppColors.white,
+      isDarkMode: isDark,
+    );
+    if (confirmed != true || !mounted) return;
+
+    final gameId = ref.read(gameParticipantNotifierProvider)?.gameId;
+    if (gameId == null) return;
+
+    try {
+      await ref.read(
+        kickMemberProvider(
+          gameId: gameId,
+          participantId: member.participantId,
+        ).future,
+      );
+    } on DioException catch (e) {
+      if (!mounted) return;
+      final message = DioExceptionHandler.handle(e).message;
+      AppSnackbar.show(
+        context,
+        message: message,
+        backgroundColor: AppColors.red,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      AppSnackbar.show(
+        context,
+        message: '강퇴 처리 중 오류가 발생했어요',
+        backgroundColor: AppColors.red,
+      );
+    }
+  }
+
   void _listenLobbyEvents() {
     _lobbyEventSub = ref.listenManual(lobbyNotifierProvider, (prev, next) {
       // dispose 후 microtask 큐에 남은 이벤트 방어
@@ -600,8 +708,40 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                 .setHost(newHostId);
           }
         }
+
+        // 강퇴 이벤트 — 본인이면 다이얼로그 + 홈 이동, 타인이면 스낵바
+        if (event.type == LobbyEventType.kicked) {
+          _handleKickedEvent(event.data, myPid);
+        }
       }
     });
+  }
+
+  /// KICKED 이벤트 처리 — 본인 강퇴 시 다이얼로그, 타인 강퇴 시 스낵바
+  Future<void> _handleKickedEvent(Map<String, dynamic> data, int? myPid) async {
+    final kickedPid = data['kickedParticipantId'] as int?;
+    final kickedNickname = data['nickname'] as String? ?? '';
+
+    // null == null 오인식 방어
+    if (kickedPid == null || myPid == null) return;
+
+    if (kickedPid == myPid) {
+      // 강퇴당한 본인 → 다이얼로그 + 홈 이동
+      if (!mounted) return;
+      await AppDialog.show(
+        context: context,
+        title: '방에서 내보내졌어요',
+        message: '다시 참가하려면 초대코드를 입력해야 해요',
+        isDarkMode: ref.read(roleThemeProvider),
+      );
+      if (!mounted) return;
+      ref.read(gameParticipantNotifierProvider.notifier).clear();
+      GoRouter.of(context).go(RoutePaths.home);
+    } else {
+      // 다른 유저 강퇴 → 스낵바
+      if (!mounted) return;
+      AppSnackbar.show(context, message: '$kickedNickname님이 내보내졌어요');
+    }
   }
 
   /// 이벤트 data에서 participant 정보 추출
@@ -823,11 +963,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   }
 
   /// 초대코드 모달 (방 생성 직후 표시)
-  void _showInviteCodeDialog() {
+  Future<void> _showInviteCodeDialog() {
     final code = _inviteCode!;
     final isDark = ref.read(roleThemeProvider);
 
-    AppDialog.show(
+    return AppDialog.show(
       context: context,
       isDarkMode: isDark,
       title: '초대코드를 생성했어요',
@@ -954,6 +1094,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('POLICE')
                                 : null,
+                            addSlotKey: _tutorialKeyAddSlotPolice,
+                            // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
+                            onMemberTap: isHost
+                                ? (member) {
+                                    final myPid =
+                                        participantInfo?.participantId;
+                                    if (member.participantId == myPid) return;
+                                    _showKickDialog(member);
+                                  }
+                                : null,
                             isDarkMode: isDark,
                           ),
                           // 구분선
@@ -981,6 +1131,16 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('ROBBER')
                                 : null,
+                            addSlotKey: _tutorialKeyAddSlotRobber,
+                            // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
+                            onMemberTap: isHost
+                                ? (member) {
+                                    final myPid =
+                                        participantInfo?.participantId;
+                                    if (member.participantId == myPid) return;
+                                    _showKickDialog(member);
+                                  }
+                                : null,
                             isDarkMode: isDark,
                           ),
                         ],
@@ -988,10 +1148,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                     ),
             ),
 
-            // 하단 버튼
+            // 하단 버튼 (준비 / 게임 시작) — 튜토리얼 하이라이트 대상
             SafeArea(
               top: false,
               child: Padding(
+                key: _tutorialKeyReadyButton,
                 padding: EdgeInsets.fromLTRB(
                   AppSpacing.horizontal20,
                   AppSpacing.vertical12,
@@ -1038,6 +1199,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ),
       title: _inviteCode != null
           ? GestureDetector(
+              // 초대 코드 영역 — 튜토리얼 하이라이트 대상
+              key: _tutorialKeyInviteCode,
               onTap: _showInviteCodeDialog,
               child: IntrinsicWidth(
                 child: Column(
@@ -1086,6 +1249,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           ),
         ),
         GestureDetector(
+          // 게임 설정 버튼 — 튜토리얼 하이라이트 대상
+          key: _tutorialKeyGameRules,
           onTap: () =>
               context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
           behavior: HitTestBehavior.opaque,

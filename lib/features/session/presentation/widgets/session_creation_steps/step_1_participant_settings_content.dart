@@ -15,6 +15,7 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
     required this.onChanged,
     this.isDarkMode = false,
     this.valueTextStyle,
+    this.maxParticipantsKey,
   });
 
   // ============================================
@@ -33,6 +34,9 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
   /// 값 텍스트 스타일 (null이면 기본 스타일)
   final TextStyle? valueTextStyle;
 
+  /// 튜토리얼 하이라이트용 — 최대 참가자 슬라이더
+  final GlobalKey? maxParticipantsKey;
+
   // ============================================
   // Build Methods
   // ============================================
@@ -40,6 +44,7 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSlider(
+      key: maxParticipantsKey,
       label: '최대 참가자',
       value: maxParticipants.toDouble(),
       min: 2,

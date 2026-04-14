@@ -55,6 +55,9 @@ abstract class LobbyEventType {
 
   /// 게임 영역 변경
   static const String areaUpdated = 'AREA_UPDATED';
+
+  /// 강제 퇴장
+  static const String kicked = 'KICKED';
 }
 
 /// GAME_START 이벤트 data

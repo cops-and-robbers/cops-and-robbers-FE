@@ -455,6 +455,35 @@ class GameEventNotifier extends _$GameEventNotifier {
     });
   }
 
+  /// WebSocket 재연결 후 서버 참가자 상태로 게임 상태를 동기화
+  ///
+  /// STOMP는 끊김 구간의 이벤트를 재전송하지 않으므로, 재연결 시
+  /// GET /api/games/{gameId}/participants 응답으로 누락된 체포·탈옥 상태를 보정합니다.
+  ///
+  /// [arrestedIds] - 서버 응답 기준 현재 수감 중인 도둑 participantId 집합
+  /// [remainingThieves] - 서버 응답 기준 현재 생존(ALIVE) 도둑 수
+  void syncFromParticipants({
+    required Set<int> arrestedIds,
+    required int remainingThieves,
+  }) {
+    if (_isDisposed) return;
+
+    debugPrint(
+      '[GameEventNotifier] 🔄 재연결 후 상태 동기화 — '
+      '수감: $arrestedIds, 남은 도둑: $remainingThieves',
+    );
+
+    // 서버가 진실의 원천. 끊김 구간에 탈옥→재체포가 발생해도
+    // 서버의 JAILED 목록을 그대로 반영하고, escaped 집합은 현재 수감자와 겹치지 않게 정리한다.
+    state = state.copyWith(
+      arrestedParticipantIds: arrestedIds,
+      escapedParticipantIds: state.escapedParticipantIds.difference(
+        arrestedIds,
+      ),
+      remainingThieves: remainingThieves,
+    );
+  }
+
   /// 외부에서 배너 메시지를 설정 (게임 시작 시퀀스 등 STOMP 외 이벤트용)
   void setBannerMessage(String message) {
     state = state.copyWith(bannerMessage: message);
@@ -657,6 +686,8 @@ class GameEventNotifier extends _$GameEventNotifier {
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
         state = state.copyWith(errorMessage: null);
+        // 재연결 후 누락된 도둑 발자국 복구
+        if (_gameId != null) _fetchLastRobberLocations(_gameId!);
       } else if (connState == StompConnectionState.disconnected) {
         if (!_intentionalDisconnect && !_isHandlingError) {
           _scheduleReconnect();
@@ -670,6 +701,46 @@ class GameEventNotifier extends _$GameEventNotifier {
       _isHandlingError = true;
       _handleStompError(errorInfo);
     });
+  }
+
+  /// 재연결 후 마지막으로 공개된 도둑 위치를 조회하여 발자국 복구
+  ///
+  /// STOMP 연결 유실 중 LOCATION_REVEAL 이벤트를 놓쳤을 때 호출.
+  /// 빈 배열(아직 공개 전)이면 상태 변경 없이 무시.
+  /// await 중 dispose되거나 새 LOCATION_REVEAL이 도착한 경우 덮어쓰지 않음.
+  Future<void> _fetchLastRobberLocations(int gameId) async {
+    // fetch 시작 시점의 reveal 타임스탬프 캡처 (race condition 방지)
+    final preRevealTime = state.lastLocationRevealTime;
+    try {
+      final locations = await ref
+          .read(gameSystemApiProvider)
+          .getRobberLastLocations(gameId);
+
+      // dispose 후 state 접근 방지
+      if (_isDisposed) return;
+      if (locations.isEmpty) return;
+
+      // await 중 새 LOCATION_REVEAL 이벤트가 도착했으면 fetch 결과를 무시
+      if (state.lastLocationRevealTime != preRevealTime) {
+        debugPrint(
+          '[GameEventNotifier] ⏭️ 도둑 위치 복구 생략 (새 LOCATION_REVEAL 수신됨)',
+        );
+        return;
+      }
+
+      final entries = {
+        for (final loc in locations)
+          loc.participantId: LatLngModel(
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+          ),
+      };
+      state = state.copyWith(robberLocations: entries);
+      debugPrint('[GameEventNotifier] 📍 재연결 후 도둑 위치 복구: ${entries.length}명');
+    } catch (e) {
+      // 위치 복구 실패는 치명적이지 않으므로 조용히 처리
+      debugPrint('[GameEventNotifier] ⚠️ 마지막 위치 조회 실패: $e');
+    }
   }
 
   void _scheduleReconnect() {

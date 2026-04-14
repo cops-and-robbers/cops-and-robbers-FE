@@ -21,6 +21,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../../router/route_paths.dart';
 import '../pages/login_page.dart';
 import '../../../session/presentation/pages/home_page.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
 
 part 'auth_provider.g.dart';
 
@@ -279,6 +280,7 @@ class AuthNotifier extends _$AuthNotifier {
       await useCase.execute();
       HomePage.resetSafetyNotice();
       LoginPage.resetAgeVerification();
+      await TutorialService.resetAll();
       state = const AsyncValue.data(null);
     } catch (e, stack) {
       state = AsyncValue.error(
@@ -320,6 +322,7 @@ class AuthNotifier extends _$AuthNotifier {
       await firebaseDataSource.signOut();
     } finally {
       await ref.read(secureTokenStorageProvider).clearTokens();
+      await TutorialService.resetAll();
     }
   }
 
@@ -330,6 +333,7 @@ class AuthNotifier extends _$AuthNotifier {
   void forceLogout() {
     HomePage.resetSafetyNotice();
     LoginPage.resetAgeVerification();
+    TutorialService.resetAll();
     state = const AsyncValue.data(null);
   }
 }

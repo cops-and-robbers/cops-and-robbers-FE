@@ -4,6 +4,7 @@ import 'package:retrofit/retrofit.dart';
 import '../../data/models/arrest_request_model.dart';
 import '../../data/models/arrest_response_model.dart';
 import '../../data/models/game_area_model.dart';
+export '../../data/models/game_area_model.dart' show RobberLocationModel;
 
 part 'game_system_api_datasource.g.dart';
 
@@ -30,4 +31,13 @@ abstract class GameSystemApi {
   /// 맵 영역 조회
   @GET('/api/games/{gameId}/area')
   Future<GameAreaModel> getArea(@Path('gameId') int gameId);
+
+  /// 가장 최근 공개된 도둑 위치 목록 조회
+  ///
+  /// 재연결 후 누락된 LOCATION_REVEAL 이벤트를 보완하기 위해 호출.
+  /// 아직 위치 공개 전이면 빈 배열 반환.
+  @GET('/api/games/{gameId}/robbers/location')
+  Future<List<RobberLocationModel>> getRobberLastLocations(
+    @Path('gameId') int gameId,
+  );
 }

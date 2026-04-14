@@ -238,6 +238,170 @@ class _LeaveGameProviderElement
   int get gameId => (origin as LeaveGameProvider).gameId;
 }
 
+String _$kickMemberHash() => r'ae7dbd999b10ee9a7bcfd6768638c2ee8fbd5529';
+
+/// 멤버 강제 퇴장 (방장 전용)
+///
+/// 대기실에서 특정 참가자를 강제 퇴장시킵니다.
+/// 실패 시 DioException을 rethrow합니다.
+///
+/// Copied from [kickMember].
+@ProviderFor(kickMember)
+const kickMemberProvider = KickMemberFamily();
+
+/// 멤버 강제 퇴장 (방장 전용)
+///
+/// 대기실에서 특정 참가자를 강제 퇴장시킵니다.
+/// 실패 시 DioException을 rethrow합니다.
+///
+/// Copied from [kickMember].
+class KickMemberFamily extends Family<AsyncValue<void>> {
+  /// 멤버 강제 퇴장 (방장 전용)
+  ///
+  /// 대기실에서 특정 참가자를 강제 퇴장시킵니다.
+  /// 실패 시 DioException을 rethrow합니다.
+  ///
+  /// Copied from [kickMember].
+  const KickMemberFamily();
+
+  /// 멤버 강제 퇴장 (방장 전용)
+  ///
+  /// 대기실에서 특정 참가자를 강제 퇴장시킵니다.
+  /// 실패 시 DioException을 rethrow합니다.
+  ///
+  /// Copied from [kickMember].
+  KickMemberProvider call({required int gameId, required int participantId}) {
+    return KickMemberProvider(gameId: gameId, participantId: participantId);
+  }
+
+  @override
+  KickMemberProvider getProviderOverride(
+    covariant KickMemberProvider provider,
+  ) {
+    return call(gameId: provider.gameId, participantId: provider.participantId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'kickMemberProvider';
+}
+
+/// 멤버 강제 퇴장 (방장 전용)
+///
+/// 대기실에서 특정 참가자를 강제 퇴장시킵니다.
+/// 실패 시 DioException을 rethrow합니다.
+///
+/// Copied from [kickMember].
+class KickMemberProvider extends AutoDisposeFutureProvider<void> {
+  /// 멤버 강제 퇴장 (방장 전용)
+  ///
+  /// 대기실에서 특정 참가자를 강제 퇴장시킵니다.
+  /// 실패 시 DioException을 rethrow합니다.
+  ///
+  /// Copied from [kickMember].
+  KickMemberProvider({required int gameId, required int participantId})
+    : this._internal(
+        (ref) => kickMember(
+          ref as KickMemberRef,
+          gameId: gameId,
+          participantId: participantId,
+        ),
+        from: kickMemberProvider,
+        name: r'kickMemberProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$kickMemberHash,
+        dependencies: KickMemberFamily._dependencies,
+        allTransitiveDependencies: KickMemberFamily._allTransitiveDependencies,
+        gameId: gameId,
+        participantId: participantId,
+      );
+
+  KickMemberProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameId,
+    required this.participantId,
+  }) : super.internal();
+
+  final int gameId;
+  final int participantId;
+
+  @override
+  Override overrideWith(
+    FutureOr<void> Function(KickMemberRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: KickMemberProvider._internal(
+        (ref) => create(ref as KickMemberRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameId: gameId,
+        participantId: participantId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<void> createElement() {
+    return _KickMemberProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is KickMemberProvider &&
+        other.gameId == gameId &&
+        other.participantId == participantId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameId.hashCode);
+    hash = _SystemHash.combine(hash, participantId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin KickMemberRef on AutoDisposeFutureProviderRef<void> {
+  /// The parameter `gameId` of this provider.
+  int get gameId;
+
+  /// The parameter `participantId` of this provider.
+  int get participantId;
+}
+
+class _KickMemberProviderElement extends AutoDisposeFutureProviderElement<void>
+    with KickMemberRef {
+  _KickMemberProviderElement(super.provider);
+
+  @override
+  int get gameId => (origin as KickMemberProvider).gameId;
+  @override
+  int get participantId => (origin as KickMemberProvider).participantId;
+}
+
 String _$startGameHash() => r'088563a5006ad0f7e429592f6a2845617b447e3f';
 
 /// 게임 시작 기능

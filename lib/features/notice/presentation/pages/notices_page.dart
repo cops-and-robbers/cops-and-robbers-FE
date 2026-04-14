@@ -12,7 +12,7 @@ import '../../../../core/widgets/pagination_bar.dart';
 ///
 /// 공지사항 목록을 아코디언(펼침/접기) 형태로 표시하며,
 /// 하단에 페이지네이션 바를 제공합니다.
-/// 현재는 더미 데이터를 사용하며, API 엔드포인트 완성 후 연동 예정입니다.
+// TODO: API 연동 — Provider(Riverpod)로 공지사항 목록 조회 연결
 class NoticesPage extends StatefulWidget {
   const NoticesPage({super.key});
 
@@ -30,30 +30,9 @@ class _NoticesPageState extends State<NoticesPage> {
   /// 현재 페이지 (0-based)
   int _currentPage = 0;
 
-  /// 페이지당 표시할 공지사항 수
-  static const int _pageSize = 10;
-
-  /// 더미 공지사항 데이터
-  static final List<_NoticeItem> _allNotices = List.generate(
-    100,
-    (_) => _NoticeItem(
-      title: '옷 장착 오류 등 기타 오류 수정',
-      content: '오류 수정했습니다~',
-      date: DateTime(2026, 2, 10),
-    ),
-  );
-
-  /// 현재 페이지에 해당하는 공지사항 목록
-  List<_NoticeItem> get _currentNotices {
-    final start = (_currentPage * _pageSize)
-        .clamp(0, _allNotices.length)
-        .toInt();
-    final end = (start + _pageSize).clamp(start, _allNotices.length).toInt();
-    return _allNotices.sublist(start, end);
-  }
-
-  /// 전체 페이지 수
-  int get _totalPages => (_allNotices.length / _pageSize).ceil();
+  // TODO: API 연동 시 Provider에서 공지사항 목록과 전체 페이지 수를 가져올 것
+  List<_NoticeItem> get _currentNotices => [];
+  int get _totalPages => 0;
 
   @override
   void dispose() {
@@ -215,9 +194,7 @@ class _NoticesPageState extends State<NoticesPage> {
   }
 }
 
-/// 공지사항 더미 데이터 모델
-///
-/// API 연동 시 NoticeEntity로 대체 예정
+// TODO: API 연동 시 NoticeEntity로 대체
 class _NoticeItem {
   final String title;
   final String content;

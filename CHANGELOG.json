@@ -1,11 +1,50 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-08T08:53:57Z",
-    "currentVersion": "1.4.2",
+    "lastUpdated": "2026-04-14T15:34:30Z",
+    "currentVersion": "1.4.10",
     "projectType": "flutter",
-    "totalReleases": 71
+    "totalReleases": 72
   },
   "releases": [
+    {
+      "version": "1.4.10",
+      "project_type": "flutter",
+      "date": "2026-04-14",
+      "pr_number": 250,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **New Features**\n  * 크레딧 페이지 및 팀 멤버 프로필 기능 추가\n  * 게임 내 인터랙티브 튜토리얼 가이드 시스템 추가\n  * 채팅 신고 기능 추가\n  * 로비 호스트 권한으로 게임 멤버 강제 퇴장 기능 추가\n  * 도둑 최근 위치 조회 API 추가\n\n* **Bug Fixes**\n  * 게임 재접속 시 게임 상태 동기화 개선\n\n* **Documentation**\n  * 실시간 통신(WebSocket/STOMP) 스펙 문서 추가\n\n* **Chores**\n  * Source Available License(ELv2 기반) 추가\n  * 앱 버전 업데이트(1.4.2 → 1.4.10)",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "크레딧 페이지 및 팀 멤버 프로필 기능 추가",
+            "게임 내 인터랙티브 튜토리얼 가이드 시스템 추가",
+            "채팅 신고 기능 추가",
+            "로비 호스트 권한으로 게임 멤버 강제 퇴장 기능 추가",
+            "도둑 최근 위치 조회 API 추가"
+          ]
+        },
+        "bug_fixes": {
+          "title": "Bug Fixes",
+          "items": [
+            "게임 재접속 시 게임 상태 동기화 개선"
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "실시간 통신(WebSocket/STOMP) 스펙 문서 추가"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "Source Available License(ELv2 기반) 추가",
+            "앱 버전 업데이트(1.4.2 → 1.4.10)"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.4.2",
       "project_type": "flutter",

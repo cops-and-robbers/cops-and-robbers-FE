@@ -30,6 +30,7 @@ import '../features/session/data/models/game_settings_response.dart';
 import '../features/game/presentation/pages/game_page.dart';
 import '../features/notice/presentation/pages/notices_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
+import '../features/credits/presentation/pages/credits_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/pages/maintenance_page.dart';
 import '../core/widgets/pages/force_update_page.dart';
@@ -224,6 +225,18 @@ final routerProvider = Provider<GoRouter>((ref) {
               child: const SettingsPage(),
               isForward: true,
             ),
+            routes: [
+              // 히든 크레딧 페이지 (앱 버전 5탭으로 진입)
+              GoRoute(
+                path: 'credits',
+                name: RoutePaths.creditsName,
+                pageBuilder: (context, state) => buildDirectionalSlide(
+                  key: state.pageKey,
+                  child: const CreditsPage(),
+                  isForward: true,
+                ),
+              ),
+            ],
           ),
 
           // ==============================================================

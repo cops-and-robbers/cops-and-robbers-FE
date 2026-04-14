@@ -8,9 +8,10 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../data/models/chat_message_dto.dart';
-import '../../domain/constants/report_categories.dart';
+import '../../../report/domain/constants/report_categories.dart';
 
 /// 채팅 메시지 롱프레스 시 표시되는 컨텍스트 메뉴 오버레이
 ///
@@ -26,6 +27,7 @@ class ChatContextMenu extends StatefulWidget {
     required this.isDarkMode,
     required this.messageRect,
     required this.onBlock,
+    required this.onReport,
     required this.callerContext,
   });
 
@@ -34,6 +36,15 @@ class ChatContextMenu extends StatefulWidget {
   final bool isDarkMode;
   final Rect messageRect;
   final void Function(int participantId) onBlock;
+
+  /// 신고 콜백 (카테고리, 메시지 내용, 대상 participantId, 기타 사유)
+  final Future<void> Function({
+    required ReportCategory category,
+    required String messageContent,
+    required int reportedParticipantId,
+    String? etcReason,
+  })
+  onReport;
 
   /// dismiss 후에도 유효한 호출자 context (Snackbar/Dialog 표시용)
   final BuildContext callerContext;
@@ -45,6 +56,13 @@ class ChatContextMenu extends StatefulWidget {
     required bool isMe,
     required bool isDarkMode,
     required void Function(int participantId) onBlock,
+    required Future<void> Function({
+      required ReportCategory category,
+      required String messageContent,
+      required int reportedParticipantId,
+      String? etcReason,
+    })
+    onReport,
   }) {
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return Future.value();
@@ -63,6 +81,7 @@ class ChatContextMenu extends StatefulWidget {
         isDarkMode: isDarkMode,
         messageRect: messageRect,
         onBlock: onBlock,
+        onReport: onReport,
         callerContext: context,
       ),
     );
@@ -121,14 +140,31 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             submitText: '신고하기',
             isDestructive: true,
             isDarkMode: isDark,
-            onSubmit: (text) {
-              // TODO: 신고 API 호출 (category: other, content: text)
-              Navigator.of(widget.callerContext).pop();
-              AppSnackbar.show(
-                widget.callerContext,
-                message: '신고가 접수되었어요',
-                isDarkMode: isDark,
-              );
+            onSubmit: (text) async {
+              try {
+                await widget.onReport(
+                  category: ReportCategory.other,
+                  messageContent: widget.message.message,
+                  reportedParticipantId: widget.message.sender.participantId,
+                  etcReason: text,
+                );
+                if (!widget.callerContext.mounted) return;
+                Navigator.of(widget.callerContext).pop();
+                AppSnackbar.show(
+                  widget.callerContext,
+                  message: '신고가 접수되었어요',
+                  isDarkMode: isDark,
+                );
+              } catch (e) {
+                if (!widget.callerContext.mounted) return;
+                Navigator.of(widget.callerContext).pop();
+                AppSnackbar.show(
+                  widget.callerContext,
+                  message: e is AppException ? e.message : '신고에 실패했어요',
+                  backgroundColor: AppColors.red,
+                  isDarkMode: isDark,
+                );
+              }
             },
           ),
         ),
@@ -171,13 +207,28 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
           ],
         ),
       ),
-      onConfirm: () {
-        // TODO: 신고 API 호출
-        AppSnackbar.show(
-          widget.callerContext,
-          message: '신고가 접수되었어요',
-          isDarkMode: isDark,
-        );
+      onConfirm: () async {
+        try {
+          await widget.onReport(
+            category: category,
+            messageContent: widget.message.message,
+            reportedParticipantId: widget.message.sender.participantId,
+          );
+          if (!widget.callerContext.mounted) return;
+          AppSnackbar.show(
+            widget.callerContext,
+            message: '신고가 접수되었어요',
+            isDarkMode: isDark,
+          );
+        } catch (e) {
+          if (!widget.callerContext.mounted) return;
+          AppSnackbar.show(
+            widget.callerContext,
+            message: e is AppException ? e.message : '신고에 실패했어요',
+            backgroundColor: AppColors.red,
+            isDarkMode: isDark,
+          );
+        }
       },
     );
   }

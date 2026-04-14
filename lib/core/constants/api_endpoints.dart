@@ -45,8 +45,8 @@ class ApiEndpoints {
   /// Mock API 사용 여부 (.env에서 로드)
   /// Whether to use Mock API (loaded from .env)
   ///
-  /// **기본값**: `true`
-  /// **Default**: `true`
+  /// **기본값**: `false`
+  /// **Default**: `false`
   static bool get useMockApi =>
       dotenv.env['USE_MOCK_API']?.toLowerCase() == 'true';
 
@@ -74,15 +74,19 @@ class ApiEndpoints {
   // Game Participant API - 게임 참여자 관리
   // ============================================
 
-  /// 게임 방 참여
-  static String joinGame(int gameId) => '/api/games/$gameId/participants';
+  /// 게임 방 참여 (초대 코드를 body로 전달)
+  static const String joinGame = '/api/games/join';
 
   /// 게임 방 퇴장
-  static String leaveGame(int gameId) => '/api/games/$gameId/participants';
+  static String leaveGame(int gameId) => '/api/games/$gameId/leave';
 
   // ============================================
   // Lobby API - 게임 로비 상태 변경
   // ============================================
+
+  /// 멤버 강제 퇴장 (방장 전용)
+  static String kickMember(int gameId, int participantId) =>
+      '/api/games/$gameId/lobby/$participantId';
 
   /// 로비 팀 변경
   static String changeTeam(int gameId) => '/api/games/$gameId/lobby/team';
@@ -123,6 +127,10 @@ class ApiEndpoints {
   /// 맵 영역 조회 (플레이그라운드·감옥 중심 좌표 및 반경)
   static String gameArea(int gameId) => '/api/games/$gameId/area';
 
+  /// 가장 최근 공개된 도둑 위치 목록 조회 (재연결 후 발자국 복구용)
+  static String robberLastLocations(int gameId) =>
+      '/api/games/$gameId/robbers/location';
+
   // ============================================
   // User API - 사용자 정보
   // ============================================
@@ -141,4 +149,11 @@ class ApiEndpoints {
 
   /// 참여 중인 게임 정보 조회
   static const String myActiveGame = '/api/user/me/game';
+
+  // ============================================
+  // Report API - 신고
+  // ============================================
+
+  /// 채팅 신고
+  static const String reportChat = '/api/report/chat';
 }

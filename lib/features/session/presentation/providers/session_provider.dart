@@ -113,6 +113,20 @@ Future<LeaveGameResponse> leaveGame(Ref ref, int gameId) async {
   return response;
 }
 
+/// 멤버 강제 퇴장 (방장 전용)
+///
+/// 대기실에서 특정 참가자를 강제 퇴장시킵니다.
+/// 실패 시 DioException을 rethrow합니다.
+@riverpod
+Future<void> kickMember(
+  Ref ref, {
+  required int gameId,
+  required int participantId,
+}) async {
+  final dataSource = ref.read(sessionRemoteDataSourceProvider);
+  await dataSource.kickMember(gameId, participantId);
+}
+
 /// 게임 시작 기능
 ///
 /// 방장이 게임을 시작합니다.
