@@ -409,7 +409,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     await TutorialService.resetAll();
     if (!mounted) return;
 
-    AppSnackbar.show(context, message: '튜토리얼이 초기화되었어요. 앱을 재실행하면 적용돼요');
+    // HomePage는 settings 상위라 initState가 재실행되지 않음 → 신호로 튜토리얼 재노출 트리거
+    ref.read(tutorialResetSignalProvider.notifier).state++;
+    AppSnackbar.show(context, message: '튜토리얼이 초기화되었어요');
+    context.go(RoutePaths.home);
   }
 
   /// 로그아웃
