@@ -43,7 +43,7 @@ enum SocialType {
       fontPackage: 'font_awesome_flutter',
     ),
     SocialType.website => IconData(
-      FontAwesomeIcons.globe.codePoint,
+      FontAwesomeIcons.blog.codePoint,
       fontFamily: 'FontAwesomeSolid',
       fontPackage: 'font_awesome_flutter',
     ),
