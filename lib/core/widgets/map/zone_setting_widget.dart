@@ -52,6 +52,7 @@ class ZoneSettingWidget extends StatefulWidget {
     this.initialCenter,
     this.isDarkMode = false,
     this.valueTextStyle,
+    this.radiusChipKey,
   });
 
   /// 초기 반경 (미터)
@@ -111,6 +112,9 @@ class ZoneSettingWidget extends StatefulWidget {
 
   /// 값 텍스트 스타일 (InfoRadiusChip에 전달, null이면 기본 스타일)
   final TextStyle? valueTextStyle;
+
+  /// 반경 칩(InfoRadiusChip)에 부착할 GlobalKey (튜토리얼 타겟용)
+  final GlobalKey? radiusChipKey;
 
   @override
   State<ZoneSettingWidget> createState() => ZoneSettingWidgetState();
@@ -392,6 +396,8 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     }
 
     return InfoRadiusChip(
+      // 튜토리얼 타겟 키 (외부에서 주입된 경우)
+      key: widget.radiusChipKey,
       prefix: '반경',
       value: displayValue,
       backgroundColor:

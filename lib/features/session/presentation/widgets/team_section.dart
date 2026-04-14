@@ -21,6 +21,7 @@ class TeamSection extends StatelessWidget {
     this.hostParticipantId,
     this.myParticipantId,
     this.onAddSlotTap,
+    this.addSlotKey,
     this.badge,
     this.onMemberTap,
     this.isDarkMode = false,
@@ -50,6 +51,9 @@ class TeamSection extends StatelessWidget {
 
   /// + 버튼 카드 탭 콜백 (팀 변경용)
   final VoidCallback? onAddSlotTap;
+
+  /// + 버튼 카드 GlobalKey (튜토리얼 하이라이트용)
+  final GlobalKey? addSlotKey;
 
   /// 팀명 옆 배지 위젯 (null이면 인원 카운트 표시)
   ///
@@ -177,7 +181,11 @@ class TeamSection extends StatelessWidget {
         children: [
           // 첫 번째 칸: + 버튼 카드 (대기실에서만 표시)
           if (hasAddSlot)
-            AddSlotCard(onTap: onAddSlotTap, isDarkMode: isDarkMode),
+            AddSlotCard(
+              key: addSlotKey,
+              onTap: onAddSlotTap,
+              isDarkMode: isDarkMode,
+            ),
           // 참가자 카드 (방장 우선)
           ...sorted.map(
             (member) => ParticipantCard(

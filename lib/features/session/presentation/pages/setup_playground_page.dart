@@ -8,6 +8,9 @@ import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
+import '../../../../core/services/tutorial/tutorial_keys.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
+import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
@@ -60,6 +63,16 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   final _storageService = SessionDraftStorageService();
 
   // ============================================
+  // Tutorial Keys
+  // ============================================
+
+  /// 지도 영역(Expanded) 튜토리얼 타겟 키
+  final _tutorialKeyMap = GlobalKey();
+
+  /// 반경 칩 튜토리얼 타겟 키
+  final _tutorialKeyRadiusChip = GlobalKey();
+
+  // ============================================
   // Lifecycle Methods
   // ============================================
 
@@ -94,7 +107,38 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
         _currentRadius = draft?.playgroundRadiusInMeters ?? 500.0;
         _isLoading = false;
       });
+
+      // 로딩 완료 후 다음 프레임에서 튜토리얼 트리거
+      // ZoneSettingWidget이 렌더된 뒤에 실행해야 GlobalKey가 유효함
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showTutorialIfNeeded();
+      });
     }
+  }
+
+  /// 처음 방문한 사용자에게 튜토리얼 표시
+  Future<void> _showTutorialIfNeeded() async {
+    final completed = await TutorialService.isCompleted(
+      TutorialKeys.setupPlayground,
+    );
+    if (completed || !mounted) return;
+
+    // ZoneSettingWidget 내부 초기화(위치 조회 등)를 기다리기 위한 지연
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: [
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyRadiusChip,
+          description: '여기를 누르면 반경을 직접 입력할 수 있어요',
+          align: TutorialAlign.bottom,
+        ),
+      ],
+      onFinish: () =>
+          TutorialService.markCompleted(TutorialKeys.setupPlayground),
+    );
   }
 
   // ============================================
@@ -197,6 +241,8 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
 
             // ZoneSettingWidget (지도 + 슬라이더)
             Expanded(
+              // 지도 영역 전체를 튜토리얼 타겟으로 지정
+              key: _tutorialKeyMap,
               child: ZoneSettingWidget(
                 initialCenter: _currentCenter,
                 initialRadius: _currentRadius,
@@ -210,6 +256,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                 onZoneChanged: _onZoneChanged,
                 isDarkMode: isDark,
                 valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
+                radiusChipKey: _tutorialKeyRadiusChip,
               ),
             ),
 

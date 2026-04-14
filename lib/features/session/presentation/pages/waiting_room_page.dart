@@ -36,6 +36,9 @@ import '../../data/models/lobby_info_response.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../providers/waiting_room_participants_provider.dart';
+import '../../../../core/services/tutorial/tutorial_keys.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
+import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../widgets/game_rules_content.dart';
 import '../widgets/team_section.dart';
 
@@ -105,6 +108,23 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 로비 STOMP 최초 연결 성공 여부
   bool _hasLobbyConnectedOnce = false;
+
+  // ── 튜토리얼용 GlobalKey ──────────────────────────────────────────────────
+  /// 팀 변경 버튼 (경찰팀 AddSlotCard)
+  final _tutorialKeyAddSlotPolice = GlobalKey();
+
+  /// 팀 변경 버튼 (도둑팀 AddSlotCard)
+  final _tutorialKeyAddSlotRobber = GlobalKey();
+
+  /// 준비 완료 / 게임 시작 버튼
+  final _tutorialKeyReadyButton = GlobalKey();
+
+  /// 앱바 초대 코드 영역
+  final _tutorialKeyInviteCode = GlobalKey();
+
+  /// 앱바 게임 규칙 버튼
+  final _tutorialKeyGameRules = GlobalKey();
+  // ─────────────────────────────────────────────────────────────────────────
 
   /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
   ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
@@ -421,13 +441,58 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ref.read(roleThemeProvider.notifier).setDarkMode(myTeam == 'ROBBER');
 
       // 방 생성 직후 초대코드 다이얼로그 표시 (팀 확정 후)
+      // 다이얼로그 닫힌 후 튜토리얼 트리거 (겹침 방지)
       if (_pendingInviteDialog && mounted) {
         _pendingInviteDialog = false;
-        _showInviteCodeDialog();
+        await _showInviteCodeDialog();
+      }
+
+      // 참가자 목록 로딩 완료 후 튜토리얼 트리거
+      if (mounted) {
+        _showTutorialIfNeeded();
       }
     } finally {
       _isFetchingParticipants = false;
     }
+  }
+
+  /// 대기실 튜토리얼 (최초 1회)
+  ///
+  /// 참가자 데이터가 로딩된 이후에 호출되므로 UI가 완전히 구성된 상태에서 실행됩니다.
+  Future<void> _showTutorialIfNeeded() async {
+    final completed = await TutorialService.isCompleted(
+      TutorialKeys.waitingRoom,
+    );
+    if (completed || !mounted) return;
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: [
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyAddSlotPolice,
+          description: '이 버튼을 눌러 경찰팀으로 이동할 수 있어요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyAddSlotRobber,
+          description: '이 버튼을 눌러 도둑팀으로 이동할 수 있어요',
+          align: TutorialAlign.bottom,
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyInviteCode,
+          description: '친구에게 초대 코드를 공유할 수 있어요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyGameRules,
+          description: '게임 설정을 확인할 수 있어요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyReadyButton,
+          description: '준비가 되면 눌러주세요',
+          align: TutorialAlign.top,
+        ),
+      ],
+      onFinish: () => TutorialService.markCompleted(TutorialKeys.waitingRoom),
+    );
   }
 
   /// 재연결 모달 표시
@@ -898,11 +963,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   }
 
   /// 초대코드 모달 (방 생성 직후 표시)
-  void _showInviteCodeDialog() {
+  Future<void> _showInviteCodeDialog() {
     final code = _inviteCode!;
     final isDark = ref.read(roleThemeProvider);
 
-    AppDialog.show(
+    return AppDialog.show(
       context: context,
       isDarkMode: isDark,
       title: '초대코드를 생성했어요',
@@ -1029,6 +1094,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('POLICE')
                                 : null,
+                            addSlotKey: _tutorialKeyAddSlotPolice,
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
                                 ? (member) {
@@ -1065,6 +1131,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('ROBBER')
                                 : null,
+                            addSlotKey: _tutorialKeyAddSlotRobber,
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
                                 ? (member) {
@@ -1081,10 +1148,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                     ),
             ),
 
-            // 하단 버튼
+            // 하단 버튼 (준비 / 게임 시작) — 튜토리얼 하이라이트 대상
             SafeArea(
               top: false,
               child: Padding(
+                key: _tutorialKeyReadyButton,
                 padding: EdgeInsets.fromLTRB(
                   AppSpacing.horizontal20,
                   AppSpacing.vertical12,
@@ -1131,6 +1199,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ),
       title: _inviteCode != null
           ? GestureDetector(
+              // 초대 코드 영역 — 튜토리얼 하이라이트 대상
+              key: _tutorialKeyInviteCode,
               onTap: _showInviteCodeDialog,
               child: IntrinsicWidth(
                 child: Column(
@@ -1179,6 +1249,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           ),
         ),
         GestureDetector(
+          // 게임 설정 버튼 — 튜토리얼 하이라이트 대상
+          key: _tutorialKeyGameRules,
           onTap: () =>
               context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
           behavior: HitTestBehavior.opaque,

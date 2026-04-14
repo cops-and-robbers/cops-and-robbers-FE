@@ -26,6 +26,7 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../credits/presentation/pages/credits_page.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
 import 'legal_document_page.dart';
 
 /// 설정 페이지
@@ -146,6 +147,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _buildVersionItem(),
             _buildItemDivider(),
             _buildMenuItem(text: '버그 제보', onTap: _onBugReport),
+            _buildItemDivider(),
+            _buildMenuItem(text: '튜토리얼 초기화', onTap: _onResetTutorial),
             _buildItemDivider(),
             _buildMenuItem(
               text: '이용약관',
@@ -391,6 +394,22 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ),
       ),
     );
+  }
+
+  /// 튜토리얼 초기화
+  Future<void> _onResetTutorial() async {
+    final result = await AppDialog.confirm(
+      context: context,
+      title: '튜토리얼 초기화',
+      message: '모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?',
+      confirmText: '초기화',
+    );
+    if (result != true || !mounted) return;
+
+    await TutorialService.resetAll();
+    if (!mounted) return;
+
+    AppSnackbar.show(context, message: '튜토리얼이 초기화되었어요. 앱을 재실행하면 적용돼요');
   }
 
   /// 로그아웃

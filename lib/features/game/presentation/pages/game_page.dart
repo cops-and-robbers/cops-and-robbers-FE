@@ -13,6 +13,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/services/tutorial/tutorial_keys.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
+import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -81,6 +84,13 @@ class GamePage extends ConsumerStatefulWidget {
 class _GamePageState extends ConsumerState<GamePage>
     with WidgetsBindingObserver {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
+
+  // 튜토리얼 하이라이트 대상 키
+  final _tutorialKeyTimer = GlobalKey();
+  final _tutorialKeyParticipants = GlobalKey();
+  final _tutorialKeyMapReturn = GlobalKey();
+  final _tutorialKeyQrButton = GlobalKey();
+
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
   bool _isCheckingGameStatus = false;
@@ -225,6 +235,67 @@ class _GamePageState extends ConsumerState<GamePage>
     _loadGameArea();
     _showPoliceTimerIfNeeded();
     _initSettingsAndStartMessages();
+
+    // 게임 초기화 완료 후 튜토리얼 (첫 진입 시 1회만)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showTutorialIfNeeded();
+    });
+  }
+
+  /// 게임 화면 튜토리얼 표시 (미완료 시 1회만 실행)
+  Future<void> _showTutorialIfNeeded() async {
+    final completed = await TutorialService.isCompleted(TutorialKeys.game);
+    if (completed || !mounted) return;
+
+    // 지도/UI 위젯 렌더링 완료 대기
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: [
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyTimer,
+          description: '남은 게임 시간이에요',
+        ),
+        AppTutorialStyle.target(
+          keyTarget: _tutorialKeyParticipants,
+          description: '참가자 목록과 QR 체포/탈옥은 여기서 확인해요',
+        ),
+      ],
+      onFinish: () => TutorialService.markCompleted(TutorialKeys.game),
+    );
+  }
+
+  /// 참가자 목록 화면 튜토리얼 (지도 복귀 + QR 안내)
+  Future<void> _showParticipantsTutorialIfNeeded() async {
+    final completed = await TutorialService.isCompleted(
+      TutorialKeys.gameParticipants,
+    );
+    if (completed || !mounted) return;
+
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    final targets = [
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyMapReturn,
+        description: '지도 화면으로 돌아갈 수 있어요',
+      ),
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyQrButton,
+        description: widget.team == 'POLICE'
+            ? '도둑 참가자 카드를 누르거나 QR을 스캔해서 체포해요'
+            : '잡히면 경찰에게 QR을 보여주고, 경찰이 스캔하면 체포돼요',
+      ),
+    ];
+
+    AppTutorialStyle.show(
+      context: context,
+      targets: targets,
+      onFinish: () =>
+          TutorialService.markCompleted(TutorialKeys.gameParticipants),
+    );
   }
 
   /// 게임 설정 로드 후 게임 시작 시스템 메시지 발송
@@ -460,6 +531,72 @@ class _GamePageState extends ConsumerState<GamePage>
   void _loadGameArea() {
     if (widget.isDummy) return;
     ref.read(gameAreaProvider(_gameId));
+  }
+
+  /// WebSocket 재연결 성공 후 게임 상태 동기화
+  ///
+  /// STOMP는 끊김 구간의 이벤트를 재전송하지 않으므로,
+  /// 재연결 시 서버 참가자 목록을 직접 조회해 체포 현황과 남은 도둑 수를 보정합니다.
+  Future<void> _syncGameStateOnReconnect() async {
+    if (widget.isDummy || !mounted) return;
+
+    try {
+      // sync 요청 직전 상태 snapshot — sync 창에 STOMP가 추가한 변화 추적용
+      final before = ref.read(gameEventNotifierProvider);
+      final arrestedBefore = before.arrestedParticipantIds;
+      final escapedBefore = before.escapedParticipantIds;
+
+      // autoDispose provider이므로 ref.refresh로 최신 데이터 보장
+      final result = await ref.refresh(
+        fetchGameParticipantsProvider(_gameId).future,
+      );
+
+      if (!mounted) return;
+
+      // sync 요청~응답 사이에 STOMP가 반영한 ID delta 계산
+      // HTTP 응답(서버 snapshot)은 요청 시점 기준이라, 그 동안 STOMP로 들어온
+      // 신규 체포/탈옥을 덮어쓰지 않도록 delta를 별도로 추출해 layer한다.
+      final after = ref.read(gameEventNotifierProvider);
+      final stompNewArrests = after.arrestedParticipantIds.difference(
+        arrestedBefore,
+      );
+      final stompNewEscapes = after.escapedParticipantIds.difference(
+        escapedBefore,
+      );
+
+      // 서버 snapshot 기반 수감자 집합
+      final serverArrested = result.robbers
+          .where((p) => p.status == 'JAILED')
+          .map((p) => p.participantId)
+          .toSet();
+
+      // 서버 snapshot 위에 sync 창 delta layer:
+      //   - STOMP가 새로 체포한 사람은 추가
+      //   - STOMP가 새로 탈옥시킨 사람은 제외
+      final finalArrested = serverArrested
+          .union(stompNewArrests)
+          .difference(stompNewEscapes);
+
+      // 서버 기준 생존 수에 sync 창 delta를 반영 (0 ~ 전체 도둑 수 범위로 clamp)
+      final serverAlive = result.robbers
+          .where((p) => p.status == 'ALIVE')
+          .length;
+      final remainingThieves =
+          (serverAlive - stompNewArrests.length + stompNewEscapes.length).clamp(
+            0,
+            result.robbers.length,
+          );
+
+      ref
+          .read(gameEventNotifierProvider.notifier)
+          .syncFromParticipants(
+            arrestedIds: finalArrested,
+            remainingThieves: remainingThieves,
+          );
+    } catch (e) {
+      // 동기화 실패 시 게임 진행에 지장을 주지 않도록 예외를 삼킴
+      debugPrint('[GamePage] ⚠️ 재연결 후 상태 동기화 실패 (무시): $e');
+    }
   }
 
   /// 도둑 팀 GPS 위치 스트림 구독 및 서버 전송 시작
@@ -1116,15 +1253,22 @@ class _GamePageState extends ConsumerState<GamePage>
       prev,
       next,
     ) {
-      // 재연결 성공 → 도둑 팀 위치 즉시 재전송
+      // 재연결 성공 → 게임 상태 동기화 + 도둑 팀 위치 즉시 재전송
       if (next == StompConnectionState.connected &&
-          prev != StompConnectionState.connected &&
-          widget.team == 'ROBBER' &&
-          !widget.isDummy) {
-        if (_lastSentPosition != null) {
-          _sendPositionNow();
-        } else if (_locationSubscription == null) {
-          _startLocationSending();
+          prev != StompConnectionState.connected) {
+        // 끊김 구간 동안 누락된 체포·탈옥 이벤트를 서버 조회로 보정.
+        // 의도적으로 await하지 않음 — 아래 도둑 팀 위치 즉시 재전송이
+        // HTTP 응답을 기다리다 지연되지 않도록. 에러는 메서드 내부 try-catch에서 처리.
+        if (_hasGameEventConnectedOnce) {
+          unawaited(_syncGameStateOnReconnect());
+        }
+
+        if (widget.team == 'ROBBER' && !widget.isDummy) {
+          if (_lastSentPosition != null) {
+            _sendPositionNow();
+          } else if (_locationSubscription == null) {
+            _startLocationSending();
+          }
         }
       }
 
@@ -1275,6 +1419,7 @@ class _GamePageState extends ConsumerState<GamePage>
               child: Column(
                 children: [
                   SvgIconButton(
+                    key: _tutorialKeyMapReturn,
                     assetPath: 'assets/icons/icon_map.svg',
                     onPressed: () => setState(() => _showParticipants = false),
                     containerSize: 48,
@@ -1294,8 +1439,12 @@ class _GamePageState extends ConsumerState<GamePage>
               child: Column(
                 children: [
                   SvgIconButton(
+                    key: _tutorialKeyParticipants,
                     assetPath: 'assets/icons/icon_person.svg',
-                    onPressed: () => setState(() => _showParticipants = true),
+                    onPressed: () {
+                      setState(() => _showParticipants = true);
+                      _showParticipantsTutorialIfNeeded();
+                    },
                     containerSize: 48,
                     iconSize: 24,
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
@@ -1404,6 +1553,7 @@ class _GamePageState extends ConsumerState<GamePage>
   /// QR 버튼 (경찰: 스캔, 도둑: QR 표시)
   Widget _buildQrButton() {
     return SvgIconButton(
+      key: _tutorialKeyQrButton,
       assetPath: widget.team == 'POLICE'
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
@@ -1526,6 +1676,7 @@ class _GamePageState extends ConsumerState<GamePage>
         children: [
           // 중앙: 타이머 + 서브 타이머
           Column(
+            key: _tutorialKeyTimer,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // START 이벤트 수신 후 경과 시간 표시
