@@ -37,12 +37,13 @@ class CreditDetailPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Hero 프로필 이미지 (카드보다 큰 150.w, 여러 장이면 동전 뒤집기)
+              // Hero 프로필 이미지 — 상세에서는 카드보다 크게(220 원형)
               Hero(
                 tag: 'credit_${member.name}',
                 child: FlippingProfileImage(
                   assets: member.profileAssets,
-                  size: 150.w,
+                  width: 220.w,
+                  height: 220.w,
                 ),
               ),
               SizedBox(height: AppSpacing.vertical24),

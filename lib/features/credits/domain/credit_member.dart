@@ -84,15 +84,20 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '홍의민',
     role: 'Frontend',
-    profileAssets: ['assets/credits/member1.png'],
+    profileAssets: [
+      'assets/credits/FE-Hong1.jpeg',
+      'assets/credits/FE-Hong2.JPG',
+    ],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/EM-H20'),
-      SocialLink(type: SocialType.instagram, url: 'https://instagram.com/'),
-      SocialLink(type: SocialType.discord, url: 'https://discord.com/'),
-      SocialLink(type: SocialType.linkedin, url: 'https://linkedin.com/in/'),
-      SocialLink(type: SocialType.youtube, url: 'https://youtube.com/'),
-      SocialLink(type: SocialType.email, url: 'mailto:example@email.com'),
-      SocialLink(type: SocialType.website, url: 'https://example.com/'),
+      SocialLink(
+        type: SocialType.instagram,
+        url: 'https://www.instagram.com/e_m_hong',
+      ),
+      SocialLink(
+        type: SocialType.linkedin,
+        url: 'https://www.linkedin.com/in/eui-min-hong',
+      ),
     ],
   ),
   CreditMember(
@@ -105,20 +110,19 @@ const List<CreditMember> creditMembers = [
       'assets/credits/FE-Park4.jpeg',
     ],
     links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/chanbin'),
-      SocialLink(type: SocialType.linkedin, url: 'https://linkedin.com/in/'),
+      SocialLink(type: SocialType.github, url: 'https://github.com/INSANE-P'),
     ],
   ),
   CreditMember(
     name: '이창희',
     role: 'Backend',
-    profileAssets: [
-      'assets/credits/member3.png',
-      'assets/credits/BE-Lee.jpeg',
-    ],
+    profileAssets: ['assets/credits/BE-Lee.jpeg'],
     links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/changhee'),
-      SocialLink(type: SocialType.website, url: 'https://blog.example.com/'),
+      SocialLink(type: SocialType.github, url: 'https://github.com/chxghee'),
+      SocialLink(
+        type: SocialType.instagram,
+        url: 'https://www.instagram.com/chxghee',
+      ),
     ],
   ),
   CreditMember(
@@ -126,8 +130,14 @@ const List<CreditMember> creditMembers = [
     role: 'Backend',
     profileAssets: ['assets/credits/member4.png'],
     links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/sanghee'),
-      SocialLink(type: SocialType.instagram, url: 'https://instagram.com/'),
+      SocialLink(
+        type: SocialType.github,
+        url: 'https://github.com/SANGHEEJEONG',
+      ),
+      SocialLink(
+        type: SocialType.instagram,
+        url: 'https://www.instagram.com/shar_o.o_',
+      ),
     ],
   ),
   CreditMember(
@@ -135,8 +145,11 @@ const List<CreditMember> creditMembers = [
     role: 'Backend',
     profileAssets: ['assets/credits/member5.png'],
     links: [
-      SocialLink(type: SocialType.github, url: 'https://github.com/hyerim'),
-      SocialLink(type: SocialType.linkedin, url: 'https://linkedin.com/in/'),
+      SocialLink(type: SocialType.github, url: 'https://github.com/HyerimH'),
+      SocialLink(
+        type: SocialType.instagram,
+        url: 'https://www.instagram.com/h._xelim',
+      ),
     ],
   ),
   CreditMember(
@@ -144,10 +157,14 @@ const List<CreditMember> creditMembers = [
     role: 'Design',
     profileAssets: ['assets/credits/member6.png'],
     links: [
-      SocialLink(type: SocialType.instagram, url: 'https://instagram.com/'),
+      SocialLink(type: SocialType.github, url: 'https://github.com/jihee127'),
+      SocialLink(
+        type: SocialType.instagram,
+        url: 'https://www.instagram.com/jihee_o4',
+      ),
       SocialLink(
         type: SocialType.website,
-        url: 'https://portfolio.example.com/',
+        url: 'https://m.blog.naver.com/chic_sara',
       ),
     ],
   ),

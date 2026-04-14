@@ -50,7 +50,7 @@ class CreditsPage extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical32),
             // 멤버 카드 가로 스크롤 목록
             SizedBox(
-              height: 260.h,
+              height: 310.h,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: AppPadding.horizontal20,
