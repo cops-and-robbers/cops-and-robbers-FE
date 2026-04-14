@@ -100,9 +100,13 @@ class _SocialIconRow extends StatelessWidget {
 
   Widget _buildIcon(SocialLink link) {
     final size = 16.w;
-    if (link.type.svgAsset != null) {
-      return SvgPicture.asset(link.type.svgAsset!, width: size, height: size);
-    }
-    return Icon(link.type.iconData, size: size, color: AppColors.white);
+    return SvgPicture.asset(
+      link.type.svgAsset,
+      width: size,
+      height: size,
+      colorFilter: link.type.tintColor != null
+          ? ColorFilter.mode(link.type.tintColor!, BlendMode.srcIn)
+          : null,
+    );
   }
 }
