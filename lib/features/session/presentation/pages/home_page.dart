@@ -488,6 +488,12 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // 설정에서 튜토리얼 초기화 시 신호를 받아 재노출 (홈 인스턴스가 살아있어 initState 재실행 안 되는 문제 대응)
+    ref.listen<int>(tutorialResetSignalProvider, (previous, next) {
+      if (previous == null || previous == next) return;
+      _showTutorialIfNeeded();
+    });
+
     return Scaffold(
       backgroundColor: AppColors.white,
       resizeToAvoidBottomInset: false,
