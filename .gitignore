@@ -57,6 +57,7 @@ app.*.map.json
 # ====================================================================
 /.claude/settings.local.json
 /.report
+/.release-note
 .env
 /env.*
 /secrets.json
