@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "statusLine": {
+    "type": "command",
+    "command": "b=$(git branch --show-current 2>/dev/null || echo detached); c=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' '); printf '🎮 \\033[36m%s\\033[0m ✏️%s' \"$b\" \"$c\""
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command // \"\"' | grep -qE 'git[[:space:]]+push' && printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"git push는 CLAUDE.md 금지 규칙입니다 — 어떤 상황에서도 원격에 push하지 않습니다\"}}' || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=$(jq -r '.tool_input.file_path // .tool_response.filePath // \"\"'); [[ \"$file\" == *.dart ]] && [ -f \"$file\" ] && grep -qE '@(riverpod|freezed|RestApi|JsonSerializable)' \"$file\" && printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"⚠️ 코드 생성 어노테이션(@riverpod/@freezed/@RestApi/@JsonSerializable) 포함 파일 수정됨. 마무리 전 `dart run build_runner build --delete-conflicting-outputs` 실행을 검토하세요.\"}}' || true"
+          }
+        ]
+      }
+    ]
+  }
+}
