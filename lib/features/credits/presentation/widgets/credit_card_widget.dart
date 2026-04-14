@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../domain/credit_member.dart';
+import 'flipping_profile_image.dart';
 
 /// 크레딧 멤버 카드
 ///
@@ -38,10 +39,13 @@ class CreditCardWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // 프로필 이미지 (Hero로 상세 페이지와 연결)
+            // 프로필 이미지 (Hero로 상세 페이지와 연결, 여러 장이면 동전 뒤집기)
             Hero(
               tag: 'credit_${member.name}',
-              child: _buildProfileImage(110.w),
+              child: FlippingProfileImage(
+                assets: member.profileAssets,
+                size: 110.w,
+              ),
             ),
             SizedBox(height: AppSpacing.vertical16),
             // 이름
@@ -63,28 +67,4 @@ class CreditCardWidget extends StatelessWidget {
     );
   }
 
-  /// 프로필 이미지 (에셋 로드 실패 시 아이콘 fallback)
-  Widget _buildProfileImage(double size) {
-    return ClipOval(
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: Image.asset(
-          member.profileAsset,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: AppColors.black800,
-              alignment: Alignment.center,
-              child: Icon(
-                Icons.person,
-                size: size * 0.5,
-                color: AppColors.black400,
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
 }
