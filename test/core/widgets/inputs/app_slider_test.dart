@@ -5,6 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cops_and_robbers/core/widgets/inputs/app_slider.dart';
 
 /// AppSlider를 ScreenUtil 환경에서 띄우는 테스트 헬퍼
+///
+/// 기본 flutter_test view(800x600)에서 AppSlider가 그려질 때 일부
+/// RenderFlex overflow 경고가 출력될 수 있으나, 테스트 통과/실패에는
+/// 영향이 없으며 실제 기기(375 logical)에서는 overflow가 발생하지 않는다.
+/// Task 4/5 편집 모드 통합 시 hit-test 문제가 실제로 발생하면 그 시점에
+/// 명시적 폭 제약을 재검토한다.
 Future<void> _pumpSlider(
   WidgetTester tester, {
   required Widget child,
@@ -28,17 +34,16 @@ Future<void> _pumpSlider(
 void main() {
   group('AppSlider editable=false (기존 동작 회귀 방지)', () {
     testWidgets('값 텍스트를 탭해도 TextField가 나타나지 않는다', (tester) async {
-      double current = 30;
       await _pumpSlider(
         tester,
         child: AppSlider(
           label: '라운드',
-          value: current,
+          value: 30,
           min: 10,
           max: 180,
           unit: '분',
           divisions: 170,
-          onChanged: (v) => current = v,
+          onChanged: (_) {},
         ),
       );
 
