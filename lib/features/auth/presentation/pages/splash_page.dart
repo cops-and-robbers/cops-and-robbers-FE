@@ -14,6 +14,7 @@ import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/network/network_failure_detector.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../router/route_paths.dart';
@@ -71,7 +72,10 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     super.dispose();
   }
 
-  Future<void> _navigateToNextScreen({bool isRecovery = false}) async {
+  Future<void> _navigateToNextScreen({
+    bool isRecovery = false,
+    bool skipConnectivityCheck = false,
+  }) async {
     // 재진입 가드 — 리스너/재시도/initState가 동시에 호출해도 한 번만 진행
     if (_isNavigating) return;
     _isNavigating = true;
@@ -83,14 +87,19 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     try {
       // ================================================================
       // 선제 연결 체크 (콜드 스타트 오프라인 차단)
+      // 수동 재시도(skipConnectivityCheck=true)에선 건너뛴다.
+      // connectivity_plus의 보고값이 stale하거나 captive portal인 경우
+      // 사전 체크에서 false가 나와 버튼이 먹통처럼 보이는 문제를 피하기 위함.
       // ================================================================
-      final connectivity = ref.read(connectivityServiceProvider);
-      final connected = await connectivity.isConnected();
-      if (!connected) {
-        if (!mounted) return;
-        setState(() => _isOffline = true);
-        _subscribeConnectivity();
-        return;
+      if (!skipConnectivityCheck) {
+        final connectivity = ref.read(connectivityServiceProvider);
+        final connected = await connectivity.isConnected();
+        if (!connected) {
+          if (!mounted) return;
+          setState(() => _isOffline = true);
+          _subscribeConnectivity();
+          return;
+        }
       }
 
       // 복구 경로에서 진입한 경우 오프라인 플래그 해제
@@ -165,10 +174,20 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       }
 
       // 인증 확인 → 게임 상태 API 호출(재시도 포함)과 남은 딜레이를 병렬 실행
+      // 복구 경로(수동 재시도 포함)에선 재시도를 생략해 피드백 지연을 줄인다.
+      //
+      // ⚠️ 주의: 과거엔 `final f = _fetchActiveGameWithRetry(); await _waitRemaining();
+      //          await f;` 패턴을 썼는데, _waitRemaining 동안 f가 핸들러 없이
+      //          reject되면 Dart가 "unhandled async error"로 먼저 처리해버려
+      //          아래 `on NetworkException` 캐치가 기회를 잃는 문제가 있었다.
+      //          Future.wait는 첫 에러 발생 시점에 await 중인 호출자로 전파하므로
+      //          정상 catch 경로로 들어간다.
       try {
-        final statusFuture = _fetchActiveGameWithRetry();
-        await _waitRemaining(startTime, minDelay);
-        final status = await statusFuture;
+        final results = await Future.wait<Object?>([
+          _fetchActiveGameWithRetry(maxRetries: isRecovery ? 0 : 2),
+          _waitRemaining(startTime, minDelay),
+        ]);
+        final status = results[0] as UserGameStatusEntity;
 
         if (!mounted) return;
 
@@ -275,15 +294,36 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
   /// 수동 재시도 버튼 핸들러.
   ///
-  /// 버튼 탭 시점에 연결 여부를 다시 확인해서,
-  /// 연결되어 있으면 플로우 재진입, 아니면 UI 유지.
+  /// connectivity 사전 체크를 건너뛰고 실제 플로우(Remote Config / Auth /
+  /// 게임 상태 조회)를 바로 시도한다. 실제 API가 성공하면 연결됨으로 간주하고,
+  /// 네트워크성 실패가 나면 복구 루프가 오프라인 UI로 되돌리며 스낵바로 피드백한다.
+  ///
+  /// 어떤 예외가 나오더라도 사용자가 버튼을 눌렀는데 아무 피드백도 없는 상황을
+  /// 만들지 않도록, 호출을 try-catch로 감싸고 최종적으로 `_isOffline`이 true이면
+  /// 스낵바를 띄운다.
   Future<void> _onManualRetry() async {
     if (_isNavigating) return;
-    final service = ref.read(connectivityServiceProvider);
-    final connected = await service.isConnected();
-    if (!mounted) return;
-    if (!connected) return;
-    _navigateToNextScreen(isRecovery: true);
+    try {
+      await _navigateToNextScreen(
+        isRecovery: true,
+        skipConnectivityCheck: true,
+      );
+    } catch (e) {
+      debugPrint('⚠️ SplashPage: 수동 재시도 중 예외 - $e');
+      // 예기치 못한 예외 시에도 오프라인 UI로 되돌린다.
+      if (isNetworkFailure(e) && mounted && !_isOffline) {
+        await _returnToOffline();
+      }
+    }
+
+    // 복구 이후에도 여전히 오프라인이면 사용자에게 명시적 피드백 제공
+    if (mounted && _isOffline) {
+      AppSnackbar.show(
+        context,
+        message: '아직 네트워크에 연결되지 않았어요',
+        backgroundColor: AppColors.red,
+      );
+    }
   }
 
   /// 시작 시각 기준 최소 딜레이가 남아있으면 대기
@@ -322,12 +362,17 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     while (true) {
       try {
         return await ref.read(getMyActiveGameUsecaseProvider).execute();
-      } on DioException catch (e) {
+      } catch (e) {
+        // Repository는 DioException을 NetworkException 등 AppException으로 변환해
+        // 던지므로, DioException 만으로 감지하면 실패 케이스를 놓치게 된다.
+        // 네트워크성 실패만 재시도 대상이고, 그 외(5xx/파싱 등)는 즉시 전파한다.
+        if (!isNetworkFailure(e)) rethrow;
+
         attempt++;
         if (attempt > maxRetries) rethrow;
         debugPrint(
           '⚠️ SplashPage: 게임 상태 조회 실패 ($attempt/$maxRetries), '
-          '1초 후 재시도 - ${e.type}',
+          '1초 후 재시도 - $e',
         );
         await Future.delayed(const Duration(seconds: 1));
         if (!mounted) rethrow;
@@ -352,34 +397,44 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: Padding(
-          padding: AppPadding.horizontal24,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.wifi_off_rounded,
-                  size: 72.w,
-                  color: AppColors.black500,
-                ),
-                SizedBox(height: AppSpacing.vertical24),
-                Text(
-                  '인터넷 연결이 필요합니다',
-                  style: AppTextStyles.heading_20,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: AppSpacing.vertical16),
-                Text(
-                  '연결 상태를 확인한 후\n다시 시도해주세요',
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black600,
+          padding: AppPadding.all20,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.wifi_off_rounded,
+                        size: 72.w,
+                        color: AppColors.black500,
+                      ),
+                      SizedBox(height: AppSpacing.vertical24),
+                      Text(
+                        '인터넷 연결이 필요합니다',
+                        style: AppTextStyles.heading_20,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: AppSpacing.vertical16),
+                      Text(
+                        '연결 상태를 확인한 후\n다시 시도해주세요',
+                        style: AppTextStyles.paragraph_14.copyWith(
+                          color: AppColors.black600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                SizedBox(height: AppSpacing.vertical32),
-                AppButton(text: '다시 시도', onPressed: _onManualRetry),
-              ],
-            ),
+              ),
+              AppButton(
+                text: '다시 시도',
+                onPressed: _onManualRetry,
+                showBorder: false,
+              ),
+            ],
           ),
         ),
       ),
