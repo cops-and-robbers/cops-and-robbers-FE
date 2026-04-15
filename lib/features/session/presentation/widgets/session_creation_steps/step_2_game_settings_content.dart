@@ -87,7 +87,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           key: locationShareKey,
           label: '위치 공유 간격',
           value: locationShareMinutes.toDouble(),
-          min: 1,
+          min: 0,
           max: 30,
           unit: '분',
           divisions: 29, // 1~30, 1분 단위
