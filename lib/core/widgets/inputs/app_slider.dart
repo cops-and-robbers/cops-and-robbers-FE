@@ -1,9 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
+
+// TODO: 세 번째 편집 가능 텍스트 사용처가 생기면
+// EditableNumberText로 추출하여 공용화한다.
+// 참고 구현: lib/core/widgets/chips/info_radius_chip.dart
 
 /// 앱 전역에서 사용하는 공용 슬라이더 컴포넌트
 ///
@@ -335,9 +342,12 @@ class AppSlider extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // 라벨 (label_16 사용)
-        Text(
-          label,
-          style: AppTextStyles.label_16.copyWith(color: _effectiveLabelColor),
+        Flexible(
+          child: Text(
+            label,
+            style: AppTextStyles.label_16.copyWith(color: _effectiveLabelColor),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
 
         // 현재 값
@@ -348,7 +358,9 @@ class AppSlider extends StatelessWidget {
 
   /// 값 표시 위젯 (스타일 분리 지원)
   Widget _buildValueDisplay() {
-    // displayValue 사용 시 (레거시)
+    // 모드 1: displayValue 사용 시 (레거시)
+    // editable은 assert로 금지됐지만, release 빌드에서도 displayValue가
+    // 우선 반환되므로 자연스럽게 편집 비활성 상태가 된다.
     if (displayValue != null) {
       return Text(
         displayValue!,
@@ -358,45 +370,68 @@ class AppSlider extends StatelessWidget {
       );
     }
 
-    // prefix/suffix 사용 시 (복합 스타일)
+    // 모드 2: prefix/suffix 사용 시 (복합 스타일)
+    // 편집 모드를 지원하기 위해 기존 RichText 구조를 Row로 재구성한다.
+    // prefix/suffix는 Text 위젯으로 남기고, 값 부분만 조건부로 _EditableValueText로 교체.
     if (displayPrefix != null || displaySuffix != null) {
-      return RichText(
-        text: TextSpan(
+      final prefixStyle = AppTextStyles.paragraph_14_100.copyWith(
+        color: isDarkMode ? AppColors.black200 : AppColors.black800,
+      );
+      final valueStyle = (valueTextStyle ?? AppTextStyles.label_16).copyWith(
+        color: valueColor ?? _effectiveThumbColor,
+      );
+
+      final Widget valueWidget = editable
+          ? _EditableValueText(
+              value: value,
+              min: min,
+              max: max,
+              unit: unit,
+              textStyle: valueStyle,
+              onChanged: onChanged,
+              onEditingChanged: onEditingChanged,
+            )
+          : Text(
+              '${value.toInt()}$unit',
+              style: valueStyle,
+            );
+
+      return FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 설명 부분 (paragraph_14_100 + black800)
             if (displayPrefix != null)
-              TextSpan(
-                text: '$displayPrefix ',
-                style: AppTextStyles.paragraph_14_100.copyWith(
-                  color: isDarkMode ? AppColors.black200 : AppColors.black800,
-                ),
-              ),
-            // 값 부분 (valueTextStyle ?? label_16 + thumbColor)
-            TextSpan(
-              text: '${value.toInt()}$unit',
-              style: (valueTextStyle ?? AppTextStyles.label_16).copyWith(
-                color: valueColor ?? _effectiveThumbColor,
-              ),
-            ),
-            // 뒤 추가 텍스트 (valueTextStyle ?? label_16 + thumbColor)
+              Text('$displayPrefix ', style: prefixStyle),
+            valueWidget,
             if (displaySuffix != null)
-              TextSpan(
-                text: ' $displaySuffix',
-                style: (valueTextStyle ?? AppTextStyles.label_16).copyWith(
-                  color: valueColor ?? _effectiveThumbColor,
-                ),
-              ),
+              Text(' $displaySuffix', style: valueStyle),
           ],
         ),
       );
     }
 
-    // 기본 형식 (valueTextStyle ?? label_16 + thumbColor)
+    // 모드 3: 기본 (valueTextStyle ?? label_16 + thumbColor)
+    final valueStyle = (valueTextStyle ?? AppTextStyles.label_16).copyWith(
+      color: _effectiveValueColor,
+    );
+
+    if (editable) {
+      return _EditableValueText(
+        value: value,
+        min: min,
+        max: max,
+        unit: unit,
+        textStyle: valueStyle,
+        onChanged: onChanged,
+        onEditingChanged: onEditingChanged,
+      );
+    }
+
     return Text(
       '${value.toInt()}$unit',
-      style: (valueTextStyle ?? AppTextStyles.label_16).copyWith(
-        color: _effectiveValueColor,
-      ),
+      style: valueStyle,
     );
   }
 
@@ -516,5 +551,184 @@ class _CustomSliderTrackShape extends RoundedRectSliderTrackShape {
         offset.dy + (parentBox.size.height - trackHeight) / 2;
     final double trackWidth = parentBox.size.width;
     return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+  }
+}
+
+/// 슬라이더 값 영역의 편집 가능 텍스트
+///
+/// 비편집 모드에서는 일반 Text로 보이고, 탭하면 TextField로 전환된다.
+/// 입력값은 100ms 디바운스 후 [min]~[max] 범위로 클램핑되어 [onChanged]로 전달된다.
+///
+/// 이 위젯은 `_EditableValueText` 라는 이름 그대로 `app_slider.dart` 내부 private이며,
+/// `InfoRadiusChip`의 편집 로직과 의도적으로 동일한 메서드 구조를 가진다. 향후 세 번째
+/// 사용처가 생기면 둘을 `EditableNumberText`로 통합할 수 있도록 미러링 구조를 유지한다.
+class _EditableValueText extends StatefulWidget {
+  const _EditableValueText({
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.unit,
+    required this.textStyle,
+    required this.onChanged,
+    this.onEditingChanged,
+  });
+
+  /// 현재 값 (부모 슬라이더의 value)
+  final double value;
+
+  /// 클램핑 하한
+  final double min;
+
+  /// 클램핑 상한
+  final double max;
+
+  /// 단위 문자열 (예: '분', '명', 'm')
+  final String unit;
+
+  /// 표시·편집 모두에 적용되는 텍스트 스타일 (값 색상 포함)
+  final TextStyle textStyle;
+
+  /// 클램핑된 값을 부모에 전달하는 콜백
+  final ValueChanged<double> onChanged;
+
+  /// 편집 모드 진입/종료 콜백 (선택)
+  final ValueChanged<bool>? onEditingChanged;
+
+  @override
+  State<_EditableValueText> createState() => _EditableValueTextState();
+}
+
+class _EditableValueTextState extends State<_EditableValueText> {
+  bool _isEditing = false;
+  late final TextEditingController _textController;
+  late final FocusNode _focusNode;
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _focusNode.removeListener(_onFocusChanged);
+    _focusNode.dispose();
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant _EditableValueText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 편집 중에는 부모 prop으로 controller를 덮어쓰지 않는다 (사용자 입력 보호).
+    // 편집 종료 후 다음 _startEditing()에서 최신 widget.value로 다시 채워진다.
+  }
+
+  /// 포커스 해제 시 자동으로 편집 종료
+  void _onFocusChanged() {
+    if (!_focusNode.hasFocus && _isEditing) {
+      _completeEditing();
+    }
+  }
+
+  /// 편집 모드 진입: 값을 controller에 채우고 전체 선택 후 포커스 요청
+  void _startEditing() {
+    final text = widget.value.toInt().toString();
+    setState(() {
+      _isEditing = true;
+      _textController.text = text;
+      _textController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: text.length,
+      );
+    });
+    widget.onEditingChanged?.call(true);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _focusNode.requestFocus();
+    });
+  }
+
+  /// 입력 변경 시 100ms 디바운스로 부모 콜백 호출
+  void _onTextChanged(String _) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 100), _applyCurrentInput);
+  }
+
+  /// 현재 입력값을 클램핑해 부모에 전달. 빈 입력은 무시.
+  void _applyCurrentInput() {
+    final input = _textController.text.trim();
+    if (input.isEmpty) return;
+
+    final parsed = int.tryParse(input);
+    if (parsed == null) return;
+
+    final clamped = parsed.toDouble().clamp(widget.min, widget.max);
+    widget.onChanged(clamped);
+  }
+
+  /// 편집 종료: 디바운스 취소 후 즉시 적용, 포커스 해제, 편집 모드 끔
+  void _completeEditing() {
+    if (!_isEditing) return;
+
+    _debounce?.cancel();
+    _applyCurrentInput();
+
+    setState(() => _isEditing = false);
+    widget.onEditingChanged?.call(false);
+
+    if (_focusNode.hasFocus) _focusNode.unfocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isEditing) {
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _startEditing,
+        child: Text(
+          '${widget.value.toInt()}${widget.unit}',
+          style: widget.textStyle,
+        ),
+      );
+    }
+
+    // 편집 중: 좁은 폭의 TextField + 단위 텍스트
+    final maxDigits = widget.max.toInt().toString().length;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        IntrinsicWidth(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: 24.w),
+            child: TextField(
+              controller: _textController,
+              focusNode: _focusNode,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: false),
+              textAlign: TextAlign.center,
+              maxLength: maxDigits,
+              style: widget.textStyle,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+                border: InputBorder.none,
+                counterText: '',
+              ),
+              onChanged: _onTextChanged,
+              onSubmitted: (_) => _completeEditing(),
+            ),
+          ),
+        ),
+        Text(widget.unit, style: widget.textStyle),
+      ],
+    );
   }
 }
