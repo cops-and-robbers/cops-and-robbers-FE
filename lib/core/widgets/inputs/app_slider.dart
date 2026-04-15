@@ -116,7 +116,13 @@ class AppSlider extends StatelessWidget {
     this.minMaxColor,
     this.isDarkMode = false,
     this.valueTextStyle,
-  });
+    this.editable = false,
+    this.onEditingChanged,
+  }) : assert(
+         !(editable && displayValue != null),
+         'AppSlider: editable과 displayValue는 함께 사용할 수 없다 '
+         '(displayValue는 임의 문자열이라 숫자 입력 위치를 알 수 없음)',
+       );
 
   /// 라벨 텍스트 (예: '최대 인원', '반경')
   final String label;
@@ -198,6 +204,17 @@ class AppSlider extends StatelessWidget {
 
   /// 값 텍스트 스타일 (null이면 AppTextStyles.label_16 사용)
   final TextStyle? valueTextStyle;
+
+  /// 값 표시 영역 탭 시 숫자 키패드 입력 모드 활성화 (기본: false)
+  ///
+  /// `displayValue`와 함께 사용할 수 없다 (assert 실패).
+  /// `displayPrefix`/`displaySuffix`와는 호환된다.
+  final bool editable;
+
+  /// 편집 모드 진입/종료 콜백 (선택)
+  /// - true: 편집 시작 (탭 → TextField 표시)
+  /// - false: 편집 종료 (포커스 해제 또는 키보드 완료)
+  final ValueChanged<bool>? onEditingChanged;
 
   // ============================================
   // 기본값 Getter 메서드
