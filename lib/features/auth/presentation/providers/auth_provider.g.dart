@@ -154,7 +154,7 @@ final authStateProvider = AutoDisposeStreamProvider<User?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthStateRef = AutoDisposeStreamProviderRef<User?>;
-String _$authNotifierHash() => r'9b0b76926994b647632cb4cf20d729a754ef6ce2';
+String _$authNotifierHash() => r'f02c6a8242c0e6481bebfec269d47e3e462e674e';
 
 /// 인증 상태를 관리하는 Notifier
 ///
