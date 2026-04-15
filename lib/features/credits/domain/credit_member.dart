@@ -1,17 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/painting.dart';
 
 /// 소셜 링크 타입
 ///
-/// SVG 아이콘이 있는 타입은 svgAsset 경로 제공, 없는 타입은 FontAwesome IconData 제공.
+/// 모든 타입은 SVG 에셋을 사용한다. (tree-shake-icons 최적화 충돌 방지)
 enum SocialType {
   github,
   instagram,
   discord,
   linkedin,
   youtube,
-  email,
-  website;
+  website,
+  blog;
 
   /// UI에 표시할 라벨
   String get label => switch (this) {
@@ -20,35 +19,29 @@ enum SocialType {
     SocialType.discord => 'Discord',
     SocialType.linkedin => 'LinkedIn',
     SocialType.youtube => 'YouTube',
-    SocialType.email => 'Email',
     SocialType.website => 'Website',
+    SocialType.blog => 'Blog',
   };
 
-  /// SVG 에셋 경로 (null이면 FontAwesome IconData 사용)
-  String? get svgAsset => switch (this) {
+  /// SVG 에셋 경로
+  String get svgAsset => switch (this) {
     SocialType.github => 'assets/icons/github.svg',
     SocialType.instagram => 'assets/icons/instagram.svg',
     SocialType.discord => 'assets/icons/discord.svg',
     SocialType.linkedin => 'assets/icons/linkedin.svg',
     SocialType.youtube => 'assets/icons/youtube.svg',
-    SocialType.email => null,
-    SocialType.website => null,
+    SocialType.website => 'assets/icons/website.svg',
+    SocialType.blog => 'assets/icons/blog.svg',
   };
 
-  /// FontAwesome fallback 아이콘 (SVG가 없는 타입용)
-  IconData get iconData => switch (this) {
-    SocialType.email => IconData(
-      FontAwesomeIcons.envelope.codePoint,
-      fontFamily: 'FontAwesomeSolid',
-      fontPackage: 'font_awesome_flutter',
-    ),
-    SocialType.website => IconData(
-      FontAwesomeIcons.blog.codePoint,
-      fontFamily: 'FontAwesomeSolid',
-      fontPackage: 'font_awesome_flutter',
-    ),
-    // SVG 아이콘이 있는 타입은 iconData를 사용하지 않음
-    _ => Icons.link,
+  /// 타입별 고유 색상 (null이면 기본 white 사용)
+  ///
+  /// website/blog는 stroke 기반 SVG라 tint 적용이 가능하다.
+  /// github/instagram 등 브랜드 SVG는 원본 색을 유지하므로 null.
+  Color? get tintColor => switch (this) {
+    SocialType.website => const Color(0xFF4A90E2), // 스카이블루 — 웹/인터넷
+    SocialType.blog => const Color(0xFF03C75A), // 네이버 그린
+    _ => null,
   };
 }
 
@@ -97,6 +90,10 @@ const List<CreditMember> creditMembers = [
       SocialLink(
         type: SocialType.linkedin,
         url: 'https://www.linkedin.com/in/eui-min-hong',
+      ),
+      SocialLink(
+        type: SocialType.website,
+        url: 'https://eui-min-hong.github.io/',
       ),
     ],
   ),
@@ -163,7 +160,7 @@ const List<CreditMember> creditMembers = [
         url: 'https://www.instagram.com/jihee_o4',
       ),
       SocialLink(
-        type: SocialType.website,
+        type: SocialType.blog,
         url: 'https://m.blog.naver.com/chic_sara',
       ),
     ],

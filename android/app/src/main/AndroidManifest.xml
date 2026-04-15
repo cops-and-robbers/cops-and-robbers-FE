@@ -3,6 +3,10 @@
     <!-- Internet permission for FCM communication -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- 네트워크 연결 상태 조회 (스플래시 오프라인 가드용) -->
+    <!-- Network connectivity state for splash offline guard -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <!-- 알림 권한 (Android 13+) -->
     <!-- Notification permission for Android 13+ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>

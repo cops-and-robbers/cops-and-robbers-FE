@@ -100,11 +100,14 @@ class CreditDetailPage extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // SVG 아이콘이 있으면 SVG, 없으면 FontAwesome Icon
-            if (link.type.svgAsset != null)
-              SvgPicture.asset(link.type.svgAsset!, width: 20.w, height: 20.w)
-            else
-              Icon(link.type.iconData, size: 18.w, color: AppColors.white),
+            SvgPicture.asset(
+              link.type.svgAsset,
+              width: 20.w,
+              height: 20.w,
+              colorFilter: link.type.tintColor != null
+                  ? ColorFilter.mode(link.type.tintColor!, BlendMode.srcIn)
+                  : null,
+            ),
             SizedBox(width: AppSpacing.horizontal6),
             Text(
               link.type.label,
