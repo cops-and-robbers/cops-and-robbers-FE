@@ -1,9 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "statusLine": {
-    "type": "command",
-    "command": "b=$(git branch --show-current 2>/dev/null || echo detached); c=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' '); printf '🎮 \\033[36m%s\\033[0m ✏️%s' \"$b\" \"$c\""
-  },
   "hooks": {
     "PreToolUse": [
       {
