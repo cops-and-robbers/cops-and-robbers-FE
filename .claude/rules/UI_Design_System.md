@@ -83,13 +83,16 @@
 ```dart
 // ✅ 올바른 예
 Container(color: AppColors.white)
-Text('안녕', style: TextStyle(color: AppColors.black600))
+Icon(Icons.check, color: AppColors.blue500)
 BoxDecoration(color: AppColors.blue100)
+// 텍스트는 AppTextStyles를 기반으로 색상만 override (§2.3의 AppTextStyles 원칙 준수)
+Text('안녕', style: AppTextStyles.body1.copyWith(color: AppColors.black600))
 
 // ❌ 잘못된 예
 Container(color: Color(0xFFFFFFFF))           // 하드코딩 금지
 Container(color: Colors.white)                 // Material 기본 색상 금지
-Text('안녕', style: TextStyle(color: Color(0xFF4A90E2)))  // HEX 금지
+Text('안녕', style: TextStyle(color: AppColors.black600))  // TextStyle 직접 생성 금지
+Text('안녕', style: TextStyle(color: Color(0xFF4A90E2)))  // HEX + TextStyle 직접 생성 금지
 ```
 
 #### ✅ 규칙 2: 투명도는 흑백 계열 상수로 대체

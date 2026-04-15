@@ -925,11 +925,16 @@ git commit -m "feat(splash): dispose 훅 및 오프라인 인라인 UI 추가"
 
 ---
 
-## Task 8: 오프라인 UI 렌더링 위젯 테스트
+## Task 8: 오프라인 UI 구조 가드 위젯 테스트
 
-`SplashPage`의 전체 플로우를 mocking하는 건 의존성이 많아 과도하므로, **오프라인 UI 분기만 핀포인트로 검증**한다. `_isOffline = true` 상태일 때 렌더링되는 요소(아이콘, 타이틀, 재시도 버튼)를 확인한다.
+`SplashPage`의 실제 오프라인 분기(`_isOffline` 전환, Provider 연계, 선제 체크)를 end-to-end로 검증하려면 Remote Config, Auth, 게임 상태 API, GoRouter 등 수많은 의존성을 override해야 한다. 이 테스트 비용이 스코프 대비 과도하다고 판단해, **full integration 테스트 대신 "오프라인 UI 구조 가드(structural guard)"만 수행**한다.
 
-이를 위해 `SplashPage` 내부를 수정할 필요 없이, 테스트에서 `ProviderScope.overrides`로 `connectivityServiceProvider`만 오프라인 상태를 리턴하도록 override한 뒤 초기 pump 후 UI를 검증한다.
+즉 이 테스트는 `SplashPage`의 프로덕션 분기를 직접 검증하지 않는다. 대신 `SplashPage._buildOfflineView`와 동일한 위젯 트리를 재현하는 **테스트 전용 하네스(`_OfflineViewHarness`)** 를 만들어, 오프라인 뷰가 가져야 할 필수 요소(아이콘·타이틀·재시도 버튼)가 깨지지 않았는지 가드한다. `SplashPage` 내부 구현을 변경해 필수 요소가 사라지는 경우, 이 하네스 역시 수동으로 함께 업데이트되어야 한다는 것을 주석으로 명시한다.
+
+**한계 및 대응:**
+- 프로덕션 코드(`SplashPage._isOffline` 전환, `connectivityServiceProvider` 연계, 자동 복구 스트림 구독)는 이 테스트로 커버되지 않는다.
+- 위 프로덕션 분기는 Task 9의 **수동 QA 시나리오 A~E** (기내 모드 토글)로 검증한다.
+- 추후 full-stack 위젯 테스트를 추가하려면 별도 이슈로 트래킹한다 (테스트 하네스 공용화 + 의존성 override 도우미 필요).
 
 **Files:**
 - Create: `test/features/auth/presentation/pages/splash_offline_ui_test.dart`
@@ -974,12 +979,13 @@ void main() {
       (tester) async {
         final fakeConnectivity = _OfflineConnectivity();
 
-        // SplashPage 전체를 띄우는 건 Remote Config 등 많은 의존성이 필요해
-        // 과도하다. 대신 _buildOfflineView와 동일한 위젯 트리를 직접 구성하여
-        // 디자인 상수 사용과 렌더링을 검증한다.
+        // NOTE: 이 테스트는 SplashPage의 실제 오프라인 분기를 검증하지 않는다.
+        // Remote Config/Auth/GameStatus/GoRouter 등 의존성 세팅 비용이 과도해,
+        // 대신 _buildOfflineView와 동일한 구조를 재현한 테스트 전용 하네스를
+        // 렌더링하여 "필수 요소가 깨지지 않았는가"만 구조적으로 가드한다.
         //
-        // 이 테스트는 "오프라인 상태일 때 화면이 깨지지 않고 필수 요소가
-        // 존재하는가"를 가드한다.
+        // 프로덕션 분기(_isOffline 전환, provider 연계, 자동 복구)는
+        // Task 9의 수동 QA 시나리오에서 검증한다.
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -1009,11 +1015,10 @@ void main() {
   });
 }
 
-/// 테스트 전용 하네스 — SplashPage._buildOfflineView와 동일한 구조를
-/// 재현하여 디자인 토큰 사용이 깨지지 않았는지 가드한다.
-///
-/// 이 하네스는 SplashPage 내부 구현이 바뀌면 함께 업데이트되어야 하는
-/// "변경 감지 가드" 역할을 한다.
+/// 테스트 전용 하네스 — SplashPage._buildOfflineView와 동일한 필수 요소를
+/// 재현한다. 이 하네스는 프로덕션 위젯과 직접 연결되지 않으므로
+/// SplashPage 내부 구현이 바뀌면 수동으로 함께 업데이트해야 하는
+/// "변경 감지 스냅샷" 역할을 한다.
 class _OfflineViewHarness extends StatelessWidget {
   const _OfflineViewHarness();
 

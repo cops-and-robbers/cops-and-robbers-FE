@@ -71,7 +71,7 @@ Data Layer (외부 시스템 통신)
 
 **상태**: ✅ 모든 기능이 동일한 폴더 구조를 따름
 
-```
+```text
 lib/features/{feature}/
 ├── data/
 │   ├── datasources/    # Retrofit, STOMP, Local Storage
@@ -389,7 +389,7 @@ state.when(
 **상태**: ✅ STOMP WebSocket에 Broadcast StreamController 사용
 
 **흐름**:
-```
+```text
 STOMP 서버 → STOMP Frame → DataSource._handleMessage()
   → DTO 파싱 → StreamController.add()
   → Notifier._sub.listen() → state.copyWith() → UI rebuild
@@ -508,7 +508,7 @@ int _calculateBackoffDelay(int attempt) {
 
 **위치**: `lib/core/errors/app_exception.dart`
 
-```
+```text
 AppException (abstract)
 ├── NetworkException
 ├── AuthException
@@ -635,7 +635,7 @@ await forceLogout?.call();
 
 ### 패턴 선택 플로우
 
-```
+```text
 Q1. 비동기 외부 데이터에 접근하나?
   Yes → Repository Pattern (Domain 인터페이스 + Data 구현체)
   No  → Q2
