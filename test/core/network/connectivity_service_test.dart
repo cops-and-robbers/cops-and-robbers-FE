@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 class FakeConnectivity implements Connectivity {
   FakeConnectivity({List<ConnectivityResult>? initial})
-      : _current = initial ?? [ConnectivityResult.none];
+    : _current = initial ?? [ConnectivityResult.none];
 
   List<ConnectivityResult> _current;
   final StreamController<List<ConnectivityResult>> _controller =
@@ -21,7 +21,8 @@ class FakeConnectivity implements Connectivity {
   Future<List<ConnectivityResult>> checkConnectivity() async => _current;
 
   @override
-  Stream<List<ConnectivityResult>> get onConnectivityChanged => _controller.stream;
+  Stream<List<ConnectivityResult>> get onConnectivityChanged =>
+      _controller.stream;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

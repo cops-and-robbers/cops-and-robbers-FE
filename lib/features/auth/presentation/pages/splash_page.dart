@@ -213,9 +213,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
           return;
         }
         // 비복구 모드 — 기존 동작 유지 (홈 fallback).
-        debugPrint(
-          '⚠️ SplashPage: 게임 상태 조회 실패 (Network), 홈으로 이동 - ${e.code}',
-        );
+        debugPrint('⚠️ SplashPage: 게임 상태 조회 실패 (Network), 홈으로 이동 - ${e.code}');
         await _waitRemaining(startTime, minDelay);
         if (mounted) context.go(RoutePaths.home);
       } on DioException catch (e) {
@@ -259,8 +257,9 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   void _subscribeConnectivity() {
     _connectivitySub?.cancel();
     final service = ref.read(connectivityServiceProvider);
-    _connectivitySub = service.onConnectivityChanged
-        .listen(_handleConnectivityChange);
+    _connectivitySub = service.onConnectivityChanged.listen(
+      _handleConnectivityChange,
+    );
   }
 
   /// 연결 상태 변화 콜백 — 자동 복구 시도.
@@ -378,10 +377,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: AppSpacing.vertical32),
-                AppButton(
-                  text: '다시 시도',
-                  onPressed: _onManualRetry,
-                ),
+                AppButton(text: '다시 시도', onPressed: _onManualRetry),
               ],
             ),
           ),
