@@ -186,6 +186,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
@@ -193,10 +194,10 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                       AppSlider(
                         label: '위치 공유 간격',
                         value: _locationShareMinutes.toDouble(),
-                        min: 1,
+                        min: 0,
                         max: 30,
                         unit: '분',
-                        divisions: 29,
+                        divisions: 30,
                         onChanged: (v) =>
                             setState(() => _locationShareMinutes = v.toInt()),
                         isDarkMode: isDark,
@@ -214,6 +215,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
@@ -244,6 +246,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
                     ],
                   ),

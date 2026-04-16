@@ -7,7 +7,7 @@ import '../../../../../core/widgets/inputs/app_slider.dart';
 ///
 /// 게임 규칙을 설정합니다:
 /// - 라운드 제한 시간 (10~180분)
-/// - 위치 공유 간격 (1~30분)
+/// - 위치 공유 간격 (0~30분)
 /// - 경찰 시작 시간 (도둑 시작 후 0~10분 뒤)
 class Step2GameSettingsContent extends StatelessWidget {
   const Step2GameSettingsContent({
@@ -78,6 +78,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           divisions: 170, // 10~180, 1분 단위
           onChanged: (value) => onRoundDurationChanged(value.toInt()),
           isDarkMode: isDarkMode,
+          editable: true,
         ),
 
         SizedBox(height: AppSpacing.vertical8),
@@ -87,12 +88,14 @@ class Step2GameSettingsContent extends StatelessWidget {
           key: locationShareKey,
           label: '위치 공유 간격',
           value: locationShareMinutes.toDouble(),
-          min: 1,
+          min: 0,
           max: 30,
           unit: '분',
-          divisions: 29, // 1~30, 1분 단위
+          divisions: 30, // 0~30, 1분 단위
           onChanged: (value) => onLocationShareChanged(value.toInt()),
           isDarkMode: isDarkMode,
+          editable: true,
+          warningText: locationShareMinutes == 0 ? '도둑의 위치가 공유되지 않아요!' : null,
         ),
 
         SizedBox(height: AppSpacing.vertical8),
@@ -110,6 +113,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           displaySuffix: " 뒤",
           onChanged: (value) => onPoliceWaitChanged(value.toInt()),
           isDarkMode: isDarkMode,
+          editable: true,
         ),
       ],
     );

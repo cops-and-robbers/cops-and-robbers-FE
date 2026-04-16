@@ -89,7 +89,7 @@ class _SessionCreationFlowPageState
 
   // Step 2: 게임 설정
   int _roundDurationMinutes = 30;
-  int _locationShareMinutes = 1;
+  int _locationShareMinutes = 5;
   int _policeWaitMinutes = 5;
 
   // ============================================
@@ -165,7 +165,7 @@ class _SessionCreationFlowPageState
         return [
           AppTutorialStyle.target(
             keyTarget: _tutorialKeyRoundDuration,
-            description: '한 라운드의 제한 시간이에요',
+            description: '한 라운드의 제한 시간이에요\n숫자를 탭하면 직접 입력할 수 있어요',
           ),
           AppTutorialStyle.target(
             keyTarget: _tutorialKeyLocationShare,
@@ -196,7 +196,7 @@ class _SessionCreationFlowPageState
         _prisonRadiusMeters = draft.jailRadiusInMeters;
         _maxParticipants = draft.maxParticipants ?? 10;
         _roundDurationMinutes = draft.roundDurationMinutes ?? 30;
-        _locationShareMinutes = draft.locationShareMinutes ?? 1;
+        _locationShareMinutes = draft.locationShareMinutes ?? 5;
         _policeWaitMinutes = (draft.policeWaitMinutes ?? 5).clamp(1, 10);
       });
     }
