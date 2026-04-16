@@ -170,13 +170,11 @@ class _SessionCreationFlowPageState
           ),
           AppTutorialStyle.target(
             keyTarget: _tutorialKeyLocationShare,
-            description:
-                '도둑 위치가 경찰에게 공개되는 주기에요\n숫자를 탭하면 직접 입력할 수 있어요',
+            description: '도둑 위치가 경찰에게 공개되는 주기에요',
           ),
           AppTutorialStyle.target(
             keyTarget: _tutorialKeyPoliceWait,
-            description:
-                '게임 시작 후 경찰이 출발할 때까지 기다리는 시간이에요\n숫자를 탭하면 직접 입력할 수 있어요',
+            description: '게임 시작 후 경찰이 출발할 때까지 기다리는 시간이에요',
           ),
         ];
       default:
