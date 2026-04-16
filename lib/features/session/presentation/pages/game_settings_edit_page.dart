@@ -186,6 +186,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
@@ -214,6 +215,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
@@ -244,6 +246,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
                     ],
                   ),

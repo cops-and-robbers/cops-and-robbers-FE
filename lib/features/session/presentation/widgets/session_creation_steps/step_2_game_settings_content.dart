@@ -78,6 +78,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           divisions: 170, // 10~180, 1분 단위
           onChanged: (value) => onRoundDurationChanged(value.toInt()),
           isDarkMode: isDarkMode,
+          editable: true,
         ),
 
         SizedBox(height: AppSpacing.vertical8),
@@ -93,6 +94,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           divisions: 30, // 0~30, 1분 단위
           onChanged: (value) => onLocationShareChanged(value.toInt()),
           isDarkMode: isDarkMode,
+          editable: true,
         ),
 
         SizedBox(height: AppSpacing.vertical8),
@@ -110,6 +112,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           displaySuffix: " 뒤",
           onChanged: (value) => onPoliceWaitChanged(value.toInt()),
           isDarkMode: isDarkMode,
+          editable: true,
         ),
       ],
     );
