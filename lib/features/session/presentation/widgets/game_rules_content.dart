@@ -111,7 +111,7 @@ class GameRulesContent extends StatelessWidget {
     return TextSpan(
       children: [
         _highlight('지정된 게임 구역에서 벗어나면 안 돼요'),
-        const TextSpan(text: '\n→ 구역 안으로 돌아갈 때까지 위치가 드러나요'),
+        const TextSpan(text: '\n→ 구역 밖으로 나가면 화면이 잠겨요'),
       ],
     );
   }
