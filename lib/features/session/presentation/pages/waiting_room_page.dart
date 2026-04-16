@@ -106,9 +106,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 재연결 모달 표시 중 여부 (중복 표시 방지)
   bool _isReconnectModalShown = false;
 
-  /// 팀 변경 배경 전환용 — isDark와 독립적으로 관리
-  Color? _bgColorOverride;
-
   /// 로비 STOMP 최초 연결 성공 여부
   bool _hasLobbyConnectedOnce = false;
 
@@ -826,16 +823,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     try {
       await ref.read(changeTeamProvider(gameId, targetTeam: targetTeam).future);
       if (navigator.canPop()) navigator.pop();
-
-      // 배경색을 목표 테마 색으로 먼저 전환 → 완료 후 테마 적용
-      final targetBg = targetTeam == 'ROBBER'
-          ? AppColors.black900
-          : AppColors.white;
-      setState(() => _bgColorOverride = targetBg);
-      await Future<void>.delayed(const Duration(milliseconds: 800));
-      if (!mounted) return;
       ref.read(roleThemeProvider.notifier).setDarkMode(targetTeam == 'ROBBER');
-      setState(() => _bgColorOverride = null);
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
       if (mounted) {
@@ -1080,123 +1068,115 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       );
     }
 
-    final bgColor =
-        _bgColorOverride ?? (isDark ? AppColors.black900 : AppColors.white);
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 800),
-      curve: Curves.easeInOut,
-      color: bgColor,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: _buildAppBar(isDark),
-        // [DEBUG] 개발자 도구 버튼 — release에서는 kDebugMode=false로 dead-code 제거
-        floatingActionButton: kDebugMode
-            ? FloatingActionButton(
-                heroTag: 'waiting_room_debug',
-                mini: true,
-                backgroundColor: AppColors.black.withValues(alpha: 0.7),
-                foregroundColor: AppColors.white,
-                onPressed: _showDebugMenu,
-                child: const Icon(Icons.bug_report),
-              )
-            : null,
-        body: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-              // 팀 섹션 (스크롤 가능)
-              Expanded(
-                child: participantsState.participants.isEmpty
-                    ? ShimmerParticipantSkeleton(isDarkMode: isDark)
-                    : SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            // 경찰팀
-                            TeamSection(
-                              team: 'POLICE',
-                              members: policeMembers,
-                              maxPerTeam: policeMembers.length + 1,
-                              isExpanded: _isPoliceExpanded,
-                              onToggle: () => setState(
-                                () => _isPoliceExpanded = !_isPoliceExpanded,
-                              ),
-                              hostParticipantId:
-                                  participantsState.hostParticipantId,
-                              myParticipantId: participantInfo?.participantId,
-                              onAddSlotTap: !_isReady
-                                  ? () => _changeTeam('POLICE')
-                                  : null,
-                              addSlotKey: _tutorialKeyAddSlotPolice,
-                              // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
-                              onMemberTap: isHost
-                                  ? (member) {
-                                      final myPid =
-                                          participantInfo?.participantId;
-                                      if (member.participantId == myPid) return;
-                                      _showKickDialog(member);
-                                    }
-                                  : null,
-                              isDarkMode: isDark,
+    return Scaffold(
+      backgroundColor: isDark ? AppColors.black900 : AppColors.white,
+      appBar: _buildAppBar(isDark),
+      // [DEBUG] 개발자 도구 버튼 — release에서는 kDebugMode=false로 dead-code 제거
+      floatingActionButton: kDebugMode
+          ? FloatingActionButton(
+              heroTag: 'waiting_room_debug',
+              mini: true,
+              backgroundColor: AppColors.black.withValues(alpha: 0.7),
+              foregroundColor: AppColors.white,
+              onPressed: _showDebugMenu,
+              child: const Icon(Icons.bug_report),
+            )
+          : null,
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            // 팀 섹션 (스크롤 가능)
+            Expanded(
+              child: participantsState.participants.isEmpty
+                  ? ShimmerParticipantSkeleton(isDarkMode: isDark)
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // 경찰팀
+                          TeamSection(
+                            team: 'POLICE',
+                            members: policeMembers,
+                            maxPerTeam: policeMembers.length + 1,
+                            isExpanded: _isPoliceExpanded,
+                            onToggle: () => setState(
+                              () => _isPoliceExpanded = !_isPoliceExpanded,
                             ),
-                            // 구분선
-                            Padding(
-                              padding: AppPadding.horizontal20,
-                              child: Divider(
-                                height: 1,
-                                color: isDark
-                                    ? AppColors.black800
-                                    : AppColors.black100,
-                              ),
+                            hostParticipantId:
+                                participantsState.hostParticipantId,
+                            myParticipantId: participantInfo?.participantId,
+                            onAddSlotTap: !_isReady
+                                ? () => _changeTeam('POLICE')
+                                : null,
+                            addSlotKey: _tutorialKeyAddSlotPolice,
+                            // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
+                            onMemberTap: isHost
+                                ? (member) {
+                                    final myPid =
+                                        participantInfo?.participantId;
+                                    if (member.participantId == myPid) return;
+                                    _showKickDialog(member);
+                                  }
+                                : null,
+                            isDarkMode: isDark,
+                          ),
+                          // 구분선
+                          Padding(
+                            padding: AppPadding.horizontal20,
+                            child: Divider(
+                              height: 1,
+                              color: isDark
+                                  ? AppColors.black800
+                                  : AppColors.black100,
                             ),
-                            // 도둑팀
-                            TeamSection(
-                              team: 'ROBBER',
-                              members: robberMembers,
-                              maxPerTeam: robberMembers.length + 1,
-                              isExpanded: _isRobberExpanded,
-                              onToggle: () => setState(
-                                () => _isRobberExpanded = !_isRobberExpanded,
-                              ),
-                              hostParticipantId:
-                                  participantsState.hostParticipantId,
-                              myParticipantId: participantInfo?.participantId,
-                              onAddSlotTap: !_isReady
-                                  ? () => _changeTeam('ROBBER')
-                                  : null,
-                              addSlotKey: _tutorialKeyAddSlotRobber,
-                              // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
-                              onMemberTap: isHost
-                                  ? (member) {
-                                      final myPid =
-                                          participantInfo?.participantId;
-                                      if (member.participantId == myPid) return;
-                                      _showKickDialog(member);
-                                    }
-                                  : null,
-                              isDarkMode: isDark,
+                          ),
+                          // 도둑팀
+                          TeamSection(
+                            team: 'ROBBER',
+                            members: robberMembers,
+                            maxPerTeam: robberMembers.length + 1,
+                            isExpanded: _isRobberExpanded,
+                            onToggle: () => setState(
+                              () => _isRobberExpanded = !_isRobberExpanded,
                             ),
-                          ],
-                        ),
+                            hostParticipantId:
+                                participantsState.hostParticipantId,
+                            myParticipantId: participantInfo?.participantId,
+                            onAddSlotTap: !_isReady
+                                ? () => _changeTeam('ROBBER')
+                                : null,
+                            addSlotKey: _tutorialKeyAddSlotRobber,
+                            // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
+                            onMemberTap: isHost
+                                ? (member) {
+                                    final myPid =
+                                        participantInfo?.participantId;
+                                    if (member.participantId == myPid) return;
+                                    _showKickDialog(member);
+                                  }
+                                : null,
+                            isDarkMode: isDark,
+                          ),
+                        ],
                       ),
-              ),
+                    ),
+            ),
 
-              // 하단 버튼 (준비 / 게임 시작) — 튜토리얼 하이라이트 대상
-              SafeArea(
-                top: false,
-                child: Padding(
-                  key: _tutorialKeyReadyButton,
-                  padding: EdgeInsets.fromLTRB(
-                    AppSpacing.horizontal20,
-                    AppSpacing.vertical12,
-                    AppSpacing.horizontal20,
-                    AppSpacing.vertical20,
-                  ),
-                  child: _buildBottomButton(isHost, isDark),
+            // 하단 버튼 (준비 / 게임 시작) — 튜토리얼 하이라이트 대상
+            SafeArea(
+              top: false,
+              child: Padding(
+                key: _tutorialKeyReadyButton,
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.horizontal20,
+                  AppSpacing.vertical12,
+                  AppSpacing.horizontal20,
+                  AppSpacing.vertical20,
                 ),
+                child: _buildBottomButton(isHost, isDark),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
