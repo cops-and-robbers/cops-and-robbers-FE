@@ -917,33 +917,47 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
   }
 
+  /// 방 나가기 확인 다이얼로그
+  Future<void> _confirmLeaveRoom() async {
+    final isDark = ref.read(roleThemeProvider);
+    final confirmed = await AppDialog.confirm(
+      context: context,
+      isDarkMode: isDark,
+      title: '방을 나가시겠어요?',
+      message: '나가면 다시 초대코드를 입력해야 해요',
+      confirmText: '나가기',
+      isDestructive: true,
+      confirmTextColor: AppColors.white,
+    );
+    if (confirmed != true || !mounted) return;
+    await _leaveRoom();
+  }
+
   /// 방 나가기
   Future<void> _leaveRoom() async {
-    // ① STOMP 먼저 끊기 (EXIT 이벤트 자기 수신 방지)
-    _lobbyEventSub?.close();
-    _lobbyEventSub = null;
-    ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
-
-    // ② 그 다음 REST API 퇴장
+    // ① REST API 퇴장 먼저 시도
     final gameId = int.tryParse(widget.sessionId);
     if (gameId != null) {
       try {
         await ref.read(leaveGameProvider(gameId).future);
       } on DioException catch (e) {
-        if (mounted) {
-          final apiError = ApiErrorResponse.tryParse(e.response?.data);
-          final message = apiError?.detail ?? '퇴장 처리 중 오류가 발생했습니다.';
-          AppSnackbar.show(
-            context,
-            message: message,
-            backgroundColor: AppColors.red,
-          );
-        }
+        if (!mounted) return;
+        final apiError = ApiErrorResponse.tryParse(e.response?.data);
+        final message = apiError?.detail ?? '퇴장 처리 중 오류가 발생했습니다.';
+        AppSnackbar.show(
+          context,
+          message: message,
+          backgroundColor: AppColors.red,
+        );
+        return;
       }
     }
 
-    // ③ await 이후 위젯이 dispose됐을 수 있으므로 mounted 확인 후 상태 초기화
+    // ② API 성공 후 STOMP 끊기 + 상태 초기화 + 홈 이동
     if (!mounted) return;
+    _lobbyEventSub?.close();
+    _lobbyEventSub = null;
+    ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
     ref.read(gameParticipantNotifierProvider.notifier).clear();
     ref.read(waitingRoomParticipantsProvider.notifier).clear();
     context.go(RoutePaths.home);
@@ -1171,7 +1185,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   PreferredSizeWidget _buildAppBar(bool isDark) {
     return AppBar(
       leadingWidth: 62.w,
-      backgroundColor: isDark ? AppColors.black900 : AppColors.white,
+      backgroundColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
@@ -1181,7 +1195,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           width: 44.w,
           height: 44.w,
           child: GestureDetector(
-            onTap: _leaveRoom,
+            onTap: _confirmLeaveRoom,
             behavior: HitTestBehavior.opaque,
             child: Center(
               child: SvgPicture.asset(

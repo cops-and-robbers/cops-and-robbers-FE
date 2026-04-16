@@ -738,7 +738,7 @@ class _GamePageState extends ConsumerState<GamePage>
               ),
               SizedBox(height: AppSpacing.vertical12),
               Text(
-                '구역 안으로 돌아와서 진행해 주세요',
+                '구역 밖으로 나가면 화면이 잠겨요',
                 style: AppTextStyles.paragraph_14_100.copyWith(
                   color: AppColors.red800,
                 ),
