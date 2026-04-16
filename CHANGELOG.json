@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-15T06:47:15Z",
-    "currentVersion": "1.4.12",
+    "lastUpdated": "2026-04-16T12:18:36Z",
+    "currentVersion": "1.4.13",
     "projectType": "flutter",
-    "totalReleases": 73
+    "totalReleases": 74
   },
   "releases": [
+    {
+      "version": "1.4.13",
+      "project_type": "flutter",
+      "date": "2026-04-16",
+      "pr_number": 261,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **새로운 기능**\n  * 방 나가기 시 확인 대화상자 추가\n\n* **버그 수정**\n  * 네트워크 연결 확인 로직 개선 및 안정성 향상\n\n* **기타**\n  * 앱 버전 1.4.13 업데이트\n  * 구역 벗어남 경고 메시지 수정\n  * 게임 규칙 안내문 업데이트",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "방 나가기 시 확인 대화상자 추가"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "네트워크 연결 확인 로직 개선 및 안정성 향상"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "앱 버전 1.4.13 업데이트",
+            "구역 벗어남 경고 메시지 수정",
+            "게임 규칙 안내문 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.4.12",
       "project_type": "flutter",
