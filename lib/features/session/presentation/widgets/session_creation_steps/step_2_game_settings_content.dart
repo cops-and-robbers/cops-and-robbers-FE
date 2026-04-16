@@ -95,6 +95,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           onChanged: (value) => onLocationShareChanged(value.toInt()),
           isDarkMode: isDarkMode,
           editable: true,
+          warningText: locationShareMinutes == 0 ? '도둑의 위치가 공유되지 않아요!' : null,
         ),
 
         SizedBox(height: AppSpacing.vertical8),

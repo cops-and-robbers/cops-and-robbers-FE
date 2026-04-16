@@ -11,19 +11,13 @@ import 'package:cops_and_robbers/core/widgets/inputs/app_slider.dart';
 /// 영향이 없으며 실제 기기(375 logical)에서는 overflow가 발생하지 않는다.
 /// Task 4/5 편집 모드 통합 시 hit-test 문제가 실제로 발생하면 그 시점에
 /// 명시적 폭 제약을 재검토한다.
-Future<void> _pumpSlider(
-  WidgetTester tester, {
-  required Widget child,
-}) async {
+Future<void> _pumpSlider(WidgetTester tester, {required Widget child}) async {
   await tester.pumpWidget(
     MaterialApp(
       home: ScreenUtilInit(
         designSize: const Size(375, 812),
         builder: (context, _) => Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: child,
-          ),
+          body: Padding(padding: const EdgeInsets.all(16), child: child),
         ),
       ),
     ),
@@ -234,7 +228,9 @@ void main() {
   });
 
   group('AppSlider editable=true + displayPrefix/displaySuffix', () {
-    testWidgets('편집 진입 시 prefix/suffix는 그대로 있고 값 부분만 TextField로 변환', (tester) async {
+    testWidgets('편집 진입 시 prefix/suffix는 그대로 있고 값 부분만 TextField로 변환', (
+      tester,
+    ) async {
       await _pumpSlider(
         tester,
         child: AppSlider(

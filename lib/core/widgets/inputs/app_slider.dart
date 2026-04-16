@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
@@ -125,6 +126,7 @@ class AppSlider extends StatelessWidget {
     this.valueTextStyle,
     this.editable = false,
     this.onEditingChanged,
+    this.warningText,
   }) : assert(
          !(editable && displayValue != null),
          'AppSlider: editable과 displayValue는 함께 사용할 수 없다 '
@@ -222,6 +224,13 @@ class AppSlider extends StatelessWidget {
   /// - true: 편집 시작 (탭 → TextField 표시)
   /// - false: 편집 종료 (포커스 해제 또는 키보드 완료)
   final ValueChanged<bool>? onEditingChanged;
+
+  /// 슬라이더 하단(min/max 아래)에 노출할 경고 문구 (선택)
+  ///
+  /// null이면 표시되지 않는다. 표시될 땐 min/max와의 간격은 vertical16,
+  /// 좌측에 icon_exclamation_mark.svg(16x16) + horizontal8 간격, 본문은
+  /// tag_12 / black400 스타일로 렌더된다.
+  final String? warningText;
 
   // ============================================
   // 기본값 Getter 메서드
@@ -327,6 +336,15 @@ class AppSlider extends StatelessWidget {
 
           // 3. 최소/최대 라벨 (패딩 없음 - 넓게 유지)
           if (showMinMax) ...[_buildMinMaxLabels()],
+
+          // 4. 경고 문구 (선택) — min/max 아래 vertical14 간격
+          if (warningText != null) ...[
+            SizedBox(height: AppSpacing.vertical14),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.w),
+              child: _buildWarning(),
+            ),
+          ],
         ],
       ),
     );
@@ -391,10 +409,7 @@ class AppSlider extends StatelessWidget {
               onChanged: onChanged,
               onEditingChanged: onEditingChanged,
             )
-          : Text(
-              '${value.toInt()}$unit',
-              style: valueStyle,
-            );
+          : Text('${value.toInt()}$unit', style: valueStyle);
 
       return FittedBox(
         fit: BoxFit.scaleDown,
@@ -429,10 +444,7 @@ class AppSlider extends StatelessWidget {
       );
     }
 
-    return Text(
-      '${value.toInt()}$unit',
-      style: valueStyle,
-    );
+    return Text('${value.toInt()}$unit', style: valueStyle);
   }
 
   /// 슬라이더 위젯
@@ -507,6 +519,26 @@ class AppSlider extends StatelessWidget {
         divisions: divisions, // null이면 연속, 숫자면 구간 분할
         onChanged: onChanged,
       ),
+    );
+  }
+
+  /// 경고 문구 (아이콘 + 텍스트)
+  Widget _buildWarning() {
+    return Row(
+      children: [
+        SvgPicture.asset(
+          'assets/icons/icon_exclamation_mark.svg',
+          width: 16.w,
+          height: 16.w,
+        ),
+        SizedBox(width: AppSpacing.horizontal8),
+        Flexible(
+          child: Text(
+            warningText!,
+            style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
+          ),
+        ),
+      ],
     );
   }
 
@@ -710,8 +742,9 @@ class _EditableValueTextState extends State<_EditableValueText> {
             child: TextField(
               controller: _textController,
               focusNode: _focusNode,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: false),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: false,
+              ),
               textAlign: TextAlign.center,
               maxLength: maxDigits,
               style: widget.textStyle,
