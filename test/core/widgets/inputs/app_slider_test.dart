@@ -192,7 +192,7 @@ void main() {
         MaterialApp(
           home: ScreenUtilInit(
             designSize: const Size(375, 812),
-            builder: (_, __) => StatefulBuilder(
+            builder: (_, child) => StatefulBuilder(
               builder: (context, setState) {
                 setOuter = setState;
                 return Scaffold(
