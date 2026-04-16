@@ -93,7 +93,13 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // ================================================================
       if (!skipConnectivityCheck) {
         final connectivity = ref.read(connectivityServiceProvider);
-        final connected = await connectivity.isConnected();
+        var connected = await connectivity.isConnected();
+        // hot restart 직후 플랫폼 채널이 stale 값을 반환할 수 있으므로 재체크
+        if (!connected) {
+          await Future<void>.delayed(const Duration(milliseconds: 500));
+          if (!mounted) return;
+          connected = await connectivity.isConnected();
+        }
         if (!connected) {
           if (!mounted) return;
           setState(() => _isOffline = true);
