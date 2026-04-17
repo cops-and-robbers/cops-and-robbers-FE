@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-16T12:18:36Z",
-    "currentVersion": "1.4.13",
+    "lastUpdated": "2026-04-17T06:41:04Z",
+    "currentVersion": "1.5.0",
     "projectType": "flutter",
-    "totalReleases": 74
+    "totalReleases": 75
   },
   "releases": [
+    {
+      "version": "1.5.0",
+      "project_type": "flutter",
+      "date": "2026-04-17",
+      "pr_number": 267,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트\n\n* **Chores**\n  - 애플리케이션 버전을 1.5.0으로 업데이트하고 빌드 코드를 184로 증가\n  - 로그인, 홈, 강제 업데이트, 유지보수 페이지 등 여러 화면에서 앱 아이콘 자산 통합\n  - 크레딧 페이지의 팀 정보 업데이트 및 QA 담당자 목록 추가\n\n* **Tests**\n  - 로그인 페이지 테스트에서 앱 아이콘 자산 참조 업데이트",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": []
+        },
+        "tests": {
+          "title": "Tests",
+          "items": []
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.4.13",
       "project_type": "flutter",

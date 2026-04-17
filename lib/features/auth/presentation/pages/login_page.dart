@@ -212,7 +212,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 children: [
                   // 앱 로고
                   Image.asset(
-                    'assets/app_icon_512.png',
+                    'assets/app_icon.png',
                     width: 224.w,
                     height: 224.w,
                   ),

@@ -30,7 +30,7 @@ class MaintenancePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Image.asset(
-                        'assets/app_icon_512.png',
+                        'assets/app_icon.png',
                         width: 223.w,
                         height: 260.w,
                       ),
