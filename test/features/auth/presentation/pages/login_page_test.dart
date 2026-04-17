@@ -34,7 +34,7 @@ void main() {
         (widget) =>
             widget is Image &&
             widget.image is AssetImage &&
-            (widget.image as AssetImage).assetName == 'assets/app_icon_512.png',
+            (widget.image as AssetImage).assetName == 'assets/app_icon.png',
       );
       expect(logoFinder, findsOneWidget);
 
@@ -171,7 +171,7 @@ void main() {
         (widget) =>
             widget is Image &&
             widget.image is AssetImage &&
-            (widget.image as AssetImage).assetName == 'assets/app_icon_512.png',
+            (widget.image as AssetImage).assetName == 'assets/app_icon.png',
       );
       expect(logoFinder, findsOneWidget);
     });
