@@ -930,7 +930,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       avatarWidget: ClipRRect(
                         borderRadius: AppRadius.large,
                         child: Image.asset(
-                          'assets/app_icon_512.png',
+                          'assets/app_icon.png',
                           width: 92.w,
                           height: 108.w,
                           fit: BoxFit.cover,
