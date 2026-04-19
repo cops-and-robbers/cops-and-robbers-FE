@@ -192,7 +192,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                       SizedBox(height: AppSpacing.vertical8),
 
                       AppSlider(
-                        label: '위치 공유 간격',
+                        label: '도둑 위치 공유 간격',
                         value: _locationShareMinutes.toDouble(),
                         min: 0,
                         max: 30,

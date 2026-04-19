@@ -86,7 +86,7 @@ class Step2GameSettingsContent extends StatelessWidget {
         // 위치 공유 간격
         AppSlider(
           key: locationShareKey,
-          label: '위치 공유 간격',
+          label: '도둑 위치 공유 간격',
           value: locationShareMinutes.toDouble(),
           min: 0,
           max: 30,
