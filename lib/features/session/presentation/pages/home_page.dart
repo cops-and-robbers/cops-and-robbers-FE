@@ -600,8 +600,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                     // ── Avatar Placeholder ──
                     Image.asset(
                       'assets/app_icon.png',
-                      width: 260.w,
-                      height: 260.h,
+                      width: 240.w,
+                      height: 240.h,
                       fit: BoxFit.contain,
                     ),
                   ],

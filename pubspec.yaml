@@ -134,7 +134,7 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/app_icon_512.png"
+  image_path: "assets/app_icon_1024.png"
   adaptive_icon_background: "#FFFFFF" # Android 전용 배경 (흰색)
-  adaptive_icon_foreground: "assets/app_icon_512.png"
+  adaptive_icon_foreground: "assets/app_icon_1024.png"
   remove_alpha_ios: true # iOS는 알파 제거 후 단색 배경
