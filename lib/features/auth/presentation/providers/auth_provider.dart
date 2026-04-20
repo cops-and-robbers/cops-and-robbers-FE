@@ -343,6 +343,29 @@ class AuthNotifier extends _$AuthNotifier {
     debugPrint('✅ [AuthNotifier] 약관 동의 완료 플래그 반영');
   }
 
+  /// 백엔드가 "필수 약관 미동의" 차단 응답을 반환했을 때 호출합니다.
+  ///
+  /// `requiresAgreement`를 true로 세팅해 라우터가 `/agreement`로 자동 redirect
+  /// 하도록 유도합니다. [markAgreementCompleted]의 반대 동작입니다.
+  ///
+  /// 구 버전에서 묵시적 동의만 한 기존 사용자가 방 생성/참여를 시도했을 때 등
+  /// 백엔드가 400 에러로 차단한 케이스를 유저에게 안내하기 위한 경로로 사용됩니다.
+  void markNeedsAgreement() {
+    final current = state.valueOrNull;
+    if (current == null) {
+      debugPrint('⚠️ [AuthNotifier] markNeedsAgreement: 상태 없음 (무시)');
+      return;
+    }
+    if (current.requiresAgreement) {
+      debugPrint('ℹ️ [AuthNotifier] markNeedsAgreement: 이미 미동의 상태 (무시)');
+      return;
+    }
+    state = AsyncValue.data(
+      current.copyWith(requiresAgreement: true),
+    );
+    debugPrint('🚨 [AuthNotifier] 필수 약관 미동의 플래그 반영 → /agreement로 리디렉트 예정');
+  }
+
   /// 회원 탈퇴 후 로컬 정리
   ///
   /// 백엔드 계정 삭제(`DELETE /api/user/me`) 성공 후 호출됩니다.
