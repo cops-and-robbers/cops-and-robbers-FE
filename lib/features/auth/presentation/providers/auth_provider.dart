@@ -160,16 +160,29 @@ class AuthNotifier extends _$AuthNotifier {
         return null;
       }
 
-      // Cold start 시점에는 로그인 응답이 없으므로 약관 상태를 GET으로 조회
-      // 실패 시 requiresAgreement=false로 시작하고, 이후 보호 API가 차단되면
-      // 자연스럽게 에러 플로우를 통해 사용자에게 피드백됨
+      // Cold start 시점에는 로그인 응답이 없으므로 약관 상태와 프로필(닉네임)을
+      // 백엔드에서 직접 조회한다. 각 조회는 독립적으로 실패를 허용하여
+      // 한쪽이 실패해도 다른 값은 반영한다.
+      // - 약관 실패 시: requiresAgreement=false (낙관적) — 이후 보호 API가 차단되면
+      //   에러 플로우로 유저에게 피드백
+      // - 프로필 실패 시: Firebase displayName으로 폴백 (백엔드 일시 장애 대비).
+      //   프로필 조회 성공 시 백엔드 닉네임(서버 생성 랜덤 또는 유저 변경값) 사용
+      final userRepo = ref.read(userRepositoryProvider);
       bool requiresAgreement = false;
+      String nickname = currentUser.displayName ?? '';
+
       try {
-        final userRepo = ref.read(userRepositoryProvider);
         final status = await userRepo.getAgreements();
         requiresAgreement = !status.hasAllRequired;
       } catch (e) {
         debugPrint('⚠️ [AuthNotifier] cold start 약관 상태 조회 실패: $e');
+      }
+
+      try {
+        final profile = await userRepo.getMyProfile();
+        nickname = profile.nickname;
+      } catch (e) {
+        debugPrint('⚠️ [AuthNotifier] cold start 프로필 조회 실패: $e');
       }
 
       // isNewUser 복원 — 신규 유저가 온보딩(약관/닉네임) 도중 이탈 후 재진입 시
@@ -179,7 +192,7 @@ class AuthNotifier extends _$AuthNotifier {
 
       return AuthResultEntity(
         userId: userId,
-        nickname: currentUser.displayName ?? '',
+        nickname: nickname,
         isNewUser: isNewUser,
         requiresAgreement: requiresAgreement,
       );
@@ -350,9 +363,7 @@ class AuthNotifier extends _$AuthNotifier {
       debugPrint('ℹ️ [AuthNotifier] markAgreementCompleted: 이미 동의 완료 (무시)');
       return;
     }
-    state = AsyncValue.data(
-      current.copyWith(requiresAgreement: false),
-    );
+    state = AsyncValue.data(current.copyWith(requiresAgreement: false));
     debugPrint('✅ [AuthNotifier] 약관 동의 완료 플래그 반영');
   }
 
@@ -373,9 +384,7 @@ class AuthNotifier extends _$AuthNotifier {
       debugPrint('ℹ️ [AuthNotifier] markNeedsAgreement: 이미 미동의 상태 (무시)');
       return;
     }
-    state = AsyncValue.data(
-      current.copyWith(requiresAgreement: true),
-    );
+    state = AsyncValue.data(current.copyWith(requiresAgreement: true));
     debugPrint('🚨 [AuthNotifier] 필수 약관 미동의 플래그 반영 → /agreement로 리디렉트 예정');
   }
 
