@@ -89,9 +89,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
       final current = _status.valueOrNull;
       if (current != null) {
         setState(() {
-          _status = AsyncValue.data(
-            current.copyWith(marketing: _newMarketing),
-          );
+          _status = AsyncValue.data(current.copyWith(marketing: _newMarketing));
         });
       }
 
@@ -184,14 +182,6 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: AppSpacing.vertical8),
-          Text(
-            '필수 약관은 서비스 이용에 필요하므로 해제할 수 없어요',
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
-          ),
-          SizedBox(height: AppSpacing.vertical16),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
