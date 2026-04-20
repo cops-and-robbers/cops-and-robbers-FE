@@ -27,6 +27,7 @@ import '../../../user/presentation/providers/user_provider.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../credits/presentation/pages/credits_page.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
+import 'agreement_settings_page.dart';
 import 'legal_document_page.dart';
 
 /// 설정 페이지
@@ -172,6 +173,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     assetPath: 'assets/legal/privacy_policy.json',
                     externalUrl: AppUrls.privacyPolicy,
                   ),
+                ),
+              ),
+            ),
+            _buildItemDivider(),
+            _buildMenuItem(
+              text: '약관 동의 관리',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AgreementSettingsPage(),
                 ),
               ),
             ),

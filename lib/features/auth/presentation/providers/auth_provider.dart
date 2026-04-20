@@ -22,6 +22,7 @@ import '../../../../router/route_paths.dart';
 import '../pages/login_page.dart';
 import '../../../session/presentation/pages/home_page.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
+import '../../../user/presentation/providers/user_provider.dart';
 
 part 'auth_provider.g.dart';
 
@@ -159,10 +160,23 @@ class AuthNotifier extends _$AuthNotifier {
         return null;
       }
 
+      // Cold start 시점에는 로그인 응답이 없으므로 약관 상태를 GET으로 조회
+      // 실패 시 requiresAgreement=false로 시작하고, 이후 보호 API가 차단되면
+      // 자연스럽게 에러 플로우를 통해 사용자에게 피드백됨
+      bool requiresAgreement = false;
+      try {
+        final userRepo = ref.read(userRepositoryProvider);
+        final status = await userRepo.getAgreements();
+        requiresAgreement = !status.hasAllRequired;
+      } catch (e) {
+        debugPrint('⚠️ [AuthNotifier] cold start 약관 상태 조회 실패: $e');
+      }
+
       return AuthResultEntity(
         userId: userId,
         nickname: currentUser.displayName ?? '',
         isNewUser: false,
+        requiresAgreement: requiresAgreement,
       );
     }
 
@@ -302,9 +316,31 @@ class AuthNotifier extends _$AuthNotifier {
           userId: current.userId,
           nickname: nickname,
           isNewUser: false,
+          requiresAgreement: current.requiresAgreement,
         ),
       );
     }
+  }
+
+  /// 약관 동의 완료를 표시합니다.
+  ///
+  /// [AgreementNotifier.submit] 성공 후 호출하여 `requiresAgreement`를 false로
+  /// 갱신합니다. 상태 변화가 GoRouter refreshListenable을 통해 redirect를 재실행시켜
+  /// 다음 화면(닉네임 설정 또는 홈)으로 자동 이동됩니다.
+  void markAgreementCompleted() {
+    final current = state.valueOrNull;
+    if (current == null) {
+      debugPrint('⚠️ [AuthNotifier] markAgreementCompleted: 상태 없음 (무시)');
+      return;
+    }
+    if (!current.requiresAgreement) {
+      debugPrint('ℹ️ [AuthNotifier] markAgreementCompleted: 이미 동의 완료 (무시)');
+      return;
+    }
+    state = AsyncValue.data(
+      current.copyWith(requiresAgreement: false),
+    );
+    debugPrint('✅ [AuthNotifier] 약관 동의 완료 플래그 반영');
   }
 
   /// 회원 탈퇴 후 로컬 정리

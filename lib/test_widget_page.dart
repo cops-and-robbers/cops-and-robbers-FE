@@ -27,6 +27,7 @@ import 'core/widgets/buttons/zone_setting_button_example.dart';
 import 'core/widgets/indicators/step_indicator.dart';
 import 'core/widgets/loading/custom_progress_bar.dart';
 import 'core/widgets/loading/loading_page.dart';
+import 'features/auth/presentation/pages/agreement_page.dart';
 import 'features/auth/presentation/pages/nickname_setup_page.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
@@ -436,6 +437,36 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   showBorder: false,
                   icon: Icon(
                     Icons.person_outline,
+                    size: 20.w,
+                    color: AppColors.black,
+                  ),
+                  iconPosition: IconPosition.leading,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // AgreementPage 테스트
+                // ============================================
+                _buildSectionTitle('AgreementPage 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 약관 동의 페이지 이동 버튼
+                AppButton(
+                  text: '약관 동의 페이지 열기',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AgreementPage(),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
+                  showBorder: false,
+                  icon: Icon(
+                    Icons.gavel_outlined,
                     size: 20.w,
                     color: AppColors.black,
                   ),

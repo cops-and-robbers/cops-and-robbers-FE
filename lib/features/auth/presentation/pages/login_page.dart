@@ -51,6 +51,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// 이용약관 탭 인식기
   late final TapGestureRecognizer _termsRecognizer;
 
+  /// 위치정보 이용약관 탭 인식기
+  late final TapGestureRecognizer _locationRecognizer;
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +74,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             title: '이용약관',
             assetPath: 'assets/legal/terms_of_service.json',
             externalUrl: AppUrls.termsOfService,
+          ),
+        ),
+      );
+    _locationRecognizer = TapGestureRecognizer()
+      ..onTap = () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const LegalDocumentPage(
+            title: '위치정보 이용약관',
+            assetPath: 'assets/legal/location_terms.json',
           ),
         ),
       );
@@ -129,6 +141,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void dispose() {
     _privacyRecognizer.dispose();
     _termsRecognizer.dispose();
+    _locationRecognizer.dispose();
     super.dispose();
   }
 
@@ -276,7 +289,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                         recognizer: _privacyRecognizer,
                       ),
-                      const TextSpan(text: ' 및 '),
+                      const TextSpan(text: ', '),
                       TextSpan(
                         text: '이용약관',
                         style: AppTextStyles.tag_12.copyWith(
@@ -284,6 +297,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           decoration: TextDecoration.underline,
                         ),
                         recognizer: _termsRecognizer,
+                      ),
+                      const TextSpan(text: ', '),
+                      TextSpan(
+                        text: '위치정보 이용약관',
+                        style: AppTextStyles.tag_12.copyWith(
+                          color: AppColors.black600,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: _locationRecognizer,
                       ),
                       const TextSpan(text: '에 동의합니다'),
                     ],

@@ -114,6 +114,7 @@ class AuthRepositoryImpl implements AuthRepository {
         debugPrint('   userId: ${response.userId}');
         debugPrint('   nickname: ${response.nickname}');
         debugPrint('   isNewUser: ${response.isNewUser}');
+        debugPrint('   requiresAgreement: ${response.requiresAgreement}');
       }
 
       // 6. Domain Entity로 변환하여 반환
@@ -121,6 +122,7 @@ class AuthRepositoryImpl implements AuthRepository {
         userId: response.userId,
         nickname: response.nickname,
         isNewUser: response.isNewUser,
+        requiresAgreement: response.requiresAgreement,
       );
     } on DioException catch (e) {
       // Firebase 로그인은 성공했지만 백엔드 호출 실패 시 Firebase 세션 정리
