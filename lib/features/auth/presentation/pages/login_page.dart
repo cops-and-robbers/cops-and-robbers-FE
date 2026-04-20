@@ -83,6 +83,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           builder: (_) => const LegalDocumentPage(
             title: '위치정보 이용약관',
             assetPath: 'assets/legal/location_terms.json',
+            externalUrl: AppUrls.locationTerms,
           ),
         ),
       );

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -59,6 +60,7 @@ class AgreementPage extends ConsumerWidget {
                             context,
                             title: '이용약관',
                             assetPath: 'assets/legal/terms_of_service.json',
+                            externalUrl: AppUrls.termsOfService,
                           ),
                         ),
                         AgreementItem(
@@ -70,6 +72,7 @@ class AgreementPage extends ConsumerWidget {
                             context,
                             title: '개인정보 처리방침',
                             assetPath: 'assets/legal/privacy_policy.json',
+                            externalUrl: AppUrls.privacyPolicy,
                           ),
                         ),
                         AgreementItem(
@@ -81,6 +84,7 @@ class AgreementPage extends ConsumerWidget {
                             context,
                             title: '위치정보 이용약관',
                             assetPath: 'assets/legal/location_terms.json',
+                            externalUrl: AppUrls.locationTerms,
                           ),
                         ),
                         AgreementItem(
@@ -92,6 +96,7 @@ class AgreementPage extends ConsumerWidget {
                             context,
                             title: '마케팅 정보 수신',
                             assetPath: 'assets/legal/marketing_consent.json',
+                            externalUrl: AppUrls.marketingConsent,
                           ),
                         ),
                       ],
@@ -137,10 +142,15 @@ class AgreementPage extends ConsumerWidget {
     BuildContext context, {
     required String title,
     required String assetPath,
+    String? externalUrl,
   }) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => LegalDocumentPage(title: title, assetPath: assetPath),
+        builder: (_) => LegalDocumentPage(
+          title: title,
+          assetPath: assetPath,
+          externalUrl: externalUrl,
+        ),
       ),
     );
   }
