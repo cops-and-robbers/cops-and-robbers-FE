@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../models/agreement_request_model.dart';
+import '../models/agreement_response_model.dart';
 import '../models/delete_account_response_model.dart';
 import '../models/my_page_response_model.dart';
 import '../models/nickname_check_response_model.dart';
@@ -61,4 +63,24 @@ abstract class UserRemoteDataSource {
   /// - 409: 진행 중인 게임이 있는 경우
   @DELETE(ApiEndpoints.deleteAccount)
   Future<DeleteAccountResponseModel> deleteAccount();
+
+  /// 약관 동의 상태 조회
+  ///
+  /// 현재 로그인한 사용자의 4종 약관 동의 여부를 조회합니다.
+  ///
+  /// - 200: 약관 동의 상태 (AgreementResponseModel)
+  /// - 401: 인증 실패
+  @GET(ApiEndpoints.agreements)
+  Future<AgreementResponseModel> getAgreements();
+
+  /// 약관 동의 저장
+  ///
+  /// 현재 로그인한 사용자의 약관 동의 정보를 저장합니다.
+  /// 필수 3종(termsOfService, privacyPolicy, locationTerms)은 모두 true여야 합니다.
+  ///
+  /// - 204: 저장 성공 (응답 본문 없음)
+  /// - 400: 유효성 검사 실패 (필수 약관 미동의)
+  /// - 401: 인증 실패
+  @PUT(ApiEndpoints.agreements)
+  Future<void> updateAgreements(@Body() AgreementRequestModel request);
 }

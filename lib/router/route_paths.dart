@@ -48,6 +48,9 @@ class RoutePaths {
   /// 닉네임 설정 화면 (신규 회원: isNewUser == true)
   static const String nicknameSetup = '/nickname-setup';
 
+  /// 약관 동의 화면 (로그인 후 필수 약관 미동의 시 진입)
+  static const String agreement = '/agreement';
+
   /// 홈 화면 (인증 필수, 게임 세션 생성/참가 선택)
   static const String home = '/home';
 
@@ -158,6 +161,7 @@ class RoutePaths {
   static const String loginName = 'login';
   static const String onboardingName = 'onboarding';
   static const String nicknameSetupName = 'nicknameSetup';
+  static const String agreementName = 'agreement';
   static const String homeName = 'home';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';

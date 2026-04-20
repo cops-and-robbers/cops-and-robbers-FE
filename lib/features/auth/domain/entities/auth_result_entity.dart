@@ -19,5 +19,11 @@ class AuthResultEntity with _$AuthResultEntity {
     ///
     /// true일 경우 닉네임 설정 페이지로 이동해야 합니다.
     required bool isNewUser,
+
+    /// 필수 약관 미동의 여부
+    ///
+    /// true일 경우 약관 동의 페이지로 라우팅해야 합니다.
+    /// 동의 완료 후 [AuthNotifier.markAgreementCompleted]로 false로 변경됩니다.
+    required bool requiresAgreement,
   }) = _AuthResultEntity;
 }

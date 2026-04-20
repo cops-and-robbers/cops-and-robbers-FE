@@ -3,9 +3,11 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
+import '../../domain/entities/agreement_status_entity.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_remote_datasource.dart';
+import '../models/agreement_request_model.dart';
 import '../models/nickname_update_request_model.dart';
 
 /// User Repository 구현체
@@ -95,6 +97,64 @@ class UserRepositoryImpl implements UserRepository {
     } catch (e) {
       throw ServerException(
         message: '회원 탈퇴 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<AgreementStatusEntity> getAgreements() async {
+    try {
+      final response = await _dataSource.getAgreements();
+
+      if (kDebugMode) {
+        debugPrint(
+          '✅ 약관 동의 상태 조회: '
+          'terms=${response.termsOfServiceAgreed}, '
+          'privacy=${response.privacyPolicyAgreed}, '
+          'location=${response.locationTermsAgreed}, '
+          'marketing=${response.marketingAgreed}',
+        );
+      }
+
+      return AgreementStatusEntity(
+        termsOfService: response.termsOfServiceAgreed,
+        privacyPolicy: response.privacyPolicyAgreed,
+        locationTerms: response.locationTermsAgreed,
+        marketing: response.marketingAgreed,
+      );
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ServerException(
+        message: '약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> updateAgreements({required bool marketing}) async {
+    try {
+      await _dataSource.updateAgreements(
+        AgreementRequestModel(
+          termsOfService: true,
+          privacyPolicy: true,
+          locationTerms: true,
+          marketing: marketing,
+        ),
+      );
+
+      if (kDebugMode) {
+        debugPrint('✅ 약관 동의 저장 성공 (marketing=$marketing)');
+      }
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ServerException(
+        message: '약관 동의 저장 중 예기치 않은 오류가 발생했습니다.',
         originalException: e,
       );
     }

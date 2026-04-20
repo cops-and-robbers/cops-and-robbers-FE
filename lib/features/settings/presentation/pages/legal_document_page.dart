@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -79,12 +80,19 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
         ),
         actions: [
           if (widget.externalUrl != null)
-            IconButton(
-              onPressed: () => launchExternalUrl(widget.externalUrl!),
-              icon: Icon(
-                Icons.open_in_new,
-                size: 20.w,
-                color: AppColors.black600,
+            Padding(
+              padding: EdgeInsets.only(right: 6.w),
+              child: IconButton(
+                onPressed: () => launchExternalUrl(widget.externalUrl!),
+                icon: SvgPicture.asset(
+                  'assets/icons/icon_link.svg',
+                  width: 24.w,
+                  height: 24.w,
+                  colorFilter: ColorFilter.mode(
+                    AppColors.black600,
+                    BlendMode.srcIn,
+                  ),
+                ),
               ),
             ),
         ],

@@ -102,18 +102,20 @@ class AuthRepositoryImpl implements AuthRepository {
         ),
       );
 
-      // 5. JWT 토큰 + userId 저장
+      // 5. JWT 토큰 + userId + isNewUser 저장
       await _tokenStorage.saveTokens(
         accessToken: response.tokens.accessToken,
         refreshToken: response.tokens.refreshToken,
       );
       await _tokenStorage.saveUserId(response.userId);
+      await _tokenStorage.saveIsNewUser(response.isNewUser);
 
       if (kDebugMode) {
         debugPrint('✅ 백엔드 로그인 성공 ($provider)');
         debugPrint('   userId: ${response.userId}');
         debugPrint('   nickname: ${response.nickname}');
         debugPrint('   isNewUser: ${response.isNewUser}');
+        debugPrint('   requiresAgreement: ${response.requiresAgreement}');
       }
 
       // 6. Domain Entity로 변환하여 반환
@@ -121,6 +123,7 @@ class AuthRepositoryImpl implements AuthRepository {
         userId: response.userId,
         nickname: response.nickname,
         isNewUser: response.isNewUser,
+        requiresAgreement: response.requiresAgreement,
       );
     } on DioException catch (e) {
       // Firebase 로그인은 성공했지만 백엔드 호출 실패 시 Firebase 세션 정리

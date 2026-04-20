@@ -13,6 +13,7 @@ _$LoginResponseModelImpl _$$LoginResponseModelImplFromJson(
   nickname: json['nickname'] as String,
   tokens: TokensModel.fromJson(json['tokens'] as Map<String, dynamic>),
   isNewUser: json['isNewUser'] as bool,
+  requiresAgreement: json['requiresAgreement'] as bool,
 );
 
 Map<String, dynamic> _$$LoginResponseModelImplToJson(
@@ -22,6 +23,7 @@ Map<String, dynamic> _$$LoginResponseModelImplToJson(
   'nickname': instance.nickname,
   'tokens': instance.tokens.toJson(),
   'isNewUser': instance.isNewUser,
+  'requiresAgreement': instance.requiresAgreement,
 };
 
 _$TokensModelImpl _$$TokensModelImplFromJson(Map<String, dynamic> json) =>
