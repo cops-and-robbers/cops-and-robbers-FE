@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## 업데이트 항목\n- (신규) 이용 약관 동의 API 추가 (PUT /api/user/agreements)\n- (신규) 이용 약관 동의 여부 조회 API 추가 (GET /api/user/agreements)\n- (수정) 로그인 API 필수 이용약관 동의 여부 응답 필드 추가 (POST /api/auth/login)\n- (수정) 게임 방 생성 API 호스트 필수 이용약관 동의 여부 검증 추가 (POST /api/games)\n- (수정) 게임 방 참여 API 유저 필수 이용약관 동의 여부 검증 추가 (POST /api/games/join)\n",
-    "version": "2.0.0"
+    "description": "## 업데이트 항목\n- (신규) 이용 약관 동의 API 추가 (PUT /api/user/agreements)\n- (신규) 이용 약관 동의 여부 조회 API 추가 (GET /api/user/agreements)\n- (수정) 로그인 API 필수 이용약관 동의 여부 응답 필드 추가 (POST /api/auth/login) - 기존 반대 의미로 되어 있던 boolean응답 수정\n- (수정) 게임 방 생성 API 호스트 필수 이용약관 동의 여부 검증 추가 (POST /api/games)\n- (수정) 게임 방 참여 API 유저 필수 이용약관 동의 여부 검증 추가 (POST /api/games/join)\n",
+    "version": "2.1.0"
   },
   "servers": [
     {
-      "url": "백엔드 주소",
+      "url": "백엔드주소",
       "description": "Generated server url"
     }
   ],
@@ -1978,7 +1978,7 @@
                         "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
                       },
                       "isNewUser": false,
-                      "requiresAgreement": true
+                      "requiresAgreement": false
                     }
                   }
                 }
@@ -2003,7 +2003,7 @@
                         "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
                       },
                       "isNewUser": true,
-                      "requiresAgreement": false
+                      "requiresAgreement": true
                     }
                   }
                 }
