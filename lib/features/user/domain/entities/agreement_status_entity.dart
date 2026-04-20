@@ -25,6 +25,5 @@ class AgreementStatusEntity with _$AgreementStatusEntity {
   const AgreementStatusEntity._();
 
   /// 필수 약관 3종이 모두 동의 완료되었는지 여부
-  bool get hasAllRequired =>
-      termsOfService && privacyPolicy && locationTerms;
+  bool get hasAllRequired => termsOfService && privacyPolicy && locationTerms;
 }

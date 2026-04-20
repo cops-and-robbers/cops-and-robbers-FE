@@ -31,20 +31,20 @@ void main() {
       expect(isRequiredTermsMissingError(null), isFalse);
     });
 
-    test('AppException(originalException=DioException title="필수 약관 미동의") → true', () {
-      final dio = _dioErrorWithTitle('필수 약관 미동의');
-      final appError = ValidationException(
-        message: '필수 약관은 모두 동의해야 합니다.',
-        originalException: dio,
-      );
-      expect(isRequiredTermsMissingError(appError), isTrue);
-    });
+    test(
+      'AppException(originalException=DioException title="필수 약관 미동의") → true',
+      () {
+        final dio = _dioErrorWithTitle('필수 약관 미동의');
+        final appError = ValidationException(
+          message: '필수 약관은 모두 동의해야 합니다.',
+          originalException: dio,
+        );
+        expect(isRequiredTermsMissingError(appError), isTrue);
+      },
+    );
 
     test('DioException title="필수 약관 미동의" → true (home_page 케이스)', () {
-      final dio = _dioErrorWithTitle(
-        '필수 약관 미동의',
-        instance: '/api/games/join',
-      );
+      final dio = _dioErrorWithTitle('필수 약관 미동의', instance: '/api/games/join');
       expect(isRequiredTermsMissingError(dio), isTrue);
     });
 

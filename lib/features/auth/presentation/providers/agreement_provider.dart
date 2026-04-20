@@ -40,8 +40,7 @@ class AgreementState with _$AgreementState {
   const AgreementState._();
 
   /// 필수 약관 3종 모두 체크되었는지 여부
-  bool get hasAllRequired =>
-      termsOfService && privacyPolicy && locationTerms;
+  bool get hasAllRequired => termsOfService && privacyPolicy && locationTerms;
 
   /// 4개(필수+선택) 모두 체크되었는지 여부
   bool get allAgreed => hasAllRequired && marketing;
@@ -69,8 +68,7 @@ class AgreementNotifier extends _$AgreementNotifier {
   void toggleLocation() =>
       state = state.copyWith(locationTerms: !state.locationTerms);
 
-  void toggleMarketing() =>
-      state = state.copyWith(marketing: !state.marketing);
+  void toggleMarketing() => state = state.copyWith(marketing: !state.marketing);
 
   /// 4개를 일괄 [value]로 설정
   void toggleAll(bool value) {

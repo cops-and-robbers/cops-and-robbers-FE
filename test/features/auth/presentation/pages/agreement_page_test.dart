@@ -11,8 +11,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeConnectivity implements Connectivity {
   @override
-  Future<List<ConnectivityResult>> checkConnectivity() async =>
-      [ConnectivityResult.wifi];
+  Future<List<ConnectivityResult>> checkConnectivity() async => [
+    ConnectivityResult.wifi,
+  ];
 
   @override
   Stream<List<ConnectivityResult>> get onConnectivityChanged =>
@@ -27,8 +28,7 @@ class _FakeUserRepository implements UserRepository {
   Future<void> updateAgreements({required bool marketing}) async {}
 
   @override
-  Future<AgreementStatusEntity> getAgreements() =>
-      throw UnimplementedError();
+  Future<AgreementStatusEntity> getAgreements() => throw UnimplementedError();
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

@@ -197,7 +197,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       // (상태 변경 → refreshListenable → GoRouter가 push된 라우트를 잃는 문제 방지)
       _navigateAfterComplete();
       unawaited(
-        ref.read(authNotifierProvider.notifier).updateNicknameCompleted(nickname),
+        ref
+            .read(authNotifierProvider.notifier)
+            .updateNicknameCompleted(nickname),
       );
     } on AppException catch (e) {
       if (!mounted) return;

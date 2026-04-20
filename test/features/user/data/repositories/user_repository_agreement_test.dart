@@ -44,19 +44,19 @@ class _FakeUserRemoteDataSource implements UserRemoteDataSource {
 }
 
 DioException _dioError(int statusCode) => DioException(
-      requestOptions: RequestOptions(path: '/api/user/agreements'),
-      response: Response(
-        requestOptions: RequestOptions(path: '/api/user/agreements'),
-        statusCode: statusCode,
-        data: {
-          'title': 'error',
-          'status': statusCode,
-          'detail': 'msg',
-          'instance': '/api/user/agreements',
-        },
-      ),
-      type: DioExceptionType.badResponse,
-    );
+  requestOptions: RequestOptions(path: '/api/user/agreements'),
+  response: Response(
+    requestOptions: RequestOptions(path: '/api/user/agreements'),
+    statusCode: statusCode,
+    data: {
+      'title': 'error',
+      'status': statusCode,
+      'detail': 'msg',
+      'instance': '/api/user/agreements',
+    },
+  ),
+  type: DioExceptionType.badResponse,
+);
 
 void main() {
   group('UserRepositoryImpl.getAgreements', () {
@@ -83,10 +83,7 @@ void main() {
       final fake = _FakeUserRemoteDataSource()..errorToThrow = _dioError(401);
       final repo = UserRepositoryImpl(fake);
 
-      expect(
-        () => repo.getAgreements(),
-        throwsA(isA<AppException>()),
-      );
+      expect(() => repo.getAgreements(), throwsA(isA<AppException>()));
     });
   });
 

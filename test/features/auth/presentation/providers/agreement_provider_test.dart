@@ -37,8 +37,7 @@ class _FakeUserRepository implements UserRepository {
   }
 
   @override
-  Future<AgreementStatusEntity> getAgreements() =>
-      throw UnimplementedError();
+  Future<AgreementStatusEntity> getAgreements() => throw UnimplementedError();
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -156,10 +155,7 @@ void main() {
 
       expect(result, AgreementSubmitResult.offline);
       expect(fakeRepo.callCount, 0);
-      expect(
-        container.read(agreementNotifierProvider).isSubmitting,
-        false,
-      );
+      expect(container.read(agreementNotifierProvider).isSubmitting, false);
     });
 
     test('필수 미체크면 저장소 호출 없이 종료한다', () async {
