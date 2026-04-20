@@ -40,16 +40,16 @@ class AgreementPage extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 52.h),
+                        SizedBox(height: 50.h),
                         _buildHeader(),
-                        SizedBox(height: AppSpacing.vertical20),
+                        SizedBox(height: AppSpacing.vertical24),
                         AgreementAllCheckbox(
                           checked: state.allAgreed,
                           onToggle: () => notifier.toggleAll(!state.allAgreed),
                         ),
-                        SizedBox(height: AppSpacing.vertical8),
+                        SizedBox(height: AppSpacing.vertical6),
                         const Divider(color: AppColors.black100, height: 1),
-                        SizedBox(height: AppSpacing.vertical8),
+                        SizedBox(height: AppSpacing.vertical6),
                         AgreementItem(
                           checked: state.termsOfService,
                           required: true,
@@ -122,7 +122,7 @@ class AgreementPage extends ConsumerWidget {
           '서비스 이용을 위해\n약관에 동의해주세요',
           style: AppTextStyles.heading_24.copyWith(color: AppColors.black),
         ),
-        SizedBox(height: AppSpacing.vertical20),
+        SizedBox(height: AppSpacing.vertical24),
         Text(
           '필수 약관에 모두 동의해야 서비스를 이용하실 수 있어요',
           style: AppTextStyles.paragraph_14_100.copyWith(
