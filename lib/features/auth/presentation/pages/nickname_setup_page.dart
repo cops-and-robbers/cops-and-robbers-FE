@@ -188,9 +188,8 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       // pop/go 이후 복귀한 화면에서도 그대로 표시됨
       AppSnackbar.show(
         context,
-        message: '닉네임이 변경되었어요',
+        message: '닉네임이 저장되었어요',
         iconPath: 'assets/icons/icon_check mark.svg',
-        backgroundColor: AppColors.deepGreen,
       );
 
       // ⚠️ 네비게이션을 먼저 수행 후 상태 갱신
