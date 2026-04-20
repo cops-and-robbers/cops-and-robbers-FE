@@ -1,11 +1,42 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-17T06:41:04Z",
-    "currentVersion": "1.5.0",
+    "lastUpdated": "2026-04-20T12:30:50Z",
+    "currentVersion": "1.6.1",
     "projectType": "flutter",
-    "totalReleases": 75
+    "totalReleases": 76
   },
   "releases": [
+    {
+      "version": "1.6.1",
+      "project_type": "flutter",
+      "date": "2026-04-20",
+      "pr_number": 273,
+      "raw_summary": "## Summary by CodeRabbit\n\n# 릴리스 노트\n\n* **새로운 기능**\n  * 로그인 후 필수 약관 동의 화면 추가\n  * 위치정보 이용약관 및 마케팅 정보 수신 동의 문서 제공\n  * 개인정보 처리방침 및 이용약관 업데이트\n\n* **버그 수정**\n  * 재연결 후 구역 이탈 경고 팝업 복구\n\n* **기타**\n  * 법적 문서 및 정책 개선\n  * 앱 버전 업데이트 (v1.5.0 → v1.6.1)",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "로그인 후 필수 약관 동의 화면 추가",
+            "위치정보 이용약관 및 마케팅 정보 수신 동의 문서 제공",
+            "개인정보 처리방침 및 이용약관 업데이트"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "재연결 후 구역 이탈 경고 팝업 복구"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "법적 문서 및 정책 개선",
+            "앱 버전 업데이트 (v1.5.0 → v1.6.1)"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.5.0",
       "project_type": "flutter",
