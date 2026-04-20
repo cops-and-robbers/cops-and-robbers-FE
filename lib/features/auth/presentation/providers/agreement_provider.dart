@@ -59,19 +59,32 @@ class AgreementNotifier extends _$AgreementNotifier {
   @override
   AgreementState build() => const AgreementState();
 
-  void toggleTerms() =>
-      state = state.copyWith(termsOfService: !state.termsOfService);
+  // 제출 중에는 체크박스 변경을 무시한다.
+  // 서버 요청이 날아간 뒤 사용자가 토글하면 화면 표시값과 서버 저장값이 어긋나므로,
+  // 동의 이력의 정합성을 지키기 위해 토글·일괄설정 모두 가드한다.
+  void toggleTerms() {
+    if (state.isSubmitting) return;
+    state = state.copyWith(termsOfService: !state.termsOfService);
+  }
 
-  void togglePrivacy() =>
-      state = state.copyWith(privacyPolicy: !state.privacyPolicy);
+  void togglePrivacy() {
+    if (state.isSubmitting) return;
+    state = state.copyWith(privacyPolicy: !state.privacyPolicy);
+  }
 
-  void toggleLocation() =>
-      state = state.copyWith(locationTerms: !state.locationTerms);
+  void toggleLocation() {
+    if (state.isSubmitting) return;
+    state = state.copyWith(locationTerms: !state.locationTerms);
+  }
 
-  void toggleMarketing() => state = state.copyWith(marketing: !state.marketing);
+  void toggleMarketing() {
+    if (state.isSubmitting) return;
+    state = state.copyWith(marketing: !state.marketing);
+  }
 
   /// 4개를 일괄 [value]로 설정
   void toggleAll(bool value) {
+    if (state.isSubmitting) return;
     state = state.copyWith(
       termsOfService: value,
       privacyPolicy: value,
