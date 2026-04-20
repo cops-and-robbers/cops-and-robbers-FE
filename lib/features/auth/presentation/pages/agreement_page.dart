@@ -125,7 +125,10 @@ class AgreementPage extends ConsumerWidget {
       children: [
         Text(
           '서비스 이용을 위해\n약관에 동의해주세요',
-          style: AppTextStyles.heading_24.copyWith(color: AppColors.black),
+          style: AppTextStyles.heading_24.copyWith(
+            color: AppColors.black,
+            height: 1.4,
+          ),
         ),
         SizedBox(height: AppSpacing.vertical24),
         Text(
