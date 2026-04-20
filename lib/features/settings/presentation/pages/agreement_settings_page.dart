@@ -178,7 +178,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
 
   Widget _buildContent(AgreementStatusEntity status) {
     return Padding(
-      padding: AppPadding.all20,
+      padding: AppPadding.all24,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -198,6 +198,9 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                       assetPath: 'assets/legal/terms_of_service.json',
                     ),
                   ),
+                  SizedBox(height: AppSpacing.vertical6),
+                  Divider(color: AppColors.black100, height: 1),
+                  SizedBox(height: AppSpacing.vertical6),
                   AgreementItem(
                     checked: status.privacyPolicy,
                     required: true,
@@ -209,6 +212,9 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                       assetPath: 'assets/legal/privacy_policy.json',
                     ),
                   ),
+                  SizedBox(height: AppSpacing.vertical6),
+                  Divider(color: AppColors.black100, height: 1),
+                  SizedBox(height: AppSpacing.vertical6),
                   AgreementItem(
                     checked: status.locationTerms,
                     required: true,
@@ -220,9 +226,9 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                       assetPath: 'assets/legal/location_terms.json',
                     ),
                   ),
-                  SizedBox(height: AppSpacing.vertical8),
+                  SizedBox(height: AppSpacing.vertical6),
                   Divider(color: AppColors.black100, height: 1),
-                  SizedBox(height: AppSpacing.vertical8),
+                  SizedBox(height: AppSpacing.vertical6),
                   AgreementItem(
                     checked: _newMarketing,
                     required: false,
