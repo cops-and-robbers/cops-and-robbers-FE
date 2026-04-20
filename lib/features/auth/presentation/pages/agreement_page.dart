@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -30,7 +31,7 @@ class AgreementPage extends ConsumerWidget {
         backgroundColor: AppColors.white,
         body: SafeArea(
           child: Padding(
-            padding: AppPadding.all20,
+            padding: AppPadding.all24,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -39,14 +40,14 @@ class AgreementPage extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: AppSpacing.vertical16),
+                        SizedBox(height: 52.h),
                         _buildHeader(),
-                        SizedBox(height: AppSpacing.vertical28),
+                        SizedBox(height: AppSpacing.vertical20),
                         AgreementAllCheckbox(
                           checked: state.allAgreed,
                           onToggle: () => notifier.toggleAll(!state.allAgreed),
                         ),
-                        SizedBox(height: AppSpacing.vertical16),
+                        SizedBox(height: AppSpacing.vertical8),
                         const Divider(color: AppColors.black100, height: 1),
                         SizedBox(height: AppSpacing.vertical8),
                         AgreementItem(
@@ -121,9 +122,9 @@ class AgreementPage extends ConsumerWidget {
           '서비스 이용을 위해\n약관에 동의해주세요',
           style: AppTextStyles.heading_24.copyWith(color: AppColors.black),
         ),
-        SizedBox(height: AppSpacing.vertical16),
+        SizedBox(height: AppSpacing.vertical20),
         Text(
-          '필수 약관에 모두 동의해야\n서비스를 이용하실 수 있어요',
+          '필수 약관에 모두 동의해야 서비스를 이용하실 수 있어요',
           style: AppTextStyles.paragraph_14_100.copyWith(
             color: AppColors.black600,
           ),

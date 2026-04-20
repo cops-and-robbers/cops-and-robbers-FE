@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -24,18 +25,14 @@ class AgreementAllCheckbox extends StatelessWidget {
     return GestureDetector(
       onTap: onToggle,
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: AppPadding.all16,
-        decoration: BoxDecoration(
-          color: AppColors.black100,
-          borderRadius: AppRadius.large,
-        ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Row(
           children: [
-            AgreementCheckbox(checked: checked, onTap: onToggle, size: 22),
-            SizedBox(width: AppSpacing.horizontal12),
+            AgreementCheckbox(checked: checked, onTap: onToggle, size: 20),
+            SizedBox(width: AppSpacing.horizontal8),
             Text(
-              '전체 동의하기',
+              '전체 동의',
               style: AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
           ],

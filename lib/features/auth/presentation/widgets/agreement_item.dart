@@ -48,10 +48,10 @@ class AgreementItem extends StatelessWidget {
             onTap: onToggle,
             readOnly: readOnly,
           ),
-          SizedBox(width: AppSpacing.horizontal12),
+          SizedBox(width: AppSpacing.horizontal8),
           Expanded(
             child: GestureDetector(
-              onTap: onDetailTap,
+              onTap: readOnly ? null : onToggle,
               behavior: HitTestBehavior.opaque,
               child: Row(
                 children: [
