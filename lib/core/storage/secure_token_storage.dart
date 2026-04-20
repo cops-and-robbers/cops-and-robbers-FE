@@ -42,6 +42,7 @@ class SecureTokenStorage {
   static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
   static const String _userIdKey = 'user_id';
+  static const String _isNewUserKey = 'is_new_user';
 
   // ============================================
   // Token 저장
@@ -67,6 +68,15 @@ class SecureTokenStorage {
   /// 앱 재시작 시 AuthNotifier에서 복원에 사용됩니다.
   Future<void> saveUserId(int userId) async {
     await _storage.write(key: _userIdKey, value: userId.toString());
+  }
+
+  /// 신규 회원 여부 저장
+  ///
+  /// 로그인 성공 시 백엔드 응답의 `isNewUser`를 저장합니다.
+  /// 앱 재시작 시 cold-start 경로에서 복원되어 닉네임 설정 플로우 유지에 사용됩니다.
+  /// 닉네임 설정 완료 시 `false`로 갱신됩니다.
+  Future<void> saveIsNewUser(bool value) async {
+    await _storage.write(key: _isNewUserKey, value: value ? 'true' : 'false');
   }
 
   // ============================================
@@ -95,6 +105,15 @@ class SecureTokenStorage {
     return value != null ? int.tryParse(value) : null;
   }
 
+  /// 신규 회원 여부 조회
+  ///
+  /// 저장된 값이 없거나 `'true'`가 아닌 경우 false를 반환합니다.
+  /// fail-safe 설계: 예외적 상황에서도 항상 false로 폴백 (기존 유저로 취급).
+  Future<bool> getIsNewUser() async {
+    final value = await _storage.read(key: _isNewUserKey);
+    return value == 'true';
+  }
+
   // ============================================
   // Token 삭제
   // ============================================
@@ -107,6 +126,7 @@ class SecureTokenStorage {
       _storage.delete(key: _accessTokenKey),
       _storage.delete(key: _refreshTokenKey),
       _storage.delete(key: _userIdKey),
+      _storage.delete(key: _isNewUserKey),
     ]);
     if (kDebugMode) {
       debugPrint('✅ 토큰 삭제 완료');

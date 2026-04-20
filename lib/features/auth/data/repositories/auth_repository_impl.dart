@@ -102,12 +102,13 @@ class AuthRepositoryImpl implements AuthRepository {
         ),
       );
 
-      // 5. JWT 토큰 + userId 저장
+      // 5. JWT 토큰 + userId + isNewUser 저장
       await _tokenStorage.saveTokens(
         accessToken: response.tokens.accessToken,
         refreshToken: response.tokens.refreshToken,
       );
       await _tokenStorage.saveUserId(response.userId);
+      await _tokenStorage.saveIsNewUser(response.isNewUser);
 
       if (kDebugMode) {
         debugPrint('✅ 백엔드 로그인 성공 ($provider)');

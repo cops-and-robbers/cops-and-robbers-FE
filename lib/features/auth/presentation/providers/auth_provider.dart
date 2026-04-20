@@ -172,10 +172,15 @@ class AuthNotifier extends _$AuthNotifier {
         debugPrint('⚠️ [AuthNotifier] cold start 약관 상태 조회 실패: $e');
       }
 
+      // isNewUser 복원 — 신규 유저가 온보딩(약관/닉네임) 도중 이탈 후 재진입 시
+      // 닉네임 설정 화면으로 다시 유도하기 위함.
+      // 저장된 값이 없으면 false (기존 유저로 취급).
+      final isNewUser = await tokenStorage.getIsNewUser();
+
       return AuthResultEntity(
         userId: userId,
         nickname: currentUser.displayName ?? '',
-        isNewUser: false,
+        isNewUser: isNewUser,
         requiresAgreement: requiresAgreement,
       );
     }
@@ -308,17 +313,25 @@ class AuthNotifier extends _$AuthNotifier {
   ///
   /// isNewUser를 false로 변경하여 GoRouter가 다시
   /// /nickname-setup으로 리다이렉트하지 않도록 합니다.
-  void updateNicknameCompleted(String nickname) {
+  /// storage의 영속 상태도 false로 갱신하여 앱 재시작 시에도 유지합니다.
+  Future<void> updateNicknameCompleted(String nickname) async {
     final current = state.value;
-    if (current != null) {
-      state = AsyncValue.data(
-        AuthResultEntity(
-          userId: current.userId,
-          nickname: nickname,
-          isNewUser: false,
-          requiresAgreement: current.requiresAgreement,
-        ),
-      );
+    if (current == null) return;
+
+    state = AsyncValue.data(
+      AuthResultEntity(
+        userId: current.userId,
+        nickname: nickname,
+        isNewUser: false,
+        requiresAgreement: current.requiresAgreement,
+      ),
+    );
+
+    // storage 영속 상태도 갱신 → 다음 cold-start에서 /nickname-setup 재진입 방지
+    try {
+      await ref.read(secureTokenStorageProvider).saveIsNewUser(false);
+    } catch (e) {
+      debugPrint('⚠️ [AuthNotifier] saveIsNewUser(false) 실패: $e');
     }
   }
 
