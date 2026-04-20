@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -359,6 +360,15 @@ class _HomePageState extends ConsumerState<HomePage> {
     try {
       response = await ref.read(joinGameProvider(inviteCode: code).future);
     } on DioException catch (e) {
+      // 필수 약관 미동의 차단 → 스낵바 + /agreement 리디렉트
+      if (mounted &&
+          handleRequiredTermsErrorIfNeeded(
+            context: context,
+            ref: ref,
+            error: e,
+          )) {
+        return;
+      }
       // 409: 이미 참가 중인 게임 → 해당 게임으로 자동 이동 시도
       if (e.response?.statusCode == 409 && mounted) {
         await _redirectToActiveGame();
@@ -600,8 +610,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                     // ── Avatar Placeholder ──
                     Image.asset(
                       'assets/app_icon.png',
-                      width: 260.w,
-                      height: 260.h,
+                      width: 240.w,
+                      height: 240.h,
                       fit: BoxFit.contain,
                     ),
                   ],

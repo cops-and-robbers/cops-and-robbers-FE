@@ -16,7 +16,8 @@ part 'login_response_model.g.dart';
 ///     "accessToken": "eyJhbG...",
 ///     "refreshToken": "eyJhbG..."
 ///   },
-///   "isNewUser": false
+///   "isNewUser": false,
+///   "requiresAgreement": true
 /// }
 /// ```
 @freezed
@@ -33,6 +34,13 @@ class LoginResponseModel with _$LoginResponseModel {
 
     /// 신규 회원 여부
     required bool isNewUser,
+
+    /// 필수 약관 미동의 여부
+    ///
+    /// true이면 약관 동의 화면으로 라우팅해야 합니다.
+    /// 신규 회원(isNewUser=true)은 항상 true.
+    /// 기존 회원 중 필수 약관 중 하나라도 미동의면 true.
+    required bool requiresAgreement,
   }) = _LoginResponseModel;
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) =>

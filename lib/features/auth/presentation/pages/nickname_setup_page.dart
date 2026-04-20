@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -163,9 +165,11 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
     // (상태 변경 → refreshListenable → GoRouter가 push된 라우트를 잃는 문제 방지)
     if (!_isNicknameChanged) {
       _navigateAfterComplete();
-      ref
-          .read(authNotifierProvider.notifier)
-          .updateNicknameCompleted(widget.initialNickname);
+      unawaited(
+        ref
+            .read(authNotifierProvider.notifier)
+            .updateNicknameCompleted(widget.initialNickname),
+      );
       return;
     }
 
@@ -180,10 +184,22 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
       if (!mounted) return;
 
+      // 성공 피드백: 네비게이션 전에 띄우면 루트 Overlay에 등록되어
+      // pop/go 이후 복귀한 화면에서도 그대로 표시됨
+      AppSnackbar.show(
+        context,
+        message: '닉네임이 저장되었어요',
+        iconPath: 'assets/icons/icon_check mark.svg',
+      );
+
       // ⚠️ 네비게이션을 먼저 수행 후 상태 갱신
       // (상태 변경 → refreshListenable → GoRouter가 push된 라우트를 잃는 문제 방지)
       _navigateAfterComplete();
-      ref.read(authNotifierProvider.notifier).updateNicknameCompleted(nickname);
+      unawaited(
+        ref
+            .read(authNotifierProvider.notifier)
+            .updateNicknameCompleted(nickname),
+      );
     } on AppException catch (e) {
       if (!mounted) return;
 

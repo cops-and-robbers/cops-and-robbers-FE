@@ -124,6 +124,19 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 앱바 게임 규칙 버튼
   final _tutorialKeyGameRules = GlobalKey();
+
+  /// 현재 표시 중인 튜토리얼 컨트롤러
+  ///
+  /// 참가자 변경으로 레이아웃이 밀렸을 때 `refresh()`로 타겟 좌표를 다시
+  /// 계산하기 위해 보관한다. 튜토리얼 종료 시 null 처리.
+  AppTutorialController? _tutorialController;
+
+  /// 튜토리얼 표시 상태
+  ///
+  /// STOMP 재연결로 `_fetchAndInitParticipants()`가 여러 번 호출될 때
+  /// `TutorialService.markCompleted()` 기록 이전이라도 중복 오버레이가
+  /// 쌓이지 않도록 로컬 플래그로 차단한다.
+  bool _isTutorialShowing = false;
   // ─────────────────────────────────────────────────────────────────────────
 
   /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
@@ -226,6 +239,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   @override
   void dispose() {
     _isDisposed = true;
+    // 페이지 사라질 때 떠 있는 튜토리얼 오버레이를 정리
+    if (_tutorialController?.isShowing == true) {
+      _tutorialController!.finish();
+    }
+    _tutorialController = null;
+    _isTutorialShowing = false;
     _reconnectStateNotifier?.dispose();
     _reconnectStateNotifier = null;
     _lobbyEventSub?.close();
@@ -460,12 +479,24 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   ///
   /// 참가자 데이터가 로딩된 이후에 호출되므로 UI가 완전히 구성된 상태에서 실행됩니다.
   Future<void> _showTutorialIfNeeded() async {
+    // 이미 표시 중이면 STOMP 재연결 등에 의한 중복 호출을 무시한다.
+    if (_isTutorialShowing) return;
+
     final completed = await TutorialService.isCompleted(
       TutorialKeys.waitingRoom,
     );
-    if (completed || !mounted) return;
+    if (completed || !mounted || _isTutorialShowing) return;
 
-    AppTutorialStyle.show(
+    _isTutorialShowing = true;
+
+    // 오버레이 삽입 직후 바로 타겟 좌표가 잡히도록 레이아웃 반영을 한 프레임 대기.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted || !_isTutorialShowing) {
+      _isTutorialShowing = false;
+      return;
+    }
+
+    _tutorialController = AppTutorialStyle.show(
       context: context,
       targets: [
         AppTutorialStyle.target(
@@ -491,7 +522,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           align: TutorialAlign.top,
         ),
       ],
-      onFinish: () => TutorialService.markCompleted(TutorialKeys.waitingRoom),
+      onFinish: () {
+        TutorialService.markCompleted(TutorialKeys.waitingRoom);
+        _tutorialController = null;
+        _isTutorialShowing = false;
+      },
     );
   }
 
@@ -1052,6 +1087,18 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   @override
   Widget build(BuildContext context) {
+    // 참가자 목록이 바뀌면 팀 섹션 Wrap의 높이가 달라져 아래쪽 타겟 좌표가 밀림.
+    // 튜토리얼 패키지는 타겟 활성화 시점의 좌표를 캐시하므로, 변경 프레임 직후
+    // refresh()를 호출해 현재 타겟 위치를 다시 잡아준다.
+    ref.listen(waitingRoomParticipantsProvider, (prev, next) {
+      final controller = _tutorialController;
+      if (controller == null || !controller.isShowing) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        controller.refresh();
+      });
+    });
+
     final participantsState = ref.watch(waitingRoomParticipantsProvider);
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;

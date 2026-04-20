@@ -18,6 +18,7 @@ import '../features/auth/presentation/pages/splash_page.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/onboarding_page.dart';
 import '../features/auth/presentation/pages/nickname_setup_page.dart';
+import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
 import '../features/session/presentation/pages/setup_playground_page.dart';
@@ -133,7 +134,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
 
         // ====================================================================
-        // 2. 신규 회원 → 닉네임 설정 페이지만 허용
+        // 2. 필수 약관 미동의 → 약관 동의 화면만 허용
+        // ====================================================================
+        if (authUser.requiresAgreement) {
+          if (currentPath == RoutePaths.agreement) {
+            return null;
+          }
+          return RoutePaths.agreement;
+        }
+
+        // ====================================================================
+        // 3. 신규 회원 → 닉네임 설정 페이지만 허용
         // ====================================================================
         if (authUser.isNewUser) {
           if (currentPath == RoutePaths.nicknameSetup) {
@@ -144,7 +155,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
 
         // ====================================================================
-        // 3. 기존 회원이 로그인 접근 시 → 활성 게임 복귀 또는 홈으로
+        // 4. 기존 회원이 로그인 접근 시 → 활성 게임 복귀 또는 홈으로
         //    로그인 성공 시 활성 게임이 있으면 대기실/게임으로 직접 이동
         //    (닉네임설정은 설정 페이지에서 닉네임 변경 시 접근 가능)
         // ====================================================================
@@ -157,6 +168,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             ref.read(postLoginDestinationProvider.notifier).state = null;
             return destination;
           }
+          return RoutePaths.home;
+        }
+
+        // ====================================================================
+        // 5. 약관 동의 완료 후 /agreement에 남아있는 경우 홈으로 이동
+        //    markAgreementCompleted → requiresAgreement=false → 리다이렉트 재평가 시
+        //    이 분기가 탈출 경로 역할 (신규 회원은 step 3에서 이미 처리됨)
+        // ====================================================================
+        if (currentPath == RoutePaths.agreement) {
           return RoutePaths.home;
         }
 
@@ -203,6 +223,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             child: NicknameSetupPage(initialNickname: nickname),
           );
         },
+      ),
+
+      GoRoute(
+        path: RoutePaths.agreement,
+        name: RoutePaths.agreementName,
+        pageBuilder: (context, state) =>
+            buildSmoothFade(key: state.pageKey, child: const AgreementPage()),
       ),
 
       // ====================================================================
@@ -561,6 +588,7 @@ class _GoRouterRefreshNotifier extends ChangeNotifier {
     debugPrint('🔧 [_GoRouterRefreshNotifier] 생성 시작');
     bool? prevIsAuthenticated;
     bool? prevIsNewUser;
+    bool? prevRequiresAgreement;
     _ref.listen<AsyncValue<dynamic>>(_provider, (previous, next) {
       debugPrint(
         '🔧 [_GoRouterRefreshNotifier] listen callback: '
@@ -569,16 +597,20 @@ class _GoRouterRefreshNotifier extends ChangeNotifier {
       // loading 중이면 notify 생략 (중간 상태로 인한 오류 화면 방지)
       if (next.isLoading) return;
 
-      // 인증 여부와 신규 회원 여부 모두 비교하여 변경 시에만 notify
+      // 인증 여부, 신규 회원 여부, 약관 동의 여부 모두 비교하여 변경 시에만 notify
       final user = next.valueOrNull;
       final isAuthenticated = user != null;
       final isNewUser = user?.isNewUser as bool?;
+      final requiresAgreement = user?.requiresAgreement as bool?;
+
       if (prevIsAuthenticated == isAuthenticated &&
-          prevIsNewUser == isNewUser) {
+          prevIsNewUser == isNewUser &&
+          prevRequiresAgreement == requiresAgreement) {
         return;
       }
       prevIsAuthenticated = isAuthenticated;
       prevIsNewUser = isNewUser;
+      prevRequiresAgreement = requiresAgreement;
 
       notifyListeners();
     });

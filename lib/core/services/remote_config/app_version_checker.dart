@@ -39,6 +39,14 @@ class AppVersionChecker {
   /// Remote Config 값과 현재 앱 버전을 비교하여 결과를 반환한다.
   /// 예외 발생 시 호출자가 처리해야 한다 (SplashPage에서 catch 후 fail-open).
   static Future<VersionCheckResult> check() async {
+    // 디버그 빌드에서는 점검/업데이트 게이트를 무시한다.
+    // 개발 중 Remote Config 설정이 실수로 maintenance/forceUpdate 상태여도
+    // 앱 흐름이 막히지 않도록 강제로 upToDate 처리.
+    if (kDebugMode) {
+      debugPrint('🛠️ [AppVersionChecker] 디버그 모드: 버전 체크 건너뜀');
+      return VersionCheckResult.upToDate;
+    }
+
     final config = RemoteConfigService.instance;
 
     // 1. 점검 모드 체크

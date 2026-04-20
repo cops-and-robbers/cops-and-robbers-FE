@@ -22,6 +22,7 @@ import '../../../../router/route_paths.dart';
 import '../pages/login_page.dart';
 import '../../../session/presentation/pages/home_page.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
+import '../../../user/presentation/providers/user_provider.dart';
 
 part 'auth_provider.g.dart';
 
@@ -159,10 +160,41 @@ class AuthNotifier extends _$AuthNotifier {
         return null;
       }
 
+      // Cold start 시점에는 로그인 응답이 없으므로 약관 상태와 프로필(닉네임)을
+      // 백엔드에서 직접 조회한다. 각 조회는 독립적으로 실패를 허용하여
+      // 한쪽이 실패해도 다른 값은 반영한다.
+      // - 약관 실패 시: requiresAgreement=false (낙관적) — 이후 보호 API가 차단되면
+      //   에러 플로우로 유저에게 피드백
+      // - 프로필 실패 시: Firebase displayName으로 폴백 (백엔드 일시 장애 대비).
+      //   프로필 조회 성공 시 백엔드 닉네임(서버 생성 랜덤 또는 유저 변경값) 사용
+      final userRepo = ref.read(userRepositoryProvider);
+      bool requiresAgreement = false;
+      String nickname = currentUser.displayName ?? '';
+
+      try {
+        final status = await userRepo.getAgreements();
+        requiresAgreement = !status.hasAllRequired;
+      } catch (e) {
+        debugPrint('⚠️ [AuthNotifier] cold start 약관 상태 조회 실패: $e');
+      }
+
+      try {
+        final profile = await userRepo.getMyProfile();
+        nickname = profile.nickname;
+      } catch (e) {
+        debugPrint('⚠️ [AuthNotifier] cold start 프로필 조회 실패: $e');
+      }
+
+      // isNewUser 복원 — 신규 유저가 온보딩(약관/닉네임) 도중 이탈 후 재진입 시
+      // 닉네임 설정 화면으로 다시 유도하기 위함.
+      // 저장된 값이 없으면 false (기존 유저로 취급).
+      final isNewUser = await tokenStorage.getIsNewUser();
+
       return AuthResultEntity(
         userId: userId,
-        nickname: currentUser.displayName ?? '',
-        isNewUser: false,
+        nickname: nickname,
+        isNewUser: isNewUser,
+        requiresAgreement: requiresAgreement,
       );
     }
 
@@ -294,17 +326,66 @@ class AuthNotifier extends _$AuthNotifier {
   ///
   /// isNewUser를 false로 변경하여 GoRouter가 다시
   /// /nickname-setup으로 리다이렉트하지 않도록 합니다.
-  void updateNicknameCompleted(String nickname) {
+  /// storage의 영속 상태도 false로 갱신하여 앱 재시작 시에도 유지합니다.
+  Future<void> updateNicknameCompleted(String nickname) async {
     final current = state.value;
-    if (current != null) {
-      state = AsyncValue.data(
-        AuthResultEntity(
-          userId: current.userId,
-          nickname: nickname,
-          isNewUser: false,
-        ),
-      );
+    if (current == null) return;
+
+    state = AsyncValue.data(
+      AuthResultEntity(
+        userId: current.userId,
+        nickname: nickname,
+        isNewUser: false,
+        requiresAgreement: current.requiresAgreement,
+      ),
+    );
+
+    // storage 영속 상태도 갱신 → 다음 cold-start에서 /nickname-setup 재진입 방지
+    try {
+      await ref.read(secureTokenStorageProvider).saveIsNewUser(false);
+    } catch (e) {
+      debugPrint('⚠️ [AuthNotifier] saveIsNewUser(false) 실패: $e');
     }
+  }
+
+  /// 약관 동의 완료를 표시합니다.
+  ///
+  /// [AgreementNotifier.submit] 성공 후 호출하여 `requiresAgreement`를 false로
+  /// 갱신합니다. 상태 변화가 GoRouter refreshListenable을 통해 redirect를 재실행시켜
+  /// 다음 화면(닉네임 설정 또는 홈)으로 자동 이동됩니다.
+  void markAgreementCompleted() {
+    final current = state.valueOrNull;
+    if (current == null) {
+      debugPrint('⚠️ [AuthNotifier] markAgreementCompleted: 상태 없음 (무시)');
+      return;
+    }
+    if (!current.requiresAgreement) {
+      debugPrint('ℹ️ [AuthNotifier] markAgreementCompleted: 이미 동의 완료 (무시)');
+      return;
+    }
+    state = AsyncValue.data(current.copyWith(requiresAgreement: false));
+    debugPrint('✅ [AuthNotifier] 약관 동의 완료 플래그 반영');
+  }
+
+  /// 백엔드가 "필수 약관 미동의" 차단 응답을 반환했을 때 호출합니다.
+  ///
+  /// `requiresAgreement`를 true로 세팅해 라우터가 `/agreement`로 자동 redirect
+  /// 하도록 유도합니다. [markAgreementCompleted]의 반대 동작입니다.
+  ///
+  /// 구 버전에서 묵시적 동의만 한 기존 사용자가 방 생성/참여를 시도했을 때 등
+  /// 백엔드가 400 에러로 차단한 케이스를 유저에게 안내하기 위한 경로로 사용됩니다.
+  void markNeedsAgreement() {
+    final current = state.valueOrNull;
+    if (current == null) {
+      debugPrint('⚠️ [AuthNotifier] markNeedsAgreement: 상태 없음 (무시)');
+      return;
+    }
+    if (current.requiresAgreement) {
+      debugPrint('ℹ️ [AuthNotifier] markNeedsAgreement: 이미 미동의 상태 (무시)');
+      return;
+    }
+    state = AsyncValue.data(current.copyWith(requiresAgreement: true));
+    debugPrint('🚨 [AuthNotifier] 필수 약관 미동의 플래그 반영 → /agreement로 리디렉트 예정');
   }
 
   /// 회원 탈퇴 후 로컬 정리

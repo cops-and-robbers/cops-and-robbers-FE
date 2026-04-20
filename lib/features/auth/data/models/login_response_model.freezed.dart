@@ -33,6 +33,13 @@ mixin _$LoginResponseModel {
   /// 신규 회원 여부
   bool get isNewUser => throw _privateConstructorUsedError;
 
+  /// 필수 약관 미동의 여부
+  ///
+  /// true이면 약관 동의 화면으로 라우팅해야 합니다.
+  /// 신규 회원(isNewUser=true)은 항상 true.
+  /// 기존 회원 중 필수 약관 중 하나라도 미동의면 true.
+  bool get requiresAgreement => throw _privateConstructorUsedError;
+
   /// Serializes this LoginResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -50,7 +57,13 @@ abstract class $LoginResponseModelCopyWith<$Res> {
     $Res Function(LoginResponseModel) then,
   ) = _$LoginResponseModelCopyWithImpl<$Res, LoginResponseModel>;
   @useResult
-  $Res call({int userId, String nickname, TokensModel tokens, bool isNewUser});
+  $Res call({
+    int userId,
+    String nickname,
+    TokensModel tokens,
+    bool isNewUser,
+    bool requiresAgreement,
+  });
 
   $TokensModelCopyWith<$Res> get tokens;
 }
@@ -74,6 +87,7 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
     Object? nickname = null,
     Object? tokens = null,
     Object? isNewUser = null,
+    Object? requiresAgreement = null,
   }) {
     return _then(
       _value.copyWith(
@@ -92,6 +106,10 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
             isNewUser: null == isNewUser
                 ? _value.isNewUser
                 : isNewUser // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            requiresAgreement: null == requiresAgreement
+                ? _value.requiresAgreement
+                : requiresAgreement // ignore: cast_nullable_to_non_nullable
                       as bool,
           )
           as $Val,
@@ -118,7 +136,13 @@ abstract class _$$LoginResponseModelImplCopyWith<$Res>
   ) = __$$LoginResponseModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int userId, String nickname, TokensModel tokens, bool isNewUser});
+  $Res call({
+    int userId,
+    String nickname,
+    TokensModel tokens,
+    bool isNewUser,
+    bool requiresAgreement,
+  });
 
   @override
   $TokensModelCopyWith<$Res> get tokens;
@@ -142,6 +166,7 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
     Object? nickname = null,
     Object? tokens = null,
     Object? isNewUser = null,
+    Object? requiresAgreement = null,
   }) {
     return _then(
       _$LoginResponseModelImpl(
@@ -161,6 +186,10 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
             ? _value.isNewUser
             : isNewUser // ignore: cast_nullable_to_non_nullable
                   as bool,
+        requiresAgreement: null == requiresAgreement
+            ? _value.requiresAgreement
+            : requiresAgreement // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -174,6 +203,7 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
     required this.nickname,
     required this.tokens,
     required this.isNewUser,
+    required this.requiresAgreement,
   });
 
   factory _$LoginResponseModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -195,9 +225,17 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
   @override
   final bool isNewUser;
 
+  /// 필수 약관 미동의 여부
+  ///
+  /// true이면 약관 동의 화면으로 라우팅해야 합니다.
+  /// 신규 회원(isNewUser=true)은 항상 true.
+  /// 기존 회원 중 필수 약관 중 하나라도 미동의면 true.
+  @override
+  final bool requiresAgreement;
+
   @override
   String toString() {
-    return 'LoginResponseModel(userId: $userId, nickname: $nickname, tokens: $tokens, isNewUser: $isNewUser)';
+    return 'LoginResponseModel(userId: $userId, nickname: $nickname, tokens: $tokens, isNewUser: $isNewUser, requiresAgreement: $requiresAgreement)';
   }
 
   @override
@@ -210,13 +248,21 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
                 other.nickname == nickname) &&
             (identical(other.tokens, tokens) || other.tokens == tokens) &&
             (identical(other.isNewUser, isNewUser) ||
-                other.isNewUser == isNewUser));
+                other.isNewUser == isNewUser) &&
+            (identical(other.requiresAgreement, requiresAgreement) ||
+                other.requiresAgreement == requiresAgreement));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, userId, nickname, tokens, isNewUser);
+  int get hashCode => Object.hash(
+    runtimeType,
+    userId,
+    nickname,
+    tokens,
+    isNewUser,
+    requiresAgreement,
+  );
 
   /// Create a copy of LoginResponseModel
   /// with the given fields replaced by the non-null parameter values.
@@ -241,6 +287,7 @@ abstract class _LoginResponseModel implements LoginResponseModel {
     required final String nickname,
     required final TokensModel tokens,
     required final bool isNewUser,
+    required final bool requiresAgreement,
   }) = _$LoginResponseModelImpl;
 
   factory _LoginResponseModel.fromJson(Map<String, dynamic> json) =
@@ -261,6 +308,14 @@ abstract class _LoginResponseModel implements LoginResponseModel {
   /// 신규 회원 여부
   @override
   bool get isNewUser;
+
+  /// 필수 약관 미동의 여부
+  ///
+  /// true이면 약관 동의 화면으로 라우팅해야 합니다.
+  /// 신규 회원(isNewUser=true)은 항상 true.
+  /// 기존 회원 중 필수 약관 중 하나라도 미동의면 true.
+  @override
+  bool get requiresAgreement;
 
   /// Create a copy of LoginResponseModel
   /// with the given fields replaced by the non-null parameter values.

@@ -39,6 +39,7 @@ import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
 import '../../domain/zone_exit_detector.dart';
+import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
@@ -144,8 +145,16 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 재연결 모달 표시 중 여부 (중복 표시 방지)
   bool _isReconnectModalShown = false;
 
-  /// 재연결 모달 중 발생한 구역 이탈 보류 플래그
-  /// (모달 닫힘 후 여전히 구역 밖이면 팝업 및 진동 처리)
+  /// 재연결 모달 종료 후 구역 이탈 팝업을 복구해야 함을 표시하는 보류 플래그.
+  ///
+  /// 다음 두 경로에서 `true` 로 세팅된다:
+  /// 1) 재연결 모달 표시 중 새로 구역을 벗어난 경우 (`_zoneExitDetector.onExitZone`)
+  /// 2) 재연결 모달 진입 시점에 이미 구역 밖이거나 이탈 팝업이 떠 있던 경우
+  ///    (`_showReconnectModalIfNeeded` → `shouldMarkZoneExitAsPendingOnReconnect`)
+  ///
+  /// 모달이 닫히면 `_processPendingZoneExit()` 이 `_zoneExitDetector.isOutside`
+  /// 를 재확인한 뒤 이탈 팝업과 진동을 복구한다. 구역으로 복귀하면
+  /// `onEnterZone` 에서 `false` 로 리셋된다.
   bool _pendingZoneExit = false;
 
   /// 게임 이벤트 STOMP 최초 연결 성공 여부
@@ -796,6 +805,17 @@ class _GamePageState extends ConsumerState<GamePage>
             currentState.connectionState != StompConnectionState.error)) {
       _processPendingZoneExit();
       return;
+    }
+
+    // 이탈 팝업이 떠 있거나 현재 구역 밖이라면, 재연결 모달이 닫힌 뒤
+    // 팝업을 복구해야 함을 보류 플래그로 기록한다.
+    // (ZoneExitDetector 는 상태 전환에만 콜백이 발화하므로 모달 종료 후
+    //  위치 업데이트만으로는 자동 복구되지 않음)
+    if (shouldMarkZoneExitAsPendingOnReconnect(
+      isPopupShown: _isZoneExitPopupShown,
+      isDetectorOutside: _zoneExitDetector.isOutside,
+    )) {
+      _pendingZoneExit = true;
     }
 
     // 구역 이탈 팝업이 떠 있으면 먼저 닫음

@@ -28,6 +28,12 @@ mixin _$AuthResultEntity {
   /// true일 경우 닉네임 설정 페이지로 이동해야 합니다.
   bool get isNewUser => throw _privateConstructorUsedError;
 
+  /// 필수 약관 미동의 여부
+  ///
+  /// true일 경우 약관 동의 페이지로 라우팅해야 합니다.
+  /// 동의 완료 후 [AuthNotifier.markAgreementCompleted]로 false로 변경됩니다.
+  bool get requiresAgreement => throw _privateConstructorUsedError;
+
   /// Create a copy of AuthResultEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -42,7 +48,12 @@ abstract class $AuthResultEntityCopyWith<$Res> {
     $Res Function(AuthResultEntity) then,
   ) = _$AuthResultEntityCopyWithImpl<$Res, AuthResultEntity>;
   @useResult
-  $Res call({int userId, String nickname, bool isNewUser});
+  $Res call({
+    int userId,
+    String nickname,
+    bool isNewUser,
+    bool requiresAgreement,
+  });
 }
 
 /// @nodoc
@@ -63,6 +74,7 @@ class _$AuthResultEntityCopyWithImpl<$Res, $Val extends AuthResultEntity>
     Object? userId = null,
     Object? nickname = null,
     Object? isNewUser = null,
+    Object? requiresAgreement = null,
   }) {
     return _then(
       _value.copyWith(
@@ -77,6 +89,10 @@ class _$AuthResultEntityCopyWithImpl<$Res, $Val extends AuthResultEntity>
             isNewUser: null == isNewUser
                 ? _value.isNewUser
                 : isNewUser // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            requiresAgreement: null == requiresAgreement
+                ? _value.requiresAgreement
+                : requiresAgreement // ignore: cast_nullable_to_non_nullable
                       as bool,
           )
           as $Val,
@@ -93,7 +109,12 @@ abstract class _$$AuthResultEntityImplCopyWith<$Res>
   ) = __$$AuthResultEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int userId, String nickname, bool isNewUser});
+  $Res call({
+    int userId,
+    String nickname,
+    bool isNewUser,
+    bool requiresAgreement,
+  });
 }
 
 /// @nodoc
@@ -113,6 +134,7 @@ class __$$AuthResultEntityImplCopyWithImpl<$Res>
     Object? userId = null,
     Object? nickname = null,
     Object? isNewUser = null,
+    Object? requiresAgreement = null,
   }) {
     return _then(
       _$AuthResultEntityImpl(
@@ -128,6 +150,10 @@ class __$$AuthResultEntityImplCopyWithImpl<$Res>
             ? _value.isNewUser
             : isNewUser // ignore: cast_nullable_to_non_nullable
                   as bool,
+        requiresAgreement: null == requiresAgreement
+            ? _value.requiresAgreement
+            : requiresAgreement // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -140,6 +166,7 @@ class _$AuthResultEntityImpl implements _AuthResultEntity {
     required this.userId,
     required this.nickname,
     required this.isNewUser,
+    required this.requiresAgreement,
   });
 
   /// 사용자 ID
@@ -156,9 +183,16 @@ class _$AuthResultEntityImpl implements _AuthResultEntity {
   @override
   final bool isNewUser;
 
+  /// 필수 약관 미동의 여부
+  ///
+  /// true일 경우 약관 동의 페이지로 라우팅해야 합니다.
+  /// 동의 완료 후 [AuthNotifier.markAgreementCompleted]로 false로 변경됩니다.
+  @override
+  final bool requiresAgreement;
+
   @override
   String toString() {
-    return 'AuthResultEntity(userId: $userId, nickname: $nickname, isNewUser: $isNewUser)';
+    return 'AuthResultEntity(userId: $userId, nickname: $nickname, isNewUser: $isNewUser, requiresAgreement: $requiresAgreement)';
   }
 
   @override
@@ -170,11 +204,14 @@ class _$AuthResultEntityImpl implements _AuthResultEntity {
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
             (identical(other.isNewUser, isNewUser) ||
-                other.isNewUser == isNewUser));
+                other.isNewUser == isNewUser) &&
+            (identical(other.requiresAgreement, requiresAgreement) ||
+                other.requiresAgreement == requiresAgreement));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, userId, nickname, isNewUser);
+  int get hashCode =>
+      Object.hash(runtimeType, userId, nickname, isNewUser, requiresAgreement);
 
   /// Create a copy of AuthResultEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -193,6 +230,7 @@ abstract class _AuthResultEntity implements AuthResultEntity {
     required final int userId,
     required final String nickname,
     required final bool isNewUser,
+    required final bool requiresAgreement,
   }) = _$AuthResultEntityImpl;
 
   /// 사용자 ID
@@ -208,6 +246,13 @@ abstract class _AuthResultEntity implements AuthResultEntity {
   /// true일 경우 닉네임 설정 페이지로 이동해야 합니다.
   @override
   bool get isNewUser;
+
+  /// 필수 약관 미동의 여부
+  ///
+  /// true일 경우 약관 동의 페이지로 라우팅해야 합니다.
+  /// 동의 완료 후 [AuthNotifier.markAgreementCompleted]로 false로 변경됩니다.
+  @override
+  bool get requiresAgreement;
 
   /// Create a copy of AuthResultEntity
   /// with the given fields replaced by the non-null parameter values.
