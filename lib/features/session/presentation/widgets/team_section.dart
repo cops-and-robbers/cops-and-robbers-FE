@@ -25,6 +25,7 @@ class TeamSection extends StatelessWidget {
     this.badge,
     this.onMemberTap,
     this.isDarkMode = false,
+    this.gameStatusByParticipantId,
     super.key,
   });
 
@@ -67,6 +68,12 @@ class TeamSection extends StatelessWidget {
 
   /// 다크 모드 여부 (도둑팀 = 다크)
   final bool isDarkMode;
+
+  /// 게임방 컨텍스트에서 각 참가자의 상태(`"ALIVE"`/`"JAILED"`/`"POLICE_WAITING"`).
+  ///
+  /// null 이거나 특정 참가자 키가 없으면 해당 카드는 대기방 모드로 렌더링됨.
+  /// 인게임 오버레이에서만 채워지고, 대기실 팀 섹션에서는 생략된다.
+  final Map<int, String>? gameStatusByParticipantId;
 
   bool get _isPolice => team.toUpperCase() == 'POLICE';
 
@@ -193,6 +200,7 @@ class TeamSection extends StatelessWidget {
               isHost: member.participantId == hostParticipantId,
               isMe: member.participantId == myParticipantId,
               isDarkMode: isDarkMode,
+              gameStatus: gameStatusByParticipantId?[member.participantId],
               onTap: onMemberTap != null ? () => onMemberTap!(member) : null,
             ),
           ),

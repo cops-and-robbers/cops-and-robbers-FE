@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
@@ -11,6 +12,12 @@ import '../../../lobby/data/models/lobby_event_dto.dart';
 ///
 /// 대기실 팀 섹션 내 참가자를 표시합니다.
 /// 아바타(72x84) + 닉네임, 방장은 왕관 아이콘 표시.
+///
+/// SVG 매핑 규칙:
+/// - 게임방 도둑 수감([gameStatus] == `"JAILED"`) → `jailed.svg`
+/// - 그 외 전부 → `isReady` 기반으로 `ready.svg` / `not_ready.svg`
+///
+/// 레디/비레디의 시각 구분은 SVG 파일 자체가 담당 (Opacity 미사용).
 class ParticipantCard extends StatelessWidget {
   const ParticipantCard({
     required this.participant,
@@ -18,6 +25,7 @@ class ParticipantCard extends StatelessWidget {
     this.isMe = false,
     this.onTap,
     this.isDarkMode = false,
+    this.gameStatus,
     super.key,
   });
 
@@ -33,6 +41,12 @@ class ParticipantCard extends StatelessWidget {
   /// 다크 모드 여부
   final bool isDarkMode;
 
+  /// 게임방 참가자 상태 (`"ALIVE"`, `"JAILED"`, `"POLICE_WAITING"`).
+  ///
+  /// null 이면 대기방 컨텍스트. 값이 있으면 게임방 컨텍스트로,
+  /// 도둑의 `JAILED` 상태일 때만 jailed SVG 사용.
+  final String? gameStatus;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -40,19 +54,11 @@ class ParticipantCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 아바타 영역 (72x84)
+          // 캐릭터 영역 (72x84) — 배경 없이 SVG 만 표시
           SizedBox(
             width: 72.w,
             height: 84.h,
-            child: Container(
-              decoration: BoxDecoration(
-                color: _avatarColor,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-              child: Center(
-                child: Icon(Icons.person, color: AppColors.white, size: 32.w),
-              ),
-            ),
+            child: SvgPicture.asset(_characterAssetPath, fit: BoxFit.contain),
           ),
           SizedBox(height: AppSpacing.vertical4),
           // 닉네임 (방장은 왕관 아이콘)
@@ -96,8 +102,22 @@ class ParticipantCard extends StatelessWidget {
     );
   }
 
-  Color get _avatarColor {
-    return participant.isReady ? AppColors.black600 : AppColors.black300;
+  /// 팀과 상태에 맞는 캐릭터 SVG 경로.
+  /// 게임방 도둑 수감은 전용 jailed.svg, 그 외는 isReady 기반으로 분기.
+  /// 방장은 backend `isReady` 값과 무관하게 항상 레디로 취급한다 —
+  /// 방장은 레디 버튼이 없기 때문.
+  String get _characterAssetPath {
+    final team = participant.team.toLowerCase();
+
+    // 게임방 + 도둑 + 수감 → 전용 에셋
+    if (gameStatus == 'JAILED' && team == 'robber') {
+      return characterAssetPath(team: 'robber', state: 'jailed');
+    }
+
+    // 방장은 항상 레디 취급
+    final isReady = isHost || participant.isReady;
+    final state = isReady ? 'ready' : 'not_ready';
+    return characterAssetPath(team: team, state: state);
   }
 }
 
