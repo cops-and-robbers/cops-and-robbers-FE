@@ -80,4 +80,15 @@ class GameConfig {
   /// 감옥 이탈 시 위치 노출 시간 (10초)
   /// Location exposure time after jail exit (10 seconds)
   static const Duration jailExitExposureTime = Duration(seconds: 10);
+
+  // ============================================
+  // QR 체포 설정 (QR Arrest Settings)
+  // ============================================
+
+  /// 도둑 QR 페이로드 유효 기간 (30초)
+  ///
+  /// 이 시간이 지난 QR은 경찰 스캔 시 거부된다. 스크린샷 저장 후 재사용하는
+  /// 리플레이 공격을 차단하기 위한 값이며, 정상 대면 체포 플로우(수 초 이내)는
+  /// 충분히 여유 있게 커버한다.
+  static const Duration qrPayloadTtl = Duration(seconds: 30);
 }
