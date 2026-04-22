@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -104,8 +105,12 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
   }
 
   /// 경찰 역할 → ALIVE 도둑 카드 탭 시 체포 모달 표시
+  ///
+  /// 실제 게임에서는 QR 스캔(대면 확인)으로만 체포 가능하다.
+  /// 카드 탭 체포는 디버그 빌드 전용 — 시뮬레이터/에뮬레이터로 흐름을 검증하기 위함.
   void _onRobberCardTap(LobbyParticipantInfo member) {
     if (widget.myTeam != 'POLICE') return;
+    if (!kDebugMode) return;
 
     final gameEventState = ref.read(gameEventNotifierProvider);
     final participantInfo = ref.read(gameParticipantNotifierProvider);
