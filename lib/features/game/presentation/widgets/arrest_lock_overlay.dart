@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -54,13 +56,14 @@ class ArrestLockOverlay extends ConsumerWidget {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // 아바타 플레이스홀더: color #B1BCC8
-                        Container(
+                        // 도둑 수감 캐릭터 — 스킨 default 고정
+                        // (다른 참가자 카드에도 동일하게 jailed 상태가 표시되므로 본인 오버레이도 동일 에셋 사용)
+                        SizedBox(
                           width: 92.w,
                           height: 108.h,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFB1BCC8),
-                            borderRadius: BorderRadius.circular(4.r),
+                          child: SvgPicture.asset(
+                            characterAssetPath(team: 'robber', state: 'jailed'),
+                            fit: BoxFit.contain,
                           ),
                         ),
                         SizedBox(height: 20.h),

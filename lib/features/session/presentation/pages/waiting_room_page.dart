@@ -478,6 +478,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 대기실 튜토리얼 (최초 1회)
   ///
   /// 참가자 데이터가 로딩된 이후에 호출되므로 UI가 완전히 구성된 상태에서 실행됩니다.
+  /// 팀 변경 카드 스텝은 사용자의 팀에 따라 "반대 팀 AddSlotCard" 만 가리키는
+  /// 단일 스텝으로 구성됩니다. 반대 팀 정원이 꽉 차서 AddSlotCard 가
+  /// 렌더링되지 않은 경우 해당 스텝은 스킵됩니다.
   Future<void> _showTutorialIfNeeded() async {
     // 이미 표시 중이면 STOMP 재연결 등에 의한 중복 호출을 무시한다.
     if (_isTutorialShowing) return;
@@ -496,32 +499,45 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       return;
     }
 
-    _tutorialController = AppTutorialStyle.show(
-      context: context,
-      targets: [
+    // 현재 사용자의 팀 기준으로 "반대 팀" AddSlotCard 하나만 안내.
+    final myTeam = ref.read(gameParticipantNotifierProvider)?.team;
+    final isPolice = myTeam == 'POLICE';
+    final opponentKey = isPolice
+        ? _tutorialKeyAddSlotRobber
+        : _tutorialKeyAddSlotPolice;
+    final changeTeamDescription = isPolice
+        ? '이 버튼을 눌러 도둑팀으로 이동할 수 있어요'
+        : '이 버튼을 눌러 경찰팀으로 이동할 수 있어요';
+
+    final targets = <TutorialTarget>[
+      // 팀 변경 카드 (반대 팀 AddSlotCard 가 렌더링된 경우에만)
+      if (opponentKey.currentContext != null)
         AppTutorialStyle.target(
-          keyTarget: _tutorialKeyAddSlotPolice,
-          description: '이 버튼을 눌러 경찰팀으로 이동할 수 있어요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyAddSlotRobber,
-          description: '이 버튼을 눌러 도둑팀으로 이동할 수 있어요',
+          keyTarget: opponentKey,
+          description: changeTeamDescription,
           align: TutorialAlign.bottom,
         ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyInviteCode,
-          description: '친구에게 초대 코드를 공유할 수 있어요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyGameRules,
-          description: '게임 설정을 확인할 수 있어요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyReadyButton,
-          description: '준비가 되면 눌러주세요',
-          align: TutorialAlign.top,
-        ),
-      ],
+      // 초대 코드 공유
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyInviteCode,
+        description: '친구에게 초대 코드를 공유할 수 있어요',
+      ),
+      // 게임 설정 확인
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyGameRules,
+        description: '게임 설정을 확인할 수 있어요',
+      ),
+      // 준비 완료
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyReadyButton,
+        description: '준비가 되면 눌러주세요',
+        align: TutorialAlign.top,
+      ),
+    ];
+
+    _tutorialController = AppTutorialStyle.show(
+      context: context,
+      targets: targets,
       onFinish: () {
         TutorialService.markCompleted(TutorialKeys.waitingRoom);
         _tutorialController = null;
@@ -1099,6 +1115,19 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       });
     });
 
+    // 튜토리얼 진행 중 내 팀이 바뀌면 이전 하이라이트 대상(AddSlotCard)이 사라지므로
+    // 튜토리얼을 자연 종료한다. 대기실 튜토리얼은 최초 1회만 실행되므로 실발생 빈도는
+    // 낮지만, 안전장치로 스킵 처리.
+    ref.listen(gameParticipantNotifierProvider, (prev, next) {
+      final prevTeam = prev?.team;
+      final nextTeam = next?.team;
+      if (prevTeam == null || nextTeam == null) return;
+      if (prevTeam == nextTeam) return;
+      final controller = _tutorialController;
+      if (controller == null || !controller.isShowing) return;
+      controller.finish();
+    });
+
     final participantsState = ref.watch(waitingRoomParticipantsProvider);
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
@@ -1152,6 +1181,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             hostParticipantId:
                                 participantsState.hostParticipantId,
                             myParticipantId: participantInfo?.participantId,
+                            currentUserTeam: participantInfo?.team,
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('POLICE')
                                 : null,
@@ -1189,6 +1219,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             hostParticipantId:
                                 participantsState.hostParticipantId,
                             myParticipantId: participantInfo?.participantId,
+                            currentUserTeam: participantInfo?.team,
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('ROBBER')
                                 : null,

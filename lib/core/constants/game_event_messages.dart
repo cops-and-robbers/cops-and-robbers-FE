@@ -11,21 +11,21 @@ abstract final class GameEventMessages {
   static String gameStartTime(int minutes) => '제한 시간은 $minutes분입니다.';
 
   /// START 2단계 — 게임 시작 예고
-  static const gameStartReady = '잠시 후 게임이 시작됩니다. 모든 플레이어는 준비하세요!';
+  static const gameStartReady = '잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!';
 
   /// START 3단계 — 신고/차단 안내
   static const gameStartReportTip = '게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.';
 
   /// START 4단계 — 게임 시작 확정
-  static const gameStartGo = '게임 시작! 행운을 빕니다!';
+  static const gameStartGo = '게임 시작!  행운을 빕니다!';
 
   // ── POLICE_MOVE_START 이벤트 (2단계 시퀀스) ──
 
   /// 경찰 출동 예고
-  static const policeMoveWarning = '경찰이 곧 출동합니다. 도둑은 서둘러 이동하세요!';
+  static const policeMoveWarning = '경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!';
 
   /// 경찰 출동 확정
-  static const policeMove = '경찰 출동! 도둑은 도망치세요!';
+  static const policeMove = '경찰 출동!  도둑은 도망치세요!';
 
   // ── LOCATION_REVEAL 이벤트 ──
 

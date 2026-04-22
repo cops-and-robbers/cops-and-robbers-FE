@@ -99,6 +99,8 @@ flutter:
     - assets/legal/
     - assets/messages/
     - assets/credits/
+    - assets/characters/police/default/
+    - assets/characters/robber/default/
     - .env
   fonts:
     - family: Pretendard-Thin

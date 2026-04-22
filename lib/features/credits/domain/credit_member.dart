@@ -79,7 +79,7 @@ const List<CreditMember> creditMembers = [
     role: 'Frontend',
     profileAssets: [
       'assets/credits/FE-Hong1.jpeg',
-      'assets/credits/FE-Hong2.JPG',
+      'assets/credits/FE-Hong2.jpg',
     ],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/EM-H20'),
@@ -121,7 +121,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '정상희',
     role: 'Backend',
-    profileAssets: ['assets/credits/BE_JEONG.jpeg'],
+    profileAssets: ['assets/credits/BE-JEONG.jpeg'],
     links: [
       SocialLink(
         type: SocialType.github,
@@ -136,7 +136,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '황혜림',
     role: 'Backend',
-    profileAssets: ['assets/credits/BE_HWANG.png'],
+    profileAssets: ['assets/credits/BE-HWANG.png'],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/HyerimH'),
       SocialLink(
@@ -148,7 +148,10 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '윤지희',
     role: 'Design',
-    profileAssets: ['assets/credits/default.png'],
+    profileAssets: [
+      'assets/credits/DESIGN-YOON1.jpeg',
+      'assets/credits/DESIGN-YOON2.jpeg',
+    ],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/jihee127'),
       SocialLink(

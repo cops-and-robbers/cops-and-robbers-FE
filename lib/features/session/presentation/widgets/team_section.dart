@@ -20,11 +20,13 @@ class TeamSection extends StatelessWidget {
     required this.onToggle,
     this.hostParticipantId,
     this.myParticipantId,
+    this.currentUserTeam,
     this.onAddSlotTap,
     this.addSlotKey,
     this.badge,
     this.onMemberTap,
     this.isDarkMode = false,
+    this.gameStatusByParticipantId,
     super.key,
   });
 
@@ -49,6 +51,14 @@ class TeamSection extends StatelessWidget {
   /// 현재 사용자 participantId (닉네임 볼드 처리용)
   final int? myParticipantId;
 
+  /// 현재 사용자가 속한 팀 ("POLICE" / "ROBBER").
+  ///
+  /// 대기실에서 내 팀 섹션의 `AddSlotCard`(팀 변경 카드) 를 숨기는 용도.
+  /// null 이면 양쪽 모두 숨김 (참가자 정보 로딩 전).
+  /// 인게임 오버레이처럼 팀 변경이 불가능한 컨텍스트에서는 전달하지 않아도 된다
+  /// (`onAddSlotTap` 이 null 이므로 `AddSlotCard` 자체가 렌더링되지 않음).
+  final String? currentUserTeam;
+
   /// + 버튼 카드 탭 콜백 (팀 변경용)
   final VoidCallback? onAddSlotTap;
 
@@ -67,6 +77,12 @@ class TeamSection extends StatelessWidget {
 
   /// 다크 모드 여부 (도둑팀 = 다크)
   final bool isDarkMode;
+
+  /// 게임방 컨텍스트에서 각 참가자의 상태(`"ALIVE"`/`"JAILED"`/`"POLICE_WAITING"`).
+  ///
+  /// null 이거나 특정 참가자 키가 없으면 해당 카드는 대기방 모드로 렌더링됨.
+  /// 인게임 오버레이에서만 채워지고, 대기실 팀 섹션에서는 생략된다.
+  final Map<int, String>? gameStatusByParticipantId;
 
   bool get _isPolice => team.toUpperCase() == 'POLICE';
 
@@ -162,7 +178,11 @@ class TeamSection extends StatelessWidget {
   }
 
   Widget _buildParticipants() {
-    final hasAddSlot = onAddSlotTap != null;
+    // 팀 변경 카드는 "반대 팀 섹션" 에서만 표시한다.
+    // currentUserTeam 이 null (참가자 로딩 전) 이면 양쪽 모두 숨김.
+    final isOpponentSection =
+        currentUserTeam != null && currentUserTeam != team;
+    final hasAddSlot = onAddSlotTap != null && isOpponentSection;
     final emptyCount = maxPerTeam - members.length - (hasAddSlot ? 1 : 0);
     // 방장을 맨 앞으로 정렬
     final sorted = [...members]
@@ -193,6 +213,7 @@ class TeamSection extends StatelessWidget {
               isHost: member.participantId == hostParticipantId,
               isMe: member.participantId == myParticipantId,
               isDarkMode: isDarkMode,
+              gameStatus: gameStatusByParticipantId?[member.participantId],
               onTap: onMemberTap != null ? () => onMemberTap!(member) : null,
             ),
           ),
