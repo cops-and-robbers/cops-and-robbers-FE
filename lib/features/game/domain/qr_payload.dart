@@ -36,15 +36,16 @@ class QrPayload {
       final decoded = jsonDecode(raw);
       if (decoded is! Map<String, dynamic>) return null;
 
-      // JSON 디코더는 정수를 int 또는 num으로 반환할 수 있어 양쪽 모두 허용.
+      // pid/exp는 int 전용. fractional 값(예: 123.9)이 암묵적으로 절삭되는 것을
+      // 막기 위해 명시적으로 거부한다. 정상 QR은 jsonDecode가 항상 int로 파싱.
       final pid = decoded['pid'];
       final exp = decoded['exp'];
-      if (pid is! num) return null;
-      if (exp is! num) return null;
+      if (pid is! int) return null;
+      if (exp is! int) return null;
 
       return QrPayload(
-        participantId: pid.toInt(),
-        expiresAt: DateTime.fromMillisecondsSinceEpoch(exp.toInt()),
+        participantId: pid,
+        expiresAt: DateTime.fromMillisecondsSinceEpoch(exp),
       );
     } catch (_) {
       return null;

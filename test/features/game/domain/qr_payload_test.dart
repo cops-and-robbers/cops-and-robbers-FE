@@ -65,11 +65,19 @@ void main() {
       );
     });
 
-    test('pid가 num(double) 타입이어도 int로 정규화하여 허용한다', () {
-      // 실제 JSON 파싱에서 정수가 num으로 들어올 수 있음
-      final parsed = QrPayload.tryParse('{"pid": 102, "exp": 1729508430000}');
-      expect(parsed, isNotNull);
-      expect(parsed!.participantId, 102);
+    test('pid가 소수(fractional)면 null을 반환한다', () {
+      // fractional 값이 조용히 절삭되는 것을 방지하기 위해 int만 허용
+      expect(
+        QrPayload.tryParse('{"pid": 102.5, "exp": 1729508430000}'),
+        isNull,
+      );
+    });
+
+    test('exp가 소수(fractional)면 null을 반환한다', () {
+      expect(
+        QrPayload.tryParse('{"pid": 102, "exp": 1729508430000.5}'),
+        isNull,
+      );
     });
   });
 
