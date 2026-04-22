@@ -148,7 +148,10 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '윤지희',
     role: 'Design',
-    profileAssets: ['assets/credits/default.png'],
+    profileAssets: [
+      'assets/credits/DESIGN-YOON1.jpeg',
+      'assets/credits/DESIGN-YOON2.jpeg',
+    ],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/jihee127'),
       SocialLink(
