@@ -20,6 +20,7 @@ class TeamSection extends StatelessWidget {
     required this.onToggle,
     this.hostParticipantId,
     this.myParticipantId,
+    this.currentUserTeam,
     this.onAddSlotTap,
     this.addSlotKey,
     this.badge,
@@ -49,6 +50,14 @@ class TeamSection extends StatelessWidget {
 
   /// 현재 사용자 participantId (닉네임 볼드 처리용)
   final int? myParticipantId;
+
+  /// 현재 사용자가 속한 팀 ("POLICE" / "ROBBER").
+  ///
+  /// 대기실에서 내 팀 섹션의 `AddSlotCard`(팀 변경 카드) 를 숨기는 용도.
+  /// null 이면 양쪽 모두 숨김 (참가자 정보 로딩 전).
+  /// 인게임 오버레이처럼 팀 변경이 불가능한 컨텍스트에서는 전달하지 않아도 된다
+  /// (`onAddSlotTap` 이 null 이므로 `AddSlotCard` 자체가 렌더링되지 않음).
+  final String? currentUserTeam;
 
   /// + 버튼 카드 탭 콜백 (팀 변경용)
   final VoidCallback? onAddSlotTap;
@@ -169,7 +178,11 @@ class TeamSection extends StatelessWidget {
   }
 
   Widget _buildParticipants() {
-    final hasAddSlot = onAddSlotTap != null;
+    // 팀 변경 카드는 "반대 팀 섹션" 에서만 표시한다.
+    // currentUserTeam 이 null (참가자 로딩 전) 이면 양쪽 모두 숨김.
+    final isOpponentSection =
+        currentUserTeam != null && currentUserTeam != team;
+    final hasAddSlot = onAddSlotTap != null && isOpponentSection;
     final emptyCount = maxPerTeam - members.length - (hasAddSlot ? 1 : 0);
     // 방장을 맨 앞으로 정렬
     final sorted = [...members]
