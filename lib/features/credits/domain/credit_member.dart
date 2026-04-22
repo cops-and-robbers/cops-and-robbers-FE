@@ -121,7 +121,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '정상희',
     role: 'Backend',
-    profileAssets: ['assets/credits/BE_JEONG.jpeg'],
+    profileAssets: ['assets/credits/BE-JEONG.jpeg'],
     links: [
       SocialLink(
         type: SocialType.github,
@@ -136,7 +136,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '황혜림',
     role: 'Backend',
-    profileAssets: ['assets/credits/BE_HWANG.png'],
+    profileAssets: ['assets/credits/BE-HWANG.png'],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/HyerimH'),
       SocialLink(
