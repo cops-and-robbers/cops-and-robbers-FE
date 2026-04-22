@@ -7,6 +7,37 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
 import 'participant_card.dart';
 
+/// 대기실 / 게임방 참가자 정렬 규칙
+///
+/// 방장 → 본인 → 나머지(서버 수신 순서 유지) 순으로 정렬한다.
+///
+/// `where`를 세 번 사용해 각 그룹을 필터링 후 합치는 방식을 택한 이유:
+/// `List.sort`는 Dart에서 stable이 보장되지 않아 "나머지" 그룹 내부 순서가
+/// 뒤섞일 수 있다. 팀 변경 시 해당 유저가 "새 팀 맨 뒤"로 밀리는 기존 동작을
+/// 유지하려면 원본 순서 보존이 필수.
+///
+/// `@visibleForTesting`: UI 렌더링 없이 순수 정렬 로직만 단위 테스트.
+@visibleForTesting
+List<LobbyParticipantInfo> sortParticipantsForDisplay(
+  List<LobbyParticipantInfo> members, {
+  required int? hostParticipantId,
+  required int? myParticipantId,
+}) {
+  final host = members.where((p) => p.participantId == hostParticipantId);
+  // 내가 방장이면 host 그룹에 이미 포함됐으므로 me 그룹에서 제외 (중복 방지)
+  final me = members.where(
+    (p) =>
+        p.participantId == myParticipantId &&
+        p.participantId != hostParticipantId,
+  );
+  final others = members.where(
+    (p) =>
+        p.participantId != hostParticipantId &&
+        p.participantId != myParticipantId,
+  );
+  return [...host, ...me, ...others];
+}
+
 /// 팀 섹션 위젯
 ///
 /// 대기실에서 경찰팀/도둑팀 섹션을 표시합니다.
@@ -184,13 +215,12 @@ class TeamSection extends StatelessWidget {
         currentUserTeam != null && currentUserTeam != team;
     final hasAddSlot = onAddSlotTap != null && isOpponentSection;
     final emptyCount = maxPerTeam - members.length - (hasAddSlot ? 1 : 0);
-    // 방장을 맨 앞으로 정렬
-    final sorted = [...members]
-      ..sort((a, b) {
-        if (a.participantId == hostParticipantId) return -1;
-        if (b.participantId == hostParticipantId) return 1;
-        return 0;
-      });
+    // 방장 → 본인 → 나머지(수신 순서 유지)
+    final sorted = sortParticipantsForDisplay(
+      members,
+      hostParticipantId: hostParticipantId,
+      myParticipantId: myParticipantId,
+    );
 
     return Padding(
       // 첫 카드 좌측 29px
