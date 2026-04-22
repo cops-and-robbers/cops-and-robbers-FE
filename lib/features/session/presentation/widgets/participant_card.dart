@@ -15,7 +15,8 @@ import '../../../lobby/data/models/lobby_event_dto.dart';
 ///
 /// SVG 매핑 규칙:
 /// - 게임방 도둑 수감([gameStatus] == `"JAILED"`) → `jailed.svg`
-/// - 그 외 전부 → `isReady` 기반으로 `ready.svg` / `not_ready.svg`
+/// - 게임방 그 외 (ALIVE / POLICE_WAITING) → `ready.svg`
+/// - 대기방 ([gameStatus] == null) → `isReady` 기반 `ready.svg` / `not_ready.svg`
 ///
 /// 레디/비레디의 시각 구분은 SVG 파일 자체가 담당 (Opacity 미사용).
 class ParticipantCard extends StatelessWidget {
@@ -103,18 +104,24 @@ class ParticipantCard extends StatelessWidget {
   }
 
   /// 팀과 상태에 맞는 캐릭터 SVG 경로.
-  /// 게임방 도둑 수감은 전용 jailed.svg, 그 외는 isReady 기반으로 분기.
-  /// 방장은 backend `isReady` 값과 무관하게 항상 레디로 취급한다 —
-  /// 방장은 레디 버튼이 없기 때문.
+  ///
+  /// 게임 시작 후에는 백엔드가 `isReady` 를 리셋(혹은 무의미해짐)하므로
+  /// 게임방 컨텍스트(gameStatus != null)에서는 `isReady` 를 보지 않는다.
+  /// JAILED 도둑만 수감 에셋, 나머지(ALIVE/POLICE_WAITING)는 활성으로 표시.
+  ///
+  /// 대기방에서는 방장이 레디 버튼이 없으므로 항상 레디로 취급한다.
   String get _characterAssetPath {
     final team = participant.team.toLowerCase();
 
-    // 게임방 + 도둑 + 수감 → 전용 에셋
-    if (gameStatus == 'JAILED' && team == 'robber') {
-      return characterAssetPath(team: 'robber', state: 'jailed');
+    // 게임방 컨텍스트
+    if (gameStatus != null) {
+      if (gameStatus == 'JAILED' && team == 'robber') {
+        return characterAssetPath(team: 'robber', state: 'jailed');
+      }
+      return characterAssetPath(team: team, state: 'ready');
     }
 
-    // 방장은 항상 레디 취급
+    // 대기방 컨텍스트 — isReady 기반 분기
     final isReady = isHost || participant.isReady;
     final state = isReady ? 'ready' : 'not_ready';
     return characterAssetPath(team: team, state: state);
