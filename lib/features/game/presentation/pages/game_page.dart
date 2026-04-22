@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -38,6 +37,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
@@ -294,7 +294,7 @@ class _GamePageState extends ConsumerState<GamePage>
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyQrButton,
         description: widget.team == 'POLICE'
-            ? '도둑 참가자 카드를 누르거나 QR을 스캔해서 체포해요'
+            ? '도둑의 QR을 스캔해서 체포해요'
             : '잡히면 경찰에게 QR을 보여주고, 경찰이 스캔하면 체포돼요',
       ),
     ];
@@ -1596,26 +1596,25 @@ class _GamePageState extends ConsumerState<GamePage>
       return;
     }
 
-    final participantId = await Navigator.push<int>(
+    // 스캐너는 파싱만 담당. 만료 여부는 호출측에서 검증하여 사용자에게 원인을 명확히 안내한다.
+    final payload = await Navigator.push<QrPayload>(
       context,
       MaterialPageRoute(
-        builder: (_) => QrScannerPage<int>(
+        builder: (_) => QrScannerPage<QrPayload>(
           title: '도둑의 수배 QR을 스캔하세요',
-          onParse: (rawValue) {
-            try {
-              final json = jsonDecode(rawValue) as Map<String, dynamic>;
-              final pid = json['pid'];
-              if (pid is int) return pid;
-              if (pid is num) return pid.toInt();
-              return null;
-            } catch (_) {
-              return null;
-            }
-          },
+          onParse: QrPayload.tryParse,
         ),
       ),
     );
-    if (participantId == null || !mounted) return;
+    if (payload == null || !mounted) return;
+
+    // 만료된 QR (스크린샷 저장 후 재사용 시나리오 등) 차단
+    if (payload.isExpiredAt(DateTime.now())) {
+      AppSnackbar.show(context, message: '만료된 QR입니다. QR 새로고침을 요청하세요');
+      return;
+    }
+
+    final participantId = payload.participantId;
 
     // 이미 체포된 도둑 체크
     final arrestedIds = ref
