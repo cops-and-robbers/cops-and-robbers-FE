@@ -8,10 +8,7 @@ import 'dart:convert';
 ///
 /// 인코딩 포맷: `{"pid": <int>, "exp": <Unix millisecond int>}`
 class QrPayload {
-  const QrPayload({
-    required this.participantId,
-    required this.expiresAt,
-  });
+  const QrPayload({required this.participantId, required this.expiresAt});
 
   /// 도둑의 참가자 ID
   final int participantId;
@@ -27,10 +24,7 @@ class QrPayload {
     required DateTime now,
     required Duration ttl,
   }) {
-    return QrPayload(
-      participantId: participantId,
-      expiresAt: now.add(ttl),
-    );
+    return QrPayload(participantId: participantId, expiresAt: now.add(ttl));
   }
 
   /// 스캔된 원본 문자열을 파싱한다. 형식 오류 시 `null` 반환.

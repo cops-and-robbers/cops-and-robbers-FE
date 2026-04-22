@@ -294,7 +294,7 @@ class _GamePageState extends ConsumerState<GamePage>
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyQrButton,
         description: widget.team == 'POLICE'
-            ? '도둑 참가자 카드를 누르거나 QR을 스캔해서 체포해요'
+            ? '도둑의 QR을 스캔해서 체포해요'
             : '잡히면 경찰에게 QR을 보여주고, 경찰이 스캔하면 체포돼요',
       ),
     ];
@@ -1610,10 +1610,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
     // 만료된 QR (스크린샷 저장 후 재사용 시나리오 등) 차단
     if (payload.isExpiredAt(DateTime.now())) {
-      AppSnackbar.show(
-        context,
-        message: '만료된 QR입니다. 도둑에게 QR 새로고침을 요청하세요.',
-      );
+      AppSnackbar.show(context, message: '만료된 QR입니다. QR 새로고침을 요청하세요');
       return;
     }
 

@@ -67,9 +67,7 @@ void main() {
 
     test('pid가 num(double) 타입이어도 int로 정규화하여 허용한다', () {
       // 실제 JSON 파싱에서 정수가 num으로 들어올 수 있음
-      final parsed = QrPayload.tryParse(
-        '{"pid": 102, "exp": 1729508430000}',
-      );
+      final parsed = QrPayload.tryParse('{"pid": 102, "exp": 1729508430000}');
       expect(parsed, isNotNull);
       expect(parsed!.participantId, 102);
     });
@@ -89,17 +87,11 @@ void main() {
     });
 
     test('expiresAt과 정확히 같은 시각은 만료로 판정한다', () {
-      expect(
-        payload.isExpiredAt(DateTime(2026, 4, 22, 12, 0, 30)),
-        isTrue,
-      );
+      expect(payload.isExpiredAt(DateTime(2026, 4, 22, 12, 0, 30)), isTrue);
     });
 
     test('expiresAt 1ms 이후는 만료로 판정한다', () {
-      expect(
-        payload.isExpiredAt(DateTime(2026, 4, 22, 12, 0, 30, 1)),
-        isTrue,
-      );
+      expect(payload.isExpiredAt(DateTime(2026, 4, 22, 12, 0, 30, 1)), isTrue);
     });
   });
 }
