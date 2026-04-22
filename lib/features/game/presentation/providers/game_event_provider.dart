@@ -402,11 +402,19 @@ class GameEventNotifier extends _$GameEventNotifier {
 
   /// 탈옥 API 호출 (수감된 도둑 전용)
   ///
-  /// STOMP ESCAPE 이벤트 도착 전 낙관적으로 [escapedParticipantIds]에 즉시 추가.
-  /// API 실패 시 rollback.
+  /// STOMP ESCAPE 이벤트 도착 전 낙관적으로 [escapedParticipantIds]에 즉시 추가하고,
+  /// 동시에 [arrestedParticipantIds]에서는 제거하여 두 집합을 상호 배타적으로 유지한다
+  /// (STOMP `_handleEscape` 와 동일한 패턴). 같은 ID가 두 집합에 동시에 남아 있으면
+  /// `_effectiveRobberStatus` 우선순위(isEscaped > isArrested)로 인해 다른 참가자 화면에서
+  /// jailed SVG 가 잠깐 ALIVE 로 잘못 표시된다.
+  ///
+  /// API 실패 시 rollback (수감 상태 복원).
   Future<void> escape(int gameId, int myParticipantId) async {
     // 낙관적 업데이트: STOMP 이벤트 도착 전 즉시 UI 반영
     state = state.copyWith(
+      arrestedParticipantIds: state.arrestedParticipantIds.difference({
+        myParticipantId,
+      }),
       escapedParticipantIds: {...state.escapedParticipantIds, myParticipantId},
       isApiLoading: true,
     );
@@ -416,8 +424,12 @@ class GameEventNotifier extends _$GameEventNotifier {
       state = state.copyWith(isApiLoading: false);
     } catch (e) {
       debugPrint('[GameEventNotifier] ❌ 탈옥 요청 실패: $e');
-      // 실패 시 낙관적 업데이트 rollback
+      // 낙관적 업데이트 rollback: 수감 상태 복원
       state = state.copyWith(
+        arrestedParticipantIds: {
+          ...state.arrestedParticipantIds,
+          myParticipantId,
+        },
         escapedParticipantIds: state.escapedParticipantIds.difference({
           myParticipantId,
         }),
