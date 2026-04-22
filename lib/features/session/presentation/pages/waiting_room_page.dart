@@ -506,6 +506,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       return;
     }
 
+    // endOfFrame 대기 사이에 TEAM_UPDATE 가 들어와 팀이 바뀌었다면 이 경로는
+    // 낡은 값이므로 표시하지 않는다. listener 가 새 팀으로 재트리거하므로
+    // _isTutorialShowing 플래그는 건드리지 않고 조용히 종료한다.
+    final currentTeam = ref.read(gameParticipantNotifierProvider)?.team;
+    if (currentTeam != team) return;
+
     // 전달받은 team 기준으로 "반대 팀" AddSlotCard 하나만 안내.
     final isPolice = team == 'POLICE';
     final opponentKey = isPolice
@@ -1149,6 +1155,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (controller != null && controller.isShowing) {
         controller.finish();
         _tutorialController = null;
+        _isTutorialShowing = false;
+      } else {
+        // 컨트롤러는 아직 없지만 _showTutorialIfNeeded 가 endOfFrame 대기 중
+        // 플래그만 선점한 상태일 수 있다. 그 낡은 경로가 새 팀 튜토리얼 시작을
+        // 가드로 막지 않도록 플래그를 해제한다. (기존 경로는 endOfFrame 후
+        // team 재확인 가드에서 조용히 종료된다.)
         _isTutorialShowing = false;
       }
 
