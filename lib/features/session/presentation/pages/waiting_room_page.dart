@@ -1214,7 +1214,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                           TeamSection(
                             team: 'POLICE',
                             members: policeMembers,
-                            maxPerTeam: policeMembers.length + 1,
                             isExpanded: _isPoliceExpanded,
                             onToggle: () => setState(
                               () => _isPoliceExpanded = !_isPoliceExpanded,
@@ -1252,7 +1251,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                           TeamSection(
                             team: 'ROBBER',
                             members: robberMembers,
-                            maxPerTeam: robberMembers.length + 1,
                             isExpanded: _isRobberExpanded,
                             onToggle: () => setState(
                               () => _isRobberExpanded = !_isRobberExpanded,

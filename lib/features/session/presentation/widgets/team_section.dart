@@ -46,7 +46,6 @@ class TeamSection extends StatelessWidget {
   const TeamSection({
     required this.team,
     required this.members,
-    required this.maxPerTeam,
     required this.isExpanded,
     required this.onToggle,
     this.hostParticipantId,
@@ -66,9 +65,6 @@ class TeamSection extends StatelessWidget {
 
   /// 해당 팀 참가자 목록
   final List<LobbyParticipantInfo> members;
-
-  /// 팀당 최대 인원
-  final int maxPerTeam;
 
   /// 펼침 상태
   final bool isExpanded;
@@ -214,7 +210,6 @@ class TeamSection extends StatelessWidget {
     final isOpponentSection =
         currentUserTeam != null && currentUserTeam != team;
     final hasAddSlot = onAddSlotTap != null && isOpponentSection;
-    final emptyCount = maxPerTeam - members.length - (hasAddSlot ? 1 : 0);
     // 방장 → 본인 → 나머지(수신 순서 유지)
     final sorted = sortParticipantsForDisplay(
       members,
@@ -247,12 +242,6 @@ class TeamSection extends StatelessWidget {
               onTap: onMemberTap != null ? () => onMemberTap!(member) : null,
             ),
           ),
-          // 나머지 빈 슬롯 (탭 비활성화)
-          if (emptyCount > 0)
-            ...List.generate(
-              emptyCount,
-              (_) => EmptySlotCard(isDarkMode: isDarkMode),
-            ),
         ],
       ),
     );

@@ -247,7 +247,6 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
             TeamSection(
               team: 'POLICE',
               members: policeMembers,
-              maxPerTeam: policeMembers.length,
               isExpanded: _isPoliceExpanded,
               onToggle: () =>
                   setState(() => _isPoliceExpanded = !_isPoliceExpanded),
@@ -267,7 +266,6 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
             TeamSection(
               team: 'ROBBER',
               members: robberMembers,
-              maxPerTeam: robberMembers.length,
               isExpanded: _isRobberExpanded,
               onToggle: () =>
                   setState(() => _isRobberExpanded = !_isRobberExpanded),
