@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -310,9 +309,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
           controller: _nicknameController,
           maxLength: 10,
           textColor: _isNicknameChanged ? null : AppColors.black600,
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]')),
-          ],
+          // NOTE: inputFormatters 제거 — 천지인/나랏글 등 일부 한국어 IME가
+          // 자모 조합 중 임시 문자를 사용해 필터링되면 입력 자체가 깨지는 문제 방지.
+          // 특수문자 검증은 백엔드(닉네임 중복확인/업데이트 API)에서 수행.
           onChanged: (value) {
             // 입력값이 변경되면 검증 상태 초기화 + 버튼 상태 갱신
             setState(() {
