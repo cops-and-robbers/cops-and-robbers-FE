@@ -42,9 +42,11 @@ import '../../domain/zone_exit_detector.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
+import '../providers/game_result_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
+import '../widgets/game_over_result_dialog.dart';
 import '../widgets/qr_display_dialog.dart';
 import '../widgets/qr_scanner_page.dart';
 import '../widgets/game_timer_text.dart';
@@ -990,17 +992,34 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 게임 종료 → 결과 팝업 2단계 시퀀스
   ///
   /// 1단계: "게임 종료" 알림 팝업 (3초 자동 닫힘)
-  /// 2단계: 결과 팝업 (커스텀 타이틀 스타일, "홈으로" 버튼)
+  /// 2단계: GameOverResultDialog — 캐릭터 오버레이 + 통계 + 홈으로/한 번 더
+  ///
+  /// 1단계 진입 직전에 [gameResultProvider]를 사전 트리거하여,
+  /// 2단계 다이얼로그가 뜰 때 API 응답이 이미 준비되도록 한다.
   Future<void> _showGameOverDialog(String? winnerTeam, String? reason) async {
     if (_gameOverDialogShown) return;
     _gameOverDialogShown = true;
+
+    // GAME_OVER 이벤트 state에서 gameResultId 캡처.
+    // 아래 disconnect()가 state를 const GameEventState()로 리셋하므로,
+    // 반드시 disconnect 호출 전에 읽어야 결과 다이얼로그에 전달할 수 있다.
+    final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
+
     // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
     ref.invalidate(chatNotificationEnabledProvider);
     // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단)
+    // NOTE: 내부에서 state 리셋 수행 — 이후에는 state 기반 값(gameResultId 등) 읽기 금지
     ref.read(gameEventNotifierProvider.notifier).disconnect();
     // 혹시 열려있는 다른 팝업/다이얼로그 모두 닫기
     if (mounted) {
       Navigator.of(context).popUntil((route) => route is! PopupRoute);
+    }
+
+    // 결과 API 사전 트리거 (1단계 3초 동안 백그라운드에서 로딩)
+    if (gameResultId != null) {
+      // fire-and-forget — 다이얼로그에서 ref.watch로 같은 Provider를 구독한다
+      // ignore: unawaited_futures
+      ref.read(gameResultProvider(gameResultId).future);
     }
 
     // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)
@@ -1012,7 +1031,7 @@ class _GamePageState extends ConsumerState<GamePage>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '게임 종료',
+            '게임 종료!',
             style: _isDarkMode
                 ? AppTextStyles.robberHeading.copyWith(color: AppColors.green)
                 : AppTextStyles.heading_20.copyWith(color: AppColors.black),
@@ -1036,10 +1055,40 @@ class _GamePageState extends ConsumerState<GamePage>
 
     if (!mounted) return;
 
-    // 2단계: 게임 결과 팝업 (커스텀 타이틀 스타일, 2버튼)
+    // 2단계: 결과 다이얼로그 (캐릭터 오버레이 + 통계)
+    final gameId = int.tryParse(widget.sessionId);
+
+    // gameResultId가 null인 경우 기존 방식으로 fallback (AppDialog 최소 정보만)
+    if (gameResultId == null || winnerTeam == null) {
+      await _showFallbackResultDialog(winnerTeam, gameId);
+      return;
+    }
+
+    await GameOverResultDialog.show(
+      context: context,
+      isDarkMode: _isDarkMode,
+      myTeam: widget.team,
+      winnerTeam: winnerTeam,
+      gameResultId: gameResultId,
+      onGoHome: () {
+        if (gameId != null) ref.read(leaveGameProvider(gameId).future);
+        ref.read(gameParticipantNotifierProvider.notifier).clear();
+        context.go(RoutePaths.home);
+      },
+      onRematch: () {
+        ref.read(gameParticipantNotifierProvider.notifier).clear();
+        context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
+      },
+    );
+  }
+
+  /// `gameResultId`가 없을 때 기존 AppDialog 기반 최소 결과 다이얼로그 표시 (방어 로직)
+  Future<void> _showFallbackResultDialog(
+    String? winnerTeam,
+    int? gameId,
+  ) async {
     final isWin = winnerTeam == widget.team;
     final winnerTeamLabel = winnerTeam == 'POLICE' ? '경찰팀' : '도둑팀';
-    final gameId = int.tryParse(widget.sessionId);
 
     AppDialog.show(
       context: context,
@@ -1062,13 +1111,11 @@ class _GamePageState extends ConsumerState<GamePage>
       confirmTextColor: _isDarkMode ? null : AppColors.white,
       barrierDismissible: false,
       onCancel: () {
-        // 방 나가기 API (fire-and-forget) + 상태 초기화 후 홈 이동
         if (gameId != null) ref.read(leaveGameProvider(gameId).future);
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.home);
       },
       onConfirm: () {
-        // leave API 미호출 (서버에서 방 유지) + 상태 초기화 후 대기실 이동
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
       },

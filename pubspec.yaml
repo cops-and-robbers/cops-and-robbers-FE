@@ -101,6 +101,8 @@ flutter:
     - assets/credits/
     - assets/characters/police/default/
     - assets/characters/robber/default/
+    - assets/characters/police/result/
+    - assets/characters/robber/result/
     - .env
   fonts:
     - family: Pretendard-Thin
