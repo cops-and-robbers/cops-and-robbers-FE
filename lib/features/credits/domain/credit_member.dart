@@ -79,7 +79,7 @@ const List<CreditMember> creditMembers = [
     role: 'Frontend',
     profileAssets: [
       'assets/credits/FE-Hong1.jpeg',
-      'assets/credits/FE-Hong2.jpg',
+      'assets/credits/FE-Hong2.JPG',
     ],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/EM-H20'),
