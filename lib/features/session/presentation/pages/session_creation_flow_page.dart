@@ -90,7 +90,7 @@ class _SessionCreationFlowPageState
 
   // Step 2: 게임 설정
   int _roundDurationMinutes = 30;
-  int _locationShareMinutes = 1;
+  int _locationShareMinutes = 5;
   int _policeWaitMinutes = 5;
 
   // ============================================
@@ -166,7 +166,7 @@ class _SessionCreationFlowPageState
         return [
           AppTutorialStyle.target(
             keyTarget: _tutorialKeyRoundDuration,
-            description: '한 라운드의 제한 시간이에요',
+            description: '한 라운드의 제한 시간이에요\n숫자를 탭하면 직접 입력할 수 있어요',
           ),
           AppTutorialStyle.target(
             keyTarget: _tutorialKeyLocationShare,
@@ -197,7 +197,7 @@ class _SessionCreationFlowPageState
         _prisonRadiusMeters = draft.jailRadiusInMeters;
         _maxParticipants = draft.maxParticipants ?? 10;
         _roundDurationMinutes = draft.roundDurationMinutes ?? 30;
-        _locationShareMinutes = draft.locationShareMinutes ?? 1;
+        _locationShareMinutes = draft.locationShareMinutes ?? 5;
         _policeWaitMinutes = (draft.policeWaitMinutes ?? 5).clamp(1, 10);
       });
     }
@@ -224,6 +224,8 @@ class _SessionCreationFlowPageState
 
   /// 이전 단계로 이동
   void _goToPreviousStep() {
+    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+    FocusScope.of(context).unfocus();
     if (_currentStep > 0) {
       _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
@@ -238,6 +240,8 @@ class _SessionCreationFlowPageState
   /// 다음 단계로 이동 (Step 0~2: "다음" / Step 3: "방 생성하기")
   Future<void> _goToNextStep() async {
     VibrationService.instance().buttonTap();
+    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+    FocusScope.of(context).unfocus();
     if (_currentStep < 3) {
       await _saveDraft();
       _pageController.nextPage(

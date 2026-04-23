@@ -55,6 +55,7 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
       isDarkMode: isDarkMode,
       valueColor: isDarkMode ? AppColors.white : null,
       valueTextStyle: valueTextStyle,
+      editable: true,
     );
   }
 }

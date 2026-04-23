@@ -73,6 +73,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
   Future<void> _saveSettings() async {
     if (!_hasChanges || _isSaving) return;
 
+    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+    FocusScope.of(context).unfocus();
+
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
     setState(() => _isSaving = true);
@@ -132,7 +135,11 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: PreviousButton(
-          onPressed: () => context.pop(),
+          onPressed: () {
+            // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+            FocusScope.of(context).unfocus();
+            context.pop();
+          },
           color: isDark ? AppColors.black200 : AppColors.black800,
         ),
         centerTitle: true,
@@ -186,20 +193,26 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
 
                       AppSlider(
-                        label: '위치 공유 간격',
+                        label: '도둑 위치 공유 간격',
                         value: _locationShareMinutes.toDouble(),
+
+                        /// TODO : 추후에 API 생기면 0으로 변경
                         min: 1,
                         max: 30,
                         unit: '분',
-                        divisions: 29,
+                        divisions: 30,
                         onChanged: (v) =>
                             setState(() => _locationShareMinutes = v.toInt()),
                         isDarkMode: isDark,
+                        warningText: _locationShareMinutes == 0
+                            ? '도둑의 위치가 공유되지 않아요!'
+                            : null,
                         backgroundColor: isDark
                             ? AppColors.black900
                             : AppColors.white,
@@ -214,6 +227,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
 
                       SizedBox(height: AppSpacing.vertical8),
@@ -244,6 +258,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
+                        editable: true,
                       ),
                     ],
                   ),
