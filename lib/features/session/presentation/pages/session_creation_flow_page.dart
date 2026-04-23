@@ -224,6 +224,8 @@ class _SessionCreationFlowPageState
 
   /// 이전 단계로 이동
   void _goToPreviousStep() {
+    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+    FocusScope.of(context).unfocus();
     if (_currentStep > 0) {
       _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
@@ -238,6 +240,8 @@ class _SessionCreationFlowPageState
   /// 다음 단계로 이동 (Step 0~2: "다음" / Step 3: "방 생성하기")
   Future<void> _goToNextStep() async {
     VibrationService.instance().buttonTap();
+    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+    FocusScope.of(context).unfocus();
     if (_currentStep < 3) {
       await _saveDraft();
       _pageController.nextPage(
