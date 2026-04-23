@@ -9,10 +9,6 @@ import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 
-// TODO: 세 번째 편집 가능 텍스트 사용처가 생기면
-// EditableNumberText로 추출하여 공용화한다.
-// 참고 구현: lib/core/widgets/chips/info_radius_chip.dart
-
 /// 앱 전역에서 사용하는 공용 슬라이더 컴포넌트
 ///
 /// **기본 스펙**:

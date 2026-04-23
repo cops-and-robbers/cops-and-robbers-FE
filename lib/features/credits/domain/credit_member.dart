@@ -71,8 +71,6 @@ class CreditMember {
 }
 
 /// 크레딧에 표시할 멤버 목록
-///
-/// TODO: 소셜 링크 URL을 실제 값으로 교체 필요
 const List<CreditMember> creditMembers = [
   CreditMember(
     name: '홍의민',

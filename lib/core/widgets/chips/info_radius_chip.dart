@@ -7,10 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/text_styles.dart';
 
-// TODO: 세 번째 편집 가능 텍스트 사용처가 생기면
-// EditableNumberText로 추출하여 공용화한다.
-// 참고 구현: lib/core/widgets/inputs/app_slider.dart (_EditableValueText)
-
 /// 정보 표시용 칩 컴포넌트
 ///
 /// Stack 기반 레이아웃으로 "반경 400m" 형태의 정보를 표시합니다.
