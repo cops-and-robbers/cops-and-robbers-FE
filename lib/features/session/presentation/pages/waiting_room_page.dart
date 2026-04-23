@@ -137,6 +137,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// `TutorialService.markCompleted()` 기록 이전이라도 중복 오버레이가
   /// 쌓이지 않도록 로컬 플래그로 차단한다.
   bool _isTutorialShowing = false;
+
+  /// 초대코드 다이얼로그가 화면에 떠 있는 동안 true.
+  ///
+  /// 방장 플로우에서 [_showInviteCodeDialog] 실행 중 STOMP 이벤트나
+  /// `ref.listen(gameParticipantNotifierProvider)` 리스너가
+  /// [_showTutorialIfNeeded] 를 호출해 다이얼로그 위에 튜토리얼이
+  /// 오버레이되는 경쟁 상태를 막기 위한 가드.
+  bool _isInviteDialogOpen = false;
   // ─────────────────────────────────────────────────────────────────────────
 
   /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
@@ -245,6 +253,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
     _tutorialController = null;
     _isTutorialShowing = false;
+    _isInviteDialogOpen = false;
     _reconnectStateNotifier?.dispose();
     _reconnectStateNotifier = null;
     _lobbyEventSub?.close();
@@ -355,7 +364,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // 더미 모드에서도 초대코드 다이얼로그 표시
       if (_pendingInviteDialog && mounted) {
         _pendingInviteDialog = false;
-        _showInviteCodeDialog();
+        await _showInviteCodeDialog();
       }
       return;
     }
@@ -490,6 +499,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   Future<void> _showTutorialIfNeeded(String team) async {
     // 이미 표시 중이면 STOMP 재연결 등에 의한 중복 호출을 무시한다.
     if (_isTutorialShowing) return;
+
+    // 초대코드 다이얼로그가 화면에 떠 있는 동안에는 튜토리얼을 띄우지
+    // 않는다. 다이얼로그 닫힘 후 _fetchAndInitParticipants 의 명시적
+    // 호출이 fallback 튜토리얼을 트리거하므로 누락 없음.
+    if (_pendingInviteDialog || _isInviteDialogOpen) return;
 
     final key = TutorialKeys.waitingRoomByTeam(team);
     if (key == null) return; // 알 수 없는 팀 값 방어
@@ -1040,77 +1054,87 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   }
 
   /// 초대코드 모달 (방 생성 직후 표시)
-  Future<void> _showInviteCodeDialog() {
-    final code = _inviteCode!;
-    final isDark = ref.read(roleThemeProvider);
+  Future<void> _showInviteCodeDialog() async {
+    // 다이얼로그가 열려 있는 동안 리스너/STOMP 경로가 튜토리얼을 띄우지
+    // 못하도록 가드 플래그를 올린다. pop/예외 어느 경로든 반드시 내려야
+    // 하므로 try/finally 사용.
+    _isInviteDialogOpen = true;
+    try {
+      final code = _inviteCode!;
+      final isDark = ref.read(roleThemeProvider);
 
-    return AppDialog.show(
-      context: context,
-      isDarkMode: isDark,
-      title: '초대코드를 생성했어요',
-      message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
-      customContent: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // QR 코드 이미지 — 초대코드를 JSON 형태로 인코딩
-          ClipRRect(
-            borderRadius: AppRadius.xxlarge,
-            child: QrImageView(
-              data: jsonEncode({'inviteCode': code}),
-              version: QrVersions.auto,
-              size: 220.w,
-              backgroundColor: isDark ? AppColors.white : AppColors.black100,
+      await AppDialog.show<void>(
+        context: context,
+        isDarkMode: isDark,
+        title: '초대코드를 생성했어요',
+        message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
+        customContent: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // QR 코드 이미지 — 초대코드를 JSON 형태로 인코딩
+            ClipRRect(
+              borderRadius: AppRadius.xxlarge,
+              child: QrImageView(
+                data: jsonEncode({'inviteCode': code}),
+                version: QrVersions.auto,
+                size: 220.w,
+                backgroundColor: isDark ? AppColors.white : AppColors.black100,
+              ),
             ),
-          ),
-          SizedBox(height: AppSpacing.vertical12),
-          // 초대코드 + 복사 아이콘
-          GestureDetector(
-            onTap: () async {
-              VibrationService.instance().buttonTap();
-              await Clipboard.setData(ClipboardData(text: code));
-              if (!mounted) return;
-              AppSnackbar.show(
-                context,
-                message: '코드가 복사되었습니다',
-                iconPath: 'assets/icons/icon_copy.svg',
-              );
-            },
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  code,
-                  style: isDark
-                      ? AppTextStyles.robberLabel.copyWith(
-                          color: AppColors.white,
-                        )
-                      : AppTextStyles.label_16.copyWith(color: AppColors.black),
-                ),
-                SizedBox(width: AppSpacing.horizontal4),
-                SvgPicture.asset(
-                  'assets/icons/icon_copy.svg',
-                  width: 20.w,
-                  height: 20.w,
-                  colorFilter: ColorFilter.mode(
-                    isDark ? AppColors.black500 : AppColors.black300,
-                    BlendMode.srcIn,
+            SizedBox(height: AppSpacing.vertical12),
+            // 초대코드 + 복사 아이콘
+            GestureDetector(
+              onTap: () async {
+                VibrationService.instance().buttonTap();
+                await Clipboard.setData(ClipboardData(text: code));
+                if (!mounted) return;
+                AppSnackbar.show(
+                  context,
+                  message: '코드가 복사되었습니다',
+                  iconPath: 'assets/icons/icon_copy.svg',
+                );
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    code,
+                    style: isDark
+                        ? AppTextStyles.robberLabel.copyWith(
+                            color: AppColors.white,
+                          )
+                        : AppTextStyles.label_16.copyWith(
+                            color: AppColors.black,
+                          ),
                   ),
-                ),
-              ],
+                  SizedBox(width: AppSpacing.horizontal4),
+                  SvgPicture.asset(
+                    'assets/icons/icon_copy.svg',
+                    width: 20.w,
+                    height: 20.w,
+                    colorFilter: ColorFilter.mode(
+                      isDark ? AppColors.black500 : AppColors.black300,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      cancelText: '닫기',
-      confirmText: '공유하기',
-      confirmColor: isDark ? null : AppColors.blue,
-      confirmTextColor: isDark ? null : AppColors.white,
-      onConfirm: () {
-        shareText(code);
-      },
-    );
+          ],
+        ),
+        cancelText: '닫기',
+        confirmText: '공유하기',
+        confirmColor: isDark ? null : AppColors.blue,
+        confirmTextColor: isDark ? null : AppColors.white,
+        onConfirm: () {
+          shareText(code);
+        },
+      );
+    } finally {
+      _isInviteDialogOpen = false;
+    }
   }
 
   @override
