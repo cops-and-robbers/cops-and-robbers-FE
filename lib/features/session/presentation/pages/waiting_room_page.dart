@@ -466,25 +466,35 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         await _showInviteCodeDialog();
       }
 
-      // 참가자 목록 로딩 완료 후 튜토리얼 트리거
-      if (mounted) {
-        _showTutorialIfNeeded();
+      // 초기 튜토리얼 트리거.
+      // WidgetRef.listen 은 future changes 만 구독하므로, 호스트 방 만들기처럼
+      // WaitingRoomPage 진입 전에 setGameInfo 로 팀이 이미 확정된 플로우는
+      // listener 로 잡히지 않는다. 여기서 최종 팀 값으로 직접 호출한다.
+      // 초대 참여 플로우처럼 listener 가 먼저 트리거된 경우에는
+      // _isTutorialShowing 가드로 중복 호출이 차단된다.
+      if (mounted && myTeam != null) {
+        _showTutorialIfNeeded(myTeam);
       }
     } finally {
       _isFetchingParticipants = false;
     }
   }
 
-  /// 대기실 튜토리얼 (최초 1회)
+  /// 대기실 튜토리얼 (팀별 1회)
   ///
-  /// 참가자 데이터가 로딩된 이후에 호출되므로 UI가 완전히 구성된 상태에서 실행됩니다.
-  Future<void> _showTutorialIfNeeded() async {
+  /// 참가자 데이터가 로딩된 이후 호출되며, 전달된 [team] 값 기준으로
+  /// 반대 팀 `AddSlotCard` 를 가리키는 팀 변경 카드 스텝을 포함한다.
+  /// 반대 팀 정원이 꽉 차서 `AddSlotCard` 가 렌더링되지 않은 경우 해당
+  /// 스텝은 스킵된다. 완료 상태는 팀별 키([TutorialKeys.waitingRoomPolice]
+  /// 또는 [TutorialKeys.waitingRoomRobber])에 저장된다.
+  Future<void> _showTutorialIfNeeded(String team) async {
     // 이미 표시 중이면 STOMP 재연결 등에 의한 중복 호출을 무시한다.
     if (_isTutorialShowing) return;
 
-    final completed = await TutorialService.isCompleted(
-      TutorialKeys.waitingRoom,
-    );
+    final key = TutorialKeys.waitingRoomByTeam(team);
+    if (key == null) return; // 알 수 없는 팀 값 방어
+
+    final completed = await TutorialService.isCompleted(key);
     if (completed || !mounted || _isTutorialShowing) return;
 
     _isTutorialShowing = true;
@@ -496,34 +506,52 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       return;
     }
 
-    _tutorialController = AppTutorialStyle.show(
-      context: context,
-      targets: [
+    // endOfFrame 대기 사이에 TEAM_UPDATE 가 들어와 팀이 바뀌었다면 이 경로는
+    // 낡은 값이므로 표시하지 않는다. listener 가 새 팀으로 재트리거하므로
+    // _isTutorialShowing 플래그는 건드리지 않고 조용히 종료한다.
+    final currentTeam = ref.read(gameParticipantNotifierProvider)?.team;
+    if (currentTeam != team) return;
+
+    // 전달받은 team 기준으로 "반대 팀" AddSlotCard 하나만 안내.
+    final isPolice = team == 'POLICE';
+    final opponentKey = isPolice
+        ? _tutorialKeyAddSlotRobber
+        : _tutorialKeyAddSlotPolice;
+    final changeTeamDescription = isPolice
+        ? '이 버튼을 눌러 도둑팀으로 이동할 수 있어요'
+        : '이 버튼을 눌러 경찰팀으로 이동할 수 있어요';
+
+    final targets = <TutorialTarget>[
+      // 팀 변경 카드 (반대 팀 AddSlotCard 가 렌더링된 경우에만)
+      if (opponentKey.currentContext != null)
         AppTutorialStyle.target(
-          keyTarget: _tutorialKeyAddSlotPolice,
-          description: '이 버튼을 눌러 경찰팀으로 이동할 수 있어요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyAddSlotRobber,
-          description: '이 버튼을 눌러 도둑팀으로 이동할 수 있어요',
+          keyTarget: opponentKey,
+          description: changeTeamDescription,
           align: TutorialAlign.bottom,
         ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyInviteCode,
-          description: '친구에게 초대 코드를 공유할 수 있어요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyGameRules,
-          description: '게임 설정을 확인할 수 있어요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyReadyButton,
-          description: '준비가 되면 눌러주세요',
-          align: TutorialAlign.top,
-        ),
-      ],
+      // 초대 코드 공유
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyInviteCode,
+        description: '친구에게 초대 코드를 공유할 수 있어요',
+      ),
+      // 게임 설정 확인
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyGameRules,
+        description: '게임 설정을 확인할 수 있어요',
+      ),
+      // 준비 완료
+      AppTutorialStyle.target(
+        keyTarget: _tutorialKeyReadyButton,
+        description: '준비가 되면 눌러주세요',
+        align: TutorialAlign.top,
+      ),
+    ];
+
+    _tutorialController = AppTutorialStyle.show(
+      context: context,
+      targets: targets,
       onFinish: () {
-        TutorialService.markCompleted(TutorialKeys.waitingRoom);
+        TutorialService.markCompleted(key);
         _tutorialController = null;
         _isTutorialShowing = false;
       },
@@ -1099,6 +1127,48 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       });
     });
 
+    // 대기실 튜토리얼 트리거:
+    //   - 팀이 처음 확정되는 시점(null → POLICE/ROBBER)에 초기 노출 트리거
+    //   - 팀 변경(POLICE ↔ ROBBER) 시점에 재트리거 (팀별 키 기준 미완료면 표시)
+    //   - 진행 중이면 현재 컨트롤러를 finish()로 종료하여 이전 팀 키를
+    //     markCompleted 처리한 뒤 새 팀 튜토리얼을 즉시 이어 실행
+    //
+    // 주의: WidgetRef.listen 은 future changes 만 구독하므로, 호스트 방
+    // 만들기 플로우처럼 WaitingRoomPage 진입 전에 setGameInfo(team:'POLICE')
+    // 가 이미 실행된 경우의 초기값은 여기서 잡지 못한다. 초기 노출은
+    // _fetchAndInitParticipants() 종료 시점의 명시적 호출이 담당한다.
+    ref.listen(gameParticipantNotifierProvider, (prev, next) {
+      final prevTeam = prev?.team;
+      final nextTeam = next?.team;
+      if (nextTeam == null) return;
+
+      final isInitial = prevTeam == null;
+      final isChanged = prevTeam != null && prevTeam != nextTeam;
+      if (!isInitial && !isChanged) return;
+
+      // 진행 중 튜토리얼이 있으면 종료하고 재표시 허용 플래그를 복구.
+      // finish() 는 onFinish 콜백을 통해 이전 팀 키를 markCompleted 처리한다.
+      // 주의: tutorial_coach_mark 의 finish() 가 onFinish 를 비동기로 호출할
+      // 경우 markCompleted 가 새 튜토리얼 시작 이후 실행될 수 있으나,
+      // markCompleted 는 저장만 수행하므로 기능/UX 오동작은 없다.
+      final controller = _tutorialController;
+      if (controller != null && controller.isShowing) {
+        controller.finish();
+        _tutorialController = null;
+        _isTutorialShowing = false;
+      } else {
+        // 컨트롤러는 아직 없지만 _showTutorialIfNeeded 가 endOfFrame 대기 중
+        // 플래그만 선점한 상태일 수 있다. 그 낡은 경로가 새 팀 튜토리얼 시작을
+        // 가드로 막지 않도록 플래그를 해제한다. (기존 경로는 endOfFrame 후
+        // team 재확인 가드에서 조용히 종료된다.)
+        _isTutorialShowing = false;
+      }
+
+      // 새 팀 기준 튜토리얼 체크 및 표시 (isCompleted 내부 체크로 이미 본
+      // 팀은 자연스럽게 skip 된다).
+      _showTutorialIfNeeded(nextTeam);
+    });
+
     final participantsState = ref.watch(waitingRoomParticipantsProvider);
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
@@ -1152,6 +1222,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             hostParticipantId:
                                 participantsState.hostParticipantId,
                             myParticipantId: participantInfo?.participantId,
+                            currentUserTeam: participantInfo?.team,
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('POLICE')
                                 : null,
@@ -1189,6 +1260,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             hostParticipantId:
                                 participantsState.hostParticipantId,
                             myParticipantId: participantInfo?.participantId,
+                            currentUserTeam: participantInfo?.team,
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam('ROBBER')
                                 : null,

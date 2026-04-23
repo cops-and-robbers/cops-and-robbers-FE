@@ -178,8 +178,6 @@ class ChatNotifier extends _$ChatNotifier {
     _authRetryCount = 0;
 
     // Access Token 획득
-    // TODO: 서버 로그인 연동 후 TokenProvider 구현체가 서버 JWT를 반환하도록 변경 예정.
-    // 현재는 Firebase ID Token을 사용.
     final tokenProvider = ref.read(tokenProviderProvider);
     final accessToken = await tokenProvider.getAccessToken();
     if (accessToken == null) {
@@ -638,9 +636,6 @@ class ChatNotifier extends _$ChatNotifier {
         '($_authRetryCount/$_maxAuthRetries)',
       );
 
-      // TODO:
-      // 서버 JWT 도입 시 refreshAccessTokenIfNeeded()가 refresh API를 호출.
-      // 현재는 Firebase의 forceRefresh를 사용.
       final tokenProvider = ref.read(tokenProviderProvider);
       // await 전에 datasource 캡처 (await 후 ref 접근 방지)
       final datasource = ref.read(chatStompDatasourceProvider);

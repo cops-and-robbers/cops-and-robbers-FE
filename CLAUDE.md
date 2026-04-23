@@ -39,6 +39,7 @@ flutter test && flutter analyze                                  # 테스트 / �
 - [06_API_INTEGRATION_GUIDE.md](.claude/rules/06_API_INTEGRATION_GUIDE.md) — API 연동 절차
 - [08_TIMER_ARCHITECTURE.md](.claude/rules/08_TIMER_ARCHITECTURE.md) — 타이머 아키텍처
 - [09_REALTIME_COMMUNICATION_SPEC.md](.claude/rules/09_REALTIME_COMMUNICATION_SPEC.md) — WebSocket STOMP 이벤트
+- [Agents.md](.claude/rules/Agents.md) — **테스트 작성 룰 (최우선)**: Classist 스타일, 시스템 경계만 모킹, PR Red Flags
 - [Design.md](.claude/rules/Design.md) — 디자인 패턴 (아키텍처 레벨)
 - [UI_Design_System.md](.claude/rules/UI_Design_System.md) — UI 시스템: AppColors·AppTextStyles·팀 테마
 - [API_SPEC.md](docs/API_SPEC.md) — API 명세
@@ -61,3 +62,11 @@ flutter test && flutter analyze                                  # 테스트 / �
 - **코드 리뷰·보안 감사** → ECC (`code-reviewer`, `security-reviewer`)
 - **버그 수정** → Superpowers(원인 분석) + ECC(TDD 수정)
 - **리팩토링·배포 전 체크** → ECC (`refactor-clean`, `security-scan`, `e2e`)
+
+### 테스트 워크플로우 우선순위
+
+테스트 작성 시 룰이 충돌하면 다음 순서로 적용한다:
+
+1. **[Agents.md](.claude/rules/Agents.md)** — 테스트 *내용* 게이트 **(최우선)**. 모킹 위치(시스템 경계만), Classist 스타일, 명명 규칙(`<subject>_<expected>_when_<condition>`), PR Red Flags
+2. **`superpowers:test-driven-development`** — RED→GREEN→REFACTOR *순서* 강제. 코드 먼저 쓰면 삭제
+3. **ECC `tdd-workflow`** — Test Type 분류(unit/integration/E2E)와 Git 체크포인트 발상만 차용. **예시 코드의 Mockist 패턴(`jest.mock` 내부 모듈, `toHaveBeenCalledWith` 단독 검증)은 무시한다** — Agents.md PR Red Flags 위반

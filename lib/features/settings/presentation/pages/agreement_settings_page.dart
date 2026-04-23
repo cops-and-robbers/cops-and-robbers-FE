@@ -139,7 +139,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
         leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
         centerTitle: true,
         title: Text(
-          '약관 동의 관리',
+          '이용약관 및 정책',
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),

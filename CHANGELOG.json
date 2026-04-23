@@ -1,11 +1,38 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-20T12:30:50Z",
-    "currentVersion": "1.6.1",
+    "lastUpdated": "2026-04-23T10:01:51Z",
+    "currentVersion": "1.7.3",
     "projectType": "flutter",
-    "totalReleases": 76
+    "totalReleases": 77
   },
   "releases": [
+    {
+      "version": "1.7.3",
+      "project_type": "flutter",
+      "date": "2026-04-23",
+      "pr_number": 286,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **신기능**\n  * AppSlider에 숫자 패드를 통한 직접 입력 기능 추가\n  * 게임 결과 상세 정보 표시 다이얼로그 추가\n  * QR 코드 만료 기능(30초) 구현\n  * 참가자 캐릭터 SVG 아바타 추가\n\n* **개선사항**\n  * 팀별 대기실 튜토리얼 개선\n  * UI 스타일 및 레이아웃 최적화\n  * 게임 플로우 및 네비게이션 개선",
+      "parsed_changes": {
+        "신기능": {
+          "title": "신기능",
+          "items": [
+            "AppSlider에 숫자 패드를 통한 직접 입력 기능 추가",
+            "게임 결과 상세 정보 표시 다이얼로그 추가",
+            "QR 코드 만료 기능(30초) 구현",
+            "참가자 캐릭터 SVG 아바타 추가"
+          ]
+        },
+        "개선사항": {
+          "title": "개선사항",
+          "items": [
+            "팀별 대기실 튜토리얼 개선",
+            "UI 스타일 및 레이아웃 최적화",
+            "게임 플로우 및 네비게이션 개선"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.6.1",
       "project_type": "flutter",

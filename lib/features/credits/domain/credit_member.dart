@@ -71,8 +71,6 @@ class CreditMember {
 }
 
 /// 크레딧에 표시할 멤버 목록
-///
-/// TODO: 소셜 링크 URL을 실제 값으로 교체 필요
 const List<CreditMember> creditMembers = [
   CreditMember(
     name: '홍의민',
@@ -121,7 +119,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '정상희',
     role: 'Backend',
-    profileAssets: ['assets/credits/BE_JEONG.jpeg'],
+    profileAssets: ['assets/credits/BE-JEONG.jpeg'],
     links: [
       SocialLink(
         type: SocialType.github,
@@ -136,7 +134,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '황혜림',
     role: 'Backend',
-    profileAssets: ['assets/credits/BE_HWANG.png'],
+    profileAssets: ['assets/credits/BE-HWANG.png'],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/HyerimH'),
       SocialLink(
@@ -148,7 +146,10 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '윤지희',
     role: 'Design',
-    profileAssets: ['assets/credits/default.png'],
+    profileAssets: [
+      'assets/credits/DESIGN-YOON1.jpeg',
+      'assets/credits/DESIGN-YOON2.jpeg',
+    ],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/jihee127'),
       SocialLink(

@@ -45,7 +45,6 @@ class SessionDraftStorageService {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = jsonEncode(draft.toJson());
       await prefs.setString(_key, jsonString);
-      // TODO: 로그는 디버깅용으로만 사용중
       if (kDebugMode) {
         debugPrint('✅ SessionDraft 저장 완료: $jsonString');
       }

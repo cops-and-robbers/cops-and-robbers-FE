@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## 업데이트 항목\n- (신규) 이용 약관 동의 API 추가 (PUT /api/user/agreements)\n- (신규) 이용 약관 동의 여부 조회 API 추가 (GET /api/user/agreements)\n- (수정) 로그인 API 필수 이용약관 동의 여부 응답 필드 추가 (POST /api/auth/login) - 기존 반대 의미로 되어 있던 boolean응답 수정\n- (수정) 게임 방 생성 API 호스트 필수 이용약관 동의 여부 검증 추가 (POST /api/games)\n- (수정) 게임 방 참여 API 유저 필수 이용약관 동의 여부 검증 추가 (POST /api/games/join)\n",
-    "version": "2.1.0"
+    "description": "## 업데이트 항목\n- (신규) 게임 결과 조회 API 추가 (GET /api/game-results/{gameResultId})\n",
+    "version": "2.2.0"
   },
   "servers": [
     {
@@ -20,6 +20,10 @@
     {
       "name": "Game Participant",
       "description": "게임 참여자 관리 API"
+    },
+    {
+      "name": "Game Result",
+      "description": "게임 결과 조회 API"
     },
     {
       "name": "Game",
@@ -1960,31 +1964,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "기존 회원 로그인 성공",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                },
-                "examples": {
-                  "기존 회원 로그인 성공 예시": {
-                    "description": "기존 회원 로그인 성공 예시",
-                    "value": {
-                      "userId": 1,
-                      "nickname": "민첩한괴도5308",
-                      "tokens": {
-                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
-                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
-                      },
-                      "isNewUser": false,
-                      "requiresAgreement": false
-                    }
-                  }
-                }
-              }
-            }
-          },
           "201": {
             "description": "신규 회원 가입 및 로그인 성공 (회원 리소스 생성)",
             "content": {
@@ -2004,6 +1983,31 @@
                       },
                       "isNewUser": true,
                       "requiresAgreement": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "기존 회원 로그인 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "examples": {
+                  "기존 회원 로그인 성공 예시": {
+                    "description": "기존 회원 로그인 성공 예시",
+                    "value": {
+                      "userId": 1,
+                      "nickname": "민첩한괴도5308",
+                      "tokens": {
+                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
+                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
+                      },
+                      "isNewUser": false,
+                      "requiresAgreement": false
                     }
                   }
                 }
@@ -3334,6 +3338,116 @@
         ]
       }
     },
+    "/api/game-results/{gameResultId}": {
+      "get": {
+        "tags": ["Game Result"],
+        "summary": "게임 결과 조회",
+        "description": "게임 종료 후 결과(승리 팀, 진행 시간, 총 체포 횟수, 남은 도둑 수)를 조회합니다.",
+        "operationId": "getGameResult",
+        "parameters": [
+          {
+            "name": "gameResultId",
+            "in": "path",
+            "description": "게임 결과 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "게임 결과 조회 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResultResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임 결과를 찾을 수 없음": {
+                    "summary": "게임 결과를 찾을 수 없음",
+                    "value": {
+                      "title": "게임 결과를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임 결과를 찾을 수 없습니다.",
+                      "instance": "/api/game-results/{gameResultId}"
+                    }
+                  },
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/game-results/{gameResultId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/game-results/{gameResultId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/game-results/{gameResultId}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/games/{gameId}/lobby/{participantId}": {
       "delete": {
         "tags": ["Lobby"],
@@ -4472,6 +4586,35 @@
             "description": "감옥 반경(m)",
             "format": "int32",
             "example": 100
+          }
+        }
+      },
+      "GameResultResponse": {
+        "type": "object",
+        "properties": {
+          "winnerTeam": {
+            "type": "string",
+            "description": "승리 팀",
+            "example": "POLICE",
+            "enum": ["POLICE", "ROBBER"]
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "description": "게임 진행 시간(초)",
+            "format": "int32",
+            "example": 300
+          },
+          "totalArrestCount": {
+            "type": "integer",
+            "description": "총 체포 횟수",
+            "format": "int32",
+            "example": 5
+          },
+          "remainingRobberCount": {
+            "type": "integer",
+            "description": "남은 도둑 수",
+            "format": "int32",
+            "example": 1
           }
         }
       },

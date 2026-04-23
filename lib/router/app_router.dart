@@ -321,15 +321,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.waitingRoom,
         name: RoutePaths.waitingRoomName,
-        builder: (context, state) {
+        // LoadingPage(재접속)·Home(방 만들기/참가)에서 넘어올 때 체감되던
+        // 플랫폼 기본 전환을 제거. 다른 라우트(180ms fade)와 톤을 맞춘다.
+        pageBuilder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
           final inviteCode = state.uri.queryParameters['inviteCode'];
           final showInviteDialog =
               state.uri.queryParameters['showInvite'] == 'true';
-          return WaitingRoomPage(
-            sessionId: sessionId,
-            inviteCode: inviteCode,
-            showInviteDialog: showInviteDialog,
+          return buildInstantTransition(
+            key: state.pageKey,
+            child: WaitingRoomPage(
+              sessionId: sessionId,
+              inviteCode: inviteCode,
+              showInviteDialog: showInviteDialog,
+            ),
           );
         },
         routes: [
@@ -474,17 +479,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.game,
         name: RoutePaths.gameName,
-        builder: (context, state) {
+        // LoadingPage(재접속)·대기방(게임 시작)에서 진입 시 플랫폼 기본 전환 제거.
+        // 몰입감을 위해 즉시 전환이 더 적합하다.
+        pageBuilder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
           final team = state.uri.queryParameters['team'] ?? 'POLICE';
           final participantId =
               int.tryParse(state.uri.queryParameters['pid'] ?? '') ?? 1;
           final isDummy = state.uri.queryParameters['dummy'] == 'true';
-          return GamePage(
-            sessionId: sessionId,
-            team: team,
-            participantId: participantId,
-            isDummy: isDummy,
+          return buildInstantTransition(
+            key: state.pageKey,
+            child: GamePage(
+              sessionId: sessionId,
+              team: team,
+              participantId: participantId,
+              isDummy: isDummy,
+            ),
           );
         },
       ),

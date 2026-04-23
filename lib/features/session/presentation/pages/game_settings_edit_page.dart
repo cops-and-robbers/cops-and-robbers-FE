@@ -13,11 +13,11 @@ import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
-import '../../../../core/widgets/inputs/app_slider.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../providers/session_provider.dart';
 import '../widgets/session_creation_steps/step_1_participant_settings_content.dart';
+import '../widgets/session_creation_steps/step_2_game_settings_content.dart';
 
 /// 게임 설정 수정 페이지
 ///
@@ -72,6 +72,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
   /// 설정 저장 API 호출
   Future<void> _saveSettings() async {
     if (!_hasChanges || _isSaving) return;
+
+    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+    FocusScope.of(context).unfocus();
 
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
@@ -132,7 +135,11 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: PreviousButton(
-          onPressed: () => context.pop(),
+          onPressed: () {
+            // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+            FocusScope.of(context).unfocus();
+            context.pop();
+          },
           color: isDark ? AppColors.black200 : AppColors.black800,
         ),
         centerTitle: true,
@@ -161,86 +168,18 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
 
                       SizedBox(height: AppSpacing.vertical8),
 
-                      // Step 2: 게임 규칙 설정 (인라인)
-                      AppSlider(
-                        label: '라운드 제한 시간',
-                        value: _roundDurationMinutes.toDouble(),
-                        min: 10,
-                        max: 180,
-                        unit: '분',
-                        divisions: 170,
-                        onChanged: (v) =>
-                            setState(() => _roundDurationMinutes = v.toInt()),
+                      // Step 2: 게임 규칙 설정 (공용 컴포넌트 재사용)
+                      Step2GameSettingsContent(
+                        roundDurationMinutes: _roundDurationMinutes,
+                        locationShareMinutes: _locationShareMinutes,
+                        policeWaitMinutes: _policeWaitMinutes,
+                        onRoundDurationChanged: (v) =>
+                            setState(() => _roundDurationMinutes = v),
+                        onLocationShareChanged: (v) =>
+                            setState(() => _locationShareMinutes = v),
+                        onPoliceWaitChanged: (v) =>
+                            setState(() => _policeWaitMinutes = v),
                         isDarkMode: isDark,
-                        backgroundColor: isDark
-                            ? AppColors.black900
-                            : AppColors.white,
-                        activeTrackColor: isDark
-                            ? AppColors.green800
-                            : AppColors.black800,
-                        thumbColor: isDark ? AppColors.green : AppColors.black,
-                        inactiveTrackColor: isDark
-                            ? AppColors.black800
-                            : AppColors.black100,
-                        valueColor: isDark ? AppColors.white : null,
-                        valueTextStyle: isDark
-                            ? AppTextStyles.robberLabel
-                            : null,
-                      ),
-
-                      SizedBox(height: AppSpacing.vertical8),
-
-                      AppSlider(
-                        label: '위치 공유 간격',
-                        value: _locationShareMinutes.toDouble(),
-                        min: 1,
-                        max: 30,
-                        unit: '분',
-                        divisions: 29,
-                        onChanged: (v) =>
-                            setState(() => _locationShareMinutes = v.toInt()),
-                        isDarkMode: isDark,
-                        backgroundColor: isDark
-                            ? AppColors.black900
-                            : AppColors.white,
-                        activeTrackColor: isDark
-                            ? AppColors.green800
-                            : AppColors.black800,
-                        thumbColor: isDark ? AppColors.green : AppColors.black,
-                        inactiveTrackColor: isDark
-                            ? AppColors.black800
-                            : AppColors.black100,
-                        valueColor: isDark ? AppColors.white : null,
-                        valueTextStyle: isDark
-                            ? AppTextStyles.robberLabel
-                            : null,
-                      ),
-
-                      SizedBox(height: AppSpacing.vertical8),
-
-                      AppSlider(
-                        label: '경찰 시작 시간',
-                        value: _policeWaitMinutes.toDouble(),
-                        min: 1,
-                        max: 10,
-                        unit: '분',
-                        divisions: 9,
-                        displayPrefix: '도둑 시작 후 ',
-                        displaySuffix: ' 뒤',
-                        onChanged: (v) =>
-                            setState(() => _policeWaitMinutes = v.toInt()),
-                        isDarkMode: isDark,
-                        backgroundColor: isDark
-                            ? AppColors.black900
-                            : AppColors.white,
-                        activeTrackColor: isDark
-                            ? AppColors.green800
-                            : AppColors.black800,
-                        thumbColor: isDark ? AppColors.green : AppColors.black,
-                        inactiveTrackColor: isDark
-                            ? AppColors.black800
-                            : AppColors.black100,
-                        valueColor: isDark ? AppColors.white : null,
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel
                             : null,
