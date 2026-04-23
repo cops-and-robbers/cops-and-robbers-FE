@@ -23,104 +23,92 @@ void main() {
 
   group('resolveBodyAsset', () {
     test('returns_police_win_body_when_my_police_team_wins', () {
-      final path = resolveBodyAsset(
-        myTeam: 'POLICE',
-        winnerTeam: 'POLICE',
-      );
+      final path = resolveBodyAsset(myTeam: 'POLICE', winnerTeam: 'POLICE');
       expect(path, 'assets/characters/police/result/win_body.svg');
     });
 
     test('returns_police_lose_body_when_robber_team_wins_and_im_police', () {
-      final path = resolveBodyAsset(
-        myTeam: 'POLICE',
-        winnerTeam: 'ROBBER',
-      );
+      final path = resolveBodyAsset(myTeam: 'POLICE', winnerTeam: 'ROBBER');
       expect(path, 'assets/characters/police/result/lose_body.svg');
     });
 
     test('returns_robber_win_body_when_my_robber_team_wins', () {
-      final path = resolveBodyAsset(
-        myTeam: 'ROBBER',
-        winnerTeam: 'ROBBER',
-      );
+      final path = resolveBodyAsset(myTeam: 'ROBBER', winnerTeam: 'ROBBER');
       expect(path, 'assets/characters/robber/result/win_body.svg');
     });
 
     test('returns_robber_lose_body_when_police_team_wins_and_im_robber', () {
-      final path = resolveBodyAsset(
-        myTeam: 'ROBBER',
-        winnerTeam: 'POLICE',
-      );
+      final path = resolveBodyAsset(myTeam: 'ROBBER', winnerTeam: 'POLICE');
       expect(path, 'assets/characters/robber/result/lose_body.svg');
     });
   });
 
   group('resolveLeftArmAsset', () {
     test('returns_police_win_left_arm_when_my_police_team_wins', () {
-      final path = resolveLeftArmAsset(
-        myTeam: 'POLICE',
-        winnerTeam: 'POLICE',
-      );
+      final path = resolveLeftArmAsset(myTeam: 'POLICE', winnerTeam: 'POLICE');
       expect(path, 'assets/characters/police/result/win_arm_left.svg');
     });
 
-    test('returns_police_lose_left_arm_when_robber_team_wins_and_im_police', () {
-      final path = resolveLeftArmAsset(
-        myTeam: 'POLICE',
-        winnerTeam: 'ROBBER',
-      );
-      expect(path, 'assets/characters/police/result/lose_arm_left.svg');
-    });
+    test(
+      'returns_police_lose_left_arm_when_robber_team_wins_and_im_police',
+      () {
+        final path = resolveLeftArmAsset(
+          myTeam: 'POLICE',
+          winnerTeam: 'ROBBER',
+        );
+        expect(path, 'assets/characters/police/result/lose_arm_left.svg');
+      },
+    );
 
     test('returns_robber_win_left_arm_when_my_robber_team_wins', () {
-      final path = resolveLeftArmAsset(
-        myTeam: 'ROBBER',
-        winnerTeam: 'ROBBER',
-      );
+      final path = resolveLeftArmAsset(myTeam: 'ROBBER', winnerTeam: 'ROBBER');
       expect(path, 'assets/characters/robber/result/win_arm_left.svg');
     });
 
-    test('returns_robber_lose_left_arm_when_police_team_wins_and_im_robber', () {
-      final path = resolveLeftArmAsset(
-        myTeam: 'ROBBER',
-        winnerTeam: 'POLICE',
-      );
-      expect(path, 'assets/characters/robber/result/lose_arm_left.svg');
-    });
+    test(
+      'returns_robber_lose_left_arm_when_police_team_wins_and_im_robber',
+      () {
+        final path = resolveLeftArmAsset(
+          myTeam: 'ROBBER',
+          winnerTeam: 'POLICE',
+        );
+        expect(path, 'assets/characters/robber/result/lose_arm_left.svg');
+      },
+    );
   });
 
   group('resolveRightArmAsset', () {
     test('returns_police_win_right_arm_when_my_police_team_wins', () {
-      final path = resolveRightArmAsset(
-        myTeam: 'POLICE',
-        winnerTeam: 'POLICE',
-      );
+      final path = resolveRightArmAsset(myTeam: 'POLICE', winnerTeam: 'POLICE');
       expect(path, 'assets/characters/police/result/win_arm_right.svg');
     });
 
-    test('returns_police_lose_right_arm_when_robber_team_wins_and_im_police', () {
-      final path = resolveRightArmAsset(
-        myTeam: 'POLICE',
-        winnerTeam: 'ROBBER',
-      );
-      expect(path, 'assets/characters/police/result/lose_arm_right.svg');
-    });
+    test(
+      'returns_police_lose_right_arm_when_robber_team_wins_and_im_police',
+      () {
+        final path = resolveRightArmAsset(
+          myTeam: 'POLICE',
+          winnerTeam: 'ROBBER',
+        );
+        expect(path, 'assets/characters/police/result/lose_arm_right.svg');
+      },
+    );
 
     test('returns_robber_win_right_arm_when_my_robber_team_wins', () {
-      final path = resolveRightArmAsset(
-        myTeam: 'ROBBER',
-        winnerTeam: 'ROBBER',
-      );
+      final path = resolveRightArmAsset(myTeam: 'ROBBER', winnerTeam: 'ROBBER');
       expect(path, 'assets/characters/robber/result/win_arm_right.svg');
     });
 
-    test('returns_robber_lose_right_arm_when_police_team_wins_and_im_robber', () {
-      final path = resolveRightArmAsset(
-        myTeam: 'ROBBER',
-        winnerTeam: 'POLICE',
-      );
-      expect(path, 'assets/characters/robber/result/lose_arm_right.svg');
-    });
+    test(
+      'returns_robber_lose_right_arm_when_police_team_wins_and_im_robber',
+      () {
+        final path = resolveRightArmAsset(
+          myTeam: 'ROBBER',
+          winnerTeam: 'POLICE',
+        );
+        expect(path, 'assets/characters/robber/result/lose_arm_right.svg');
+      },
+    );
   });
 
   group('GameOverResultDialog', () {
@@ -131,36 +119,34 @@ void main() {
       remainingRobberCount: 1,
     );
 
-    testWidgets(
-      'shows_stats_from_entity_when_api_returns_data',
-      (tester) async {
-        await pumpGameOverDialog(
-          tester,
-          gameResultId: 1,
-          resultFuture: () async => entity,
-        );
+    testWidgets('shows_stats_from_entity_when_api_returns_data', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 1,
+        resultFuture: () async => entity,
+      );
 
-        expect(find.text('5회'), findsOneWidget);
-        expect(find.text('1명'), findsOneWidget);
-        expect(find.text('5:00'), findsOneWidget);
-      },
-    );
+      expect(find.text('5회'), findsOneWidget);
+      expect(find.text('1명'), findsOneWidget);
+      expect(find.text('5:00'), findsOneWidget);
+    });
 
-    testWidgets(
-      'shows_placeholder_dash_for_all_stats_when_api_fails',
-      (tester) async {
-        await pumpGameOverDialog(
-          tester,
-          gameResultId: 2,
-          resultFuture: () async => throw Exception('boom'),
-        );
-        // 에러 전파까지 pump
-        await tester.pump();
+    testWidgets('shows_placeholder_dash_for_all_stats_when_api_fails', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 2,
+        resultFuture: () async => throw Exception('boom'),
+      );
+      // 에러 전파까지 pump
+      await tester.pump();
 
-        // 체포 횟수/남은 도둑/게임 진행 시간 3개 모두 "-"
-        expect(find.text('-'), findsNWidgets(3));
-      },
-    );
+      // 체포 횟수/남은 도둑/게임 진행 시간 3개 모두 "-"
+      expect(find.text('-'), findsNWidgets(3));
+    });
 
     testWidgets(
       'shows_placeholder_dash_for_all_stats_when_provider_still_loading',
@@ -185,71 +171,65 @@ void main() {
       },
     );
 
-    testWidgets(
-      'shows_win_title_in_team_color_when_my_team_wins',
-      (tester) async {
-        await pumpGameOverDialog(
-          tester,
-          gameResultId: 4,
-          resultFuture: () async => entity,
-          myTeam: 'POLICE',
-          winnerTeam: 'POLICE',
-        );
+    testWidgets('shows_win_title_in_team_color_when_my_team_wins', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 4,
+        resultFuture: () async => entity,
+        myTeam: 'POLICE',
+        winnerTeam: 'POLICE',
+      );
 
-        expect(find.text('승리'), findsOneWidget);
-      },
-    );
+      expect(find.text('승리'), findsOneWidget);
+    });
 
-    testWidgets(
-      'shows_lose_title_in_red_when_my_team_loses',
-      (tester) async {
-        await pumpGameOverDialog(
-          tester,
-          gameResultId: 5,
-          resultFuture: () async => entity,
-          myTeam: 'POLICE',
-          winnerTeam: 'ROBBER',
-        );
+    testWidgets('shows_lose_title_in_red_when_my_team_loses', (tester) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 5,
+        resultFuture: () async => entity,
+        myTeam: 'POLICE',
+        winnerTeam: 'ROBBER',
+      );
 
-        expect(find.text('패배'), findsOneWidget);
-      },
-    );
+      expect(find.text('패배'), findsOneWidget);
+    });
 
-    testWidgets(
-      'triggers_on_go_home_callback_when_home_button_tapped',
-      (tester) async {
-        var called = false;
-        await pumpGameOverDialog(
-          tester,
-          gameResultId: 6,
-          resultFuture: () async => entity,
-          onGoHome: () => called = true,
-        );
+    testWidgets('triggers_on_go_home_callback_when_home_button_tapped', (
+      tester,
+    ) async {
+      var called = false;
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 6,
+        resultFuture: () async => entity,
+        onGoHome: () => called = true,
+      );
 
-        await tester.tap(find.byKey(const ValueKey('game_over_go_home_button')));
-        await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('game_over_go_home_button')));
+      await tester.pump();
 
-        expect(called, isTrue);
-      },
-    );
+      expect(called, isTrue);
+    });
 
-    testWidgets(
-      'triggers_on_rematch_callback_when_rematch_button_tapped',
-      (tester) async {
-        var called = false;
-        await pumpGameOverDialog(
-          tester,
-          gameResultId: 7,
-          resultFuture: () async => entity,
-          onRematch: () => called = true,
-        );
+    testWidgets('triggers_on_rematch_callback_when_rematch_button_tapped', (
+      tester,
+    ) async {
+      var called = false;
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 7,
+        resultFuture: () async => entity,
+        onRematch: () => called = true,
+      );
 
-        await tester.tap(find.byKey(const ValueKey('game_over_rematch_button')));
-        await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('game_over_rematch_button')));
+      await tester.pump();
 
-        expect(called, isTrue);
-      },
-    );
+      expect(called, isTrue);
+    });
   });
 }
 
