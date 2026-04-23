@@ -25,7 +25,7 @@ final gameResultApiProvider = AutoDisposeProvider<GameResultApi>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GameResultApiRef = AutoDisposeProviderRef<GameResultApi>;
-String _$gameResultHash() => r'0d715d78a656a999d6cb9e565a3272a65a291ef6';
+String _$gameResultHash() => r'3b37621cd7c99e21ebf388e2130c63ccc2f3c513';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -61,6 +61,10 @@ class _SystemHash {
 /// UI 쪽에서 AsyncValue.error로 분기됩니다.
 /// (로깅은 `DioExceptionHandler` 내부에서 수행하므로 여기서는 별도 출력 없음)
 ///
+/// `keepAlive: true` — GAME_OVER 직후 pre-trigger 후 1단계 AppPopup(3초)이 떠있는 동안
+/// provider 구독자가 없어 autoDispose가 발동하면 다이얼로그 열릴 때 재요청이 발생한다.
+/// 세션당 gameResultId는 소수라 메모리 영향 미미.
+///
 /// Copied from [gameResult].
 @ProviderFor(gameResult)
 const gameResultProvider = GameResultFamily();
@@ -78,6 +82,10 @@ const gameResultProvider = GameResultFamily();
 /// UI 쪽에서 AsyncValue.error로 분기됩니다.
 /// (로깅은 `DioExceptionHandler` 내부에서 수행하므로 여기서는 별도 출력 없음)
 ///
+/// `keepAlive: true` — GAME_OVER 직후 pre-trigger 후 1단계 AppPopup(3초)이 떠있는 동안
+/// provider 구독자가 없어 autoDispose가 발동하면 다이얼로그 열릴 때 재요청이 발생한다.
+/// 세션당 gameResultId는 소수라 메모리 영향 미미.
+///
 /// Copied from [gameResult].
 class GameResultFamily extends Family<AsyncValue<GameResultEntity>> {
   /// 게임 결과 조회 FutureProvider (family by gameResultId)
@@ -92,6 +100,10 @@ class GameResultFamily extends Family<AsyncValue<GameResultEntity>> {
   /// 실패 시 `DioExceptionHandler.handle`로 AppException 변환 후 던져,
   /// UI 쪽에서 AsyncValue.error로 분기됩니다.
   /// (로깅은 `DioExceptionHandler` 내부에서 수행하므로 여기서는 별도 출력 없음)
+  ///
+  /// `keepAlive: true` — GAME_OVER 직후 pre-trigger 후 1단계 AppPopup(3초)이 떠있는 동안
+  /// provider 구독자가 없어 autoDispose가 발동하면 다이얼로그 열릴 때 재요청이 발생한다.
+  /// 세션당 gameResultId는 소수라 메모리 영향 미미.
   ///
   /// Copied from [gameResult].
   const GameResultFamily();
@@ -108,6 +120,10 @@ class GameResultFamily extends Family<AsyncValue<GameResultEntity>> {
   /// 실패 시 `DioExceptionHandler.handle`로 AppException 변환 후 던져,
   /// UI 쪽에서 AsyncValue.error로 분기됩니다.
   /// (로깅은 `DioExceptionHandler` 내부에서 수행하므로 여기서는 별도 출력 없음)
+  ///
+  /// `keepAlive: true` — GAME_OVER 직후 pre-trigger 후 1단계 AppPopup(3초)이 떠있는 동안
+  /// provider 구독자가 없어 autoDispose가 발동하면 다이얼로그 열릴 때 재요청이 발생한다.
+  /// 세션당 gameResultId는 소수라 메모리 영향 미미.
   ///
   /// Copied from [gameResult].
   GameResultProvider call(int gameResultId) {
@@ -149,8 +165,12 @@ class GameResultFamily extends Family<AsyncValue<GameResultEntity>> {
 /// UI 쪽에서 AsyncValue.error로 분기됩니다.
 /// (로깅은 `DioExceptionHandler` 내부에서 수행하므로 여기서는 별도 출력 없음)
 ///
+/// `keepAlive: true` — GAME_OVER 직후 pre-trigger 후 1단계 AppPopup(3초)이 떠있는 동안
+/// provider 구독자가 없어 autoDispose가 발동하면 다이얼로그 열릴 때 재요청이 발생한다.
+/// 세션당 gameResultId는 소수라 메모리 영향 미미.
+///
 /// Copied from [gameResult].
-class GameResultProvider extends AutoDisposeFutureProvider<GameResultEntity> {
+class GameResultProvider extends FutureProvider<GameResultEntity> {
   /// 게임 결과 조회 FutureProvider (family by gameResultId)
   ///
   /// `GET /api/game-results/{gameResultId}` 응답을 캐시합니다.
@@ -163,6 +183,10 @@ class GameResultProvider extends AutoDisposeFutureProvider<GameResultEntity> {
   /// 실패 시 `DioExceptionHandler.handle`로 AppException 변환 후 던져,
   /// UI 쪽에서 AsyncValue.error로 분기됩니다.
   /// (로깅은 `DioExceptionHandler` 내부에서 수행하므로 여기서는 별도 출력 없음)
+  ///
+  /// `keepAlive: true` — GAME_OVER 직후 pre-trigger 후 1단계 AppPopup(3초)이 떠있는 동안
+  /// provider 구독자가 없어 autoDispose가 발동하면 다이얼로그 열릴 때 재요청이 발생한다.
+  /// 세션당 gameResultId는 소수라 메모리 영향 미미.
   ///
   /// Copied from [gameResult].
   GameResultProvider(int gameResultId)
@@ -209,7 +233,7 @@ class GameResultProvider extends AutoDisposeFutureProvider<GameResultEntity> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<GameResultEntity> createElement() {
+  FutureProviderElement<GameResultEntity> createElement() {
     return _GameResultProviderElement(this);
   }
 
@@ -229,13 +253,12 @@ class GameResultProvider extends AutoDisposeFutureProvider<GameResultEntity> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin GameResultRef on AutoDisposeFutureProviderRef<GameResultEntity> {
+mixin GameResultRef on FutureProviderRef<GameResultEntity> {
   /// The parameter `gameResultId` of this provider.
   int get gameResultId;
 }
 
-class _GameResultProviderElement
-    extends AutoDisposeFutureProviderElement<GameResultEntity>
+class _GameResultProviderElement extends FutureProviderElement<GameResultEntity>
     with GameResultRef {
   _GameResultProviderElement(super.provider);
 

@@ -28,7 +28,11 @@ GameResultApi gameResultApi(Ref ref) {
 /// 실패 시 `DioExceptionHandler.handle`로 AppException 변환 후 던져,
 /// UI 쪽에서 AsyncValue.error로 분기됩니다.
 /// (로깅은 `DioExceptionHandler` 내부에서 수행하므로 여기서는 별도 출력 없음)
-@riverpod
+///
+/// `keepAlive: true` — GAME_OVER 직후 pre-trigger 후 1단계 AppPopup(3초)이 떠있는 동안
+/// provider 구독자가 없어 autoDispose가 발동하면 다이얼로그 열릴 때 재요청이 발생한다.
+/// 세션당 gameResultId는 소수라 메모리 영향 미미.
+@Riverpod(keepAlive: true)
 Future<GameResultEntity> gameResult(Ref ref, int gameResultId) async {
   try {
     final response = await ref
