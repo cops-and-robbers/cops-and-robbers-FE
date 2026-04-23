@@ -131,6 +131,14 @@ class ApiEndpoints {
   static String robberLastLocations(int gameId) =>
       '/api/games/$gameId/robbers/location';
 
+  /// 게임 결과 조회
+  ///
+  /// `GET /api/game-results/{gameResultId}` — GAME_OVER 이벤트로 받은
+  /// `gameResultId`로 조회한다. 응답에는 승리 팀, 진행 시간, 체포 횟수,
+  /// 남은 도둑 수가 포함된다.
+  static String gameResult(int gameResultId) =>
+      '/api/game-results/$gameResultId';
+
   // ============================================
   // User API - 사용자 정보
   // ============================================
