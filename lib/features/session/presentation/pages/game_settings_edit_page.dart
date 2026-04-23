@@ -194,7 +194,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
                       AppSlider(
                         label: '도둑 위치 공유 간격',
                         value: _locationShareMinutes.toDouble(),
-                        min: 0,
+
+                        /// TODO : 추후에 API 생기면 0으로 변경
+                        min: 1,
                         max: 30,
                         unit: '분',
                         divisions: 30,
