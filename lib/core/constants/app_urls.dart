@@ -21,4 +21,12 @@ class AppUrls {
   /// 이용약관
   static const String termsOfService =
       'https://sites.google.com/view/copsandrobbers-tos/%ED%99%88';
+
+  /// 위치정보 이용약관
+  static const String locationTerms =
+      'https://sites.google.com/view/copsandrobbers-lt/%ED%99%88';
+
+  /// 마케팅 정보 수신
+  static const String marketingConsent =
+      'https://sites.google.com/view/copsandrobbers-mc/%ED%99%88';
 }

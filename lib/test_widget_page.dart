@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/utils/share_util.dart';
@@ -27,7 +28,11 @@ import 'core/widgets/buttons/zone_setting_button_example.dart';
 import 'core/widgets/indicators/step_indicator.dart';
 import 'core/widgets/loading/custom_progress_bar.dart';
 import 'core/widgets/loading/loading_page.dart';
+import 'features/auth/presentation/pages/agreement_page.dart';
 import 'features/auth/presentation/pages/nickname_setup_page.dart';
+import 'features/game/domain/entities/game_result_entity.dart';
+import 'features/game/presentation/providers/game_result_provider.dart';
+import 'features/game/presentation/widgets/game_over_result_dialog.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
 import 'features/session/presentation/widgets/session_info_view.dart';
@@ -436,6 +441,36 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   showBorder: false,
                   icon: Icon(
                     Icons.person_outline,
+                    size: 20.w,
+                    color: AppColors.black,
+                  ),
+                  iconPosition: IconPosition.leading,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // AgreementPage 테스트
+                // ============================================
+                _buildSectionTitle('AgreementPage 테스트'),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 약관 동의 페이지 이동 버튼
+                AppButton(
+                  text: '약관 동의 페이지 열기',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AgreementPage(),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
+                  showBorder: false,
+                  icon: Icon(
+                    Icons.gavel_outlined,
                     size: 20.w,
                     color: AppColors.black,
                   ),
@@ -930,7 +965,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       avatarWidget: ClipRRect(
                         borderRadius: AppRadius.large,
                         child: Image.asset(
-                          'assets/app_icon_512.png',
+                          'assets/app_icon.png',
                           width: 92.w,
                           height: 108.w,
                           fit: BoxFit.cover,
@@ -1180,6 +1215,73 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 SizedBox(height: AppSpacing.vertical64),
 
                 // ============================================
+                // GameOverResultDialog 테스트
+                // ============================================
+                _buildSectionTitle('GameOverResultDialog 테스트'),
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  '4조합 버튼 — mock AsyncValue.data로 다이얼로그 표시',
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black400,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                AppButton(
+                  text: '경찰 승리 (light)',
+                  onPressed: () => _showMockGameOverDialog(
+                    context: context,
+                    isDarkMode: false,
+                    myTeam: 'POLICE',
+                    winnerTeam: 'POLICE',
+                  ),
+                  backgroundColor: AppColors.blue,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                AppButton(
+                  text: '경찰 패배 (light)',
+                  onPressed: () => _showMockGameOverDialog(
+                    context: context,
+                    isDarkMode: false,
+                    myTeam: 'POLICE',
+                    winnerTeam: 'ROBBER',
+                  ),
+                  backgroundColor: AppColors.red,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                AppButton(
+                  text: '도둑 승리 (dark)',
+                  onPressed: () => _showMockGameOverDialog(
+                    context: context,
+                    isDarkMode: true,
+                    myTeam: 'ROBBER',
+                    winnerTeam: 'ROBBER',
+                  ),
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                AppButton(
+                  text: '도둑 패배 (dark)',
+                  onPressed: () => _showMockGameOverDialog(
+                    context: context,
+                    isDarkMode: true,
+                    myTeam: 'ROBBER',
+                    winnerTeam: 'POLICE',
+                  ),
+                  backgroundColor: AppColors.black800,
+                  showBorder: false,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
                 // ReconnectModal 테스트
                 // ============================================
                 _buildSectionTitle('ReconnectModal 테스트'),
@@ -1275,6 +1377,42 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  /// 다이얼로그 시각 테스트용 헬퍼 — gameResultProvider를 mock AsyncValue.data로 override
+  void _showMockGameOverDialog({
+    required BuildContext context,
+    required bool isDarkMode,
+    required String myTeam,
+    required String winnerTeam,
+  }) {
+    const mockGameResultId = 999;
+    const mockEntity = GameResultEntity(
+      winnerTeam: 'POLICE', // UI에서는 myTeam==winnerTeam 비교만 쓰므로 임의값 OK
+      durationSeconds: 1845, // 30:45
+      totalArrestCount: 12,
+      remainingRobberCount: 2,
+    );
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => ProviderScope(
+        overrides: [
+          gameResultProvider(
+            mockGameResultId,
+          ).overrideWith((_) async => mockEntity),
+        ],
+        child: GameOverResultDialog(
+          isDarkMode: isDarkMode,
+          myTeam: myTeam,
+          winnerTeam: winnerTeam,
+          gameResultId: mockGameResultId,
+          onGoHome: () => Navigator.of(context).pop(),
+          onRematch: () => Navigator.of(context).pop(),
         ),
       ),
     );

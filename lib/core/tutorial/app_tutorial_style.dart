@@ -39,21 +39,56 @@ class AppTutorialStyle {
   /// [context] — BuildContext
   /// [targets] — target()으로 생성한 목록
   /// [onFinish] — 완료 콜백
-  static void show({
+  ///
+  /// 반환된 [AppTutorialController]로 진행 중 타겟 위치 재계산(`refresh()`)이
+  /// 가능하다. 하위 호환을 위해 반환값 무시해도 동작은 그대로.
+  static AppTutorialController show({
     required BuildContext context,
     required List<TutorialTarget> targets,
     VoidCallback? onFinish,
   }) {
     final focusTargets = targets.map((t) => t._toTargetFocus()).toList();
 
-    TutorialCoachMark(
+    final coach = TutorialCoachMark(
       targets: focusTargets,
       colorShadow: AppColors.black,
       opacityShadow: 0.8,
       hideSkip: true,
       onFinish: onFinish,
-    ).show(context: context);
+    );
+    coach.show(context: context);
+    return AppTutorialController._(coach);
   }
+}
+
+/// 표시 중인 튜토리얼을 제어하는 핸들
+///
+/// 패키지의 `TutorialCoachMark`를 캡슐화하여 상위 코드가 직접 의존하지
+/// 않도록 한다. 레이아웃이 변한 시점에 `refresh()`를 호출하면 현재
+/// 활성화된 타겟의 화면 좌표를 다시 계산한다.
+class AppTutorialController {
+  AppTutorialController._(this._coach);
+
+  final TutorialCoachMark _coach;
+
+  /// 튜토리얼 오버레이가 떠 있는지 여부
+  bool get isShowing => _coach.isShowing;
+
+  /// 현재 타겟 위치 재계산
+  ///
+  /// 패키지가 `refreshTargetPosition()`을 외부로 직접 노출하지 않기 때문에,
+  /// 내부의 `didChangeMetrics` 경로를 빌려 좌표를 강제 재계산한다.
+  /// (패키지 내부에서 `didChangeMetrics`가 `refreshTargetPosition()`을 호출)
+  ///
+  /// 레이아웃이 실제로 변하지 않은 위젯은 `handleMetricsChanged`로 인한
+  /// 리빌드가 발생해도 대부분 no-op이므로 성능 영향은 미미하다.
+  void refresh() {
+    if (!_coach.isShowing) return;
+    WidgetsBinding.instance.handleMetricsChanged();
+  }
+
+  /// 튜토리얼 강제 종료
+  void finish() => _coach.finish();
 }
 
 /// 패키지 타입을 숨기는 내부 래퍼

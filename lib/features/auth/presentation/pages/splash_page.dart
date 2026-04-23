@@ -93,7 +93,13 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // ================================================================
       if (!skipConnectivityCheck) {
         final connectivity = ref.read(connectivityServiceProvider);
-        final connected = await connectivity.isConnected();
+        var connected = await connectivity.isConnected();
+        // hot restart 직후 플랫폼 채널이 stale 값을 반환할 수 있으므로 재체크
+        if (!connected) {
+          await Future<void>.delayed(const Duration(milliseconds: 500));
+          if (!mounted) return;
+          connected = await connectivity.isConnected();
+        }
         if (!connected) {
           if (!mounted) return;
           setState(() => _isOffline = true);
@@ -388,7 +394,29 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (_isReconnecting) {
       return LoadingPage(message: _reconnectMessage, subtitle: '잠시만 기다려주세요');
     }
-    return const Scaffold(body: Center(child: Text('Splash')));
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: Image.asset(
+                  'assets/splash.png',
+                  width: 300.w,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            Text(
+              'by 동심지키미',
+              style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
+            ),
+            SizedBox(height: AppSpacing.vertical24),
+          ],
+        ),
+      ),
+    );
   }
 
   /// 오프라인 상태 인라인 UI.

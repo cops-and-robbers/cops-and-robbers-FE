@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -38,12 +37,16 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
+import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
+import '../providers/game_result_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
+import '../widgets/game_over_result_dialog.dart';
 import '../widgets/qr_display_dialog.dart';
 import '../widgets/qr_scanner_page.dart';
 import '../widgets/game_timer_text.dart';
@@ -144,8 +147,16 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 재연결 모달 표시 중 여부 (중복 표시 방지)
   bool _isReconnectModalShown = false;
 
-  /// 재연결 모달 중 발생한 구역 이탈 보류 플래그
-  /// (모달 닫힘 후 여전히 구역 밖이면 팝업 및 진동 처리)
+  /// 재연결 모달 종료 후 구역 이탈 팝업을 복구해야 함을 표시하는 보류 플래그.
+  ///
+  /// 다음 두 경로에서 `true` 로 세팅된다:
+  /// 1) 재연결 모달 표시 중 새로 구역을 벗어난 경우 (`_zoneExitDetector.onExitZone`)
+  /// 2) 재연결 모달 진입 시점에 이미 구역 밖이거나 이탈 팝업이 떠 있던 경우
+  ///    (`_showReconnectModalIfNeeded` → `shouldMarkZoneExitAsPendingOnReconnect`)
+  ///
+  /// 모달이 닫히면 `_processPendingZoneExit()` 이 `_zoneExitDetector.isOutside`
+  /// 를 재확인한 뒤 이탈 팝업과 진동을 복구한다. 구역으로 복귀하면
+  /// `onEnterZone` 에서 `false` 로 리셋된다.
   bool _pendingZoneExit = false;
 
   /// 게임 이벤트 STOMP 최초 연결 성공 여부
@@ -285,7 +296,7 @@ class _GamePageState extends ConsumerState<GamePage>
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyQrButton,
         description: widget.team == 'POLICE'
-            ? '도둑 참가자 카드를 누르거나 QR을 스캔해서 체포해요'
+            ? '도둑의 QR을 스캔해서 체포해요'
             : '잡히면 경찰에게 QR을 보여주고, 경찰이 스캔하면 체포돼요',
       ),
     ];
@@ -738,7 +749,7 @@ class _GamePageState extends ConsumerState<GamePage>
               ),
               SizedBox(height: AppSpacing.vertical12),
               Text(
-                '구역 안으로 돌아와서 진행해 주세요',
+                '구역 밖으로 나가면 화면이 잠겨요',
                 style: AppTextStyles.paragraph_14_100.copyWith(
                   color: AppColors.red800,
                 ),
@@ -796,6 +807,17 @@ class _GamePageState extends ConsumerState<GamePage>
             currentState.connectionState != StompConnectionState.error)) {
       _processPendingZoneExit();
       return;
+    }
+
+    // 이탈 팝업이 떠 있거나 현재 구역 밖이라면, 재연결 모달이 닫힌 뒤
+    // 팝업을 복구해야 함을 보류 플래그로 기록한다.
+    // (ZoneExitDetector 는 상태 전환에만 콜백이 발화하므로 모달 종료 후
+    //  위치 업데이트만으로는 자동 복구되지 않음)
+    if (shouldMarkZoneExitAsPendingOnReconnect(
+      isPopupShown: _isZoneExitPopupShown,
+      isDetectorOutside: _zoneExitDetector.isOutside,
+    )) {
+      _pendingZoneExit = true;
     }
 
     // 구역 이탈 팝업이 떠 있으면 먼저 닫음
@@ -970,17 +992,34 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 게임 종료 → 결과 팝업 2단계 시퀀스
   ///
   /// 1단계: "게임 종료" 알림 팝업 (3초 자동 닫힘)
-  /// 2단계: 결과 팝업 (커스텀 타이틀 스타일, "홈으로" 버튼)
+  /// 2단계: GameOverResultDialog — 캐릭터 오버레이 + 통계 + 홈으로/한 번 더
+  ///
+  /// 1단계 진입 직전에 [gameResultProvider]를 사전 트리거하여,
+  /// 2단계 다이얼로그가 뜰 때 API 응답이 이미 준비되도록 한다.
   Future<void> _showGameOverDialog(String? winnerTeam, String? reason) async {
     if (_gameOverDialogShown) return;
     _gameOverDialogShown = true;
+
+    // GAME_OVER 이벤트 state에서 gameResultId 캡처.
+    // 아래 disconnect()가 state를 const GameEventState()로 리셋하므로,
+    // 반드시 disconnect 호출 전에 읽어야 결과 다이얼로그에 전달할 수 있다.
+    final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
+
     // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
     ref.invalidate(chatNotificationEnabledProvider);
     // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단)
+    // NOTE: 내부에서 state 리셋 수행 — 이후에는 state 기반 값(gameResultId 등) 읽기 금지
     ref.read(gameEventNotifierProvider.notifier).disconnect();
     // 혹시 열려있는 다른 팝업/다이얼로그 모두 닫기
     if (mounted) {
       Navigator.of(context).popUntil((route) => route is! PopupRoute);
+    }
+
+    // 결과 API 사전 트리거 (1단계 3초 동안 백그라운드에서 로딩)
+    if (gameResultId != null) {
+      // fire-and-forget — 다이얼로그에서 ref.watch로 같은 Provider를 구독한다
+      // ignore: unawaited_futures
+      ref.read(gameResultProvider(gameResultId).future);
     }
 
     // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)
@@ -992,7 +1031,7 @@ class _GamePageState extends ConsumerState<GamePage>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '게임 종료',
+            '게임 종료!',
             style: _isDarkMode
                 ? AppTextStyles.robberHeading.copyWith(color: AppColors.green)
                 : AppTextStyles.heading_20.copyWith(color: AppColors.black),
@@ -1016,10 +1055,40 @@ class _GamePageState extends ConsumerState<GamePage>
 
     if (!mounted) return;
 
-    // 2단계: 게임 결과 팝업 (커스텀 타이틀 스타일, 2버튼)
+    // 2단계: 결과 다이얼로그 (캐릭터 오버레이 + 통계)
+    final gameId = int.tryParse(widget.sessionId);
+
+    // gameResultId가 null인 경우 기존 방식으로 fallback (AppDialog 최소 정보만)
+    if (gameResultId == null || winnerTeam == null) {
+      await _showFallbackResultDialog(winnerTeam, gameId);
+      return;
+    }
+
+    await GameOverResultDialog.show(
+      context: context,
+      isDarkMode: _isDarkMode,
+      myTeam: widget.team,
+      winnerTeam: winnerTeam,
+      gameResultId: gameResultId,
+      onGoHome: () {
+        if (gameId != null) ref.read(leaveGameProvider(gameId).future);
+        ref.read(gameParticipantNotifierProvider.notifier).clear();
+        context.go(RoutePaths.home);
+      },
+      onRematch: () {
+        ref.read(gameParticipantNotifierProvider.notifier).clear();
+        context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
+      },
+    );
+  }
+
+  /// `gameResultId`가 없을 때 기존 AppDialog 기반 최소 결과 다이얼로그 표시 (방어 로직)
+  Future<void> _showFallbackResultDialog(
+    String? winnerTeam,
+    int? gameId,
+  ) async {
     final isWin = winnerTeam == widget.team;
     final winnerTeamLabel = winnerTeam == 'POLICE' ? '경찰팀' : '도둑팀';
-    final gameId = int.tryParse(widget.sessionId);
 
     AppDialog.show(
       context: context,
@@ -1042,13 +1111,11 @@ class _GamePageState extends ConsumerState<GamePage>
       confirmTextColor: _isDarkMode ? null : AppColors.white,
       barrierDismissible: false,
       onCancel: () {
-        // 방 나가기 API (fire-and-forget) + 상태 초기화 후 홈 이동
         if (gameId != null) ref.read(leaveGameProvider(gameId).future);
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.home);
       },
       onConfirm: () {
-        // leave API 미호출 (서버에서 방 유지) + 상태 초기화 후 대기실 이동
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
       },
@@ -1576,26 +1643,25 @@ class _GamePageState extends ConsumerState<GamePage>
       return;
     }
 
-    final participantId = await Navigator.push<int>(
+    // 스캐너는 파싱만 담당. 만료 여부는 호출측에서 검증하여 사용자에게 원인을 명확히 안내한다.
+    final payload = await Navigator.push<QrPayload>(
       context,
       MaterialPageRoute(
-        builder: (_) => QrScannerPage<int>(
+        builder: (_) => QrScannerPage<QrPayload>(
           title: '도둑의 수배 QR을 스캔하세요',
-          onParse: (rawValue) {
-            try {
-              final json = jsonDecode(rawValue) as Map<String, dynamic>;
-              final pid = json['pid'];
-              if (pid is int) return pid;
-              if (pid is num) return pid.toInt();
-              return null;
-            } catch (_) {
-              return null;
-            }
-          },
+          onParse: QrPayload.tryParse,
         ),
       ),
     );
-    if (participantId == null || !mounted) return;
+    if (payload == null || !mounted) return;
+
+    // 만료된 QR (스크린샷 저장 후 재사용 시나리오 등) 차단
+    if (payload.isExpiredAt(DateTime.now())) {
+      AppSnackbar.show(context, message: '만료된 QR입니다. QR 새로고침을 요청하세요');
+      return;
+    }
+
+    final participantId = payload.participantId;
 
     // 이미 체포된 도둑 체크
     final arrestedIds = ref

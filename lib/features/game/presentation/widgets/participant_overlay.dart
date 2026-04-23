@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -91,9 +92,25 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     );
   }
 
+  /// 체포/탈옥 낙관적 업데이트를 반영한 도둑의 유효 상태.
+  /// STOMP 이벤트 도착 전에 UI 가 즉시 반영되도록 보정된 값을 반환한다.
+  String _effectiveRobberStatus(
+    InGameParticipant p, {
+    required bool isArrested,
+    required bool isEscaped,
+  }) {
+    if (isEscaped) return 'ALIVE';
+    if (isArrested) return 'JAILED';
+    return p.status;
+  }
+
   /// 경찰 역할 → ALIVE 도둑 카드 탭 시 체포 모달 표시
+  ///
+  /// 실제 게임에서는 QR 스캔(대면 확인)으로만 체포 가능하다.
+  /// 카드 탭 체포는 디버그 빌드 전용 — 시뮬레이터/에뮬레이터로 흐름을 검증하기 위함.
   void _onRobberCardTap(LobbyParticipantInfo member) {
     if (widget.myTeam != 'POLICE') return;
+    if (!kDebugMode) return;
 
     final gameEventState = ref.read(gameEventNotifierProvider);
     final participantInfo = ref.read(gameParticipantNotifierProvider);
@@ -199,6 +216,19 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     // ALIVE 도둑 수 (도주 중)
     final aliveCount = robberMembers.where((m) => !m.isReady).length;
 
+    // 게임방 컨텍스트에서 ParticipantCard 의 SVG 선택을 위한 상태 맵.
+    // 낙관적 체포/탈옥 업데이트를 반영한 유효 상태 사용.
+    final gameStatusMap = <int, String>{
+      for (final p in _participants?.police ?? const <InGameParticipant>[])
+        p.participantId: p.status,
+      for (final p in _participants?.robbers ?? const <InGameParticipant>[])
+        p.participantId: _effectiveRobberStatus(
+          p,
+          isArrested: arrestedIds.contains(p.participantId),
+          isEscaped: escapedIds.contains(p.participantId),
+        ),
+    };
+
     // 참가자 데이터 로딩 중 → shimmer 스켈레톤 표시
     if (_participants == null) {
       return Container(
@@ -225,6 +255,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
               myParticipantId: widget.myParticipantId,
               badge: const SizedBox.shrink(),
               isDarkMode: widget.isDarkMode,
+              gameStatusByParticipantId: gameStatusMap,
             ),
             Divider(
               height: 1,
@@ -247,6 +278,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
                   : null,
               onMemberTap: _onRobberTeamCardTap,
               isDarkMode: widget.isDarkMode,
+              gameStatusByParticipantId: gameStatusMap,
             ),
           ],
         ),

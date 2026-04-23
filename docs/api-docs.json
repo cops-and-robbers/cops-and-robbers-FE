@@ -2,7 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "version": "1.0.0"
+    "description": "## 업데이트 항목\n- (신규) 게임 결과 조회 API 추가 (GET /api/game-results/{gameResultId})\n",
+    "version": "2.2.0"
   },
   "servers": [
     {
@@ -21,6 +22,10 @@
       "description": "게임 참여자 관리 API"
     },
     {
+      "name": "Game Result",
+      "description": "게임 결과 조회 API"
+    },
+    {
       "name": "Game",
       "description": "게임 방 생성 및 관리 API"
     },
@@ -31,6 +36,10 @@
     {
       "name": "User",
       "description": "사용자 정보 및 프로필 관리 API"
+    },
+    {
+      "name": "Location",
+      "description": "게임 위치 API"
     },
     {
       "name": "Report",
@@ -50,6 +59,161 @@
     }
   ],
   "paths": {
+    "/api/user/agreements": {
+      "get": {
+        "tags": ["User"],
+        "summary": "약관 동의 현황 조회",
+        "description": "로그인한 사용자의 약관 동의 현황을 조회합니다.",
+        "operationId": "getAgreements",
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 회원": {
+                    "summary": "존재하지 않는 회원",
+                    "value": {
+                      "title": "존재하지 않는 회원",
+                      "status": 401,
+                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "instance": "/api/user/agreements"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/user/agreements"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["User"],
+        "summary": "약관 동의",
+        "description": "이용약관, 개인정보처리방침, 위치정보 이용약관(필수), 마케팅 수신 동의(선택)를 저장합니다. 필수 동의 약관들은 모두 true 여야 합니다.",
+        "operationId": "updateTerms",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "약관 동의 저장 성공 (응답 본문 없음)"
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 회원": {
+                    "summary": "존재하지 않는 회원",
+                    "value": {
+                      "title": "존재하지 않는 회원",
+                      "status": 401,
+                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "instance": "/api/user/agreements"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "필수 약관 미동의": {
+                    "summary": "필수 약관 미동의",
+                    "value": {
+                      "title": "필수 약관 미동의",
+                      "status": 400,
+                      "detail": "필수 약관은 모두 동의해야 합니다.",
+                      "instance": "/api/user/agreements"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/user/agreements"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/user/agreements"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/games/{gameId}/settings": {
       "put": {
         "tags": ["Game"],
@@ -799,6 +963,15 @@
                       "instance": "/api/games"
                     }
                   },
+                  "필수 약관 미동의": {
+                    "summary": "필수 약관 미동의",
+                    "value": {
+                      "title": "필수 약관 미동의",
+                      "status": 400,
+                      "detail": "필수 약관은 모두 동의해야 합니다.",
+                      "instance": "/api/games"
+                    }
+                  },
                   "유효하지 않은 위치 공개 주기": {
                     "summary": "유효하지 않은 위치 공개 주기",
                     "value": {
@@ -1493,6 +1666,15 @@
                       "instance": "/api/games/join"
                     }
                   },
+                  "필수 약관 미동의": {
+                    "summary": "필수 약관 미동의",
+                    "value": {
+                      "title": "필수 약관 미동의",
+                      "status": 400,
+                      "detail": "필수 약관은 모두 동의해야 합니다.",
+                      "instance": "/api/games/join"
+                    }
+                  },
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
@@ -1790,8 +1972,8 @@
                   "$ref": "#/components/schemas/LoginResponse"
                 },
                 "examples": {
-                  "신규 회원 가입 성공 예시": {
-                    "description": "신규 회원 가입 성공 예시",
+                  "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)": {
+                    "description": "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)",
                     "value": {
                       "userId": 2,
                       "nickname": "집요한괴도4053",
@@ -1799,7 +1981,8 @@
                         "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njg0OTg2MTB9...",
                         "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
                       },
-                      "isNewUser": true
+                      "isNewUser": true,
+                      "requiresAgreement": true
                     }
                   }
                 }
@@ -1823,7 +2006,8 @@
                         "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njg0OTg2MDV9...",
                         "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY4NDk1MDA1LCJleHAiOjE3Njk3MDQ2MDV9..."
                       },
-                      "isNewUser": false
+                      "isNewUser": false,
+                      "requiresAgreement": false
                     }
                   }
                 }
@@ -2758,6 +2942,140 @@
         ]
       }
     },
+    "/api/games/{gameId}/robbers/location": {
+      "get": {
+        "tags": ["Location"],
+        "summary": "도둑 위치 조회",
+        "description": "현재 게임에 참여 중인 도둑들의 마지막 위치를 조회합니다.\n\n- 위치를 한 번도 전송하지 않은 도둑은 목록에 포함되지 않습니다.\n",
+        "operationId": "getRobberLocations",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "게임 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RobberLocationResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/robbers/location"
+                    }
+                  },
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}/robbers/location"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임 진행 중 아님": {
+                    "summary": "게임 진행 중 아님",
+                    "value": {
+                      "title": "게임 진행 중 아님",
+                      "status": 400,
+                      "detail": "게임이 진행 중인 상태가 아닙니다.",
+                      "instance": "/api/games/{gameId}/robbers/location"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/robbers/location"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/robbers/location"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/games/{gameId}/participants": {
       "get": {
         "tags": ["Game Participant"],
@@ -3006,6 +3324,116 @@
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/games/{gameId}/lobby"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/game-results/{gameResultId}": {
+      "get": {
+        "tags": ["Game Result"],
+        "summary": "게임 결과 조회",
+        "description": "게임 종료 후 결과(승리 팀, 진행 시간, 총 체포 횟수, 남은 도둑 수)를 조회합니다.",
+        "operationId": "getGameResult",
+        "parameters": [
+          {
+            "name": "gameResultId",
+            "in": "path",
+            "description": "게임 결과 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "게임 결과 조회 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResultResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임 결과를 찾을 수 없음": {
+                    "summary": "게임 결과를 찾을 수 없음",
+                    "value": {
+                      "title": "게임 결과를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임 결과를 찾을 수 없습니다.",
+                      "instance": "/api/game-results/{gameResultId}"
+                    }
+                  },
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/game-results/{gameResultId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/game-results/{gameResultId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/game-results/{gameResultId}"
                     }
                   }
                 }
@@ -3333,6 +3761,37 @@
           }
         },
         "description": "에러 응답"
+      },
+      "AgreementRequest": {
+        "required": [
+          "locationTerms",
+          "marketing",
+          "privacyPolicy",
+          "termsOfService"
+        ],
+        "type": "object",
+        "properties": {
+          "termsOfService": {
+            "type": "boolean",
+            "description": "이용약관 동의 여부",
+            "example": true
+          },
+          "privacyPolicy": {
+            "type": "boolean",
+            "description": "개인정보처리방침 동의 여부",
+            "example": true
+          },
+          "locationTerms": {
+            "type": "boolean",
+            "description": "위치정보 이용약관 동의 여부",
+            "example": true
+          },
+          "marketing": {
+            "type": "boolean",
+            "description": "마케팅 수신 동의 여부",
+            "example": true
+          }
+        }
       },
       "GameSettingsRequest": {
         "required": [
@@ -3773,6 +4232,11 @@
             "type": "boolean",
             "description": "신규 회원 여부",
             "example": false
+          },
+          "requiresAgreement": {
+            "type": "boolean",
+            "description": "필수 이용약관 동의 여부",
+            "example": true
           }
         }
       },
@@ -3902,6 +4366,41 @@
           }
         }
       },
+      "AgreementResponse": {
+        "type": "object",
+        "properties": {
+          "termsOfServiceAgreed": {
+            "type": "boolean",
+            "description": "이용약관 동의 여부",
+            "example": true
+          },
+          "privacyPolicyAgreed": {
+            "type": "boolean",
+            "description": "개인정보처리방침 동의 여부",
+            "example": true
+          },
+          "locationTermsAgreed": {
+            "type": "boolean",
+            "description": "위치정보 이용약관 동의 여부",
+            "example": true
+          },
+          "termsAgreedAt": {
+            "type": "string",
+            "description": "필수 약관 동의 시각 (미동의 시 null)",
+            "example": "2026-04-15T10:00:00+09:00"
+          },
+          "marketingAgreed": {
+            "type": "boolean",
+            "description": "마케팅 수신 동의 여부",
+            "example": false
+          },
+          "marketingAgreedAt": {
+            "type": "string",
+            "description": "마케팅 동의 시각 (미동의 시 null)",
+            "example": "null"
+          }
+        }
+      },
       "GameInfoResponse": {
         "type": "object",
         "properties": {
@@ -3938,6 +4437,34 @@
             "type": "string",
             "description": "게임 시작 시간 (진행 중일 때만 포함)",
             "format": "date-time"
+          }
+        }
+      },
+      "RobberLocationResponse": {
+        "type": "object",
+        "properties": {
+          "participantId": {
+            "type": "integer",
+            "description": "도둑 참가자 ID",
+            "format": "int64",
+            "example": 1
+          },
+          "nickname": {
+            "type": "string",
+            "description": "도둑 닉네임",
+            "example": "거북이"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "위도",
+            "format": "double",
+            "example": 37.5665
+          },
+          "longitude": {
+            "type": "number",
+            "description": "경도",
+            "format": "double",
+            "example": 126.978
           }
         }
       },
@@ -4059,6 +4586,35 @@
             "description": "감옥 반경(m)",
             "format": "int32",
             "example": 100
+          }
+        }
+      },
+      "GameResultResponse": {
+        "type": "object",
+        "properties": {
+          "winnerTeam": {
+            "type": "string",
+            "description": "승리 팀",
+            "example": "POLICE",
+            "enum": ["POLICE", "ROBBER"]
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "description": "게임 진행 시간(초)",
+            "format": "int32",
+            "example": 300
+          },
+          "totalArrestCount": {
+            "type": "integer",
+            "description": "총 체포 횟수",
+            "format": "int32",
+            "example": 5
+          },
+          "remainingRobberCount": {
+            "type": "integer",
+            "description": "남은 도둑 수",
+            "format": "int32",
+            "example": 1
           }
         }
       },

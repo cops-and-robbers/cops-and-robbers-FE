@@ -79,7 +79,7 @@ const List<CreditMember> creditMembers = [
     role: 'Frontend',
     profileAssets: [
       'assets/credits/FE-Hong1.jpeg',
-      'assets/credits/FE-Hong2.JPG',
+      'assets/credits/FE-Hong2.jpg',
     ],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/EM-H20'),
@@ -90,10 +90,6 @@ const List<CreditMember> creditMembers = [
       SocialLink(
         type: SocialType.linkedin,
         url: 'https://www.linkedin.com/in/eui-min-hong',
-      ),
-      SocialLink(
-        type: SocialType.website,
-        url: 'https://eui-min-hong.github.io/',
       ),
     ],
   ),
@@ -125,7 +121,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '정상희',
     role: 'Backend',
-    profileAssets: ['assets/credits/member4.png'],
+    profileAssets: ['assets/credits/BE-JEONG.jpeg'],
     links: [
       SocialLink(
         type: SocialType.github,
@@ -140,7 +136,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '황혜림',
     role: 'Backend',
-    profileAssets: ['assets/credits/member5.png'],
+    profileAssets: ['assets/credits/BE-HWANG.png'],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/HyerimH'),
       SocialLink(
@@ -152,7 +148,10 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '윤지희',
     role: 'Design',
-    profileAssets: ['assets/credits/member6.png'],
+    profileAssets: [
+      'assets/credits/DESIGN-YOON1.jpeg',
+      'assets/credits/DESIGN-YOON2.jpeg',
+    ],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/jihee127'),
       SocialLink(
@@ -176,12 +175,13 @@ class CreditHelper {
 }
 
 /// 도움 준 사람들 목록
-///
-/// TODO: 실제 이름/역할로 교체 필요
 const List<CreditHelper> creditHelpers = [
-  CreditHelper(name: '정상희', role: '사장?'),
-  CreditHelper(name: '황혜림', role: '부사장..?'),
-  CreditHelper(name: '이지은', role: '기획 자문'),
-  CreditHelper(name: '박준혁', role: '인프라'),
-  CreditHelper(name: '최민정', role: 'QA'),
+  CreditHelper(name: '안금서', role: 'QA'),
+  CreditHelper(name: '남해윤', role: 'QA'),
+  CreditHelper(name: '손건우', role: 'QA'),
+  CreditHelper(name: '송혜정', role: 'QA'),
+  CreditHelper(name: '신혜빈', role: 'QA'),
+  CreditHelper(name: '이진', role: 'QA'),
+  CreditHelper(name: '정창우', role: 'QA'),
+  CreditHelper(name: '허석준', role: 'QA'),
 ];

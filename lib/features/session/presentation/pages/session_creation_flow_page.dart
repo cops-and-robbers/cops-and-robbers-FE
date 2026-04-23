@@ -9,6 +9,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
@@ -334,6 +335,17 @@ class _SessionCreationFlowPageState
     } else if (sessionState is AsyncError) {
       if (kDebugMode) {
         debugPrint('❌ [SessionCreationFlow] 세션 생성 실패: ${sessionState.error}');
+      }
+
+      // 필수 약관 미동의 차단 → 스낵바 + /agreement 리디렉트
+      if (mounted &&
+          handleRequiredTermsErrorIfNeeded(
+            context: context,
+            ref: ref,
+            error: sessionState.error,
+          )) {
+        setState(() => _isLoading = false);
+        return;
       }
 
       // 409: 이미 참가 중인 게임 → 해당 게임으로 자동 이동 시도
