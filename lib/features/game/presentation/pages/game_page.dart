@@ -195,7 +195,7 @@ class _GamePageState extends ConsumerState<GamePage>
     if (!mounted) return;
 
     if (canAccess) {
-      _initGameConnections();
+      await _initGameConnections();
       return;
     }
 
@@ -237,15 +237,24 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 게임 연결 및 초기화 (위치 권한 확보 후 실행)
-  void _initGameConnections() {
+  ///
+  /// STOMP 연결 시 `_fetchLastRobberLocations` 가드가 `participantInfo`의
+  /// gameStartTime/policeWaitMinutes에 의존하므로, 반드시 설정 로드 후에
+  /// STOMP 연결을 시작한다. 로비 경유 진입에서는 이미 설정이 있어 지연 없음.
+  /// splash 재진입 시에만 settings API 1회 호출 비용이 발생한다.
+  Future<void> _initGameConnections() async {
     if (_isLocationPermissionDenied) {
       setState(() => _isLocationPermissionDenied = false);
     }
     _connectChat();
+
+    await _initSettingsFromApiIfNeeded();
+    if (!mounted) return;
+
     _connectGameEvents();
     _loadGameArea();
     _showPoliceTimerIfNeeded();
-    _initSettingsAndStartMessages();
+    _sendGameStartSystemMessages();
 
     // 게임 초기화 완료 후 튜토리얼 (첫 진입 시 1회만)
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -307,16 +316,6 @@ class _GamePageState extends ConsumerState<GamePage>
       onFinish: () =>
           TutorialService.markCompleted(TutorialKeys.gameParticipants),
     );
-  }
-
-  /// 게임 설정 로드 후 게임 시작 시스템 메시지 발송
-  ///
-  /// 정상 진입(로비 경유): participantInfo에 이미 설정이 있으므로 즉시 판단.
-  /// terminate 재접속: API로 설정 로드 후 gameStartTime 기반으로 판단.
-  Future<void> _initSettingsAndStartMessages() async {
-    await _initSettingsFromApiIfNeeded();
-    if (!mounted) return;
-    _sendGameStartSystemMessages();
   }
 
   /// 앱 포그라운드 복귀 시 위치 권한 재확인

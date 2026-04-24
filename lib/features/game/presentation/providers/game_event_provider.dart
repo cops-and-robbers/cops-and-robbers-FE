@@ -698,7 +698,8 @@ class GameEventNotifier extends _$GameEventNotifier {
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
         state = state.copyWith(errorMessage: null);
-        // 재연결 후 누락된 도둑 발자국 복구
+        // STOMP 유실 구간에서 놓친 LOCATION_REVEAL 복구.
+        // 실제 호출 여부 판단(경찰 대기 중 skip 등)은 메서드 내부 가드에서 수행.
         if (_gameId != null) _fetchLastRobberLocations(_gameId!);
       } else if (connState == StompConnectionState.disconnected) {
         if (!_intentionalDisconnect && !_isHandlingError) {
@@ -715,12 +716,38 @@ class GameEventNotifier extends _$GameEventNotifier {
     });
   }
 
-  /// 재연결 후 마지막으로 공개된 도둑 위치를 조회하여 발자국 복구
+  /// 마지막으로 공개된 도둑 위치를 조회하여 발자국 복구
   ///
-  /// STOMP 연결 유실 중 LOCATION_REVEAL 이벤트를 놓쳤을 때 호출.
-  /// 빈 배열(아직 공개 전)이면 상태 변경 없이 무시.
-  /// await 중 dispose되거나 새 LOCATION_REVEAL이 도착한 경우 덮어쓰지 않음.
+  /// STOMP 연결 유실(네트워크 끊김, 앱 백그라운드/종료 후 재진입) 구간에서
+  /// 놓친 LOCATION_REVEAL 이벤트를 서버 조회로 보정한다.
+  ///
+  /// 가드: 경찰 이동 시작 시각(= `gameStartTime + policeWaitMinutes`) 이전에는
+  /// reveal이 발생할 수 없으므로 호출 자체를 skip한다. 그 이전에 호출하면
+  /// 서버가 이전 게임 잔존/스테일 데이터를 반환해도 초기 UI에 노출될 위험이 있다.
+  /// `participantInfo`는 `game_page.dart`에서 STOMP 연결 전에 로드되도록 보장한다.
+  ///
+  /// 빈 배열이면 상태 변경 없이 무시. await 중 dispose되거나 새 LOCATION_REVEAL이
+  /// 도착한 경우 덮어쓰지 않음.
   Future<void> _fetchLastRobberLocations(int gameId) async {
+    // 경찰 이동 시작 전에는 reveal 발생 불가 → API 호출 자체를 skip.
+    final participantInfo = ref.read(gameParticipantNotifierProvider);
+    final gameStartTimeStr = participantInfo?.gameStartTime;
+    final policeWaitMinutes = participantInfo?.policeWaitMinutes;
+    if (gameStartTimeStr == null || policeWaitMinutes == null) {
+      debugPrint('[GameEventNotifier] ⏭️ 발자국 복구 skip (게임 설정 미로드)');
+      return;
+    }
+    final startTime = DateTime.tryParse(gameStartTimeStr);
+    if (startTime == null) {
+      debugPrint('[GameEventNotifier] ⏭️ 발자국 복구 skip (startTime 파싱 실패)');
+      return;
+    }
+    final policeMoveTime = startTime.add(Duration(minutes: policeWaitMinutes));
+    if (DateTime.now().isBefore(policeMoveTime)) {
+      debugPrint('[GameEventNotifier] ⏭️ 발자국 복구 skip (경찰 대기 중)');
+      return;
+    }
+
     // fetch 시작 시점의 reveal 타임스탬프 캡처 (race condition 방지)
     final preRevealTime = state.lastLocationRevealTime;
     try {
