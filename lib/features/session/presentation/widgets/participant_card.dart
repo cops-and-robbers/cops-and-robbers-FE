@@ -128,46 +128,6 @@ class ParticipantCard extends StatelessWidget {
   }
 }
 
-/// 빈 슬롯 카드 위젯
-///
-/// 대기실 팀 섹션 내 비어 있는 참가자 슬롯을 표시합니다.
-class EmptySlotCard extends StatelessWidget {
-  const EmptySlotCard({this.isDarkMode = false, super.key});
-
-  /// 다크 모드 여부
-  final bool isDarkMode;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          width: 72.w,
-          height: 84.h,
-          child: Container(
-            decoration: BoxDecoration(
-              color: isDarkMode ? AppColors.black800 : AppColors.black100,
-              borderRadius: BorderRadius.circular(4.r),
-            ),
-            child: Center(
-              child: Text(
-                '대기 중',
-                style: AppTextStyles.tag_12.copyWith(
-                  color: isDarkMode ? AppColors.black400 : AppColors.black400,
-                ),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(height: AppSpacing.vertical4),
-        // 닉네임 영역 높이 맞춤용
-        SizedBox(width: 72.w, height: AppTextStyles.tag_10.fontSize),
-      ],
-    );
-  }
-}
-
 /// + 버튼 슬롯 카드 위젯
 ///
 /// 대기실 팀 섹션 첫 번째 칸에 표시되며, 탭 시 해당 팀으로 변경합니다.

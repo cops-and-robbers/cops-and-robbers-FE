@@ -1,11 +1,36 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-23T10:01:51Z",
-    "currentVersion": "1.7.3",
+    "lastUpdated": "2026-04-24T04:10:54Z",
+    "currentVersion": "1.8.0",
     "projectType": "flutter",
-    "totalReleases": 77
+    "totalReleases": 78
   },
   "releases": [
+    {
+      "version": "1.8.0",
+      "project_type": "flutter",
+      "date": "2026-04-24",
+      "pr_number": 293,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Bug Fixes**\n  * 초기화 순서 개선으로 더욱 안정적인 게임 시작 경험 제공\n  * 재연결 시 위치 정보 복구 로직 최적화\n  * 대화상자 겹침 문제 방지\n\n* **Chores**\n  * 버전 1.8.0으로 업데이트\n  * 팀 섹션 UI에서 빈 참가자 슬롯 표시 제거",
+      "parsed_changes": {
+        "bug_fixes": {
+          "title": "Bug Fixes",
+          "items": [
+            "초기화 순서 개선으로 더욱 안정적인 게임 시작 경험 제공",
+            "재연결 시 위치 정보 복구 로직 최적화",
+            "대화상자 겹침 문제 방지"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전 1.8.0으로 업데이트",
+            "팀 섹션 UI에서 빈 참가자 슬롯 표시 제거"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.7.3",
       "project_type": "flutter",
