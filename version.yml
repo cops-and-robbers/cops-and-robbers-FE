@@ -34,8 +34,8 @@
 # - 버전은 항상 높은 버전으로 자동 동기화됩니다
 # ===================================================================
 
-version: "1.8.1" # 사용자에게 표시되는 앱 버전
-version_code: 206 # app build number
+version: "1.8.2" # 사용자에게 표시되는 앱 버전
+version_code: 207 # app build number
 project_type: "flutter" # spring, flutter, react, react-native, react-native-expo, node, python, basic
 metadata:
   last_updated: "2026-04-24 08:39:12"
