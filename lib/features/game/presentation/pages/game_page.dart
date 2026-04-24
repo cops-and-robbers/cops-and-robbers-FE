@@ -1000,14 +1000,13 @@ class _GamePageState extends ConsumerState<GamePage>
     _gameOverDialogShown = true;
 
     // GAME_OVER 이벤트 state에서 gameResultId 캡처.
-    // 아래 disconnect()가 state를 const GameEventState()로 리셋하므로,
-    // 반드시 disconnect 호출 전에 읽어야 결과 다이얼로그에 전달할 수 있다.
     final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
 
     // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
     ref.invalidate(chatNotificationEnabledProvider);
-    // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단)
-    // NOTE: 내부에서 state 리셋 수행 — 이후에는 state 기반 값(gameResultId 등) 읽기 금지
+    // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단).
+    // disconnect()는 시각 상태(arrestedParticipantIds 등)를 보존하므로,
+    // 참가자 목록 오버레이는 마지막 체포 스냅샷을 유지한다.
     ref.read(gameEventNotifierProvider.notifier).disconnect();
     // 혹시 열려있는 다른 팝업/다이얼로그 모두 닫기
     if (mounted) {

@@ -324,6 +324,13 @@ class GameEventNotifier extends _$GameEventNotifier {
   }
 
   /// 의도적 연결 해제
+  ///
+  /// STOMP 구독과 내부 타이머만 정리하고 시각 상태
+  /// ([arrestedParticipantIds]·[escapedParticipantIds]·[robberLocations] 등)는
+  /// 보존한다. 게임 종료 시퀀스에서 참가자 목록 오버레이가 마지막 체포 스냅샷을
+  /// 그대로 유지하도록 하기 위함.
+  ///
+  /// 전체 상태 초기화는 provider autoDispose 에 맡긴다 (페이지 dispose 시 자동 정리).
   void disconnect() {
     _intentionalDisconnect = true;
     _reconnectTimer?.cancel();
@@ -342,7 +349,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     _gameId = null;
 
     ref.read(gameEventStompDatasourceProvider).disconnect();
-    state = const GameEventState();
+    state = state.copyWith(
+      connectionState: StompConnectionState.disconnected,
+      errorMessage: null,
+    );
   }
 
   /// 도둑 체포 API 호출 (경찰 전용)
