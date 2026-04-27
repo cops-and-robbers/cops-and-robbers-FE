@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'local_notifications_service.dart';
 import '../device/device_info_service.dart';
 import '../device/device_id_manager.dart';
+import '../vibration_service.dart';
 
 /// Firebase Cloud Messaging 서비스
 /// FCM 푸시 알림을 관리하고 메시지를 처리합니다
@@ -152,11 +153,12 @@ class FirebaseMessagingService {
     // iOS: 포그라운드에서 FCM이 직접 시스템 배너/사운드/뱃지를 표시하도록 활성화
     // (iOS는 UNUserNotificationCenter delegate가 하나뿐이라 FCM이 점유하므로,
     //  flutter_local_notifications로 띄우면 같은 옵션의 영향을 받아 배너가 안 뜸)
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
 
     // Register handler for background messages (app terminated)
     // 백그라운드 메시지 핸들러 등록 (앱 종료 상태)
@@ -260,10 +262,14 @@ class FirebaseMessagingService {
     debugPrint('  notification.body : ${message.notification?.body}');
     debugPrint('  data: ${message.data}');
 
-    // 1. 백엔드 메시지 타입 확인 (data.type)
+    // 1. 커스텀 진동 피드백 (백그라운드에서는 OS 기본 진동도 안 오는 이슈가 있어
+    //    포그라운드라도 명시적으로 진동을 발생시켜 알림 인지율을 높임)
+    VibrationService.instance().messageReceived();
+
+    // 2. 백엔드 메시지 타입 확인 (data.type)
     final messageType = message.data['type'];
 
-    // 2. 콘텐츠 분석 완료 알림 처리
+    // 3. 콘텐츠 분석 완료 알림 처리
     if (messageType == 'content_completed') {
       final contentId = message.data['id'];
       if (contentId != null) {
@@ -272,7 +278,7 @@ class FirebaseMessagingService {
       }
     }
 
-    // 3. 로컬 알림 표시
+    // 4. 로컬 알림 표시
     //    Android: FCM이 포그라운드에서 자동 표시하지 않으므로 우리가 직접 띄움
     //    iOS:    위 setForegroundNotificationPresentationOptions로 FCM이 직접 띄우므로 스킵 (중복 방지)
     if (Platform.isAndroid) {
