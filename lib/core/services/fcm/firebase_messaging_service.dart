@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'local_notifications_service.dart';
@@ -148,6 +149,15 @@ class FirebaseMessagingService {
     // 알림 권한 요청
     _requestPermission();
 
+    // iOS: 포그라운드에서 FCM이 직접 시스템 배너/사운드/뱃지를 표시하도록 활성화
+    // (iOS는 UNUserNotificationCenter delegate가 하나뿐이라 FCM이 점유하므로,
+    //  flutter_local_notifications로 띄우면 같은 옵션의 영향을 받아 배너가 안 뜸)
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     // Register handler for background messages (app terminated)
     // 백그라운드 메시지 핸들러 등록 (앱 종료 상태)
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -244,7 +254,11 @@ class FirebaseMessagingService {
   /// Handles messages received while the app is in the foreground
   /// 앱이 포그라운드 상태일 때 수신한 메시지를 처리합니다
   void _onForegroundMessage(RemoteMessage message) {
-    debugPrint('Foreground message received: ${message.data.toString()}');
+    // FCM 페이로드는 notification(제목/본문)과 data(커스텀 키-값)로 분리되어 있어 둘 다 출력
+    debugPrint('[FCM] Foreground message received');
+    debugPrint('  notification.title: ${message.notification?.title}');
+    debugPrint('  notification.body : ${message.notification?.body}');
+    debugPrint('  data: ${message.data}');
 
     // 1. 백엔드 메시지 타입 확인 (data.type)
     final messageType = message.data['type'];
@@ -258,25 +272,29 @@ class FirebaseMessagingService {
       }
     }
 
-    // 3. 로컬 알림 표시 (기존 기능 유지)
-    final notificationData = message.notification;
-    if (notificationData != null) {
-      // Display a local notification using the service
-      // 서비스를 사용하여 로컬 알림 표시
-      _localNotificationsService?.showNotification(
-        notificationData.title,
-        notificationData.body,
-        message.data.toString(),
-      );
+    // 3. 로컬 알림 표시
+    //    Android: FCM이 포그라운드에서 자동 표시하지 않으므로 우리가 직접 띄움
+    //    iOS:    위 setForegroundNotificationPresentationOptions로 FCM이 직접 띄우므로 스킵 (중복 방지)
+    if (Platform.isAndroid) {
+      final notificationData = message.notification;
+      if (notificationData != null) {
+        _localNotificationsService?.showNotification(
+          notificationData.title,
+          notificationData.body,
+          message.data.toString(),
+        );
+      }
     }
   }
 
   /// Handles notification taps when app is opened from the background or terminated state
   /// 앱이 백그라운드 또는 종료 상태에서 알림 탭으로 열렸을 때 처리합니다
   void _onMessageOpenedApp(RemoteMessage message) {
-    debugPrint(
-      'Notification caused the app to open: ${message.data.toString()}',
-    );
+    // 알림 탭 시 notification 페이로드(제목/본문)와 data 페이로드를 분리해서 출력
+    debugPrint('[FCM] Notification tapped (app opened)');
+    debugPrint('  notification.title: ${message.notification?.title}');
+    debugPrint('  notification.body : ${message.notification?.body}');
+    debugPrint('  data: ${message.data}');
 
     // 백엔드 메시지 타입 확인 (data.type)
     final messageType = message.data['type'];
@@ -308,7 +326,10 @@ class FirebaseMessagingService {
 /// 앱이 완전히 종료된 상태에서 메시지를 처리합니다
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint('Background message received: ${message.data.toString()}');
+  debugPrint('[FCM] Background message received');
+  debugPrint('  notification.title: ${message.notification?.title}');
+  debugPrint('  notification.body : ${message.notification?.body}');
+  debugPrint('  data: ${message.data}');
 
   // 백엔드 메시지 타입 확인 (data.type)
   final messageType = message.data['type'];
