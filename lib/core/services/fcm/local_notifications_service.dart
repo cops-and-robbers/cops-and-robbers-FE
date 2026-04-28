@@ -106,7 +106,7 @@ class LocalNotificationsService {
     String? payload,
   ) async {
     // Android-specific notification details
-    // Android 전용 알림 세부 설정
+    // Android 전용 알림 세부 설정 (진동/사운드는 OS 기본값 사용)
     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       _androidChannel.id,
       _androidChannel.name,
@@ -117,7 +117,15 @@ class LocalNotificationsService {
 
     // iOS-specific notification details
     // iOS 전용 알림 세부 설정
-    const iosDetails = DarwinNotificationDetails();
+    // presentAlert/Banner/Sound: 포그라운드 상태에서도 알림이 보이도록 명시적 활성화
+    // (기본값 null이면 OS 기본 동작에 위임되어 포그라운드에서 표시 안 됨)
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      presentBanner: true,
+      presentList: true,
+    );
 
     // Combine platform-specific details
     // 플랫폼별 세부 설정 결합

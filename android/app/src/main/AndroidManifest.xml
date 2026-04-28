@@ -73,6 +73,12 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@android:color/white" />
+
+        <!-- FCM 기본 알림 채널 ID (LocalNotificationsService와 동일 채널 사용) -->
+        <!-- FCM default notification channel for background messages -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="channel_id" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
