@@ -58,6 +58,7 @@ import '../widgets/google_map_view.dart';
 import '../widgets/participant_overlay.dart';
 import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
+import '../services/game_start_notice_flow.dart';
 
 /// 인게임 지도 화면
 ///
@@ -181,13 +182,17 @@ class _GamePageState extends ConsumerState<GamePage>
     super.initState();
     if (widget.isDummy) _dummyStartTime = DateTime.now();
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // keepAlive 서비스이므로 build 완료 후 한 번만 저장
       _backgroundService = ref.read(backgroundServiceProvider);
       _ensureLocationAndInit();
       // 재진입 가드: 게임 도중 앱을 닫았다 다시 들어온 경우
       // GAME_START 이벤트를 못 받았어도 백그라운드 인프라를 강제 시작
       _ensureBackgroundInfrastructureForOngoingGame();
+      // 첫 게임 진입 시 배터리 영향/최적화 안내 (각각 1회만)
+      if (mounted) {
+        await GameStartNoticeFlow.showOnceIfNeeded(context);
+      }
     });
   }
 
