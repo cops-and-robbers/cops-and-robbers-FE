@@ -18,6 +18,9 @@ import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/background/background_service.dart';
+import '../../../../core/services/background/background_service_provider.dart';
+import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
@@ -106,6 +109,10 @@ class _GamePageState extends ConsumerState<GamePage>
   GameEventNotifier? _gameEventNotifier;
   GameEventStompDatasource? _gameEventDatasource;
 
+  /// dispose() + 재진입 가드에서 사용하기 위해 사전에 저장
+  /// keepAlive provider이므로 게임 화면 dispose 이후에도 인스턴스 유효
+  late final BackgroundService _backgroundService;
+
   StreamSubscription<Position>? _locationSubscription;
   StreamSubscription<Position>? _headingSubscription; // POLICE 전용 heading 스트림
   Position? _lastSentPosition;
@@ -175,7 +182,12 @@ class _GamePageState extends ConsumerState<GamePage>
     if (widget.isDummy) _dummyStartTime = DateTime.now();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // keepAlive 서비스이므로 build 완료 후 한 번만 저장
+      _backgroundService = ref.read(backgroundServiceProvider);
       _ensureLocationAndInit();
+      // 재진입 가드: 게임 도중 앱을 닫았다 다시 들어온 경우
+      // GAME_START 이벤트를 못 받았어도 백그라운드 인프라를 강제 시작
+      _ensureBackgroundInfrastructureForOngoingGame();
     });
   }
 
@@ -339,6 +351,26 @@ class _GamePageState extends ConsumerState<GamePage>
     await _showLocationPermissionDialog();
   }
 
+  /// 진행 중인 게임이면 백그라운드 인프라를 활성화 (멱등)
+  ///
+  /// 게임 상태(IN_PROGRESS)는 GameEventNotifier의 state를 통해 확인.
+  /// 이미 GAME_START 이벤트를 통해 활성화된 상태라면 멱등성 덕에 no-op.
+  ///
+  /// 사용 케이스: 사용자가 게임 도중 앱을 닫았다 다시 들어왔을 때
+  /// GAME_START 이벤트는 이미 발생한 후라 못 받음. 이 가드가 그 케이스 방어.
+  void _ensureBackgroundInfrastructureForOngoingGame() {
+    if (!mounted) return;
+    final gameEvent = ref.read(gameEventNotifierProvider);
+    // IN_PROGRESS 판단 기준: gameStartTime이 설정되어 있고 isGameOver=false
+    final isInProgress =
+        gameEvent.gameStartTime != null && !gameEvent.isGameOver;
+    if (!isInProgress) return;
+
+    _backgroundService.start(gameId: _gameId);
+    AppLifecycleService.instance().enableKeepAlive();
+    debugPrint('[GamePage] ✅ 재진입 가드: 백그라운드 인프라 활성화');
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -352,9 +384,14 @@ class _GamePageState extends ConsumerState<GamePage>
     final chatNotifier = _chatNotifier;
     final gameEventDatasource = _gameEventDatasource;
     final isDummy = widget.isDummy;
+    final backgroundService = _backgroundService;
     Future.microtask(() {
       chatNotifier?.disconnectChat();
       if (!isDummy) gameEventDatasource?.disconnect();
+      // 게임 화면 이탈 시 백그라운드 인프라 정리
+      // GAME_OVER 이벤트로 이미 정리된 경우는 멱등성으로 no-op
+      backgroundService.stop();
+      AppLifecycleService.instance().disableKeepAlive();
     });
     super.dispose();
   }
