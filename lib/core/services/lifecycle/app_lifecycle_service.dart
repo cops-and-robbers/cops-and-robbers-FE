@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'lifecycle_log.dart';
 
 /// 앱 생명주기 상태를 감지하고 관리하는 서비스
@@ -51,6 +52,70 @@ class AppLifecycleService with WidgetsBindingObserver {
 
   /// 현재 생명주기 상태
   AppLifecycleState? _currentState;
+
+  /// iOS keep-alive 타이머
+  ///
+  /// 백그라운드에서 도둑이 가만히 있어 위치 콜백이 끊기는 케이스 방어.
+  /// 30초마다 getCurrentPosition을 강제로 호출해 OS가 앱을 suspend 못 하게 함.
+  Timer? _keepAliveTimer;
+
+  /// keep-alive 활성화 여부 (BackgroundService 동작 중일 때만 true)
+  bool _keepAliveEnabled = false;
+
+  /// keep-alive 인터벌 (30초)
+  static const Duration _keepAliveInterval = Duration(seconds: 30);
+
+  /// 현재 백그라운드 상태인지 (paused 또는 hidden)
+  bool get isInBackground =>
+      _currentState == AppLifecycleState.paused ||
+      _currentState == AppLifecycleState.hidden;
+
+  /// keep-alive 활성화 (게임 시작 시 호출)
+  ///
+  /// 이 시점에 paused 상태면 즉시 타이머 시작.
+  void enableKeepAlive() {
+    _keepAliveEnabled = true;
+    debugPrint('✅ AppLifecycleService: keep-alive 활성화');
+    if (isInBackground) {
+      _startKeepAliveTimer();
+    }
+  }
+
+  /// keep-alive 비활성화 (게임 종료 시 호출)
+  void disableKeepAlive() {
+    _keepAliveEnabled = false;
+    _stopKeepAliveTimer();
+    debugPrint('✅ AppLifecycleService: keep-alive 비활성화');
+  }
+
+  void _startKeepAliveTimer() {
+    if (_keepAliveTimer != null) return;
+    debugPrint('🔄 AppLifecycleService: keep-alive 타이머 시작 (30초 주기)');
+    _keepAliveTimer = Timer.periodic(_keepAliveInterval, (_) {
+      // 결과는 사용하지 않음. OS가 위치 콜백을 발생시키도록 트리거하는 게 목적.
+      _triggerKeepAlivePosition();
+    });
+  }
+
+  /// keep-alive용 위치 조회 — 성공/실패 무관하게 OS suspend만 방지
+  Future<void> _triggerKeepAlivePosition() async {
+    try {
+      await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
+      );
+    } catch (e) {
+      debugPrint('[keep-alive] 위치 조회 실패: $e');
+    }
+  }
+
+  void _stopKeepAliveTimer() {
+    if (_keepAliveTimer == null) return;
+    _keepAliveTimer!.cancel();
+    _keepAliveTimer = null;
+    debugPrint('🔚 AppLifecycleService: keep-alive 타이머 종료');
+  }
 
   /// Private 생성자
   AppLifecycleService._();
@@ -153,6 +218,15 @@ class AppLifecycleService with WidgetsBindingObserver {
     debugPrint(
       '🔄 AppLifecycleState: ${state.name} (${_getStateDescription(state)})',
     );
+
+    // keep-alive 타이머 라이프사이클: paused 진입 시 켜고, resumed 시 끔
+    if (_keepAliveEnabled) {
+      if (state == AppLifecycleState.paused) {
+        _startKeepAliveTimer();
+      } else if (state == AppLifecycleState.resumed) {
+        _stopKeepAliveTimer();
+      }
+    }
   }
 
   /// 상태 변화를 로그에 추가
@@ -198,6 +272,10 @@ class AppLifecycleService with WidgetsBindingObserver {
   /// 생명주기 감지를 중지하고 Stream을 닫습니다.
   /// 앱 종료 시 호출해야 합니다.
   void dispose() {
+    // keep-alive 정리 먼저 수행
+    _stopKeepAliveTimer();
+    _keepAliveEnabled = false;
+
     // 아직 활성화 상태면 자동으로 deactivate 호출
     if (_isActive) {
       deactivate();
