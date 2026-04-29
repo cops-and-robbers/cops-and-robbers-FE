@@ -874,6 +874,8 @@ class _GamePageState extends ConsumerState<GamePage>
         // dispose 후 모달이 화면에 남은 경우 ref 접근 크래시 방지
         if (!mounted) return;
         ref.read(gameEventNotifierProvider.notifier).manualReconnect();
+        // 두 채널 모두 사용자 한 번 탭으로 복구되도록 Chat도 같이 재연결
+        ref.read(chatNotifierProvider.notifier).manualReconnect();
       },
     ).then((_) {
       _isReconnectModalShown = false;
