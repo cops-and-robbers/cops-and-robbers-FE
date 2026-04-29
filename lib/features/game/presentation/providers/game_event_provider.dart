@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
@@ -815,7 +816,23 @@ class GameEventNotifier extends _$GameEventNotifier {
     _reconnectTimer = Timer(Duration(seconds: delaySeconds), _attemptReconnect);
   }
 
+  /// 재연결 백오프 지연 (초)
+  ///
+  /// 라이프사이클 인지 정책:
+  /// - 백그라운드: 0s → 1s → 2s → 5s → 5s (총 13초 내 재연결 시도)
+  ///   iOS background wake 시간이 짧을 수 있어 첫 시도를 즉시 진행
+  /// - 포그라운드: 1s → 2s → 4s → 8s → 10s (기존)
   int _calculateBackoffDelay(int attempt) {
+    final isBackground = AppLifecycleService.instance().isInBackground;
+
+    if (isBackground) {
+      // attempt 1=0s, 2=1s, 3=2s, 4=5s, 5+=5s
+      const backgroundDelays = [0, 1, 2, 5, 5];
+      final index = (attempt - 1).clamp(0, backgroundDelays.length - 1);
+      return backgroundDelays[index];
+    }
+
+    // 포그라운드: 기존 지수 백오프 (1, 2, 4, 8, 10 clamp)
     final delay = 1 << (attempt - 1);
     return delay.clamp(1, 10);
   }
