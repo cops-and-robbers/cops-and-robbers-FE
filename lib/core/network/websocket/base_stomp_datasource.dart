@@ -76,6 +76,10 @@ abstract class BaseStompDatasource {
         onDisconnect: _onDisconnect,
         // 자동 재연결 비활성화 - Notifier가 재연결 정책을 관리
         reconnectDelay: Duration.zero,
+        // STOMP heartbeat 활성화 — Android 백그라운드 idle TCP 회수(~20초) 회피
+        // 양방향 10초 인터벌. 트래픽 부담 미미 (분당 약 60바이트)
+        heartbeatIncoming: const Duration(seconds: 10),
+        heartbeatOutgoing: const Duration(seconds: 10),
       ),
     );
 
