@@ -16,6 +16,11 @@ class TutorialKeys {
   static const game = 'tutorial_game';
   static const gameParticipants = 'tutorial_game_participants';
 
+  // 게임 진입 시 1회성 배터리 안내 다이얼로그 — 튜토리얼은 아니지만
+  // "1회만 표시 + 초기화로 재노출" 정책이 동일하므로 같이 관리.
+  static const batteryOptNotice = 'tutorial_battery_opt_notice';
+  static const batteryImpactNotice = 'tutorial_battery_impact_notice';
+
   /// 팀 문자열('POLICE' | 'ROBBER')에 대응하는 대기실 튜토리얼 키.
   /// 알 수 없는 값/`null`은 `null`을 반환하므로 호출부에서 가드해야 한다.
   static String? waitingRoomByTeam(String? team) {
@@ -34,5 +39,7 @@ class TutorialKeys {
     waitingRoomRobber,
     game,
     gameParticipants,
+    batteryOptNotice,
+    batteryImpactNotice,
   ];
 }
