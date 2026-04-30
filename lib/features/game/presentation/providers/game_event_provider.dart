@@ -8,6 +8,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
+import '../../../../core/services/fcm/firebase_messaging_service.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
@@ -235,6 +236,7 @@ class GameEventNotifier extends _$GameEventNotifier {
   StreamSubscription<GameEventModel>? _eventSub;
   StreamSubscription<StompConnectionState>? _connectionSub;
   StreamSubscription<StompErrorInfo>? _errorSub;
+  StreamSubscription<String>? _fcmEventSub;
 
   int _authRetryCount = 0;
   static const _maxAuthRetries = 1;
@@ -256,15 +258,46 @@ class GameEventNotifier extends _$GameEventNotifier {
   @override
   GameEventState build() {
     ref.watch(gameEventStompDatasourceProvider);
+
+    // FCM 게임 시스템 이벤트(BE PR #84) 수신 시 STOMP 좀비 연결 자동 복구.
+    // 백오프 5회 소진 후 사용자가 재연결 모달을 방치한 케이스를
+    // FCM 도착 신호(=네트워크 살아있음)로 자동 복구한다.
+    _fcmEventSub = FirebaseMessagingService.gameSystemEventStream.listen(
+      _handleFcmGameEvent,
+    );
+
     ref.onDispose(() {
       _isDisposed = true;
       _eventSub?.cancel();
       _connectionSub?.cancel();
       _errorSub?.cancel();
+      _fcmEventSub?.cancel();
       _reconnectTimer?.cancel();
       _locationRevealBannerTimer?.cancel();
     });
     return const GameEventState();
+  }
+
+  /// FCM 게임 시스템 이벤트 도착 → STOMP 좀비 연결 자동 복구
+  ///
+  /// FCM이 도착했다는 것은 디바이스 푸시 채널이 살아있다 = 네트워크가 살아있다는
+  /// 신호다. 같은 시점에 STOMP가 dead 상태(`error`/`disconnected`)라면
+  /// `manualReconnect()`로 자동 복구한다. `connecting`/`connected` 상태이면
+  /// 정상 동작 중이므로 흔들지 않는다.
+  void _handleFcmGameEvent(String eventType) {
+    if (_isDisposed || _intentionalDisconnect || _gameId == null) return;
+
+    final connState = state.connectionState;
+    if (connState != StompConnectionState.error &&
+        connState != StompConnectionState.disconnected) {
+      return;
+    }
+
+    debugPrint(
+      '[GameEventNotifier] 📨 FCM($eventType) 수신 + STOMP $connState '
+      '→ 자동 재연결 시도',
+    );
+    manualReconnect();
   }
 
   /// STOMP 연결 후 게임 이벤트 구독

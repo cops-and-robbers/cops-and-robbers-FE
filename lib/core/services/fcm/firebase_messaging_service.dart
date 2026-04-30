@@ -51,6 +51,37 @@ class FirebaseMessagingService {
   static Stream<String> get contentCompletedStream =>
       _contentCompletedController.stream;
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // 게임 시스템 이벤트 알림 Stream (STOMP 좀비 연결 자동 복구용)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  /// 백엔드에서 게임 진행 중 발생하는 시스템 이벤트의 FCM data.type 값 집합.
+  ///
+  /// BE PR #84의 SystemEventType.name() 결과와 일치한다.
+  /// (ARREST, ESCAPE, GAME_OVER, ROBBER_LOCATION_REVEAL, POLICE_MOVE_START)
+  static const Set<String> _gameSystemEventTypes = {
+    'ARREST',
+    'ESCAPE',
+    'GAME_OVER',
+    'ROBBER_LOCATION_REVEAL',
+    'POLICE_MOVE_START',
+  };
+
+  /// 게임 시스템 이벤트 FCM 도착 시 발행되는 StreamController.
+  ///
+  /// 페이로드는 `data.type` 값(`ARREST` 등)을 그대로 전달한다.
+  /// 구독자(GameEventNotifier)는 이 신호를 받아 STOMP 좀비 연결 시
+  /// 자동 재연결을 트리거한다.
+  static final _gameSystemEventController =
+      StreamController<String>.broadcast();
+
+  /// 게임 시스템 이벤트 알림 Stream
+  ///
+  /// FCM이 도착했다는 것은 디바이스 푸시 채널이 살아있다는 신호이므로,
+  /// 같은 시점에 STOMP가 dead 상태라면 재연결을 시도할 좋은 트리거다.
+  static Stream<String> get gameSystemEventStream =>
+      _gameSystemEventController.stream;
+
   /// 백엔드 등록용 FCM 토큰을 가져옵니다
   ///
   /// 로그인 API 호출 시 이 메서드를 사용하여 FCM 토큰을 가져옵니다.
@@ -265,6 +296,13 @@ class FirebaseMessagingService {
         _contentCompletedController.add(contentId);
       }
     }
+
+    // 게임 시스템 이벤트(BE PR #84) — Stream으로 발행하여
+    // GameEventNotifier가 STOMP 좀비 연결 자동 복구 트리거로 활용한다.
+    if (messageType != null && _gameSystemEventTypes.contains(messageType)) {
+      debugPrint('[FCM] 게임 시스템 이벤트 수신: $messageType');
+      _gameSystemEventController.add(messageType);
+    }
   }
 
   /// Handles notification taps when app is opened from the background or terminated state
@@ -297,6 +335,7 @@ class FirebaseMessagingService {
   /// 앱 종료 시 호출하여 메모리 누수를 방지합니다.
   static void dispose() {
     _contentCompletedController.close();
+    _gameSystemEventController.close();
   }
 }
 
