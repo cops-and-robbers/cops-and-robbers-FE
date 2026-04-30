@@ -54,4 +54,17 @@ class BackgroundServiceAndroid implements BackgroundService {
       _isRunning = false;
     }
   }
+
+  @override
+  Future<void> openAppSettings() async {
+    // 사용자 명시적 [설정 열기] 탭에 의해서만 호출됨.
+    // MainActivity.kt의 openAppSettings()가 Settings.ACTION_APPLICATION_DETAILS_SETTINGS 실행.
+    try {
+      await _channel.invokeMethod('openAppSettings');
+      debugPrint('[BackgroundService.Android] ✅ openAppSettings');
+    } catch (e, stack) {
+      debugPrint('[BackgroundService.Android] ❌ openAppSettings 실패: $e');
+      debugPrint('Stack: $stack');
+    }
+  }
 }

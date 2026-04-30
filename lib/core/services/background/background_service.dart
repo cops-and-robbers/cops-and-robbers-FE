@@ -16,4 +16,12 @@ abstract class BackgroundService {
 
   /// 현재 실행 중인지
   bool get isRunning;
+
+  /// 앱 상세 설정 화면 열기 (사용자 명시적 [설정 열기] 탭에 의해서만 호출).
+  ///
+  /// Android: 설정 → 앱 → 경찰과 도둑 으로 이동.
+  /// 거기서 사용자가 "배터리" 메뉴 → "제한 없음" 직접 선택.
+  ///
+  /// iOS: 별도 배터리 설정이 없어 no-op.
+  Future<void> openAppSettings();
 }
