@@ -73,7 +73,15 @@ class AppLifecycleService with WidgetsBindingObserver {
   /// keep-alive 활성화 (게임 시작 시 호출)
   ///
   /// 이 시점에 paused 상태면 즉시 타이머 시작.
+  ///
+  /// WidgetsBindingObserver를 자동으로 등록(activate)한다.
+  /// observer 없이는 didChangeAppLifecycleState가 발화되지 않아
+  /// isInBackground가 항상 false → keep-alive 타이머/백그라운드 알림/STOMP 백오프
+  /// 모두 작동 안 함. 따라서 keep-alive 사용 = observer 필요로 묶어서 처리.
   void enableKeepAlive() {
+    if (!_isActive) {
+      activate();
+    }
     _keepAliveEnabled = true;
     debugPrint('✅ AppLifecycleService: keep-alive 활성화');
     if (isInBackground) {

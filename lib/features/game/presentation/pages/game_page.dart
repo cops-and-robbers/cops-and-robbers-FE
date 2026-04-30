@@ -358,18 +358,30 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 진행 중인 게임이면 백그라운드 인프라를 활성화 (멱등)
   ///
-  /// 게임 상태(IN_PROGRESS)는 GameEventNotifier의 state를 통해 확인.
   /// 이미 GAME_START 이벤트를 통해 활성화된 상태라면 멱등성 덕에 no-op.
   ///
-  /// 사용 케이스: 사용자가 게임 도중 앱을 닫았다 다시 들어왔을 때
+  /// 사용 케이스 1: 사용자가 게임 도중 앱을 닫았다 다시 들어왔을 때
   /// GAME_START 이벤트는 이미 발생한 후라 못 받음. 이 가드가 그 케이스 방어.
+  ///
+  /// 사용 케이스 2: LobbyStomp가 GAME_START을 먼저 가로채 화면을 전환한 뒤
+  /// GameEventStomp가 늦게 구독하는 race condition. GameEventNotifier의
+  /// gameStartTime은 영원히 null이므로 participantInfo로 폴백 판단.
   void _ensureBackgroundInfrastructureForOngoingGame() {
     if (!mounted) return;
     final gameEvent = ref.read(gameEventNotifierProvider);
-    // IN_PROGRESS 판단 기준: gameStartTime이 설정되어 있고 isGameOver=false
-    final isInProgress =
-        gameEvent.gameStartTime != null && !gameEvent.isGameOver;
-    if (!isInProgress) return;
+    if (gameEvent.isGameOver) return;
+
+    // gameStartTime 우선순위:
+    //   1) GameEventNotifier.gameStartTime (GAME_START 수신 시 세팅)
+    //   2) participantInfo.gameStartTime (lobby/API 응답에 포함된 ISO 문자열)
+    final participantInfo = ref.read(gameParticipantNotifierProvider);
+    final participantStartTimeStr = participantInfo?.gameStartTime;
+    final effectiveStartTime = gameEvent.gameStartTime ??
+        (participantStartTimeStr != null
+            ? DateTime.tryParse(participantStartTimeStr)
+            : null);
+
+    if (effectiveStartTime == null) return;
 
     _backgroundService.start(gameId: _gameId);
     AppLifecycleService.instance().enableKeepAlive();
