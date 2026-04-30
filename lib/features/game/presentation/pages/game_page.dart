@@ -18,6 +18,9 @@ import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/background/background_service.dart';
+import '../../../../core/services/background/background_service_provider.dart';
+import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
@@ -106,6 +109,11 @@ class _GamePageState extends ConsumerState<GamePage>
   GameEventNotifier? _gameEventNotifier;
   GameEventStompDatasource? _gameEventDatasource;
 
+  /// dispose() + 재진입 가드에서 사용하기 위해 사전에 저장
+  /// keepAlive provider이므로 게임 화면 dispose 이후에도 인스턴스 유효.
+  /// initState에서 동기 할당 (post-frame 이전 dispose 시 LateInitializationError 방지)
+  late final BackgroundService _backgroundService;
+
   StreamSubscription<Position>? _locationSubscription;
   StreamSubscription<Position>? _headingSubscription; // POLICE 전용 heading 스트림
   Position? _lastSentPosition;
@@ -174,8 +182,18 @@ class _GamePageState extends ConsumerState<GamePage>
     super.initState();
     if (widget.isDummy) _dummyStartTime = DateTime.now();
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _ensureLocationAndInit();
+    // keepAlive 서비스 — 동기 할당해서 첫 프레임 전 dispose에도 안전.
+    // ref.read는 initState에서 합법 (ref.watch만 금지).
+    _backgroundService = ref.read(backgroundServiceProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // 위치 권한 + STOMP 초기화 + participantInfo 로드를 끝까지 기다린 뒤
+      // 재진입 가드를 호출해야 콜드 재시작 케이스에서 participantInfo.gameStartTime
+      // 이 채워진 상태로 가드가 판정 가능.
+      await _ensureLocationAndInit();
+      if (!mounted) return;
+      // 재진입 가드: 게임 도중 앱을 닫았다 다시 들어온 경우
+      // GAME_START 이벤트를 못 받았어도 백그라운드 인프라를 강제 시작
+      _ensureBackgroundInfrastructureForOngoingGame();
     });
   }
 
@@ -339,6 +357,39 @@ class _GamePageState extends ConsumerState<GamePage>
     await _showLocationPermissionDialog();
   }
 
+  /// 진행 중인 게임이면 백그라운드 인프라를 활성화 (멱등)
+  ///
+  /// 이미 GAME_START 이벤트를 통해 활성화된 상태라면 멱등성 덕에 no-op.
+  ///
+  /// 사용 케이스 1: 사용자가 게임 도중 앱을 닫았다 다시 들어왔을 때
+  /// GAME_START 이벤트는 이미 발생한 후라 못 받음. 이 가드가 그 케이스 방어.
+  ///
+  /// 사용 케이스 2: LobbyStomp가 GAME_START을 먼저 가로채 화면을 전환한 뒤
+  /// GameEventStomp가 늦게 구독하는 race condition. GameEventNotifier의
+  /// gameStartTime은 영원히 null이므로 participantInfo로 폴백 판단.
+  void _ensureBackgroundInfrastructureForOngoingGame() {
+    if (!mounted) return;
+    final gameEvent = ref.read(gameEventNotifierProvider);
+    if (gameEvent.isGameOver) return;
+
+    // gameStartTime 우선순위:
+    //   1) GameEventNotifier.gameStartTime (GAME_START 수신 시 세팅)
+    //   2) participantInfo.gameStartTime (lobby/API 응답에 포함된 ISO 문자열)
+    final participantInfo = ref.read(gameParticipantNotifierProvider);
+    final participantStartTimeStr = participantInfo?.gameStartTime;
+    final effectiveStartTime =
+        gameEvent.gameStartTime ??
+        (participantStartTimeStr != null
+            ? DateTime.tryParse(participantStartTimeStr)
+            : null);
+
+    if (effectiveStartTime == null) return;
+
+    _backgroundService.start(gameId: _gameId);
+    AppLifecycleService.instance().enableKeepAlive();
+    debugPrint('[GamePage] ✅ 재진입 가드: 백그라운드 인프라 활성화');
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -352,9 +403,14 @@ class _GamePageState extends ConsumerState<GamePage>
     final chatNotifier = _chatNotifier;
     final gameEventDatasource = _gameEventDatasource;
     final isDummy = widget.isDummy;
+    final backgroundService = _backgroundService;
     Future.microtask(() {
       chatNotifier?.disconnectChat();
       if (!isDummy) gameEventDatasource?.disconnect();
+      // 게임 화면 이탈 시 백그라운드 인프라 정리
+      // GAME_OVER 이벤트로 이미 정리된 경우는 멱등성으로 no-op
+      backgroundService.stop();
+      AppLifecycleService.instance().disableKeepAlive();
     });
     super.dispose();
   }
@@ -832,6 +888,8 @@ class _GamePageState extends ConsumerState<GamePage>
         // dispose 후 모달이 화면에 남은 경우 ref 접근 크래시 방지
         if (!mounted) return;
         ref.read(gameEventNotifierProvider.notifier).manualReconnect();
+        // 두 채널 모두 사용자 한 번 탭으로 복구되도록 Chat도 같이 재연결
+        ref.read(chatNotifierProvider.notifier).manualReconnect();
       },
     ).then((_) {
       _isReconnectModalShown = false;

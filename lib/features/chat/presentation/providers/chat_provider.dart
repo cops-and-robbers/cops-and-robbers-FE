@@ -117,6 +117,9 @@ class ChatNotifier extends _$ChatNotifier {
   /// STOMP 에러 처리 중 여부 (일반 재연결 방지용)
   bool _isHandlingError = false;
 
+  /// 수동 재연결 중복 호출 방지 플래그
+  bool _isManualReconnecting = false;
+
   /// 현재 게임/팀 정보 (재연결용)
   int? _gameId;
   String? _team;
@@ -611,6 +614,29 @@ class ChatNotifier extends _$ChatNotifier {
     datasource.subscribeChat(_gameId!, _team!);
     final wsUrl = ApiEndpoints.gameConnectionUrl;
     datasource.connect(wsUrl, accessToken);
+  }
+
+  /// 수동 재연결 — 재시도 카운터를 초기화하고 즉시 연결 시도
+  ///
+  /// 사용자가 게임 화면의 재연결 버튼을 탭했을 때 호출됩니다.
+  /// 기존 자동 재연결 백오프와 달리 딜레이 없이 즉시 시도합니다.
+  ///
+  /// GameEventNotifier.manualReconnect와 동일 패턴 — 두 채널이 같은 책임을
+  /// 가지므로 인터페이스도 일관되게 유지.
+  Future<void> manualReconnect() async {
+    // UI의 isConnecting 비활성화 외에 메서드 레벨에서도 중복 호출 차단
+    if (_isManualReconnecting || _gameId == null) return;
+    _isManualReconnecting = true;
+    try {
+      _reconnectCount = 0; // 재시도 카운터 초기화 → 이후 자동 재연결 5회 재활성화
+      _intentionalDisconnect = false;
+      _isHandlingError = false;
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
+      await _attemptReconnect();
+    } finally {
+      _isManualReconnecting = false;
+    }
   }
 
   // ============================================

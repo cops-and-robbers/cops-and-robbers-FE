@@ -6,6 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
+import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
@@ -332,6 +334,7 @@ class GameEventNotifier extends _$GameEventNotifier {
   ///
   /// 전체 상태 초기화는 provider autoDispose 에 맡긴다 (페이지 dispose 시 자동 정리).
   void disconnect() {
+    _deactivateBackgroundInfrastructure();
     _intentionalDisconnect = true;
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
@@ -463,6 +466,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
     _reconnectCount = _maxReconnectRetries + 1; // 자동 재연결 차단
+    _deactivateBackgroundInfrastructure();
     _intentionalDisconnect = true; // 스트림 콜백의 _scheduleReconnect 호출 억제
     ref.read(gameEventStompDatasourceProvider).disconnect();
     // disconnect() → stream listener → state = disconnected (동기) 이후
@@ -563,6 +567,31 @@ class GameEventNotifier extends _$GameEventNotifier {
     debugPrint(
       '[GameEventNotifier] ✅ START 이벤트 → 게임 시작 시각: ${state.gameStartTime}',
     );
+    // 백그라운드 위치 추적/STOMP 유지 인프라 활성화
+    _activateBackgroundInfrastructure();
+  }
+
+  /// 백그라운드 인프라 활성화 (Service start + keep-alive timer ON)
+  ///
+  /// 멱등: 이미 활성화되어 있으면 no-op (재진입 가드와 함께 호출 가능).
+  void _activateBackgroundInfrastructure() {
+    final gameId = _gameId;
+    if (gameId == null) {
+      debugPrint('[GameEventNotifier] ⚠️ gameId 없음 - background 활성화 스킵');
+      return;
+    }
+    final service = ref.read(backgroundServiceProvider);
+    service.start(gameId: gameId);
+    AppLifecycleService.instance().enableKeepAlive();
+    debugPrint('[GameEventNotifier] ✅ 백그라운드 인프라 ON');
+  }
+
+  /// 백그라운드 인프라 비활성화 (Service stop + keep-alive timer OFF)
+  void _deactivateBackgroundInfrastructure() {
+    final service = ref.read(backgroundServiceProvider);
+    service.stop();
+    AppLifecycleService.instance().disableKeepAlive();
+    debugPrint('[GameEventNotifier] ✅ 백그라운드 인프라 OFF');
   }
 
   void _handleLocationReveal(Map<String, dynamic> data, String timestamp) {
@@ -672,6 +701,8 @@ class GameEventNotifier extends _$GameEventNotifier {
     debugPrint(
       '[GameEventNotifier] ✅ GAME_OVER 이벤트 → winner: ${state.winnerTeam}',
     );
+    // 게임 종료 시점에 백그라운드 인프라 정리
+    _deactivateBackgroundInfrastructure();
   }
 
   // ============================================================
@@ -815,7 +846,23 @@ class GameEventNotifier extends _$GameEventNotifier {
     _reconnectTimer = Timer(Duration(seconds: delaySeconds), _attemptReconnect);
   }
 
+  /// 재연결 백오프 지연 (초)
+  ///
+  /// 라이프사이클 인지 정책:
+  /// - 백그라운드: 0s → 1s → 2s → 5s → 5s (총 13초 내 재연결 시도)
+  ///   iOS background wake 시간이 짧을 수 있어 첫 시도를 즉시 진행
+  /// - 포그라운드: 1s → 2s → 4s → 8s → 10s (기존)
   int _calculateBackoffDelay(int attempt) {
+    final isBackground = AppLifecycleService.instance().isInBackground;
+
+    if (isBackground) {
+      // attempt 1=0s, 2=1s, 3=2s, 4=5s, 5+=5s
+      const backgroundDelays = [0, 1, 2, 5, 5];
+      final index = (attempt - 1).clamp(0, backgroundDelays.length - 1);
+      return backgroundDelays[index];
+    }
+
+    // 포그라운드: 기존 지수 백오프 (1, 2, 4, 8, 10 clamp)
     final delay = 1 << (attempt - 1);
     return delay.clamp(1, 10);
   }
