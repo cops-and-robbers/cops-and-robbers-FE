@@ -78,5 +78,50 @@ void main() {
       await failingService.stop();
       expect(failingService.isRunning, false);
     });
+
+    test(
+      'returns_true_when_native_says_ignoring_battery_optimizations',
+      () async {
+        const channel = MethodChannel(BackgroundServiceAndroid.channelName);
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, (call) async {
+              if (call.method == 'isIgnoringBatteryOptimizations') return true;
+              return null;
+            });
+
+        final result = await service.isIgnoringBatteryOptimizations();
+
+        expect(result, true);
+      },
+    );
+
+    test('returns_false_when_native_says_not_ignoring', () async {
+      const channel = MethodChannel(BackgroundServiceAndroid.channelName);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            if (call.method == 'isIgnoringBatteryOptimizations') return false;
+            return null;
+          });
+
+      final result = await service.isIgnoringBatteryOptimizations();
+
+      expect(result, false);
+    });
+
+    test('returns_false_when_native_throws_platform_exception', () async {
+      const channel = MethodChannel(BackgroundServiceAndroid.channelName);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            if (call.method == 'isIgnoringBatteryOptimizations') {
+              throw PlatformException(code: 'ERROR');
+            }
+            return null;
+          });
+
+      final result = await service.isIgnoringBatteryOptimizations();
+
+      // 안전 디폴트: native 호출 실패 시 false 반환 → 사용자에게 다이얼로그 표시
+      expect(result, false);
+    });
   });
 }
