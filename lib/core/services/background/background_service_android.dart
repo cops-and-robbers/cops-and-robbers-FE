@@ -16,7 +16,7 @@ class BackgroundServiceAndroid implements BackgroundService {
   bool _isRunning = false;
 
   BackgroundServiceAndroid({MethodChannel? channel})
-      : _channel = channel ?? const MethodChannel(channelName);
+    : _channel = channel ?? const MethodChannel(channelName);
 
   @override
   bool get isRunning => _isRunning;

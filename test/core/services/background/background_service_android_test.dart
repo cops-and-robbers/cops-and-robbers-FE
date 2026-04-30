@@ -14,9 +14,9 @@ void main() {
       const channel = MethodChannel(BackgroundServiceAndroid.channelName);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-        calls.add(call);
-        return null;
-      });
+            calls.add(call);
+            return null;
+          });
       service = BackgroundServiceAndroid(channel: channel);
     });
 
@@ -62,11 +62,14 @@ void main() {
       const channel = MethodChannel(BackgroundServiceAndroid.channelName);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-        if (call.method == 'stop') {
-          throw PlatformException(code: 'ERROR', message: 'Service not found');
-        }
-        return null;
-      });
+            if (call.method == 'stop') {
+              throw PlatformException(
+                code: 'ERROR',
+                message: 'Service not found',
+              );
+            }
+            return null;
+          });
 
       final failingService = BackgroundServiceAndroid(channel: channel);
       await failingService.start(gameId: 1);

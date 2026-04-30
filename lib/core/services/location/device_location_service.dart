@@ -73,9 +73,6 @@ class DeviceLocationService {
     }
 
     // 기타 플랫폼 (테스트/데스크톱) fallback
-    return LocationSettings(
-      accuracy: accuracy,
-      distanceFilter: distanceFilter,
-    );
+    return LocationSettings(accuracy: accuracy, distanceFilter: distanceFilter);
   }
 }
