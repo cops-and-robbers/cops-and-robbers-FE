@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/services/fcm/local_notifications_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
@@ -594,6 +596,33 @@ class GameEventNotifier extends _$GameEventNotifier {
     debugPrint('[GameEventNotifier] ✅ 백그라운드 인프라 OFF');
   }
 
+  /// iOS 백그라운드일 때만 로컬 알림 표시.
+  ///
+  /// iOS는 백그라운드에서 Vibration.vibrate() 호출이 silently 무시되므로,
+  /// 잠금화면/다른 앱 사용 중에도 사용자가 게임 이벤트를 인지할 수 있도록
+  /// LocalNotification을 띄운다. 알림 채널이 자체적으로 진동/소리/시각 메시지를
+  /// 묶어서 처리.
+  ///
+  /// Android는 백그라운드에서 Vibration.vibrate()가 정상 동작하므로 호출 안 함.
+  /// 포그라운드 상태에서도 기존 UI(배너/모달)가 잘 동작하므로 호출 안 함.
+  Future<void> _showBackgroundNotificationIfNeeded({
+    required String title,
+    required String body,
+  }) async {
+    if (!Platform.isIOS) return;
+    if (!AppLifecycleService.instance().isInBackground) return;
+    try {
+      await LocalNotificationsService.instance().showNotification(
+        title,
+        body,
+        null,
+      );
+    } catch (e) {
+      // 알림 표시 실패는 게임 진행에 영향 없음. 조용히 무시.
+      debugPrint('[GameEventNotifier] ⚠️ 백그라운드 알림 표시 실패: $e');
+    }
+  }
+
   void _handleLocationReveal(Map<String, dynamic> data, String timestamp) {
     final locationsList = (data['locations'] as List<dynamic>?) ?? [];
     Map<int, LatLngModel>? newLocations;
@@ -620,6 +649,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().locationRevealed();
+    _showBackgroundNotificationIfNeeded(
+      title: '도둑 위치 공개',
+      body: '지금 도둑들의 위치가 공개되었습니다.',
+    );
     debugPrint(
       '[GameEventNotifier] ✅ LOCATION_REVEAL 이벤트 수신 '
       '(도둑 ${newLocations?.length ?? 0}명)',
@@ -663,6 +696,13 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().arrested();
+    final arrestNickname = state.lastArrestNickname;
+    _showBackgroundNotificationIfNeeded(
+      title: '체포 발생',
+      body: arrestNickname != null
+          ? '$arrestNickname이(가) 체포되었습니다.'
+          : '도둑이 체포되었습니다.',
+    );
     debugPrint(
       '[GameEventNotifier] ✅ ARREST 이벤트 → robberPid: $robberPid, 남은: $remaining',
     );
@@ -687,6 +727,13 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().escaped();
+    final escapeNickname = state.lastEscapeNickname;
+    _showBackgroundNotificationIfNeeded(
+      title: '탈옥 발생',
+      body: escapeNickname != null
+          ? '$escapeNickname이(가) 탈옥했습니다.'
+          : '도둑이 탈옥했습니다.',
+    );
     debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedId');
   }
 
@@ -698,6 +745,10 @@ class GameEventNotifier extends _$GameEventNotifier {
       gameResultId: (data['gameResultId'] as num?)?.toInt(),
     );
     VibrationService.instance().gameEnd();
+    _showBackgroundNotificationIfNeeded(
+      title: '게임 종료',
+      body: '게임이 끝났습니다. 결과를 확인하세요.',
+    );
     debugPrint(
       '[GameEventNotifier] ✅ GAME_OVER 이벤트 → winner: ${state.winnerTeam}',
     );
