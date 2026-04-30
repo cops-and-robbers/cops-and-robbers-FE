@@ -191,7 +191,11 @@ class _GamePageState extends ConsumerState<GamePage>
       _ensureBackgroundInfrastructureForOngoingGame();
       // 첫 게임 진입 시 배터리 영향/최적화 안내 (각각 1회만)
       if (mounted) {
-        await GameStartNoticeFlow.showOnceIfNeeded(context);
+        await GameStartNoticeFlow.showOnceIfNeeded(
+          context,
+          backgroundService: _backgroundService,
+          isDarkMode: _isDarkMode,
+        );
       }
     });
   }
@@ -376,7 +380,8 @@ class _GamePageState extends ConsumerState<GamePage>
     //   2) participantInfo.gameStartTime (lobby/API 응답에 포함된 ISO 문자열)
     final participantInfo = ref.read(gameParticipantNotifierProvider);
     final participantStartTimeStr = participantInfo?.gameStartTime;
-    final effectiveStartTime = gameEvent.gameStartTime ??
+    final effectiveStartTime =
+        gameEvent.gameStartTime ??
         (participantStartTimeStr != null
             ? DateTime.tryParse(participantStartTimeStr)
             : null);
