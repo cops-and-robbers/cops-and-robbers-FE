@@ -1,11 +1,43 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-24T09:43:19Z",
-    "currentVersion": "1.8.2",
+    "lastUpdated": "2026-04-30T13:47:43Z",
+    "currentVersion": "1.8.5",
     "projectType": "flutter",
-    "totalReleases": 79
+    "totalReleases": 80
   },
   "releases": [
+    {
+      "version": "1.8.5",
+      "project_type": "flutter",
+      "date": "2026-04-30",
+      "pr_number": 311,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새로운 기능**\n  * 게임 진행 중 백그라운드 위치 추적 지원\n  * 위치 공유 간격을 0분으로 설정 가능\n  * 배터리 최적화 설정 접근 기능 추가\n\n* **버그 수정**\n  * 앱 재연결 기능 개선\n  * 푸시 알림 처리 최적화\n  * 위치 서비스 배경 실행 안정화\n\n* **업데이트**\n  * 앱 버전 1.8.5로 업그레이드",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "게임 진행 중 백그라운드 위치 추적 지원",
+            "위치 공유 간격을 0분으로 설정 가능",
+            "배터리 최적화 설정 접근 기능 추가"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "앱 재연결 기능 개선",
+            "푸시 알림 처리 최적화",
+            "위치 서비스 배경 실행 안정화"
+          ]
+        },
+        "업데이트": {
+          "title": "업데이트",
+          "items": [
+            "앱 버전 1.8.5로 업그레이드"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.2",
       "project_type": "flutter",
