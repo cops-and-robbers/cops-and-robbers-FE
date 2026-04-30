@@ -23,14 +23,17 @@ class BackgroundServiceAndroid implements BackgroundService {
 
   @override
   Future<void> start({required int gameId}) async {
-    // 멱등: 이미 실행 중이면 native 호출 생략
+    // 멱등 + 동시성 가드: 상태를 await 이전에 선반영(optimistic)해서
+    // start/stop 교차 호출(예: 게임 화면 진입 직후 즉시 dispose) 시
+    // stop 쪽 멱등 가드가 잘못 빠져나가는 race를 방지.
     if (_isRunning) return;
+    _isRunning = true;
 
     try {
       await _channel.invokeMethod('start');
-      _isRunning = true;
       debugPrint('[BackgroundService.Android] ✅ start (gameId=$gameId)');
     } catch (e, stack) {
+      _isRunning = false; // 실패 시 롤백
       debugPrint('[BackgroundService.Android] ❌ start 실패: $e');
       debugPrint('Stack: $stack');
       rethrow;
@@ -39,19 +42,18 @@ class BackgroundServiceAndroid implements BackgroundService {
 
   @override
   Future<void> stop() async {
-    // 멱등: 실행 중이 아니면 native 호출 생략
+    // 멱등 + 동시성 가드: start와 동일한 이유로 선반영.
     if (!_isRunning) return;
+    _isRunning = false;
 
     try {
       await _channel.invokeMethod('stop');
-      _isRunning = false;
       debugPrint('[BackgroundService.Android] ✅ stop');
     } catch (e, stack) {
+      // native stop 실패해도 Dart 상태는 종료로 유지.
+      // FGS는 어차피 OS가 정리하거나 다음 start에서 재초기화됨.
       debugPrint('[BackgroundService.Android] ❌ stop 실패: $e');
       debugPrint('Stack: $stack');
-      // native stop이 실패해도 Dart 상태는 종료로 정리.
-      // 재시도 시 idempotent 동작을 보장하기 위함.
-      _isRunning = false;
     }
   }
 

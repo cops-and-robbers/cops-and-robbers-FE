@@ -37,8 +37,13 @@ class GameSessionForegroundService : android.app.Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIFICATION_ID, buildNotification())
-        // OS가 죽여도 재시작 시도
-        return START_STICKY
+        // START_NOT_STICKY 사용 이유:
+        // - FGS는 메인 앱 프로세스에서 동작 (별도 process 미지정)
+        // - OS가 메모리 부족으로 FGS를 죽일 땐 앱 프로세스도 함께 사망
+        // - START_STICKY로 FGS만 부활시켜도 Flutter측이 죽은 상태라
+        //   STOMP/위치 추적이 동작하지 않아 "게임 진행 중" 알림만 거짓으로 남음
+        // - FGS 단독 부활은 기능적으로 무의미하므로 START_NOT_STICKY로 명시
+        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

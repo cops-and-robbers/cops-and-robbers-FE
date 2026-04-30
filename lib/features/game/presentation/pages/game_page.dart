@@ -111,7 +111,8 @@ class _GamePageState extends ConsumerState<GamePage>
   GameEventStompDatasource? _gameEventDatasource;
 
   /// dispose() + 재진입 가드에서 사용하기 위해 사전에 저장
-  /// keepAlive provider이므로 게임 화면 dispose 이후에도 인스턴스 유효
+  /// keepAlive provider이므로 게임 화면 dispose 이후에도 인스턴스 유효.
+  /// initState에서 동기 할당 (post-frame 이전 dispose 시 LateInitializationError 방지)
   late final BackgroundService _backgroundService;
 
   StreamSubscription<Position>? _locationSubscription;
@@ -182,10 +183,15 @@ class _GamePageState extends ConsumerState<GamePage>
     super.initState();
     if (widget.isDummy) _dummyStartTime = DateTime.now();
     WidgetsBinding.instance.addObserver(this);
+    // keepAlive 서비스 — 동기 할당해서 첫 프레임 전 dispose에도 안전.
+    // ref.read는 initState에서 합법 (ref.watch만 금지).
+    _backgroundService = ref.read(backgroundServiceProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // keepAlive 서비스이므로 build 완료 후 한 번만 저장
-      _backgroundService = ref.read(backgroundServiceProvider);
-      _ensureLocationAndInit();
+      // 위치 권한 + STOMP 초기화 + participantInfo 로드를 끝까지 기다린 뒤
+      // 재진입 가드를 호출해야 콜드 재시작 케이스에서 participantInfo.gameStartTime
+      // 이 채워진 상태로 가드가 판정 가능.
+      await _ensureLocationAndInit();
+      if (!mounted) return;
       // 재진입 가드: 게임 도중 앱을 닫았다 다시 들어온 경우
       // GAME_START 이벤트를 못 받았어도 백그라운드 인프라를 강제 시작
       _ensureBackgroundInfrastructureForOngoingGame();

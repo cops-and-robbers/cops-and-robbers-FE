@@ -65,6 +65,11 @@ class AppLifecycleService with WidgetsBindingObserver {
   /// keep-alive 인터벌 (30초)
   static const Duration _keepAliveInterval = Duration(seconds: 30);
 
+  /// keep-alive 위치 조회 in-flight 여부.
+  /// GPS cold lock 등으로 getCurrentPosition이 30초 이상 걸리면
+  /// 다음 타이머 틱이 또 호출하여 요청이 누적됨 → 배터리/안정성 영향.
+  bool _keepAliveInFlight = false;
+
   /// 현재 백그라운드 상태인지 (paused 또는 hidden)
   bool get isInBackground =>
       _currentState == AppLifecycleState.paused ||
@@ -105,8 +110,11 @@ class AppLifecycleService with WidgetsBindingObserver {
     });
   }
 
-  /// keep-alive용 위치 조회 — 성공/실패 무관하게 OS suspend만 방지
+  /// keep-alive용 위치 조회 — 성공/실패 무관하게 OS suspend만 방지.
+  /// 이전 호출이 아직 in-flight면 새 호출 스킵 (요청 누적 방지).
   Future<void> _triggerKeepAlivePosition() async {
+    if (_keepAliveInFlight) return;
+    _keepAliveInFlight = true;
     try {
       await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
@@ -115,6 +123,8 @@ class AppLifecycleService with WidgetsBindingObserver {
       );
     } catch (e) {
       debugPrint('[keep-alive] 위치 조회 실패: $e');
+    } finally {
+      _keepAliveInFlight = false;
     }
   }
 
