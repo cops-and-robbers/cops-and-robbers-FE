@@ -58,7 +58,6 @@ import '../widgets/google_map_view.dart';
 import '../widgets/participant_overlay.dart';
 import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
-import '../services/game_start_notice_flow.dart';
 
 /// 인게임 지도 화면
 ///
@@ -195,14 +194,6 @@ class _GamePageState extends ConsumerState<GamePage>
       // 재진입 가드: 게임 도중 앱을 닫았다 다시 들어온 경우
       // GAME_START 이벤트를 못 받았어도 백그라운드 인프라를 강제 시작
       _ensureBackgroundInfrastructureForOngoingGame();
-      // 첫 게임 진입 시 배터리 영향/최적화 안내 (각각 1회만)
-      if (mounted) {
-        await GameStartNoticeFlow.showOnceIfNeeded(
-          context,
-          backgroundService: _backgroundService,
-          isDarkMode: _isDarkMode,
-        );
-      }
     });
   }
 
