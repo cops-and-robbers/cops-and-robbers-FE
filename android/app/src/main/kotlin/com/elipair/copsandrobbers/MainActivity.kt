@@ -1,8 +1,10 @@
 package com.elipair.copsandrobbers
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -31,6 +33,9 @@ class MainActivity : FlutterActivity() {
                     "openAppSettings" -> {
                         openAppSettings()
                         result.success(null)
+                    }
+                    "isIgnoringBatteryOptimizations" -> {
+                        result.success(isIgnoringBatteryOptimizations())
                     }
                     else -> result.notImplemented()
                 }
@@ -68,5 +73,22 @@ class MainActivity : FlutterActivity() {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         startActivity(intent)
+    }
+
+    /**
+     * 배터리 최적화 무시 권한 보유 여부 체크.
+     *
+     * Samsung "제한 없음" 설정이 이 API에 매핑됨.
+     * 일부 OEM에서 false negative 가능성 있음(매우 드묾).
+     *
+     * API 23 (Android 6.0, M) 미만은 이 API 자체가 없음.
+     * 그 이전 버전은 배터리 최적화 정책이 없었으므로 true 반환(통과).
+     */
+    private fun isIgnoringBatteryOptimizations(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true
+        }
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        return powerManager.isIgnoringBatteryOptimizations(packageName)
     }
 }

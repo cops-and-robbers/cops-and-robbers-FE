@@ -24,4 +24,11 @@ abstract class BackgroundService {
   ///
   /// iOS: 별도 배터리 설정이 없어 no-op.
   Future<void> openAppSettings();
+
+  /// 배터리 최적화 무시 권한 보유 여부.
+  ///
+  /// Android: PowerManager.isIgnoringBatteryOptimizations(packageName) 결과.
+  /// Samsung "제한 없음" 설정이 이 API에 매핑됨.
+  /// iOS: 항상 true (해당 사항 없음).
+  Future<bool> isIgnoringBatteryOptimizations();
 }
