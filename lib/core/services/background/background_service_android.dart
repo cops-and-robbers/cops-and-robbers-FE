@@ -78,7 +78,9 @@ class BackgroundServiceAndroid implements BackgroundService {
       );
       return result ?? false;
     } catch (e, stack) {
-      debugPrint('[BackgroundService.Android] ❌ isIgnoringBatteryOptimizations 실패: $e');
+      debugPrint(
+        '[BackgroundService.Android] ❌ isIgnoringBatteryOptimizations 실패: $e',
+      );
       debugPrint('Stack: $stack');
       // 실패 시 false 반환 → 사용자에게 다이얼로그 표시 (안전 디폴트)
       return false;

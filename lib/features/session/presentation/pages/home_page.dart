@@ -323,8 +323,8 @@ class _HomePageState extends ConsumerState<HomePage> {
       context: context,
       title: '끊김 없는 게임을 위해',
       message:
-          '앱 설정 → 배터리 → "제한 없음"으로 변경해주세요.\n'
-          '그래야 화면이 꺼져도 게임이 끊기지 않아요.',
+          '앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n'
+          '그래야 화면이 꺼져도 게임이 끊기지 않아요',
       confirmText: '설정으로 이동',
       cancelText: '취소',
       onConfirm: () async {

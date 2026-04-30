@@ -79,18 +79,21 @@ void main() {
       expect(failingService.isRunning, false);
     });
 
-    test('returns_true_when_native_says_ignoring_battery_optimizations', () async {
-      const channel = MethodChannel(BackgroundServiceAndroid.channelName);
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (call) async {
-            if (call.method == 'isIgnoringBatteryOptimizations') return true;
-            return null;
-          });
+    test(
+      'returns_true_when_native_says_ignoring_battery_optimizations',
+      () async {
+        const channel = MethodChannel(BackgroundServiceAndroid.channelName);
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, (call) async {
+              if (call.method == 'isIgnoringBatteryOptimizations') return true;
+              return null;
+            });
 
-      final result = await service.isIgnoringBatteryOptimizations();
+        final result = await service.isIgnoringBatteryOptimizations();
 
-      expect(result, true);
-    });
+        expect(result, true);
+      },
+    );
 
     test('returns_false_when_native_says_not_ignoring', () async {
       const channel = MethodChannel(BackgroundServiceAndroid.channelName);
