@@ -121,10 +121,8 @@ void main() async {
   // 4. 로컬 알림 서비스 초기화 (Firebase와 독립적)
   // 4. Initialize local notifications (independent from Firebase)
   // ============================================================
-  LocalNotificationsService? localNotificationsService;
   try {
-    localNotificationsService = LocalNotificationsService.instance();
-    await localNotificationsService.init();
+    await LocalNotificationsService.instance().init();
     debugPrint('✅ Local notifications initialized successfully');
   } catch (e, stackTrace) {
     debugPrint('❌ Local notifications initialization failed: $e');
@@ -134,14 +132,12 @@ void main() async {
   }
 
   // ============================================================
-  // 5. FCM 서비스 초기화 (Firebase + 로컬 알림 필요)
-  // 5. Initialize FCM (requires Firebase + Local notifications)
+  // 5. FCM 서비스 초기화 (Firebase 의존)
+  // 5. Initialize FCM (requires Firebase)
   // ============================================================
-  if (isFirebaseInitialized && localNotificationsService != null) {
+  if (isFirebaseInitialized) {
     try {
-      await FirebaseMessagingService.instance().init(
-        localNotificationsService: localNotificationsService,
-      );
+      await FirebaseMessagingService.instance().init();
       debugPrint('✅ FCM initialized successfully');
     } catch (e, stackTrace) {
       debugPrint('❌ FCM initialization failed: $e');
@@ -150,12 +146,7 @@ void main() async {
       // Continue execution (app works without remote push)
     }
   } else {
-    if (!isFirebaseInitialized) {
-      debugPrint('⚠️ FCM skipped (Firebase not initialized)');
-    }
-    if (localNotificationsService == null) {
-      debugPrint('⚠️ FCM skipped (Local notifications not initialized)');
-    }
+    debugPrint('⚠️ FCM skipped (Firebase not initialized)');
   }
 
   runApp(
