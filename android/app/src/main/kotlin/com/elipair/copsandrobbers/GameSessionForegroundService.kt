@@ -6,8 +6,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 
 /**
@@ -30,9 +32,81 @@ class GameSessionForegroundService : android.app.Service() {
         private const val CHANNEL_NAME = "게임 진행 중"
     }
 
+    /**
+     * CPU deep sleep 방지용 wake lock.
+     * Service 라이프사이클(onCreate ~ onDestroy)에 묶여 자동 정리.
+     */
+    private var wakeLock: PowerManager.WakeLock? = null
+
+    /**
+     * WiFi 슬립 방지용 lock.
+     * 화면 잠금 시 WiFi가 슬립 모드로 가서 DNS/네트워크가 끊기는 문제 방어.
+     */
+    private var wifiLock: WifiManager.WifiLock? = null
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        acquireLocks()
+    }
+
+    override fun onDestroy() {
+        releaseLocks()
+        super.onDestroy()
+    }
+
+    /**
+     * WAKE_LOCK + WIFI_LOCK 획득.
+     *
+     * - PARTIAL_WAKE_LOCK: CPU만 깨어있게 (화면/입력 영향 없음)
+     * - WIFI_MODE_FULL_HIGH_PERF: 화면 꺼져도 WiFi 슬립 차단
+     *
+     * 둘 다 onDestroy에서 release. timeout 미설정 — 게임 종료 시 service stop이
+     * 명시적 정리 시점이라 외부 timeout 불필요.
+     */
+    private fun acquireLocks() {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "CopsAndRobbers::GameSession"
+        ).apply {
+            setReferenceCounted(false)
+            acquire()
+        }
+
+        val wifiManager =
+            applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        wifiLock = wifiManager.createWifiLock(
+            WifiManager.WIFI_MODE_FULL_HIGH_PERF,
+            "CopsAndRobbers::GameSession::WiFi"
+        ).apply {
+            setReferenceCounted(false)
+            acquire()
+        }
+    }
+
+    /**
+     * 획득한 lock들을 안전하게 release.
+     *
+     * isHeld 체크로 이중 release 예방. release 실패 시 무시 (이미 끊긴 거라 영향 없음).
+     */
+    private fun releaseLocks() {
+        try {
+            if (wakeLock?.isHeld == true) {
+                wakeLock?.release()
+            }
+        } catch (e: Exception) {
+            // ignore: already released or invalid state
+        }
+        try {
+            if (wifiLock?.isHeld == true) {
+                wifiLock?.release()
+            }
+        } catch (e: Exception) {
+            // ignore
+        }
+        wakeLock = null
+        wifiLock = null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
