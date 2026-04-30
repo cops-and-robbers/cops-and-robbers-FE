@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
+import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -292,18 +294,59 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
+  /// 배터리 최적화 무시 권한 확인 후 [onGranted] 실행.
+  ///
+  /// Android만 체크. iOS는 즉시 onGranted 호출.
+  /// Samsung 등 OEM에서 백그라운드에서 STOMP/위치가 끊기는 문제 방지.
+  /// 위치 권한과 동일 패턴 (AppDialog 재사용, 신규 위젯 X).
+  Future<void> _ensureBatteryOptimization({
+    required VoidCallback onGranted,
+  }) async {
+    // iOS는 해당 사항 없음 → 바로 진행
+    if (!Platform.isAndroid) {
+      onGranted();
+      return;
+    }
+
+    // 이미 설정됨 → 바로 진행
+    final isIgnoring = await ref
+        .read(backgroundServiceProvider)
+        .isIgnoringBatteryOptimizations();
+    if (isIgnoring) {
+      onGranted();
+      return;
+    }
+
+    // 미설정 → 차단 다이얼로그 (위치 권한과 동일 패턴)
+    if (!mounted) return;
+    AppDialog.show(
+      context: context,
+      title: '끊김 없는 게임을 위해',
+      message:
+          '앱 설정 → 배터리 → "제한 없음"으로 변경해주세요.\n'
+          '그래야 화면이 꺼져도 게임이 끊기지 않아요.',
+      confirmText: '설정으로 이동',
+      cancelText: '취소',
+      onConfirm: () async {
+        await ref.read(backgroundServiceProvider).openAppSettings();
+      },
+    );
+  }
+
   /// 방 만들기 버튼 클릭 시
   ///
   /// 위치 권한 확인 후 세션 생성 플로우로 이동합니다.
   void _onCreateSession() {
     VibrationService.instance().buttonTap();
     _ensureLocationPermission(
-      onGranted: () async {
-        await SessionDraftStorageService().clearDraft();
-        if (mounted) {
-          context.go(RoutePaths.sessionCreationFlow);
-        }
-      },
+      onGranted: () => _ensureBatteryOptimization(
+        onGranted: () async {
+          await SessionDraftStorageService().clearDraft();
+          if (mounted) {
+            context.go(RoutePaths.sessionCreationFlow);
+          }
+        },
+      ),
     );
   }
 
@@ -342,7 +385,11 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   /// 방 참여 다이얼로그 표시
   void _showJoinRoomDialog() {
-    _ensureLocationPermission(onGranted: () => _showJoinRoomDialogInternal());
+    _ensureLocationPermission(
+      onGranted: () => _ensureBatteryOptimization(
+        onGranted: () => _showJoinRoomDialogInternal(),
+      ),
+    );
   }
 
   /// 초대 코드로 방 참여 (API 호출 → 대기실 이동)
