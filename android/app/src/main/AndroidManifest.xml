@@ -29,6 +29,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
+    <!-- 백그라운드에서 CPU가 deep sleep으로 진입하지 못하게 함 (STOMP 연결 유지용) -->
+    <!-- WAKE_LOCK to prevent CPU deep sleep during game session -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:label="경찰과도둑"
         android:name="${applicationName}"
