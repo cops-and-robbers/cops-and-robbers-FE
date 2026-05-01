@@ -8,8 +8,9 @@
     <string>98QY4938R9</string>
     <key>provisioningProfiles</key>
     <dict>
+        <!-- 빌드 시 GitHub Secret(IOS_PROVISIONING_PROFILE_NAME)으로 덮어씀. 로컬 빌드는 Xcode 자동 서명 사용. -->
         <key>com.elipair.copsandrobbers</key>
-        <string>CopsAndRobbers-AppStore-2025</string>
+        <string>__PROVISIONING_PROFILE_NAME__</string>
     </dict>
     <key>signingStyle</key>
     <string>manual</string>
