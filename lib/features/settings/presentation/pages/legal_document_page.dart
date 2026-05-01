@@ -13,7 +13,7 @@ import '../../../../core/widgets/buttons/previous_button.dart';
 
 /// 이용약관/개인정보처리방침 등 법적 문서 열람 페이지
 ///
-/// assets/legal/ 디렉토리의 JSON 파일을 로드하여 표시합니다.
+/// assets/legals/ 디렉토리의 JSON 파일을 로드하여 표시합니다.
 /// [assetPath]로 JSON 파일 경로를, [title]로 앱바 제목을 지정합니다.
 class LegalDocumentPage extends StatefulWidget {
   const LegalDocumentPage({
@@ -26,7 +26,7 @@ class LegalDocumentPage extends StatefulWidget {
   /// 앱바에 표시할 제목
   final String title;
 
-  /// JSON 파일 경로 (예: 'assets/legal/terms_of_service.json')
+  /// JSON 파일 경로 (예: 'assets/legals/terms_of_service.json')
   final String assetPath;
 
   /// 외부 링크 URL (앱바 우측 버튼용, null이면 버튼 숨김)
