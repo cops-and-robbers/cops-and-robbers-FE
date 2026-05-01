@@ -140,10 +140,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 초대코드 다이얼로그가 화면에 떠 있는 동안 true.
   ///
-  /// 방장 플로우에서 [_showInviteCodeDialog] 실행 중 STOMP 이벤트나
-  /// `ref.listen(gameParticipantNotifierProvider)` 리스너가
-  /// [_showTutorialIfNeeded] 를 호출해 다이얼로그 위에 튜토리얼이
-  /// 오버레이되는 경쟁 상태를 막기 위한 가드.
+  /// 방장 플로우에서 [_showInviteCodeDialog] 실행 중 STOMP 이벤트로
+  /// 트리거된 [_showTutorialIfNeeded] 가 다이얼로그 위에 튜토리얼을
+  /// 오버레이하는 경쟁 상태를 막기 위한 가드.
   bool _isInviteDialogOpen = false;
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -1148,48 +1147,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         if (!mounted) return;
         controller.refresh();
       });
-    });
-
-    // 대기실 튜토리얼 트리거:
-    //   - 팀이 처음 확정되는 시점(null → POLICE/ROBBER)에 초기 노출 트리거
-    //   - 팀 변경(POLICE ↔ ROBBER) 시점에 재트리거 (팀별 키 기준 미완료면 표시)
-    //   - 진행 중이면 현재 컨트롤러를 finish()로 종료하여 이전 팀 키를
-    //     markCompleted 처리한 뒤 새 팀 튜토리얼을 즉시 이어 실행
-    //
-    // 주의: WidgetRef.listen 은 future changes 만 구독하므로, 호스트 방
-    // 만들기 플로우처럼 WaitingRoomPage 진입 전에 setGameInfo(team:'POLICE')
-    // 가 이미 실행된 경우의 초기값은 여기서 잡지 못한다. 초기 노출은
-    // _fetchAndInitParticipants() 종료 시점의 명시적 호출이 담당한다.
-    ref.listen(gameParticipantNotifierProvider, (prev, next) {
-      final prevTeam = prev?.team;
-      final nextTeam = next?.team;
-      if (nextTeam == null) return;
-
-      final isInitial = prevTeam == null;
-      final isChanged = prevTeam != null && prevTeam != nextTeam;
-      if (!isInitial && !isChanged) return;
-
-      // 진행 중 튜토리얼이 있으면 종료하고 재표시 허용 플래그를 복구.
-      // finish() 는 onFinish 콜백을 통해 이전 팀 키를 markCompleted 처리한다.
-      // 주의: tutorial_coach_mark 의 finish() 가 onFinish 를 비동기로 호출할
-      // 경우 markCompleted 가 새 튜토리얼 시작 이후 실행될 수 있으나,
-      // markCompleted 는 저장만 수행하므로 기능/UX 오동작은 없다.
-      final controller = _tutorialController;
-      if (controller != null && controller.isShowing) {
-        controller.finish();
-        _tutorialController = null;
-        _isTutorialShowing = false;
-      } else {
-        // 컨트롤러는 아직 없지만 _showTutorialIfNeeded 가 endOfFrame 대기 중
-        // 플래그만 선점한 상태일 수 있다. 그 낡은 경로가 새 팀 튜토리얼 시작을
-        // 가드로 막지 않도록 플래그를 해제한다. (기존 경로는 endOfFrame 후
-        // team 재확인 가드에서 조용히 종료된다.)
-        _isTutorialShowing = false;
-      }
-
-      // 새 팀 기준 튜토리얼 체크 및 표시 (isCompleted 내부 체크로 이미 본
-      // 팀은 자연스럽게 skip 된다).
-      _showTutorialIfNeeded(nextTeam);
     });
 
     final participantsState = ref.watch(waitingRoomParticipantsProvider);
