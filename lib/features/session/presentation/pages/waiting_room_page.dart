@@ -474,12 +474,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         await _showInviteCodeDialog();
       }
 
-      // 초기 튜토리얼 트리거.
-      // WidgetRef.listen 은 future changes 만 구독하므로, 호스트 방 만들기처럼
-      // WaitingRoomPage 진입 전에 setGameInfo 로 팀이 이미 확정된 플로우는
-      // listener 로 잡히지 않는다. 여기서 최종 팀 값으로 직접 호출한다.
-      // 초대 참여 플로우처럼 listener 가 먼저 트리거된 경우에는
-      // _isTutorialShowing 가드로 중복 호출이 차단된다.
+      // 튜토리얼 트리거 단일 진입점.
+      // 단일 키 정책으로 팀 변경 재트리거 리스너가 제거되었으므로, 본 호출이
+      // 유일한 진입 경로다. STOMP 재연결 등으로 _fetchAndInitParticipants 가
+      // 여러 번 호출되어도 _isTutorialShowing 가드와 isCompleted 가드로
+      // 중복 노출이 차단된다.
       if (mounted && myTeam != null) {
         _showTutorialIfNeeded(myTeam);
       }
