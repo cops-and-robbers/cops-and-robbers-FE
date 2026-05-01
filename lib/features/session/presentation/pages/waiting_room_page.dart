@@ -489,13 +489,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
   }
 
-  /// 대기실 튜토리얼 (팀별 1회)
+  /// 대기실 튜토리얼 (사용자당 1회)
   ///
   /// 참가자 데이터가 로딩된 이후 호출되며, 전달된 [team] 값 기준으로
   /// 반대 팀 `AddSlotCard` 를 가리키는 팀 변경 카드 스텝을 포함한다.
   /// 반대 팀 정원이 꽉 차서 `AddSlotCard` 가 렌더링되지 않은 경우 해당
-  /// 스텝은 스킵된다. 완료 상태는 팀별 키([TutorialKeys.waitingRoomPolice]
-  /// 또는 [TutorialKeys.waitingRoomRobber])에 저장된다.
+  /// 스텝은 스킵된다. 완료 상태는 단일 키 [TutorialKeys.waitingRoom] 에
+  /// 저장되며, 한 번 본 사용자는 팀을 바꾸거나 재입장해도 다시 노출되지
+  /// 않는다(설정의 "튜토리얼 초기화"로만 재노출).
   Future<void> _showTutorialIfNeeded(String team) async {
     // 이미 표시 중이면 STOMP 재연결 등에 의한 중복 호출을 무시한다.
     if (_isTutorialShowing) return;
@@ -505,8 +506,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     // 호출이 fallback 튜토리얼을 트리거하므로 누락 없음.
     if (_pendingInviteDialog || _isInviteDialogOpen) return;
 
-    final key = TutorialKeys.waitingRoomByTeam(team);
-    if (key == null) return; // 알 수 없는 팀 값 방어
+    const key = TutorialKeys.waitingRoom;
 
     final completed = await TutorialService.isCompleted(key);
     if (completed || !mounted || _isTutorialShowing) return;
@@ -521,26 +521,25 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
 
     // endOfFrame 대기 사이에 TEAM_UPDATE 가 들어와 팀이 바뀌었다면 이 경로는
-    // 낡은 값이므로 표시하지 않는다. listener 가 새 팀으로 재트리거하므로
-    // _isTutorialShowing 플래그는 건드리지 않고 조용히 종료한다.
+    // 낡은 값이므로 표시하지 않는다. 단일 키 정책으로 재트리거 리스너가
+    // 제거되었으므로 새 호출은 _fetchAndInitParticipants() 의 명시 경로에서만
+    // 발생한다. 낡은 값에서는 _isTutorialShowing 플래그를 해제하지 않고 조용히
+    // 종료한다 — 새 경로가 진행 중일 수 있다.
     final currentTeam = ref.read(gameParticipantNotifierProvider)?.team;
     if (currentTeam != team) return;
 
-    // 전달받은 team 기준으로 "반대 팀" AddSlotCard 하나만 안내.
+    // 1번 스텝 타겟: 현재 팀 기준 반대 팀의 첫 빈 AddSlotCard.
     final isPolice = team == 'POLICE';
     final opponentKey = isPolice
         ? _tutorialKeyAddSlotRobber
         : _tutorialKeyAddSlotPolice;
-    final changeTeamDescription = isPolice
-        ? '이 버튼을 눌러 도둑팀으로 이동할 수 있어요'
-        : '이 버튼을 눌러 경찰팀으로 이동할 수 있어요';
 
     final targets = <TutorialTarget>[
       // 팀 변경 카드 (반대 팀 AddSlotCard 가 렌더링된 경우에만)
       if (opponentKey.currentContext != null)
         AppTutorialStyle.target(
           keyTarget: opponentKey,
-          description: changeTeamDescription,
+          description: '이 버튼을 눌러 다른 팀으로 이동할 수 있어요',
           align: TutorialAlign.bottom,
         ),
       // 초대 코드 공유
