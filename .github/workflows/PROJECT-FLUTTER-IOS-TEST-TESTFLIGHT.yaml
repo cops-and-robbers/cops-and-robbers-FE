@@ -519,7 +519,10 @@ jobs:
           uuid=$(grep -A1 -a "UUID" profile.mobileprovision | grep string | sed -e "s/<string>//" -e "s/<\/string>//" -e "s/[[:space:]]//g")
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$uuid.mobileprovision
 
-      - name: Verify ExportOptions.plist
+      - name: Inject Provisioning Profile name into ExportOptions.plist
+        env:
+          IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+          IOS_BUNDLE_ID: com.elipair.copsandrobbers
         run: |
           cd ios
           if [ ! -f "ExportOptions.plist" ]; then
@@ -528,7 +531,11 @@ jobs:
             echo "  브라우저에서 .github/util/flutter/ios-testflight-setup-wizard/index.html 열기"
             exit 1
           fi
-          echo "✅ ExportOptions.plist 확인됨"
+          # plist에는 placeholder만 두고, Secret에서 실제 프로파일 이름을 주입(이중 관리 방지)
+          /usr/libexec/PlistBuddy -c \
+            "Set :provisioningProfiles:${IOS_BUNDLE_ID} ${IOS_PROVISIONING_PROFILE_NAME}" \
+            ExportOptions.plist
+          echo "✅ ExportOptions.plist 프로파일 주입 완료: ${IOS_PROVISIONING_PROFILE_NAME}"
 
       - name: Flutter build (no codesign)
         run: |
