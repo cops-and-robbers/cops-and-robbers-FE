@@ -1,11 +1,28 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-01T00:31:47Z",
-    "currentVersion": "1.8.6",
+    "lastUpdated": "2026-05-01T11:23:23Z",
+    "currentVersion": "1.8.7",
     "projectType": "flutter",
-    "totalReleases": 81
+    "totalReleases": 82
   },
   "releases": [
+    {
+      "version": "1.8.7",
+      "project_type": "flutter",
+      "date": "2026-05-01",
+      "pr_number": 314,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Chores**\n  * 앱 버전을 1.8.7로 업그레이드했습니다(빌드 번호: 212).\n  * iOS 애플리케이션 배포 파이프라인의 앱 서명 설정 프로세스를 개선했습니다.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전을 1.8.7로 업그레이드했습니다(빌드 번호: 212).",
+            "iOS 애플리케이션 배포 파이프라인의 앱 서명 설정 프로세스를 개선했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.6",
       "project_type": "flutter",
