@@ -204,7 +204,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
                       title: '이용약관',
-                      assetPath: 'assets/legal/terms_of_service.json',
+                      assetPath: 'assets/legals/terms_of_service.json',
                       externalUrl: AppUrls.termsOfService,
                     ),
                   ),
@@ -219,7 +219,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
                       title: '개인정보 처리방침',
-                      assetPath: 'assets/legal/privacy_policy.json',
+                      assetPath: 'assets/legals/privacy_policy.json',
                       externalUrl: AppUrls.privacyPolicy,
                     ),
                   ),
@@ -234,7 +234,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
                       title: '위치정보 이용약관',
-                      assetPath: 'assets/legal/location_terms.json',
+                      assetPath: 'assets/legals/location_terms.json',
                       externalUrl: AppUrls.locationTerms,
                     ),
                   ),
@@ -249,7 +249,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                         setState(() => _newMarketing = !_newMarketing),
                     onDetailTap: () => _openDetail(
                       title: '마케팅 정보 수신',
-                      assetPath: 'assets/legal/marketing_consent.json',
+                      assetPath: 'assets/legals/marketing_consent.json',
                       externalUrl: AppUrls.marketingConsent,
                     ),
                   ),
