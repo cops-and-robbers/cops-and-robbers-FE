@@ -1,11 +1,35 @@
 {
   "metadata": {
-    "lastUpdated": "2026-04-30T13:47:43Z",
-    "currentVersion": "1.8.5",
+    "lastUpdated": "2026-05-01T00:31:47Z",
+    "currentVersion": "1.8.6",
     "projectType": "flutter",
-    "totalReleases": 80
+    "totalReleases": 81
   },
   "releases": [
+    {
+      "version": "1.8.6",
+      "project_type": "flutter",
+      "date": "2026-05-01",
+      "pr_number": 313,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Chores**\n  * 앱 버전을 1.8.6(빌드 211)으로 업데이트했습니다.\n  * iOS 배포 워크플로우를 개선하여 프로비저닝 프로필 자동 업데이트 기능을 추가했습니다.\n  * 관련 설정 파일들을 함께 업데이트했습니다.\n\n* **Documentation**\n  * README 버전 정보를 최신으로 업데이트했습니다.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전을 1.8.6(빌드 211)으로 업데이트했습니다.",
+            "iOS 배포 워크플로우를 개선하여 프로비저닝 프로필 자동 업데이트 기능을 추가했습니다.",
+            "관련 설정 파일들을 함께 업데이트했습니다."
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "README 버전 정보를 최신으로 업데이트했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.5",
       "project_type": "flutter",
