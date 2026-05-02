@@ -1,11 +1,43 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-01T11:23:23Z",
-    "currentVersion": "1.8.7",
+    "lastUpdated": "2026-05-02T12:39:24Z",
+    "currentVersion": "1.8.10",
     "projectType": "flutter",
-    "totalReleases": 82
+    "totalReleases": 83
   },
   "releases": [
+    {
+      "version": "1.8.10",
+      "project_type": "flutter",
+      "date": "2026-05-02",
+      "pr_number": 319,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **New Features**\n  * 게임 결과 통계 서비스 추가 (누적 동선, 이동 거리, 평균 속도 등)\n  * 백그라운드 위치 수집 기능 추가\n\n* **Documentation**\n  * 위치정보 수집 시점, 방식, 플랫폼별 메커니즘 명시\n  * 개인정보 처리 및 위치정보 이용 약관 개선\n  * PR 작성 가이드 문서 추가\n\n* **Chores**\n  * 앱 버전 1.8.10으로 업데이트\n  * 환경 설정 정리",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "게임 결과 통계 서비스 추가 (누적 동선, 이동 거리, 평균 속도 등)",
+            "백그라운드 위치 수집 기능 추가"
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "위치정보 수집 시점, 방식, 플랫폼별 메커니즘 명시",
+            "개인정보 처리 및 위치정보 이용 약관 개선",
+            "PR 작성 가이드 문서 추가"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전 1.8.10으로 업데이트",
+            "환경 설정 정리"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.7",
       "project_type": "flutter",

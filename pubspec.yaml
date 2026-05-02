@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 1.8.7+211
+version: 1.8.10+214
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -96,7 +96,7 @@ flutter:
     - assets/
     - assets/fonts/
     - assets/icons/
-    - assets/legal/
+    - assets/legals/
     - assets/messages/
     - assets/credits/
     - assets/characters/police/default/

@@ -7,11 +7,11 @@ class TutorialKeys {
   static const setupPlayground = 'tutorial_setup_playground';
   static const createStep2 = 'tutorial_create_step2';
 
-  // 대기실 튜토리얼: 팀별로 1회씩 노출되도록 키를 분리.
-  // 경찰 시점과 도둑 시점은 타겟 위젯(반대 팀 첫 슬롯)이 물리적으로 달라서
-  // 같은 키 하나로 묶으면 한쪽을 본 사용자에게 반대편 안내가 사라진다.
-  static const waitingRoomPolice = 'tutorial_waiting_room_police';
-  static const waitingRoomRobber = 'tutorial_waiting_room_robber';
+  // 대기실 튜토리얼: 역할(경찰/도둑) 무관 사용자당 1회만 노출.
+  // 모든 스텝(팀 변경·초대 코드·게임 설정·준비 버튼)이 양 팀에서 동일한
+  // 안내이므로 팀별 분리가 불필요. 1번 스텝 타겟만 "현재 팀의 반대 팀 첫
+  // 빈 슬롯"으로 호출 시점의 team 값으로 결정된다(키와 무관).
+  static const waitingRoom = 'tutorial_waiting_room';
 
   static const game = 'tutorial_game';
   static const gameParticipants = 'tutorial_game_participants';
@@ -21,22 +21,13 @@ class TutorialKeys {
   static const batteryOptNotice = 'tutorial_battery_opt_notice';
   static const batteryImpactNotice = 'tutorial_battery_impact_notice';
 
-  /// 팀 문자열('POLICE' | 'ROBBER')에 대응하는 대기실 튜토리얼 키.
-  /// 알 수 없는 값/`null`은 `null`을 반환하므로 호출부에서 가드해야 한다.
-  static String? waitingRoomByTeam(String? team) {
-    if (team == 'POLICE') return waitingRoomPolice;
-    if (team == 'ROBBER') return waitingRoomRobber;
-    return null;
-  }
-
   /// 전체 키 목록 (초기화 시 사용)
   static const all = [
     home,
     createStep0,
     setupPlayground,
     createStep2,
-    waitingRoomPolice,
-    waitingRoomRobber,
+    waitingRoom,
     game,
     gameParticipants,
     batteryOptNotice,
