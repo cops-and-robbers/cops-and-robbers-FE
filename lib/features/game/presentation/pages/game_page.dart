@@ -10,7 +10,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
@@ -1455,7 +1454,6 @@ class _GamePageState extends ConsumerState<GamePage>
               key: _googleMapKey,
               onCameraMoveStarted: _onMapCameraMoved,
               isDarkMode: _isDarkMode,
-              mapId: _isDarkMode ? EnvConfig.googleMapsRobberMapId : null,
             ),
           ),
 
