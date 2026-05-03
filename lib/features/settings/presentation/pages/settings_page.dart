@@ -22,6 +22,7 @@ import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../bug/presentation/providers/bug_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../credits/presentation/pages/credits_page.dart';
@@ -359,7 +360,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
-  /// 버그 제보
+  /// 버그 제보 입력 화면 진입
   void _onBugReport() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -368,14 +369,44 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           label: '버그 내용',
           hintText: '어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)',
           submitText: '제보하기',
-          onSubmit: (text) {
-            // TODO: 버그 제보 API 연동 (백엔드 API 미구현 상태)
-            Navigator.of(context).pop();
-            AppSnackbar.show(context, message: '버그 제보가 접수되었어요');
-          },
+          maxLength: 1000,
+          onSubmit: _submitBugReport,
         ),
       ),
     );
+  }
+
+  /// 버그 제보 API 호출 + 결과 처리
+  ///
+  /// 성공: loading + 입력 페이지 모두 닫고 설정 화면으로 복귀, 성공 스낵바 표시.
+  /// 실패: loading만 닫고 입력 페이지는 유지(재시도 가능), 에러 스낵바 표시.
+  /// AuthException은 AuthInterceptor가 강제 로그아웃을 자동 처리하므로 무시.
+  Future<void> _submitBugReport(String content) async {
+    final navigator = Navigator.of(context);
+
+    await AppPopup.showRandomLoading(
+      context: context,
+      category: LoadingCategory.bugReport,
+    );
+
+    try {
+      await ref.read(bugRepositoryProvider).reportBug(content: content);
+      if (!mounted) return;
+      if (navigator.canPop()) navigator.pop(); // loading 닫기
+      if (navigator.canPop()) navigator.pop(); // TextSubmitPage 닫기
+      AppSnackbar.show(context, message: '버그 제보가 접수되었어요');
+    } on AuthException {
+      // AuthInterceptor가 강제 로그아웃 + 로그인 화면 이동을 처리
+      return;
+    } on AppException catch (e) {
+      if (!mounted) return;
+      if (navigator.canPop()) navigator.pop(); // loading만 닫고 입력 페이지는 유지
+      AppSnackbar.show(
+        context,
+        message: e.message,
+        backgroundColor: AppColors.red,
+      );
+    }
   }
 
   /// 튜토리얼 초기화
