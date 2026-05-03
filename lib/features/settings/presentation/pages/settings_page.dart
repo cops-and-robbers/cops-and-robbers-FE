@@ -397,6 +397,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       AppSnackbar.show(context, message: '버그 제보가 접수되었어요');
     } on AuthException {
       // AuthInterceptor가 강제 로그아웃 + 로그인 화면 이동을 처리
+      // 다이얼로그는 Navigator 스택에 남으므로 명시적으로 닫아준다
+      if (navigator.canPop()) navigator.pop(); // loading 닫기
       return;
     } on AppException catch (e) {
       if (!mounted) return;
