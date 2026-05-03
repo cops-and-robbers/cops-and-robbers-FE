@@ -284,7 +284,11 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// 신호다. 같은 시점에 STOMP가 dead 상태(`error`/`disconnected`)라면
   /// `manualReconnect()`로 자동 복구한다. `connecting`/`connected` 상태이면
   /// 정상 동작 중이므로 흔들지 않는다.
-  void _handleFcmGameEvent(String eventType) {
+  ///
+  /// `manualReconnect()` 내부의 토큰 조회/재연결에서 예외가 던져질 수 있으므로
+  /// await + try-catch로 unhandled async error를 차단한다. 자동 복구 경로라
+  /// state는 흔들지 않고 로그만 남긴다(STOMP는 이미 error/disconnected 상태).
+  Future<void> _handleFcmGameEvent(String eventType) async {
     if (_isDisposed || _intentionalDisconnect || _gameId == null) return;
 
     final connState = state.connectionState;
@@ -297,7 +301,12 @@ class GameEventNotifier extends _$GameEventNotifier {
       '[GameEventNotifier] 📨 FCM($eventType) 수신 + STOMP $connState '
       '→ 자동 재연결 시도',
     );
-    manualReconnect();
+    try {
+      await manualReconnect();
+    } catch (e, stack) {
+      debugPrint('[GameEventNotifier] ❌ FCM 트리거 자동 재연결 실패: $e');
+      debugPrint('$stack');
+    }
   }
 
   /// STOMP 연결 후 게임 이벤트 구독
