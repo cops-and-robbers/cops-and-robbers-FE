@@ -30,47 +30,40 @@ void main() {
     );
   }
 
-  testWidgets(
-    'limits_input_to_maxLength_when_maxLength_is_set',
-    (tester) async {
-      await tester.pumpWidget(buildHarness(maxLength: 10));
-      await tester.pumpAndSettle();
+  testWidgets('limits_input_to_maxLength_when_maxLength_is_set', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildHarness(maxLength: 10));
+    await tester.pumpAndSettle();
 
-      final textField = find.byType(TextField);
-      // 11자 입력 시도
-      await tester.enterText(textField, '12345678901');
-      await tester.pump();
+    final textField = find.byType(TextField);
+    // 11자 입력 시도
+    await tester.enterText(textField, '12345678901');
+    await tester.pump();
 
-      final controller = (tester.widget<TextField>(textField)).controller!;
-      expect(controller.text.length, 10);
-    },
-  );
+    final controller = (tester.widget<TextField>(textField)).controller!;
+    expect(controller.text.length, 10);
+  });
 
-  testWidgets(
-    'shows_character_counter_when_maxLength_is_set',
-    (tester) async {
-      await tester.pumpWidget(buildHarness(maxLength: 1000));
-      await tester.pumpAndSettle();
+  testWidgets('shows_character_counter_when_maxLength_is_set', (tester) async {
+    await tester.pumpWidget(buildHarness(maxLength: 1000));
+    await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextField), '안녕');
-      await tester.pump();
+    await tester.enterText(find.byType(TextField), '안녕');
+    await tester.pump();
 
-      // Material 기본 카운터 포맷: "{현재}/{최대}"
-      expect(find.text('2/1000'), findsOneWidget);
-    },
-  );
+    // Material 기본 카운터 포맷: "{현재}/{최대}"
+    expect(find.text('2/1000'), findsOneWidget);
+  });
 
-  testWidgets(
-    'omits_counter_when_maxLength_is_null',
-    (tester) async {
-      await tester.pumpWidget(buildHarness());
-      await tester.pumpAndSettle();
+  testWidgets('omits_counter_when_maxLength_is_null', (tester) async {
+    await tester.pumpWidget(buildHarness());
+    await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextField), '안녕');
-      await tester.pump();
+    await tester.enterText(find.byType(TextField), '안녕');
+    await tester.pump();
 
-      // 카운터 텍스트가 어떤 형태로도 보이지 않아야 함
-      expect(find.textContaining('/'), findsNothing);
-    },
-  );
+    // 카운터 텍스트가 어떤 형태로도 보이지 않아야 함
+    expect(find.textContaining('/'), findsNothing);
+  });
 }

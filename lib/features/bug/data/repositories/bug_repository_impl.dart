@@ -17,9 +17,7 @@ class BugRepositoryImpl implements BugRepository {
   @override
   Future<void> reportBug({required String content}) async {
     try {
-      await _dataSource.reportBug(
-        BugReportRequestModel(content: content),
-      );
+      await _dataSource.reportBug(BugReportRequestModel(content: content));
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
     } catch (e) {

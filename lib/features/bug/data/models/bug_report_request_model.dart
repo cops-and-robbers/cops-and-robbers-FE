@@ -10,9 +10,8 @@ part 'bug_report_request_model.g.dart';
 /// UI 정책: 빈 입력은 제출 버튼 비활성화로 차단한다.
 @freezed
 class BugReportRequestModel with _$BugReportRequestModel {
-  const factory BugReportRequestModel({
-    required String content,
-  }) = _BugReportRequestModel;
+  const factory BugReportRequestModel({required String content}) =
+      _BugReportRequestModel;
 
   factory BugReportRequestModel.fromJson(Map<String, dynamic> json) =>
       _$BugReportRequestModelFromJson(json);
