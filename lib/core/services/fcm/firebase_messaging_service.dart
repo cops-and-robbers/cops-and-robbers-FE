@@ -300,6 +300,10 @@ class FirebaseMessagingService {
 
   /// Handles notification taps when app is opened from the background or terminated state
   /// 앱이 백그라운드 또는 종료 상태에서 알림 탭으로 열렸을 때 처리합니다
+  ///
+  /// `getInitialMessage()`로 종료 상태에서 진입한 경우에도 동일하게 호출되므로,
+  /// 포그라운드 핸들러와 동일한 Stream 발행을 수행해 STOMP 좀비 연결
+  /// 자동 복구 트리거가 누락되지 않도록 한다.
   void _onMessageOpenedApp(RemoteMessage message) {
     // 알림 탭 시 notification 페이로드(제목/본문)와 data 페이로드를 분리해서 출력
     debugPrint('[FCM] Notification tapped (app opened)');
@@ -317,6 +321,13 @@ class FirebaseMessagingService {
         debugPrint('[FCM] 백그라운드에서 앱 열림 - contentId: $contentId');
         _contentCompletedController.add(contentId); // ✅ Stream으로 브로드캐스트
       }
+    }
+
+    // 게임 시스템 이벤트(BE PR #84) — 포그라운드 진입 시점에도 동일하게 발행하여
+    // GameEventNotifier가 STOMP 좀비 연결을 자동 복구할 수 있게 한다.
+    if (messageType != null && _gameSystemEventTypes.contains(messageType)) {
+      debugPrint('[FCM] 게임 시스템 이벤트 수신(알림 탭): $messageType');
+      _gameSystemEventController.add(messageType);
     }
 
     // TODO: Add navigation or specific handling based on message data
