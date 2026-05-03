@@ -218,37 +218,33 @@ class FirebaseMessagingService {
       debugPrint('📱 Full Device Info: $fullDeviceInfo');
     }
 
-    // 3. Try to get FCM token (may fail on iOS simulator)
-    // 3. FCM 토큰 가져오기 시도 (iOS 시뮬레이터에서는 실패할 수 있음)
+    // 3. Register token refresh listener BEFORE fetching the initial token
+    // 3. 초기 토큰 조회 전에 갱신 리스너 등록 (초기 토큰이 null이어도 이후 발급분 캡처 보장)
+    FirebaseMessaging.instance.onTokenRefresh
+        .listen((fcmToken) {
+          debugPrint('🔄 FCM token refreshed: $fcmToken');
+          debugPrint('✅ Updated token will be sent on next login.');
+        })
+        .onError((error) {
+          // Handle errors during token refresh
+          // 토큰 갱신 중 발생한 에러 처리
+          debugPrint('❌ Error refreshing FCM token: $error');
+        });
+
+    // 4. Try to get FCM token (may fail on iOS simulator)
+    // 4. FCM 토큰 가져오기 시도 (iOS 시뮬레이터에서는 실패할 수 있음)
     // getFcmToken()이 이미 try-catch 처리하므로 재사용
     final token = await getFcmToken();
 
-    // 4. Setup token refresh listener if token exists
-    // 4. 토큰이 있으면 갱신 리스너 등록
-    if (token != null) {
-      // Listen for token refresh events
-      // 토큰 갱신 이벤트 수신 대기
-      FirebaseMessaging.instance.onTokenRefresh
-          .listen((fcmToken) {
-            debugPrint('🔄 FCM token refreshed: $fcmToken');
-            debugPrint('✅ Updated token will be sent on next login.');
-          })
-          .onError((error) {
-            // Handle errors during token refresh
-            // 토큰 갱신 중 발생한 에러 처리
-            debugPrint('❌ Error refreshing FCM token: $error');
-          });
-    } else {
-      // Show helpful message for simulator users when token is null
-      // 시뮬레이터 사용자를 위한 안내 메시지
-      if (!isPhysical) {
-        debugPrint(
-          '📱 Note: FCM tokens are only available on physical iOS devices, not simulators',
-        );
-        debugPrint(
-          '💡 Device information is collected successfully, but push notifications require a real device',
-        );
-      }
+    // 5. Show helpful message for simulator users when token is null
+    // 5. 시뮬레이터 사용자를 위한 안내 메시지
+    if (token == null && !isPhysical) {
+      debugPrint(
+        '📱 Note: FCM tokens are only available on physical iOS devices, not simulators',
+      );
+      debugPrint(
+        '💡 Device information is collected successfully, but push notifications require a real device',
+      );
     }
   }
 
