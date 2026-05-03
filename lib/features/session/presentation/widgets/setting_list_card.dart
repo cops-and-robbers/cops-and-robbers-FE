@@ -12,7 +12,7 @@ import '../../domain/entities/session_settings.dart';
 
 /// 게임 설정 목록 카드
 ///
-/// 참여 인원, 라운드 시간, 위치 공유 간격, 경찰 시작 시간 등
+/// 참여 인원, 라운드 시간, 위치 공유 간격, 경찰 출동 시간 등
 /// 게임 설정 정보를 표시합니다.
 ///
 /// 사용 예시:
@@ -94,7 +94,7 @@ class SettingListCard extends StatelessWidget {
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: '경찰 시작 시간',
+              label: '경찰 출동 시간',
               value: settings.policeStartDisplay,
               isDarkMode: isDarkMode,
             ),
