@@ -234,13 +234,13 @@ void main() {
       await _pumpSlider(
         tester,
         child: AppSlider(
-          label: '경찰 시작 시간',
+          label: '경찰 출동 시간',
           value: 5,
           min: 1,
           max: 10,
           unit: '분',
           divisions: 9,
-          displayPrefix: '도둑 시작 후 ',
+          displayPrefix: '도둑 도망 후 ',
           displaySuffix: ' 뒤',
           editable: true,
           onChanged: (_) {},
@@ -248,7 +248,7 @@ void main() {
       );
 
       // 편집 전: prefix/value/suffix 모두 보임
-      expect(find.textContaining('도둑 시작 후'), findsOneWidget);
+      expect(find.textContaining('도둑 도망 후'), findsOneWidget);
       expect(find.textContaining('뒤'), findsOneWidget);
 
       // 값 텍스트(5분)를 찾아 탭
@@ -258,7 +258,7 @@ void main() {
       // TextField 출현
       expect(find.byType(TextField), findsOneWidget);
       // prefix/suffix는 여전히 보임
-      expect(find.textContaining('도둑 시작 후'), findsOneWidget);
+      expect(find.textContaining('도둑 도망 후'), findsOneWidget);
       expect(find.textContaining('뒤'), findsOneWidget);
     });
   });

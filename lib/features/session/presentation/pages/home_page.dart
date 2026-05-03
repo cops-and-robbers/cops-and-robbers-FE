@@ -592,7 +592,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'LOGO',
+                      '경찰과도둑',
                       style: AppTextStyles.heading_20.copyWith(
                         color: AppColors.black,
                       ),
