@@ -43,6 +43,7 @@ class TextSubmitPage extends StatefulWidget {
     this.isDestructive = false,
     this.isDarkMode = false,
     this.minLines = 8,
+    this.maxLength,
   });
 
   /// AppBar 타이틀
@@ -68,6 +69,12 @@ class TextSubmitPage extends StatefulWidget {
 
   /// 입력 필드 최소 줄 수
   final int minLines;
+
+  /// 입력 가능한 최대 글자 수. null이면 제한 없음.
+  ///
+  /// 설정 시 TextField에 maxLength가 적용되어 입력이 차단되고,
+  /// Material 기본 카운터(현재/최대) 위젯이 우측 하단에 표시된다.
+  final int? maxLength;
 
   @override
   State<TextSubmitPage> createState() => _TextSubmitPageState();
@@ -147,6 +154,7 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
                     constraints: BoxConstraints(minHeight: 300.h),
                     child: TextField(
                       controller: _controller,
+                      maxLength: widget.maxLength,
                       maxLines: null,
                       minLines: 7,
                       textAlignVertical: TextAlignVertical.top,
