@@ -160,13 +160,10 @@ class FirebaseMessagingService {
   /// Initialize Firebase Messaging and sets up all message listeners
   /// Firebase Messaging을 초기화하고 모든 메시지 리스너를 설정합니다
   Future<void> init() async {
-    // Handle FCM token
-    // FCM 토큰 처리
-    _handlePushNotificationsToken();
-
-    // Request user permission for notifications
-    // 알림 권한 요청
-    _requestPermission();
+    // Ensure permission is granted before fetching token
+    // Android 13+/iOS는 권한 부여 전 FCM 토큰이 null로 반환될 수 있음
+    await _requestPermission();
+    await _handlePushNotificationsToken();
 
     // iOS: 포그라운드에서는 시스템 배너/사운드/뱃지를 띄우지 않는다.
     // 게임 이벤트는 STOMP 인앱 배너로 이미 표시되며, 그 외 화면에서도
