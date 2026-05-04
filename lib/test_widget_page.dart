@@ -372,13 +372,13 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
                 // 복합 텍스트 스타일 슬라이더 (NEW)
                 AppSlider(
-                  label: '경찰 시작 시간',
+                  label: '경찰 출동 시간',
                   value: _policeWaitTime,
                   min: 1,
                   max: 10,
                   unit: '분',
                   divisions: 9, // 1분 단위
-                  displayPrefix: '도둑 시작 후',
+                  displayPrefix: '도둑 도망 후',
                   displaySuffix: '뒤',
                   onChanged: (value) {
                     setState(() => _policeWaitTime = value);

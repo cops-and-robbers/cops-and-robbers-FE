@@ -9,7 +9,7 @@ import '../../../../../core/widgets/inputs/app_slider.dart';
 /// 게임 규칙을 설정합니다:
 /// - 라운드 제한 시간 (10~180분)
 /// - 위치 공유 간격 (0~30분)
-/// - 경찰 시작 시간 (도둑 시작 후 0~10분 뒤)
+/// - 경찰 출동 시간 (도둑 도망 후 0~10분 뒤)
 class Step2GameSettingsContent extends StatelessWidget {
   const Step2GameSettingsContent({
     super.key,
@@ -36,7 +36,7 @@ class Step2GameSettingsContent extends StatelessWidget {
   /// 위치 공유 간격 (분)
   final int locationShareMinutes;
 
-  /// 경찰 시작 시간 (분, 도둑 시작 후)
+  /// 경찰 출동 시간 (분, 도둑 도망 후)
   final int policeWaitMinutes;
 
   /// 라운드 시간 변경 콜백
@@ -63,7 +63,7 @@ class Step2GameSettingsContent extends StatelessWidget {
   /// 튜토리얼 하이라이트용 — 위치 공유 간격 슬라이더
   final GlobalKey? locationShareKey;
 
-  /// 튜토리얼 하이라이트용 — 경찰 시작 시간 슬라이더
+  /// 튜토리얼 하이라이트용 — 경찰 출동 시간 슬라이더
   final GlobalKey? policeWaitKey;
 
   // ============================================
@@ -113,16 +113,16 @@ class Step2GameSettingsContent extends StatelessWidget {
 
         SizedBox(height: AppSpacing.vertical8),
 
-        // 경찰 시작 시간 (도둑 시작 후)
+        // 경찰 출동 시간 (도둑 도망 후)
         AppSlider(
           key: policeWaitKey,
-          label: '경찰 시작 시간',
+          label: '경찰 출동 시간',
           value: policeWaitMinutes.toDouble(),
           min: 1,
           max: 10,
           unit: '분',
           divisions: 9, // 1~10, 1분 단위
-          displayPrefix: "도둑 시작 후 ",
+          displayPrefix: "도둑 도망 후 ",
           displaySuffix: " 뒤",
           onChanged: (value) => onPoliceWaitChanged(value.toInt()),
           isDarkMode: isDarkMode,

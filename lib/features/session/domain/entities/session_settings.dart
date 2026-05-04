@@ -31,8 +31,8 @@ class SessionSettings with _$SessionSettings {
   /// 예: "5분"
   String get locationShareDisplay => '$locationShareMinutes분';
 
-  /// 화면 표시용 경찰 시작 시간
+  /// 화면 표시용 경찰 출동 시간
   ///
-  /// 예: "도둑 시작 후 5분 뒤"
-  String get policeStartDisplay => '도둑 시작 후 $policeStartDelayMinutes분 뒤';
+  /// 예: "도둑 도망 후 5분 뒤"
+  String get policeStartDisplay => '도둑 도망 후 $policeStartDelayMinutes분 뒤';
 }

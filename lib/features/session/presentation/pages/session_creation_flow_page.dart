@@ -499,7 +499,7 @@ class _SessionCreationFlowPageState
   /// 각 단계별 설명
   static const _stepDescriptions = [
     '게임에 필요한 구역을 설정해요',
-    '최소 5명부터 게임 진행이 가능해요',
+    '최소 2명부터 게임 진행이 가능해요',
     '게임을 진행할 때, 꼭 필요한 정보들이에요',
     '방 생성 전 마지막으로 설정을 확인할까요?',
   ];

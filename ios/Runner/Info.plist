@@ -43,6 +43,8 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>게임 중 도둑 위치 공유와 구역 이탈 감지를 위해 위치 정보를 사용합니다. 화면이 꺼져 있거나 다른 앱을 사용 중일 때도 게임이 끝날 때까지 위치를 사용합니다. 위치는 같은 게임의 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>게임 중 도둑 위치 공유와 구역 이탈 감지를 위해 위치 정보를 사용합니다. 화면이 꺼져 있거나 다른 앱을 사용 중일 때도 게임이 끝날 때까지 위치를 사용합니다. 위치는 같은 게임의 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>게임 중 상대방의 QR코드를 스캔하여 체포를 수행합니다.</string>
 	<key>NSUserNotificationsUsageDescription</key>

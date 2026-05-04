@@ -1,11 +1,44 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-02T12:39:24Z",
-    "currentVersion": "1.8.10",
+    "lastUpdated": "2026-05-04T04:06:23Z",
+    "currentVersion": "1.8.15",
     "projectType": "flutter",
-    "totalReleases": 83
+    "totalReleases": 84
   },
   "releases": [
+    {
+      "version": "1.8.15",
+      "project_type": "flutter",
+      "date": "2026-05-04",
+      "pr_number": 327,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새로운 기능**\n  * 버그 제보 기능 추가\n  * 공지사항 게시판 추가\n  * 텍스트 입력 필드 최대 글자 수 제한 옵션 추가\n\n* **개선 사항**\n  * 앱 시작 성능 최적화\n  * 게임 시스템 알림 처리 개선\n  * UI 라벨 텍스트 명확성 향상\n  * 위치 권한 요청 설명 개선\n\n* **그 외**\n  * 버전 업데이트 (v1.8.10 → v1.8.15)",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "버그 제보 기능 추가",
+            "공지사항 게시판 추가",
+            "텍스트 입력 필드 최대 글자 수 제한 옵션 추가"
+          ]
+        },
+        "개선_사항": {
+          "title": "개선 사항",
+          "items": [
+            "앱 시작 성능 최적화",
+            "게임 시스템 알림 처리 개선",
+            "UI 라벨 텍스트 명확성 향상",
+            "위치 권한 요청 설명 개선"
+          ]
+        },
+        "그_외": {
+          "title": "그 외",
+          "items": [
+            "버전 업데이트 (v1.8.10 → v1.8.15)"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.10",
       "project_type": "flutter",

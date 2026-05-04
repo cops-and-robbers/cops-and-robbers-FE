@@ -61,24 +61,24 @@ import '../../constants/text_styles.dart';
 ///
 /// // 복합 텍스트 스타일 (NEW - 권장)
 /// AppSlider(
-///   label: '경찰 시작 시간',
+///   label: '경찰 출동 시간',
 ///   value: _policeWaitTime,
 ///   min: 1,
 ///   max: 10,
 ///   unit: '분',
-///   displayPrefix: '도둑 시작 후',
+///   displayPrefix: '도둑 도망 후',
 ///   displaySuffix: '뒤',
 ///   onChanged: (value) => setState(() => _policeWaitTime = value),
 /// )
 ///
 /// // 커스텀 표시값 사용 (레거시)
 /// AppSlider(
-///   label: '경찰 시작 시간',
+///   label: '경찰 출동 시간',
 ///   value: _policeWaitTime,
 ///   min: 1,
 ///   max: 10,
 ///   unit: '분',
-///   displayValue: '도둑 시작 후 ${_policeWaitTime.toInt()}분 뒤',
+///   displayValue: '도둑 도망 후 ${_policeWaitTime.toInt()}분 뒤',
 ///   onChanged: (value) => setState(() => _policeWaitTime = value),
 /// )
 ///
@@ -147,12 +147,12 @@ class AppSlider extends StatelessWidget {
   /// 값 변경 콜백
   final ValueChanged<double> onChanged;
 
-  /// 커스텀 표시값 (선택 사항, 예: '도둑 시작 후 5분 뒤')
+  /// 커스텀 표시값 (선택 사항, 예: '도둑 도망 후 5분 뒤')
   /// null이면 기본 포맷: '{value}{unit}'
   /// displayPrefix/displaySuffix와 함께 사용 불가
   final String? displayValue;
 
-  /// 값 앞 설명 텍스트 (예: '도둑 시작 후')
+  /// 값 앞 설명 텍스트 (예: '도둑 도망 후')
   /// paragraph_14_100 스타일 + black800 색상 사용
   final String? displayPrefix;
 
