@@ -96,14 +96,8 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
         _closeLoadingPopupIfShown();
         // AuthInterceptor가 강제 로그아웃을 처리하므로 UI는 무반응.
         if (e is AuthException) return;
-        final msg = e is AppException
-            ? e.message
-            : '공지사항을 불러오지 못했어요';
-        AppSnackbar.show(
-          context,
-          message: msg,
-          backgroundColor: AppColors.red,
-        );
+        final msg = e is AppException ? e.message : '공지사항을 불러오지 못했어요';
+        AppSnackbar.show(context, message: msg, backgroundColor: AppColors.red);
       },
     );
   }
@@ -156,9 +150,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
       return Center(
         child: Text(
           '등록된 공지사항이 없습니다',
-          style: AppTextStyles.paragraph_14.copyWith(
-            color: AppColors.black600,
-          ),
+          style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black600),
         ),
       );
     }
