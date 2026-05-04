@@ -730,9 +730,19 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 구역 복귀 처리: 진동 Timer 정리 + 배너 숨김
   void _onZoneEntered() {
+    _clearZoneExitWarning();
+  }
+
+  /// 외부 사유(체포·게임 종료·재연결 모달)로 이탈 경고 신호를 강제 정리
+  ///
+  /// `_onZoneEntered`와 달리 ZoneExitDetector 상태(isOutside)와 무관하게 호출되며,
+  /// 진동 타이머만 cancel하고 시각 신호 플래그도 false로 내린다. ZoneExitDetector
+  /// 자체 상태는 건드리지 않으므로, 외부 사유가 해제되면 다음 위치 업데이트에서
+  /// 정상적으로 이탈 콜백이 다시 발화한다.
+  void _clearZoneExitWarning() {
     _zoneExitVibrationTimer?.cancel();
     _zoneExitVibrationTimer = null;
-    if (!mounted) return;
+    if (!mounted || !_isZoneExitWarningActive) return;
     setState(() => _isZoneExitWarningActive = false);
   }
 
@@ -777,10 +787,9 @@ class _GamePageState extends ConsumerState<GamePage>
       _pendingZoneExit = true;
     }
 
-    // 재연결 모달 진입 시 진동 Timer는 즉시 정리 (모달 표시 중 진동 폭주 방지)
-    // 배너/플래그는 _pendingZoneExit으로 보존되므로 모달 닫힘 후 _processPendingZoneExit이 복구
-    _zoneExitVibrationTimer?.cancel();
-    _zoneExitVibrationTimer = null;
+    // 재연결 모달 진입 시 진동·시각 신호를 모두 정리 (모달 위에 펄스/배너가 겹치는 것 방지)
+    // 모달 닫힘 후 _processPendingZoneExit이 _pendingZoneExit 플래그를 보고 복구한다.
+    _clearZoneExitWarning();
     _reconnectStateNotifier = ValueNotifier(currentState.connectionState);
     _isReconnectModalShown = true;
     ReconnectModal.show(
@@ -959,6 +968,10 @@ class _GamePageState extends ConsumerState<GamePage>
   Future<void> _showGameOverDialog(String? winnerTeam, String? reason) async {
     if (_gameOverDialogShown) return;
     _gameOverDialogShown = true;
+
+    // 종료 시점에 구역 밖이었다면 진동 타이머·시각 신호가 살아있을 수 있다.
+    // 결과 다이얼로그 위에 펄스/배너가 깜빡이고 진동이 폭주하지 않도록 정리한다.
+    _clearZoneExitWarning();
 
     // GAME_OVER 이벤트 state에서 gameResultId 캡처.
     final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
@@ -1165,13 +1178,17 @@ class _GamePageState extends ConsumerState<GamePage>
       }
     });
 
-    // 체포 이벤트 감지 → 열려있는 다이얼로그(QR 등) 닫기
+    // 체포 이벤트 감지 → 열려있는 다이얼로그(QR 등) 닫기 + 이탈 경고 정리
+    // 본인이 체포되면 _checkZoneExit가 가드되어 더 이상 호출되지 않지만,
+    // 이미 켜진 진동 타이머와 시각 신호 플래그는 ArrestLockOverlay 위에 잔존하므로
+    // 여기서 명시적으로 정리한다.
     ref.listen(
       gameEventNotifierProvider.select((s) => s.arrestedParticipantIds),
       (prev, next) {
         if (prev == null) return;
         final newlyArrested = next.difference(prev);
         if (newlyArrested.contains(widget.participantId) && mounted) {
+          _clearZoneExitWarning();
           Navigator.of(context).popUntil((route) => route is! PopupRoute);
         }
       },
