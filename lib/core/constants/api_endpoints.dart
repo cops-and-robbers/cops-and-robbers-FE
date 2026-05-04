@@ -174,4 +174,11 @@ class ApiEndpoints {
 
   /// 버그 제보
   static const String reportBug = '/api/bugs';
+
+  // ============================================
+  // Notice API - 공지사항
+  // ============================================
+
+  /// 공지사항 목록 조회
+  static const String getNotices = '/api/notices';
 }
