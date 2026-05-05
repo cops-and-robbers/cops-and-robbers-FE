@@ -59,6 +59,7 @@ app.*.map.json
 /.report
 /.release-note
 /.issues
+/.pr
 
 .env
 /env.*
