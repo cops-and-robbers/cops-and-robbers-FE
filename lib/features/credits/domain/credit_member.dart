@@ -1,5 +1,7 @@
 import 'package:flutter/painting.dart';
 
+import '../../../core/constants/app_colors.dart';
+
 /// 소셜 링크 타입
 ///
 /// 모든 타입은 SVG 에셋을 사용한다. (tree-shake-icons 최적화 충돌 방지)
@@ -166,20 +168,150 @@ const List<CreditMember> creditMembers = [
 
 /// 도움 준 사람 정보
 class CreditHelper {
-  const CreditHelper({required this.name, required this.role});
+  const CreditHelper({
+    required this.name,
+    required this.role,
+    required this.tier,
+    this.participationCount = 1,
+  });
 
   final String name;
   final String role;
+
+  /// 표시 등급 — 색상/굵기를 결정하는 단일 진실(single source of truth).
+  final ContributionTier tier;
+
+  /// 참여 횟수 메타데이터 (현재 표시에는 영향 없음).
+  ///
+  /// 자동 계산이 아니라 데이터 입력 시점에 사람이 명시한다.
+  /// 미래에 통계, 정렬, 툴팁 등에 활용 가능.
+  final int participationCount;
 }
 
-/// 도움 준 사람들 목록
+/// 크레딧 기여도 티어 (5단계)
+///
+/// - tier1~3: QA 참여 횟수 기반 (1회 / 2회 / 3회+) — 데이터 입력 시점에 수동 분류
+/// - tier4~5: 인프라 제공·후원 등 큰 도움 — 수동 지정
+///
+/// 자동 카운트 로직을 두지 않는다. 4·5단계는 어차피 수동이라 두 로직이 섞이면 복잡.
+enum ContributionTier { tier1, tier2, tier3, tier4, tier5 }
+
+/// 티어별 텍스트 색상 (`SocialType.tintColor` 패턴과 동일하게 enum extension)
+///
+/// 검은 배경(`AppColors.black`) 기준 perceived brightness가 단조 증가하도록 매핑.
+/// (134 → 171 → 196 → 220 → 227)
+extension ContributionTierColor on ContributionTier {
+  Color get color => switch (this) {
+    ContributionTier.tier1 => AppColors.black500, // #76899E (134) — 회색
+    ContributionTier.tier2 => AppColors.green, // #38F55B (171) — 비비드 초록
+    ContributionTier.tier3 => AppColors.green800, // #7AF391 (196) — 밝은 초록
+    ContributionTier.tier4 => AppColors.yellow, // #F5EF38 (220) — 선명 노랑
+    ContributionTier.tier5 => AppColors.yellow900, // #F7F260 (227) — 가장 밝은 노랑
+  };
+}
+
+/// 도움 준 사람들 목록 (unique union — 중복 이름은 한 번만, 횟수는 메타로 보존)
+///
+/// 마키 노출 우선순위를 위해 **티어 높은 순**으로 정렬 (tier4 → tier2 → tier1).
+/// 같은 티어 안에서는 명단 입력 순서를 유지한다.
 const List<CreditHelper> creditHelpers = [
-  CreditHelper(name: '안금서', role: 'QA'),
-  CreditHelper(name: '남해윤', role: 'QA'),
-  CreditHelper(name: '손건우', role: 'QA'),
-  CreditHelper(name: '송혜정', role: 'QA'),
-  CreditHelper(name: '신혜빈', role: 'QA'),
-  CreditHelper(name: '이진', role: 'QA'),
-  CreditHelper(name: '정창우', role: 'QA'),
-  CreditHelper(name: '허석준', role: 'QA'),
+  // 인프라 제공 (tier4) — 가장 높은 강조
+  CreditHelper(
+    name: '신지훈',
+    role: '인프라 제공',
+    tier: ContributionTier.tier4,
+    participationCount: 1,
+  ),
+  // 2회 참여 QA (tier2)
+  CreditHelper(
+    name: '남해윤',
+    role: 'QA',
+    tier: ContributionTier.tier2,
+    participationCount: 2,
+  ),
+  CreditHelper(
+    name: '송혜정',
+    role: 'QA',
+    tier: ContributionTier.tier2,
+    participationCount: 2,
+  ),
+  CreditHelper(
+    name: '이진',
+    role: 'QA',
+    tier: ContributionTier.tier2,
+    participationCount: 2,
+  ),
+  // 1회 참여 QA (tier1) — 12명
+  CreditHelper(
+    name: '안금서',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '손건우',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '신혜빈',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '정창우',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '허석준',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '서현진',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '오동현',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '최승훈',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '김민욱',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '정명준',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '강대현',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
+  CreditHelper(
+    name: '심 혁',
+    role: 'QA',
+    tier: ContributionTier.tier1,
+    participationCount: 1,
+  ),
 ];
