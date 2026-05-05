@@ -716,7 +716,10 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  /// 구역 이탈 진입 처리: 진동(즉시 + 5초 주기 반복) + 배너 표시
+  /// 구역 이탈 진입 처리: 진동(즉시 + 5초 주기 반복) + 배너 표시 + 지도 리다이렉트
+  ///
+  /// 참가자 화면이 떠있을 때 이탈하면 지도가 가려져 복귀 경로를 파악할 수 없으므로,
+  /// 이탈 진입 시점에 지도 화면으로 강제 리다이렉트한다.
   void _onZoneExited() {
     if (!mounted) return;
     VibrationService.instance().zoneExit();
@@ -725,7 +728,10 @@ class _GamePageState extends ConsumerState<GamePage>
       if (!mounted || !_zoneExitDetector.isOutside) return;
       VibrationService.instance().zoneExit();
     });
-    setState(() => _isZoneExitWarningActive = true);
+    setState(() {
+      _isZoneExitWarningActive = true;
+      _showParticipants = false;
+    });
   }
 
   /// 구역 복귀 처리: 진동 Timer 정리 + 배너 숨김
@@ -1496,10 +1502,11 @@ class _GamePageState extends ConsumerState<GamePage>
               bottom: actionButtonBottom,
               child: Column(
                 children: [
-                  // 이탈 중 참가자 화면 진입 차단 — 시각 경고가 가려져 위험
-                  IgnorePointer(
-                    ignoring: _isZoneExitWarningActive,
-                    child: SvgIconButton(
+                  // 참가자 목록 버튼: 이탈 중에는 아예 숨김
+                  // (IgnorePointer로 비활성만 시키면 "있는데 안 눌리는" 혼란이 생기고,
+                  //  참가자 화면 진입 자체가 복귀 시야를 가려 위험하므로 시야에서 제거)
+                  if (!_isZoneExitWarningActive) ...[
+                    SvgIconButton(
                       assetPath: 'assets/icons/icon_person.svg',
                       onPressed: () => setState(() => _showParticipants = true),
                       containerSize: 48,
@@ -1507,8 +1514,8 @@ class _GamePageState extends ConsumerState<GamePage>
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
                     ),
-                  ),
-                  SizedBox(height: AppSpacing.vertical8),
+                    SizedBox(height: AppSpacing.vertical8),
+                  ],
                   // 내 위치 버튼: 이탈 중에도 활성화 유지
                   // (오히려 복귀 경로 파악에 필수적인 동작이라 차단하면 UX 저해)
                   MyLocationButton(
