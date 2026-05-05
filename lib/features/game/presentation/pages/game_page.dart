@@ -96,6 +96,12 @@ class _GamePageState extends ConsumerState<GamePage>
   final _tutorialKeyMapReturn = GlobalKey();
   final _tutorialKeyQrButton = GlobalKey();
 
+  /// 채팅 시트 collapsed 상단과 우측 액션 버튼 하단 사이의 **고정 시각 여백** (논리 dp).
+  ///
+  /// 시스템 네비 inset(`MediaQuery.viewPadding.bottom`)에 따라 변하지 않는 고정값이다.
+  /// inset은 별도로 더해지며 이 상수에는 포함되지 않는다.
+  static const double _kActionButtonChatGap = 45.0;
+
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
   bool _isCheckingGameStatus = false;
@@ -1444,6 +1450,19 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
+    // 우측 액션 버튼(및 개발용 디버그 FAB)이 채팅 시트와 겹치지 않게 정렬할 bottom.
+    //
+    // = 채팅 시트 collapsed 고정 부분([kChatOverlayCollapsedFixedHeight])
+    // + 시각 여백([_kActionButtonChatGap])
+    // + 시스템 네비 inset(`MediaQuery.viewPadding.bottom`, 안드로이드 3-button 등)
+    //
+    // ChatOverlay 측이 inset을 자동 흡수하므로 액션 버튼도 같은 inset을 더해 정렬한다.
+    final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+    final actionButtonBottom =
+        kChatOverlayCollapsedFixedHeight.h +
+        _kActionButtonChatGap.h +
+        bottomInset;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -1536,7 +1555,7 @@ class _GamePageState extends ConsumerState<GamePage>
           if (_showParticipants)
             Positioned(
               right: 20.w,
-              bottom: 157.h,
+              bottom: actionButtonBottom,
               child: Column(
                 children: [
                   SvgIconButton(
@@ -1556,7 +1575,7 @@ class _GamePageState extends ConsumerState<GamePage>
           else
             Positioned(
               right: 20.w,
-              bottom: 157.h,
+              bottom: actionButtonBottom,
               child: Column(
                 children: [
                   SvgIconButton(
@@ -1613,7 +1632,7 @@ class _GamePageState extends ConsumerState<GamePage>
           if (kDebugMode)
             Positioned(
               left: 12.w,
-              bottom: 157.h,
+              bottom: actionButtonBottom,
               child: FloatingActionButton(
                 heroTag: 'game_debug',
                 mini: true,
