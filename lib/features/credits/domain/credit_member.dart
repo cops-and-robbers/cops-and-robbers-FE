@@ -218,7 +218,7 @@ const List<CreditHelper> creditHelpers = [
   // 인프라 제공 (tier4) — 가장 높은 강조
   CreditHelper(
     name: '신지훈',
-    role: '인프라 제공',
+    role: 'Infra Provision',
     tier: ContributionTier.tier4,
     participationCount: 1,
   ),
