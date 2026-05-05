@@ -1444,6 +1444,12 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
+    // 시스템 네비게이션 바(안드로이드 3-button 등)의 하단 inset.
+    // ChatOverlay는 viewPadding.bottom을 반영해 시트가 위로 밀리는 반면,
+    // 우측 액션 버튼(및 개발용 디버그 FAB)은 절대 좌표(bottom: 157.h)라
+    // inset이 누락된다. 같은 inset을 더해 채팅 시트와 동일 기준으로 정렬한다.
+    final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -1536,7 +1542,7 @@ class _GamePageState extends ConsumerState<GamePage>
           if (_showParticipants)
             Positioned(
               right: 20.w,
-              bottom: 157.h,
+              bottom: 157.h + bottomInset,
               child: Column(
                 children: [
                   SvgIconButton(
@@ -1556,7 +1562,7 @@ class _GamePageState extends ConsumerState<GamePage>
           else
             Positioned(
               right: 20.w,
-              bottom: 157.h,
+              bottom: 157.h + bottomInset,
               child: Column(
                 children: [
                   SvgIconButton(
@@ -1613,7 +1619,7 @@ class _GamePageState extends ConsumerState<GamePage>
           if (kDebugMode)
             Positioned(
               left: 12.w,
-              bottom: 157.h,
+              bottom: 157.h + bottomInset,
               child: FloatingActionButton(
                 heroTag: 'game_debug',
                 mini: true,
