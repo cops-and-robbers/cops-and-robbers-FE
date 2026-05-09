@@ -22,11 +22,6 @@ import '../../../../core/constants/text_styles.dart';
 /// - 슬라이드 in/out은 본 위젯이 책임지지 않는다. 부모(`GamePage`)에서
 ///   `AnimatedSwitcher` + `SlideTransition`으로 enter/exit를 처리하므로
 ///   본 위젯은 정적인 시각 표현만 담는다.
-///
-/// 아이콘 시맨틱:
-/// - `icon_zone_exit.svg` — 점선 원(플레이그라운드 경계) + 외부 도트(내 위치).
-///   "구역 밖에 있다"는 도메인 의미를 직접 전달한다. 표준 경고 아이콘 대신
-///   도메인 아이콘을 사용하여 추후 일반 경고/신고 기능과 시각적으로 구분한다.
 class ZoneExitBanner extends StatelessWidget {
   const ZoneExitBanner({super.key, required this.isDarkMode});
 
