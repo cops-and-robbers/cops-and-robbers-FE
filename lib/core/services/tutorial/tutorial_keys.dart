@@ -13,6 +13,10 @@ class TutorialKeys {
   // 빈 슬롯"으로 호출 시점의 team 값으로 결정된다(키와 무관).
   static const waitingRoom = 'tutorial_waiting_room';
 
+  // 대기방 코치마크 완료 후 인게임 튜토리얼 페이지 안내 다이얼로그를
+  // 1회만 노출하기 위한 키. "튜토리얼 초기화" 시 함께 reset되어 재노출됨.
+  static const inGamePrompt = 'tutorial_in_game_prompt';
+
   /// 전체 키 목록 (초기화 시 사용)
   static const all = [
     home,
@@ -20,5 +24,6 @@ class TutorialKeys {
     setupPlayground,
     createStep2,
     waitingRoom,
+    inGamePrompt,
   ];
 }

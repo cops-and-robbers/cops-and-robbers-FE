@@ -561,11 +561,37 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _tutorialController = AppTutorialStyle.show(
       context: context,
       targets: targets,
-      onFinish: () {
+      onFinish: () async {
         TutorialService.markCompleted(key);
         _tutorialController = null;
         _isTutorialShowing = false;
+        if (!mounted) return;
+        await _showInGameTutorialPromptIfNeeded();
       },
+    );
+  }
+
+  /// 대기방 코치마크가 처음 끝난 직후 1회 노출되는 인게임 튜토리얼 안내.
+  ///
+  /// 키가 이미 mark되어 있으면 아무 동작도 하지 않는다.
+  /// 다이얼로그 표시 **전에** mark를 수행해 어떤 이유로 다이얼로그가
+  /// 중단되더라도 영구 재노출을 방지한다.
+  Future<void> _showInGameTutorialPromptIfNeeded() async {
+    final shown = await TutorialService.isCompleted(
+      TutorialKeys.inGamePrompt,
+    );
+    if (shown || !mounted) return;
+
+    await TutorialService.markCompleted(TutorialKeys.inGamePrompt);
+    if (!mounted) return;
+
+    await AppDialog.show<void>(
+      context: context,
+      title: '인게임 화면 미리 보기',
+      message: '게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?',
+      confirmText: '보러 가기',
+      barrierDismissible: false,
+      onConfirm: () => context.push('/tutorial/in-game'),
     );
   }
 

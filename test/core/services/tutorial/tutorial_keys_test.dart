@@ -11,4 +11,14 @@ void main() {
       expect(TutorialKeys.all, contains(TutorialKeys.waitingRoom));
     });
   });
+
+  group('TutorialKeys.inGamePrompt', () {
+    test('단일 키 상수 값', () {
+      expect(TutorialKeys.inGamePrompt, 'tutorial_in_game_prompt');
+    });
+
+    test('TutorialKeys.all 에 포함된다', () {
+      expect(TutorialKeys.all, contains(TutorialKeys.inGamePrompt));
+    });
+  });
 }
