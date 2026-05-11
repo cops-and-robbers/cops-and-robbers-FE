@@ -15,8 +15,6 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../chat/presentation/widgets/chat_overlay.dart'
     show kChatOverlayCollapsedFixedHeight;
-import '../../../game/presentation/widgets/game_timer_text.dart';
-import '../../../game/presentation/widgets/location_reveal_countdown.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
 import '../../../session/presentation/widgets/team_section.dart';
 
@@ -52,15 +50,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
 
   /// 참가자 화면 — 도둑팀 접힘/펼침 (실제 ParticipantOverlay 기본값과 동일)
   bool _isRobberExpanded = true;
-
-  /// 데모용 게임 시작 시각 — 30분 라운드 중 30초 경과 상태로 보여준다
-  late final DateTime _demoStartTime;
-
-  /// 데모용 다음 도둑 위치 공개 시각 — 약 4분 30초 남은 상태
-  late final DateTime _demoNextRevealTime;
-
-  static const Duration _demoRoundDuration = Duration(minutes: 30);
-  static const int _demoLocationRevealInterval = 5;
 
   // 데모 참가자 데이터 — 호스트는 경찰1, 본인은 도둑이게아니게
   static const int _demoHostParticipantId = 1;
@@ -119,10 +108,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    _demoStartTime = now.subtract(const Duration(seconds: 30));
-    _demoNextRevealTime = now.add(const Duration(minutes: 4, seconds: 30));
-
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -440,16 +425,23 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GameTimerText(
-                startTime: _demoStartTime,
-                totalDuration: _demoRoundDuration,
-                isDarkMode: _isDarkMode,
+              // 튜토리얼은 정적 미리보기 — 실 GameTimerText/LocationRevealCountdown은
+              // 매초 setState로 재빌드되어 학습용 화면에서는 불필요한 부담.
+              // 외형(스타일/텍스트 위치)은 그대로 복제하고 값만 고정.
+              Text(
+                '29:30',
+                style: _isDarkMode
+                    ? AppTextStyles.robberHeading.copyWith(
+                        color: AppColors.white,
+                      )
+                    : AppTextStyles.heading_20.copyWith(color: AppColors.black),
               ),
               SizedBox(height: 6.h),
-              LocationRevealCountdown(
-                nextRevealTime: _demoNextRevealTime,
-                intervalMinutes: _demoLocationRevealInterval,
-                isDarkMode: _isDarkMode,
+              Text(
+                '다음 도둑 위치 공개까지 04:30',
+                style: AppTextStyles.tag_12.copyWith(
+                  color: _isDarkMode ? AppColors.black400 : AppColors.red,
+                ),
               ),
             ],
           ),
