@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
@@ -384,9 +385,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final participantStartTimeStr = participantInfo?.gameStartTime;
     final effectiveStartTime =
         gameEvent.gameStartTime ??
-        (participantStartTimeStr != null
-            ? DateTime.tryParse(participantStartTimeStr)
-            : null);
+        IsoTimestampParser.parse(participantStartTimeStr);
 
     if (effectiveStartTime == null) return;
 
@@ -429,7 +428,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final waitMinutes = info?.policeWaitMinutes;
     if (startTimeStr == null || waitMinutes == null || waitMinutes <= 0) return;
 
-    final startTime = DateTime.tryParse(startTimeStr);
+    final startTime = IsoTimestampParser.parse(startTimeStr);
     if (startTime == null) return;
 
     final waitEndTime = startTime.add(Duration(minutes: waitMinutes));
@@ -512,9 +511,7 @@ class _GamePageState extends ConsumerState<GamePage>
     if (waitMinutes == null || waitMinutes <= 0) return null;
 
     final startTimeStr = info?.gameStartTime;
-    final startTime = startTimeStr != null
-        ? DateTime.tryParse(startTimeStr)
-        : null;
+    final startTime = IsoTimestampParser.parse(startTimeStr);
     // 더미 모드 시 _dummyStartTime 사용
     final effectiveStartTime = _dummyStartTime ?? startTime;
     if (effectiveStartTime == null) return null;
@@ -561,7 +558,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final participantInfo = ref.read(gameParticipantNotifierProvider);
     final startTimeStr = participantInfo?.gameStartTime;
     if (startTimeStr != null) {
-      final startTime = DateTime.tryParse(startTimeStr);
+      final startTime = IsoTimestampParser.parse(startTimeStr);
       if (startTime != null &&
           DateTime.now().difference(startTime).inSeconds > 20) {
         return;
@@ -1769,9 +1766,9 @@ class _GamePageState extends ConsumerState<GamePage>
       gameEventNotifierProvider.select((s) => s.gameStartTime),
     );
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
-    final participantStartTime = participantInfo?.gameStartTime != null
-        ? DateTime.tryParse(participantInfo!.gameStartTime!)
-        : null;
+    final participantStartTime = IsoTimestampParser.parse(
+      participantInfo?.gameStartTime,
+    );
     // 우선순위: 더미 시작 시각 → STOMP START 이벤트 시각 → 대기실 게임 시작 시각
     final gameStartTime =
         _dummyStartTime ?? stompGameStartTime ?? participantStartTime;
