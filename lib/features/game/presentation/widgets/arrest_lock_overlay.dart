@@ -42,11 +42,13 @@ class ArrestLockOverlay extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Positioned.fill(
       child: Container(
+        // 배경: black 40% 반투명 딤 처리
         color: AppColors.black.withValues(alpha: 0.4),
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 중앙 모달 카드: 320 x 304, black
               Container(
                 width: 320.w,
                 height: 304.h,
@@ -58,9 +60,12 @@ class ArrestLockOverlay extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // 아바타 + 텍스트
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // 도둑 수감 캐릭터 — 스킨 default 고정
+                        // (다른 참가자 카드에도 동일하게 jailed 상태가 표시되므로 본인 오버레이도 동일 에셋 사용)
                         SizedBox(
                           width: 92.w,
                           height: 108.h,

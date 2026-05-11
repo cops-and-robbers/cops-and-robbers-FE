@@ -20,12 +20,6 @@ Widget _wrap(Widget child) {
 
 void main() {
   group('ArrestLockOverlay', () {
-    // ScreenUtil이 375×812 기준 .h/.w를 정확히 스케일하도록
-    // 테스트 뷰를 실제 디자인 사이즈로 고정
-    setUp(() {
-      TestWidgetsFlutterBinding.ensureInitialized();
-    });
-
     testWidgets(
       'hides_manual_escape_button_when_showManualFallback_is_false',
       (tester) async {
