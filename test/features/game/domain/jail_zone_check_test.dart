@@ -44,7 +44,7 @@ void main() {
       expect(keepInside, isFalse);
     });
 
-    test('returns_true_at_exact_boundary_of_radius_plus_buffer', () {
+    test('returns_false_at_exact_boundary_of_radius_plus_buffer', () {
       // distance == radius + buffer → 아직 이탈로 판정 안 함 (strict >)
       final result = JailZoneCheck.computeIsOutside(
         distanceMeters: 40,
