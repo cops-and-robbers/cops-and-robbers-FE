@@ -137,7 +137,6 @@ class _GamePageState extends ConsumerState<GamePage>
   bool _isEscapeInFlight = false;
 
   /// 직전 자동 탈옥 시도가 실패했는가 — true면 ArrestLockOverlay가 폴백 모드 노출.
-  // ignore: unused_field
   bool _autoEscapeFailed = false;
 
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
@@ -780,6 +779,9 @@ class _GamePageState extends ConsumerState<GamePage>
         break;
       case JailZoneTransition.exited:
         if (_canTriggerAutoEscape()) {
+          // fire-and-forget — _checkJailExit는 GPS 스트림 콜백에서 sync 호출됨.
+          // 실패 처리는 _triggerAutoEscape 내부에서 setState로 폴백 모드 전환.
+          // ignore: unawaited_futures
           _triggerAutoEscape();
         }
         break;
@@ -829,6 +831,9 @@ class _GamePageState extends ConsumerState<GamePage>
 
       if (stillArrested) {
         setState(() => _autoEscapeFailed = true);
+      } else if (_autoEscapeFailed) {
+        // 직전 실패 후 재시도 성공 — 폴백 UI 즉시 해제 (다음 ARREST까지 잔류 방지)
+        setState(() => _autoEscapeFailed = false);
       }
     } finally {
       _isEscapeInFlight = false;
