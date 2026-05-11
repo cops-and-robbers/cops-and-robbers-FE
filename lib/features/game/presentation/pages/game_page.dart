@@ -37,6 +37,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import '../../domain/jail_zone_check.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
@@ -115,6 +116,32 @@ class _GamePageState extends ConsumerState<GamePage>
   StreamSubscription<Position>? _headingSubscription; // POLICE 전용 heading 스트림
   Position? _lastSentPosition;
   DateTime? _lastSentTime;
+
+  // === 자동 탈옥 추적 상태 (감옥 이탈 감지 시스템) ===
+
+  /// 매 GPS tick마다 갱신되는 최신 위치.
+  /// ARREST 핸들러가 즉시 `_wasOutsideJail`을 재계산할 때 사용.
+  /// (`_lastSentPosition`은 5초 throttle된 송신용이라 별개)
+  // ignore: unused_field
+  Position? _lastKnownPosition;
+
+  /// 직전 GPS tick에서 "감옥 밖" 여부. 진입/이탈 전환 판정 baseline.
+  /// 초기값은 보수적으로 true (감옥 밖으로 가정).
+  // ignore: prefer_final_fields
+  bool _wasOutsideJail = true;
+
+  /// 이번 체포 사이클 동안 감옥 영역에 명시적으로 진입(out→in 전환)한 적 있는가.
+  /// ARREST 이벤트마다 false로 리셋된다.
+  // ignore: unused_field, prefer_final_fields
+  bool _hasEnteredJailThisArrestCycle = false;
+
+  /// 자동 탈옥 API 호출이 진행 중인가 (중복 호출 방지).
+  // ignore: unused_field, prefer_final_fields
+  bool _isEscapeInFlight = false;
+
+  /// 직전 자동 탈옥 시도가 실패했는가 — true면 ArrestLockOverlay가 폴백 모드 노출.
+  // ignore: unused_field, prefer_final_fields
+  bool _autoEscapeFailed = false;
 
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
   DateTime? _lastHandledPoliceMove;
@@ -705,6 +732,35 @@ class _GamePageState extends ConsumerState<GamePage>
 
     _zoneExitDetector.update(
       isOutside: distance > area.playgroundRadiusInMeters,
+    );
+  }
+
+  /// 마지막으로 알려진 GPS Position을 기반으로 "감옥 밖" 여부를 계산한다.
+  ///
+  /// `position == null` 이거나 게임 영역이 아직 로드되지 않았으면 `null` 반환.
+  /// 히스테리시스 buffer는 [JailZoneCheck.defaultExitBuffer] 사용.
+  /// 호출자는 이전 상태(`_wasOutsideJail`)를 전달하여 buffer band 내에서는
+  /// 직전 상태를 유지하도록 한다.
+  // ignore: unused_element
+  bool? _computeIsOutsideJail(Position? position) {
+    if (position == null) return null;
+    final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
+    final jailCenter = area?.jailCenter;
+    final jailRadius = area?.jailRadiusInMeters;
+    if (jailCenter == null || jailRadius == null) return null;
+
+    final distance = Geolocator.distanceBetween(
+      jailCenter.latitude,
+      jailCenter.longitude,
+      position.latitude,
+      position.longitude,
+    );
+
+    return JailZoneCheck.computeIsOutside(
+      distanceMeters: distance,
+      radiusMeters: jailRadius,
+      buffer: JailZoneCheck.defaultExitBuffer,
+      previousIsOutside: _wasOutsideJail,
     );
   }
 
