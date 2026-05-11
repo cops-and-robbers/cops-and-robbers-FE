@@ -153,7 +153,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
       context: context,
       title: '튜토리얼 완료!',
       message: '핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요',
-      confirmText: '카탈로그로 돌아가기',
+      confirmText: '튜토리얼 끝내기',
       onConfirm: () => context.pop(),
       isDarkMode: _isDarkMode,
     );

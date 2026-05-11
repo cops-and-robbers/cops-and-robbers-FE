@@ -148,6 +148,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _buildItemDivider(),
             _buildMenuItem(text: '버그 제보', onTap: _onBugReport),
             _buildItemDivider(),
+            _buildMenuItem(
+              text: '튜토리얼 다시 보기',
+              onTap: () => context.push('/tutorial'),
+            ),
+            _buildItemDivider(),
             _buildMenuItem(text: '튜토리얼 초기화', onTap: _onResetTutorial),
             _buildItemDivider(),
             _buildMenuItem(

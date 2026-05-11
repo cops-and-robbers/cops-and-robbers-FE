@@ -16,7 +16,7 @@ class TutorialCatalogPage extends StatelessWidget {
   static const _items = <_TutorialCatalogItem>[
     _TutorialCatalogItem(
       title: '방 만들기',
-      subtitle: '운동장·감옥 설정과 슬라이더 조작',
+      subtitle: '플레이그라운드·감옥 설정과 슬라이더 조작',
       icon: Icons.add_box_outlined,
     ),
     _TutorialCatalogItem(
@@ -183,11 +183,7 @@ class _TutorialCatalogCard extends StatelessWidget {
             ),
             SizedBox(width: AppSpacing.horizontal8),
             if (item.isActive)
-              Icon(
-                Icons.chevron_right,
-                size: 24.w,
-                color: AppColors.black800,
-              )
+              Icon(Icons.chevron_right, size: 24.w, color: AppColors.black800)
             else
               Container(
                 padding: EdgeInsets.symmetric(
