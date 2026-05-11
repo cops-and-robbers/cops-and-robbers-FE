@@ -127,20 +127,17 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 직전 GPS tick에서 "감옥 밖" 여부. 진입/이탈 전환 판정 baseline.
   /// 초기값은 보수적으로 true (감옥 밖으로 가정).
-  // ignore: prefer_final_fields
   bool _wasOutsideJail = true;
 
   /// 이번 체포 사이클 동안 감옥 영역에 명시적으로 진입(out→in 전환)한 적 있는가.
   /// ARREST 이벤트마다 false로 리셋된다.
-  // ignore: unused_field, prefer_final_fields
   bool _hasEnteredJailThisArrestCycle = false;
 
   /// 자동 탈옥 API 호출이 진행 중인가 (중복 호출 방지).
-  // ignore: unused_field, prefer_final_fields
   bool _isEscapeInFlight = false;
 
   /// 직전 자동 탈옥 시도가 실패했는가 — true면 ArrestLockOverlay가 폴백 모드 노출.
-  // ignore: unused_field, prefer_final_fields
+  // ignore: unused_field
   bool _autoEscapeFailed = false;
 
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
@@ -741,7 +738,6 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 히스테리시스 buffer는 [JailZoneCheck.defaultExitBuffer] 사용.
   /// 호출자는 이전 상태(`_wasOutsideJail`)를 전달하여 buffer band 내에서는
   /// 직전 상태를 유지하도록 한다.
-  // ignore: unused_element
   bool? _computeIsOutsideJail(Position? position) {
     if (position == null) return null;
     final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
@@ -762,6 +758,81 @@ class _GamePageState extends ConsumerState<GamePage>
       buffer: JailZoneCheck.defaultExitBuffer,
       previousIsOutside: _wasOutsideJail,
     );
+  }
+
+  /// GPS 매 tick마다 호출 — 감옥 진입/이탈 전환을 감지하고 트리거 조건 시 자동 탈옥 호출.
+  ///
+  /// 진입(out→in)이면 `_hasEnteredJailThisArrestCycle = true`.
+  /// 이탈(in→out)이면 [_canTriggerAutoEscape] 통과 시 [_triggerAutoEscape] 호출.
+  // ignore: unused_element
+  void _checkJailExit(Position position) {
+    final newIsOutside = _computeIsOutsideJail(position);
+    if (newIsOutside == null) return; // 게임 영역 미로드
+
+    final transition = JailZoneCheck.evaluateTransition(
+      wasOutside: _wasOutsideJail,
+      isOutside: newIsOutside,
+    );
+
+    switch (transition) {
+      case JailZoneTransition.entered:
+        _hasEnteredJailThisArrestCycle = true;
+        break;
+      case JailZoneTransition.exited:
+        if (_canTriggerAutoEscape()) {
+          _triggerAutoEscape();
+        }
+        break;
+      case JailZoneTransition.none:
+        break;
+    }
+
+    _wasOutsideJail = newIsOutside;
+  }
+
+  /// 자동 탈옥 발동 가드 — 7개 조건 모두 통과해야 true.
+  // ignore: unused_element
+  bool _canTriggerAutoEscape() {
+    if (!_hasEnteredJailThisArrestCycle) return false;
+    if (_isEscapeInFlight) return false;
+    if (_gameOverDialogShown) return false;
+    if (_isReconnectModalShown) return false;
+
+    final eventState = ref.read(gameEventNotifierProvider);
+    if (!eventState.arrestedParticipantIds.contains(widget.participantId)) {
+      return false;
+    }
+    if (eventState.escapedParticipantIds.contains(widget.participantId)) {
+      return false;
+    }
+    return true;
+  }
+
+  /// 자동 탈옥 호출 — escape()는 예외를 throw하지 않으므로 호출 후 상태로 실패 판정.
+  ///
+  /// `arrestedParticipantIds`에 내 ID가 남아 있으면 rollback된 것 = 실패 →
+  /// `_autoEscapeFailed = true`로 폴백 모드 전환.
+  // ignore: unused_element
+  Future<void> _triggerAutoEscape() async {
+    _isEscapeInFlight = true;
+    try {
+      await ref
+          .read(gameEventNotifierProvider.notifier)
+          .escape(_gameId, widget.participantId);
+
+      if (!mounted) return;
+
+      final stillArrested = ref
+          .read(gameEventNotifierProvider)
+          .arrestedParticipantIds
+          .contains(widget.participantId);
+
+      if (stillArrested) {
+        setState(() => _autoEscapeFailed = true);
+      }
+    } finally {
+      _isEscapeInFlight = false;
+    }
   }
 
   /// 구역 이탈 경고 팝업 표시
