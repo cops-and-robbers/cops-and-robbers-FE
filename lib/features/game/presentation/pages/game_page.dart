@@ -56,8 +56,7 @@ import '../widgets/participant_overlay.dart';
 import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
 import '../widgets/zone_exit_banner.dart';
-import '../widgets/zone_exit_pulse_border.dart';
-import '../widgets/zone_exit_pulse_overlay.dart';
+import '../widgets/zone_exit_vignette.dart';
 
 /// 인게임 지도 화면
 ///
@@ -1616,21 +1615,12 @@ class _GamePageState extends ConsumerState<GamePage>
             ),
           ),
 
-          /// index 10: 구역 이탈 전체 화면 펄스 오버레이 (보더 아래)
-          /// 가장자리 보더만으로는 못 알아챌 수 있어, 옅은 빨강 워시를 화면 전체에
-          /// 깔아 주변 시야로도 인지하게 한다. 보더와 동일한 1.5초 주기로 동기화.
-          /// 팀 테마 분기: 경찰=red, 도둑=red900 (명도만 차별화)
+          /// index 10: 구역 이탈 비네트 (가장 위, 터치 차단 없음)
+          /// 화면 가장자리에 부드러운 빨강 그라데이션을 깔아 이탈 상태를 알린다.
+          /// 중앙은 투명하게 유지되어 지도·플레이그라운드 원·내 위치를 가리지 않음.
+          /// 팀 테마 분기는 위젯 내부에서 처리.
           if (_isZoneExitWarningActive)
-            Positioned.fill(
-              child: ZoneExitPulseOverlay(isDarkMode: _isDarkMode),
-            )
-          else
-            const SizedBox.shrink(),
-
-          /// index 11: 구역 이탈 펄스 보더 (가장 위, 터치 차단 없음)
-          /// 잠금 오버레이 위에 얹어 화면 가장자리의 시각 강조 효과를 유지한다.
-          if (_isZoneExitWarningActive)
-            const Positioned.fill(child: ZoneExitPulseBorder())
+            Positioned.fill(child: ZoneExitVignette(isDarkMode: _isDarkMode))
           else
             const SizedBox.shrink(),
         ],
