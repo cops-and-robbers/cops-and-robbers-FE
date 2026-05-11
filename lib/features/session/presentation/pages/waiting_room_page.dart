@@ -562,7 +562,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       context: context,
       targets: targets,
       onFinish: () async {
-        TutorialService.markCompleted(key);
+        await TutorialService.markCompleted(key);
         _tutorialController = null;
         _isTutorialShowing = false;
         if (!mounted) return;
@@ -577,9 +577,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 다이얼로그 표시 **전에** mark를 수행해 어떤 이유로 다이얼로그가
   /// 중단되더라도 영구 재노출을 방지한다.
   Future<void> _showInGameTutorialPromptIfNeeded() async {
-    final shown = await TutorialService.isCompleted(
-      TutorialKeys.inGamePrompt,
-    );
+    final shown = await TutorialService.isCompleted(TutorialKeys.inGamePrompt);
     if (shown || !mounted) return;
 
     await TutorialService.markCompleted(TutorialKeys.inGamePrompt);
@@ -591,6 +589,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       message: '게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?',
       confirmText: '보러 가기',
       barrierDismissible: false,
+      // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
+      isDarkMode: ref.read(roleThemeProvider),
       onConfirm: () => context.push('/tutorial/in-game'),
     );
   }
