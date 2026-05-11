@@ -703,9 +703,11 @@ class _GamePageState extends ConsumerState<GamePage>
         DeviceLocationService.getPositionStream(distanceFilter: 0).listen((
           pos,
         ) {
-          if (mounted) {
-            _checkZoneExit(pos);
-          }
+          if (!mounted) return;
+          _checkZoneExit(pos);
+          // 자동 탈옥 감지용 — 최신 위치 보관 + 감옥 진입/이탈 판정
+          _lastKnownPosition = pos;
+          _checkJailExit(pos);
         });
   }
 
@@ -763,7 +765,6 @@ class _GamePageState extends ConsumerState<GamePage>
   ///
   /// 진입(out→in)이면 `_hasEnteredJailThisArrestCycle = true`.
   /// 이탈(in→out)이면 [_canTriggerAutoEscape] 통과 시 [_triggerAutoEscape] 호출.
-  // ignore: unused_element
   void _checkJailExit(Position position) {
     final newIsOutside = _computeIsOutsideJail(position);
     if (newIsOutside == null) return; // 게임 영역 미로드
@@ -793,7 +794,6 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 자동 탈옥 발동 가드 — 7개 조건 모두 통과해야 true.
-  // ignore: unused_element
   bool _canTriggerAutoEscape() {
     if (!_hasEnteredJailThisArrestCycle) return false;
     if (_isEscapeInFlight) return false;
@@ -814,7 +814,6 @@ class _GamePageState extends ConsumerState<GamePage>
   ///
   /// `arrestedParticipantIds`에 내 ID가 남아 있으면 rollback된 것 = 실패 →
   /// `_autoEscapeFailed = true`로 폴백 모드 전환.
-  // ignore: unused_element
   Future<void> _triggerAutoEscape() async {
     _isEscapeInFlight = true;
     try {
