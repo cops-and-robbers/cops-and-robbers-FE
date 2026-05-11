@@ -164,8 +164,7 @@ class _SessionCreationFlowPageState
         return [
           AppTutorialStyle.target(
             keyTarget: _tutorialKeySettings,
-            description:
-                '게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요',
+            description: '게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요',
           ),
         ];
       default:

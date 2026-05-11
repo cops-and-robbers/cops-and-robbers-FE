@@ -229,12 +229,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             color: _isDarkMode ? AppColors.black900 : AppColors.white,
             child: SafeArea(
               bottom: false,
-              child: Column(
-                children: [
-                  _buildTopBar(),
-                  _buildMissionBanner(),
-                ],
-              ),
+              child: Column(children: [_buildTopBar(), _buildMissionBanner()]),
             ),
           ),
         ),
@@ -255,8 +250,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                   },
                   containerSize: 48,
                   iconSize: 24,
-                  iconColor:
-                      _isDarkMode ? AppColors.green : AppColors.blue,
+                  iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                   backgroundColor: _isDarkMode ? AppColors.black : null,
                 ),
               ),
@@ -342,8 +336,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                   },
                   containerSize: 48,
                   iconSize: 24,
-                  iconColor:
-                      _isDarkMode ? AppColors.green : AppColors.blue,
+                  iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                   backgroundColor: _isDarkMode ? AppColors.black : null,
                 ),
               ),
@@ -513,15 +506,10 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   Widget _buildMissionBanner() {
     if (_missionStep >= 3) return const SizedBox.shrink();
 
-    const descriptions = [
-      '참가자 보기 버튼을 눌러보세요',
-      'QR 버튼을 눌러보세요',
-      '지도로 돌아가 보세요',
-    ];
+    const descriptions = ['참가자 보기 버튼을 눌러보세요', 'QR 버튼을 눌러보세요', '지도로 돌아가 보세요'];
 
     final accentColor = _isDarkMode ? AppColors.green : AppColors.blue;
-    final bgColor =
-        _isDarkMode ? AppColors.black800 : AppColors.blue100;
+    final bgColor = _isDarkMode ? AppColors.black800 : AppColors.blue100;
     final descColor = _isDarkMode ? AppColors.white : AppColors.black800;
 
     return Container(

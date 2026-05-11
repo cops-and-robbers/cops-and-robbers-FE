@@ -1509,8 +1509,7 @@ class _GamePageState extends ConsumerState<GamePage>
                 children: [
                   SvgIconButton(
                     assetPath: 'assets/icons/icon_person.svg',
-                    onPressed: () =>
-                        setState(() => _showParticipants = true),
+                    onPressed: () => setState(() => _showParticipants = true),
                     containerSize: 48,
                     iconSize: 24,
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,

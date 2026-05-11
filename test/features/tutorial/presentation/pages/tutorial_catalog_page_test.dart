@@ -16,8 +16,7 @@ GoRouter _testRouter() {
       ),
       GoRoute(
         path: '/tutorial/in-game',
-        builder: (_, _) =>
-            const Scaffold(body: Text('IN_GAME_LANDED')),
+        builder: (_, _) => const Scaffold(body: Text('IN_GAME_LANDED')),
       ),
     ],
   );
@@ -51,41 +50,36 @@ void main() {
       expect(find.text('QR 체포·탈옥'), findsNothing);
     });
 
-    testWidgets(
-      'shows_준비_중_badge_for_3_disabled_cards_when_built',
-      (tester) async {
-        await tester.pumpWidget(_wrap(tester, _testRouter()));
-        await tester.pumpAndSettle();
+    testWidgets('shows_준비_중_badge_for_3_disabled_cards_when_built', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(tester, _testRouter()));
+      await tester.pumpAndSettle();
 
-        expect(find.text('준비 중'), findsNWidgets(3));
-      },
-    );
+      expect(find.text('준비 중'), findsNWidgets(3));
+    });
 
-    testWidgets(
-      'inGame_card_navigates_to_in_game_route_when_tapped',
-      (tester) async {
-        await tester.pumpWidget(_wrap(tester, _testRouter()));
-        await tester.pumpAndSettle();
+    testWidgets('inGame_card_navigates_to_in_game_route_when_tapped', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(tester, _testRouter()));
+      await tester.pumpAndSettle();
 
-        await tester.tap(find.text('인게임'));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text('인게임'));
+      await tester.pumpAndSettle();
 
-        expect(find.text('IN_GAME_LANDED'), findsOneWidget);
-      },
-    );
+      expect(find.text('IN_GAME_LANDED'), findsOneWidget);
+    });
 
-    testWidgets(
-      'disabled_card_does_not_navigate_when_tapped',
-      (tester) async {
-        await tester.pumpWidget(_wrap(tester, _testRouter()));
-        await tester.pumpAndSettle();
+    testWidgets('disabled_card_does_not_navigate_when_tapped', (tester) async {
+      await tester.pumpWidget(_wrap(tester, _testRouter()));
+      await tester.pumpAndSettle();
 
-        await tester.tap(find.text('방 만들기'));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text('방 만들기'));
+      await tester.pumpAndSettle();
 
-        expect(find.text('IN_GAME_LANDED'), findsNothing);
-        expect(find.text('방 만들기'), findsOneWidget);
-      },
-    );
+      expect(find.text('IN_GAME_LANDED'), findsNothing);
+      expect(find.text('방 만들기'), findsOneWidget);
+    });
   });
 }
