@@ -1673,6 +1673,7 @@ class _GamePageState extends ConsumerState<GamePage>
             ArrestLockOverlay(
               gameId: _gameId,
               myParticipantId: widget.participantId,
+              showManualFallback: _autoEscapeFailed,
             )
           else
             const SizedBox.shrink(),
