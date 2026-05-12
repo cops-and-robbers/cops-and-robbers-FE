@@ -122,7 +122,6 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 매 GPS tick마다 갱신되는 최신 위치.
   /// ARREST 핸들러가 즉시 `_wasOutsideJail`을 재계산할 때 사용.
   /// (`_lastSentPosition`은 5초 throttle된 송신용이라 별개)
-  // ignore: unused_field
   Position? _lastKnownPosition;
 
   /// 직전 GPS tick에서 "감옥 밖" 여부. 진입/이탈 전환 판정 baseline.
@@ -1326,14 +1325,25 @@ class _GamePageState extends ConsumerState<GamePage>
       }
     });
 
-    // 체포 이벤트 감지 → 열려있는 다이얼로그(QR 등) 닫기
+    // 체포 이벤트 감지 → 열려있는 다이얼로그(QR 등) 닫기 + 자동 탈옥 추적 리셋
     ref.listen(
       gameEventNotifierProvider.select((s) => s.arrestedParticipantIds),
       (prev, next) {
         if (prev == null) return;
         final newlyArrested = next.difference(prev);
-        if (newlyArrested.contains(widget.participantId) && mounted) {
-          Navigator.of(context).popUntil((route) => route is! PopupRoute);
+        if (!newlyArrested.contains(widget.participantId) || !mounted) return;
+
+        Navigator.of(context).popUntil((route) => route is! PopupRoute);
+
+        // 자동 탈옥 추적 상태 리셋 — 새 체포 사이클 시작.
+        // _wasOutsideJail은 마지막 GPS 기준으로 재계산 (감옥 안에서 잡힌 케이스 대응).
+        _wasOutsideJail = _computeIsOutsideJail(_lastKnownPosition) ?? true;
+        _hasEnteredJailThisArrestCycle = false;
+        _isEscapeInFlight = false;
+
+        // _autoEscapeFailed 는 UI(폴백 모드)에 영향을 주므로 값이 실제로 바뀔 때만 setState.
+        if (_autoEscapeFailed) {
+          setState(() => _autoEscapeFailed = false);
         }
       },
     );
