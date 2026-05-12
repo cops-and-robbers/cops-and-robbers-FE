@@ -1296,20 +1296,19 @@ class _GamePageState extends ConsumerState<GamePage>
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
     final policeStartTime = _computePoliceStartTime();
 
-    // 재연결 감지 → 도둑 팀 위치 즉시 재전송 + 재연결 모달 표시/닫기
+    // 연결 성공 시 게임 상태 동기화 + 도둑 팀 위치 즉시 재전송 / 끊김 시 재연결 모달 처리
     ref.listen(gameEventNotifierProvider.select((s) => s.connectionState), (
       prev,
       next,
     ) {
-      // 재연결 성공 → 게임 상태 동기화 + 도둑 팀 위치 즉시 재전송
+      // 연결 성공 → 게임 상태 동기화 + 도둑 팀 위치 즉시 재전송
       if (next == StompConnectionState.connected &&
           prev != StompConnectionState.connected) {
-        // 끊김 구간 동안 누락된 체포·탈옥 이벤트를 서버 조회로 보정.
+        // 끊김 구간 + 앱 재시작 후 첫 진입에서 누락된 체포·탈옥 상태를 서버 조회로 보정.
+        // 최초 connected에서도 호출해, 재실행 시 JAILED 상태가 ArrestLockOverlay에 반영되도록 한다.
         // 의도적으로 await하지 않음 — 아래 도둑 팀 위치 즉시 재전송이
         // HTTP 응답을 기다리다 지연되지 않도록. 에러는 메서드 내부 try-catch에서 처리.
-        if (_hasGameEventConnectedOnce) {
-          unawaited(_syncGameStateOnReconnect());
-        }
+        unawaited(_syncGameStateOnReconnect());
 
         if (widget.team == 'ROBBER' && !widget.isDummy) {
           if (_lastSentPosition != null) {
