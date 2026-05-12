@@ -89,21 +89,27 @@ class CreditsPage extends StatelessWidget {
                   SizedBox(height: AppSpacing.vertical12),
                   MarqueeWidget(
                     child: Row(
-                      children: creditHelpers
-                          .map(
-                            (helper) => Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: AppSpacing.horizontal16,
-                              ),
-                              child: Text(
-                                '${helper.name} (${helper.role})',
-                                style: AppTextStyles.paragraph_14.copyWith(
-                                  color: AppColors.black500,
-                                ),
-                              ),
+                      children: [
+                        // 첫 항목이 화면에 진입하기 전 시각적 휴지 — 화면 너비만큼
+                        // spacer를 두어 첫 텍스트(tier4)가 화면 오른쪽 밖에서
+                        // 들어오도록 하고, 한 사이클 사이에도 호흡을 만든다.
+                        SizedBox(width: 0.7.sw),
+                        ...creditHelpers.map(
+                          (helper) => Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppSpacing.horizontal16,
                             ),
-                          )
-                          .toList(),
+                            child: Text(
+                              '${helper.name} (${helper.role})',
+                              style:
+                                  (helper.tier == ContributionTier.tier5
+                                          ? AppTextStyles.paragraph14Semibold
+                                          : AppTextStyles.paragraph_14)
+                                      .copyWith(color: helper.tier.color),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

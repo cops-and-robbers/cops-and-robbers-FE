@@ -19,6 +19,17 @@ import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
 import 'chat_preview_card.dart';
 
+/// ChatOverlay collapsed 시트의 시스템 inset 제외 고정 부분 높이 (논리 dp).
+///
+/// 시트 상단부 합계: 드래그 핸들(28) + 핸들↔입력바 간격(8) + 입력바(64)
+///                  + 입력바 아래 안전 여백(12) = 112.
+/// 시스템 네비 바 inset(`MediaQuery.viewPadding.bottom`)은 호출 측에서
+/// 별도로 더해야 한다.
+///
+/// 같은 게임 화면 위에 절대 좌표로 떠 있는 위젯(우측 액션 버튼 등)이
+/// 채팅 시트와 충돌하지 않게 정렬할 때 이 상수를 단일 진실 공급원으로 참조한다.
+const double kChatOverlayCollapsedFixedHeight = 112.0;
+
 /// 채팅 오버레이 위젯
 ///
 /// 게임 화면 하단에 표시되는 채팅 UI입니다.
@@ -229,11 +240,12 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     final bottomMargin = (isKeyboardOpen && !isKeyboardClosing)
         ? keyboardHeight
         : safeBottomMargin;
+    // collapsed 시트 총 높이 = inset 제외 고정 부분(상단 핸들 + 입력바 + 내부 여백)
+    //                          + 시스템 inset(viewPadding.bottom 또는 fallback)
+    // 고정 부분은 file-level [kChatOverlayCollapsedFixedHeight]를 단일 공급원으로 사용한다.
     final collapsedHeight =
-        _dragHandleHeight.h +
-        AppSpacing.vertical8 +
-        _inputBarHeight.h +
-        safeBottomMargin;
+        kChatOverlayCollapsedFixedHeight.h +
+        (bottomPadding > 0 ? bottomPadding : _fallbackBottomPadding.h);
     final expandedMinHeight =
         _dragHandleHeight.h +
         _titleAreaHeight.h +

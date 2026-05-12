@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
@@ -118,8 +119,7 @@ class GameEventState {
 
     final gameStartTimeStr = participantInfo?.gameStartTime;
     final effectiveStartTime =
-        gameStartTime ??
-        (gameStartTimeStr != null ? DateTime.tryParse(gameStartTimeStr) : null);
+        gameStartTime ?? IsoTimestampParser.parse(gameStartTimeStr);
 
     return policeWaitMinutes != null &&
         effectiveStartTime != null &&
@@ -583,7 +583,7 @@ class GameEventNotifier extends _$GameEventNotifier {
         _handleStart(event.data);
       case GameEventType.policeMoveStart:
         final moveStartTime =
-            _parseTimestamp(event.timestamp) ?? DateTime.now();
+            IsoTimestampParser.parse(event.timestamp) ?? DateTime.now();
         state = state.copyWith(
           isPoliceMoving: true,
           policeMoveStartTime: moveStartTime,
@@ -600,7 +600,7 @@ class GameEventNotifier extends _$GameEventNotifier {
 
   void _handleStart(Map<String, dynamic> data) {
     final startTimeStr = data['startTime'] as String?;
-    final startTime = _parseTimestamp(startTimeStr);
+    final startTime = IsoTimestampParser.parse(startTimeStr);
     state = state.copyWith(
       gameStartTime: startTime ?? DateTime.now(),
       bannerMessage: GameEventMessages.gameStartGo,
@@ -654,7 +654,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       }
     }
 
-    final revealTime = _parseTimestamp(timestamp) ?? DateTime.now();
+    final revealTime = IsoTimestampParser.parse(timestamp) ?? DateTime.now();
     state = state.copyWith(
       lastLocationRevealTime: revealTime,
       bannerMessage: GameEventMessages.locationReveal,
@@ -748,19 +748,6 @@ class GameEventNotifier extends _$GameEventNotifier {
   }
 
   // ============================================================
-  // 유틸리티
-  // ============================================================
-
-  static DateTime? _parseTimestamp(String? raw) {
-    if (raw == null) return null;
-    final normalized = raw.replaceFirstMapped(
-      RegExp(r'(\.\d{1,6})\d*'),
-      (m) => m.group(1)!,
-    );
-    return DateTime.tryParse(normalized);
-  }
-
-  // ============================================================
   // 스트림 설정 및 재연결 정책
   // ============================================================
 
@@ -820,7 +807,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       debugPrint('[GameEventNotifier] ⏭️ 발자국 복구 skip (게임 설정 미로드)');
       return;
     }
-    final startTime = DateTime.tryParse(gameStartTimeStr);
+    final startTime = IsoTimestampParser.parse(gameStartTimeStr);
     if (startTime == null) {
       debugPrint('[GameEventNotifier] ⏭️ 발자국 복구 skip (startTime 파싱 실패)');
       return;

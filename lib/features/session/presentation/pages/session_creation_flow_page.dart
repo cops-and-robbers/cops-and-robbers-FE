@@ -74,9 +74,7 @@ class _SessionCreationFlowPageState
   final _tutorialKeyPlayground = GlobalKey();
   // Step 1
   // Step 2
-  final _tutorialKeyRoundDuration = GlobalKey();
-  final _tutorialKeyLocationShare = GlobalKey();
-  final _tutorialKeyPoliceWait = GlobalKey();
+  final _tutorialKeySettings = GlobalKey();
   // Step 3
 
   // Step 0: 구역 선택
@@ -165,16 +163,8 @@ class _SessionCreationFlowPageState
       case 2:
         return [
           AppTutorialStyle.target(
-            keyTarget: _tutorialKeyRoundDuration,
-            description: '한 라운드의 제한 시간이에요\n숫자를 탭하면 직접 입력할 수 있어요',
-          ),
-          AppTutorialStyle.target(
-            keyTarget: _tutorialKeyLocationShare,
-            description: '도둑 위치가 경찰에게 공개되는 주기에요',
-          ),
-          AppTutorialStyle.target(
-            keyTarget: _tutorialKeyPoliceWait,
-            description: '게임 시작 후 경찰이 출발할 때까지 기다리는 시간이에요',
+            keyTarget: _tutorialKeySettings,
+            description: '게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요',
           ),
         ];
       default:
@@ -656,9 +646,7 @@ class _SessionCreationFlowPageState
             onRoundDurationChanged: _onRoundDurationChanged,
             onLocationShareChanged: _onLocationShareChanged,
             onPoliceWaitChanged: _onPoliceWaitChanged,
-            roundDurationKey: _tutorialKeyRoundDuration,
-            locationShareKey: _tutorialKeyLocationShare,
-            policeWaitKey: _tutorialKeyPoliceWait,
+            settingsKey: _tutorialKeySettings,
           ),
         ),
 

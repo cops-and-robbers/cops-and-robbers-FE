@@ -31,6 +31,8 @@ import '../features/session/data/models/game_settings_response.dart';
 import '../features/game/presentation/pages/game_page.dart';
 import '../features/notice/presentation/pages/notices_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
+import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
+import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
 import '../features/credits/presentation/pages/credits_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/pages/maintenance_page.dart';
@@ -230,6 +232,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: RoutePaths.agreementName,
         pageBuilder: (context, state) =>
             buildSmoothFade(key: state.pageKey, child: const AgreementPage()),
+      ),
+
+      // ====================================================================
+      // Tutorial Routes (튜토리얼 — 카탈로그 + 항목별 디테일)
+      // ====================================================================
+      GoRoute(
+        path: '/tutorial',
+        pageBuilder: (context, state) => buildDirectionalSlide(
+          key: state.pageKey,
+          child: const TutorialCatalogPage(),
+          isForward: true,
+        ),
+      ),
+      GoRoute(
+        path: '/tutorial/in-game',
+        pageBuilder: (context, state) => buildDirectionalSlide(
+          key: state.pageKey,
+          child: const InGameTutorialPage(),
+          isForward: true,
+        ),
       ),
 
       // ====================================================================

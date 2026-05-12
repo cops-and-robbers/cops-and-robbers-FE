@@ -10,10 +10,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/services/tutorial/tutorial_keys.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -57,6 +55,8 @@ import '../widgets/google_map_view.dart';
 import '../widgets/participant_overlay.dart';
 import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
+import '../widgets/zone_exit_banner.dart';
+import '../widgets/zone_exit_vignette.dart';
 
 /// 인게임 지도 화면
 ///
@@ -90,11 +90,11 @@ class _GamePageState extends ConsumerState<GamePage>
     with WidgetsBindingObserver {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
 
-  // 튜토리얼 하이라이트 대상 키
-  final _tutorialKeyTimer = GlobalKey();
-  final _tutorialKeyParticipants = GlobalKey();
-  final _tutorialKeyMapReturn = GlobalKey();
-  final _tutorialKeyQrButton = GlobalKey();
+  /// 채팅 시트 collapsed 상단과 우측 액션 버튼 하단 사이의 **고정 시각 여백** (논리 dp).
+  ///
+  /// 시스템 네비 inset(`MediaQuery.viewPadding.bottom`)에 따라 변하지 않는 고정값이다.
+  /// inset은 별도로 더해지며 이 상수에는 포함되지 않는다.
+  static const double _kActionButtonChatGap = 45.0;
 
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
@@ -135,21 +135,23 @@ class _GamePageState extends ConsumerState<GamePage>
         _pendingZoneExit = true;
         return;
       }
-      VibrationService.instance().zoneExit();
-      _showZoneExitPopup();
+      _onZoneExited();
     },
     onEnterZone: () {
       // 구역 복귀 시 보류 플래그도 함께 초기화
       _pendingZoneExit = false;
-      _dismissZoneExitPopup();
+      _onZoneEntered();
     },
   );
 
-  /// 이탈 경고 팝업 표시 중 여부 (중복 팝업 방지)
-  bool _isZoneExitPopupShown = false;
+  /// 이탈 경고(배너·펄스·보더·반복 진동) 노출 중 여부
+  ///
+  /// 의미: "구역 밖에 있어 시각·진동 신호가 노출 중".
+  /// `_zoneExitDetector.isOutside`와 동기화되며, build 트리거를 위해 별도 보유.
+  bool _isZoneExitWarningActive = false;
 
-  /// 이탈 경고 팝업의 다이얼로그 context (removeRoute용)
-  BuildContext? _zoneExitPopupContext;
+  /// 구역 밖 체류 중 반복 진동 Timer (5초 주기)
+  Timer? _zoneExitVibrationTimer;
 
   /// 재연결 모달 표시 중 여부 (중복 표시 방지)
   bool _isReconnectModalShown = false;
@@ -272,67 +274,6 @@ class _GamePageState extends ConsumerState<GamePage>
     _loadGameArea();
     _showPoliceTimerIfNeeded();
     _sendGameStartSystemMessages();
-
-    // 게임 초기화 완료 후 튜토리얼 (첫 진입 시 1회만)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showTutorialIfNeeded();
-    });
-  }
-
-  /// 게임 화면 튜토리얼 표시 (미완료 시 1회만 실행)
-  Future<void> _showTutorialIfNeeded() async {
-    final completed = await TutorialService.isCompleted(TutorialKeys.game);
-    if (completed || !mounted) return;
-
-    // 지도/UI 위젯 렌더링 완료 대기
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    AppTutorialStyle.show(
-      context: context,
-      targets: [
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyTimer,
-          description: '남은 게임 시간이에요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyParticipants,
-          description: '참가자 목록과 QR 체포/탈옥은 여기서 확인해요',
-        ),
-      ],
-      onFinish: () => TutorialService.markCompleted(TutorialKeys.game),
-    );
-  }
-
-  /// 참가자 목록 화면 튜토리얼 (지도 복귀 + QR 안내)
-  Future<void> _showParticipantsTutorialIfNeeded() async {
-    final completed = await TutorialService.isCompleted(
-      TutorialKeys.gameParticipants,
-    );
-    if (completed || !mounted) return;
-
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    final targets = [
-      AppTutorialStyle.target(
-        keyTarget: _tutorialKeyMapReturn,
-        description: '지도 화면으로 돌아갈 수 있어요',
-      ),
-      AppTutorialStyle.target(
-        keyTarget: _tutorialKeyQrButton,
-        description: widget.team == 'POLICE'
-            ? '도둑의 QR을 스캔해서 체포해요'
-            : '잡히면 경찰에게 QR을 보여주고, 경찰이 스캔하면 체포돼요',
-      ),
-    ];
-
-    AppTutorialStyle.show(
-      context: context,
-      targets: targets,
-      onFinish: () =>
-          TutorialService.markCompleted(TutorialKeys.gameParticipants),
-    );
   }
 
   /// 앱 포그라운드 복귀 시 위치 권한 재확인
@@ -378,9 +319,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final participantStartTimeStr = participantInfo?.gameStartTime;
     final effectiveStartTime =
         gameEvent.gameStartTime ??
-        (participantStartTimeStr != null
-            ? DateTime.tryParse(participantStartTimeStr)
-            : null);
+        IsoTimestampParser.parse(participantStartTimeStr);
 
     if (effectiveStartTime == null) return;
 
@@ -394,6 +333,7 @@ class _GamePageState extends ConsumerState<GamePage>
     WidgetsBinding.instance.removeObserver(this);
     _locationSubscription?.cancel();
     _headingSubscription?.cancel();
+    _zoneExitVibrationTimer?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
@@ -423,7 +363,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final waitMinutes = info?.policeWaitMinutes;
     if (startTimeStr == null || waitMinutes == null || waitMinutes <= 0) return;
 
-    final startTime = DateTime.tryParse(startTimeStr);
+    final startTime = IsoTimestampParser.parse(startTimeStr);
     if (startTime == null) return;
 
     final waitEndTime = startTime.add(Duration(minutes: waitMinutes));
@@ -506,9 +446,7 @@ class _GamePageState extends ConsumerState<GamePage>
     if (waitMinutes == null || waitMinutes <= 0) return null;
 
     final startTimeStr = info?.gameStartTime;
-    final startTime = startTimeStr != null
-        ? DateTime.tryParse(startTimeStr)
-        : null;
+    final startTime = IsoTimestampParser.parse(startTimeStr);
     // 더미 모드 시 _dummyStartTime 사용
     final effectiveStartTime = _dummyStartTime ?? startTime;
     if (effectiveStartTime == null) return null;
@@ -555,7 +493,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final participantInfo = ref.read(gameParticipantNotifierProvider);
     final startTimeStr = participantInfo?.gameStartTime;
     if (startTimeStr != null) {
-      final startTime = DateTime.tryParse(startTimeStr);
+      final startTime = IsoTimestampParser.parse(startTimeStr);
       if (startTime != null &&
           DateTime.now().difference(startTime).inSeconds > 20) {
         return;
@@ -753,7 +691,10 @@ class _GamePageState extends ConsumerState<GamePage>
         });
   }
 
-  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 + 경고 팝업
+  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 + 경고 배너
+  ///
+  /// 매 위치 업데이트마다 호출되어 구역 안/밖 전환을 감지한다.
+  /// 구역 밖이면 경계까지의 거리를 setState로 갱신하여 배너에 실시간 반영한다.
   void _checkZoneExit(Position pos) {
     // 게임 종료 또는 체포 상태에서는 불필요
     if (_gameOverDialogShown) return;
@@ -769,80 +710,57 @@ class _GamePageState extends ConsumerState<GamePage>
       pos.latitude,
       pos.longitude,
     );
-
     _zoneExitDetector.update(
       isOutside: distance > area.playgroundRadiusInMeters,
     );
   }
 
-  /// 구역 이탈 경고 팝업 표시
-  void _showZoneExitPopup() {
-    // 재연결 모달이 떠 있을 때는 구역 이탈 팝업 스킵
-    // (연결 끊김 중에는 구역 판단이 무의미하고, 스택 충돌로 재연결 모달이 닫히지 않는 버그 방지)
-    if (_isZoneExitPopupShown || _isReconnectModalShown || !mounted) return;
-    _isZoneExitPopupShown = true;
-    AppPopup.show(
-      context: context,
-      barrierDismissible: false,
-      backgroundColor: _isDarkMode ? AppColors.black : null,
-      content: Builder(
-        builder: (popupContext) {
-          // 다이얼로그 context를 캡처하여 removeRoute에 사용
-          _zoneExitPopupContext = popupContext;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '플레이그라운드를 벗어났어요!',
-                style:
-                    (_isDarkMode
-                            ? AppTextStyles.robberHeading
-                            : AppTextStyles.heading_20)
-                        .copyWith(color: AppColors.red),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: AppSpacing.vertical12),
-              Text(
-                '구역 밖으로 나가면 화면이 잠겨요',
-                style: AppTextStyles.paragraph_14_100.copyWith(
-                  color: AppColors.red800,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          );
-        },
-      ),
-    ).whenComplete(() {
-      // 팝업이 닫히면 (어떤 경로든) 참조 정리
-      _zoneExitPopupContext = null;
-      _isZoneExitPopupShown = false;
+  /// 구역 이탈 진입 처리: 진동(즉시 + 5초 주기 반복) + 배너 표시 + 지도 리다이렉트
+  ///
+  /// 참가자 화면이 떠있을 때 이탈하면 지도가 가려져 복귀 경로를 파악할 수 없으므로,
+  /// 이탈 진입 시점에 지도 화면으로 강제 리다이렉트한다.
+  void _onZoneExited() {
+    if (!mounted) return;
+    VibrationService.instance().zoneExit();
+    _zoneExitVibrationTimer?.cancel();
+    _zoneExitVibrationTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted || !_zoneExitDetector.isOutside) return;
+      VibrationService.instance().zoneExit();
+    });
+    setState(() {
+      _isZoneExitWarningActive = true;
+      _showParticipants = false;
     });
   }
 
-  /// 구역 이탈 경고 팝업 닫기
-  ///
-  /// dialog context에서 직접 pop.
-  /// removeRoute는 _history.firstWhere(!isComplete) 필터로 "Bad state: No element" 크래시 위험.
-  /// GoRouter의 onPopPage는 GoRouter 비관리 route(dialog)를 통과시키므로 안전하다.
-  void _dismissZoneExitPopup() {
-    final popupCtx = _zoneExitPopupContext;
-    if (!_isZoneExitPopupShown || popupCtx == null || !popupCtx.mounted) return;
+  /// 구역 복귀 처리: 진동 Timer 정리 + 배너 숨김
+  void _onZoneEntered() {
+    _clearZoneExitWarning();
+  }
 
-    Navigator.of(popupCtx).pop();
+  /// 외부 사유(체포·게임 종료·재연결 모달)로 이탈 경고 신호를 강제 정리
+  ///
+  /// `_onZoneEntered`와 달리 ZoneExitDetector 상태(isOutside)와 무관하게 호출되며,
+  /// 진동 타이머만 cancel하고 시각 신호 플래그도 false로 내린다. ZoneExitDetector
+  /// 자체 상태는 건드리지 않으므로, 외부 사유가 해제되면 다음 위치 업데이트에서
+  /// 정상적으로 이탈 콜백이 다시 발화한다.
+  void _clearZoneExitWarning() {
+    _zoneExitVibrationTimer?.cancel();
+    _zoneExitVibrationTimer = null;
+    if (!mounted || !_isZoneExitWarningActive) return;
+    setState(() => _isZoneExitWarningActive = false);
   }
 
   /// 재연결 모달 닫힘 후 보류된 구역 이탈 처리
   ///
   /// 모달 중 발생한 이탈(_pendingZoneExit)이 있고
-  /// 여전히 구역 밖(_zoneExitDetector.isOutside)이면 팝업·진동을 실행한다.
+  /// 여전히 구역 밖(_zoneExitDetector.isOutside)이면 진동·배너를 복구한다.
   /// 복귀했다면 플래그만 초기화하고 아무것도 하지 않는다.
   void _processPendingZoneExit() {
     if (!_pendingZoneExit) return;
     _pendingZoneExit = false;
     if (_zoneExitDetector.isOutside && mounted) {
-      VibrationService.instance().zoneExit();
-      _showZoneExitPopup();
+      _onZoneExited();
     }
   }
 
@@ -868,15 +786,15 @@ class _GamePageState extends ConsumerState<GamePage>
     // (ZoneExitDetector 는 상태 전환에만 콜백이 발화하므로 모달 종료 후
     //  위치 업데이트만으로는 자동 복구되지 않음)
     if (shouldMarkZoneExitAsPendingOnReconnect(
-      isPopupShown: _isZoneExitPopupShown,
+      isPopupShown: _isZoneExitWarningActive,
       isDetectorOutside: _zoneExitDetector.isOutside,
     )) {
       _pendingZoneExit = true;
     }
 
-    // 구역 이탈 팝업이 떠 있으면 먼저 닫음
-    // (재연결 모달이 스택 하단에 깔리면 pop()이 잘못된 다이얼로그를 닫는 버그 방지)
-    _dismissZoneExitPopup();
+    // 재연결 모달 진입 시 진동·시각 신호를 모두 정리 (모달 위에 펄스/배너가 겹치는 것 방지)
+    // 모달 닫힘 후 _processPendingZoneExit이 _pendingZoneExit 플래그를 보고 복구한다.
+    _clearZoneExitWarning();
     _reconnectStateNotifier = ValueNotifier(currentState.connectionState);
     _isReconnectModalShown = true;
     ReconnectModal.show(
@@ -1055,6 +973,10 @@ class _GamePageState extends ConsumerState<GamePage>
   Future<void> _showGameOverDialog(String? winnerTeam, String? reason) async {
     if (_gameOverDialogShown) return;
     _gameOverDialogShown = true;
+
+    // 종료 시점에 구역 밖이었다면 진동 타이머·시각 신호가 살아있을 수 있다.
+    // 결과 다이얼로그 위에 펄스/배너가 깜빡이고 진동이 폭주하지 않도록 정리한다.
+    _clearZoneExitWarning();
 
     // GAME_OVER 이벤트 state에서 gameResultId 캡처.
     final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
@@ -1261,13 +1183,17 @@ class _GamePageState extends ConsumerState<GamePage>
       }
     });
 
-    // 체포 이벤트 감지 → 열려있는 다이얼로그(QR 등) 닫기
+    // 체포 이벤트 감지 → 열려있는 다이얼로그(QR 등) 닫기 + 이탈 경고 정리
+    // 본인이 체포되면 _checkZoneExit가 가드되어 더 이상 호출되지 않지만,
+    // 이미 켜진 진동 타이머와 시각 신호 플래그는 ArrestLockOverlay 위에 잔존하므로
+    // 여기서 명시적으로 정리한다.
     ref.listen(
       gameEventNotifierProvider.select((s) => s.arrestedParticipantIds),
       (prev, next) {
         if (prev == null) return;
         final newlyArrested = next.difference(prev);
         if (newlyArrested.contains(widget.participantId) && mounted) {
+          _clearZoneExitWarning();
           Navigator.of(context).popUntil((route) => route is! PopupRoute);
         }
       },
@@ -1444,6 +1370,19 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
+    // 우측 액션 버튼(및 개발용 디버그 FAB)이 채팅 시트와 겹치지 않게 정렬할 bottom.
+    //
+    // = 채팅 시트 collapsed 고정 부분([kChatOverlayCollapsedFixedHeight])
+    // + 시각 여백([_kActionButtonChatGap])
+    // + 시스템 네비 inset(`MediaQuery.viewPadding.bottom`, 안드로이드 3-button 등)
+    //
+    // ChatOverlay 측이 inset을 자동 흡수하므로 액션 버튼도 같은 inset을 더해 정렬한다.
+    final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+    final actionButtonBottom =
+        kChatOverlayCollapsedFixedHeight.h +
+        _kActionButtonChatGap.h +
+        bottomInset;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -1515,7 +1454,11 @@ class _GamePageState extends ConsumerState<GamePage>
             const SizedBox.shrink(),
 
           /// index 4: 알림 배너 (if/else로 개수 고정, 카운트다운보다 위에 표시)
-          if (!_showParticipants && bannerMessage != null)
+          /// 구역 이탈 중에는 ZoneExitBanner가 같은 자리를 점유하므로 표시 차단.
+          /// (어차피 가려지는 정보를 띄워봐야 손실되므로 표시 자체를 막는다)
+          if (!_showParticipants &&
+              bannerMessage != null &&
+              !_isZoneExitWarningActive)
             SafeArea(
               bottom: false,
               child: Column(
@@ -1536,11 +1479,10 @@ class _GamePageState extends ConsumerState<GamePage>
           if (_showParticipants)
             Positioned(
               right: 20.w,
-              bottom: 157.h,
+              bottom: actionButtonBottom,
               child: Column(
                 children: [
                   SvgIconButton(
-                    key: _tutorialKeyMapReturn,
                     assetPath: 'assets/icons/icon_map.svg',
                     onPressed: () => setState(() => _showParticipants = false),
                     containerSize: 48,
@@ -1556,22 +1498,25 @@ class _GamePageState extends ConsumerState<GamePage>
           else
             Positioned(
               right: 20.w,
-              bottom: 157.h,
+              bottom: actionButtonBottom,
               child: Column(
                 children: [
-                  SvgIconButton(
-                    key: _tutorialKeyParticipants,
-                    assetPath: 'assets/icons/icon_person.svg',
-                    onPressed: () {
-                      setState(() => _showParticipants = true);
-                      _showParticipantsTutorialIfNeeded();
-                    },
-                    containerSize: 48,
-                    iconSize: 24,
-                    iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                    backgroundColor: _isDarkMode ? AppColors.black : null,
-                  ),
-                  SizedBox(height: AppSpacing.vertical8),
+                  // 참가자 목록 버튼: 이탈 중에는 아예 숨김
+                  // (IgnorePointer로 비활성만 시키면 "있는데 안 눌리는" 혼란이 생기고,
+                  //  참가자 화면 진입 자체가 복귀 시야를 가려 위험하므로 시야에서 제거)
+                  if (!_isZoneExitWarningActive) ...[
+                    SvgIconButton(
+                      assetPath: 'assets/icons/icon_person.svg',
+                      onPressed: () => setState(() => _showParticipants = true),
+                      containerSize: 48,
+                      iconSize: 24,
+                      iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                      backgroundColor: _isDarkMode ? AppColors.black : null,
+                    ),
+                    SizedBox(height: AppSpacing.vertical8),
+                  ],
+                  // 내 위치 버튼: 이탈 중에도 활성화 유지
+                  // (오히려 복귀 경로 파악에 필수적인 동작이라 차단하면 UX 저해)
                   MyLocationButton(
                     onPressed: _moveToCurrentLocation,
                     isFocused: _isLocationFocused,
@@ -1613,7 +1558,7 @@ class _GamePageState extends ConsumerState<GamePage>
           if (kDebugMode)
             Positioned(
               left: 12.w,
-              bottom: 157.h,
+              bottom: actionButtonBottom,
               child: FloatingActionButton(
                 heroTag: 'game_debug',
                 mini: true,
@@ -1623,6 +1568,59 @@ class _GamePageState extends ConsumerState<GamePage>
                 child: const Icon(Icons.bug_report),
               ),
             )
+          else
+            const SizedBox.shrink(),
+
+          /// index 9: 구역 이탈 슬림 배너 (지도 모드 + 구역 밖)
+          ///
+          /// 화면 가시성 우선 정책: 큰 모달/dim 없이 상단 슬림 배너로만 알림.
+          /// MarqueeAlertBanner와 동일 톤(빨강 + BR large + 외부 horizontal 20).
+          /// 잠금/페널티 의미는 펄스 보더(index 11), 반복 진동(Timer),
+          /// 우측 액션 버튼 IgnorePointer 가드(index 5)가 담당한다.
+          ///
+          /// AnimatedSwitcher + SlideTransition으로 enter/exit 모두 슬라이드 처리한다
+          /// (자식 위젯이 unmount되며 펑 사라지는 잘림 현상 방지).
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                // 64.h: 상단 HUD(타이머·서브타이머) Container 높이와 동일.
+                // HUD 아래에 배너가 겹쳐 들어가지 않도록 같은 값을 패딩으로 둔다.
+                padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  reverseDuration: const Duration(milliseconds: 200),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder: (child, anim) => SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, -1),
+                      end: Offset.zero,
+                    ).animate(anim),
+                    child: FadeTransition(opacity: anim, child: child),
+                  ),
+                  child: (_isZoneExitWarningActive && !_showParticipants)
+                      ? ZoneExitBanner(
+                          key: const ValueKey('zone-exit-banner'),
+                          isDarkMode: _isDarkMode,
+                        )
+                      : const SizedBox.shrink(
+                          key: ValueKey('zone-exit-banner-empty'),
+                        ),
+                ),
+              ),
+            ),
+          ),
+
+          /// index 10: 구역 이탈 비네트 (가장 위, 터치 차단 없음)
+          /// 화면 가장자리에 부드러운 빨강 그라데이션을 깔아 이탈 상태를 알린다.
+          /// 중앙은 투명하게 유지되어 지도·플레이그라운드 원·내 위치를 가리지 않음.
+          /// 팀 테마 분기는 위젯 내부에서 처리.
+          if (_isZoneExitWarningActive)
+            Positioned.fill(child: ZoneExitVignette(isDarkMode: _isDarkMode))
           else
             const SizedBox.shrink(),
         ],
@@ -1674,7 +1672,6 @@ class _GamePageState extends ConsumerState<GamePage>
   /// QR 버튼 (경찰: 스캔, 도둑: QR 표시)
   Widget _buildQrButton() {
     return SvgIconButton(
-      key: _tutorialKeyQrButton,
       assetPath: widget.team == 'POLICE'
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
@@ -1750,9 +1747,9 @@ class _GamePageState extends ConsumerState<GamePage>
       gameEventNotifierProvider.select((s) => s.gameStartTime),
     );
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
-    final participantStartTime = participantInfo?.gameStartTime != null
-        ? DateTime.tryParse(participantInfo!.gameStartTime!)
-        : null;
+    final participantStartTime = IsoTimestampParser.parse(
+      participantInfo?.gameStartTime,
+    );
     // 우선순위: 더미 시작 시각 → STOMP START 이벤트 시각 → 대기실 게임 시작 시각
     final gameStartTime =
         _dummyStartTime ?? stompGameStartTime ?? participantStartTime;
@@ -1796,7 +1793,6 @@ class _GamePageState extends ConsumerState<GamePage>
         children: [
           // 중앙: 타이머 + 서브 타이머
           Column(
-            key: _tutorialKeyTimer,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // START 이벤트 수신 후 경과 시간 표시

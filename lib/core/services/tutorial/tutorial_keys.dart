@@ -13,13 +13,9 @@ class TutorialKeys {
   // 빈 슬롯"으로 호출 시점의 team 값으로 결정된다(키와 무관).
   static const waitingRoom = 'tutorial_waiting_room';
 
-  static const game = 'tutorial_game';
-  static const gameParticipants = 'tutorial_game_participants';
-
-  // 게임 진입 시 1회성 배터리 안내 다이얼로그 — 튜토리얼은 아니지만
-  // "1회만 표시 + 초기화로 재노출" 정책이 동일하므로 같이 관리.
-  static const batteryOptNotice = 'tutorial_battery_opt_notice';
-  static const batteryImpactNotice = 'tutorial_battery_impact_notice';
+  // 대기방 코치마크 완료 후 인게임 튜토리얼 페이지 안내 다이얼로그를
+  // 1회만 노출하기 위한 키. "튜토리얼 초기화" 시 함께 reset되어 재노출됨.
+  static const inGamePrompt = 'tutorial_in_game_prompt';
 
   /// 전체 키 목록 (초기화 시 사용)
   static const all = [
@@ -28,9 +24,6 @@ class TutorialKeys {
     setupPlayground,
     createStep2,
     waitingRoom,
-    game,
-    gameParticipants,
-    batteryOptNotice,
-    batteryImpactNotice,
+    inGamePrompt,
   ];
 }
