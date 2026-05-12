@@ -696,7 +696,8 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 방향 인디케이터 실시간 갱신 스트림 시작 (양 팀 공통, 서버 전송 없음)
-  /// 추가로 플레이그라운드 영역 이탈 감지 → 진동 피드백 제공
+  /// 추가로 플레이그라운드 영역 이탈 감지 → 진동 피드백 제공,
+  /// 도둑 팀 자동 탈옥을 위한 감옥 진입/이탈 감지도 수행한다.
   void _startHeadingTracking() {
     if (widget.isDummy) return;
     _headingSubscription =
