@@ -1,0 +1,10 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 경고 삼각형 외곽 (모서리 자동 라운드) -->
+  <path d="M8 2 L14.7 13.5 L1.3 13.5 Z"
+        stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+  <!-- 느낌표 세로선 -->
+  <line x1="8" y1="6" x2="8" y2="9.7"
+        stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 느낌표 점 -->
+  <circle cx="8" cy="11.8" r="0.85" fill="#FFFFFF"/>
+</svg>
