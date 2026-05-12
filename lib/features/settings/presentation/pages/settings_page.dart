@@ -17,6 +17,7 @@ import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
@@ -26,7 +27,6 @@ import '../../../bug/presentation/providers/bug_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../credits/presentation/pages/credits_page.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
 import 'agreement_settings_page.dart';
 
 /// 설정 페이지
@@ -147,6 +147,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _buildVersionItem(),
             _buildItemDivider(),
             _buildMenuItem(text: '버그 제보', onTap: _onBugReport),
+            _buildItemDivider(),
+            _buildMenuItem(
+              text: '튜토리얼 다시 보기',
+              onTap: () => context.push('/tutorial'),
+            ),
             _buildItemDivider(),
             _buildMenuItem(text: '튜토리얼 초기화', onTap: _onResetTutorial),
             _buildItemDivider(),
@@ -411,7 +416,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
-  /// 튜토리얼 초기화
+  /// 튜토리얼 초기화 (코치마크 한정)
+  ///
+  /// SharedPreferences의 모든 코치마크 키를 삭제하고, 신호를 발행해
+  /// 부모 위젯이 dispose되지 않은 화면도 즉시 재노출되게 한다.
+  /// 마지막에 홈으로 이동해 첫 코치마크가 바로 떠 보이도록 한다.
   Future<void> _onResetTutorial() async {
     final result = await AppDialog.confirm(
       context: context,
@@ -424,7 +433,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     await TutorialService.resetAll();
     if (!mounted) return;
 
-    // HomePage는 settings 상위라 initState가 재실행되지 않음 → 신호로 튜토리얼 재노출 트리거
     ref.read(tutorialResetSignalProvider.notifier).state++;
     AppSnackbar.show(context, message: '튜토리얼이 초기화되었어요');
     context.go(RoutePaths.home);

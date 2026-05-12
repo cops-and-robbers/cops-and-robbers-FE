@@ -10,11 +10,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
-import '../../../../core/services/tutorial/tutorial_keys.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/tutorial/app_tutorial_style.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -90,12 +87,6 @@ class GamePage extends ConsumerStatefulWidget {
 class _GamePageState extends ConsumerState<GamePage>
     with WidgetsBindingObserver {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
-
-  // 튜토리얼 하이라이트 대상 키
-  final _tutorialKeyTimer = GlobalKey();
-  final _tutorialKeyParticipants = GlobalKey();
-  final _tutorialKeyMapReturn = GlobalKey();
-  final _tutorialKeyQrButton = GlobalKey();
 
   /// 채팅 시트 collapsed 상단과 우측 액션 버튼 하단 사이의 **고정 시각 여백** (논리 dp).
   ///
@@ -279,67 +270,6 @@ class _GamePageState extends ConsumerState<GamePage>
     _loadGameArea();
     _showPoliceTimerIfNeeded();
     _sendGameStartSystemMessages();
-
-    // 게임 초기화 완료 후 튜토리얼 (첫 진입 시 1회만)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showTutorialIfNeeded();
-    });
-  }
-
-  /// 게임 화면 튜토리얼 표시 (미완료 시 1회만 실행)
-  Future<void> _showTutorialIfNeeded() async {
-    final completed = await TutorialService.isCompleted(TutorialKeys.game);
-    if (completed || !mounted) return;
-
-    // 지도/UI 위젯 렌더링 완료 대기
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    AppTutorialStyle.show(
-      context: context,
-      targets: [
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyTimer,
-          description: '남은 게임 시간이에요',
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyParticipants,
-          description: '참가자 목록과 QR 체포/탈옥은 여기서 확인해요',
-        ),
-      ],
-      onFinish: () => TutorialService.markCompleted(TutorialKeys.game),
-    );
-  }
-
-  /// 참가자 목록 화면 튜토리얼 (지도 복귀 + QR 안내)
-  Future<void> _showParticipantsTutorialIfNeeded() async {
-    final completed = await TutorialService.isCompleted(
-      TutorialKeys.gameParticipants,
-    );
-    if (completed || !mounted) return;
-
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    final targets = [
-      AppTutorialStyle.target(
-        keyTarget: _tutorialKeyMapReturn,
-        description: '지도 화면으로 돌아갈 수 있어요',
-      ),
-      AppTutorialStyle.target(
-        keyTarget: _tutorialKeyQrButton,
-        description: widget.team == 'POLICE'
-            ? '도둑의 QR을 스캔해서 체포해요'
-            : '잡히면 경찰에게 QR을 보여주고, 경찰이 스캔하면 체포돼요',
-      ),
-    ];
-
-    AppTutorialStyle.show(
-      context: context,
-      targets: targets,
-      onFinish: () =>
-          TutorialService.markCompleted(TutorialKeys.gameParticipants),
-    );
   }
 
   /// 앱 포그라운드 복귀 시 위치 권한 재확인
@@ -1556,7 +1486,6 @@ class _GamePageState extends ConsumerState<GamePage>
               child: Column(
                 children: [
                   SvgIconButton(
-                    key: _tutorialKeyMapReturn,
                     assetPath: 'assets/icons/icon_map.svg',
                     onPressed: () => setState(() => _showParticipants = false),
                     containerSize: 48,
@@ -1576,12 +1505,8 @@ class _GamePageState extends ConsumerState<GamePage>
               child: Column(
                 children: [
                   SvgIconButton(
-                    key: _tutorialKeyParticipants,
                     assetPath: 'assets/icons/icon_person.svg',
-                    onPressed: () {
-                      setState(() => _showParticipants = true);
-                      _showParticipantsTutorialIfNeeded();
-                    },
+                    onPressed: () => setState(() => _showParticipants = true),
                     containerSize: 48,
                     iconSize: 24,
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
@@ -1690,7 +1615,6 @@ class _GamePageState extends ConsumerState<GamePage>
   /// QR 버튼 (경찰: 스캔, 도둑: QR 표시)
   Widget _buildQrButton() {
     return SvgIconButton(
-      key: _tutorialKeyQrButton,
       assetPath: widget.team == 'POLICE'
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
@@ -1812,7 +1736,6 @@ class _GamePageState extends ConsumerState<GamePage>
         children: [
           // 중앙: 타이머 + 서브 타이머
           Column(
-            key: _tutorialKeyTimer,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // START 이벤트 수신 후 경과 시간 표시

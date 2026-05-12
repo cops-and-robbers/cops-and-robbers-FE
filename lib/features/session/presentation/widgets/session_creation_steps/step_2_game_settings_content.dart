@@ -21,9 +21,7 @@ class Step2GameSettingsContent extends StatelessWidget {
     required this.onPoliceWaitChanged,
     this.isDarkMode = false,
     this.valueTextStyle,
-    this.roundDurationKey,
-    this.locationShareKey,
-    this.policeWaitKey,
+    this.settingsKey,
   });
 
   // ============================================
@@ -57,14 +55,10 @@ class Step2GameSettingsContent extends StatelessWidget {
   /// Step 1과 동일한 시그니처를 유지한다.
   final TextStyle? valueTextStyle;
 
-  /// 튜토리얼 하이라이트용 — 라운드 제한 시간 슬라이더
-  final GlobalKey? roundDurationKey;
-
-  /// 튜토리얼 하이라이트용 — 위치 공유 간격 슬라이더
-  final GlobalKey? locationShareKey;
-
-  /// 튜토리얼 하이라이트용 — 경찰 출동 시간 슬라이더
-  final GlobalKey? policeWaitKey;
+  /// 튜토리얼 하이라이트용 — 슬라이더 3개를 묶은 컨테이너 키
+  ///
+  /// 세 슬라이더 UI가 동일하므로 각각 하이라이트하지 않고 하나로 묶어 안내한다.
+  final GlobalKey? settingsKey;
 
   // ============================================
   // Build Methods
@@ -74,10 +68,10 @@ class Step2GameSettingsContent extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint('🔍 Step2 isDarkMode: $isDarkMode');
     return Column(
+      key: settingsKey,
       children: [
         // 라운드 제한 시간
         AppSlider(
-          key: roundDurationKey,
           label: '라운드 제한 시간',
           value: roundDurationMinutes.toDouble(),
           min: 10,
@@ -95,7 +89,6 @@ class Step2GameSettingsContent extends StatelessWidget {
 
         // 위치 공유 간격
         AppSlider(
-          key: locationShareKey,
           label: '도둑 위치 공유 간격',
           value: locationShareMinutes.toDouble(),
 
@@ -115,7 +108,6 @@ class Step2GameSettingsContent extends StatelessWidget {
 
         // 경찰 출동 시간 (도둑 도망 후)
         AppSlider(
-          key: policeWaitKey,
           label: '경찰 출동 시간',
           value: policeWaitMinutes.toDouble(),
           min: 1,
