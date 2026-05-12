@@ -77,7 +77,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                         Text(
                           '체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!',
                           style: AppTextStyles.paragraph_14.copyWith(
-                            color: AppColors.black300,
+                            color: AppColors.black400,
                           ),
                           textAlign: TextAlign.center,
                         ),
