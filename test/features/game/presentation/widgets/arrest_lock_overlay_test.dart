@@ -20,25 +20,19 @@ Widget _wrap(Widget child) {
 
 void main() {
   group('ArrestLockOverlay', () {
-    testWidgets(
-      'hides_manual_escape_button_when_showManualFallback_is_false',
-      (tester) async {
-        tester.view.physicalSize = const Size(375, 812);
-        tester.view.devicePixelRatio = 1.0;
-        addTearDown(tester.view.reset);
+    testWidgets('hides_manual_escape_button_when_showManualFallback_is_false', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
-        await tester.pumpWidget(
-          _wrap(
-            const ArrestLockOverlay(
-              gameId: 1,
-              myParticipantId: 100,
-            ),
-          ),
-        );
+      await tester.pumpWidget(
+        _wrap(const ArrestLockOverlay(gameId: 1, myParticipantId: 100)),
+      );
 
-        expect(find.text('탈옥 완료'), findsNothing);
-      },
-    );
+      expect(find.text('탈옥 완료'), findsNothing);
+    });
 
     testWidgets(
       'shows_auto_escape_guidance_text_when_showManualFallback_is_false',
@@ -48,64 +42,51 @@ void main() {
         addTearDown(tester.view.reset);
 
         await tester.pumpWidget(
-          _wrap(
-            const ArrestLockOverlay(
-              gameId: 1,
-              myParticipantId: 100,
-            ),
-          ),
+          _wrap(const ArrestLockOverlay(gameId: 1, myParticipantId: 100)),
         );
 
-        expect(
-          find.textContaining('감옥 영역에 들어갔다가 다시 벗어나면'),
-          findsOneWidget,
-        );
+        expect(find.textContaining('감옥 영역에 들어갔다가 다시 벗어나면'), findsOneWidget);
       },
     );
 
-    testWidgets(
-      'shows_manual_escape_button_when_showManualFallback_is_true',
-      (tester) async {
-        tester.view.physicalSize = const Size(375, 812);
-        tester.view.devicePixelRatio = 1.0;
-        addTearDown(tester.view.reset);
+    testWidgets('shows_manual_escape_button_when_showManualFallback_is_true', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
-        await tester.pumpWidget(
-          _wrap(
-            const ArrestLockOverlay(
-              gameId: 1,
-              myParticipantId: 100,
-              showManualFallback: true,
-            ),
+      await tester.pumpWidget(
+        _wrap(
+          const ArrestLockOverlay(
+            gameId: 1,
+            myParticipantId: 100,
+            showManualFallback: true,
           ),
-        );
+        ),
+      );
 
-        expect(find.text('탈옥 완료'), findsOneWidget);
-      },
-    );
+      expect(find.text('탈옥 완료'), findsOneWidget);
+    });
 
-    testWidgets(
-      'shows_failure_guidance_text_when_showManualFallback_is_true',
-      (tester) async {
-        tester.view.physicalSize = const Size(375, 812);
-        tester.view.devicePixelRatio = 1.0;
-        addTearDown(tester.view.reset);
+    testWidgets('shows_failure_guidance_text_when_showManualFallback_is_true', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
-        await tester.pumpWidget(
-          _wrap(
-            const ArrestLockOverlay(
-              gameId: 1,
-              myParticipantId: 100,
-              showManualFallback: true,
-            ),
+      await tester.pumpWidget(
+        _wrap(
+          const ArrestLockOverlay(
+            gameId: 1,
+            myParticipantId: 100,
+            showManualFallback: true,
           ),
-        );
+        ),
+      );
 
-        expect(
-          find.textContaining('자동 탈옥 처리에 실패'),
-          findsOneWidget,
-        );
-      },
-    );
+      expect(find.textContaining('자동 탈옥 처리에 실패'), findsOneWidget);
+    });
   });
 }
