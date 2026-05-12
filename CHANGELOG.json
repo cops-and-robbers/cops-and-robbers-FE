@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-04T04:06:23Z",
-    "currentVersion": "1.8.15",
+    "lastUpdated": "2026-05-12T10:00:24Z",
+    "currentVersion": "1.8.23",
     "projectType": "flutter",
-    "totalReleases": 84
+    "totalReleases": 85
   },
   "releases": [
+    {
+      "version": "1.8.23",
+      "project_type": "flutter",
+      "date": "2026-05-12",
+      "pr_number": 343,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 새 기능\n\n* 대기방 튜토리얼 완료 후 인게임 튜토리얼을 자동으로 안내하는 팝업 추가\n* 튜토리얼 카탈로그 페이지 신설 (다양한 튜토리얼 콘텐츠 한 곳에서 접근)\n* 설정 메뉴에 튜토리얼 다시 보기 옵션 추가\n\n## 개선 사항\n\n* 게임규칙 안내에서 인게임 튜토리얼로 직접 이동 가능\n* 구역 이탈 경고 시스템 업그레이드\n\n[![Review Change Stack](https://storage.googleapis.com/coderabbit_public_assets/review-stack-in-coderabbit-ui.svg)](https://app.coderabbit.ai/change-stack/cops-and-robbers/cops-and-robbers-FE/pull/343)",
+      "parsed_changes": {
+        "대기방_튜토리얼_완료_후_인게임_튜토리얼을_자동으로_안내하는_팝업_추가": {
+          "title": "대기방 튜토리얼 완료 후 인게임 튜토리얼을 자동으로 안내하는 팝업 추가",
+          "items": []
+        },
+        "튜토리얼_카탈로그_페이지_신설__다양한_튜토리얼_콘텐츠_한_곳에서_접근": {
+          "title": "튜토리얼 카탈로그 페이지 신설 (다양한 튜토리얼 콘텐츠 한 곳에서 접근)",
+          "items": []
+        },
+        "설정_메뉴에_튜토리얼_다시_보기_옵션_추가": {
+          "title": "설정 메뉴에 튜토리얼 다시 보기 옵션 추가",
+          "items": []
+        },
+        "게임규칙_안내에서_인게임_튜토리얼로_직접_이동_가능": {
+          "title": "게임규칙 안내에서 인게임 튜토리얼로 직접 이동 가능",
+          "items": []
+        },
+        "구역_이탈_경고_시스템_업그레이드": {
+          "title": "구역 이탈 경고 시스템 업그레이드",
+          "items": []
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.15",
       "project_type": "flutter",
