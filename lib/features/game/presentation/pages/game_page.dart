@@ -55,6 +55,9 @@ import '../widgets/google_map_view.dart';
 import '../widgets/participant_overlay.dart';
 import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
+import '../widgets/zone_exit_banner.dart';
+import '../widgets/zone_exit_pulse_border.dart';
+import '../widgets/zone_exit_pulse_overlay.dart';
 
 /// 인게임 지도 화면
 ///
@@ -133,21 +136,23 @@ class _GamePageState extends ConsumerState<GamePage>
         _pendingZoneExit = true;
         return;
       }
-      VibrationService.instance().zoneExit();
-      _showZoneExitPopup();
+      _onZoneExited();
     },
     onEnterZone: () {
       // 구역 복귀 시 보류 플래그도 함께 초기화
       _pendingZoneExit = false;
-      _dismissZoneExitPopup();
+      _onZoneEntered();
     },
   );
 
-  /// 이탈 경고 팝업 표시 중 여부 (중복 팝업 방지)
-  bool _isZoneExitPopupShown = false;
+  /// 이탈 경고(배너·펄스·보더·반복 진동) 노출 중 여부
+  ///
+  /// 의미: "구역 밖에 있어 시각·진동 신호가 노출 중".
+  /// `_zoneExitDetector.isOutside`와 동기화되며, build 트리거를 위해 별도 보유.
+  bool _isZoneExitWarningActive = false;
 
-  /// 이탈 경고 팝업의 다이얼로그 context (removeRoute용)
-  BuildContext? _zoneExitPopupContext;
+  /// 구역 밖 체류 중 반복 진동 Timer (5초 주기)
+  Timer? _zoneExitVibrationTimer;
 
   /// 재연결 모달 표시 중 여부 (중복 표시 방지)
   bool _isReconnectModalShown = false;
@@ -329,6 +334,7 @@ class _GamePageState extends ConsumerState<GamePage>
     WidgetsBinding.instance.removeObserver(this);
     _locationSubscription?.cancel();
     _headingSubscription?.cancel();
+    _zoneExitVibrationTimer?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
@@ -686,7 +692,10 @@ class _GamePageState extends ConsumerState<GamePage>
         });
   }
 
-  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 + 경고 팝업
+  /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 + 경고 배너
+  ///
+  /// 매 위치 업데이트마다 호출되어 구역 안/밖 전환을 감지한다.
+  /// 구역 밖이면 경계까지의 거리를 setState로 갱신하여 배너에 실시간 반영한다.
   void _checkZoneExit(Position pos) {
     // 게임 종료 또는 체포 상태에서는 불필요
     if (_gameOverDialogShown) return;
@@ -702,80 +711,41 @@ class _GamePageState extends ConsumerState<GamePage>
       pos.latitude,
       pos.longitude,
     );
-
     _zoneExitDetector.update(
       isOutside: distance > area.playgroundRadiusInMeters,
     );
   }
 
-  /// 구역 이탈 경고 팝업 표시
-  void _showZoneExitPopup() {
-    // 재연결 모달이 떠 있을 때는 구역 이탈 팝업 스킵
-    // (연결 끊김 중에는 구역 판단이 무의미하고, 스택 충돌로 재연결 모달이 닫히지 않는 버그 방지)
-    if (_isZoneExitPopupShown || _isReconnectModalShown || !mounted) return;
-    _isZoneExitPopupShown = true;
-    AppPopup.show(
-      context: context,
-      barrierDismissible: false,
-      backgroundColor: _isDarkMode ? AppColors.black : null,
-      content: Builder(
-        builder: (popupContext) {
-          // 다이얼로그 context를 캡처하여 removeRoute에 사용
-          _zoneExitPopupContext = popupContext;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '플레이그라운드를 벗어났어요!',
-                style:
-                    (_isDarkMode
-                            ? AppTextStyles.robberHeading
-                            : AppTextStyles.heading_20)
-                        .copyWith(color: AppColors.red),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: AppSpacing.vertical12),
-              Text(
-                '구역 밖으로 나가면 화면이 잠겨요',
-                style: AppTextStyles.paragraph_14_100.copyWith(
-                  color: AppColors.red800,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          );
-        },
-      ),
-    ).whenComplete(() {
-      // 팝업이 닫히면 (어떤 경로든) 참조 정리
-      _zoneExitPopupContext = null;
-      _isZoneExitPopupShown = false;
+  /// 구역 이탈 진입 처리: 진동(즉시 + 5초 주기 반복) + 배너 표시
+  void _onZoneExited() {
+    if (!mounted) return;
+    VibrationService.instance().zoneExit();
+    _zoneExitVibrationTimer?.cancel();
+    _zoneExitVibrationTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted || !_zoneExitDetector.isOutside) return;
+      VibrationService.instance().zoneExit();
     });
+    setState(() => _isZoneExitWarningActive = true);
   }
 
-  /// 구역 이탈 경고 팝업 닫기
-  ///
-  /// dialog context에서 직접 pop.
-  /// removeRoute는 _history.firstWhere(!isComplete) 필터로 "Bad state: No element" 크래시 위험.
-  /// GoRouter의 onPopPage는 GoRouter 비관리 route(dialog)를 통과시키므로 안전하다.
-  void _dismissZoneExitPopup() {
-    final popupCtx = _zoneExitPopupContext;
-    if (!_isZoneExitPopupShown || popupCtx == null || !popupCtx.mounted) return;
-
-    Navigator.of(popupCtx).pop();
+  /// 구역 복귀 처리: 진동 Timer 정리 + 배너 숨김
+  void _onZoneEntered() {
+    _zoneExitVibrationTimer?.cancel();
+    _zoneExitVibrationTimer = null;
+    if (!mounted) return;
+    setState(() => _isZoneExitWarningActive = false);
   }
 
   /// 재연결 모달 닫힘 후 보류된 구역 이탈 처리
   ///
   /// 모달 중 발생한 이탈(_pendingZoneExit)이 있고
-  /// 여전히 구역 밖(_zoneExitDetector.isOutside)이면 팝업·진동을 실행한다.
+  /// 여전히 구역 밖(_zoneExitDetector.isOutside)이면 진동·배너를 복구한다.
   /// 복귀했다면 플래그만 초기화하고 아무것도 하지 않는다.
   void _processPendingZoneExit() {
     if (!_pendingZoneExit) return;
     _pendingZoneExit = false;
     if (_zoneExitDetector.isOutside && mounted) {
-      VibrationService.instance().zoneExit();
-      _showZoneExitPopup();
+      _onZoneExited();
     }
   }
 
@@ -801,15 +771,16 @@ class _GamePageState extends ConsumerState<GamePage>
     // (ZoneExitDetector 는 상태 전환에만 콜백이 발화하므로 모달 종료 후
     //  위치 업데이트만으로는 자동 복구되지 않음)
     if (shouldMarkZoneExitAsPendingOnReconnect(
-      isPopupShown: _isZoneExitPopupShown,
+      isPopupShown: _isZoneExitWarningActive,
       isDetectorOutside: _zoneExitDetector.isOutside,
     )) {
       _pendingZoneExit = true;
     }
 
-    // 구역 이탈 팝업이 떠 있으면 먼저 닫음
-    // (재연결 모달이 스택 하단에 깔리면 pop()이 잘못된 다이얼로그를 닫는 버그 방지)
-    _dismissZoneExitPopup();
+    // 재연결 모달 진입 시 진동 Timer는 즉시 정리 (모달 표시 중 진동 폭주 방지)
+    // 배너/플래그는 _pendingZoneExit으로 보존되므로 모달 닫힘 후 _processPendingZoneExit이 복구
+    _zoneExitVibrationTimer?.cancel();
+    _zoneExitVibrationTimer = null;
     _reconnectStateNotifier = ValueNotifier(currentState.connectionState);
     _isReconnectModalShown = true;
     ReconnectModal.show(
@@ -1461,7 +1432,11 @@ class _GamePageState extends ConsumerState<GamePage>
             const SizedBox.shrink(),
 
           /// index 4: 알림 배너 (if/else로 개수 고정, 카운트다운보다 위에 표시)
-          if (!_showParticipants && bannerMessage != null)
+          /// 구역 이탈 중에는 ZoneExitBanner가 같은 자리를 점유하므로 표시 차단.
+          /// (어차피 가려지는 정보를 띄워봐야 손실되므로 표시 자체를 막는다)
+          if (!_showParticipants &&
+              bannerMessage != null &&
+              !_isZoneExitWarningActive)
             SafeArea(
               bottom: false,
               child: Column(
@@ -1504,15 +1479,21 @@ class _GamePageState extends ConsumerState<GamePage>
               bottom: actionButtonBottom,
               child: Column(
                 children: [
-                  SvgIconButton(
-                    assetPath: 'assets/icons/icon_person.svg',
-                    onPressed: () => setState(() => _showParticipants = true),
-                    containerSize: 48,
-                    iconSize: 24,
-                    iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                    backgroundColor: _isDarkMode ? AppColors.black : null,
+                  // 이탈 중 참가자 화면 진입 차단 — 시각 경고가 가려져 위험
+                  IgnorePointer(
+                    ignoring: _isZoneExitWarningActive,
+                    child: SvgIconButton(
+                      assetPath: 'assets/icons/icon_person.svg',
+                      onPressed: () => setState(() => _showParticipants = true),
+                      containerSize: 48,
+                      iconSize: 24,
+                      iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                      backgroundColor: _isDarkMode ? AppColors.black : null,
+                    ),
                   ),
                   SizedBox(height: AppSpacing.vertical8),
+                  // 내 위치 버튼: 이탈 중에도 활성화 유지
+                  // (오히려 복귀 경로 파악에 필수적인 동작이라 차단하면 UX 저해)
                   MyLocationButton(
                     onPressed: _moveToCurrentLocation,
                     isFocused: _isLocationFocused,
@@ -1564,6 +1545,68 @@ class _GamePageState extends ConsumerState<GamePage>
                 child: const Icon(Icons.bug_report),
               ),
             )
+          else
+            const SizedBox.shrink(),
+
+          /// index 9: 구역 이탈 슬림 배너 (지도 모드 + 구역 밖)
+          ///
+          /// 화면 가시성 우선 정책: 큰 모달/dim 없이 상단 슬림 배너로만 알림.
+          /// MarqueeAlertBanner와 동일 톤(빨강 + BR large + 외부 horizontal 20).
+          /// 잠금/페널티 의미는 펄스 보더(index 11), 반복 진동(Timer),
+          /// 우측 액션 버튼 IgnorePointer 가드(index 5)가 담당한다.
+          ///
+          /// AnimatedSwitcher + SlideTransition으로 enter/exit 모두 슬라이드 처리한다
+          /// (자식 위젯이 unmount되며 펑 사라지는 잘림 현상 방지).
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                // 64.h: 상단 HUD(타이머·서브타이머) Container 높이와 동일.
+                // HUD 아래에 배너가 겹쳐 들어가지 않도록 같은 값을 패딩으로 둔다.
+                padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  reverseDuration: const Duration(milliseconds: 200),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder: (child, anim) => SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, -1),
+                      end: Offset.zero,
+                    ).animate(anim),
+                    child: FadeTransition(opacity: anim, child: child),
+                  ),
+                  child: (_isZoneExitWarningActive && !_showParticipants)
+                      ? ZoneExitBanner(
+                          key: const ValueKey('zone-exit-banner'),
+                          isDarkMode: _isDarkMode,
+                        )
+                      : const SizedBox.shrink(
+                          key: ValueKey('zone-exit-banner-empty'),
+                        ),
+                ),
+              ),
+            ),
+          ),
+
+          /// index 10: 구역 이탈 전체 화면 펄스 오버레이 (보더 아래)
+          /// 가장자리 보더만으로는 못 알아챌 수 있어, 옅은 빨강 워시를 화면 전체에
+          /// 깔아 주변 시야로도 인지하게 한다. 보더와 동일한 1.5초 주기로 동기화.
+          /// 팀 테마 분기: 경찰=red, 도둑=red900 (명도만 차별화)
+          if (_isZoneExitWarningActive)
+            Positioned.fill(
+              child: ZoneExitPulseOverlay(isDarkMode: _isDarkMode),
+            )
+          else
+            const SizedBox.shrink(),
+
+          /// index 11: 구역 이탈 펄스 보더 (가장 위, 터치 차단 없음)
+          /// 잠금 오버레이 위에 얹어 화면 가장자리의 시각 강조 효과를 유지한다.
+          if (_isZoneExitWarningActive)
+            const Positioned.fill(child: ZoneExitPulseBorder())
           else
             const SizedBox.shrink(),
         ],
