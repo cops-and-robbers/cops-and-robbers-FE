@@ -106,6 +106,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 재연결 모달 표시 중 여부 (중복 표시 방지)
   bool _isReconnectModalShown = false;
 
+  /// 강퇴/게임 삭제로 not-participating 처리 중 여부.
+  /// true일 때는 _showReconnectModal이 막혀 재표시되지 않는다.
+  /// ReconnectModal.then()의 재귀 호출이 우리 안내 다이얼로그를 우회하지 못하도록.
+  bool _isHandlingNotParticipating = false;
+
   /// 로비 STOMP 최초 연결 성공 여부
   bool _hasLobbyConnectedOnce = false;
 
@@ -399,6 +404,15 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       try {
         lobbyInfo = await lobbyFuture;
+      } on DioException catch (e) {
+        // 404 "참가자 아님" — 강퇴/게임 삭제/세션 만료 등으로 더 이상 참가자가 아닌 경우.
+        // 무한 로딩과 STOMP 재연결 루프를 막고 사용자를 홈으로 안내한다.
+        if (e.response?.statusCode == 404 && mounted && !_isDisposed) {
+          final apiError = ApiErrorResponse.tryParse(e.response?.data);
+          await _handleNotParticipating(apiError?.detail);
+          return;
+        }
+        debugPrint('[WaitingRoomPage] 로비 조회 실패: $e');
       } catch (e) {
         debugPrint('[WaitingRoomPage] 로비 조회 실패: $e');
       }
@@ -484,6 +498,83 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       }
     } finally {
       _isFetchingParticipants = false;
+    }
+  }
+
+  /// 강퇴/게임 삭제/세션 만료 등으로 더 이상 게임 참가자가 아닐 때:
+  ///   1) LobbyNotifier의 STOMP 재연결 루프를 명시적으로 끊고
+  ///   2) 서버가 보낸 RFC 7807 detail 메시지를 그대로 안내하고
+  ///   3) 확인 시 홈으로 이동시킨다.
+  ///
+  /// 클라이언트는 KICKED 이벤트를 직접 받지 않아 강퇴 단정은 위험하므로,
+  /// "강퇴" 단어 대신 "방에 참여할 수 없어요"로 톤을 부드럽게 한다.
+  Future<void> _handleNotParticipating(String? serverDetail) async {
+    if (_isDisposed || !mounted) return;
+
+    // 진행 플래그 셋팅 — _showReconnectModal.then() 재귀 호출과 외부 listener가
+    // 이 흐름 도중 ReconnectModal을 다시 표시하지 못하도록 차단한다.
+    _isHandlingNotParticipating = true;
+
+    // Lobby listener 사전 정리 — disconnectLobby가 state를 초기 disconnected 로
+    // 되돌리면서 _lobbyEventSub 콜백이 한 번 더 fire되어 _showReconnectModal /
+    // _fetchAndInitParticipants 가 dead path로 진입하는 것을 차단한다.
+    // (홈 라우팅 후 dead ref/notifier 사용으로 인한 폭발 방지)
+    _lobbyEventSub?.close();
+    _lobbyEventSub = null;
+
+    // STOMP 재연결 백오프 차단 (intentionalDisconnect 신호).
+    // 이 호출 없으면 서버가 lobby 구독을 권한 없음으로 거절하는 동안
+    // LobbyNotifier가 일반 disconnect로 인식해 무한 재시도한다.
+    ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
+
+    // STOMP ERROR가 HTTP 404보다 먼저 도착해 ReconnectModal이 이미 떠있을 수 있다.
+    // 같이 두면 사용자가 우리 안내 다이얼로그에서 홈으로 가도 ReconnectModal이 남아
+    // dead ref 호출로 폭발한다. 우리 안내 표시 전에 명시적으로 닫는다.
+    if (_isReconnectModalShown && mounted) {
+      // ReconnectModal은 showGeneralDialog 기본값(useRootNavigator: true)으로 root에 push되므로
+      // 동일하게 root navigator로 pop해야 ReconnectModal이 닫힌다.
+      Navigator.of(context, rootNavigator: true).pop();
+      _isReconnectModalShown = false;
+      _reconnectStateNotifier?.dispose();
+      _reconnectStateNotifier = null;
+    }
+
+    await AppDialog.show(
+      context: context,
+      title: '방에 참여할 수 없어요',
+      message: serverDetail ?? '해당 게임에 참가하지 않은 사용자입니다.',
+      confirmText: '확인',
+      barrierDismissible: false,
+      // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
+      isDarkMode: ref.read(roleThemeProvider),
+      onConfirm: () {
+        if (mounted) context.go(RoutePaths.home);
+      },
+    );
+  }
+
+  /// 사용자 액션 catch 공통 처리: 404 "참가자 아님" 이면 [_handleNotParticipating]
+  /// 흐름으로, 그 외에는 [fallbackMessage] 또는 서버 detail로 스낵바 표시.
+  ///
+  /// 호출자는 결과를 분기할 필요 없이 await만 하면 된다. 404 흐름은 내부에서
+  /// 다이얼로그 → 홈 라우팅까지 완료한다.
+  Future<void> _handleApiErrorOrNotParticipating(
+    DioException e, {
+    required String fallbackMessage,
+  }) async {
+    if (_isDisposed) return;
+    if (e.response?.statusCode == 404 && mounted) {
+      final apiError = ApiErrorResponse.tryParse(e.response?.data);
+      await _handleNotParticipating(apiError?.detail);
+      return;
+    }
+    if (mounted && !_isDisposed) {
+      final apiError = ApiErrorResponse.tryParse(e.response?.data);
+      AppSnackbar.show(
+        context,
+        message: apiError?.detail ?? fallbackMessage,
+        backgroundColor: AppColors.red,
+      );
     }
   }
 
@@ -641,6 +732,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   void _showReconnectModal(StompConnectionState connState) {
     if (_isDisposed ||
         _isReconnectModalShown ||
+        _isHandlingNotParticipating ||
         !mounted ||
         (connState != StompConnectionState.disconnected &&
             connState != StompConnectionState.error)) {
@@ -655,6 +747,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       isDarkMode: isDark,
       stateNotifier: _reconnectStateNotifier!,
       onReconnect: () {
+        // GamePage가 외부 사유로 이미 dispose된 경우 ref/context 사용 금지 (안전망)
+        if (!mounted) return;
         ref.read(lobbyNotifierProvider.notifier).manualReconnect();
       },
     ).then((_) {
@@ -926,15 +1020,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ref.read(roleThemeProvider.notifier).setDarkMode(targetTeam == 'ROBBER');
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
-      if (mounted) {
-        final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? '팀 변경에 실패했습니다.';
-        AppSnackbar.show(
-          context,
-          message: message,
-          backgroundColor: AppColors.red,
-        );
-      }
+      await _handleApiErrorOrNotParticipating(
+        e,
+        fallbackMessage: '팀 변경에 실패했어요',
+      );
     }
   }
 
@@ -963,15 +1052,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (!mounted) return;
       setState(() => _isReady = newReadyState);
     } on DioException catch (e) {
-      if (mounted) {
-        final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? '준비 상태 변경에 실패했습니다.';
-        AppSnackbar.show(
-          context,
-          message: message,
-          backgroundColor: AppColors.red,
-        );
-      }
+      await _handleApiErrorOrNotParticipating(
+        e,
+        fallbackMessage: '준비 상태 변경에 실패했어요',
+      );
     } finally {
       if (mounted) {
         setState(() => _isUpdatingReady = false);
@@ -1005,15 +1089,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (navigator.canPop()) navigator.pop();
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
-      if (mounted) {
-        final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? '게임 시작에 실패했습니다.';
-        AppSnackbar.show(
-          context,
-          message: message,
-          backgroundColor: AppColors.red,
-        );
-      }
+      await _handleApiErrorOrNotParticipating(
+        e,
+        fallbackMessage: '게임 시작에 실패했어요',
+      );
     }
   }
 
