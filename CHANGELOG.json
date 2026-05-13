@@ -1,11 +1,27 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-13T05:11:36Z",
-    "currentVersion": "1.8.28",
+    "lastUpdated": "2026-05-13T06:04:30Z",
+    "currentVersion": "1.8.29",
     "projectType": "flutter",
-    "totalReleases": 86
+    "totalReleases": 87
   },
   "releases": [
+    {
+      "version": "1.8.29",
+      "project_type": "flutter",
+      "date": "2026-05-13",
+      "pr_number": 352,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **개선**\n  * Android 빌드 환경에서 .env 파일 인식 안 되는 문제 해결",
+      "parsed_changes": {
+        "개선": {
+          "title": "개선",
+          "items": [
+            "Android 빌드 환경에서 .env 파일 인식 안 되는 문제 해결"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.28",
       "project_type": "flutter",
