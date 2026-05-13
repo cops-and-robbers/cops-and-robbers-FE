@@ -1,11 +1,27 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-13T06:04:30Z",
-    "currentVersion": "1.8.29",
+    "lastUpdated": "2026-05-13T06:38:35Z",
+    "currentVersion": "1.8.30",
     "projectType": "flutter",
-    "totalReleases": 87
+    "totalReleases": 88
   },
   "releases": [
+    {
+      "version": "1.8.30",
+      "project_type": "flutter",
+      "date": "2026-05-13",
+      "pr_number": 353,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **버그 수정**\n  * iOS 및 Android 배포 파이프라인 실패 문제 해결",
+      "parsed_changes": {
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "iOS 및 Android 배포 파이프라인 실패 문제 해결"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.29",
       "project_type": "flutter",
