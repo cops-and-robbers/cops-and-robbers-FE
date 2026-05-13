@@ -1,23 +1,50 @@
 # ===================================================================
-# Flutter Android Play Store 내부 테스트 배포 워크플로우
+# Flutter Android Firebase App Distribution 배포
 # ===================================================================
 #
 # deploy 브랜치 푸시 시 Android AAB를 빌드하고
-# Play Store 내부 테스트에 자동 배포합니다.
+# Firebase App Distribution에 자동 배포합니다.
+#
+# PlayStore CICD와 동일한 빌드 과정(AAB + 버전 검증)을 거친 후
+# Play Store 대신 Firebase App Distribution에 업로드합니다.
 #
 # ===================================================================
 # 🔑 필수 GitHub Secrets
 # ===================================================================
-# ENV_FILE: .env 파일 내용
+#
+# 🔐 Release Keystore:
 # RELEASE_KEYSTORE_BASE64: 서명용 keystore (base64)
 # RELEASE_KEYSTORE_PASSWORD: keystore 비밀번호
 # RELEASE_KEY_ALIAS: key alias
 # RELEASE_KEY_PASSWORD: key 비밀번호
+#
+# 🔥 Firebase:
+# FIREBASE_SERVICE_ACCOUNT_JSON_BASE64: Firebase 서비스 계정 JSON (base64)
+#
+# 📝 환경 설정 (선택):
+# ENV_FILE: .env 파일 내용
 # GOOGLE_SERVICES_JSON: Firebase google-services.json
-# GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_BASE64: Play Console 서비스 계정 (base64)
+#
+# ===================================================================
+#
+# 🔧 프로젝트별 설정 (env 섹션에서 수정)
+# ===================================================================
+# PROJECT_NAME       : 프로젝트 이름
+# FLUTTER_VERSION    : Flutter SDK 버전
+# JAVA_VERSION       : Java 버전
+# FIREBASE_APP_ID    : Firebase 앱 ID (Firebase Console에서 확인)
+# FIREBASE_TESTER_GROUP : Firebase 테스터 그룹명
+# ===================================================================
+#
+# 🛠️ 사전 설정:
+# 1. Firebase Console → App Distribution → 테스터 그룹 생성
+# 2. Firebase 서비스 계정 JSON 생성 (base64 인코딩)
+# 3. GitHub Secrets에 FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 등록
+# 4. env 섹션의 FIREBASE_APP_ID, FIREBASE_TESTER_GROUP 수정
+#
 # ===================================================================
 
-name: PROJECT-FLUTTER-ANDROID-PLAYSTORE-INTERNAL-CICD
+name: PROJECT-FLUTTER-ANDROID-FIREBASE-APPDIST-CICD
 
 on:
   push:
@@ -28,16 +55,19 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# ============================================
-# 🔧 프로젝트별 설정 (아래 값들을 수정하세요)
-# ============================================
 env:
+  # ============================================
+  # 🔧 프로젝트별 설정 (아래 값들을 수정하세요)
+  # ============================================
   # 프로젝트 이름
   PROJECT_NAME: "your-project"
   # Flutter/Java 버전
   FLUTTER_VERSION: "3.35.5"
   JAVA_VERSION: "17"
   PROJECT_TYPE: "flutter"
+  # Firebase App Distribution 설정
+  FIREBASE_APP_ID: "your-firebase-app-id"
+  FIREBASE_TESTER_GROUP: "testers"
 
 jobs:
   prepare-build:
@@ -285,17 +315,17 @@ jobs:
             echo "❌ VERSION_NAME 또는 VERSION_CODE가 비어있습니다!"
             exit 1
           fi
-          
+
           # Flutter 환경 정보 출력
           echo "🔍 Flutter 환경 정보:"
           flutter --version
           flutter doctor -v | head -20
-          
+
           # 빌드 디렉토리 정리
           echo "🧹 이전 빌드 결과물 정리..."
           rm -rf build/app/outputs/bundle/release/
           mkdir -p build/app/outputs/bundle/release/
-          
+
           # Flutter clean 및 pub get
           echo "🔄 Flutter clean 및 의존성 재설치..."
           flutter clean
@@ -336,22 +366,22 @@ jobs:
             --build-name="$VERSION_NAME" \
             --build-number="$VERSION_CODE" \
             --verbose
-          
+
           BUILD_EXIT_CODE=$?
-          
+
           if [ $BUILD_EXIT_CODE -ne 0 ]; then
             echo "❌ Flutter build 실패! Exit code: $BUILD_EXIT_CODE"
             echo "🔍 빌드 디렉토리 상태:"
             find build/ -name "*.aab" -o -name "*.apk" 2>/dev/null || echo "AAB/APK 파일을 찾을 수 없습니다"
             exit 1
           fi
-          
+
           echo "✅ Flutter build 성공!"
-          
+
           # 빌드 결과 확인
           echo "🔍 빌드 결과 확인:"
           ls -lah build/app/outputs/bundle/release/
-          
+
           # AAB 파일 존재 확인
           AAB_FILE="build/app/outputs/bundle/release/app-release.aab"
           if [ ! -f "$AAB_FILE" ]; then
@@ -362,37 +392,37 @@ jobs:
             find build/app/outputs/ -type f 2>/dev/null || echo "outputs 디렉토리가 없습니다"
             exit 1
           fi
-          
+
           echo "✅ AAB 파일 생성 확인"
           echo "📱 AAB 파일 크기: $(du -h "$AAB_FILE" | cut -f1)"
           echo "📋 AAB 파일 정보: $(ls -lah "$AAB_FILE")"
-          
+
           # bundletool 다운로드 및 설치
           echo "📦 bundletool 다운로드 중..."
           BUNDLETOOL_VERSION="1.15.6"
           BUNDLETOOL_URL="https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar"
-          
+
           echo "📋 다운로드 URL: $BUNDLETOOL_URL"
           wget -q "$BUNDLETOOL_URL" -O bundletool.jar
-          
+
           if [ ! -f "bundletool.jar" ]; then
             echo "❌ bundletool 다운로드 실패"
             echo "🔄 대체 URL로 재시도..."
             wget -q "https://github.com/google/bundletool/releases/latest/download/bundletool-all-1.15.6.jar" -O bundletool.jar
-            
+
             if [ ! -f "bundletool.jar" ]; then
               echo "❌ bundletool 다운로드 완전 실패"
               exit 1
             fi
           fi
-          
+
           echo "✅ bundletool 다운로드 완료"
           echo "📋 bundletool 파일 크기: $(du -h bundletool.jar | cut -f1)"
-          
+
           # Java 환경 확인
           echo "🔍 Java 환경 확인:"
           java -version
-          
+
           # AAB 파일 내부의 실제 버전 정보 확인
           # Flutter CLI 플래그로 전달한 VERSION_CODE가 제대로 적용되었는지 검증
           echo "=========================================="
@@ -402,26 +432,26 @@ jobs:
           # AndroidManifest.xml에서 버전 정보 추출
           echo "📋 AAB에서 실제 버전 정보 추출 중..."
           echo "📋 실행할 명령어: java -jar bundletool.jar dump manifest --bundle='$AAB_FILE'"
-          
+
           MANIFEST_OUTPUT=$(java -jar bundletool.jar dump manifest --bundle="$AAB_FILE" 2>&1)
           MANIFEST_EXIT_CODE=$?
-          
+
           echo "📋 bundletool 실행 결과 (Exit code: $MANIFEST_EXIT_CODE):"
           echo "$MANIFEST_OUTPUT"
-          
+
           if [ $MANIFEST_EXIT_CODE -eq 0 ]; then
             echo "✅ Manifest 추출 성공"
-            
+
             # 실제 버전 코드와 버전 이름 추출
             ACTUAL_VERSION_CODE=$(echo "$MANIFEST_OUTPUT" | grep -o 'android:versionCode="[0-9]*"' | grep -o '[0-9]*' | head -1)
             ACTUAL_VERSION_NAME=$(echo "$MANIFEST_OUTPUT" | grep -o 'android:versionName="[^"]*"' | sed 's/android:versionName="//;s/"//' | head -1)
-            
+
             echo "🎯 버전 정보 비교:"
             echo "  예상 VERSION_CODE: '$VERSION_CODE'"
             echo "  실제 VERSION_CODE: '$ACTUAL_VERSION_CODE'"
             echo "  예상 VERSION_NAME: '$VERSION_NAME'"
             echo "  실제 VERSION_NAME: '$ACTUAL_VERSION_NAME'"
-            
+
             # VERSION_CODE 검증 - version.yml에서 관리되는 단순 증가 번호
             if [ -z "$ACTUAL_VERSION_CODE" ]; then
               echo "❌ 치명적 오류: AAB에서 VERSION_CODE를 추출할 수 없습니다!"
@@ -446,7 +476,7 @@ jobs:
             else
               echo "✅ VERSION_CODE 검증 성공: $ACTUAL_VERSION_CODE"
             fi
-            
+
             # 버전 이름도 확인 (경고만)
             if [ -z "$ACTUAL_VERSION_NAME" ]; then
               echo "⚠️ 경고: AAB에서 VERSION_NAME을 추출할 수 없습니다"
@@ -456,15 +486,15 @@ jobs:
             else
               echo "✅ VERSION_NAME 검증 성공: $ACTUAL_VERSION_NAME"
             fi
-            
+
           else
             echo "❌ bundletool로 Manifest 추출 실패"
             echo "🔄 대체 방법으로 검증 시도..."
-            
+
             # unzip으로 직접 확인 시도
             echo "📋 unzip을 사용한 직접 추출 시도..."
             UNZIP_OUTPUT=$(unzip -p "$AAB_FILE" base/manifest/AndroidManifest.xml 2>/dev/null | strings | grep -E "versionCode|versionName")
-            
+
             if [ -n "$UNZIP_OUTPUT" ]; then
               echo "✅ unzip으로 버전 정보 추출 성공:"
               echo "$UNZIP_OUTPUT"
@@ -473,7 +503,7 @@ jobs:
               echo "⚠️ AAB 검증을 건너뛰고 계속 진행합니다."
             fi
           fi
-          
+
           echo "=========================================="
           echo "✅ AAB 빌드 및 검증 완료"
           echo "🎯 최종 AAB: $AAB_FILE"
@@ -488,8 +518,8 @@ jobs:
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 1
 
-  deploy-playstore:
-    name: Play Store 내부 테스트 배포
+  deploy-firebase:
+    name: Firebase App Distribution 배포
     runs-on: ubuntu-latest
     needs: [prepare-build, build-android]
 
@@ -499,13 +529,6 @@ jobs:
         with:
           ref: deploy
           fetch-depth: 0
-
-      # Service Account JSON 설정
-      - name: Setup Google Play Service Account
-        run: |
-          mkdir -p ~/.config/gcloud
-          echo "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_BASE64 }}" | base64 --decode > ~/.config/gcloud/service-account.json
-          echo "✅ Service Account JSON 설정 완료"
 
       # AAB 파일 다운로드
       - name: Download AAB artifact
@@ -521,154 +544,43 @@ jobs:
           name: release-notes
           path: .
 
-      # Ruby 및 Fastlane 설치
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      # Firebase 서비스 계정 설정
+      - name: Setup Firebase credentials file
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 }}" | base64 --decode > firebase-service-account.json
+          echo "✅ Firebase 서비스 계정 JSON 파일 생성 완료"
+
+      # Firebase App Distribution에 AAB 업로드
+      - name: Upload to Firebase App Distribution
+        id: firebase_upload
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-          ruby-version: "3.4.1"
+          appId: ${{ env.FIREBASE_APP_ID }}
+          serviceCredentialsFile: firebase-service-account.json
+          groups: ${{ env.FIREBASE_TESTER_GROUP }}
+          file: build/app/outputs/bundle/release/app-release.aab
+          releaseNotesFile: final_release_notes.txt
 
-      - name: Install Fastlane
-        working-directory: android
-        run: |
-          printf 'source "https://rubygems.org"\ngem "fastlane"\n' > Gemfile
-          bundle install
-          echo "✅ Fastlane 설치 완료 (Bundler)"
-          bundle exec fastlane --version
-
-      # Fastfile 복사 (Play Store 배포용)
-      # android/fastlane/Fastfile.playstore를 사용하여 일관성 유지
-      - name: Copy Fastfile for Play Store
-        run: |
-          mkdir -p android/fastlane
-          cp android/fastlane/Fastfile.playstore android/fastlane/Fastfile
-          echo "✅ Fastfile 복사 완료 (Fastfile.playstore → Fastfile)"
-          echo "📋 Fastfile 내용:"
-          cat android/fastlane/Fastfile
-
-      # Play Store에 업로드
-      - name: Upload to Play Store Internal Testing
-        run: |
-          echo "=========================================="
-          echo "🚀 Play Store 배포 시작"
-          echo "=========================================="
-          echo "🕐 배포 시작 시간: $(date '+%Y-%m-%d %H:%M:%S')"
-          echo "🔍 GitHub Run Number: ${{ github.run_number }}"
-          echo "🔍 GitHub SHA: ${{ github.sha }}"
-          
-          # 환경 변수 초기화 및 검증
-          VERSION_CODE="${{ needs.prepare-build.outputs.version_code }}"
-          VERSION_NAME="${{ needs.prepare-build.outputs.version }}"
-          
-          echo "📋 배포 대상 버전 정보:"
-          echo "  VERSION_NAME: '$VERSION_NAME'"
-          echo "  VERSION_CODE: '$VERSION_CODE'"
-          
-          # 입력 검증
-          if [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ]; then
-            echo "❌ 치명적 오류: VERSION_NAME 또는 VERSION_CODE가 비어있습니다!"
-            echo "VERSION_NAME: '$VERSION_NAME'"
-            echo "VERSION_CODE: '$VERSION_CODE'"
-            echo "이는 prepare-build 작업에서 출력이 제대로 전달되지 않았음을 의미합니다."
-            exit 1
-          fi
-          
-          # AAB 파일 절대 경로 찾기
-          AAB_PATH=$(realpath build/app/outputs/bundle/release/app-release.aab)
-          echo "📦 AAB 파일 경로: $AAB_PATH"
-
-          if [ ! -f "$AAB_PATH" ]; then
-            echo "❌ AAB 파일을 찾을 수 없습니다!"
-            echo "🔍 빌드 디렉토리 내용:"
-            ls -la build/app/outputs/bundle/release/ || echo "디렉토리가 존재하지 않습니다"
-            echo "🔍 전체 빌드 디렉토리 구조:"
-            find build/ -name "*.aab" -o -name "*.apk" 2>/dev/null || echo "AAB/APK 파일을 찾을 수 없습니다"
-            exit 1
-          fi
-          
-          echo "✅ AAB 파일 존재 확인"
-          echo "📋 AAB 파일 정보: $(ls -lah "$AAB_PATH")"
-          echo "📱 AAB 파일 크기: $(du -h "$AAB_PATH" | cut -f1)"
-          
-          # 배포 전 AAB 버전 검증
-          echo "=========================================="
-          echo "🔍 AAB 버전 검증 중..."
-          echo "=========================================="
-          
-          # bundletool 다운로드
-          if [ ! -f "bundletool.jar" ]; then
-            wget -q "https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar" -O bundletool.jar
-          fi
-          
-          if [ -f "bundletool.jar" ]; then
-            MANIFEST_OUTPUT=$(java -jar bundletool.jar dump manifest --bundle="$AAB_PATH" 2>&1)
-            
-            if [ $? -eq 0 ]; then
-              FINAL_VERSION_CODE=$(echo "$MANIFEST_OUTPUT" | grep -o 'android:versionCode="[0-9]*"' | grep -o '[0-9]*' | head -1)
-              FINAL_VERSION_NAME=$(echo "$MANIFEST_OUTPUT" | grep -o 'android:versionName="[^"]*"' | sed 's/android:versionName="//;s/"//' | head -1)
-              
-              echo "📋 AAB 버전: $FINAL_VERSION_NAME (코드: $FINAL_VERSION_CODE)"
-              
-              # VERSION_CODE 검증
-              if [ "$FINAL_VERSION_CODE" != "$VERSION_CODE" ]; then
-                echo "❌ 오류: AAB 버전 코드가 예상과 다릅니다! (예상: $VERSION_CODE, 실제: $FINAL_VERSION_CODE)"
-                exit 1
-              fi
-              
-              echo "✅ 버전 검증 성공"
-            else
-              echo "⚠️ 버전 검증 실패, 배포 계속 진행"
-            fi
-          fi
-
-          # Release notes 준비
-          CHANGELOG_DIR="android/fastlane/metadata/android/ko-KR/changelogs"
-          mkdir -p "$CHANGELOG_DIR"
-          
-          if [ -f "final_release_notes.txt" ]; then
-            cp final_release_notes.txt "$CHANGELOG_DIR/${VERSION_CODE}.txt"
-            echo "✅ Changelog 준비 완료 (버전 코드: $VERSION_CODE)"
-          else
-            echo "v$VERSION_NAME 업데이트" > "$CHANGELOG_DIR/${VERSION_CODE}.txt"
-            echo "⚠️ 기본 Changelog 생성 (버전 코드: $VERSION_CODE)"
-          fi
-          
-          # Service Account JSON 파일 확인
-          GOOGLE_PLAY_JSON_KEY="$HOME/.config/gcloud/service-account.json"
-          if [ ! -f "$GOOGLE_PLAY_JSON_KEY" ]; then
-            echo "❌ Service Account JSON 파일을 찾을 수 없습니다"
-            exit 1
-          fi
-          
-          # 환경변수 설정
-          export AAB_PATH="$AAB_PATH"
-          export GOOGLE_PLAY_JSON_KEY="$GOOGLE_PLAY_JSON_KEY"
-          export VERSION_NAME="$VERSION_NAME"
-          export VERSION_CODE="$VERSION_CODE"
-          
-          # 배포 실행
-          echo "=========================================="
-          echo "🚀 Play Store 배포 실행"
-          echo "🎯 버전: $VERSION_NAME (코드: $VERSION_CODE)"
-          echo "=========================================="
-          
-          cd android
-          bundle exec fastlane deploy_internal
+      # Firebase 인증 파일 삭제 (보안)
+      - name: Cleanup Firebase credentials
+        if: always()
+        run: rm -f firebase-service-account.json
 
       # 성공 알림
-      - name: Notify Play Store Upload Success
+      - name: Notify Firebase Upload Success
         if: success()
         run: |
-          echo "✅ Play Store 내부 테스트 배포 성공!"
+          echo "✅ Firebase App Distribution 배포 성공!"
           echo "버전: ${{ needs.prepare-build.outputs.version }} (${{ needs.prepare-build.outputs.version_code }})"
           echo "커밋: ${{ github.sha }}"
           echo ""
           echo "📱 테스터 확인 방법:"
-          echo "1. Play Console → 테스트 및 출시 → 내부 테스트"
-          echo "2. 테스터에게 테스트 링크 공유"
-          # Play Console URL은 프로젝트별로 다르므로 별도 설정 필요
+          echo "1. Firebase App Tester 앱 실행"
+          echo "2. 앱 선택"
+          echo "3. 최신 빌드 다운로드"
 
       - name: Notify on Failure
         if: failure()
         run: |
-          echo "❌ Play Store 배포 실패!"
+          echo "❌ Firebase App Distribution 배포 실패!"
           echo "로그를 확인해주세요."

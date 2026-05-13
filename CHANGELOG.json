@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-12T10:00:24Z",
-    "currentVersion": "1.8.23",
+    "lastUpdated": "2026-05-13T05:11:36Z",
+    "currentVersion": "1.8.28",
     "projectType": "flutter",
-    "totalReleases": 85
+    "totalReleases": 86
   },
   "releases": [
+    {
+      "version": "1.8.28",
+      "project_type": "flutter",
+      "date": "2026-05-13",
+      "pr_number": 351,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **버그 수정**\n  * 강퇴 후 대기방에서 발생하던 일부 비정상 동작 수정\n  * 백그라운드 상태에서 게임 종료 시 결과 화면 크래시 수정\n  * 앱 재시작 후 체포 상태가 화면에 반영되지 않던 문제 수정",
+      "parsed_changes": {
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "강퇴 후 대기방에서 발생하던 일부 비정상 동작 수정",
+            "백그라운드 상태에서 게임 종료 시 결과 화면 크래시 수정",
+            "앱 재시작 후 체포 상태가 화면에 반영되지 않던 문제 수정"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.23",
       "project_type": "flutter",
