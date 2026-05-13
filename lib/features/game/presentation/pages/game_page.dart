@@ -986,6 +986,13 @@ class _GamePageState extends ConsumerState<GamePage>
     // 결과 다이얼로그 위에 펄스/배너가 깜빡이고 진동이 폭주하지 않도록 정리한다.
     _clearZoneExitWarning();
 
+    // iOS 파란 위치 인디케이터 즉시 해제: 게임 종료 이후 위치 수집 불필요.
+    // dispose()까지 미루면 결과 다이얼로그 표시 시간 내내 인디케이터가 유지된다.
+    _locationSubscription?.cancel();
+    _locationSubscription = null;
+    _headingSubscription?.cancel();
+    _headingSubscription = null;
+
     // GAME_OVER 이벤트 state에서 gameResultId 캡처.
     final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
 
