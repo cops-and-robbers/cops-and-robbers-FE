@@ -47,6 +47,6 @@ metadata:
     source: "SUH-DEVOPS-TEMPLATE"
     version: "1.3.14"
     integrated_date: "2026-01-15"
-    last_update_date: "2026-01-15"
+    last_update_date: "2026-05-13"
     options:
       synology: false
