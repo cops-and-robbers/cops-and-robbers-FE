@@ -52,8 +52,6 @@ concurrency:
 
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [build-ios-app]
 
 # ===================================================================
 # 🔧 프로젝트별 설정 (아래 값들을 수정하세요)
