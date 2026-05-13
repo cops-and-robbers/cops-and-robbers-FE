@@ -36,10 +36,24 @@ jobs:
     name: CodeRabbit Summary 감지 및 파싱
     runs-on: ubuntu-latest
     outputs:
-      summary_found: ${{ steps.detect_summary.outputs.summary_found }}
+      content_source: ${{ steps.determine_source.outputs.content_source }}
       version: ${{ steps.get_version.outputs.version }}
       project_type: ${{ steps.get_version.outputs.project_type }}
     steps:
+      - name: PR 본문 백업
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          echo "📋 PR #$PR_NUMBER 본문 백업 중..."
+
+          # 초기화 전 작성자가 적어둔 본문을 /tmp에 저장 (checkout 영향 받지 않음)
+          ORIGINAL_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                               "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}" | \
+                               jq -r '.body // ""')
+
+          echo "$ORIGINAL_BODY" > /tmp/original_pr_body.md
+          BYTES=$(wc -c < /tmp/original_pr_body.md)
+          echo "✅ PR 본문 백업 완료 (${BYTES} bytes)"
+
       - name: PR 본문 초기화
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
@@ -135,6 +149,11 @@ jobs:
           PR_NUMBER="${{ github.event.pull_request.number }}"
           MAX_ATTEMPTS=40  # 10분 = 40 * 15초
           ATTEMPT=0
+          SUMMARY_FOUND=false
+          EARLY_ABORT=false
+
+          # CodeRabbit이 응답하지 못함을 알리는 댓글 키워드 (대소문자 무시)
+          ERROR_PATTERNS="rate limit|quota|too many requests|couldn't process|unable to process|service unavailable|limit reached|exceeded"
 
           echo "🔍 PR #$PR_NUMBER에서 CodeRabbit Summary 감지 시작..."
           echo "⏰ 최대 대기 시간: 10분 (15초마다 체크)"
@@ -154,10 +173,22 @@ jobs:
             elif echo "$PR_BODY" | grep -q "Summary by CodeRabbit"; then
               echo "✅ CodeRabbit Summary 발견!"
               echo "$PR_BODY" > pr_body.md
-              echo "summary_found=true" >> $GITHUB_OUTPUT
+              SUMMARY_FOUND=true
               break
             else
               echo "⏳ CodeRabbit Summary 아직 없음"
+            fi
+
+            # CodeRabbit 봇의 최신 댓글에서 에러 키워드 조기 감지 (10분 낭비 방지)
+            LATEST_CODERABBIT_COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                                             "https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments?per_page=30" | \
+                                             jq -r '[.[] | select(.user.login | test("coderabbitai"; "i"))] | last | .body // ""')
+
+            if [ -n "$LATEST_CODERABBIT_COMMENT" ] && echo "$LATEST_CODERABBIT_COMMENT" | grep -iE "$ERROR_PATTERNS" > /dev/null; then
+              echo "⚠️ CodeRabbit 에러 댓글 감지 — 폴링 조기 종료"
+              echo "   감지된 댓글(첫 200자): $(echo "$LATEST_CODERABBIT_COMMENT" | head -c 200)"
+              EARLY_ABORT=true
+              break
             fi
 
             if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
@@ -165,13 +196,88 @@ jobs:
             fi
           done
 
-          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-            echo "⚠️ 10분 대기 후에도 Summary를 찾을 수 없습니다"
+          if [ "$SUMMARY_FOUND" = "true" ]; then
+            echo "summary_found=true" >> $GITHUB_OUTPUT
+          else
+            if [ "$EARLY_ABORT" = "true" ]; then
+              echo "⚠️ CodeRabbit 응답 불가 상태로 종료 — fallback 단계로 진행합니다"
+            else
+              echo "⚠️ 10분 대기 후에도 Summary를 찾을 수 없습니다 — fallback 단계로 진행합니다"
+            fi
             echo "summary_found=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: 콘텐츠 소스 결정
+        id: determine_source
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          SUMMARY_FOUND="${{ steps.detect_summary.outputs.summary_found }}"
+          CONTENT_SOURCE="none"
+
+          echo "🔀 콘텐츠 소스 결정 시작..."
+
+          if [ "$SUMMARY_FOUND" = "true" ]; then
+            # 1순위: CodeRabbit Summary (pr_body.md 이미 생성됨)
+            CONTENT_SOURCE="coderabbit"
+            echo "✅ Source: CodeRabbit Summary"
+          else
+            echo "⚠️ CodeRabbit Summary 없음 — fallback 단계 진입"
+
+            # 2순위: 작성자 수동 입력 텍스트 (changelog 마커 안의 내용)
+            if [ -f "/tmp/original_pr_body.md" ]; then
+              MANUAL_CONTENT=$(awk '
+                /<!-- changelog:start -->/ {flag=1; next}
+                /<!-- changelog:end -->/   {flag=0}
+                flag {print}
+              ' /tmp/original_pr_body.md | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed '/^$/d')
+
+              MANUAL_LEN=$(echo -n "$MANUAL_CONTENT" | wc -c)
+
+              # 의미 있는 본문 판정: 마커 내부 텍스트가 20자 이상
+              if [ "$MANUAL_LEN" -ge 20 ]; then
+                echo "$MANUAL_CONTENT" > pr_body.md
+                CONTENT_SOURCE="manual"
+                echo "✅ Source: 작성자 수동 입력 텍스트 (${MANUAL_LEN} chars)"
+              else
+                echo "⏳ 작성자 본문이 비어있거나 너무 짧음 (${MANUAL_LEN} chars)"
+              fi
+            fi
+
+            # 3순위: 자동 생성 (PR 제목 + feat/fix 커밋 메시지)
+            if [ "$CONTENT_SOURCE" = "none" ]; then
+              echo "🛠️ 자동 fallback 생성 중..."
+
+              PR_TITLE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                              "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}" | \
+                              jq -r '.title // ""')
+
+              # feat/fix 커밋 메시지만 추출, 중복 제거
+              COMMIT_LINES=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                                  "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}/commits?per_page=100" | \
+                                  jq -r '[.[] | .commit.message | split("\n")[0] | select(test("^(feat|fix)"; "i"))] | unique | .[] | "- " + .')
+
+              {
+                echo "$PR_TITLE"
+                echo ""
+                if [ -n "$COMMIT_LINES" ]; then
+                  echo "$COMMIT_LINES"
+                else
+                  echo "- 안정성 개선 및 버그 수정"
+                fi
+              } > pr_body.md
+
+              CONTENT_SOURCE="auto"
+              echo "✅ Source: 자동 생성 (PR 제목 + 커밋 메시지)"
+            fi
+          fi
+
+          echo "content_source=$CONTENT_SOURCE" >> $GITHUB_OUTPUT
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📋 최종 콘텐츠 소스: $CONTENT_SOURCE"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
       - name: Summary 파일 업로드
-        if: steps.detect_summary.outputs.summary_found == 'true'
+        if: steps.determine_source.outputs.content_source != 'none'
         uses: actions/upload-artifact@v4
         with:
           name: pr-content
@@ -183,7 +289,7 @@ jobs:
     name: CHANGELOG 업데이트
     runs-on: ubuntu-latest
     needs: detect-and-parse
-    if: needs.detect-and-parse.outputs.summary_found == 'true'
+    if: needs.detect-and-parse.outputs.content_source != 'none'
     steps:
       - name: 저장소 체크아웃
         uses: actions/checkout@v4
@@ -283,12 +389,40 @@ jobs:
         run: rm -f pr_body.md
 
   # Job 3: PR 머지 및 배포 트리거
+  # CHANGELOG 갱신(Job 2) 실패해도 배포 라인은 막지 않도록 always() 사용
   merge-and-deploy:
     name: PR 머지 및 배포 트리거
     runs-on: ubuntu-latest
     needs: [detect-and-parse, update-changelog]
-    if: needs.detect-and-parse.outputs.summary_found == 'true'
+    if: always() && needs.detect-and-parse.result == 'success'
     steps:
+      - name: 콘텐츠 소스 알림 댓글
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          CONTENT_SOURCE="${{ needs.detect-and-parse.outputs.content_source }}"
+          CHANGELOG_RESULT="${{ needs.update-changelog.result }}"
+
+          case "$CONTENT_SOURCE" in
+            coderabbit)
+              echo "✅ CodeRabbit Summary 정상 — 알림 댓글 생략"
+              ;;
+            manual)
+              gh pr comment $PR_NUMBER --body "⚠️ CodeRabbit Summary 없음 — PR 작성자 본문(\`<!-- changelog:start -->\` 마커)을 CHANGELOG로 사용했습니다."
+              ;;
+            auto)
+              gh pr comment $PR_NUMBER --body "⚠️ CodeRabbit Summary 없음 + 작성자 본문 없음 — PR 제목 + 커밋 메시지로 CHANGELOG를 자동 생성했습니다. 릴리즈 후 CHANGELOG를 수동 보완해주세요."
+              ;;
+            none|"")
+              gh pr comment $PR_NUMBER --body "❌ CHANGELOG 소스를 결정할 수 없어 CHANGELOG가 갱신되지 않았습니다. 배포는 진행되지만 릴리즈 노트를 수동으로 작성해주세요."
+              ;;
+          esac
+
+          if [ "$CHANGELOG_RESULT" = "failure" ]; then
+            gh pr comment $PR_NUMBER --body "⚠️ CHANGELOG 업데이트(Job 2) 실패. 배포는 계속 진행됩니다 — 릴리즈 후 CHANGELOG를 수동 보완해주세요."
+          fi
+
       - name: 저장소 체크아웃
         uses: actions/checkout@v4
         with:
