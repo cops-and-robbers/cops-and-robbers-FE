@@ -890,9 +890,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           final participant = _extractEventParticipant(event.data);
           final newHostId = participant['participantId'] as int?;
           if (newHostId != null && myPid != null) {
+            final iAmNewHost = myPid == newHostId;
             ref
                 .read(gameParticipantNotifierProvider.notifier)
-                .setIsHost(myPid == newHostId);
+                .setIsHost(iAmNewHost);
             ref
                 .read(gameParticipantNotifierProvider.notifier)
                 .setHostParticipantId(newHostId);
@@ -900,6 +901,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ref
                 .read(waitingRoomParticipantsProvider.notifier)
                 .setHost(newHostId);
+            // 내가 방장이 되면 레디 상태 해제 — 레디 중에는 팀 변경 UI가 숨겨지기 때문
+            if (iAmNewHost && _isReady) {
+              setState(() => _isReady = false);
+            }
           }
         }
 

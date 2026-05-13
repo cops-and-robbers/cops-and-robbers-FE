@@ -1,0 +1,540 @@
+# ===================================================================
+# Flutter iOS TestFlight 자동 배포 워크플로우
+# ===================================================================
+#
+# 이 워크플로우는 Flutter iOS 앱을 빌드하여 TestFlight에 자동 배포합니다.
+#
+# ★ 마법사 우선 아키텍처 ★
+# - 빌드에 필요한 설정 파일들은 웹 마법사가 생성합니다
+# - 워크플로우는 마법사가 생성한 파일들을 그대로 사용합니다
+# - 마법사 경로: .github/util/flutter/ios-testflight-setup-wizard/index.html
+#   (브라우저에서 열어서 사용)
+#
+# 빌드 파이프라인:
+#   1. flutter build ios --no-codesign (Flutter 빌드)
+#   2. xcodebuild archive (Xcode 아카이브 생성)
+#   3. xcodebuild -exportArchive (IPA 생성, ExportOptions.plist 사용)
+#   4. fastlane upload_testflight (마법사 생성 Fastfile 사용)
+#
+# ===================================================================
+# 📋 필요한 GitHub Secrets
+# ===================================================================
+#
+# 🔐 Apple 인증서 & 프로비저닝 프로파일 (필수):
+#   - APPLE_CERTIFICATE_BASE64        : .p12 인증서 (base64 인코딩)
+#   - APPLE_CERTIFICATE_PASSWORD      : .p12 인증서 비밀번호
+#   - APPLE_PROVISIONING_PROFILE_BASE64 : .mobileprovision 파일 (base64 인코딩)
+#   - IOS_PROVISIONING_PROFILE_NAME   : 프로비저닝 프로파일 이름 (예: "MyApp Distribution")
+#
+# 🔑 App Store Connect API (필수):
+#   - APP_STORE_CONNECT_API_KEY_ID    : API Key ID (10자리, 예: ABC123DEF4)
+#   - APP_STORE_CONNECT_ISSUER_ID     : Issuer ID (UUID 형식)
+#   - APP_STORE_CONNECT_API_KEY_BASE64: AuthKey_XXXXXX.p8 파일 (base64 인코딩)
+#
+# 📝 환경 설정 (선택):
+#   - ENV_FILE (또는 ENV)             : .env 파일 내용 (앱에서 사용하는 환경변수)
+#   - SECRETS_XCCONFIG                : ios/Flutter/Secrets.xcconfig 내용 (선택)
+#                                       iOS 네이티브 빌드 시 필요한 API 키 등
+#                                       (예: GOOGLE_MAPS_API_KEY=xxx)
+#
+# ===================================================================
+# 🛠️ 초기 설정 방법
+# ===================================================================
+#
+# 1. 웹 마법사 실행:
+#    브라우저에서 .github/util/flutter/ios-testflight-setup-wizard/index.html 열기
+#    → 필요한 정보 입력 후 설정 파일 다운로드
+#
+# 2. GitHub Secrets 설정 (위 목록 참고)
+#
+# 3. 생성된 파일 커밋:
+#    git add ios/
+#    git commit -m "chore: iOS TestFlight 배포 설정"
+#
+# 4. deploy 브랜치로 푸시하여 배포 시작
+#
+# ===================================================================
+
+name: PROJECT-iOS-TestFlight-Deploy
+
+on:
+  push:
+    branches: ["deploy"]
+  workflow_run:
+    workflows: ["CHANGELOG 자동 업데이트"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# ============================================
+# 🔧 프로젝트별 설정 (아래 값들을 수정하세요)
+# ============================================
+env:
+  FLUTTER_VERSION: "3.35.5"
+  XCODE_VERSION: "26.0" # macos-26 runner + iOS 26 SDK (TestFlight 경고 90725 대응 - 2026년 4월 필수)
+  PROJECT_TYPE: "flutter"
+
+  # ============================================
+  # 📝 환경 파일 설정
+  # ============================================
+  # .env 파일 생성 경로 (프로젝트 루트 기준)
+  ENV_FILE_PATH: ".env"
+
+  # ============================================
+  # 📝 TestFlight Changelog 설정
+  # ============================================
+  SKIP_WAITING_FOR_BUILD_PROCESSING: "false"
+
+jobs:
+  prepare-build:
+    name: 환경 설정 및 준비
+    runs-on: macos-26 # iOS 26 SDK 지원 (2026년 4월 App Store 정책 대응)
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+
+    outputs:
+      version: ${{ steps.current_version.outputs.version }}
+      build_number: ${{ steps.current_version.outputs.build_number }}
+      project_type: ${{ steps.current_version.outputs.project_type }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: deploy
+          fetch-depth: 0
+
+      - name: Pull latest changes
+        run: git pull origin deploy
+
+      - name: Select Xcode 26 and verify SDK
+        run: |
+          # Xcode 26 명시적 선택
+          sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer || true
+
+          # 현재 Xcode 버전 확인
+          echo "📱 Current Xcode version:"
+          xcodebuild -version
+
+          # 사용 가능한 iOS SDK 목록
+          echo ""
+          echo "📦 Available iOS SDKs:"
+          xcodebuild -showsdks | grep "iOS"
+
+          # xcode-select 경로 확인
+          echo ""
+          echo "🎯 xcode-select path:"
+          xcode-select -p
+
+          # iOS 26 SDK 존재 여부 확인 (필수)
+          echo ""
+          if xcodebuild -showsdks | grep -q "iOS 26"; then
+            echo "✅ iOS 26 SDK available - TestFlight warning 90725 will be resolved"
+          else
+            echo "❌ iOS 26 SDK NOT FOUND - Build will fail"
+            echo "📦 Available Xcode versions:"
+            ls /Applications | grep "Xcode_"
+            exit 1
+          fi
+
+      - name: Create .env file
+        run: |
+          cat << 'EOF' > ${{ env.ENV_FILE_PATH }}
+          ${{ secrets.ENV_FILE || secrets.ENV }}
+          EOF
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> ${{ env.ENV_FILE_PATH }}
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> ${{ env.ENV_FILE_PATH }}
+          echo "✅ ${{ env.ENV_FILE_PATH }} file created"
+
+      - name: Create Secrets.xcconfig file
+        run: |
+          mkdir -p ios/Flutter
+          if [ -n "${{ secrets.SECRETS_XCCONFIG }}" ]; then
+            echo "${{ secrets.SECRETS_XCCONFIG }}" > ios/Flutter/Secrets.xcconfig
+            echo "✅ Secrets.xcconfig created from SECRETS_XCCONFIG secret"
+          else
+            # SECRETS_XCCONFIG가 없으면 개별 시크릿으로 생성
+            cat > ios/Flutter/Secrets.xcconfig << 'SECRETS_EOF'
+          // Google Maps API Key
+          // iOS Google Maps SDK에서 사용
+          // Info.plist → AppDelegate를 통해 초기화
+          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          SECRETS_EOF
+            echo "✅ Secrets.xcconfig created from individual secrets"
+          fi
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      # 보안 검증 (API 키 노출 확인)
+      - name: Verify Secrets Not Exposed
+        run: |
+          echo "🔒 보안 검증: API 키가 노출되지 않았는지 확인"
+
+          # iOS Secrets.xcconfig 확인
+          if [ -f ios/Flutter/Secrets.xcconfig ]; then
+            echo "✅ ios/Flutter/Secrets.xcconfig exists"
+            if grep -q "GOOGLE_MAPS_API_KEY" ios/Flutter/Secrets.xcconfig; then
+              echo "✅ GOOGLE_MAPS_API_KEY variable found in Secrets.xcconfig"
+            else
+              echo "⚠️ GOOGLE_MAPS_API_KEY not found in Secrets.xcconfig"
+            fi
+          else
+            echo "❌ ios/Flutter/Secrets.xcconfig not created"
+            exit 1
+          fi
+
+          echo "✅ 보안 검증 완료: 설정 파일 생성됨 (API 키 값은 마스킹됨)"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-flutter-pub-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true
+
+      - name: Install CocoaPods
+        run: |
+          gem install cocoapods
+          cd ios && pod install
+
+      - name: 버전 관리 스크립트 권한 설정
+        run: |
+          chmod +x ./.github/scripts/version_manager.sh
+          chmod +x ./.github/scripts/changelog_manager.py
+
+      - name: 현재 버전 정보 가져오기
+        id: current_version
+        run: |
+          VERSION=$(./.github/scripts/version_manager.sh get | tail -n 1)
+          BUILD_NUMBER=$(./.github/scripts/version_manager.sh get-code | tail -n 1)
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "project_type=${{ env.PROJECT_TYPE }}" >> $GITHUB_OUTPUT
+
+          echo "📋 버전: $VERSION (빌드번호: $BUILD_NUMBER)"
+
+      - name: 릴리즈 노트 생성
+        id: release_notes
+        run: |
+          VERSION="${{ steps.current_version.outputs.version }}"
+
+          if [ -f "CHANGELOG.json" ]; then
+            python3 ./.github/scripts/changelog_manager.py generate-md
+            python3 ./.github/scripts/changelog_manager.py export --version $VERSION --output final_release_notes.txt
+
+            if [ -s final_release_notes.txt ]; then
+              echo "RELEASE_NOTES_FOUND=true" >> $GITHUB_ENV
+            else
+              echo "RELEASE_NOTES_FOUND=false" >> $GITHUB_ENV
+              echo "v$VERSION 업데이트" > final_release_notes.txt
+            fi
+          else
+            echo "RELEASE_NOTES_FOUND=false" >> $GITHUB_ENV
+            echo "v$VERSION 업데이트" > final_release_notes.txt
+          fi
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: final_release_notes.txt
+          retention-days: 1
+
+      - name: Upload project files
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-files
+          path: |
+            ${{ env.ENV_FILE_PATH }}
+            ios/Flutter/Secrets.xcconfig
+            pubspec.yaml
+            lib/
+            assets/
+          retention-days: 1
+
+  # ============================================
+  # iOS 빌드 (xcodebuild 직접 사용)
+  # ============================================
+  build-ios:
+    name: iOS 앱 빌드
+    runs-on: macos-26 # iOS 26 SDK 지원 (2026년 4월 App Store 정책 대응)
+    needs: prepare-build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: deploy
+          fetch-depth: 0
+
+      - name: Pull latest changes
+        run: git pull origin deploy
+
+      - name: Select Xcode 26 and verify SDK
+        run: |
+          # Xcode 26 명시적 선택
+          sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer || true
+
+          # 현재 Xcode 버전 확인
+          echo "📱 Current Xcode version:"
+          xcodebuild -version
+
+          # 사용 가능한 iOS SDK 목록
+          echo ""
+          echo "📦 Available iOS SDKs:"
+          xcodebuild -showsdks | grep "iOS"
+
+          # xcode-select 경로 확인
+          echo ""
+          echo "🎯 xcode-select path:"
+          xcode-select -p
+
+          # iOS 26 SDK 존재 여부 확인 (필수)
+          echo ""
+          if xcodebuild -showsdks | grep -q "iOS 26"; then
+            echo "✅ iOS 26 SDK available - TestFlight warning 90725 will be resolved"
+          else
+            echo "❌ iOS 26 SDK NOT FOUND - Build will fail"
+            echo "📦 Available Xcode versions:"
+            ls /Applications | grep "Xcode_"
+            exit 1
+          fi
+
+      - name: Install iOS 26 device platform
+        run: |
+          # Xcode 26부터 디바이스용 iOS platform이 별도 다운로드 필요
+          echo "📥 iOS 26 device platform 설치 중..."
+          xcodebuild -downloadPlatform iOS
+          echo "✅ iOS 26 device platform 설치 완료"
+
+      - name: Download project files
+        uses: actions/download-artifact@v4
+        with:
+          name: project-files
+          path: .
+
+      - name: Ensure .env file exists
+        run: |
+          if [ ! -f "${{ env.ENV_FILE_PATH }}" ]; then
+            cat << 'EOF' > ${{ env.ENV_FILE_PATH }}
+          ${{ secrets.ENV_FILE || secrets.ENV }}
+          EOF
+            echo "✅ ${{ env.ENV_FILE_PATH }} file created (fallback)"
+          fi
+          # 아티팩트에 이미 포함된 경우 중복 추가 방지
+          grep -q "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID" ${{ env.ENV_FILE_PATH }} || \
+            echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> ${{ env.ENV_FILE_PATH }}
+          grep -q "GOOGLE_MAPS_ROBBER_MAP_ID_IOS" ${{ env.ENV_FILE_PATH }} || \
+            echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> ${{ env.ENV_FILE_PATH }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-flutter-pub-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true
+
+      - name: Install CocoaPods
+        run: |
+          gem install cocoapods
+          cd ios && pod install
+
+      - name: Import Code-Signing Certificates
+        uses: Apple-Actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+
+      - name: Install Provisioning Profile
+        run: |
+          echo "${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > profile.mobileprovision
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+          uuid=$(grep -A1 -a "UUID" profile.mobileprovision | grep string | sed -e "s/<string>//" -e "s/<\/string>//" -e "s/[[:space:]]//g")
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$uuid.mobileprovision
+
+      - name: Inject signing config into ExportOptions.plist
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+          IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+        run: |
+          cd ios
+          if [ ! -f "ExportOptions.plist" ]; then
+            echo "❌ ExportOptions.plist 누락"
+            exit 1
+          fi
+          # plist에는 placeholder만 두고, 빌드 시 Secret에서 실제 값을 주입(이중 관리 방지)
+          /usr/libexec/PlistBuddy -c "Set :teamID ${APPLE_TEAM_ID}" ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Delete :provisioningProfiles:__IOS_BUNDLE_ID__" ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:${IOS_BUNDLE_ID} string ${IOS_PROVISIONING_PROFILE_NAME}" ExportOptions.plist
+          echo "✅ ExportOptions.plist 주입 완료 (team/bundle/profile은 GitHub Secrets에서 가져옴)"
+
+      - name: Flutter build (no codesign)
+        run: |
+          flutter build ios --release --no-codesign \
+            --build-name="${{ needs.prepare-build.outputs.version }}" \
+            --build-number="${{ needs.prepare-build.outputs.build_number }}"
+
+      - name: Create Archive
+        env:
+          IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+        run: |
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -sdk iphoneos \
+            -archivePath build/Runner.xcarchive \
+            archive \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="$IOS_PROVISIONING_PROFILE_NAME" \
+            CODE_SIGN_IDENTITY="Apple Distribution"
+
+      - name: Export IPA
+        run: |
+          cd ios
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist ExportOptions.plist
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/build/ipa/*.ipa
+          retention-days: 1
+
+  # ============================================
+  # TestFlight 배포 (마법사 생성 Fastfile 사용)
+  # ============================================
+  deploy-testflight:
+    name: TestFlight 배포
+    runs-on: macos-15
+    needs: [prepare-build, build-ios]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: deploy
+          fetch-depth: 0
+
+      - name: Setup App Store Connect API Key
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8
+
+      - name: Download IPA artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/build/ipa/
+
+      - name: Download release notes
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+          path: .
+
+      - name: Verify Fastfile exists
+        run: |
+          if [ ! -f "ios/fastlane/Fastfile" ]; then
+            echo "❌ ios/fastlane/Fastfile이 없습니다!"
+            echo "웹 마법사를 실행하여 설정 파일을 생성하세요:"
+            echo "  브라우저에서 .github/util/flutter/ios-testflight-setup-wizard/index.html 열기"
+            exit 1
+          fi
+          echo "✅ Fastfile 확인됨: ios/fastlane/Fastfile"
+
+      # Fastlane 설치 (Bundler 방식으로 CFPropertyList 의존성 충돌 방지)
+      - name: Install Fastlane
+        run: |
+          printf 'source "https://rubygems.org"\ngem "fastlane"\n' > Gemfile
+          bundle install
+          echo "✅ Fastlane 설치 완료"
+          bundle exec fastlane --version
+
+      - name: Upload to TestFlight
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          SKIP_WAITING_FOR_BUILD_PROCESSING: ${{ env.SKIP_WAITING_FOR_BUILD_PROCESSING }}
+        run: |
+          # IPA 파일 찾기
+          IPA_PATH=$(find $GITHUB_WORKSPACE/ios/build/ipa -name "*.ipa" | head -1)
+          echo "📦 Found IPA at: $IPA_PATH"
+
+          if [ ! -f "$IPA_PATH" ]; then
+            echo "❌ IPA 파일을 찾을 수 없습니다!"
+            ls -la ios/build/ipa/
+            exit 1
+          fi
+
+          # Release notes 준비
+          if [ -f "final_release_notes.txt" ]; then
+            RELEASE_NOTES=$(cat final_release_notes.txt)
+            echo "📝 Release Notes:"
+            echo "$RELEASE_NOTES"
+          else
+            RELEASE_NOTES="v${{ needs.prepare-build.outputs.version }} 업데이트"
+            echo "📝 기본 Release Notes: $RELEASE_NOTES"
+          fi
+
+          # 환경변수 설정 (Fastfile에서 사용)
+          export API_KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8"
+          export IPA_PATH="$IPA_PATH"
+          export RELEASE_NOTES="$RELEASE_NOTES"
+
+          # 디버깅 정보
+          echo "🔧 Working directory: $(pwd)"
+          echo "🔧 IPA_PATH: $IPA_PATH"
+          echo "🔧 API_KEY_PATH: $API_KEY_PATH"
+
+          # Fastlane 실행 (마법사가 생성한 Fastfile 사용)
+          cd ios
+          bundle exec fastlane upload_testflight
+
+      - name: Notify TestFlight Upload Success
+        if: success()
+        run: |
+          echo "✅ TestFlight 업로드 성공!"
+          echo "📱 버전: ${{ needs.prepare-build.outputs.version }}"
+          echo "🔢 빌드번호: ${{ needs.prepare-build.outputs.build_number }}"
+          echo "📝 커밋: ${{ github.sha }}"
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "❌ TestFlight 업로드 실패!"
+          echo "로그를 확인해주세요."
