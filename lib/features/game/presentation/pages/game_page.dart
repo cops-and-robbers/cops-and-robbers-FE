@@ -39,6 +39,7 @@ import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
+import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
@@ -542,6 +543,13 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 재연결 시 서버 참가자 목록을 직접 조회해 체포 현황과 남은 도둑 수를 보정합니다.
   Future<void> _syncGameStateOnReconnect() async {
     if (widget.isDummy || !mounted) return;
+    // GAME_OVER 후엔 서버가 400 "게임 진행 중 아님"을 응답하므로 호출 자체를 스킵.
+    if (GameOverGuard.shouldSkipSync(
+      gameOverDialogShown: _gameOverDialogShown,
+    )) {
+      debugPrint('[GamePage] GameOver 표시 중 → sync 스킵');
+      return;
+    }
 
     try {
       // sync 요청 직전 상태 snapshot — sync 창에 STOMP가 추가한 변화 추적용
@@ -1048,11 +1056,14 @@ class _GamePageState extends ConsumerState<GamePage>
       winnerTeam: winnerTeam,
       gameResultId: gameResultId,
       onGoHome: () {
+        // GamePage가 외부 사유로 이미 dispose된 경우 ref/context 사용 금지 (안전망)
+        if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         if (gameId != null) ref.read(leaveGameProvider(gameId).future);
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.home);
       },
       onRematch: () {
+        if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
       },
@@ -1088,11 +1099,13 @@ class _GamePageState extends ConsumerState<GamePage>
       confirmTextColor: _isDarkMode ? null : AppColors.white,
       barrierDismissible: false,
       onCancel: () {
+        if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         if (gameId != null) ref.read(leaveGameProvider(gameId).future);
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.home);
       },
       onConfirm: () {
+        if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
       },
@@ -1135,6 +1148,17 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 백그라운드 중 게임이 끝났을 경우 홈으로 이동,
   /// 대기실로 돌아간 경우 로비로 이동합니다.
   Future<void> _checkGameStatusOnResume() async {
+    // GameOver 모달 표시 중에는 lifecycle resume의 자동 라우팅을 스킵한다.
+    // 사용자가 모달의 '홈으로'/'한 번 더'를 명시 선택하면 그 콜백에서 라우팅된다.
+    // 가드가 없으면 백그라운드 중 GAME_OVER 후 포그라운드 복귀 시 GamePage가 dispose되어
+    // 모달 콜백의 ref/context 사용이 실패한다(ref disposed 에러).
+    if (GameOverGuard.shouldSkipResume(
+      gameOverDialogShown: _gameOverDialogShown,
+    )) {
+      debugPrint('[GamePage] GameOver 모달 표시 중 → resume 자동 라우팅 스킵');
+      return;
+    }
+
     debugPrint(
       '[GamePage] _checkGameStatusOnResume 호출 '
       '(isChecking=$_isCheckingGameStatus, isDummy=${widget.isDummy})',
