@@ -1,22 +1,3 @@
-# ===================================================================
-# Flutter Android Play Store 내부 테스트 배포 워크플로우
-# ===================================================================
-#
-# deploy 브랜치 푸시 시 Android AAB를 빌드하고
-# Play Store 내부 테스트에 자동 배포합니다.
-#
-# ===================================================================
-# 🔑 필수 GitHub Secrets
-# ===================================================================
-# ENV_FILE: .env 파일 내용
-# RELEASE_KEYSTORE_BASE64: 서명용 keystore (base64)
-# RELEASE_KEYSTORE_PASSWORD: keystore 비밀번호
-# RELEASE_KEY_ALIAS: key alias
-# RELEASE_KEY_PASSWORD: key 비밀번호
-# GOOGLE_SERVICES_JSON: Firebase google-services.json
-# GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_BASE64: Play Console 서비스 계정 (base64)
-# ===================================================================
-
 name: PROJECT-FLUTTER-ANDROID-PLAYSTORE-INTERNAL-CICD
 
 on:
@@ -53,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           ref: deploy
           fetch-depth: 0
@@ -63,8 +44,12 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "${{ secrets.ENV_FILE || secrets.ENV }}" > .env
-          echo ".env file created"
+          cat << 'EOF' > .env
+          ${{ secrets.ENV_FILE || secrets.ENV }}
+          EOF
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> .env
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> .env
+          echo "✅ .env file created"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -174,7 +159,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           ref: deploy
           fetch-depth: 0
@@ -192,8 +177,54 @@ jobs:
       # .env 파일 생성 (보안을 위해 아티팩트가 아닌 시크릿에서 생성)
       - name: Create .env file
         run: |
-          echo "${{ secrets.ENV_FILE || secrets.ENV }}" > .env
+          cat << 'EOF' > .env
+          ${{ secrets.ENV_FILE || secrets.ENV }}
+          EOF
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> .env
+          echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> .env
           echo "✅ .env 파일 생성됨 (크기: $(wc -c < .env) bytes)"
+
+      # Android Native Config 생성 (Google Maps API Key)
+      - name: Setup Android Secrets (Google Maps)
+        run: |
+          # 기존 local.properties가 있으면 버전 정보 제거 후 업데이트
+          if [ -f "android/local.properties" ]; then
+            # 버전 정보만 보존하고 나머지는 새로 작성
+            grep "flutter.versionName\|flutter.versionCode" android/local.properties > android/local.properties.tmp || touch android/local.properties.tmp
+            mv android/local.properties.tmp android/local.properties
+          else
+            touch android/local.properties
+          fi
+
+          # Google Maps API Key 추가
+          cat >> android/local.properties << 'SECRETS_EOF'
+
+          # Google Maps API Key
+          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          SECRETS_EOF
+          echo "✅ android/local.properties updated with API key"
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      # 보안 검증 (API 키 노출 확인)
+      - name: Verify Secrets Not Exposed
+        run: |
+          echo "🔒 보안 검증: API 키가 노출되지 않았는지 확인"
+
+          # Android local.properties 확인
+          if [ -f android/local.properties ]; then
+            echo "✅ android/local.properties exists"
+            if grep -q "GOOGLE_MAPS_API_KEY" android/local.properties; then
+              echo "✅ GOOGLE_MAPS_API_KEY variable found in local.properties"
+            else
+              echo "⚠️ GOOGLE_MAPS_API_KEY not found in local.properties"
+            fi
+          else
+            echo "❌ android/local.properties not created"
+            exit 1
+          fi
+
+          echo "✅ 보안 검증 완료: 설정 파일 생성됨 (API 키 값은 마스킹됨)"
 
       # Release Keystore 설정
       - name: Setup Release Keystore
@@ -207,7 +238,7 @@ jobs:
       - name: Create key.properties
         run: |
           cat > android/key.properties << EOF
-          storeFile=app/keystore/key.jks
+          storeFile=keystore/key.jks
           storePassword=${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           keyAlias=${{ secrets.RELEASE_KEY_ALIAS }}
           keyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}
@@ -285,17 +316,17 @@ jobs:
             echo "❌ VERSION_NAME 또는 VERSION_CODE가 비어있습니다!"
             exit 1
           fi
-          
+
           # Flutter 환경 정보 출력
           echo "🔍 Flutter 환경 정보:"
           flutter --version
           flutter doctor -v | head -20
-          
+
           # 빌드 디렉토리 정리
           echo "🧹 이전 빌드 결과물 정리..."
           rm -rf build/app/outputs/bundle/release/
           mkdir -p build/app/outputs/bundle/release/
-          
+
           # Flutter clean 및 pub get
           echo "🔄 Flutter clean 및 의존성 재설치..."
           flutter clean
@@ -336,22 +367,22 @@ jobs:
             --build-name="$VERSION_NAME" \
             --build-number="$VERSION_CODE" \
             --verbose
-          
+
           BUILD_EXIT_CODE=$?
-          
+
           if [ $BUILD_EXIT_CODE -ne 0 ]; then
             echo "❌ Flutter build 실패! Exit code: $BUILD_EXIT_CODE"
             echo "🔍 빌드 디렉토리 상태:"
             find build/ -name "*.aab" -o -name "*.apk" 2>/dev/null || echo "AAB/APK 파일을 찾을 수 없습니다"
             exit 1
           fi
-          
+
           echo "✅ Flutter build 성공!"
-          
+
           # 빌드 결과 확인
           echo "🔍 빌드 결과 확인:"
           ls -lah build/app/outputs/bundle/release/
-          
+
           # AAB 파일 존재 확인
           AAB_FILE="build/app/outputs/bundle/release/app-release.aab"
           if [ ! -f "$AAB_FILE" ]; then
@@ -362,19 +393,19 @@ jobs:
             find build/app/outputs/ -type f 2>/dev/null || echo "outputs 디렉토리가 없습니다"
             exit 1
           fi
-          
+
           echo "✅ AAB 파일 생성 확인"
           echo "📱 AAB 파일 크기: $(du -h "$AAB_FILE" | cut -f1)"
           echo "📋 AAB 파일 정보: $(ls -lah "$AAB_FILE")"
-          
+
           # bundletool 다운로드 및 설치
           echo "📦 bundletool 다운로드 중..."
           BUNDLETOOL_VERSION="1.15.6"
           BUNDLETOOL_URL="https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar"
-          
+
           echo "📋 다운로드 URL: $BUNDLETOOL_URL"
           wget -q "$BUNDLETOOL_URL" -O bundletool.jar
-          
+
           if [ ! -f "bundletool.jar" ]; then
             echo "❌ bundletool 다운로드 실패"
             echo "🔄 대체 URL로 재시도..."
@@ -385,14 +416,14 @@ jobs:
               exit 1
             fi
           fi
-          
+
           echo "✅ bundletool 다운로드 완료"
           echo "📋 bundletool 파일 크기: $(du -h bundletool.jar | cut -f1)"
-          
+
           # Java 환경 확인
           echo "🔍 Java 환경 확인:"
           java -version
-          
+
           # AAB 파일 내부의 실제 버전 정보 확인
           # Flutter CLI 플래그로 전달한 VERSION_CODE가 제대로 적용되었는지 검증
           echo "=========================================="
@@ -402,13 +433,13 @@ jobs:
           # AndroidManifest.xml에서 버전 정보 추출
           echo "📋 AAB에서 실제 버전 정보 추출 중..."
           echo "📋 실행할 명령어: java -jar bundletool.jar dump manifest --bundle='$AAB_FILE'"
-          
+
           MANIFEST_OUTPUT=$(java -jar bundletool.jar dump manifest --bundle="$AAB_FILE" 2>&1)
           MANIFEST_EXIT_CODE=$?
-          
+
           echo "📋 bundletool 실행 결과 (Exit code: $MANIFEST_EXIT_CODE):"
           echo "$MANIFEST_OUTPUT"
-          
+
           if [ $MANIFEST_EXIT_CODE -eq 0 ]; then
             echo "✅ Manifest 추출 성공"
             
@@ -473,7 +504,7 @@ jobs:
               echo "⚠️ AAB 검증을 건너뛰고 계속 진행합니다."
             fi
           fi
-          
+
           echo "=========================================="
           echo "✅ AAB 빌드 및 검증 완료"
           echo "🎯 최종 AAB: $AAB_FILE"
@@ -495,7 +526,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           ref: deploy
           fetch-depth: 0
@@ -525,14 +556,15 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4.1"
+          ruby-version: "3.3"
+          bundler-cache: false
 
+      # Fastlane 설치 (Bundler 방식으로 CFPropertyList 의존성 충돌 방지)
       - name: Install Fastlane
-        working-directory: android
         run: |
           printf 'source "https://rubygems.org"\ngem "fastlane"\n' > Gemfile
           bundle install
-          echo "✅ Fastlane 설치 완료 (Bundler)"
+          echo "✅ Fastlane 설치 완료"
           bundle exec fastlane --version
 
       # Fastfile 복사 (Play Store 배포용)
@@ -554,15 +586,15 @@ jobs:
           echo "🕐 배포 시작 시간: $(date '+%Y-%m-%d %H:%M:%S')"
           echo "🔍 GitHub Run Number: ${{ github.run_number }}"
           echo "🔍 GitHub SHA: ${{ github.sha }}"
-          
+
           # 환경 변수 초기화 및 검증
           VERSION_CODE="${{ needs.prepare-build.outputs.version_code }}"
           VERSION_NAME="${{ needs.prepare-build.outputs.version }}"
-          
+
           echo "📋 배포 대상 버전 정보:"
           echo "  VERSION_NAME: '$VERSION_NAME'"
           echo "  VERSION_CODE: '$VERSION_CODE'"
-          
+
           # 입력 검증
           if [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ]; then
             echo "❌ 치명적 오류: VERSION_NAME 또는 VERSION_CODE가 비어있습니다!"
@@ -571,7 +603,7 @@ jobs:
             echo "이는 prepare-build 작업에서 출력이 제대로 전달되지 않았음을 의미합니다."
             exit 1
           fi
-          
+
           # AAB 파일 절대 경로 찾기
           AAB_PATH=$(realpath build/app/outputs/bundle/release/app-release.aab)
           echo "📦 AAB 파일 경로: $AAB_PATH"
@@ -584,21 +616,21 @@ jobs:
             find build/ -name "*.aab" -o -name "*.apk" 2>/dev/null || echo "AAB/APK 파일을 찾을 수 없습니다"
             exit 1
           fi
-          
+
           echo "✅ AAB 파일 존재 확인"
           echo "📋 AAB 파일 정보: $(ls -lah "$AAB_PATH")"
           echo "📱 AAB 파일 크기: $(du -h "$AAB_PATH" | cut -f1)"
-          
+
           # 배포 전 AAB 버전 검증
           echo "=========================================="
           echo "🔍 AAB 버전 검증 중..."
           echo "=========================================="
-          
+
           # bundletool 다운로드
           if [ ! -f "bundletool.jar" ]; then
             wget -q "https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar" -O bundletool.jar
           fi
-          
+
           if [ -f "bundletool.jar" ]; then
             MANIFEST_OUTPUT=$(java -jar bundletool.jar dump manifest --bundle="$AAB_PATH" 2>&1)
             
@@ -623,7 +655,7 @@ jobs:
           # Release notes 준비
           CHANGELOG_DIR="android/fastlane/metadata/android/ko-KR/changelogs"
           mkdir -p "$CHANGELOG_DIR"
-          
+
           if [ -f "final_release_notes.txt" ]; then
             cp final_release_notes.txt "$CHANGELOG_DIR/${VERSION_CODE}.txt"
             echo "✅ Changelog 준비 완료 (버전 코드: $VERSION_CODE)"
@@ -631,26 +663,26 @@ jobs:
             echo "v$VERSION_NAME 업데이트" > "$CHANGELOG_DIR/${VERSION_CODE}.txt"
             echo "⚠️ 기본 Changelog 생성 (버전 코드: $VERSION_CODE)"
           fi
-          
+
           # Service Account JSON 파일 확인
           GOOGLE_PLAY_JSON_KEY="$HOME/.config/gcloud/service-account.json"
           if [ ! -f "$GOOGLE_PLAY_JSON_KEY" ]; then
             echo "❌ Service Account JSON 파일을 찾을 수 없습니다"
             exit 1
           fi
-          
+
           # 환경변수 설정
           export AAB_PATH="$AAB_PATH"
           export GOOGLE_PLAY_JSON_KEY="$GOOGLE_PLAY_JSON_KEY"
           export VERSION_NAME="$VERSION_NAME"
           export VERSION_CODE="$VERSION_CODE"
-          
+
           # 배포 실행
           echo "=========================================="
           echo "🚀 Play Store 배포 실행"
           echo "🎯 버전: $VERSION_NAME (코드: $VERSION_CODE)"
           echo "=========================================="
-          
+
           cd android
           bundle exec fastlane deploy_internal
 
