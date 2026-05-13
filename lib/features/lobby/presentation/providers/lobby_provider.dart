@@ -266,12 +266,6 @@ class LobbyNotifier extends _$LobbyNotifier {
     // 상태 업데이트
     state = state.copyWith(lastEvent: event);
 
-    // ENTER / EXIT 이벤트 → 입장/퇴장 진동
-    if (event.type == LobbyEventType.enter ||
-        event.type == LobbyEventType.exit) {
-      VibrationService.instance().playerJoinLeave();
-    }
-
     // GAME_START 이벤트 처리
     if (event.type == LobbyEventType.gameStart) {
       VibrationService.instance().gameStart();
