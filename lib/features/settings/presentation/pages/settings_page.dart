@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/network/connectivity_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -47,6 +48,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   /// 히든 크레딧 페이지 진입을 위한 탭 카운터
   int _versionTapCount = 0;
   DateTime? _lastVersionTap;
+
+  /// 게임 알림 토글 중복 실행 방지 플래그 (setState 없이 사용)
+  bool _gamePushToggling = false;
 
   /// 앱 버전 5탭 → 크레딧 페이지 진입
   void _onVersionTap() {
@@ -88,6 +92,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final gamePushState = ref.watch(gamePushNotifierProvider);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -122,6 +127,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // 앱 설정
             // ══════════════════════════════════════════
             _buildSectionHeader('앱 설정'),
+            _buildSwitchMenuItem(
+              text: '게임 알림',
+              subtitle: '게임 진행 중 알림을 받을 수 있어요',
+              value: gamePushState.valueOrNull ?? false,
+              onToggle: _onGamePushToggle,
+            ),
+            _buildItemDivider(),
             _buildMenuItem(
               text: '알림',
               subtitle: '게임 중 알림을 제외한 기타 알림의 설정이에요',
@@ -130,6 +142,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ),
             ),
             _buildItemDivider(),
+
             _buildMenuItem(
               text: '위치 권한 관리',
               subtitle: '기기 설정에서 위치 권한을 변경할 수 있어요',
@@ -331,9 +344,111 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
+  /// 스위치 토글이 포함된 설정 메뉴 아이템 빌더
+  Widget _buildSwitchMenuItem({
+    required String text,
+    String? subtitle,
+    required bool value,
+    required VoidCallback onToggle,
+  }) {
+    return GestureDetector(
+      onTap: onToggle,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: AppSpacing.horizontal24,
+          right: AppSpacing.horizontal20,
+          top: AppSpacing.vertical16,
+          bottom: AppSpacing.vertical16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    text,
+                    style: AppTextStyles.label_16.copyWith(
+                      color: AppColors.black,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    SizedBox(height: AppSpacing.vertical8),
+                    Text(
+                      subtitle,
+                      style: AppTextStyles.tag_12.copyWith(
+                        color: AppColors.black600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            AbsorbPointer(
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Switch(
+                  value: value,
+                  onChanged: (_) {},
+                  activeThumbColor: AppColors.white,
+                  activeTrackColor: AppColors.black,
+                  inactiveThumbColor: AppColors.white,
+                  inactiveTrackColor: AppColors.black200,
+                  trackOutlineColor: WidgetStateProperty.all(
+                    Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // 액션 핸들러
   // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 게임 알림 토글
+  ///
+  /// 네트워크 사전 검증 후 GamePushNotifier.toggle() 호출.
+  /// _gamePushToggling 플래그로 중복 탭과 스위치 onChanged 동시 발화를 차단.
+  Future<void> _onGamePushToggle() async {
+    if (_gamePushToggling) return;
+
+    final isConnected = await ref
+        .read(connectivityServiceProvider)
+        .isConnected();
+    if (!isConnected) {
+      if (mounted) {
+        AppSnackbar.show(
+          context,
+          message: '네트워크가 연결되지 않았어요',
+          backgroundColor: AppColors.red,
+        );
+      }
+      return;
+    }
+
+    _gamePushToggling = true;
+    try {
+      await ref.read(gamePushNotifierProvider.notifier).toggle();
+    } catch (_) {
+      if (mounted) {
+        AppSnackbar.show(
+          context,
+          message: '게임 알림 설정을 변경하지 못했어요',
+          backgroundColor: AppColors.red,
+        );
+      }
+    } finally {
+      _gamePushToggling = false;
+    }
+  }
 
   /// 닉네임 변경
   Future<void> _onNicknameChange() async {
