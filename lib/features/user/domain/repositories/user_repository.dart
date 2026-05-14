@@ -41,4 +41,16 @@ abstract class UserRepository {
   /// [marketing]: 마케팅 수신 동의 여부 (true/false)
   /// Throws: [NetworkException], [ServerException], [ValidationException]
   Future<void> updateAgreements({required bool marketing});
+
+  /// 게임 푸시 알림 수신 동의 여부를 조회합니다.
+  ///
+  /// Returns: 동의 여부 (true/false)
+  /// Throws: [NetworkException], [ServerException], [AuthException]
+  Future<bool> getGamePushAgreement();
+
+  /// 게임 푸시 알림 수신 동의 여부를 업데이트합니다.
+  ///
+  /// [allowGamePush]: 게임 푸시 알림 수신 동의 여부
+  /// Throws: [NetworkException], [ServerException], [ValidationException]
+  Future<void> updateGamePushAgreement({required bool allowGamePush});
 }

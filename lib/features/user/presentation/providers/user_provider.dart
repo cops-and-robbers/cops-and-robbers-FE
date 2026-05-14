@@ -35,3 +35,35 @@ UserRepository userRepository(Ref ref) {
 DeleteAccountUseCase deleteAccountUseCase(Ref ref) {
   return DeleteAccountUseCase(repository: ref.watch(userRepositoryProvider));
 }
+
+// ============================================================================
+// Game Push Agreement
+// ============================================================================
+
+/// 게임 푸시 알림 동의 상태 Provider
+///
+/// build: GET /api/user/agreements/game-push
+/// toggle: PUT /api/user/agreements/game-push (낙관적 업데이트, 실패 시 원복)
+@riverpod
+class GamePushNotifier extends _$GamePushNotifier {
+  @override
+  FutureOr<bool> build() {
+    return ref.watch(userRepositoryProvider).getGamePushAgreement();
+  }
+
+  Future<void> toggle() async {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    final next = !current;
+    state = AsyncValue.data(next);
+    try {
+      await ref.read(userRepositoryProvider).updateGamePushAgreement(
+        allowGamePush: next,
+      );
+    } catch (_) {
+      state = AsyncValue.data(current);
+      rethrow;
+    }
+  }
+}
