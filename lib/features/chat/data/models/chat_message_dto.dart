@@ -36,27 +36,29 @@ class ChatMessageDto with _$ChatMessageDto {
 
 /// 채팅 메시지 타임스탬프 파싱 확장
 ///
-/// 서버 타임스탬프를 KST(UTC+9)로 변환합니다.
-/// 마이크로초 초과 자릿수를 정규화한 뒤 파싱합니다.
+/// 서버 타임스탬프(`+09:00` suffix 포함 ISO 8601)를 **단말 local DateTime**으로
+/// 변환합니다. 채팅은 실시간 대화 맥락이라 사용자 시계 기준 시각이 자연스럽습니다
+/// (예: 미국 동부 사용자에게는 한국 14:30 메시지가 00:30으로 표시).
+/// 마이크로초 초과 자릿수는 절단합니다.
 extension ChatMessageTimestamp on ChatMessageDto {
   static final _microRegex = RegExp(r'(\.\d{1,6})\d*');
 
-  /// KST 변환된 DateTime. 파싱 실패 시 null.
-  DateTime? get kstDateTime {
+  /// 단말 local로 변환된 DateTime. 파싱 실패 시 null.
+  DateTime? get localDateTime {
     try {
       final normalized = timestamp.replaceFirstMapped(
         _microRegex,
         (m) => m.group(1)!,
       );
-      return DateTime.parse(normalized).toUtc().toLocal();
+      return DateTime.parse(normalized).toLocal();
     } catch (_) {
       return null;
     }
   }
 
-  /// HH:MM 형태의 KST 시간 문자열
-  String get formattedTimeKst {
-    final dt = kstDateTime;
+  /// HH:MM 형태의 단말 local 시간 문자열
+  String get formattedTimeLocal {
+    final dt = localDateTime;
     if (dt == null) return '';
     return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
