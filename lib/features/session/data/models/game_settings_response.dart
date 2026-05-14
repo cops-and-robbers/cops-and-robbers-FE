@@ -13,7 +13,7 @@ part 'game_settings_response.g.dart';
 ///   "locationRevealIntervalMinutes": 2,
 ///   "policeWaitMinutes": 3,
 ///   "maxParticipants": 10,
-///   "gameStartTime": "2026-03-21T15:30:00"
+///   "gameStartTime": "2026-03-21T15:30:00+09:00"
 /// }
 /// ```
 @freezed
@@ -32,6 +32,9 @@ class GameSettingsResponse with _$GameSettingsResponse {
     required int maxParticipants,
 
     /// 게임 시작 시각 (ISO 8601, IN_PROGRESS 상태일 때만 non-null)
+    ///
+    /// v2.7.0부터 `+09:00` timezone suffix 포함. 소비 시 `IsoTimestampParser`
+    /// 또는 `DateTime.parse(...).toLocal()`로 단말 local 시간 정규화.
     String? gameStartTime,
   }) = _GameSettingsResponse;
 
