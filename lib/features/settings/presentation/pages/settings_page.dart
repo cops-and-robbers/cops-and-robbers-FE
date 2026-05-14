@@ -8,7 +8,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/errors/app_exception.dart';
-import '../../../../core/network/connectivity_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -415,36 +414,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   /// 게임 알림 토글
   ///
-  /// 네트워크 사전 검증 후 GamePushNotifier.toggle() 호출.
   /// _gamePushToggling 플래그로 중복 탭과 스위치 onChanged 동시 발화를 차단.
+  /// 실패 시 AppException.message를 그대로 노출해 네트워크/서버/검증 사유를 구분.
   Future<void> _onGamePushToggle() async {
     if (_gamePushToggling) return;
-
-    final isConnected = await ref
-        .read(connectivityServiceProvider)
-        .isConnected();
-    if (!isConnected) {
-      if (mounted) {
-        AppSnackbar.show(
-          context,
-          message: '네트워크가 연결되지 않았어요',
-          backgroundColor: AppColors.red,
-        );
-      }
-      return;
-    }
-
     _gamePushToggling = true;
     try {
       await ref.read(gamePushNotifierProvider.notifier).toggle();
-    } catch (_) {
-      if (mounted) {
-        AppSnackbar.show(
-          context,
-          message: '게임 알림 설정을 변경하지 못했어요',
-          backgroundColor: AppColors.red,
-        );
-      }
+    } catch (e) {
+      if (!mounted) return;
+      AppSnackbar.show(
+        context,
+        message: e is AppException ? e.message : '게임 알림 설정을 변경하지 못했어요',
+        backgroundColor: AppColors.red,
+      );
     } finally {
       _gamePushToggling = false;
     }
