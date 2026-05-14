@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/buttons/previous_button.dart';
 
 /// 튜토리얼 카탈로그 페이지
 ///
@@ -45,24 +46,32 @@ class TutorialCatalogPage extends StatelessWidget {
         child: Stack(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.horizontal20,
-              ),
+              padding: AppPadding.all20,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: AppSpacing.vertical48),
-                  Text(
-                    '튜토리얼',
-                    style: AppTextStyles.heading_24.copyWith(
-                      color: AppColors.black,
+                  SizedBox(height: 50.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.horizontal4,
                     ),
-                  ),
-                  SizedBox(height: AppSpacing.vertical8),
-                  Text(
-                    '게임을 처음 한다면 한 번씩 보고 시작해보세요',
-                    style: AppTextStyles.paragraph_14.copyWith(
-                      color: AppColors.black600,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '튜토리얼',
+                          style: AppTextStyles.heading_24.copyWith(
+                            color: AppColors.black,
+                          ),
+                        ),
+                        SizedBox(height: AppSpacing.vertical16),
+                        Text(
+                          '게임을 처음 한다면 한 번씩 보고 시작해보세요',
+                          style: AppTextStyles.paragraph_14.copyWith(
+                            color: AppColors.black600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical24),
@@ -80,15 +89,8 @@ class TutorialCatalogPage extends StatelessWidget {
             ),
             Positioned(
               top: 0,
-              left: AppSpacing.horizontal4,
-              child: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: AppColors.black,
-                  size: 24.w,
-                ),
-                onPressed: () => context.pop(),
-              ),
+              left: 0,
+              child: PreviousButton(onPressed: () => context.pop()),
             ),
           ],
         ),
