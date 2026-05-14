@@ -60,7 +60,7 @@ class ChatMessageBubble extends StatelessWidget {
     return null;
   }
 
-  String get _formattedTime => message.formattedTimeKst;
+  String get _formattedTime => message.formattedTimeLocal;
 
   @override
   Widget build(BuildContext context) {

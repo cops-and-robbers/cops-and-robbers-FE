@@ -47,7 +47,7 @@ final noticeRepositoryProvider = AutoDisposeProvider<NoticeRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef NoticeRepositoryRef = AutoDisposeProviderRef<NoticeRepository>;
-String _$noticesNotifierHash() => r'c3259ff23f04557df4347af0f0242b7c1ec74fb7';
+String _$noticesNotifierHash() => r'c40ecd535922c0195c51fdd5eef3f80f29999194';
 
 /// 공지사항 목록 페이지 상태 관리 Notifier
 ///

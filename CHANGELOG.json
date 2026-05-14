@@ -1,11 +1,50 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-13T16:31:39Z",
-    "currentVersion": "1.8.32",
+    "lastUpdated": "2026-05-14T17:48:50Z",
+    "currentVersion": "1.8.34",
     "projectType": "flutter",
-    "totalReleases": 89
+    "totalReleases": 90
   },
   "releases": [
+    {
+      "version": "1.8.34",
+      "project_type": "flutter",
+      "date": "2026-05-14",
+      "pr_number": 364,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #363 from cops-and-robbers/20260514_#361_백엔드_API_v2_7_0_변경사항_Flutter_클라이언트_반영\n  * Update .gitignore\n  * docs : 위치정보이용약관 시행일 및 게임 종료 시 동작 설명 갱신 #361\n  * style : 설정 페이지 알림 항목 문구 및 강조 표시 보강 #361\n  * fix : CodeRabbit 리뷰 반영 #361\n  * docs : 정보구조도\n  * fix : CI format #361\n  * refactor : 도둑 위치 조회 API deprecated 마이그레이션 #361\n  * docs : v2.7.0 명세 정합성 정리 #361\n  * refactor : 채팅 timestamp 명명 정정 (kst → local) #361\n  * feat : 게임 방 생성 응답 createdAt 도메인 엔티티 노출 #361\n  * fix : 공지사항 createdAt 단말 local 시간으로 정규화 #361\n  * refactor : 게임 알림 토글 네트워크 사전 검증 제거 #361\n  * fix : CI format #361\n  * test : 게임 푸시 알림 동의 레포지토리 테스트 추가 #361\n  * feat : 설정 페이지 게임 알림 토글 추가 #361\n  * feat : 게임 푸시 알림 동의 API 연동 #361\n  * feat : 게임 상태 조회 API 추가 (GET /api/games/{gameId}/state) #361\n  * docs : API v2.7.0 명세 업데이트 #361\n  * fix : 튜토리얼 카탈로그 UI 개선 #361\n  * Merge pull request #360 from cops-and-robbers/20260514_#359_Android_15_Edge_to_Edge_대응\n  * fix : 설정 페이지 하단 여백 개선 #359\n  * fix : 디버그 빌드에서 배터리 최적화 체크 생략 #359\n  * fix : Android 15 Edge-to-Edge 대응 #359\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #363 from cops-and-robbers/20260514_#361_백엔드_API_v2_7_0_변경사항_Flutter_클라이언트_반영",
+            "Update .gitignore",
+            "docs : 위치정보이용약관 시행일 및 게임 종료 시 동작 설명 갱신 #361",
+            "style : 설정 페이지 알림 항목 문구 및 강조 표시 보강 #361",
+            "fix : CodeRabbit 리뷰 반영 #361",
+            "docs : 정보구조도",
+            "fix : CI format #361",
+            "refactor : 도둑 위치 조회 API deprecated 마이그레이션 #361",
+            "docs : v2.7.0 명세 정합성 정리 #361",
+            "refactor : 채팅 timestamp 명명 정정 (kst → local) #361",
+            "feat : 게임 방 생성 응답 createdAt 도메인 엔티티 노출 #361",
+            "fix : 공지사항 createdAt 단말 local 시간으로 정규화 #361",
+            "refactor : 게임 알림 토글 네트워크 사전 검증 제거 #361",
+            "fix : CI format #361",
+            "test : 게임 푸시 알림 동의 레포지토리 테스트 추가 #361",
+            "feat : 설정 페이지 게임 알림 토글 추가 #361",
+            "feat : 게임 푸시 알림 동의 API 연동 #361",
+            "feat : 게임 상태 조회 API 추가 (GET /api/games/{gameId}/state) #361",
+            "docs : API v2.7.0 명세 업데이트 #361",
+            "fix : 튜토리얼 카탈로그 UI 개선 #361",
+            "Merge pull request #360 from cops-and-robbers/20260514_#359_Android_15_Edge_to_Edge_대응",
+            "fix : 설정 페이지 하단 여백 개선 #359",
+            "fix : 디버그 빌드에서 배터리 최적화 체크 생략 #359",
+            "fix : Android 15 Edge-to-Edge 대응 #359"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.32",
       "project_type": "flutter",

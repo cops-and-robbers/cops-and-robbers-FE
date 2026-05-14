@@ -1,7 +1,39 @@
 # Changelog
 
-**현재 버전:** 1.8.32  
-**마지막 업데이트:** 2026-05-13T16:31:39Z  
+**현재 버전:** 1.8.34  
+**마지막 업데이트:** 2026-05-14T17:48:50Z  
+
+---
+
+## [1.8.34] - 2026-05-14
+
+**PR:** #364  
+
+**기타**
+- Merge pull request #363 from cops-and-robbers/20260514_#361_백엔드_API_v2_7_0_변경사항_Flutter_클라이언트_반영
+- Update .gitignore
+- docs : 위치정보이용약관 시행일 및 게임 종료 시 동작 설명 갱신 #361
+- style : 설정 페이지 알림 항목 문구 및 강조 표시 보강 #361
+- fix : CodeRabbit 리뷰 반영 #361
+- docs : 정보구조도
+- fix : CI format #361
+- refactor : 도둑 위치 조회 API deprecated 마이그레이션 #361
+- docs : v2.7.0 명세 정합성 정리 #361
+- refactor : 채팅 timestamp 명명 정정 (kst → local) #361
+- feat : 게임 방 생성 응답 createdAt 도메인 엔티티 노출 #361
+- fix : 공지사항 createdAt 단말 local 시간으로 정규화 #361
+- refactor : 게임 알림 토글 네트워크 사전 검증 제거 #361
+- fix : CI format #361
+- test : 게임 푸시 알림 동의 레포지토리 테스트 추가 #361
+- feat : 설정 페이지 게임 알림 토글 추가 #361
+- feat : 게임 푸시 알림 동의 API 연동 #361
+- feat : 게임 상태 조회 API 추가 (GET /api/games/{gameId}/state) #361
+- docs : API v2.7.0 명세 업데이트 #361
+- fix : 튜토리얼 카탈로그 UI 개선 #361
+- Merge pull request #360 from cops-and-robbers/20260514_#359_Android_15_Edge_to_Edge_대응
+- fix : 설정 페이지 하단 여백 개선 #359
+- fix : 디버그 빌드에서 배터리 최적화 체크 생략 #359
+- fix : Android 15 Edge-to-Edge 대응 #359
 
 ---
 

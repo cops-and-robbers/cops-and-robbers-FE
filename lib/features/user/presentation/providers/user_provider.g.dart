@@ -67,5 +67,26 @@ final deleteAccountUseCaseProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef DeleteAccountUseCaseRef = AutoDisposeProviderRef<DeleteAccountUseCase>;
+String _$gamePushNotifierHash() => r'd34c1d27b4ea78fde34fa429e0e725a5b0a9c9ed';
+
+/// 게임 푸시 알림 동의 상태 Provider
+///
+/// build: GET /api/user/agreements/game-push
+/// toggle: PUT /api/user/agreements/game-push (낙관적 업데이트, 실패 시 원복)
+///
+/// Copied from [GamePushNotifier].
+@ProviderFor(GamePushNotifier)
+final gamePushNotifierProvider =
+    AutoDisposeAsyncNotifierProvider<GamePushNotifier, bool>.internal(
+      GamePushNotifier.new,
+      name: r'gamePushNotifierProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$gamePushNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$GamePushNotifier = AutoDisposeAsyncNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

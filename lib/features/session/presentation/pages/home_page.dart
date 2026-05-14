@@ -308,6 +308,12 @@ class _HomePageState extends ConsumerState<HomePage> {
       return;
     }
 
+    // 디버그 빌드에서는 테스트 편의를 위해 배터리 최적화 체크 생략
+    if (kDebugMode) {
+      onGranted();
+      return;
+    }
+
     // 이미 설정됨 → 바로 진행
     final isIgnoring = await ref
         .read(backgroundServiceProvider)

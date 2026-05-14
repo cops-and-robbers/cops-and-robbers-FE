@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import androidx.core.view.WindowCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -14,6 +16,13 @@ class MainActivity : FlutterActivity() {
 
     companion object {
         private const val CHANNEL_NAME = "cops_and_robbers/background_service"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Android 15(API 35)부터 SDK 35 타겟 앱에 edge-to-edge 강제 적용.
+        // decorView가 시스템 바 inset을 직접 처리하지 않도록 설정 — Play Console 경고 해소.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        super.onCreate(savedInstanceState)
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {

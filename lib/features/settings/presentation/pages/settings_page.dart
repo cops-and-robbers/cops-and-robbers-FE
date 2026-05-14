@@ -48,6 +48,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   int _versionTapCount = 0;
   DateTime? _lastVersionTap;
 
+  /// 게임 알림 토글 중복 실행 방지 플래그 (setState 없이 사용)
+  bool _gamePushToggling = false;
+
   /// 앱 버전 5탭 → 크레딧 페이지 진입
   void _onVersionTap() {
     final now = DateTime.now();
@@ -88,6 +91,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final gamePushState = ref.watch(gamePushNotifierProvider);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -122,14 +126,40 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // 앱 설정
             // ══════════════════════════════════════════
             _buildSectionHeader('앱 설정'),
+            _buildSwitchMenuItem(
+              text: '게임 알림',
+              subtitle: '게임 진행 중 발생하는 이벤트 알림을 설정해요',
+              value: gamePushState.valueOrNull ?? false,
+              onToggle: _onGamePushToggle,
+            ),
+            _buildItemDivider(),
             _buildMenuItem(
               text: '알림',
-              subtitle: '게임 중 알림을 제외한 기타 알림의 설정이에요',
+              // "게임 중 알림" 부분만 더 큰 스타일 + 진한 색상으로 강조
+              subtitleWidget: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '게임 중 알림',
+                      style: AppTextStyles.tag12Semibold.copyWith(
+                        color: AppColors.black800,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '을 포함한 앱에서 보내는 모든 알림을 설정해요',
+                      style: AppTextStyles.tag_12.copyWith(
+                        color: AppColors.black600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               onTap: () => AppSettings.openAppSettings(
                 type: AppSettingsType.notification,
               ),
             ),
             _buildItemDivider(),
+
             _buildMenuItem(
               text: '위치 권한 관리',
               subtitle: '기기 설정에서 위치 권한을 변경할 수 있어요',
@@ -182,7 +212,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               onTap: _showDeleteAccountDialog,
             ),
 
-            SizedBox(height: AppSpacing.vertical32),
+            SizedBox(height: AppSpacing.vertical64),
           ],
         ),
       ),
@@ -285,11 +315,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /// 설정 메뉴 아이템 빌더
+  ///
+  /// 일부 텍스트에 강조가 필요한 경우 [subtitleWidget]을 사용하면 [subtitle] 대신 표시된다.
   Widget _buildMenuItem({
     required String text,
     required VoidCallback onTap,
     Color? textColor,
     String? subtitle,
+    Widget? subtitleWidget,
     Widget? trailing,
   }) {
     return GestureDetector(
@@ -312,7 +345,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       color: textColor ?? AppColors.black,
                     ),
                   ),
-                  if (subtitle != null) ...[
+                  if (subtitleWidget != null) ...[
+                    SizedBox(height: AppSpacing.vertical8),
+                    subtitleWidget,
+                  ] else if (subtitle != null) ...[
                     SizedBox(height: AppSpacing.vertical8),
                     Text(
                       subtitle,
@@ -331,9 +367,95 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
+  /// 스위치 토글이 포함된 설정 메뉴 아이템 빌더
+  Widget _buildSwitchMenuItem({
+    required String text,
+    String? subtitle,
+    required bool value,
+    required VoidCallback onToggle,
+  }) {
+    return GestureDetector(
+      onTap: onToggle,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: AppSpacing.horizontal24,
+          right: AppSpacing.horizontal20,
+          top: AppSpacing.vertical16,
+          bottom: AppSpacing.vertical16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    text,
+                    style: AppTextStyles.label_16.copyWith(
+                      color: AppColors.black,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    SizedBox(height: AppSpacing.vertical8),
+                    Text(
+                      subtitle,
+                      style: AppTextStyles.tag_12.copyWith(
+                        color: AppColors.black600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            AbsorbPointer(
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Switch(
+                  value: value,
+                  onChanged: (_) {},
+                  activeThumbColor: AppColors.white,
+                  activeTrackColor: AppColors.black,
+                  inactiveThumbColor: AppColors.white,
+                  inactiveTrackColor: AppColors.black200,
+                  trackOutlineColor: WidgetStateProperty.all(
+                    Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // 액션 핸들러
   // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 게임 알림 토글
+  ///
+  /// _gamePushToggling 플래그로 중복 탭과 스위치 onChanged 동시 발화를 차단.
+  /// 실패 시 AppException.message를 그대로 노출해 네트워크/서버/검증 사유를 구분.
+  Future<void> _onGamePushToggle() async {
+    if (_gamePushToggling) return;
+    _gamePushToggling = true;
+    try {
+      await ref.read(gamePushNotifierProvider.notifier).toggle();
+    } catch (e) {
+      if (!mounted) return;
+      AppSnackbar.show(
+        context,
+        message: e is AppException ? e.message : '게임 알림 설정을 변경하지 못했어요',
+        backgroundColor: AppColors.red,
+      );
+    } finally {
+      _gamePushToggling = false;
+    }
+  }
 
   /// 닉네임 변경
   Future<void> _onNicknameChange() async {

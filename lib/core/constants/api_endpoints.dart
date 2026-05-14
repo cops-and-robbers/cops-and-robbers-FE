@@ -127,9 +127,10 @@ class ApiEndpoints {
   /// 맵 영역 조회 (플레이그라운드·감옥 중심 좌표 및 반경)
   static String gameArea(int gameId) => '/api/games/$gameId/area';
 
-  /// 가장 최근 공개된 도둑 위치 목록 조회 (재연결 후 발자국 복구용)
-  static String robberLastLocations(int gameId) =>
-      '/api/games/$gameId/robbers/location';
+  /// 게임 상태 조회 (소켓 재연결 시 화면 복원용)
+  ///
+  /// robberLocations + participants 를 한 번에 반환합니다.
+  static String gameState(int gameId) => '/api/games/$gameId/state';
 
   /// 게임 결과 조회
   ///
@@ -157,6 +158,9 @@ class ApiEndpoints {
 
   /// 약관 동의 상태 조회 / 저장
   static const String agreements = '/api/user/agreements';
+
+  /// 게임 푸시 알림 수신 동의 조회 / 업데이트
+  static const String agreementsGamePush = '/api/user/agreements/game-push';
 
   /// 참여 중인 게임 정보 조회
   static const String myActiveGame = '/api/user/me/game';
