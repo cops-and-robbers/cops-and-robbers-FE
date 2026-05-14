@@ -8,7 +8,7 @@ part 'create_session_response.g.dart';
 /// API 서버로부터 받은 세션 생성 결과를 파싱합니다.
 /// 초대 코드와 세션 ID를 포함하여 InviteCodePage로 전달됩니다.
 ///
-/// **API 응답 예시**:
+/// **API 응답 예시** (v2.7.0+ — timezone suffix 포함):
 /// ```json
 /// {
 ///   "gameId": 1,
@@ -18,7 +18,7 @@ part 'create_session_response.g.dart';
 ///   "locationRevealIntervalMinutes": 5,
 ///   "policeWaitMinutes": 3,
 ///   "maxParticipants": 10,
-///   "createdAt": "2026-01-16T01:25:37.543066"
+///   "createdAt": "2026-01-16T01:25:37+09:00"
 /// }
 /// ```
 @freezed
@@ -45,8 +45,8 @@ class CreateSessionResponse with _$CreateSessionResponse {
     /// 최대 참가자 수
     required int maxParticipants,
 
-    /// 생성 시각 (ISO 8601 형식)
-    required String createdAt,
+    /// 생성 시각 (v2.7.0부터 `+09:00` timezone suffix 포함 ISO 8601)
+    required DateTime createdAt,
   }) = _CreateSessionResponse;
 
   factory CreateSessionResponse.fromJson(Map<String, dynamic> json) =>

@@ -67,7 +67,7 @@ final deleteAccountUseCaseProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef DeleteAccountUseCaseRef = AutoDisposeProviderRef<DeleteAccountUseCase>;
-String _$gamePushNotifierHash() => r'de445b0d61fc320e08b62ccc1d1ea4276e08f6fd';
+String _$gamePushNotifierHash() => r'd34c1d27b4ea78fde34fa429e0e725a5b0a9c9ed';
 
 /// 게임 푸시 알림 동의 상태 Provider
 ///

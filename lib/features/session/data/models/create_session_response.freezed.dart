@@ -44,8 +44,8 @@ mixin _$CreateSessionResponse {
   /// 최대 참가자 수
   int get maxParticipants => throw _privateConstructorUsedError;
 
-  /// 생성 시각 (ISO 8601 형식)
-  String get createdAt => throw _privateConstructorUsedError;
+  /// 생성 시각 (v2.7.0부터 `+09:00` timezone suffix 포함 ISO 8601)
+  DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this CreateSessionResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -72,7 +72,7 @@ abstract class $CreateSessionResponseCopyWith<$Res> {
     int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
-    String createdAt,
+    DateTime createdAt,
   });
 }
 
@@ -136,7 +136,7 @@ class _$CreateSessionResponseCopyWithImpl<
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as DateTime,
           )
           as $Val,
     );
@@ -160,7 +160,7 @@ abstract class _$$CreateSessionResponseImplCopyWith<$Res>
     int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
-    String createdAt,
+    DateTime createdAt,
   });
 }
 
@@ -221,7 +221,7 @@ class __$$CreateSessionResponseImplCopyWithImpl<$Res>
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as DateTime,
       ),
     );
   }
@@ -272,9 +272,9 @@ class _$CreateSessionResponseImpl implements _CreateSessionResponse {
   @override
   final int maxParticipants;
 
-  /// 생성 시각 (ISO 8601 형식)
+  /// 생성 시각 (v2.7.0부터 `+09:00` timezone suffix 포함 ISO 8601)
   @override
-  final String createdAt;
+  final DateTime createdAt;
 
   @override
   String toString() {
@@ -347,7 +347,7 @@ abstract class _CreateSessionResponse implements CreateSessionResponse {
     required final int locationRevealIntervalMinutes,
     required final int policeWaitMinutes,
     required final int maxParticipants,
-    required final String createdAt,
+    required final DateTime createdAt,
   }) = _$CreateSessionResponseImpl;
 
   factory _CreateSessionResponse.fromJson(Map<String, dynamic> json) =
@@ -381,9 +381,9 @@ abstract class _CreateSessionResponse implements CreateSessionResponse {
   @override
   int get maxParticipants;
 
-  /// 생성 시각 (ISO 8601 형식)
+  /// 생성 시각 (v2.7.0부터 `+09:00` timezone suffix 포함 ISO 8601)
   @override
-  String get createdAt;
+  DateTime get createdAt;
 
   /// Create a copy of CreateSessionResponse
   /// with the given fields replaced by the non-null parameter values.
