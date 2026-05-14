@@ -47,38 +47,33 @@ NoticeListResponseModel _listOf(List<NoticeResponseModel> items) =>
 
 void main() {
   group('NoticeRepositoryImpl.getNotices', () {
-    test(
-      'KST(+09:00) timestamp는 단말 local DateTime으로 정규화되어 반환된다',
-      () async {
-        // 백엔드가 v2.7.0부터 "2024-01-01T00:00:00+09:00" 형식으로 보냄.
-        // DateTime.parse는 UTC(2023-12-31T15:00:00Z)로 저장하므로
-        // .year 직접 호출 시 2023이 되어 표기가 하루 빠지는 버그 방지.
-        final raw = NoticeResponseModel.fromJson({
-          'id': 1,
-          'title': '공지',
-          'content': '본문',
-          'pinned': false,
-          'createdAt': '2024-01-01T00:00:00+09:00',
-          'updatedAt': '2024-01-01T00:00:00+09:00',
-        });
-        final fake = _FakeNoticeRemoteDataSource()
-          ..responseToReturn = _listOf([raw]);
-        final repo = NoticeRepositoryImpl(fake);
+    test('KST(+09:00) timestamp는 단말 local DateTime으로 정규화되어 반환된다', () async {
+      // 백엔드가 v2.7.0부터 "2024-01-01T00:00:00+09:00" 형식으로 보냄.
+      // DateTime.parse는 UTC(2023-12-31T15:00:00Z)로 저장하므로
+      // .year 직접 호출 시 2023이 되어 표기가 하루 빠지는 버그 방지.
+      final raw = NoticeResponseModel.fromJson({
+        'id': 1,
+        'title': '공지',
+        'content': '본문',
+        'pinned': false,
+        'createdAt': '2024-01-01T00:00:00+09:00',
+        'updatedAt': '2024-01-01T00:00:00+09:00',
+      });
+      final fake = _FakeNoticeRemoteDataSource()
+        ..responseToReturn = _listOf([raw]);
+      final repo = NoticeRepositoryImpl(fake);
 
-        final result = await repo.getNotices(page: 0, size: 10);
+      final result = await repo.getNotices(page: 0, size: 10);
 
-        final entity = result.items.single;
-        // Entity의 createdAt은 local로 변환되어 있어야 한다.
-        expect(entity.createdAt.isUtc, false);
-        // KST(+09:00) 기준 "2024-01-01" 동일한 절대 시각이어야 한다.
-        expect(
-          entity.createdAt.isAtSameMomentAs(
-            DateTime.utc(2023, 12, 31, 15, 0, 0),
-          ),
-          true,
-        );
-      },
-    );
+      final entity = result.items.single;
+      // Entity의 createdAt은 local로 변환되어 있어야 한다.
+      expect(entity.createdAt.isUtc, false);
+      // KST(+09:00) 기준 "2024-01-01" 동일한 절대 시각이어야 한다.
+      expect(
+        entity.createdAt.isAtSameMomentAs(DateTime.utc(2023, 12, 31, 15, 0, 0)),
+        true,
+      );
+    });
 
     test('UTC(Z) timestamp도 동일하게 local로 정규화된다', () async {
       // 혹시 백엔드가 Z 형태로 보내더라도 정규화 보장.
@@ -99,9 +94,7 @@ void main() {
       final entity = result.items.single;
       expect(entity.createdAt.isUtc, false);
       expect(
-        entity.createdAt.isAtSameMomentAs(
-          DateTime.utc(2024, 6, 15, 12, 0, 0),
-        ),
+        entity.createdAt.isAtSameMomentAs(DateTime.utc(2024, 6, 15, 12, 0, 0)),
         true,
       );
     });

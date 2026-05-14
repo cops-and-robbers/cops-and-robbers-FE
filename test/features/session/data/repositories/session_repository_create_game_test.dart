@@ -23,7 +23,9 @@ class _FakeSessionRemoteDataSource implements SessionRemoteDataSource {
   Object? errorToThrow;
 
   @override
-  Future<CreateSessionResponse> createGame(GameCreateRequestModel request) async {
+  Future<CreateSessionResponse> createGame(
+    GameCreateRequestModel request,
+  ) async {
     if (errorToThrow != null) throw errorToThrow!;
     return responseToReturn!;
   }
@@ -110,36 +112,33 @@ Future<dynamic> _callCreateGame(SessionRepositoryImpl repo) => repo.createGame(
 
 void main() {
   group('SessionRepositoryImpl.createGame', () {
-    test(
-      'KST(+09:00) createdAt은 단말 local DateTime으로 정규화된다',
-      () async {
-        // v2.7.0부터 백엔드가 "2026-01-16T01:25:37+09:00" 형식으로 보낸다.
-        // DateTime.parse는 UTC로 저장하므로 Entity 경계에서 toLocal()로 정규화 필요.
-        final raw = CreateSessionResponse.fromJson({
-          'gameId': 1,
-          'inviteCode': 'ABC123',
-          'status': 'WAITING',
-          'roundDurationMinutes': 30,
-          'locationRevealIntervalMinutes': 5,
-          'policeWaitMinutes': 3,
-          'maxParticipants': 10,
-          'createdAt': '2026-01-16T01:25:37+09:00',
-        });
-        final fake = _FakeSessionRemoteDataSource()..responseToReturn = raw;
-        final repo = SessionRepositoryImpl(fake);
+    test('KST(+09:00) createdAt은 단말 local DateTime으로 정규화된다', () async {
+      // v2.7.0부터 백엔드가 "2026-01-16T01:25:37+09:00" 형식으로 보낸다.
+      // DateTime.parse는 UTC로 저장하므로 Entity 경계에서 toLocal()로 정규화 필요.
+      final raw = CreateSessionResponse.fromJson({
+        'gameId': 1,
+        'inviteCode': 'ABC123',
+        'status': 'WAITING',
+        'roundDurationMinutes': 30,
+        'locationRevealIntervalMinutes': 5,
+        'policeWaitMinutes': 3,
+        'maxParticipants': 10,
+        'createdAt': '2026-01-16T01:25:37+09:00',
+      });
+      final fake = _FakeSessionRemoteDataSource()..responseToReturn = raw;
+      final repo = SessionRepositoryImpl(fake);
 
-        final result = await _callCreateGame(repo);
+      final result = await _callCreateGame(repo);
 
-        expect(result.createdAt.isUtc, false);
-        // KST 01:25:37 = UTC 2026-01-15 16:25:37
-        expect(
-          result.createdAt.isAtSameMomentAs(
-            DateTime.utc(2026, 1, 15, 16, 25, 37),
-          ),
-          true,
-        );
-      },
-    );
+      expect(result.createdAt.isUtc, false);
+      // KST 01:25:37 = UTC 2026-01-15 16:25:37
+      expect(
+        result.createdAt.isAtSameMomentAs(
+          DateTime.utc(2026, 1, 15, 16, 25, 37),
+        ),
+        true,
+      );
+    });
 
     test('비-시각 필드는 Entity로 그대로 매핑된다', () async {
       final raw = CreateSessionResponse.fromJson({
@@ -165,7 +164,8 @@ void main() {
     });
 
     test('DioException은 AppException으로 변환된다', () async {
-      final fake = _FakeSessionRemoteDataSource()..errorToThrow = _dioError(409);
+      final fake = _FakeSessionRemoteDataSource()
+        ..errorToThrow = _dioError(409);
       final repo = SessionRepositoryImpl(fake);
 
       expect(() => _callCreateGame(repo), throwsA(isA<AppException>()));
