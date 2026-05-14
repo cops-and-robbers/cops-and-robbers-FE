@@ -182,7 +182,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               onTap: _showDeleteAccountDialog,
             ),
 
-            SizedBox(height: AppSpacing.vertical32),
+            SizedBox(height: AppSpacing.vertical64),
           ],
         ),
       ),
