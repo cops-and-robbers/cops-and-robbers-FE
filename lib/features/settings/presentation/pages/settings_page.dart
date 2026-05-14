@@ -128,14 +128,32 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _buildSectionHeader('앱 설정'),
             _buildSwitchMenuItem(
               text: '게임 알림',
-              subtitle: '게임 진행 중 알림을 받을 수 있어요',
+              subtitle: '게임 진행 중 발생하는 이벤트 알림을 설정해요',
               value: gamePushState.valueOrNull ?? false,
               onToggle: _onGamePushToggle,
             ),
             _buildItemDivider(),
             _buildMenuItem(
               text: '알림',
-              subtitle: '게임 중 알림을 제외한 기타 알림의 설정이에요',
+              // "게임 중 알림" 부분만 더 큰 스타일 + 진한 색상으로 강조
+              subtitleWidget: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '게임 중 알림',
+                      style: AppTextStyles.tag12Semibold.copyWith(
+                        color: AppColors.black800,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '을 포함한 앱에서 보내는 모든 알림을 설정해요',
+                      style: AppTextStyles.tag_12.copyWith(
+                        color: AppColors.black600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               onTap: () => AppSettings.openAppSettings(
                 type: AppSettingsType.notification,
               ),
@@ -297,11 +315,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /// 설정 메뉴 아이템 빌더
+  ///
+  /// 일부 텍스트에 강조가 필요한 경우 [subtitleWidget]을 사용하면 [subtitle] 대신 표시된다.
   Widget _buildMenuItem({
     required String text,
     required VoidCallback onTap,
     Color? textColor,
     String? subtitle,
+    Widget? subtitleWidget,
     Widget? trailing,
   }) {
     return GestureDetector(
@@ -324,7 +345,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       color: textColor ?? AppColors.black,
                     ),
                   ),
-                  if (subtitle != null) ...[
+                  if (subtitleWidget != null) ...[
+                    SizedBox(height: AppSpacing.vertical8),
+                    subtitleWidget,
+                  ] else if (subtitle != null) ...[
                     SizedBox(height: AppSpacing.vertical8),
                     Text(
                       subtitle,
