@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## 업데이트 항목\n- 버그 제보 API 추가 (POST /api/bugs)\n",
-    "version": "2.5.0"
+    "description": "## v2.7.0 업데이트 내역\n\n### ✅ 신규 API\n- 게임 푸시 알림 수신 동의 여부 조회 API 추가 (GET /api/user/agreements/game-push)\n- 게임 푸시 알림 수신 동의 여부 업데이트 API 추가 (PUT /api/user/agreements/game-push)\n\n### 🛠 변경 및 수정\n- 이전 API에 운동장 -\u003E 플레이그라운드로 스웨거 명세 수정\n- 게임 알림에 이모지 제거\n- timezone suffix 누락 버그 수정: 아래 필드들이 +09:00 포함된 형식으로 변경됨\n  - GET /api/games/{gameId} → gameStartTime\n  - POST /api/games → createdAt\n  - GET /api/notices, GET /api/notices/{noticeId} → createdAt, updatedAt\n\n## v2.6.0 업데이트 내역\n\n### ✅ 신규 API\n\n**게임 상태 조회** `GET /api/games/{gameId}/state`\n- 앱 재접속·소켓 재연결 시 게임 화면 복원에 사용 (기존 도둑 위치 조회 API를 대체)\n- 응답: 마지막 위치 공개 주기의 생존 도둑 위치 스냅샷 + 전체 참여자 팀·상태\n- `robberLocations` 반환 조건\n  - 경찰 대기 시간 중 (POLICE_WAITING): 도둑 위치 빈 배열 — 경찰·도둑 모두 위치 비공개\n  - 경찰 출동 후 첫 공개 주기 전: 도둑 위치 빈 배열\n  - 첫 도둑 위치 공개 이후: 생존 도둑 위치 목록 (JAILED 도둑 제외)\n- 자세한 내용은 해당 API 항목을 확인하세요.\n\n### ⚠️ Deprecated API\n\n**도둑 위치 조회** `GET /api/games/{gameId}/robbers/location`\n- 기존 강제 종료 후 재접속 시 위치 공개 버그는 해결된 상태입니다.\n- `state` API의 `robberLocations` 필드로 동일한 데이터를 제공받을 수 있습니다 (위 `state` API로 마이그레이션 필요)\n- 현재는 호출 가능하나, 프론트 마이그레이션 완료 후 삭제됩니다\n",
+    "version": "2.7.0"
   },
   "servers": [
     {
@@ -213,6 +213,152 @@
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/user/agreements"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/agreements/game-push": {
+      "get": {
+        "tags": ["User"],
+        "summary": "게임 푸시 알림 수신 동의 여부 조회",
+        "description": "로그인한 사용자의 게임 푸시 알림 수신 동의 여부를 조회합니다.",
+        "operationId": "getGamePushAgreement",
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePushAgreementResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 회원": {
+                    "summary": "존재하지 않는 회원",
+                    "value": {
+                      "title": "존재하지 않는 회원",
+                      "status": 401,
+                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "instance": "/api/user/agreements/game-push"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/user/agreements/game-push"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["User"],
+        "summary": "게임 푸시 알림 수신 동의 여부 업데이트",
+        "description": "로그인한 사용자의 게임 푸시 알림 수신 동의 여부를 업데이트합니다.",
+        "operationId": "updateGamePushAgreement",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GamePushAgreementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "업데이트 성공 (응답 본문 없음)"
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 회원": {
+                    "summary": "존재하지 않는 회원",
+                    "value": {
+                      "title": "존재하지 않는 회원",
+                      "status": 401,
+                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "instance": "/api/user/agreements/game-push"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/user/agreements/game-push"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/user/agreements/game-push"
                     }
                   }
                 }
@@ -873,7 +1019,7 @@
                     "value": {
                       "title": "유효하지 않은 감옥 반지름",
                       "status": 400,
-                      "detail": "감옥의 반지름이 운동장의 반지름보다 크거나 같을 수 없습니다.",
+                      "detail": "감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없습니다.",
                       "instance": "/api/games/{gameId}/area"
                     }
                   },
@@ -882,7 +1028,7 @@
                     "value": {
                       "title": "감옥 영역 벗어남",
                       "status": 400,
-                      "detail": "감옥은 운동장 내부에 완전히 포함되어야 합니다.",
+                      "detail": "감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다.",
                       "instance": "/api/games/{gameId}/area"
                     }
                   },
@@ -1288,7 +1434,7 @@
                     "value": {
                       "title": "유효하지 않은 감옥 반지름",
                       "status": 400,
-                      "detail": "감옥의 반지름이 운동장의 반지름보다 크거나 같을 수 없습니다.",
+                      "detail": "감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없습니다.",
                       "instance": "/api/games"
                     }
                   },
@@ -1297,7 +1443,7 @@
                     "value": {
                       "title": "감옥 영역 벗어남",
                       "status": 400,
-                      "detail": "감옥은 운동장 내부에 완전히 포함되어야 합니다.",
+                      "detail": "감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다.",
                       "instance": "/api/games"
                     }
                   },
@@ -3240,11 +3386,227 @@
         }
       }
     },
+    "/api/games/{gameId}/state": {
+      "get": {
+        "tags": ["Location"],
+        "summary": "게임 현재 상태 조회",
+        "description": "현재 게임 상태를 조회합니다. 소켓 재연결 시 게임 화면(상태) 복원에 활용됩니다.\n\n- 가장 최근 도둑 위치 공개 시점의 위치를 기준으로 목록을 응답합니다.\n\n**응답 내용**\n- `robberLocations`: 마지막 위치 공개 주기에 찍힌 생존 도둑들의 위치\n- `participants`: 전체 참가자의 팀·상태 현황\n\n**robberLocations 반환 조건**\n\n| 게임 단계 | robberLocations |\n|---|---|\n| 경찰 대기 시간 중 (POLICE_WAITING) | 빈 배열 |\n| 경찰 출동 후 첫 위치 공개 전 | 빈 배열 |\n| 첫 위치 공개 이후 | 생존 도둑 위치 목록 (JAILED 제외) |\n\n\u003E 경찰 대기 시간 중에는 경찰·도둑 구분 없이 모두 빈 배열이 반환됩니다.\n",
+        "operationId": "getGameState",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "게임 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "게임 상태 조회 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameStateResponse"
+                },
+                "examples": {
+                  "경찰 대기 단계 (POLICE_WAITING)": {
+                    "summary": "경찰이 아직 출동하지 않은 상태 — 누구도 도둑 위치를 볼 수 없음",
+                    "description": "경찰 대기 단계 (POLICE_WAITING)",
+                    "value": {
+                      "robberLocations": [],
+                      "participants": [
+                        {
+                          "participantId": 1,
+                          "nickname": "빠른경찰1",
+                          "team": "POLICE",
+                          "status": "POLICE_WAITING"
+                        },
+                        {
+                          "participantId": 2,
+                          "nickname": "민첩한괴도1",
+                          "team": "ROBBER",
+                          "status": "ALIVE"
+                        },
+                        {
+                          "participantId": 3,
+                          "nickname": "교활한괴도2",
+                          "team": "ROBBER",
+                          "status": "ALIVE"
+                        }
+                      ]
+                    }
+                  },
+                  "경찰 출동 후 첫 위치 공개 전": {
+                    "summary": "경찰 출동 완료, 아직 위치 공개 주기가 도래하지 않아 스냅샷 없음",
+                    "description": "경찰 출동 후 첫 위치 공개 전",
+                    "value": {
+                      "robberLocations": [],
+                      "participants": [
+                        {
+                          "participantId": 1,
+                          "nickname": "빠른경찰1",
+                          "team": "POLICE",
+                          "status": "ALIVE"
+                        },
+                        {
+                          "participantId": 2,
+                          "nickname": "민첩한괴도1",
+                          "team": "ROBBER",
+                          "status": "ALIVE"
+                        },
+                        {
+                          "participantId": 3,
+                          "nickname": "교활한괴도2",
+                          "team": "ROBBER",
+                          "status": "ALIVE"
+                        }
+                      ]
+                    }
+                  },
+                  "위치 공개 이후 (일부 도둑 체포)": {
+                    "summary": "최소 1회 위치 공개 완료, JAILED 도둑은 위치 목록에서 제외되고 participants에만 포함",
+                    "description": "위치 공개 이후 (일부 도둑 체포)",
+                    "value": {
+                      "robberLocations": [
+                        {
+                          "participantId": 2,
+                          "nickname": "민첩한괴도1",
+                          "latitude": 37.5665,
+                          "longitude": 126.978
+                        }
+                      ],
+                      "participants": [
+                        {
+                          "participantId": 1,
+                          "nickname": "빠른경찰1",
+                          "team": "POLICE",
+                          "status": "ALIVE"
+                        },
+                        {
+                          "participantId": 2,
+                          "nickname": "민첩한괴도1",
+                          "team": "ROBBER",
+                          "status": "ALIVE"
+                        },
+                        {
+                          "participantId": 3,
+                          "nickname": "교활한괴도2",
+                          "team": "ROBBER",
+                          "status": "JAILED"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/state"
+                    }
+                  },
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}/state"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임 진행 중 아님": {
+                    "summary": "게임 진행 중 아님",
+                    "value": {
+                      "title": "게임 진행 중 아님",
+                      "status": 400,
+                      "detail": "게임이 진행 중인 상태가 아닙니다.",
+                      "instance": "/api/games/{gameId}/state"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/state"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/state"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/games/{gameId}/robbers/location": {
       "get": {
         "tags": ["Location"],
-        "summary": "도둑 위치 조회",
-        "description": "현재 게임에 참여 중인 도둑들의 마지막 위치를 조회합니다.\n\n- 위치를 한 번도 전송하지 않은 도둑은 목록에 포함되지 않습니다.\n",
+        "summary": "도둑 위치 조회 (deprecated)",
+        "description": "현재 게임에 참여 중인 도둑들의 마지막 위치를 조회합니다.\n\n- 가장 최근 도둑 위치 공개 시점의 위치를 기준으로 목록을 응답합니다.\n- JAILED 상태의 도둑은 목록에 포함되지 않습니다.\n- 위치를 한 번도 전송하지 않은 도둑은 목록에 포함되지 않습니다.\n\n- **Deprecated**: /api/games/{gameId}/state 로 대체됩니다.\n     (프론트로직 마이그레이션 되면 해당 API는 삭제 예정, 현재 까지는 호출 가능)\n",
         "operationId": "getRobberLocations",
         "parameters": [
           {
@@ -3366,7 +3728,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/api/games/{gameId}/participants": {
@@ -4066,6 +4429,17 @@
           }
         }
       },
+      "GamePushAgreementRequest": {
+        "required": ["allowGamePush"],
+        "type": "object",
+        "properties": {
+          "allowGamePush": {
+            "type": "boolean",
+            "description": "게임 푸시 알림 수신 동의 여부",
+            "example": true
+          }
+        }
+      },
       "NoticeUpdateRequest": {
         "required": ["content", "pinned", "title"],
         "type": "object",
@@ -4116,12 +4490,12 @@
           "createdAt": {
             "type": "string",
             "description": "생성일시",
-            "format": "date-time"
+            "example": "2024-01-01T00:00:00+09:00"
           },
           "updatedAt": {
             "type": "string",
             "description": "수정일시",
-            "format": "date-time"
+            "example": "2024-01-01T00:00:00+09:00"
           }
         }
       },
@@ -4424,7 +4798,7 @@
           "createdAt": {
             "type": "string",
             "description": "생성 시각",
-            "format": "date-time"
+            "example": "2026-01-16T01:25:37+09:00"
           }
         }
       },
@@ -4767,6 +5141,16 @@
           }
         }
       },
+      "GamePushAgreementResponse": {
+        "type": "object",
+        "properties": {
+          "allowGamePush": {
+            "type": "boolean",
+            "description": "게임 푸시 알림 수신 동의 여부",
+            "example": true
+          }
+        }
+      },
       "NoticeListResponse": {
         "type": "object",
         "properties": {
@@ -4839,9 +5223,78 @@
           "gameStartTime": {
             "type": "string",
             "description": "게임 시작 시간 (진행 중일 때만 포함)",
-            "format": "date-time"
+            "example": "2026-03-21T15:30:00+09:00"
           }
         }
+      },
+      "GameStateResponse": {
+        "type": "object",
+        "properties": {
+          "robberLocations": {
+            "type": "array",
+            "description": "마지막 공개된 생존 도둑 위치 목록",
+            "items": {
+              "$ref": "#/components/schemas/RobberLocationInfo"
+            }
+          },
+          "participants": {
+            "type": "array",
+            "description": "전체 참여자 현황",
+            "items": {
+              "$ref": "#/components/schemas/ParticipantInfo"
+            }
+          }
+        }
+      },
+      "ParticipantInfo": {
+        "type": "object",
+        "properties": {
+          "participantId": {
+            "type": "integer",
+            "description": "참여자 ID",
+            "format": "int64"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "닉네임"
+          },
+          "team": {
+            "type": "string",
+            "description": "팀",
+            "enum": ["POLICE", "ROBBER"]
+          },
+          "status": {
+            "type": "string",
+            "description": "상태",
+            "enum": ["WAITING", "ALIVE", "JAILED", "POLICE_WAITING"]
+          }
+        },
+        "description": "전체 참여자 현황"
+      },
+      "RobberLocationInfo": {
+        "type": "object",
+        "properties": {
+          "participantId": {
+            "type": "integer",
+            "description": "참여자 ID",
+            "format": "int64"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "닉네임"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "위도",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "description": "경도",
+            "format": "double"
+          }
+        },
+        "description": "마지막 공개된 생존 도둑 위치 목록"
       },
       "RobberLocationResponse": {
         "type": "object",
