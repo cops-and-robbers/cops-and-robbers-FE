@@ -48,9 +48,8 @@ class _FakeUserRemoteDataSource implements UserRemoteDataSource {
       throw UnimplementedError();
 
   @override
-  Future<void> updateGamePushAgreement(
-    GamePushAgreementRequestModel request,
-  ) => throw UnimplementedError();
+  Future<void> updateGamePushAgreement(GamePushAgreementRequestModel request) =>
+      throw UnimplementedError();
 }
 
 DioException _dioError(int statusCode) => DioException(

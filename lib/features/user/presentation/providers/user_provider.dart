@@ -58,9 +58,9 @@ class GamePushNotifier extends _$GamePushNotifier {
     final next = !current;
     state = AsyncValue.data(next);
     try {
-      await ref.read(userRepositoryProvider).updateGamePushAgreement(
-        allowGamePush: next,
-      );
+      await ref
+          .read(userRepositoryProvider)
+          .updateGamePushAgreement(allowGamePush: next);
     } catch (_) {
       state = AsyncValue.data(current);
       rethrow;

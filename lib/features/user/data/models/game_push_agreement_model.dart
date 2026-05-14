@@ -8,9 +8,8 @@ part 'game_push_agreement_model.g.dart';
 /// `GET /api/user/agreements/game-push` 응답.
 @freezed
 class GamePushAgreementResponseModel with _$GamePushAgreementResponseModel {
-  const factory GamePushAgreementResponseModel({
-    required bool allowGamePush,
-  }) = _GamePushAgreementResponseModel;
+  const factory GamePushAgreementResponseModel({required bool allowGamePush}) =
+      _GamePushAgreementResponseModel;
 
   factory GamePushAgreementResponseModel.fromJson(Map<String, dynamic> json) =>
       _$GamePushAgreementResponseModelFromJson(json);
@@ -21,9 +20,8 @@ class GamePushAgreementResponseModel with _$GamePushAgreementResponseModel {
 /// `PUT /api/user/agreements/game-push` 요청 바디.
 @freezed
 class GamePushAgreementRequestModel with _$GamePushAgreementRequestModel {
-  const factory GamePushAgreementRequestModel({
-    required bool allowGamePush,
-  }) = _GamePushAgreementRequestModel;
+  const factory GamePushAgreementRequestModel({required bool allowGamePush}) =
+      _GamePushAgreementRequestModel;
 
   factory GamePushAgreementRequestModel.fromJson(Map<String, dynamic> json) =>
       _$GamePushAgreementRequestModelFromJson(json);
