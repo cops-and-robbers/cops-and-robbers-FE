@@ -94,6 +94,33 @@ class _GameSystemApi implements GameSystemApi {
   }
 
   @override
+  Future<GameStateModel> getGameState(int gameId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<GameStateModel>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/games/${gameId}/state',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late GameStateModel _value;
+    try {
+      _value = GameStateModel.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<List<RobberLocationModel>> getRobberLastLocations(int gameId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
