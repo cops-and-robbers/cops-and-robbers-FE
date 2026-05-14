@@ -30,5 +30,5 @@ Map<String, dynamic> _$$CreateSessionResponseImplToJson(
   'locationRevealIntervalMinutes': instance.locationRevealIntervalMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
-  'createdAt': instance.createdAt.toIso8601String(),
+  'createdAt': _dateTimeToIso(instance.createdAt),
 };

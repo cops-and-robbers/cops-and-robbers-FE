@@ -320,7 +320,7 @@ graph TD
 
     Create -->|"Step 0"| SetupPG["/.../playground"]
     Create -->|"Step 0"| SetupPrison["/.../prison"]
-    Create -->|"Step 3 방생성"| Waiting
+    Create -->|"Step 3 방 생성"| Waiting
 
     Waiting -->|"방장"| GameSettings["/.../game-settings"]
     Waiting -->|"게임 시작"| Game
