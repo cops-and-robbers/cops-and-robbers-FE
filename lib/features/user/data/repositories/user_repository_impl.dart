@@ -8,6 +8,7 @@ import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_remote_datasource.dart';
 import '../models/agreement_request_model.dart';
+import '../models/game_push_agreement_model.dart';
 import '../models/nickname_update_request_model.dart';
 
 /// User Repository 구현체
@@ -155,6 +156,48 @@ class UserRepositoryImpl implements UserRepository {
       if (e is AppException) rethrow;
       throw ServerException(
         message: '약관 동의 저장 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<bool> getGamePushAgreement() async {
+    try {
+      final response = await _dataSource.getGamePushAgreement();
+
+      if (kDebugMode) {
+        debugPrint('✅ 게임 푸시 알림 동의 조회: ${response.allowGamePush}');
+      }
+
+      return response.allowGamePush;
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ServerException(
+        message: '게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다.',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> updateGamePushAgreement({required bool allowGamePush}) async {
+    try {
+      await _dataSource.updateGamePushAgreement(
+        GamePushAgreementRequestModel(allowGamePush: allowGamePush),
+      );
+
+      if (kDebugMode) {
+        debugPrint('✅ 게임 푸시 알림 동의 업데이트 성공 (allowGamePush=$allowGamePush)');
+      }
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ServerException(
+        message: '게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다.',
         originalException: e,
       );
     }

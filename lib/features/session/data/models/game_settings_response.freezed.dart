@@ -34,6 +34,9 @@ mixin _$GameSettingsResponse {
   int get maxParticipants => throw _privateConstructorUsedError;
 
   /// 게임 시작 시각 (ISO 8601, IN_PROGRESS 상태일 때만 non-null)
+  ///
+  /// v2.7.0부터 `+09:00` timezone suffix 포함. 소비 시 `IsoTimestampParser`
+  /// 또는 `DateTime.parse(...).toLocal()`로 단말 local 시간 정규화.
   String? get gameStartTime => throw _privateConstructorUsedError;
 
   /// Serializes this GameSettingsResponse to a JSON map.
@@ -210,6 +213,9 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
   final int maxParticipants;
 
   /// 게임 시작 시각 (ISO 8601, IN_PROGRESS 상태일 때만 non-null)
+  ///
+  /// v2.7.0부터 `+09:00` timezone suffix 포함. 소비 시 `IsoTimestampParser`
+  /// 또는 `DateTime.parse(...).toLocal()`로 단말 local 시간 정규화.
   @override
   final String? gameStartTime;
 
@@ -297,6 +303,9 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
   int get maxParticipants;
 
   /// 게임 시작 시각 (ISO 8601, IN_PROGRESS 상태일 때만 non-null)
+  ///
+  /// v2.7.0부터 `+09:00` timezone suffix 포함. 소비 시 `IsoTimestampParser`
+  /// 또는 `DateTime.parse(...).toLocal()`로 단말 local 시간 정규화.
   @override
   String? get gameStartTime;
 

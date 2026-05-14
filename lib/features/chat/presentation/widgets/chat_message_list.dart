@@ -107,8 +107,8 @@ class _ChatMessageListState extends State<ChatMessageList> {
   /// 두 메시지가 같은 그룹인지 판별 (같은 sender + 같은 분)
   bool _isSameGroup(ChatMessageDto a, ChatMessageDto b) {
     if (a.sender.participantId != b.sender.participantId) return false;
-    final dtA = a.kstDateTime;
-    final dtB = b.kstDateTime;
+    final dtA = a.localDateTime;
+    final dtB = b.localDateTime;
     if (dtA == null || dtB == null) return false;
     return dtA.year == dtB.year &&
         dtA.month == dtB.month &&
@@ -119,8 +119,8 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
   /// 두 메시지의 날짜가 다른지 판별
   bool _isDifferentDate(ChatMessageDto a, ChatMessageDto b) {
-    final dtA = a.kstDateTime;
-    final dtB = b.kstDateTime;
+    final dtA = a.localDateTime;
+    final dtB = b.localDateTime;
     if (dtA == null || dtB == null) return false;
     return dtA.year != dtB.year || dtA.month != dtB.month || dtA.day != dtB.day;
   }
@@ -199,7 +199,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
               return Column(
                 children: [
-                  if (showDateDivider) _buildDateDivider(message.kstDateTime),
+                  if (showDateDivider) _buildDateDivider(message.localDateTime),
                   ChatMessageBubble(
                     message: message,
                     isMe: isMe,

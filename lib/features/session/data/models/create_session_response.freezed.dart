@@ -44,8 +44,13 @@ mixin _$CreateSessionResponse {
   /// 최대 참가자 수
   int get maxParticipants => throw _privateConstructorUsedError;
 
-  /// 생성 시각 (ISO 8601 형식)
-  String get createdAt => throw _privateConstructorUsedError;
+  /// 생성 시각 (v2.7.0부터 `+09:00` timezone suffix 포함 ISO 8601)
+  ///
+  /// `fromJson`은 json_serializable 기본 동작으로 String → DateTime 파싱.
+  /// `toJson`은 UTC로 강제 변환하여 ISO 8601 + `Z` suffix를 보장
+  /// (로컬 DateTime 직렬화 시 timezone 정보가 누락되는 문제 방지).
+  @JsonKey(toJson: _dateTimeToIso)
+  DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this CreateSessionResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -72,7 +77,7 @@ abstract class $CreateSessionResponseCopyWith<$Res> {
     int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
-    String createdAt,
+    @JsonKey(toJson: _dateTimeToIso) DateTime createdAt,
   });
 }
 
@@ -136,7 +141,7 @@ class _$CreateSessionResponseCopyWithImpl<
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as DateTime,
           )
           as $Val,
     );
@@ -160,7 +165,7 @@ abstract class _$$CreateSessionResponseImplCopyWith<$Res>
     int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
-    String createdAt,
+    @JsonKey(toJson: _dateTimeToIso) DateTime createdAt,
   });
 }
 
@@ -221,7 +226,7 @@ class __$$CreateSessionResponseImplCopyWithImpl<$Res>
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as DateTime,
       ),
     );
   }
@@ -238,7 +243,7 @@ class _$CreateSessionResponseImpl implements _CreateSessionResponse {
     required this.locationRevealIntervalMinutes,
     required this.policeWaitMinutes,
     required this.maxParticipants,
-    required this.createdAt,
+    @JsonKey(toJson: _dateTimeToIso) required this.createdAt,
   });
 
   factory _$CreateSessionResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -272,9 +277,14 @@ class _$CreateSessionResponseImpl implements _CreateSessionResponse {
   @override
   final int maxParticipants;
 
-  /// 생성 시각 (ISO 8601 형식)
+  /// 생성 시각 (v2.7.0부터 `+09:00` timezone suffix 포함 ISO 8601)
+  ///
+  /// `fromJson`은 json_serializable 기본 동작으로 String → DateTime 파싱.
+  /// `toJson`은 UTC로 강제 변환하여 ISO 8601 + `Z` suffix를 보장
+  /// (로컬 DateTime 직렬화 시 timezone 정보가 누락되는 문제 방지).
   @override
-  final String createdAt;
+  @JsonKey(toJson: _dateTimeToIso)
+  final DateTime createdAt;
 
   @override
   String toString() {
@@ -347,7 +357,7 @@ abstract class _CreateSessionResponse implements CreateSessionResponse {
     required final int locationRevealIntervalMinutes,
     required final int policeWaitMinutes,
     required final int maxParticipants,
-    required final String createdAt,
+    @JsonKey(toJson: _dateTimeToIso) required final DateTime createdAt,
   }) = _$CreateSessionResponseImpl;
 
   factory _CreateSessionResponse.fromJson(Map<String, dynamic> json) =
@@ -381,9 +391,14 @@ abstract class _CreateSessionResponse implements CreateSessionResponse {
   @override
   int get maxParticipants;
 
-  /// 생성 시각 (ISO 8601 형식)
+  /// 생성 시각 (v2.7.0부터 `+09:00` timezone suffix 포함 ISO 8601)
+  ///
+  /// `fromJson`은 json_serializable 기본 동작으로 String → DateTime 파싱.
+  /// `toJson`은 UTC로 강제 변환하여 ISO 8601 + `Z` suffix를 보장
+  /// (로컬 DateTime 직렬화 시 timezone 정보가 누락되는 문제 방지).
   @override
-  String get createdAt;
+  @JsonKey(toJson: _dateTimeToIso)
+  DateTime get createdAt;
 
   /// Create a copy of CreateSessionResponse
   /// with the given fields replaced by the non-null parameter values.

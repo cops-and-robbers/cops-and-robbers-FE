@@ -30,7 +30,10 @@ class NoticeRepositoryImpl implements NoticeRepository {
                 title: m.title,
                 content: m.content,
                 pinned: m.pinned,
-                createdAt: m.createdAt,
+                // 백엔드가 timezone suffix(+09:00)를 포함해 직렬화하므로
+                // json_serializable이 UTC DateTime으로 파싱한다. UI는 단말 local
+                // 기준 날짜 표기를 기대하므로 Entity 경계에서 local로 정규화한다.
+                createdAt: m.createdAt.toLocal(),
               ),
             )
             .toList(),
