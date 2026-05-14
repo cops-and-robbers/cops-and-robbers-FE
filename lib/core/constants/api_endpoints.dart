@@ -130,14 +130,7 @@ class ApiEndpoints {
   /// 게임 상태 조회 (소켓 재연결 시 화면 복원용)
   ///
   /// robberLocations + participants 를 한 번에 반환합니다.
-  /// `GET /api/games/{gameId}/robbers/location` Deprecated — 이 엔드포인트로 대체.
   static String gameState(int gameId) => '/api/games/$gameId/state';
-
-  /// 가장 최근 공개된 도둑 위치 목록 조회
-  ///
-  /// @deprecated v2.6.0부터 deprecated. [gameState]의 `robberLocations` 필드를 사용하세요.
-  static String robberLastLocations(int gameId) =>
-      '/api/games/$gameId/robbers/location';
 
   /// 게임 결과 조회
   ///

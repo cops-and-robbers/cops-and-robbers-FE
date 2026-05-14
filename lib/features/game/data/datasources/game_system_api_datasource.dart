@@ -5,7 +5,6 @@ import '../../data/models/arrest_request_model.dart';
 import '../../data/models/arrest_response_model.dart';
 import '../../data/models/game_area_model.dart';
 import '../../data/models/game_state_model.dart';
-export '../../data/models/game_area_model.dart' show RobberLocationModel;
 export '../../data/models/game_state_model.dart'
     show GameStateModel, ParticipantInfoModel, RobberLocationInfoModel;
 
@@ -43,14 +42,4 @@ abstract class GameSystemApi {
   /// - `participants`: 전체 참여자 팀·상태 목록
   @GET('/api/games/{gameId}/state')
   Future<GameStateModel> getGameState(@Path('gameId') int gameId);
-
-  /// 가장 최근 공개된 도둑 위치 목록 조회
-  ///
-  /// @deprecated v2.6.0부터 deprecated. [getGameState]의 `robberLocations` 필드를 사용하세요.
-  /// 재연결 후 누락된 LOCATION_REVEAL 이벤트를 보완하기 위해 호출.
-  /// 아직 위치 공개 전이면 빈 배열 반환.
-  @GET('/api/games/{gameId}/robbers/location')
-  Future<List<RobberLocationModel>> getRobberLastLocations(
-    @Path('gameId') int gameId,
-  );
 }

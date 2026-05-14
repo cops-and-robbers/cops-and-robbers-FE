@@ -821,9 +821,12 @@ class GameEventNotifier extends _$GameEventNotifier {
     // fetch 시작 시점의 reveal 타임스탬프 캡처 (race condition 방지)
     final preRevealTime = state.lastLocationRevealTime;
     try {
-      final locations = await ref
+      // v2.6.0: GET /api/games/{gameId}/state 의 robberLocations 필드를 사용한다.
+      // participants 필드는 본 메서드에서 사용하지 않음 (오버레이/재연결 동기화는 별도 흐름 유지).
+      final gameState = await ref
           .read(gameSystemApiProvider)
-          .getRobberLastLocations(gameId);
+          .getGameState(gameId);
+      final locations = gameState.robberLocations;
 
       // dispose 후 state 접근 방지
       if (_isDisposed) return;
