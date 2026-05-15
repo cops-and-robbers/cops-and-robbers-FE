@@ -1,242 +1,161 @@
-name: Project Flutter CI
+# ==========================================================================================
+# Flutter CI (코드 분석) 워크플로우
+# ==========================================================================================
+#
+# 이 워크플로우는 PR 생성 또는 main 브랜치 푸시 시
+# 코드 정적 분석(flutter analyze)을 실행합니다.
+#
+# ==========================================================================================
+# 🔧 프로젝트별 설정
+# ==========================================================================================
+#
+# FLUTTER_VERSION : Flutter SDK 버전
+# ENV_FILE_PATH   : .env 파일 경로 (기본값: 루트의 .env)
+#
+# ==========================================================================================
+# 🔑 필수 GitHub Secrets
+# ==========================================================================================
+# ENV_FILE (선택): .env 파일 내용
+# ==========================================================================================
 
-# PR과 main/develop 브랜치 push 시 자동 실행
-# Android, iOS 플랫폼만 검증 (macOS, Linux, Web 제외)
+name: PROJECT-Flutter-CI
+
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch: # 수동 실행 허용
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  pull-requests: write  # PR에 댓글을 달기 위한 권한
+
+# ==========================================================================================
+# 🔧 프로젝트별 설정 (아래 값들을 수정하세요)
+# ==========================================================================================
+env:
+  FLUTTER_VERSION: "3.35.5"
+  ENV_FILE_PATH: ".env"
+
+concurrency:
+  group: flutter-ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  # 코드 품질 검증 작업
-  analyze:
-    name: Code Analysis
+  # ===================================================================
+  # Job 1: 준비 단계
+  # ===================================================================
+  prepare:
+    name: CI 준비
     runs-on: ubuntu-latest
 
+    outputs:
+      branch_name: ${{ steps.info.outputs.branch_name }}
+      commit_hash: ${{ steps.info.outputs.commit_hash }}
+
     steps:
-      # 1. 저장소 코드 체크아웃
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # 2. Flutter SDK 설치
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.35.5'
-          channel: 'stable'
-          cache: true
-
-      # 3. 의존성 설치
-      - name: Install dependencies
-        run: flutter pub get
-
-      # 4. 환경 변수 파일 생성 (.env 파일 - analyze 에러 방지)
-      - name: Create .env file
+      # 빌드 정보 수집
+      - name: 빌드 정보 수집
+        id: info
         run: |
-          cat > .env << 'EOF'
-          ${{ secrets.ENV_FILE || secrets.ENV }}
-          EOF
-          echo "GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_ANDROID }}" >> .env
-          echo "GOOGLE_MAPS_ROBBER_MAP_ID_IOS=${{ secrets.GOOGLE_MAPS_ROBBER_MAP_ID_IOS }}" >> .env
-
-      # 5. iOS Native Config 생성 (Google Maps API Key)
-      - name: Setup iOS Secrets (Google Maps)
-        run: |
-          mkdir -p ios/Flutter
-          cat > ios/Flutter/Secrets.xcconfig << 'SECRETS_EOF'
-          // Google Maps API Key
-          // iOS Google Maps SDK에서 사용
-          // Info.plist → AppDelegate를 통해 초기화
-          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
-          SECRETS_EOF
-          echo "✅ ios/Flutter/Secrets.xcconfig created"
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-
-      # 6. Android Native Config 생성 (Google Maps API Key)
-      - name: Setup Android Secrets (Google Maps)
-        run: |
-          # 기존 local.properties가 있으면 백업
-          if [ -f android/local.properties ]; then
-            cp android/local.properties android/local.properties.backup
-          fi
-
-          # local.properties 생성/업데이트
-          cat >> android/local.properties << 'SECRETS_EOF'
-
-          # Google Maps API Key
-          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
-          SECRETS_EOF
-          echo "✅ android/local.properties updated with API key"
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-
-      # 7. 보안 검증 (API 키 노출 확인)
-      - name: Verify Secrets Not Exposed
-        run: |
-          echo "🔒 보안 검증: API 키가 노출되지 않았는지 확인"
-
-          # iOS Secrets.xcconfig 확인
-          if [ -f ios/Flutter/Secrets.xcconfig ]; then
-            echo "✅ ios/Flutter/Secrets.xcconfig exists"
-            # 파일 내용에 실제 API 키가 아닌 변수만 있는지 확인 (키 값은 출력하지 않음)
-            if grep -q "GOOGLE_MAPS_API_KEY" ios/Flutter/Secrets.xcconfig; then
-              echo "✅ GOOGLE_MAPS_API_KEY variable found in Secrets.xcconfig"
-            else
-              echo "⚠️ GOOGLE_MAPS_API_KEY not found in Secrets.xcconfig"
-            fi
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BRANCH_NAME="${{ github.head_ref }}"
           else
-            echo "❌ ios/Flutter/Secrets.xcconfig not created"
-            exit 1
+            BRANCH_NAME="${{ github.ref_name }}"
           fi
+          COMMIT_HASH=$(echo "${{ github.sha }}" | cut -c1-7)
 
-          # Android local.properties 확인
-          if [ -f android/local.properties ]; then
-            echo "✅ android/local.properties exists"
-            if grep -q "GOOGLE_MAPS_API_KEY" android/local.properties; then
-              echo "✅ GOOGLE_MAPS_API_KEY variable found in local.properties"
-            else
-              echo "⚠️ GOOGLE_MAPS_API_KEY not found in local.properties"
-            fi
-          else
-            echo "❌ android/local.properties not created"
-            exit 1
-          fi
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
 
-          echo "✅ 보안 검증 완료: 설정 파일 생성됨 (API 키 값은 마스킹됨)"
+          echo "📋 빌드 정보:"
+          echo "  브랜치: $BRANCH_NAME"
+          echo "  커밋: $COMMIT_HASH"
 
-      # 8. 코드 포맷팅 검사
-      - name: Check formatting
-        id: format_check
-        continue-on-error: true
-        run: |
-          dart format --set-exit-if-changed . 2>&1 | tee format_output.txt
-          exit ${PIPESTATUS[0]}
 
-      # 9. 정적 분석
-      - name: Analyze code
-        id: analyze_check
-        continue-on-error: true
-        run: |
-          flutter analyze 2>&1 | tee analyze_output.txt
-          exit ${PIPESTATUS[0]}
+  # ===================================================================
+  # Job 2: 코드 분석
+  # ===================================================================
+  analyze:
+    name: 코드 분석
+    runs-on: ubuntu-latest
+    needs: prepare
 
-      # 10. PR에 결과 댓글 달기 (실패 시)
-      - name: Comment on PR with issues
-        if: failure() && github.event_name == 'pull_request'
+    outputs:
+      status: ${{ steps.result.outputs.status }}
+      duration: ${{ steps.result.outputs.duration }}
+
+    steps:
+      - name: 분석 시작 시간 기록
+        id: analyze_start
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            let commentBody = '## 🚨 Flutter CI 검사 실패\n\n';
-            let hasIssues = false;
+            core.setOutput('time', Date.now().toString());
 
-            // 포맷팅 검사 결과
-            if ('${{ steps.format_check.outcome }}' === 'failure') {
-              hasIssues = true;
-              commentBody += '### ❌ 코드 포맷팅 검사 실패\n\n';
-              commentBody += '다음 명령어로 자동 포맷팅을 적용하세요:\n';
-              commentBody += '```bash\n';
-              commentBody += 'dart format .\n';
-              commentBody += '```\n\n';
-              
-              try {
-                const formatOutput = fs.readFileSync('format_output.txt', 'utf8');
-                if (formatOutput.trim()) {
-                  commentBody += '<details>\n<summary>포맷팅 오류 상세 내용</summary>\n\n';
-                  commentBody += '```\n' + formatOutput.trim() + '\n```\n\n';
-                  commentBody += '</details>\n\n';
-                }
-              } catch (e) {
-                console.log('포맷팅 출력 파일을 읽을 수 없습니다.');
-              }
-            }
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-            // 정적 분석 결과
-            if ('${{ steps.analyze_check.outcome }}' === 'failure') {
-              hasIssues = true;
-              commentBody += '### ❌ 정적 분석 검사 실패\n\n';
-              
-              try {
-                const analyzeOutput = fs.readFileSync('analyze_output.txt', 'utf8');
-                if (analyzeOutput.trim()) {
-                  // 오류/경고 라인 추출
-                  const lines = analyzeOutput.split('\n');
-                  const issues = lines.filter(line => 
-                    line.includes('error •') || 
-                    line.includes('warning •') ||
-                    line.includes('info •')
-                  );
-                  
-                  if (issues.length > 0) {
-                    commentBody += '발견된 문제:\n\n';
-                    commentBody += '```\n';
-                    commentBody += issues.slice(0, 20).join('\n');  // 최대 20개만 표시
-                    if (issues.length > 20) {
-                      commentBody += '\n... 그 외 ' + (issues.length - 20) + '개의 문제';
-                    }
-                    commentBody += '\n```\n\n';
-                  }
-                  
-                  commentBody += '<details>\n<summary>전체 분석 결과 보기</summary>\n\n';
-                  commentBody += '```\n' + analyzeOutput.trim() + '\n```\n\n';
-                  commentBody += '</details>\n\n';
-                }
-              } catch (e) {
-                console.log('분석 출력 파일을 읽을 수 없습니다.');
-              }
-            }
-
-            if (hasIssues) {
-              commentBody += '---\n';
-              commentBody += '💡 **수정 방법:**\n';
-              commentBody += '1. 로컬에서 `dart format .` 명령어로 포맷팅 적용\n';
-              commentBody += '2. `flutter analyze` 명령어로 오류 확인\n';
-              commentBody += '3. 오류를 수정한 후 다시 커밋하세요\n';
-
-              // 기존 봇 댓글 찾기
-              const { data: comments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-              });
-
-              const botComment = comments.find(comment => 
-                comment.user.type === 'Bot' && 
-                comment.body.includes('🚨 Flutter CI 검사 실패')
-              );
-
-              if (botComment) {
-                // 기존 댓글 업데이트
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: botComment.id,
-                  body: commentBody
-                });
-              } else {
-                // 새 댓글 작성
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.issue.number,
-                  body: commentBody
-                });
-              }
-            }
-
-      # 11. 최종 결과 확인 (실패 시 워크플로우 실패)
-      - name: Check final status
-        if: steps.format_check.outcome == 'failure' || steps.analyze_check.outcome == 'failure'
+      # .env 파일 생성
+      - name: Create .env file
         run: |
-          echo "❌ CI 검사 실패!"
-          echo "포맷팅 검사: ${{ steps.format_check.outcome }}"
-          echo "정적 분석: ${{ steps.analyze_check.outcome }}"
-          exit 1
+          cat << 'EOF' > ${{ env.ENV_FILE_PATH }}
+          ${{ secrets.ENV_FILE || secrets.ENV }}
+          EOF
+          echo "✅ ${{ env.ENV_FILE_PATH }} file created"
+
+      # Flutter 설정
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Verify Flutter version
+        run: |
+          echo "✅ Flutter setup completed"
+          flutter --version
+
+      # Flutter 캐시
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-flutter-pub-
+
+      # 프로젝트 의존성 설치
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          echo "✅ Dependencies installed"
+
+      # Flutter Analyze 실행
+      - name: Run Flutter Analyze
+        id: analyze
+        run: |
+          echo "🔍 Flutter 코드 분석 시작..."
+          flutter analyze --no-fatal-infos
+          echo "✅ 코드 분석 완료"
+
+      # 분석 결과 기록
+      - name: 분석 결과 기록
+        id: result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const analyzeStart = parseInt('${{ steps.analyze_start.outputs.time }}');
+            const now = Date.now();
+            const elapsed = now - analyzeStart;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            const duration = minutes > 0 ? `${minutes}분 ${seconds}초` : `${seconds}초`;
+
+            const status = '${{ steps.analyze.outcome }}' === 'success' ? 'success' : 'failure';
+
+            core.setOutput('status', status);
+            core.setOutput('duration', duration);
+            console.log(`📋 코드 분석 결과: ${status} (${duration})`);
+

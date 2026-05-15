@@ -32,6 +32,9 @@ mixin _$CreateSessionResult {
   /// 위치 공개 주기 (분)
   int get locationRevealIntervalMinutes => throw _privateConstructorUsedError;
 
+  /// 생성 시각 (단말 local 기준으로 정규화됨)
+  DateTime get createdAt => throw _privateConstructorUsedError;
+
   /// Create a copy of CreateSessionResult
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -52,6 +55,7 @@ abstract class $CreateSessionResultCopyWith<$Res> {
     String status,
     int maxParticipants,
     int locationRevealIntervalMinutes,
+    DateTime createdAt,
   });
 }
 
@@ -75,6 +79,7 @@ class _$CreateSessionResultCopyWithImpl<$Res, $Val extends CreateSessionResult>
     Object? status = null,
     Object? maxParticipants = null,
     Object? locationRevealIntervalMinutes = null,
+    Object? createdAt = null,
   }) {
     return _then(
       _value.copyWith(
@@ -98,6 +103,10 @@ class _$CreateSessionResultCopyWithImpl<$Res, $Val extends CreateSessionResult>
                 ? _value.locationRevealIntervalMinutes
                 : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -119,6 +128,7 @@ abstract class _$$CreateSessionResultImplCopyWith<$Res>
     String status,
     int maxParticipants,
     int locationRevealIntervalMinutes,
+    DateTime createdAt,
   });
 }
 
@@ -141,6 +151,7 @@ class __$$CreateSessionResultImplCopyWithImpl<$Res>
     Object? status = null,
     Object? maxParticipants = null,
     Object? locationRevealIntervalMinutes = null,
+    Object? createdAt = null,
   }) {
     return _then(
       _$CreateSessionResultImpl(
@@ -164,6 +175,10 @@ class __$$CreateSessionResultImplCopyWithImpl<$Res>
             ? _value.locationRevealIntervalMinutes
             : locationRevealIntervalMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -178,6 +193,7 @@ class _$CreateSessionResultImpl implements _CreateSessionResult {
     required this.status,
     required this.maxParticipants,
     required this.locationRevealIntervalMinutes,
+    required this.createdAt,
   });
 
   /// 게임 세션 ID
@@ -200,9 +216,13 @@ class _$CreateSessionResultImpl implements _CreateSessionResult {
   @override
   final int locationRevealIntervalMinutes;
 
+  /// 생성 시각 (단말 local 기준으로 정규화됨)
+  @override
+  final DateTime createdAt;
+
   @override
   String toString() {
-    return 'CreateSessionResult(gameId: $gameId, inviteCode: $inviteCode, status: $status, maxParticipants: $maxParticipants, locationRevealIntervalMinutes: $locationRevealIntervalMinutes)';
+    return 'CreateSessionResult(gameId: $gameId, inviteCode: $inviteCode, status: $status, maxParticipants: $maxParticipants, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, createdAt: $createdAt)';
   }
 
   @override
@@ -221,7 +241,9 @@ class _$CreateSessionResultImpl implements _CreateSessionResult {
                   locationRevealIntervalMinutes,
                 ) ||
                 other.locationRevealIntervalMinutes ==
-                    locationRevealIntervalMinutes));
+                    locationRevealIntervalMinutes) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @override
@@ -232,6 +254,7 @@ class _$CreateSessionResultImpl implements _CreateSessionResult {
     status,
     maxParticipants,
     locationRevealIntervalMinutes,
+    createdAt,
   );
 
   /// Create a copy of CreateSessionResult
@@ -253,6 +276,7 @@ abstract class _CreateSessionResult implements CreateSessionResult {
     required final String status,
     required final int maxParticipants,
     required final int locationRevealIntervalMinutes,
+    required final DateTime createdAt,
   }) = _$CreateSessionResultImpl;
 
   /// 게임 세션 ID
@@ -274,6 +298,10 @@ abstract class _CreateSessionResult implements CreateSessionResult {
   /// 위치 공개 주기 (분)
   @override
   int get locationRevealIntervalMinutes;
+
+  /// 생성 시각 (단말 local 기준으로 정규화됨)
+  @override
+  DateTime get createdAt;
 
   /// Create a copy of CreateSessionResult
   /// with the given fields replaced by the non-null parameter values.

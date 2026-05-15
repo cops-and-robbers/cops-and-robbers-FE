@@ -28,5 +28,8 @@ class CreateSessionResult with _$CreateSessionResult {
 
     /// 위치 공개 주기 (분)
     required int locationRevealIntervalMinutes,
+
+    /// 생성 시각 (단말 local 기준으로 정규화됨)
+    required DateTime createdAt,
   }) = _CreateSessionResult;
 }

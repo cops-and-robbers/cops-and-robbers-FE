@@ -87,7 +87,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                               ? '자동 탈옥 처리에 실패했어요.\n직접 탈출하시겠어요?'
                               : '감옥 영역에 들어갔다가 다시 벗어나면\n자동으로 탈옥됩니다',
                           style: AppTextStyles.paragraph_14.copyWith(
-                            color: AppColors.black300,
+                            color: AppColors.black400,
                           ),
                           textAlign: TextAlign.center,
                         ),

@@ -17,7 +17,7 @@ _$CreateSessionResponseImpl _$$CreateSessionResponseImplFromJson(
       .toInt(),
   policeWaitMinutes: (json['policeWaitMinutes'] as num).toInt(),
   maxParticipants: (json['maxParticipants'] as num).toInt(),
-  createdAt: json['createdAt'] as String,
+  createdAt: DateTime.parse(json['createdAt'] as String),
 );
 
 Map<String, dynamic> _$$CreateSessionResponseImplToJson(
@@ -30,5 +30,5 @@ Map<String, dynamic> _$$CreateSessionResponseImplToJson(
   'locationRevealIntervalMinutes': instance.locationRevealIntervalMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
-  'createdAt': instance.createdAt,
+  'createdAt': _dateTimeToIso(instance.createdAt),
 };

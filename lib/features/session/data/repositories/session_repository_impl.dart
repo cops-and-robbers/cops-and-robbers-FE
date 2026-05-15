@@ -69,6 +69,9 @@ class SessionRepositoryImpl implements SessionRepository {
         status: response.status,
         maxParticipants: response.maxParticipants,
         locationRevealIntervalMinutes: response.locationRevealIntervalMinutes,
+        // v2.7.0부터 +09:00 suffix가 포함되어 DateTime이 UTC로 파싱된다.
+        // UI는 단말 local 기준 시각을 기대하므로 Entity 경계에서 정규화.
+        createdAt: response.createdAt.toLocal(),
       );
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);

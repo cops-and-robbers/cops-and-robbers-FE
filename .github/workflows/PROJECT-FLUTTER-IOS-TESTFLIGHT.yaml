@@ -440,7 +440,7 @@ jobs:
   # ============================================
   deploy-testflight:
     name: TestFlight 배포
-    runs-on: macos-15
+    runs-on: macos-26
     needs: [prepare-build, build-ios]
 
     steps:

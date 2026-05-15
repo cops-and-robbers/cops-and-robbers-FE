@@ -18,24 +18,6 @@ Map<String, dynamic> _$$LatLngModelImplToJson(_$LatLngModelImpl instance) =>
       'longitude': instance.longitude,
     };
 
-_$RobberLocationModelImpl _$$RobberLocationModelImplFromJson(
-  Map<String, dynamic> json,
-) => _$RobberLocationModelImpl(
-  participantId: (json['participantId'] as num).toInt(),
-  nickname: json['nickname'] as String,
-  latitude: (json['latitude'] as num).toDouble(),
-  longitude: (json['longitude'] as num).toDouble(),
-);
-
-Map<String, dynamic> _$$RobberLocationModelImplToJson(
-  _$RobberLocationModelImpl instance,
-) => <String, dynamic>{
-  'participantId': instance.participantId,
-  'nickname': instance.nickname,
-  'latitude': instance.latitude,
-  'longitude': instance.longitude,
-};
-
 _$GameAreaModelImpl _$$GameAreaModelImplFromJson(Map<String, dynamic> json) =>
     _$GameAreaModelImpl(
       playgroundCenter: LatLngModel.fromJson(

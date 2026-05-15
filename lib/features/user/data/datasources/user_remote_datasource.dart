@@ -5,6 +5,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../models/agreement_request_model.dart';
 import '../models/agreement_response_model.dart';
 import '../models/delete_account_response_model.dart';
+import '../models/game_push_agreement_model.dart';
 import '../models/my_page_response_model.dart';
 import '../models/nickname_check_response_model.dart';
 import '../models/nickname_update_request_model.dart';
@@ -20,6 +21,8 @@ part 'user_remote_datasource.g.dart';
 /// - `PATCH /api/user/me/nickname` - 닉네임 변경 (JWT 필요)
 /// - `GET /api/user/me` - 내 정보 조회 (JWT 필요)
 /// - `DELETE /api/user/me` - 회원 탈퇴 (JWT 필요)
+/// - `GET /api/user/agreements/game-push` - 게임 푸시 알림 동의 조회 (JWT 필요)
+/// - `PUT /api/user/agreements/game-push` - 게임 푸시 알림 동의 업데이트 (JWT 필요)
 @RestApi()
 abstract class UserRemoteDataSource {
   factory UserRemoteDataSource(Dio dio) = _UserRemoteDataSource;
@@ -83,4 +86,21 @@ abstract class UserRemoteDataSource {
   /// - 401: 인증 실패
   @PUT(ApiEndpoints.agreements)
   Future<void> updateAgreements(@Body() AgreementRequestModel request);
+
+  /// 게임 푸시 알림 수신 동의 여부 조회
+  ///
+  /// - 200: 동의 여부 (allowGamePush)
+  /// - 401: 인증 실패
+  @GET(ApiEndpoints.agreementsGamePush)
+  Future<GamePushAgreementResponseModel> getGamePushAgreement();
+
+  /// 게임 푸시 알림 수신 동의 여부 업데이트
+  ///
+  /// - 204: 업데이트 성공 (응답 본문 없음)
+  /// - 400: 유효성 검사 실패
+  /// - 401: 인증 실패
+  @PUT(ApiEndpoints.agreementsGamePush)
+  Future<void> updateGamePushAgreement(
+    @Body() GamePushAgreementRequestModel request,
+  );
 }
