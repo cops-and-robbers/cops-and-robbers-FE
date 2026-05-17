@@ -19,7 +19,10 @@ class JailZoneCheck {
   JailZoneCheck._();
 
   /// 자동 탈옥 기본 히스테리시스 buffer (m)
-  static const double defaultExitBuffer = 10.0;
+  ///
+  /// 야외 폰 GPS 정지 오차(3~5m)를 흡수한다. 순간 GPS 스파이크는
+  /// presentation 레이어의 dwell 디바운스(`_pendingExitConfirm`)가 별도로 막는다.
+  static const double defaultExitBuffer = 5.0;
 
   /// 히스테리시스를 적용해 "감옥 밖" 여부를 판정한다.
   ///

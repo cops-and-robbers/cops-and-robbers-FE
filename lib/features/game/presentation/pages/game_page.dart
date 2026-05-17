@@ -141,6 +141,12 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 직전 자동 탈옥 시도가 실패했는가 — true면 ArrestLockOverlay가 폴백 모드 노출.
   bool _autoEscapeFailed = false;
 
+  /// exited 발화 후 다음 1 tick 더 outside 유지를 확인 중인가 (dwell 디바운스).
+  ///
+  /// 단일 tick GPS 스파이크로 buffer를 넘는 false trigger를 막기 위함.
+  /// exited 시 true → 다음 tick에서 outside면 트리거, inside면(스파이크 회복) 리셋.
+  bool _pendingExitConfirm = false;
+
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
   DateTime? _lastHandledPoliceMove;
   DateTime? _lastHandledLocationReveal;
@@ -792,16 +798,23 @@ class _GamePageState extends ConsumerState<GamePage>
     switch (transition) {
       case JailZoneTransition.entered:
         _hasEnteredJailThisArrestCycle = true;
+        _pendingExitConfirm = false; // 스파이크 회복: 다시 들어왔으므로 대기 해제
         break;
       case JailZoneTransition.exited:
-        if (_canTriggerAutoEscape()) {
-          // fire-and-forget — _checkJailExit는 GPS 스트림 콜백에서 sync 호출됨.
-          // 실패 처리는 _triggerAutoEscape 내부에서 setState로 폴백 모드 전환.
-          // ignore: unawaited_futures
-          _triggerAutoEscape();
-        }
+        // 즉시 트리거하지 않고 다음 tick에서 outside 유지 확인 후 확정
+        _pendingExitConfirm = true;
         break;
       case JailZoneTransition.none:
+        // exited 후 outside 유지를 확인. 가드 통과 시 트리거.
+        if (_pendingExitConfirm && newIsOutside) {
+          _pendingExitConfirm = false;
+          if (_canTriggerAutoEscape()) {
+            // fire-and-forget — _checkJailExit는 GPS 스트림 콜백에서 sync 호출됨.
+            // 실패 처리는 _triggerAutoEscape 내부에서 setState로 폴백 모드 전환.
+            // ignore: unawaited_futures
+            _triggerAutoEscape();
+          }
+        }
         break;
     }
 
@@ -1364,6 +1377,7 @@ class _GamePageState extends ConsumerState<GamePage>
         _wasOutsideJail = _computeIsOutsideJail(_lastKnownPosition) ?? true;
         _hasEnteredJailThisArrestCycle = false;
         _isEscapeInFlight = false;
+        _pendingExitConfirm = false; // 새 사이클: dwell 대기 상태도 초기화
 
         // _autoEscapeFailed 는 UI(폴백 모드)에 영향을 주므로 값이 실제로 바뀔 때만 setState.
         if (_autoEscapeFailed) {
