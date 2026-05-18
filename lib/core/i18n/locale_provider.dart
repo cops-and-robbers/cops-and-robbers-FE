@@ -20,6 +20,12 @@ const Locale kDefaultLocale = Locale('ko');
 /// SharedPreferences 키 — 명시적으로 선택한 언어 코드 저장 (없으면 시스템 따름)
 const String _kStorageKey = 'app_locale_code';
 
+/// 앱 로캘 상태 (Locale + 시스템 추종 여부)
+///
+/// 두 값을 한 record로 묶어 atomic하게 갱신 — settings UI 라디오 선택과
+/// 실제 적용 Locale이 항상 동기화되도록 보장.
+typedef AppLocaleState = ({Locale locale, bool isFollowingSystem});
+
 /// 시스템 로캘이 지원 목록에 있으면 그대로, 아니면 [kDefaultLocale]
 Locale _resolveSystemLocale() {
   final code = PlatformDispatcher.instance.locale.languageCode;
@@ -38,36 +44,28 @@ Locale _resolveSystemLocale() {
 ///
 /// 사용 예:
 /// ```dart
-/// final locale = ref.watch(appLocaleProvider);
+/// final state = ref.watch(appLocaleProvider);
+/// final locale = state.locale;
+/// final isFollowingSystem = state.isFollowingSystem;
 /// await ref.read(appLocaleProvider.notifier).setLocale(const Locale('en'));
 /// await ref.read(appLocaleProvider.notifier).followSystem();
-/// final following = ref.read(appLocaleProvider.notifier).isFollowingSystem;
 /// ```
 @Riverpod(keepAlive: true)
 class AppLocale extends _$AppLocale {
-  // 사용자가 명시적으로 언어를 골랐는지 여부 (false면 시스템 로캘 추종)
-  bool _followingSystem = true;
-
-  /// "시스템 따름" 상태인지 — settings UI에서 라디오 선택 표시용
-  ///
-  /// 이 값은 Provider state가 아니라 notifier 내부 상태이므로 watch 불가.
-  /// 변화 감지가 필요한 경우 setLocale/followSystem 호출 후 별도 갱신 필요.
-  bool get isFollowingSystem => _followingSystem;
-
   @override
-  Locale build() {
+  AppLocaleState build() {
     final initial = _resolveSystemLocale();
     // SharedPreferences는 비동기라 build 동기 흐름에 직접 못 넣음.
     // 첫 프레임은 시스템 로캘로, 저장값 있으면 다음 프레임에서 덮어씀.
     Future.microtask(_loadFromStorage);
-    return initial;
+    return (locale: initial, isFollowingSystem: true);
   }
 
   Future<void> _loadFromStorage() async {
     final prefs = await SharedPreferences.getInstance();
     final stored = prefs.getString(_kStorageKey);
     if (stored == null) {
-      _followingSystem = true;
+      // 저장값 없음 → 시스템 추종 유지 (build()에서 이미 설정)
       return;
     }
     final isSupported = kSupportedLocales.any((l) => l.languageCode == stored);
@@ -76,29 +74,31 @@ class AppLocale extends _$AppLocale {
       await prefs.remove(_kStorageKey);
       return;
     }
-    _followingSystem = false;
     final loaded = Locale(stored);
-    if (loaded.languageCode != state.languageCode) {
-      state = loaded;
+    // locale 또는 isFollowingSystem 중 하나라도 달라지면 state 갱신
+    if (loaded.languageCode != state.locale.languageCode ||
+        state.isFollowingSystem) {
+      state = (locale: loaded, isFollowingSystem: false);
     }
   }
 
   /// 사용자가 명시적으로 언어 선택 — 영속 저장 + 즉시 반영
+  ///
+  /// Locale 값이 동일하더라도 isFollowingSystem이 바뀌면 state는 새 record라
+  /// watcher가 정상 재트리거된다.
   Future<void> setLocale(Locale locale) async {
     final isSupported = kSupportedLocales.any(
       (l) => l.languageCode == locale.languageCode,
     );
     if (!isSupported) return;
-    _followingSystem = false;
-    state = Locale(locale.languageCode);
+    state = (locale: Locale(locale.languageCode), isFollowingSystem: false);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kStorageKey, locale.languageCode);
   }
 
   /// 저장값 삭제 후 시스템 로캘 추종으로 전환
   Future<void> followSystem() async {
-    _followingSystem = true;
-    state = _resolveSystemLocale();
+    state = (locale: _resolveSystemLocale(), isFollowingSystem: true);
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kStorageKey);
   }

@@ -18,25 +18,16 @@ import '../../../../l10n/app_localizations.dart';
 /// **즉시 적용 패턴**: 저장 버튼 없이 옵션 탭 → `notifier.setLocale()` 호출
 /// → `appLocaleProvider` 갱신 → `_LocalizedApp`(main.dart)이 watch 중이므로
 /// `MaterialApp` 통째로 재구성되어 페이지 내 텍스트도 즉시 새 언어로 갱신된다.
-///
-/// **`ConsumerStatefulWidget` 이유**: `isFollowingSystem`은 Notifier 내부 bool 필드라
-/// `ref.watch`로 받지 못한다. 옵션 탭 후 선택 마크가 즉시 갱신되려면 `setState`가 필요하다.
-class LanguageSettingsPage extends ConsumerStatefulWidget {
+class LanguageSettingsPage extends ConsumerWidget {
   const LanguageSettingsPage({super.key});
 
   @override
-  ConsumerState<LanguageSettingsPage> createState() =>
-      _LanguageSettingsPageState();
-}
-
-class _LanguageSettingsPageState extends ConsumerState<LanguageSettingsPage> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final currentLocale = ref.watch(appLocaleProvider);
-    // notifier 메서드 접근 + isFollowingSystem 일회성 조회 (watch 불가)
+    final localeState = ref.watch(appLocaleProvider);
     final notifier = ref.read(appLocaleProvider.notifier);
-    final isFollowingSystem = notifier.isFollowingSystem;
+    final isFollowingSystem = localeState.isFollowingSystem;
+    final currentCode = localeState.locale.languageCode;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -58,40 +49,25 @@ class _LanguageSettingsPageState extends ConsumerState<LanguageSettingsPage> {
             _LanguageOptionTile(
               label: l10n.settingsLanguageOptionSystem,
               selected: isFollowingSystem,
-              onTap: () async {
-                await notifier.followSystem();
-                if (mounted) setState(() {});
-              },
+              onTap: () => notifier.followSystem(),
             ),
             _buildItemDivider(),
             _LanguageOptionTile(
               label: l10n.settingsLanguageOptionKorean,
-              selected:
-                  !isFollowingSystem && currentLocale.languageCode == 'ko',
-              onTap: () async {
-                await notifier.setLocale(const Locale('ko'));
-                if (mounted) setState(() {});
-              },
+              selected: !isFollowingSystem && currentCode == 'ko',
+              onTap: () => notifier.setLocale(const Locale('ko')),
             ),
             _buildItemDivider(),
             _LanguageOptionTile(
               label: l10n.settingsLanguageOptionEnglish,
-              selected:
-                  !isFollowingSystem && currentLocale.languageCode == 'en',
-              onTap: () async {
-                await notifier.setLocale(const Locale('en'));
-                if (mounted) setState(() {});
-              },
+              selected: !isFollowingSystem && currentCode == 'en',
+              onTap: () => notifier.setLocale(const Locale('en')),
             ),
             _buildItemDivider(),
             _LanguageOptionTile(
               label: l10n.settingsLanguageOptionJapanese,
-              selected:
-                  !isFollowingSystem && currentLocale.languageCode == 'ja',
-              onTap: () async {
-                await notifier.setLocale(const Locale('ja'));
-                if (mounted) setState(() {});
-              },
+              selected: !isFollowingSystem && currentCode == 'ja',
+              onTap: () => notifier.setLocale(const Locale('ja')),
             ),
           ],
         ),

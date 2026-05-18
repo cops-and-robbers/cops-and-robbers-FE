@@ -195,7 +195,7 @@ class _LocalizedApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    final locale = ref.watch(appLocaleProvider);
+    final locale = ref.watch(appLocaleProvider).locale;
 
     return MaterialApp.router(
       key: ValueKey(locale.languageCode),

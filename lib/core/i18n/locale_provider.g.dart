@@ -6,7 +6,7 @@ part of 'locale_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appLocaleHash() => r'b145f4d8fa8b85cf274150cf6d62c6efc25f0664';
+String _$appLocaleHash() => r'c275539744ef9fbdf938ba5ca87e97ba6488e10d';
 
 /// 앱 로캘 상태 관리
 ///
@@ -19,15 +19,16 @@ String _$appLocaleHash() => r'b145f4d8fa8b85cf274150cf6d62c6efc25f0664';
 ///
 /// 사용 예:
 /// ```dart
-/// final locale = ref.watch(appLocaleProvider);
+/// final state = ref.watch(appLocaleProvider);
+/// final locale = state.locale;
+/// final isFollowingSystem = state.isFollowingSystem;
 /// await ref.read(appLocaleProvider.notifier).setLocale(const Locale('en'));
 /// await ref.read(appLocaleProvider.notifier).followSystem();
-/// final following = ref.read(appLocaleProvider.notifier).isFollowingSystem;
 /// ```
 ///
 /// Copied from [AppLocale].
 @ProviderFor(AppLocale)
-final appLocaleProvider = NotifierProvider<AppLocale, Locale>.internal(
+final appLocaleProvider = NotifierProvider<AppLocale, AppLocaleState>.internal(
   AppLocale.new,
   name: r'appLocaleProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -37,6 +38,6 @@ final appLocaleProvider = NotifierProvider<AppLocale, Locale>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef _$AppLocale = Notifier<Locale>;
+typedef _$AppLocale = Notifier<AppLocaleState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -566,20 +566,20 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// `lookupAppLocalizations`로 sync 변환한다. 배너는 자동 해제되므로
   /// 변환 후 locale이 바뀌어도 stale 메시지는 곧 사라진다.
   String _localizeGameEvent(String key, [List<Object?>? args]) {
-    final locale = ref.read(appLocaleProvider);
+    final locale = ref.read(appLocaleProvider).locale;
     final l10n = lookupAppLocalizations(locale);
     return resolveGameEventMessage(l10n, key, args);
   }
 
   /// 닉네임 누락 시 사용하는 "경찰" 라벨 i18n
   String _localizePoliceLabel() {
-    final locale = ref.read(appLocaleProvider);
+    final locale = ref.read(appLocaleProvider).locale;
     return lookupAppLocalizations(locale).gameRoleCopLabel;
   }
 
   /// 닉네임 누락 시 사용하는 "도둑" 라벨 i18n
   String _localizeRobberLabel() {
-    final locale = ref.read(appLocaleProvider);
+    final locale = ref.read(appLocaleProvider).locale;
     return lookupAppLocalizations(locale).gameRoleRobberLabel;
   }
 

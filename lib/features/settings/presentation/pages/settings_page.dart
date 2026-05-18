@@ -178,14 +178,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               text: AppLocalizations.of(context).settingsLanguageLabel,
               subtitle: _currentLanguageDisplay(),
               trailing: _buildForwardArrow(),
-              onTap: () async {
-                await Navigator.of(context).push(
+              onTap: () {
+                Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const LanguageSettingsPage(),
                   ),
                 );
-                // 페이지에서 돌아온 후 subtitle 갱신 (isFollowingSystem은 watch 불가)
-                if (mounted) setState(() {});
+                // subtitle은 _currentLanguageDisplay()가 appLocaleProvider를 watch하므로 자동 갱신
               },
             ),
             SizedBox(height: AppSpacing.vertical4),
@@ -254,15 +253,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   /// 설정 메뉴 subtitle용 현재 언어 표시 문자열
   ///
   /// "시스템 따름" / "한국어" / "English" / "日本語" 중 하나 반환
-  /// isFollowingSystem은 notifier 내부 상태라 watch 불가 — read로 일회성 조회
   String _currentLanguageDisplay() {
     final l10n = AppLocalizations.of(context);
-    final locale = ref.watch(appLocaleProvider);
-    final isFollowingSystem = ref
-        .read(appLocaleProvider.notifier)
-        .isFollowingSystem;
-    if (isFollowingSystem) return l10n.settingsLanguageOptionSystem;
-    switch (locale.languageCode) {
+    final localeState = ref.watch(appLocaleProvider);
+    if (localeState.isFollowingSystem) return l10n.settingsLanguageOptionSystem;
+    switch (localeState.locale.languageCode) {
       case 'en':
         return l10n.settingsLanguageOptionEnglish;
       case 'ja':
