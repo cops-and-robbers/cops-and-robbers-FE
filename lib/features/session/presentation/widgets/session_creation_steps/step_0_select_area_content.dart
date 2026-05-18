@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/constants/spacing_and_radius.dart';
 import '../../../../../core/widgets/buttons/zone_setting_button.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// 세션 생성 Step 0: 구역 선택 컨텐츠
 ///
@@ -85,6 +86,7 @@ class Step0SelectAreaContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isPlaygroundSet =
         playgroundCenter != null && playgroundRadiusMeters != null;
 
@@ -94,7 +96,7 @@ class Step0SelectAreaContent extends StatelessWidget {
         ZoneSettingButton(
           key: playgroundKey,
           zoneType: ZoneType.playground,
-          title: '플레이그라운드',
+          title: l10n.dialogstep0SelectAreaContentTitle,
           radiusMeters: playgroundRadiusMeters,
           onPressed: () => _onPlaygroundPressed(context),
         ),
@@ -105,7 +107,7 @@ class Step0SelectAreaContent extends StatelessWidget {
           ZoneSettingButton(
             key: prisonKey,
             zoneType: ZoneType.prison,
-            title: '감옥',
+            title: l10n.dialogstep0SelectAreaContentTitle5bc0,
             radiusMeters: prisonRadiusMeters,
             onPressed: () => _onPrisonPressed(context),
           ),

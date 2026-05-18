@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/inputs/app_slider.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// 세션 생성 Step 1: 인원 설정 컨텐츠
 ///
@@ -43,13 +44,14 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppSlider(
       key: maxParticipantsKey,
-      label: '최대 참가자',
+      label: l10n.fieldstep1ParticipantSettingsContentLabel,
       value: maxParticipants.toDouble(),
       min: 2,
       max: 50,
-      unit: '명',
+      unit: l10n.unitPerson,
       divisions: 48, // 2~50, 1명 단위
       onChanged: (value) => onChanged(value.toInt()),
       isDarkMode: isDarkMode,

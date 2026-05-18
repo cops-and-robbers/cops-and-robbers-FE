@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -32,6 +33,7 @@ class ArrestLockOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Positioned.fill(
       child: Container(
         // 배경: black 40% 반투명 딤 처리
@@ -40,53 +42,52 @@ class ArrestLockOverlay extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 중앙 모달 카드: 320 x 304, black
+              // 중앙 모달 카드: width 320 고정, height는 내용에 맞춤
+              // 고정 높이를 두면 영어/일본어처럼 줄바꿈 횟수가 늘어나는 로케일에서
+              // 본문과 하단 버튼이 충돌해 overflow가 발생함 → 다국어 대응 위해 내용 기반 자동 확장
               Container(
                 width: 320.w,
-                height: 304.h,
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 24.h),
                 decoration: BoxDecoration(
                   color: AppColors.black,
                   borderRadius: BorderRadius.circular(16.r),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // 아바타 + 텍스트
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // 도둑 수감 캐릭터 — 스킨 default 고정
-                        // (다른 참가자 카드에도 동일하게 jailed 상태가 표시되므로 본인 오버레이도 동일 에셋 사용)
-                        SizedBox(
-                          width: 92.w,
-                          height: 108.h,
-                          child: SvgPicture.asset(
-                            characterAssetPath(team: 'robber', state: 'jailed'),
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        SizedBox(height: 20.h),
-                        Text(
-                          '체포되었어요!',
-                          style: AppTextStyles.robberHeading.copyWith(
-                            color: AppColors.white,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          '체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!',
-                          style: AppTextStyles.paragraph_14.copyWith(
-                            color: AppColors.black400,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                    // 도둑 수감 캐릭터 — 스킨 default 고정
+                    // (다른 참가자 카드에도 동일하게 jailed 상태가 표시되므로 본인 오버레이도 동일 에셋 사용)
+                    SizedBox(
+                      width: 92.w,
+                      height: 108.h,
+                      child: SvgPicture.asset(
+                        characterAssetPath(team: 'robber', state: 'jailed'),
+                        fit: BoxFit.contain,
+                      ),
                     ),
+                    SizedBox(height: 20.h),
+                    Text(
+                      l10n.gameArrestOverlayTitle,
+                      style: AppTextStyles.robberHeading.copyWith(
+                        color: AppColors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      l10n.gameArrestOverlayMessage,
+                      style: AppTextStyles.paragraph_14.copyWith(
+                        color: AppColors.black400,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    // 본문 ↔ 버튼 사이 명시적 간격 (이전 spaceBetween 대체)
+                    SizedBox(height: 24.h),
 
                     // 탈옥 완료 버튼: 288 x 48, green
                     AppButton(
-                      text: '탈옥 완료',
+                      text: l10n.gameArrestOverlayEscapeCompleteButton,
                       width: 288.w,
                       height: 48.h,
                       borderRadius: AppRadius.medium,
@@ -97,9 +98,9 @@ class ArrestLockOverlay extends ConsumerWidget {
                       onPressed: () {
                         GameActionModal.show(
                           context: context,
-                          title: '탈옥',
-                          message: '탈옥하시겠습니까?',
-                          confirmLabel: '탈옥',
+                          title: l10n.buttonEscape,
+                          message: l10n.dialogEscapeAttemptMessage,
+                          confirmLabel: l10n.buttonEscape,
                           isDarkMode: true,
                           onConfirm: () => ref
                               .read(gameEventNotifierProvider.notifier)

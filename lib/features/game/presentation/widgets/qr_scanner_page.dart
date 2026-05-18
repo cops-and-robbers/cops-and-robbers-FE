@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -55,12 +56,13 @@ class _QrScannerPageState<T> extends State<QrScannerPage<T>> {
   }
 
   void _showPermissionDeniedDialog() {
+    final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
-      title: '카메라 권한 필요',
-      message: 'QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요.',
-      confirmText: '설정으로 이동',
-      cancelText: '닫기',
+      title: l10n.dialogCameraPermissionTitle,
+      message: l10n.dialogCameraPermissionMessage,
+      confirmText: l10n.buttonGoToSettings,
+      cancelText: l10n.buttonClose,
       onConfirm: () => AppSettings.openAppSettings(),
     );
   }
@@ -87,7 +89,7 @@ class _QrScannerPageState<T> extends State<QrScannerPage<T>> {
               }
               return Center(
                 child: Text(
-                  '카메라를 사용할 수 없습니다',
+                  AppLocalizations.of(context).errorCameraUnavailable,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: AppColors.white,
                   ),

@@ -28,7 +28,17 @@ LobbyStompDatasource lobbyStompDatasource(Ref ref) {
 /// 로비 상태
 class LobbyState {
   final StompConnectionState connectionState;
+
+  /// 사용자 노출 메시지 (i18n 미적용 폴백 — 한국어).
+  ///
+  /// UI 레이어에서는 [errorMessageKey]가 있으면 우선 사용하고,
+  /// 없거나 알 수 없는 키이면 이 값을 표시한다.
   final String? errorMessage;
+
+  /// i18n 메시지 키 — UI 레이어에서 [AppLocalizations]로 변환.
+  ///
+  /// Notifier는 BuildContext를 갖지 않으므로 키만 노출한다.
+  final String? errorMessageKey;
 
   /// 마지막으로 수신한 이벤트 (UI 업데이트용)
   final LobbyEventDto? lastEvent;
@@ -36,12 +46,14 @@ class LobbyState {
   const LobbyState({
     this.connectionState = StompConnectionState.disconnected,
     this.errorMessage,
+    this.errorMessageKey,
     this.lastEvent,
   });
 
   LobbyState copyWith({
     StompConnectionState? connectionState,
     Object? errorMessage = _sentinel,
+    Object? errorMessageKey = _sentinel,
     Object? lastEvent = _sentinel,
   }) {
     return LobbyState(
@@ -49,6 +61,9 @@ class LobbyState {
       errorMessage: errorMessage == _sentinel
           ? this.errorMessage
           : errorMessage as String?,
+      errorMessageKey: errorMessageKey == _sentinel
+          ? this.errorMessageKey
+          : errorMessageKey as String?,
       lastEvent: lastEvent == _sentinel
           ? this.lastEvent
           : lastEvent as LobbyEventDto?,
@@ -137,6 +152,7 @@ class LobbyNotifier extends _$LobbyNotifier {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다.',
+        errorMessageKey: 'errorAuthTokenMissing',
       );
       return;
     }
@@ -185,6 +201,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         state = state.copyWith(
           connectionState: StompConnectionState.error,
           errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+          errorMessageKey: 'errorServerUnreachable',
         );
         _intentionalDisconnect = false; // 수동 재연결(manualReconnect)은 허용
       } catch (_) {
@@ -240,7 +257,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         _isHandlingError = false;
         _reconnectTimer?.cancel();
         _reconnectTimer = null;
-        state = state.copyWith(errorMessage: null);
+        state = state.copyWith(errorMessage: null, errorMessageKey: null);
       } else if (connState == StompConnectionState.disconnected) {
         // 예기치 않은 연결 종료 → 재연결 시도
         if (!_intentionalDisconnect && !_isHandlingError) {
@@ -317,6 +334,7 @@ class LobbyNotifier extends _$LobbyNotifier {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+        errorMessageKey: 'errorServerUnreachable',
       );
       return;
     }
@@ -379,6 +397,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         state = state.copyWith(
           connectionState: StompConnectionState.error,
           errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
+          errorMessageKey: 'errorAuthExpired',
         );
         return;
       }
@@ -397,6 +416,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         state = state.copyWith(
           connectionState: StompConnectionState.error,
           errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
+          errorMessageKey: 'errorAuthExpired',
         );
         return;
       }

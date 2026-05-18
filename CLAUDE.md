@@ -14,6 +14,8 @@ Flutter 3.9.2+ / Feature-First + Clean Architecture / Riverpod·Freezed·Retrofi
 - **답변은 항상 한국어** — 코드/커맨드 제외 모두 한국어
 - **모르면 모른다고** — 확실하지 않은 내용은 추측하지 않는다
 - **실무 수준 한국어 주석** — WHY 중심, 과하지 않게
+- **UI 텍스트 한국어 하드코딩 금지** — 사용자에게 보이는 모든 문자열은 `lib/l10n/app_*.arb`에 추가 후 `AppLocalizations.of(context).keyName`으로 사용한다. 단, debugPrint/AppLogger/주석/assert 메시지는 한국어 허용 — [10_I18N_GUIDE.md](.claude/rules/10_I18N_GUIDE.md)
+- **자동 생성 i18n 파일 직접 편집 금지** — `lib/l10n/app_localizations*.dart`는 ARB에서 생성. 수정은 ARB만, 코드는 `flutter gen-l10n` 으로 재생성
 
 ---
 
@@ -22,10 +24,12 @@ Flutter 3.9.2+ / Feature-First + Clean Architecture / Riverpod·Freezed·Retrofi
 ```bash
 flutter pub get                                                  # 의존성
 dart run build_runner build --delete-conflicting-outputs         # 코드 생성 (필수)
+flutter gen-l10n                                                 # i18n ARB → AppLocalizations 생성
 flutter test && flutter analyze                                  # 테스트 / 린트
 ```
 
 **코드 생성 실행 시점**: `@riverpod`·`@freezed`·`@RestApi`·`@JsonSerializable` 추가/수정 후, `.g.dart`·`.freezed.dart` 누락 시, "generated file not found" 에러 시
+**i18n 생성 실행 시점**: `lib/l10n/app_*.arb` 추가/수정 후 (hot reload로는 반영 안 됨)
 
 ---
 
@@ -39,6 +43,7 @@ flutter test && flutter analyze                                  # 테스트 / �
 - [06_API_INTEGRATION_GUIDE.md](.claude/rules/06_API_INTEGRATION_GUIDE.md) — API 연동 절차
 - [08_TIMER_ARCHITECTURE.md](.claude/rules/08_TIMER_ARCHITECTURE.md) — 타이머 아키텍처
 - [09_REALTIME_COMMUNICATION_SPEC.md](.claude/rules/09_REALTIME_COMMUNICATION_SPEC.md) — WebSocket STOMP 이벤트
+- [10_I18N_GUIDE.md](.claude/rules/10_I18N_GUIDE.md) — **i18n 워크플로 (필수)**: ARB 관리, AppLocalizations 사용, Notifier/Exception 패턴, gen-l10n
 - [Agents.md](.claude/rules/Agents.md) — **테스트 작성 룰 (최우선)**: Classist 스타일, 시스템 경계만 모킹, PR Red Flags
 - [Design.md](.claude/rules/Design.md) — 디자인 패턴 (아키텍처 레벨)
 - [UI_Design_System.md](.claude/rules/UI_Design_System.md) — UI 시스템: AppColors·AppTextStyles·팀 테마
@@ -53,6 +58,7 @@ flutter test && flutter analyze                                  # 테스트 / �
 - **컬러/타이포**: `AppColors`·`AppTextStyles` 직접 참조, `Theme.of(context)` 미사용 — [UI_Design_System.md](.claude/rules/UI_Design_System.md)
 - **팀 테마**: `roleThemeProvider` + `isDarkMode` prop 전파 (시스템 다크모드 아님)
 - **Retrofit 버전 고정**: `retrofit: 4.7.3` (4.9.x는 `ParseErrorLogger` 시그니처 충돌)
+- **i18n**: 지원 로케일 `ko/en/ja` (ISO 639-1). ARB 정본 (`lib/l10n/app_*.arb`), 코드 자동 생성. Widget은 `AppLocalizations.of(context).key`, Notifier·Exception은 `messageKey` + `lookupAppLocalizations(locale)` 패턴 — [10_I18N_GUIDE.md](.claude/rules/10_I18N_GUIDE.md)
 
 ---
 

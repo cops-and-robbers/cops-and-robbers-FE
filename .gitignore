@@ -79,3 +79,6 @@ docs/superpowers/
 
 # 임시 공지사항 페이로드 (백오피스 입력용, 커밋 대상 아님)
 docs/notices/
+
+# flutter gen-l10n 부산물 — 누락 번역 추적용, 빌드마다 자동 재생성
+docs/i18n/untranslated.txt

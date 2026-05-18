@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,7 +46,9 @@ class SplashPage extends ConsumerStatefulWidget {
 
 class _SplashPageState extends ConsumerState<SplashPage> {
   bool _isReconnecting = false;
-  String _reconnectMessage = '다시 현장으로 복귀 중...';
+  // 실제 값은 LoadingMessageService.getMessage()로 채워지므로 nullable 초기화
+  // (build() 시 l10n.splashReturningToScene으로 폴백)
+  String? _reconnectMessage;
 
   /// 오프라인 차단 상태
   /// 네트워크 미연결 감지 시 true가 되며, 외부 API 호출을 차단한다.
@@ -203,16 +206,15 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         }
 
         // 재참여 상황 → LoadingPage 전환 후 이동
-        final message = await LoadingMessageService.getMessage(
+        if (!mounted) return;
+        final message = LoadingMessageService.getMessage(
+          context,
           LoadingCategory.reconnect,
-          fallback: '다시 현장으로 복귀 중...',
         );
-        if (mounted) {
-          setState(() {
-            _reconnectMessage = message;
-            _isReconnecting = true;
-          });
-        }
+        setState(() {
+          _reconnectMessage = message;
+          _isReconnecting = true;
+        });
         await Future.delayed(const Duration(milliseconds: 300));
         if (!mounted) return;
 
@@ -326,7 +328,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (mounted && _isOffline) {
       AppSnackbar.show(
         context,
-        message: '아직 네트워크에 연결되지 않았어요',
+        message: AppLocalizations.of(context).errorNetworkNotConnected,
         backgroundColor: AppColors.red,
       );
     }
@@ -345,11 +347,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   ///
   /// 모달의 "재시도" 버튼을 누르면 [_navigateToNextScreen]을 처음부터 재실행합니다.
   Future<void> _showNetworkErrorDialog() async {
+    final l10n = AppLocalizations.of(context);
     await AppDialog.show(
       context: context,
-      title: '네트워크 연결 실패',
-      message: '인터넷 연결을 확인한 후\n다시 시도해주세요',
-      confirmText: '재시도',
+      title: l10n.dialogNetworkConnectionFailedTitle,
+      message: l10n.dialogSplashOfflineMessage,
+      confirmText: l10n.buttonRetry,
       barrierDismissible: false,
       onConfirm: () {
         if (mounted) _navigateToNextScreen();
@@ -388,11 +391,15 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_isOffline) {
       return _buildOfflineView(context);
     }
     if (_isReconnecting) {
-      return LoadingPage(message: _reconnectMessage, subtitle: '잠시만 기다려주세요');
+      return LoadingPage(
+        message: _reconnectMessage ?? l10n.splashReturningToScene,
+        subtitle: l10n.splashPleaseWait,
+      );
     }
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -409,7 +416,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
               ),
             ),
             Text(
-              'by 동심지키미',
+              l10n.splashCreditTag,
               style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
             ),
             SizedBox(height: AppSpacing.vertical24),
@@ -421,6 +428,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
   /// 오프라인 상태 인라인 UI.
   Widget _buildOfflineView(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -441,13 +449,13 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                       ),
                       SizedBox(height: AppSpacing.vertical24),
                       Text(
-                        '인터넷 연결이 필요합니다',
+                        l10n.splashOfflineTitle,
                         style: AppTextStyles.heading_20,
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: AppSpacing.vertical16),
                       Text(
-                        '연결 상태를 확인한 후\n다시 시도해주세요',
+                        l10n.splashOfflineMessage,
                         style: AppTextStyles.paragraph_14.copyWith(
                           color: AppColors.black600,
                         ),
@@ -458,7 +466,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                 ),
               ),
               AppButton(
-                text: '다시 시도',
+                text: l10n.buttonRetry,
                 onPressed: _onManualRetry,
                 showBorder: false,
               ),

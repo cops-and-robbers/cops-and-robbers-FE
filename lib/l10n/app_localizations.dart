@@ -1,0 +1,3377 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_en.dart';
+import 'app_localizations_ja.dart';
+import 'app_localizations_ko.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('ja'),
+    Locale('ko'),
+  ];
+
+  /// 앱 이름 (MaterialApp.title) — i18n 스모크 테스트용 첫 키
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰과도둑'**
+  String get appTitle;
+
+  /// 법적 문서 페이지 상단 고지문 — 한국어 원본만 제공함을 비-ko 로케일에 안내 (ko는 빈 문자열 → 미표시)
+  ///
+  /// In ko, this message translates to:
+  /// **''**
+  String get legalDocumentKoreanOnlyNotice;
+
+  /// auto-imported from lib/core/services/loading_message_service.dart:49
+  ///
+  /// In ko, this message translates to:
+  /// **'처리 중...'**
+  String get loadingDefault;
+
+  /// auto-imported from lib/core/services/permission/location_permission_messages.dart:48
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한 안내'**
+  String get permissionLocationFallbackTitle;
+
+  /// auto-imported from lib/core/services/permission/location_permission_messages.dart:49
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한을 허용해주세요'**
+  String get permissionLocationFallbackMessage;
+
+  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:53
+  ///
+  /// In ko, this message translates to:
+  /// **'새 버전 안내'**
+  String get dialogUpdateOptionalTitle;
+
+  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:54
+  ///
+  /// In ko, this message translates to:
+  /// **'더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?'**
+  String get dialogUpdateOptionalMessage;
+
+  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:55
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트'**
+  String get dialogUpdateOptionalConfirm;
+
+  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:56
+  ///
+  /// In ko, this message translates to:
+  /// **'나중에'**
+  String get dialogUpdateOptionalCancel;
+
+  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:68
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트 안내'**
+  String get dialogUpdateMandatoryTitle;
+
+  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:69
+  ///
+  /// In ko, this message translates to:
+  /// **'새로운 버전이 출시되었어요.\n업데이트하시겠어요?'**
+  String get dialogUpdateMandatoryMessage;
+
+  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:70
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트'**
+  String get dialogUpdateMandatoryConfirm;
+
+  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:71
+  ///
+  /// In ko, this message translates to:
+  /// **'나중에'**
+  String get dialogUpdateMandatoryCancel;
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:11
+  ///
+  /// In ko, this message translates to:
+  /// **'제한 시간은 {minutes}분입니다'**
+  String chatSystemGameStartTime(int minutes);
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:14
+  ///
+  /// In ko, this message translates to:
+  /// **'잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!'**
+  String get chatSystemGameStartReady;
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:17
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다'**
+  String get chatSystemGameStartReportTip;
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:20
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시작!  행운을 빕니다!'**
+  String get chatSystemGameStartGo;
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:25
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!'**
+  String get chatSystemPoliceMoveWarning;
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:28
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 출동!  도둑은 도망치세요!'**
+  String get chatSystemPoliceMove;
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:33
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 도둑의 위치가 공개됩니다!'**
+  String get chatSystemLocationReveal;
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:36
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 {count}명 도주 중!'**
+  String chatSystemRemainingRobbers(int count);
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:42
+  ///
+  /// In ko, this message translates to:
+  /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!'**
+  String chatSystemArrest(String policeNickname, String robberNickname);
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:47
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑이 탈옥했습니다! 지금 바로 체포하세요!'**
+  String get chatSystemEscapeNotice;
+
+  /// auto-imported from lib/core/constants/game_event_messages.dart:52
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!'**
+  String get chatSystemFiveMinutesLeft;
+
+  /// auto-imported from lib/core/network/dio_exception_handler.dart:41
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 연결 시간이 초과되었습니다'**
+  String get errorNetworkTimeout;
+
+  /// auto-imported from lib/core/network/dio_exception_handler.dart:49
+  ///
+  /// In ko, this message translates to:
+  /// **'네트워크 연결을 확인하세요'**
+  String get errorNetworkOffline;
+
+  /// auto-imported from lib/core/network/dio_exception_handler.dart:63
+  ///
+  /// In ko, this message translates to:
+  /// **'서버에 문제가 발생했습니다'**
+  String get errorServerInternal;
+
+  /// auto-imported from lib/core/network/dio_exception_handler.dart:71
+  ///
+  /// In ko, this message translates to:
+  /// **'잘못된 요청입니다'**
+  String get errorBadRequest;
+
+  /// auto-imported from lib/core/network/dio_exception_handler.dart:76
+  ///
+  /// In ko, this message translates to:
+  /// **'인증에 실패했습니다'**
+  String get errorUnauthorized;
+
+  /// auto-imported from lib/core/network/dio_exception_handler.dart:81
+  ///
+  /// In ko, this message translates to:
+  /// **'접근 권한이 없습니다'**
+  String get errorForbidden;
+
+  /// auto-imported from lib/core/network/dio_exception_handler.dart:86
+  ///
+  /// In ko, this message translates to:
+  /// **'요청한 리소스를 찾을 수 없습니다'**
+  String get errorNotFound;
+
+  /// auto-imported from lib/core/network/dio_exception_handler.dart:91
+  ///
+  /// In ko, this message translates to:
+  /// **'요청이 현재 상태와 충돌합니다'**
+  String get errorConflict;
+
+  /// auto-imported from lib/core/widgets/dialogs/app_dialog.dart:79
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get buttonConfirm;
+
+  /// auto-imported from lib/core/widgets/dialogs/app_dialog.dart:267
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get buttonCancel;
+
+  /// auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:158
+  ///
+  /// In ko, this message translates to:
+  /// **'연결이 끊어졌어요. 재연결이 필요해요'**
+  String get dialogReconnectMessage;
+
+  /// auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 중...'**
+  String get dialogReconnectButtonConnecting;
+
+  /// auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169
+  ///
+  /// In ko, this message translates to:
+  /// **'재연결'**
+  String get dialogReconnectButtonRetry;
+
+  /// auto-imported from lib/core/widgets/pages/force_update_page.dart:41
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트 필요'**
+  String get pageForceUpdateTitle;
+
+  /// auto-imported from lib/core/widgets/pages/force_update_page.dart:49
+  ///
+  /// In ko, this message translates to:
+  /// **'새로운 버전이 출시되었어요\n업데이트 후 이용해 주세요!'**
+  String get pageForceUpdateMessage;
+
+  /// auto-imported from lib/core/widgets/pages/force_update_page.dart:60
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트'**
+  String get pageForceUpdateButton;
+
+  /// auto-imported from lib/core/widgets/pages/maintenance_page.dart:39
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 점검 중'**
+  String get pageMaintenanceTitle;
+
+  /// auto-imported from lib/core/widgets/pages/maintenance_page.dart:47
+  ///
+  /// In ko, this message translates to:
+  /// **'더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!'**
+  String get pageMaintenanceMessage;
+
+  /// auto-imported from lib/core/widgets/buttons/social_login_button.dart:39
+  ///
+  /// In ko, this message translates to:
+  /// **'Google로 시작하기'**
+  String get buttonGoogleSignIn;
+
+  /// auto-imported from lib/core/widgets/buttons/social_login_button.dart:86
+  ///
+  /// In ko, this message translates to:
+  /// **'Apple로 시작하기'**
+  String get buttonAppleSignIn;
+
+  /// 구역 정보 — 반경 (km 단위)
+  ///
+  /// In ko, this message translates to:
+  /// **'반경 {km}km'**
+  String zoneRadiusKm(String km);
+
+  /// auto-imported from lib/core/widgets/buttons/zone_setting_button.dart:131
+  ///
+  /// In ko, this message translates to:
+  /// **'반경 {radiusMeters}m'**
+  String zoneRadiusMeter(String radiusMeters);
+
+  /// auto-imported from lib/core/widgets/map/zone_setting_widget.dart:364
+  ///
+  /// In ko, this message translates to:
+  /// **'반경'**
+  String get zoneRadiusLabel;
+
+  /// auto-imported from lib/core/utils/agreement_error_handler.dart:15
+  ///
+  /// In ko, this message translates to:
+  /// **'필수 약관 미동의'**
+  String get dialogAgreementRequiredTermsTitle;
+
+  /// auto-imported from lib/core/errors/app_exception.dart:57
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인이 취소되었습니다'**
+  String get errorAuthLoginCancelled;
+
+  /// 설정 화면의 언어 설정 메뉴 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'언어'**
+  String get settingsLanguageLabel;
+
+  /// 언어 메뉴 부제 (서브타이틀)
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 표시 언어를 변경할 수 있어요'**
+  String get settingsLanguageSubtitle;
+
+  /// 언어 설정 페이지 AppBar 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'언어 선택'**
+  String get settingsLanguagePageTitle;
+
+  /// 언어 옵션: 단말 시스템 로캘 추종
+  ///
+  /// In ko, this message translates to:
+  /// **'시스템'**
+  String get settingsLanguageOptionSystem;
+
+  /// 언어 옵션: 한국어 — 모든 로캘에서 자국어 표기 유지
+  ///
+  /// In ko, this message translates to:
+  /// **'한국어'**
+  String get settingsLanguageOptionKorean;
+
+  /// 언어 옵션: 영어 — 모든 로캘에서 자국어 표기 유지
+  ///
+  /// In ko, this message translates to:
+  /// **'English'**
+  String get settingsLanguageOptionEnglish;
+
+  /// 언어 옵션: 일본어 — 모든 로캘에서 자국어 표기 유지
+  ///
+  /// In ko, this message translates to:
+  /// **'日本語'**
+  String get settingsLanguageOptionJapanese;
+
+  /// auto-imported from assets/messages/loading_messages.json :: join_room.0
+  ///
+  /// In ko, this message translates to:
+  /// **'잠입 준비 중...'**
+  String get asset_loading_joinRoom;
+
+  /// auto-imported from assets/messages/loading_messages.json :: join_room.1
+  ///
+  /// In ko, this message translates to:
+  /// **'작전에 합류하는 중...'**
+  String get asset_loading_joinRoom477c;
+
+  /// auto-imported from assets/messages/loading_messages.json :: join_room.2
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀 통로로 진입 중...'**
+  String get asset_loading_joinRoom24a9;
+
+  /// auto-imported from assets/messages/loading_messages.json :: join_room.3
+  ///
+  /// In ko, this message translates to:
+  /// **'변장 확인 중...'**
+  String get asset_loading_joinRoomCb98;
+
+  /// auto-imported from assets/messages/loading_messages.json :: join_room.4
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 투입 인원 확인 중...'**
+  String get asset_loading_joinRoomF964;
+
+  /// auto-imported from assets/messages/loading_messages.json :: join_room.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_joinRoomB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: join_room.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_joinRoomAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: join_room.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_joinRoom25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: create_room.0
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 본부 설치 중...'**
+  String get asset_loading_createRoom;
+
+  /// auto-imported from assets/messages/loading_messages.json :: create_room.1
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀 아지트 준비 중...'**
+  String get asset_loading_createRoomF1fe;
+
+  /// auto-imported from assets/messages/loading_messages.json :: create_room.2
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 구역 확보 중...'**
+  String get asset_loading_createRoom01f8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: create_room.3
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀 지도 펼치는 중...'**
+  String get asset_loading_createRoom5076;
+
+  /// auto-imported from assets/messages/loading_messages.json :: create_room.4
+  ///
+  /// In ko, this message translates to:
+  /// **'무전기 주파수 맞추는 중...'**
+  String get asset_loading_createRoomDd9e;
+
+  /// auto-imported from assets/messages/loading_messages.json :: create_room.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_createRoomB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: create_room.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_createRoomAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: create_room.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_createRoom25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: change_team.0
+  ///
+  /// In ko, this message translates to:
+  /// **'변장 중...'**
+  String get asset_loading_changeTeam;
+
+  /// auto-imported from assets/messages/loading_messages.json :: change_team.1
+  ///
+  /// In ko, this message translates to:
+  /// **'위장 신분 변경 중...'**
+  String get asset_loading_changeTeam681d;
+
+  /// auto-imported from assets/messages/loading_messages.json :: change_team.2
+  ///
+  /// In ko, this message translates to:
+  /// **'신분 세탁 중...'**
+  String get asset_loading_changeTeam1106;
+
+  /// auto-imported from assets/messages/loading_messages.json :: change_team.3
+  ///
+  /// In ko, this message translates to:
+  /// **'이중 스파이 전환 중...'**
+  String get asset_loading_changeTeam4d7a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: change_team.4
+  ///
+  /// In ko, this message translates to:
+  /// **'새 신분증 발급 중...'**
+  String get asset_loading_changeTeam4cdc;
+
+  /// auto-imported from assets/messages/loading_messages.json :: change_team.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_changeTeamB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: change_team.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_changeTeamAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: change_team.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_changeTeam25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: start_game.0
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 개시 준비 중...'**
+  String get asset_loading_startGame;
+
+  /// auto-imported from assets/messages/loading_messages.json :: start_game.1
+  ///
+  /// In ko, this message translates to:
+  /// **'출동 준비 중...'**
+  String get asset_loading_startGameA35d;
+
+  /// auto-imported from assets/messages/loading_messages.json :: start_game.2
+  ///
+  /// In ko, this message translates to:
+  /// **'카운트다운 시작...'**
+  String get asset_loading_startGame64c3;
+
+  /// auto-imported from assets/messages/loading_messages.json :: start_game.3
+  ///
+  /// In ko, this message translates to:
+  /// **'무전기 켜는 중...'**
+  String get asset_loading_startGame7a2f;
+
+  /// auto-imported from assets/messages/loading_messages.json :: start_game.4
+  ///
+  /// In ko, this message translates to:
+  /// **'현장 요원 배치 중...'**
+  String get asset_loading_startGame1b41;
+
+  /// auto-imported from assets/messages/loading_messages.json :: start_game.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_startGameB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: start_game.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_startGameAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: start_game.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_startGame25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: update_area.0
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 구역 설정 중...'**
+  String get asset_loading_updateArea;
+
+  /// auto-imported from assets/messages/loading_messages.json :: update_area.1
+  ///
+  /// In ko, this message translates to:
+  /// **'관할 구역 지정 중...'**
+  String get asset_loading_updateArea8c32;
+
+  /// auto-imported from assets/messages/loading_messages.json :: update_area.2
+  ///
+  /// In ko, this message translates to:
+  /// **'지도 위에 점 찍는 중...'**
+  String get asset_loading_updateArea0183;
+
+  /// auto-imported from assets/messages/loading_messages.json :: update_area.3
+  ///
+  /// In ko, this message translates to:
+  /// **'위성 사진 분석 중...'**
+  String get asset_loading_updateArea2433;
+
+  /// auto-imported from assets/messages/loading_messages.json :: update_area.4
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 범위 계산 중...'**
+  String get asset_loading_updateAreaDc8b;
+
+  /// auto-imported from assets/messages/loading_messages.json :: update_area.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_updateAreaB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: update_area.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_updateAreaAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: update_area.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_updateArea25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: save_settings.0
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 지침 수정 중...'**
+  String get asset_loading_saveSettings;
+
+  /// auto-imported from assets/messages/loading_messages.json :: save_settings.1
+  ///
+  /// In ko, this message translates to:
+  /// **'규칙 업데이트 중...'**
+  String get asset_loading_saveSettingsFb58;
+
+  /// auto-imported from assets/messages/loading_messages.json :: save_settings.2
+  ///
+  /// In ko, this message translates to:
+  /// **'새로운 룰 적용 중...'**
+  String get asset_loading_saveSettings65dc;
+
+  /// auto-imported from assets/messages/loading_messages.json :: save_settings.3
+  ///
+  /// In ko, this message translates to:
+  /// **'암호 변경 중...'**
+  String get asset_loading_saveSettings5e80;
+
+  /// auto-imported from assets/messages/loading_messages.json :: save_settings.4
+  ///
+  /// In ko, this message translates to:
+  /// **'새 작전 코드 적용 중...'**
+  String get asset_loading_saveSettings128d;
+
+  /// auto-imported from assets/messages/loading_messages.json :: save_settings.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_saveSettingsB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: save_settings.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_saveSettingsAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: save_settings.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_saveSettings25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: load_profile.0
+  ///
+  /// In ko, this message translates to:
+  /// **'신원 조회 중...'**
+  String get asset_loading_loadProfile;
+
+  /// auto-imported from assets/messages/loading_messages.json :: load_profile.1
+  ///
+  /// In ko, this message translates to:
+  /// **'수배서 확인 중...'**
+  String get asset_loading_loadProfile27ee;
+
+  /// auto-imported from assets/messages/loading_messages.json :: load_profile.2
+  ///
+  /// In ko, this message translates to:
+  /// **'신분증 검사 중...'**
+  String get asset_loading_loadProfile6dac;
+
+  /// auto-imported from assets/messages/loading_messages.json :: load_profile.3
+  ///
+  /// In ko, this message translates to:
+  /// **'지문 대조 중...'**
+  String get asset_loading_loadProfile23c6;
+
+  /// auto-imported from assets/messages/loading_messages.json :: load_profile.4
+  ///
+  /// In ko, this message translates to:
+  /// **'용의자 프로필 분석 중...'**
+  String get asset_loading_loadProfile221d;
+
+  /// auto-imported from assets/messages/loading_messages.json :: load_profile.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_loadProfileB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: load_profile.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_loadProfileAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: load_profile.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_loadProfile25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: logout.0
+  ///
+  /// In ko, this message translates to:
+  /// **'철수 중...'**
+  String get asset_loading_logout;
+
+  /// auto-imported from assets/messages/loading_messages.json :: logout.1
+  ///
+  /// In ko, this message translates to:
+  /// **'잠적 중...'**
+  String get asset_loading_logout3031;
+
+  /// auto-imported from assets/messages/logout_messages.json :: logout.2
+  ///
+  /// In ko, this message translates to:
+  /// **'흔적 지우는 중...'**
+  String get asset_loading_logoutCe40;
+
+  /// auto-imported from assets/messages/loading_messages.json :: logout.3
+  ///
+  /// In ko, this message translates to:
+  /// **'증거 인멸 중...'**
+  String get asset_loading_logout0ba9;
+
+  /// auto-imported from assets/messages/loading_messages.json :: logout.4
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀 통로로 탈출 중...'**
+  String get asset_loading_logoutFc0d;
+
+  /// auto-imported from assets/messages/loading_messages.json :: logout.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_logoutB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: logout.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_logoutAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: logout.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_logout25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: delete_account.0
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리 중...'**
+  String get asset_loading_deleteAccount;
+
+  /// auto-imported from assets/messages/loading_messages.json :: delete_account.1
+  ///
+  /// In ko, this message translates to:
+  /// **'기록 말소 중...'**
+  String get asset_loading_deleteAccountC5fd;
+
+  /// auto-imported from assets/messages/loading_messages.json :: delete_account.2
+  ///
+  /// In ko, this message translates to:
+  /// **'신원 삭제 중...'**
+  String get asset_loading_deleteAccount517f;
+
+  /// auto-imported from assets/messages/loading_messages.json :: reconnect.0
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 현장으로 복귀 중...'**
+  String get asset_loading_reconnect;
+
+  /// auto-imported from assets/messages/loading_messages.json :: reconnect.1
+  ///
+  /// In ko, this message translates to:
+  /// **'작전에 재합류하는 중...'**
+  String get asset_loading_reconnectBa5f;
+
+  /// auto-imported from assets/messages/loading_messages.json :: reconnect.2
+  ///
+  /// In ko, this message translates to:
+  /// **'현장 복귀 준비 중...'**
+  String get asset_loading_reconnect098b;
+
+  /// auto-imported from assets/messages/loading_messages.json :: reconnect.3
+  ///
+  /// In ko, this message translates to:
+  /// **'무전 채널 복구 중...'**
+  String get asset_loading_reconnect429b;
+
+  /// auto-imported from assets/messages/loading_messages.json :: reconnect.4
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀 주파수 재탐색 중...'**
+  String get asset_loading_reconnect6b88;
+
+  /// auto-imported from assets/messages/loading_messages.json :: reconnect.5
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_reconnectB36a;
+
+  /// auto-imported from assets/messages/loading_messages.json :: reconnect.6
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_reconnectAaf8;
+
+  /// auto-imported from assets/messages/loading_messages.json :: reconnect.7
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_reconnect25aa;
+
+  /// auto-imported from assets/messages/loading_messages.json :: bug_report.0
+  ///
+  /// In ko, this message translates to:
+  /// **'신고서 작성 중...'**
+  String get asset_loading_bugReport;
+
+  /// auto-imported from assets/messages/loading_messages.json :: bug_report.1
+  ///
+  /// In ko, this message translates to:
+  /// **'본부에 보고서 제출 중...'**
+  String get asset_loading_bugReportDd4b;
+
+  /// auto-imported from assets/messages/loading_messages.json :: bug_report.2
+  ///
+  /// In ko, this message translates to:
+  /// **'현장 사진 첨부 중...'**
+  String get asset_loading_bugReport5d70;
+
+  /// auto-imported from assets/messages/loading_messages.json :: bug_report.3
+  ///
+  /// In ko, this message translates to:
+  /// **'사건 번호 부여 중...'**
+  String get asset_loading_bugReport3c49;
+
+  /// auto-imported from assets/messages/loading_messages.json :: bug_report.4
+  ///
+  /// In ko, this message translates to:
+  /// **'수사반에 인계 중...'**
+  String get asset_loading_bugReport83ca;
+
+  /// auto-imported from assets/messages/location_permission_messages.json :: service_disabled.title
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 서비스가 꺼져 있습니다'**
+  String get asset_locationpermission_serviceDisabledTitle;
+
+  /// auto-imported from assets/messages/location_permission_messages.json :: service_disabled.home
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요'**
+  String get asset_locationpermission_serviceDisabledHome;
+
+  /// auto-imported from assets/messages/location_permission_messages.json :: service_disabled.game
+  ///
+  /// In ko, this message translates to:
+  /// **'게임에 복귀하려면 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요'**
+  String get asset_locationpermission_serviceDisabledGame;
+
+  /// auto-imported from assets/messages/location_permission_messages.json :: service_disabled.waiting_room
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요'**
+  String get asset_locationpermission_serviceDisabledWaitingRoom;
+
+  /// auto-imported from assets/messages/location_permission_messages.json :: permission_denied.title
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한이 필요합니다'**
+  String get asset_locationpermission_permissionDeniedTitle;
+
+  /// auto-imported from assets/messages/location_permission_messages.json :: permission_denied.home
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다'**
+  String get asset_locationpermission_permissionDeniedHome;
+
+  /// auto-imported from assets/messages/location_permission_messages.json :: permission_denied.game
+  ///
+  /// In ko, this message translates to:
+  /// **'게임에 복귀하려면 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요'**
+  String get asset_locationpermission_permissionDeniedGame;
+
+  /// auto-imported from assets/messages/location_permission_messages.json :: permission_denied.waiting_room
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요'**
+  String get asset_locationpermission_permissionDeniedWaitingRoom;
+
+  /// 게임 방 생성 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 방 생성 중 예기치 않은 오류가 발생했습니다'**
+  String get errorGameRoomCreateUnexpected;
+
+  /// 참여 중인 게임 조회 실패 시 표시되는 예외 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다'**
+  String get errorActiveGameFetchUnexpected;
+
+  /// 게임 설정 — 최대 참가 인원수 표기 (단위: 명)
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명'**
+  String gameSettingMaxPlayers(String count);
+
+  /// 게임 설정 — 라운드 시간 표기 (단위: 분)
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분'**
+  String gameSettingRoundMinutes(int minutes);
+
+  /// 게임 설정 — 위치 공유 주기 표기 (단위: 분)
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분'**
+  String gameSettingLocationShareMinutes(int minutes);
+
+  /// 게임 설정 — 경찰 출동 시작 지연 시간 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 도망 후 {minutes}분 뒤'**
+  String gameSettingPoliceStartDelay(int minutes);
+
+  /// 구역 정보 — 반경 (m 단위)
+  ///
+  /// In ko, this message translates to:
+  /// **'반경 {meters}m'**
+  String zoneRadiusMeters(String meters);
+
+  /// 게임 설정 저장 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 저장에 실패했습니다'**
+  String get errorSettingsSaveFailed;
+
+  /// 게임 설정 수정 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 수정'**
+  String get pageGameSettingsEditTitle;
+
+  /// 저장 진행 중 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'저장 중...'**
+  String get buttonSaving;
+
+  /// 공통 — 저장 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get buttonSave;
+
+  /// 게임 구역 저장 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'영역 저장에 실패했습니다'**
+  String get errorAreaSaveFailed;
+
+  /// 게임 설정 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 설정'**
+  String get pageGameSettingsTitle;
+
+  /// 구역 정보 로드 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 정보를 불러올 수 없습니다'**
+  String get errorZoneInfoLoadFailed;
+
+  /// 게임 설정 로드 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 정보를 불러올 수 없습니다'**
+  String get errorSettingsLoadFailed;
+
+  /// 공통 — 플레이그라운드 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'플레이그라운드'**
+  String get zonePlayground;
+
+  /// 공통 — 감옥 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'감옥'**
+  String get zoneJail;
+
+  /// 홈 페이지 — 방 만들기 카드 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'새로운 게임을 만들 수 있어요'**
+  String get homePageCreateGameHint;
+
+  /// 홈 페이지 — 방 참여하기 카드 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 코드를 입력하면 게임에 참가할 수 있어요'**
+  String get homePageJoinGameHint;
+
+  /// 홈 진입 시 표시되는 주변 안전 확인 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'주변을 확인하며 이용해 주세요'**
+  String get dialogSafetyWarningTitle;
+
+  /// 홈 진입 시 표시되는 주변 안전 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요'**
+  String get dialogSafetyWarningMessage;
+
+  /// 주변 안전 확인 다이얼로그의 동의 버튼 ('확인했어요!')
+  ///
+  /// In ko, this message translates to:
+  /// **'확인했어요!'**
+  String get buttonAcknowledgedSurroundings;
+
+  /// 홈 페이지 — 안내 다이얼로그 오늘 숨김 옵션
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘은 다시 보지 않기'**
+  String get homePageDontShowToday;
+
+  /// 이미 다른 게임에 참가 중일 때 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 참가 중인 게임이 있습니다'**
+  String get errorAlreadyInGame;
+
+  /// 게임 상태를 식별할 수 없을 때 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'알 수 없는 게임 상태입니다'**
+  String get errorUnknownGameState;
+
+  /// 기기 설정 화면으로 이동하는 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'설정으로 이동'**
+  String get buttonGoToSettings;
+
+  /// 홈 화면 배터리 최적화 안내 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'끊김 없는 게임을 위해'**
+  String get dialogBatteryGuideTitle;
+
+  /// 홈 페이지 — 배터리 최적화 해제 안내 1단계
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n'**
+  String get homePageBatteryGuideStep1;
+
+  /// 홈 페이지 — 배터리 최적화 해제 안내 2단계
+  ///
+  /// In ko, this message translates to:
+  /// **'그래야 화면이 꺼져도 게임이 끊기지 않아요'**
+  String get homePageBatteryGuideStep2;
+
+  /// 방 참여 실패 — 초대 코드 확인 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'참여에 실패했습니다. 초대 코드를 확인해주세요'**
+  String get errorJoinFailedCheckCode;
+
+  /// 방 참여 실패 — 일반 재시도 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'참여에 실패했습니다. 다시 시도해주세요'**
+  String get errorJoinRetry;
+
+  /// 방 참여 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'방 참여하기'**
+  String get dialogJoinRoomTitle;
+
+  /// 초대 코드 입력 필드 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'참여코드를 입력하세요'**
+  String get fieldInviteCodeHint;
+
+  /// 초대코드 QR 스캔 안내 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'초대코드 QR을 스캔하세요'**
+  String get dialogScanInviteQrTitle;
+
+  /// 방 참여 액션 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'참여하기'**
+  String get buttonJoin;
+
+  /// 앱 브랜드명 — ko: 한글, en: 영문 'Cops and Robbers', ja: 카타카나 'コップス・アンド・ロバーズ'
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰과도둑'**
+  String get appBrandName;
+
+  /// 미구현 기능 안내 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'준비중입니다'**
+  String get messageComingSoon;
+
+  /// 홈 페이지 — 메인 환영 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'너무 기대 돼\n이번에는 어떤 역할을 할까?'**
+  String get homePageWelcomeMessage;
+
+  /// 공통 — 방 만들기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'방 만들기'**
+  String get buttonCreateRoom;
+
+  /// 공통 — 방 참여하기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'방 참여하기'**
+  String get buttonJoinRoom;
+
+  /// 방 생성 — 구역 설정 단계 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요'**
+  String get sessionCreationStepZoneSubtitle;
+
+  /// 방 생성 — 규칙 설정 단계 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요'**
+  String get sessionCreationStepRulesSubtitle;
+
+  /// 방 생성 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 방 생성에 실패했습니다. 다시 시도해주세요'**
+  String get errorCreateRoomFailed;
+
+  /// 방 생성 — 구역 미설정 시 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 선택을 먼저 설정할까요?'**
+  String get sessionCreationZoneFirstQuestion;
+
+  /// 방 생성 — 인원 설정 단계 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'인원을 설정해요'**
+  String get sessionCreationStepParticipantsTitle;
+
+  /// 방 생성 — 기본 정보 설정 단계 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 정보를 설정해요'**
+  String get sessionCreationStepBasicTitle;
+
+  /// 방 생성 — 최종 설정 확인 단계 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'최종 설정을 확인해요'**
+  String get sessionCreationStepReviewTitle;
+
+  /// 방 생성 — 구역 설정 단계 보조 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'게임에 필요한 구역을 설정해요'**
+  String get sessionCreationStepZoneIntro;
+
+  /// 방 생성 — 인원 설정 단계 보조 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 2명부터 게임 진행이 가능해요'**
+  String get sessionCreationStepParticipantsHint;
+
+  /// 방 생성 — 기본 정보 단계 보조 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'게임을 진행할 때, 꼭 필요한 정보들이에요'**
+  String get sessionCreationStepBasicHint;
+
+  /// 방 생성 — 리뷰 단계 보조 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'방 생성 전 마지막으로 설정을 확인할까요?'**
+  String get sessionCreationStepReviewHint;
+
+  /// 공통 — 다음 단계 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'다음'**
+  String get buttonNext;
+
+  /// 구역 미설정 상태에서 다음 단계 진입 시 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 정보를 먼저 설정해주세요'**
+  String get errorZoneNotConfigured;
+
+  /// 플레이그라운드 설정 — 반경 입력 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'여기를 누르면 반경을 직접 입력할 수 있어요'**
+  String get setupPlaygroundRadiusInputHint;
+
+  /// 플레이그라운드 설정 — 화면 안내문
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 진행될 전체 구역의 크기를 설정해요'**
+  String get setupPlaygroundDescription;
+
+  /// 공통 — 완료 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get buttonDone;
+
+  /// 감옥 설정 — 화면 안내문
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑을 잡아둘 감옥의 위치와 크기를 설정해요'**
+  String get setupPrisonDescription;
+
+  /// 감옥 설정 시 플레이그라운드 미설정 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'플레이그라운드를 먼저 설정해주세요'**
+  String get errorPlaygroundFirst;
+
+  /// 감옥 설정 시 플레이그라운드 범위 이탈 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'감옥이 플레이그라운드 범위를 벗어났어요'**
+  String get errorJailOutsidePlayground;
+
+  /// 더미 닉네임 — 곰 (튜토리얼/스켈레톤용)
+  ///
+  /// In ko, this message translates to:
+  /// **'포근포근곰...'**
+  String get dummyNicknameBear;
+
+  /// 방 참여 불가 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'방에 참여할 수 없어요'**
+  String get errorCannotJoinRoom;
+
+  /// 권한 없음 — 해당 게임 참가자가 아닐 때 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 게임에 참가하지 않은 사용자입니다'**
+  String get errorNotInGame;
+
+  /// 대기실 튜토리얼 — 팀 변경 버튼 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'이 버튼을 눌러 다른 팀으로 이동할 수 있어요'**
+  String get waitingRoomTutorialTeamSwitch;
+
+  /// 대기실 튜토리얼 — 초대 코드 공유 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'친구에게 초대 코드를 공유할 수 있어요'**
+  String get waitingRoomTutorialInvite;
+
+  /// 대기실 튜토리얼 — 설정 확인 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 설정을 확인할 수 있어요'**
+  String get waitingRoomTutorialSettings;
+
+  /// 대기실 튜토리얼 — 준비 버튼 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'준비가 되면 눌러주세요'**
+  String get waitingRoomTutorialReady;
+
+  /// 인게임 미리보기 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'인게임 화면 미리 보기'**
+  String get dialogInGamePreviewTitle;
+
+  /// 대기실에서 튜토리얼 진행을 권유하는 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?'**
+  String get dialogTutorialPromptMessage;
+
+  /// 인게임 튜토리얼 미리보기로 이동 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'보러 가기'**
+  String get buttonViewInGamePreview;
+
+  /// 강퇴 확인 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님을 내보낼까요?'**
+  String dialogKickConfirmTitle(String nickname);
+
+  /// 강퇴 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요'**
+  String get dialogKickConfirmMessage;
+
+  /// 참가자 강퇴 확정 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'내보내기'**
+  String get buttonKick;
+
+  /// 참가자 강퇴 실패 시 표시되는 에러 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'강퇴 처리 중 오류가 발생했어요'**
+  String get errorKickFailed;
+
+  /// 강퇴 알림 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'방에서 내보내졌어요'**
+  String get dialogKickedFromRoomTitle;
+
+  /// 강퇴 알림 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 참가하려면 초대코드를 입력해야 해요'**
+  String get dialogKickedFromRoomMessage;
+
+  /// 강퇴된 멤버 알림 (placeholder: 강퇴된 닉네임)
+  ///
+  /// In ko, this message translates to:
+  /// **'{kickedNickname}님이 내보내졌어요'**
+  String messageMemberKicked(String kickedNickname);
+
+  /// 대기실 — 팀 변경 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 변경에 실패했어요'**
+  String get errorTeamChangeFailed;
+
+  /// 대기실 — 준비 상태 변경 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'준비 상태 변경에 실패했어요'**
+  String get errorReadyChangeFailed;
+
+  /// 대기실 — 게임 시작 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시작에 실패했어요'**
+  String get errorGameStartFailed;
+
+  /// 대기실 퇴장 확인 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'방을 나가시겠어요?'**
+  String get dialogLeaveRoomTitle;
+
+  /// 대기실 퇴장 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'나가면 다시 초대코드를 입력해야 해요'**
+  String get dialogLeaveRoomMessage;
+
+  /// 대기실 퇴장 확정 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'나가기'**
+  String get buttonLeave;
+
+  /// 대기실 — 퇴장 처리 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'퇴장 처리 중 오류가 발생했습니다'**
+  String get errorLeaveRoomFailed;
+
+  /// 초대코드 생성 완료 알림 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'초대코드를 생성했어요'**
+  String get dialogInviteCodeCreatedTitle;
+
+  /// 초대코드 공유 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'친구에게 코드를 공유하고 게임에 참여해 보세요!'**
+  String get dialogInviteCodeShareMessage;
+
+  /// 초대코드 클립보드 복사 완료 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'코드가 복사되었습니다'**
+  String get messageCodeCopied;
+
+  /// 공유 액션 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'공유하기'**
+  String get buttonShare;
+
+  /// 공통 — 게임 시작 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시작'**
+  String get buttonStartGame;
+
+  /// 대기실 — 준비 완료 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'준비 완료'**
+  String get buttonReadyDone;
+
+  /// 대기실 — 준비 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'준비'**
+  String get buttonReady;
+
+  /// 구역 미리보기 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 구역'**
+  String get pageZonePreviewTitle;
+
+  /// 구역 미리보기 — 본문 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 설정된 게임 구역이에요'**
+  String get zonePreviewSubtitle;
+
+  /// 더미 닉네임 — 너구리 (튜토리얼/스켈레톤용)
+  ///
+  /// In ko, this message translates to:
+  /// **'오동통 너구리'**
+  String get dummyNicknameRaccoon;
+
+  /// 닉네임 누락 시 기본 표시 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'닉네임'**
+  String get defaultNicknameLabel;
+
+  /// 게임 규칙 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 규칙'**
+  String get titleGameRules;
+
+  /// 게임 규칙 다이얼로그의 '인게임 보기' 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'인게임 보기'**
+  String get buttonViewInGame;
+
+  /// 게임 규칙 — 경찰 승리 조건 도입부
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰은 모든 도둑을 잡아서'**
+  String get gameRulesCopGoalPrefix;
+
+  /// 게임 규칙 — 경찰 승리 조건 강조부
+  ///
+  /// In ko, this message translates to:
+  /// **'체포하면,'**
+  String get gameRulesCopGoalSuffix;
+
+  /// 게임 규칙 — 도둑 승리 조건 도입부 (개행 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'\n도둑은'**
+  String get gameRulesRobberGoalPrefix;
+
+  /// 게임 규칙 — 도둑 승리 조건 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'제한 시간이 끝날 때까지 버티면'**
+  String get gameRulesRobberGoalCondition;
+
+  /// 게임 규칙 — 승리 조건 종결부
+  ///
+  /// In ko, this message translates to:
+  /// **'승리해요'**
+  String get gameRulesWinSuffix;
+
+  /// 게임 규칙 — 위치 공유 1줄 (한국어 어순 1행)
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑팀의 위치는'**
+  String get gameRulesLocationShareLine1;
+
+  /// 게임 규칙 — 위치 공유 2줄 (주기 강조)
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분마다'**
+  String gameRulesLocationShareLine2(int minutes);
+
+  /// 게임 규칙 — 위치 공유 3줄 (한국어 어순 종결)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰팀에게 공유돼요'**
+  String get gameRulesLocationShareLine3;
+
+  /// 게임 규칙 — 구역 이탈 금지 1줄
+  ///
+  /// In ko, this message translates to:
+  /// **'지정된 게임 구역에서 벗어나면 안 돼요'**
+  String get gameRulesZoneRuleLine1;
+
+  /// 게임 규칙 — 구역 이탈 금지 2줄 (개행 + 화살표 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'\n→ 구역 밖으로 나가면 화면이 잠겨요'**
+  String get gameRulesZoneRuleLine2;
+
+  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:97
+  ///
+  /// In ko, this message translates to:
+  /// **'플레이그라운드'**
+  String get dialogstep0SelectAreaContentTitle;
+
+  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:108
+  ///
+  /// In ko, this message translates to:
+  /// **'감옥'**
+  String get dialogstep0SelectAreaContentTitle5bc0;
+
+  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_1_participant_settings_content.dart:48
+  ///
+  /// In ko, this message translates to:
+  /// **'최대 참가자'**
+  String get fieldstep1ParticipantSettingsContentLabel;
+
+  /// 공통 — 인원수 단위 (명)
+  ///
+  /// In ko, this message translates to:
+  /// **'명'**
+  String get unitPerson;
+
+  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:75
+  ///
+  /// In ko, this message translates to:
+  /// **'라운드 제한 시간'**
+  String get fieldstep2GameSettingsContentLabel;
+
+  /// 공통 — 시간 단위 (분)
+  ///
+  /// In ko, this message translates to:
+  /// **'분'**
+  String get unitMinutes;
+
+  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:92
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 위치 공유 간격'**
+  String get fieldstep2GameSettingsContentLabel5ab2;
+
+  /// 게임 설정 — 위치 공유 비활성 경고
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑의 위치가 공유되지 않아요!'**
+  String get gameSettingNoLocationShareWarning;
+
+  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:111
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 출동 시간'**
+  String get fieldstep2GameSettingsContentLabelCe3b;
+
+  /// 게임 설정 — 경찰 출동 시간 prefix
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 도망 후'**
+  String get gameSettingPoliceStartPrefix;
+
+  /// 게임 설정 — 경찰 출동 시간 suffix
+  ///
+  /// In ko, this message translates to:
+  /// **'뒤'**
+  String get gameSettingPoliceStartSuffix;
+
+  /// 대기실 설정 카드 섹션 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'설정'**
+  String get sectionTitleSettings;
+
+  /// 대기실 설정 카드의 참여 인원 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'참여 인원'**
+  String get labelParticipantCount;
+
+  /// 게임 설정 — 라운드 제한 시간 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'라운드 제한 시간'**
+  String get fieldRoundTimeLimit;
+
+  /// 게임 설정 — 위치 공유 간격 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공유 간격'**
+  String get fieldLocationShareInterval;
+
+  /// 게임 설정 — 경찰 출동 시간 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 출동 시간'**
+  String get fieldPoliceDispatchTime;
+
+  /// 팀 섹션 — 현재 인원수 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 {count}명'**
+  String teamSectionCurrentCount(int count);
+
+  /// 대기실 구역 카드 섹션 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'구역'**
+  String get sectionTitleZone;
+
+  /// 로그아웃 처리 중 일반 오류 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃 중 오류가 발생했습니다'**
+  String get errorLogoutGeneric;
+
+  /// Firebase 인증 — 사용자 정보 조회 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 정보를 가져올 수 없습니다. 다시 시도해주세요'**
+  String get errorAuthUserNotFound;
+
+  /// Firebase 인증 — 토큰 발급 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 토큰 발급에 실패했습니다. 다시 시도해주세요'**
+  String get errorAuthTokenIssueFailed;
+
+  /// Firebase 인증 — 토큰 검증 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요'**
+  String get errorAuthTokenValidationFailed;
+
+  /// Firebase 인증 — 잘못된 인증 정보
+  ///
+  /// In ko, this message translates to:
+  /// **'잘못된 인증 정보입니다'**
+  String get errorAuthInvalidCredential;
+
+  /// Firebase 인증 — 비활성화된 계정
+  ///
+  /// In ko, this message translates to:
+  /// **'비활성화된 계정입니다'**
+  String get errorAuthAccountDisabled;
+
+  /// Firebase 인증 — 요청 과다 (rate limit)
+  ///
+  /// In ko, this message translates to:
+  /// **'너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorAuthTooManyRequests;
+
+  /// Firebase 인증 — 비활성화된 로그인 방법
+  ///
+  /// In ko, this message translates to:
+  /// **'이 로그인 방법은 현재 사용할 수 없습니다'**
+  String get errorAuthSignInMethodUnavailable;
+
+  /// Firebase 인증 — 설정 오류 (API 키 등)
+  ///
+  /// In ko, this message translates to:
+  /// **'Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요'**
+  String get errorAuthFirebaseConfig;
+
+  /// Firebase 인증 — 내부 오류
+  ///
+  /// In ko, this message translates to:
+  /// **'Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorAuthFirebaseInternal;
+
+  /// Firebase 인증 — 특정 provider 로그인 실패 (Google/Apple 등)
+  ///
+  /// In ko, this message translates to:
+  /// **'{provider} 로그인에 실패했습니다. 다시 시도해주세요'**
+  String errorAuthProviderLoginFailed(String provider);
+
+  /// Firebase 인증 — 일반 로그인 실패 (provider 미지정)
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인에 실패했습니다. 다시 시도해주세요'**
+  String get errorAuthLoginFailed;
+
+  /// 마케팅 정보 수신 동의 링크 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'마케팅 정보 수신'**
+  String get linkMarketingConsent;
+
+  /// 약관 동의 페이지 — 동의 후 시작 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'동의하고 시작하기'**
+  String get agreementPageAgreeButton;
+
+  /// 약관 동의 페이지 — 본문 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 이용을 위해\n약관에 동의해주세요'**
+  String get agreementPageTitle;
+
+  /// 약관 동의 페이지 — 필수 약관 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'필수 약관에 모두 동의해야 서비스를 이용하실 수 있어요'**
+  String get agreementPageRequiredNotice;
+
+  /// 네트워크 미연결 시 표시되는 안내 (약관 동의/스플래시 등 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 네트워크에 연결되지 않았어요'**
+  String get errorNetworkNotConnected;
+
+  /// 필수 약관 미동의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'필수 약관에 모두 동의해주세요'**
+  String get errorRequiredAgreementsMissing;
+
+  /// 회원 탈퇴 완료 토스트
+  ///
+  /// In ko, this message translates to:
+  /// **'회원탈퇴가 완료되었습니다'**
+  String get messageAccountDeleted;
+
+  /// 만 14세 이상 확인 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'만 14세 이상이신가요?'**
+  String get dialogAge14ConfirmTitle;
+
+  /// 만 14세 이상 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요'**
+  String get dialogAge14ConfirmMessage;
+
+  /// 로그인 처리 중 발생한 일반 오류
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 중 오류가 발생했습니다'**
+  String get errorLoginGeneric;
+
+  /// Apple 로그인 전용 오류 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'Apple 로그인 중 오류가 발생했습니다'**
+  String get errorAppleLoginFailed;
+
+  /// 만 14세 미만 가입 차단 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'만 14세 미만은 서비스를 이용할 수 없습니다'**
+  String get errorAgeRestrictionUnder14;
+
+  /// 로그인 페이지 약관 안내 접두사 (예: '로그인 시 ~ 에 동의합니다')
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 시'**
+  String get loginPageAgreementPrefix;
+
+  /// 공통 — 개인정보 처리방침 링크 텍스트
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보 처리방침'**
+  String get linkPrivacyPolicy;
+
+  /// 공통 — 이용약관 링크 텍스트
+  ///
+  /// In ko, this message translates to:
+  /// **'이용약관'**
+  String get linkTermsOfService;
+
+  /// 공통 — 위치정보 이용약관 링크 텍스트
+  ///
+  /// In ko, this message translates to:
+  /// **'위치정보 이용약관'**
+  String get linkLocationTerms;
+
+  /// 로그인 페이지 약관 안내 접미사
+  ///
+  /// In ko, this message translates to:
+  /// **'에 동의합니다'**
+  String get loginPageAgreementSuffix;
+
+  /// 닉네임 저장 완료 토스트
+  ///
+  /// In ko, this message translates to:
+  /// **'닉네임이 저장되었어요'**
+  String get messageNicknameSaved;
+
+  /// 닉네임 설정 페이지 — 메인 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'닉네임을 설정해요'**
+  String get nicknameSetupTitle;
+
+  /// 닉네임 설정 페이지 — 보조 안내문
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 내에서 계속 사용될 닉네임이에요\n1~10글자로 생성할 수 있어요'**
+  String get nicknameSetupSubtitle;
+
+  /// 공통 — 닉네임 입력 필드 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'닉네임을 입력하세요'**
+  String get fieldNicknameHint;
+
+  /// 닉네임 중복 확인 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'중복 확인'**
+  String get buttonCheckNicknameDuplicate;
+
+  /// 닉네임 검증 — 글자 수 부족
+  ///
+  /// In ko, this message translates to:
+  /// **'1글자 미만의 닉네임은 사용할 수 없어요'**
+  String get errorNicknameTooShort;
+
+  /// 닉네임 검증 — 이미 사용 중
+  ///
+  /// In ko, this message translates to:
+  /// **'중복된 닉네임이에요. 다른 닉네임을 입력하세요'**
+  String get errorNicknameDuplicated;
+
+  /// 닉네임 검증 — 사용 가능
+  ///
+  /// In ko, this message translates to:
+  /// **'사용 가능한 닉네임이에요'**
+  String get nicknameAvailable;
+
+  /// 스플래시 — 자동 로그인 진행 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 현장으로 복귀 중...'**
+  String get splashReturningToScene;
+
+  /// 네트워크 연결 실패 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'네트워크 연결 실패'**
+  String get dialogNetworkConnectionFailedTitle;
+
+  /// 스플래시 — 오프라인 다이얼로그 본문 (스플래시 화면 본문 splashOfflineMessage와 별개)
+  ///
+  /// In ko, this message translates to:
+  /// **'인터넷 연결을 확인한 후\n다시 시도해주세요'**
+  String get dialogSplashOfflineMessage;
+
+  /// 스플래시 — 대기 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'잠시만 기다려주세요'**
+  String get splashPleaseWait;
+
+  /// 스플래시 — 제작 크레딧 태그라인
+  ///
+  /// In ko, this message translates to:
+  /// **'by 동심지키미'**
+  String get splashCreditTag;
+
+  /// 스플래시 — 오프라인 상태 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'인터넷 연결이 필요합니다'**
+  String get splashOfflineTitle;
+
+  /// 스플래시 — 오프라인 상태 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 상태를 확인한 후\n다시 시도해주세요'**
+  String get splashOfflineMessage;
+
+  /// 원인을 특정할 수 없는 일반 오류 메시지 (auth fallback 등)
+  ///
+  /// In ko, this message translates to:
+  /// **'알 수 없는 오류가 발생했습니다'**
+  String get errorUnknown;
+
+  /// 로그아웃 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃에 실패했습니다'**
+  String get errorLogoutFailed;
+
+  /// 약관 — 전체 동의 체크박스 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 동의'**
+  String get agreementAllCheckboxLabel;
+
+  /// 약관 항목 — 필수 태그
+  ///
+  /// In ko, this message translates to:
+  /// **'[필수]'**
+  String get agreementItemRequiredTag;
+
+  /// 약관 항목 — 선택 태그
+  ///
+  /// In ko, this message translates to:
+  /// **'[선택]'**
+  String get agreementItemOptionalTag;
+
+  /// 게임 시작 후 도둑 도주 시작 알림 배너
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑이 도망치는 중이에요!'**
+  String get gameRobberOnTheRunBanner;
+
+  /// 게임 종료 시 화면 상단에 표시되는 배너 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 종료!'**
+  String get gameOverBannerTitle;
+
+  /// 게임 종료 사유 — 도둑 전원 체포로 종료
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑이 모두 체포되었습니다!'**
+  String get gameOverReasonAllArrested;
+
+  /// 게임 종료 사유 — 제한 시간 만료
+  ///
+  /// In ko, this message translates to:
+  /// **'제한 시간이 종료되었습니다!'**
+  String get gameOverReasonTimeUp;
+
+  /// 경찰 팀 라벨 (팀명)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰팀'**
+  String get gameTeamCop;
+
+  /// 도둑 팀 라벨 (팀명)
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑팀'**
+  String get gameTeamRobber;
+
+  /// 게임 결과 — 승리
+  ///
+  /// In ko, this message translates to:
+  /// **'승리'**
+  String get gameResultWin;
+
+  /// 게임 결과 — 패배
+  ///
+  /// In ko, this message translates to:
+  /// **'패배'**
+  String get gameResultLose;
+
+  /// 게임 종료 다이얼로그 메시지 — 승리팀 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'{winnerTeamLabel}의 승리입니다!'**
+  String messageGameOverWinner(Object winnerTeamLabel);
+
+  /// 경찰 역할 단일 라벨 (닉네임 누락 시 fallback 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰'**
+  String get gameRoleCopLabel;
+
+  /// 도둑 역할 단일 라벨 (닉네임 누락 시 fallback 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑'**
+  String get gameRoleRobberLabel;
+
+  /// 체포 실패 — 경찰 대기 시간 중
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 대기 시간 중에는 도둑을 체포할 수 없습니다'**
+  String get errorCannotArrestDuringWait;
+
+  /// 도둑 수배 QR 스캐너 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑의 수배 QR을 스캔하세요'**
+  String get qrScannerWantedRobberTitle;
+
+  /// QR 스캔 실패 — QR 만료
+  ///
+  /// In ko, this message translates to:
+  /// **'만료된 QR입니다. QR 새로고침을 요청하세요'**
+  String get errorExpiredQr;
+
+  /// 체포 실패 — 이미 체포된 도둑
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 체포된 도둑입니다'**
+  String get errorAlreadyArrested;
+
+  /// 체포된 도둑에게 표시되는 잠금 오버레이 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'체포되었어요!'**
+  String get gameArrestOverlayTitle;
+
+  /// 체포 잠금 오버레이 안내 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!'**
+  String get gameArrestOverlayMessage;
+
+  /// 체포 잠금 오버레이에서 탈옥을 확정하는 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'탈옥 완료'**
+  String get gameArrestOverlayEscapeCompleteButton;
+
+  /// 공통 — 탈옥 액션 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'탈옥'**
+  String get buttonEscape;
+
+  /// 공통 — 부정 응답 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'아니요'**
+  String get buttonNo;
+
+  /// 게임 종료 결과 다이얼로그의 체포 횟수 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'체포 횟수'**
+  String get labelArrestCount;
+
+  /// 게임 결과 — 총 체포 횟수 (단위: 회)
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}회'**
+  String gameResultArrestCount(int count);
+
+  /// 게임 종료 결과 — 남은 도둑 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 도둑'**
+  String get fieldRemainingRobbers;
+
+  /// 게임 결과 — 남은 도둑 인원수 (단위: 명)
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명'**
+  String gameResultRemainingRobberCount(int count);
+
+  /// 게임 종료 결과 — 게임 진행 시간 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 진행 시간'**
+  String get fieldGamePlaytime;
+
+  /// 공통 — 홈 화면으로 이동 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'홈으로'**
+  String get buttonGoHome;
+
+  /// 공통 — 다시 플레이 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'한 번 더'**
+  String get buttonPlayAgain;
+
+  /// 다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 도둑 위치 공개까지 {formatted}'**
+  String gameLocationRevealCountdown(String formatted);
+
+  /// 참가자 체포 확인 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 플레이어를 체포하셨나요?'**
+  String get dialogArrestConfirmTitle;
+
+  /// 공통 — 긍정 응답 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'네'**
+  String get buttonYes;
+
+  /// 탈옥 시도 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'탈옥을 시도하시겠습니까?'**
+  String get dialogEscapeAttemptMessage;
+
+  /// 참가자 오버레이 — 현재 인원 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'현재'**
+  String get gameParticipantOverlayCurrent;
+
+  /// 참가자 오버레이 — 인원 수 표기 (단위: 명)
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명'**
+  String gameParticipantOverlayCount(int count);
+
+  /// 도둑 상태 — 도주 중 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'도주 중!'**
+  String get gameRobberStatusEscaping;
+
+  /// 경찰 출동 시작까지 남은 시간 카운트다운 (mm:ss 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 시작까지 {formatted}'**
+  String gamePoliceStartCountdown(String formatted);
+
+  /// 도둑 수배 QR 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'수배 QR'**
+  String get gameQrDisplayTitle;
+
+  /// 도둑 수배 QR 다이얼로그 안내 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰에게 QR을 보여주세요'**
+  String get gameQrDisplayMessage;
+
+  /// 공통 — 닫기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'닫기'**
+  String get buttonClose;
+
+  /// 카메라 권한 요청 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'카메라 권한 필요'**
+  String get dialogCameraPermissionTitle;
+
+  /// 카메라 권한 요청 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요'**
+  String get dialogCameraPermissionMessage;
+
+  /// QR 스캐너 — 카메라 초기화 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'카메라를 사용할 수 없습니다'**
+  String get errorCameraUnavailable;
+
+  /// 플레이 영역 이탈 시 표시되는 배너
+  ///
+  /// In ko, this message translates to:
+  /// **'플레이그라운드를 벗어났어요'**
+  String get gameZoneExitBanner;
+
+  /// 팀 채팅 메시지 prefix 라벨 (예: [팀])
+  ///
+  /// In ko, this message translates to:
+  /// **'[팀]'**
+  String get chatTeamPrefix;
+
+  /// 더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)
+  ///
+  /// In ko, this message translates to:
+  /// **'제한 시간은 30분입니다'**
+  String get chatSystemGameTimeLimit30Min;
+
+  /// 더미 채팅 메시지 — 경찰의 도둑 응원 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 잘 도망쳐 봐요~'**
+  String get chatSystemGoodLuckRobber;
+
+  /// 더미 채팅 메시지 — 팀 응원 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'이겨봅시다!'**
+  String get chatSystemLetsWin;
+
+  /// 채팅 메시지 복사 완료 토스트
+  ///
+  /// In ko, this message translates to:
+  /// **'메시지가 복사되었어요'**
+  String get messageMessageCopied;
+
+  /// 사용자 차단 완료 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 유저를 차단했어요'**
+  String get messageUserBlocked;
+
+  /// 신고 사유 입력 필드 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 내용'**
+  String get fieldReportContentLabel;
+
+  /// 신고 사유 입력 필드 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 사유를 자세히 작성해 주세요\n(상황 또는 대화 내용을 포함해 주세요)'**
+  String get fieldReportReasonHint;
+
+  /// 신고 공통 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'신고하기'**
+  String get buttonReport;
+
+  /// 신고 제출 완료 안내 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'신고가 접수되었어요'**
+  String get messageReportSubmitted;
+
+  /// 신고 제출 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'신고에 실패했어요'**
+  String get errorReportFailed;
+
+  /// 신고 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 유저를 신고할까요?'**
+  String get dialogReportConfirmTitle;
+
+  /// 신고 폼 — 선택한 카테고리 라벨 (뒤에 카테고리 이름 이어붙음)
+  ///
+  /// In ko, this message translates to:
+  /// **'선택한 신고 사유:'**
+  String get chatReportSelectedCategoryLabel;
+
+  /// 신고 폼 — 제출 시 검토 안내 (선두 줄바꿈은 위 라벨과 줄 분리 의도)
+  ///
+  /// In ko, this message translates to:
+  /// **'\n신고된 내용은 검토 후 조치할게요'**
+  String get chatReportSubmitNotice;
+
+  /// 텍스트 복사 액션 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'복사하기'**
+  String get buttonCopy;
+
+  /// 사용자 차단 액션 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'차단하기'**
+  String get buttonBlock;
+
+  /// 신고 폼 — 카테고리 선택 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 유형 선택'**
+  String get chatReportCategoryTitle;
+
+  /// 미읽음 힌트 부분 — 전체 채팅 미읽음 수
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 {all}개'**
+  String chatInputBarUnreadAll(String all);
+
+  /// 미읽음 힌트 부분 — 팀 채팅 미읽음 수
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 {team}개'**
+  String chatInputBarUnreadTeam(String team);
+
+  /// 채팅 입력바 위 미읽음 힌트 wrapper — body에는 '전체 N개 · 팀 N개' 같은 부분 라벨이 들어감
+  ///
+  /// In ko, this message translates to:
+  /// **'안 읽은 메시지 [{body}]'**
+  String chatInputBarUnreadHint(String body);
+
+  /// 채팅 입력바 — STOMP 연결 중 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 중...'**
+  String get chatInputBarConnecting;
+
+  /// 채팅 입력바 — 메시지 입력 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅을 입력하세요'**
+  String get chatInputBarHint;
+
+  /// 채팅 메시지 리스트 — 메시지 0건 빈 상태 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅을 시작해보세요'**
+  String get chatMessageListEmpty;
+
+  /// 채팅 화면에서 최신 메시지로 스크롤 이동하는 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'최신 메시지로 이동'**
+  String get buttonGoToLatestMessage;
+
+  /// 채팅 날짜 구분선 — 월요일 단축 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'월'**
+  String get chatWeekdayMon;
+
+  /// 채팅 날짜 구분선 — 화요일 단축 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'화'**
+  String get chatWeekdayTue;
+
+  /// 채팅 날짜 구분선 — 수요일 단축 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'수'**
+  String get chatWeekdayWed;
+
+  /// 채팅 날짜 구분선 — 목요일 단축 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'목'**
+  String get chatWeekdayThu;
+
+  /// 채팅 날짜 구분선 — 금요일 단축 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'금'**
+  String get chatWeekdayFri;
+
+  /// 채팅 날짜 구분선 — 토요일 단축 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'토'**
+  String get chatWeekdaySat;
+
+  /// 채팅 날짜 구분선 — 일요일 단축 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'일'**
+  String get chatWeekdaySun;
+
+  /// 채팅 날짜 구분선 — 날짜+요일 라벨 (요일은 chatWeekday* 키 값이 들어감)
+  ///
+  /// In ko, this message translates to:
+  /// **'{year}년 {month}월 {day}일 {weekday}요일'**
+  String chatDateSeparator(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  );
+
+  /// 채팅 오버레이 — 전체 채팅 탭 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 채팅'**
+  String get chatScopeAllTitle;
+
+  /// 채팅 오버레이 — 팀 채팅 탭 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 채팅'**
+  String get chatScopeTeamTitle;
+
+  /// 채팅 프리뷰 카드 — 시스템 공지 태그
+  ///
+  /// In ko, this message translates to:
+  /// **'공지'**
+  String get chatPreviewTagNotice;
+
+  /// 채팅 프리뷰 카드 — 팀 채팅 태그
+  ///
+  /// In ko, this message translates to:
+  /// **'팀'**
+  String get chatPreviewTagTeam;
+
+  /// 채팅 프리뷰 카드 — 전체 채팅 태그
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get chatPreviewTagAll;
+
+  /// 설정 변경사항 저장 완료 안내 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'변경사항이 저장되었어요'**
+  String get messageChangesSaved;
+
+  /// 일시적 오류 발생 시 재시도 유도 공통 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'일시적인 오류가 발생했습니다. 다시 시도해주세요'**
+  String get errorTemporaryRetry;
+
+  /// 이용약관/정책 설정 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'이용약관 및 정책'**
+  String get pageAgreementSettingsTitle;
+
+  /// 약관 동의 정보 조회 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'약관 동의 현황을 불러올 수 없습니다'**
+  String get errorAgreementLoadFailed;
+
+  /// 재시도 공통 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 시도'**
+  String get buttonRetry;
+
+  /// 변경사항 저장 공통 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'변경사항 저장'**
+  String get buttonSaveChanges;
+
+  /// 법적 문서(약관/정책) 로드 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'문서를 불러올 수 없습니다'**
+  String get errorLegalDocumentLoadFailed;
+
+  /// 설정 페이지 AppBar 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'설정'**
+  String get pageSettingsTitle;
+
+  /// 설정 — 계정 섹션 헤더
+  ///
+  /// In ko, this message translates to:
+  /// **'계정'**
+  String get settingsSectionAccount;
+
+  /// 설정 — 닉네임 변경 메뉴
+  ///
+  /// In ko, this message translates to:
+  /// **'닉네임 변경'**
+  String get settingsAccountChangeNickname;
+
+  /// 설정 — 앱 설정 섹션 헤더
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 설정'**
+  String get settingsSectionAppPreferences;
+
+  /// 설정 — 게임 알림 토글 메뉴 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 알림'**
+  String get settingsAppGameNotification;
+
+  /// 설정 — 게임 알림 토글 메뉴 부제
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 진행 중 발생하는 이벤트 알림을 설정해요'**
+  String get settingsAppGameNotificationDescription;
+
+  /// 설정 — 시스템 알림 설정 메뉴 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'알림'**
+  String get settingsAppGeneralNotification;
+
+  /// 설정 — 시스템 알림 설정 부제의 강조 토큰 (스타일 분리 위해 별도 키)
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 중 알림'**
+  String get settingsAppGeneralNotificationHighlight;
+
+  /// 설정 — 시스템 알림 설정 부제의 나머지 토큰 (Highlight 뒤에 이어붙임)
+  ///
+  /// In ko, this message translates to:
+  /// **'을 포함한 앱에서 보내는 모든 알림을 설정해요'**
+  String get settingsAppGeneralNotificationDetail;
+
+  /// 설정 — 위치 권한 관리 메뉴 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한 관리'**
+  String get settingsAppLocationPermission;
+
+  /// 설정 — 위치 권한 관리 메뉴 부제
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 설정에서 위치 권한을 변경할 수 있어요'**
+  String get settingsAppLocationPermissionDescription;
+
+  /// 설정 — 이용 안내 섹션 헤더
+  ///
+  /// In ko, this message translates to:
+  /// **'이용 안내'**
+  String get settingsSectionGuide;
+
+  /// 설정 — 버그 제보 메뉴 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'버그 제보'**
+  String get settingsGuideBugReport;
+
+  /// 설정 — 튜토리얼 다시 보기 메뉴
+  ///
+  /// In ko, this message translates to:
+  /// **'튜토리얼 다시 보기'**
+  String get settingsGuideTutorialRewatch;
+
+  /// 설정 — 튜토리얼 초기화 메뉴
+  ///
+  /// In ko, this message translates to:
+  /// **'튜토리얼 초기화'**
+  String get settingsGuideTutorialReset;
+
+  /// 설정 — 이용약관 및 정책 메뉴 (페이지 진입)
+  ///
+  /// In ko, this message translates to:
+  /// **'이용약관 및 정책'**
+  String get settingsGuideAgreements;
+
+  /// 설정 — 기타 섹션 헤더 (로그아웃/탈퇴 등)
+  ///
+  /// In ko, this message translates to:
+  /// **'기타'**
+  String get settingsSectionEtc;
+
+  /// 설정 — 회원 탈퇴 메뉴 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'회원 탈퇴'**
+  String get settingsEtcDeleteAccount;
+
+  /// 설정 — 앱 버전 표시 메뉴 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전'**
+  String get settingsAppVersionLabel;
+
+  /// 게임 알림 설정 변경 실패 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 알림 설정을 변경하지 못했어요'**
+  String get errorGameNotificationToggleFailed;
+
+  /// 버그 제보 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'버그 제보'**
+  String get titleBugReport;
+
+  /// 버그 제보 입력 필드 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'버그 내용'**
+  String get fieldBugReportLabel;
+
+  /// 버그 제보 입력 필드 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)'**
+  String get fieldBugReportHint;
+
+  /// 버그 제보 다이얼로그 — 제출 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'제보하기'**
+  String get buttonSubmitReport;
+
+  /// 버그 제보 접수 완료 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'버그 제보가 접수되었어요'**
+  String get messageBugReportSubmitted;
+
+  /// 튜토리얼 초기화 확인 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'튜토리얼 초기화'**
+  String get dialogTutorialResetTitle;
+
+  /// 튜토리얼 초기화 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?'**
+  String get dialogTutorialResetMessage;
+
+  /// 초기화 확인 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'초기화'**
+  String get buttonReset;
+
+  /// 튜토리얼 초기화 완료 안내 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'튜토리얼이 초기화되었어요'**
+  String get messageTutorialReset;
+
+  /// 로그아웃 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃'**
+  String get dialogLogoutTitle;
+
+  /// 로그아웃 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'정말 로그아웃 하시겠어요?'**
+  String get dialogLogoutMessage;
+
+  /// 로그아웃 실패 스낵바 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃에 실패했습니다'**
+  String get snackbarLogoutFailed;
+
+  /// 로그아웃 성공 스낵바 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃되었습니다'**
+  String get snackbarLogoutSuccess;
+
+  /// 회원 탈퇴 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'회원 탈퇴'**
+  String get dialogDeleteAccountTitle;
+
+  /// 회원 탈퇴 확인 다이얼로그 본문 — 비가역성 경고 + 확인 키워드 입력 요구
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요'**
+  String get dialogDeleteAccountMessage;
+
+  /// 회원 탈퇴 확인 입력 필드 placeholder (사용자가 직접 입력해야 하는 키워드)
+  ///
+  /// In ko, this message translates to:
+  /// **'delete'**
+  String get fieldDeleteAccountHint;
+
+  /// 회원 탈퇴 확정 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴'**
+  String get buttonDeleteAccount;
+
+  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰1'**
+  String get tutorialDummyNicknameCop1;
+
+  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑킹'**
+  String get tutorialDummyNicknameRobberKing;
+
+  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑이게아니게'**
+  String get tutorialDummyNicknameRobberOrNot;
+
+  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'잡힌도둑'**
+  String get tutorialDummyNicknameCapturedRobber;
+
+  /// 튜토리얼 완료 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'튜토리얼 완료!'**
+  String get titleTutorialComplete;
+
+  /// 튜토리얼 완료 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요'**
+  String get messageTutorialComplete;
+
+  /// 튜토리얼 완료 다이얼로그의 종료 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'튜토리얼 끝내기'**
+  String get buttonFinishTutorial;
+
+  /// 튜토리얼 — 내 위치 버튼 동작 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'내 위치로 카메라가 이동했어요'**
+  String get tutorialInGameMyLocation;
+
+  /// 튜토리얼 — 인게임 지도 미리보기 상단 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'지도 미리보기'**
+  String get tutorialMapPreviewLabel;
+
+  /// 튜토리얼 — 도둑 위치 공개 카운트다운 (시연용 고정값)
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 도둑 위치 공개까지 04:30'**
+  String get tutorialLocationRevealCountdown;
+
+  /// 튜토리얼 — 게임 룰 버튼 동작 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 룰 안내가 열려요'**
+  String get tutorialInGameRulesGuide;
+
+  /// 튜토리얼 — 도둑 시점 QR 안내 (수배 QR 표시)
+  ///
+  /// In ko, this message translates to:
+  /// **'내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포'**
+  String get tutorialQrRobberHint;
+
+  /// 튜토리얼 — 경찰 시점 QR 안내 (스캐너 사용)
+  ///
+  /// In ko, this message translates to:
+  /// **'카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요'**
+  String get tutorialQrCopHint;
+
+  /// 튜토리얼 미션 1/3 — 참가자 버튼 탭 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'참가자 보기 버튼을 눌러보세요'**
+  String get tutorialMissionParticipantsButton;
+
+  /// 튜토리얼 미션 2/3 — QR 버튼 탭 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'QR 버튼을 눌러보세요'**
+  String get tutorialMissionQrButton;
+
+  /// 튜토리얼 미션 3/3 — 지도로 복귀 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'지도로 돌아가 보세요'**
+  String get tutorialMissionMapButton;
+
+  /// 튜토리얼 진행도 라벨 (현재 미션 / 총 3)
+  ///
+  /// In ko, this message translates to:
+  /// **'미션 {step}/3'**
+  String tutorialMissionProgress(String step);
+
+  /// 튜토리얼 — 도둑 시점 시연 상태 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 시점 보는 중'**
+  String get tutorialPerspectiveRobber;
+
+  /// 튜토리얼 — 경찰 시점 시연 상태 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 시점 보는 중'**
+  String get tutorialPerspectiveCop;
+
+  /// 튜토리얼 — 본인 수감 시 카드 탭으로 탈옥 시도 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요'**
+  String get tutorialInGameSelfEscape;
+
+  /// 튜토리얼 — 실제 게임 QR 체포 방식 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'실제 게임에서는 QR 스캔으로 도둑을 체포해요'**
+  String get tutorialInGameQrArrest;
+
+  /// 튜토리얼 — '현재' 라벨 (현재 도주 중인 도둑 수 앞 텍스트)
+  ///
+  /// In ko, this message translates to:
+  /// **'현재'**
+  String get tutorialCurrentLabel;
+
+  /// 튜토리얼 — 인원수 표시 (예: 3명)
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명'**
+  String tutorialPlayerCount(int count);
+
+  /// 튜토리얼 — 도주 중 강조 텍스트
+  ///
+  /// In ko, this message translates to:
+  /// **'도주 중!'**
+  String get tutorialOnTheRun;
+
+  /// 튜토리얼 — 채팅 시트 확장 제스처 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'핸들을 위로 드래그하면 채팅이 펼쳐져요'**
+  String get tutorialInGameChatExpand;
+
+  /// 튜토리얼 — 채팅 입력 영역 사용법 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요'**
+  String get tutorialInGameChatInput;
+
+  /// 튜토리얼 — 채팅 입력바 placeholder (인게임 chat과 동일 문구지만 컨텍스트 분리)
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅을 입력하세요'**
+  String get tutorialChatHint;
+
+  /// 튜토리얼 카탈로그 — 방 만들기 단계 부제
+  ///
+  /// In ko, this message translates to:
+  /// **'플레이그라운드·감옥 설정과 슬라이더 조작'**
+  String get tutorialCatalogAreaSubtitle;
+
+  /// 튜토리얼 카탈로그 — 방 참여하기 단계 부제
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 코드 입력과 QR 스캔'**
+  String get tutorialCatalogInviteSubtitle;
+
+  /// 튜토리얼 카탈로그 — 대기방 단계 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'대기방'**
+  String get tutorialCatalogWaitingRoomTitle;
+
+  /// 튜토리얼 카탈로그 — 대기방 단계 부제
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 변경, 게임 설정, 준비 완료'**
+  String get tutorialCatalogLobbySubtitle;
+
+  /// 튜토리얼 카탈로그 — 인게임 단계 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'인게임'**
+  String get tutorialCatalogInGameTitle;
+
+  /// 튜토리얼 카탈로그 — 인게임 단계 부제
+  ///
+  /// In ko, this message translates to:
+  /// **'타이머·지도·참가자·채팅·QR'**
+  String get tutorialCatalogGameSubtitle;
+
+  /// 튜토리얼 카탈로그 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'튜토리얼'**
+  String get pageTutorialCatalogTitle;
+
+  /// 튜토리얼 카탈로그 페이지 인트로 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임을 처음 한다면 한 번씩 보고 시작해보세요'**
+  String get tutorialCatalogIntro;
+
+  /// 튜토리얼 카탈로그 — 미구현 단계의 '준비 중' 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'준비 중'**
+  String get tutorialCatalogComingSoon;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hong Eui-min)
+  ///
+  /// In ko, this message translates to:
+  /// **'홍의민'**
+  String get creditMemberHongEuiMin;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Park Chan-bin)
+  ///
+  /// In ko, this message translates to:
+  /// **'박찬빈'**
+  String get creditMemberParkChanBin;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Chang-hee)
+  ///
+  /// In ko, this message translates to:
+  /// **'이창희'**
+  String get creditMemberLeeChangHee;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Sang-hee)
+  ///
+  /// In ko, this message translates to:
+  /// **'정상희'**
+  String get creditMemberJeongSangHee;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hwang Hye-rim)
+  ///
+  /// In ko, this message translates to:
+  /// **'황혜림'**
+  String get creditMemberHwangHyeRim;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Yoon Ji-hee)
+  ///
+  /// In ko, this message translates to:
+  /// **'윤지희'**
+  String get creditMemberYoonJiHee;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Da-im)
+  ///
+  /// In ko, this message translates to:
+  /// **'김다임'**
+  String get creditMemberKimDaim;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Ji-hoon)
+  ///
+  /// In ko, this message translates to:
+  /// **'신지훈'**
+  String get creditMemberShinJiHoon;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Nam Hae-yoon)
+  ///
+  /// In ko, this message translates to:
+  /// **'남해윤'**
+  String get creditMemberNamHaeYoon;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Song Hye-jung)
+  ///
+  /// In ko, this message translates to:
+  /// **'송혜정'**
+  String get creditMemberSongHyeJung;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Jin)
+  ///
+  /// In ko, this message translates to:
+  /// **'이진'**
+  String get creditMemberLeeJin;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Ahn Geum-seo)
+  ///
+  /// In ko, this message translates to:
+  /// **'안금서'**
+  String get creditMemberAhnGeumSeo;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Son Geon-woo)
+  ///
+  /// In ko, this message translates to:
+  /// **'손건우'**
+  String get creditMemberSonGeonWoo;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Hye-bin)
+  ///
+  /// In ko, this message translates to:
+  /// **'신혜빈'**
+  String get creditMemberShinHyeBin;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Chang-woo)
+  ///
+  /// In ko, this message translates to:
+  /// **'정창우'**
+  String get creditMemberJeongChangWoo;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Heo Seok-jun)
+  ///
+  /// In ko, this message translates to:
+  /// **'허석준'**
+  String get creditMemberHeoSeokJun;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Seo Hyun-jin)
+  ///
+  /// In ko, this message translates to:
+  /// **'서현진'**
+  String get creditMemberSeoHyunJin;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Oh Dong-hyun)
+  ///
+  /// In ko, this message translates to:
+  /// **'오동현'**
+  String get creditMemberOhDongHyun;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Choi Seung-hoon)
+  ///
+  /// In ko, this message translates to:
+  /// **'최승훈'**
+  String get creditMemberChoiSeungHoon;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Min-wook)
+  ///
+  /// In ko, this message translates to:
+  /// **'김민욱'**
+  String get creditMemberKimMinWook;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Myeong-jun)
+  ///
+  /// In ko, this message translates to:
+  /// **'정명준'**
+  String get creditMemberJeongMyeongJun;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kang Dae-hyun)
+  ///
+  /// In ko, this message translates to:
+  /// **'강대현'**
+  String get creditMemberKangDaeHyun;
+
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Sim Hyuk)
+  ///
+  /// In ko, this message translates to:
+  /// **'심 혁'**
+  String get creditMemberSimHyuk;
+
+  /// 크레딧 페이지 상단 헤더 — 제작진 소개
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰과 도둑을 만든 사람들'**
+  String get pageCreditsTitle;
+
+  /// 신고 처리 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 처리 중 오류가 발생했습니다'**
+  String get errorReportGeneric;
+
+  /// 신고 카테고리 — 낚시/놀람/도배 (ReportCategory.bait)
+  ///
+  /// In ko, this message translates to:
+  /// **'낚시/놀람/도배'**
+  String get reportCategoryBait;
+
+  /// 신고 카테고리 — 욕설/비하 (ReportCategory.abuse)
+  ///
+  /// In ko, this message translates to:
+  /// **'욕설/비하'**
+  String get reportCategoryAbuse;
+
+  /// 신고 카테고리 — 사칭/사기 (ReportCategory.impersonation)
+  ///
+  /// In ko, this message translates to:
+  /// **'사칭/사기'**
+  String get reportCategoryImpersonation;
+
+  /// 신고 카테고리 — 광고/스팸 (ReportCategory.spam)
+  ///
+  /// In ko, this message translates to:
+  /// **'광고/스팸'**
+  String get reportCategorySpam;
+
+  /// 신고 카테고리 — 부정 행위/버그 악용 (ReportCategory.exploit)
+  ///
+  /// In ko, this message translates to:
+  /// **'부정 행위/버그 악용'**
+  String get reportCategoryExploit;
+
+  /// 신고 카테고리 — 팀 사기 저하 (ReportCategory.teamSabotage)
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 사기 저하'**
+  String get reportCategoryTeamSabotage;
+
+  /// 신고 카테고리 — 기타 (ReportCategory.other, 직접 입력)
+  ///
+  /// In ko, this message translates to:
+  /// **'기타(직접 작성)'**
+  String get reportCategoryOther;
+
+  /// 닉네임 중복 확인 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'닉네임 확인 중 예기치 않은 오류가 발생했습니다'**
+  String get errorNicknameCheckUnexpected;
+
+  /// 닉네임 변경 실패 시 표시되는 예외 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'닉네임 변경 중 예기치 않은 오류가 발생했습니다'**
+  String get errorNicknameUpdateUnexpected;
+
+  /// 사용자 정보 조회 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'사용자 정보 조회 중 오류가 발생했습니다'**
+  String get errorUserInfoFetch;
+
+  /// 회원 탈퇴 처리 중 예기치 않은 오류 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'회원 탈퇴 중 예기치 않은 오류가 발생했습니다'**
+  String get errorDeleteAccountUnexpected;
+
+  /// 약관 동의 상태 조회 중 예기치 않은 오류 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다'**
+  String get errorAgreementFetchUnexpected;
+
+  /// 약관 동의 저장 중 예기치 않은 오류 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'약관 동의 저장 중 예기치 않은 오류가 발생했습니다'**
+  String get errorAgreementSaveUnexpected;
+
+  /// 게임 푸시 알림 동의 조회 중 예기치 않은 오류 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다'**
+  String get errorGamePushFetchUnexpected;
+
+  /// 게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다'**
+  String get errorGamePushUpdateUnexpected;
+
+  /// 인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다'**
+  String get errorAuthTokenMissing;
+
+  /// 서버 연결 실패 — STOMP/REST 모두 실패 시 재시도 권장 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요'**
+  String get errorServerUnreachable;
+
+  /// 인증 토큰 만료 — 재로그인 유도
+  ///
+  /// In ko, this message translates to:
+  /// **'인증이 만료되었습니다. 재로그인이 필요합니다'**
+  String get errorAuthExpired;
+
+  /// 공지사항 로딩 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'공지사항을 불러오는 중 오류가 발생했습니다'**
+  String get errorNoticesLoadGeneric;
+
+  /// 공지사항 로딩 중 표시되는 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'공지사항을 불러오는 중...'**
+  String get messageLoadingNotices;
+
+  /// 공지사항 로딩 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'공지사항을 불러오지 못했어요'**
+  String get errorNoticeLoadFailed;
+
+  /// 공지사항 페이지 AppBar 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'공지사항'**
+  String get pageNoticesTitle;
+
+  /// 공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 공지사항이 없습니다'**
+  String get pageNoticesEmpty;
+
+  /// 게임 진입 시 area(구역) 정보 로드 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 정보를 불러올 수 없습니다'**
+  String get errorAreaLoadFailed;
+
+  /// 404 페이지 AppBar 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'페이지를 찾을 수 없습니다'**
+  String get pageNotFoundTitle;
+
+  /// 404 페이지 본문 — 잘못된 경로 진입 시 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'요청하신 페이지가 존재하지 않습니다'**
+  String get pageNotFoundMessage;
+
+  /// 404 페이지 — 시도한 경로 표시 (디버깅 도움)
+  ///
+  /// In ko, this message translates to:
+  /// **'경로: {path}'**
+  String pageNotFoundPath(String path);
+
+  /// 로그아웃 공통 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃'**
+  String get buttonLogout;
+
+  /// 버그 제보 처리 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'버그 제보 처리 중 오류가 발생했습니다'**
+  String get errorBugReportFailed;
+
+  /// START 1단계 — 제한 시간 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'제한 시간은 {minutes}분입니다.'**
+  String gameEventStartTime(int minutes);
+
+  /// START 2단계 — 게임 시작 예고
+  ///
+  /// In ko, this message translates to:
+  /// **'잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!'**
+  String get gameEventStartReady;
+
+  /// START 3단계 — 신고/차단 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.'**
+  String get gameEventStartReportTip;
+
+  /// START 4단계 — 게임 시작 확정
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시작!  행운을 빕니다!'**
+  String get gameEventStartGo;
+
+  /// 경찰 출동 확정
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 출동!  도둑은 도망치세요!'**
+  String get gameEventPoliceMove;
+
+  /// 도둑 위치 공개 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 도둑의 위치가 공개됩니다!'**
+  String get gameEventLocationReveal;
+
+  /// 체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환
+  ///
+  /// In ko, this message translates to:
+  /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!'**
+  String gameEventArrestNotice(String policeNickname, String robberNickname);
+
+  /// 탈옥 공지
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑이 탈옥했습니다! 지금 바로 체포하세요!'**
+  String get gameEventEscapeNotice;
+
+  /// 지도 로드 실패 시 표시 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'{mapName} 로드 실패'**
+  String mapErrorLoadFailed(String mapName);
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['en', 'ja', 'ko'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'ja':
+      return AppLocalizationsJa();
+    case 'ko':
+      return AppLocalizationsKo();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
+}

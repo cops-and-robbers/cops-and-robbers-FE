@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,7 +37,10 @@ class AgreementItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tagText = required ? '[필수]' : '[선택]';
+    final l10n = AppLocalizations.of(context);
+    final tagText = required
+        ? l10n.agreementItemRequiredTag
+        : l10n.agreementItemOptionalTag;
     final tagColor = required ? AppColors.black600 : AppColors.black400;
 
     return Padding(

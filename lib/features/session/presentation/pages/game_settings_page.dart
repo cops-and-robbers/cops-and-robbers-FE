@@ -12,6 +12,7 @@ import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../game/data/models/game_area_model.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
@@ -135,9 +136,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       final errorMsg =
           ApiErrorResponse.tryParse(e.response?.data)?.detail ??
-          '영역 저장에 실패했습니다.';
+          l10n.errorAreaSaveFailed;
       AppSnackbar.show(
         context,
         message: errorMsg,
@@ -168,6 +170,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
     final isDark = ref.watch(roleThemeProvider);
+    final l10n = AppLocalizations.of(context);
 
     final settingsAsync = ref.watch(fetchGameSettingsProvider(gameId));
     final areaAsync = ref.watch(fetchGameAreaProvider(gameId));
@@ -187,7 +190,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
         ),
         centerTitle: true,
         title: Text(
-          '게임 설정',
+          l10n.pageGameSettingsTitle,
           style: AppTextStyles.heading_20.copyWith(color: textColor),
         ),
         iconTheme: IconThemeData(
@@ -203,11 +206,15 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
               // ── 구역 섹션 ──
               areaAsync.when(
-                data: (area) =>
-                    _buildZoneSection(area, isHost: isHost, isDark: isDark),
+                data: (area) => _buildZoneSection(
+                  area,
+                  isHost: isHost,
+                  isDark: isDark,
+                  l10n: l10n,
+                ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
-                  '구역 정보를 불러올 수 없습니다.',
+                  l10n.errorZoneInfoLoadFailed,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: AppColors.red,
                   ),
@@ -225,7 +232,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
-                  '설정 정보를 불러올 수 없습니다.',
+                  l10n.errorSettingsLoadFailed,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: AppColors.red,
                   ),
@@ -263,16 +270,17 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     GameAreaModel area, {
     required bool isHost,
     required bool isDark,
+    required AppLocalizations l10n,
   }) {
     final zones = [
       ZoneInfo(
         id: 'playground',
-        name: '플레이그라운드',
+        name: l10n.zonePlayground,
         radiusMeters: area.playgroundRadiusInMeters.toInt(),
       ),
       ZoneInfo(
         id: 'prison',
-        name: '감옥',
+        name: l10n.zoneJail,
         radiusMeters: area.jailRadiusInMeters.toInt(),
       ),
     ];

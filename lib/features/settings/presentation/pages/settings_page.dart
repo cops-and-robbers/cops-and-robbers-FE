@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -21,7 +22,10 @@ import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../../router/route_paths.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
+import 'language_settings_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bug/presentation/providers/bug_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
@@ -92,6 +96,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final gamePushState = ref.watch(gamePushNotifierProvider);
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -101,7 +106,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         leading: PreviousButton(onPressed: () => context.pop()),
         centerTitle: true,
         title: Text(
-          '설정',
+          l10n.pageSettingsTitle,
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
@@ -112,9 +117,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // ══════════════════════════════════════════
             // 계정
             // ══════════════════════════════════════════
-            _buildSectionHeader('계정'),
+            _buildSectionHeader(l10n.settingsSectionAccount),
             _buildMenuItem(
-              text: '닉네임 변경',
+              text: l10n.settingsAccountChangeNickname,
               trailing: _buildForwardArrow(),
               onTap: _onNicknameChange,
             ),
@@ -125,28 +130,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // ══════════════════════════════════════════
             // 앱 설정
             // ══════════════════════════════════════════
-            _buildSectionHeader('앱 설정'),
+            _buildSectionHeader(l10n.settingsSectionAppPreferences),
             _buildSwitchMenuItem(
-              text: '게임 알림',
-              subtitle: '게임 진행 중 발생하는 이벤트 알림을 설정해요',
+              text: l10n.settingsAppGameNotification,
+              subtitle: l10n.settingsAppGameNotificationDescription,
               value: gamePushState.valueOrNull ?? false,
               onToggle: _onGamePushToggle,
             ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: '알림',
+              text: l10n.settingsAppGeneralNotification,
               // "게임 중 알림" 부분만 더 큰 스타일 + 진한 색상으로 강조
               subtitleWidget: Text.rich(
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: '게임 중 알림',
+                      text: l10n.settingsAppGeneralNotificationHighlight,
                       style: AppTextStyles.tag12Semibold.copyWith(
                         color: AppColors.black800,
                       ),
                     ),
                     TextSpan(
-                      text: '을 포함한 앱에서 보내는 모든 알림을 설정해요',
+                      text: l10n.settingsAppGeneralNotificationDetail,
                       style: AppTextStyles.tag_12.copyWith(
                         color: AppColors.black600,
                       ),
@@ -161,10 +166,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _buildItemDivider(),
 
             _buildMenuItem(
-              text: '위치 권한 관리',
-              subtitle: '기기 설정에서 위치 권한을 변경할 수 있어요',
+              text: l10n.settingsAppLocationPermission,
+              subtitle: l10n.settingsAppLocationPermissionDescription,
               onTap: () =>
                   AppSettings.openAppSettings(type: AppSettingsType.location),
+            ),
+            _buildItemDivider(),
+
+            // 언어 설정 — 현재 선택값을 subtitle에 표시, 탭 시 BottomSheet
+            _buildMenuItem(
+              text: AppLocalizations.of(context).settingsLanguageLabel,
+              subtitle: _currentLanguageDisplay(),
+              trailing: _buildForwardArrow(),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LanguageSettingsPage(),
+                  ),
+                );
+                // subtitle은 _currentLanguageDisplay()가 appLocaleProvider를 watch하므로 자동 갱신
+              },
             ),
             SizedBox(height: AppSpacing.vertical4),
 
@@ -173,20 +194,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // ══════════════════════════════════════════
             // 이용 안내
             // ══════════════════════════════════════════
-            _buildSectionHeader('이용 안내'),
+            _buildSectionHeader(l10n.settingsSectionGuide),
             _buildVersionItem(),
             _buildItemDivider(),
-            _buildMenuItem(text: '버그 제보', onTap: _onBugReport),
+            _buildMenuItem(
+              text: l10n.settingsGuideBugReport,
+              onTap: _onBugReport,
+            ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: '튜토리얼 다시 보기',
+              text: l10n.settingsGuideTutorialRewatch,
               onTap: () => context.push('/tutorial'),
             ),
             _buildItemDivider(),
-            _buildMenuItem(text: '튜토리얼 초기화', onTap: _onResetTutorial),
+            _buildMenuItem(
+              text: l10n.settingsGuideTutorialReset,
+              onTap: _onResetTutorial,
+            ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: '이용약관 및 정책',
+              text: l10n.settingsGuideAgreements,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const AgreementSettingsPage(),
@@ -199,15 +226,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // ══════════════════════════════════════════
             // 기타
             // ══════════════════════════════════════════
-            _buildSectionHeader('기타'),
+            _buildSectionHeader(l10n.settingsSectionEtc),
             _buildMenuItem(
-              text: '로그아웃',
+              text: l10n.buttonLogout,
               textColor: AppColors.red,
               onTap: _onLogout,
             ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: '회원 탈퇴',
+              text: l10n.settingsEtcDeleteAccount,
               textColor: AppColors.black600,
               onTap: _showDeleteAccountDialog,
             ),
@@ -217,6 +244,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ),
       ),
     );
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // i18n 헬퍼
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 설정 메뉴 subtitle용 현재 언어 표시 문자열
+  ///
+  /// "시스템 따름" / "한국어" / "English" / "日本語" 중 하나 반환
+  String _currentLanguageDisplay() {
+    final l10n = AppLocalizations.of(context);
+    final localeState = ref.watch(appLocaleProvider);
+    if (localeState.isFollowingSystem) return l10n.settingsLanguageOptionSystem;
+    switch (localeState.locale.languageCode) {
+      case 'en':
+        return l10n.settingsLanguageOptionEnglish;
+      case 'ja':
+        return l10n.settingsLanguageOptionJapanese;
+      case 'ko':
+      default:
+        return l10n.settingsLanguageOptionKorean;
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -289,7 +338,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '앱 버전',
+              AppLocalizations.of(context).settingsAppVersionLabel,
               style: AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
             FutureBuilder<PackageInfo>(
@@ -447,9 +496,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       await ref.read(gamePushNotifierProvider.notifier).toggle();
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       AppSnackbar.show(
         context,
-        message: e is AppException ? e.message : '게임 알림 설정을 변경하지 못했어요',
+        message: e is AppException
+            ? l10n.errorByException(e)
+            : l10n.errorGameNotificationToggleFailed,
         backgroundColor: AppColors.red,
       );
     } finally {
@@ -478,7 +530,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: e.message,
+        message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
     } finally {
@@ -489,13 +541,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   /// 버그 제보 입력 화면 진입
   void _onBugReport() {
+    final l10n = AppLocalizations.of(context);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => TextSubmitPage(
-          title: '버그 제보',
-          label: '버그 내용',
-          hintText: '어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)',
-          submitText: '제보하기',
+          title: l10n.titleBugReport,
+          label: l10n.fieldBugReportLabel,
+          hintText: l10n.fieldBugReportHint,
+          submitText: l10n.buttonSubmitReport,
           maxLength: 1000,
           onSubmit: _submitBugReport,
         ),
@@ -521,7 +574,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (!mounted) return;
       if (navigator.canPop()) navigator.pop(); // loading 닫기
       if (navigator.canPop()) navigator.pop(); // TextSubmitPage 닫기
-      AppSnackbar.show(context, message: '버그 제보가 접수되었어요');
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).messageBugReportSubmitted,
+      );
     } on AuthException {
       // AuthInterceptor가 강제 로그아웃 + 로그인 화면 이동을 처리
       // 다이얼로그는 Navigator 스택에 남으므로 명시적으로 닫아준다
@@ -532,7 +588,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (navigator.canPop()) navigator.pop(); // loading만 닫고 입력 페이지는 유지
       AppSnackbar.show(
         context,
-        message: e.message,
+        message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
     }
@@ -544,11 +600,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   /// 부모 위젯이 dispose되지 않은 화면도 즉시 재노출되게 한다.
   /// 마지막에 홈으로 이동해 첫 코치마크가 바로 떠 보이도록 한다.
   Future<void> _onResetTutorial() async {
+    final l10n = AppLocalizations.of(context);
     final result = await AppDialog.confirm(
       context: context,
-      title: '튜토리얼 초기화',
-      message: '모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?',
-      confirmText: '초기화',
+      title: l10n.dialogTutorialResetTitle,
+      message: l10n.dialogTutorialResetMessage,
+      confirmText: l10n.buttonReset,
     );
     if (result != true || !mounted) return;
 
@@ -556,18 +613,22 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     if (!mounted) return;
 
     ref.read(tutorialResetSignalProvider.notifier).state++;
-    AppSnackbar.show(context, message: '튜토리얼이 초기화되었어요');
+    AppSnackbar.show(
+      context,
+      message: AppLocalizations.of(context).messageTutorialReset,
+    );
     context.go(RoutePaths.home);
   }
 
   /// 로그아웃
   Future<void> _onLogout() async {
     final navigator = Navigator.of(context);
+    final l10n = AppLocalizations.of(context);
     final result = await AppDialog.confirm(
       context: context,
-      title: '로그아웃',
-      message: '정말 로그아웃 하시겠어요?',
-      confirmText: '로그아웃',
+      title: l10n.dialogLogoutTitle,
+      message: l10n.dialogLogoutMessage,
+      confirmText: l10n.buttonLogout,
       isDestructive: true,
     );
     if (result != true || !mounted) return;
@@ -587,7 +648,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     AppSnackbar.show(
       // ignore: use_build_context_synchronously
       context,
-      message: authState.hasError ? '로그아웃에 실패했습니다' : '로그아웃되었습니다',
+      message: authState.hasError
+          ? AppLocalizations.of(context).snackbarLogoutFailed
+          : AppLocalizations.of(context).snackbarLogoutSuccess,
       backgroundColor: authState.hasError ? AppColors.red : AppColors.blue,
     );
   }
@@ -595,22 +658,25 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   /// 회원 탈퇴 확인 다이얼로그 표시
   void _showDeleteAccountDialog() {
     final controller = TextEditingController();
+    final l10n = AppLocalizations.of(context);
 
     AppDialog.show(
       context: context,
-      title: '회원 탈퇴',
-      message:
-          '탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다.\n\n계속하려면 "탈퇴하기" 또는 "delete"를 입력하세요.',
+      title: l10n.dialogDeleteAccountTitle,
+      message: l10n.dialogDeleteAccountMessage,
       customContent: AppTextField(
         controller: controller,
-        hintText: '탈퇴하기 또는 delete',
+        hintText: l10n.fieldDeleteAccountHint,
       ),
-      cancelText: '취소',
-      confirmText: '탈퇴',
+      cancelText: l10n.buttonCancel,
+      confirmText: l10n.buttonDeleteAccount,
       isDestructive: true,
       validator: () {
-        final text = controller.text.trim();
-        return text == '탈퇴하기' || text.toLowerCase() == 'delete';
+        // 검증 키워드는 모든 로케일에서 'delete'로 통일 (글로벌 공통 영문)
+        // 로케일별 번역어를 허용하지 않는 이유:
+        // 1) hint와 정책 일치 — 각 로케일 hint도 'delete'만 안내
+        // 2) 한 단어 영문이라 입력 비용·오타 위험 모두 낮음
+        return controller.text.trim().toLowerCase() == 'delete';
       },
       onConfirm: () => _executeDeleteAccount(),
     ).whenComplete(() {
@@ -649,7 +715,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: e.message,
+        message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
     }

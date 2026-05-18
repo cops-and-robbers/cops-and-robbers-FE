@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -48,12 +49,13 @@ class UpdateDialogHelper {
 
   /// 권고 업데이트 다이얼로그 (최신 버전 안내, "나중에" 가능)
   static Future<void> _showRecommendUpdateDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppDialog.show(
       context: context,
-      title: '새 버전 안내',
-      message: '더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?',
-      confirmText: '업데이트',
-      cancelText: '나중에',
+      title: l10n.dialogUpdateOptionalTitle,
+      message: l10n.dialogUpdateOptionalMessage,
+      confirmText: l10n.dialogUpdateOptionalConfirm,
+      cancelText: l10n.dialogUpdateOptionalCancel,
       barrierDismissible: true,
       onConfirm: () {
         launchExternalUrl(AppUrls.storeUrl);
@@ -63,12 +65,13 @@ class UpdateDialogHelper {
 
   /// 선택 업데이트 다이얼로그 (minimum_version 미만, "나중에" 가능)
   static Future<void> _showOptionalUpdateDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppDialog.show(
       context: context,
-      title: '업데이트 안내',
-      message: '새로운 버전이 출시되었어요.\n업데이트하시겠어요?',
-      confirmText: '업데이트',
-      cancelText: '나중에',
+      title: l10n.dialogUpdateMandatoryTitle,
+      message: l10n.dialogUpdateMandatoryMessage,
+      confirmText: l10n.dialogUpdateMandatoryConfirm,
+      cancelText: l10n.dialogUpdateMandatoryCancel,
       barrierDismissible: true,
       onConfirm: () {
         launchExternalUrl(AppUrls.storeUrl);

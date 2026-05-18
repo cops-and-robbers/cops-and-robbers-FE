@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -97,24 +98,26 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
             ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _document == null
-          ? Center(
-              child: Text(
-                '문서를 불러올 수 없습니다.',
-                style: AppTextStyles.paragraph_14.copyWith(
-                  color: AppColors.black600,
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _document == null
+            ? Center(
+                child: Text(
+                  AppLocalizations.of(context).errorLegalDocumentLoadFailed,
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black600,
+                  ),
                 ),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.horizontal24,
+                  vertical: AppSpacing.vertical16,
+                ),
+                child: _buildSections(),
               ),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.horizontal24,
-                vertical: AppSpacing.vertical16,
-              ),
-              child: _buildSections(),
-            ),
+      ),
     );
   }
 
@@ -124,11 +127,39 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // 비-ko 로케일 전용 고지문 배너 (ko에서는 빈 문자열 → 미표시)
+        _buildKoreanOnlyNotice(),
         for (int i = 0; i < sections.length; i++) ...[
           if (i > 0) SizedBox(height: 24.h),
           _buildSection(sections[i] as Map<String, dynamic>),
         ],
+        // 안드로이드 제스처 네비게이션 바와 마지막 본문이 겹치지 않도록 여백 확보
+        SizedBox(height: AppSpacing.vertical64),
       ],
+    );
+  }
+
+  /// 한국어 원본만 제공한다는 고지문 배너
+  ///
+  /// ARB의 [legalDocumentKoreanOnlyNotice]가 빈 문자열인 로케일(ko)은 미표시.
+  /// en/ja 등 번역되지 않은 로케일 사용자에게 원본 언어와 법적 효력을 안내.
+  Widget _buildKoreanOnlyNotice() {
+    final notice = AppLocalizations.of(context).legalDocumentKoreanOnlyNotice;
+    if (notice.isEmpty) return const SizedBox.shrink();
+    return Container(
+      margin: EdgeInsets.only(bottom: AppSpacing.vertical16),
+      padding: AppPadding.all16,
+      decoration: BoxDecoration(
+        color: AppColors.black100,
+        borderRadius: AppRadius.large,
+      ),
+      child: Text(
+        notice,
+        style: AppTextStyles.tag_12.copyWith(
+          color: AppColors.black800,
+          height: 1.4,
+        ),
+      ),
     );
   }
 

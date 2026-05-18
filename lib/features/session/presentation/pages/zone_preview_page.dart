@@ -13,6 +13,7 @@ import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 구역 읽기전용 프리뷰 페이지
 ///
@@ -114,12 +115,13 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
     final isDark = ref.watch(roleThemeProvider);
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
     final textColor = isDark ? AppColors.white : AppColors.black;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
         title: Text(
-          '게임 구역',
+          l10n.pageZonePreviewTitle,
           style: AppTextStyles.heading_20.copyWith(color: textColor),
         ),
         backgroundColor: bgColor,
@@ -142,7 +144,7 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '현재 설정된 게임 구역이에요',
+                  l10n.zonePreviewSubtitle,
                   style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),

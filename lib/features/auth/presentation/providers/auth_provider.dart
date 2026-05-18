@@ -257,7 +257,12 @@ class AuthNotifier extends _$AuthNotifier {
         state = AsyncValue.error(e, stack);
       } else {
         state = AsyncValue.error(
-          AuthException(message: '알 수 없는 오류가 발생했습니다.', originalException: e),
+          AuthException(
+            // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
+            message: 'unknown auth error',
+            messageKey: 'errorUnknown',
+            originalException: e,
+          ),
           stack,
         );
       }
@@ -293,7 +298,12 @@ class AuthNotifier extends _$AuthNotifier {
         state = AsyncValue.error(e, stack);
       } else {
         state = AsyncValue.error(
-          AuthException(message: '알 수 없는 오류가 발생했습니다.', originalException: e),
+          AuthException(
+            // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
+            message: 'unknown auth error',
+            messageKey: 'errorUnknown',
+            originalException: e,
+          ),
           stack,
         );
       }
@@ -316,7 +326,12 @@ class AuthNotifier extends _$AuthNotifier {
       state = const AsyncValue.data(null);
     } catch (e, stack) {
       state = AsyncValue.error(
-        AuthException(message: '로그아웃에 실패했습니다.', originalException: e),
+        AuthException(
+          // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
+          message: 'logout failed',
+          messageKey: 'errorLogoutFailed',
+          originalException: e,
+        ),
         stack,
       );
     }

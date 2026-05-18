@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +7,7 @@ import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
@@ -72,7 +74,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: '아직 네트워크에 연결되지 않았어요',
+        message: AppLocalizations.of(context).errorNetworkNotConnected,
         backgroundColor: AppColors.red,
       );
       return;
@@ -94,12 +96,16 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
         });
       }
 
-      AppSnackbar.show(context, message: '변경사항이 저장되었어요');
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).messageChangesSaved,
+      );
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       final message = e is AppException
-          ? e.message
-          : '일시적인 오류가 발생했습니다. 다시 시도해주세요.';
+          ? l10n.errorByException(e)
+          : l10n.errorTemporaryRetry;
       AppSnackbar.show(
         context,
         message: message,
@@ -130,6 +136,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -139,7 +146,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
         leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
         centerTitle: true,
         title: Text(
-          '이용약관 및 정책',
+          l10n.pageAgreementSettingsTitle,
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
@@ -154,9 +161,10 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
   }
 
   Widget _buildError(Object error) {
+    final l10n = AppLocalizations.of(context);
     final message = error is AppException
-        ? error.message
-        : '약관 동의 현황을 불러올 수 없습니다.';
+        ? l10n.errorByException(error)
+        : l10n.errorAgreementLoadFailed;
     return Padding(
       padding: AppPadding.all20,
       child: Column(
@@ -173,7 +181,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
           ),
           SizedBox(height: AppSpacing.vertical16),
           AppButton(
-            text: '다시 시도',
+            text: l10n.buttonRetry,
             onPressed: () {
               setState(() => _status = const AsyncValue.loading());
               _loadAgreements();
@@ -186,6 +194,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
   }
 
   Widget _buildContent(AgreementStatusEntity status) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: AppPadding.all24,
       child: Column(
@@ -200,10 +209,10 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     checked: status.termsOfService,
                     required: true,
                     readOnly: true,
-                    title: '이용약관',
+                    title: l10n.linkTermsOfService,
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
-                      title: '이용약관',
+                      title: l10n.linkTermsOfService,
                       assetPath: 'assets/legals/terms_of_service.json',
                       externalUrl: AppUrls.termsOfService,
                     ),
@@ -215,10 +224,10 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     checked: status.privacyPolicy,
                     required: true,
                     readOnly: true,
-                    title: '개인정보 처리방침',
+                    title: l10n.linkPrivacyPolicy,
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
-                      title: '개인정보 처리방침',
+                      title: l10n.linkPrivacyPolicy,
                       assetPath: 'assets/legals/privacy_policy.json',
                       externalUrl: AppUrls.privacyPolicy,
                     ),
@@ -230,10 +239,10 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     checked: status.locationTerms,
                     required: true,
                     readOnly: true,
-                    title: '위치정보 이용약관',
+                    title: l10n.linkLocationTerms,
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
-                      title: '위치정보 이용약관',
+                      title: l10n.linkLocationTerms,
                       assetPath: 'assets/legals/location_terms.json',
                       externalUrl: AppUrls.locationTerms,
                     ),
@@ -244,11 +253,11 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                   AgreementItem(
                     checked: _newMarketing,
                     required: false,
-                    title: '마케팅 정보 수신',
+                    title: l10n.linkMarketingConsent,
                     onToggle: () =>
                         setState(() => _newMarketing = !_newMarketing),
                     onDetailTap: () => _openDetail(
-                      title: '마케팅 정보 수신',
+                      title: l10n.linkMarketingConsent,
                       assetPath: 'assets/legals/marketing_consent.json',
                       externalUrl: AppUrls.marketingConsent,
                     ),
@@ -258,7 +267,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
             ),
           ),
           AppButton(
-            text: '변경사항 저장',
+            text: l10n.buttonSaveChanges,
             onPressed: _hasChanges && !_isSaving ? _save : null,
             isLoading: _isSaving,
             showBorder: false,

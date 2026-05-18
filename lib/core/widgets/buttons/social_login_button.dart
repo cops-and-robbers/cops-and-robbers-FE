@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -36,7 +37,7 @@ class GoogleLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppButton(
-      text: 'Google로 시작하기',
+      text: AppLocalizations.of(context).buttonGoogleSignIn,
       onPressed: onPressed,
       icon: SvgPicture.asset(
         'assets/icons/icon_google.svg',
@@ -83,7 +84,7 @@ class AppleLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppButton(
-      text: 'Apple로 시작하기',
+      text: AppLocalizations.of(context).buttonAppleSignIn,
       onPressed: onPressed,
       icon: SvgPicture.asset(
         'assets/icons/icon_apple.svg',

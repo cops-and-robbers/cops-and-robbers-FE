@@ -11,6 +11,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/constants/chat_constants.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_notification_provider.dart';
 import '../providers/chat_provider.dart';
@@ -425,7 +426,10 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   Widget _buildTitle() {
-    final title = _currentPage == 0 ? '전체 채팅' : '팀 채팅';
+    final l10n = AppLocalizations.of(context);
+    final title = _currentPage == 0
+        ? l10n.chatScopeAllTitle
+        : l10n.chatScopeTeamTitle;
     final isNotificationOn = ref.watch(chatNotificationEnabledProvider);
 
     return Padding(

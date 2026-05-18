@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,6 +18,7 @@ class MaintenancePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -36,7 +38,7 @@ class MaintenancePage extends StatelessWidget {
                       ),
                       SizedBox(height: AppSpacing.vertical24),
                       Text(
-                        '서버 점검 중',
+                        l10n.pageMaintenanceTitle,
                         style: AppTextStyles.heading_24.copyWith(
                           color: AppColors.black,
                         ),
@@ -44,7 +46,7 @@ class MaintenancePage extends StatelessWidget {
                       ),
                       SizedBox(height: AppSpacing.vertical16),
                       Text(
-                        '더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!',
+                        l10n.pageMaintenanceMessage,
                         style: AppTextStyles.subHeading_18.copyWith(
                           color: AppColors.black600,
                         ),

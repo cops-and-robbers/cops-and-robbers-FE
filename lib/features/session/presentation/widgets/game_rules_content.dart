@@ -7,6 +7,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/dialog_spacing.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 게임 규칙 다이얼로그 내용 위젯
 ///
@@ -31,11 +32,12 @@ class GameRulesContent extends StatelessWidget {
     bool isDarkMode = false,
     int? locationRevealIntervalMinutes,
   }) {
+    final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
       isDarkMode: isDarkMode,
       backgroundColor: isDarkMode ? AppColors.black : null,
-      title: '게임 규칙',
+      title: l10n.titleGameRules,
       titleStyle: isDarkMode
           ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
           : null,
@@ -46,8 +48,8 @@ class GameRulesContent extends StatelessWidget {
       ),
       // 좌측은 단순 닫기, 우측 primary로 인게임 튜토리얼 재방문 경로 노출.
       // 한 번 본 사용자도 게임 규칙 다이얼로그를 통해 언제든 다시 학습 가능.
-      cancelText: '확인',
-      confirmText: '인게임 보기',
+      cancelText: l10n.buttonConfirm,
+      confirmText: l10n.buttonViewInGame,
       confirmColor: isDarkMode ? null : AppColors.blue,
       confirmTextColor: isDarkMode ? null : AppColors.white,
       onConfirm: () => context.push('/tutorial/in-game'),
@@ -56,15 +58,16 @@ class GameRulesContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildRule(number: '1.', content: _rule1()),
+        _buildRule(number: '1.', content: _rule1(l10n)),
         SizedBox(height: AppSpacing.vertical12),
-        _buildRule(number: '2.', content: _rule2()),
+        _buildRule(number: '2.', content: _rule2(l10n)),
         SizedBox(height: AppSpacing.vertical12),
-        _buildRule(number: '3.', content: _rule3()),
+        _buildRule(number: '3.', content: _rule3(l10n)),
       ],
     );
   }
@@ -89,34 +92,34 @@ class GameRulesContent extends StatelessWidget {
     );
   }
 
-  InlineSpan _rule1() {
+  InlineSpan _rule1(AppLocalizations l10n) {
     return TextSpan(
       children: [
-        const TextSpan(text: '경찰은 모든 도둑을 잡아서 '),
-        _highlight('체포하면,'),
-        const TextSpan(text: '\n도둑은 '),
-        _highlight('제한 시간이 끝날 때까지 버티면'),
-        const TextSpan(text: ' 승리해요'),
+        TextSpan(text: l10n.gameRulesCopGoalPrefix),
+        _highlight(l10n.gameRulesCopGoalSuffix),
+        TextSpan(text: l10n.gameRulesRobberGoalPrefix),
+        _highlight(l10n.gameRulesRobberGoalCondition),
+        TextSpan(text: l10n.gameRulesWinSuffix),
       ],
     );
   }
 
-  InlineSpan _rule2() {
+  InlineSpan _rule2(AppLocalizations l10n) {
     final minutes = locationRevealIntervalMinutes ?? 5;
     return TextSpan(
       children: [
-        const TextSpan(text: '도둑팀의 위치는 '),
-        _highlight('$minutes분마다'),
-        const TextSpan(text: ' 경찰팀에게 공유돼요'),
+        TextSpan(text: l10n.gameRulesLocationShareLine1),
+        _highlight(l10n.gameRulesLocationShareLine2(minutes)),
+        TextSpan(text: l10n.gameRulesLocationShareLine3),
       ],
     );
   }
 
-  InlineSpan _rule3() {
+  InlineSpan _rule3(AppLocalizations l10n) {
     return TextSpan(
       children: [
-        _highlight('지정된 게임 구역에서 벗어나면 안 돼요'),
-        const TextSpan(text: '\n→ 구역 밖으로 나가면 화면이 잠겨요'),
+        _highlight(l10n.gameRulesZoneRuleLine1),
+        TextSpan(text: l10n.gameRulesZoneRuleLine2),
       ],
     );
   }

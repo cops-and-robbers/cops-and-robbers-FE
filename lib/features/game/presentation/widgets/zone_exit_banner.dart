@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -63,7 +64,7 @@ class ZoneExitBanner extends StatelessWidget {
             SizedBox(width: AppSpacing.horizontal8),
             Expanded(
               child: Text(
-                '플레이그라운드를 벗어났어요',
+                AppLocalizations.of(context).gameZoneExitBanner,
                 style: textStyle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
