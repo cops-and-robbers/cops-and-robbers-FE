@@ -1288,14 +1288,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get game_gamePage_L1086_1 => 'Robber team';
 
   @override
-  String get game_gamePage_L1090 => 'Victory';
+  String get game_gamePage_L1090 => 'Win';
 
   @override
-  String get game_gamePage_L1090_1 => 'Defeat';
+  String get game_gamePage_L1090_1 => 'Lose';
 
   @override
   String dialoggamePageMessage(String winnerTeamLabel) {
-    return 'Victory for the $winnerTeamLabel!';
+    return '$winnerTeamLabel wins!';
   }
 
   @override
@@ -1383,10 +1383,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get game_gameActionModal_L63_1 => 'Cancel';
 
   @override
-  String get game_gameOverResultDialog_L324 => 'Victory';
+  String get game_gameOverResultDialog_L324 => 'Win';
 
   @override
-  String get game_gameOverResultDialog_L324_1 => 'Defeat';
+  String get game_gameOverResultDialog_L324_1 => 'Lose';
 
   @override
   String get fieldgameOverResultDialogLabel => 'Arrest count';
