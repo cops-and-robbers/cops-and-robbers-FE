@@ -81,11 +81,11 @@ class AgreementPage extends ConsumerWidget {
                         AgreementItem(
                           checked: state.locationTerms,
                           required: true,
-                          title: l10n.dialogagreementPageTitle6dcc,
+                          title: l10n.linkLocationTerms,
                           onToggle: notifier.toggleLocation,
                           onDetailTap: () => _openDetail(
                             context,
-                            title: l10n.dialogagreementPageTitle6dcc,
+                            title: l10n.linkLocationTerms,
                             assetPath: 'assets/legals/location_terms.json',
                             externalUrl: AppUrls.locationTerms,
                           ),
@@ -93,11 +93,11 @@ class AgreementPage extends ConsumerWidget {
                         AgreementItem(
                           checked: state.marketing,
                           required: false,
-                          title: l10n.dialogagreementPageTitle76b8,
+                          title: l10n.linkMarketingConsent,
                           onToggle: notifier.toggleMarketing,
                           onDetailTap: () => _openDetail(
                             context,
-                            title: l10n.dialogagreementPageTitle76b8,
+                            title: l10n.linkMarketingConsent,
                             assetPath: 'assets/legals/marketing_consent.json',
                             externalUrl: AppUrls.marketingConsent,
                           ),
@@ -180,7 +180,7 @@ class AgreementPage extends ConsumerWidget {
       case AgreementSubmitResult.missingRequired:
         AppSnackbar.show(
           context,
-          message: l10n.dialogagreementPageMessage24a8,
+          message: l10n.errorRequiredAgreementsMissing,
           backgroundColor: AppColors.red,
         );
       case AgreementSubmitResult.failure:

@@ -73,7 +73,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       ..onTap = () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).dialogloginPageTitle2aa8,
+            title: AppLocalizations.of(context).linkTermsOfService,
             assetPath: 'assets/legals/terms_of_service.json',
             externalUrl: AppUrls.termsOfService,
           ),
@@ -83,7 +83,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       ..onTap = () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).dialogloginPageTitle6dcc,
+            title: AppLocalizations.of(context).linkLocationTerms,
             assetPath: 'assets/legals/location_terms.json',
             externalUrl: AppUrls.locationTerms,
           ),

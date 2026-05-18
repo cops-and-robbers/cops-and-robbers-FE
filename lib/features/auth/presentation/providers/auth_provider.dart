@@ -326,7 +326,7 @@ class AuthNotifier extends _$AuthNotifier {
       state = AsyncValue.error(
         AuthException(
           message: '로그아웃에 실패했습니다.',
-          messageKey: 'dialogauthProviderMessage222f',
+          messageKey: 'errorLogoutFailed',
           originalException: e,
         ),
         stack,

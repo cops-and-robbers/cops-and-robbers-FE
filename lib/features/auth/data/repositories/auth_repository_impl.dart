@@ -187,7 +187,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       throw AuthException(
         message: '로그아웃 중 오류가 발생했습니다.',
-        messageKey: 'dialogauthRepositoryImplMessage993d',
+        messageKey: 'errorLogoutGeneric',
         originalException: e,
       );
     }

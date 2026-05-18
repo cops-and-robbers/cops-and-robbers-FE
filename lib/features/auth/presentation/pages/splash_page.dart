@@ -351,7 +351,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     await AppDialog.show(
       context: context,
       title: l10n.dialogsplashPageTitle,
-      message: l10n.dialogsplashPageMessage665f,
+      message: l10n.dialogSplashOfflineMessage,
       confirmText: l10n.dialogsplashPageConfirm,
       barrierDismissible: false,
       onConfirm: () {
