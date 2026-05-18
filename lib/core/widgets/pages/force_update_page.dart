@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -19,6 +20,7 @@ class ForceUpdatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -38,7 +40,7 @@ class ForceUpdatePage extends StatelessWidget {
                       ),
                       SizedBox(height: AppSpacing.vertical24),
                       Text(
-                        '업데이트 필요',
+                        l10n.pageForceUpdateTitle,
                         style: AppTextStyles.heading_24.copyWith(
                           color: AppColors.black,
                         ),
@@ -46,7 +48,7 @@ class ForceUpdatePage extends StatelessWidget {
                       ),
                       SizedBox(height: AppSpacing.vertical16),
                       Text(
-                        '새로운 버전이 출시되었어요\n업데이트 후 이용해 주세요!',
+                        l10n.pageForceUpdateMessage,
                         style: AppTextStyles.subHeading_18.copyWith(
                           color: AppColors.black600,
                         ),
@@ -57,7 +59,7 @@ class ForceUpdatePage extends StatelessWidget {
                 ),
               ),
               AppButton(
-                text: '업데이트',
+                text: l10n.pageForceUpdateButton,
                 onPressed: () => launchExternalUrl(AppUrls.storeUrl),
                 showBorder: false,
               ),

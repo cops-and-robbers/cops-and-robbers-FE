@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -155,7 +156,7 @@ class _ReconnectModalState extends State<ReconnectModal> {
                   SizedBox(height: 12.h),
 
                   Text(
-                    '연결이 끊어졌어요. 재연결이 필요해요',
+                    AppLocalizations.of(context).dialogReconnectMessage,
                     style: AppTextStyles.paragraph_14.copyWith(
                       color: _textColor,
                     ),
@@ -166,7 +167,13 @@ class _ReconnectModalState extends State<ReconnectModal> {
 
                   // connecting 중에만 "연결 중..." 비활성, 나머지는 "재연결" 활성
                   AppButton(
-                    text: isConnecting ? '연결 중...' : '재연결',
+                    text: isConnecting
+                        ? AppLocalizations.of(
+                            context,
+                          ).dialogReconnectButtonConnecting
+                        : AppLocalizations.of(
+                            context,
+                          ).dialogReconnectButtonRetry,
                     onPressed: isConnecting ? null : widget.onReconnect,
                     backgroundColor: _buttonBg,
                     foregroundColor: _buttonFg,

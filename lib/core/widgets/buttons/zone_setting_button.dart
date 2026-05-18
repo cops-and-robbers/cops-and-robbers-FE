@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -118,17 +119,18 @@ class ZoneSettingButton extends StatelessWidget {
   /// 아이콘 색상 (메인 텍스트와 동일)
   Color get _iconColor => _mainTextColor;
 
-  /// 서브텍스트 (반경 미터 정보)
+  /// 서브텍스트 (반경 미터 정보) — locale에 따라 i18n 적용
   ///
-  /// 1000m 미만: "반경 400m"
-  /// 1000m 이상: "반경 1.50km" (소수점 2자리 고정)
-  String? get _subtitle {
+  /// 1000m 미만: "반경 400m" / "Radius 400m"
+  /// 1000m 이상: "반경 1.50km" / "Radius 1.50km" (소수점 2자리 고정)
+  String? _subtitleOf(BuildContext context) {
     if (radiusMeters == null) return null;
+    final l10n = AppLocalizations.of(context);
     if (radiusMeters! >= 1000) {
       final km = (radiusMeters! / 1000).toStringAsFixed(2);
-      return '반경 ${km}km';
+      return l10n.zoneRadiusKm(km);
     }
-    return '반경 ${radiusMeters!.toInt()}m';
+    return l10n.zoneRadiusMeter(radiusMeters!.toInt().toString());
   }
 
   // ============================================
@@ -137,12 +139,13 @@ class ZoneSettingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final subtitle = _subtitleOf(context);
     return InkWell(
       onTap: onPressed,
       borderRadius: AppRadius.xlarge,
       child: Container(
         width: 353.w,
-        height: _subtitle != null ? 76.h : 56.h,
+        height: subtitle != null ? 76.h : 56.h,
         decoration: BoxDecoration(
           color: _backgroundColor,
           borderRadius: AppRadius.xlarge,
@@ -173,10 +176,10 @@ class ZoneSettingButton extends StatelessWidget {
               ),
 
               // 조건부: subtitle이 있을 때만 간격 + subtitle 표시
-              if (_subtitle != null) ...[
+              if (subtitle != null) ...[
                 SizedBox(height: AppSpacing.vertical4),
                 Text(
-                  _subtitle!,
+                  subtitle,
                   style: AppTextStyles.tag_12.copyWith(color: _subtitleColor),
                 ),
                 SizedBox(height: AppSpacing.vertical8),

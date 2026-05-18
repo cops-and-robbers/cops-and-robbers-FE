@@ -8,10 +8,11 @@ import '../errors/app_exception.dart';
 import '../network/api_error_response.dart';
 import '../widgets/snackbars/app_snackbar.dart';
 
-/// 백엔드가 RFC 7807 응답으로 내려주는 "필수 약관 미동의" 에러의 title 문자열.
+/// 백엔드가 RFC 7807 응답으로 내려주는 "필수 약관 미동의" 에러의 title 식별자.
 ///
-/// `POST /api/games`, `POST /api/games/join` 등 필수 약관 동의가 선행되어야 하는
-/// 엔드포인트에서 사용자가 미동의 상태로 호출했을 때 백엔드가 400과 함께 내려줍니다.
+/// 이 값은 UI 로케일과 무관하게 백엔드가 항상 동일한 한국어 문자열로 내려주는
+/// **고정 식별자**이므로 i18n과 무관하게 리터럴 비교를 한다.
+/// (i18n 처리된 `AppLocalizations.dialogAgreementRequiredTermsTitle`은 UI 표시용)
 const String _requiredTermsErrorTitle = '필수 약관 미동의';
 
 /// 에러에서 RFC 7807 응답을 추출합니다.
@@ -32,7 +33,7 @@ ApiErrorResponse? _extractApiError(Object? error) {
 
 /// "필수 약관 미동의" 에러인지 판별합니다.
 ///
-/// 백엔드의 RFC 7807 응답 `title`이 `"필수 약관 미동의"`인 경우 true를 반환합니다.
+/// 백엔드의 RFC 7807 응답 `title`이 고정 식별자와 일치하면 true.
 bool isRequiredTermsMissingError(Object? error) {
   final api = _extractApiError(error);
   return api?.title == _requiredTermsErrorTitle;

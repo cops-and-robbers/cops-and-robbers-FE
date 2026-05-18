@@ -138,7 +138,7 @@ class AppPopup extends StatefulWidget {
     required BuildContext context,
     required LoadingCategory category,
   }) async {
-    final message = await LoadingMessageService.getMessage(category);
+    final message = LoadingMessageService.getMessage(context, category);
     if (!context.mounted) return;
     // showLoading의 Future는 팝업이 닫힐 때 complete되므로 await하지 않음
     showLoading(context: context, message: message);

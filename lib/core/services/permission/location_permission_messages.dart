@@ -1,19 +1,11 @@
-import 'dart:convert';
+import 'package:flutter/widgets.dart';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// 위치 권한 다이얼로그 사용 컨텍스트
-enum LocationPermissionContext {
-  home('home'),
-  game('game'),
-  waitingRoom('waiting_room');
-
-  const LocationPermissionContext(this.jsonKey);
-
-  /// JSON 파일 내 키
-  final String jsonKey;
-}
+///
+/// 상황별로 다이얼로그 본문이 다르게 매핑된다.
+enum LocationPermissionContext { home, game, waitingRoom }
 
 /// 위치 권한 다이얼로그 메시지 (title + message)
 class LocationPermissionDialogText {
@@ -28,39 +20,45 @@ class LocationPermissionDialogText {
 
 /// 위치 권한 다이얼로그 메시지 서비스
 ///
-/// `assets/messages/location_permission_messages.json`에서 메시지를 로드합니다.
-/// 최초 호출 시 1회 로드 후 메모리에 캐싱합니다.
+/// ARB(`asset_locationpermission_*` 키)에서 컨텍스트별 문구를 가져온다.
+/// 과거 `assets/messages/location_permission_messages.json` 로드 방식을
+/// i18n 통합으로 대체했다.
 class LocationPermissionMessages {
   LocationPermissionMessages._();
 
-  static Map<String, dynamic>? _cache;
-
   /// 위치 서비스 꺼짐 / 권한 미허용에 따른 다이얼로그 텍스트 반환
-  static Future<LocationPermissionDialogText> getText({
+  ///
+  /// [isServiceDisabled] true → 위치 서비스 자체가 꺼진 경우 문구
+  /// false → 앱 권한 거부 상태 문구
+  static LocationPermissionDialogText getText({
+    required BuildContext context,
     required bool isServiceDisabled,
-    required LocationPermissionContext context,
-  }) async {
-    _cache ??= await _load();
+    required LocationPermissionContext locationContext,
+  }) {
+    final l10n = AppLocalizations.of(context);
 
-    final key = isServiceDisabled ? 'service_disabled' : 'permission_denied';
-    final section = _cache?[key] as Map<String, dynamic>?;
-
-    final title = section?['title'] as String? ?? '위치 권한 안내';
-    final message = section?[context.jsonKey] as String? ?? '위치 권한을 허용해주세요.';
-
-    return LocationPermissionDialogText(title: title, message: message);
-  }
-
-  /// JSON 파일 로드
-  static Future<Map<String, dynamic>> _load() async {
-    try {
-      final jsonString = await rootBundle.loadString(
-        'assets/messages/location_permission_messages.json',
-      );
-      return jsonDecode(jsonString) as Map<String, dynamic>;
-    } catch (e) {
-      debugPrint('[LocationPermissionMessages] JSON 로드 실패: $e');
-      return {};
+    if (isServiceDisabled) {
+      final title = l10n.asset_locationpermission_serviceDisabledTitle;
+      final message = switch (locationContext) {
+        LocationPermissionContext.home =>
+          l10n.asset_locationpermission_serviceDisabledHome,
+        LocationPermissionContext.game =>
+          l10n.asset_locationpermission_serviceDisabledGame,
+        LocationPermissionContext.waitingRoom =>
+          l10n.asset_locationpermission_serviceDisabledWaitingRoom,
+      };
+      return LocationPermissionDialogText(title: title, message: message);
     }
+
+    final title = l10n.asset_locationpermission_permissionDeniedTitle;
+    final message = switch (locationContext) {
+      LocationPermissionContext.home =>
+        l10n.asset_locationpermission_permissionDeniedHome,
+      LocationPermissionContext.game =>
+        l10n.asset_locationpermission_permissionDeniedGame,
+      LocationPermissionContext.waitingRoom =>
+        l10n.asset_locationpermission_permissionDeniedWaitingRoom,
+    };
+    return LocationPermissionDialogText(title: title, message: message);
   }
 }
