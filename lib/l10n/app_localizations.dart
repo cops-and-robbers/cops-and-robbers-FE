@@ -106,6 +106,12 @@ abstract class AppLocalizations {
   /// **'경찰과도둑'**
   String get appTitle;
 
+  /// 법적 문서 페이지 상단 고지문 — 한국어 원본만 제공함을 비-ko 로케일에 안내 (ko는 빈 문자열 → 미표시)
+  ///
+  /// In ko, this message translates to:
+  /// **''**
+  String get legalDocumentKoreanOnlyNotice;
+
   /// auto-imported from lib/core/services/loading_message_service.dart:49
   ///
   /// In ko, this message translates to:
