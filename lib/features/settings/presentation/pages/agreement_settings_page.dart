@@ -74,9 +74,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(
-          context,
-        ).errorNetworkNotConnected,
+        message: AppLocalizations.of(context).errorNetworkNotConnected,
         backgroundColor: AppColors.red,
       );
       return;

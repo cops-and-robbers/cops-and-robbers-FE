@@ -79,17 +79,13 @@ class SettingListCard extends StatelessWidget {
           children: [
             _SettingRow(
               label: l10n.labelParticipantCount,
-              value: l10n.gameSettingMaxPlayers(
-                settings.maxPlayers.toString(),
-              ),
+              value: l10n.gameSettingMaxPlayers(settings.maxPlayers.toString()),
               isDarkMode: isDarkMode,
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
               label: l10n.fieldRoundTimeLimit,
-              value: l10n.gameSettingRoundMinutes(
-                settings.roundTimeMinutes,
-              ),
+              value: l10n.gameSettingRoundMinutes(settings.roundTimeMinutes),
               isDarkMode: isDarkMode,
             ),
             SizedBox(height: AppSpacing.vertical12),

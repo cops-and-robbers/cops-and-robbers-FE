@@ -622,12 +622,8 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             SizedBox(width: AppSpacing.horizontal6),
             Text(
               _isDarkMode
-                  ? AppLocalizations.of(
-                      context,
-                    ).tutorialPerspectiveRobber
-                  : AppLocalizations.of(
-                      context,
-                    ).tutorialPerspectiveCop,
+                  ? AppLocalizations.of(context).tutorialPerspectiveRobber
+                  : AppLocalizations.of(context).tutorialPerspectiveCop,
               style: AppTextStyles.tag12Semibold.copyWith(
                 color: _isDarkMode ? AppColors.white : AppColors.black,
               ),
@@ -779,9 +775,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
       onTap: () {
         AppSnackbar.show(
           context,
-          message: AppLocalizations.of(
-            context,
-          ).tutorialInGameChatExpand,
+          message: AppLocalizations.of(context).tutorialInGameChatExpand,
           isDarkMode: _isDarkMode,
         );
       },

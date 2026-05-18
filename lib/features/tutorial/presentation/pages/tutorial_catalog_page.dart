@@ -203,9 +203,7 @@ class _TutorialCatalogCard extends StatelessWidget {
                   borderRadius: AppRadius.medium,
                 ),
                 child: Text(
-                  AppLocalizations.of(
-                    context,
-                  ).tutorialCatalogComingSoon,
+                  AppLocalizations.of(context).tutorialCatalogComingSoon,
                   style: AppTextStyles.tag_12.copyWith(
                     color: AppColors.black500,
                   ),
