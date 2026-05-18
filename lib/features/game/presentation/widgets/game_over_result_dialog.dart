@@ -344,7 +344,7 @@ class _StatsSection extends StatelessWidget {
         children: [
           _StatRow(
             isDarkMode: isDarkMode,
-            label: l10n.fieldgameOverResultDialogLabel,
+            label: l10n.labelArrestCount,
             value: l10n.gameResultArrestCount(entity.totalArrestCount),
           ),
           SizedBox(height: AppSpacing.vertical12),
@@ -374,7 +374,7 @@ class _StatsSection extends StatelessWidget {
       children: [
         _StatRow(
           isDarkMode: isDarkMode,
-          label: l10n.fieldgameOverResultDialogLabel,
+          label: l10n.labelArrestCount,
           value: '-',
         ),
         SizedBox(height: AppSpacing.vertical12),

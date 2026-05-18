@@ -98,8 +98,8 @@ class ArrestLockOverlay extends ConsumerWidget {
                       onPressed: () {
                         GameActionModal.show(
                           context: context,
-                          title: l10n.dialogarrestLockOverlayTitle,
-                          message: l10n.dialogarrestLockOverlayMessage,
+                          title: l10n.buttonEscape,
+                          message: l10n.dialogEscapeAttemptMessage,
                           confirmLabel: l10n.buttonEscape,
                           isDarkMode: true,
                           onConfirm: () => ref

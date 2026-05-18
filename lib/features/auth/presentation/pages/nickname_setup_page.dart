@@ -189,7 +189,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       // pop/go 이후 복귀한 화면에서도 그대로 표시됨
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialognicknameSetupPageMessage,
+        message: AppLocalizations.of(context).messageNicknameSaved,
         iconPath: 'assets/icons/icon_check mark.svg',
       );
 

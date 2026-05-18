@@ -50,7 +50,7 @@ class ZoneListCard extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: InfoCard(
-        title: l10n.dialogzoneListCardTitle,
+        title: l10n.sectionTitleZone,
         titleStyle: AppTextStyles.label_16.copyWith(
           color: isDarkMode ? AppColors.white : AppColors.black,
         ),

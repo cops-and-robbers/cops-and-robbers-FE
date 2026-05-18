@@ -136,9 +136,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     AppDialog.show(
       context: context,
-      title: l10n.dialoghomePageTitle,
-      message: l10n.dialoghomePageMessage,
-      confirmText: l10n.dialoghomePageConfirm,
+      title: l10n.dialogSafetyWarningTitle,
+      message: l10n.dialogSafetyWarningMessage,
+      confirmText: l10n.buttonAcknowledgedSurroundings,
       barrierDismissible: false,
       customContent: StatefulBuilder(
         builder: (context, setState) {
@@ -290,7 +290,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       title: text.title,
       message: text.message,
       confirmText: l10n.buttonGoToSettings,
-      cancelText: l10n.dialoghomePageCancel,
+      cancelText: l10n.buttonCancel,
       onConfirm: () async {
         if (!serviceEnabled) {
           await LocationPermissionService.openLocationSettings();
@@ -340,7 +340,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           '${l10n.homePageBatteryGuideStep1}'
           '${l10n.homePageBatteryGuideStep2}',
       confirmText: l10n.buttonGoToSettings,
-      cancelText: l10n.dialoghomePageCancel,
+      cancelText: l10n.buttonCancel,
       onConfirm: () async {
         await ref.read(backgroundServiceProvider).openAppSettings();
       },
@@ -498,7 +498,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       title: l10n.dialogJoinRoomTitle,
       customContent: AppTextField(
         controller: codeController,
-        hintText: l10n.fieldhomePageHint,
+        hintText: l10n.fieldInviteCodeHint,
         maxLength: 6,
         inputFormatters: [_UpperCaseFormatter()],
         suffixIcon: GestureDetector(

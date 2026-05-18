@@ -51,7 +51,7 @@ class SettingListCard extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: InfoCard(
-        title: l10n.dialogsettingListCardTitle,
+        title: l10n.sectionTitleSettings,
         titleStyle: AppTextStyles.label_16.copyWith(
           color: isDarkMode ? AppColors.white : AppColors.black,
         ),
@@ -78,7 +78,7 @@ class SettingListCard extends StatelessWidget {
         child: Column(
           children: [
             _SettingRow(
-              label: l10n.fieldsettingListCardLabel,
+              label: l10n.labelParticipantCount,
               value: l10n.gameSettingMaxPlayers(
                 settings.maxPlayers.toString(),
               ),

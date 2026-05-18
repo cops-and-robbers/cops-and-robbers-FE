@@ -119,7 +119,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     if (!gameEventState.canPoliceArrest(participantInfo: participantInfo)) {
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialogparticipantOverlayMessage,
+        message: AppLocalizations.of(context).errorCannotArrestDuringWait,
       );
       return;
     }
@@ -139,7 +139,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     final l10n = AppLocalizations.of(context);
     GameActionModal.show(
       context: context,
-      title: l10n.dialogparticipantOverlayTitle,
+      title: l10n.dialogArrestConfirmTitle,
       message: '',
       confirmLabel: l10n.buttonYes,
       nickname: member.nickname,

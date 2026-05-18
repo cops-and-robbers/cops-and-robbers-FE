@@ -135,7 +135,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       throw AuthException(
         message: '로그인 중 오류가 발생했습니다.',
-        messageKey: 'dialogauthRepositoryImplMessage',
+        messageKey: 'errorLoginGeneric',
         originalException: e,
       );
     } catch (e) {
@@ -144,7 +144,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       throw AuthException(
         message: '로그인 중 오류가 발생했습니다.',
-        messageKey: 'dialogauthRepositoryImplMessage',
+        messageKey: 'errorLoginGeneric',
         originalException: e,
       );
     }

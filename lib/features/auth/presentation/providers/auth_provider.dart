@@ -260,7 +260,7 @@ class AuthNotifier extends _$AuthNotifier {
           AuthException(
             // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
             message: 'unknown auth error',
-            messageKey: 'dialogauthProviderMessage',
+            messageKey: 'errorUnknown',
             originalException: e,
           ),
           stack,
@@ -301,7 +301,7 @@ class AuthNotifier extends _$AuthNotifier {
           AuthException(
             // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
             message: 'unknown auth error',
-            messageKey: 'dialogauthProviderMessage',
+            messageKey: 'errorUnknown',
             originalException: e,
           ),
           stack,

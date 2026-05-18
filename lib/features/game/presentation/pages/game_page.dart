@@ -242,7 +242,7 @@ class _GamePageState extends ConsumerState<GamePage>
       context: context,
       title: text.title,
       message: text.message,
-      confirmText: AppLocalizations.of(context).dialoggamePageConfirm,
+      confirmText: AppLocalizations.of(context).buttonGoToSettings,
       barrierDismissible: false,
       isDarkMode: _isDarkMode,
       onConfirm: () async {
@@ -1095,7 +1095,7 @@ class _GamePageState extends ConsumerState<GamePage>
     AppDialog.show(
       context: context,
       title: isWin ? l10n.gameResultWin : l10n.gameResultLose,
-      message: l10n.dialoggamePageMessage(winnerTeamLabel),
+      message: l10n.messageGameOverWinner(winnerTeamLabel),
       titleStyle:
           (_isDarkMode
                   ? AppTextStyles.robberHeading24
@@ -1105,7 +1105,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     ? AppColors.green
                     : (isWin ? AppColors.blue : AppColors.red),
               ),
-      cancelText: l10n.dialoggamePageCancel,
+      cancelText: l10n.buttonGoHome,
       confirmText: l10n.buttonPlayAgain,
       isDarkMode: _isDarkMode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
@@ -1740,7 +1740,7 @@ class _GamePageState extends ConsumerState<GamePage>
       context,
       MaterialPageRoute(
         builder: (_) => QrScannerPage<QrPayload>(
-          title: AppLocalizations.of(context).dialoggamePageTitle,
+          title: AppLocalizations.of(context).qrScannerWantedRobberTitle,
           onParse: QrPayload.tryParse,
         ),
       ),

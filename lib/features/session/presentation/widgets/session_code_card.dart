@@ -41,7 +41,7 @@ class SessionCodeCard extends StatelessWidget {
       final l10n = AppLocalizations.of(context);
       AppSnackbar.show(
         context,
-        message: l10n.dialogsessionCodeCardMessage,
+        message: l10n.messageCodeCopied,
         iconPath: 'assets/icons/icon_copy.svg',
       );
     }

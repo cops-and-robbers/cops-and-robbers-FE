@@ -200,8 +200,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       context: context,
       title: text.title,
       message: text.message,
-      confirmText: l10n.dialogwaitingRoomPageConfirm,
-      cancelText: l10n.dialogwaitingRoomPageCancel,
+      confirmText: l10n.buttonGoToSettings,
+      cancelText: l10n.buttonLeave,
       barrierDismissible: false,
       isDarkMode: isDark,
       onConfirm: () async {
@@ -546,7 +546,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final l10n = AppLocalizations.of(context);
     await AppDialog.show(
       context: context,
-      title: l10n.dialogwaitingRoomPageTitle,
+      title: l10n.errorCannotJoinRoom,
       message: serverDetail ?? l10n.errorNotInGame,
       confirmText: l10n.buttonConfirm,
       barrierDismissible: false,
@@ -684,7 +684,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     await AppDialog.show<void>(
       context: context,
       title: l10n.dialogInGamePreviewTitle,
-      message: l10n.dialogwaitingRoomPageMessage,
+      message: l10n.dialogTutorialPromptMessage,
       confirmText: l10n.buttonViewInGamePreview,
       barrierDismissible: false,
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지

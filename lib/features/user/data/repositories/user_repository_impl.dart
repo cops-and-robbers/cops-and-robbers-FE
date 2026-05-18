@@ -34,7 +34,7 @@ class UserRepositoryImpl implements UserRepository {
     } catch (e) {
       throw ServerException(
         message: '닉네임 확인 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialoguserRepositoryImplMessage',
+        messageKey: 'errorNicknameCheckUnexpected',
         originalException: e,
       );
     }

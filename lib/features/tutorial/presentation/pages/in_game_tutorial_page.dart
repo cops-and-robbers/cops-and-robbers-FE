@@ -142,9 +142,9 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
     final l10n = AppLocalizations.of(context);
     AppDialog.show<void>(
       context: context,
-      title: l10n.dialoginGameTutorialPageTitle,
-      message: l10n.dialoginGameTutorialPageMessage,
-      confirmText: l10n.dialoginGameTutorialPageConfirm,
+      title: l10n.titleTutorialComplete,
+      message: l10n.messageTutorialComplete,
+      confirmText: l10n.buttonFinishTutorial,
       onConfirm: () => context.pop(),
       isDarkMode: _isDarkMode,
     );

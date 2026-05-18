@@ -402,7 +402,7 @@ class _SessionCreationFlowPageState
         final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: l10n.dialogsessionCreationFlowPageMessage,
+          message: l10n.errorAlreadyInGame,
           backgroundColor: AppColors.red,
         );
         setState(() => _isLoading = false);
@@ -435,7 +435,7 @@ class _SessionCreationFlowPageState
         final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: l10n.dialogsessionCreationFlowPageMessage,
+          message: l10n.errorAlreadyInGame,
           backgroundColor: AppColors.red,
         );
         setState(() => _isLoading = false);

@@ -506,7 +506,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         context,
         message: e is AppException
             ? l10n.errorByException(e)
-            : l10n.dialogsettingsPageMessage,
+            : l10n.errorGameNotificationToggleFailed,
         backgroundColor: AppColors.red,
       );
     } finally {
@@ -550,9 +550,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => TextSubmitPage(
-          title: l10n.dialogsettingsPageTitle,
-          label: l10n.fieldsettingsPageLabel,
-          hintText: l10n.fieldsettingsPageHint,
+          title: l10n.titleBugReport,
+          label: l10n.fieldBugReportLabel,
+          hintText: l10n.fieldBugReportHint,
           submitText: l10n.buttonSubmitReport,
           maxLength: 1000,
           onSubmit: _submitBugReport,
@@ -610,7 +610,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       context: context,
       title: l10n.dialogTutorialResetTitle,
       message: l10n.dialogTutorialResetMessage,
-      confirmText: l10n.dialogsettingsPageConfirm,
+      confirmText: l10n.buttonReset,
     );
     if (result != true || !mounted) return;
 
@@ -673,7 +673,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         controller: controller,
         hintText: l10n.fieldDeleteAccountHint,
       ),
-      cancelText: l10n.dialogsettingsPageCancel,
+      cancelText: l10n.buttonCancel,
       confirmText: l10n.buttonDeleteAccount,
       isDestructive: true,
       validator: () {

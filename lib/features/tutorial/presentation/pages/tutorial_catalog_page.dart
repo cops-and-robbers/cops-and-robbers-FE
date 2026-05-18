@@ -19,7 +19,7 @@ class TutorialCatalogPage extends StatelessWidget {
   List<_TutorialCatalogItem> _buildItems(AppLocalizations l10n) {
     return <_TutorialCatalogItem>[
       _TutorialCatalogItem(
-        title: l10n.dialogtutorialCatalogPageTitle,
+        title: l10n.buttonCreateRoom,
         subtitle: l10n.tutorialCatalogAreaSubtitle,
         icon: Icons.add_box_outlined,
       ),

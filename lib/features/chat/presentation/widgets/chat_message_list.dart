@@ -228,7 +228,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
             right: 24.w,
             bottom: 8.h,
             child: Semantics(
-              label: l10n.fieldchatMessageListLabel,
+              label: l10n.buttonGoToLatestMessage,
               button: true,
               child: GestureDetector(
                 onTap: _scrollToBottom,

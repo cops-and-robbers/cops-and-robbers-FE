@@ -65,7 +65,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     _isLoadingPopupShown = true;
     AppPopup.showLoading(
       context: context,
-      message: AppLocalizations.of(context).dialognoticesPageMessage,
+      message: AppLocalizations.of(context).messageLoadingNotices,
     );
   }
 

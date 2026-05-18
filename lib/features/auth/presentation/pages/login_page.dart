@@ -63,7 +63,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       ..onTap = () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).dialogloginPageTitle,
+            title: AppLocalizations.of(context).linkPrivacyPolicy,
             assetPath: 'assets/legals/privacy_policy.json',
             externalUrl: AppUrls.privacyPolicy,
           ),
@@ -106,7 +106,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (accountDeleted == 'true') {
         AppSnackbar.show(
           context,
-          message: AppLocalizations.of(context).dialogloginPageMessage,
+          message: AppLocalizations.of(context).messageAccountDeleted,
           backgroundColor: AppColors.blue,
         );
       } else if (forceLogoutMessage != null) {
@@ -129,8 +129,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       context: context,
       title: l10n.dialogAge14ConfirmTitle,
       message: l10n.dialogAge14ConfirmMessage,
-      confirmText: l10n.dialogloginPageConfirm,
-      cancelText: l10n.dialogloginPageCancel,
+      confirmText: l10n.buttonYes,
+      cancelText: l10n.buttonNo,
       barrierDismissible: false,
       onConfirm: () {
         _ageVerified = true;

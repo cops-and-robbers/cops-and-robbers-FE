@@ -37,7 +37,7 @@ class GameRulesContent extends StatelessWidget {
       context: context,
       isDarkMode: isDarkMode,
       backgroundColor: isDarkMode ? AppColors.black : null,
-      title: l10n.dialoggameRulesContentTitle,
+      title: l10n.titleGameRules,
       titleStyle: isDarkMode
           ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
           : null,
@@ -48,8 +48,8 @@ class GameRulesContent extends StatelessWidget {
       ),
       // 좌측은 단순 닫기, 우측 primary로 인게임 튜토리얼 재방문 경로 노출.
       // 한 번 본 사용자도 게임 규칙 다이얼로그를 통해 언제든 다시 학습 가능.
-      cancelText: l10n.dialoggameRulesContentCancel,
-      confirmText: l10n.dialoggameRulesContentConfirm,
+      cancelText: l10n.buttonConfirm,
+      confirmText: l10n.buttonViewInGame,
       confirmColor: isDarkMode ? null : AppColors.blue,
       confirmTextColor: isDarkMode ? null : AppColors.white,
       onConfirm: () => context.push('/tutorial/in-game'),

@@ -106,7 +106,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     _dismiss();
     AppSnackbar.show(
       widget.callerContext,
-      message: l10n.dialogchatContextMenuMessage,
+      message: l10n.messageMessageCopied,
       iconPath: 'assets/icons/icon_copy.svg',
       isDarkMode: widget.isDarkMode,
     );
@@ -139,9 +139,9 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       Navigator.of(widget.callerContext).push(
         MaterialPageRoute<void>(
           builder: (_) => TextSubmitPage(
-            title: l10n.dialogchatContextMenuTitle,
-            label: l10n.fieldchatContextMenuLabel,
-            hintText: l10n.fieldchatContextMenuHint,
+            title: l10n.buttonReport,
+            label: l10n.fieldReportContentLabel,
+            hintText: l10n.fieldReportReasonHint,
             submitText: l10n.buttonReport,
             isDestructive: true,
             isDarkMode: isDark,
@@ -183,8 +183,8 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     AppDialog.show(
       context: widget.callerContext,
       title: l10n.dialogReportConfirmTitle,
-      cancelText: l10n.dialogchatContextMenuCancel,
-      confirmText: l10n.dialogchatContextMenuConfirm,
+      cancelText: l10n.buttonCancel,
+      confirmText: l10n.buttonReport,
       isDestructive: true,
       isDarkMode: isDark,
       cancelTextColor: isDark ? AppColors.black400 : AppColors.black600,

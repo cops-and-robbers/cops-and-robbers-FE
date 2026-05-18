@@ -964,11 +964,11 @@ abstract class AppLocalizations {
   /// **'게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요'**
   String get asset_locationpermission_permissionDeniedWaitingRoom;
 
-  /// auto-imported from lib/features/session/data/repositories/session_repository_impl.dart:80
+  /// 게임 방 생성 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
   /// **'게임 방 생성 중 예기치 않은 오류가 발생했습니다'**
-  String get dialogsessionRepositoryImplMessage;
+  String get errorGameRoomCreateUnexpected;
 
   /// 참여 중인 게임 조회 실패 시 표시되는 예외 메시지
   ///
@@ -1078,23 +1078,23 @@ abstract class AppLocalizations {
   /// **'초대 코드를 입력하면 게임에 참가할 수 있어요'**
   String get homePageJoinGameHint;
 
-  /// auto-imported from lib/features/session/presentation/pages/home_page.dart:136
+  /// 홈 진입 시 표시되는 주변 안전 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'주변을 확인하며 이용해 주세요'**
-  String get dialoghomePageTitle;
+  String get dialogSafetyWarningTitle;
 
-  /// auto-imported from lib/features/session/presentation/pages/home_page.dart:137
+  /// 홈 진입 시 표시되는 주변 안전 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
   /// **'게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요'**
-  String get dialoghomePageMessage;
+  String get dialogSafetyWarningMessage;
 
-  /// auto-imported from lib/features/session/presentation/pages/home_page.dart:138
+  /// 주변 안전 확인 다이얼로그의 동의 버튼 ('확인했어요!')
   ///
   /// In ko, this message translates to:
   /// **'확인했어요!'**
-  String get dialoghomePageConfirm;
+  String get buttonAcknowledgedSurroundings;
 
   /// 홈 페이지 — 안내 다이얼로그 오늘 숨김 옵션
   ///
@@ -1119,12 +1119,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'설정으로 이동'**
   String get buttonGoToSettings;
-
-  /// auto-imported from lib/features/session/presentation/pages/home_page.dart:286
-  ///
-  /// In ko, this message translates to:
-  /// **'취소'**
-  String get dialoghomePageCancel;
 
   /// 홈 화면 배터리 최적화 안내 다이얼로그 타이틀
   ///
@@ -1162,11 +1156,11 @@ abstract class AppLocalizations {
   /// **'방 참여하기'**
   String get dialogJoinRoomTitle;
 
-  /// auto-imported from lib/features/session/presentation/pages/home_page.dart:490
+  /// 초대 코드 입력 필드 placeholder
   ///
   /// In ko, this message translates to:
   /// **'참여코드를 입력하세요'**
-  String get fieldhomePageHint;
+  String get fieldInviteCodeHint;
 
   /// 초대코드 QR 스캔 안내 다이얼로그 제목
   ///
@@ -1227,12 +1221,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'게임 방 생성에 실패했습니다. 다시 시도해주세요'**
   String get errorCreateRoomFailed;
-
-  /// auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:401
-  ///
-  /// In ko, this message translates to:
-  /// **'이미 참가 중인 게임이 있습니다'**
-  String get dialogsessionCreationFlowPageMessage;
 
   /// 방 생성 — 구역 미설정 시 안내
   ///
@@ -1330,29 +1318,17 @@ abstract class AppLocalizations {
   /// **'감옥이 플레이그라운드 범위를 벗어났어요'**
   String get errorJailOutsidePlayground;
 
-  /// auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:201
-  ///
-  /// In ko, this message translates to:
-  /// **'설정으로 이동'**
-  String get dialogwaitingRoomPageConfirm;
-
-  /// auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:202
-  ///
-  /// In ko, this message translates to:
-  /// **'나가기'**
-  String get dialogwaitingRoomPageCancel;
-
   /// 더미 닉네임 — 곰 (튜토리얼/스켈레톤용)
   ///
   /// In ko, this message translates to:
   /// **'포근포근곰...'**
   String get dummyNicknameBear;
 
-  /// auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:544
+  /// 방 참여 불가 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'방에 참여할 수 없어요'**
-  String get dialogwaitingRoomPageTitle;
+  String get errorCannotJoinRoom;
 
   /// 권한 없음 — 해당 게임 참가자가 아닐 때 안내
   ///
@@ -1390,11 +1366,11 @@ abstract class AppLocalizations {
   /// **'인게임 화면 미리 보기'**
   String get dialogInGamePreviewTitle;
 
-  /// auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:680
+  /// 대기실에서 튜토리얼 진행을 권유하는 다이얼로그 본문
   ///
   /// In ko, this message translates to:
   /// **'게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?'**
-  String get dialogwaitingRoomPageMessage;
+  String get dialogTutorialPromptMessage;
 
   /// 인게임 튜토리얼 미리보기로 이동 버튼
   ///
@@ -1552,23 +1528,17 @@ abstract class AppLocalizations {
   /// **'닉네임'**
   String get defaultNicknameLabel;
 
-  /// auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:38
+  /// 게임 규칙 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'게임 규칙'**
-  String get dialoggameRulesContentTitle;
+  String get titleGameRules;
 
-  /// auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:49
-  ///
-  /// In ko, this message translates to:
-  /// **'확인'**
-  String get dialoggameRulesContentCancel;
-
-  /// auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:50
+  /// 게임 규칙 다이얼로그의 '인게임 보기' 버튼
   ///
   /// In ko, this message translates to:
   /// **'인게임 보기'**
-  String get dialoggameRulesContentConfirm;
+  String get buttonViewInGame;
 
   /// 게임 규칙 — 경찰 승리 조건 도입부
   ///
@@ -1629,12 +1599,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'\n→ 구역 밖으로 나가면 화면이 잠겨요'**
   String get gameRulesZoneRuleLine2;
-
-  /// auto-imported from lib/features/session/presentation/widgets/session_code_card.dart:42
-  ///
-  /// In ko, this message translates to:
-  /// **'코드가 복사되었습니다'**
-  String get dialogsessionCodeCardMessage;
 
   /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:97
   ///
@@ -1702,17 +1666,17 @@ abstract class AppLocalizations {
   /// **'뒤'**
   String get gameSettingPoliceStartSuffix;
 
-  /// auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:52
+  /// 대기실 설정 카드 섹션 타이틀
   ///
   /// In ko, this message translates to:
   /// **'설정'**
-  String get dialogsettingListCardTitle;
+  String get sectionTitleSettings;
 
-  /// auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:79
+  /// 대기실 설정 카드의 참여 인원 라벨
   ///
   /// In ko, this message translates to:
   /// **'참여 인원'**
-  String get fieldsettingListCardLabel;
+  String get labelParticipantCount;
 
   /// 게임 설정 — 라운드 제한 시간 라벨
   ///
@@ -1738,17 +1702,11 @@ abstract class AppLocalizations {
   /// **'현재 {count}명'**
   String teamSectionCurrentCount(int count);
 
-  /// auto-imported from lib/features/session/presentation/widgets/zone_list_card.dart:51
+  /// 대기실 구역 카드 섹션 타이틀
   ///
   /// In ko, this message translates to:
   /// **'구역'**
-  String get dialogzoneListCardTitle;
-
-  /// auto-imported from lib/features/auth/data/repositories/auth_repository_impl.dart:136
-  ///
-  /// In ko, this message translates to:
-  /// **'로그인 중 오류가 발생했습니다'**
-  String get dialogauthRepositoryImplMessage;
+  String get sectionTitleZone;
 
   /// 로그아웃 처리 중 일반 오류 안내
   ///
@@ -1822,12 +1780,6 @@ abstract class AppLocalizations {
   /// **'로그인에 실패했습니다. 다시 시도해주세요'**
   String get errorAuthLoginFailed;
 
-  /// auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:57
-  ///
-  /// In ko, this message translates to:
-  /// **'이용약관'**
-  String get dialogagreementPageTitle;
-
   /// 마케팅 정보 수신 동의 링크 라벨
   ///
   /// In ko, this message translates to:
@@ -1852,11 +1804,11 @@ abstract class AppLocalizations {
   /// **'필수 약관에 모두 동의해야 서비스를 이용하실 수 있어요'**
   String get agreementPageRequiredNotice;
 
-  /// auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:173
+  /// 네트워크 미연결 시 표시되는 안내 (약관 동의/스플래시 등 공용)
   ///
   /// In ko, this message translates to:
   /// **'아직 네트워크에 연결되지 않았어요'**
-  String get dialogagreementPageMessage;
+  String get errorNetworkNotConnected;
 
   /// 필수 약관 미동의 안내
   ///
@@ -1864,17 +1816,11 @@ abstract class AppLocalizations {
   /// **'필수 약관에 모두 동의해주세요'**
   String get errorRequiredAgreementsMissing;
 
-  /// auto-imported from lib/features/auth/presentation/pages/login_page.dart:64
-  ///
-  /// In ko, this message translates to:
-  /// **'개인정보 처리방침'**
-  String get dialogloginPageTitle;
-
-  /// auto-imported from lib/features/auth/presentation/pages/login_page.dart:107
+  /// 회원 탈퇴 완료 토스트
   ///
   /// In ko, this message translates to:
   /// **'회원탈퇴가 완료되었습니다'**
-  String get dialogloginPageMessage;
+  String get messageAccountDeleted;
 
   /// 만 14세 이상 확인 다이얼로그 타이틀
   ///
@@ -1887,18 +1833,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요'**
   String get dialogAge14ConfirmMessage;
-
-  /// auto-imported from lib/features/auth/presentation/pages/login_page.dart:129
-  ///
-  /// In ko, this message translates to:
-  /// **'네'**
-  String get dialogloginPageConfirm;
-
-  /// auto-imported from lib/features/auth/presentation/pages/login_page.dart:130
-  ///
-  /// In ko, this message translates to:
-  /// **'아니요'**
-  String get dialogloginPageCancel;
 
   /// 로그인 처리 중 발생한 일반 오류
   ///
@@ -1948,11 +1882,11 @@ abstract class AppLocalizations {
   /// **'에 동의합니다'**
   String get loginPageAgreementSuffix;
 
-  /// auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:190
+  /// 닉네임 저장 완료 토스트
   ///
   /// In ko, this message translates to:
   /// **'닉네임이 저장되었어요'**
-  String get dialognicknameSetupPageMessage;
+  String get messageNicknameSaved;
 
   /// 닉네임 설정 페이지 — 메인 타이틀
   ///
@@ -2002,29 +1936,17 @@ abstract class AppLocalizations {
   /// **'다시 현장으로 복귀 중...'**
   String get splashReturningToScene;
 
-  /// auto-imported from lib/features/auth/presentation/pages/splash_page.dart:329
-  ///
-  /// In ko, this message translates to:
-  /// **'아직 네트워크에 연결되지 않았어요'**
-  String get dialogsplashPageMessage;
-
-  /// auto-imported from lib/features/auth/presentation/pages/splash_page.dart:350
+  /// 네트워크 연결 실패 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'네트워크 연결 실패'**
-  String get dialogsplashPageTitle;
+  String get dialogNetworkConnectionFailedTitle;
 
   /// 스플래시 — 오프라인 다이얼로그 본문 (스플래시 화면 본문 splashOfflineMessage와 별개)
   ///
   /// In ko, this message translates to:
   /// **'인터넷 연결을 확인한 후\n다시 시도해주세요'**
   String get dialogSplashOfflineMessage;
-
-  /// auto-imported from lib/features/auth/presentation/pages/splash_page.dart:352
-  ///
-  /// In ko, this message translates to:
-  /// **'재시도'**
-  String get dialogsplashPageConfirm;
 
   /// 스플래시 — 대기 안내
   ///
@@ -2050,17 +1972,11 @@ abstract class AppLocalizations {
   /// **'연결 상태를 확인한 후\n다시 시도해주세요'**
   String get splashOfflineMessage;
 
-  /// auto-imported from lib/features/auth/presentation/providers/agreement_provider.dart:129
-  ///
-  /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 다시 시도해주세요'**
-  String get dialogagreementProviderMessage;
-
-  /// auto-imported from lib/features/auth/presentation/providers/auth_provider.dart:260
+  /// 원인을 특정할 수 없는 일반 오류 메시지 (auth fallback 등)
   ///
   /// In ko, this message translates to:
   /// **'알 수 없는 오류가 발생했습니다'**
-  String get dialogauthProviderMessage;
+  String get errorUnknown;
 
   /// 로그아웃 실패 안내
   ///
@@ -2085,12 +2001,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'[선택]'**
   String get agreementItemOptionalTag;
-
-  /// auto-imported from lib/features/game/presentation/pages/game_page.dart:245
-  ///
-  /// In ko, this message translates to:
-  /// **'설정으로 이동'**
-  String get dialoggamePageConfirm;
 
   /// 게임 시작 후 도둑 도주 시작 알림 배너
   ///
@@ -2140,17 +2050,11 @@ abstract class AppLocalizations {
   /// **'패배'**
   String get gameResultLose;
 
-  /// auto-imported from lib/features/game/presentation/pages/game_page.dart:1091
+  /// 게임 종료 다이얼로그 메시지 — 승리팀 안내
   ///
   /// In ko, this message translates to:
   /// **'{winnerTeamLabel}의 승리입니다!'**
-  String dialoggamePageMessage(String winnerTeamLabel);
-
-  /// auto-imported from lib/features/game/presentation/pages/game_page.dart:1101
-  ///
-  /// In ko, this message translates to:
-  /// **'홈으로'**
-  String get dialoggamePageCancel;
+  String messageGameOverWinner(Object winnerTeamLabel);
 
   /// 경찰 역할 단일 라벨 (닉네임 누락 시 fallback 포함)
   ///
@@ -2170,11 +2074,11 @@ abstract class AppLocalizations {
   /// **'경찰 대기 시간 중에는 도둑을 체포할 수 없습니다'**
   String get errorCannotArrestDuringWait;
 
-  /// auto-imported from lib/features/game/presentation/pages/game_page.dart:1732
+  /// 도둑 수배 QR 스캐너 페이지 타이틀
   ///
   /// In ko, this message translates to:
   /// **'도둑의 수배 QR을 스캔하세요'**
-  String get dialoggamePageTitle;
+  String get qrScannerWantedRobberTitle;
 
   /// QR 스캔 실패 — QR 만료
   ///
@@ -2206,18 +2110,6 @@ abstract class AppLocalizations {
   /// **'탈옥 완료'**
   String get gameArrestOverlayEscapeCompleteButton;
 
-  /// auto-imported from lib/features/game/presentation/widgets/arrest_lock_overlay.dart:100
-  ///
-  /// In ko, this message translates to:
-  /// **'탈옥'**
-  String get dialogarrestLockOverlayTitle;
-
-  /// auto-imported from lib/features/game/presentation/widgets/arrest_lock_overlay.dart:101
-  ///
-  /// In ko, this message translates to:
-  /// **'탈옥하시겠습니까?'**
-  String get dialogarrestLockOverlayMessage;
-
   /// 공통 — 탈옥 액션 버튼 라벨
   ///
   /// In ko, this message translates to:
@@ -2230,11 +2122,11 @@ abstract class AppLocalizations {
   /// **'아니요'**
   String get buttonNo;
 
-  /// auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:344
+  /// 게임 종료 결과 다이얼로그의 체포 횟수 라벨
   ///
   /// In ko, this message translates to:
   /// **'체포 횟수'**
-  String get fieldgameOverResultDialogLabel;
+  String get labelArrestCount;
 
   /// 게임 결과 — 총 체포 횟수 (단위: 회)
   ///
@@ -2278,17 +2170,11 @@ abstract class AppLocalizations {
   /// **'다음 도둑 위치 공개까지 {formatted}'**
   String gameLocationRevealCountdown(String formatted);
 
-  /// auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:119
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰 대기 시간 중에는 도둑을 체포할 수 없습니다'**
-  String get dialogparticipantOverlayMessage;
-
-  /// auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:137
+  /// 참가자 체포 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'해당 플레이어를 체포하셨나요?'**
-  String get dialogparticipantOverlayTitle;
+  String get dialogArrestConfirmTitle;
 
   /// 공통 — 긍정 응답 버튼
   ///
@@ -2344,29 +2230,17 @@ abstract class AppLocalizations {
   /// **'닫기'**
   String get buttonClose;
 
-  /// auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:60
+  /// 카메라 권한 요청 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'카메라 권한 필요'**
-  String get dialogqrScannerPageTitle;
+  String get dialogCameraPermissionTitle;
 
-  /// auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:61
+  /// 카메라 권한 요청 다이얼로그 본문
   ///
   /// In ko, this message translates to:
   /// **'QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요'**
-  String get dialogqrScannerPageMessage;
-
-  /// auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:62
-  ///
-  /// In ko, this message translates to:
-  /// **'설정으로 이동'**
-  String get dialogqrScannerPageConfirm;
-
-  /// auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:63
-  ///
-  /// In ko, this message translates to:
-  /// **'닫기'**
-  String get dialogqrScannerPageCancel;
+  String get dialogCameraPermissionMessage;
 
   /// QR 스캐너 — 카메라 초기화 실패 안내
   ///
@@ -2380,11 +2254,11 @@ abstract class AppLocalizations {
   /// **'플레이그라운드를 벗어났어요'**
   String get gameZoneExitBanner;
 
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:262
+  /// 팀 채팅 메시지 prefix 라벨 (예: [팀])
   ///
   /// In ko, this message translates to:
   /// **'[팀]'**
-  String get dialogchatProviderMessage;
+  String get chatTeamPrefix;
 
   /// 더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)
   ///
@@ -2404,11 +2278,11 @@ abstract class AppLocalizations {
   /// **'이겨봅시다!'**
   String get chatSystemLetsWin;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:106
+  /// 채팅 메시지 복사 완료 토스트
   ///
   /// In ko, this message translates to:
   /// **'메시지가 복사되었어요'**
-  String get dialogchatContextMenuMessage;
+  String get messageMessageCopied;
 
   /// 사용자 차단 완료 안내
   ///
@@ -2416,23 +2290,17 @@ abstract class AppLocalizations {
   /// **'해당 유저를 차단했어요'**
   String get messageUserBlocked;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:137
-  ///
-  /// In ko, this message translates to:
-  /// **'신고하기'**
-  String get dialogchatContextMenuTitle;
-
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:138
+  /// 신고 사유 입력 필드 라벨
   ///
   /// In ko, this message translates to:
   /// **'신고 내용'**
-  String get fieldchatContextMenuLabel;
+  String get fieldReportContentLabel;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:139
+  /// 신고 사유 입력 필드 placeholder
   ///
   /// In ko, this message translates to:
   /// **'신고 사유를 자세히 작성해 주세요\n(상황 또는 대화 내용을 포함해 주세요)'**
-  String get fieldchatContextMenuHint;
+  String get fieldReportReasonHint;
 
   /// 신고 공통 버튼 라벨
   ///
@@ -2457,18 +2325,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'해당 유저를 신고할까요?'**
   String get dialogReportConfirmTitle;
-
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:179
-  ///
-  /// In ko, this message translates to:
-  /// **'취소'**
-  String get dialogchatContextMenuCancel;
-
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:180
-  ///
-  /// In ko, this message translates to:
-  /// **'신고하기'**
-  String get dialogchatContextMenuConfirm;
 
   /// 신고 폼 — 선택한 카테고리 라벨 (뒤에 카테고리 이름 이어붙음)
   ///
@@ -2536,11 +2392,11 @@ abstract class AppLocalizations {
   /// **'채팅을 시작해보세요'**
   String get chatMessageListEmpty;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:229
+  /// 채팅 화면에서 최신 메시지로 스크롤 이동하는 버튼 라벨
   ///
   /// In ko, this message translates to:
   /// **'최신 메시지로 이동'**
-  String get fieldchatMessageListLabel;
+  String get buttonGoToLatestMessage;
 
   /// 채팅 날짜 구분선 — 월요일 단축 라벨
   ///
@@ -2625,12 +2481,6 @@ abstract class AppLocalizations {
   /// **'전체'**
   String get chatPreviewTagAll;
 
-  /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:75
-  ///
-  /// In ko, this message translates to:
-  /// **'아직 네트워크에 연결되지 않았어요'**
-  String get dialogagreementSettingsPageMessage;
-
   /// 설정 변경사항 저장 완료 안내 메시지
   ///
   /// In ko, this message translates to:
@@ -2660,12 +2510,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'다시 시도'**
   String get buttonRetry;
-
-  /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:203
-  ///
-  /// In ko, this message translates to:
-  /// **'이용약관'**
-  String get dialogagreementSettingsPageTitle;
 
   /// 변경사항 저장 공통 버튼 라벨
   ///
@@ -2793,29 +2637,29 @@ abstract class AppLocalizations {
   /// **'앱 버전'**
   String get settingsAppVersionLabel;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:452
+  /// 게임 알림 설정 변경 실패 메시지
   ///
   /// In ko, this message translates to:
   /// **'게임 알림 설정을 변경하지 못했어요'**
-  String get dialogsettingsPageMessage;
+  String get errorGameNotificationToggleFailed;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:495
+  /// 버그 제보 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'버그 제보'**
-  String get dialogsettingsPageTitle;
+  String get titleBugReport;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:496
+  /// 버그 제보 입력 필드 라벨
   ///
   /// In ko, this message translates to:
   /// **'버그 내용'**
-  String get fieldsettingsPageLabel;
+  String get fieldBugReportLabel;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:497
+  /// 버그 제보 입력 필드 placeholder
   ///
   /// In ko, this message translates to:
   /// **'어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)'**
-  String get fieldsettingsPageHint;
+  String get fieldBugReportHint;
 
   /// 버그 제보 다이얼로그 — 제출 버튼 라벨
   ///
@@ -2841,11 +2685,11 @@ abstract class AppLocalizations {
   /// **'모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?'**
   String get dialogTutorialResetMessage;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:551
+  /// 초기화 확인 버튼
   ///
   /// In ko, this message translates to:
   /// **'초기화'**
-  String get dialogsettingsPageConfirm;
+  String get buttonReset;
 
   /// 튜토리얼 초기화 완료 안내 메시지
   ///
@@ -2895,12 +2739,6 @@ abstract class AppLocalizations {
   /// **'delete'**
   String get fieldDeleteAccountHint;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:608
-  ///
-  /// In ko, this message translates to:
-  /// **'취소'**
-  String get dialogsettingsPageCancel;
-
   /// 회원 탈퇴 확정 버튼
   ///
   /// In ko, this message translates to:
@@ -2931,23 +2769,23 @@ abstract class AppLocalizations {
   /// **'잡힌도둑'**
   String get tutorialDummyNicknameCapturedRobber;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:139
+  /// 튜토리얼 완료 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'튜토리얼 완료!'**
-  String get dialoginGameTutorialPageTitle;
+  String get titleTutorialComplete;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:140
+  /// 튜토리얼 완료 다이얼로그 본문
   ///
   /// In ko, this message translates to:
   /// **'핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요'**
-  String get dialoginGameTutorialPageMessage;
+  String get messageTutorialComplete;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:141
+  /// 튜토리얼 완료 다이얼로그의 종료 버튼
   ///
   /// In ko, this message translates to:
   /// **'튜토리얼 끝내기'**
-  String get dialoginGameTutorialPageConfirm;
+  String get buttonFinishTutorial;
 
   /// 튜토리얼 — 내 위치 버튼 동작 안내
   ///
@@ -3068,12 +2906,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'채팅을 입력하세요'**
   String get tutorialChatHint;
-
-  /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:19
-  ///
-  /// In ko, this message translates to:
-  /// **'방 만들기'**
-  String get dialogtutorialCatalogPageTitle;
 
   /// 튜토리얼 카탈로그 — 방 만들기 단계 부제
   ///
@@ -3273,11 +3105,11 @@ abstract class AppLocalizations {
   /// **'경찰과 도둑을 만든 사람들'**
   String get pageCreditsTitle;
 
-  /// auto-imported from lib/features/report/data/repositories/report_repository_impl.dart:39
+  /// 신고 처리 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
   /// **'신고 처리 중 오류가 발생했습니다'**
-  String get dialogreportRepositoryImplMessage;
+  String get errorReportGeneric;
 
   /// 신고 카테고리 — 낚시/놀람/도배 (ReportCategory.bait)
   ///
@@ -3321,11 +3153,11 @@ abstract class AppLocalizations {
   /// **'기타(직접 작성)'**
   String get reportCategoryOther;
 
-  /// auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:36
+  /// 닉네임 중복 확인 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
   /// **'닉네임 확인 중 예기치 않은 오류가 발생했습니다'**
-  String get dialoguserRepositoryImplMessage;
+  String get errorNicknameCheckUnexpected;
 
   /// 닉네임 변경 실패 시 표시되는 예외 메시지
   ///
@@ -3387,17 +3219,17 @@ abstract class AppLocalizations {
   /// **'인증이 만료되었습니다. 재로그인이 필요합니다'**
   String get errorAuthExpired;
 
-  /// auto-imported from lib/features/notice/data/repositories/notice_repository_impl.dart:49
+  /// 공지사항 로딩 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
   /// **'공지사항을 불러오는 중 오류가 발생했습니다'**
-  String get dialognoticeRepositoryImplMessage;
+  String get errorNoticesLoadGeneric;
 
-  /// auto-imported from lib/features/notice/presentation/pages/notices_page.dart:64
+  /// 공지사항 로딩 중 표시되는 안내
   ///
   /// In ko, this message translates to:
   /// **'공지사항을 불러오는 중...'**
-  String get dialognoticesPageMessage;
+  String get messageLoadingNotices;
 
   /// 공지사항 로딩 실패 안내
   ///
@@ -3447,17 +3279,11 @@ abstract class AppLocalizations {
   /// **'로그아웃'**
   String get buttonLogout;
 
-  /// auto-imported from lib/features/bug/data/repositories/bug_repository_impl.dart:25
+  /// 버그 제보 처리 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
   /// **'버그 제보 처리 중 오류가 발생했습니다'**
-  String get dialogbugRepositoryImplMessage;
-
-  /// auto-imported from lib/main.dart:181
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰과도둑'**
-  String get dialogmainTitle;
+  String get errorBugReportFailed;
 
   /// START 1단계 — 제한 시간 안내
   ///

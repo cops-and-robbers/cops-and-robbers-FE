@@ -78,7 +78,7 @@ class SessionRepositoryImpl implements SessionRepository {
     } catch (e) {
       throw ServerException(
         message: '게임 방 생성 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialogsessionRepositoryImplMessage',
+        messageKey: 'errorGameRoomCreateUnexpected',
         originalException: e,
       );
     }

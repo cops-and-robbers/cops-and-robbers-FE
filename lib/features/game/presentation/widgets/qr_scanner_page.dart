@@ -59,10 +59,10 @@ class _QrScannerPageState<T> extends State<QrScannerPage<T>> {
     final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
-      title: l10n.dialogqrScannerPageTitle,
-      message: l10n.dialogqrScannerPageMessage,
-      confirmText: l10n.dialogqrScannerPageConfirm,
-      cancelText: l10n.dialogqrScannerPageCancel,
+      title: l10n.dialogCameraPermissionTitle,
+      message: l10n.dialogCameraPermissionMessage,
+      confirmText: l10n.buttonGoToSettings,
+      cancelText: l10n.buttonClose,
       onConfirm: () => AppSettings.openAppSettings(),
     );
   }

@@ -76,7 +76,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
         context,
         message: AppLocalizations.of(
           context,
-        ).dialogagreementSettingsPageMessage,
+        ).errorNetworkNotConnected,
         backgroundColor: AppColors.red,
       );
       return;
@@ -211,10 +211,10 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     checked: status.termsOfService,
                     required: true,
                     readOnly: true,
-                    title: l10n.dialogagreementSettingsPageTitle,
+                    title: l10n.linkTermsOfService,
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
-                      title: l10n.dialogagreementSettingsPageTitle,
+                      title: l10n.linkTermsOfService,
                       assetPath: 'assets/legals/terms_of_service.json',
                       externalUrl: AppUrls.termsOfService,
                     ),

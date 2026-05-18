@@ -57,11 +57,11 @@ class AgreementPage extends ConsumerWidget {
                         AgreementItem(
                           checked: state.termsOfService,
                           required: true,
-                          title: l10n.dialogagreementPageTitle,
+                          title: l10n.linkTermsOfService,
                           onToggle: notifier.toggleTerms,
                           onDetailTap: () => _openDetail(
                             context,
-                            title: l10n.dialogagreementPageTitle,
+                            title: l10n.linkTermsOfService,
                             assetPath: 'assets/legals/terms_of_service.json',
                             externalUrl: AppUrls.termsOfService,
                           ),
@@ -174,7 +174,7 @@ class AgreementPage extends ConsumerWidget {
       case AgreementSubmitResult.offline:
         AppSnackbar.show(
           context,
-          message: l10n.dialogagreementPageMessage,
+          message: l10n.errorNetworkNotConnected,
           backgroundColor: AppColors.red,
         );
       case AgreementSubmitResult.missingRequired:

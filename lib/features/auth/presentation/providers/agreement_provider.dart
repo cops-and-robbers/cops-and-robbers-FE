@@ -128,7 +128,7 @@ class AgreementNotifier extends _$AgreementNotifier {
           : ServerException(
               // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
               message: 'temporary error, please retry',
-              messageKey: 'dialogagreementProviderMessage',
+              messageKey: 'errorTemporaryRetry',
               originalException: e,
             );
       state = state.copyWith(isSubmitting: false);

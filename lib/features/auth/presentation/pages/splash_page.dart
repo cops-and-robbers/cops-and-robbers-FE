@@ -328,7 +328,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (mounted && _isOffline) {
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialogsplashPageMessage,
+        message: AppLocalizations.of(context).errorNetworkNotConnected,
         backgroundColor: AppColors.red,
       );
     }
@@ -350,9 +350,9 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     final l10n = AppLocalizations.of(context);
     await AppDialog.show(
       context: context,
-      title: l10n.dialogsplashPageTitle,
+      title: l10n.dialogNetworkConnectionFailedTitle,
       message: l10n.dialogSplashOfflineMessage,
-      confirmText: l10n.dialogsplashPageConfirm,
+      confirmText: l10n.buttonRetry,
       barrierDismissible: false,
       onConfirm: () {
         if (mounted) _navigateToNextScreen();
