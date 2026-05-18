@@ -267,7 +267,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                     context,
                     message: AppLocalizations.of(
                       context,
-                    ).dialoginGameTutorialPageMessage8372,
+                    ).tutorialInGameMyLocation,
                     isDarkMode: _isDarkMode,
                   );
                 },
@@ -454,7 +454,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                   context,
                   message: AppLocalizations.of(
                     context,
-                  ).dialoginGameTutorialPageMessage9b3f,
+                  ).tutorialInGameRulesGuide,
                   isDarkMode: _isDarkMode,
                 );
               },
@@ -689,7 +689,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               } else {
                 AppSnackbar.show(
                   context,
-                  message: l10n.dialoginGameTutorialPageMessage9331,
+                  message: l10n.tutorialInGameQrArrest,
                   isDarkMode: false,
                 );
               }
@@ -781,7 +781,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           context,
           message: AppLocalizations.of(
             context,
-          ).dialoginGameTutorialPageMessage7650,
+          ).tutorialInGameChatExpand,
           isDarkMode: _isDarkMode,
         );
       },

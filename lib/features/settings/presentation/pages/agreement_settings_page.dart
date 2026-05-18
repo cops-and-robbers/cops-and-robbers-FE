@@ -242,10 +242,10 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     checked: status.locationTerms,
                     required: true,
                     readOnly: true,
-                    title: l10n.dialogagreementSettingsPageTitle6dcc,
+                    title: l10n.linkLocationTerms,
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
-                      title: l10n.dialogagreementSettingsPageTitle6dcc,
+                      title: l10n.linkLocationTerms,
                       assetPath: 'assets/legals/location_terms.json',
                       externalUrl: AppUrls.locationTerms,
                     ),
@@ -256,11 +256,11 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                   AgreementItem(
                     checked: _newMarketing,
                     required: false,
-                    title: l10n.dialogagreementSettingsPageTitle76b8,
+                    title: l10n.linkMarketingConsent,
                     onToggle: () =>
                         setState(() => _newMarketing = !_newMarketing),
                     onDetailTap: () => _openDetail(
-                      title: l10n.dialogagreementSettingsPageTitle76b8,
+                      title: l10n.linkMarketingConsent,
                       assetPath: 'assets/legals/marketing_consent.json',
                       externalUrl: AppUrls.marketingConsent,
                     ),

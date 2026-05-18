@@ -24,17 +24,17 @@ class TutorialCatalogPage extends StatelessWidget {
         icon: Icons.add_box_outlined,
       ),
       _TutorialCatalogItem(
-        title: l10n.dialogtutorialCatalogPageTitle879f,
+        title: l10n.buttonJoinRoom,
         subtitle: l10n.tutorialCatalogInviteSubtitle,
         icon: Icons.qr_code_scanner_outlined,
       ),
       _TutorialCatalogItem(
-        title: l10n.dialogtutorialCatalogPageTitle2421,
+        title: l10n.tutorialCatalogWaitingRoomTitle,
         subtitle: l10n.tutorialCatalogLobbySubtitle,
         icon: Icons.groups_outlined,
       ),
       _TutorialCatalogItem(
-        title: l10n.dialogtutorialCatalogPageTitle8700,
+        title: l10n.tutorialCatalogInGameTitle,
         subtitle: l10n.tutorialCatalogGameSubtitle,
         icon: Icons.map_outlined,
         route: '/tutorial/in-game',

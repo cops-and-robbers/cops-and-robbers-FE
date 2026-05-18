@@ -579,7 +579,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (navigator.canPop()) navigator.pop(); // TextSubmitPage 닫기
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialogsettingsPageMessage1b8e,
+        message: AppLocalizations.of(context).messageBugReportSubmitted,
       );
     } on AuthException {
       // AuthInterceptor가 강제 로그아웃 + 로그인 화면 이동을 처리
@@ -629,9 +629,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final l10n = AppLocalizations.of(context);
     final result = await AppDialog.confirm(
       context: context,
-      title: l10n.dialogsettingsPageTitle9ab1,
+      title: l10n.dialogLogoutTitle,
       message: l10n.dialogsettingsPageMessageE675,
-      confirmText: l10n.dialogsettingsPageConfirm9ab1,
+      confirmText: l10n.buttonLogout,
       isDestructive: true,
     );
     if (result != true || !mounted) return;
@@ -665,14 +665,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
     AppDialog.show(
       context: context,
-      title: l10n.dialogsettingsPageTitle5e0d,
+      title: l10n.dialogDeleteAccountTitle,
       message: l10n.dialogDeleteAccountMessage,
       customContent: AppTextField(
         controller: controller,
-        hintText: l10n.fieldsettingsPageHint2960,
+        hintText: l10n.fieldDeleteAccountHint,
       ),
       cancelText: l10n.dialogsettingsPageCancel,
-      confirmText: l10n.dialogsettingsPageConfirm9140,
+      confirmText: l10n.buttonDeleteAccount,
       isDestructive: true,
       validator: () {
         // 검증 키워드는 모든 로케일에서 'delete'로 통일 (글로벌 공통 영문)

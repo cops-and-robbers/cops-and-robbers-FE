@@ -82,7 +82,7 @@ class UserRepositoryImpl implements UserRepository {
     } catch (e) {
       throw ServerException(
         message: '사용자 정보 조회 중 오류가 발생했습니다.',
-        messageKey: 'dialoguserRepositoryImplMessage243c',
+        messageKey: 'errorUserInfoFetch',
         originalException: e,
       );
     }
@@ -101,7 +101,7 @@ class UserRepositoryImpl implements UserRepository {
     } catch (e) {
       throw ServerException(
         message: '회원 탈퇴 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialoguserRepositoryImplMessage220e',
+        messageKey: 'errorDeleteAccountUnexpected',
         originalException: e,
       );
     }
@@ -134,7 +134,7 @@ class UserRepositoryImpl implements UserRepository {
       if (e is AppException) rethrow;
       throw ServerException(
         message: '약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialoguserRepositoryImplMessage05b0',
+        messageKey: 'errorAgreementFetchUnexpected',
         originalException: e,
       );
     }
@@ -161,7 +161,7 @@ class UserRepositoryImpl implements UserRepository {
       if (e is AppException) rethrow;
       throw ServerException(
         message: '약관 동의 저장 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialoguserRepositoryImplMessage2357',
+        messageKey: 'errorAgreementSaveUnexpected',
         originalException: e,
       );
     }
@@ -183,7 +183,7 @@ class UserRepositoryImpl implements UserRepository {
       if (e is AppException) rethrow;
       throw ServerException(
         message: '게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialoguserRepositoryImplMessage3d3a',
+        messageKey: 'errorGamePushFetchUnexpected',
         originalException: e,
       );
     }
@@ -205,7 +205,7 @@ class UserRepositoryImpl implements UserRepository {
       if (e is AppException) rethrow;
       throw ServerException(
         message: '게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialoguserRepositoryImplMessage5fe2',
+        messageKey: 'errorGamePushUpdateUnexpected',
         originalException: e,
       );
     }
