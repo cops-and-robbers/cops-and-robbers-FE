@@ -1992,6 +1992,15 @@
       }
     }
   },
+  "chatInputBarUnreadHint": "안 읽은 메시지 [{body}]",
+  "@chatInputBarUnreadHint": {
+    "description": "채팅 입력바 위 미읽음 힌트 wrapper — body에는 '전체 N개 · 팀 N개' 같은 부분 라벨이 들어감",
+    "placeholders": {
+      "body": {
+        "type": "String"
+      }
+    }
+  },
   "chat_chatInputBar_L158": "연결 중...",
   "@chat_chatInputBar_L158": {
     "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:158"

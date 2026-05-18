@@ -1482,6 +1482,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String chatInputBarUnreadHint(String body) {
+    return '안 읽은 메시지 [$body]';
+  }
+
+  @override
   String get chat_chatInputBar_L158 => '연결 중...';
 
   @override

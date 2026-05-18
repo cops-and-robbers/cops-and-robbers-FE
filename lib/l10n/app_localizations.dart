@@ -2896,6 +2896,12 @@ abstract class AppLocalizations {
   /// **'팀 {team}개'**
   String chat_chatInputBar_L99(String team);
 
+  /// 채팅 입력바 위 미읽음 힌트 wrapper — body에는 '전체 N개 · 팀 N개' 같은 부분 라벨이 들어감
+  ///
+  /// In ko, this message translates to:
+  /// **'안 읽은 메시지 [{body}]'**
+  String chatInputBarUnreadHint(String body);
+
   /// auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:158
   ///
   /// In ko, this message translates to:

@@ -1604,6 +1604,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String chatInputBarUnreadHint(String body) {
+    return 'Unread [$body]';
+  }
+
+  @override
   String get chat_chatInputBar_L158 => 'Connecting...';
 
   @override

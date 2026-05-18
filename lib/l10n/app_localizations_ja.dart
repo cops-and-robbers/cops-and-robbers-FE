@@ -1484,6 +1484,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String chatInputBarUnreadHint(String body) {
+    return '未読メッセージ [$body]';
+  }
+
+  @override
   String get chat_chatInputBar_L158 => '接続中...';
 
   @override

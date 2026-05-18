@@ -466,6 +466,7 @@
   "chat_chatContextMenu_L478": "Select report type",
   "chat_chatInputBar_L98": "Total {all}",
   "chat_chatInputBar_L99": "Team {team}",
+  "chatInputBarUnreadHint": "Unread [{body}]",
   "chat_chatInputBar_L158": "Connecting...",
   "chat_chatInputBar_L159": "Enter chat message",
   "chat_chatMessageList_L152": "Start chatting",

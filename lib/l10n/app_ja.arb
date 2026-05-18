@@ -466,6 +466,7 @@
   "chat_chatContextMenu_L478": "通報タイプの選択",
   "chat_chatInputBar_L98": "全体 {all}件",
   "chat_chatInputBar_L99": "チーム {team}件",
+  "chatInputBarUnreadHint": "未読メッセージ [{body}]",
   "chat_chatInputBar_L158": "接続中...",
   "chat_chatInputBar_L159": "チャットを入力してください",
   "chat_chatMessageList_L152": "チャットを始めてみてください",
