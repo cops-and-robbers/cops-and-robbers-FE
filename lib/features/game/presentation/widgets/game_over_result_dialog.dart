@@ -323,9 +323,7 @@ class _ResultTitle extends StatelessWidget {
 
     final l10n = AppLocalizations.of(context);
     return Text(
-      isWin
-          ? l10n.game_gameOverResultDialog_L324
-          : l10n.game_gameOverResultDialog_L324_1,
+      isWin ? l10n.gameResultWin : l10n.gameResultLose,
       style: baseStyle.copyWith(color: color),
       textAlign: TextAlign.center,
     );
@@ -347,13 +345,13 @@ class _StatsSection extends StatelessWidget {
           _StatRow(
             isDarkMode: isDarkMode,
             label: l10n.fieldgameOverResultDialogLabel,
-            value: l10n.game_gameOverResultDialog_L345(entity.totalArrestCount),
+            value: l10n.gameResultArrestCount(entity.totalArrestCount),
           ),
           SizedBox(height: AppSpacing.vertical12),
           _StatRow(
             isDarkMode: isDarkMode,
             label: l10n.fieldgameOverResultDialogLabelD8df,
-            value: l10n.game_gameOverResultDialog_L351(
+            value: l10n.gameResultRemainingRobberCount(
               entity.remainingRobberCount,
             ),
           ),
@@ -456,7 +454,7 @@ class _ActionButtons extends StatelessWidget {
         Expanded(
           child: AppButton(
             key: const ValueKey('game_over_go_home_button'),
-            text: l10n.game_gameOverResultDialog_L438,
+            text: l10n.buttonGoHome,
             onPressed: onGoHome,
             backgroundColor: cancelBg,
             foregroundColor: cancelFg,
@@ -470,7 +468,7 @@ class _ActionButtons extends StatelessWidget {
         Expanded(
           child: AppButton(
             key: const ValueKey('game_over_rematch_button'),
-            text: l10n.game_gameOverResultDialog_L452,
+            text: l10n.buttonPlayAgain,
             onPressed: onRematch,
             backgroundColor: confirmBg,
             foregroundColor: confirmFg,

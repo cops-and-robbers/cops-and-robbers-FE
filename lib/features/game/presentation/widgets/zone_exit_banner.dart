@@ -64,7 +64,7 @@ class ZoneExitBanner extends StatelessWidget {
             SizedBox(width: AppSpacing.horizontal8),
             Expanded(
               child: Text(
-                AppLocalizations.of(context).game_zoneExitBanner_L66,
+                AppLocalizations.of(context).gameZoneExitBanner,
                 style: textStyle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

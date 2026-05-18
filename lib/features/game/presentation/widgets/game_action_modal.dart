@@ -62,9 +62,7 @@ class GameActionModal {
           : null,
       message: useAvatar ? null : message,
       confirmText: confirmLabel,
-      cancelText: useAvatar
-          ? l10n.game_gameActionModal_L63
-          : l10n.game_gameActionModal_L63_1,
+      cancelText: useAvatar ? l10n.buttonNo : l10n.buttonCancel,
       confirmColor: isDarkMode ? null : AppColors.blue,
       confirmTextColor: isDarkMode ? null : AppColors.white,
       onConfirm: onConfirm,

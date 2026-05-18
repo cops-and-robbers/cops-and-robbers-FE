@@ -466,70 +466,65 @@ class AppLocalizationsKo extends AppLocalizations {
       '참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다';
 
   @override
-  String session_sessionSettings_L22(String maxPlayers) {
-    return '$maxPlayers명';
+  String gameSettingMaxPlayers(String count) {
+    return '$count명';
   }
 
   @override
-  String session_sessionSettings_L27(int roundTimeMinutes) {
-    return '$roundTimeMinutes분';
+  String gameSettingRoundMinutes(int minutes) {
+    return '$minutes분';
   }
 
   @override
-  String session_sessionSettings_L32(int locationShareMinutes) {
-    return '$locationShareMinutes분';
+  String gameSettingLocationShareMinutes(int minutes) {
+    return '$minutes분';
   }
 
   @override
-  String session_sessionSettings_L37(int policeStartDelayMinutes) {
-    return '도둑 도망 후 $policeStartDelayMinutes분 뒤';
+  String gameSettingPoliceStartDelay(int minutes) {
+    return '도둑 도망 후 $minutes분 뒤';
   }
 
   @override
-  String session_zoneInfo_L25(String km) {
-    return '반경 ${km}km';
+  String zoneRadiusMeters(String meters) {
+    return '반경 ${meters}m';
   }
 
   @override
-  String session_zoneInfo_L27(String radiusMeters) {
-    return '반경 ${radiusMeters}m';
-  }
+  String get errorSettingsSaveFailed => '설정 저장에 실패했습니다';
 
   @override
-  String get session_gameSettingsEditPage_L110 => '설정 저장에 실패했습니다';
+  String get pageGameSettingsEditTitle => '설정 수정';
 
   @override
-  String get session_gameSettingsEditPage_L146 => '설정 수정';
+  String get buttonSaving => '저장 중...';
 
   @override
-  String get session_gameSettingsEditPage_L197 => '저장 중...';
+  String get buttonSave => '저장';
 
   @override
-  String get session_gameSettingsEditPage_L197_1 => '저장';
+  String get errorAreaSaveFailed => '영역 저장에 실패했습니다';
 
   @override
-  String get session_gameSettingsPage_L140 => '영역 저장에 실패했습니다';
+  String get pageGameSettingsTitle => '게임 설정';
 
   @override
-  String get session_gameSettingsPage_L190 => '게임 설정';
+  String get errorZoneInfoLoadFailed => '구역 정보를 불러올 수 없습니다';
 
   @override
-  String get session_gameSettingsPage_L210 => '구역 정보를 불러올 수 없습니다';
+  String get errorSettingsLoadFailed => '설정 정보를 불러올 수 없습니다';
 
   @override
-  String get session_gameSettingsPage_L228 => '설정 정보를 불러올 수 없습니다';
+  String get zonePlayground => '플레이그라운드';
 
   @override
-  String get session_gameSettingsPage_L270 => '플레이그라운드';
+  String get zoneJail => '감옥';
 
   @override
-  String get session_gameSettingsPage_L275 => '감옥';
+  String get homePageCreateGameHint => '새로운 게임을 만들 수 있어요';
 
   @override
-  String get session_homePage_L108 => '새로운 게임을 만들 수 있어요';
-
-  @override
-  String get session_homePage_L113 => '초대 코드를 입력하면 게임에 참가할 수 있어요';
+  String get homePageJoinGameHint => '초대 코드를 입력하면 게임에 참가할 수 있어요';
 
   @override
   String get dialoghomePageTitle => '주변을 확인하며 이용해 주세요';
@@ -542,7 +537,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoghomePageConfirm => '확인했어요!';
 
   @override
-  String get session_homePage_L158 => '오늘은 다시 보지 않기';
+  String get homePageDontShowToday => '오늘은 다시 보지 않기';
 
   @override
   String get dialoghomePageMessage50b3 => '이미 참가 중인 게임이 있습니다';
@@ -560,13 +555,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoghomePageTitleEeea => '끊김 없는 게임을 위해';
 
   @override
-  String get session_homePage_L332 => '앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n';
+  String get homePageBatteryGuideStep1 => '앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n';
 
   @override
-  String get session_homePage_L333 => '그래야 화면이 꺼져도 게임이 끊기지 않아요';
+  String get homePageBatteryGuideStep2 => '그래야 화면이 꺼져도 게임이 끊기지 않아요';
 
   @override
-  String get session_homePage_L432 => '참여에 실패했습니다. 초대 코드를 확인해주세요';
+  String get errorJoinFailedCheckCode => '참여에 실패했습니다. 초대 코드를 확인해주세요';
 
   @override
   String get dialoghomePageMessage8155 => '참여에 실패했습니다. 다시 시도해주세요';
@@ -587,31 +582,30 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoghomePageConfirm665b => '참여하기';
 
   @override
-  String get session_homePage_L601 => '경찰과도둑';
+  String get appBrandName => '경찰과도둑';
 
   @override
   String get dialoghomePageMessage9e36 => '준비중입니다';
 
   @override
-  String get session_homePage_L661 => '너무 기대 돼\n이번에는 어떤 역할을 할까?';
+  String get homePageWelcomeMessage => '너무 기대 돼\n이번에는 어떤 역할을 할까?';
 
   @override
-  String get session_homePage_L677 => '방 만들기';
+  String get buttonCreateRoom => '방 만들기';
 
   @override
-  String get session_homePage_L684 => '방 참여하기';
+  String get buttonJoinRoom => '방 참여하기';
 
   @override
-  String get session_sessionCreationFlowPage_L160 =>
+  String get sessionCreationStepZoneSubtitle =>
       '게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요';
 
   @override
-  String get session_sessionCreationFlowPage_L167 =>
+  String get sessionCreationStepRulesSubtitle =>
       '게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요';
 
   @override
-  String get session_sessionCreationFlowPage_L374 =>
-      '게임 방 생성에 실패했습니다. 다시 시도해주세요';
+  String get errorCreateRoomFailed => '게임 방 생성에 실패했습니다. 다시 시도해주세요';
 
   @override
   String get dialogsessionCreationFlowPageMessage => '이미 참가 중인 게임이 있습니다';
@@ -620,79 +614,52 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogsessionCreationFlowPageMessage89ff => '알 수 없는 게임 상태입니다';
 
   @override
-  String get session_sessionCreationFlowPage_L483 => '구역 선택을 먼저 설정할까요?';
+  String get sessionCreationZoneFirstQuestion => '구역 선택을 먼저 설정할까요?';
 
   @override
-  String get session_sessionCreationFlowPage_L484 => '인원을 설정해요';
+  String get sessionCreationStepParticipantsTitle => '인원을 설정해요';
 
   @override
-  String get session_sessionCreationFlowPage_L485 => '기본 정보를 설정해요';
+  String get sessionCreationStepBasicTitle => '기본 정보를 설정해요';
 
   @override
-  String get session_sessionCreationFlowPage_L486 => '최종 설정을 확인해요';
+  String get sessionCreationStepReviewTitle => '최종 설정을 확인해요';
 
   @override
-  String get session_sessionCreationFlowPage_L491 => '게임에 필요한 구역을 설정해요';
+  String get sessionCreationStepZoneIntro => '게임에 필요한 구역을 설정해요';
 
   @override
-  String get session_sessionCreationFlowPage_L492 => '최소 2명부터 게임 진행이 가능해요';
+  String get sessionCreationStepParticipantsHint => '최소 2명부터 게임 진행이 가능해요';
 
   @override
-  String get session_sessionCreationFlowPage_L493 => '게임을 진행할 때, 꼭 필요한 정보들이에요';
+  String get sessionCreationStepBasicHint => '게임을 진행할 때, 꼭 필요한 정보들이에요';
 
   @override
-  String get session_sessionCreationFlowPage_L494 => '방 생성 전 마지막으로 설정을 확인할까요?';
+  String get sessionCreationStepReviewHint => '방 생성 전 마지막으로 설정을 확인할까요?';
 
   @override
-  String get session_sessionCreationFlowPage_L503 => '다음';
+  String get buttonNext => '다음';
 
   @override
-  String get session_sessionCreationFlowPage_L505 => '방 생성하기';
+  String get errorZoneNotConfigured => '구역 정보를 먼저 설정해주세요';
 
   @override
-  String get session_sessionCreationFlowPage_L507 => '다음';
+  String get setupPlaygroundRadiusInputHint => '여기를 누르면 반경을 직접 입력할 수 있어요';
 
   @override
-  String get session_sessionCreationFlowPage_L660 => '플레이그라운드';
+  String get setupPlaygroundDescription => '게임이 진행될 전체 구역의 크기를 설정해요';
 
   @override
-  String get session_sessionCreationFlowPage_L665 => '감옥';
+  String get buttonDone => '완료';
 
   @override
-  String get session_sessionCreationFlowPage_L676 => '구역 정보를 먼저 설정해주세요';
+  String get setupPrisonDescription => '도둑을 잡아둘 감옥의 위치와 크기를 설정해요';
 
   @override
-  String get session_setupPlaygroundPage_L135 => '여기를 누르면 반경을 직접 입력할 수 있어요';
+  String get errorPlaygroundFirst => '플레이그라운드를 먼저 설정해주세요';
 
   @override
-  String get session_setupPlaygroundPage_L195 => '플레이그라운드';
-
-  @override
-  String get session_setupPlaygroundPage_L212 => '플레이그라운드';
-
-  @override
-  String get session_setupPlaygroundPage_L233 => '게임이 진행될 전체 구역의 크기를 설정해요';
-
-  @override
-  String get session_setupPlaygroundPage_L267 => '완료';
-
-  @override
-  String get session_setupPrisonPage_L210 => '감옥';
-
-  @override
-  String get session_setupPrisonPage_L227 => '감옥';
-
-  @override
-  String get session_setupPrisonPage_L248 => '도둑을 잡아둘 감옥의 위치와 크기를 설정해요';
-
-  @override
-  String get session_setupPrisonPage_L286 => '플레이그라운드를 먼저 설정해주세요';
-
-  @override
-  String get session_setupPrisonPage_L287 => '감옥이 플레이그라운드 범위를 벗어났어요';
-
-  @override
-  String get session_setupPrisonPage_L299 => '완료';
+  String get errorJailOutsidePlayground => '감옥이 플레이그라운드 범위를 벗어났어요';
 
   @override
   String get dialogwaitingRoomPageConfirm => '설정으로 이동';
@@ -701,28 +668,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogwaitingRoomPageCancel => '나가기';
 
   @override
-  String get session_waitingRoomPage_L364 => '포근포근곰...';
+  String get dummyNicknameBear => '포근포근곰...';
 
   @override
   String get dialogwaitingRoomPageTitle => '방에 참여할 수 없어요';
 
   @override
-  String get session_waitingRoomPage_L545 => '해당 게임에 참가하지 않은 사용자입니다';
+  String get errorNotInGame => '해당 게임에 참가하지 않은 사용자입니다';
 
   @override
   String get dialogwaitingRoomPageConfirm3ce8 => '확인';
 
   @override
-  String get session_waitingRoomPage_L631 => '이 버튼을 눌러 다른 팀으로 이동할 수 있어요';
+  String get waitingRoomTutorialTeamSwitch => '이 버튼을 눌러 다른 팀으로 이동할 수 있어요';
 
   @override
-  String get session_waitingRoomPage_L637 => '친구에게 초대 코드를 공유할 수 있어요';
+  String get waitingRoomTutorialInvite => '친구에게 초대 코드를 공유할 수 있어요';
 
   @override
-  String get session_waitingRoomPage_L642 => '게임 설정을 확인할 수 있어요';
+  String get waitingRoomTutorialSettings => '게임 설정을 확인할 수 있어요';
 
   @override
-  String get session_waitingRoomPage_L647 => '준비가 되면 눌러주세요';
+  String get waitingRoomTutorialReady => '준비가 되면 눌러주세요';
 
   @override
   String get dialogwaitingRoomPageTitle1946 => '인게임 화면 미리 보기';
@@ -764,13 +731,13 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get session_waitingRoomPage_L1030 => '팀 변경에 실패했어요';
+  String get errorTeamChangeFailed => '팀 변경에 실패했어요';
 
   @override
-  String get session_waitingRoomPage_L1062 => '준비 상태 변경에 실패했어요';
+  String get errorReadyChangeFailed => '준비 상태 변경에 실패했어요';
 
   @override
-  String get session_waitingRoomPage_L1099 => '게임 시작에 실패했어요';
+  String get errorGameStartFailed => '게임 시작에 실패했어요';
 
   @override
   String get dialogwaitingRoomPageTitleFfec => '방을 나가시겠어요?';
@@ -782,7 +749,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogwaitingRoomPageConfirmC0a3 => '나가기';
 
   @override
-  String get session_waitingRoomPage_L1130 => '퇴장 처리 중 오류가 발생했습니다';
+  String get errorLeaveRoomFailed => '퇴장 처리 중 오류가 발생했습니다';
 
   @override
   String get dialogwaitingRoomPageTitleA5bb => '초대코드를 생성했어요';
@@ -800,31 +767,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogwaitingRoomPageConfirm27f8 => '공유하기';
 
   @override
-  String get session_waitingRoomPage_L1511 => '게임 시작';
+  String get buttonStartGame => '게임 시작';
 
   @override
-  String get session_waitingRoomPage_L1526 => '준비 완료';
+  String get buttonReadyDone => '준비 완료';
 
   @override
-  String get session_waitingRoomPage_L1537 => '준비';
+  String get buttonReady => '준비';
 
   @override
-  String get session_zonePreviewPage_L122 => '게임 구역';
+  String get pageZonePreviewTitle => '게임 구역';
 
   @override
-  String get session_zonePreviewPage_L145 => '현재 설정된 게임 구역이에요';
+  String get zonePreviewSubtitle => '현재 설정된 게임 구역이에요';
 
   @override
-  String get session_waitingRoomParticipantsProvider_L81 => '포근포근곰...';
+  String get dummyNicknameRaccoon => '오동통 너구리';
 
   @override
-  String get session_waitingRoomParticipantsProvider_L87 => '오동통 너구리';
-
-  @override
-  String get session_waitingRoomParticipantsProvider_L93 => '닉네임';
-
-  @override
-  String get session_waitingRoomParticipantsProvider_L99 => '닉네임';
+  String get defaultNicknameLabel => '닉네임';
 
   @override
   String get dialoggameRulesContentTitle => '게임 규칙';
@@ -836,36 +797,36 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoggameRulesContentConfirm => '인게임 보기';
 
   @override
-  String get session_gameRulesContent_L95 => '경찰은 모든 도둑을 잡아서';
+  String get gameRulesCopGoalPrefix => '경찰은 모든 도둑을 잡아서';
 
   @override
-  String get session_gameRulesContent_L96 => '체포하면,';
+  String get gameRulesCopGoalSuffix => '체포하면,';
 
   @override
-  String get session_gameRulesContent_L97 => '\n도둑은';
+  String get gameRulesRobberGoalPrefix => '\n도둑은';
 
   @override
-  String get session_gameRulesContent_L98 => '제한 시간이 끝날 때까지 버티면';
+  String get gameRulesRobberGoalCondition => '제한 시간이 끝날 때까지 버티면';
 
   @override
-  String get session_gameRulesContent_L99 => '승리해요';
+  String get gameRulesWinSuffix => '승리해요';
 
   @override
-  String get session_gameRulesContent_L108 => '도둑팀의 위치는';
+  String get gameRulesLocationShareLine1 => '도둑팀의 위치는';
 
   @override
-  String session_gameRulesContent_L109(int minutes) {
+  String gameRulesLocationShareLine2(int minutes) {
     return '$minutes분마다';
   }
 
   @override
-  String get session_gameRulesContent_L110 => '경찰팀에게 공유돼요';
+  String get gameRulesLocationShareLine3 => '경찰팀에게 공유돼요';
 
   @override
-  String get session_gameRulesContent_L118 => '지정된 게임 구역에서 벗어나면 안 돼요';
+  String get gameRulesZoneRuleLine1 => '지정된 게임 구역에서 벗어나면 안 돼요';
 
   @override
-  String get session_gameRulesContent_L119 => '\n→ 구역 밖으로 나가면 화면이 잠겨요';
+  String get gameRulesZoneRuleLine2 => '\n→ 구역 밖으로 나가면 화면이 잠겨요';
 
   @override
   String get dialogsessionCodeCardMessage => '코드가 복사되었습니다';
@@ -880,37 +841,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fieldstep1ParticipantSettingsContentLabel => '최대 참가자';
 
   @override
-  String get session_step1ParticipantSettingsContent_L52 => '명';
+  String get unitPerson => '명';
 
   @override
   String get fieldstep2GameSettingsContentLabel => '라운드 제한 시간';
 
   @override
-  String get session_step2GameSettingsContent_L79 => '분';
+  String get unitMinutes => '분';
 
   @override
   String get fieldstep2GameSettingsContentLabel5ab2 => '도둑 위치 공유 간격';
 
   @override
-  String get session_step2GameSettingsContent_L97 => '분';
-
-  @override
-  String get session_step2GameSettingsContent_L104 => '도둑의 위치가 공유되지 않아요!';
+  String get gameSettingNoLocationShareWarning => '도둑의 위치가 공유되지 않아요!';
 
   @override
   String get fieldstep2GameSettingsContentLabelCe3b => '경찰 출동 시간';
 
   @override
-  String get session_step2GameSettingsContent_L115 => '분';
+  String get gameSettingPoliceStartPrefix => '도둑 도망 후';
 
   @override
-  String get session_step2GameSettingsContent_L117 => '도둑 도망 후';
-
-  @override
-  String get session_step2GameSettingsContent_L118 => '뒤';
-
-  @override
-  String get session_sessionStepLayout_L42 => '다음';
+  String get gameSettingPoliceStartSuffix => '뒤';
 
   @override
   String get dialogsettingListCardTitle => '설정';
@@ -928,14 +880,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fieldsettingListCardLabelCe3b => '경찰 출동 시간';
 
   @override
-  String get session_teamSection_L116 => '경찰팀';
-
-  @override
-  String get session_teamSection_L116_1 => '도둑팀';
-
-  @override
-  String session_teamSection_L178(int length) {
-    return '현재 $length명';
+  String teamSectionCurrentCount(int count) {
+    return '현재 $count명';
   }
 
   @override
@@ -948,50 +894,41 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogauthRepositoryImplMessage993d => '로그아웃 중 오류가 발생했습니다';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L31 =>
-      '로그인 정보를 가져올 수 없습니다. 다시 시도해주세요';
+  String get errorAuthUserNotFound => '로그인 정보를 가져올 수 없습니다. 다시 시도해주세요';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L33 => '인증 토큰 발급에 실패했습니다. 다시 시도해주세요';
+  String get errorAuthTokenIssueFailed => '인증 토큰 발급에 실패했습니다. 다시 시도해주세요';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L35 =>
+  String get errorAuthTokenValidationFailed =>
       'Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L37 => '로그인이 취소되었습니다';
+  String get errorAuthInvalidCredential => '잘못된 인증 정보입니다';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L39 => '네트워크 연결을 확인해주세요';
+  String get errorAuthAccountDisabled => '비활성화된 계정입니다';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L41 => '잘못된 인증 정보입니다';
+  String get errorAuthTooManyRequests => '너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L43 => '비활성화된 계정입니다';
+  String get errorAuthSignInMethodUnavailable => '이 로그인 방법은 현재 사용할 수 없습니다';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L45 =>
-      '너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorAuthFirebaseConfig => 'Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L47 => '이 로그인 방법은 현재 사용할 수 없습니다';
-
-  @override
-  String get auth_firebaseAuthErrorHandler_L49 =>
-      'Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요';
-
-  @override
-  String get auth_firebaseAuthErrorHandler_L51 =>
+  String get errorAuthFirebaseInternal =>
       'Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
 
   @override
-  String auth_firebaseAuthErrorHandler_L55(int provider) {
+  String errorAuthProviderLoginFailed(String provider) {
     return '$provider 로그인에 실패했습니다. 다시 시도해주세요';
   }
 
   @override
-  String get auth_firebaseAuthErrorHandler_L57 => '로그인에 실패했습니다. 다시 시도해주세요';
+  String get errorAuthLoginFailed => '로그인에 실패했습니다. 다시 시도해주세요';
 
   @override
   String get dialogagreementPageTitle => '이용약관';
@@ -1006,22 +943,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogagreementPageTitle76b8 => '마케팅 정보 수신';
 
   @override
-  String get auth_agreementPage_L107 => '동의하고 시작하기';
+  String get agreementPageAgreeButton => '동의하고 시작하기';
 
   @override
-  String get auth_agreementPage_L127 => '서비스 이용을 위해\n약관에 동의해주세요';
+  String get agreementPageTitle => '서비스 이용을 위해\n약관에 동의해주세요';
 
   @override
-  String get auth_agreementPage_L135 => '필수 약관에 모두 동의해야 서비스를 이용하실 수 있어요';
+  String get agreementPageRequiredNotice => '필수 약관에 모두 동의해야 서비스를 이용하실 수 있어요';
 
   @override
   String get dialogagreementPageMessage => '아직 네트워크에 연결되지 않았어요';
 
   @override
   String get dialogagreementPageMessage24a8 => '필수 약관에 모두 동의해주세요';
-
-  @override
-  String get auth_agreementPage_L184 => '일시적인 오류가 발생했습니다. 다시 시도해주세요';
 
   @override
   String get dialogloginPageTitle => '개인정보 처리방침';
@@ -1052,65 +986,56 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogloginPageMessageFe9d => '로그인이 취소되었습니다';
 
   @override
-  String get auth_loginPage_L166 => '로그인 중 오류가 발생했습니다';
+  String get errorLoginGeneric => '로그인 중 오류가 발생했습니다';
 
   @override
-  String get auth_loginPage_L191 => 'Apple 로그인 중 오류가 발생했습니다';
+  String get errorAppleLoginFailed => 'Apple 로그인 중 오류가 발생했습니다';
 
   @override
-  String get auth_loginPage_L260 => '만 14세 미만은 서비스를 이용할 수 없습니다';
+  String get errorAgeRestrictionUnder14 => '만 14세 미만은 서비스를 이용할 수 없습니다';
 
   @override
-  String get auth_loginPage_L284 => '로그인 시';
+  String get loginPageAgreementPrefix => '로그인 시';
 
   @override
-  String get auth_loginPage_L286 => '개인정보 처리방침';
+  String get linkPrivacyPolicy => '개인정보 처리방침';
 
   @override
-  String get auth_loginPage_L295 => '이용약관';
+  String get linkTermsOfService => '이용약관';
 
   @override
-  String get auth_loginPage_L304 => '위치정보 이용약관';
+  String get linkLocationTerms => '위치정보 이용약관';
 
   @override
-  String get auth_loginPage_L311 => '에 동의합니다';
+  String get loginPageAgreementSuffix => '에 동의합니다';
 
   @override
   String get dialognicknameSetupPageMessage => '닉네임이 저장되었어요';
 
   @override
-  String get auth_nicknameSetupPage_L248 => '닉네임을 설정해요';
+  String get nicknameSetupTitle => '닉네임을 설정해요';
 
   @override
-  String get auth_nicknameSetupPage_L257 =>
+  String get nicknameSetupSubtitle =>
       '서비스 내에서 계속 사용될 닉네임이에요\n1~10글자로 생성할 수 있어요';
 
   @override
-  String get auth_nicknameSetupPage_L281 => '확인';
+  String get fieldNicknameHint => '닉네임을 입력하세요';
 
   @override
-  String get auth_nicknameSetupPage_L308 => '닉네임을 입력하세요';
+  String get buttonCheckNicknameDuplicate => '중복 확인';
 
   @override
-  String get auth_nicknameSetupPage_L336 => '중복 확인';
+  String get errorNicknameTooShort => '1글자 미만의 닉네임은 사용할 수 없어요';
 
   @override
-  String get auth_nicknameSetupPage_L354 => '1글자 미만의 닉네임은 사용할 수 없어요';
+  String get errorNicknameDuplicated => '중복된 닉네임이에요. 다른 닉네임을 입력하세요';
 
   @override
-  String get auth_nicknameSetupPage_L359 => '중복된 닉네임이에요. 다른 닉네임을 입력하세요';
+  String get nicknameAvailable => '사용 가능한 닉네임이에요';
 
   @override
-  String get auth_nicknameSetupPage_L364 => '사용 가능한 닉네임이에요';
-
-  @override
-  String get auth_nicknameSetupPage_L369 => '오류가 발생했어요. 다시 시도해주세요';
-
-  @override
-  String get auth_splashPage_L48 => '다시 현장으로 복귀 중...';
-
-  @override
-  String get auth_splashPage_L208 => '다시 현장으로 복귀 중...';
+  String get splashReturningToScene => '다시 현장으로 복귀 중...';
 
   @override
   String get dialogsplashPageMessage => '아직 네트워크에 연결되지 않았어요';
@@ -1125,27 +1050,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogsplashPageConfirm => '재시도';
 
   @override
-  String get auth_splashPage_L395 => '잠시만 기다려주세요';
+  String get splashPleaseWait => '잠시만 기다려주세요';
 
   @override
-  String get auth_splashPage_L412 => 'by 동심지키미';
+  String get splashCreditTag => 'by 동심지키미';
 
   @override
-  String get auth_splashPage_L444 => '인터넷 연결이 필요합니다';
+  String get splashOfflineTitle => '인터넷 연결이 필요합니다';
 
   @override
-  String get auth_splashPage_L450 => '연결 상태를 확인한 후\n다시 시도해주세요';
-
-  @override
-  String get auth_splashPage_L461 => '다시 시도';
+  String get splashOfflineMessage => '연결 상태를 확인한 후\n다시 시도해주세요';
 
   @override
   String get dialogagreementProviderMessage => '일시적인 오류가 발생했습니다. 다시 시도해주세요';
-
-  @override
-  String auth_authProvider_L129(String message) {
-    return '사유: $message';
-  }
 
   @override
   String get dialogauthProviderMessage => '알 수 없는 오류가 발생했습니다';
@@ -1154,40 +1071,40 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogauthProviderMessage222f => '로그아웃에 실패했습니다';
 
   @override
-  String get auth_agreementAllCheckbox_L35 => '전체 동의';
+  String get agreementAllCheckboxLabel => '전체 동의';
 
   @override
-  String get auth_agreementItem_L39 => '[필수]';
+  String get agreementItemRequiredTag => '[필수]';
 
   @override
-  String get auth_agreementItem_L39_1 => '[선택]';
+  String get agreementItemOptionalTag => '[선택]';
 
   @override
   String get dialoggamePageConfirm => '설정으로 이동';
 
   @override
-  String get game_gamePage_L379 => '도둑이 도망치는 중이에요!';
+  String get gameRobberOnTheRunBanner => '도둑이 도망치는 중이에요!';
 
   @override
-  String get game_gamePage_L1026 => '게임 종료!';
+  String get gameOverBannerTitle => '게임 종료!';
 
   @override
-  String get game_gamePage_L1034 => '도둑이 모두 체포되었습니다!';
+  String get gameOverReasonAllArrested => '도둑이 모두 체포되었습니다!';
 
   @override
-  String get game_gamePage_L1034_1 => '제한 시간이 종료되었습니다!';
+  String get gameOverReasonTimeUp => '제한 시간이 종료되었습니다!';
 
   @override
-  String get game_gamePage_L1086 => '경찰팀';
+  String get gameTeamCop => '경찰팀';
 
   @override
-  String get game_gamePage_L1086_1 => '도둑팀';
+  String get gameTeamRobber => '도둑팀';
 
   @override
-  String get game_gamePage_L1090 => '승리';
+  String get gameResultWin => '승리';
 
   @override
-  String get game_gamePage_L1090_1 => '패배';
+  String get gameResultLose => '패배';
 
   @override
   String dialoggamePageMessage(String winnerTeamLabel) {
@@ -1201,10 +1118,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoggamePageConfirm5863 => '한 번 더';
 
   @override
-  String get game_gamePage_L1289 => '경찰';
+  String get gameRoleCopLabel => '경찰';
 
   @override
-  String get game_gamePage_L1290 => '도둑';
+  String get gameRoleRobberLabel => '도둑';
 
   @override
   String get dialoggamePageMessage5e97 => '경찰 대기 시간 중에는 도둑을 체포할 수 없습니다';
@@ -1219,41 +1136,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoggamePageMessage4b5f => '이미 체포된 도둑입니다';
 
   @override
-  String get game_gameEventProvider_L337 => '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다';
+  String get gameArrestOverlayTitle => '체포되었어요!';
 
   @override
-  String get game_gameEventProvider_L452 => '체포 요청 실패';
-
-  @override
-  String get game_gameEventProvider_L492 => '탈옥 요청 실패';
-
-  @override
-  String get game_gameEventProvider_L520 => '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요';
-
-  @override
-  String get game_gameEventProvider_L702 => '경찰';
-
-  @override
-  String get game_gameEventProvider_L703 => '도둑';
-
-  @override
-  String get game_gameEventProvider_L866 => '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요';
-
-  @override
-  String get game_gameEventProvider_L937 => '인증이 만료되었습니다. 재로그인이 필요합니다';
-
-  @override
-  String get game_gameEventProvider_L951 => '인증이 만료되었습니다. 재로그인이 필요합니다';
-
-  @override
-  String get game_arrestLockOverlay_L71 => '체포되었어요!';
-
-  @override
-  String get game_arrestLockOverlay_L78 =>
+  String get gameArrestOverlayMessage =>
       '체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!';
 
   @override
-  String get game_arrestLockOverlay_L89 => '탈옥 완료';
+  String get gameArrestOverlayEscapeCompleteButton => '탈옥 완료';
 
   @override
   String get dialogarrestLockOverlayTitle => '탈옥';
@@ -1262,48 +1152,39 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogarrestLockOverlayMessage => '탈옥하시겠습니까?';
 
   @override
-  String get game_arrestLockOverlay_L102 => '탈옥';
+  String get buttonEscape => '탈옥';
 
   @override
-  String get game_gameActionModal_L63 => '아니요';
-
-  @override
-  String get game_gameActionModal_L63_1 => '취소';
-
-  @override
-  String get game_gameOverResultDialog_L324 => '승리';
-
-  @override
-  String get game_gameOverResultDialog_L324_1 => '패배';
+  String get buttonNo => '아니요';
 
   @override
   String get fieldgameOverResultDialogLabel => '체포 횟수';
 
   @override
-  String game_gameOverResultDialog_L345(int totalArrestCount) {
-    return '$totalArrestCount회';
+  String gameResultArrestCount(int count) {
+    return '$count회';
   }
 
   @override
   String get fieldgameOverResultDialogLabelD8df => '남은 도둑';
 
   @override
-  String game_gameOverResultDialog_L351(int remainingRobberCount) {
-    return '$remainingRobberCount명';
+  String gameResultRemainingRobberCount(int count) {
+    return '$count명';
   }
 
   @override
   String get fieldgameOverResultDialogLabelAb0c => '게임 진행 시간';
 
   @override
-  String get game_gameOverResultDialog_L438 => '홈으로';
+  String get buttonGoHome => '홈으로';
 
   @override
-  String get game_gameOverResultDialog_L452 => '한 번 더';
+  String get buttonPlayAgain => '한 번 더';
 
   @override
-  String game_locationRevealCountdown_L109(String _formatted) {
-    return '다음 도둑 위치 공개까지 $_formatted';
+  String gameLocationRevealCountdown(String formatted) {
+    return '다음 도둑 위치 공개까지 $formatted';
   }
 
   @override
@@ -1313,7 +1194,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogparticipantOverlayTitle => '해당 플레이어를 체포하셨나요?';
 
   @override
-  String get game_participantOverlay_L139 => '네';
+  String get buttonYes => '네';
 
   @override
   String get dialogparticipantOverlayTitle4167 => '탈옥';
@@ -1322,32 +1203,29 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogparticipantOverlayMessage9497 => '탈옥을 시도하시겠습니까?';
 
   @override
-  String get game_participantOverlay_L166 => '탈옥';
+  String get gameParticipantOverlayCurrent => '현재';
 
   @override
-  String get game_participantOverlay_L297 => '현재';
-
-  @override
-  String game_participantOverlay_L299(int count) {
+  String gameParticipantOverlayCount(int count) {
     return '$count명';
   }
 
   @override
-  String get game_participantOverlay_L305 => '도주 중!';
+  String get gameRobberStatusEscaping => '도주 중!';
 
   @override
-  String game_policeStartCountdown_L79(String _formatted) {
-    return '경찰 시작까지 $_formatted';
+  String gamePoliceStartCountdown(String formatted) {
+    return '경찰 시작까지 $formatted';
   }
 
   @override
-  String get game_qrDisplayDialog_L62 => '수배 QR';
+  String get gameQrDisplayTitle => '수배 QR';
 
   @override
-  String get game_qrDisplayDialog_L86 => '경찰에게 QR을 보여주세요';
+  String get gameQrDisplayMessage => '경찰에게 QR을 보여주세요';
 
   @override
-  String get game_qrDisplayDialog_L97 => '닫기';
+  String get buttonClose => '닫기';
 
   @override
   String get dialogqrScannerPageTitle => '카메라 권한 필요';
@@ -1363,10 +1241,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogqrScannerPageCancel => '닫기';
 
   @override
-  String get game_qrScannerPage_L90 => '카메라를 사용할 수 없습니다';
+  String get errorCameraUnavailable => '카메라를 사용할 수 없습니다';
 
   @override
-  String get game_zoneExitBanner_L66 => '플레이그라운드를 벗어났어요';
+  String get gameZoneExitBanner => '플레이그라운드를 벗어났어요';
 
   @override
   String get dialogchatProviderMessage => '[팀]';

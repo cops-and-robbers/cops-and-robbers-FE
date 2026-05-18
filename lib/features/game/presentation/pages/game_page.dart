@@ -376,7 +376,7 @@ class _GamePageState extends ConsumerState<GamePage>
       autoCloseDuration: remaining,
       content: CountdownTimerContent(
         duration: remaining,
-        subtitle: AppLocalizations.of(context).game_gamePage_L379,
+        subtitle: AppLocalizations.of(context).gameRobberOnTheRunBanner,
       ),
     );
   }
@@ -1025,7 +1025,7 @@ class _GamePageState extends ConsumerState<GamePage>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            l10n.game_gamePage_L1026,
+            l10n.gameOverBannerTitle,
             style: _isDarkMode
                 ? AppTextStyles.robberHeading.copyWith(color: AppColors.green)
                 : AppTextStyles.heading_20.copyWith(color: AppColors.black),
@@ -1034,8 +1034,8 @@ class _GamePageState extends ConsumerState<GamePage>
           SizedBox(height: AppSpacing.vertical8),
           Text(
             reason == 'ALL_ARRESTED'
-                ? l10n.game_gamePage_L1034
-                : l10n.game_gamePage_L1034_1,
+                ? l10n.gameOverReasonAllArrested
+                : l10n.gameOverReasonTimeUp,
             style: _isDarkMode
                 ? AppTextStyles.paragraph_14_100.copyWith(
                     color: AppColors.black400,
@@ -1089,12 +1089,12 @@ class _GamePageState extends ConsumerState<GamePage>
     final isWin = winnerTeam == widget.team;
     final l10n = AppLocalizations.of(context);
     final winnerTeamLabel = winnerTeam == 'POLICE'
-        ? l10n.game_gamePage_L1086
-        : l10n.game_gamePage_L1086_1;
+        ? l10n.gameTeamCop
+        : l10n.gameTeamRobber;
 
     AppDialog.show(
       context: context,
-      title: isWin ? l10n.game_gamePage_L1090 : l10n.game_gamePage_L1090_1,
+      title: isWin ? l10n.gameResultWin : l10n.gameResultLose,
       message: l10n.dialoggamePageMessage(winnerTeamLabel),
       titleStyle:
           (_isDarkMode
@@ -1294,8 +1294,8 @@ class _GamePageState extends ConsumerState<GamePage>
               .addSystemMessage(
                 gameId: _gameId,
                 message: l10n.gameEventArrestNotice(
-                  policeNick ?? l10n.game_gamePage_L1289,
-                  robberNick ?? l10n.game_gamePage_L1290,
+                  policeNick ?? l10n.gameRoleCopLabel,
+                  robberNick ?? l10n.gameRoleRobberLabel,
                 ),
               );
         }

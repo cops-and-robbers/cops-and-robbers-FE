@@ -57,6 +57,28 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorAuthTokenMissing;
       case 'errorAuthExpired':
         return errorAuthExpired;
+      // Firebase 인증 에러 (firebase_auth_error_handler.dart)
+      case 'errorAuthUserNotFound':
+        return errorAuthUserNotFound;
+      case 'errorAuthTokenIssueFailed':
+        return errorAuthTokenIssueFailed;
+      case 'errorAuthTokenValidationFailed':
+        return errorAuthTokenValidationFailed;
+      case 'errorAuthInvalidCredential':
+        return errorAuthInvalidCredential;
+      case 'errorAuthAccountDisabled':
+        return errorAuthAccountDisabled;
+      case 'errorAuthTooManyRequests':
+        return errorAuthTooManyRequests;
+      case 'errorAuthSignInMethodUnavailable':
+        return errorAuthSignInMethodUnavailable;
+      case 'errorAuthFirebaseConfig':
+        return errorAuthFirebaseConfig;
+      case 'errorAuthFirebaseInternal':
+        return errorAuthFirebaseInternal;
+      case 'errorAuthLoginFailed':
+        return errorAuthLoginFailed;
+      // errorAuthProviderLoginFailed는 placeholder 필요 — 호출부에서 직접 호출
       // 서버 연결
       case 'errorServerUnreachable':
         return errorServerUnreachable;

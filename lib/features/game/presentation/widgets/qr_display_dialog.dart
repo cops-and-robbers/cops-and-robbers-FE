@@ -61,7 +61,7 @@ class QrDisplayDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              l10n.game_qrDisplayDialog_L62,
+              l10n.gameQrDisplayTitle,
               style: AppTextStyles.robberHeading.copyWith(
                 color: AppColors.green,
               ),
@@ -85,7 +85,7 @@ class QrDisplayDialog extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical20),
 
             Text(
-              l10n.game_qrDisplayDialog_L86,
+              l10n.gameQrDisplayMessage,
               style: AppTextStyles.paragraph_14.copyWith(
                 color: AppColors.black300,
               ),
@@ -96,7 +96,7 @@ class QrDisplayDialog extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: AppButton(
-                text: l10n.game_qrDisplayDialog_L97,
+                text: l10n.buttonClose,
                 onPressed: () => Navigator.of(context).pop(),
                 backgroundColor: AppColors.green,
                 foregroundColor: AppColors.black,

@@ -68,32 +68,32 @@ class FirebaseAuthErrorHandler {
   static String getErrorMessageKey(String errorCode, {String? provider}) {
     switch (errorCode) {
       case 'user-not-found':
-        return 'auth_firebaseAuthErrorHandler_L31';
+        return 'errorAuthUserNotFound';
       case 'token-not-available':
-        return 'auth_firebaseAuthErrorHandler_L33';
+        return 'errorAuthTokenIssueFailed';
       case 'token-validation-failed':
-        return 'auth_firebaseAuthErrorHandler_L35';
+        return 'errorAuthTokenValidationFailed';
       case 'ERROR_ABORTED_BY_USER':
-        return 'auth_firebaseAuthErrorHandler_L37';
+        return 'errorAuthLoginCancelled';
       case 'network-request-failed':
-        return 'auth_firebaseAuthErrorHandler_L39';
+        return 'errorNetworkOffline';
       case 'invalid-credential':
-        return 'auth_firebaseAuthErrorHandler_L41';
+        return 'errorAuthInvalidCredential';
       case 'user-disabled':
-        return 'auth_firebaseAuthErrorHandler_L43';
+        return 'errorAuthAccountDisabled';
       case 'too-many-requests':
-        return 'auth_firebaseAuthErrorHandler_L45';
+        return 'errorAuthTooManyRequests';
       case 'operation-not-allowed':
-        return 'auth_firebaseAuthErrorHandler_L47';
+        return 'errorAuthSignInMethodUnavailable';
       case 'firebase-api-key-invalid':
-        return 'auth_firebaseAuthErrorHandler_L49';
+        return 'errorAuthFirebaseConfig';
       case 'internal-error':
-        return 'auth_firebaseAuthErrorHandler_L51';
+        return 'errorAuthFirebaseInternal';
       default:
-        // L55는 placeholder 포함이라 별도 처리 필요 — UI에서 L55(provider) 직접 호출 권장
+        // provider 별 메시지가 필요한 경우 errorAuthProviderLoginFailed(provider) 직접 호출 권장
         return provider != null
-            ? 'auth_firebaseAuthErrorHandler_L55'
-            : 'auth_firebaseAuthErrorHandler_L57';
+            ? 'errorAuthProviderLoginFailed'
+            : 'errorAuthLoginFailed';
     }
   }
 

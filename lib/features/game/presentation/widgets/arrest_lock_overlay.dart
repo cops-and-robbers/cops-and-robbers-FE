@@ -67,7 +67,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                     ),
                     SizedBox(height: 20.h),
                     Text(
-                      l10n.game_arrestLockOverlay_L71,
+                      l10n.gameArrestOverlayTitle,
                       style: AppTextStyles.robberHeading.copyWith(
                         color: AppColors.white,
                       ),
@@ -75,7 +75,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      l10n.game_arrestLockOverlay_L78,
+                      l10n.gameArrestOverlayMessage,
                       style: AppTextStyles.paragraph_14.copyWith(
                         color: AppColors.black400,
                       ),
@@ -87,7 +87,7 @@ class ArrestLockOverlay extends ConsumerWidget {
 
                     // 탈옥 완료 버튼: 288 x 48, green
                     AppButton(
-                      text: l10n.game_arrestLockOverlay_L89,
+                      text: l10n.gameArrestOverlayEscapeCompleteButton,
                       width: 288.w,
                       height: 48.h,
                       borderRadius: AppRadius.medium,
@@ -100,7 +100,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                           context: context,
                           title: l10n.dialogarrestLockOverlayTitle,
                           message: l10n.dialogarrestLockOverlayMessage,
-                          confirmLabel: l10n.game_arrestLockOverlay_L102,
+                          confirmLabel: l10n.buttonEscape,
                           isDarkMode: true,
                           onConfirm: () => ref
                               .read(gameEventNotifierProvider.notifier)

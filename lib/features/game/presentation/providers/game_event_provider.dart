@@ -574,13 +574,13 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// 닉네임 누락 시 사용하는 "경찰" 라벨 i18n
   String _localizePoliceLabel() {
     final locale = ref.read(appLocaleProvider);
-    return lookupAppLocalizations(locale).game_gamePage_L1289;
+    return lookupAppLocalizations(locale).gameRoleCopLabel;
   }
 
   /// 닉네임 누락 시 사용하는 "도둑" 라벨 i18n
   String _localizeRobberLabel() {
     final locale = ref.read(appLocaleProvider);
-    return lookupAppLocalizations(locale).game_gamePage_L1290;
+    return lookupAppLocalizations(locale).gameRoleRobberLabel;
   }
 
   /// 배너를 5초 후 자동 해제하는 타이머 시작

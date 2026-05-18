@@ -89,7 +89,7 @@ class _QrScannerPageState<T> extends State<QrScannerPage<T>> {
               }
               return Center(
                 child: Text(
-                  AppLocalizations.of(context).game_qrScannerPage_L90,
+                  AppLocalizations.of(context).errorCameraUnavailable,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: AppColors.white,
                   ),

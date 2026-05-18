@@ -515,72 +515,65 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while looking up the game in progress';
 
   @override
-  String session_sessionSettings_L22(String maxPlayers) {
-    return '$maxPlayers display';
+  String gameSettingMaxPlayers(String count) {
+    return '$count players';
   }
 
   @override
-  String session_sessionSettings_L27(int roundTimeMinutes) {
-    return '$roundTimeMinutes min';
+  String gameSettingRoundMinutes(int minutes) {
+    return '$minutes min';
   }
 
   @override
-  String session_sessionSettings_L32(int locationShareMinutes) {
-    return '$locationShareMinutes min';
+  String gameSettingLocationShareMinutes(int minutes) {
+    return '$minutes min';
   }
 
   @override
-  String session_sessionSettings_L37(int policeStartDelayMinutes) {
-    return '$policeStartDelayMinutes min after Robbers run away';
+  String gameSettingPoliceStartDelay(int minutes) {
+    return '$minutes min after Robbers run away';
   }
 
   @override
-  String session_zoneInfo_L25(String km) {
-    return 'Radius ${km}km';
+  String zoneRadiusMeters(String meters) {
+    return 'Radius ${meters}m';
   }
 
   @override
-  String session_zoneInfo_L27(String radiusMeters) {
-    return 'Radius ${radiusMeters}m';
-  }
+  String get errorSettingsSaveFailed => 'Failed to save settings';
 
   @override
-  String get session_gameSettingsEditPage_L110 => 'Failed to save settings';
+  String get pageGameSettingsEditTitle => 'Edit settings';
 
   @override
-  String get session_gameSettingsEditPage_L146 => 'Edit settings';
+  String get buttonSaving => 'Saving...';
 
   @override
-  String get session_gameSettingsEditPage_L197 => 'Saving...';
+  String get buttonSave => 'Save';
 
   @override
-  String get session_gameSettingsEditPage_L197_1 => 'Save';
+  String get errorAreaSaveFailed => 'Failed to save game area';
 
   @override
-  String get session_gameSettingsPage_L140 => 'Failed to save game area';
+  String get pageGameSettingsTitle => 'Game settings';
 
   @override
-  String get session_gameSettingsPage_L190 => 'Game settings';
+  String get errorZoneInfoLoadFailed => 'Unable to load game area information';
 
   @override
-  String get session_gameSettingsPage_L210 =>
-      'Unable to load game area information';
+  String get errorSettingsLoadFailed => 'Unable to load settings information';
 
   @override
-  String get session_gameSettingsPage_L228 =>
-      'Unable to load settings information';
+  String get zonePlayground => 'Playground';
 
   @override
-  String get session_gameSettingsPage_L270 => 'Playground';
+  String get zoneJail => 'Jail';
 
   @override
-  String get session_gameSettingsPage_L275 => 'Jail';
+  String get homePageCreateGameHint => 'You can create a new game';
 
   @override
-  String get session_homePage_L108 => 'You can create a new game';
-
-  @override
-  String get session_homePage_L113 => 'Enter the invite code to join the game';
+  String get homePageJoinGameHint => 'Enter the invite code to join the game';
 
   @override
   String get dialoghomePageTitle =>
@@ -594,7 +587,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialoghomePageConfirm => 'I understand!';
 
   @override
-  String get session_homePage_L158 => 'Do not show again today';
+  String get homePageDontShowToday => 'Do not show again today';
 
   @override
   String get dialoghomePageMessage50b3 =>
@@ -613,15 +606,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialoghomePageTitleEeea => 'For uninterrupted gameplay';
 
   @override
-  String get session_homePage_L332 =>
+  String get homePageBatteryGuideStep1 =>
       'Please change app settings → battery → unrestricted\n';
 
   @override
-  String get session_homePage_L333 =>
+  String get homePageBatteryGuideStep2 =>
       'This prevents the game from disconnecting even when the screen is turned off';
 
   @override
-  String get session_homePage_L432 =>
+  String get errorJoinFailedCheckCode =>
       'Failed to join. Please check the invite code';
 
   @override
@@ -643,31 +636,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialoghomePageConfirm665b => 'Join';
 
   @override
-  String get session_homePage_L601 => 'Cops and Robbers';
+  String get appBrandName => 'Cops and Robbers';
 
   @override
   String get dialoghomePageMessage9e36 => 'In preparation';
 
   @override
-  String get session_homePage_L661 =>
+  String get homePageWelcomeMessage =>
       'I am so excited\nWhat role will I play this time?';
 
   @override
-  String get session_homePage_L677 => 'Create room';
+  String get buttonCreateRoom => 'Create room';
 
   @override
-  String get session_homePage_L684 => 'Join room';
+  String get buttonJoinRoom => 'Join room';
 
   @override
-  String get session_sessionCreationFlowPage_L160 =>
+  String get sessionCreationStepZoneSubtitle =>
       'Set up the game area\nPlease designate the playground first';
 
   @override
-  String get session_sessionCreationFlowPage_L167 =>
+  String get sessionCreationStepRulesSubtitle =>
       'Set up the game rules\nTap the number to enter it directly';
 
   @override
-  String get session_sessionCreationFlowPage_L374 =>
+  String get errorCreateRoomFailed =>
       'Failed to create game room. Please try again';
 
   @override
@@ -678,91 +671,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogsessionCreationFlowPageMessage89ff => 'Unknown game status';
 
   @override
-  String get session_sessionCreationFlowPage_L483 =>
+  String get sessionCreationZoneFirstQuestion =>
       'Shall we set up the game area selection first?';
 
   @override
-  String get session_sessionCreationFlowPage_L484 =>
+  String get sessionCreationStepParticipantsTitle =>
       'Set up the number of players';
 
   @override
-  String get session_sessionCreationFlowPage_L485 => 'Set up basic information';
+  String get sessionCreationStepBasicTitle => 'Set up basic information';
 
   @override
-  String get session_sessionCreationFlowPage_L486 => 'Verify final settings';
+  String get sessionCreationStepReviewTitle => 'Verify final settings';
 
   @override
-  String get session_sessionCreationFlowPage_L491 =>
+  String get sessionCreationStepZoneIntro =>
       'Set up the required game area for the game';
 
   @override
-  String get session_sessionCreationFlowPage_L492 =>
+  String get sessionCreationStepParticipantsHint =>
       'A minimum of 2 players is required to play the game';
 
   @override
-  String get session_sessionCreationFlowPage_L493 =>
+  String get sessionCreationStepBasicHint =>
       'This information is essential for running the game';
 
   @override
-  String get session_sessionCreationFlowPage_L494 =>
+  String get sessionCreationStepReviewHint =>
       'Shall we check the settings one last time before creating the room?';
 
   @override
-  String get session_sessionCreationFlowPage_L503 => 'Next';
+  String get buttonNext => 'Next';
 
   @override
-  String get session_sessionCreationFlowPage_L505 => 'Create room';
-
-  @override
-  String get session_sessionCreationFlowPage_L507 => 'Next';
-
-  @override
-  String get session_sessionCreationFlowPage_L660 => 'Playground';
-
-  @override
-  String get session_sessionCreationFlowPage_L665 => 'Jail';
-
-  @override
-  String get session_sessionCreationFlowPage_L676 =>
+  String get errorZoneNotConfigured =>
       'Please set up game area information first';
 
   @override
-  String get session_setupPlaygroundPage_L135 =>
+  String get setupPlaygroundRadiusInputHint =>
       'Tap here to enter the radius directly';
 
   @override
-  String get session_setupPlaygroundPage_L195 => 'Playground';
-
-  @override
-  String get session_setupPlaygroundPage_L212 => 'Playground';
-
-  @override
-  String get session_setupPlaygroundPage_L233 =>
+  String get setupPlaygroundDescription =>
       'Set up the size of the total game area where the game will take place';
 
   @override
-  String get session_setupPlaygroundPage_L267 => 'Confirm';
+  String get buttonDone => 'Confirm';
 
   @override
-  String get session_setupPrisonPage_L210 => 'Jail';
-
-  @override
-  String get session_setupPrisonPage_L227 => 'Jail';
-
-  @override
-  String get session_setupPrisonPage_L248 =>
+  String get setupPrisonDescription =>
       'Set up the location and size of the jail to hold the Robbers';
 
   @override
-  String get session_setupPrisonPage_L286 =>
-      'Please set up the playground first';
+  String get errorPlaygroundFirst => 'Please set up the playground first';
 
   @override
-  String get session_setupPrisonPage_L287 =>
+  String get errorJailOutsidePlayground =>
       'The jail is out of the playground range';
-
-  @override
-  String get session_setupPrisonPage_L299 => 'Confirm';
 
   @override
   String get dialogwaitingRoomPageConfirm => 'Go to settings';
@@ -771,31 +736,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogwaitingRoomPageCancel => 'Leave';
 
   @override
-  String get session_waitingRoomPage_L364 => 'Cozy bear...';
+  String get dummyNicknameBear => 'Cozy bear...';
 
   @override
   String get dialogwaitingRoomPageTitle => 'Unable to join the room';
 
   @override
-  String get session_waitingRoomPage_L545 =>
+  String get errorNotInGame =>
       'This user is not a participant in the corresponding game';
 
   @override
   String get dialogwaitingRoomPageConfirm3ce8 => 'Confirm';
 
   @override
-  String get session_waitingRoomPage_L631 =>
+  String get waitingRoomTutorialTeamSwitch =>
       'Tap this button to move to another team';
 
   @override
-  String get session_waitingRoomPage_L637 =>
+  String get waitingRoomTutorialInvite =>
       'You can share the invite code with friends';
 
   @override
-  String get session_waitingRoomPage_L642 => 'You can view the game settings';
+  String get waitingRoomTutorialSettings => 'You can view the game settings';
 
   @override
-  String get session_waitingRoomPage_L647 => 'Please tap when you are ready';
+  String get waitingRoomTutorialReady => 'Please tap when you are ready';
 
   @override
   String get dialogwaitingRoomPageTitle1946 => 'In-game screen preview';
@@ -840,14 +805,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get session_waitingRoomPage_L1030 => 'Failed to change the team';
+  String get errorTeamChangeFailed => 'Failed to change the team';
 
   @override
-  String get session_waitingRoomPage_L1062 =>
-      'Failed to change the readiness status';
+  String get errorReadyChangeFailed => 'Failed to change the readiness status';
 
   @override
-  String get session_waitingRoomPage_L1099 => 'Failed to start the game';
+  String get errorGameStartFailed => 'Failed to start the game';
 
   @override
   String get dialogwaitingRoomPageTitleFfec =>
@@ -861,7 +825,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogwaitingRoomPageConfirmC0a3 => 'Leave';
 
   @override
-  String get session_waitingRoomPage_L1130 =>
+  String get errorLeaveRoomFailed =>
       'An error occurred while processing your exit';
 
   @override
@@ -881,32 +845,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogwaitingRoomPageConfirm27f8 => 'Share';
 
   @override
-  String get session_waitingRoomPage_L1511 => 'Game start';
+  String get buttonStartGame => 'Game start';
 
   @override
-  String get session_waitingRoomPage_L1526 => 'Ready';
+  String get buttonReadyDone => 'Ready';
 
   @override
-  String get session_waitingRoomPage_L1537 => 'Ready';
+  String get buttonReady => 'Ready';
 
   @override
-  String get session_zonePreviewPage_L122 => 'Game area';
+  String get pageZonePreviewTitle => 'Game area';
 
   @override
-  String get session_zonePreviewPage_L145 =>
+  String get zonePreviewSubtitle =>
       'This is the currently configured game area';
 
   @override
-  String get session_waitingRoomParticipantsProvider_L81 => 'Cozy bear...';
+  String get dummyNicknameRaccoon => 'Plump raccoon';
 
   @override
-  String get session_waitingRoomParticipantsProvider_L87 => 'Plump raccoon';
-
-  @override
-  String get session_waitingRoomParticipantsProvider_L93 => 'Nickname';
-
-  @override
-  String get session_waitingRoomParticipantsProvider_L99 => 'Nickname';
+  String get defaultNicknameLabel => 'Nickname';
 
   @override
   String get dialoggameRulesContentTitle => 'Game rules';
@@ -918,40 +876,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialoggameRulesContentConfirm => 'View in-game';
 
   @override
-  String get session_gameRulesContent_L95 =>
+  String get gameRulesCopGoalPrefix =>
       'The Cops win by catching all Robbers and';
 
   @override
-  String get session_gameRulesContent_L96 => 'arresting them,';
+  String get gameRulesCopGoalSuffix => 'arresting them,';
 
   @override
-  String get session_gameRulesContent_L97 => '\nand the Robbers win by';
+  String get gameRulesRobberGoalPrefix => '\nand the Robbers win by';
 
   @override
-  String get session_gameRulesContent_L98 =>
+  String get gameRulesRobberGoalCondition =>
       'holding out until the time limit ends';
 
   @override
-  String get session_gameRulesContent_L99 => '';
+  String get gameRulesWinSuffix => '';
 
   @override
-  String get session_gameRulesContent_L108 => 'The Robbers\' locations are';
+  String get gameRulesLocationShareLine1 => 'The Robbers\' locations are';
 
   @override
-  String session_gameRulesContent_L109(int minutes) {
+  String gameRulesLocationShareLine2(int minutes) {
     return 'shared with the Cops team every $minutes min';
   }
 
   @override
-  String get session_gameRulesContent_L110 => '';
+  String get gameRulesLocationShareLine3 => '';
 
   @override
-  String get session_gameRulesContent_L118 =>
+  String get gameRulesZoneRuleLine1 =>
       'You must not leave the designated game area';
 
   @override
-  String get session_gameRulesContent_L119 =>
-      '\n→ Screen locks if you leave the zone';
+  String get gameRulesZoneRuleLine2 => '\n→ Screen locks if you leave the zone';
 
   @override
   String get dialogsessionCodeCardMessage => 'The code has been copied';
@@ -966,39 +923,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldstep1ParticipantSettingsContentLabel => 'Max players';
 
   @override
-  String get session_step1ParticipantSettingsContent_L52 => 'people';
+  String get unitPerson => 'people';
 
   @override
   String get fieldstep2GameSettingsContentLabel => 'Round time limit';
 
   @override
-  String get session_step2GameSettingsContent_L79 => 'min';
+  String get unitMinutes => 'min';
 
   @override
   String get fieldstep2GameSettingsContentLabel5ab2 =>
       'Robber location reveal interval';
 
   @override
-  String get session_step2GameSettingsContent_L97 => 'min';
-
-  @override
-  String get session_step2GameSettingsContent_L104 =>
+  String get gameSettingNoLocationShareWarning =>
       'The Robbers\' locations will not be shared!';
 
   @override
   String get fieldstep2GameSettingsContentLabelCe3b => 'Cop dispatch delay';
 
   @override
-  String get session_step2GameSettingsContent_L115 => 'min';
+  String get gameSettingPoliceStartPrefix => 'After Robbers run away,';
 
   @override
-  String get session_step2GameSettingsContent_L117 => 'After Robbers run away,';
-
-  @override
-  String get session_step2GameSettingsContent_L118 => 'later';
-
-  @override
-  String get session_sessionStepLayout_L42 => 'Next';
+  String get gameSettingPoliceStartSuffix => 'later';
 
   @override
   String get dialogsettingListCardTitle => 'Settings';
@@ -1016,14 +964,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldsettingListCardLabelCe3b => 'Cop dispatch delay';
 
   @override
-  String get session_teamSection_L116 => 'Cop team';
-
-  @override
-  String get session_teamSection_L116_1 => 'Robber team';
-
-  @override
-  String session_teamSection_L178(int length) {
-    return 'Currently $length people';
+  String teamSectionCurrentCount(int count) {
+    return 'Currently $count people';
   }
 
   @override
@@ -1038,54 +980,46 @@ class AppLocalizationsEn extends AppLocalizations {
       'An error occurred during sign out';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L31 =>
+  String get errorAuthUserNotFound =>
       'Unable to retrieve sign in information. Please try again';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L33 =>
+  String get errorAuthTokenIssueFailed =>
       'Failed to issue the authentication token. Please try again';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L35 =>
+  String get errorAuthTokenValidationFailed =>
       'Failed to verify the Firebase authentication token. Please sign in again';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L37 => 'Sign in was cancelled';
+  String get errorAuthInvalidCredential => 'Invalid credentials';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L39 =>
-      'Please check your network connection';
+  String get errorAuthAccountDisabled => 'Account has been disabled';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L41 => 'Invalid credentials';
-
-  @override
-  String get auth_firebaseAuthErrorHandler_L43 => 'Account has been disabled';
-
-  @override
-  String get auth_firebaseAuthErrorHandler_L45 =>
+  String get errorAuthTooManyRequests =>
       'Too many requests. Please try again in a moment';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L47 =>
+  String get errorAuthSignInMethodUnavailable =>
       'This sign in method is currently unavailable';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L49 =>
+  String get errorAuthFirebaseConfig =>
       'There is an issue with the Firebase configuration. Please try again in a moment';
 
   @override
-  String get auth_firebaseAuthErrorHandler_L51 =>
+  String get errorAuthFirebaseInternal =>
       'A Firebase internal error occurred. Please try again in a moment';
 
   @override
-  String auth_firebaseAuthErrorHandler_L55(int provider) {
+  String errorAuthProviderLoginFailed(String provider) {
     return 'Failed to sign in with $provider. Please try again';
   }
 
   @override
-  String get auth_firebaseAuthErrorHandler_L57 =>
-      'Sign in failed. Please try again';
+  String get errorAuthLoginFailed => 'Sign in failed. Please try again';
 
   @override
   String get dialogagreementPageTitle => 'Terms of service';
@@ -1100,14 +1034,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogagreementPageTitle76b8 => 'Receive marketing information';
 
   @override
-  String get auth_agreementPage_L107 => 'Agree and get started';
+  String get agreementPageAgreeButton => 'Agree and get started';
 
   @override
-  String get auth_agreementPage_L127 =>
+  String get agreementPageTitle =>
       'Please agree to the terms\nto use the service';
 
   @override
-  String get auth_agreementPage_L135 =>
+  String get agreementPageRequiredNotice =>
       'You must agree to all required terms to use the service';
 
   @override
@@ -1116,10 +1050,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get dialogagreementPageMessage24a8 =>
       'Please agree to all required terms';
-
-  @override
-  String get auth_agreementPage_L184 =>
-      'A temporary error occurred. Please try again';
 
   @override
   String get dialogloginPageTitle => 'Privacy policy';
@@ -1150,68 +1080,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogloginPageMessageFe9d => 'Sign in was cancelled';
 
   @override
-  String get auth_loginPage_L166 => 'An error occurred during sign in';
+  String get errorLoginGeneric => 'An error occurred during sign in';
 
   @override
-  String get auth_loginPage_L191 => 'An error occurred during Apple sign in';
+  String get errorAppleLoginFailed => 'An error occurred during Apple sign in';
 
   @override
-  String get auth_loginPage_L260 => 'Users under 14 cannot use the service';
+  String get errorAgeRestrictionUnder14 =>
+      'Users under 14 cannot use the service';
 
   @override
-  String get auth_loginPage_L284 => 'By signing in, you agree to the';
+  String get loginPageAgreementPrefix => 'By signing in, you agree to the';
 
   @override
-  String get auth_loginPage_L286 => 'Privacy policy';
+  String get linkPrivacyPolicy => 'Privacy policy';
 
   @override
-  String get auth_loginPage_L295 => 'Terms of service';
+  String get linkTermsOfService => 'Terms of service';
 
   @override
-  String get auth_loginPage_L304 => 'Location terms of service';
+  String get linkLocationTerms => 'Location terms of service';
 
   @override
-  String get auth_loginPage_L311 => '';
+  String get loginPageAgreementSuffix => '';
 
   @override
   String get dialognicknameSetupPageMessage => 'Nickname has been saved';
 
   @override
-  String get auth_nicknameSetupPage_L248 => 'Set up your nickname';
+  String get nicknameSetupTitle => 'Set up your nickname';
 
   @override
-  String get auth_nicknameSetupPage_L257 =>
+  String get nicknameSetupSubtitle =>
       'This nickname will be used throughout the service\nIt can be 1 to 10 characters long';
 
   @override
-  String get auth_nicknameSetupPage_L281 => 'Confirm';
+  String get fieldNicknameHint => 'Enter nickname';
 
   @override
-  String get auth_nicknameSetupPage_L308 => 'Enter nickname';
+  String get buttonCheckNicknameDuplicate => 'Check duplication';
 
   @override
-  String get auth_nicknameSetupPage_L336 => 'Check duplication';
-
-  @override
-  String get auth_nicknameSetupPage_L354 =>
+  String get errorNicknameTooShort =>
       'Nicknames shorter than 1 character cannot be used';
 
   @override
-  String get auth_nicknameSetupPage_L359 =>
+  String get errorNicknameDuplicated =>
       'This nickname is already taken. Please enter a different nickname';
 
   @override
-  String get auth_nicknameSetupPage_L364 => 'This nickname is available';
+  String get nicknameAvailable => 'This nickname is available';
 
   @override
-  String get auth_nicknameSetupPage_L369 =>
-      'An error occurred. Please try again';
-
-  @override
-  String get auth_splashPage_L48 => 'Returning to the field';
-
-  @override
-  String get auth_splashPage_L208 => 'Returning to the field';
+  String get splashReturningToScene => 'Returning to the field';
 
   @override
   String get dialogsplashPageMessage => 'Not connected to the network yet';
@@ -1227,29 +1148,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogsplashPageConfirm => 'Retry';
 
   @override
-  String get auth_splashPage_L395 => 'Please wait a moment';
+  String get splashPleaseWait => 'Please wait a moment';
 
   @override
-  String get auth_splashPage_L412 => 'by Dongsim_Jikimi';
+  String get splashCreditTag => 'by Dongsim_Jikimi';
 
   @override
-  String get auth_splashPage_L444 => 'Internet connection is required';
+  String get splashOfflineTitle => 'Internet connection is required';
 
   @override
-  String get auth_splashPage_L450 =>
+  String get splashOfflineMessage =>
       'Please check the connection status\nand try again';
-
-  @override
-  String get auth_splashPage_L461 => 'Retry';
 
   @override
   String get dialogagreementProviderMessage =>
       'A temporary error occurred. Please try again';
-
-  @override
-  String auth_authProvider_L129(String message) {
-    return 'Reason: $message';
-  }
 
   @override
   String get dialogauthProviderMessage => 'An unknown error occurred';
@@ -1258,40 +1171,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogauthProviderMessage222f => 'Failed to sign out';
 
   @override
-  String get auth_agreementAllCheckbox_L35 => 'Agree to all';
+  String get agreementAllCheckboxLabel => 'Agree to all';
 
   @override
-  String get auth_agreementItem_L39 => '[Required]';
+  String get agreementItemRequiredTag => '[Required]';
 
   @override
-  String get auth_agreementItem_L39_1 => '[Optional]';
+  String get agreementItemOptionalTag => '[Optional]';
 
   @override
   String get dialoggamePageConfirm => 'Go to settings';
 
   @override
-  String get game_gamePage_L379 => 'Robbers are running away!';
+  String get gameRobberOnTheRunBanner => 'Robbers are running away!';
 
   @override
-  String get game_gamePage_L1026 => 'Game over!';
+  String get gameOverBannerTitle => 'Game over!';
 
   @override
-  String get game_gamePage_L1034 => 'All Robbers have been arrested!';
+  String get gameOverReasonAllArrested => 'All Robbers have been arrested!';
 
   @override
-  String get game_gamePage_L1034_1 => 'The time limit has expired!';
+  String get gameOverReasonTimeUp => 'The time limit has expired!';
 
   @override
-  String get game_gamePage_L1086 => 'Cop team';
+  String get gameTeamCop => 'Cop team';
 
   @override
-  String get game_gamePage_L1086_1 => 'Robber team';
+  String get gameTeamRobber => 'Robber team';
 
   @override
-  String get game_gamePage_L1090 => 'Win';
+  String get gameResultWin => 'Win';
 
   @override
-  String get game_gamePage_L1090_1 => 'Lose';
+  String get gameResultLose => 'Lose';
 
   @override
   String dialoggamePageMessage(String winnerTeamLabel) {
@@ -1305,10 +1218,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialoggamePageConfirm5863 => 'One more time';
 
   @override
-  String get game_gamePage_L1289 => 'Cop';
+  String get gameRoleCopLabel => 'Cop';
 
   @override
-  String get game_gamePage_L1290 => 'Robber';
+  String get gameRoleRobberLabel => 'Robber';
 
   @override
   String get dialoggamePageMessage5e97 =>
@@ -1326,46 +1239,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'This Robber has already been arrested';
 
   @override
-  String get game_gameEventProvider_L337 =>
-      'Unable to retrieve the authentication token. Re-login is required';
+  String get gameArrestOverlayTitle => 'You have been arrested!';
 
   @override
-  String get game_gameEventProvider_L452 => 'Failed to request arrest';
-
-  @override
-  String get game_gameEventProvider_L492 => 'Failed to request jailbreak';
-
-  @override
-  String get game_gameEventProvider_L520 =>
-      'Unable to connect to the server. Please try again in a moment';
-
-  @override
-  String get game_gameEventProvider_L702 => 'Cop';
-
-  @override
-  String get game_gameEventProvider_L703 => 'Robber';
-
-  @override
-  String get game_gameEventProvider_L866 =>
-      'Unable to connect to the server. Please try again in a moment';
-
-  @override
-  String get game_gameEventProvider_L937 =>
-      'Authentication has expired. Re-login is required';
-
-  @override
-  String get game_gameEventProvider_L951 =>
-      'Authentication has expired. Re-login is required';
-
-  @override
-  String get game_arrestLockOverlay_L71 => 'You have been arrested!';
-
-  @override
-  String get game_arrestLockOverlay_L78 =>
+  String get gameArrestOverlayMessage =>
       'You cannot check the game status while arrested\nRequest rescue from your teammates and jailbreak quickly!';
 
   @override
-  String get game_arrestLockOverlay_L89 => 'Jailbreak complete';
+  String get gameArrestOverlayEscapeCompleteButton => 'Jailbreak complete';
 
   @override
   String get dialogarrestLockOverlayTitle => 'Jailbreak';
@@ -1374,48 +1255,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogarrestLockOverlayMessage => 'Would you like to jailbreak?';
 
   @override
-  String get game_arrestLockOverlay_L102 => 'Jailbreak';
+  String get buttonEscape => 'Jailbreak';
 
   @override
-  String get game_gameActionModal_L63 => 'No';
-
-  @override
-  String get game_gameActionModal_L63_1 => 'Cancel';
-
-  @override
-  String get game_gameOverResultDialog_L324 => 'Win';
-
-  @override
-  String get game_gameOverResultDialog_L324_1 => 'Lose';
+  String get buttonNo => 'No';
 
   @override
   String get fieldgameOverResultDialogLabel => 'Arrest count';
 
   @override
-  String game_gameOverResultDialog_L345(int totalArrestCount) {
-    return '$totalArrestCount times';
+  String gameResultArrestCount(int count) {
+    return '$count times';
   }
 
   @override
   String get fieldgameOverResultDialogLabelD8df => 'Remaining Robbers';
 
   @override
-  String game_gameOverResultDialog_L351(int remainingRobberCount) {
-    return '$remainingRobberCount people';
+  String gameResultRemainingRobberCount(int count) {
+    return '$count people';
   }
 
   @override
   String get fieldgameOverResultDialogLabelAb0c => 'Game playtime';
 
   @override
-  String get game_gameOverResultDialog_L438 => 'Go to home';
+  String get buttonGoHome => 'Go to home';
 
   @override
-  String get game_gameOverResultDialog_L452 => 'One more time';
+  String get buttonPlayAgain => 'One more time';
 
   @override
-  String game_locationRevealCountdown_L109(String _formatted) {
-    return 'Until next Robber location reveal: $_formatted';
+  String gameLocationRevealCountdown(String formatted) {
+    return 'Until next Robber location reveal: $formatted';
   }
 
   @override
@@ -1426,7 +1298,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogparticipantOverlayTitle => 'Have you arrested this player?';
 
   @override
-  String get game_participantOverlay_L139 => 'Yes';
+  String get buttonYes => 'Yes';
 
   @override
   String get dialogparticipantOverlayTitle4167 => 'Jailbreak';
@@ -1436,32 +1308,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Would you like to attempt a jailbreak?';
 
   @override
-  String get game_participantOverlay_L166 => 'Jailbreak';
+  String get gameParticipantOverlayCurrent => 'Currently';
 
   @override
-  String get game_participantOverlay_L297 => 'Currently';
-
-  @override
-  String game_participantOverlay_L299(int count) {
+  String gameParticipantOverlayCount(int count) {
     return '$count people';
   }
 
   @override
-  String get game_participantOverlay_L305 => 'running away!';
+  String get gameRobberStatusEscaping => 'running away!';
 
   @override
-  String game_policeStartCountdown_L79(String _formatted) {
-    return 'Until Cops start: $_formatted';
+  String gamePoliceStartCountdown(String formatted) {
+    return 'Until Cops start: $formatted';
   }
 
   @override
-  String get game_qrDisplayDialog_L62 => 'Wanted QR code';
+  String get gameQrDisplayTitle => 'Wanted QR code';
 
   @override
-  String get game_qrDisplayDialog_L86 => 'Please show the QR code to the Cops';
+  String get gameQrDisplayMessage => 'Please show the QR code to the Cops';
 
   @override
-  String get game_qrDisplayDialog_L97 => 'Close';
+  String get buttonClose => 'Close';
 
   @override
   String get dialogqrScannerPageTitle => 'Camera permission required';
@@ -1477,10 +1346,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogqrScannerPageCancel => 'Close';
 
   @override
-  String get game_qrScannerPage_L90 => 'Camera is unavailable';
+  String get errorCameraUnavailable => 'Camera is unavailable';
 
   @override
-  String get game_zoneExitBanner_L66 => 'Left the playground';
+  String get gameZoneExitBanner => 'Left the playground';
 
   @override
   String get dialogchatProviderMessage => '[Team]';

@@ -77,7 +77,7 @@ class _PoliceStartCountdownState extends State<PoliceStartCountdown>
     final isUrgent = _remaining.inSeconds < 60;
 
     return Text(
-      AppLocalizations.of(context).game_policeStartCountdown_L79(_formatted),
+      AppLocalizations.of(context).gamePoliceStartCountdown(_formatted),
       style: AppTextStyles.robberLabel.copyWith(
         color: isUrgent ? AppColors.red : AppColors.green,
       ),

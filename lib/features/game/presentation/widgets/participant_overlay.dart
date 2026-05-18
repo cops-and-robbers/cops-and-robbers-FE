@@ -141,7 +141,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
       context: context,
       title: l10n.dialogparticipantOverlayTitle,
       message: '',
-      confirmLabel: l10n.game_participantOverlay_L139,
+      confirmLabel: l10n.buttonYes,
       nickname: member.nickname,
       onConfirm: () => ref
           .read(gameEventNotifierProvider.notifier)
@@ -169,7 +169,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
         context: context,
         title: l10n.dialogparticipantOverlayTitle4167,
         message: l10n.dialogparticipantOverlayMessage9497,
-        confirmLabel: l10n.game_participantOverlay_L166,
+        confirmLabel: l10n.buttonEscape,
         isDarkMode: widget.isDarkMode,
         onConfirm: () => ref
             .read(gameEventNotifierProvider.notifier)
@@ -301,15 +301,15 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
       text: TextSpan(
         style: AppTextStyles.tag_12.copyWith(color: badgeColor),
         children: [
-          TextSpan(text: '${l10n.game_participantOverlay_L297} '),
+          TextSpan(text: '${l10n.gameParticipantOverlayCurrent} '),
           TextSpan(
-            text: l10n.game_participantOverlay_L299(count),
+            text: l10n.gameParticipantOverlayCount(count),
             style: AppTextStyles.tag_12.copyWith(
               color: badgeBoldColor,
               fontWeight: FontWeight.w700,
             ),
           ),
-          TextSpan(text: ' ${l10n.game_participantOverlay_L305}'),
+          TextSpan(text: ' ${l10n.gameRobberStatusEscaping}'),
         ],
       ),
     );

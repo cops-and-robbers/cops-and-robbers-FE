@@ -107,9 +107,7 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
   @override
   Widget build(BuildContext context) {
     return Text(
-      AppLocalizations.of(
-        context,
-      ).game_locationRevealCountdown_L109(_formatted),
+      AppLocalizations.of(context).gameLocationRevealCountdown(_formatted),
       style: AppTextStyles.tag_12.copyWith(
         color: widget.isDarkMode ? AppColors.black400 : AppColors.red,
       ),
