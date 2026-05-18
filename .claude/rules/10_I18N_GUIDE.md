@@ -35,7 +35,7 @@
 
 ## 파일 구조
 
-```
+```text
 lib/l10n/
 ├── app_ko.arb              # ✅ 정본 (template) — description 포함
 ├── app_en.arb              # ✅ 영어 번역
@@ -55,7 +55,7 @@ pubspec.yaml                # flutter: generate: true
 
 ### 1. 새 텍스트 추가 절차
 
-```
+```text
 ARB 3개 파일에 동일 키 추가
   ↓
 flutter gen-l10n
@@ -120,7 +120,7 @@ flutter gen-l10n
 
 ### 4. 키 네이밍 컨벤션
 
-```
+```text
 {용도prefix}{도메인/대상}{세부사항}
 ```
 
@@ -389,7 +389,7 @@ MaterialApp(
 | Exception → i18n 헬퍼 | `lib/core/i18n/error_message_mapper.dart` |
 | Dio 에러 매핑 | `lib/core/network/dio_exception_handler.dart` |
 | MaterialApp wiring | `lib/main.dart` (`_LocalizedApp`) |
-| 언어 선택 UI | `lib/features/settings/presentation/widgets/language_selector_sheet.dart` |
+| 언어 선택 UI | `lib/features/settings/presentation/pages/language_settings_page.dart` |
 
 ---
 
