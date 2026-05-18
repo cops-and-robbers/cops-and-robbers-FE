@@ -21,6 +21,7 @@ import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
 import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
@@ -152,19 +153,20 @@ class _SessionCreationFlowPageState
 
   /// 단계별 튜토리얼 타겟 목록 생성
   List<TutorialTarget> _buildTutorialTargets(int step) {
+    final l10n = AppLocalizations.of(context);
     switch (step) {
       case 0:
         return [
           AppTutorialStyle.target(
             keyTarget: _tutorialKeyPlayground,
-            description: '게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요',
+            description: l10n.session_sessionCreationFlowPage_L160,
           ),
         ];
       case 2:
         return [
           AppTutorialStyle.target(
             keyTarget: _tutorialKeySettings,
-            description: '게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요',
+            description: l10n.session_sessionCreationFlowPage_L167,
           ),
         ];
       default:
@@ -349,7 +351,8 @@ class _SessionCreationFlowPageState
       }
 
       if (mounted) {
-        final errorMessage = _getErrorMessage(sessionState.error!);
+        final l10n = AppLocalizations.of(context);
+        final errorMessage = _getErrorMessage(l10n, sessionState.error!);
         AppSnackbar.show(
           context,
           message: errorMessage,
@@ -367,11 +370,11 @@ class _SessionCreationFlowPageState
   ///
   /// [AppException]인 경우 백엔드의 RFC 7807 `detail` 메시지를 그대로 표시합니다.
   /// (예: 409 → "이미 게임에 참가하고 있습니다.")
-  String _getErrorMessage(Object error) {
+  String _getErrorMessage(AppLocalizations l10n, Object error) {
     if (error is AppException) {
       return error.message;
     }
-    return '게임 방 생성에 실패했습니다. 다시 시도해주세요.';
+    return l10n.session_sessionCreationFlowPage_L374;
   }
 
   /// 에러가 409 Conflict인지 확인
@@ -396,9 +399,10 @@ class _SessionCreationFlowPageState
       if (!mounted) return;
 
       if (!status.isParticipating || status.participationInfo == null) {
+        final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: '이미 참가 중인 게임이 있습니다.',
+          message: l10n.dialogsessionCreationFlowPageMessage,
           backgroundColor: AppColors.red,
         );
         setState(() => _isLoading = false);
@@ -418,18 +422,20 @@ class _SessionCreationFlowPageState
         debugPrint(
           '⚠️ 알 수 없는 게임 상태: ${info.gameStatus} (gameId=${info.gameId})',
         );
+        final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: '알 수 없는 게임 상태입니다.',
+          message: l10n.dialogsessionCreationFlowPageMessage89ff,
           backgroundColor: AppColors.red,
         );
         setState(() => _isLoading = false);
       }
     } catch (_) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: '이미 참가 중인 게임이 있습니다.',
+          message: l10n.dialogsessionCreationFlowPageMessage,
           backgroundColor: AppColors.red,
         );
         setState(() => _isLoading = false);
@@ -478,33 +484,33 @@ class _SessionCreationFlowPageState
   // Step Configuration
   // ============================================
 
-  /// 각 단계별 제목
-  static const _stepTitles = [
-    '구역 선택을 먼저 설정할까요?',
-    '인원을 설정해요',
-    '기본 정보를 설정해요',
-    '최종 설정을 확인해요',
+  /// 각 단계별 제목 (l10n 기반)
+  List<String> _stepTitles(AppLocalizations l10n) => [
+    l10n.session_sessionCreationFlowPage_L483,
+    l10n.session_sessionCreationFlowPage_L484,
+    l10n.session_sessionCreationFlowPage_L485,
+    l10n.session_sessionCreationFlowPage_L486,
   ];
 
-  /// 각 단계별 설명
-  static const _stepDescriptions = [
-    '게임에 필요한 구역을 설정해요',
-    '최소 2명부터 게임 진행이 가능해요',
-    '게임을 진행할 때, 꼭 필요한 정보들이에요',
-    '방 생성 전 마지막으로 설정을 확인할까요?',
+  /// 각 단계별 설명 (l10n 기반)
+  List<String> _stepDescriptions(AppLocalizations l10n) => [
+    l10n.session_sessionCreationFlowPage_L491,
+    l10n.session_sessionCreationFlowPage_L492,
+    l10n.session_sessionCreationFlowPage_L493,
+    l10n.session_sessionCreationFlowPage_L494,
   ];
 
-  /// 각 단계별 버튼 텍스트
-  String get _buttonText {
+  /// 각 단계별 버튼 텍스트 (l10n 기반)
+  String _buttonText(AppLocalizations l10n) {
     switch (_currentStep) {
       case 0:
       case 1:
       case 2:
-        return '다음';
+        return l10n.session_sessionCreationFlowPage_L503;
       case 3:
-        return '방 생성하기';
+        return l10n.session_sessionCreationFlowPage_L505;
       default:
-        return '다음';
+        return l10n.session_sessionCreationFlowPage_L507;
     }
   }
 
@@ -535,6 +541,7 @@ class _SessionCreationFlowPageState
   Widget build(BuildContext context) {
     // autoDispose provider를 유지하기 위해 watch (401 토큰 재발급 중 dispose 방지)
     ref.watch(sessionCreationNotifierProvider);
+    final l10n = AppLocalizations.of(context);
 
     return PopScope(
       canPop: false,
@@ -553,10 +560,10 @@ class _SessionCreationFlowPageState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: AppSpacing.vertical16),
-                _buildHeader(),
+                _buildHeader(l10n),
                 SizedBox(height: AppSpacing.vertical28),
-                Expanded(child: _buildPageView()),
-                _buildBottomButton(),
+                Expanded(child: _buildPageView(l10n)),
+                _buildBottomButton(l10n),
               ],
             ),
           ),
@@ -581,19 +588,19 @@ class _SessionCreationFlowPageState
   }
 
   /// Header (제목 + 설명)
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _stepTitles[_currentStep],
+            _stepTitles(l10n)[_currentStep],
             style: AppTextStyles.heading_24.copyWith(color: AppColors.black),
           ),
           SizedBox(height: AppSpacing.vertical16),
           Text(
-            _stepDescriptions[_currentStep],
+            _stepDescriptions(l10n)[_currentStep],
             style: AppTextStyles.paragraph_14_100.copyWith(
               color: AppColors.black600,
             ),
@@ -604,7 +611,7 @@ class _SessionCreationFlowPageState
   }
 
   /// PageView (4개 스텝 콘텐츠)
-  Widget _buildPageView() {
+  Widget _buildPageView(AppLocalizations l10n) {
     return PageView(
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(), // 스와이프 비활성화 (버튼으로만 이동)
@@ -657,12 +664,12 @@ class _SessionCreationFlowPageState
                   zones: [
                     ZoneInfo(
                       id: 'playground',
-                      name: '플레이그라운드',
+                      name: l10n.session_sessionCreationFlowPage_L660,
                       radiusMeters: _playgroundRadiusMeters!.toInt(),
                     ),
                     ZoneInfo(
                       id: 'prison',
-                      name: '감옥',
+                      name: l10n.session_sessionCreationFlowPage_L665,
                       radiusMeters: _prisonRadiusMeters!.toInt(),
                     ),
                   ],
@@ -673,16 +680,16 @@ class _SessionCreationFlowPageState
                     policeStartDelayMinutes: _policeWaitMinutes,
                   ),
                 )
-              : const Center(child: Text('구역 정보를 먼저 설정해주세요')),
+              : Center(child: Text(l10n.session_sessionCreationFlowPage_L676)),
         ),
       ],
     );
   }
 
   /// 하단 버튼
-  Widget _buildBottomButton() {
+  Widget _buildBottomButton(AppLocalizations l10n) {
     return AppButton(
-      text: _buttonText,
+      text: _buttonText(l10n),
       onPressed: _isNextButtonEnabled && !_isLoading ? _goToNextStep : null,
       isLoading: _isLoading,
       showBorder: false,

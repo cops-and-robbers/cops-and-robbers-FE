@@ -8,6 +8,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/cards/info_card.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/session_settings.dart';
 
 /// 게임 설정 목록 카드
@@ -45,11 +46,12 @@ class SettingListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: InfoCard(
-        title: '설정',
+        title: l10n.dialogsettingListCardTitle,
         titleStyle: AppTextStyles.label_16.copyWith(
           color: isDarkMode ? AppColors.white : AppColors.black,
         ),
@@ -76,26 +78,34 @@ class SettingListCard extends StatelessWidget {
         child: Column(
           children: [
             _SettingRow(
-              label: '참여 인원',
-              value: settings.maxPlayersDisplay,
+              label: l10n.fieldsettingListCardLabel,
+              value: l10n.session_sessionSettings_L22(
+                settings.maxPlayers.toString(),
+              ),
               isDarkMode: isDarkMode,
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: '라운드 제한 시간',
-              value: settings.roundTimeDisplay,
+              label: l10n.fieldsettingListCardLabelEc5e,
+              value: l10n.session_sessionSettings_L27(
+                settings.roundTimeMinutes,
+              ),
               isDarkMode: isDarkMode,
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: '위치 공유 간격',
-              value: settings.locationShareDisplay,
+              label: l10n.fieldsettingListCardLabelA1b3,
+              value: l10n.session_sessionSettings_L32(
+                settings.locationShareMinutes,
+              ),
               isDarkMode: isDarkMode,
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: '경찰 출동 시간',
-              value: settings.policeStartDisplay,
+              label: l10n.fieldsettingListCardLabelCe3b,
+              value: l10n.session_sessionSettings_L37(
+                settings.policeStartDelayMinutes,
+              ),
               isDarkMode: isDarkMode,
             ),
           ],

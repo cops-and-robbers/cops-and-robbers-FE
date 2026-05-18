@@ -9,6 +9,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 세션 코드 표시 및 복사 카드
 ///
@@ -37,9 +38,10 @@ class SessionCodeCard extends StatelessWidget {
     onCopy?.call();
 
     if (context.mounted) {
+      final l10n = AppLocalizations.of(context);
       AppSnackbar.show(
         context,
-        message: '코드가 복사되었습니다',
+        message: l10n.dialogsessionCodeCardMessage,
         iconPath: 'assets/icons/icon_copy.svg',
       );
     }

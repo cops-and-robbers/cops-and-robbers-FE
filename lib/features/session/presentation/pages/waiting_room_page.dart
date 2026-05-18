@@ -26,6 +26,7 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
 import '../../../lobby/data/datasources/lobby_stomp_datasource.dart'
     show StompConnectionState;
@@ -186,20 +187,21 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final serviceEnabled = await LocationPermissionService.isServiceEnabled();
     if (!mounted) return;
 
-    final text = await LocationPermissionMessages.getText(
+    final text = LocationPermissionMessages.getText(
+      context: context,
       isServiceDisabled: !serviceEnabled,
-      context: LocationPermissionContext.waitingRoom,
+      locationContext: LocationPermissionContext.waitingRoom,
     );
-    if (!mounted) return;
 
     final isDark = ref.read(roleThemeProvider);
 
+    final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
       title: text.title,
       message: text.message,
-      confirmText: '설정으로 이동',
-      cancelText: '나가기',
+      confirmText: l10n.dialogwaitingRoomPageConfirm,
+      cancelText: l10n.dialogwaitingRoomPageCancel,
       barrierDismissible: false,
       isDarkMode: isDark,
       onConfirm: () async {
@@ -357,11 +359,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     if (gameId == null) {
       // 숫자가 아닌 sessionId (임시 UI 확인용) → 더미 데이터 + 방장으로 세팅
       ref.read(waitingRoomParticipantsProvider.notifier).loadDummyData();
+      // 더미 닉네임은 매핑된 l10n 키를 사용해 다국어 출력을 일관되게 유지한다.
+      final l10n = AppLocalizations.of(context);
       ref
           .read(gameParticipantNotifierProvider.notifier)
           .setGameInfo(
             gameId: 0,
-            nickname: '포근포근곰...',
+            nickname: l10n.session_waitingRoomPage_L364,
             participantId: _dummyMyId,
             isHost: true,
           );
@@ -539,11 +543,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       _reconnectStateNotifier = null;
     }
 
+    final l10n = AppLocalizations.of(context);
     await AppDialog.show(
       context: context,
-      title: '방에 참여할 수 없어요',
-      message: serverDetail ?? '해당 게임에 참가하지 않은 사용자입니다.',
-      confirmText: '확인',
+      title: l10n.dialogwaitingRoomPageTitle,
+      message: serverDetail ?? l10n.session_waitingRoomPage_L545,
+      confirmText: l10n.dialogwaitingRoomPageConfirm3ce8,
       barrierDismissible: false,
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
       isDarkMode: ref.read(roleThemeProvider),
@@ -623,28 +628,29 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         ? _tutorialKeyAddSlotRobber
         : _tutorialKeyAddSlotPolice;
 
+    final l10n = AppLocalizations.of(context);
     final targets = <TutorialTarget>[
       // 팀 변경 카드 (반대 팀 AddSlotCard 가 렌더링된 경우에만)
       if (opponentKey.currentContext != null)
         AppTutorialStyle.target(
           keyTarget: opponentKey,
-          description: '이 버튼을 눌러 다른 팀으로 이동할 수 있어요',
+          description: l10n.session_waitingRoomPage_L631,
           align: TutorialAlign.bottom,
         ),
       // 초대 코드 공유
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyInviteCode,
-        description: '친구에게 초대 코드를 공유할 수 있어요',
+        description: l10n.session_waitingRoomPage_L637,
       ),
       // 게임 설정 확인
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyGameRules,
-        description: '게임 설정을 확인할 수 있어요',
+        description: l10n.session_waitingRoomPage_L642,
       ),
       // 준비 완료
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyReadyButton,
-        description: '준비가 되면 눌러주세요',
+        description: l10n.session_waitingRoomPage_L647,
         align: TutorialAlign.top,
       ),
     ];
@@ -674,11 +680,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     await TutorialService.markCompleted(TutorialKeys.inGamePrompt);
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context);
     await AppDialog.show<void>(
       context: context,
-      title: '인게임 화면 미리 보기',
-      message: '게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?',
-      confirmText: '보러 가기',
+      title: l10n.dialogwaitingRoomPageTitle1946,
+      message: l10n.dialogwaitingRoomPageMessage,
+      confirmText: l10n.dialogwaitingRoomPageConfirmA2d8,
       barrierDismissible: false,
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
       isDarkMode: ref.read(roleThemeProvider),
@@ -767,12 +774,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 강퇴 확인 다이얼로그 → API 호출
   Future<void> _showKickDialog(LobbyParticipantInfo member) async {
     final isDark = ref.read(roleThemeProvider);
+    final l10n = AppLocalizations.of(context);
     final confirmed = await AppDialog.confirm(
       context: context,
-      title: '${member.nickname}님을 내보낼까요?',
-      message: '강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요',
-      cancelText: '취소',
-      confirmText: '내보내기',
+      title: l10n.dialogwaitingRoomPageTitleBc54(member.nickname),
+      message: l10n.dialogwaitingRoomPageMessageB302,
+      cancelText: l10n.dialogwaitingRoomPageCancelD9de,
+      confirmText: l10n.dialogwaitingRoomPageConfirmC08c,
       isDestructive: true,
       confirmTextColor: AppColors.white,
       isDarkMode: isDark,
@@ -801,7 +809,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: '강퇴 처리 중 오류가 발생했어요',
+        message: l10n.dialogwaitingRoomPageMessageE87b,
         backgroundColor: AppColors.red,
       );
     }
@@ -927,10 +935,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     if (kickedPid == myPid) {
       // 강퇴당한 본인 → 다이얼로그 + 홈 이동
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       await AppDialog.show(
         context: context,
-        title: '방에서 내보내졌어요',
-        message: '다시 참가하려면 초대코드를 입력해야 해요',
+        title: l10n.dialogwaitingRoomPageTitle8208,
+        message: l10n.dialogwaitingRoomPageMessage64a2,
         isDarkMode: ref.read(roleThemeProvider),
       );
       if (!mounted) return;
@@ -939,7 +948,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     } else {
       // 다른 유저 강퇴 → 스낵바
       if (!mounted) return;
-      AppSnackbar.show(context, message: '$kickedNickname님이 내보내졌어요');
+      final l10n = AppLocalizations.of(context);
+      AppSnackbar.show(
+        context,
+        message: l10n.dialogwaitingRoomPageMessage36a5(kickedNickname),
+      );
     }
   }
 
@@ -1025,9 +1038,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ref.read(roleThemeProvider.notifier).setDarkMode(targetTeam == 'ROBBER');
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       await _handleApiErrorOrNotParticipating(
         e,
-        fallbackMessage: '팀 변경에 실패했어요',
+        fallbackMessage: l10n.session_waitingRoomPage_L1030,
       );
     }
   }
@@ -1057,9 +1072,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (!mounted) return;
       setState(() => _isReady = newReadyState);
     } on DioException catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       await _handleApiErrorOrNotParticipating(
         e,
-        fallbackMessage: '준비 상태 변경에 실패했어요',
+        fallbackMessage: l10n.session_waitingRoomPage_L1062,
       );
     } finally {
       if (mounted) {
@@ -1094,9 +1111,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (navigator.canPop()) navigator.pop();
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       await _handleApiErrorOrNotParticipating(
         e,
-        fallbackMessage: '게임 시작에 실패했어요',
+        fallbackMessage: l10n.session_waitingRoomPage_L1099,
       );
     }
   }
@@ -1104,12 +1123,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 방 나가기 확인 다이얼로그
   Future<void> _confirmLeaveRoom() async {
     final isDark = ref.read(roleThemeProvider);
+    final l10n = AppLocalizations.of(context);
     final confirmed = await AppDialog.confirm(
       context: context,
       isDarkMode: isDark,
-      title: '방을 나가시겠어요?',
-      message: '나가면 다시 초대코드를 입력해야 해요',
-      confirmText: '나가기',
+      title: l10n.dialogwaitingRoomPageTitleFfec,
+      message: l10n.dialogwaitingRoomPageMessage3930,
+      confirmText: l10n.dialogwaitingRoomPageConfirmC0a3,
       isDestructive: true,
       confirmTextColor: AppColors.white,
     );
@@ -1126,8 +1146,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         await ref.read(leaveGameProvider(gameId).future);
       } on DioException catch (e) {
         if (!mounted) return;
+        final l10n = AppLocalizations.of(context);
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? '퇴장 처리 중 오류가 발생했습니다.';
+        final message = apiError?.detail ?? l10n.session_waitingRoomPage_L1130;
         AppSnackbar.show(
           context,
           message: message,
@@ -1169,12 +1190,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     try {
       final code = _inviteCode!;
       final isDark = ref.read(roleThemeProvider);
+      final l10n = AppLocalizations.of(context);
 
       await AppDialog.show<void>(
         context: context,
         isDarkMode: isDark,
-        title: '초대코드를 생성했어요',
-        message: '친구에게 코드를 공유하고 게임에 참여해 보세요!',
+        title: l10n.dialogwaitingRoomPageTitleA5bb,
+        message: l10n.dialogwaitingRoomPageMessage06a6,
         customContent: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1197,7 +1219,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                 if (!mounted) return;
                 AppSnackbar.show(
                   context,
-                  message: '코드가 복사되었습니다',
+                  message: l10n.dialogwaitingRoomPageMessage4785,
                   iconPath: 'assets/icons/icon_copy.svg',
                 );
               },
@@ -1231,8 +1253,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ),
           ],
         ),
-        cancelText: '닫기',
-        confirmText: '공유하기',
+        cancelText: l10n.dialogwaitingRoomPageCancel218e,
+        confirmText: l10n.dialogwaitingRoomPageConfirm27f8,
         confirmColor: isDark ? null : AppColors.blue,
         confirmTextColor: isDark ? null : AppColors.white,
         onConfirm: () {
@@ -1496,6 +1518,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   }
 
   Widget _buildBottomButton(bool isHost, bool isDark) {
+    final l10n = AppLocalizations.of(context);
     if (isHost) {
       final participantsState = ref.watch(waitingRoomParticipantsProvider);
       final hostPid = participantsState.hostParticipantId;
@@ -1508,7 +1531,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           nonHostParticipants.every((p) => p.isReady);
 
       return AppButton(
-        text: '게임 시작',
+        text: l10n.session_waitingRoomPage_L1511,
         onPressed: allReady ? _startGame : null,
         backgroundColor: isDark ? AppColors.green : AppColors.blue,
         foregroundColor: isDark ? AppColors.black : AppColors.white,
@@ -1523,7 +1546,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     if (_isReady) {
       return AppButton(
-        text: '준비 완료',
+        text: l10n.session_waitingRoomPage_L1526,
         onPressed: _isUpdatingReady ? null : _toggleReady,
         backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
         foregroundColor: isDark ? AppColors.green : AppColors.blue,
@@ -1534,7 +1557,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
 
     return AppButton(
-      text: '준비',
+      text: l10n.session_waitingRoomPage_L1537,
       onPressed: _isUpdatingReady ? null : _toggleReady,
       backgroundColor: isDark ? AppColors.green : AppColors.blue,
       foregroundColor: isDark ? AppColors.black : AppColors.white,

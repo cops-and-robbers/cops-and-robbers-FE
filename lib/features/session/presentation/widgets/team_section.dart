@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
 import 'participant_card.dart';
 
@@ -113,7 +114,9 @@ class TeamSection extends StatelessWidget {
 
   bool get _isPolice => team.toUpperCase() == 'POLICE';
 
-  String get _teamName => _isPolice ? '경찰팀' : '도둑팀';
+  String _teamName(AppLocalizations l10n) => _isPolice
+      ? l10n.session_teamSection_L116
+      : l10n.session_teamSection_L116_1;
 
   String get _iconPath {
     if (_isPolice) {
@@ -128,9 +131,10 @@ class TeamSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
-        _buildHeader(),
+        _buildHeader(l10n),
         ClipRect(
           child: AnimatedAlign(
             alignment: Alignment.topLeft,
@@ -144,7 +148,7 @@ class TeamSection extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     return GestureDetector(
       onTap: onToggle,
       behavior: HitTestBehavior.opaque,
@@ -163,7 +167,7 @@ class TeamSection extends StatelessWidget {
             // 팀명 (아이콘에서 8px)
             SizedBox(width: 8.w),
             Text(
-              _teamName,
+              _teamName(l10n),
               style: isDarkMode
                   ? AppTextStyles.robberLabel.copyWith(color: AppColors.white)
                   : AppTextStyles.label_16.copyWith(color: AppColors.black),
@@ -175,7 +179,7 @@ class TeamSection extends StatelessWidget {
             ] else ...[
               SizedBox(width: 4.w),
               Text(
-                '현재 ${members.length}명',
+                l10n.session_teamSection_L178(members.length),
                 style: AppTextStyles.tag_12.copyWith(
                   color: isDarkMode ? AppColors.black400 : AppColors.black600,
                 ),
@@ -219,7 +223,7 @@ class TeamSection extends StatelessWidget {
 
     return Padding(
       // 첫 카드 좌측 29px
-      padding: EdgeInsets.only(left: 29.w, right: 24.w, bottom: 20.h),
+      padding: EdgeInsets.only(left: 30.w, right: 24.w, bottom: 20.h),
       child: Wrap(
         spacing: 16.w, // 카드 간 가로 여백 16px
         runSpacing: 16.h, // 줄 간 세로 여백

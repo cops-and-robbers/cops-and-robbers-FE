@@ -13,6 +13,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 감옥 구역 설정 화면
 ///
@@ -201,13 +202,14 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     final titleStyle = isDark
         ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
         : AppTextStyles.heading_20.copyWith(color: AppColors.black);
+    final l10n = AppLocalizations.of(context);
 
     // 로딩 중일 때는 로딩 인디케이터 표시
     if (_isLoading) {
       return Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
-          title: Text('감옥', style: titleStyle),
+          title: Text(l10n.session_setupPrisonPage_L210, style: titleStyle),
           backgroundColor: bgColor,
           elevation: 0,
           centerTitle: true,
@@ -224,7 +226,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text('감옥', style: titleStyle),
+        title: Text(l10n.session_setupPrisonPage_L227, style: titleStyle),
         backgroundColor: bgColor,
         elevation: 0,
         centerTitle: true,
@@ -245,7 +247,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '도둑을 잡아둘 감옥의 위치와 크기를 설정해요',
+                  l10n.session_setupPrisonPage_L248,
                   style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),
@@ -283,8 +285,8 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                   alignment: Alignment.center,
                   child: Text(
                     _playgroundCenter == null
-                        ? '플레이그라운드를 먼저 설정해주세요'
-                        : '감옥이 플레이그라운드 범위를 벗어났어요',
+                        ? l10n.session_setupPrisonPage_L286
+                        : l10n.session_setupPrisonPage_L287,
                     style: AppTextStyles.label16Medium.copyWith(
                       color: AppColors.red,
                     ),
@@ -296,7 +298,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
             Padding(
               padding: AppPadding.all20,
               child: AppButton(
-                text: '완료',
+                text: l10n.session_setupPrisonPage_L299,
                 onPressed: _isMapReady && _isJailInsidePlayground()
                     ? _onComplete
                     : null,

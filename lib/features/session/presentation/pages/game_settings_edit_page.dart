@@ -13,6 +13,7 @@ import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../providers/session_provider.dart';
@@ -105,9 +106,10 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop(); // 로딩 팝업 닫기
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       final errorMsg =
           ApiErrorResponse.tryParse(e.response?.data)?.detail ??
-          '설정 저장에 실패했습니다.';
+          l10n.session_gameSettingsEditPage_L110;
       AppSnackbar.show(
         context,
         message: errorMsg,
@@ -127,6 +129,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
     final titleStyle = isDark
         ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
         : AppTextStyles.heading_20.copyWith(color: AppColors.black);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -143,7 +146,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
           color: isDark ? AppColors.black200 : AppColors.black800,
         ),
         centerTitle: true,
-        title: Text('설정 수정', style: titleStyle),
+        title: Text(l10n.session_gameSettingsEditPage_L146, style: titleStyle),
       ),
       body: SafeArea(
         child: Column(
@@ -194,7 +197,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
             Padding(
               padding: AppPadding.all20,
               child: AppButton(
-                text: _isSaving ? '저장 중...' : '저장',
+                text: _isSaving
+                    ? l10n.session_gameSettingsEditPage_L197
+                    : l10n.session_gameSettingsEditPage_L197_1,
                 onPressed: _hasChanges && !_isSaving ? _saveSettings : null,
                 backgroundColor: isDark ? AppColors.green : AppColors.blue,
                 foregroundColor: isDark ? AppColors.black : AppColors.white,

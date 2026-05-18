@@ -7,6 +7,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 세션 생성 단계별 공통 레이아웃 위젯
 ///
@@ -39,7 +40,7 @@ class SessionStepLayout extends StatelessWidget {
     required this.title,
     required this.description,
     required this.content,
-    this.buttonText = '다음',
+    this.buttonText,
     this.isButtonEnabled = true,
     required this.onNext,
     this.onPrevious,
@@ -62,8 +63,8 @@ class SessionStepLayout extends StatelessWidget {
   /// 페이지별 메인 컨텐츠 위젯
   final Widget content;
 
-  /// 하단 버튼 텍스트 (기본값: "다음")
-  final String buttonText;
+  /// 하단 버튼 텍스트 (null이면 l10n 기본값 "다음" 사용)
+  final String? buttonText;
 
   /// 하단 버튼 활성화 여부 (기본값: true)
   final bool isButtonEnabled;
@@ -93,6 +94,7 @@ class SessionStepLayout extends StatelessWidget {
     }
 
     // 정상 레이아웃
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: _buildAppBar(context),
@@ -107,7 +109,7 @@ class SessionStepLayout extends StatelessWidget {
               SizedBox(height: AppSpacing.vertical28),
               content,
               const Spacer(),
-              _buildNextButton(),
+              _buildNextButton(l10n),
             ],
           ),
         ),
@@ -153,9 +155,9 @@ class SessionStepLayout extends StatelessWidget {
   }
 
   /// 하단 버튼 (다음/참여하기)
-  Widget _buildNextButton() {
+  Widget _buildNextButton(AppLocalizations l10n) {
     return AppButton(
-      text: buttonText,
+      text: buttonText ?? l10n.session_sessionStepLayout_L42,
       onPressed: isButtonEnabled ? onNext : null,
       showBorder: false,
     );

@@ -33,6 +33,7 @@ import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
 import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -100,17 +101,18 @@ class _HomePageState extends ConsumerState<HomePage> {
     await Future<void>.delayed(const Duration(milliseconds: 400));
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context);
     AppTutorialStyle.show(
       context: context,
       targets: [
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyCreateRoom,
-          description: '새로운 게임을 만들 수 있어요',
+          description: l10n.session_homePage_L108,
           align: TutorialAlign.top,
         ),
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyJoinRoom,
-          description: '초대 코드를 입력하면 게임에 참가할 수 있어요',
+          description: l10n.session_homePage_L113,
           align: TutorialAlign.top,
         ),
       ],
@@ -130,12 +132,13 @@ class _HomePageState extends ConsumerState<HomePage> {
     if (!mounted) return;
 
     bool doNotShowToday = false;
+    final l10n = AppLocalizations.of(context);
 
     AppDialog.show(
       context: context,
-      title: '주변을 확인하며 이용해 주세요',
-      message: '게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요',
-      confirmText: '확인했어요!',
+      title: l10n.dialoghomePageTitle,
+      message: l10n.dialoghomePageMessage,
+      confirmText: l10n.dialoghomePageConfirm,
       barrierDismissible: false,
       customContent: StatefulBuilder(
         builder: (context, setState) {
@@ -155,7 +158,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                   SizedBox(width: AppSpacing.horizontal8),
                   Text(
-                    '오늘은 다시 보지 않기',
+                    l10n.session_homePage_L158,
                     style: AppTextStyles.paragraph_14_100.copyWith(
                       color: AppColors.black600,
                     ),
@@ -215,9 +218,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 
       if (!status.isParticipating || status.participationInfo == null) {
         // 서버 상태 불일치 — 참가 중인 게임이 없음
+        final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: '이미 참가 중인 게임이 있습니다.',
+          message: l10n.dialoghomePageMessage50b3,
           backgroundColor: AppColors.red,
         );
         return;
@@ -236,18 +240,20 @@ class _HomePageState extends ConsumerState<HomePage> {
         debugPrint(
           '⚠️ 알 수 없는 게임 상태: ${info.gameStatus} (gameId=${info.gameId})',
         );
+        final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: '알 수 없는 게임 상태입니다.',
+          message: l10n.dialoghomePageMessage89ff,
           backgroundColor: AppColors.red,
         );
       }
     } catch (_) {
       // 활성 게임 조회도 실패 → fallback 스낵바
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: '이미 참가 중인 게임이 있습니다.',
+          message: l10n.dialoghomePageMessage50b3,
           backgroundColor: AppColors.red,
         );
       }
@@ -272,18 +278,19 @@ class _HomePageState extends ConsumerState<HomePage> {
     final serviceEnabled = await LocationPermissionService.isServiceEnabled();
     if (!mounted) return;
 
-    final text = await LocationPermissionMessages.getText(
+    final text = LocationPermissionMessages.getText(
+      context: context,
       isServiceDisabled: !serviceEnabled,
-      context: LocationPermissionContext.home,
+      locationContext: LocationPermissionContext.home,
     );
-    if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
       title: text.title,
       message: text.message,
-      confirmText: '설정으로 이동',
-      cancelText: '취소',
+      confirmText: l10n.dialoghomePageConfirm5435,
+      cancelText: l10n.dialoghomePageCancel,
       onConfirm: () async {
         if (!serviceEnabled) {
           await LocationPermissionService.openLocationSettings();
@@ -325,14 +332,15 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     // 미설정 → 차단 다이얼로그 (위치 권한과 동일 패턴)
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
-      title: '끊김 없는 게임을 위해',
+      title: l10n.dialoghomePageTitleEeea,
       message:
-          '앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n'
-          '그래야 화면이 꺼져도 게임이 끊기지 않아요',
-      confirmText: '설정으로 이동',
-      cancelText: '취소',
+          '${l10n.session_homePage_L332}'
+          '${l10n.session_homePage_L333}',
+      confirmText: l10n.dialoghomePageConfirm5435,
+      cancelText: l10n.dialoghomePageCancel,
       onConfirm: () async {
         await ref.read(backgroundServiceProvider).openAppSettings();
       },
@@ -428,8 +436,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         return;
       }
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? '참여에 실패했습니다. 초대 코드를 확인해주세요.';
+        final message = apiError?.detail ?? l10n.session_homePage_L432;
         AppSnackbar.show(
           context,
           message: message,
@@ -440,9 +449,10 @@ class _HomePageState extends ConsumerState<HomePage> {
     } catch (_) {
       // 예상치 못한 예외 (FormatException, StateError 등)
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: '참여에 실패했습니다. 다시 시도해주세요.',
+          message: l10n.dialoghomePageMessage8155,
           backgroundColor: AppColors.red,
         );
       }
@@ -481,13 +491,14 @@ class _HomePageState extends ConsumerState<HomePage> {
   /// 방 참여 다이얼로그 (권한 확인 후 호출)
   void _showJoinRoomDialogInternal() {
     final codeController = TextEditingController();
+    final l10n = AppLocalizations.of(context);
 
     AppDialog.show(
       context: context,
-      title: '방 참여하기',
+      title: l10n.dialoghomePageTitle879f,
       customContent: AppTextField(
         controller: codeController,
-        hintText: '참여코드를 입력하세요',
+        hintText: l10n.fieldhomePageHint,
         maxLength: 6,
         inputFormatters: [_UpperCaseFormatter()],
         suffixIcon: GestureDetector(
@@ -499,7 +510,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               context,
               MaterialPageRoute(
                 builder: (_) => QrScannerPage<String>(
-                  title: '초대코드 QR을 스캔하세요',
+                  title: l10n.dialoghomePageTitle86c1,
                   onParse: (rawValue) {
                     try {
                       final json = jsonDecode(rawValue) as Map<String, dynamic>;
@@ -531,8 +542,8 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ),
       ),
-      cancelText: '닫기',
-      confirmText: '참여하기',
+      cancelText: l10n.dialoghomePageCancel218e,
+      confirmText: l10n.dialoghomePageConfirm665b,
       validator: () => codeController.text.trim().length == 6,
       onConfirm: () async {
         final code = codeController.text.trim().toUpperCase();
@@ -551,6 +562,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // 설정에서 튜토리얼 초기화 시 신호를 받아 재노출 (홈 인스턴스가 살아있어 initState 재실행 안 되는 문제 대응)
     ref.listen<int>(tutorialResetSignalProvider, (previous, next) {
       if (previous == null || previous == next) return;
@@ -598,7 +610,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '경찰과도둑',
+                      l10n.session_homePage_L601,
                       style: AppTextStyles.heading_20.copyWith(
                         color: AppColors.black,
                       ),
@@ -649,7 +661,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                         SvgIconButton(
                           assetPath: 'assets/icons/Top_hat.svg',
                           onPressed: () {
-                            AppSnackbar.show(context, message: '준비중입니다');
+                            AppSnackbar.show(
+                              context,
+                              message: l10n.dialoghomePageMessage9e36,
+                            );
                           },
                         ),
                       ],
@@ -658,7 +673,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     SizedBox(height: AppSpacing.vertical48),
 
                     // ── Speech Bubble ──
-                    const SpeechBubble(text: '너무 기대 돼\n이번에는 어떤 역할을 할까?'),
+                    SpeechBubble(text: l10n.session_homePage_L661),
 
                     // ── Avatar Placeholder ──
                     Image.asset(
@@ -674,14 +689,14 @@ class _HomePageState extends ConsumerState<HomePage> {
               // ── Bottom Buttons ──
               AppButton(
                 key: _tutorialKeyCreateRoom,
-                text: '방 만들기',
+                text: l10n.session_homePage_L677,
                 onPressed: _onCreateSession,
                 showBorder: false,
               ),
               SizedBox(height: AppSpacing.vertical12),
               AppButton(
                 key: _tutorialKeyJoinRoom,
-                text: '방 참여하기',
+                text: l10n.session_homePage_L684,
                 onPressed: _showJoinRoomDialog,
                 backgroundColor: AppColors.black100,
                 foregroundColor: AppColors.black600,
