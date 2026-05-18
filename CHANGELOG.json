@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-18T11:25:36Z",
-    "currentVersion": "1.8.35",
+    "lastUpdated": "2026-05-18T11:58:54Z",
+    "currentVersion": "1.9.1",
     "projectType": "flutter",
-    "totalReleases": 91
+    "totalReleases": 92
   },
   "releases": [
+    {
+      "version": "1.9.1",
+      "project_type": "flutter",
+      "date": "2026-05-18",
+      "pr_number": 368,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **Chores**\n  * 앱 버전을 1.9.1로 업그레이드했습니다.\n  * 다국어 패치노트 템플릿 지침을 개선하여 한국어, 일본어, 영어 블록으로 구성되도록 표준화했습니다.\n  * 빌드 정보 및 메타데이터를 최신화했습니다.\n\n[![Review Change Stack](https://storage.googleapis.com/coderabbit_public_assets/review-stack-in-coderabbit-ui.svg)](https://app.coderabbit.ai/change-stack/cops-and-robbers/cops-and-robbers-FE/pull/368?utm_source=github_walkthrough&utm_medium=github&utm_campaign=change_stack)",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전을 1.9.1로 업그레이드했습니다.",
+            "다국어 패치노트 템플릿 지침을 개선하여 한국어, 일본어, 영어 블록으로 구성되도록 표준화했습니다.",
+            "빌드 정보 및 메타데이터를 최신화했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.35",
       "project_type": "flutter",
