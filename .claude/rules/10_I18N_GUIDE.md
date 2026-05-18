@@ -121,21 +121,49 @@ flutter gen-l10n
 ### 4. 키 네이밍 컨벤션
 
 ```
-{도메인}{컴포넌트}{용도}{식별자}
+{용도prefix}{도메인/대상}{세부사항}
 ```
 
-| 패턴 | 예시 |
-|---|---|
-| `button*` | `buttonConfirm`, `buttonStartGame` |
-| `dialog*` | `dialogReconnectMessage`, `dialogGameOverTitle` |
-| `error*` | `errorNetworkTimeout`, `errorUnauthorized` |
-| `chatSystem*` | `chatSystemGameStartReady` |
-| `gameEvent*` | `gameEventPoliceMove`, `gameEventArrestNotice` |
-| `settings*` | `settingsLanguageLabel` |
-| `field*Hint`, `field*Label` | `fieldHomePageHint` |
-| `asset_*` | `asset_loading_joinRoom` (외부 데이터 매핑) |
+용도 prefix는 **메시지의 역할**로 정한다. 파일명이나 화면명을 넣지 않는다.
 
-기존 자동 생성 키(`{feature}_{filename}_L{line}`)는 그대로 두고, **신규는 시맨틱 네이밍**.
+| 패턴 | 예시 | 비고 |
+|---|---|---|
+| `button*` | `buttonConfirm`, `buttonStartGame`, `buttonReport` | 버튼 라벨 |
+| `dialog*Title` / `dialog*Message` | `dialogReconnectMessage`, `dialogSafetyWarningTitle` | 다이얼로그 제목/본문 |
+| `error*` | `errorNetworkTimeout`, `errorBugReportFailed` | 에러 메시지 (Exception 노출 포함) |
+| `message*` | `messageBugReportSubmitted`, `messageAccountDeleted` | 안내/성공 메시지 (스낵바 등) |
+| `field*Hint` / `field*Label` | `fieldBugReportHint`, `fieldNicknameLabel` | 입력 필드 |
+| `title*` / `section*` / `label*` | `titleGameRules`, `sectionTitleSettings`, `labelArrestCount` | 화면 구성 요소 |
+| `link*` | `linkPrivacyPolicy`, `linkTermsOfService` | 약관/외부 링크 |
+| `chatSystem*` | `chatSystemGameStartReady` | 채팅 시스템 메시지 |
+| `gameEvent*` | `gameEventPoliceMove`, `gameEventArrestNotice` | 게임 이벤트 배너 |
+| `settings*` | `settingsLanguageLabel` | 설정 화면 도메인 |
+| `asset_*` | `asset_loading_joinRoom` | 외부 데이터 매핑 (스네이크 케이스 유지) |
+
+### 5. 금지 패턴 (재발 방지)
+
+마이그레이션 도구가 자동 생성하는 다음 패턴은 **사용 금지**. 신규 작업에 발견되면 즉시 의미 기반 키로 교체한다.
+
+| ❌ 금지 패턴 | 문제점 | ✅ 대체 |
+|---|---|---|
+| `{feature}_{filename}_L{line}` | 라인 번호는 파일 수정 시 의미 깨짐 | 의미 기반 (예: `chatSystemGameStartGo`) |
+| `{prefix}{Name}{hex4}` (예: `dialogTutorialPromptF6a8`) | hex suffix는 키 충돌 회피용으로 자동 생성, 의미 0 | 의미 기반 (예: `dialogTutorialPromptMessage`) |
+| `{prefix}{filename}{Purpose}` (예: `dialogsettingsPageMessage`) | 파일 rename 시 키 의미 깨짐, 같은 파일에 여러 dialog 있으면 모호 | 의미 기반 (예: `dialogGamePushUpdateFailed`) |
+
+### 6. 중복 키 재사용 우선
+
+신규 키 만들기 전에 ARB 전체에서 같은 의미의 키가 있는지 검색한다. 있으면 **무조건 재사용**.
+
+자주 재사용되는 공용 키:
+- `buttonConfirm`, `buttonCancel`, `buttonClose`, `buttonRetry`
+- `errorNetworkTimeout`, `errorNetworkOffline`, `errorTemporaryRetry`
+- `linkPrivacyPolicy`, `linkTermsOfService`
+
+```bash
+# 새 키 추가 전 검색 예시
+grep -n '"확인"' lib/l10n/app_ko.arb   # 같은 한국어 메시지가 이미 있나?
+grep -n 'buttonConfirm' lib/l10n/app_ko.arb  # 공용 키 존재 여부
+```
 
 ---
 
@@ -376,3 +404,10 @@ MaterialApp(
 - [ ] 일본어 ARB에서 영어/일본어 혼용 없음
 - [ ] Widget 테스트에 `localizationsDelegates` 셋업
 - [ ] `flutter analyze` 통과
+- [ ] **금지 패턴 0건 확인** (자동완성 도구 출력 재발 방지):
+  ```bash
+  # 셋 다 0이어야 함
+  grep -cE '"[a-z]+_[a-zA-Z]+_L[0-9]+":' lib/l10n/app_ko.arb
+  grep -cE '"[a-z]+[A-Z][a-zA-Z0-9]*[a-fA-F0-9]{4}":' lib/l10n/app_ko.arb
+  grep -cE '"(field|dialog)[a-z]+[A-Z]' lib/l10n/app_ko.arb
+  ```
