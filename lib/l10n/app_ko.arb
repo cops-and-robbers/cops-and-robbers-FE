@@ -1,0 +1,2747 @@
+{
+  "@@locale": "ko",
+  "appTitle": "경찰과도둑",
+  "@appTitle": {
+    "description": "앱 이름 (MaterialApp.title) — i18n 스모크 테스트용 첫 키"
+  },
+  "loadingDefault": "처리 중...",
+  "@loadingDefault": {
+    "description": "auto-imported from lib/core/services/loading_message_service.dart:49"
+  },
+  "permissionLocationFallbackTitle": "위치 권한 안내",
+  "@permissionLocationFallbackTitle": {
+    "description": "auto-imported from lib/core/services/permission/location_permission_messages.dart:48"
+  },
+  "permissionLocationFallbackMessage": "위치 권한을 허용해주세요",
+  "@permissionLocationFallbackMessage": {
+    "description": "auto-imported from lib/core/services/permission/location_permission_messages.dart:49"
+  },
+  "dialogUpdateOptionalTitle": "새 버전 안내",
+  "@dialogUpdateOptionalTitle": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:53"
+  },
+  "dialogUpdateOptionalMessage": "더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?",
+  "@dialogUpdateOptionalMessage": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:54"
+  },
+  "dialogUpdateOptionalConfirm": "업데이트",
+  "@dialogUpdateOptionalConfirm": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:55"
+  },
+  "dialogUpdateOptionalCancel": "나중에",
+  "@dialogUpdateOptionalCancel": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:56"
+  },
+  "dialogUpdateMandatoryTitle": "업데이트 안내",
+  "@dialogUpdateMandatoryTitle": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:68"
+  },
+  "dialogUpdateMandatoryMessage": "새로운 버전이 출시되었어요.\n업데이트하시겠어요?",
+  "@dialogUpdateMandatoryMessage": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:69"
+  },
+  "dialogUpdateMandatoryConfirm": "업데이트",
+  "@dialogUpdateMandatoryConfirm": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:70"
+  },
+  "dialogUpdateMandatoryCancel": "나중에",
+  "@dialogUpdateMandatoryCancel": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:71"
+  },
+  "chatSystemGameStartTime": "제한 시간은 {minutes}분입니다",
+  "@chatSystemGameStartTime": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:11",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "chatSystemGameStartReady": "잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!",
+  "@chatSystemGameStartReady": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:14"
+  },
+  "chatSystemGameStartReportTip": "게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다",
+  "@chatSystemGameStartReportTip": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:17"
+  },
+  "chatSystemGameStartGo": "게임 시작!  행운을 빕니다!",
+  "@chatSystemGameStartGo": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:20"
+  },
+  "chatSystemPoliceMoveWarning": "경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!",
+  "@chatSystemPoliceMoveWarning": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:25"
+  },
+  "chatSystemPoliceMove": "경찰 출동!  도둑은 도망치세요!",
+  "@chatSystemPoliceMove": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:28"
+  },
+  "chatSystemLocationReveal": "현재 도둑의 위치가 공개됩니다!",
+  "@chatSystemLocationReveal": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:33"
+  },
+  "chatSystemRemainingRobbers": "현재 {count}명 도주 중!",
+  "@chatSystemRemainingRobbers": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:36",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatSystemArrest": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!",
+  "@chatSystemArrest": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:42",
+    "placeholders": {
+      "policeNickname": {
+        "type": "String"
+      },
+      "robberNickname": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSystemEscapeNotice": "도둑이 탈옥했습니다! 지금 바로 체포하세요!",
+  "@chatSystemEscapeNotice": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:47"
+  },
+  "chatSystemFiveMinutesLeft": "게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!",
+  "@chatSystemFiveMinutesLeft": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:52"
+  },
+  "errorNetworkTimeout": "서버 연결 시간이 초과되었습니다",
+  "@errorNetworkTimeout": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:41"
+  },
+  "errorNetworkOffline": "네트워크 연결을 확인하세요",
+  "@errorNetworkOffline": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:49"
+  },
+  "errorServerInternal": "서버에 문제가 발생했습니다",
+  "@errorServerInternal": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:63"
+  },
+  "errorBadRequest": "잘못된 요청입니다",
+  "@errorBadRequest": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:71"
+  },
+  "errorUnauthorized": "인증에 실패했습니다",
+  "@errorUnauthorized": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:76"
+  },
+  "errorForbidden": "접근 권한이 없습니다",
+  "@errorForbidden": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:81"
+  },
+  "errorNotFound": "요청한 리소스를 찾을 수 없습니다",
+  "@errorNotFound": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:86"
+  },
+  "errorConflict": "요청이 현재 상태와 충돌합니다",
+  "@errorConflict": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:91"
+  },
+  "buttonConfirm": "확인",
+  "@buttonConfirm": {
+    "description": "auto-imported from lib/core/widgets/dialogs/app_dialog.dart:79"
+  },
+  "buttonCancel": "취소",
+  "@buttonCancel": {
+    "description": "auto-imported from lib/core/widgets/dialogs/app_dialog.dart:267"
+  },
+  "dialogReconnectMessage": "연결이 끊어졌어요. 재연결이 필요해요",
+  "@dialogReconnectMessage": {
+    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:158"
+  },
+  "dialogReconnectButtonConnecting": "연결 중...",
+  "@dialogReconnectButtonConnecting": {
+    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169"
+  },
+  "dialogReconnectButtonRetry": "재연결",
+  "@dialogReconnectButtonRetry": {
+    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169"
+  },
+  "pageForceUpdateTitle": "업데이트 필요",
+  "@pageForceUpdateTitle": {
+    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:41"
+  },
+  "pageForceUpdateMessage": "새로운 버전이 출시되었어요\n업데이트 후 이용해 주세요!",
+  "@pageForceUpdateMessage": {
+    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:49"
+  },
+  "pageForceUpdateButton": "업데이트",
+  "@pageForceUpdateButton": {
+    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:60"
+  },
+  "pageMaintenanceTitle": "서버 점검 중",
+  "@pageMaintenanceTitle": {
+    "description": "auto-imported from lib/core/widgets/pages/maintenance_page.dart:39"
+  },
+  "pageMaintenanceMessage": "더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!",
+  "@pageMaintenanceMessage": {
+    "description": "auto-imported from lib/core/widgets/pages/maintenance_page.dart:47"
+  },
+  "buttonGoogleSignIn": "Google로 시작하기",
+  "@buttonGoogleSignIn": {
+    "description": "auto-imported from lib/core/widgets/buttons/social_login_button.dart:39"
+  },
+  "buttonAppleSignIn": "Apple로 시작하기",
+  "@buttonAppleSignIn": {
+    "description": "auto-imported from lib/core/widgets/buttons/social_login_button.dart:86"
+  },
+  "zoneRadiusKm": "반경 {km}km",
+  "@zoneRadiusKm": {
+    "description": "auto-imported from lib/core/widgets/buttons/zone_setting_button.dart:129",
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "zoneRadiusMeter": "반경 {radiusMeters}m",
+  "@zoneRadiusMeter": {
+    "description": "auto-imported from lib/core/widgets/buttons/zone_setting_button.dart:131",
+    "placeholders": {
+      "radiusMeters": {
+        "type": "String"
+      }
+    }
+  },
+  "zoneRadiusLabel": "반경",
+  "@zoneRadiusLabel": {
+    "description": "auto-imported from lib/core/widgets/map/zone_setting_widget.dart:364"
+  },
+  "dialogAgreementRequiredTermsTitle": "필수 약관 미동의",
+  "@dialogAgreementRequiredTermsTitle": {
+    "description": "auto-imported from lib/core/utils/agreement_error_handler.dart:15"
+  },
+  "errorAuthLoginCancelled": "로그인이 취소되었습니다",
+  "@errorAuthLoginCancelled": {
+    "description": "auto-imported from lib/core/errors/app_exception.dart:57"
+  },
+  "settingsLanguageLabel": "언어",
+  "@settingsLanguageLabel": {
+    "description": "설정 화면의 언어 설정 메뉴 라벨"
+  },
+  "settingsLanguageSubtitle": "앱 표시 언어를 변경할 수 있어요",
+  "@settingsLanguageSubtitle": {
+    "description": "언어 메뉴 부제 (서브타이틀)"
+  },
+  "settingsLanguageSheetTitle": "언어 선택",
+  "@settingsLanguageSheetTitle": {
+    "description": "언어 선택 BottomSheet 제목"
+  },
+  "settingsLanguageOptionSystem": "System default",
+  "@settingsLanguageOptionSystem": {
+    "description": "언어 옵션: 단말 시스템 로캘 추종"
+  },
+  "settingsLanguageOptionKorean": "한국어",
+  "@settingsLanguageOptionKorean": {
+    "description": "언어 옵션: 한국어 — 모든 로캘에서 자국어 표기 유지"
+  },
+  "settingsLanguageOptionEnglish": "English",
+  "@settingsLanguageOptionEnglish": {
+    "description": "언어 옵션: 영어 — 모든 로캘에서 자국어 표기 유지"
+  },
+  "settingsLanguageOptionJapanese": "日本語",
+  "@settingsLanguageOptionJapanese": {
+    "description": "언어 옵션: 일본어 — 모든 로캘에서 자국어 표기 유지"
+  },
+  "asset_loading_joinRoom": "잠입 준비 중...",
+  "@asset_loading_joinRoom": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.0"
+  },
+  "asset_loading_joinRoom477c": "작전에 합류하는 중...",
+  "@asset_loading_joinRoom477c": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.1"
+  },
+  "asset_loading_joinRoom24a9": "비밀 통로로 진입 중...",
+  "@asset_loading_joinRoom24a9": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.2"
+  },
+  "asset_loading_joinRoomCb98": "변장 확인 중...",
+  "@asset_loading_joinRoomCb98": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.3"
+  },
+  "asset_loading_joinRoomF964": "작전 투입 인원 확인 중...",
+  "@asset_loading_joinRoomF964": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.4"
+  },
+  "asset_loading_joinRoomB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_joinRoomB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.5"
+  },
+  "asset_loading_joinRoomAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_joinRoomAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.6"
+  },
+  "asset_loading_joinRoom25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_joinRoom25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.7"
+  },
+  "asset_loading_createRoom": "작전 본부 설치 중...",
+  "@asset_loading_createRoom": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.0"
+  },
+  "asset_loading_createRoomF1fe": "비밀 아지트 준비 중...",
+  "@asset_loading_createRoomF1fe": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.1"
+  },
+  "asset_loading_createRoom01f8": "작전 구역 확보 중...",
+  "@asset_loading_createRoom01f8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.2"
+  },
+  "asset_loading_createRoom5076": "비밀 지도 펼치는 중...",
+  "@asset_loading_createRoom5076": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.3"
+  },
+  "asset_loading_createRoomDd9e": "무전기 주파수 맞추는 중...",
+  "@asset_loading_createRoomDd9e": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.4"
+  },
+  "asset_loading_createRoomB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_createRoomB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.5"
+  },
+  "asset_loading_createRoomAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_createRoomAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.6"
+  },
+  "asset_loading_createRoom25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_createRoom25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.7"
+  },
+  "asset_loading_changeTeam": "변장 중...",
+  "@asset_loading_changeTeam": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.0"
+  },
+  "asset_loading_changeTeam681d": "위장 신분 변경 중...",
+  "@asset_loading_changeTeam681d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.1"
+  },
+  "asset_loading_changeTeam1106": "신분 세탁 중...",
+  "@asset_loading_changeTeam1106": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.2"
+  },
+  "asset_loading_changeTeam4d7a": "이중 스파이 전환 중...",
+  "@asset_loading_changeTeam4d7a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.3"
+  },
+  "asset_loading_changeTeam4cdc": "새 신분증 발급 중...",
+  "@asset_loading_changeTeam4cdc": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.4"
+  },
+  "asset_loading_changeTeamB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_changeTeamB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.5"
+  },
+  "asset_loading_changeTeamAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_changeTeamAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.6"
+  },
+  "asset_loading_changeTeam25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_changeTeam25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.7"
+  },
+  "asset_loading_startGame": "작전 개시 준비 중...",
+  "@asset_loading_startGame": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.0"
+  },
+  "asset_loading_startGameA35d": "출동 준비 중...",
+  "@asset_loading_startGameA35d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.1"
+  },
+  "asset_loading_startGame64c3": "카운트다운 시작...",
+  "@asset_loading_startGame64c3": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.2"
+  },
+  "asset_loading_startGame7a2f": "무전기 켜는 중...",
+  "@asset_loading_startGame7a2f": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.3"
+  },
+  "asset_loading_startGame1b41": "현장 요원 배치 중...",
+  "@asset_loading_startGame1b41": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.4"
+  },
+  "asset_loading_startGameB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_startGameB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.5"
+  },
+  "asset_loading_startGameAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_startGameAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.6"
+  },
+  "asset_loading_startGame25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_startGame25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.7"
+  },
+  "asset_loading_updateArea": "작전 구역 설정 중...",
+  "@asset_loading_updateArea": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.0"
+  },
+  "asset_loading_updateArea8c32": "관할 구역 지정 중...",
+  "@asset_loading_updateArea8c32": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.1"
+  },
+  "asset_loading_updateArea0183": "지도 위에 점 찍는 중...",
+  "@asset_loading_updateArea0183": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.2"
+  },
+  "asset_loading_updateArea2433": "위성 사진 분석 중...",
+  "@asset_loading_updateArea2433": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.3"
+  },
+  "asset_loading_updateAreaDc8b": "작전 범위 계산 중...",
+  "@asset_loading_updateAreaDc8b": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.4"
+  },
+  "asset_loading_updateAreaB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_updateAreaB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.5"
+  },
+  "asset_loading_updateAreaAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_updateAreaAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.6"
+  },
+  "asset_loading_updateArea25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_updateArea25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.7"
+  },
+  "asset_loading_saveSettings": "작전 지침 수정 중...",
+  "@asset_loading_saveSettings": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.0"
+  },
+  "asset_loading_saveSettingsFb58": "규칙 업데이트 중...",
+  "@asset_loading_saveSettingsFb58": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.1"
+  },
+  "asset_loading_saveSettings65dc": "새로운 룰 적용 중...",
+  "@asset_loading_saveSettings65dc": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.2"
+  },
+  "asset_loading_saveSettings5e80": "암호 변경 중...",
+  "@asset_loading_saveSettings5e80": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.3"
+  },
+  "asset_loading_saveSettings128d": "새 작전 코드 적용 중...",
+  "@asset_loading_saveSettings128d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.4"
+  },
+  "asset_loading_saveSettingsB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_saveSettingsB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.5"
+  },
+  "asset_loading_saveSettingsAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_saveSettingsAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.6"
+  },
+  "asset_loading_saveSettings25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_saveSettings25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.7"
+  },
+  "asset_loading_loadProfile": "신원 조회 중...",
+  "@asset_loading_loadProfile": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.0"
+  },
+  "asset_loading_loadProfile27ee": "수배서 확인 중...",
+  "@asset_loading_loadProfile27ee": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.1"
+  },
+  "asset_loading_loadProfile6dac": "신분증 검사 중...",
+  "@asset_loading_loadProfile6dac": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.2"
+  },
+  "asset_loading_loadProfile23c6": "지문 대조 중...",
+  "@asset_loading_loadProfile23c6": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.3"
+  },
+  "asset_loading_loadProfile221d": "용의자 프로필 분석 중...",
+  "@asset_loading_loadProfile221d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.4"
+  },
+  "asset_loading_loadProfileB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_loadProfileB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.5"
+  },
+  "asset_loading_loadProfileAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_loadProfileAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.6"
+  },
+  "asset_loading_loadProfile25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_loadProfile25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.7"
+  },
+  "asset_loading_logout": "철수 중...",
+  "@asset_loading_logout": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.0"
+  },
+  "asset_loading_logout3031": "잠적 중...",
+  "@asset_loading_logout3031": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.1"
+  },
+  "asset_loading_logoutCe40": "흔적 지우는 중...",
+  "@asset_loading_logoutCe40": {
+    "description": "auto-imported from assets/messages/logout_messages.json :: logout.2"
+  },
+  "asset_loading_logout0ba9": "증거 인멸 중...",
+  "@asset_loading_logout0ba9": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.3"
+  },
+  "asset_loading_logoutFc0d": "비밀 통로로 탈출 중...",
+  "@asset_loading_logoutFc0d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.4"
+  },
+  "asset_loading_logoutB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_logoutB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.5"
+  },
+  "asset_loading_logoutAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_logoutAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.6"
+  },
+  "asset_loading_logout25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_logout25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.7"
+  },
+  "asset_loading_deleteAccount": "탈퇴 처리 중...",
+  "@asset_loading_deleteAccount": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.0"
+  },
+  "asset_loading_deleteAccountC5fd": "기록 말소 중...",
+  "@asset_loading_deleteAccountC5fd": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.1"
+  },
+  "asset_loading_deleteAccount517f": "신원 삭제 중...",
+  "@asset_loading_deleteAccount517f": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.2"
+  },
+  "asset_loading_reconnect": "다시 현장으로 복귀 중...",
+  "@asset_loading_reconnect": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.0"
+  },
+  "asset_loading_reconnectBa5f": "작전에 재합류하는 중...",
+  "@asset_loading_reconnectBa5f": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.1"
+  },
+  "asset_loading_reconnect098b": "현장 복귀 준비 중...",
+  "@asset_loading_reconnect098b": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.2"
+  },
+  "asset_loading_reconnect429b": "무전 채널 복구 중...",
+  "@asset_loading_reconnect429b": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.3"
+  },
+  "asset_loading_reconnect6b88": "비밀 주파수 재탐색 중...",
+  "@asset_loading_reconnect6b88": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.4"
+  },
+  "asset_loading_reconnectB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_reconnectB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.5"
+  },
+  "asset_loading_reconnectAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_reconnectAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.6"
+  },
+  "asset_loading_reconnect25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_reconnect25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.7"
+  },
+  "asset_loading_bugReport": "신고서 작성 중...",
+  "@asset_loading_bugReport": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.0"
+  },
+  "asset_loading_bugReportDd4b": "본부에 보고서 제출 중...",
+  "@asset_loading_bugReportDd4b": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.1"
+  },
+  "asset_loading_bugReport5d70": "현장 사진 첨부 중...",
+  "@asset_loading_bugReport5d70": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.2"
+  },
+  "asset_loading_bugReport3c49": "사건 번호 부여 중...",
+  "@asset_loading_bugReport3c49": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.3"
+  },
+  "asset_loading_bugReport83ca": "수사반에 인계 중...",
+  "@asset_loading_bugReport83ca": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.4"
+  },
+  "asset_locationpermission_serviceDisabledTitle": "위치 서비스가 꺼져 있습니다",
+  "@asset_locationpermission_serviceDisabledTitle": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.title"
+  },
+  "asset_locationpermission_serviceDisabledHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요",
+  "@asset_locationpermission_serviceDisabledHome": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.home"
+  },
+  "asset_locationpermission_serviceDisabledGame": "게임에 복귀하려면 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
+  "@asset_locationpermission_serviceDisabledGame": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.game"
+  },
+  "asset_locationpermission_serviceDisabledWaitingRoom": "게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
+  "@asset_locationpermission_serviceDisabledWaitingRoom": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.waiting_room"
+  },
+  "asset_locationpermission_permissionDeniedTitle": "위치 권한이 필요합니다",
+  "@asset_locationpermission_permissionDeniedTitle": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.title"
+  },
+  "asset_locationpermission_permissionDeniedHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다",
+  "@asset_locationpermission_permissionDeniedHome": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.home"
+  },
+  "asset_locationpermission_permissionDeniedGame": "게임에 복귀하려면 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
+  "@asset_locationpermission_permissionDeniedGame": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.game"
+  },
+  "asset_locationpermission_permissionDeniedWaitingRoom": "게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
+  "@asset_locationpermission_permissionDeniedWaitingRoom": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.waiting_room"
+  },
+  "dialogsessionRepositoryImplMessage": "게임 방 생성 중 예기치 않은 오류가 발생했습니다",
+  "@dialogsessionRepositoryImplMessage": {
+    "description": "auto-imported from lib/features/session/data/repositories/session_repository_impl.dart:80"
+  },
+  "dialogsessionRepositoryImplMessageAddf": "참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다",
+  "@dialogsessionRepositoryImplMessageAddf": {
+    "description": "auto-imported from lib/features/session/data/repositories/session_repository_impl.dart:105"
+  },
+  "session_sessionSettings_L22": "{maxPlayers}명",
+  "@session_sessionSettings_L22": {
+    "description": "auto-imported from lib/features/session/domain/entities/session_settings.dart:22",
+    "placeholders": {
+      "maxPlayers": {
+        "type": "String"
+      }
+    }
+  },
+  "session_sessionSettings_L27": "{roundTimeMinutes}분",
+  "@session_sessionSettings_L27": {
+    "description": "auto-imported from lib/features/session/domain/entities/session_settings.dart:27",
+    "placeholders": {
+      "roundTimeMinutes": {
+        "type": "int"
+      }
+    }
+  },
+  "session_sessionSettings_L32": "{locationShareMinutes}분",
+  "@session_sessionSettings_L32": {
+    "description": "auto-imported from lib/features/session/domain/entities/session_settings.dart:32",
+    "placeholders": {
+      "locationShareMinutes": {
+        "type": "int"
+      }
+    }
+  },
+  "session_sessionSettings_L37": "도둑 도망 후 {policeStartDelayMinutes}분 뒤",
+  "@session_sessionSettings_L37": {
+    "description": "auto-imported from lib/features/session/domain/entities/session_settings.dart:37",
+    "placeholders": {
+      "policeStartDelayMinutes": {
+        "type": "int"
+      }
+    }
+  },
+  "session_zoneInfo_L25": "반경 {km}km",
+  "@session_zoneInfo_L25": {
+    "description": "auto-imported from lib/features/session/domain/entities/zone_info.dart:25",
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "session_zoneInfo_L27": "반경 {radiusMeters}m",
+  "@session_zoneInfo_L27": {
+    "description": "auto-imported from lib/features/session/domain/entities/zone_info.dart:27",
+    "placeholders": {
+      "radiusMeters": {
+        "type": "String"
+      }
+    }
+  },
+  "session_gameSettingsEditPage_L110": "설정 저장에 실패했습니다",
+  "@session_gameSettingsEditPage_L110": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_edit_page.dart:110"
+  },
+  "session_gameSettingsEditPage_L146": "설정 수정",
+  "@session_gameSettingsEditPage_L146": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_edit_page.dart:146"
+  },
+  "session_gameSettingsEditPage_L197": "저장 중...",
+  "@session_gameSettingsEditPage_L197": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_edit_page.dart:197"
+  },
+  "session_gameSettingsEditPage_L197_1": "저장",
+  "@session_gameSettingsEditPage_L197_1": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_edit_page.dart:197"
+  },
+  "session_gameSettingsPage_L140": "영역 저장에 실패했습니다",
+  "@session_gameSettingsPage_L140": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_page.dart:140"
+  },
+  "session_gameSettingsPage_L190": "게임 설정",
+  "@session_gameSettingsPage_L190": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_page.dart:190"
+  },
+  "session_gameSettingsPage_L210": "구역 정보를 불러올 수 없습니다",
+  "@session_gameSettingsPage_L210": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_page.dart:210"
+  },
+  "session_gameSettingsPage_L228": "설정 정보를 불러올 수 없습니다",
+  "@session_gameSettingsPage_L228": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_page.dart:228"
+  },
+  "session_gameSettingsPage_L270": "플레이그라운드",
+  "@session_gameSettingsPage_L270": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_page.dart:270"
+  },
+  "session_gameSettingsPage_L275": "감옥",
+  "@session_gameSettingsPage_L275": {
+    "description": "auto-imported from lib/features/session/presentation/pages/game_settings_page.dart:275"
+  },
+  "session_homePage_L108": "새로운 게임을 만들 수 있어요",
+  "@session_homePage_L108": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:108"
+  },
+  "session_homePage_L113": "초대 코드를 입력하면 게임에 참가할 수 있어요",
+  "@session_homePage_L113": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:113"
+  },
+  "dialoghomePageTitle": "주변을 확인하며 이용해 주세요",
+  "@dialoghomePageTitle": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:136"
+  },
+  "dialoghomePageMessage": "게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요",
+  "@dialoghomePageMessage": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:137"
+  },
+  "dialoghomePageConfirm": "확인했어요!",
+  "@dialoghomePageConfirm": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:138"
+  },
+  "session_homePage_L158": "오늘은 다시 보지 않기",
+  "@session_homePage_L158": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:158"
+  },
+  "dialoghomePageMessage50b3": "이미 참가 중인 게임이 있습니다",
+  "@dialoghomePageMessage50b3": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:250"
+  },
+  "dialoghomePageMessage89ff": "알 수 없는 게임 상태입니다",
+  "@dialoghomePageMessage89ff": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:241"
+  },
+  "dialoghomePageConfirm5435": "설정으로 이동",
+  "@dialoghomePageConfirm5435": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:334"
+  },
+  "dialoghomePageCancel": "취소",
+  "@dialoghomePageCancel": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:286"
+  },
+  "dialoghomePageTitleEeea": "끊김 없는 게임을 위해",
+  "@dialoghomePageTitleEeea": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:330"
+  },
+  "session_homePage_L332": "앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n",
+  "@session_homePage_L332": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:332"
+  },
+  "session_homePage_L333": "그래야 화면이 꺼져도 게임이 끊기지 않아요",
+  "@session_homePage_L333": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:333"
+  },
+  "session_homePage_L432": "참여에 실패했습니다. 초대 코드를 확인해주세요",
+  "@session_homePage_L432": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:432"
+  },
+  "dialoghomePageMessage8155": "참여에 실패했습니다. 다시 시도해주세요",
+  "@dialoghomePageMessage8155": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:445"
+  },
+  "dialoghomePageTitle879f": "방 참여하기",
+  "@dialoghomePageTitle879f": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:487"
+  },
+  "fieldhomePageHint": "참여코드를 입력하세요",
+  "@fieldhomePageHint": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:490"
+  },
+  "dialoghomePageTitle86c1": "초대코드 QR을 스캔하세요",
+  "@dialoghomePageTitle86c1": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:502"
+  },
+  "dialoghomePageCancel218e": "닫기",
+  "@dialoghomePageCancel218e": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:534"
+  },
+  "dialoghomePageConfirm665b": "참여하기",
+  "@dialoghomePageConfirm665b": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:535"
+  },
+  "session_homePage_L601": "경찰과도둑",
+  "@session_homePage_L601": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:601"
+  },
+  "dialoghomePageMessage9e36": "준비중입니다",
+  "@dialoghomePageMessage9e36": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:652"
+  },
+  "session_homePage_L661": "너무 기대 돼\n이번에는 어떤 역할을 할까?",
+  "@session_homePage_L661": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:661"
+  },
+  "session_homePage_L677": "방 만들기",
+  "@session_homePage_L677": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:677"
+  },
+  "session_homePage_L684": "방 참여하기",
+  "@session_homePage_L684": {
+    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:684"
+  },
+  "session_sessionCreationFlowPage_L160": "게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요",
+  "@session_sessionCreationFlowPage_L160": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:160"
+  },
+  "session_sessionCreationFlowPage_L167": "게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요",
+  "@session_sessionCreationFlowPage_L167": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:167"
+  },
+  "session_sessionCreationFlowPage_L374": "게임 방 생성에 실패했습니다. 다시 시도해주세요",
+  "@session_sessionCreationFlowPage_L374": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:374"
+  },
+  "dialogsessionCreationFlowPageMessage": "이미 참가 중인 게임이 있습니다",
+  "@dialogsessionCreationFlowPageMessage": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:401"
+  },
+  "dialogsessionCreationFlowPageMessage89ff": "알 수 없는 게임 상태입니다",
+  "@dialogsessionCreationFlowPageMessage89ff": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:423"
+  },
+  "session_sessionCreationFlowPage_L483": "구역 선택을 먼저 설정할까요?",
+  "@session_sessionCreationFlowPage_L483": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:483"
+  },
+  "session_sessionCreationFlowPage_L484": "인원을 설정해요",
+  "@session_sessionCreationFlowPage_L484": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:484"
+  },
+  "session_sessionCreationFlowPage_L485": "기본 정보를 설정해요",
+  "@session_sessionCreationFlowPage_L485": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:485"
+  },
+  "session_sessionCreationFlowPage_L486": "최종 설정을 확인해요",
+  "@session_sessionCreationFlowPage_L486": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:486"
+  },
+  "session_sessionCreationFlowPage_L491": "게임에 필요한 구역을 설정해요",
+  "@session_sessionCreationFlowPage_L491": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:491"
+  },
+  "session_sessionCreationFlowPage_L492": "최소 2명부터 게임 진행이 가능해요",
+  "@session_sessionCreationFlowPage_L492": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:492"
+  },
+  "session_sessionCreationFlowPage_L493": "게임을 진행할 때, 꼭 필요한 정보들이에요",
+  "@session_sessionCreationFlowPage_L493": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:493"
+  },
+  "session_sessionCreationFlowPage_L494": "방 생성 전 마지막으로 설정을 확인할까요?",
+  "@session_sessionCreationFlowPage_L494": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:494"
+  },
+  "session_sessionCreationFlowPage_L503": "다음",
+  "@session_sessionCreationFlowPage_L503": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:503"
+  },
+  "session_sessionCreationFlowPage_L505": "방 생성하기",
+  "@session_sessionCreationFlowPage_L505": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:505"
+  },
+  "session_sessionCreationFlowPage_L507": "다음",
+  "@session_sessionCreationFlowPage_L507": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:507"
+  },
+  "session_sessionCreationFlowPage_L660": "플레이그라운드",
+  "@session_sessionCreationFlowPage_L660": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:660"
+  },
+  "session_sessionCreationFlowPage_L665": "감옥",
+  "@session_sessionCreationFlowPage_L665": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:665"
+  },
+  "session_sessionCreationFlowPage_L676": "구역 정보를 먼저 설정해주세요",
+  "@session_sessionCreationFlowPage_L676": {
+    "description": "auto-imported from lib/features/session/presentation/pages/session_creation_flow_page.dart:676"
+  },
+  "session_setupPlaygroundPage_L135": "여기를 누르면 반경을 직접 입력할 수 있어요",
+  "@session_setupPlaygroundPage_L135": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_playground_page.dart:135"
+  },
+  "session_setupPlaygroundPage_L195": "플레이그라운드",
+  "@session_setupPlaygroundPage_L195": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_playground_page.dart:195"
+  },
+  "session_setupPlaygroundPage_L212": "플레이그라운드",
+  "@session_setupPlaygroundPage_L212": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_playground_page.dart:212"
+  },
+  "session_setupPlaygroundPage_L233": "게임이 진행될 전체 구역의 크기를 설정해요",
+  "@session_setupPlaygroundPage_L233": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_playground_page.dart:233"
+  },
+  "session_setupPlaygroundPage_L267": "완료",
+  "@session_setupPlaygroundPage_L267": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_playground_page.dart:267"
+  },
+  "session_setupPrisonPage_L210": "감옥",
+  "@session_setupPrisonPage_L210": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_prison_page.dart:210"
+  },
+  "session_setupPrisonPage_L227": "감옥",
+  "@session_setupPrisonPage_L227": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_prison_page.dart:227"
+  },
+  "session_setupPrisonPage_L248": "도둑을 잡아둘 감옥의 위치와 크기를 설정해요",
+  "@session_setupPrisonPage_L248": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_prison_page.dart:248"
+  },
+  "session_setupPrisonPage_L286": "플레이그라운드를 먼저 설정해주세요",
+  "@session_setupPrisonPage_L286": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_prison_page.dart:286"
+  },
+  "session_setupPrisonPage_L287": "감옥이 플레이그라운드 범위를 벗어났어요",
+  "@session_setupPrisonPage_L287": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_prison_page.dart:287"
+  },
+  "session_setupPrisonPage_L299": "완료",
+  "@session_setupPrisonPage_L299": {
+    "description": "auto-imported from lib/features/session/presentation/pages/setup_prison_page.dart:299"
+  },
+  "dialogwaitingRoomPageConfirm": "설정으로 이동",
+  "@dialogwaitingRoomPageConfirm": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:201"
+  },
+  "dialogwaitingRoomPageCancel": "나가기",
+  "@dialogwaitingRoomPageCancel": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:202"
+  },
+  "session_waitingRoomPage_L364": "포근포근곰...",
+  "@session_waitingRoomPage_L364": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:364"
+  },
+  "dialogwaitingRoomPageTitle": "방에 참여할 수 없어요",
+  "@dialogwaitingRoomPageTitle": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:544"
+  },
+  "session_waitingRoomPage_L545": "해당 게임에 참가하지 않은 사용자입니다",
+  "@session_waitingRoomPage_L545": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:545"
+  },
+  "dialogwaitingRoomPageConfirm3ce8": "확인",
+  "@dialogwaitingRoomPageConfirm3ce8": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:546"
+  },
+  "session_waitingRoomPage_L631": "이 버튼을 눌러 다른 팀으로 이동할 수 있어요",
+  "@session_waitingRoomPage_L631": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:631"
+  },
+  "session_waitingRoomPage_L637": "친구에게 초대 코드를 공유할 수 있어요",
+  "@session_waitingRoomPage_L637": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:637"
+  },
+  "session_waitingRoomPage_L642": "게임 설정을 확인할 수 있어요",
+  "@session_waitingRoomPage_L642": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:642"
+  },
+  "session_waitingRoomPage_L647": "준비가 되면 눌러주세요",
+  "@session_waitingRoomPage_L647": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:647"
+  },
+  "dialogwaitingRoomPageTitle1946": "인게임 화면 미리 보기",
+  "@dialogwaitingRoomPageTitle1946": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:679"
+  },
+  "dialogwaitingRoomPageMessage": "게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?",
+  "@dialogwaitingRoomPageMessage": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:680"
+  },
+  "dialogwaitingRoomPageConfirmA2d8": "보러 가기",
+  "@dialogwaitingRoomPageConfirmA2d8": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:681"
+  },
+  "dialogwaitingRoomPageTitleBc54": "{nickname}님을 내보낼까요?",
+  "@dialogwaitingRoomPageTitleBc54": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:772",
+    "placeholders": {
+      "nickname": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogwaitingRoomPageMessageB302": "강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요",
+  "@dialogwaitingRoomPageMessageB302": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:773"
+  },
+  "dialogwaitingRoomPageCancelD9de": "취소",
+  "@dialogwaitingRoomPageCancelD9de": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:774"
+  },
+  "dialogwaitingRoomPageConfirmC08c": "내보내기",
+  "@dialogwaitingRoomPageConfirmC08c": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:775"
+  },
+  "dialogwaitingRoomPageMessageE87b": "강퇴 처리 중 오류가 발생했어요",
+  "@dialogwaitingRoomPageMessageE87b": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:804"
+  },
+  "dialogwaitingRoomPageTitle8208": "방에서 내보내졌어요",
+  "@dialogwaitingRoomPageTitle8208": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:932"
+  },
+  "dialogwaitingRoomPageMessage64a2": "다시 참가하려면 초대코드를 입력해야 해요",
+  "@dialogwaitingRoomPageMessage64a2": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:933"
+  },
+  "dialogwaitingRoomPageMessage36a5": "{kickedNickname}님이 내보내졌어요",
+  "@dialogwaitingRoomPageMessage36a5": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:942",
+    "placeholders": {
+      "kickedNickname": {
+        "type": "String"
+      }
+    }
+  },
+  "session_waitingRoomPage_L1030": "팀 변경에 실패했어요",
+  "@session_waitingRoomPage_L1030": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1030"
+  },
+  "session_waitingRoomPage_L1062": "준비 상태 변경에 실패했어요",
+  "@session_waitingRoomPage_L1062": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1062"
+  },
+  "session_waitingRoomPage_L1099": "게임 시작에 실패했어요",
+  "@session_waitingRoomPage_L1099": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1099"
+  },
+  "dialogwaitingRoomPageTitleFfec": "방을 나가시겠어요?",
+  "@dialogwaitingRoomPageTitleFfec": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1110"
+  },
+  "dialogwaitingRoomPageMessage3930": "나가면 다시 초대코드를 입력해야 해요",
+  "@dialogwaitingRoomPageMessage3930": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1111"
+  },
+  "dialogwaitingRoomPageConfirmC0a3": "나가기",
+  "@dialogwaitingRoomPageConfirmC0a3": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1112"
+  },
+  "session_waitingRoomPage_L1130": "퇴장 처리 중 오류가 발생했습니다",
+  "@session_waitingRoomPage_L1130": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1130"
+  },
+  "dialogwaitingRoomPageTitleA5bb": "초대코드를 생성했어요",
+  "@dialogwaitingRoomPageTitleA5bb": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1176"
+  },
+  "dialogwaitingRoomPageMessage06a6": "친구에게 코드를 공유하고 게임에 참여해 보세요!",
+  "@dialogwaitingRoomPageMessage06a6": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1177"
+  },
+  "dialogwaitingRoomPageMessage4785": "코드가 복사되었습니다",
+  "@dialogwaitingRoomPageMessage4785": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1200"
+  },
+  "dialogwaitingRoomPageCancel218e": "닫기",
+  "@dialogwaitingRoomPageCancel218e": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1234"
+  },
+  "dialogwaitingRoomPageConfirm27f8": "공유하기",
+  "@dialogwaitingRoomPageConfirm27f8": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1235"
+  },
+  "session_waitingRoomPage_L1511": "게임 시작",
+  "@session_waitingRoomPage_L1511": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1511"
+  },
+  "session_waitingRoomPage_L1526": "준비 완료",
+  "@session_waitingRoomPage_L1526": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1526"
+  },
+  "session_waitingRoomPage_L1537": "준비",
+  "@session_waitingRoomPage_L1537": {
+    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1537"
+  },
+  "session_zonePreviewPage_L122": "게임 구역",
+  "@session_zonePreviewPage_L122": {
+    "description": "auto-imported from lib/features/session/presentation/pages/zone_preview_page.dart:122"
+  },
+  "session_zonePreviewPage_L145": "현재 설정된 게임 구역이에요",
+  "@session_zonePreviewPage_L145": {
+    "description": "auto-imported from lib/features/session/presentation/pages/zone_preview_page.dart:145"
+  },
+  "session_waitingRoomParticipantsProvider_L81": "포근포근곰...",
+  "@session_waitingRoomParticipantsProvider_L81": {
+    "description": "auto-imported from lib/features/session/presentation/providers/waiting_room_participants_provider.dart:81"
+  },
+  "session_waitingRoomParticipantsProvider_L87": "오동통 너구리",
+  "@session_waitingRoomParticipantsProvider_L87": {
+    "description": "auto-imported from lib/features/session/presentation/providers/waiting_room_participants_provider.dart:87"
+  },
+  "session_waitingRoomParticipantsProvider_L93": "닉네임",
+  "@session_waitingRoomParticipantsProvider_L93": {
+    "description": "auto-imported from lib/features/session/presentation/providers/waiting_room_participants_provider.dart:93"
+  },
+  "session_waitingRoomParticipantsProvider_L99": "닉네임",
+  "@session_waitingRoomParticipantsProvider_L99": {
+    "description": "auto-imported from lib/features/session/presentation/providers/waiting_room_participants_provider.dart:99"
+  },
+  "dialoggameRulesContentTitle": "게임 규칙",
+  "@dialoggameRulesContentTitle": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:38"
+  },
+  "dialoggameRulesContentCancel": "확인",
+  "@dialoggameRulesContentCancel": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:49"
+  },
+  "dialoggameRulesContentConfirm": "인게임 보기",
+  "@dialoggameRulesContentConfirm": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:50"
+  },
+  "session_gameRulesContent_L95": "경찰은 모든 도둑을 잡아서",
+  "@session_gameRulesContent_L95": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:95"
+  },
+  "session_gameRulesContent_L96": "체포하면,",
+  "@session_gameRulesContent_L96": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:96"
+  },
+  "session_gameRulesContent_L97": "\n도둑은",
+  "@session_gameRulesContent_L97": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:97"
+  },
+  "session_gameRulesContent_L98": "제한 시간이 끝날 때까지 버티면",
+  "@session_gameRulesContent_L98": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:98"
+  },
+  "session_gameRulesContent_L99": "승리해요",
+  "@session_gameRulesContent_L99": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:99"
+  },
+  "session_gameRulesContent_L108": "도둑팀의 위치는",
+  "@session_gameRulesContent_L108": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:108"
+  },
+  "session_gameRulesContent_L109": "{minutes}분마다",
+  "@session_gameRulesContent_L109": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:109",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "session_gameRulesContent_L110": "경찰팀에게 공유돼요",
+  "@session_gameRulesContent_L110": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:110"
+  },
+  "session_gameRulesContent_L118": "지정된 게임 구역에서 벗어나면 안 돼요",
+  "@session_gameRulesContent_L118": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:118"
+  },
+  "session_gameRulesContent_L119": "\n→ 구역 밖으로 나가면 화면이 잠겨요",
+  "@session_gameRulesContent_L119": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/game_rules_content.dart:119"
+  },
+  "dialogsessionCodeCardMessage": "코드가 복사되었습니다",
+  "@dialogsessionCodeCardMessage": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_code_card.dart:42"
+  },
+  "dialogstep0SelectAreaContentTitle": "플레이그라운드",
+  "@dialogstep0SelectAreaContentTitle": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:97"
+  },
+  "dialogstep0SelectAreaContentTitle5bc0": "감옥",
+  "@dialogstep0SelectAreaContentTitle5bc0": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:108"
+  },
+  "fieldstep1ParticipantSettingsContentLabel": "최대 참가자",
+  "@fieldstep1ParticipantSettingsContentLabel": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_1_participant_settings_content.dart:48"
+  },
+  "session_step1ParticipantSettingsContent_L52": "명",
+  "@session_step1ParticipantSettingsContent_L52": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_1_participant_settings_content.dart:52"
+  },
+  "fieldstep2GameSettingsContentLabel": "라운드 제한 시간",
+  "@fieldstep2GameSettingsContentLabel": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:75"
+  },
+  "session_step2GameSettingsContent_L79": "분",
+  "@session_step2GameSettingsContent_L79": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:79"
+  },
+  "fieldstep2GameSettingsContentLabel5ab2": "도둑 위치 공유 간격",
+  "@fieldstep2GameSettingsContentLabel5ab2": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:92"
+  },
+  "session_step2GameSettingsContent_L97": "분",
+  "@session_step2GameSettingsContent_L97": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:97"
+  },
+  "session_step2GameSettingsContent_L104": "도둑의 위치가 공유되지 않아요!",
+  "@session_step2GameSettingsContent_L104": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:104"
+  },
+  "fieldstep2GameSettingsContentLabelCe3b": "경찰 출동 시간",
+  "@fieldstep2GameSettingsContentLabelCe3b": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:111"
+  },
+  "session_step2GameSettingsContent_L115": "분",
+  "@session_step2GameSettingsContent_L115": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:115"
+  },
+  "session_step2GameSettingsContent_L117": "도둑 도망 후",
+  "@session_step2GameSettingsContent_L117": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:117"
+  },
+  "session_step2GameSettingsContent_L118": "뒤",
+  "@session_step2GameSettingsContent_L118": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:118"
+  },
+  "session_sessionStepLayout_L42": "다음",
+  "@session_sessionStepLayout_L42": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_step_layout.dart:42"
+  },
+  "dialogsettingListCardTitle": "설정",
+  "@dialogsettingListCardTitle": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:52"
+  },
+  "fieldsettingListCardLabel": "참여 인원",
+  "@fieldsettingListCardLabel": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:79"
+  },
+  "fieldsettingListCardLabelEc5e": "라운드 제한 시간",
+  "@fieldsettingListCardLabelEc5e": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:85"
+  },
+  "fieldsettingListCardLabelA1b3": "위치 공유 간격",
+  "@fieldsettingListCardLabelA1b3": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:91"
+  },
+  "fieldsettingListCardLabelCe3b": "경찰 출동 시간",
+  "@fieldsettingListCardLabelCe3b": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:97"
+  },
+  "session_teamSection_L116": "경찰팀",
+  "@session_teamSection_L116": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/team_section.dart:116"
+  },
+  "session_teamSection_L116_1": "도둑팀",
+  "@session_teamSection_L116_1": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/team_section.dart:116"
+  },
+  "session_teamSection_L178": "현재 {length}명",
+  "@session_teamSection_L178": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/team_section.dart:178",
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "dialogzoneListCardTitle": "구역",
+  "@dialogzoneListCardTitle": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/zone_list_card.dart:51"
+  },
+  "dialogauthRepositoryImplMessage": "로그인 중 오류가 발생했습니다",
+  "@dialogauthRepositoryImplMessage": {
+    "description": "auto-imported from lib/features/auth/data/repositories/auth_repository_impl.dart:136"
+  },
+  "dialogauthRepositoryImplMessage993d": "로그아웃 중 오류가 발생했습니다",
+  "@dialogauthRepositoryImplMessage993d": {
+    "description": "auto-imported from lib/features/auth/data/repositories/auth_repository_impl.dart:180"
+  },
+  "auth_firebaseAuthErrorHandler_L31": "로그인 정보를 가져올 수 없습니다. 다시 시도해주세요",
+  "@auth_firebaseAuthErrorHandler_L31": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:31"
+  },
+  "auth_firebaseAuthErrorHandler_L33": "인증 토큰 발급에 실패했습니다. 다시 시도해주세요",
+  "@auth_firebaseAuthErrorHandler_L33": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:33"
+  },
+  "auth_firebaseAuthErrorHandler_L35": "Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요",
+  "@auth_firebaseAuthErrorHandler_L35": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:35"
+  },
+  "auth_firebaseAuthErrorHandler_L37": "로그인이 취소되었습니다",
+  "@auth_firebaseAuthErrorHandler_L37": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:37"
+  },
+  "auth_firebaseAuthErrorHandler_L39": "네트워크 연결을 확인해주세요",
+  "@auth_firebaseAuthErrorHandler_L39": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:39"
+  },
+  "auth_firebaseAuthErrorHandler_L41": "잘못된 인증 정보입니다",
+  "@auth_firebaseAuthErrorHandler_L41": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:41"
+  },
+  "auth_firebaseAuthErrorHandler_L43": "비활성화된 계정입니다",
+  "@auth_firebaseAuthErrorHandler_L43": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:43"
+  },
+  "auth_firebaseAuthErrorHandler_L45": "너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요",
+  "@auth_firebaseAuthErrorHandler_L45": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:45"
+  },
+  "auth_firebaseAuthErrorHandler_L47": "이 로그인 방법은 현재 사용할 수 없습니다",
+  "@auth_firebaseAuthErrorHandler_L47": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:47"
+  },
+  "auth_firebaseAuthErrorHandler_L49": "Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요",
+  "@auth_firebaseAuthErrorHandler_L49": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:49"
+  },
+  "auth_firebaseAuthErrorHandler_L51": "Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
+  "@auth_firebaseAuthErrorHandler_L51": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:51"
+  },
+  "auth_firebaseAuthErrorHandler_L55": "{provider} 로그인에 실패했습니다. 다시 시도해주세요",
+  "@auth_firebaseAuthErrorHandler_L55": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:55",
+    "placeholders": {
+      "provider": {
+        "type": "int"
+      }
+    }
+  },
+  "auth_firebaseAuthErrorHandler_L57": "로그인에 실패했습니다. 다시 시도해주세요",
+  "@auth_firebaseAuthErrorHandler_L57": {
+    "description": "auto-imported from lib/features/auth/domain/utils/firebase_auth_error_handler.dart:57"
+  },
+  "dialogagreementPageTitle": "이용약관",
+  "@dialogagreementPageTitle": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:57"
+  },
+  "dialogagreementPageTitleBe29": "개인정보 처리방침",
+  "@dialogagreementPageTitleBe29": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:73"
+  },
+  "dialogagreementPageTitle6dcc": "위치정보 이용약관",
+  "@dialogagreementPageTitle6dcc": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:85"
+  },
+  "dialogagreementPageTitle76b8": "마케팅 정보 수신",
+  "@dialogagreementPageTitle76b8": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:97"
+  },
+  "auth_agreementPage_L107": "동의하고 시작하기",
+  "@auth_agreementPage_L107": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:107"
+  },
+  "auth_agreementPage_L127": "서비스 이용을 위해\n약관에 동의해주세요",
+  "@auth_agreementPage_L127": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:127"
+  },
+  "auth_agreementPage_L135": "필수 약관에 모두 동의해야 서비스를 이용하실 수 있어요",
+  "@auth_agreementPage_L135": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:135"
+  },
+  "dialogagreementPageMessage": "아직 네트워크에 연결되지 않았어요",
+  "@dialogagreementPageMessage": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:173"
+  },
+  "dialogagreementPageMessage24a8": "필수 약관에 모두 동의해주세요",
+  "@dialogagreementPageMessage24a8": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:179"
+  },
+  "auth_agreementPage_L184": "일시적인 오류가 발생했습니다. 다시 시도해주세요",
+  "@auth_agreementPage_L184": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:184"
+  },
+  "dialogloginPageTitle": "개인정보 처리방침",
+  "@dialogloginPageTitle": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:64"
+  },
+  "dialogloginPageTitle2aa8": "이용약관",
+  "@dialogloginPageTitle2aa8": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:74"
+  },
+  "dialogloginPageTitle6dcc": "위치정보 이용약관",
+  "@dialogloginPageTitle6dcc": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:84"
+  },
+  "dialogloginPageMessage": "회원탈퇴가 완료되었습니다",
+  "@dialogloginPageMessage": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:107"
+  },
+  "dialogloginPageTitleA40f": "만 14세 이상이신가요?",
+  "@dialogloginPageTitleA40f": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:127"
+  },
+  "dialogloginPageMessageBa5d": "경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요",
+  "@dialogloginPageMessageBa5d": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:128"
+  },
+  "dialogloginPageConfirm": "네",
+  "@dialogloginPageConfirm": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:129"
+  },
+  "dialogloginPageCancel": "아니요",
+  "@dialogloginPageCancel": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:130"
+  },
+  "dialogloginPageMessageFe9d": "로그인이 취소되었습니다",
+  "@dialogloginPageMessageFe9d": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:188"
+  },
+  "auth_loginPage_L166": "로그인 중 오류가 발생했습니다",
+  "@auth_loginPage_L166": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:166"
+  },
+  "auth_loginPage_L191": "Apple 로그인 중 오류가 발생했습니다",
+  "@auth_loginPage_L191": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:191"
+  },
+  "auth_loginPage_L260": "만 14세 미만은 서비스를 이용할 수 없습니다",
+  "@auth_loginPage_L260": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:260"
+  },
+  "auth_loginPage_L284": "로그인 시",
+  "@auth_loginPage_L284": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:284"
+  },
+  "auth_loginPage_L286": "개인정보 처리방침",
+  "@auth_loginPage_L286": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:286"
+  },
+  "auth_loginPage_L295": "이용약관",
+  "@auth_loginPage_L295": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:295"
+  },
+  "auth_loginPage_L304": "위치정보 이용약관",
+  "@auth_loginPage_L304": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:304"
+  },
+  "auth_loginPage_L311": "에 동의합니다",
+  "@auth_loginPage_L311": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:311"
+  },
+  "dialognicknameSetupPageMessage": "닉네임이 저장되었어요",
+  "@dialognicknameSetupPageMessage": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:190"
+  },
+  "auth_nicknameSetupPage_L248": "닉네임을 설정해요",
+  "@auth_nicknameSetupPage_L248": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:248"
+  },
+  "auth_nicknameSetupPage_L257": "서비스 내에서 계속 사용될 닉네임이에요\n1~10글자로 생성할 수 있어요",
+  "@auth_nicknameSetupPage_L257": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:257"
+  },
+  "auth_nicknameSetupPage_L281": "확인",
+  "@auth_nicknameSetupPage_L281": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:281"
+  },
+  "auth_nicknameSetupPage_L308": "닉네임을 입력하세요",
+  "@auth_nicknameSetupPage_L308": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:308"
+  },
+  "auth_nicknameSetupPage_L336": "중복 확인",
+  "@auth_nicknameSetupPage_L336": {
+    "description": "auto-imported from lib/features/auth/presentation/widgets/nickname_setup_page.dart:336"
+  },
+  "auth_nicknameSetupPage_L354": "1글자 미만의 닉네임은 사용할 수 없어요",
+  "@auth_nicknameSetupPage_L354": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:354"
+  },
+  "auth_nicknameSetupPage_L359": "중복된 닉네임이에요. 다른 닉네임을 입력하세요",
+  "@auth_nicknameSetupPage_L359": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:359"
+  },
+  "auth_nicknameSetupPage_L364": "사용 가능한 닉네임이에요",
+  "@auth_nicknameSetupPage_L364": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:364"
+  },
+  "auth_nicknameSetupPage_L369": "오류가 발생했어요. 다시 시도해주세요",
+  "@auth_nicknameSetupPage_L369": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/nickname_setup_page.dart:369"
+  },
+  "auth_splashPage_L48": "다시 현장으로 복귀 중...",
+  "@auth_splashPage_L48": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:48"
+  },
+  "auth_splashPage_L208": "다시 현장으로 복귀 중...",
+  "@auth_splashPage_L208": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:208"
+  },
+  "dialogsplashPageMessage": "아직 네트워크에 연결되지 않았어요",
+  "@dialogsplashPageMessage": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:329"
+  },
+  "dialogsplashPageTitle": "네트워크 연결 실패",
+  "@dialogsplashPageTitle": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:350"
+  },
+  "dialogsplashPageMessage665f": "인터넷 연결을 확인한 후\n다시 시도해주세요",
+  "@dialogsplashPageMessage665f": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:351"
+  },
+  "dialogsplashPageConfirm": "재시도",
+  "@dialogsplashPageConfirm": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:352"
+  },
+  "auth_splashPage_L395": "잠시만 기다려주세요",
+  "@auth_splashPage_L395": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:395"
+  },
+  "auth_splashPage_L412": "by 동심지키미",
+  "@auth_splashPage_L412": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:412"
+  },
+  "auth_splashPage_L444": "인터넷 연결이 필요합니다",
+  "@auth_splashPage_L444": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:444"
+  },
+  "auth_splashPage_L450": "연결 상태를 확인한 후\n다시 시도해주세요",
+  "@auth_splashPage_L450": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:450"
+  },
+  "auth_splashPage_L461": "다시 시도",
+  "@auth_splashPage_L461": {
+    "description": "auto-imported from lib/features/auth/presentation/pages/splash_page.dart:461"
+  },
+  "dialogagreementProviderMessage": "일시적인 오류가 발생했습니다. 다시 시도해주세요",
+  "@dialogagreementProviderMessage": {
+    "description": "auto-imported from lib/features/auth/presentation/providers/agreement_provider.dart:129"
+  },
+  "auth_authProvider_L129": "사유: {message}",
+  "@auth_authProvider_L129": {
+    "description": "auto-imported from lib/features/auth/presentation/providers/auth_provider.dart:129",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogauthProviderMessage": "알 수 없는 오류가 발생했습니다",
+  "@dialogauthProviderMessage": {
+    "description": "auto-imported from lib/features/auth/presentation/providers/auth_provider.dart:260"
+  },
+  "dialogauthProviderMessage222f": "로그아웃에 실패했습니다",
+  "@dialogauthProviderMessage222f": {
+    "description": "auto-imported from lib/features/auth/presentation/providers/auth_provider.dart:319"
+  },
+  "auth_agreementAllCheckbox_L35": "전체 동의",
+  "@auth_agreementAllCheckbox_L35": {
+    "description": "auto-imported from lib/features/auth/presentation/widgets/agreement_all_checkbox.dart:35"
+  },
+  "auth_agreementItem_L39": "[필수]",
+  "@auth_agreementItem_L39": {
+    "description": "auto-imported from lib/features/auth/presentation/widgets/agreement_item.dart:39"
+  },
+  "auth_agreementItem_L39_1": "[선택]",
+  "@auth_agreementItem_L39_1": {
+    "description": "auto-imported from lib/features/auth/presentation/widgets/agreement_item.dart:39"
+  },
+  "dialoggamePageConfirm": "설정으로 이동",
+  "@dialoggamePageConfirm": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:245"
+  },
+  "game_gamePage_L379": "도둑이 도망치는 중이에요!",
+  "@game_gamePage_L379": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:379"
+  },
+  "game_gamePage_L1026": "게임 종료!",
+  "@game_gamePage_L1026": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1026"
+  },
+  "game_gamePage_L1034": "도둑이 모두 체포되었습니다!",
+  "@game_gamePage_L1034": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1034"
+  },
+  "game_gamePage_L1034_1": "제한 시간이 종료되었습니다!",
+  "@game_gamePage_L1034_1": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1034"
+  },
+  "game_gamePage_L1086": "경찰팀",
+  "@game_gamePage_L1086": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1086"
+  },
+  "game_gamePage_L1086_1": "도둑팀",
+  "@game_gamePage_L1086_1": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1086"
+  },
+  "game_gamePage_L1090": "승리",
+  "@game_gamePage_L1090": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1090"
+  },
+  "game_gamePage_L1090_1": "패배",
+  "@game_gamePage_L1090_1": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1090"
+  },
+  "dialoggamePageMessage": "{winnerTeamLabel}의 승리입니다!",
+  "@dialoggamePageMessage": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1091",
+    "placeholders": {
+      "winnerTeamLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "dialoggamePageCancel": "홈으로",
+  "@dialoggamePageCancel": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1101"
+  },
+  "dialoggamePageConfirm5863": "한 번 더",
+  "@dialoggamePageConfirm5863": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1102"
+  },
+  "game_gamePage_L1289": "경찰",
+  "@game_gamePage_L1289": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1289"
+  },
+  "game_gamePage_L1290": "도둑",
+  "@game_gamePage_L1290": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1290"
+  },
+  "dialoggamePageMessage5e97": "경찰 대기 시간 중에는 도둑을 체포할 수 없습니다",
+  "@dialoggamePageMessage5e97": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1723"
+  },
+  "dialoggamePageTitle": "도둑의 수배 QR을 스캔하세요",
+  "@dialoggamePageTitle": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1732"
+  },
+  "dialoggamePageMessage6487": "만료된 QR입니다. QR 새로고침을 요청하세요",
+  "@dialoggamePageMessage6487": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1741"
+  },
+  "dialoggamePageMessage4b5f": "이미 체포된 도둑입니다",
+  "@dialoggamePageMessage4b5f": {
+    "description": "auto-imported from lib/features/game/presentation/pages/game_page.dart:1756"
+  },
+  "game_gameEventProvider_L337": "인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다",
+  "@game_gameEventProvider_L337": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:337"
+  },
+  "game_gameEventProvider_L452": "체포 요청 실패",
+  "@game_gameEventProvider_L452": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:452"
+  },
+  "game_gameEventProvider_L492": "탈옥 요청 실패",
+  "@game_gameEventProvider_L492": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:492"
+  },
+  "game_gameEventProvider_L520": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "@game_gameEventProvider_L520": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:520"
+  },
+  "game_gameEventProvider_L702": "경찰",
+  "@game_gameEventProvider_L702": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:702"
+  },
+  "game_gameEventProvider_L703": "도둑",
+  "@game_gameEventProvider_L703": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:703"
+  },
+  "game_gameEventProvider_L866": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "@game_gameEventProvider_L866": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:866"
+  },
+  "game_gameEventProvider_L937": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "@game_gameEventProvider_L937": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:937"
+  },
+  "game_gameEventProvider_L951": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "@game_gameEventProvider_L951": {
+    "description": "auto-imported from lib/features/game/presentation/providers/game_event_provider.dart:951"
+  },
+  "game_arrestLockOverlay_L71": "체포되었어요!",
+  "@game_arrestLockOverlay_L71": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/arrest_lock_overlay.dart:71"
+  },
+  "game_arrestLockOverlay_L78": "체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!",
+  "@game_arrestLockOverlay_L78": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/arrest_lock_overlay.dart:78"
+  },
+  "game_arrestLockOverlay_L89": "탈옥 완료",
+  "@game_arrestLockOverlay_L89": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/arrest_lock_overlay.dart:89"
+  },
+  "dialogarrestLockOverlayTitle": "탈옥",
+  "@dialogarrestLockOverlayTitle": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/arrest_lock_overlay.dart:100"
+  },
+  "dialogarrestLockOverlayMessage": "탈옥하시겠습니까?",
+  "@dialogarrestLockOverlayMessage": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/arrest_lock_overlay.dart:101"
+  },
+  "game_arrestLockOverlay_L102": "탈옥",
+  "@game_arrestLockOverlay_L102": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/arrest_lock_overlay.dart:102"
+  },
+  "game_gameActionModal_L63": "아니요",
+  "@game_gameActionModal_L63": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_action_modal.dart:63"
+  },
+  "game_gameActionModal_L63_1": "취소",
+  "@game_gameActionModal_L63_1": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_action_modal.dart:63"
+  },
+  "game_gameOverResultDialog_L324": "승리",
+  "@game_gameOverResultDialog_L324": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:324"
+  },
+  "game_gameOverResultDialog_L324_1": "패배",
+  "@game_gameOverResultDialog_L324_1": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:324"
+  },
+  "fieldgameOverResultDialogLabel": "체포 횟수",
+  "@fieldgameOverResultDialogLabel": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:344"
+  },
+  "game_gameOverResultDialog_L345": "{totalArrestCount}회",
+  "@game_gameOverResultDialog_L345": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:345",
+    "placeholders": {
+      "totalArrestCount": {
+        "type": "int"
+      }
+    }
+  },
+  "fieldgameOverResultDialogLabelD8df": "남은 도둑",
+  "@fieldgameOverResultDialogLabelD8df": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:371"
+  },
+  "game_gameOverResultDialog_L351": "{remainingRobberCount}명",
+  "@game_gameOverResultDialog_L351": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:351",
+    "placeholders": {
+      "remainingRobberCount": {
+        "type": "int"
+      }
+    }
+  },
+  "fieldgameOverResultDialogLabelAb0c": "게임 진행 시간",
+  "@fieldgameOverResultDialogLabelAb0c": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:373"
+  },
+  "game_gameOverResultDialog_L438": "홈으로",
+  "@game_gameOverResultDialog_L438": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:438"
+  },
+  "game_gameOverResultDialog_L452": "한 번 더",
+  "@game_gameOverResultDialog_L452": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:452"
+  },
+  "game_locationRevealCountdown_L109": "다음 도둑 위치 공개까지 {_formatted}",
+  "@game_locationRevealCountdown_L109": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/location_reveal_countdown.dart:109",
+    "placeholders": {
+      "_formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogparticipantOverlayMessage": "경찰 대기 시간 중에는 도둑을 체포할 수 없습니다",
+  "@dialogparticipantOverlayMessage": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:119"
+  },
+  "dialogparticipantOverlayTitle": "해당 플레이어를 체포하셨나요?",
+  "@dialogparticipantOverlayTitle": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:137"
+  },
+  "game_participantOverlay_L139": "네",
+  "@game_participantOverlay_L139": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:139"
+  },
+  "dialogparticipantOverlayTitle4167": "탈옥",
+  "@dialogparticipantOverlayTitle4167": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:164"
+  },
+  "dialogparticipantOverlayMessage9497": "탈옥을 시도하시겠습니까?",
+  "@dialogparticipantOverlayMessage9497": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:165"
+  },
+  "game_participantOverlay_L166": "탈옥",
+  "@game_participantOverlay_L166": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:166"
+  },
+  "game_participantOverlay_L297": "현재",
+  "@game_participantOverlay_L297": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:297"
+  },
+  "game_participantOverlay_L299": "{count}명",
+  "@game_participantOverlay_L299": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:299",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "game_participantOverlay_L305": "도주 중!",
+  "@game_participantOverlay_L305": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/participant_overlay.dart:305"
+  },
+  "game_policeStartCountdown_L79": "경찰 시작까지 {_formatted}",
+  "@game_policeStartCountdown_L79": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/police_start_countdown.dart:79",
+    "placeholders": {
+      "_formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "game_qrDisplayDialog_L62": "수배 QR",
+  "@game_qrDisplayDialog_L62": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/qr_display_dialog.dart:62"
+  },
+  "game_qrDisplayDialog_L86": "경찰에게 QR을 보여주세요",
+  "@game_qrDisplayDialog_L86": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/qr_display_dialog.dart:86"
+  },
+  "game_qrDisplayDialog_L97": "닫기",
+  "@game_qrDisplayDialog_L97": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/qr_display_dialog.dart:97"
+  },
+  "dialogqrScannerPageTitle": "카메라 권한 필요",
+  "@dialogqrScannerPageTitle": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:60"
+  },
+  "dialogqrScannerPageMessage": "QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요",
+  "@dialogqrScannerPageMessage": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:61"
+  },
+  "dialogqrScannerPageConfirm": "설정으로 이동",
+  "@dialogqrScannerPageConfirm": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:62"
+  },
+  "dialogqrScannerPageCancel": "닫기",
+  "@dialogqrScannerPageCancel": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:63"
+  },
+  "game_qrScannerPage_L90": "카메라를 사용할 수 없습니다",
+  "@game_qrScannerPage_L90": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/qr_scanner_page.dart:90"
+  },
+  "game_zoneExitBanner_L66": "플레이그라운드를 벗어났어요",
+  "@game_zoneExitBanner_L66": {
+    "description": "auto-imported from lib/features/game/presentation/widgets/zone_exit_banner.dart:66"
+  },
+  "chat_chatProvider_L190": "인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다",
+  "@chat_chatProvider_L190": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:190"
+  },
+  "chat_chatProvider_L254": "나",
+  "@chat_chatProvider_L254": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:254"
+  },
+  "dialogchatProviderMessage": "[팀]",
+  "@dialogchatProviderMessage": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:262"
+  },
+  "chat_chatProvider_L265": "팀원닉네임",
+  "@chat_chatProvider_L265": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:265"
+  },
+  "chat_chatProvider_L265_1": "상대닉네임",
+  "@chat_chatProvider_L265_1": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:265"
+  },
+  "chat_chatProvider_L286": "시스템",
+  "@chat_chatProvider_L286": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:286"
+  },
+  "dialogchatProviderMessageDfca": "제한 시간은 30분입니다",
+  "@dialogchatProviderMessageDfca": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:378"
+  },
+  "chat_chatProvider_L381": "시스템",
+  "@chat_chatProvider_L381": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:381"
+  },
+  "dialogchatProviderMessage2119": "게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!",
+  "@dialogchatProviderMessage2119": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:385"
+  },
+  "chat_chatProvider_L388": "시스템",
+  "@chat_chatProvider_L388": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:388"
+  },
+  "dialogchatProviderMessageC357": "도둑 잘 도망쳐 봐요~",
+  "@dialogchatProviderMessageC357": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:392"
+  },
+  "chat_chatProvider_L395": "닉네임",
+  "@chat_chatProvider_L395": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:395"
+  },
+  "dialogchatProviderMessageEa9a": "이겨봅시다!",
+  "@dialogchatProviderMessageEa9a": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:399"
+  },
+  "chat_chatProvider_L402": "닉네임",
+  "@chat_chatProvider_L402": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:402"
+  },
+  "chat_chatProvider_L564": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "@chat_chatProvider_L564": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:564"
+  },
+  "chat_chatProvider_L655": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "@chat_chatProvider_L655": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:655"
+  },
+  "chat_chatProvider_L676": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "@chat_chatProvider_L676": {
+    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:676"
+  },
+  "dialogchatContextMenuMessage": "메시지가 복사되었어요",
+  "@dialogchatContextMenuMessage": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:106"
+  },
+  "dialogchatContextMenuMessage2c60": "해당 유저를 차단했어요",
+  "@dialogchatContextMenuMessage2c60": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:121"
+  },
+  "dialogchatContextMenuTitle": "신고하기",
+  "@dialogchatContextMenuTitle": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:137"
+  },
+  "fieldchatContextMenuLabel": "신고 내용",
+  "@fieldchatContextMenuLabel": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:138"
+  },
+  "fieldchatContextMenuHint": "신고 사유를 자세히 작성해 주세요\n(상황 또는 대화 내용을 포함해 주세요)",
+  "@fieldchatContextMenuHint": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:139"
+  },
+  "chat_chatContextMenu_L140": "신고하기",
+  "@chat_chatContextMenu_L140": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:140"
+  },
+  "dialogchatContextMenuMessageDf78": "신고가 접수되었어요",
+  "@dialogchatContextMenuMessageDf78": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:220"
+  },
+  "dialogchatContextMenuMessage9d41": "신고에 실패했어요",
+  "@dialogchatContextMenuMessage9d41": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:227"
+  },
+  "dialogchatContextMenuTitle5ccb": "해당 유저를 신고할까요?",
+  "@dialogchatContextMenuTitle5ccb": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:178"
+  },
+  "dialogchatContextMenuCancel": "취소",
+  "@dialogchatContextMenuCancel": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:179"
+  },
+  "dialogchatContextMenuConfirm": "신고하기",
+  "@dialogchatContextMenuConfirm": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:180"
+  },
+  "chat_chatContextMenu_L190": "선택한 신고 사유:",
+  "@chat_chatContextMenu_L190": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:190"
+  },
+  "chat_chatContextMenu_L202": "\n신고된 내용은 검토 후 조치할게요",
+  "@chat_chatContextMenu_L202": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:202"
+  },
+  "fieldchatContextMenuLabelA83e": "복사하기",
+  "@fieldchatContextMenuLabelA83e": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:422"
+  },
+  "fieldchatContextMenuLabel7812": "신고하기",
+  "@fieldchatContextMenuLabel7812": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:432"
+  },
+  "fieldchatContextMenuLabel2f14": "차단하기",
+  "@fieldchatContextMenuLabel2f14": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:441"
+  },
+  "chat_chatContextMenu_L478": "신고 유형 선택",
+  "@chat_chatContextMenu_L478": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:478"
+  },
+  "chat_chatInputBar_L98": "전체 {all}개",
+  "@chat_chatInputBar_L98": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:98",
+    "placeholders": {
+      "all": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_chatInputBar_L99": "팀 {team}개",
+  "@chat_chatInputBar_L99": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:99",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_chatInputBar_L158": "연결 중...",
+  "@chat_chatInputBar_L158": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:158"
+  },
+  "chat_chatInputBar_L159": "채팅을 입력하세요",
+  "@chat_chatInputBar_L159": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:159"
+  },
+  "chat_chatMessageList_L152": "채팅을 시작해보세요",
+  "@chat_chatMessageList_L152": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:152"
+  },
+  "fieldchatMessageListLabel": "최신 메시지로 이동",
+  "@fieldchatMessageListLabel": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:229"
+  },
+  "chat_chatMessageList_L276": "월",
+  "@chat_chatMessageList_L276": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  },
+  "chat_chatMessageList_L276_1": "화",
+  "@chat_chatMessageList_L276_1": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  },
+  "chat_chatMessageList_L276_2": "수",
+  "@chat_chatMessageList_L276_2": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  },
+  "chat_chatMessageList_L276_3": "목",
+  "@chat_chatMessageList_L276_3": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  },
+  "chat_chatMessageList_L276_4": "금",
+  "@chat_chatMessageList_L276_4": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  },
+  "chat_chatMessageList_L276_5": "토",
+  "@chat_chatMessageList_L276_5": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  },
+  "chat_chatMessageList_L276_6": "일",
+  "@chat_chatMessageList_L276_6": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  },
+  "chat_chatMessageList_L278": "{year}년 {month}월 {day}일 {weekday}요일",
+  "@chat_chatMessageList_L278": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:278",
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_chatOverlay_L428": "전체 채팅",
+  "@chat_chatOverlay_L428": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_overlay.dart:428"
+  },
+  "chat_chatOverlay_L428_1": "팀 채팅",
+  "@chat_chatOverlay_L428_1": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_overlay.dart:428"
+  },
+  "chat_chatPreviewCard_L116": "공지",
+  "@chat_chatPreviewCard_L116": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:116"
+  },
+  "chat_chatPreviewCard_L120": "팀",
+  "@chat_chatPreviewCard_L120": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:120"
+  },
+  "chat_chatPreviewCard_L124": "전체",
+  "@chat_chatPreviewCard_L124": {
+    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:124"
+  },
+  "dialogagreementSettingsPageMessage": "아직 네트워크에 연결되지 않았어요",
+  "@dialogagreementSettingsPageMessage": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:75"
+  },
+  "dialogagreementSettingsPageMessageEfc5": "변경사항이 저장되었어요",
+  "@dialogagreementSettingsPageMessageEfc5": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:97"
+  },
+  "settings_agreementSettingsPage_L102": "일시적인 오류가 발생했습니다. 다시 시도해주세요",
+  "@settings_agreementSettingsPage_L102": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:102"
+  },
+  "settings_agreementSettingsPage_L142": "이용약관 및 정책",
+  "@settings_agreementSettingsPage_L142": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:142"
+  },
+  "settings_agreementSettingsPage_L159": "약관 동의 현황을 불러올 수 없습니다",
+  "@settings_agreementSettingsPage_L159": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:159"
+  },
+  "settings_agreementSettingsPage_L176": "다시 시도",
+  "@settings_agreementSettingsPage_L176": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:176"
+  },
+  "dialogagreementSettingsPageTitle": "이용약관",
+  "@dialogagreementSettingsPageTitle": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:203"
+  },
+  "dialogagreementSettingsPageTitleBe29": "개인정보 처리방침",
+  "@dialogagreementSettingsPageTitleBe29": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:221"
+  },
+  "dialogagreementSettingsPageTitle6dcc": "위치정보 이용약관",
+  "@dialogagreementSettingsPageTitle6dcc": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:236"
+  },
+  "dialogagreementSettingsPageTitle76b8": "마케팅 정보 수신",
+  "@dialogagreementSettingsPageTitle76b8": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:251"
+  },
+  "settings_agreementSettingsPage_L261": "변경사항 저장",
+  "@settings_agreementSettingsPage_L261": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:261"
+  },
+  "settings_legalDocumentPage_L105": "문서를 불러올 수 없습니다",
+  "@settings_legalDocumentPage_L105": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/legal_document_page.dart:105"
+  },
+  "settings_settingsPage_L104": "설정",
+  "@settings_settingsPage_L104": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:104"
+  },
+  "settings_settingsPage_L115": "계정",
+  "@settings_settingsPage_L115": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:115"
+  },
+  "settings_settingsPage_L117": "닉네임 변경",
+  "@settings_settingsPage_L117": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:117"
+  },
+  "settings_settingsPage_L128": "앱 설정",
+  "@settings_settingsPage_L128": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:128"
+  },
+  "settings_settingsPage_L130": "게임 알림",
+  "@settings_settingsPage_L130": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:130"
+  },
+  "settings_settingsPage_L131": "게임 진행 중 발생하는 이벤트 알림을 설정해요",
+  "@settings_settingsPage_L131": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:131"
+  },
+  "settings_settingsPage_L137": "알림",
+  "@settings_settingsPage_L137": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:137"
+  },
+  "settings_settingsPage_L143": "게임 중 알림",
+  "@settings_settingsPage_L143": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:143"
+  },
+  "settings_settingsPage_L149": "을 포함한 앱에서 보내는 모든 알림을 설정해요",
+  "@settings_settingsPage_L149": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:149"
+  },
+  "settings_settingsPage_L164": "위치 권한 관리",
+  "@settings_settingsPage_L164": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:164"
+  },
+  "settings_settingsPage_L165": "기기 설정에서 위치 권한을 변경할 수 있어요",
+  "@settings_settingsPage_L165": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:165"
+  },
+  "settings_settingsPage_L176": "이용 안내",
+  "@settings_settingsPage_L176": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:176"
+  },
+  "settings_settingsPage_L179": "버그 제보",
+  "@settings_settingsPage_L179": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:179"
+  },
+  "settings_settingsPage_L182": "튜토리얼 다시 보기",
+  "@settings_settingsPage_L182": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:182"
+  },
+  "settings_settingsPage_L186": "튜토리얼 초기화",
+  "@settings_settingsPage_L186": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:186"
+  },
+  "settings_settingsPage_L189": "이용약관 및 정책",
+  "@settings_settingsPage_L189": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:189"
+  },
+  "settings_settingsPage_L202": "기타",
+  "@settings_settingsPage_L202": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:202"
+  },
+  "settings_settingsPage_L204": "로그아웃",
+  "@settings_settingsPage_L204": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:204"
+  },
+  "settings_settingsPage_L210": "회원 탈퇴",
+  "@settings_settingsPage_L210": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:210"
+  },
+  "settings_settingsPage_L292": "앱 버전",
+  "@settings_settingsPage_L292": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:292"
+  },
+  "dialogsettingsPageMessage": "게임 알림 설정을 변경하지 못했어요",
+  "@dialogsettingsPageMessage": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:452"
+  },
+  "dialogsettingsPageTitle": "버그 제보",
+  "@dialogsettingsPageTitle": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:495"
+  },
+  "fieldsettingsPageLabel": "버그 내용",
+  "@fieldsettingsPageLabel": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:496"
+  },
+  "fieldsettingsPageHint": "어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)",
+  "@fieldsettingsPageHint": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:497"
+  },
+  "settings_settingsPage_L498": "제보하기",
+  "@settings_settingsPage_L498": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:498"
+  },
+  "dialogsettingsPageMessage1b8e": "버그 제보가 접수되었어요",
+  "@dialogsettingsPageMessage1b8e": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:524"
+  },
+  "dialogsettingsPageTitleD4a4": "튜토리얼 초기화",
+  "@dialogsettingsPageTitleD4a4": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:549"
+  },
+  "dialogsettingsPageMessageA4c9": "모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?",
+  "@dialogsettingsPageMessageA4c9": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:550"
+  },
+  "dialogsettingsPageConfirm": "초기화",
+  "@dialogsettingsPageConfirm": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:551"
+  },
+  "dialogsettingsPageMessageC8cb": "튜토리얼이 초기화되었어요",
+  "@dialogsettingsPageMessageC8cb": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:559"
+  },
+  "dialogsettingsPageTitle9ab1": "로그아웃",
+  "@dialogsettingsPageTitle9ab1": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:568"
+  },
+  "dialogsettingsPageMessageE675": "정말 로그아웃 하시겠어요?",
+  "@dialogsettingsPageMessageE675": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:569"
+  },
+  "dialogsettingsPageConfirm9ab1": "로그아웃",
+  "@dialogsettingsPageConfirm9ab1": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:570"
+  },
+  "settings_settingsPage_L590": "로그아웃에 실패했습니다",
+  "@settings_settingsPage_L590": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:590"
+  },
+  "settings_settingsPage_L590_1": "로그아웃되었습니다",
+  "@settings_settingsPage_L590_1": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:590"
+  },
+  "dialogsettingsPageTitle5e0d": "회원 탈퇴",
+  "@dialogsettingsPageTitle5e0d": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:601"
+  },
+  "settings_settingsPage_L603": "탈퇴하기",
+  "@settings_settingsPage_L603": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:603"
+  },
+  "fieldsettingsPageHint2960": "탈퇴하기 또는 delete",
+  "@fieldsettingsPageHint2960": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:606"
+  },
+  "dialogsettingsPageCancel": "취소",
+  "@dialogsettingsPageCancel": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:608"
+  },
+  "dialogsettingsPageConfirm9140": "탈퇴",
+  "@dialogsettingsPageConfirm9140": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:609"
+  },
+  "settings_settingsPage_L613": "탈퇴하기",
+  "@settings_settingsPage_L613": {
+    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:613"
+  },
+  "tutorial_inGameTutorialPage_L62": "경찰1",
+  "@tutorial_inGameTutorialPage_L62": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:62"
+  },
+  "tutorial_inGameTutorialPage_L72": "도둑킹",
+  "@tutorial_inGameTutorialPage_L72": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:72"
+  },
+  "tutorial_inGameTutorialPage_L78": "도둑이게아니게",
+  "@tutorial_inGameTutorialPage_L78": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:78"
+  },
+  "tutorial_inGameTutorialPage_L84": "잡힌도둑",
+  "@tutorial_inGameTutorialPage_L84": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:84"
+  },
+  "dialoginGameTutorialPageTitle": "튜토리얼 완료!",
+  "@dialoginGameTutorialPageTitle": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:139"
+  },
+  "dialoginGameTutorialPageMessage": "핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요",
+  "@dialoginGameTutorialPageMessage": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:140"
+  },
+  "dialoginGameTutorialPageConfirm": "튜토리얼 끝내기",
+  "@dialoginGameTutorialPageConfirm": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:141"
+  },
+  "dialoginGameTutorialPageMessage8372": "내 위치로 카메라가 이동했어요",
+  "@dialoginGameTutorialPageMessage8372": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:262"
+  },
+  "tutorial_inGameTutorialPage_L391": "지도 미리보기",
+  "@tutorial_inGameTutorialPage_L391": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:391"
+  },
+  "tutorial_inGameTutorialPage_L434": "다음 도둑 위치 공개까지 04:30",
+  "@tutorial_inGameTutorialPage_L434": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:434"
+  },
+  "dialoginGameTutorialPageMessage9b3f": "게임 룰 안내가 열려요",
+  "@dialoginGameTutorialPageMessage9b3f": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:447"
+  },
+  "tutorial_inGameTutorialPage_L491": "내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포",
+  "@tutorial_inGameTutorialPage_L491": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:491"
+  },
+  "tutorial_inGameTutorialPage_L492": "카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요",
+  "@tutorial_inGameTutorialPage_L492": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:492"
+  },
+  "tutorial_inGameTutorialPage_L509": "참가자 보기 버튼을 눌러보세요",
+  "@tutorial_inGameTutorialPage_L509": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509"
+  },
+  "tutorial_inGameTutorialPage_L509_1": "QR 버튼을 눌러보세요",
+  "@tutorial_inGameTutorialPage_L509_1": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509"
+  },
+  "tutorial_inGameTutorialPage_L509_2": "지도로 돌아가 보세요",
+  "@tutorial_inGameTutorialPage_L509_2": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509"
+  },
+  "tutorial_inGameTutorialPage_L525": "미션 {_missionStep}/3",
+  "@tutorial_inGameTutorialPage_L525": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:525",
+    "placeholders": {
+      "_missionStep": {
+        "type": "String"
+      }
+    }
+  },
+  "tutorial_inGameTutorialPage_L608": "도둑 시점 보는 중",
+  "@tutorial_inGameTutorialPage_L608": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:608"
+  },
+  "tutorial_inGameTutorialPage_L608_1": "경찰 시점 보는 중",
+  "@tutorial_inGameTutorialPage_L608_1": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:608"
+  },
+  "dialoginGameTutorialPageMessageA1c5": "본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요",
+  "@dialoginGameTutorialPageMessageA1c5": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:661"
+  },
+  "dialoginGameTutorialPageMessage9331": "실제 게임에서는 QR 스캔으로 도둑을 체포해요",
+  "@dialoginGameTutorialPageMessage9331": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:667"
+  },
+  "tutorial_inGameTutorialPage_L688": "현재",
+  "@tutorial_inGameTutorialPage_L688": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:688"
+  },
+  "tutorial_inGameTutorialPage_L690": "{count}명",
+  "@tutorial_inGameTutorialPage_L690": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:690",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tutorial_inGameTutorialPage_L696": "도주 중!",
+  "@tutorial_inGameTutorialPage_L696": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:696"
+  },
+  "dialoginGameTutorialPageMessage7650": "핸들을 위로 드래그하면 채팅이 펼쳐져요",
+  "@dialoginGameTutorialPageMessage7650": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:756"
+  },
+  "dialoginGameTutorialPageMessageDb39": "여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요",
+  "@dialoginGameTutorialPageMessageDb39": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:788"
+  },
+  "tutorial_inGameTutorialPage_L806": "채팅을 입력하세요",
+  "@tutorial_inGameTutorialPage_L806": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:806"
+  },
+  "dialogtutorialCatalogPageTitle": "방 만들기",
+  "@dialogtutorialCatalogPageTitle": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:19"
+  },
+  "tutorial_tutorialCatalogPage_L20": "플레이그라운드·감옥 설정과 슬라이더 조작",
+  "@tutorial_tutorialCatalogPage_L20": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:20"
+  },
+  "dialogtutorialCatalogPageTitle879f": "방 참여하기",
+  "@dialogtutorialCatalogPageTitle879f": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:24"
+  },
+  "tutorial_tutorialCatalogPage_L25": "초대 코드 입력과 QR 스캔",
+  "@tutorial_tutorialCatalogPage_L25": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:25"
+  },
+  "dialogtutorialCatalogPageTitle2421": "대기방",
+  "@dialogtutorialCatalogPageTitle2421": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:29"
+  },
+  "tutorial_tutorialCatalogPage_L30": "팀 변경, 게임 설정, 준비 완료",
+  "@tutorial_tutorialCatalogPage_L30": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:30"
+  },
+  "dialogtutorialCatalogPageTitle8700": "인게임",
+  "@dialogtutorialCatalogPageTitle8700": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:34"
+  },
+  "tutorial_tutorialCatalogPage_L35": "타이머·지도·참가자·채팅·QR",
+  "@tutorial_tutorialCatalogPage_L35": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:35"
+  },
+  "tutorial_tutorialCatalogPage_L62": "튜토리얼",
+  "@tutorial_tutorialCatalogPage_L62": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:62"
+  },
+  "tutorial_tutorialCatalogPage_L69": "게임을 처음 한다면 한 번씩 보고 시작해보세요",
+  "@tutorial_tutorialCatalogPage_L69": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:69"
+  },
+  "tutorial_tutorialCatalogPage_L200": "준비 중",
+  "@tutorial_tutorialCatalogPage_L200": {
+    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:200"
+  },
+  "credits_creditMember_L78": "홍의민",
+  "@credits_creditMember_L78": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:78"
+  },
+  "credits_creditMember_L97": "박찬빈",
+  "@credits_creditMember_L97": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:97"
+  },
+  "credits_creditMember_L110": "이창희",
+  "@credits_creditMember_L110": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:110"
+  },
+  "credits_creditMember_L122": "정상희",
+  "@credits_creditMember_L122": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:122"
+  },
+  "credits_creditMember_L137": "황혜림",
+  "@credits_creditMember_L137": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:137"
+  },
+  "credits_creditMember_L149": "윤지희",
+  "@credits_creditMember_L149": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:149"
+  },
+  "credits_creditMember_L220": "신지훈",
+  "@credits_creditMember_L220": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:220"
+  },
+  "credits_creditMember_L227": "남해윤",
+  "@credits_creditMember_L227": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:227"
+  },
+  "credits_creditMember_L233": "송혜정",
+  "@credits_creditMember_L233": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:233"
+  },
+  "credits_creditMember_L239": "이진",
+  "@credits_creditMember_L239": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:239"
+  },
+  "credits_creditMember_L246": "안금서",
+  "@credits_creditMember_L246": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:246"
+  },
+  "credits_creditMember_L252": "손건우",
+  "@credits_creditMember_L252": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:252"
+  },
+  "credits_creditMember_L258": "신혜빈",
+  "@credits_creditMember_L258": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:258"
+  },
+  "credits_creditMember_L264": "정창우",
+  "@credits_creditMember_L264": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:264"
+  },
+  "credits_creditMember_L270": "허석준",
+  "@credits_creditMember_L270": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:270"
+  },
+  "credits_creditMember_L276": "서현진",
+  "@credits_creditMember_L276": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:276"
+  },
+  "credits_creditMember_L282": "오동현",
+  "@credits_creditMember_L282": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:282"
+  },
+  "credits_creditMember_L288": "최승훈",
+  "@credits_creditMember_L288": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:288"
+  },
+  "credits_creditMember_L294": "김민욱",
+  "@credits_creditMember_L294": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:294"
+  },
+  "credits_creditMember_L300": "정명준",
+  "@credits_creditMember_L300": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:300"
+  },
+  "credits_creditMember_L306": "강대현",
+  "@credits_creditMember_L306": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:306"
+  },
+  "credits_creditMember_L312": "심 혁",
+  "@credits_creditMember_L312": {
+    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:312"
+  },
+  "credits_creditsPage_L45": "경찰과 도둑을 만든 사람들",
+  "@credits_creditsPage_L45": {
+    "description": "auto-imported from lib/features/credits/presentation/pages/credits_page.dart:45"
+  },
+  "dialogreportRepositoryImplMessage": "신고 처리 중 오류가 발생했습니다",
+  "@dialogreportRepositoryImplMessage": {
+    "description": "auto-imported from lib/features/report/data/repositories/report_repository_impl.dart:39"
+  },
+  "report_reportCategories_L7": "낚시/놀람/도배",
+  "@report_reportCategories_L7": {
+    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:7"
+  },
+  "report_reportCategories_L8": "욕설/비하",
+  "@report_reportCategories_L8": {
+    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:8"
+  },
+  "report_reportCategories_L9": "사칭/사기",
+  "@report_reportCategories_L9": {
+    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:9"
+  },
+  "report_reportCategories_L10": "광고/스팸",
+  "@report_reportCategories_L10": {
+    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:10"
+  },
+  "report_reportCategories_L11": "부정 행위/버그 악용",
+  "@report_reportCategories_L11": {
+    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:11"
+  },
+  "report_reportCategories_L12": "팀 사기 저하",
+  "@report_reportCategories_L12": {
+    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:12"
+  },
+  "report_reportCategories_L13": "기타(직접 작성)",
+  "@report_reportCategories_L13": {
+    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:13"
+  },
+  "dialoguserRepositoryImplMessage": "닉네임 확인 중 예기치 않은 오류가 발생했습니다",
+  "@dialoguserRepositoryImplMessage": {
+    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:36"
+  },
+  "dialoguserRepositoryImplMessageAc72": "닉네임 변경 중 예기치 않은 오류가 발생했습니다",
+  "@dialoguserRepositoryImplMessageAc72": {
+    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:56"
+  },
+  "dialoguserRepositoryImplMessage243c": "사용자 정보 조회 중 오류가 발생했습니다",
+  "@dialoguserRepositoryImplMessage243c": {
+    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:82"
+  },
+  "dialoguserRepositoryImplMessage220e": "회원 탈퇴 중 예기치 않은 오류가 발생했습니다",
+  "@dialoguserRepositoryImplMessage220e": {
+    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:100"
+  },
+  "dialoguserRepositoryImplMessage05b0": "약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다",
+  "@dialoguserRepositoryImplMessage05b0": {
+    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:132"
+  },
+  "dialoguserRepositoryImplMessage2357": "약관 동의 저장 중 예기치 않은 오류가 발생했습니다",
+  "@dialoguserRepositoryImplMessage2357": {
+    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:158"
+  },
+  "dialoguserRepositoryImplMessage3d3a": "게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다",
+  "@dialoguserRepositoryImplMessage3d3a": {
+    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:179"
+  },
+  "dialoguserRepositoryImplMessage5fe2": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다",
+  "@dialoguserRepositoryImplMessage5fe2": {
+    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:200"
+  },
+  "lobby_lobbyProvider_L139": "인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다",
+  "@lobby_lobbyProvider_L139": {
+    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:139"
+  },
+  "lobby_lobbyProvider_L187": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "@lobby_lobbyProvider_L187": {
+    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:187"
+  },
+  "lobby_lobbyProvider_L319": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "@lobby_lobbyProvider_L319": {
+    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:319"
+  },
+  "lobby_lobbyProvider_L381": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "@lobby_lobbyProvider_L381": {
+    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:381"
+  },
+  "lobby_lobbyProvider_L399": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "@lobby_lobbyProvider_L399": {
+    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:399"
+  },
+  "dialognoticeRepositoryImplMessage": "공지사항을 불러오는 중 오류가 발생했습니다",
+  "@dialognoticeRepositoryImplMessage": {
+    "description": "auto-imported from lib/features/notice/data/repositories/notice_repository_impl.dart:49"
+  },
+  "dialognoticesPageMessage": "공지사항을 불러오는 중...",
+  "@dialognoticesPageMessage": {
+    "description": "auto-imported from lib/features/notice/presentation/pages/notices_page.dart:64"
+  },
+  "dialognoticesPageMessage4982": "공지사항을 불러오지 못했어요",
+  "@dialognoticesPageMessage4982": {
+    "description": "auto-imported from lib/features/notice/presentation/pages/notices_page.dart:99"
+  },
+  "notice_noticesPage_L131": "공지사항",
+  "@notice_noticesPage_L131": {
+    "description": "auto-imported from lib/features/notice/presentation/pages/notices_page.dart:131"
+  },
+  "notice_noticesPage_L152": "등록된 공지사항이 없습니다",
+  "@notice_noticesPage_L152": {
+    "description": "auto-imported from lib/features/notice/presentation/pages/notices_page.dart:152"
+  },
+  "router_appRouter_L477": "구역 정보를 불러올 수 없습니다",
+  "@router_appRouter_L477": {
+    "description": "auto-imported from lib/router/app_router.dart:477"
+  },
+  "router_appRouter_L575": "페이지를 찾을 수 없습니다",
+  "@router_appRouter_L575": {
+    "description": "auto-imported from lib/router/app_router.dart:575"
+  },
+  "router_appRouter_L586": "요청하신 페이지가 존재하지 않습니다",
+  "@router_appRouter_L586": {
+    "description": "auto-imported from lib/router/app_router.dart:586"
+  },
+  "router_appRouter_L589": "경로: {path}",
+  "@router_appRouter_L589": {
+    "description": "auto-imported from lib/router/app_router.dart:589",
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "router_appRouter_L600": "로그아웃",
+  "@router_appRouter_L600": {
+    "description": "auto-imported from lib/router/app_router.dart:600"
+  },
+  "dialogbugRepositoryImplMessage": "버그 제보 처리 중 오류가 발생했습니다",
+  "@dialogbugRepositoryImplMessage": {
+    "description": "auto-imported from lib/features/bug/data/repositories/bug_repository_impl.dart:25"
+  },
+  "dialogmainTitle": "경찰과도둑",
+  "@dialogmainTitle": {
+    "description": "auto-imported from lib/main.dart:181"
+  },
+  "gameEventStartTime": "제한 시간은 {minutes}분입니다.",
+  "@gameEventStartTime": {
+    "description": "START 1단계 — 제한 시간 안내",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "gameEventStartReady": "잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!",
+  "@gameEventStartReady": {
+    "description": "START 2단계 — 게임 시작 예고"
+  },
+  "gameEventStartReportTip": "게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.",
+  "@gameEventStartReportTip": {
+    "description": "START 3단계 — 신고/차단 안내"
+  },
+  "gameEventStartGo": "게임 시작!  행운을 빕니다!",
+  "@gameEventStartGo": {
+    "description": "START 4단계 — 게임 시작 확정"
+  },
+  "gameEventPoliceMoveWarning": "경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!",
+  "@gameEventPoliceMoveWarning": {
+    "description": "경찰 출동 예고"
+  },
+  "gameEventPoliceMove": "경찰 출동!  도둑은 도망치세요!",
+  "@gameEventPoliceMove": {
+    "description": "경찰 출동 확정"
+  },
+  "gameEventLocationReveal": "현재 도둑의 위치가 공개됩니다!",
+  "@gameEventLocationReveal": {
+    "description": "도둑 위치 공개 안내"
+  },
+  "gameEventRemainingRobbers": "현재 {count}명 도주 중!",
+  "@gameEventRemainingRobbers": {
+    "description": "도주 중인 도둑 인원",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "gameEventArrestNotice": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!",
+  "@gameEventArrestNotice": {
+    "description": "체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환",
+    "placeholders": {
+      "policeNickname": {
+        "type": "String"
+      },
+      "robberNickname": {
+        "type": "String"
+      }
+    }
+  },
+  "gameEventEscapeNotice": "도둑이 탈옥했습니다! 지금 바로 체포하세요!",
+  "@gameEventEscapeNotice": {
+    "description": "탈옥 공지"
+  },
+  "gameEventFiveMinutesLeft": "게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!",
+  "@gameEventFiveMinutesLeft": {
+    "description": "게임 종료 5분 전 경고"
+  },
+  "mapErrorLoadFailed": "{mapName} 로드 실패",
+  "@mapErrorLoadFailed": {
+    "description": "지도 로드 실패 시 표시 메시지",
+    "placeholders": {
+      "mapName": {
+        "type": "String"
+      }
+    }
+  }
+}

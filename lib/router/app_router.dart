@@ -8,6 +8,7 @@ import '../core/constants/app_colors.dart';
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
 import '../core/utils/custom_page_transitions.dart';
+import '../l10n/app_localizations.dart';
 import 'route_paths.dart';
 
 // Auth Provider Import
@@ -474,7 +475,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                         ),
-                        body: const Center(child: Text('구역 정보를 불러올 수 없습니다.')),
+                        body: Center(
+                          child: Text(
+                            AppLocalizations.of(context).router_appRouter_L477,
+                          ),
+                        ),
                       ),
                       isForward: true,
                     );
@@ -570,9 +575,10 @@ class _ErrorPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('페이지를 찾을 수 없습니다', style: AppTextStyles.label_16),
+        title: Text(l10n.router_appRouter_L575, style: AppTextStyles.label_16),
         centerTitle: true,
       ),
       body: Center(
@@ -583,10 +589,10 @@ class _ErrorPage extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 64, color: AppColors.red),
               SizedBox(height: AppSpacing.vertical16),
-              Text('요청하신 페이지가 존재하지 않습니다.', style: AppTextStyles.label_16),
+              Text(l10n.router_appRouter_L586, style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical8),
               Text(
-                '경로: $path',
+                l10n.router_appRouter_L589(path),
                 style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
               ),
               SizedBox(height: AppSpacing.vertical24),
@@ -597,7 +603,10 @@ class _ErrorPage extends ConsumerWidget {
                     context.go(RoutePaths.login);
                   }
                 },
-                child: Text('로그아웃', style: AppTextStyles.paragraph_14),
+                child: Text(
+                  l10n.router_appRouter_L600,
+                  style: AppTextStyles.paragraph_14,
+                ),
               ),
             ],
           ),
