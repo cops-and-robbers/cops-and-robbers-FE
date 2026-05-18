@@ -2680,41 +2680,11 @@ abstract class AppLocalizations {
   /// **'플레이그라운드를 벗어났어요'**
   String get game_zoneExitBanner_L66;
 
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:190
-  ///
-  /// In ko, this message translates to:
-  /// **'인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다'**
-  String get chat_chatProvider_L190;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:254
-  ///
-  /// In ko, this message translates to:
-  /// **'나'**
-  String get chat_chatProvider_L254;
-
   /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:262
   ///
   /// In ko, this message translates to:
   /// **'[팀]'**
   String get dialogchatProviderMessage;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:265
-  ///
-  /// In ko, this message translates to:
-  /// **'팀원닉네임'**
-  String get chat_chatProvider_L265;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:265
-  ///
-  /// In ko, this message translates to:
-  /// **'상대닉네임'**
-  String get chat_chatProvider_L265_1;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:286
-  ///
-  /// In ko, this message translates to:
-  /// **'시스템'**
-  String get chat_chatProvider_L286;
 
   /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:378
   ///
@@ -2722,23 +2692,11 @@ abstract class AppLocalizations {
   /// **'제한 시간은 30분입니다'**
   String get dialogchatProviderMessageDfca;
 
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:381
-  ///
-  /// In ko, this message translates to:
-  /// **'시스템'**
-  String get chat_chatProvider_L381;
-
   /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:385
   ///
   /// In ko, this message translates to:
   /// **'게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!'**
   String get dialogchatProviderMessage2119;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:388
-  ///
-  /// In ko, this message translates to:
-  /// **'시스템'**
-  String get chat_chatProvider_L388;
 
   /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:392
   ///
@@ -2746,41 +2704,11 @@ abstract class AppLocalizations {
   /// **'도둑 잘 도망쳐 봐요~'**
   String get dialogchatProviderMessageC357;
 
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:395
-  ///
-  /// In ko, this message translates to:
-  /// **'닉네임'**
-  String get chat_chatProvider_L395;
-
   /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:399
   ///
   /// In ko, this message translates to:
   /// **'이겨봅시다!'**
   String get dialogchatProviderMessageEa9a;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:402
-  ///
-  /// In ko, this message translates to:
-  /// **'닉네임'**
-  String get chat_chatProvider_L402;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:564
-  ///
-  /// In ko, this message translates to:
-  /// **'서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요'**
-  String get chat_chatProvider_L564;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:655
-  ///
-  /// In ko, this message translates to:
-  /// **'인증이 만료되었습니다. 재로그인이 필요합니다'**
-  String get chat_chatProvider_L655;
-
-  /// auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:676
-  ///
-  /// In ko, this message translates to:
-  /// **'인증이 만료되었습니다. 재로그인이 필요합니다'**
-  String get chat_chatProvider_L676;
 
   /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:106
   ///
@@ -2812,11 +2740,11 @@ abstract class AppLocalizations {
   /// **'신고 사유를 자세히 작성해 주세요\n(상황 또는 대화 내용을 포함해 주세요)'**
   String get fieldchatContextMenuHint;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:140
+  /// 신고 공통 버튼 라벨
   ///
   /// In ko, this message translates to:
   /// **'신고하기'**
-  String get chat_chatContextMenu_L140;
+  String get buttonReport;
 
   /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:220
   ///
@@ -2848,17 +2776,17 @@ abstract class AppLocalizations {
   /// **'신고하기'**
   String get dialogchatContextMenuConfirm;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:190
+  /// 신고 폼 — 선택한 카테고리 라벨 (뒤에 카테고리 이름 이어붙음)
   ///
   /// In ko, this message translates to:
   /// **'선택한 신고 사유:'**
-  String get chat_chatContextMenu_L190;
+  String get chatReportSelectedCategoryLabel;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:202
+  /// 신고 폼 — 제출 시 검토 안내 (선두 줄바꿈은 위 라벨과 줄 분리 의도)
   ///
   /// In ko, this message translates to:
   /// **'\n신고된 내용은 검토 후 조치할게요'**
-  String get chat_chatContextMenu_L202;
+  String get chatReportSubmitNotice;
 
   /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:422
   ///
@@ -2878,23 +2806,23 @@ abstract class AppLocalizations {
   /// **'차단하기'**
   String get fieldchatContextMenuLabel2f14;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:478
+  /// 신고 폼 — 카테고리 선택 섹션 제목
   ///
   /// In ko, this message translates to:
   /// **'신고 유형 선택'**
-  String get chat_chatContextMenu_L478;
+  String get chatReportCategoryTitle;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:98
+  /// 미읽음 힌트 부분 — 전체 채팅 미읽음 수
   ///
   /// In ko, this message translates to:
   /// **'전체 {all}개'**
-  String chat_chatInputBar_L98(String all);
+  String chatInputBarUnreadAll(String all);
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:99
+  /// 미읽음 힌트 부분 — 팀 채팅 미읽음 수
   ///
   /// In ko, this message translates to:
   /// **'팀 {team}개'**
-  String chat_chatInputBar_L99(String team);
+  String chatInputBarUnreadTeam(String team);
 
   /// 채팅 입력바 위 미읽음 힌트 wrapper — body에는 '전체 N개 · 팀 N개' 같은 부분 라벨이 들어감
   ///
@@ -2902,23 +2830,23 @@ abstract class AppLocalizations {
   /// **'안 읽은 메시지 [{body}]'**
   String chatInputBarUnreadHint(String body);
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:158
+  /// 채팅 입력바 — STOMP 연결 중 placeholder
   ///
   /// In ko, this message translates to:
   /// **'연결 중...'**
-  String get chat_chatInputBar_L158;
+  String get chatInputBarConnecting;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:159
+  /// 채팅 입력바 — 메시지 입력 placeholder
   ///
   /// In ko, this message translates to:
   /// **'채팅을 입력하세요'**
-  String get chat_chatInputBar_L159;
+  String get chatInputBarHint;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:152
+  /// 채팅 메시지 리스트 — 메시지 0건 빈 상태 안내
   ///
   /// In ko, this message translates to:
   /// **'채팅을 시작해보세요'**
-  String get chat_chatMessageList_L152;
+  String get chatMessageListEmpty;
 
   /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:229
   ///
@@ -2926,88 +2854,88 @@ abstract class AppLocalizations {
   /// **'최신 메시지로 이동'**
   String get fieldchatMessageListLabel;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276
+  /// 채팅 날짜 구분선 — 월요일 단축 라벨
   ///
   /// In ko, this message translates to:
   /// **'월'**
-  String get chat_chatMessageList_L276;
+  String get chatWeekdayMon;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276
+  /// 채팅 날짜 구분선 — 화요일 단축 라벨
   ///
   /// In ko, this message translates to:
   /// **'화'**
-  String get chat_chatMessageList_L276_1;
+  String get chatWeekdayTue;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276
+  /// 채팅 날짜 구분선 — 수요일 단축 라벨
   ///
   /// In ko, this message translates to:
   /// **'수'**
-  String get chat_chatMessageList_L276_2;
+  String get chatWeekdayWed;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276
+  /// 채팅 날짜 구분선 — 목요일 단축 라벨
   ///
   /// In ko, this message translates to:
   /// **'목'**
-  String get chat_chatMessageList_L276_3;
+  String get chatWeekdayThu;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276
+  /// 채팅 날짜 구분선 — 금요일 단축 라벨
   ///
   /// In ko, this message translates to:
   /// **'금'**
-  String get chat_chatMessageList_L276_4;
+  String get chatWeekdayFri;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276
+  /// 채팅 날짜 구분선 — 토요일 단축 라벨
   ///
   /// In ko, this message translates to:
   /// **'토'**
-  String get chat_chatMessageList_L276_5;
+  String get chatWeekdaySat;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276
+  /// 채팅 날짜 구분선 — 일요일 단축 라벨
   ///
   /// In ko, this message translates to:
   /// **'일'**
-  String get chat_chatMessageList_L276_6;
+  String get chatWeekdaySun;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:278
+  /// 채팅 날짜 구분선 — 날짜+요일 라벨 (요일은 chatWeekday* 키 값이 들어감)
   ///
   /// In ko, this message translates to:
   /// **'{year}년 {month}월 {day}일 {weekday}요일'**
-  String chat_chatMessageList_L278(
+  String chatDateSeparator(
     String year,
     String month,
     String day,
     String weekday,
   );
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_overlay.dart:428
+  /// 채팅 오버레이 — 전체 채팅 탭 제목
   ///
   /// In ko, this message translates to:
   /// **'전체 채팅'**
-  String get chat_chatOverlay_L428;
+  String get chatScopeAllTitle;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_overlay.dart:428
+  /// 채팅 오버레이 — 팀 채팅 탭 제목
   ///
   /// In ko, this message translates to:
   /// **'팀 채팅'**
-  String get chat_chatOverlay_L428_1;
+  String get chatScopeTeamTitle;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:116
+  /// 채팅 프리뷰 카드 — 시스템 공지 태그
   ///
   /// In ko, this message translates to:
   /// **'공지'**
-  String get chat_chatPreviewCard_L116;
+  String get chatPreviewTagNotice;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:120
+  /// 채팅 프리뷰 카드 — 팀 채팅 태그
   ///
   /// In ko, this message translates to:
   /// **'팀'**
-  String get chat_chatPreviewCard_L120;
+  String get chatPreviewTagTeam;
 
-  /// auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:124
+  /// 채팅 프리뷰 카드 — 전체 채팅 태그
   ///
   /// In ko, this message translates to:
   /// **'전체'**
-  String get chat_chatPreviewCard_L124;
+  String get chatPreviewTagAll;
 
   /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:75
   ///
@@ -3021,29 +2949,29 @@ abstract class AppLocalizations {
   /// **'변경사항이 저장되었어요'**
   String get dialogagreementSettingsPageMessageEfc5;
 
-  /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:102
+  /// 일시적 오류 발생 시 재시도 유도 공통 메시지
   ///
   /// In ko, this message translates to:
   /// **'일시적인 오류가 발생했습니다. 다시 시도해주세요'**
-  String get settings_agreementSettingsPage_L102;
+  String get errorTemporaryRetry;
 
-  /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:142
+  /// 이용약관/정책 설정 페이지 타이틀
   ///
   /// In ko, this message translates to:
   /// **'이용약관 및 정책'**
-  String get settings_agreementSettingsPage_L142;
+  String get pageAgreementSettingsTitle;
 
-  /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:159
+  /// 약관 동의 정보 조회 실패 안내
   ///
   /// In ko, this message translates to:
   /// **'약관 동의 현황을 불러올 수 없습니다'**
-  String get settings_agreementSettingsPage_L159;
+  String get errorAgreementLoadFailed;
 
-  /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:176
+  /// 재시도 공통 버튼 라벨
   ///
   /// In ko, this message translates to:
   /// **'다시 시도'**
-  String get settings_agreementSettingsPage_L176;
+  String get buttonRetry;
 
   /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:203
   ///
@@ -3069,137 +2997,131 @@ abstract class AppLocalizations {
   /// **'마케팅 정보 수신'**
   String get dialogagreementSettingsPageTitle76b8;
 
-  /// auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:261
+  /// 변경사항 저장 공통 버튼 라벨
   ///
   /// In ko, this message translates to:
   /// **'변경사항 저장'**
-  String get settings_agreementSettingsPage_L261;
+  String get buttonSaveChanges;
 
-  /// auto-imported from lib/features/settings/presentation/pages/legal_document_page.dart:105
+  /// 법적 문서(약관/정책) 로드 실패 안내
   ///
   /// In ko, this message translates to:
   /// **'문서를 불러올 수 없습니다'**
-  String get settings_legalDocumentPage_L105;
+  String get errorLegalDocumentLoadFailed;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:104
+  /// 설정 페이지 AppBar 타이틀
   ///
   /// In ko, this message translates to:
   /// **'설정'**
-  String get settings_settingsPage_L104;
+  String get pageSettingsTitle;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:115
+  /// 설정 — 계정 섹션 헤더
   ///
   /// In ko, this message translates to:
   /// **'계정'**
-  String get settings_settingsPage_L115;
+  String get settingsSectionAccount;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:117
+  /// 설정 — 닉네임 변경 메뉴
   ///
   /// In ko, this message translates to:
   /// **'닉네임 변경'**
-  String get settings_settingsPage_L117;
+  String get settingsAccountChangeNickname;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:128
+  /// 설정 — 앱 설정 섹션 헤더
   ///
   /// In ko, this message translates to:
   /// **'앱 설정'**
-  String get settings_settingsPage_L128;
+  String get settingsSectionAppPreferences;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:130
+  /// 설정 — 게임 알림 토글 메뉴 라벨
   ///
   /// In ko, this message translates to:
   /// **'게임 알림'**
-  String get settings_settingsPage_L130;
+  String get settingsAppGameNotification;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:131
+  /// 설정 — 게임 알림 토글 메뉴 부제
   ///
   /// In ko, this message translates to:
   /// **'게임 진행 중 발생하는 이벤트 알림을 설정해요'**
-  String get settings_settingsPage_L131;
+  String get settingsAppGameNotificationDescription;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:137
+  /// 설정 — 시스템 알림 설정 메뉴 라벨
   ///
   /// In ko, this message translates to:
   /// **'알림'**
-  String get settings_settingsPage_L137;
+  String get settingsAppGeneralNotification;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:143
+  /// 설정 — 시스템 알림 설정 부제의 강조 토큰 (스타일 분리 위해 별도 키)
   ///
   /// In ko, this message translates to:
   /// **'게임 중 알림'**
-  String get settings_settingsPage_L143;
+  String get settingsAppGeneralNotificationHighlight;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:149
+  /// 설정 — 시스템 알림 설정 부제의 나머지 토큰 (Highlight 뒤에 이어붙임)
   ///
   /// In ko, this message translates to:
   /// **'을 포함한 앱에서 보내는 모든 알림을 설정해요'**
-  String get settings_settingsPage_L149;
+  String get settingsAppGeneralNotificationDetail;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:164
+  /// 설정 — 위치 권한 관리 메뉴 라벨
   ///
   /// In ko, this message translates to:
   /// **'위치 권한 관리'**
-  String get settings_settingsPage_L164;
+  String get settingsAppLocationPermission;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:165
+  /// 설정 — 위치 권한 관리 메뉴 부제
   ///
   /// In ko, this message translates to:
   /// **'기기 설정에서 위치 권한을 변경할 수 있어요'**
-  String get settings_settingsPage_L165;
+  String get settingsAppLocationPermissionDescription;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:176
+  /// 설정 — 이용 안내 섹션 헤더
   ///
   /// In ko, this message translates to:
   /// **'이용 안내'**
-  String get settings_settingsPage_L176;
+  String get settingsSectionGuide;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:179
+  /// 설정 — 버그 제보 메뉴 라벨
   ///
   /// In ko, this message translates to:
   /// **'버그 제보'**
-  String get settings_settingsPage_L179;
+  String get settingsGuideBugReport;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:182
+  /// 설정 — 튜토리얼 다시 보기 메뉴
   ///
   /// In ko, this message translates to:
   /// **'튜토리얼 다시 보기'**
-  String get settings_settingsPage_L182;
+  String get settingsGuideTutorialRewatch;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:186
+  /// 설정 — 튜토리얼 초기화 메뉴
   ///
   /// In ko, this message translates to:
   /// **'튜토리얼 초기화'**
-  String get settings_settingsPage_L186;
+  String get settingsGuideTutorialReset;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:189
+  /// 설정 — 이용약관 및 정책 메뉴 (페이지 진입)
   ///
   /// In ko, this message translates to:
   /// **'이용약관 및 정책'**
-  String get settings_settingsPage_L189;
+  String get settingsGuideAgreements;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:202
+  /// 설정 — 기타 섹션 헤더 (로그아웃/탈퇴 등)
   ///
   /// In ko, this message translates to:
   /// **'기타'**
-  String get settings_settingsPage_L202;
+  String get settingsSectionEtc;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:204
-  ///
-  /// In ko, this message translates to:
-  /// **'로그아웃'**
-  String get settings_settingsPage_L204;
-
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:210
+  /// 설정 — 회원 탈퇴 메뉴 라벨
   ///
   /// In ko, this message translates to:
   /// **'회원 탈퇴'**
-  String get settings_settingsPage_L210;
+  String get settingsEtcDeleteAccount;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:292
+  /// 설정 — 앱 버전 표시 메뉴 라벨
   ///
   /// In ko, this message translates to:
   /// **'앱 버전'**
-  String get settings_settingsPage_L292;
+  String get settingsAppVersionLabel;
 
   /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:452
   ///
@@ -3225,11 +3147,11 @@ abstract class AppLocalizations {
   /// **'어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)'**
   String get fieldsettingsPageHint;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:498
+  /// 버그 제보 다이얼로그 — 제출 버튼 라벨
   ///
   /// In ko, this message translates to:
   /// **'제보하기'**
-  String get settings_settingsPage_L498;
+  String get buttonSubmitReport;
 
   /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:524
   ///
@@ -3279,17 +3201,17 @@ abstract class AppLocalizations {
   /// **'로그아웃'**
   String get dialogsettingsPageConfirm9ab1;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:590
+  /// 로그아웃 실패 스낵바 메시지
   ///
   /// In ko, this message translates to:
   /// **'로그아웃에 실패했습니다'**
-  String get settings_settingsPage_L590;
+  String get snackbarLogoutFailed;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:590
+  /// 로그아웃 성공 스낵바 메시지
   ///
   /// In ko, this message translates to:
   /// **'로그아웃되었습니다'**
-  String get settings_settingsPage_L590_1;
+  String get snackbarLogoutSuccess;
 
   /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:601
   ///
@@ -3297,11 +3219,11 @@ abstract class AppLocalizations {
   /// **'회원 탈퇴'**
   String get dialogsettingsPageTitle5e0d;
 
-  /// 회원 탈퇴 확인 다이얼로그 본문 — 사용자에게 비가역성 경고 + 확인 키워드 입력 요구
+  /// 회원 탈퇴 확인 다이얼로그 본문 — 비가역성 경고 + 확인 키워드 입력 요구
   ///
   /// In ko, this message translates to:
   /// **'탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요'**
-  String get settings_settingsPage_L603;
+  String get dialogDeleteAccountMessage;
 
   /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:606
   ///
@@ -3320,12 +3242,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'탈퇴'**
   String get dialogsettingsPageConfirm9140;
-
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:613
-  ///
-  /// In ko, this message translates to:
-  /// **'탈퇴하기'**
-  String get settings_settingsPage_L613;
 
   /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
   ///

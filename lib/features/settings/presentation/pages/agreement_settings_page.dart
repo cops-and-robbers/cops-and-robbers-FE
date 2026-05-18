@@ -108,7 +108,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
       final l10n = AppLocalizations.of(context);
       final message = e is AppException
           ? e.message
-          : l10n.settings_agreementSettingsPage_L102;
+          : l10n.errorTemporaryRetry;
       AppSnackbar.show(
         context,
         message: message,
@@ -149,7 +149,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
         leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
         centerTitle: true,
         title: Text(
-          l10n.settings_agreementSettingsPage_L142,
+          l10n.pageAgreementSettingsTitle,
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
@@ -167,7 +167,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
     final l10n = AppLocalizations.of(context);
     final message = error is AppException
         ? error.message
-        : l10n.settings_agreementSettingsPage_L159;
+        : l10n.errorAgreementLoadFailed;
     return Padding(
       padding: AppPadding.all20,
       child: Column(
@@ -184,7 +184,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
           ),
           SizedBox(height: AppSpacing.vertical16),
           AppButton(
-            text: l10n.settings_agreementSettingsPage_L176,
+            text: l10n.buttonRetry,
             onPressed: () {
               setState(() => _status = const AsyncValue.loading());
               _loadAgreements();
@@ -270,7 +270,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
             ),
           ),
           AppButton(
-            text: l10n.settings_agreementSettingsPage_L261,
+            text: l10n.buttonSaveChanges,
             onPressed: _hasChanges && !_isSaving ? _save : null,
             isLoading: _isSaving,
             showBorder: false,

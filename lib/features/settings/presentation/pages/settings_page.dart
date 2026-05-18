@@ -105,7 +105,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         leading: PreviousButton(onPressed: () => context.pop()),
         centerTitle: true,
         title: Text(
-          l10n.settings_settingsPage_L104,
+          l10n.pageSettingsTitle,
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
@@ -116,9 +116,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // ══════════════════════════════════════════
             // 계정
             // ══════════════════════════════════════════
-            _buildSectionHeader(l10n.settings_settingsPage_L115),
+            _buildSectionHeader(l10n.settingsSectionAccount),
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L117,
+              text: l10n.settingsAccountChangeNickname,
               trailing: _buildForwardArrow(),
               onTap: _onNicknameChange,
             ),
@@ -129,28 +129,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // ══════════════════════════════════════════
             // 앱 설정
             // ══════════════════════════════════════════
-            _buildSectionHeader(l10n.settings_settingsPage_L128),
+            _buildSectionHeader(l10n.settingsSectionAppPreferences),
             _buildSwitchMenuItem(
-              text: l10n.settings_settingsPage_L130,
-              subtitle: l10n.settings_settingsPage_L131,
+              text: l10n.settingsAppGameNotification,
+              subtitle: l10n.settingsAppGameNotificationDescription,
               value: gamePushState.valueOrNull ?? false,
               onToggle: _onGamePushToggle,
             ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L137,
+              text: l10n.settingsAppGeneralNotification,
               // "게임 중 알림" 부분만 더 큰 스타일 + 진한 색상으로 강조
               subtitleWidget: Text.rich(
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: l10n.settings_settingsPage_L143,
+                      text: l10n.settingsAppGeneralNotificationHighlight,
                       style: AppTextStyles.tag12Semibold.copyWith(
                         color: AppColors.black800,
                       ),
                     ),
                     TextSpan(
-                      text: l10n.settings_settingsPage_L149,
+                      text: l10n.settingsAppGeneralNotificationDetail,
                       style: AppTextStyles.tag_12.copyWith(
                         color: AppColors.black600,
                       ),
@@ -165,8 +165,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _buildItemDivider(),
 
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L164,
-              subtitle: l10n.settings_settingsPage_L165,
+              text: l10n.settingsAppLocationPermission,
+              subtitle: l10n.settingsAppLocationPermissionDescription,
               onTap: () =>
                   AppSettings.openAppSettings(type: AppSettingsType.location),
             ),
@@ -194,26 +194,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // ══════════════════════════════════════════
             // 이용 안내
             // ══════════════════════════════════════════
-            _buildSectionHeader(l10n.settings_settingsPage_L176),
+            _buildSectionHeader(l10n.settingsSectionGuide),
             _buildVersionItem(),
             _buildItemDivider(),
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L179,
+              text: l10n.settingsGuideBugReport,
               onTap: _onBugReport,
             ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L182,
+              text: l10n.settingsGuideTutorialRewatch,
               onTap: () => context.push('/tutorial'),
             ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L186,
+              text: l10n.settingsGuideTutorialReset,
               onTap: _onResetTutorial,
             ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L189,
+              text: l10n.settingsGuideAgreements,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const AgreementSettingsPage(),
@@ -226,15 +226,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             // ══════════════════════════════════════════
             // 기타
             // ══════════════════════════════════════════
-            _buildSectionHeader(l10n.settings_settingsPage_L202),
+            _buildSectionHeader(l10n.settingsSectionEtc),
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L204,
+              text: l10n.buttonLogout,
               textColor: AppColors.red,
               onTap: _onLogout,
             ),
             _buildItemDivider(),
             _buildMenuItem(
-              text: l10n.settings_settingsPage_L210,
+              text: l10n.settingsEtcDeleteAccount,
               textColor: AppColors.black600,
               onTap: _showDeleteAccountDialog,
             ),
@@ -342,7 +342,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              AppLocalizations.of(context).settings_settingsPage_L292,
+              AppLocalizations.of(context).settingsAppVersionLabel,
               style: AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
             FutureBuilder<PackageInfo>(
@@ -551,7 +551,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           title: l10n.dialogsettingsPageTitle,
           label: l10n.fieldsettingsPageLabel,
           hintText: l10n.fieldsettingsPageHint,
-          submitText: l10n.settings_settingsPage_L498,
+          submitText: l10n.buttonSubmitReport,
           maxLength: 1000,
           onSubmit: _submitBugReport,
         ),
@@ -652,8 +652,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       // ignore: use_build_context_synchronously
       context,
       message: authState.hasError
-          ? AppLocalizations.of(context).settings_settingsPage_L590
-          : AppLocalizations.of(context).settings_settingsPage_L590_1,
+          ? AppLocalizations.of(context).snackbarLogoutFailed
+          : AppLocalizations.of(context).snackbarLogoutSuccess,
       backgroundColor: authState.hasError ? AppColors.red : AppColors.blue,
     );
   }
@@ -666,7 +666,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     AppDialog.show(
       context: context,
       title: l10n.dialogsettingsPageTitle5e0d,
-      message: l10n.settings_settingsPage_L603,
+      message: l10n.dialogDeleteAccountMessage,
       customContent: AppTextField(
         controller: controller,
         hintText: l10n.fieldsettingsPageHint2960,

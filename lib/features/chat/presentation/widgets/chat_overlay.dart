@@ -428,8 +428,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   Widget _buildTitle() {
     final l10n = AppLocalizations.of(context);
     final title = _currentPage == 0
-        ? l10n.chat_chatOverlay_L428
-        : l10n.chat_chatOverlay_L428_1;
+        ? l10n.chatScopeAllTitle
+        : l10n.chatScopeTeamTitle;
     final isNotificationOn = ref.watch(chatNotificationEnabledProvider);
 
     return Padding(

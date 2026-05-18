@@ -1838,73 +1838,25 @@
   "@game_zoneExitBanner_L66": {
     "description": "auto-imported from lib/features/game/presentation/widgets/zone_exit_banner.dart:66"
   },
-  "chat_chatProvider_L190": "인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다",
-  "@chat_chatProvider_L190": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:190"
-  },
-  "chat_chatProvider_L254": "나",
-  "@chat_chatProvider_L254": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:254"
-  },
   "dialogchatProviderMessage": "[팀]",
   "@dialogchatProviderMessage": {
     "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:262"
-  },
-  "chat_chatProvider_L265": "팀원닉네임",
-  "@chat_chatProvider_L265": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:265"
-  },
-  "chat_chatProvider_L265_1": "상대닉네임",
-  "@chat_chatProvider_L265_1": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:265"
-  },
-  "chat_chatProvider_L286": "시스템",
-  "@chat_chatProvider_L286": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:286"
   },
   "dialogchatProviderMessageDfca": "제한 시간은 30분입니다",
   "@dialogchatProviderMessageDfca": {
     "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:378"
   },
-  "chat_chatProvider_L381": "시스템",
-  "@chat_chatProvider_L381": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:381"
-  },
   "dialogchatProviderMessage2119": "게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!",
   "@dialogchatProviderMessage2119": {
     "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:385"
-  },
-  "chat_chatProvider_L388": "시스템",
-  "@chat_chatProvider_L388": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:388"
   },
   "dialogchatProviderMessageC357": "도둑 잘 도망쳐 봐요~",
   "@dialogchatProviderMessageC357": {
     "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:392"
   },
-  "chat_chatProvider_L395": "닉네임",
-  "@chat_chatProvider_L395": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:395"
-  },
   "dialogchatProviderMessageEa9a": "이겨봅시다!",
   "@dialogchatProviderMessageEa9a": {
     "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:399"
-  },
-  "chat_chatProvider_L402": "닉네임",
-  "@chat_chatProvider_L402": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:402"
-  },
-  "chat_chatProvider_L564": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
-  "@chat_chatProvider_L564": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:564"
-  },
-  "chat_chatProvider_L655": "인증이 만료되었습니다. 재로그인이 필요합니다",
-  "@chat_chatProvider_L655": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:655"
-  },
-  "chat_chatProvider_L676": "인증이 만료되었습니다. 재로그인이 필요합니다",
-  "@chat_chatProvider_L676": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:676"
   },
   "dialogchatContextMenuMessage": "메시지가 복사되었어요",
   "@dialogchatContextMenuMessage": {
@@ -1926,9 +1878,9 @@
   "@fieldchatContextMenuHint": {
     "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:139"
   },
-  "chat_chatContextMenu_L140": "신고하기",
-  "@chat_chatContextMenu_L140": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:140"
+  "buttonReport": "신고하기",
+  "@buttonReport": {
+    "description": "신고 공통 버튼 라벨"
   },
   "dialogchatContextMenuMessageDf78": "신고가 접수되었어요",
   "@dialogchatContextMenuMessageDf78": {
@@ -1950,13 +1902,13 @@
   "@dialogchatContextMenuConfirm": {
     "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:180"
   },
-  "chat_chatContextMenu_L190": "선택한 신고 사유:",
-  "@chat_chatContextMenu_L190": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:190"
+  "chatReportSelectedCategoryLabel": "선택한 신고 사유:",
+  "@chatReportSelectedCategoryLabel": {
+    "description": "신고 폼 — 선택한 카테고리 라벨 (뒤에 카테고리 이름 이어붙음)"
   },
-  "chat_chatContextMenu_L202": "\n신고된 내용은 검토 후 조치할게요",
-  "@chat_chatContextMenu_L202": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:202"
+  "chatReportSubmitNotice": "\n신고된 내용은 검토 후 조치할게요",
+  "@chatReportSubmitNotice": {
+    "description": "신고 폼 — 제출 시 검토 안내 (선두 줄바꿈은 위 라벨과 줄 분리 의도)"
   },
   "fieldchatContextMenuLabelA83e": "복사하기",
   "@fieldchatContextMenuLabelA83e": {
@@ -1970,22 +1922,22 @@
   "@fieldchatContextMenuLabel2f14": {
     "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:441"
   },
-  "chat_chatContextMenu_L478": "신고 유형 선택",
-  "@chat_chatContextMenu_L478": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:478"
+  "chatReportCategoryTitle": "신고 유형 선택",
+  "@chatReportCategoryTitle": {
+    "description": "신고 폼 — 카테고리 선택 섹션 제목"
   },
-  "chat_chatInputBar_L98": "전체 {all}개",
-  "@chat_chatInputBar_L98": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:98",
+  "chatInputBarUnreadAll": "전체 {all}개",
+  "@chatInputBarUnreadAll": {
+    "description": "미읽음 힌트 부분 — 전체 채팅 미읽음 수",
     "placeholders": {
       "all": {
         "type": "String"
       }
     }
   },
-  "chat_chatInputBar_L99": "팀 {team}개",
-  "@chat_chatInputBar_L99": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:99",
+  "chatInputBarUnreadTeam": "팀 {team}개",
+  "@chatInputBarUnreadTeam": {
+    "description": "미읽음 힌트 부분 — 팀 채팅 미읽음 수",
     "placeholders": {
       "team": {
         "type": "String"
@@ -2001,53 +1953,53 @@
       }
     }
   },
-  "chat_chatInputBar_L158": "연결 중...",
-  "@chat_chatInputBar_L158": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:158"
+  "chatInputBarConnecting": "연결 중...",
+  "@chatInputBarConnecting": {
+    "description": "채팅 입력바 — STOMP 연결 중 placeholder"
   },
-  "chat_chatInputBar_L159": "채팅을 입력하세요",
-  "@chat_chatInputBar_L159": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_input_bar.dart:159"
+  "chatInputBarHint": "채팅을 입력하세요",
+  "@chatInputBarHint": {
+    "description": "채팅 입력바 — 메시지 입력 placeholder"
   },
-  "chat_chatMessageList_L152": "채팅을 시작해보세요",
-  "@chat_chatMessageList_L152": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:152"
+  "chatMessageListEmpty": "채팅을 시작해보세요",
+  "@chatMessageListEmpty": {
+    "description": "채팅 메시지 리스트 — 메시지 0건 빈 상태 안내"
   },
   "fieldchatMessageListLabel": "최신 메시지로 이동",
   "@fieldchatMessageListLabel": {
     "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:229"
   },
-  "chat_chatMessageList_L276": "월",
-  "@chat_chatMessageList_L276": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  "chatWeekdayMon": "월",
+  "@chatWeekdayMon": {
+    "description": "채팅 날짜 구분선 — 월요일 단축 라벨"
   },
-  "chat_chatMessageList_L276_1": "화",
-  "@chat_chatMessageList_L276_1": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  "chatWeekdayTue": "화",
+  "@chatWeekdayTue": {
+    "description": "채팅 날짜 구분선 — 화요일 단축 라벨"
   },
-  "chat_chatMessageList_L276_2": "수",
-  "@chat_chatMessageList_L276_2": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  "chatWeekdayWed": "수",
+  "@chatWeekdayWed": {
+    "description": "채팅 날짜 구분선 — 수요일 단축 라벨"
   },
-  "chat_chatMessageList_L276_3": "목",
-  "@chat_chatMessageList_L276_3": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  "chatWeekdayThu": "목",
+  "@chatWeekdayThu": {
+    "description": "채팅 날짜 구분선 — 목요일 단축 라벨"
   },
-  "chat_chatMessageList_L276_4": "금",
-  "@chat_chatMessageList_L276_4": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  "chatWeekdayFri": "금",
+  "@chatWeekdayFri": {
+    "description": "채팅 날짜 구분선 — 금요일 단축 라벨"
   },
-  "chat_chatMessageList_L276_5": "토",
-  "@chat_chatMessageList_L276_5": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  "chatWeekdaySat": "토",
+  "@chatWeekdaySat": {
+    "description": "채팅 날짜 구분선 — 토요일 단축 라벨"
   },
-  "chat_chatMessageList_L276_6": "일",
-  "@chat_chatMessageList_L276_6": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:276"
+  "chatWeekdaySun": "일",
+  "@chatWeekdaySun": {
+    "description": "채팅 날짜 구분선 — 일요일 단축 라벨"
   },
-  "chat_chatMessageList_L278": "{year}년 {month}월 {day}일 {weekday}요일",
-  "@chat_chatMessageList_L278": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_message_list.dart:278",
+  "chatDateSeparator": "{year}년 {month}월 {day}일 {weekday}요일",
+  "@chatDateSeparator": {
+    "description": "채팅 날짜 구분선 — 날짜+요일 라벨 (요일은 chatWeekday* 키 값이 들어감)",
     "placeholders": {
       "year": {
         "type": "String"
@@ -2063,25 +2015,25 @@
       }
     }
   },
-  "chat_chatOverlay_L428": "전체 채팅",
-  "@chat_chatOverlay_L428": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_overlay.dart:428"
+  "chatScopeAllTitle": "전체 채팅",
+  "@chatScopeAllTitle": {
+    "description": "채팅 오버레이 — 전체 채팅 탭 제목"
   },
-  "chat_chatOverlay_L428_1": "팀 채팅",
-  "@chat_chatOverlay_L428_1": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_overlay.dart:428"
+  "chatScopeTeamTitle": "팀 채팅",
+  "@chatScopeTeamTitle": {
+    "description": "채팅 오버레이 — 팀 채팅 탭 제목"
   },
-  "chat_chatPreviewCard_L116": "공지",
-  "@chat_chatPreviewCard_L116": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:116"
+  "chatPreviewTagNotice": "공지",
+  "@chatPreviewTagNotice": {
+    "description": "채팅 프리뷰 카드 — 시스템 공지 태그"
   },
-  "chat_chatPreviewCard_L120": "팀",
-  "@chat_chatPreviewCard_L120": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:120"
+  "chatPreviewTagTeam": "팀",
+  "@chatPreviewTagTeam": {
+    "description": "채팅 프리뷰 카드 — 팀 채팅 태그"
   },
-  "chat_chatPreviewCard_L124": "전체",
-  "@chat_chatPreviewCard_L124": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_preview_card.dart:124"
+  "chatPreviewTagAll": "전체",
+  "@chatPreviewTagAll": {
+    "description": "채팅 프리뷰 카드 — 전체 채팅 태그"
   },
   "dialogagreementSettingsPageMessage": "아직 네트워크에 연결되지 않았어요",
   "@dialogagreementSettingsPageMessage": {
@@ -2091,21 +2043,21 @@
   "@dialogagreementSettingsPageMessageEfc5": {
     "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:97"
   },
-  "settings_agreementSettingsPage_L102": "일시적인 오류가 발생했습니다. 다시 시도해주세요",
-  "@settings_agreementSettingsPage_L102": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:102"
+  "errorTemporaryRetry": "일시적인 오류가 발생했습니다. 다시 시도해주세요",
+  "@errorTemporaryRetry": {
+    "description": "일시적 오류 발생 시 재시도 유도 공통 메시지"
   },
-  "settings_agreementSettingsPage_L142": "이용약관 및 정책",
-  "@settings_agreementSettingsPage_L142": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:142"
+  "pageAgreementSettingsTitle": "이용약관 및 정책",
+  "@pageAgreementSettingsTitle": {
+    "description": "이용약관/정책 설정 페이지 타이틀"
   },
-  "settings_agreementSettingsPage_L159": "약관 동의 현황을 불러올 수 없습니다",
-  "@settings_agreementSettingsPage_L159": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:159"
+  "errorAgreementLoadFailed": "약관 동의 현황을 불러올 수 없습니다",
+  "@errorAgreementLoadFailed": {
+    "description": "약관 동의 정보 조회 실패 안내"
   },
-  "settings_agreementSettingsPage_L176": "다시 시도",
-  "@settings_agreementSettingsPage_L176": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:176"
+  "buttonRetry": "다시 시도",
+  "@buttonRetry": {
+    "description": "재시도 공통 버튼 라벨"
   },
   "dialogagreementSettingsPageTitle": "이용약관",
   "@dialogagreementSettingsPageTitle": {
@@ -2123,93 +2075,89 @@
   "@dialogagreementSettingsPageTitle76b8": {
     "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:251"
   },
-  "settings_agreementSettingsPage_L261": "변경사항 저장",
-  "@settings_agreementSettingsPage_L261": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:261"
+  "buttonSaveChanges": "변경사항 저장",
+  "@buttonSaveChanges": {
+    "description": "변경사항 저장 공통 버튼 라벨"
   },
-  "settings_legalDocumentPage_L105": "문서를 불러올 수 없습니다",
-  "@settings_legalDocumentPage_L105": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/legal_document_page.dart:105"
+  "errorLegalDocumentLoadFailed": "문서를 불러올 수 없습니다",
+  "@errorLegalDocumentLoadFailed": {
+    "description": "법적 문서(약관/정책) 로드 실패 안내"
   },
-  "settings_settingsPage_L104": "설정",
-  "@settings_settingsPage_L104": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:104"
+  "pageSettingsTitle": "설정",
+  "@pageSettingsTitle": {
+    "description": "설정 페이지 AppBar 타이틀"
   },
-  "settings_settingsPage_L115": "계정",
-  "@settings_settingsPage_L115": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:115"
+  "settingsSectionAccount": "계정",
+  "@settingsSectionAccount": {
+    "description": "설정 — 계정 섹션 헤더"
   },
-  "settings_settingsPage_L117": "닉네임 변경",
-  "@settings_settingsPage_L117": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:117"
+  "settingsAccountChangeNickname": "닉네임 변경",
+  "@settingsAccountChangeNickname": {
+    "description": "설정 — 닉네임 변경 메뉴"
   },
-  "settings_settingsPage_L128": "앱 설정",
-  "@settings_settingsPage_L128": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:128"
+  "settingsSectionAppPreferences": "앱 설정",
+  "@settingsSectionAppPreferences": {
+    "description": "설정 — 앱 설정 섹션 헤더"
   },
-  "settings_settingsPage_L130": "게임 알림",
-  "@settings_settingsPage_L130": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:130"
+  "settingsAppGameNotification": "게임 알림",
+  "@settingsAppGameNotification": {
+    "description": "설정 — 게임 알림 토글 메뉴 라벨"
   },
-  "settings_settingsPage_L131": "게임 진행 중 발생하는 이벤트 알림을 설정해요",
-  "@settings_settingsPage_L131": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:131"
+  "settingsAppGameNotificationDescription": "게임 진행 중 발생하는 이벤트 알림을 설정해요",
+  "@settingsAppGameNotificationDescription": {
+    "description": "설정 — 게임 알림 토글 메뉴 부제"
   },
-  "settings_settingsPage_L137": "알림",
-  "@settings_settingsPage_L137": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:137"
+  "settingsAppGeneralNotification": "알림",
+  "@settingsAppGeneralNotification": {
+    "description": "설정 — 시스템 알림 설정 메뉴 라벨"
   },
-  "settings_settingsPage_L143": "게임 중 알림",
-  "@settings_settingsPage_L143": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:143"
+  "settingsAppGeneralNotificationHighlight": "게임 중 알림",
+  "@settingsAppGeneralNotificationHighlight": {
+    "description": "설정 — 시스템 알림 설정 부제의 강조 토큰 (스타일 분리 위해 별도 키)"
   },
-  "settings_settingsPage_L149": "을 포함한 앱에서 보내는 모든 알림을 설정해요",
-  "@settings_settingsPage_L149": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:149"
+  "settingsAppGeneralNotificationDetail": "을 포함한 앱에서 보내는 모든 알림을 설정해요",
+  "@settingsAppGeneralNotificationDetail": {
+    "description": "설정 — 시스템 알림 설정 부제의 나머지 토큰 (Highlight 뒤에 이어붙임)"
   },
-  "settings_settingsPage_L164": "위치 권한 관리",
-  "@settings_settingsPage_L164": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:164"
+  "settingsAppLocationPermission": "위치 권한 관리",
+  "@settingsAppLocationPermission": {
+    "description": "설정 — 위치 권한 관리 메뉴 라벨"
   },
-  "settings_settingsPage_L165": "기기 설정에서 위치 권한을 변경할 수 있어요",
-  "@settings_settingsPage_L165": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:165"
+  "settingsAppLocationPermissionDescription": "기기 설정에서 위치 권한을 변경할 수 있어요",
+  "@settingsAppLocationPermissionDescription": {
+    "description": "설정 — 위치 권한 관리 메뉴 부제"
   },
-  "settings_settingsPage_L176": "이용 안내",
-  "@settings_settingsPage_L176": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:176"
+  "settingsSectionGuide": "이용 안내",
+  "@settingsSectionGuide": {
+    "description": "설정 — 이용 안내 섹션 헤더"
   },
-  "settings_settingsPage_L179": "버그 제보",
-  "@settings_settingsPage_L179": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:179"
+  "settingsGuideBugReport": "버그 제보",
+  "@settingsGuideBugReport": {
+    "description": "설정 — 버그 제보 메뉴 라벨"
   },
-  "settings_settingsPage_L182": "튜토리얼 다시 보기",
-  "@settings_settingsPage_L182": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:182"
+  "settingsGuideTutorialRewatch": "튜토리얼 다시 보기",
+  "@settingsGuideTutorialRewatch": {
+    "description": "설정 — 튜토리얼 다시 보기 메뉴"
   },
-  "settings_settingsPage_L186": "튜토리얼 초기화",
-  "@settings_settingsPage_L186": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:186"
+  "settingsGuideTutorialReset": "튜토리얼 초기화",
+  "@settingsGuideTutorialReset": {
+    "description": "설정 — 튜토리얼 초기화 메뉴"
   },
-  "settings_settingsPage_L189": "이용약관 및 정책",
-  "@settings_settingsPage_L189": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:189"
+  "settingsGuideAgreements": "이용약관 및 정책",
+  "@settingsGuideAgreements": {
+    "description": "설정 — 이용약관 및 정책 메뉴 (페이지 진입)"
   },
-  "settings_settingsPage_L202": "기타",
-  "@settings_settingsPage_L202": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:202"
+  "settingsSectionEtc": "기타",
+  "@settingsSectionEtc": {
+    "description": "설정 — 기타 섹션 헤더 (로그아웃/탈퇴 등)"
   },
-  "settings_settingsPage_L204": "로그아웃",
-  "@settings_settingsPage_L204": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:204"
+  "settingsEtcDeleteAccount": "회원 탈퇴",
+  "@settingsEtcDeleteAccount": {
+    "description": "설정 — 회원 탈퇴 메뉴 라벨"
   },
-  "settings_settingsPage_L210": "회원 탈퇴",
-  "@settings_settingsPage_L210": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:210"
-  },
-  "settings_settingsPage_L292": "앱 버전",
-  "@settings_settingsPage_L292": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:292"
+  "settingsAppVersionLabel": "앱 버전",
+  "@settingsAppVersionLabel": {
+    "description": "설정 — 앱 버전 표시 메뉴 라벨"
   },
   "dialogsettingsPageMessage": "게임 알림 설정을 변경하지 못했어요",
   "@dialogsettingsPageMessage": {
@@ -2227,9 +2175,9 @@
   "@fieldsettingsPageHint": {
     "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:497"
   },
-  "settings_settingsPage_L498": "제보하기",
-  "@settings_settingsPage_L498": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:498"
+  "buttonSubmitReport": "제보하기",
+  "@buttonSubmitReport": {
+    "description": "버그 제보 다이얼로그 — 제출 버튼 라벨"
   },
   "dialogsettingsPageMessage1b8e": "버그 제보가 접수되었어요",
   "@dialogsettingsPageMessage1b8e": {
@@ -2263,21 +2211,21 @@
   "@dialogsettingsPageConfirm9ab1": {
     "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:570"
   },
-  "settings_settingsPage_L590": "로그아웃에 실패했습니다",
-  "@settings_settingsPage_L590": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:590"
+  "snackbarLogoutFailed": "로그아웃에 실패했습니다",
+  "@snackbarLogoutFailed": {
+    "description": "로그아웃 실패 스낵바 메시지"
   },
-  "settings_settingsPage_L590_1": "로그아웃되었습니다",
-  "@settings_settingsPage_L590_1": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:590"
+  "snackbarLogoutSuccess": "로그아웃되었습니다",
+  "@snackbarLogoutSuccess": {
+    "description": "로그아웃 성공 스낵바 메시지"
   },
   "dialogsettingsPageTitle5e0d": "회원 탈퇴",
   "@dialogsettingsPageTitle5e0d": {
     "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:601"
   },
-  "settings_settingsPage_L603": "탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요",
-  "@settings_settingsPage_L603": {
-    "description": "회원 탈퇴 확인 다이얼로그 본문 — 사용자에게 비가역성 경고 + 확인 키워드 입력 요구"
+  "dialogDeleteAccountMessage": "탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요",
+  "@dialogDeleteAccountMessage": {
+    "description": "회원 탈퇴 확인 다이얼로그 본문 — 비가역성 경고 + 확인 키워드 입력 요구"
   },
   "fieldsettingsPageHint2960": "delete",
   "@fieldsettingsPageHint2960": {
@@ -2290,10 +2238,6 @@
   "dialogsettingsPageConfirm9140": "탈퇴",
   "@dialogsettingsPageConfirm9140": {
     "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:609"
-  },
-  "settings_settingsPage_L613": "탈퇴하기",
-  "@settings_settingsPage_L613": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:613"
   },
   "tutorialDummyNicknameCop1": "경찰1",
   "@tutorialDummyNicknameCop1": {

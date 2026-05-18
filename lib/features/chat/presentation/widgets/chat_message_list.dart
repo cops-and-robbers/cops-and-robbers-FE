@@ -151,7 +151,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
     if (filteredMessages.isEmpty) {
       return Center(
         child: Text(
-          l10n.chat_chatMessageList_L152,
+          l10n.chatMessageListEmpty,
           style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
         ),
       );
@@ -278,16 +278,16 @@ class _ChatMessageListState extends State<ChatMessageList> {
     final l10n = AppLocalizations.of(context);
     // 요일 라벨 — 가독성을 위해 ARB 키 7개로 분리 관리 (월~일)
     final weekdays = [
-      l10n.chat_chatMessageList_L276,
-      l10n.chat_chatMessageList_L276_1,
-      l10n.chat_chatMessageList_L276_2,
-      l10n.chat_chatMessageList_L276_3,
-      l10n.chat_chatMessageList_L276_4,
-      l10n.chat_chatMessageList_L276_5,
-      l10n.chat_chatMessageList_L276_6,
+      l10n.chatWeekdayMon,
+      l10n.chatWeekdayTue,
+      l10n.chatWeekdayWed,
+      l10n.chatWeekdayThu,
+      l10n.chatWeekdayFri,
+      l10n.chatWeekdaySat,
+      l10n.chatWeekdaySun,
     ];
     final weekday = weekdays[dt.weekday - 1];
-    final label = l10n.chat_chatMessageList_L278(
+    final label = l10n.chatDateSeparator(
       dt.year.toString(),
       dt.month.toString(),
       dt.day.toString(),

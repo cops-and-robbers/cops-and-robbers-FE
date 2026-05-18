@@ -104,7 +104,7 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
             : _document == null
             ? Center(
                 child: Text(
-                  AppLocalizations.of(context).settings_legalDocumentPage_L105,
+                  AppLocalizations.of(context).errorLegalDocumentLoadFailed,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: AppColors.black600,
                   ),

@@ -98,8 +98,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
     final l10n = AppLocalizations.of(context);
     final parts = <String>[];
     // 전체/팀 카운트 라벨은 ARB placeholder 키 사용 (단위 표기가 로케일별로 다름)
-    if (all > 0) parts.add(l10n.chat_chatInputBar_L98(all.toString()));
-    if (team > 0) parts.add(l10n.chat_chatInputBar_L99(team.toString()));
+    if (all > 0) parts.add(l10n.chatInputBarUnreadAll(all.toString()));
+    if (team > 0) parts.add(l10n.chatInputBarUnreadTeam(team.toString()));
     return l10n.chatInputBarUnreadHint(parts.join(' · '));
   }
 
@@ -159,8 +159,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   ),
                   decoration: InputDecoration(
                     hintText: !widget.enabled
-                        ? l10n.chat_chatInputBar_L158
-                        : _buildUnreadHint() ?? l10n.chat_chatInputBar_L159,
+                        ? l10n.chatInputBarConnecting
+                        : _buildUnreadHint() ?? l10n.chatInputBarHint,
                     hintStyle: AppTextStyles.label16Medium.copyWith(
                       color: widget.isDarkMode
                           ? AppColors.black200

@@ -115,15 +115,15 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
     if (isSystem) {
       tagBg = AppColors.red;
       tagText = AppColors.white;
-      tagLabel = l10n.chat_chatPreviewCard_L116;
+      tagLabel = l10n.chatPreviewTagNotice;
     } else if (isTeam) {
       tagBg = dark ? AppColors.green : AppColors.blue;
       tagText = dark ? AppColors.black : AppColors.white;
-      tagLabel = l10n.chat_chatPreviewCard_L120;
+      tagLabel = l10n.chatPreviewTagTeam;
     } else {
       tagBg = AppColors.black;
       tagText = AppColors.white;
-      tagLabel = l10n.chat_chatPreviewCard_L124;
+      tagLabel = l10n.chatPreviewTagAll;
     }
 
     // 닉네임/메시지 색상 (채팅 버블과 동일)

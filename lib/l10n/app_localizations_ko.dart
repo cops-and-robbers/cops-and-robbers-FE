@@ -1369,55 +1369,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get game_zoneExitBanner_L66 => '플레이그라운드를 벗어났어요';
 
   @override
-  String get chat_chatProvider_L190 => '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다';
-
-  @override
-  String get chat_chatProvider_L254 => '나';
-
-  @override
   String get dialogchatProviderMessage => '[팀]';
-
-  @override
-  String get chat_chatProvider_L265 => '팀원닉네임';
-
-  @override
-  String get chat_chatProvider_L265_1 => '상대닉네임';
-
-  @override
-  String get chat_chatProvider_L286 => '시스템';
 
   @override
   String get dialogchatProviderMessageDfca => '제한 시간은 30분입니다';
 
   @override
-  String get chat_chatProvider_L381 => '시스템';
-
-  @override
   String get dialogchatProviderMessage2119 => '게임이 곧 시작됩니다. 모든 플레이어는 준비하세요!';
-
-  @override
-  String get chat_chatProvider_L388 => '시스템';
 
   @override
   String get dialogchatProviderMessageC357 => '도둑 잘 도망쳐 봐요~';
 
   @override
-  String get chat_chatProvider_L395 => '닉네임';
-
-  @override
   String get dialogchatProviderMessageEa9a => '이겨봅시다!';
-
-  @override
-  String get chat_chatProvider_L402 => '닉네임';
-
-  @override
-  String get chat_chatProvider_L564 => '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요';
-
-  @override
-  String get chat_chatProvider_L655 => '인증이 만료되었습니다. 재로그인이 필요합니다';
-
-  @override
-  String get chat_chatProvider_L676 => '인증이 만료되었습니다. 재로그인이 필요합니다';
 
   @override
   String get dialogchatContextMenuMessage => '메시지가 복사되었어요';
@@ -1436,7 +1400,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '신고 사유를 자세히 작성해 주세요\n(상황 또는 대화 내용을 포함해 주세요)';
 
   @override
-  String get chat_chatContextMenu_L140 => '신고하기';
+  String get buttonReport => '신고하기';
 
   @override
   String get dialogchatContextMenuMessageDf78 => '신고가 접수되었어요';
@@ -1454,10 +1418,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogchatContextMenuConfirm => '신고하기';
 
   @override
-  String get chat_chatContextMenu_L190 => '선택한 신고 사유:';
+  String get chatReportSelectedCategoryLabel => '선택한 신고 사유:';
 
   @override
-  String get chat_chatContextMenu_L202 => '\n신고된 내용은 검토 후 조치할게요';
+  String get chatReportSubmitNotice => '\n신고된 내용은 검토 후 조치할게요';
 
   @override
   String get fieldchatContextMenuLabelA83e => '복사하기';
@@ -1469,15 +1433,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fieldchatContextMenuLabel2f14 => '차단하기';
 
   @override
-  String get chat_chatContextMenu_L478 => '신고 유형 선택';
+  String get chatReportCategoryTitle => '신고 유형 선택';
 
   @override
-  String chat_chatInputBar_L98(String all) {
+  String chatInputBarUnreadAll(String all) {
     return '전체 $all개';
   }
 
   @override
-  String chat_chatInputBar_L99(String team) {
+  String chatInputBarUnreadTeam(String team) {
     return '팀 $team개';
   }
 
@@ -1487,40 +1451,40 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get chat_chatInputBar_L158 => '연결 중...';
+  String get chatInputBarConnecting => '연결 중...';
 
   @override
-  String get chat_chatInputBar_L159 => '채팅을 입력하세요';
+  String get chatInputBarHint => '채팅을 입력하세요';
 
   @override
-  String get chat_chatMessageList_L152 => '채팅을 시작해보세요';
+  String get chatMessageListEmpty => '채팅을 시작해보세요';
 
   @override
   String get fieldchatMessageListLabel => '최신 메시지로 이동';
 
   @override
-  String get chat_chatMessageList_L276 => '월';
+  String get chatWeekdayMon => '월';
 
   @override
-  String get chat_chatMessageList_L276_1 => '화';
+  String get chatWeekdayTue => '화';
 
   @override
-  String get chat_chatMessageList_L276_2 => '수';
+  String get chatWeekdayWed => '수';
 
   @override
-  String get chat_chatMessageList_L276_3 => '목';
+  String get chatWeekdayThu => '목';
 
   @override
-  String get chat_chatMessageList_L276_4 => '금';
+  String get chatWeekdayFri => '금';
 
   @override
-  String get chat_chatMessageList_L276_5 => '토';
+  String get chatWeekdaySat => '토';
 
   @override
-  String get chat_chatMessageList_L276_6 => '일';
+  String get chatWeekdaySun => '일';
 
   @override
-  String chat_chatMessageList_L278(
+  String chatDateSeparator(
     String year,
     String month,
     String day,
@@ -1530,19 +1494,19 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get chat_chatOverlay_L428 => '전체 채팅';
+  String get chatScopeAllTitle => '전체 채팅';
 
   @override
-  String get chat_chatOverlay_L428_1 => '팀 채팅';
+  String get chatScopeTeamTitle => '팀 채팅';
 
   @override
-  String get chat_chatPreviewCard_L116 => '공지';
+  String get chatPreviewTagNotice => '공지';
 
   @override
-  String get chat_chatPreviewCard_L120 => '팀';
+  String get chatPreviewTagTeam => '팀';
 
   @override
-  String get chat_chatPreviewCard_L124 => '전체';
+  String get chatPreviewTagAll => '전체';
 
   @override
   String get dialogagreementSettingsPageMessage => '아직 네트워크에 연결되지 않았어요';
@@ -1551,17 +1515,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogagreementSettingsPageMessageEfc5 => '변경사항이 저장되었어요';
 
   @override
-  String get settings_agreementSettingsPage_L102 =>
-      '일시적인 오류가 발생했습니다. 다시 시도해주세요';
+  String get errorTemporaryRetry => '일시적인 오류가 발생했습니다. 다시 시도해주세요';
 
   @override
-  String get settings_agreementSettingsPage_L142 => '이용약관 및 정책';
+  String get pageAgreementSettingsTitle => '이용약관 및 정책';
 
   @override
-  String get settings_agreementSettingsPage_L159 => '약관 동의 현황을 불러올 수 없습니다';
+  String get errorAgreementLoadFailed => '약관 동의 현황을 불러올 수 없습니다';
 
   @override
-  String get settings_agreementSettingsPage_L176 => '다시 시도';
+  String get buttonRetry => '다시 시도';
 
   @override
   String get dialogagreementSettingsPageTitle => '이용약관';
@@ -1576,70 +1539,70 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogagreementSettingsPageTitle76b8 => '마케팅 정보 수신';
 
   @override
-  String get settings_agreementSettingsPage_L261 => '변경사항 저장';
+  String get buttonSaveChanges => '변경사항 저장';
 
   @override
-  String get settings_legalDocumentPage_L105 => '문서를 불러올 수 없습니다';
+  String get errorLegalDocumentLoadFailed => '문서를 불러올 수 없습니다';
 
   @override
-  String get settings_settingsPage_L104 => '설정';
+  String get pageSettingsTitle => '설정';
 
   @override
-  String get settings_settingsPage_L115 => '계정';
+  String get settingsSectionAccount => '계정';
 
   @override
-  String get settings_settingsPage_L117 => '닉네임 변경';
+  String get settingsAccountChangeNickname => '닉네임 변경';
 
   @override
-  String get settings_settingsPage_L128 => '앱 설정';
+  String get settingsSectionAppPreferences => '앱 설정';
 
   @override
-  String get settings_settingsPage_L130 => '게임 알림';
+  String get settingsAppGameNotification => '게임 알림';
 
   @override
-  String get settings_settingsPage_L131 => '게임 진행 중 발생하는 이벤트 알림을 설정해요';
+  String get settingsAppGameNotificationDescription =>
+      '게임 진행 중 발생하는 이벤트 알림을 설정해요';
 
   @override
-  String get settings_settingsPage_L137 => '알림';
+  String get settingsAppGeneralNotification => '알림';
 
   @override
-  String get settings_settingsPage_L143 => '게임 중 알림';
+  String get settingsAppGeneralNotificationHighlight => '게임 중 알림';
 
   @override
-  String get settings_settingsPage_L149 => '을 포함한 앱에서 보내는 모든 알림을 설정해요';
+  String get settingsAppGeneralNotificationDetail =>
+      '을 포함한 앱에서 보내는 모든 알림을 설정해요';
 
   @override
-  String get settings_settingsPage_L164 => '위치 권한 관리';
+  String get settingsAppLocationPermission => '위치 권한 관리';
 
   @override
-  String get settings_settingsPage_L165 => '기기 설정에서 위치 권한을 변경할 수 있어요';
+  String get settingsAppLocationPermissionDescription =>
+      '기기 설정에서 위치 권한을 변경할 수 있어요';
 
   @override
-  String get settings_settingsPage_L176 => '이용 안내';
+  String get settingsSectionGuide => '이용 안내';
 
   @override
-  String get settings_settingsPage_L179 => '버그 제보';
+  String get settingsGuideBugReport => '버그 제보';
 
   @override
-  String get settings_settingsPage_L182 => '튜토리얼 다시 보기';
+  String get settingsGuideTutorialRewatch => '튜토리얼 다시 보기';
 
   @override
-  String get settings_settingsPage_L186 => '튜토리얼 초기화';
+  String get settingsGuideTutorialReset => '튜토리얼 초기화';
 
   @override
-  String get settings_settingsPage_L189 => '이용약관 및 정책';
+  String get settingsGuideAgreements => '이용약관 및 정책';
 
   @override
-  String get settings_settingsPage_L202 => '기타';
+  String get settingsSectionEtc => '기타';
 
   @override
-  String get settings_settingsPage_L204 => '로그아웃';
+  String get settingsEtcDeleteAccount => '회원 탈퇴';
 
   @override
-  String get settings_settingsPage_L210 => '회원 탈퇴';
-
-  @override
-  String get settings_settingsPage_L292 => '앱 버전';
+  String get settingsAppVersionLabel => '앱 버전';
 
   @override
   String get dialogsettingsPageMessage => '게임 알림 설정을 변경하지 못했어요';
@@ -1655,7 +1618,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)';
 
   @override
-  String get settings_settingsPage_L498 => '제보하기';
+  String get buttonSubmitReport => '제보하기';
 
   @override
   String get dialogsettingsPageMessage1b8e => '버그 제보가 접수되었어요';
@@ -1683,16 +1646,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogsettingsPageConfirm9ab1 => '로그아웃';
 
   @override
-  String get settings_settingsPage_L590 => '로그아웃에 실패했습니다';
+  String get snackbarLogoutFailed => '로그아웃에 실패했습니다';
 
   @override
-  String get settings_settingsPage_L590_1 => '로그아웃되었습니다';
+  String get snackbarLogoutSuccess => '로그아웃되었습니다';
 
   @override
   String get dialogsettingsPageTitle5e0d => '회원 탈퇴';
 
   @override
-  String get settings_settingsPage_L603 =>
+  String get dialogDeleteAccountMessage =>
       '탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요';
 
   @override
@@ -1703,9 +1666,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dialogsettingsPageConfirm9140 => '탈퇴';
-
-  @override
-  String get settings_settingsPage_L613 => '탈퇴하기';
 
   @override
   String get tutorialDummyNicknameCop1 => '경찰1';

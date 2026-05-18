@@ -1483,61 +1483,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get game_zoneExitBanner_L66 => 'Left the playground';
 
   @override
-  String get chat_chatProvider_L190 =>
-      'Unable to retrieve the authentication token. Re-login is required';
-
-  @override
-  String get chat_chatProvider_L254 => 'Me';
-
-  @override
   String get dialogchatProviderMessage => '[Team]';
 
   @override
-  String get chat_chatProvider_L265 => 'Teammate nickname';
-
-  @override
-  String get chat_chatProvider_L265_1 => 'Opponent nickname';
-
-  @override
-  String get chat_chatProvider_L286 => 'System';
-
-  @override
   String get dialogchatProviderMessageDfca => 'The time limit is 30 minutes';
-
-  @override
-  String get chat_chatProvider_L381 => 'System';
 
   @override
   String get dialogchatProviderMessage2119 =>
       'The game is about to start. All players, please get ready!';
 
   @override
-  String get chat_chatProvider_L388 => 'System';
-
-  @override
   String get dialogchatProviderMessageC357 =>
       'Good luck running away, Robbers~';
 
   @override
-  String get chat_chatProvider_L395 => 'Nickname';
-
-  @override
   String get dialogchatProviderMessageEa9a => 'Let\'s win this!';
-
-  @override
-  String get chat_chatProvider_L402 => 'Nickname';
-
-  @override
-  String get chat_chatProvider_L564 =>
-      'Unable to connect to the server. Please try again in a moment';
-
-  @override
-  String get chat_chatProvider_L655 =>
-      'Authentication has expired. Re-login is required';
-
-  @override
-  String get chat_chatProvider_L676 =>
-      'Authentication has expired. Re-login is required';
 
   @override
   String get dialogchatContextMenuMessage => 'Message has been copied';
@@ -1556,7 +1516,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please write the reason for the report in detail\n(include the situation or conversation details)';
 
   @override
-  String get chat_chatContextMenu_L140 => 'Report';
+  String get buttonReport => 'Report';
 
   @override
   String get dialogchatContextMenuMessageDf78 => 'Report has been received';
@@ -1575,10 +1535,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogchatContextMenuConfirm => 'Report';
 
   @override
-  String get chat_chatContextMenu_L190 => 'Selected reason for report:';
+  String get chatReportSelectedCategoryLabel => 'Selected reason for report:';
 
   @override
-  String get chat_chatContextMenu_L202 =>
+  String get chatReportSubmitNotice =>
       '\nThe reported content will be reviewed and acted upon';
 
   @override
@@ -1591,15 +1551,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldchatContextMenuLabel2f14 => 'Block';
 
   @override
-  String get chat_chatContextMenu_L478 => 'Select report type';
+  String get chatReportCategoryTitle => 'Select report type';
 
   @override
-  String chat_chatInputBar_L98(String all) {
+  String chatInputBarUnreadAll(String all) {
     return 'Total $all';
   }
 
   @override
-  String chat_chatInputBar_L99(String team) {
+  String chatInputBarUnreadTeam(String team) {
     return 'Team $team';
   }
 
@@ -1609,40 +1569,40 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get chat_chatInputBar_L158 => 'Connecting...';
+  String get chatInputBarConnecting => 'Connecting...';
 
   @override
-  String get chat_chatInputBar_L159 => 'Enter chat message';
+  String get chatInputBarHint => 'Enter chat message';
 
   @override
-  String get chat_chatMessageList_L152 => 'Start chatting';
+  String get chatMessageListEmpty => 'Start chatting';
 
   @override
   String get fieldchatMessageListLabel => 'Go to the latest message';
 
   @override
-  String get chat_chatMessageList_L276 => 'Mon';
+  String get chatWeekdayMon => 'Mon';
 
   @override
-  String get chat_chatMessageList_L276_1 => 'Tue';
+  String get chatWeekdayTue => 'Tue';
 
   @override
-  String get chat_chatMessageList_L276_2 => 'Wed';
+  String get chatWeekdayWed => 'Wed';
 
   @override
-  String get chat_chatMessageList_L276_3 => 'Thu';
+  String get chatWeekdayThu => 'Thu';
 
   @override
-  String get chat_chatMessageList_L276_4 => 'Fri';
+  String get chatWeekdayFri => 'Fri';
 
   @override
-  String get chat_chatMessageList_L276_5 => 'Sat';
+  String get chatWeekdaySat => 'Sat';
 
   @override
-  String get chat_chatMessageList_L276_6 => 'Sun';
+  String get chatWeekdaySun => 'Sun';
 
   @override
-  String chat_chatMessageList_L278(
+  String chatDateSeparator(
     String year,
     String month,
     String day,
@@ -1652,19 +1612,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get chat_chatOverlay_L428 => 'Global chat';
+  String get chatScopeAllTitle => 'Global chat';
 
   @override
-  String get chat_chatOverlay_L428_1 => 'Team chat';
+  String get chatScopeTeamTitle => 'Team chat';
 
   @override
-  String get chat_chatPreviewCard_L116 => 'Notice';
+  String get chatPreviewTagNotice => 'Notice';
 
   @override
-  String get chat_chatPreviewCard_L120 => 'Team';
+  String get chatPreviewTagTeam => 'Team';
 
   @override
-  String get chat_chatPreviewCard_L124 => 'All';
+  String get chatPreviewTagAll => 'All';
 
   @override
   String get dialogagreementSettingsPageMessage =>
@@ -1675,18 +1635,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Changes have been saved';
 
   @override
-  String get settings_agreementSettingsPage_L102 =>
+  String get errorTemporaryRetry =>
       'A temporary error occurred. Please try again';
 
   @override
-  String get settings_agreementSettingsPage_L142 => 'Terms and policies';
+  String get pageAgreementSettingsTitle => 'Terms and policies';
 
   @override
-  String get settings_agreementSettingsPage_L159 =>
-      'Unable to load agreement status';
+  String get errorAgreementLoadFailed => 'Unable to load agreement status';
 
   @override
-  String get settings_agreementSettingsPage_L176 => 'Retry';
+  String get buttonRetry => 'Retry';
 
   @override
   String get dialogagreementSettingsPageTitle => 'Terms of service';
@@ -1703,73 +1662,70 @@ class AppLocalizationsEn extends AppLocalizations {
       'Receive marketing information';
 
   @override
-  String get settings_agreementSettingsPage_L261 => 'Save changes';
+  String get buttonSaveChanges => 'Save changes';
 
   @override
-  String get settings_legalDocumentPage_L105 => 'Unable to load document';
+  String get errorLegalDocumentLoadFailed => 'Unable to load document';
 
   @override
-  String get settings_settingsPage_L104 => 'Settings';
+  String get pageSettingsTitle => 'Settings';
 
   @override
-  String get settings_settingsPage_L115 => 'Account';
+  String get settingsSectionAccount => 'Account';
 
   @override
-  String get settings_settingsPage_L117 => 'Change nickname';
+  String get settingsAccountChangeNickname => 'Change nickname';
 
   @override
-  String get settings_settingsPage_L128 => 'App settings';
+  String get settingsSectionAppPreferences => 'App settings';
 
   @override
-  String get settings_settingsPage_L130 => 'Game notifications';
+  String get settingsAppGameNotification => 'Game notifications';
 
   @override
-  String get settings_settingsPage_L131 =>
+  String get settingsAppGameNotificationDescription =>
       'Configure notifications for events occurring during the game';
 
   @override
-  String get settings_settingsPage_L137 => 'Notification';
+  String get settingsAppGeneralNotification => 'Notification';
 
   @override
-  String get settings_settingsPage_L143 => 'In-game notifications';
+  String get settingsAppGeneralNotificationHighlight => 'In-game notifications';
 
   @override
-  String get settings_settingsPage_L149 =>
+  String get settingsAppGeneralNotificationDetail =>
       'Configure all notifications sent by the app including';
 
   @override
-  String get settings_settingsPage_L164 => 'Manage location permissions';
+  String get settingsAppLocationPermission => 'Manage location permissions';
 
   @override
-  String get settings_settingsPage_L165 =>
+  String get settingsAppLocationPermissionDescription =>
       'You can change location permissions in device settings';
 
   @override
-  String get settings_settingsPage_L176 => 'Guide';
+  String get settingsSectionGuide => 'Guide';
 
   @override
-  String get settings_settingsPage_L179 => 'Bug report';
+  String get settingsGuideBugReport => 'Bug report';
 
   @override
-  String get settings_settingsPage_L182 => 'Replay tutorial';
+  String get settingsGuideTutorialRewatch => 'Replay tutorial';
 
   @override
-  String get settings_settingsPage_L186 => 'Reset tutorial';
+  String get settingsGuideTutorialReset => 'Reset tutorial';
 
   @override
-  String get settings_settingsPage_L189 => 'Terms and policies';
+  String get settingsGuideAgreements => 'Terms and policies';
 
   @override
-  String get settings_settingsPage_L202 => 'Others';
+  String get settingsSectionEtc => 'Others';
 
   @override
-  String get settings_settingsPage_L204 => 'Sign out';
+  String get settingsEtcDeleteAccount => 'Delete account';
 
   @override
-  String get settings_settingsPage_L210 => 'Delete account';
-
-  @override
-  String get settings_settingsPage_L292 => 'App version';
+  String get settingsAppVersionLabel => 'App version';
 
   @override
   String get dialogsettingsPageMessage =>
@@ -1786,7 +1742,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'What kind of problem occurred?\nPlease write down the details of the situation (including time and device info)';
 
   @override
-  String get settings_settingsPage_L498 => 'Report';
+  String get buttonSubmitReport => 'Report';
 
   @override
   String get dialogsettingsPageMessage1b8e => 'Bug report has been received';
@@ -1815,16 +1771,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogsettingsPageConfirm9ab1 => 'Sign out';
 
   @override
-  String get settings_settingsPage_L590 => 'Failed to sign out';
+  String get snackbarLogoutFailed => 'Failed to sign out';
 
   @override
-  String get settings_settingsPage_L590_1 => 'Signed out successfully';
+  String get snackbarLogoutSuccess => 'Signed out successfully';
 
   @override
   String get dialogsettingsPageTitle5e0d => 'Delete account';
 
   @override
-  String get settings_settingsPage_L603 =>
+  String get dialogDeleteAccountMessage =>
       'Deleting your account will erase all data\nand cannot be undone\n\nTo continue, enter \"delete\"';
 
   @override
@@ -1835,9 +1791,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialogsettingsPageConfirm9140 => 'Delete';
-
-  @override
-  String get settings_settingsPage_L613 => '탈퇴하기';
 
   @override
   String get tutorialDummyNicknameCop1 => 'Cop1';

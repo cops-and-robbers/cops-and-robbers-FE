@@ -141,7 +141,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             title: l10n.dialogchatContextMenuTitle,
             label: l10n.fieldchatContextMenuLabel,
             hintText: l10n.fieldchatContextMenuHint,
-            submitText: l10n.chat_chatContextMenu_L140,
+            submitText: l10n.buttonReport,
             isDestructive: true,
             isDarkMode: isDark,
             onSubmit: (text) async {
@@ -193,7 +193,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
         text: TextSpan(
           children: [
             TextSpan(
-              text: '${l10n.chat_chatContextMenu_L190} ',
+              text: '${l10n.chatReportSelectedCategoryLabel} ',
               style: AppTextStyles.paragraph_14.copyWith(
                 color: isDark ? AppColors.black400 : AppColors.black600,
               ),
@@ -205,7 +205,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
               ),
             ),
             TextSpan(
-              text: l10n.chat_chatContextMenu_L202,
+              text: l10n.chatReportSubmitNotice,
               style: AppTextStyles.paragraph_14.copyWith(
                 color: isDark ? AppColors.black400 : AppColors.black600,
               ),
@@ -485,7 +485,7 @@ class _ReportCategoryMenu extends StatelessWidget {
             AppSpacing.vertical4,
           ),
           child: Text(
-            l10n.chat_chatContextMenu_L478,
+            l10n.chatReportCategoryTitle,
             style:
                 (isDarkMode
                         ? AppTextStyles.robberParagraph
