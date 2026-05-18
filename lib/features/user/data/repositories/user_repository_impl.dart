@@ -55,7 +55,7 @@ class UserRepositoryImpl implements UserRepository {
     } catch (e) {
       throw ServerException(
         message: '닉네임 변경 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialoguserRepositoryImplMessageAc72',
+        messageKey: 'errorNicknameUpdateUnexpected',
         originalException: e,
       );
     }

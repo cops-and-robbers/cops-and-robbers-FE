@@ -685,7 +685,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       context: context,
       title: l10n.dialogInGamePreviewTitle,
       message: l10n.dialogwaitingRoomPageMessage,
-      confirmText: l10n.dialogwaitingRoomPageConfirmA2d8,
+      confirmText: l10n.buttonViewInGamePreview,
       barrierDismissible: false,
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
       isDarkMode: ref.read(roleThemeProvider),
@@ -777,10 +777,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final l10n = AppLocalizations.of(context);
     final confirmed = await AppDialog.confirm(
       context: context,
-      title: l10n.dialogwaitingRoomPageTitleBc54(member.nickname),
-      message: l10n.dialogwaitingRoomPageMessageB302,
-      cancelText: l10n.dialogwaitingRoomPageCancelD9de,
-      confirmText: l10n.dialogwaitingRoomPageConfirmC08c,
+      title: l10n.dialogKickConfirmTitle(member.nickname),
+      message: l10n.dialogKickConfirmMessage,
+      cancelText: l10n.buttonCancel,
+      confirmText: l10n.buttonKick,
       isDestructive: true,
       confirmTextColor: AppColors.white,
       isDarkMode: isDark,
@@ -809,7 +809,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: l10n.dialogwaitingRoomPageMessageE87b,
+        message: l10n.errorKickFailed,
         backgroundColor: AppColors.red,
       );
     }
@@ -1127,9 +1127,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final confirmed = await AppDialog.confirm(
       context: context,
       isDarkMode: isDark,
-      title: l10n.dialogwaitingRoomPageTitleFfec,
+      title: l10n.dialogLeaveRoomTitle,
       message: l10n.dialogLeaveRoomMessage,
-      confirmText: l10n.dialogwaitingRoomPageConfirmC0a3,
+      confirmText: l10n.buttonLeave,
       isDestructive: true,
       confirmTextColor: AppColors.white,
     );
@@ -1195,7 +1195,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       await AppDialog.show<void>(
         context: context,
         isDarkMode: isDark,
-        title: l10n.dialogwaitingRoomPageTitleA5bb,
+        title: l10n.dialogInviteCodeCreatedTitle,
         message: l10n.dialogInviteCodeShareMessage,
         customContent: Column(
           mainAxisSize: MainAxisSize.min,

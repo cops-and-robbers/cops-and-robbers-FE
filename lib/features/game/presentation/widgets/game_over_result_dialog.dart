@@ -350,7 +350,7 @@ class _StatsSection extends StatelessWidget {
           SizedBox(height: AppSpacing.vertical12),
           _StatRow(
             isDarkMode: isDarkMode,
-            label: l10n.fieldgameOverResultDialogLabelD8df,
+            label: l10n.fieldRemainingRobbers,
             value: l10n.gameResultRemainingRobberCount(
               entity.remainingRobberCount,
             ),
@@ -358,7 +358,7 @@ class _StatsSection extends StatelessWidget {
           SizedBox(height: AppSpacing.vertical12),
           _StatRow(
             isDarkMode: isDarkMode,
-            label: l10n.fieldgameOverResultDialogLabelAb0c,
+            label: l10n.fieldGamePlaytime,
             value: formatDuration(entity.durationSeconds),
           ),
         ],
@@ -380,13 +380,13 @@ class _StatsSection extends StatelessWidget {
         SizedBox(height: AppSpacing.vertical12),
         _StatRow(
           isDarkMode: isDarkMode,
-          label: l10n.fieldgameOverResultDialogLabelD8df,
+          label: l10n.fieldRemainingRobbers,
           value: '-',
         ),
         SizedBox(height: AppSpacing.vertical12),
         _StatRow(
           isDarkMode: isDarkMode,
-          label: l10n.fieldgameOverResultDialogLabelAb0c,
+          label: l10n.fieldGamePlaytime,
           value: '-',
         ),
       ],

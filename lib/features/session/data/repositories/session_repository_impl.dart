@@ -104,7 +104,7 @@ class SessionRepositoryImpl implements SessionRepository {
     } catch (e) {
       throw ServerException(
         message: '참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다.',
-        messageKey: 'dialogsessionRepositoryImplMessageAddf',
+        messageKey: 'errorActiveGameFetchUnexpected',
         originalException: e,
       );
     }

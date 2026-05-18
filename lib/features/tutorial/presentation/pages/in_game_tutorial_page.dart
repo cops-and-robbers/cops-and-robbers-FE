@@ -683,7 +683,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               if (_isDarkMode) {
                 AppSnackbar.show(
                   context,
-                  message: l10n.dialoginGameTutorialPageMessageA1c5,
+                  message: l10n.tutorialInGameSelfEscape,
                   isDarkMode: true,
                 );
               } else {
@@ -813,9 +813,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
         onTap: () {
           AppSnackbar.show(
             context,
-            message: AppLocalizations.of(
-              context,
-            ).dialoginGameTutorialPageMessageDb39,
+            message: AppLocalizations.of(context).tutorialInGameChatInput,
             isDarkMode: _isDarkMode,
           );
         },

@@ -335,7 +335,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
-      title: l10n.dialoghomePageTitleEeea,
+      title: l10n.dialogBatteryGuideTitle,
       message:
           '${l10n.homePageBatteryGuideStep1}'
           '${l10n.homePageBatteryGuideStep2}',

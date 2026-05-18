@@ -86,7 +86,7 @@ class SettingListCard extends StatelessWidget {
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: l10n.fieldsettingListCardLabelEc5e,
+              label: l10n.fieldRoundTimeLimit,
               value: l10n.gameSettingRoundMinutes(
                 settings.roundTimeMinutes,
               ),
@@ -94,7 +94,7 @@ class SettingListCard extends StatelessWidget {
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: l10n.fieldsettingListCardLabelA1b3,
+              label: l10n.fieldLocationShareInterval,
               value: l10n.gameSettingLocationShareMinutes(
                 settings.locationShareMinutes,
               ),
@@ -102,7 +102,7 @@ class SettingListCard extends StatelessWidget {
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: l10n.fieldsettingListCardLabelCe3b,
+              label: l10n.fieldPoliceDispatchTime,
               value: l10n.gameSettingPoliceStartDelay(
                 settings.policeStartDelayMinutes,
               ),

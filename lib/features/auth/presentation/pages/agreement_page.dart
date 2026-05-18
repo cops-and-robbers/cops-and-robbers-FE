@@ -69,11 +69,11 @@ class AgreementPage extends ConsumerWidget {
                         AgreementItem(
                           checked: state.privacyPolicy,
                           required: true,
-                          title: l10n.dialogagreementPageTitleBe29,
+                          title: l10n.linkPrivacyPolicy,
                           onToggle: notifier.togglePrivacy,
                           onDetailTap: () => _openDetail(
                             context,
-                            title: l10n.dialogagreementPageTitleBe29,
+                            title: l10n.linkPrivacyPolicy,
                             assetPath: 'assets/legals/privacy_policy.json',
                             externalUrl: AppUrls.privacyPolicy,
                           ),

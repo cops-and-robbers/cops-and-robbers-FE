@@ -127,8 +127,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
-      title: l10n.dialogloginPageTitleA40f,
-      message: l10n.dialogloginPageMessageBa5d,
+      title: l10n.dialogAge14ConfirmTitle,
+      message: l10n.dialogAge14ConfirmMessage,
       confirmText: l10n.dialogloginPageConfirm,
       cancelText: l10n.dialogloginPageCancel,
       barrierDismissible: false,
@@ -165,7 +165,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // ignore_for_file: use_build_context_synchronously
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialogloginPageMessageFe9d,
+        message: AppLocalizations.of(context).errorAuthLoginCancelled,
       );
     } catch (e) {
       if (!mounted) return;
@@ -192,7 +192,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialogloginPageMessageFe9d,
+        message: AppLocalizations.of(context).errorAuthLoginCancelled,
       );
     } catch (e) {
       if (!mounted) return;
