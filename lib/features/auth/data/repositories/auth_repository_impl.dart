@@ -133,12 +133,20 @@ class AuthRepositoryImpl implements AuthRepository {
       if (e.code == 'ERROR_ABORTED_BY_USER') {
         throw const AuthCancelledException();
       }
-      throw AuthException(message: '로그인 중 오류가 발생했습니다.', originalException: e);
+      throw AuthException(
+        message: '로그인 중 오류가 발생했습니다.',
+        messageKey: 'dialogauthRepositoryImplMessage',
+        originalException: e,
+      );
     } catch (e) {
       // 예상치 못한 에러
       if (e is AppException) rethrow;
 
-      throw AuthException(message: '로그인 중 오류가 발생했습니다.', originalException: e);
+      throw AuthException(
+        message: '로그인 중 오류가 발생했습니다.',
+        messageKey: 'dialogauthRepositoryImplMessage',
+        originalException: e,
+      );
     }
   }
 
@@ -177,7 +185,11 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       if (e is AppException) rethrow;
 
-      throw AuthException(message: '로그아웃 중 오류가 발생했습니다.', originalException: e);
+      throw AuthException(
+        message: '로그아웃 중 오류가 발생했습니다.',
+        messageKey: 'dialogauthRepositoryImplMessage993d',
+        originalException: e,
+      );
     }
   }
 

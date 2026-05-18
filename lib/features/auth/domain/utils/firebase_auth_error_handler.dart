@@ -24,7 +24,7 @@ class FirebaseAuthErrorHandler {
   /// [errorCode]: Firebase 에러 코드
   /// [provider]: 로그인 제공자 이름 (선택적, 에러 메시지 커스터마이징용)
   ///
-  /// Returns: 사용자 친화적인 에러 메시지
+  /// Returns: 사용자 친화적인 에러 메시지 (한국어 폴백 — i18n 키는 [getErrorMessageKey] 참조)
   static String getErrorMessage(String errorCode, {String? provider}) {
     switch (errorCode) {
       case 'user-not-found':
@@ -55,6 +55,45 @@ class FirebaseAuthErrorHandler {
           return '$provider 로그인에 실패했습니다. 다시 시도해주세요.';
         }
         return '로그인에 실패했습니다. 다시 시도해주세요.';
+    }
+  }
+
+  /// Firebase 에러 코드를 i18n 메시지 키로 변환
+  ///
+  /// 정적 클래스 컨텍스트에서는 BuildContext가 없으므로 키만 결정하고,
+  /// UI 레이어에서 [AppLocalizations]로 실제 문자열을 조회한다.
+  ///
+  /// [errorCode]: Firebase 에러 코드
+  /// [provider]: 로그인 제공자 이름 (선택적, L55 키는 placeholder 포함이라 별도 처리)
+  static String getErrorMessageKey(String errorCode, {String? provider}) {
+    switch (errorCode) {
+      case 'user-not-found':
+        return 'auth_firebaseAuthErrorHandler_L31';
+      case 'token-not-available':
+        return 'auth_firebaseAuthErrorHandler_L33';
+      case 'token-validation-failed':
+        return 'auth_firebaseAuthErrorHandler_L35';
+      case 'ERROR_ABORTED_BY_USER':
+        return 'auth_firebaseAuthErrorHandler_L37';
+      case 'network-request-failed':
+        return 'auth_firebaseAuthErrorHandler_L39';
+      case 'invalid-credential':
+        return 'auth_firebaseAuthErrorHandler_L41';
+      case 'user-disabled':
+        return 'auth_firebaseAuthErrorHandler_L43';
+      case 'too-many-requests':
+        return 'auth_firebaseAuthErrorHandler_L45';
+      case 'operation-not-allowed':
+        return 'auth_firebaseAuthErrorHandler_L47';
+      case 'firebase-api-key-invalid':
+        return 'auth_firebaseAuthErrorHandler_L49';
+      case 'internal-error':
+        return 'auth_firebaseAuthErrorHandler_L51';
+      default:
+        // L55는 placeholder 포함이라 별도 처리 필요 — UI에서 L55(provider) 직접 호출 권장
+        return provider != null
+            ? 'auth_firebaseAuthErrorHandler_L55'
+            : 'auth_firebaseAuthErrorHandler_L57';
     }
   }
 
@@ -95,6 +134,9 @@ class FirebaseAuthErrorHandler {
 
     return AuthException(
       message: customMessage ?? getErrorMessage(errorCode, provider: provider),
+      messageKey: customMessage != null
+          ? null
+          : getErrorMessageKey(errorCode, provider: provider),
       code: errorCode,
       originalException: e,
     );

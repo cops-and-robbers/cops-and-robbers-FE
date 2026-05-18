@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cops_and_robbers/core/i18n/error_message_mapper.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -134,7 +136,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
       AppSnackbar.show(
         context,
-        message: e.message,
+        message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
     }
@@ -187,7 +189,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       // pop/go 이후 복귀한 화면에서도 그대로 표시됨
       AppSnackbar.show(
         context,
-        message: '닉네임이 저장되었어요',
+        message: AppLocalizations.of(context).dialognicknameSetupPageMessage,
         iconPath: 'assets/icons/icon_check mark.svg',
       );
 
@@ -208,7 +210,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
       AppSnackbar.show(
         context,
-        message: e.message,
+        message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
     }
@@ -220,6 +222,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () {
         // 빈 공간 클릭 시 키보드 닫기
@@ -245,7 +248,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                     children: [
                       // 제목
                       Text(
-                        '닉네임을 설정해요',
+                        l10n.auth_nicknameSetupPage_L248,
                         style: AppTextStyles.heading_24.copyWith(
                           color: AppColors.black,
                         ),
@@ -254,7 +257,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
                       // 설명
                       Text(
-                        '서비스 내에서 계속 사용될 닉네임이에요\n1~10글자로 생성할 수 있어요',
+                        l10n.auth_nicknameSetupPage_L257,
                         style: AppTextStyles.paragraph_14.copyWith(
                           color: AppColors.black600,
                         ),
@@ -266,11 +269,11 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                 SizedBox(height: AppSpacing.vertical28),
 
                 // 닉네임 입력칸 + 중복 확인 버튼
-                _buildNicknameInputRow(),
+                _buildNicknameInputRow(l10n),
 
                 // 검증 피드백 메시지
                 if (_validationState != NicknameValidationState.none)
-                  _buildValidationFeedback(),
+                  _buildValidationFeedback(l10n),
 
                 const Spacer(),
 
@@ -278,7 +281,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                 // - 닉네임 미변경: 바로 활성화 (서버 닉네임은 이미 유니크)
                 // - 닉네임 변경: 중복확인 통과 후 활성화
                 AppButton(
-                  text: '확인',
+                  text: l10n.auth_nicknameSetupPage_L281,
                   onPressed:
                       !_isLoading &&
                           _nicknameController.text.trim().isNotEmpty &&
@@ -297,7 +300,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
   }
 
   /// 닉네임 입력칸과 중복 확인 버튼을 포함한 Stack 위젯
-  Widget _buildNicknameInputRow() {
+  Widget _buildNicknameInputRow(AppLocalizations l10n) {
     return Stack(
       alignment: Alignment.centerRight,
       children: [
@@ -305,7 +308,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
         AppTextField(
           hintText: widget.initialNickname.isNotEmpty
               ? widget.initialNickname
-              : '닉네임을 입력하세요',
+              : l10n.auth_nicknameSetupPage_L308,
           controller: _nicknameController,
           maxLength: 10,
           textColor: _isNicknameChanged ? null : AppColors.black600,
@@ -333,7 +336,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                   ),
                 )
               : custom_chip.ActionChip(
-                  text: '중복 확인',
+                  text: l10n.auth_nicknameSetupPage_L336,
                   height: AppSpacing.vertical40,
                   onTap: _isNicknameChanged ? _onCheckDuplicate : null,
                 ),
@@ -343,7 +346,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
   }
 
   /// 검증 피드백 메시지 위젯
-  Widget _buildValidationFeedback() {
+  Widget _buildValidationFeedback(AppLocalizations l10n) {
     // 상태별 메시지, 색상, 아이콘 설정
     final String message;
     final Color color;
@@ -351,22 +354,22 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
     switch (_validationState) {
       case NicknameValidationState.empty:
-        message = '1글자 미만의 닉네임은 사용할 수 없어요';
+        message = l10n.auth_nicknameSetupPage_L354;
         color = AppColors.red;
         iconPath = 'assets/icons/icon_wrong mark.svg';
         break;
       case NicknameValidationState.duplicate:
-        message = '중복된 닉네임이에요. 다른 닉네임을 입력하세요';
+        message = l10n.auth_nicknameSetupPage_L359;
         color = AppColors.red;
         iconPath = 'assets/icons/icon_wrong mark.svg';
         break;
       case NicknameValidationState.valid:
-        message = '사용 가능한 닉네임이에요';
+        message = l10n.auth_nicknameSetupPage_L364;
         color = AppColors.deepGreen;
         iconPath = 'assets/icons/icon_check mark.svg';
         break;
       case NicknameValidationState.error:
-        message = '오류가 발생했어요. 다시 시도해주세요';
+        message = l10n.auth_nicknameSetupPage_L369;
         color = AppColors.red;
         iconPath = 'assets/icons/icon_wrong mark.svg';
         break;

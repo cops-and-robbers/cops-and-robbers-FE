@@ -127,6 +127,7 @@ class AgreementNotifier extends _$AgreementNotifier {
           ? e
           : ServerException(
               message: '일시적인 오류가 발생했습니다. 다시 시도해주세요.',
+              messageKey: 'dialogagreementProviderMessage',
               originalException: e,
             );
       state = state.copyWith(isSubmitting: false);
