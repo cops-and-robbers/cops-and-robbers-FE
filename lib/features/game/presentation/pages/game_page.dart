@@ -10,9 +10,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/game_event_messages.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/background/background_service.dart';
@@ -231,18 +231,18 @@ class _GamePageState extends ConsumerState<GamePage>
     final serviceEnabled = await LocationPermissionService.isServiceEnabled();
     if (!mounted) return;
 
-    final text = await LocationPermissionMessages.getText(
+    final text = LocationPermissionMessages.getText(
+      context: context,
       isServiceDisabled: !serviceEnabled,
-      context: LocationPermissionContext.game,
+      locationContext: LocationPermissionContext.game,
     );
-    if (!mounted) return;
 
     // 게임 중에는 나갈 수 없으므로 설정 이동 버튼만 제공
     AppDialog.show(
       context: context,
       title: text.title,
       message: text.message,
-      confirmText: '설정으로 이동',
+      confirmText: AppLocalizations.of(context).dialoggamePageConfirm,
       barrierDismissible: false,
       isDarkMode: _isDarkMode,
       onConfirm: () async {
@@ -376,7 +376,7 @@ class _GamePageState extends ConsumerState<GamePage>
       autoCloseDuration: remaining,
       content: CountdownTimerContent(
         duration: remaining,
-        subtitle: '도둑이 도망치는 중이에요!',
+        subtitle: AppLocalizations.of(context).game_gamePage_L379,
       ),
     );
   }
@@ -502,12 +502,13 @@ class _GamePageState extends ConsumerState<GamePage>
     }
 
     final gameDuration = participantInfo?.roundTimeMinutes;
+    final l10n = AppLocalizations.of(context);
 
     final messages = <String>[
-      if (gameDuration != null) GameEventMessages.gameStartTime(gameDuration),
-      GameEventMessages.gameStartReady,
-      GameEventMessages.gameStartReportTip,
-      GameEventMessages.gameStartGo,
+      if (gameDuration != null) l10n.gameEventStartTime(gameDuration),
+      l10n.gameEventStartReady,
+      l10n.gameEventStartReportTip,
+      l10n.gameEventStartGo,
     ];
 
     for (var i = 0; i < messages.length; i++) {
@@ -1015,6 +1016,7 @@ class _GamePageState extends ConsumerState<GamePage>
     }
 
     // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)
+    final l10n = AppLocalizations.of(context);
     await AppPopup.show(
       context: context,
       autoCloseDuration: const Duration(seconds: 3),
@@ -1023,7 +1025,7 @@ class _GamePageState extends ConsumerState<GamePage>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '게임 종료!',
+            l10n.game_gamePage_L1026,
             style: _isDarkMode
                 ? AppTextStyles.robberHeading.copyWith(color: AppColors.green)
                 : AppTextStyles.heading_20.copyWith(color: AppColors.black),
@@ -1031,7 +1033,9 @@ class _GamePageState extends ConsumerState<GamePage>
           ),
           SizedBox(height: AppSpacing.vertical8),
           Text(
-            reason == 'ALL_ARRESTED' ? '도둑이 모두 체포되었습니다!' : '제한 시간이 종료되었습니다!',
+            reason == 'ALL_ARRESTED'
+                ? l10n.game_gamePage_L1034
+                : l10n.game_gamePage_L1034_1,
             style: _isDarkMode
                 ? AppTextStyles.paragraph_14_100.copyWith(
                     color: AppColors.black400,
@@ -1083,12 +1087,15 @@ class _GamePageState extends ConsumerState<GamePage>
     int? gameId,
   ) async {
     final isWin = winnerTeam == widget.team;
-    final winnerTeamLabel = winnerTeam == 'POLICE' ? '경찰팀' : '도둑팀';
+    final l10n = AppLocalizations.of(context);
+    final winnerTeamLabel = winnerTeam == 'POLICE'
+        ? l10n.game_gamePage_L1086
+        : l10n.game_gamePage_L1086_1;
 
     AppDialog.show(
       context: context,
-      title: isWin ? '승리' : '패배',
-      message: '$winnerTeamLabel의 승리입니다!',
+      title: isWin ? l10n.game_gamePage_L1090 : l10n.game_gamePage_L1090_1,
+      message: l10n.dialoggamePageMessage(winnerTeamLabel),
       titleStyle:
           (_isDarkMode
                   ? AppTextStyles.robberHeading24
@@ -1098,8 +1105,8 @@ class _GamePageState extends ConsumerState<GamePage>
                     ? AppColors.green
                     : (isWin ? AppColors.blue : AppColors.red),
               ),
-      cancelText: '홈으로',
-      confirmText: '한 번 더',
+      cancelText: l10n.dialoggamePageCancel,
+      confirmText: l10n.dialoggamePageConfirm5863,
       isDarkMode: _isDarkMode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
       confirmColor: _isDarkMode ? null : AppColors.blue,
@@ -1248,7 +1255,7 @@ class _GamePageState extends ConsumerState<GamePage>
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(
               gameId: _gameId,
-              message: GameEventMessages.policeMove,
+              message: AppLocalizations.of(context).gameEventPoliceMove,
             );
       }
     });
@@ -1262,7 +1269,7 @@ class _GamePageState extends ConsumerState<GamePage>
               .read(chatNotifierProvider.notifier)
               .addSystemMessage(
                 gameId: _gameId,
-                message: GameEventMessages.locationReveal,
+                message: AppLocalizations.of(context).gameEventLocationReveal,
               );
         }
       },
@@ -1281,13 +1288,14 @@ class _GamePageState extends ConsumerState<GamePage>
         final (count, robberNick, policeNick) = next;
         if (count > _lastHandledArrestCount) {
           _lastHandledArrestCount = count;
+          final l10n = AppLocalizations.of(context);
           ref
               .read(chatNotifierProvider.notifier)
               .addSystemMessage(
                 gameId: _gameId,
-                message: GameEventMessages.arrestNotice(
-                  policeNick ?? '경찰',
-                  robberNick ?? '도둑',
+                message: l10n.gameEventArrestNotice(
+                  policeNick ?? l10n.game_gamePage_L1289,
+                  robberNick ?? l10n.game_gamePage_L1290,
                 ),
               );
         }
@@ -1305,7 +1313,7 @@ class _GamePageState extends ConsumerState<GamePage>
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(
               gameId: _gameId,
-              message: GameEventMessages.escapeNotice,
+              message: AppLocalizations.of(context).gameEventEscapeNotice,
             );
       }
     });
@@ -1720,7 +1728,10 @@ class _GamePageState extends ConsumerState<GamePage>
 
     // 경찰 대기 시간 가드
     if (!gameEventState.canPoliceArrest(participantInfo: participantInfo)) {
-      AppSnackbar.show(context, message: '경찰 대기 시간 중에는 도둑을 체포할 수 없습니다.');
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).dialoggamePageMessage5e97,
+      );
       return;
     }
 
@@ -1729,7 +1740,7 @@ class _GamePageState extends ConsumerState<GamePage>
       context,
       MaterialPageRoute(
         builder: (_) => QrScannerPage<QrPayload>(
-          title: '도둑의 수배 QR을 스캔하세요',
+          title: AppLocalizations.of(context).dialoggamePageTitle,
           onParse: QrPayload.tryParse,
         ),
       ),
@@ -1738,7 +1749,10 @@ class _GamePageState extends ConsumerState<GamePage>
 
     // 만료된 QR (스크린샷 저장 후 재사용 시나리오 등) 차단
     if (payload.isExpiredAt(DateTime.now())) {
-      AppSnackbar.show(context, message: '만료된 QR입니다. QR 새로고침을 요청하세요');
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).dialoggamePageMessage6487,
+      );
       return;
     }
 
@@ -1753,7 +1767,10 @@ class _GamePageState extends ConsumerState<GamePage>
         .escapedParticipantIds;
     if (arrestedIds.contains(participantId) &&
         !escapedIds.contains(participantId)) {
-      AppSnackbar.show(context, message: '이미 체포된 도둑입니다.');
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).dialoggamePageMessage4b5f,
+      );
       return;
     }
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -320,8 +321,11 @@ class _ResultTitle extends StatelessWidget {
         ? AppTextStyles.robberHeading24
         : AppTextStyles.heading_24;
 
+    final l10n = AppLocalizations.of(context);
     return Text(
-      isWin ? '승리' : '패배',
+      isWin
+          ? l10n.game_gameOverResultDialog_L324
+          : l10n.game_gameOverResultDialog_L324_1,
       style: baseStyle.copyWith(color: color),
       textAlign: TextAlign.center,
     );
@@ -336,41 +340,57 @@ class _StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return resultAsync.when(
       data: (entity) => Column(
         children: [
           _StatRow(
             isDarkMode: isDarkMode,
-            label: '체포 횟수',
-            value: '${entity.totalArrestCount}회',
+            label: l10n.fieldgameOverResultDialogLabel,
+            value: l10n.game_gameOverResultDialog_L345(entity.totalArrestCount),
           ),
           SizedBox(height: AppSpacing.vertical12),
           _StatRow(
             isDarkMode: isDarkMode,
-            label: '남은 도둑',
-            value: '${entity.remainingRobberCount}명',
+            label: l10n.fieldgameOverResultDialogLabelD8df,
+            value: l10n.game_gameOverResultDialog_L351(
+              entity.remainingRobberCount,
+            ),
           ),
           SizedBox(height: AppSpacing.vertical12),
           _StatRow(
             isDarkMode: isDarkMode,
-            label: '게임 진행 시간',
+            label: l10n.fieldgameOverResultDialogLabelAb0c,
             value: formatDuration(entity.durationSeconds),
           ),
         ],
       ),
-      loading: () => _placeholderRows(),
-      error: (_, _) => _placeholderRows(),
+      loading: () => _placeholderRows(context),
+      error: (_, _) => _placeholderRows(context),
     );
   }
 
-  Widget _placeholderRows() {
+  Widget _placeholderRows(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
-        _StatRow(isDarkMode: isDarkMode, label: '체포 횟수', value: '-'),
+        _StatRow(
+          isDarkMode: isDarkMode,
+          label: l10n.fieldgameOverResultDialogLabel,
+          value: '-',
+        ),
         SizedBox(height: AppSpacing.vertical12),
-        _StatRow(isDarkMode: isDarkMode, label: '남은 도둑', value: '-'),
+        _StatRow(
+          isDarkMode: isDarkMode,
+          label: l10n.fieldgameOverResultDialogLabelD8df,
+          value: '-',
+        ),
         SizedBox(height: AppSpacing.vertical12),
-        _StatRow(isDarkMode: isDarkMode, label: '게임 진행 시간', value: '-'),
+        _StatRow(
+          isDarkMode: isDarkMode,
+          label: l10n.fieldgameOverResultDialogLabelAb0c,
+          value: '-',
+        ),
       ],
     );
   }
@@ -429,13 +449,14 @@ class _ActionButtons extends StatelessWidget {
     final cancelFg = isDarkMode ? AppColors.black400 : AppColors.black600;
     final confirmBg = isDarkMode ? AppColors.green : AppColors.blue;
     final confirmFg = isDarkMode ? AppColors.black : AppColors.white;
+    final l10n = AppLocalizations.of(context);
 
     return Row(
       children: [
         Expanded(
           child: AppButton(
             key: const ValueKey('game_over_go_home_button'),
-            text: '홈으로',
+            text: l10n.game_gameOverResultDialog_L438,
             onPressed: onGoHome,
             backgroundColor: cancelBg,
             foregroundColor: cancelFg,
@@ -449,7 +470,7 @@ class _ActionButtons extends StatelessWidget {
         Expanded(
           child: AppButton(
             key: const ValueKey('game_over_rematch_button'),
-            text: '한 번 더',
+            text: l10n.game_gameOverResultDialog_L452,
             onPressed: onRematch,
             backgroundColor: confirmBg,
             foregroundColor: confirmFg,

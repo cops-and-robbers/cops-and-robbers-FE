@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -32,6 +33,7 @@ class ArrestLockOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Positioned.fill(
       child: Container(
         // 배경: black 40% 반투명 딤 처리
@@ -68,14 +70,14 @@ class ArrestLockOverlay extends ConsumerWidget {
                         ),
                         SizedBox(height: 20.h),
                         Text(
-                          '체포되었어요!',
+                          l10n.game_arrestLockOverlay_L71,
                           style: AppTextStyles.robberHeading.copyWith(
                             color: AppColors.white,
                           ),
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          '체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!',
+                          l10n.game_arrestLockOverlay_L78,
                           style: AppTextStyles.paragraph_14.copyWith(
                             color: AppColors.black400,
                           ),
@@ -86,7 +88,7 @@ class ArrestLockOverlay extends ConsumerWidget {
 
                     // 탈옥 완료 버튼: 288 x 48, green
                     AppButton(
-                      text: '탈옥 완료',
+                      text: l10n.game_arrestLockOverlay_L89,
                       width: 288.w,
                       height: 48.h,
                       borderRadius: AppRadius.medium,
@@ -97,9 +99,9 @@ class ArrestLockOverlay extends ConsumerWidget {
                       onPressed: () {
                         GameActionModal.show(
                           context: context,
-                          title: '탈옥',
-                          message: '탈옥하시겠습니까?',
-                          confirmLabel: '탈옥',
+                          title: l10n.dialogarrestLockOverlayTitle,
+                          message: l10n.dialogarrestLockOverlayMessage,
+                          confirmLabel: l10n.game_arrestLockOverlay_L102,
                           isDarkMode: true,
                           onConfirm: () => ref
                               .read(gameEventNotifierProvider.notifier)

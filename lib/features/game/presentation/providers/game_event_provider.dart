@@ -11,7 +11,9 @@ import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/fcm/firebase_messaging_service.dart';
 import '../../../../core/constants/game_event_messages.dart';
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/datasources/game_system_api_datasource.dart';
@@ -558,6 +560,29 @@ class GameEventNotifier extends _$GameEventNotifier {
     _startBannerTimer();
   }
 
+  /// 현재 앱 locale 기준으로 게임 이벤트 메시지를 i18n 변환한다.
+  ///
+  /// Notifier는 BuildContext가 없으므로 `appLocaleProvider`에서 locale을 읽어
+  /// `lookupAppLocalizations`로 sync 변환한다. 배너는 자동 해제되므로
+  /// 변환 후 locale이 바뀌어도 stale 메시지는 곧 사라진다.
+  String _localizeGameEvent(String key, [List<Object?>? args]) {
+    final locale = ref.read(appLocaleProvider);
+    final l10n = lookupAppLocalizations(locale);
+    return resolveGameEventMessage(l10n, key, args);
+  }
+
+  /// 닉네임 누락 시 사용하는 "경찰" 라벨 i18n
+  String _localizePoliceLabel() {
+    final locale = ref.read(appLocaleProvider);
+    return lookupAppLocalizations(locale).game_gamePage_L1289;
+  }
+
+  /// 닉네임 누락 시 사용하는 "도둑" 라벨 i18n
+  String _localizeRobberLabel() {
+    final locale = ref.read(appLocaleProvider);
+    return lookupAppLocalizations(locale).game_gamePage_L1290;
+  }
+
   /// 배너를 5초 후 자동 해제하는 타이머 시작
   void _startBannerTimer() {
     _locationRevealBannerTimer?.cancel();
@@ -587,7 +612,7 @@ class GameEventNotifier extends _$GameEventNotifier {
         state = state.copyWith(
           isPoliceMoving: true,
           policeMoveStartTime: moveStartTime,
-          bannerMessage: GameEventMessages.policeMove,
+          bannerMessage: _localizeGameEvent(GameEventMessageKey.policeMove),
         );
         _startBannerTimer();
       case GameEventType.locationReveal:
@@ -603,7 +628,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     final startTime = IsoTimestampParser.parse(startTimeStr);
     state = state.copyWith(
       gameStartTime: startTime ?? DateTime.now(),
-      bannerMessage: GameEventMessages.gameStartGo,
+      bannerMessage: _localizeGameEvent(GameEventMessageKey.startGo),
     );
     _startBannerTimer();
     debugPrint(
@@ -657,7 +682,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     final revealTime = IsoTimestampParser.parse(timestamp) ?? DateTime.now();
     state = state.copyWith(
       lastLocationRevealTime: revealTime,
-      bannerMessage: GameEventMessages.locationReveal,
+      bannerMessage: _localizeGameEvent(GameEventMessageKey.locationReveal),
       robberLocations: newLocations ?? state.robberLocations,
     );
     _startBannerTimer();
@@ -698,10 +723,10 @@ class GameEventNotifier extends _$GameEventNotifier {
           : state.arrestEventCount,
       isApiLoading: false,
       // 배너는 plain Text이므로 아이콘 마커를 strip
-      bannerMessage: GameEventMessages.arrestNotice(
-        policeNickname ?? '경찰',
-        robberNickname ?? '도둑',
-      ).replaceAll(RegExp(r'@icon_(police|robber)\s*'), ''),
+      bannerMessage: _localizeGameEvent(GameEventMessageKey.arrestNotice, [
+        policeNickname ?? _localizePoliceLabel(),
+        robberNickname ?? _localizeRobberLabel(),
+      ]).replaceAll(RegExp(r'@icon_(police|robber)\s*'), ''),
     );
     _startBannerTimer();
     VibrationService.instance().arrested();
@@ -725,7 +750,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       lastEscapeNickname: firstNickname,
       escapeEventCount: state.escapeEventCount + 1,
       isApiLoading: false,
-      bannerMessage: GameEventMessages.escapeNotice,
+      bannerMessage: _localizeGameEvent(GameEventMessageKey.escapeNotice),
     );
     _startBannerTimer();
     VibrationService.instance().escaped();

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
 
@@ -106,7 +107,9 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
   @override
   Widget build(BuildContext context) {
     return Text(
-      '다음 도둑 위치 공개까지 $_formatted',
+      AppLocalizations.of(
+        context,
+      ).game_locationRevealCountdown_L109(_formatted),
       style: AppTextStyles.tag_12.copyWith(
         color: widget.isDarkMode ? AppColors.black400 : AppColors.red,
       ),

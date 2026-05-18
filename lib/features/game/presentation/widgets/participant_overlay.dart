@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -116,7 +117,10 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     final participantInfo = ref.read(gameParticipantNotifierProvider);
 
     if (!gameEventState.canPoliceArrest(participantInfo: participantInfo)) {
-      AppSnackbar.show(context, message: '경찰 대기 시간 중에는 도둑을 체포할 수 없습니다.');
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).dialogparticipantOverlayMessage,
+      );
       return;
     }
 
@@ -132,11 +136,12 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     if (participant?.status == 'JAILED') return;
 
     FocusScope.of(context).unfocus();
+    final l10n = AppLocalizations.of(context);
     GameActionModal.show(
       context: context,
-      title: '해당 플레이어를 체포하셨나요?',
+      title: l10n.dialogparticipantOverlayTitle,
       message: '',
-      confirmLabel: '네',
+      confirmLabel: l10n.game_participantOverlay_L139,
       nickname: member.nickname,
       onConfirm: () => ref
           .read(gameEventNotifierProvider.notifier)
@@ -159,11 +164,12 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
       // 모달 닫힘 시 채팅 입력 TextField로 포커스가 복원되어
       // 채팅 시트가 올라오는 현상 방지
       FocusScope.of(context).unfocus();
+      final l10n = AppLocalizations.of(context);
       GameActionModal.show(
         context: context,
-        title: '탈옥',
-        message: '탈옥을 시도하시겠습니까?',
-        confirmLabel: '탈옥',
+        title: l10n.dialogparticipantOverlayTitle4167,
+        message: l10n.dialogparticipantOverlayMessage9497,
+        confirmLabel: l10n.game_participantOverlay_L166,
         isDarkMode: widget.isDarkMode,
         onConfirm: () => ref
             .read(gameEventNotifierProvider.notifier)
@@ -290,19 +296,20 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
         ? AppColors.green800
         : AppColors.blue800;
     final badgeBoldColor = widget.isDarkMode ? AppColors.green : AppColors.blue;
+    final l10n = AppLocalizations.of(context);
     return RichText(
       text: TextSpan(
         style: AppTextStyles.tag_12.copyWith(color: badgeColor),
         children: [
-          const TextSpan(text: '현재 '),
+          TextSpan(text: '${l10n.game_participantOverlay_L297} '),
           TextSpan(
-            text: '$count명',
+            text: l10n.game_participantOverlay_L299(count),
             style: AppTextStyles.tag_12.copyWith(
               color: badgeBoldColor,
               fontWeight: FontWeight.w700,
             ),
           ),
-          const TextSpan(text: ' 도주 중!'),
+          TextSpan(text: ' ${l10n.game_participantOverlay_L305}'),
         ],
       ),
     );
