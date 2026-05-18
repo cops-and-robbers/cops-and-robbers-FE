@@ -167,8 +167,8 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
       final l10n = AppLocalizations.of(context);
       GameActionModal.show(
         context: context,
-        title: l10n.dialogparticipantOverlayTitle4167,
-        message: l10n.dialogparticipantOverlayMessage9497,
+        title: l10n.buttonEscape,
+        message: l10n.dialogEscapeAttemptMessage,
         confirmLabel: l10n.buttonEscape,
         isDarkMode: widget.isDarkMode,
         onConfirm: () => ref

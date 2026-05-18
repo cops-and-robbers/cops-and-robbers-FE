@@ -121,7 +121,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     widget.onBlock(widget.message.sender.participantId);
     AppSnackbar.show(
       widget.callerContext,
-      message: l10n.dialogchatContextMenuMessage2c60,
+      message: l10n.messageUserBlocked,
       iconPath: 'assets/icons/icon_block.svg',
       isDarkMode: widget.isDarkMode,
     );
@@ -166,7 +166,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
                   widget.callerContext,
                   message: e is AppException
                       ? e.message
-                      : l10n.dialogchatContextMenuMessage9d41,
+                      : l10n.errorReportFailed,
                   backgroundColor: AppColors.red,
                   isDarkMode: isDark,
                 );
@@ -181,7 +181,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     // 나머지 카테고리: 확인 다이얼로그
     AppDialog.show(
       context: widget.callerContext,
-      title: l10n.dialogchatContextMenuTitle5ccb,
+      title: l10n.dialogReportConfirmTitle,
       cancelText: l10n.dialogchatContextMenuCancel,
       confirmText: l10n.dialogchatContextMenuConfirm,
       isDestructive: true,
@@ -232,7 +232,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             widget.callerContext,
             message: e is AppException
                 ? e.message
-                : l10n.dialogchatContextMenuMessage9d41,
+                : l10n.errorReportFailed,
             backgroundColor: AppColors.red,
             isDarkMode: isDark,
           );
@@ -438,7 +438,7 @@ class _ActionMenu extends StatelessWidget {
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
             iconPath: 'assets/icons/icon_siren.svg',
-            label: l10n.fieldchatContextMenuLabel7812,
+            label: l10n.buttonReport,
             textColor: AppColors.red,
             iconColor: AppColors.red900,
             isDarkMode: isDarkMode,
@@ -447,7 +447,7 @@ class _ActionMenu extends StatelessWidget {
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
             iconPath: 'assets/icons/icon_block.svg',
-            label: l10n.fieldchatContextMenuLabel2f14,
+            label: l10n.buttonBlock,
             textColor: isDarkMode ? AppColors.white : AppColors.black,
             iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,
             isDarkMode: isDarkMode,

@@ -1106,7 +1106,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     : (isWin ? AppColors.blue : AppColors.red),
               ),
       cancelText: l10n.dialoggamePageCancel,
-      confirmText: l10n.dialoggamePageConfirm5863,
+      confirmText: l10n.buttonPlayAgain,
       isDarkMode: _isDarkMode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
       confirmColor: _isDarkMode ? null : AppColors.blue,
@@ -1730,7 +1730,7 @@ class _GamePageState extends ConsumerState<GamePage>
     if (!gameEventState.canPoliceArrest(participantInfo: participantInfo)) {
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialoggamePageMessage5e97,
+        message: AppLocalizations.of(context).errorCannotArrestDuringWait,
       );
       return;
     }
@@ -1751,7 +1751,7 @@ class _GamePageState extends ConsumerState<GamePage>
     if (payload.isExpiredAt(DateTime.now())) {
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialoggamePageMessage6487,
+        message: AppLocalizations.of(context).errorExpiredQr,
       );
       return;
     }
@@ -1769,7 +1769,7 @@ class _GamePageState extends ConsumerState<GamePage>
         !escapedIds.contains(participantId)) {
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).dialoggamePageMessage4b5f,
+        message: AppLocalizations.of(context).errorAlreadyArrested,
       );
       return;
     }
