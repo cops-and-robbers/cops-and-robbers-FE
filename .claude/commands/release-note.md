@@ -7,8 +7,10 @@
 - 입력: 커밋 로그, 이슈 내용, 보고서 파일 등 어떤 형태든 받음
 - 출력: `.release-note/vX.Y.Z.md` 파일로 저장
 - 톤: **간결하고 담백하게**. 사실만
-- **구조**: 언어별 블록 3개 (한국어 / 일본어 / 영어). 각 블록 안에 [버전 + 요약 + 상세] 모두 포함 → 스토어별 통째로 copy-paste 가능
-- **상세는 한국어/영어만**, 일본어 블록은 요약까지만
+- **출력은 3개 섹션**:
+  1. **Android (Google Play)** — `<ko-KR>` / `<en-US>` / `<ja-JP>` 태그로 감싼 요약 (콘솔에 통째로 붙여넣기)
+  2. **iOS (App Store)** — `[한국어]` / `[English]` / `[日本語]` 블록 요약 (언어별 입력칸에 각각 붙여넣기)
+  3. **주요 변경사항 (애플 제출용 상세)** — 한국어 / 영어만 (일본어 제외)
 
 ## 절대 금지 사항
 
@@ -34,34 +36,91 @@
 - 같은 기능의 여러 커밋은 하나로 통합
 - `refactor`, `chore`, `docs`, `test`, `style`, `ci`, 머지 커밋은 제외
 
-### 3단계: 언어별 블록 작성
+### 3단계: 섹션별 작성
 
-**공통 규칙**
-- 각 언어 블록 맨 위에 `vX.Y.Z` 버전 표기
-- 그 아래 요약 (각 항목 한 줄 bullet, 전체 10줄 이내)
-- 한국어/영어 블록만 요약 아래에 상세 섹션 추가
-- 블록 사이 구분선 `==========`
-
-**요약 작성**
+**공통 요약 규칙**
+- 각 항목 한 줄 bullet, 전체 10줄 이내
 - 한국어: "~했습니다" 체
-- 일본어: "~しました" 체. 영어 단어 혼용 금지 (Cops → 警察, Robbers → 泥棒). 게임 타이틀 `경찰과도둑`은 일본어에서도 `Cops and Robbers` 브랜드명 유지
 - 영어: 자연스러운 영어
+- 일본어: "~しました" 체. 영어 단어 혼용 금지 (Cops → 警察, Robbers → 泥棒). 게임 타이틀 `경찰과도둑`은 일본어에서도 `Cops and Robbers` 브랜드명 유지
 - 사소한 수정 여러 개는 "안정성 개선 및 버그 수정"(또는 해당 언어 번역) 한 줄로 통합
+- 사람 이름·캐릭터 이름은 일본어에서도 영문 표기 그대로 (예: `Hong Eui-min`, `RobberKing`)
+- Android `<ko-KR>` 본문 = iOS `[한국어]` 본문 (텍스트 동일, 감싸는 형식만 다름)
 
-**상세 작성 (한국어/영어 블록만)**
-- 각 기능을 번호 항목으로, 세부 내용은 `-` 불릿으로
-- 기존 변경 전/후 문구가 있으면 "기존/변경" 형태로 포함
-- 사람 이름·캐릭터 이름은 영문 표기 그대로 (예: `Hong Eui-min`, `RobberKing`)
+**Android 섹션** (`# [Android]` 헤더 + 3개 태그)
+- `<ko-KR>` / `<en-US>` / `<ja-JP>` 태그로 감싸기
+- 각 태그 안 첫 줄에 `vX.Y.Z`, 빈 줄, 요약 bullet
+
+**iOS 섹션** (`# [iOS]` 헤더 + 3개 블록)
+- `[한국어]` / `[English]` / `[日本語]` 라벨 후 다음 줄에 `vX.Y.Z`, 빈 줄, 요약 bullet
+- 블록 사이 빈 줄로 구분 (태그 없음)
+
+**주요 변경사항 섹션** (`# [주요 변경사항 — 애플 제출용]` 헤더)
+- `[한국어]` / `[English]` 두 블록만 (일본어 제외)
+- 두 블록 사이 구분선 `==========`
+- 한국어: "이번 버전의 주요 변경사항입니다." 도입문 + 번호 항목 + `-` 세부 불릿
+- 영어: "Key changes in this version:" 도입문 + 동일 구조
+- 기존 변경 전/후 문구가 있으면 "기존/변경" (한국어), "Before/After" (영어) 형태로 포함
 
 ## 출력 형식
 
 ```text
-[한국어]
-v{VERSION}
+# [Android]
+
+<ko-KR>
+vX.Y.Z
 
 - 항목 1
 - 항목 2
 - 안정성 개선 및 버그 수정
+</ko-KR>
+
+<en-US>
+vX.Y.Z
+
+- Item 1
+- Item 2
+- Stability improvements and bug fixes
+</en-US>
+
+<ja-JP>
+vX.Y.Z
+
+- 項目 1
+- 項目 2
+- 安定性の改善とバグ修正
+</ja-JP>
+
+==========
+
+# [iOS]
+
+[한국어]
+vX.Y.Z
+
+- 항목 1
+- 항목 2
+- 안정성 개선 및 버그 수정
+
+[English]
+vX.Y.Z
+
+- Item 1
+- Item 2
+- Stability improvements and bug fixes
+
+[日本語]
+vX.Y.Z
+
+- 項目 1
+- 項目 2
+- 安定性の改善とバグ修正
+
+==========
+
+# [주요 변경사항 — 애플 제출용]
+
+[한국어]
 
 이번 버전의 주요 변경사항입니다.
 
@@ -73,21 +132,7 @@ v{VERSION}
 
 ==========
 
-[日本語]
-v{VERSION}
-
-- 項目 1
-- 項目 2
-- 安定性の改善とバグ修正
-
-==========
-
 [English]
-v{VERSION}
-
-- Item 1
-- Item 2
-- Stability improvements and bug fixes
 
 Key changes in this version:
 
@@ -120,6 +165,39 @@ fix : 방 참여 시 자동 리다이렉트
 ### 출력 (`.release-note/v1.4.10.md`)
 
 ```text
+# [Android]
+
+<ko-KR>
+v1.4.10
+
+- 대기실·게임 화면에 튜토리얼 가이드를 추가했습니다
+- 숨겨진 크레딧 페이지를 추가했습니다
+- 네트워크 재접속 시 도둑 위치가 복구됩니다
+- 안정성 개선 및 버그 수정
+</ko-KR>
+
+<en-US>
+v1.4.10
+
+- Added a tutorial guide to the waiting room and game screen
+- Added a hidden credits page
+- Robber locations are restored after network reconnection
+- Stability improvements and bug fixes
+</en-US>
+
+<ja-JP>
+v1.4.10
+
+- 待機室・ゲーム画面にチュートリアルガイドを追加しました
+- 隠しクレジットページを追加しました
+- ネットワーク再接続時に泥棒の位置が復元されます
+- 安定性の改善とバグ修正
+</ja-JP>
+
+==========
+
+# [iOS]
+
 [한국어]
 v1.4.10
 
@@ -127,6 +205,28 @@ v1.4.10
 - 숨겨진 크레딧 페이지를 추가했습니다
 - 네트워크 재접속 시 도둑 위치가 복구됩니다
 - 안정성 개선 및 버그 수정
+
+[English]
+v1.4.10
+
+- Added a tutorial guide to the waiting room and game screen
+- Added a hidden credits page
+- Robber locations are restored after network reconnection
+- Stability improvements and bug fixes
+
+[日本語]
+v1.4.10
+
+- 待機室・ゲーム画面にチュートリアルガイドを追加しました
+- 隠しクレジットページを追加しました
+- ネットワーク再接続時に泥棒の位置が復元されます
+- 安定性の改善とバグ修正
+
+==========
+
+# [주요 변경사항 — 애플 제출용]
+
+[한국어]
 
 이번 버전의 주요 변경사항입니다.
 
@@ -145,23 +245,7 @@ v1.4.10
 
 ==========
 
-[日本語]
-v1.4.10
-
-- 待機室・ゲーム画面にチュートリアルガイドを追加しました
-- 隠しクレジットページを追加しました
-- ネットワーク再接続時に泥棒の位置が復元されます
-- 安定性の改善とバグ修正
-
-==========
-
 [English]
-v1.4.10
-
-- Added a tutorial guide to the waiting room and game screen
-- Added a hidden credits page
-- Robber locations are restored after network reconnection
-- Stability improvements and bug fixes
 
 Key changes in this version:
 
