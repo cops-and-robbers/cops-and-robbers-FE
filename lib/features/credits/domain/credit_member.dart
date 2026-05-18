@@ -165,6 +165,24 @@ const List<CreditMember> creditMembers = [
       ),
     ],
   ),
+  CreditMember(
+    name: '김다임',
+    role: 'Design',
+    profileAssets: [
+      'assets/credits/DESIGN-KIM1.png',
+      'assets/credits/DESIGN-KIM2.jpeg',
+    ],
+    links: [
+      SocialLink(
+        type: SocialType.instagram,
+        url: 'https://www.instagram.com/daimmmmi',
+      ),
+      SocialLink(
+        type: SocialType.linkedin,
+        url: 'https://www.linkedin.com/in/daim-kim',
+      ),
+    ],
+  ),
 ];
 
 /// 도움 준 사람 정보
@@ -224,6 +242,7 @@ String localizedMemberName(AppLocalizations l10n, String name) {
     '정상희' => l10n.creditMemberJeongSangHee,
     '황혜림' => l10n.creditMemberHwangHyeRim,
     '윤지희' => l10n.creditMemberYoonJiHee,
+    '김다임' => l10n.creditMemberKimDaim,
     '신지훈' => l10n.creditMemberShinJiHoon,
     '남해윤' => l10n.creditMemberNamHaeYoon,
     '송혜정' => l10n.creditMemberSongHyeJung,

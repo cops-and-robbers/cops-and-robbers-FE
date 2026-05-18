@@ -1684,6 +1684,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get creditMemberYoonJiHee => '윤지희';
 
   @override
+  String get creditMemberKimDaim => '김다임';
+
+  @override
   String get creditMemberShinJiHoon => '신지훈';
 
   @override

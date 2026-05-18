@@ -2272,6 +2272,10 @@
   "@creditMemberYoonJiHee": {
     "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Yoon Ji-hee)"
   },
+  "creditMemberKimDaim": "김다임",
+  "@creditMemberKimDaim": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Da-im)"
+  },
   "creditMemberShinJiHoon": "신지훈",
   "@creditMemberShinJiHoon": {
     "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Ji-hoon)"

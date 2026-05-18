@@ -3279,6 +3279,12 @@ abstract class AppLocalizations {
   /// **'윤지희'**
   String get creditMemberYoonJiHee;
 
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Da-im)
+  ///
+  /// In ko, this message translates to:
+  /// **'김다임'**
+  String get creditMemberKimDaim;
+
   /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Ji-hoon)
   ///
   /// In ko, this message translates to:

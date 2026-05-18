@@ -1813,6 +1813,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creditMemberYoonJiHee => 'Yoon Ji-hee';
 
   @override
+  String get creditMemberKimDaim => 'Kim Da-im';
+
+  @override
   String get creditMemberShinJiHoon => 'Shin Ji-hoon';
 
   @override
