@@ -1905,25 +1905,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogreportRepositoryImplMessage => '通報処理中にエラーが発生しました';
 
   @override
-  String get report_reportCategories_L7 => '釣り/いやがらせ/連投';
+  String get reportCategoryBait => '釣り/いやがらせ/連投';
 
   @override
-  String get report_reportCategories_L8 => '暴言/見下し';
+  String get reportCategoryAbuse => '暴言/見下し';
 
   @override
-  String get report_reportCategories_L9 => '詐称/詐欺';
+  String get reportCategoryImpersonation => '詐称/詐欺';
 
   @override
-  String get report_reportCategories_L10 => '広告/スパム';
+  String get reportCategorySpam => '広告/スパム';
 
   @override
-  String get report_reportCategories_L11 => '不正行為/バグ悪用';
+  String get reportCategoryExploit => '不正行為/バグ悪用';
 
   @override
-  String get report_reportCategories_L12 => 'チーム士気低下行為';
+  String get reportCategoryTeamSabotage => 'チーム士気低下行為';
 
   @override
-  String get report_reportCategories_L13 => 'その他(直接記入)';
+  String get reportCategoryOther => 'その他(直接記入)';
 
   @override
   String get dialoguserRepositoryImplMessage => 'ニックネームの確認中に予期せぬエラーが発生しました';
@@ -1951,19 +1951,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialoguserRepositoryImplMessage5fe2 => '';
 
   @override
-  String get lobby_lobbyProvider_L139 => '認証トークンを取得できません。再ログインが必要です';
+  String get errorAuthTokenMissing => '認証トークンを取得できません。再ログインが必要です';
 
   @override
-  String get lobby_lobbyProvider_L187 => 'サーバーに接続できません。しばらくしてからもう一度お試しください';
+  String get errorServerUnreachable => 'サーバーに接続できません。しばらくしてからもう一度お試しください';
 
   @override
-  String get lobby_lobbyProvider_L319 => 'サーバーに接続できません。しばらくしてからもう一度お試しください';
-
-  @override
-  String get lobby_lobbyProvider_L381 => '認証の有効期限が切れました。再ログインが必要です';
-
-  @override
-  String get lobby_lobbyProvider_L399 => '認証の有効期限が切れました。再ログインが必要です';
+  String get errorAuthExpired => '認証の有効期限が切れました。再ログインが必要です';
 
   @override
   String get dialognoticeRepositoryImplMessage => '知らせを読み込む中にエラーが発生しました';
@@ -1975,27 +1969,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialognoticesPageMessage4982 => 'お知らせを読み込めませんでした';
 
   @override
-  String get notice_noticesPage_L131 => 'お知らせ';
+  String get pageNoticesTitle => 'お知らせ';
 
   @override
-  String get notice_noticesPage_L152 => '登録されたお知らせはありません';
+  String get pageNoticesEmpty => '登録されたお知らせはありません';
 
   @override
-  String get router_appRouter_L477 => 'エリア情報を読み込めません';
+  String get errorAreaLoadFailed => 'エリア情報を読み込めません';
 
   @override
-  String get router_appRouter_L575 => 'ページが見つかりません';
+  String get pageNotFoundTitle => 'ページが見つかりません';
 
   @override
-  String get router_appRouter_L586 => 'お探しのページは存在しません';
+  String get pageNotFoundMessage => 'お探しのページは存在しません';
 
   @override
-  String router_appRouter_L589(String path) {
+  String pageNotFoundPath(String path) {
     return 'パス: $path';
   }
 
   @override
-  String get router_appRouter_L600 => 'ログアウト';
+  String get buttonLogout => 'ログアウト';
 
   @override
   String get dialogbugRepositoryImplMessage => 'バグ報告の処理中にエラーが発生しました';

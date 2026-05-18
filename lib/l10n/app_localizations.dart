@@ -3699,47 +3699,47 @@ abstract class AppLocalizations {
   /// **'신고 처리 중 오류가 발생했습니다'**
   String get dialogreportRepositoryImplMessage;
 
-  /// auto-imported from lib/features/report/domain/constants/report_categories.dart:7
+  /// 신고 카테고리 — 낚시/놀람/도배 (ReportCategory.bait)
   ///
   /// In ko, this message translates to:
   /// **'낚시/놀람/도배'**
-  String get report_reportCategories_L7;
+  String get reportCategoryBait;
 
-  /// auto-imported from lib/features/report/domain/constants/report_categories.dart:8
+  /// 신고 카테고리 — 욕설/비하 (ReportCategory.abuse)
   ///
   /// In ko, this message translates to:
   /// **'욕설/비하'**
-  String get report_reportCategories_L8;
+  String get reportCategoryAbuse;
 
-  /// auto-imported from lib/features/report/domain/constants/report_categories.dart:9
+  /// 신고 카테고리 — 사칭/사기 (ReportCategory.impersonation)
   ///
   /// In ko, this message translates to:
   /// **'사칭/사기'**
-  String get report_reportCategories_L9;
+  String get reportCategoryImpersonation;
 
-  /// auto-imported from lib/features/report/domain/constants/report_categories.dart:10
+  /// 신고 카테고리 — 광고/스팸 (ReportCategory.spam)
   ///
   /// In ko, this message translates to:
   /// **'광고/스팸'**
-  String get report_reportCategories_L10;
+  String get reportCategorySpam;
 
-  /// auto-imported from lib/features/report/domain/constants/report_categories.dart:11
+  /// 신고 카테고리 — 부정 행위/버그 악용 (ReportCategory.exploit)
   ///
   /// In ko, this message translates to:
   /// **'부정 행위/버그 악용'**
-  String get report_reportCategories_L11;
+  String get reportCategoryExploit;
 
-  /// auto-imported from lib/features/report/domain/constants/report_categories.dart:12
+  /// 신고 카테고리 — 팀 사기 저하 (ReportCategory.teamSabotage)
   ///
   /// In ko, this message translates to:
   /// **'팀 사기 저하'**
-  String get report_reportCategories_L12;
+  String get reportCategoryTeamSabotage;
 
-  /// auto-imported from lib/features/report/domain/constants/report_categories.dart:13
+  /// 신고 카테고리 — 기타 (ReportCategory.other, 직접 입력)
   ///
   /// In ko, this message translates to:
   /// **'기타(직접 작성)'**
-  String get report_reportCategories_L13;
+  String get reportCategoryOther;
 
   /// auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:36
   ///
@@ -3789,35 +3789,23 @@ abstract class AppLocalizations {
   /// **'게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다'**
   String get dialoguserRepositoryImplMessage5fe2;
 
-  /// auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:139
+  /// 인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후
   ///
   /// In ko, this message translates to:
   /// **'인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다'**
-  String get lobby_lobbyProvider_L139;
+  String get errorAuthTokenMissing;
 
-  /// auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:187
+  /// 서버 연결 실패 — STOMP/REST 모두 실패 시 재시도 권장 안내
   ///
   /// In ko, this message translates to:
   /// **'서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요'**
-  String get lobby_lobbyProvider_L187;
+  String get errorServerUnreachable;
 
-  /// auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:319
-  ///
-  /// In ko, this message translates to:
-  /// **'서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요'**
-  String get lobby_lobbyProvider_L319;
-
-  /// auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:381
+  /// 인증 토큰 만료 — 재로그인 유도
   ///
   /// In ko, this message translates to:
   /// **'인증이 만료되었습니다. 재로그인이 필요합니다'**
-  String get lobby_lobbyProvider_L381;
-
-  /// auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:399
-  ///
-  /// In ko, this message translates to:
-  /// **'인증이 만료되었습니다. 재로그인이 필요합니다'**
-  String get lobby_lobbyProvider_L399;
+  String get errorAuthExpired;
 
   /// auto-imported from lib/features/notice/data/repositories/notice_repository_impl.dart:49
   ///
@@ -3837,47 +3825,47 @@ abstract class AppLocalizations {
   /// **'공지사항을 불러오지 못했어요'**
   String get dialognoticesPageMessage4982;
 
-  /// auto-imported from lib/features/notice/presentation/pages/notices_page.dart:131
+  /// 공지사항 페이지 AppBar 제목
   ///
   /// In ko, this message translates to:
   /// **'공지사항'**
-  String get notice_noticesPage_L131;
+  String get pageNoticesTitle;
 
-  /// auto-imported from lib/features/notice/presentation/pages/notices_page.dart:152
+  /// 공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지
   ///
   /// In ko, this message translates to:
   /// **'등록된 공지사항이 없습니다'**
-  String get notice_noticesPage_L152;
+  String get pageNoticesEmpty;
 
-  /// auto-imported from lib/router/app_router.dart:477
+  /// 게임 진입 시 area(구역) 정보 로드 실패 안내
   ///
   /// In ko, this message translates to:
   /// **'구역 정보를 불러올 수 없습니다'**
-  String get router_appRouter_L477;
+  String get errorAreaLoadFailed;
 
-  /// auto-imported from lib/router/app_router.dart:575
+  /// 404 페이지 AppBar 제목
   ///
   /// In ko, this message translates to:
   /// **'페이지를 찾을 수 없습니다'**
-  String get router_appRouter_L575;
+  String get pageNotFoundTitle;
 
-  /// auto-imported from lib/router/app_router.dart:586
+  /// 404 페이지 본문 — 잘못된 경로 진입 시 안내
   ///
   /// In ko, this message translates to:
   /// **'요청하신 페이지가 존재하지 않습니다'**
-  String get router_appRouter_L586;
+  String get pageNotFoundMessage;
 
-  /// auto-imported from lib/router/app_router.dart:589
+  /// 404 페이지 — 시도한 경로 표시 (디버깅 도움)
   ///
   /// In ko, this message translates to:
   /// **'경로: {path}'**
-  String router_appRouter_L589(String path);
+  String pageNotFoundPath(String path);
 
-  /// auto-imported from lib/router/app_router.dart:600
+  /// 로그아웃 공통 버튼 라벨
   ///
   /// In ko, this message translates to:
   /// **'로그아웃'**
-  String get router_appRouter_L600;
+  String get buttonLogout;
 
   /// auto-imported from lib/features/bug/data/repositories/bug_repository_impl.dart:25
   ///

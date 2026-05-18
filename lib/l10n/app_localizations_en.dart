@@ -2048,25 +2048,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'An error occurred while processing the report';
 
   @override
-  String get report_reportCategories_L7 => 'Trolling/Spamming';
+  String get reportCategoryBait => 'Trolling/Spamming';
 
   @override
-  String get report_reportCategories_L8 => 'Profanity/Insults';
+  String get reportCategoryAbuse => 'Profanity/Insults';
 
   @override
-  String get report_reportCategories_L9 => 'Impersonation/Scam';
+  String get reportCategoryImpersonation => 'Impersonation/Scam';
 
   @override
-  String get report_reportCategories_L10 => 'Advertising/Spam';
+  String get reportCategorySpam => 'Advertising/Spam';
 
   @override
-  String get report_reportCategories_L11 => 'Cheating/Exploiting bugs';
+  String get reportCategoryExploit => 'Cheating/Exploiting bugs';
 
   @override
-  String get report_reportCategories_L12 => 'Sabotage/Griefing';
+  String get reportCategoryTeamSabotage => 'Sabotage/Griefing';
 
   @override
-  String get report_reportCategories_L13 => 'Others (Write directly)';
+  String get reportCategoryOther => 'Others (Write directly)';
 
   @override
   String get dialoguserRepositoryImplMessage =>
@@ -2101,23 +2101,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while updating push notification consent';
 
   @override
-  String get lobby_lobbyProvider_L139 =>
+  String get errorAuthTokenMissing =>
       'Unable to retrieve the authentication token. Re-login is required';
 
   @override
-  String get lobby_lobbyProvider_L187 =>
+  String get errorServerUnreachable =>
       'Unable to connect to the server. Please try again in a moment';
 
   @override
-  String get lobby_lobbyProvider_L319 =>
-      'Unable to connect to the server. Please try again in a moment';
-
-  @override
-  String get lobby_lobbyProvider_L381 =>
-      'Authentication has expired. Re-login is required';
-
-  @override
-  String get lobby_lobbyProvider_L399 =>
+  String get errorAuthExpired =>
       'Authentication has expired. Re-login is required';
 
   @override
@@ -2131,27 +2123,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialognoticesPageMessage4982 => 'Failed to load notices';
 
   @override
-  String get notice_noticesPage_L131 => 'Notices';
+  String get pageNoticesTitle => 'Notices';
 
   @override
-  String get notice_noticesPage_L152 => 'There are no notices registered';
+  String get pageNoticesEmpty => 'There are no notices registered';
 
   @override
-  String get router_appRouter_L477 => 'Unable to load game area information';
+  String get errorAreaLoadFailed => 'Unable to load game area information';
 
   @override
-  String get router_appRouter_L575 => 'Page not found';
+  String get pageNotFoundTitle => 'Page not found';
 
   @override
-  String get router_appRouter_L586 => 'The requested page does not exist';
+  String get pageNotFoundMessage => 'The requested page does not exist';
 
   @override
-  String router_appRouter_L589(String path) {
+  String pageNotFoundPath(String path) {
     return 'Path: $path';
   }
 
   @override
-  String get router_appRouter_L600 => 'Sign out';
+  String get buttonLogout => 'Sign out';
 
   @override
   String get dialogbugRepositoryImplMessage =>

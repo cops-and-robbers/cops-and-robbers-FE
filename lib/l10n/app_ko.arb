@@ -2553,33 +2553,33 @@
   "@dialogreportRepositoryImplMessage": {
     "description": "auto-imported from lib/features/report/data/repositories/report_repository_impl.dart:39"
   },
-  "report_reportCategories_L7": "낚시/놀람/도배",
-  "@report_reportCategories_L7": {
-    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:7"
+  "reportCategoryBait": "낚시/놀람/도배",
+  "@reportCategoryBait": {
+    "description": "신고 카테고리 — 낚시/놀람/도배 (ReportCategory.bait)"
   },
-  "report_reportCategories_L8": "욕설/비하",
-  "@report_reportCategories_L8": {
-    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:8"
+  "reportCategoryAbuse": "욕설/비하",
+  "@reportCategoryAbuse": {
+    "description": "신고 카테고리 — 욕설/비하 (ReportCategory.abuse)"
   },
-  "report_reportCategories_L9": "사칭/사기",
-  "@report_reportCategories_L9": {
-    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:9"
+  "reportCategoryImpersonation": "사칭/사기",
+  "@reportCategoryImpersonation": {
+    "description": "신고 카테고리 — 사칭/사기 (ReportCategory.impersonation)"
   },
-  "report_reportCategories_L10": "광고/스팸",
-  "@report_reportCategories_L10": {
-    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:10"
+  "reportCategorySpam": "광고/스팸",
+  "@reportCategorySpam": {
+    "description": "신고 카테고리 — 광고/스팸 (ReportCategory.spam)"
   },
-  "report_reportCategories_L11": "부정 행위/버그 악용",
-  "@report_reportCategories_L11": {
-    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:11"
+  "reportCategoryExploit": "부정 행위/버그 악용",
+  "@reportCategoryExploit": {
+    "description": "신고 카테고리 — 부정 행위/버그 악용 (ReportCategory.exploit)"
   },
-  "report_reportCategories_L12": "팀 사기 저하",
-  "@report_reportCategories_L12": {
-    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:12"
+  "reportCategoryTeamSabotage": "팀 사기 저하",
+  "@reportCategoryTeamSabotage": {
+    "description": "신고 카테고리 — 팀 사기 저하 (ReportCategory.teamSabotage)"
   },
-  "report_reportCategories_L13": "기타(직접 작성)",
-  "@report_reportCategories_L13": {
-    "description": "auto-imported from lib/features/report/domain/constants/report_categories.dart:13"
+  "reportCategoryOther": "기타(직접 작성)",
+  "@reportCategoryOther": {
+    "description": "신고 카테고리 — 기타 (ReportCategory.other, 직접 입력)"
   },
   "dialoguserRepositoryImplMessage": "닉네임 확인 중 예기치 않은 오류가 발생했습니다",
   "@dialoguserRepositoryImplMessage": {
@@ -2613,25 +2613,17 @@
   "@dialoguserRepositoryImplMessage5fe2": {
     "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:200"
   },
-  "lobby_lobbyProvider_L139": "인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다",
-  "@lobby_lobbyProvider_L139": {
-    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:139"
+  "errorAuthTokenMissing": "인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다",
+  "@errorAuthTokenMissing": {
+    "description": "인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후"
   },
-  "lobby_lobbyProvider_L187": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
-  "@lobby_lobbyProvider_L187": {
-    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:187"
+  "errorServerUnreachable": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "@errorServerUnreachable": {
+    "description": "서버 연결 실패 — STOMP/REST 모두 실패 시 재시도 권장 안내"
   },
-  "lobby_lobbyProvider_L319": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
-  "@lobby_lobbyProvider_L319": {
-    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:319"
-  },
-  "lobby_lobbyProvider_L381": "인증이 만료되었습니다. 재로그인이 필요합니다",
-  "@lobby_lobbyProvider_L381": {
-    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:381"
-  },
-  "lobby_lobbyProvider_L399": "인증이 만료되었습니다. 재로그인이 필요합니다",
-  "@lobby_lobbyProvider_L399": {
-    "description": "auto-imported from lib/features/lobby/presentation/providers/lobby_provider.dart:399"
+  "errorAuthExpired": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "@errorAuthExpired": {
+    "description": "인증 토큰 만료 — 재로그인 유도"
   },
   "dialognoticeRepositoryImplMessage": "공지사항을 불러오는 중 오류가 발생했습니다",
   "@dialognoticeRepositoryImplMessage": {
@@ -2645,38 +2637,38 @@
   "@dialognoticesPageMessage4982": {
     "description": "auto-imported from lib/features/notice/presentation/pages/notices_page.dart:99"
   },
-  "notice_noticesPage_L131": "공지사항",
-  "@notice_noticesPage_L131": {
-    "description": "auto-imported from lib/features/notice/presentation/pages/notices_page.dart:131"
+  "pageNoticesTitle": "공지사항",
+  "@pageNoticesTitle": {
+    "description": "공지사항 페이지 AppBar 제목"
   },
-  "notice_noticesPage_L152": "등록된 공지사항이 없습니다",
-  "@notice_noticesPage_L152": {
-    "description": "auto-imported from lib/features/notice/presentation/pages/notices_page.dart:152"
+  "pageNoticesEmpty": "등록된 공지사항이 없습니다",
+  "@pageNoticesEmpty": {
+    "description": "공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지"
   },
-  "router_appRouter_L477": "구역 정보를 불러올 수 없습니다",
-  "@router_appRouter_L477": {
-    "description": "auto-imported from lib/router/app_router.dart:477"
+  "errorAreaLoadFailed": "구역 정보를 불러올 수 없습니다",
+  "@errorAreaLoadFailed": {
+    "description": "게임 진입 시 area(구역) 정보 로드 실패 안내"
   },
-  "router_appRouter_L575": "페이지를 찾을 수 없습니다",
-  "@router_appRouter_L575": {
-    "description": "auto-imported from lib/router/app_router.dart:575"
+  "pageNotFoundTitle": "페이지를 찾을 수 없습니다",
+  "@pageNotFoundTitle": {
+    "description": "404 페이지 AppBar 제목"
   },
-  "router_appRouter_L586": "요청하신 페이지가 존재하지 않습니다",
-  "@router_appRouter_L586": {
-    "description": "auto-imported from lib/router/app_router.dart:586"
+  "pageNotFoundMessage": "요청하신 페이지가 존재하지 않습니다",
+  "@pageNotFoundMessage": {
+    "description": "404 페이지 본문 — 잘못된 경로 진입 시 안내"
   },
-  "router_appRouter_L589": "경로: {path}",
-  "@router_appRouter_L589": {
-    "description": "auto-imported from lib/router/app_router.dart:589",
+  "pageNotFoundPath": "경로: {path}",
+  "@pageNotFoundPath": {
+    "description": "404 페이지 — 시도한 경로 표시 (디버깅 도움)",
     "placeholders": {
       "path": {
         "type": "String"
       }
     }
   },
-  "router_appRouter_L600": "로그아웃",
-  "@router_appRouter_L600": {
-    "description": "auto-imported from lib/router/app_router.dart:600"
+  "buttonLogout": "로그아웃",
+  "@buttonLogout": {
+    "description": "로그아웃 공통 버튼 라벨"
   },
   "dialogbugRepositoryImplMessage": "버그 제보 처리 중 오류가 발생했습니다",
   "@dialogbugRepositoryImplMessage": {

@@ -136,7 +136,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
         leading: PreviousButton(onPressed: () => context.pop()),
         centerTitle: true,
         title: Text(
-          AppLocalizations.of(context).notice_noticesPage_L131,
+          AppLocalizations.of(context).pageNoticesTitle,
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
@@ -157,7 +157,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     if (notices.isEmpty) {
       return Center(
         child: Text(
-          AppLocalizations.of(context).notice_noticesPage_L152,
+          AppLocalizations.of(context).pageNoticesEmpty,
           style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black600),
         ),
       );

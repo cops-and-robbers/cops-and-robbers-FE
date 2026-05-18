@@ -152,7 +152,7 @@ class LobbyNotifier extends _$LobbyNotifier {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다.',
-        errorMessageKey: 'lobby_lobbyProvider_L139',
+        errorMessageKey: 'errorAuthTokenMissing',
       );
       return;
     }
@@ -201,7 +201,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         state = state.copyWith(
           connectionState: StompConnectionState.error,
           errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
-          errorMessageKey: 'lobby_lobbyProvider_L187',
+          errorMessageKey: 'errorServerUnreachable',
         );
         _intentionalDisconnect = false; // 수동 재연결(manualReconnect)은 허용
       } catch (_) {
@@ -334,7 +334,7 @@ class LobbyNotifier extends _$LobbyNotifier {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
-        errorMessageKey: 'lobby_lobbyProvider_L319',
+        errorMessageKey: 'errorServerUnreachable',
       );
       return;
     }
@@ -397,7 +397,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         state = state.copyWith(
           connectionState: StompConnectionState.error,
           errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
-          errorMessageKey: 'lobby_lobbyProvider_L381',
+          errorMessageKey: 'errorAuthExpired',
         );
         return;
       }
@@ -416,7 +416,7 @@ class LobbyNotifier extends _$LobbyNotifier {
         state = state.copyWith(
           connectionState: StompConnectionState.error,
           errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
-          errorMessageKey: 'lobby_lobbyProvider_L399',
+          errorMessageKey: 'errorAuthExpired',
         );
         return;
       }

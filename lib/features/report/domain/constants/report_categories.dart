@@ -26,12 +26,12 @@ enum ReportCategory {
 
   /// 다국어 라벨 — UI에서 사용
   String localizedLabel(AppLocalizations l10n) => switch (this) {
-    ReportCategory.bait => l10n.report_reportCategories_L7,
-    ReportCategory.abuse => l10n.report_reportCategories_L8,
-    ReportCategory.impersonation => l10n.report_reportCategories_L9,
-    ReportCategory.spam => l10n.report_reportCategories_L10,
-    ReportCategory.exploit => l10n.report_reportCategories_L11,
-    ReportCategory.teamSabotage => l10n.report_reportCategories_L12,
-    ReportCategory.other => l10n.report_reportCategories_L13,
+    ReportCategory.bait => l10n.reportCategoryBait,
+    ReportCategory.abuse => l10n.reportCategoryAbuse,
+    ReportCategory.impersonation => l10n.reportCategoryImpersonation,
+    ReportCategory.spam => l10n.reportCategorySpam,
+    ReportCategory.exploit => l10n.reportCategoryExploit,
+    ReportCategory.teamSabotage => l10n.reportCategoryTeamSabotage,
+    ReportCategory.other => l10n.reportCategoryOther,
   };
 }

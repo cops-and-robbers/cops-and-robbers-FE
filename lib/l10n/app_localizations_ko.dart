@@ -1902,25 +1902,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogreportRepositoryImplMessage => '신고 처리 중 오류가 발생했습니다';
 
   @override
-  String get report_reportCategories_L7 => '낚시/놀람/도배';
+  String get reportCategoryBait => '낚시/놀람/도배';
 
   @override
-  String get report_reportCategories_L8 => '욕설/비하';
+  String get reportCategoryAbuse => '욕설/비하';
 
   @override
-  String get report_reportCategories_L9 => '사칭/사기';
+  String get reportCategoryImpersonation => '사칭/사기';
 
   @override
-  String get report_reportCategories_L10 => '광고/스팸';
+  String get reportCategorySpam => '광고/스팸';
 
   @override
-  String get report_reportCategories_L11 => '부정 행위/버그 악용';
+  String get reportCategoryExploit => '부정 행위/버그 악용';
 
   @override
-  String get report_reportCategories_L12 => '팀 사기 저하';
+  String get reportCategoryTeamSabotage => '팀 사기 저하';
 
   @override
-  String get report_reportCategories_L13 => '기타(직접 작성)';
+  String get reportCategoryOther => '기타(직접 작성)';
 
   @override
   String get dialoguserRepositoryImplMessage => '닉네임 확인 중 예기치 않은 오류가 발생했습니다';
@@ -1952,19 +1952,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다';
 
   @override
-  String get lobby_lobbyProvider_L139 => '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다';
+  String get errorAuthTokenMissing => '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다';
 
   @override
-  String get lobby_lobbyProvider_L187 => '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요';
+  String get errorServerUnreachable => '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요';
 
   @override
-  String get lobby_lobbyProvider_L319 => '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요';
-
-  @override
-  String get lobby_lobbyProvider_L381 => '인증이 만료되었습니다. 재로그인이 필요합니다';
-
-  @override
-  String get lobby_lobbyProvider_L399 => '인증이 만료되었습니다. 재로그인이 필요합니다';
+  String get errorAuthExpired => '인증이 만료되었습니다. 재로그인이 필요합니다';
 
   @override
   String get dialognoticeRepositoryImplMessage => '공지사항을 불러오는 중 오류가 발생했습니다';
@@ -1976,27 +1970,27 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialognoticesPageMessage4982 => '공지사항을 불러오지 못했어요';
 
   @override
-  String get notice_noticesPage_L131 => '공지사항';
+  String get pageNoticesTitle => '공지사항';
 
   @override
-  String get notice_noticesPage_L152 => '등록된 공지사항이 없습니다';
+  String get pageNoticesEmpty => '등록된 공지사항이 없습니다';
 
   @override
-  String get router_appRouter_L477 => '구역 정보를 불러올 수 없습니다';
+  String get errorAreaLoadFailed => '구역 정보를 불러올 수 없습니다';
 
   @override
-  String get router_appRouter_L575 => '페이지를 찾을 수 없습니다';
+  String get pageNotFoundTitle => '페이지를 찾을 수 없습니다';
 
   @override
-  String get router_appRouter_L586 => '요청하신 페이지가 존재하지 않습니다';
+  String get pageNotFoundMessage => '요청하신 페이지가 존재하지 않습니다';
 
   @override
-  String router_appRouter_L589(String path) {
+  String pageNotFoundPath(String path) {
     return '경로: $path';
   }
 
   @override
-  String get router_appRouter_L600 => '로그아웃';
+  String get buttonLogout => '로그아웃';
 
   @override
   String get dialogbugRepositoryImplMessage => '버그 제보 처리 중 오류가 발생했습니다';

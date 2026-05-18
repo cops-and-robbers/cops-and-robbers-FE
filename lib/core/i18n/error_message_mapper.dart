@@ -53,6 +53,16 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       // 인증 에러
       case 'errorAuthLoginCancelled':
         return errorAuthLoginCancelled;
+      case 'errorAuthTokenMissing':
+        return errorAuthTokenMissing;
+      case 'errorAuthExpired':
+        return errorAuthExpired;
+      // 서버 연결
+      case 'errorServerUnreachable':
+        return errorServerUnreachable;
+      // 게임 영역
+      case 'errorAreaLoadFailed':
+        return errorAreaLoadFailed;
       default:
         return fallback ?? key;
     }

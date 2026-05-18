@@ -477,7 +477,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         ),
                         body: Center(
                           child: Text(
-                            AppLocalizations.of(context).router_appRouter_L477,
+                            AppLocalizations.of(context).errorAreaLoadFailed,
                           ),
                         ),
                       ),
@@ -578,7 +578,7 @@ class _ErrorPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.router_appRouter_L575, style: AppTextStyles.label_16),
+        title: Text(l10n.pageNotFoundTitle, style: AppTextStyles.label_16),
         centerTitle: true,
       ),
       body: Center(
@@ -589,10 +589,10 @@ class _ErrorPage extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 64, color: AppColors.red),
               SizedBox(height: AppSpacing.vertical16),
-              Text(l10n.router_appRouter_L586, style: AppTextStyles.label_16),
+              Text(l10n.pageNotFoundMessage, style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical8),
               Text(
-                l10n.router_appRouter_L589(path),
+                l10n.pageNotFoundPath(path),
                 style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
               ),
               SizedBox(height: AppSpacing.vertical24),
@@ -604,7 +604,7 @@ class _ErrorPage extends ConsumerWidget {
                   }
                 },
                 child: Text(
-                  l10n.router_appRouter_L600,
+                  l10n.buttonLogout,
                   style: AppTextStyles.paragraph_14,
                 ),
               ),
