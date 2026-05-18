@@ -209,7 +209,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
       return Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
-          title: Text(l10n.session_setupPrisonPage_L210, style: titleStyle),
+          title: Text(l10n.zoneJail, style: titleStyle),
           backgroundColor: bgColor,
           elevation: 0,
           centerTitle: true,
@@ -226,7 +226,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text(l10n.session_setupPrisonPage_L227, style: titleStyle),
+        title: Text(l10n.zoneJail, style: titleStyle),
         backgroundColor: bgColor,
         elevation: 0,
         centerTitle: true,
@@ -247,7 +247,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  l10n.session_setupPrisonPage_L248,
+                  l10n.setupPrisonDescription,
                   style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),
@@ -285,8 +285,8 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                   alignment: Alignment.center,
                   child: Text(
                     _playgroundCenter == null
-                        ? l10n.session_setupPrisonPage_L286
-                        : l10n.session_setupPrisonPage_L287,
+                        ? l10n.errorPlaygroundFirst
+                        : l10n.errorJailOutsidePlayground,
                     style: AppTextStyles.label16Medium.copyWith(
                       color: AppColors.red,
                     ),
@@ -298,7 +298,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
             Padding(
               padding: AppPadding.all20,
               child: AppButton(
-                text: l10n.session_setupPrisonPage_L299,
+                text: l10n.buttonDone,
                 onPressed: _isMapReady && _isJailInsidePlayground()
                     ? _onComplete
                     : null,

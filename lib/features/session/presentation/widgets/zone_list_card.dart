@@ -101,9 +101,9 @@ class _ZoneItem extends StatelessWidget {
   String _displayDistance(AppLocalizations l10n) {
     if (zone.radiusMeters >= 1000) {
       final km = (zone.radiusMeters / 1000).toStringAsFixed(2);
-      return l10n.session_zoneInfo_L25(km);
+      return l10n.zoneRadiusKm(km);
     }
-    return l10n.session_zoneInfo_L27(zone.radiusMeters.toString());
+    return l10n.zoneRadiusMeters(zone.radiusMeters.toString());
   }
 
   @override

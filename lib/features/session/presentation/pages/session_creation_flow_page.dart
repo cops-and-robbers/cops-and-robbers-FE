@@ -159,14 +159,14 @@ class _SessionCreationFlowPageState
         return [
           AppTutorialStyle.target(
             keyTarget: _tutorialKeyPlayground,
-            description: l10n.session_sessionCreationFlowPage_L160,
+            description: l10n.sessionCreationStepZoneSubtitle,
           ),
         ];
       case 2:
         return [
           AppTutorialStyle.target(
             keyTarget: _tutorialKeySettings,
-            description: l10n.session_sessionCreationFlowPage_L167,
+            description: l10n.sessionCreationStepRulesSubtitle,
           ),
         ];
       default:
@@ -374,7 +374,7 @@ class _SessionCreationFlowPageState
     if (error is AppException) {
       return error.message;
     }
-    return l10n.session_sessionCreationFlowPage_L374;
+    return l10n.errorCreateRoomFailed;
   }
 
   /// 에러가 409 Conflict인지 확인
@@ -486,18 +486,18 @@ class _SessionCreationFlowPageState
 
   /// 각 단계별 제목 (l10n 기반)
   List<String> _stepTitles(AppLocalizations l10n) => [
-    l10n.session_sessionCreationFlowPage_L483,
-    l10n.session_sessionCreationFlowPage_L484,
-    l10n.session_sessionCreationFlowPage_L485,
-    l10n.session_sessionCreationFlowPage_L486,
+    l10n.sessionCreationZoneFirstQuestion,
+    l10n.sessionCreationStepParticipantsTitle,
+    l10n.sessionCreationStepBasicTitle,
+    l10n.sessionCreationStepReviewTitle,
   ];
 
   /// 각 단계별 설명 (l10n 기반)
   List<String> _stepDescriptions(AppLocalizations l10n) => [
-    l10n.session_sessionCreationFlowPage_L491,
-    l10n.session_sessionCreationFlowPage_L492,
-    l10n.session_sessionCreationFlowPage_L493,
-    l10n.session_sessionCreationFlowPage_L494,
+    l10n.sessionCreationStepZoneIntro,
+    l10n.sessionCreationStepParticipantsHint,
+    l10n.sessionCreationStepBasicHint,
+    l10n.sessionCreationStepReviewHint,
   ];
 
   /// 각 단계별 버튼 텍스트 (l10n 기반)
@@ -506,11 +506,11 @@ class _SessionCreationFlowPageState
       case 0:
       case 1:
       case 2:
-        return l10n.session_sessionCreationFlowPage_L503;
+        return l10n.buttonNext;
       case 3:
-        return l10n.session_sessionCreationFlowPage_L505;
+        return l10n.buttonCreateRoom;
       default:
-        return l10n.session_sessionCreationFlowPage_L507;
+        return l10n.buttonNext;
     }
   }
 
@@ -664,12 +664,12 @@ class _SessionCreationFlowPageState
                   zones: [
                     ZoneInfo(
                       id: 'playground',
-                      name: l10n.session_sessionCreationFlowPage_L660,
+                      name: l10n.zonePlayground,
                       radiusMeters: _playgroundRadiusMeters!.toInt(),
                     ),
                     ZoneInfo(
                       id: 'prison',
-                      name: l10n.session_sessionCreationFlowPage_L665,
+                      name: l10n.zoneJail,
                       radiusMeters: _prisonRadiusMeters!.toInt(),
                     ),
                   ],
@@ -680,7 +680,7 @@ class _SessionCreationFlowPageState
                     policeStartDelayMinutes: _policeWaitMinutes,
                   ),
                 )
-              : Center(child: Text(l10n.session_sessionCreationFlowPage_L676)),
+              : Center(child: Text(l10n.errorZoneNotConfigured)),
         ),
       ],
     );

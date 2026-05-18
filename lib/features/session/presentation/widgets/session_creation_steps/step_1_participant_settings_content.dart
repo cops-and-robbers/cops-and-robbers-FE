@@ -51,7 +51,7 @@ class Step1ParticipantSettingsContent extends StatelessWidget {
       value: maxParticipants.toDouble(),
       min: 2,
       max: 50,
-      unit: l10n.session_step1ParticipantSettingsContent_L52,
+      unit: l10n.unitPerson,
       divisions: 48, // 2~50, 1명 단위
       onChanged: (value) => onChanged(value.toInt()),
       isDarkMode: isDarkMode,

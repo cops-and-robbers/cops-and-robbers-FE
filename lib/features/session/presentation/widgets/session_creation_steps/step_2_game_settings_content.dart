@@ -78,7 +78,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           value: roundDurationMinutes.toDouble(),
           min: 10,
           max: 180,
-          unit: l10n.session_step2GameSettingsContent_L79,
+          unit: l10n.unitMinutes,
           divisions: 170, // 10~180, 1분 단위
           onChanged: (value) => onRoundDurationChanged(value.toInt()),
           isDarkMode: isDarkMode,
@@ -96,7 +96,7 @@ class Step2GameSettingsContent extends StatelessWidget {
 
           min: 0,
           max: 30,
-          unit: l10n.session_step2GameSettingsContent_L97,
+          unit: l10n.unitMinutes,
           divisions: 30, // 1~30, 1분 단위
           onChanged: (value) => onLocationShareChanged(value.toInt()),
           isDarkMode: isDarkMode,
@@ -104,7 +104,7 @@ class Step2GameSettingsContent extends StatelessWidget {
           valueTextStyle: valueTextStyle,
           editable: true,
           warningText: locationShareMinutes == 0
-              ? l10n.session_step2GameSettingsContent_L104
+              ? l10n.gameSettingNoLocationShareWarning
               : null,
         ),
 
@@ -116,11 +116,11 @@ class Step2GameSettingsContent extends StatelessWidget {
           value: policeWaitMinutes.toDouble(),
           min: 1,
           max: 10,
-          unit: l10n.session_step2GameSettingsContent_L115,
+          unit: l10n.unitMinutes,
           divisions: 9, // 1~10, 1분 단위
           // ARB는 양 끝 공백 없음 → 표시 시 공백 보강 (원본 UI 유지)
-          displayPrefix: '${l10n.session_step2GameSettingsContent_L117} ',
-          displaySuffix: ' ${l10n.session_step2GameSettingsContent_L118}',
+          displayPrefix: '${l10n.gameSettingPoliceStartPrefix} ',
+          displaySuffix: ' ${l10n.gameSettingPoliceStartSuffix}',
           onChanged: (value) => onPoliceWaitChanged(value.toInt()),
           isDarkMode: isDarkMode,
           valueColor: isDarkMode ? AppColors.white : null,

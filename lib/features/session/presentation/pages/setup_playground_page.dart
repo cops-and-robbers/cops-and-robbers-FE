@@ -134,7 +134,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
       targets: [
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyRadiusChip,
-          description: l10n.session_setupPlaygroundPage_L135,
+          description: l10n.setupPlaygroundRadiusInputHint,
           align: TutorialAlign.bottom,
         ),
       ],
@@ -195,7 +195,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
       return Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
-          title: Text(l10n.session_setupPlaygroundPage_L195, style: titleStyle),
+          title: Text(l10n.zonePlayground, style: titleStyle),
           backgroundColor: bgColor,
           elevation: 0,
           centerTitle: true,
@@ -212,7 +212,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text(l10n.session_setupPlaygroundPage_L212, style: titleStyle),
+        title: Text(l10n.zonePlayground, style: titleStyle),
         backgroundColor: bgColor,
         elevation: 0,
         centerTitle: true,
@@ -233,7 +233,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  l10n.session_setupPlaygroundPage_L233,
+                  l10n.setupPlaygroundDescription,
                   style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),
@@ -267,7 +267,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
             Padding(
               padding: AppPadding.all20,
               child: AppButton(
-                text: l10n.session_setupPlaygroundPage_L267,
+                text: l10n.buttonDone,
                 onPressed: _isMapReady ? _onComplete : null,
                 backgroundColor: AppColors.blue,
                 showBorder: false,

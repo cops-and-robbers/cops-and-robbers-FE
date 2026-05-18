@@ -121,7 +121,7 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
       backgroundColor: bgColor,
       appBar: AppBar(
         title: Text(
-          l10n.session_zonePreviewPage_L122,
+          l10n.pageZonePreviewTitle,
           style: AppTextStyles.heading_20.copyWith(color: textColor),
         ),
         backgroundColor: bgColor,
@@ -144,7 +144,7 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  l10n.session_zonePreviewPage_L145,
+                  l10n.zonePreviewSubtitle,
                   style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),

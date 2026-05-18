@@ -109,7 +109,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
       final l10n = AppLocalizations.of(context);
       final errorMsg =
           ApiErrorResponse.tryParse(e.response?.data)?.detail ??
-          l10n.session_gameSettingsEditPage_L110;
+          l10n.errorSettingsSaveFailed;
       AppSnackbar.show(
         context,
         message: errorMsg,
@@ -146,7 +146,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
           color: isDark ? AppColors.black200 : AppColors.black800,
         ),
         centerTitle: true,
-        title: Text(l10n.session_gameSettingsEditPage_L146, style: titleStyle),
+        title: Text(l10n.pageGameSettingsEditTitle, style: titleStyle),
       ),
       body: SafeArea(
         child: Column(
@@ -197,9 +197,7 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
             Padding(
               padding: AppPadding.all20,
               child: AppButton(
-                text: _isSaving
-                    ? l10n.session_gameSettingsEditPage_L197
-                    : l10n.session_gameSettingsEditPage_L197_1,
+                text: _isSaving ? l10n.buttonSaving : l10n.buttonSave,
                 onPressed: _hasChanges && !_isSaving ? _saveSettings : null,
                 backgroundColor: isDark ? AppColors.green : AppColors.blue,
                 foregroundColor: isDark ? AppColors.black : AppColors.white,

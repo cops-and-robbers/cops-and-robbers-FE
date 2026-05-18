@@ -157,7 +157,7 @@ class SessionStepLayout extends StatelessWidget {
   /// 하단 버튼 (다음/참여하기)
   Widget _buildNextButton(AppLocalizations l10n) {
     return AppButton(
-      text: buttonText ?? l10n.session_sessionStepLayout_L42,
+      text: buttonText ?? l10n.buttonNext,
       onPressed: isButtonEnabled ? onNext : null,
       showBorder: false,
     );

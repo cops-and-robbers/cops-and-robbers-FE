@@ -365,7 +365,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           .read(gameParticipantNotifierProvider.notifier)
           .setGameInfo(
             gameId: 0,
-            nickname: l10n.session_waitingRoomPage_L364,
+            nickname: l10n.dummyNicknameBear,
             participantId: _dummyMyId,
             isHost: true,
           );
@@ -547,7 +547,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     await AppDialog.show(
       context: context,
       title: l10n.dialogwaitingRoomPageTitle,
-      message: serverDetail ?? l10n.session_waitingRoomPage_L545,
+      message: serverDetail ?? l10n.errorNotInGame,
       confirmText: l10n.dialogwaitingRoomPageConfirm3ce8,
       barrierDismissible: false,
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
@@ -634,23 +634,23 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       if (opponentKey.currentContext != null)
         AppTutorialStyle.target(
           keyTarget: opponentKey,
-          description: l10n.session_waitingRoomPage_L631,
+          description: l10n.waitingRoomTutorialTeamSwitch,
           align: TutorialAlign.bottom,
         ),
       // 초대 코드 공유
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyInviteCode,
-        description: l10n.session_waitingRoomPage_L637,
+        description: l10n.waitingRoomTutorialInvite,
       ),
       // 게임 설정 확인
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyGameRules,
-        description: l10n.session_waitingRoomPage_L642,
+        description: l10n.waitingRoomTutorialSettings,
       ),
       // 준비 완료
       AppTutorialStyle.target(
         keyTarget: _tutorialKeyReadyButton,
-        description: l10n.session_waitingRoomPage_L647,
+        description: l10n.waitingRoomTutorialReady,
         align: TutorialAlign.top,
       ),
     ];
@@ -1042,7 +1042,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       final l10n = AppLocalizations.of(context);
       await _handleApiErrorOrNotParticipating(
         e,
-        fallbackMessage: l10n.session_waitingRoomPage_L1030,
+        fallbackMessage: l10n.errorTeamChangeFailed,
       );
     }
   }
@@ -1076,7 +1076,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       final l10n = AppLocalizations.of(context);
       await _handleApiErrorOrNotParticipating(
         e,
-        fallbackMessage: l10n.session_waitingRoomPage_L1062,
+        fallbackMessage: l10n.errorReadyChangeFailed,
       );
     } finally {
       if (mounted) {
@@ -1115,7 +1115,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       final l10n = AppLocalizations.of(context);
       await _handleApiErrorOrNotParticipating(
         e,
-        fallbackMessage: l10n.session_waitingRoomPage_L1099,
+        fallbackMessage: l10n.errorGameStartFailed,
       );
     }
   }
@@ -1148,7 +1148,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         if (!mounted) return;
         final l10n = AppLocalizations.of(context);
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? l10n.session_waitingRoomPage_L1130;
+        final message = apiError?.detail ?? l10n.errorLeaveRoomFailed;
         AppSnackbar.show(
           context,
           message: message,
@@ -1531,7 +1531,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           nonHostParticipants.every((p) => p.isReady);
 
       return AppButton(
-        text: l10n.session_waitingRoomPage_L1511,
+        text: l10n.buttonStartGame,
         onPressed: allReady ? _startGame : null,
         backgroundColor: isDark ? AppColors.green : AppColors.blue,
         foregroundColor: isDark ? AppColors.black : AppColors.white,
@@ -1546,7 +1546,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     if (_isReady) {
       return AppButton(
-        text: l10n.session_waitingRoomPage_L1526,
+        text: l10n.buttonReadyDone,
         onPressed: _isUpdatingReady ? null : _toggleReady,
         backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
         foregroundColor: isDark ? AppColors.green : AppColors.blue,
@@ -1557,7 +1557,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
 
     return AppButton(
-      text: l10n.session_waitingRoomPage_L1537,
+      text: l10n.buttonReady,
       onPressed: _isUpdatingReady ? null : _toggleReady,
       backgroundColor: isDark ? AppColors.green : AppColors.blue,
       foregroundColor: isDark ? AppColors.black : AppColors.white,

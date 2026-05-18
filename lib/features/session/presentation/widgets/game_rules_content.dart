@@ -95,11 +95,11 @@ class GameRulesContent extends StatelessWidget {
   InlineSpan _rule1(AppLocalizations l10n) {
     return TextSpan(
       children: [
-        TextSpan(text: l10n.session_gameRulesContent_L95),
-        _highlight(l10n.session_gameRulesContent_L96),
-        TextSpan(text: l10n.session_gameRulesContent_L97),
-        _highlight(l10n.session_gameRulesContent_L98),
-        TextSpan(text: l10n.session_gameRulesContent_L99),
+        TextSpan(text: l10n.gameRulesCopGoalPrefix),
+        _highlight(l10n.gameRulesCopGoalSuffix),
+        TextSpan(text: l10n.gameRulesRobberGoalPrefix),
+        _highlight(l10n.gameRulesRobberGoalCondition),
+        TextSpan(text: l10n.gameRulesWinSuffix),
       ],
     );
   }
@@ -108,9 +108,9 @@ class GameRulesContent extends StatelessWidget {
     final minutes = locationRevealIntervalMinutes ?? 5;
     return TextSpan(
       children: [
-        TextSpan(text: l10n.session_gameRulesContent_L108),
-        _highlight(l10n.session_gameRulesContent_L109(minutes)),
-        TextSpan(text: l10n.session_gameRulesContent_L110),
+        TextSpan(text: l10n.gameRulesLocationShareLine1),
+        _highlight(l10n.gameRulesLocationShareLine2(minutes)),
+        TextSpan(text: l10n.gameRulesLocationShareLine3),
       ],
     );
   }
@@ -118,8 +118,8 @@ class GameRulesContent extends StatelessWidget {
   InlineSpan _rule3(AppLocalizations l10n) {
     return TextSpan(
       children: [
-        _highlight(l10n.session_gameRulesContent_L118),
-        TextSpan(text: l10n.session_gameRulesContent_L119),
+        _highlight(l10n.gameRulesZoneRuleLine1),
+        TextSpan(text: l10n.gameRulesZoneRuleLine2),
       ],
     );
   }

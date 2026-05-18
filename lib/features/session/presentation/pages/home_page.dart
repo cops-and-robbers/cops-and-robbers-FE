@@ -107,12 +107,12 @@ class _HomePageState extends ConsumerState<HomePage> {
       targets: [
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyCreateRoom,
-          description: l10n.session_homePage_L108,
+          description: l10n.homePageCreateGameHint,
           align: TutorialAlign.top,
         ),
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyJoinRoom,
-          description: l10n.session_homePage_L113,
+          description: l10n.homePageJoinGameHint,
           align: TutorialAlign.top,
         ),
       ],
@@ -158,7 +158,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                   SizedBox(width: AppSpacing.horizontal8),
                   Text(
-                    l10n.session_homePage_L158,
+                    l10n.homePageDontShowToday,
                     style: AppTextStyles.paragraph_14_100.copyWith(
                       color: AppColors.black600,
                     ),
@@ -337,8 +337,8 @@ class _HomePageState extends ConsumerState<HomePage> {
       context: context,
       title: l10n.dialoghomePageTitleEeea,
       message:
-          '${l10n.session_homePage_L332}'
-          '${l10n.session_homePage_L333}',
+          '${l10n.homePageBatteryGuideStep1}'
+          '${l10n.homePageBatteryGuideStep2}',
       confirmText: l10n.dialoghomePageConfirm5435,
       cancelText: l10n.dialoghomePageCancel,
       onConfirm: () async {
@@ -438,7 +438,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? l10n.session_homePage_L432;
+        final message = apiError?.detail ?? l10n.errorJoinFailedCheckCode;
         AppSnackbar.show(
           context,
           message: message,
@@ -610,7 +610,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      l10n.session_homePage_L601,
+                      l10n.appBrandName,
                       style: AppTextStyles.heading_20.copyWith(
                         color: AppColors.black,
                       ),
@@ -673,7 +673,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     SizedBox(height: AppSpacing.vertical48),
 
                     // ── Speech Bubble ──
-                    SpeechBubble(text: l10n.session_homePage_L661),
+                    SpeechBubble(text: l10n.homePageWelcomeMessage),
 
                     // ── Avatar Placeholder ──
                     Image.asset(
@@ -689,14 +689,14 @@ class _HomePageState extends ConsumerState<HomePage> {
               // ── Bottom Buttons ──
               AppButton(
                 key: _tutorialKeyCreateRoom,
-                text: l10n.session_homePage_L677,
+                text: l10n.buttonCreateRoom,
                 onPressed: _onCreateSession,
                 showBorder: false,
               ),
               SizedBox(height: AppSpacing.vertical12),
               AppButton(
                 key: _tutorialKeyJoinRoom,
-                text: l10n.session_homePage_L684,
+                text: l10n.buttonJoinRoom,
                 onPressed: _showJoinRoomDialog,
                 backgroundColor: AppColors.black100,
                 foregroundColor: AppColors.black600,

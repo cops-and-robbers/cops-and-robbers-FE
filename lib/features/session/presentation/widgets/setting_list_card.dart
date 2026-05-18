@@ -79,7 +79,7 @@ class SettingListCard extends StatelessWidget {
           children: [
             _SettingRow(
               label: l10n.fieldsettingListCardLabel,
-              value: l10n.session_sessionSettings_L22(
+              value: l10n.gameSettingMaxPlayers(
                 settings.maxPlayers.toString(),
               ),
               isDarkMode: isDarkMode,
@@ -87,7 +87,7 @@ class SettingListCard extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
               label: l10n.fieldsettingListCardLabelEc5e,
-              value: l10n.session_sessionSettings_L27(
+              value: l10n.gameSettingRoundMinutes(
                 settings.roundTimeMinutes,
               ),
               isDarkMode: isDarkMode,
@@ -95,7 +95,7 @@ class SettingListCard extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
               label: l10n.fieldsettingListCardLabelA1b3,
-              value: l10n.session_sessionSettings_L32(
+              value: l10n.gameSettingLocationShareMinutes(
                 settings.locationShareMinutes,
               ),
               isDarkMode: isDarkMode,
@@ -103,7 +103,7 @@ class SettingListCard extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
               label: l10n.fieldsettingListCardLabelCe3b,
-              value: l10n.session_sessionSettings_L37(
+              value: l10n.gameSettingPoliceStartDelay(
                 settings.policeStartDelayMinutes,
               ),
               isDarkMode: isDarkMode,

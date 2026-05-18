@@ -139,7 +139,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
       final l10n = AppLocalizations.of(context);
       final errorMsg =
           ApiErrorResponse.tryParse(e.response?.data)?.detail ??
-          l10n.session_gameSettingsPage_L140;
+          l10n.errorAreaSaveFailed;
       AppSnackbar.show(
         context,
         message: errorMsg,
@@ -190,7 +190,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
         ),
         centerTitle: true,
         title: Text(
-          l10n.session_gameSettingsPage_L190,
+          l10n.pageGameSettingsTitle,
           style: AppTextStyles.heading_20.copyWith(color: textColor),
         ),
         iconTheme: IconThemeData(
@@ -214,7 +214,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
-                  l10n.session_gameSettingsPage_L210,
+                  l10n.errorZoneInfoLoadFailed,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: AppColors.red,
                   ),
@@ -232,7 +232,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
-                  l10n.session_gameSettingsPage_L228,
+                  l10n.errorSettingsLoadFailed,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: AppColors.red,
                   ),
@@ -275,12 +275,12 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     final zones = [
       ZoneInfo(
         id: 'playground',
-        name: l10n.session_gameSettingsPage_L270,
+        name: l10n.zonePlayground,
         radiusMeters: area.playgroundRadiusInMeters.toInt(),
       ),
       ZoneInfo(
         id: 'prison',
-        name: l10n.session_gameSettingsPage_L275,
+        name: l10n.zoneJail,
         radiusMeters: area.jailRadiusInMeters.toInt(),
       ),
     ];

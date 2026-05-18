@@ -114,9 +114,8 @@ class TeamSection extends StatelessWidget {
 
   bool get _isPolice => team.toUpperCase() == 'POLICE';
 
-  String _teamName(AppLocalizations l10n) => _isPolice
-      ? l10n.session_teamSection_L116
-      : l10n.session_teamSection_L116_1;
+  String _teamName(AppLocalizations l10n) =>
+      _isPolice ? l10n.gameTeamCop : l10n.gameTeamRobber;
 
   String get _iconPath {
     if (_isPolice) {
@@ -179,7 +178,7 @@ class TeamSection extends StatelessWidget {
             ] else ...[
               SizedBox(width: 4.w),
               Text(
-                l10n.session_teamSection_L178(members.length),
+                l10n.teamSectionCurrentCount(members.length),
                 style: AppTextStyles.tag_12.copyWith(
                   color: isDarkMode ? AppColors.black400 : AppColors.black600,
                 ),
