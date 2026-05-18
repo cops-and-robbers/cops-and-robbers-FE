@@ -3285,16 +3285,16 @@ abstract class AppLocalizations {
   /// **'회원 탈퇴'**
   String get dialogsettingsPageTitle5e0d;
 
-  /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:603
+  /// 회원 탈퇴 확인 다이얼로그 본문 — 사용자에게 비가역성 경고 + 확인 키워드 입력 요구
   ///
   /// In ko, this message translates to:
-  /// **'탈퇴하기'**
+  /// **'탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요'**
   String get settings_settingsPage_L603;
 
   /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:606
   ///
   /// In ko, this message translates to:
-  /// **'탈퇴하기 또는 delete'**
+  /// **'delete'**
   String get fieldsettingsPageHint2960;
 
   /// auto-imported from lib/features/settings/presentation/pages/settings_page.dart:608

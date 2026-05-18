@@ -1684,10 +1684,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogsettingsPageTitle5e0d => '회원 탈퇴';
 
   @override
-  String get settings_settingsPage_L603 => '탈퇴하기';
+  String get settings_settingsPage_L603 =>
+      '탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요';
 
   @override
-  String get fieldsettingsPageHint2960 => '탈퇴하기 또는 delete';
+  String get fieldsettingsPageHint2960 => 'delete';
 
   @override
   String get dialogsettingsPageCancel => '취소';

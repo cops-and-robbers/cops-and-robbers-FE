@@ -1686,10 +1686,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_settingsPage_L603 =>
-      '退会するとすべてのデータが削除され\n元に戻すことはできません\n\n続けるには「退会する」または「delete」と入力してください';
+      '退会するとすべてのデータが削除され\n元に戻すことはできません\n\n続けるには「delete」と入力してください';
 
   @override
-  String get fieldsettingsPageHint2960 => '退会する または delete';
+  String get fieldsettingsPageHint2960 => 'delete';
 
   @override
   String get dialogsettingsPageCancel => 'キャンセル';

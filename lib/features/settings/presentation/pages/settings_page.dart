@@ -675,9 +675,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       confirmText: l10n.dialogsettingsPageConfirm9140,
       isDestructive: true,
       validator: () {
-        // 검증 키워드는 한국어 입력만 허용 (localize 대상 아님)
-        final text = controller.text.trim();
-        return text == '탈퇴하기' || text.toLowerCase() == 'delete';
+        // 검증 키워드는 모든 로케일에서 'delete'로 통일 (글로벌 공통 영문)
+        // 로케일별 번역어를 허용하지 않는 이유:
+        // 1) hint와 정책 일치 — 각 로케일 hint도 'delete'만 안내
+        // 2) 한 단어 영문이라 입력 비용·오타 위험 모두 낮음
+        return controller.text.trim().toLowerCase() == 'delete';
       },
       onConfirm: () => _executeDeleteAccount(),
     ).whenComplete(() {

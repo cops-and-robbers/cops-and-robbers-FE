@@ -1816,10 +1816,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_settingsPage_L603 =>
-      'Deleting your account will erase all data\nand cannot be undone.\n\nTo continue, enter \"탈퇴하기\" or \"delete\"';
+      'Deleting your account will erase all data\nand cannot be undone\n\nTo continue, enter \"delete\"';
 
   @override
-  String get fieldsettingsPageHint2960 => '탈퇴하기 or delete';
+  String get fieldsettingsPageHint2960 => 'delete';
 
   @override
   String get dialogsettingsPageCancel => 'Cancel';
