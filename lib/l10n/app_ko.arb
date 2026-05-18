@@ -608,9 +608,9 @@
   "@dialogsessionRepositoryImplMessage": {
     "description": "auto-imported from lib/features/session/data/repositories/session_repository_impl.dart:80"
   },
-  "dialogsessionRepositoryImplMessageAddf": "참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다",
-  "@dialogsessionRepositoryImplMessageAddf": {
-    "description": "auto-imported from lib/features/session/data/repositories/session_repository_impl.dart:105"
+  "errorActiveGameFetchUnexpected": "참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다",
+  "@errorActiveGameFetchUnexpected": {
+    "description": "참여 중인 게임 조회 실패 시 표시되는 예외 메시지"
   },
   "gameSettingMaxPlayers": "{count}명",
   "@gameSettingMaxPlayers": {
@@ -746,9 +746,9 @@
   "@dialoghomePageCancel": {
     "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:286"
   },
-  "dialoghomePageTitleEeea": "끊김 없는 게임을 위해",
-  "@dialoghomePageTitleEeea": {
-    "description": "auto-imported from lib/features/session/presentation/pages/home_page.dart:330"
+  "dialogBatteryGuideTitle": "끊김 없는 게임을 위해",
+  "@dialogBatteryGuideTitle": {
+    "description": "홈 화면 배터리 최적화 안내 다이얼로그 타이틀"
   },
   "homePageBatteryGuideStep1": "앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n",
   "@homePageBatteryGuideStep1": {
@@ -926,34 +926,30 @@
   "@dialogwaitingRoomPageMessage": {
     "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:680"
   },
-  "dialogwaitingRoomPageConfirmA2d8": "보러 가기",
-  "@dialogwaitingRoomPageConfirmA2d8": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:681"
+  "buttonViewInGamePreview": "보러 가기",
+  "@buttonViewInGamePreview": {
+    "description": "인게임 튜토리얼 미리보기로 이동 버튼"
   },
-  "dialogwaitingRoomPageTitleBc54": "{nickname}님을 내보낼까요?",
-  "@dialogwaitingRoomPageTitleBc54": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:772",
+  "dialogKickConfirmTitle": "{nickname}님을 내보낼까요?",
+  "@dialogKickConfirmTitle": {
+    "description": "강퇴 확인 다이얼로그 타이틀",
     "placeholders": {
       "nickname": {
         "type": "String"
       }
     }
   },
-  "dialogwaitingRoomPageMessageB302": "강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요",
-  "@dialogwaitingRoomPageMessageB302": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:773"
+  "dialogKickConfirmMessage": "강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요",
+  "@dialogKickConfirmMessage": {
+    "description": "강퇴 확인 다이얼로그 본문"
   },
-  "dialogwaitingRoomPageCancelD9de": "취소",
-  "@dialogwaitingRoomPageCancelD9de": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:774"
+  "buttonKick": "내보내기",
+  "@buttonKick": {
+    "description": "참가자 강퇴 확정 버튼"
   },
-  "dialogwaitingRoomPageConfirmC08c": "내보내기",
-  "@dialogwaitingRoomPageConfirmC08c": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:775"
-  },
-  "dialogwaitingRoomPageMessageE87b": "강퇴 처리 중 오류가 발생했어요",
-  "@dialogwaitingRoomPageMessageE87b": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:804"
+  "errorKickFailed": "강퇴 처리 중 오류가 발생했어요",
+  "@errorKickFailed": {
+    "description": "참가자 강퇴 실패 시 표시되는 에러 메시지"
   },
   "dialogKickedFromRoomTitle": "방에서 내보내졌어요",
   "@dialogKickedFromRoomTitle": {
@@ -984,25 +980,25 @@
   "@errorGameStartFailed": {
     "description": "대기실 — 게임 시작 실패 안내"
   },
-  "dialogwaitingRoomPageTitleFfec": "방을 나가시겠어요?",
-  "@dialogwaitingRoomPageTitleFfec": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1110"
+  "dialogLeaveRoomTitle": "방을 나가시겠어요?",
+  "@dialogLeaveRoomTitle": {
+    "description": "대기실 퇴장 확인 다이얼로그 타이틀"
   },
   "dialogLeaveRoomMessage": "나가면 다시 초대코드를 입력해야 해요",
   "@dialogLeaveRoomMessage": {
     "description": "대기실 퇴장 확인 다이얼로그 본문"
   },
-  "dialogwaitingRoomPageConfirmC0a3": "나가기",
-  "@dialogwaitingRoomPageConfirmC0a3": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1112"
+  "buttonLeave": "나가기",
+  "@buttonLeave": {
+    "description": "대기실 퇴장 확정 버튼"
   },
   "errorLeaveRoomFailed": "퇴장 처리 중 오류가 발생했습니다",
   "@errorLeaveRoomFailed": {
     "description": "대기실 — 퇴장 처리 실패 안내"
   },
-  "dialogwaitingRoomPageTitleA5bb": "초대코드를 생성했어요",
-  "@dialogwaitingRoomPageTitleA5bb": {
-    "description": "auto-imported from lib/features/session/presentation/pages/waiting_room_page.dart:1176"
+  "dialogInviteCodeCreatedTitle": "초대코드를 생성했어요",
+  "@dialogInviteCodeCreatedTitle": {
+    "description": "초대코드 생성 완료 알림 다이얼로그 타이틀"
   },
   "dialogInviteCodeShareMessage": "친구에게 코드를 공유하고 게임에 참여해 보세요!",
   "@dialogInviteCodeShareMessage": {
@@ -1157,17 +1153,17 @@
   "@fieldsettingListCardLabel": {
     "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:79"
   },
-  "fieldsettingListCardLabelEc5e": "라운드 제한 시간",
-  "@fieldsettingListCardLabelEc5e": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:85"
+  "fieldRoundTimeLimit": "라운드 제한 시간",
+  "@fieldRoundTimeLimit": {
+    "description": "게임 설정 — 라운드 제한 시간 라벨"
   },
-  "fieldsettingListCardLabelA1b3": "위치 공유 간격",
-  "@fieldsettingListCardLabelA1b3": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:91"
+  "fieldLocationShareInterval": "위치 공유 간격",
+  "@fieldLocationShareInterval": {
+    "description": "게임 설정 — 위치 공유 간격 라벨"
   },
-  "fieldsettingListCardLabelCe3b": "경찰 출동 시간",
-  "@fieldsettingListCardLabelCe3b": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/setting_list_card.dart:97"
+  "fieldPoliceDispatchTime": "경찰 출동 시간",
+  "@fieldPoliceDispatchTime": {
+    "description": "게임 설정 — 경찰 출동 시간 라벨"
   },
   "teamSectionCurrentCount": "현재 {count}명",
   "@teamSectionCurrentCount": {
@@ -1243,10 +1239,6 @@
   "@dialogagreementPageTitle": {
     "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:57"
   },
-  "dialogagreementPageTitleBe29": "개인정보 처리방침",
-  "@dialogagreementPageTitleBe29": {
-    "description": "auto-imported from lib/features/auth/presentation/pages/agreement_page.dart:73"
-  },
   "linkMarketingConsent": "마케팅 정보 수신",
   "@linkMarketingConsent": {
     "description": "마케팅 정보 수신 동의 링크 라벨"
@@ -1279,13 +1271,13 @@
   "@dialogloginPageMessage": {
     "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:107"
   },
-  "dialogloginPageTitleA40f": "만 14세 이상이신가요?",
-  "@dialogloginPageTitleA40f": {
-    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:127"
+  "dialogAge14ConfirmTitle": "만 14세 이상이신가요?",
+  "@dialogAge14ConfirmTitle": {
+    "description": "만 14세 이상 확인 다이얼로그 타이틀"
   },
-  "dialogloginPageMessageBa5d": "경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요",
-  "@dialogloginPageMessageBa5d": {
-    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:128"
+  "dialogAge14ConfirmMessage": "경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요",
+  "@dialogAge14ConfirmMessage": {
+    "description": "만 14세 이상 확인 다이얼로그 본문"
   },
   "dialogloginPageConfirm": "네",
   "@dialogloginPageConfirm": {
@@ -1294,10 +1286,6 @@
   "dialogloginPageCancel": "아니요",
   "@dialogloginPageCancel": {
     "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:130"
-  },
-  "dialogloginPageMessageFe9d": "로그인이 취소되었습니다",
-  "@dialogloginPageMessageFe9d": {
-    "description": "auto-imported from lib/features/auth/presentation/pages/login_page.dart:188"
   },
   "errorLoginGeneric": "로그인 중 오류가 발생했습니다",
   "@errorLoginGeneric": {
@@ -1537,9 +1525,9 @@
       }
     }
   },
-  "fieldgameOverResultDialogLabelD8df": "남은 도둑",
-  "@fieldgameOverResultDialogLabelD8df": {
-    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:371"
+  "fieldRemainingRobbers": "남은 도둑",
+  "@fieldRemainingRobbers": {
+    "description": "게임 종료 결과 — 남은 도둑 라벨"
   },
   "gameResultRemainingRobberCount": "{count}명",
   "@gameResultRemainingRobberCount": {
@@ -1550,9 +1538,9 @@
       }
     }
   },
-  "fieldgameOverResultDialogLabelAb0c": "게임 진행 시간",
-  "@fieldgameOverResultDialogLabelAb0c": {
-    "description": "auto-imported from lib/features/game/presentation/widgets/game_over_result_dialog.dart:373"
+  "fieldGamePlaytime": "게임 진행 시간",
+  "@fieldGamePlaytime": {
+    "description": "게임 종료 결과 — 게임 진행 시간 라벨"
   },
   "buttonGoHome": "홈으로",
   "@buttonGoHome": {
@@ -1653,17 +1641,17 @@
   "@dialogchatProviderMessage": {
     "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:262"
   },
-  "dialogchatProviderMessageDfca": "제한 시간은 30분입니다",
-  "@dialogchatProviderMessageDfca": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:378"
+  "chatSystemGameTimeLimit30Min": "제한 시간은 30분입니다",
+  "@chatSystemGameTimeLimit30Min": {
+    "description": "더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)"
   },
-  "dialogchatProviderMessageC357": "도둑 잘 도망쳐 봐요~",
-  "@dialogchatProviderMessageC357": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:392"
+  "chatSystemGoodLuckRobber": "도둑 잘 도망쳐 봐요~",
+  "@chatSystemGoodLuckRobber": {
+    "description": "더미 채팅 메시지 — 경찰의 도둑 응원 메시지"
   },
-  "dialogchatProviderMessageEa9a": "이겨봅시다!",
-  "@dialogchatProviderMessageEa9a": {
-    "description": "auto-imported from lib/features/chat/presentation/providers/chat_provider.dart:399"
+  "chatSystemLetsWin": "이겨봅시다!",
+  "@chatSystemLetsWin": {
+    "description": "더미 채팅 메시지 — 팀 응원 메시지"
   },
   "dialogchatContextMenuMessage": "메시지가 복사되었어요",
   "@dialogchatContextMenuMessage": {
@@ -1689,9 +1677,9 @@
   "@buttonReport": {
     "description": "신고 공통 버튼 라벨"
   },
-  "dialogchatContextMenuMessageDf78": "신고가 접수되었어요",
-  "@dialogchatContextMenuMessageDf78": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:220"
+  "messageReportSubmitted": "신고가 접수되었어요",
+  "@messageReportSubmitted": {
+    "description": "신고 제출 완료 안내 메시지"
   },
   "errorReportFailed": "신고에 실패했어요",
   "@errorReportFailed": {
@@ -1717,9 +1705,9 @@
   "@chatReportSubmitNotice": {
     "description": "신고 폼 — 제출 시 검토 안내 (선두 줄바꿈은 위 라벨과 줄 분리 의도)"
   },
-  "fieldchatContextMenuLabelA83e": "복사하기",
-  "@fieldchatContextMenuLabelA83e": {
-    "description": "auto-imported from lib/features/chat/presentation/widgets/chat_context_menu.dart:422"
+  "buttonCopy": "복사하기",
+  "@buttonCopy": {
+    "description": "텍스트 복사 액션 버튼"
   },
   "buttonBlock": "차단하기",
   "@buttonBlock": {
@@ -1842,9 +1830,9 @@
   "@dialogagreementSettingsPageMessage": {
     "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:75"
   },
-  "dialogagreementSettingsPageMessageEfc5": "변경사항이 저장되었어요",
-  "@dialogagreementSettingsPageMessageEfc5": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:97"
+  "messageChangesSaved": "변경사항이 저장되었어요",
+  "@messageChangesSaved": {
+    "description": "설정 변경사항 저장 완료 안내 메시지"
   },
   "errorTemporaryRetry": "일시적인 오류가 발생했습니다. 다시 시도해주세요",
   "@errorTemporaryRetry": {
@@ -1865,10 +1853,6 @@
   "dialogagreementSettingsPageTitle": "이용약관",
   "@dialogagreementSettingsPageTitle": {
     "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:203"
-  },
-  "dialogagreementSettingsPageTitleBe29": "개인정보 처리방침",
-  "@dialogagreementSettingsPageTitleBe29": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/agreement_settings_page.dart:221"
   },
   "buttonSaveChanges": "변경사항 저장",
   "@buttonSaveChanges": {
@@ -1978,29 +1962,29 @@
   "@messageBugReportSubmitted": {
     "description": "버그 제보 접수 완료 안내"
   },
-  "dialogsettingsPageTitleD4a4": "튜토리얼 초기화",
-  "@dialogsettingsPageTitleD4a4": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:549"
+  "dialogTutorialResetTitle": "튜토리얼 초기화",
+  "@dialogTutorialResetTitle": {
+    "description": "튜토리얼 초기화 확인 다이얼로그 타이틀"
   },
-  "dialogsettingsPageMessageA4c9": "모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?",
-  "@dialogsettingsPageMessageA4c9": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:550"
+  "dialogTutorialResetMessage": "모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?",
+  "@dialogTutorialResetMessage": {
+    "description": "튜토리얼 초기화 확인 다이얼로그 본문"
   },
   "dialogsettingsPageConfirm": "초기화",
   "@dialogsettingsPageConfirm": {
     "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:551"
   },
-  "dialogsettingsPageMessageC8cb": "튜토리얼이 초기화되었어요",
-  "@dialogsettingsPageMessageC8cb": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:559"
+  "messageTutorialReset": "튜토리얼이 초기화되었어요",
+  "@messageTutorialReset": {
+    "description": "튜토리얼 초기화 완료 안내 메시지"
   },
   "dialogLogoutTitle": "로그아웃",
   "@dialogLogoutTitle": {
     "description": "로그아웃 확인 다이얼로그 제목"
   },
-  "dialogsettingsPageMessageE675": "정말 로그아웃 하시겠어요?",
-  "@dialogsettingsPageMessageE675": {
-    "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:569"
+  "dialogLogoutMessage": "정말 로그아웃 하시겠어요?",
+  "@dialogLogoutMessage": {
+    "description": "로그아웃 확인 다이얼로그 본문"
   },
   "snackbarLogoutFailed": "로그아웃에 실패했습니다",
   "@snackbarLogoutFailed": {
@@ -2111,9 +2095,9 @@
   "@tutorialPerspectiveCop": {
     "description": "튜토리얼 — 경찰 시점 시연 상태 표시"
   },
-  "dialoginGameTutorialPageMessageA1c5": "본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요",
-  "@dialoginGameTutorialPageMessageA1c5": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:661"
+  "tutorialInGameSelfEscape": "본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요",
+  "@tutorialInGameSelfEscape": {
+    "description": "튜토리얼 — 본인 수감 시 카드 탭으로 탈옥 시도 안내"
   },
   "tutorialInGameQrArrest": "실제 게임에서는 QR 스캔으로 도둑을 체포해요",
   "@tutorialInGameQrArrest": {
@@ -2140,9 +2124,9 @@
   "@tutorialInGameChatExpand": {
     "description": "튜토리얼 — 채팅 시트 확장 제스처 안내"
   },
-  "dialoginGameTutorialPageMessageDb39": "여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요",
-  "@dialoginGameTutorialPageMessageDb39": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:788"
+  "tutorialInGameChatInput": "여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요",
+  "@tutorialInGameChatInput": {
+    "description": "튜토리얼 — 채팅 입력 영역 사용법 안내"
   },
   "tutorialChatHint": "채팅을 입력하세요",
   "@tutorialChatHint": {
@@ -2320,9 +2304,9 @@
   "@dialoguserRepositoryImplMessage": {
     "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:36"
   },
-  "dialoguserRepositoryImplMessageAc72": "닉네임 변경 중 예기치 않은 오류가 발생했습니다",
-  "@dialoguserRepositoryImplMessageAc72": {
-    "description": "auto-imported from lib/features/user/data/repositories/user_repository_impl.dart:56"
+  "errorNicknameUpdateUnexpected": "닉네임 변경 중 예기치 않은 오류가 발생했습니다",
+  "@errorNicknameUpdateUnexpected": {
+    "description": "닉네임 변경 실패 시 표시되는 예외 메시지"
   },
   "errorUserInfoFetch": "사용자 정보 조회 중 오류가 발생했습니다",
   "@errorUserInfoFetch": {
@@ -2434,10 +2418,6 @@
   "@gameEventStartGo": {
     "description": "START 4단계 — 게임 시작 확정"
   },
-  "gameEventPoliceMoveWarning": "경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!",
-  "@gameEventPoliceMoveWarning": {
-    "description": "경찰 출동 예고"
-  },
   "gameEventPoliceMove": "경찰 출동!  도둑은 도망치세요!",
   "@gameEventPoliceMove": {
     "description": "경찰 출동 확정"
@@ -2445,15 +2425,6 @@
   "gameEventLocationReveal": "현재 도둑의 위치가 공개됩니다!",
   "@gameEventLocationReveal": {
     "description": "도둑 위치 공개 안내"
-  },
-  "gameEventRemainingRobbers": "현재 {count}명 도주 중!",
-  "@gameEventRemainingRobbers": {
-    "description": "도주 중인 도둑 인원",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "gameEventArrestNotice": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!",
   "@gameEventArrestNotice": {
@@ -2470,10 +2441,6 @@
   "gameEventEscapeNotice": "도둑이 탈옥했습니다! 지금 바로 체포하세요!",
   "@gameEventEscapeNotice": {
     "description": "탈옥 공지"
-  },
-  "gameEventFiveMinutesLeft": "게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!",
-  "@gameEventFiveMinutesLeft": {
-    "description": "게임 종료 5분 전 경고"
   },
   "mapErrorLoadFailed": "{mapName} 로드 실패",
   "@mapErrorLoadFailed": {

@@ -462,7 +462,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 방 생성 중 예기치 않은 오류가 발생했습니다';
 
   @override
-  String get dialogsessionRepositoryImplMessageAddf =>
+  String get errorActiveGameFetchUnexpected =>
       '참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다';
 
   @override
@@ -552,7 +552,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoghomePageCancel => '취소';
 
   @override
-  String get dialoghomePageTitleEeea => '끊김 없는 게임을 위해';
+  String get dialogBatteryGuideTitle => '끊김 없는 게임을 위해';
 
   @override
   String get homePageBatteryGuideStep1 => '앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n';
@@ -690,25 +690,22 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?';
 
   @override
-  String get dialogwaitingRoomPageConfirmA2d8 => '보러 가기';
+  String get buttonViewInGamePreview => '보러 가기';
 
   @override
-  String dialogwaitingRoomPageTitleBc54(String nickname) {
+  String dialogKickConfirmTitle(String nickname) {
     return '$nickname님을 내보낼까요?';
   }
 
   @override
-  String get dialogwaitingRoomPageMessageB302 =>
+  String get dialogKickConfirmMessage =>
       '강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요';
 
   @override
-  String get dialogwaitingRoomPageCancelD9de => '취소';
+  String get buttonKick => '내보내기';
 
   @override
-  String get dialogwaitingRoomPageConfirmC08c => '내보내기';
-
-  @override
-  String get dialogwaitingRoomPageMessageE87b => '강퇴 처리 중 오류가 발생했어요';
+  String get errorKickFailed => '강퇴 처리 중 오류가 발생했어요';
 
   @override
   String get dialogKickedFromRoomTitle => '방에서 내보내졌어요';
@@ -731,19 +728,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorGameStartFailed => '게임 시작에 실패했어요';
 
   @override
-  String get dialogwaitingRoomPageTitleFfec => '방을 나가시겠어요?';
+  String get dialogLeaveRoomTitle => '방을 나가시겠어요?';
 
   @override
   String get dialogLeaveRoomMessage => '나가면 다시 초대코드를 입력해야 해요';
 
   @override
-  String get dialogwaitingRoomPageConfirmC0a3 => '나가기';
+  String get buttonLeave => '나가기';
 
   @override
   String get errorLeaveRoomFailed => '퇴장 처리 중 오류가 발생했습니다';
 
   @override
-  String get dialogwaitingRoomPageTitleA5bb => '초대코드를 생성했어요';
+  String get dialogInviteCodeCreatedTitle => '초대코드를 생성했어요';
 
   @override
   String get dialogInviteCodeShareMessage => '친구에게 코드를 공유하고 게임에 참여해 보세요!';
@@ -859,13 +856,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fieldsettingListCardLabel => '참여 인원';
 
   @override
-  String get fieldsettingListCardLabelEc5e => '라운드 제한 시간';
+  String get fieldRoundTimeLimit => '라운드 제한 시간';
 
   @override
-  String get fieldsettingListCardLabelA1b3 => '위치 공유 간격';
+  String get fieldLocationShareInterval => '위치 공유 간격';
 
   @override
-  String get fieldsettingListCardLabelCe3b => '경찰 출동 시간';
+  String get fieldPoliceDispatchTime => '경찰 출동 시간';
 
   @override
   String teamSectionCurrentCount(int count) {
@@ -922,9 +919,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogagreementPageTitle => '이용약관';
 
   @override
-  String get dialogagreementPageTitleBe29 => '개인정보 처리방침';
-
-  @override
   String get linkMarketingConsent => '마케팅 정보 수신';
 
   @override
@@ -949,10 +943,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogloginPageMessage => '회원탈퇴가 완료되었습니다';
 
   @override
-  String get dialogloginPageTitleA40f => '만 14세 이상이신가요?';
+  String get dialogAge14ConfirmTitle => '만 14세 이상이신가요?';
 
   @override
-  String get dialogloginPageMessageBa5d =>
+  String get dialogAge14ConfirmMessage =>
       '경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요';
 
   @override
@@ -960,9 +954,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dialogloginPageCancel => '아니요';
-
-  @override
-  String get dialogloginPageMessageFe9d => '로그인이 취소되었습니다';
 
   @override
   String get errorLoginGeneric => '로그인 중 오류가 발생했습니다';
@@ -1142,7 +1133,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get fieldgameOverResultDialogLabelD8df => '남은 도둑';
+  String get fieldRemainingRobbers => '남은 도둑';
 
   @override
   String gameResultRemainingRobberCount(int count) {
@@ -1150,7 +1141,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get fieldgameOverResultDialogLabelAb0c => '게임 진행 시간';
+  String get fieldGamePlaytime => '게임 진행 시간';
 
   @override
   String get buttonGoHome => '홈으로';
@@ -1223,13 +1214,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogchatProviderMessage => '[팀]';
 
   @override
-  String get dialogchatProviderMessageDfca => '제한 시간은 30분입니다';
+  String get chatSystemGameTimeLimit30Min => '제한 시간은 30분입니다';
 
   @override
-  String get dialogchatProviderMessageC357 => '도둑 잘 도망쳐 봐요~';
+  String get chatSystemGoodLuckRobber => '도둑 잘 도망쳐 봐요~';
 
   @override
-  String get dialogchatProviderMessageEa9a => '이겨봅시다!';
+  String get chatSystemLetsWin => '이겨봅시다!';
 
   @override
   String get dialogchatContextMenuMessage => '메시지가 복사되었어요';
@@ -1251,7 +1242,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonReport => '신고하기';
 
   @override
-  String get dialogchatContextMenuMessageDf78 => '신고가 접수되었어요';
+  String get messageReportSubmitted => '신고가 접수되었어요';
 
   @override
   String get errorReportFailed => '신고에 실패했어요';
@@ -1272,7 +1263,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chatReportSubmitNotice => '\n신고된 내용은 검토 후 조치할게요';
 
   @override
-  String get fieldchatContextMenuLabelA83e => '복사하기';
+  String get buttonCopy => '복사하기';
 
   @override
   String get buttonBlock => '차단하기';
@@ -1357,7 +1348,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogagreementSettingsPageMessage => '아직 네트워크에 연결되지 않았어요';
 
   @override
-  String get dialogagreementSettingsPageMessageEfc5 => '변경사항이 저장되었어요';
+  String get messageChangesSaved => '변경사항이 저장되었어요';
 
   @override
   String get errorTemporaryRetry => '일시적인 오류가 발생했습니다. 다시 시도해주세요';
@@ -1373,9 +1364,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dialogagreementSettingsPageTitle => '이용약관';
-
-  @override
-  String get dialogagreementSettingsPageTitleBe29 => '개인정보 처리방침';
 
   @override
   String get buttonSaveChanges => '변경사항 저장';
@@ -1463,23 +1451,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get messageBugReportSubmitted => '버그 제보가 접수되었어요';
 
   @override
-  String get dialogsettingsPageTitleD4a4 => '튜토리얼 초기화';
+  String get dialogTutorialResetTitle => '튜토리얼 초기화';
 
   @override
-  String get dialogsettingsPageMessageA4c9 =>
-      '모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?';
+  String get dialogTutorialResetMessage => '모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?';
 
   @override
   String get dialogsettingsPageConfirm => '초기화';
 
   @override
-  String get dialogsettingsPageMessageC8cb => '튜토리얼이 초기화되었어요';
+  String get messageTutorialReset => '튜토리얼이 초기화되었어요';
 
   @override
   String get dialogLogoutTitle => '로그아웃';
 
   @override
-  String get dialogsettingsPageMessageE675 => '정말 로그아웃 하시겠어요?';
+  String get dialogLogoutMessage => '정말 로그아웃 하시겠어요?';
 
   @override
   String get snackbarLogoutFailed => '로그아웃에 실패했습니다';
@@ -1563,8 +1550,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tutorialPerspectiveCop => '경찰 시점 보는 중';
 
   @override
-  String get dialoginGameTutorialPageMessageA1c5 =>
-      '본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요';
+  String get tutorialInGameSelfEscape => '본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요';
 
   @override
   String get tutorialInGameQrArrest => '실제 게임에서는 QR 스캔으로 도둑을 체포해요';
@@ -1584,8 +1570,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tutorialInGameChatExpand => '핸들을 위로 드래그하면 채팅이 펼쳐져요';
 
   @override
-  String get dialoginGameTutorialPageMessageDb39 =>
-      '여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요';
+  String get tutorialInGameChatInput => '여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요';
 
   @override
   String get tutorialChatHint => '채팅을 입력하세요';
@@ -1720,8 +1705,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoguserRepositoryImplMessage => '닉네임 확인 중 예기치 않은 오류가 발생했습니다';
 
   @override
-  String get dialoguserRepositoryImplMessageAc72 =>
-      '닉네임 변경 중 예기치 않은 오류가 발생했습니다';
+  String get errorNicknameUpdateUnexpected => '닉네임 변경 중 예기치 않은 오류가 발생했습니다';
 
   @override
   String get errorUserInfoFetch => '사용자 정보 조회 중 오류가 발생했습니다';
@@ -1806,18 +1790,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameEventStartGo => '게임 시작!  행운을 빕니다!';
 
   @override
-  String get gameEventPoliceMoveWarning => '경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!';
-
-  @override
   String get gameEventPoliceMove => '경찰 출동!  도둑은 도망치세요!';
 
   @override
   String get gameEventLocationReveal => '현재 도둑의 위치가 공개됩니다!';
-
-  @override
-  String gameEventRemainingRobbers(int count) {
-    return '현재 $count명 도주 중!';
-  }
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
@@ -1826,9 +1802,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gameEventEscapeNotice => '도둑이 탈옥했습니다! 지금 바로 체포하세요!';
-
-  @override
-  String get gameEventFiveMinutesLeft => '게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!';
 
   @override
   String mapErrorLoadFailed(String mapName) {

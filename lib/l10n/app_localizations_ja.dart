@@ -464,8 +464,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogsessionRepositoryImplMessage => '待機室の作成中に予期せぬエラーが発生しました';
 
   @override
-  String get dialogsessionRepositoryImplMessageAddf =>
-      '参加中のゲームの照会中に予期せぬエラーが発生しました';
+  String get errorActiveGameFetchUnexpected => '参加中のゲームの照会中に予期せぬエラーが発生しました';
 
   @override
   String gameSettingMaxPlayers(String count) {
@@ -554,7 +553,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialoghomePageCancel => 'キャンセル';
 
   @override
-  String get dialoghomePageTitleEeea => '途切れのないゲームのために';
+  String get dialogBatteryGuideTitle => '途切れのないゲームのために';
 
   @override
   String get homePageBatteryGuideStep1 => 'アプリ設定 → バッテリー → 制限なし に変更してください\n';
@@ -692,25 +691,22 @@ class AppLocalizationsJa extends AppLocalizations {
       'ゲームが開始されたらどのように動作するか\n一度確認してから始めてみましょうか';
 
   @override
-  String get dialogwaitingRoomPageConfirmA2d8 => '見に行く';
+  String get buttonViewInGamePreview => '見に行く';
 
   @override
-  String dialogwaitingRoomPageTitleBc54(String nickname) {
+  String dialogKickConfirmTitle(String nickname) {
     return '$nicknameさんを退出させますか';
   }
 
   @override
-  String get dialogwaitingRoomPageMessageB302 =>
+  String get dialogKickConfirmMessage =>
       '追放されたユーザーは即座に待機室から退出させられます\n再び待機室に参加するには招待コードを入力する必要があります';
 
   @override
-  String get dialogwaitingRoomPageCancelD9de => 'キャンセル';
+  String get buttonKick => '退出させる';
 
   @override
-  String get dialogwaitingRoomPageConfirmC08c => '退出させる';
-
-  @override
-  String get dialogwaitingRoomPageMessageE87b => '追放処理中にエラーが発生しました';
+  String get errorKickFailed => '追放処理中にエラーが発生しました';
 
   @override
   String get dialogKickedFromRoomTitle => '待機室から退出させられました';
@@ -733,19 +729,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGameStartFailed => 'ゲーム開始に失敗しました';
 
   @override
-  String get dialogwaitingRoomPageTitleFfec => '待機室から退室しますか';
+  String get dialogLeaveRoomTitle => '待機室から退室しますか';
 
   @override
   String get dialogLeaveRoomMessage => '退室すると、再度招待コードを入力する必要があります';
 
   @override
-  String get dialogwaitingRoomPageConfirmC0a3 => '退室';
+  String get buttonLeave => '退室';
 
   @override
   String get errorLeaveRoomFailed => '退出処理中にエラーが発生しました';
 
   @override
-  String get dialogwaitingRoomPageTitleA5bb => '招待コードを作成しました';
+  String get dialogInviteCodeCreatedTitle => '招待コードを作成しました';
 
   @override
   String get dialogInviteCodeShareMessage => '友達にコードを共有してゲームに参加してみましょう！';
@@ -861,13 +857,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fieldsettingListCardLabel => '参加人数';
 
   @override
-  String get fieldsettingListCardLabelEc5e => 'ラウンド制限時間';
+  String get fieldRoundTimeLimit => 'ラウンド制限時間';
 
   @override
-  String get fieldsettingListCardLabelA1b3 => '位置公開間隔';
+  String get fieldLocationShareInterval => '位置公開間隔';
 
   @override
-  String get fieldsettingListCardLabelCe3b => '警察出動時間';
+  String get fieldPoliceDispatchTime => '警察出動時間';
 
   @override
   String teamSectionCurrentCount(int count) {
@@ -925,9 +921,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogagreementPageTitle => '利用規約';
 
   @override
-  String get dialogagreementPageTitleBe29 => '個人情報処理方針';
-
-  @override
   String get linkMarketingConsent => 'マーケティング情報の受信';
 
   @override
@@ -952,10 +945,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogloginPageMessage => '退会が完了しました';
 
   @override
-  String get dialogloginPageTitleA40f => '14歳以上ですか';
+  String get dialogAge14ConfirmTitle => '14歳以上ですか';
 
   @override
-  String get dialogloginPageMessageBa5d =>
+  String get dialogAge14ConfirmMessage =>
       'Cops and Robbersは14歳未満の会員登録ができません\n該当情報は登録禁止の確認目的のみに使用しています';
 
   @override
@@ -963,9 +956,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dialogloginPageCancel => 'いいえ';
-
-  @override
-  String get dialogloginPageMessageFe9d => 'ログインがキャンセルされました';
 
   @override
   String get errorLoginGeneric => 'ログイン中にエラーが発生しました';
@@ -1034,7 +1024,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get splashPleaseWait => '少々お待ちください';
 
   @override
-  String get splashCreditTag => 'by 童心守り隊';
+  String get splashCreditTag => 'by Innocare';
 
   @override
   String get splashOfflineTitle => 'インターネット接続が必要です';
@@ -1144,7 +1134,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get fieldgameOverResultDialogLabelD8df => '残りの泥棒';
+  String get fieldRemainingRobbers => '残りの泥棒';
 
   @override
   String gameResultRemainingRobberCount(int count) {
@@ -1152,7 +1142,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get fieldgameOverResultDialogLabelAb0c => 'ゲーム進行時間';
+  String get fieldGamePlaytime => 'ゲーム進行時間';
 
   @override
   String get buttonGoHome => 'ホームへ';
@@ -1225,13 +1215,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogchatProviderMessage => '[チーム]';
 
   @override
-  String get dialogchatProviderMessageDfca => '制限時間は30分です';
+  String get chatSystemGameTimeLimit30Min => '制限時間は30分です';
 
   @override
-  String get dialogchatProviderMessageC357 => '泥棒さん、うまく逃げてくださいね〜';
+  String get chatSystemGoodLuckRobber => '泥棒さん、うまく逃げてくださいね〜';
 
   @override
-  String get dialogchatProviderMessageEa9a => '勝ちましょう！';
+  String get chatSystemLetsWin => '勝ちましょう！';
 
   @override
   String get dialogchatContextMenuMessage => 'メッセージがコピーされました';
@@ -1252,7 +1242,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonReport => '通報';
 
   @override
-  String get dialogchatContextMenuMessageDf78 => '通報が受け付けられました';
+  String get messageReportSubmitted => '通報が受け付けられました';
 
   @override
   String get errorReportFailed => '通報に失敗しました';
@@ -1273,7 +1263,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chatReportSubmitNotice => '\n報告された内容は検討した上で対処いたします';
 
   @override
-  String get fieldchatContextMenuLabelA83e => 'コピーする';
+  String get buttonCopy => 'コピーする';
 
   @override
   String get buttonBlock => 'ブロック';
@@ -1358,7 +1348,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogagreementSettingsPageMessage => 'まだネットワークに接続されていません';
 
   @override
-  String get dialogagreementSettingsPageMessageEfc5 => '変更事項が保存されました';
+  String get messageChangesSaved => '変更事項が保存されました';
 
   @override
   String get errorTemporaryRetry => '一時的なエラーが発生しました。もう一度お試しください';
@@ -1374,9 +1364,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dialogagreementSettingsPageTitle => '利用規約';
-
-  @override
-  String get dialogagreementSettingsPageTitleBe29 => '個人情報処理方針';
 
   @override
   String get buttonSaveChanges => '変更事項を保存';
@@ -1463,23 +1450,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get messageBugReportSubmitted => 'バグ報告が受け付けられました';
 
   @override
-  String get dialogsettingsPageTitleD4a4 => 'チュートリアル初期化';
+  String get dialogTutorialResetTitle => 'チュートリアル初期化';
 
   @override
-  String get dialogsettingsPageMessageA4c9 =>
+  String get dialogTutorialResetMessage =>
       'すべての画面のチュートリアルを\nもう一度見られるように初期化しますか';
 
   @override
   String get dialogsettingsPageConfirm => '初期化';
 
   @override
-  String get dialogsettingsPageMessageC8cb => 'チュートリアルが初期化されました';
+  String get messageTutorialReset => 'チュートリアルが初期化されました';
 
   @override
   String get dialogLogoutTitle => 'ログアウト';
 
   @override
-  String get dialogsettingsPageMessageE675 => '本当にログアウトしますか';
+  String get dialogLogoutMessage => '本当にログアウトしますか';
 
   @override
   String get snackbarLogoutFailed => 'ログアウトに失敗しました';
@@ -1564,8 +1551,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tutorialPerspectiveCop => '警察視点で見ているところです';
 
   @override
-  String get dialoginGameTutorialPageMessageA1c5 =>
-      '自分が収監された場合、カードタップで脱獄を試みることができます';
+  String get tutorialInGameSelfEscape => '自分が収監された場合、カードタップで脱獄を試みることができます';
 
   @override
   String get tutorialInGameQrArrest => '実際のゲームでは、QRスキャンで泥棒を逮捕します';
@@ -1585,8 +1571,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tutorialInGameChatExpand => 'ハンドルを上にドラッグするとチャットが展開されます';
 
   @override
-  String get dialoginGameTutorialPageMessageDb39 =>
-      'ここにメッセージを入力すると、チーム/全体チャットに送信できます';
+  String get tutorialInGameChatInput => 'ここにメッセージを入力すると、チーム/全体チャットに送信できます';
 
   @override
   String get tutorialChatHint => 'チャットを入力してください';
@@ -1691,7 +1676,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get creditMemberSimHyuk => 'Sim Hyuk';
 
   @override
-  String get pageCreditsTitle => 'Cops and Robbersを作った人々';
+  String get pageCreditsTitle => 'コップス・アンド・ロバーズを作った人々';
 
   @override
   String get dialogreportRepositoryImplMessage => '通報処理中にエラーが発生しました';
@@ -1721,7 +1706,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialoguserRepositoryImplMessage => 'ニックネームの確認中に予期せぬエラーが発生しました';
 
   @override
-  String get dialoguserRepositoryImplMessageAc72 => 'ニックネームの変更中に予期せぬエラーが発生しました';
+  String get errorNicknameUpdateUnexpected => 'ニックネームの変更中に予期せぬエラーが発生しました';
 
   @override
   String get errorUserInfoFetch => 'ユーザー情報の照会中にエラーが発生しました';
@@ -1803,18 +1788,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameEventStartGo => 'ゲーム開始!  幸運を!';
 
   @override
-  String get gameEventPoliceMoveWarning => '警察がまもなく出動します。  泥棒は急いで移動してください!';
-
-  @override
   String get gameEventPoliceMove => '警察出動!  泥棒は逃げて!';
 
   @override
   String get gameEventLocationReveal => '現在の泥棒の位置が公開されます!';
-
-  @override
-  String gameEventRemainingRobbers(int count) {
-    return '現在$count人が逃走中!';
-  }
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
@@ -1823,9 +1800,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get gameEventEscapeNotice => '泥棒が脱獄しました!今すぐ逮捕してください!';
-
-  @override
-  String get gameEventFiveMinutesLeft => 'ゲーム終了まで5分です。最後のチャンスを逃さないで!';
 
   @override
   String mapErrorLoadFailed(String mapName) {

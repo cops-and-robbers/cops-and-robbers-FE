@@ -511,7 +511,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while creating the waiting room';
 
   @override
-  String get dialogsessionRepositoryImplMessageAddf =>
+  String get errorActiveGameFetchUnexpected =>
       'An unexpected error occurred while looking up the game in progress';
 
   @override
@@ -602,7 +602,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialoghomePageCancel => 'Cancel';
 
   @override
-  String get dialoghomePageTitleEeea => 'For uninterrupted gameplay';
+  String get dialogBatteryGuideTitle => 'For uninterrupted gameplay';
 
   @override
   String get homePageBatteryGuideStep1 =>
@@ -760,25 +760,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Shall we check how it works\nonce the game starts before we begin?';
 
   @override
-  String get dialogwaitingRoomPageConfirmA2d8 => 'Let\'s view';
+  String get buttonViewInGamePreview => 'Let\'s view';
 
   @override
-  String dialogwaitingRoomPageTitleBc54(String nickname) {
+  String dialogKickConfirmTitle(String nickname) {
     return 'Remove $nickname?';
   }
 
   @override
-  String get dialogwaitingRoomPageMessageB302 =>
+  String get dialogKickConfirmMessage =>
       'Removed users will be kicked out of the room immediately\nThey must enter the invite code to rejoin the room';
 
   @override
-  String get dialogwaitingRoomPageCancelD9de => 'Cancel';
+  String get buttonKick => 'Remove';
 
   @override
-  String get dialogwaitingRoomPageConfirmC08c => 'Remove';
-
-  @override
-  String get dialogwaitingRoomPageMessageE87b =>
+  String get errorKickFailed =>
       'An error occurred while processing the removal';
 
   @override
@@ -803,22 +800,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorGameStartFailed => 'Failed to start the game';
 
   @override
-  String get dialogwaitingRoomPageTitleFfec =>
-      'Would you like to leave the room?';
+  String get dialogLeaveRoomTitle => 'Would you like to leave the room?';
 
   @override
   String get dialogLeaveRoomMessage =>
       'You will need to enter the invite code again to rejoin';
 
   @override
-  String get dialogwaitingRoomPageConfirmC0a3 => 'Leave';
+  String get buttonLeave => 'Leave';
 
   @override
   String get errorLeaveRoomFailed =>
       'An error occurred while processing your exit';
 
   @override
-  String get dialogwaitingRoomPageTitleA5bb => 'Created an invite code';
+  String get dialogInviteCodeCreatedTitle => 'Created an invite code';
 
   @override
   String get dialogInviteCodeShareMessage =>
@@ -941,13 +937,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldsettingListCardLabel => 'Player count';
 
   @override
-  String get fieldsettingListCardLabelEc5e => 'Round time limit';
+  String get fieldRoundTimeLimit => 'Round time limit';
 
   @override
-  String get fieldsettingListCardLabelA1b3 => 'Location reveal interval';
+  String get fieldLocationShareInterval => 'Location reveal interval';
 
   @override
-  String get fieldsettingListCardLabelCe3b => 'Cop dispatch delay';
+  String get fieldPoliceDispatchTime => 'Cop dispatch delay';
 
   @override
   String teamSectionCurrentCount(int count) {
@@ -1010,9 +1006,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogagreementPageTitle => 'Terms of service';
 
   @override
-  String get dialogagreementPageTitleBe29 => 'Privacy policy';
-
-  @override
   String get linkMarketingConsent => 'Receive marketing information';
 
   @override
@@ -1040,10 +1033,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogloginPageMessage => 'Account deletion is complete';
 
   @override
-  String get dialogloginPageTitleA40f => 'Are you 14 years of age or older?';
+  String get dialogAge14ConfirmTitle => 'Are you 14 years of age or older?';
 
   @override
-  String get dialogloginPageMessageBa5d =>
+  String get dialogAge14ConfirmMessage =>
       'Cops and Robbers does not allow signups for users under 14\nThis information is used solely to verify eligibility';
 
   @override
@@ -1051,9 +1044,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialogloginPageCancel => 'No';
-
-  @override
-  String get dialogloginPageMessageFe9d => 'Sign in was cancelled';
 
   @override
   String get errorLoginGeneric => 'An error occurred during sign in';
@@ -1127,7 +1117,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashPleaseWait => 'Please wait a moment';
 
   @override
-  String get splashCreditTag => 'by Dongsim_Jikimi';
+  String get splashCreditTag => 'by Innocare';
 
   @override
   String get splashOfflineTitle => 'Internet connection is required';
@@ -1241,7 +1231,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get fieldgameOverResultDialogLabelD8df => 'Remaining Robbers';
+  String get fieldRemainingRobbers => 'Remaining Robbers';
 
   @override
   String gameResultRemainingRobberCount(int count) {
@@ -1249,7 +1239,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get fieldgameOverResultDialogLabelAb0c => 'Game playtime';
+  String get fieldGamePlaytime => 'Game playtime';
 
   @override
   String get buttonGoHome => 'Go to home';
@@ -1324,14 +1314,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogchatProviderMessage => '[Team]';
 
   @override
-  String get dialogchatProviderMessageDfca => 'The time limit is 30 minutes';
+  String get chatSystemGameTimeLimit30Min => 'The time limit is 30 minutes';
 
   @override
-  String get dialogchatProviderMessageC357 =>
-      'Good luck running away, Robbers~';
+  String get chatSystemGoodLuckRobber => 'Good luck running away, Robbers~';
 
   @override
-  String get dialogchatProviderMessageEa9a => 'Let\'s win this!';
+  String get chatSystemLetsWin => 'Let\'s win this!';
 
   @override
   String get dialogchatContextMenuMessage => 'Message has been copied';
@@ -1353,7 +1342,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonReport => 'Report';
 
   @override
-  String get dialogchatContextMenuMessageDf78 => 'Report has been received';
+  String get messageReportSubmitted => 'Report has been received';
 
   @override
   String get errorReportFailed => 'Failed to submit the report';
@@ -1375,7 +1364,7 @@ class AppLocalizationsEn extends AppLocalizations {
       '\nThe reported content will be reviewed and acted upon';
 
   @override
-  String get fieldchatContextMenuLabelA83e => 'Copy';
+  String get buttonCopy => 'Copy';
 
   @override
   String get buttonBlock => 'Block';
@@ -1461,8 +1450,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Not connected to the network yet';
 
   @override
-  String get dialogagreementSettingsPageMessageEfc5 =>
-      'Changes have been saved';
+  String get messageChangesSaved => 'Changes have been saved';
 
   @override
   String get errorTemporaryRetry =>
@@ -1479,9 +1467,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialogagreementSettingsPageTitle => 'Terms of service';
-
-  @override
-  String get dialogagreementSettingsPageTitleBe29 => 'Privacy policy';
 
   @override
   String get buttonSaveChanges => 'Save changes';
@@ -1570,24 +1555,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageBugReportSubmitted => 'Bug report has been received';
 
   @override
-  String get dialogsettingsPageTitleD4a4 => 'Reset tutorial';
+  String get dialogTutorialResetTitle => 'Reset tutorial';
 
   @override
-  String get dialogsettingsPageMessageA4c9 =>
+  String get dialogTutorialResetMessage =>
       'Would you like to reset the tutorials\nso you can see them on all screens again?';
 
   @override
   String get dialogsettingsPageConfirm => 'Reset';
 
   @override
-  String get dialogsettingsPageMessageC8cb => 'Tutorial has been reset';
+  String get messageTutorialReset => 'Tutorial has been reset';
 
   @override
   String get dialogLogoutTitle => 'Sign out';
 
   @override
-  String get dialogsettingsPageMessageE675 =>
-      'Are you sure you want to sign out?';
+  String get dialogLogoutMessage => 'Are you sure you want to sign out?';
 
   @override
   String get snackbarLogoutFailed => 'Failed to sign out';
@@ -1676,7 +1660,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tutorialPerspectiveCop => 'Viewing from Cops\' perspective';
 
   @override
-  String get dialoginGameTutorialPageMessageA1c5 =>
+  String get tutorialInGameSelfEscape =>
       'If you are jailed, you can attempt a jailbreak by tapping the card';
 
   @override
@@ -1699,7 +1683,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Drag the handle up to expand the chat';
 
   @override
-  String get dialoginGameTutorialPageMessageDb39 =>
+  String get tutorialInGameChatInput =>
       'Enter a message here to send it to team/global chat';
 
   @override
@@ -1842,7 +1826,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while checking nickname';
 
   @override
-  String get dialoguserRepositoryImplMessageAc72 =>
+  String get errorNicknameUpdateUnexpected =>
       'An unexpected error occurred while changing nickname';
 
   @override
@@ -1938,19 +1922,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameEventStartGo => 'Game start!  Good luck!';
 
   @override
-  String get gameEventPoliceMoveWarning =>
-      'Cops will move soon.  Robbers, hurry and run!';
-
-  @override
   String get gameEventPoliceMove => 'Cops are on the move!  Robbers, run!';
 
   @override
   String get gameEventLocationReveal => 'Robbers\' locations are now revealed!';
-
-  @override
-  String gameEventRemainingRobbers(int count) {
-    return '$count robber(s) still on the run!';
-  }
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
@@ -1960,10 +1935,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get gameEventEscapeNotice =>
       'A robber has escaped from jail! Arrest them now!';
-
-  @override
-  String get gameEventFiveMinutesLeft =>
-      '5 minutes left until the game ends. Don\'t miss your last chance!';
 
   @override
   String mapErrorLoadFailed(String mapName) {
