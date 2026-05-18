@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -102,7 +103,7 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
           : _document == null
           ? Center(
               child: Text(
-                '문서를 불러올 수 없습니다.',
+                AppLocalizations.of(context).settings_legalDocumentPage_L105,
                 style: AppTextStyles.paragraph_14.copyWith(
                   color: AppColors.black600,
                 ),
