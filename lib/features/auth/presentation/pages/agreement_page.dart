@@ -107,7 +107,7 @@ class AgreementPage extends ConsumerWidget {
                   ),
                 ),
                 AppButton(
-                  text: l10n.auth_agreementPage_L107,
+                  text: l10n.agreementPageAgreeButton,
                   onPressed: state.hasAllRequired && !state.isSubmitting
                       ? () => _onSubmit(context, ref)
                       : null,
@@ -127,7 +127,7 @@ class AgreementPage extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.auth_agreementPage_L127,
+          l10n.agreementPageTitle,
           style: AppTextStyles.heading_24.copyWith(
             color: AppColors.black,
             height: 1.4,
@@ -135,7 +135,7 @@ class AgreementPage extends ConsumerWidget {
         ),
         SizedBox(height: AppSpacing.vertical24),
         Text(
-          l10n.auth_agreementPage_L135,
+          l10n.agreementPageRequiredNotice,
           style: AppTextStyles.paragraph_14_100.copyWith(
             color: AppColors.black600,
           ),
@@ -188,7 +188,7 @@ class AgreementPage extends ConsumerWidget {
         final lastError = notifier.lastError;
         final message = lastError != null
             ? l10n.errorByException(lastError)
-            : l10n.auth_agreementPage_L184;
+            : l10n.errorTemporaryRetry;
         AppSnackbar.show(
           context,
           message: message,

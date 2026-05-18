@@ -248,7 +248,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                     children: [
                       // 제목
                       Text(
-                        l10n.auth_nicknameSetupPage_L248,
+                        l10n.nicknameSetupTitle,
                         style: AppTextStyles.heading_24.copyWith(
                           color: AppColors.black,
                         ),
@@ -257,7 +257,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
                       // 설명
                       Text(
-                        l10n.auth_nicknameSetupPage_L257,
+                        l10n.nicknameSetupSubtitle,
                         style: AppTextStyles.paragraph_14.copyWith(
                           color: AppColors.black600,
                         ),
@@ -281,7 +281,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                 // - 닉네임 미변경: 바로 활성화 (서버 닉네임은 이미 유니크)
                 // - 닉네임 변경: 중복확인 통과 후 활성화
                 AppButton(
-                  text: l10n.auth_nicknameSetupPage_L281,
+                  text: l10n.buttonConfirm,
                   onPressed:
                       !_isLoading &&
                           _nicknameController.text.trim().isNotEmpty &&
@@ -308,7 +308,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
         AppTextField(
           hintText: widget.initialNickname.isNotEmpty
               ? widget.initialNickname
-              : l10n.auth_nicknameSetupPage_L308,
+              : l10n.fieldNicknameHint,
           controller: _nicknameController,
           maxLength: 10,
           textColor: _isNicknameChanged ? null : AppColors.black600,
@@ -336,7 +336,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                   ),
                 )
               : custom_chip.ActionChip(
-                  text: l10n.auth_nicknameSetupPage_L336,
+                  text: l10n.buttonCheckNicknameDuplicate,
                   height: AppSpacing.vertical40,
                   onTap: _isNicknameChanged ? _onCheckDuplicate : null,
                 ),
@@ -354,22 +354,22 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
     switch (_validationState) {
       case NicknameValidationState.empty:
-        message = l10n.auth_nicknameSetupPage_L354;
+        message = l10n.errorNicknameTooShort;
         color = AppColors.red;
         iconPath = 'assets/icons/icon_wrong mark.svg';
         break;
       case NicknameValidationState.duplicate:
-        message = l10n.auth_nicknameSetupPage_L359;
+        message = l10n.errorNicknameDuplicated;
         color = AppColors.red;
         iconPath = 'assets/icons/icon_wrong mark.svg';
         break;
       case NicknameValidationState.valid:
-        message = l10n.auth_nicknameSetupPage_L364;
+        message = l10n.nicknameAvailable;
         color = AppColors.deepGreen;
         iconPath = 'assets/icons/icon_check mark.svg';
         break;
       case NicknameValidationState.error:
-        message = l10n.auth_nicknameSetupPage_L369;
+        message = l10n.errorTemporaryRetry;
         color = AppColors.red;
         iconPath = 'assets/icons/icon_wrong mark.svg';
         break;

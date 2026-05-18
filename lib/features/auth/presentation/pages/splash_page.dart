@@ -47,7 +47,7 @@ class SplashPage extends ConsumerStatefulWidget {
 class _SplashPageState extends ConsumerState<SplashPage> {
   bool _isReconnecting = false;
   // 실제 값은 LoadingMessageService.getMessage()로 채워지므로 nullable 초기화
-  // (build() 시 l10n.auth_splashPage_L48로 폴백)
+  // (build() 시 l10n.splashReturningToScene으로 폴백)
   String? _reconnectMessage;
 
   /// 오프라인 차단 상태
@@ -397,8 +397,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     }
     if (_isReconnecting) {
       return LoadingPage(
-        message: _reconnectMessage ?? l10n.auth_splashPage_L48,
-        subtitle: l10n.auth_splashPage_L395,
+        message: _reconnectMessage ?? l10n.splashReturningToScene,
+        subtitle: l10n.splashPleaseWait,
       );
     }
     return Scaffold(
@@ -416,7 +416,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
               ),
             ),
             Text(
-              l10n.auth_splashPage_L412,
+              l10n.splashCreditTag,
               style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
             ),
             SizedBox(height: AppSpacing.vertical24),
@@ -449,13 +449,13 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                       ),
                       SizedBox(height: AppSpacing.vertical24),
                       Text(
-                        l10n.auth_splashPage_L444,
+                        l10n.splashOfflineTitle,
                         style: AppTextStyles.heading_20,
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: AppSpacing.vertical16),
                       Text(
-                        l10n.auth_splashPage_L450,
+                        l10n.splashOfflineMessage,
                         style: AppTextStyles.paragraph_14.copyWith(
                           color: AppColors.black600,
                         ),
@@ -466,7 +466,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                 ),
               ),
               AppButton(
-                text: l10n.auth_splashPage_L461,
+                text: l10n.buttonRetry,
                 onPressed: _onManualRetry,
                 showBorder: false,
               ),

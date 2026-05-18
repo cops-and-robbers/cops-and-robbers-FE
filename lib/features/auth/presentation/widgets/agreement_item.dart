@@ -39,8 +39,8 @@ class AgreementItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tagText = required
-        ? l10n.auth_agreementItem_L39
-        : l10n.auth_agreementItem_L39_1;
+        ? l10n.agreementItemRequiredTag
+        : l10n.agreementItemOptionalTag;
     final tagColor = required ? AppColors.black600 : AppColors.black400;
 
     return Padding(

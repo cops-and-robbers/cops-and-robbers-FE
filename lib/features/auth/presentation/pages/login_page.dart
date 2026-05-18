@@ -169,7 +169,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      _showLoginError(AppLocalizations.of(context).auth_loginPage_L166);
+      _showLoginError(AppLocalizations.of(context).errorLoginGeneric);
     } finally {
       if (mounted) {
         setState(() => _isGoogleLoading = false);
@@ -196,7 +196,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      _showLoginError(AppLocalizations.of(context).auth_loginPage_L191);
+      _showLoginError(AppLocalizations.of(context).errorAppleLoginFailed);
     } finally {
       if (mounted) {
         setState(() => _isAppleLoading = false);
@@ -268,7 +268,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   if (_isUnder14) ...[
                     SizedBox(height: AppSpacing.vertical12),
                     Text(
-                      l10n.auth_loginPage_L260,
+                      l10n.errorAgeRestrictionUnder14,
                       style: AppTextStyles.tag_12.copyWith(
                         color: AppColors.red,
                       ),
@@ -292,9 +292,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       color: AppColors.black400,
                     ),
                     children: [
-                      TextSpan(text: l10n.auth_loginPage_L284),
+                      TextSpan(text: l10n.loginPageAgreementPrefix),
                       TextSpan(
-                        text: l10n.auth_loginPage_L286,
+                        text: l10n.linkPrivacyPolicy,
                         style: AppTextStyles.tag_12.copyWith(
                           color: AppColors.black600,
                           decoration: TextDecoration.underline,
@@ -303,7 +303,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       const TextSpan(text: ', '),
                       TextSpan(
-                        text: l10n.auth_loginPage_L295,
+                        text: l10n.linkTermsOfService,
                         style: AppTextStyles.tag_12.copyWith(
                           color: AppColors.black600,
                           decoration: TextDecoration.underline,
@@ -312,14 +312,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       const TextSpan(text: ', '),
                       TextSpan(
-                        text: l10n.auth_loginPage_L304,
+                        text: l10n.linkLocationTerms,
                         style: AppTextStyles.tag_12.copyWith(
                           color: AppColors.black600,
                           decoration: TextDecoration.underline,
                         ),
                         recognizer: _locationRecognizer,
                       ),
-                      TextSpan(text: l10n.auth_loginPage_L311),
+                      TextSpan(text: l10n.loginPageAgreementSuffix),
                     ],
                   ),
                 ),

@@ -33,7 +33,7 @@ class AgreementAllCheckbox extends StatelessWidget {
             AgreementCheckbox(checked: checked, onTap: onToggle, size: 20),
             SizedBox(width: AppSpacing.horizontal8),
             Text(
-              AppLocalizations.of(context).auth_agreementAllCheckbox_L35,
+              AppLocalizations.of(context).agreementAllCheckboxLabel,
               style: AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
           ],
