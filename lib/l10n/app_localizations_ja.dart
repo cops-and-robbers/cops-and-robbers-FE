@@ -1710,16 +1710,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_settingsPage_L613 => '退会する';
 
   @override
-  String get tutorial_inGameTutorialPage_L62 => 'Cop1';
+  String get tutorialDummyNicknameCop1 => 'Cop1';
 
   @override
-  String get tutorial_inGameTutorialPage_L72 => 'RobberKing';
+  String get tutorialDummyNicknameRobberKing => 'RobberKing';
 
   @override
-  String get tutorial_inGameTutorialPage_L78 => 'RobberOrNot';
+  String get tutorialDummyNicknameRobberOrNot => 'RobberOrNot';
 
   @override
-  String get tutorial_inGameTutorialPage_L84 => 'CapturedRobber';
+  String get tutorialDummyNicknameCapturedRobber => 'CapturedRobber';
 
   @override
   String get dialoginGameTutorialPageTitle => 'チュートリアル完了！';
@@ -1735,40 +1735,39 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialoginGameTutorialPageMessage8372 => '自分の位置にカメラが移動しました';
 
   @override
-  String get tutorial_inGameTutorialPage_L391 => '地図のプレビュー';
+  String get tutorialMapPreviewLabel => '地図のプレビュー';
 
   @override
-  String get tutorial_inGameTutorialPage_L434 => '次の泥棒の位置公開まで 04:30';
+  String get tutorialLocationRevealCountdown => '次の泥棒の位置公開まで 04:30';
 
   @override
   String get dialoginGameTutorialPageMessage9b3f => 'ゲームルールの案内が開きます';
 
   @override
-  String get tutorial_inGameTutorialPage_L491 =>
-      '自分の指名手配QRが画面に表示されます。警察に見せると逮捕されます';
+  String get tutorialQrRobberHint => '自分の指名手配QRが画面に表示されます。警察に見せると逮捕されます';
 
   @override
-  String get tutorial_inGameTutorialPage_L492 => 'カメラが起動し、泥棒のQRをスキャンして逮捕できます';
+  String get tutorialQrCopHint => 'カメラが起動し、泥棒のQRをスキャンして逮捕できます';
 
   @override
-  String get tutorial_inGameTutorialPage_L509 => '参加者表示ボタンを押してみてください';
+  String get tutorialMissionParticipantsButton => '参加者表示ボタンを押してみてください';
 
   @override
-  String get tutorial_inGameTutorialPage_L509_1 => 'QRボタンを押してみてください';
+  String get tutorialMissionQrButton => 'QRボタンを押してみてください';
 
   @override
-  String get tutorial_inGameTutorialPage_L509_2 => '地図に戻ってみてください';
+  String get tutorialMissionMapButton => '地図に戻ってみてください';
 
   @override
-  String tutorial_inGameTutorialPage_L525(String _missionStep) {
-    return 'ミッション $_missionStep/3';
+  String tutorialMissionProgress(String step) {
+    return 'ミッション $step/3';
   }
 
   @override
-  String get tutorial_inGameTutorialPage_L608 => '泥棒視点で見ているところです';
+  String get tutorialPerspectiveRobber => '泥棒視点で見ているところです';
 
   @override
-  String get tutorial_inGameTutorialPage_L608_1 => '警察視点で見ているところです';
+  String get tutorialPerspectiveCop => '警察視点で見ているところです';
 
   @override
   String get dialoginGameTutorialPageMessageA1c5 =>
@@ -1778,15 +1777,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialoginGameTutorialPageMessage9331 => '実際のゲームでは、QRスキャンで泥棒を逮捕します';
 
   @override
-  String get tutorial_inGameTutorialPage_L688 => '現在';
+  String get tutorialCurrentLabel => '現在';
 
   @override
-  String tutorial_inGameTutorialPage_L690(int count) {
+  String tutorialPlayerCount(int count) {
     return '$count人';
   }
 
   @override
-  String get tutorial_inGameTutorialPage_L696 => '逃走中！';
+  String get tutorialOnTheRun => '逃走中！';
 
   @override
   String get dialoginGameTutorialPageMessage7650 => 'ハンドルを上にドラッグするとチャットが展開されます';
@@ -1796,110 +1795,109 @@ class AppLocalizationsJa extends AppLocalizations {
       'ここにメッセージを入力すると、チーム/全体チャットに送信できます';
 
   @override
-  String get tutorial_inGameTutorialPage_L806 => 'チャットを入力してください';
+  String get tutorialChatHint => 'チャットを入力してください';
 
   @override
   String get dialogtutorialCatalogPageTitle => '待機室を作る';
 
   @override
-  String get tutorial_tutorialCatalogPage_L20 => 'プレイグラウンド・牢屋の設定とスライダー操作';
+  String get tutorialCatalogAreaSubtitle => 'プレイグラウンド・牢屋の設定とスライダー操作';
 
   @override
   String get dialogtutorialCatalogPageTitle879f => '待機室に参加する';
 
   @override
-  String get tutorial_tutorialCatalogPage_L25 => '招待コードの入力とQRスキャン';
+  String get tutorialCatalogInviteSubtitle => '招待コードの入力とQRスキャン';
 
   @override
   String get dialogtutorialCatalogPageTitle2421 => '待機室';
 
   @override
-  String get tutorial_tutorialCatalogPage_L30 => 'チーム変更、ゲーム設定、準備完了';
+  String get tutorialCatalogLobbySubtitle => 'チーム変更、ゲーム設定、準備完了';
 
   @override
   String get dialogtutorialCatalogPageTitle8700 => 'インゲーム';
 
   @override
-  String get tutorial_tutorialCatalogPage_L35 => 'タイマー・地図・参加者・チャット・QR';
+  String get tutorialCatalogGameSubtitle => 'タイマー・地図・参加者・チャット・QR';
 
   @override
-  String get tutorial_tutorialCatalogPage_L62 => 'チュートリアル';
+  String get pageTutorialCatalogTitle => 'チュートリアル';
 
   @override
-  String get tutorial_tutorialCatalogPage_L69 =>
-      'ゲームを初めてプレイする場合は、一度見てから始めてみてください';
+  String get tutorialCatalogIntro => 'ゲームを初めてプレイする場合は、一度見てから始めてみてください';
 
   @override
-  String get tutorial_tutorialCatalogPage_L200 => '準備中';
+  String get tutorialCatalogComingSoon => '準備中';
 
   @override
-  String get credits_creditMember_L78 => 'Hong Eui-min';
+  String get creditMemberHongEuiMin => 'Hong Eui-min';
 
   @override
-  String get credits_creditMember_L97 => 'Park Chan-bin';
+  String get creditMemberParkChanBin => 'Park Chan-bin';
 
   @override
-  String get credits_creditMember_L110 => 'Lee Chang-hee';
+  String get creditMemberLeeChangHee => 'Lee Chang-hee';
 
   @override
-  String get credits_creditMember_L122 => 'Jeong Sang-hee';
+  String get creditMemberJeongSangHee => 'Jeong Sang-hee';
 
   @override
-  String get credits_creditMember_L137 => 'Hwang Hye-rim';
+  String get creditMemberHwangHyeRim => 'Hwang Hye-rim';
 
   @override
-  String get credits_creditMember_L149 => 'Yoon Ji-hee';
+  String get creditMemberYoonJiHee => 'Yoon Ji-hee';
 
   @override
-  String get credits_creditMember_L220 => 'Shin Ji-hoon';
+  String get creditMemberShinJiHoon => 'Shin Ji-hoon';
 
   @override
-  String get credits_creditMember_L227 => 'Nam Hae-yoon';
+  String get creditMemberNamHaeYoon => 'Nam Hae-yoon';
 
   @override
-  String get credits_creditMember_L233 => 'Song Hye-jung';
+  String get creditMemberSongHyeJung => 'Song Hye-jung';
 
   @override
-  String get credits_creditMember_L239 => 'Lee Jin';
+  String get creditMemberLeeJin => 'Lee Jin';
 
   @override
-  String get credits_creditMember_L246 => 'Ahn Geum-seo';
+  String get creditMemberAhnGeumSeo => 'Ahn Geum-seo';
 
   @override
-  String get credits_creditMember_L252 => 'Son Geon-woo';
+  String get creditMemberSonGeonWoo => 'Son Geon-woo';
 
   @override
-  String get credits_creditMember_L258 => 'Shin Hye-bin';
+  String get creditMemberShinHyeBin => 'Shin Hye-bin';
 
   @override
-  String get credits_creditMember_L264 => 'Jeong Chang-woo';
+  String get creditMemberJeongChangWoo => 'Jeong Chang-woo';
 
   @override
-  String get credits_creditMember_L270 => 'Heo Seok-jun';
+  String get creditMemberHeoSeokJun => 'Heo Seok-jun';
 
   @override
-  String get credits_creditMember_L276 => 'Seo Hyun-jin';
+  String get creditMemberSeoHyunJin => 'Seo Hyun-jin';
 
   @override
-  String get credits_creditMember_L282 => 'Oh Dong-hyun';
+  String get creditMemberOhDongHyun => 'Oh Dong-hyun';
 
   @override
-  String get credits_creditMember_L288 => 'Choi Seung-hoon';
+  String get creditMemberChoiSeungHoon => 'Choi Seung-hoon';
 
   @override
-  String get credits_creditMember_L294 => 'Kim Min-wook';
+  String get creditMemberKimMinWook => 'Kim Min-wook';
 
   @override
-  String get credits_creditMember_L300 => 'Jeong Myeong-jun';
+  String get creditMemberJeongMyeongJun => 'Jeong Myeong-jun';
 
   @override
-  String get credits_creditMember_L306 => 'Kang Dae-hyun';
+  String get creditMemberKangDaeHyun => 'Kang Dae-hyun';
 
   @override
-  String get credits_creditMember_L312 => 'Sim Hyuk';
+  String get creditMemberSimHyuk => 'Sim Hyuk';
 
   @override
-  String get credits_creditsPage_L45 => 'Cops and Robbersを作った人々';
+  String get pageCreditsTitle => 'Cops and Robbersを作った人々';
 
   @override
   String get dialogreportRepositoryImplMessage => '通報処理中にエラーが発生しました';

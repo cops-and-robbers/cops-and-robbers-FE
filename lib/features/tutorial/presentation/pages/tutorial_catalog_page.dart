@@ -20,22 +20,22 @@ class TutorialCatalogPage extends StatelessWidget {
     return <_TutorialCatalogItem>[
       _TutorialCatalogItem(
         title: l10n.dialogtutorialCatalogPageTitle,
-        subtitle: l10n.tutorial_tutorialCatalogPage_L20,
+        subtitle: l10n.tutorialCatalogAreaSubtitle,
         icon: Icons.add_box_outlined,
       ),
       _TutorialCatalogItem(
         title: l10n.dialogtutorialCatalogPageTitle879f,
-        subtitle: l10n.tutorial_tutorialCatalogPage_L25,
+        subtitle: l10n.tutorialCatalogInviteSubtitle,
         icon: Icons.qr_code_scanner_outlined,
       ),
       _TutorialCatalogItem(
         title: l10n.dialogtutorialCatalogPageTitle2421,
-        subtitle: l10n.tutorial_tutorialCatalogPage_L30,
+        subtitle: l10n.tutorialCatalogLobbySubtitle,
         icon: Icons.groups_outlined,
       ),
       _TutorialCatalogItem(
         title: l10n.dialogtutorialCatalogPageTitle8700,
-        subtitle: l10n.tutorial_tutorialCatalogPage_L35,
+        subtitle: l10n.tutorialCatalogGameSubtitle,
         icon: Icons.map_outlined,
         route: '/tutorial/in-game',
       ),
@@ -65,14 +65,14 @@ class TutorialCatalogPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.tutorial_tutorialCatalogPage_L62,
+                          l10n.pageTutorialCatalogTitle,
                           style: AppTextStyles.heading_24.copyWith(
                             color: AppColors.black,
                           ),
                         ),
                         SizedBox(height: AppSpacing.vertical16),
                         Text(
-                          l10n.tutorial_tutorialCatalogPage_L69,
+                          l10n.tutorialCatalogIntro,
                           style: AppTextStyles.paragraph_14.copyWith(
                             color: AppColors.black600,
                           ),
@@ -205,7 +205,7 @@ class _TutorialCatalogCard extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(
                     context,
-                  ).tutorial_tutorialCatalogPage_L200,
+                  ).tutorialCatalogComingSoon,
                   style: AppTextStyles.tag_12.copyWith(
                     color: AppColors.black500,
                   ),

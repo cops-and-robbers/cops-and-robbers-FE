@@ -61,7 +61,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
     return [
       LobbyParticipantInfo(
         participantId: 1,
-        nickname: l10n.tutorial_inGameTutorialPage_L62,
+        nickname: l10n.tutorialDummyNicknameCop1,
         team: 'POLICE',
         isReady: true,
       ),
@@ -73,19 +73,19 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
     return [
       LobbyParticipantInfo(
         participantId: 10,
-        nickname: l10n.tutorial_inGameTutorialPage_L72,
+        nickname: l10n.tutorialDummyNicknameRobberKing,
         team: 'ROBBER',
         isReady: false, // ALIVE → 도주 중
       ),
       LobbyParticipantInfo(
         participantId: 11,
-        nickname: l10n.tutorial_inGameTutorialPage_L78,
+        nickname: l10n.tutorialDummyNicknameRobberOrNot,
         team: 'ROBBER',
         isReady: false, // ALIVE → 도주 중 (본인)
       ),
       LobbyParticipantInfo(
         participantId: 12,
-        nickname: l10n.tutorial_inGameTutorialPage_L84,
+        nickname: l10n.tutorialDummyNicknameCapturedRobber,
         team: 'ROBBER',
         isReady: true, // JAILED
       ),
@@ -396,7 +396,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               ),
               SizedBox(height: AppSpacing.vertical8),
               Text(
-                AppLocalizations.of(context).tutorial_inGameTutorialPage_L391,
+                AppLocalizations.of(context).tutorialMapPreviewLabel,
                 style: AppTextStyles.paragraph_14.copyWith(
                   color: _isDarkMode ? AppColors.black400 : AppColors.black500,
                 ),
@@ -439,7 +439,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               ),
               SizedBox(height: 6.h),
               Text(
-                AppLocalizations.of(context).tutorial_inGameTutorialPage_L434,
+                AppLocalizations.of(context).tutorialLocationRevealCountdown,
                 style: AppTextStyles.tag_12.copyWith(
                   color: _isDarkMode ? AppColors.black400 : AppColors.red,
                 ),
@@ -499,8 +499,8 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           AppSnackbar.show(
             context,
             message: _isDarkMode
-                ? l10n.tutorial_inGameTutorialPage_L491
-                : l10n.tutorial_inGameTutorialPage_L492,
+                ? l10n.tutorialQrRobberHint
+                : l10n.tutorialQrCopHint,
             isDarkMode: _isDarkMode,
           );
         },
@@ -519,9 +519,9 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
 
     final l10n = AppLocalizations.of(context);
     final descriptions = [
-      l10n.tutorial_inGameTutorialPage_L509,
-      l10n.tutorial_inGameTutorialPage_L509_1,
-      l10n.tutorial_inGameTutorialPage_L509_2,
+      l10n.tutorialMissionParticipantsButton,
+      l10n.tutorialMissionQrButton,
+      l10n.tutorialMissionMapButton,
     ];
 
     final accentColor = _isDarkMode ? AppColors.green : AppColors.blue;
@@ -538,7 +538,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
       child: Row(
         children: [
           Text(
-            l10n.tutorial_inGameTutorialPage_L525('${_missionStep + 1}'),
+            l10n.tutorialMissionProgress('${_missionStep + 1}'),
             style: AppTextStyles.tag12Semibold.copyWith(color: accentColor),
           ),
           SizedBox(width: AppSpacing.horizontal8),
@@ -624,10 +624,10 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               _isDarkMode
                   ? AppLocalizations.of(
                       context,
-                    ).tutorial_inGameTutorialPage_L608
+                    ).tutorialPerspectiveRobber
                   : AppLocalizations.of(
                       context,
-                    ).tutorial_inGameTutorialPage_L608_1,
+                    ).tutorialPerspectiveCop,
               style: AppTextStyles.tag12Semibold.copyWith(
                 color: _isDarkMode ? AppColors.white : AppColors.black,
               ),
@@ -711,15 +711,15 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
       text: TextSpan(
         style: AppTextStyles.tag_12.copyWith(color: badgeColor),
         children: [
-          TextSpan(text: '${l10n.tutorial_inGameTutorialPage_L688} '),
+          TextSpan(text: '${l10n.tutorialCurrentLabel} '),
           TextSpan(
-            text: l10n.tutorial_inGameTutorialPage_L690(count),
+            text: l10n.tutorialPlayerCount(count),
             style: AppTextStyles.tag_12.copyWith(
               color: badgeBoldColor,
               fontWeight: FontWeight.w700,
             ),
           ),
-          TextSpan(text: ' ${l10n.tutorial_inGameTutorialPage_L696}'),
+          TextSpan(text: ' ${l10n.tutorialOnTheRun}'),
         ],
       ),
     );
@@ -833,7 +833,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             children: [
               Expanded(
                 child: Text(
-                  AppLocalizations.of(context).tutorial_inGameTutorialPage_L806,
+                  AppLocalizations.of(context).tutorialChatHint,
                   style: AppTextStyles.label16Medium.copyWith(
                     color: _isDarkMode
                         ? AppColors.black200

@@ -2295,21 +2295,21 @@
   "@settings_settingsPage_L613": {
     "description": "auto-imported from lib/features/settings/presentation/pages/settings_page.dart:613"
   },
-  "tutorial_inGameTutorialPage_L62": "경찰1",
-  "@tutorial_inGameTutorialPage_L62": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:62"
+  "tutorialDummyNicknameCop1": "경찰1",
+  "@tutorialDummyNicknameCop1": {
+    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
   },
-  "tutorial_inGameTutorialPage_L72": "도둑킹",
-  "@tutorial_inGameTutorialPage_L72": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:72"
+  "tutorialDummyNicknameRobberKing": "도둑킹",
+  "@tutorialDummyNicknameRobberKing": {
+    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
   },
-  "tutorial_inGameTutorialPage_L78": "도둑이게아니게",
-  "@tutorial_inGameTutorialPage_L78": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:78"
+  "tutorialDummyNicknameRobberOrNot": "도둑이게아니게",
+  "@tutorialDummyNicknameRobberOrNot": {
+    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
   },
-  "tutorial_inGameTutorialPage_L84": "잡힌도둑",
-  "@tutorial_inGameTutorialPage_L84": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:84"
+  "tutorialDummyNicknameCapturedRobber": "잡힌도둑",
+  "@tutorialDummyNicknameCapturedRobber": {
+    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
   },
   "dialoginGameTutorialPageTitle": "튜토리얼 완료!",
   "@dialoginGameTutorialPageTitle": {
@@ -2327,54 +2327,54 @@
   "@dialoginGameTutorialPageMessage8372": {
     "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:262"
   },
-  "tutorial_inGameTutorialPage_L391": "지도 미리보기",
-  "@tutorial_inGameTutorialPage_L391": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:391"
+  "tutorialMapPreviewLabel": "지도 미리보기",
+  "@tutorialMapPreviewLabel": {
+    "description": "튜토리얼 — 인게임 지도 미리보기 상단 라벨"
   },
-  "tutorial_inGameTutorialPage_L434": "다음 도둑 위치 공개까지 04:30",
-  "@tutorial_inGameTutorialPage_L434": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:434"
+  "tutorialLocationRevealCountdown": "다음 도둑 위치 공개까지 04:30",
+  "@tutorialLocationRevealCountdown": {
+    "description": "튜토리얼 — 도둑 위치 공개 카운트다운 (시연용 고정값)"
   },
   "dialoginGameTutorialPageMessage9b3f": "게임 룰 안내가 열려요",
   "@dialoginGameTutorialPageMessage9b3f": {
     "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:447"
   },
-  "tutorial_inGameTutorialPage_L491": "내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포",
-  "@tutorial_inGameTutorialPage_L491": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:491"
+  "tutorialQrRobberHint": "내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포",
+  "@tutorialQrRobberHint": {
+    "description": "튜토리얼 — 도둑 시점 QR 안내 (수배 QR 표시)"
   },
-  "tutorial_inGameTutorialPage_L492": "카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요",
-  "@tutorial_inGameTutorialPage_L492": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:492"
+  "tutorialQrCopHint": "카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요",
+  "@tutorialQrCopHint": {
+    "description": "튜토리얼 — 경찰 시점 QR 안내 (스캐너 사용)"
   },
-  "tutorial_inGameTutorialPage_L509": "참가자 보기 버튼을 눌러보세요",
-  "@tutorial_inGameTutorialPage_L509": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509"
+  "tutorialMissionParticipantsButton": "참가자 보기 버튼을 눌러보세요",
+  "@tutorialMissionParticipantsButton": {
+    "description": "튜토리얼 미션 1/3 — 참가자 버튼 탭 안내"
   },
-  "tutorial_inGameTutorialPage_L509_1": "QR 버튼을 눌러보세요",
-  "@tutorial_inGameTutorialPage_L509_1": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509"
+  "tutorialMissionQrButton": "QR 버튼을 눌러보세요",
+  "@tutorialMissionQrButton": {
+    "description": "튜토리얼 미션 2/3 — QR 버튼 탭 안내"
   },
-  "tutorial_inGameTutorialPage_L509_2": "지도로 돌아가 보세요",
-  "@tutorial_inGameTutorialPage_L509_2": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509"
+  "tutorialMissionMapButton": "지도로 돌아가 보세요",
+  "@tutorialMissionMapButton": {
+    "description": "튜토리얼 미션 3/3 — 지도로 복귀 안내"
   },
-  "tutorial_inGameTutorialPage_L525": "미션 {_missionStep}/3",
-  "@tutorial_inGameTutorialPage_L525": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:525",
+  "tutorialMissionProgress": "미션 {step}/3",
+  "@tutorialMissionProgress": {
+    "description": "튜토리얼 진행도 라벨 (현재 미션 / 총 3)",
     "placeholders": {
-      "_missionStep": {
+      "step": {
         "type": "String"
       }
     }
   },
-  "tutorial_inGameTutorialPage_L608": "도둑 시점 보는 중",
-  "@tutorial_inGameTutorialPage_L608": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:608"
+  "tutorialPerspectiveRobber": "도둑 시점 보는 중",
+  "@tutorialPerspectiveRobber": {
+    "description": "튜토리얼 — 도둑 시점 시연 상태 표시"
   },
-  "tutorial_inGameTutorialPage_L608_1": "경찰 시점 보는 중",
-  "@tutorial_inGameTutorialPage_L608_1": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:608"
+  "tutorialPerspectiveCop": "경찰 시점 보는 중",
+  "@tutorialPerspectiveCop": {
+    "description": "튜토리얼 — 경찰 시점 시연 상태 표시"
   },
   "dialoginGameTutorialPageMessageA1c5": "본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요",
   "@dialoginGameTutorialPageMessageA1c5": {
@@ -2384,22 +2384,22 @@
   "@dialoginGameTutorialPageMessage9331": {
     "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:667"
   },
-  "tutorial_inGameTutorialPage_L688": "현재",
-  "@tutorial_inGameTutorialPage_L688": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:688"
+  "tutorialCurrentLabel": "현재",
+  "@tutorialCurrentLabel": {
+    "description": "튜토리얼 — '현재' 라벨 (현재 도주 중인 도둑 수 앞 텍스트)"
   },
-  "tutorial_inGameTutorialPage_L690": "{count}명",
-  "@tutorial_inGameTutorialPage_L690": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:690",
+  "tutorialPlayerCount": "{count}명",
+  "@tutorialPlayerCount": {
+    "description": "튜토리얼 — 인원수 표시 (예: 3명)",
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "tutorial_inGameTutorialPage_L696": "도주 중!",
-  "@tutorial_inGameTutorialPage_L696": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:696"
+  "tutorialOnTheRun": "도주 중!",
+  "@tutorialOnTheRun": {
+    "description": "튜토리얼 — 도주 중 강조 텍스트"
   },
   "dialoginGameTutorialPageMessage7650": "핸들을 위로 드래그하면 채팅이 펼쳐져요",
   "@dialoginGameTutorialPageMessage7650": {
@@ -2409,145 +2409,145 @@
   "@dialoginGameTutorialPageMessageDb39": {
     "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:788"
   },
-  "tutorial_inGameTutorialPage_L806": "채팅을 입력하세요",
-  "@tutorial_inGameTutorialPage_L806": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:806"
+  "tutorialChatHint": "채팅을 입력하세요",
+  "@tutorialChatHint": {
+    "description": "튜토리얼 — 채팅 입력바 placeholder (인게임 chat과 동일 문구지만 컨텍스트 분리)"
   },
   "dialogtutorialCatalogPageTitle": "방 만들기",
   "@dialogtutorialCatalogPageTitle": {
     "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:19"
   },
-  "tutorial_tutorialCatalogPage_L20": "플레이그라운드·감옥 설정과 슬라이더 조작",
-  "@tutorial_tutorialCatalogPage_L20": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:20"
+  "tutorialCatalogAreaSubtitle": "플레이그라운드·감옥 설정과 슬라이더 조작",
+  "@tutorialCatalogAreaSubtitle": {
+    "description": "튜토리얼 카탈로그 — 방 만들기 단계 부제"
   },
   "dialogtutorialCatalogPageTitle879f": "방 참여하기",
   "@dialogtutorialCatalogPageTitle879f": {
     "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:24"
   },
-  "tutorial_tutorialCatalogPage_L25": "초대 코드 입력과 QR 스캔",
-  "@tutorial_tutorialCatalogPage_L25": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:25"
+  "tutorialCatalogInviteSubtitle": "초대 코드 입력과 QR 스캔",
+  "@tutorialCatalogInviteSubtitle": {
+    "description": "튜토리얼 카탈로그 — 방 참여하기 단계 부제"
   },
   "dialogtutorialCatalogPageTitle2421": "대기방",
   "@dialogtutorialCatalogPageTitle2421": {
     "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:29"
   },
-  "tutorial_tutorialCatalogPage_L30": "팀 변경, 게임 설정, 준비 완료",
-  "@tutorial_tutorialCatalogPage_L30": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:30"
+  "tutorialCatalogLobbySubtitle": "팀 변경, 게임 설정, 준비 완료",
+  "@tutorialCatalogLobbySubtitle": {
+    "description": "튜토리얼 카탈로그 — 대기방 단계 부제"
   },
   "dialogtutorialCatalogPageTitle8700": "인게임",
   "@dialogtutorialCatalogPageTitle8700": {
     "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:34"
   },
-  "tutorial_tutorialCatalogPage_L35": "타이머·지도·참가자·채팅·QR",
-  "@tutorial_tutorialCatalogPage_L35": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:35"
+  "tutorialCatalogGameSubtitle": "타이머·지도·참가자·채팅·QR",
+  "@tutorialCatalogGameSubtitle": {
+    "description": "튜토리얼 카탈로그 — 인게임 단계 부제"
   },
-  "tutorial_tutorialCatalogPage_L62": "튜토리얼",
-  "@tutorial_tutorialCatalogPage_L62": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:62"
+  "pageTutorialCatalogTitle": "튜토리얼",
+  "@pageTutorialCatalogTitle": {
+    "description": "튜토리얼 카탈로그 페이지 타이틀"
   },
-  "tutorial_tutorialCatalogPage_L69": "게임을 처음 한다면 한 번씩 보고 시작해보세요",
-  "@tutorial_tutorialCatalogPage_L69": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:69"
+  "tutorialCatalogIntro": "게임을 처음 한다면 한 번씩 보고 시작해보세요",
+  "@tutorialCatalogIntro": {
+    "description": "튜토리얼 카탈로그 페이지 인트로 안내"
   },
-  "tutorial_tutorialCatalogPage_L200": "준비 중",
-  "@tutorial_tutorialCatalogPage_L200": {
-    "description": "auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:200"
+  "tutorialCatalogComingSoon": "준비 중",
+  "@tutorialCatalogComingSoon": {
+    "description": "튜토리얼 카탈로그 — 미구현 단계의 '준비 중' 라벨"
   },
-  "credits_creditMember_L78": "홍의민",
-  "@credits_creditMember_L78": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:78"
+  "creditMemberHongEuiMin": "홍의민",
+  "@creditMemberHongEuiMin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hong Eui-min)"
   },
-  "credits_creditMember_L97": "박찬빈",
-  "@credits_creditMember_L97": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:97"
+  "creditMemberParkChanBin": "박찬빈",
+  "@creditMemberParkChanBin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Park Chan-bin)"
   },
-  "credits_creditMember_L110": "이창희",
-  "@credits_creditMember_L110": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:110"
+  "creditMemberLeeChangHee": "이창희",
+  "@creditMemberLeeChangHee": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Chang-hee)"
   },
-  "credits_creditMember_L122": "정상희",
-  "@credits_creditMember_L122": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:122"
+  "creditMemberJeongSangHee": "정상희",
+  "@creditMemberJeongSangHee": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Sang-hee)"
   },
-  "credits_creditMember_L137": "황혜림",
-  "@credits_creditMember_L137": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:137"
+  "creditMemberHwangHyeRim": "황혜림",
+  "@creditMemberHwangHyeRim": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hwang Hye-rim)"
   },
-  "credits_creditMember_L149": "윤지희",
-  "@credits_creditMember_L149": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:149"
+  "creditMemberYoonJiHee": "윤지희",
+  "@creditMemberYoonJiHee": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Yoon Ji-hee)"
   },
-  "credits_creditMember_L220": "신지훈",
-  "@credits_creditMember_L220": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:220"
+  "creditMemberShinJiHoon": "신지훈",
+  "@creditMemberShinJiHoon": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Ji-hoon)"
   },
-  "credits_creditMember_L227": "남해윤",
-  "@credits_creditMember_L227": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:227"
+  "creditMemberNamHaeYoon": "남해윤",
+  "@creditMemberNamHaeYoon": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Nam Hae-yoon)"
   },
-  "credits_creditMember_L233": "송혜정",
-  "@credits_creditMember_L233": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:233"
+  "creditMemberSongHyeJung": "송혜정",
+  "@creditMemberSongHyeJung": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Song Hye-jung)"
   },
-  "credits_creditMember_L239": "이진",
-  "@credits_creditMember_L239": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:239"
+  "creditMemberLeeJin": "이진",
+  "@creditMemberLeeJin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Jin)"
   },
-  "credits_creditMember_L246": "안금서",
-  "@credits_creditMember_L246": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:246"
+  "creditMemberAhnGeumSeo": "안금서",
+  "@creditMemberAhnGeumSeo": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Ahn Geum-seo)"
   },
-  "credits_creditMember_L252": "손건우",
-  "@credits_creditMember_L252": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:252"
+  "creditMemberSonGeonWoo": "손건우",
+  "@creditMemberSonGeonWoo": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Son Geon-woo)"
   },
-  "credits_creditMember_L258": "신혜빈",
-  "@credits_creditMember_L258": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:258"
+  "creditMemberShinHyeBin": "신혜빈",
+  "@creditMemberShinHyeBin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Hye-bin)"
   },
-  "credits_creditMember_L264": "정창우",
-  "@credits_creditMember_L264": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:264"
+  "creditMemberJeongChangWoo": "정창우",
+  "@creditMemberJeongChangWoo": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Chang-woo)"
   },
-  "credits_creditMember_L270": "허석준",
-  "@credits_creditMember_L270": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:270"
+  "creditMemberHeoSeokJun": "허석준",
+  "@creditMemberHeoSeokJun": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Heo Seok-jun)"
   },
-  "credits_creditMember_L276": "서현진",
-  "@credits_creditMember_L276": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:276"
+  "creditMemberSeoHyunJin": "서현진",
+  "@creditMemberSeoHyunJin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Seo Hyun-jin)"
   },
-  "credits_creditMember_L282": "오동현",
-  "@credits_creditMember_L282": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:282"
+  "creditMemberOhDongHyun": "오동현",
+  "@creditMemberOhDongHyun": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Oh Dong-hyun)"
   },
-  "credits_creditMember_L288": "최승훈",
-  "@credits_creditMember_L288": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:288"
+  "creditMemberChoiSeungHoon": "최승훈",
+  "@creditMemberChoiSeungHoon": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Choi Seung-hoon)"
   },
-  "credits_creditMember_L294": "김민욱",
-  "@credits_creditMember_L294": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:294"
+  "creditMemberKimMinWook": "김민욱",
+  "@creditMemberKimMinWook": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Min-wook)"
   },
-  "credits_creditMember_L300": "정명준",
-  "@credits_creditMember_L300": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:300"
+  "creditMemberJeongMyeongJun": "정명준",
+  "@creditMemberJeongMyeongJun": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Myeong-jun)"
   },
-  "credits_creditMember_L306": "강대현",
-  "@credits_creditMember_L306": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:306"
+  "creditMemberKangDaeHyun": "강대현",
+  "@creditMemberKangDaeHyun": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kang Dae-hyun)"
   },
-  "credits_creditMember_L312": "심 혁",
-  "@credits_creditMember_L312": {
-    "description": "auto-imported from lib/features/credits/domain/credit_member.dart:312"
+  "creditMemberSimHyuk": "심 혁",
+  "@creditMemberSimHyuk": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Sim Hyuk)"
   },
-  "credits_creditsPage_L45": "경찰과 도둑을 만든 사람들",
-  "@credits_creditsPage_L45": {
-    "description": "auto-imported from lib/features/credits/presentation/pages/credits_page.dart:45"
+  "pageCreditsTitle": "경찰과 도둑을 만든 사람들",
+  "@pageCreditsTitle": {
+    "description": "크레딧 페이지 상단 헤더 — 제작진 소개"
   },
   "dialogreportRepositoryImplMessage": "신고 처리 중 오류가 발생했습니다",
   "@dialogreportRepositoryImplMessage": {

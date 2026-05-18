@@ -1708,16 +1708,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_settingsPage_L613 => '탈퇴하기';
 
   @override
-  String get tutorial_inGameTutorialPage_L62 => '경찰1';
+  String get tutorialDummyNicknameCop1 => '경찰1';
 
   @override
-  String get tutorial_inGameTutorialPage_L72 => '도둑킹';
+  String get tutorialDummyNicknameRobberKing => '도둑킹';
 
   @override
-  String get tutorial_inGameTutorialPage_L78 => '도둑이게아니게';
+  String get tutorialDummyNicknameRobberOrNot => '도둑이게아니게';
 
   @override
-  String get tutorial_inGameTutorialPage_L84 => '잡힌도둑';
+  String get tutorialDummyNicknameCapturedRobber => '잡힌도둑';
 
   @override
   String get dialoginGameTutorialPageTitle => '튜토리얼 완료!';
@@ -1732,41 +1732,39 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoginGameTutorialPageMessage8372 => '내 위치로 카메라가 이동했어요';
 
   @override
-  String get tutorial_inGameTutorialPage_L391 => '지도 미리보기';
+  String get tutorialMapPreviewLabel => '지도 미리보기';
 
   @override
-  String get tutorial_inGameTutorialPage_L434 => '다음 도둑 위치 공개까지 04:30';
+  String get tutorialLocationRevealCountdown => '다음 도둑 위치 공개까지 04:30';
 
   @override
   String get dialoginGameTutorialPageMessage9b3f => '게임 룰 안내가 열려요';
 
   @override
-  String get tutorial_inGameTutorialPage_L491 =>
-      '내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포';
+  String get tutorialQrRobberHint => '내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포';
 
   @override
-  String get tutorial_inGameTutorialPage_L492 =>
-      '카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요';
+  String get tutorialQrCopHint => '카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요';
 
   @override
-  String get tutorial_inGameTutorialPage_L509 => '참가자 보기 버튼을 눌러보세요';
+  String get tutorialMissionParticipantsButton => '참가자 보기 버튼을 눌러보세요';
 
   @override
-  String get tutorial_inGameTutorialPage_L509_1 => 'QR 버튼을 눌러보세요';
+  String get tutorialMissionQrButton => 'QR 버튼을 눌러보세요';
 
   @override
-  String get tutorial_inGameTutorialPage_L509_2 => '지도로 돌아가 보세요';
+  String get tutorialMissionMapButton => '지도로 돌아가 보세요';
 
   @override
-  String tutorial_inGameTutorialPage_L525(String _missionStep) {
-    return '미션 $_missionStep/3';
+  String tutorialMissionProgress(String step) {
+    return '미션 $step/3';
   }
 
   @override
-  String get tutorial_inGameTutorialPage_L608 => '도둑 시점 보는 중';
+  String get tutorialPerspectiveRobber => '도둑 시점 보는 중';
 
   @override
-  String get tutorial_inGameTutorialPage_L608_1 => '경찰 시점 보는 중';
+  String get tutorialPerspectiveCop => '경찰 시점 보는 중';
 
   @override
   String get dialoginGameTutorialPageMessageA1c5 =>
@@ -1776,15 +1774,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialoginGameTutorialPageMessage9331 => '실제 게임에서는 QR 스캔으로 도둑을 체포해요';
 
   @override
-  String get tutorial_inGameTutorialPage_L688 => '현재';
+  String get tutorialCurrentLabel => '현재';
 
   @override
-  String tutorial_inGameTutorialPage_L690(int count) {
+  String tutorialPlayerCount(int count) {
     return '$count명';
   }
 
   @override
-  String get tutorial_inGameTutorialPage_L696 => '도주 중!';
+  String get tutorialOnTheRun => '도주 중!';
 
   @override
   String get dialoginGameTutorialPageMessage7650 => '핸들을 위로 드래그하면 채팅이 펼쳐져요';
@@ -1794,109 +1792,109 @@ class AppLocalizationsKo extends AppLocalizations {
       '여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요';
 
   @override
-  String get tutorial_inGameTutorialPage_L806 => '채팅을 입력하세요';
+  String get tutorialChatHint => '채팅을 입력하세요';
 
   @override
   String get dialogtutorialCatalogPageTitle => '방 만들기';
 
   @override
-  String get tutorial_tutorialCatalogPage_L20 => '플레이그라운드·감옥 설정과 슬라이더 조작';
+  String get tutorialCatalogAreaSubtitle => '플레이그라운드·감옥 설정과 슬라이더 조작';
 
   @override
   String get dialogtutorialCatalogPageTitle879f => '방 참여하기';
 
   @override
-  String get tutorial_tutorialCatalogPage_L25 => '초대 코드 입력과 QR 스캔';
+  String get tutorialCatalogInviteSubtitle => '초대 코드 입력과 QR 스캔';
 
   @override
   String get dialogtutorialCatalogPageTitle2421 => '대기방';
 
   @override
-  String get tutorial_tutorialCatalogPage_L30 => '팀 변경, 게임 설정, 준비 완료';
+  String get tutorialCatalogLobbySubtitle => '팀 변경, 게임 설정, 준비 완료';
 
   @override
   String get dialogtutorialCatalogPageTitle8700 => '인게임';
 
   @override
-  String get tutorial_tutorialCatalogPage_L35 => '타이머·지도·참가자·채팅·QR';
+  String get tutorialCatalogGameSubtitle => '타이머·지도·참가자·채팅·QR';
 
   @override
-  String get tutorial_tutorialCatalogPage_L62 => '튜토리얼';
+  String get pageTutorialCatalogTitle => '튜토리얼';
 
   @override
-  String get tutorial_tutorialCatalogPage_L69 => '게임을 처음 한다면 한 번씩 보고 시작해보세요';
+  String get tutorialCatalogIntro => '게임을 처음 한다면 한 번씩 보고 시작해보세요';
 
   @override
-  String get tutorial_tutorialCatalogPage_L200 => '준비 중';
+  String get tutorialCatalogComingSoon => '준비 중';
 
   @override
-  String get credits_creditMember_L78 => '홍의민';
+  String get creditMemberHongEuiMin => '홍의민';
 
   @override
-  String get credits_creditMember_L97 => '박찬빈';
+  String get creditMemberParkChanBin => '박찬빈';
 
   @override
-  String get credits_creditMember_L110 => '이창희';
+  String get creditMemberLeeChangHee => '이창희';
 
   @override
-  String get credits_creditMember_L122 => '정상희';
+  String get creditMemberJeongSangHee => '정상희';
 
   @override
-  String get credits_creditMember_L137 => '황혜림';
+  String get creditMemberHwangHyeRim => '황혜림';
 
   @override
-  String get credits_creditMember_L149 => '윤지희';
+  String get creditMemberYoonJiHee => '윤지희';
 
   @override
-  String get credits_creditMember_L220 => '신지훈';
+  String get creditMemberShinJiHoon => '신지훈';
 
   @override
-  String get credits_creditMember_L227 => '남해윤';
+  String get creditMemberNamHaeYoon => '남해윤';
 
   @override
-  String get credits_creditMember_L233 => '송혜정';
+  String get creditMemberSongHyeJung => '송혜정';
 
   @override
-  String get credits_creditMember_L239 => '이진';
+  String get creditMemberLeeJin => '이진';
 
   @override
-  String get credits_creditMember_L246 => '안금서';
+  String get creditMemberAhnGeumSeo => '안금서';
 
   @override
-  String get credits_creditMember_L252 => '손건우';
+  String get creditMemberSonGeonWoo => '손건우';
 
   @override
-  String get credits_creditMember_L258 => '신혜빈';
+  String get creditMemberShinHyeBin => '신혜빈';
 
   @override
-  String get credits_creditMember_L264 => '정창우';
+  String get creditMemberJeongChangWoo => '정창우';
 
   @override
-  String get credits_creditMember_L270 => '허석준';
+  String get creditMemberHeoSeokJun => '허석준';
 
   @override
-  String get credits_creditMember_L276 => '서현진';
+  String get creditMemberSeoHyunJin => '서현진';
 
   @override
-  String get credits_creditMember_L282 => '오동현';
+  String get creditMemberOhDongHyun => '오동현';
 
   @override
-  String get credits_creditMember_L288 => '최승훈';
+  String get creditMemberChoiSeungHoon => '최승훈';
 
   @override
-  String get credits_creditMember_L294 => '김민욱';
+  String get creditMemberKimMinWook => '김민욱';
 
   @override
-  String get credits_creditMember_L300 => '정명준';
+  String get creditMemberJeongMyeongJun => '정명준';
 
   @override
-  String get credits_creditMember_L306 => '강대현';
+  String get creditMemberKangDaeHyun => '강대현';
 
   @override
-  String get credits_creditMember_L312 => '심 혁';
+  String get creditMemberSimHyuk => '심 혁';
 
   @override
-  String get credits_creditsPage_L45 => '경찰과 도둑을 만든 사람들';
+  String get pageCreditsTitle => '경찰과 도둑을 만든 사람들';
 
   @override
   String get dialogreportRepositoryImplMessage => '신고 처리 중 오류가 발생했습니다';

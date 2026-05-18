@@ -3327,29 +3327,29 @@ abstract class AppLocalizations {
   /// **'탈퇴하기'**
   String get settings_settingsPage_L613;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:62
+  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
   ///
   /// In ko, this message translates to:
   /// **'경찰1'**
-  String get tutorial_inGameTutorialPage_L62;
+  String get tutorialDummyNicknameCop1;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:72
+  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
   ///
   /// In ko, this message translates to:
   /// **'도둑킹'**
-  String get tutorial_inGameTutorialPage_L72;
+  String get tutorialDummyNicknameRobberKing;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:78
+  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
   ///
   /// In ko, this message translates to:
   /// **'도둑이게아니게'**
-  String get tutorial_inGameTutorialPage_L78;
+  String get tutorialDummyNicknameRobberOrNot;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:84
+  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
   ///
   /// In ko, this message translates to:
   /// **'잡힌도둑'**
-  String get tutorial_inGameTutorialPage_L84;
+  String get tutorialDummyNicknameCapturedRobber;
 
   /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:139
   ///
@@ -3375,17 +3375,17 @@ abstract class AppLocalizations {
   /// **'내 위치로 카메라가 이동했어요'**
   String get dialoginGameTutorialPageMessage8372;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:391
+  /// 튜토리얼 — 인게임 지도 미리보기 상단 라벨
   ///
   /// In ko, this message translates to:
   /// **'지도 미리보기'**
-  String get tutorial_inGameTutorialPage_L391;
+  String get tutorialMapPreviewLabel;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:434
+  /// 튜토리얼 — 도둑 위치 공개 카운트다운 (시연용 고정값)
   ///
   /// In ko, this message translates to:
   /// **'다음 도둑 위치 공개까지 04:30'**
-  String get tutorial_inGameTutorialPage_L434;
+  String get tutorialLocationRevealCountdown;
 
   /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:447
   ///
@@ -3393,53 +3393,53 @@ abstract class AppLocalizations {
   /// **'게임 룰 안내가 열려요'**
   String get dialoginGameTutorialPageMessage9b3f;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:491
+  /// 튜토리얼 — 도둑 시점 QR 안내 (수배 QR 표시)
   ///
   /// In ko, this message translates to:
   /// **'내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포'**
-  String get tutorial_inGameTutorialPage_L491;
+  String get tutorialQrRobberHint;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:492
+  /// 튜토리얼 — 경찰 시점 QR 안내 (스캐너 사용)
   ///
   /// In ko, this message translates to:
   /// **'카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요'**
-  String get tutorial_inGameTutorialPage_L492;
+  String get tutorialQrCopHint;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509
+  /// 튜토리얼 미션 1/3 — 참가자 버튼 탭 안내
   ///
   /// In ko, this message translates to:
   /// **'참가자 보기 버튼을 눌러보세요'**
-  String get tutorial_inGameTutorialPage_L509;
+  String get tutorialMissionParticipantsButton;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509
+  /// 튜토리얼 미션 2/3 — QR 버튼 탭 안내
   ///
   /// In ko, this message translates to:
   /// **'QR 버튼을 눌러보세요'**
-  String get tutorial_inGameTutorialPage_L509_1;
+  String get tutorialMissionQrButton;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:509
+  /// 튜토리얼 미션 3/3 — 지도로 복귀 안내
   ///
   /// In ko, this message translates to:
   /// **'지도로 돌아가 보세요'**
-  String get tutorial_inGameTutorialPage_L509_2;
+  String get tutorialMissionMapButton;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:525
+  /// 튜토리얼 진행도 라벨 (현재 미션 / 총 3)
   ///
   /// In ko, this message translates to:
-  /// **'미션 {_missionStep}/3'**
-  String tutorial_inGameTutorialPage_L525(String _missionStep);
+  /// **'미션 {step}/3'**
+  String tutorialMissionProgress(String step);
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:608
+  /// 튜토리얼 — 도둑 시점 시연 상태 표시
   ///
   /// In ko, this message translates to:
   /// **'도둑 시점 보는 중'**
-  String get tutorial_inGameTutorialPage_L608;
+  String get tutorialPerspectiveRobber;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:608
+  /// 튜토리얼 — 경찰 시점 시연 상태 표시
   ///
   /// In ko, this message translates to:
   /// **'경찰 시점 보는 중'**
-  String get tutorial_inGameTutorialPage_L608_1;
+  String get tutorialPerspectiveCop;
 
   /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:661
   ///
@@ -3453,23 +3453,23 @@ abstract class AppLocalizations {
   /// **'실제 게임에서는 QR 스캔으로 도둑을 체포해요'**
   String get dialoginGameTutorialPageMessage9331;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:688
+  /// 튜토리얼 — '현재' 라벨 (현재 도주 중인 도둑 수 앞 텍스트)
   ///
   /// In ko, this message translates to:
   /// **'현재'**
-  String get tutorial_inGameTutorialPage_L688;
+  String get tutorialCurrentLabel;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:690
+  /// 튜토리얼 — 인원수 표시 (예: 3명)
   ///
   /// In ko, this message translates to:
   /// **'{count}명'**
-  String tutorial_inGameTutorialPage_L690(int count);
+  String tutorialPlayerCount(int count);
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:696
+  /// 튜토리얼 — 도주 중 강조 텍스트
   ///
   /// In ko, this message translates to:
   /// **'도주 중!'**
-  String get tutorial_inGameTutorialPage_L696;
+  String get tutorialOnTheRun;
 
   /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:756
   ///
@@ -3483,11 +3483,11 @@ abstract class AppLocalizations {
   /// **'여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요'**
   String get dialoginGameTutorialPageMessageDb39;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/in_game_tutorial_page.dart:806
+  /// 튜토리얼 — 채팅 입력바 placeholder (인게임 chat과 동일 문구지만 컨텍스트 분리)
   ///
   /// In ko, this message translates to:
   /// **'채팅을 입력하세요'**
-  String get tutorial_inGameTutorialPage_L806;
+  String get tutorialChatHint;
 
   /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:19
   ///
@@ -3495,11 +3495,11 @@ abstract class AppLocalizations {
   /// **'방 만들기'**
   String get dialogtutorialCatalogPageTitle;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:20
+  /// 튜토리얼 카탈로그 — 방 만들기 단계 부제
   ///
   /// In ko, this message translates to:
   /// **'플레이그라운드·감옥 설정과 슬라이더 조작'**
-  String get tutorial_tutorialCatalogPage_L20;
+  String get tutorialCatalogAreaSubtitle;
 
   /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:24
   ///
@@ -3507,11 +3507,11 @@ abstract class AppLocalizations {
   /// **'방 참여하기'**
   String get dialogtutorialCatalogPageTitle879f;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:25
+  /// 튜토리얼 카탈로그 — 방 참여하기 단계 부제
   ///
   /// In ko, this message translates to:
   /// **'초대 코드 입력과 QR 스캔'**
-  String get tutorial_tutorialCatalogPage_L25;
+  String get tutorialCatalogInviteSubtitle;
 
   /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:29
   ///
@@ -3519,11 +3519,11 @@ abstract class AppLocalizations {
   /// **'대기방'**
   String get dialogtutorialCatalogPageTitle2421;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:30
+  /// 튜토리얼 카탈로그 — 대기방 단계 부제
   ///
   /// In ko, this message translates to:
   /// **'팀 변경, 게임 설정, 준비 완료'**
-  String get tutorial_tutorialCatalogPage_L30;
+  String get tutorialCatalogLobbySubtitle;
 
   /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:34
   ///
@@ -3531,167 +3531,167 @@ abstract class AppLocalizations {
   /// **'인게임'**
   String get dialogtutorialCatalogPageTitle8700;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:35
+  /// 튜토리얼 카탈로그 — 인게임 단계 부제
   ///
   /// In ko, this message translates to:
   /// **'타이머·지도·참가자·채팅·QR'**
-  String get tutorial_tutorialCatalogPage_L35;
+  String get tutorialCatalogGameSubtitle;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:62
+  /// 튜토리얼 카탈로그 페이지 타이틀
   ///
   /// In ko, this message translates to:
   /// **'튜토리얼'**
-  String get tutorial_tutorialCatalogPage_L62;
+  String get pageTutorialCatalogTitle;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:69
+  /// 튜토리얼 카탈로그 페이지 인트로 안내
   ///
   /// In ko, this message translates to:
   /// **'게임을 처음 한다면 한 번씩 보고 시작해보세요'**
-  String get tutorial_tutorialCatalogPage_L69;
+  String get tutorialCatalogIntro;
 
-  /// auto-imported from lib/features/tutorial/presentation/pages/tutorial_catalog_page.dart:200
+  /// 튜토리얼 카탈로그 — 미구현 단계의 '준비 중' 라벨
   ///
   /// In ko, this message translates to:
   /// **'준비 중'**
-  String get tutorial_tutorialCatalogPage_L200;
+  String get tutorialCatalogComingSoon;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:78
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hong Eui-min)
   ///
   /// In ko, this message translates to:
   /// **'홍의민'**
-  String get credits_creditMember_L78;
+  String get creditMemberHongEuiMin;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:97
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Park Chan-bin)
   ///
   /// In ko, this message translates to:
   /// **'박찬빈'**
-  String get credits_creditMember_L97;
+  String get creditMemberParkChanBin;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:110
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Chang-hee)
   ///
   /// In ko, this message translates to:
   /// **'이창희'**
-  String get credits_creditMember_L110;
+  String get creditMemberLeeChangHee;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:122
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Sang-hee)
   ///
   /// In ko, this message translates to:
   /// **'정상희'**
-  String get credits_creditMember_L122;
+  String get creditMemberJeongSangHee;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:137
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hwang Hye-rim)
   ///
   /// In ko, this message translates to:
   /// **'황혜림'**
-  String get credits_creditMember_L137;
+  String get creditMemberHwangHyeRim;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:149
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Yoon Ji-hee)
   ///
   /// In ko, this message translates to:
   /// **'윤지희'**
-  String get credits_creditMember_L149;
+  String get creditMemberYoonJiHee;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:220
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Ji-hoon)
   ///
   /// In ko, this message translates to:
   /// **'신지훈'**
-  String get credits_creditMember_L220;
+  String get creditMemberShinJiHoon;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:227
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Nam Hae-yoon)
   ///
   /// In ko, this message translates to:
   /// **'남해윤'**
-  String get credits_creditMember_L227;
+  String get creditMemberNamHaeYoon;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:233
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Song Hye-jung)
   ///
   /// In ko, this message translates to:
   /// **'송혜정'**
-  String get credits_creditMember_L233;
+  String get creditMemberSongHyeJung;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:239
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Jin)
   ///
   /// In ko, this message translates to:
   /// **'이진'**
-  String get credits_creditMember_L239;
+  String get creditMemberLeeJin;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:246
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Ahn Geum-seo)
   ///
   /// In ko, this message translates to:
   /// **'안금서'**
-  String get credits_creditMember_L246;
+  String get creditMemberAhnGeumSeo;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:252
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Son Geon-woo)
   ///
   /// In ko, this message translates to:
   /// **'손건우'**
-  String get credits_creditMember_L252;
+  String get creditMemberSonGeonWoo;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:258
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Hye-bin)
   ///
   /// In ko, this message translates to:
   /// **'신혜빈'**
-  String get credits_creditMember_L258;
+  String get creditMemberShinHyeBin;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:264
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Chang-woo)
   ///
   /// In ko, this message translates to:
   /// **'정창우'**
-  String get credits_creditMember_L264;
+  String get creditMemberJeongChangWoo;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:270
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Heo Seok-jun)
   ///
   /// In ko, this message translates to:
   /// **'허석준'**
-  String get credits_creditMember_L270;
+  String get creditMemberHeoSeokJun;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:276
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Seo Hyun-jin)
   ///
   /// In ko, this message translates to:
   /// **'서현진'**
-  String get credits_creditMember_L276;
+  String get creditMemberSeoHyunJin;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:282
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Oh Dong-hyun)
   ///
   /// In ko, this message translates to:
   /// **'오동현'**
-  String get credits_creditMember_L282;
+  String get creditMemberOhDongHyun;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:288
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Choi Seung-hoon)
   ///
   /// In ko, this message translates to:
   /// **'최승훈'**
-  String get credits_creditMember_L288;
+  String get creditMemberChoiSeungHoon;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:294
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Min-wook)
   ///
   /// In ko, this message translates to:
   /// **'김민욱'**
-  String get credits_creditMember_L294;
+  String get creditMemberKimMinWook;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:300
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Myeong-jun)
   ///
   /// In ko, this message translates to:
   /// **'정명준'**
-  String get credits_creditMember_L300;
+  String get creditMemberJeongMyeongJun;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:306
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kang Dae-hyun)
   ///
   /// In ko, this message translates to:
   /// **'강대현'**
-  String get credits_creditMember_L306;
+  String get creditMemberKangDaeHyun;
 
-  /// auto-imported from lib/features/credits/domain/credit_member.dart:312
+  /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Sim Hyuk)
   ///
   /// In ko, this message translates to:
   /// **'심 혁'**
-  String get credits_creditMember_L312;
+  String get creditMemberSimHyuk;
 
-  /// auto-imported from lib/features/credits/presentation/pages/credits_page.dart:45
+  /// 크레딧 페이지 상단 헤더 — 제작진 소개
   ///
   /// In ko, this message translates to:
   /// **'경찰과 도둑을 만든 사람들'**
-  String get credits_creditsPage_L45;
+  String get pageCreditsTitle;
 
   /// auto-imported from lib/features/report/data/repositories/report_repository_impl.dart:39
   ///

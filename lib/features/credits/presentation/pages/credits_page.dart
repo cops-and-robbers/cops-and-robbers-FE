@@ -43,7 +43,7 @@ class CreditsPage extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical12),
             // 서브타이틀
             Text(
-              AppLocalizations.of(context).credits_creditsPage_L45,
+              AppLocalizations.of(context).pageCreditsTitle,
               style: AppTextStyles.paragraph_14.copyWith(
                 color: AppColors.black400,
               ),

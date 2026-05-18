@@ -1840,16 +1840,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_settingsPage_L613 => '탈퇴하기';
 
   @override
-  String get tutorial_inGameTutorialPage_L62 => 'Cop1';
+  String get tutorialDummyNicknameCop1 => 'Cop1';
 
   @override
-  String get tutorial_inGameTutorialPage_L72 => 'RobberKing';
+  String get tutorialDummyNicknameRobberKing => 'RobberKing';
 
   @override
-  String get tutorial_inGameTutorialPage_L78 => 'RobberOrNot';
+  String get tutorialDummyNicknameRobberOrNot => 'RobberOrNot';
 
   @override
-  String get tutorial_inGameTutorialPage_L84 => 'CapturedRobber';
+  String get tutorialDummyNicknameCapturedRobber => 'CapturedRobber';
 
   @override
   String get dialoginGameTutorialPageTitle => 'Tutorial complete!';
@@ -1866,45 +1866,43 @@ class AppLocalizationsEn extends AppLocalizations {
       'Camera has moved to my location';
 
   @override
-  String get tutorial_inGameTutorialPage_L391 => 'Map preview';
+  String get tutorialMapPreviewLabel => 'Map preview';
 
   @override
-  String get tutorial_inGameTutorialPage_L434 =>
+  String get tutorialLocationRevealCountdown =>
       'Until next Robber location reveal: 04:30';
 
   @override
   String get dialoginGameTutorialPageMessage9b3f => 'Game rules guide opens';
 
   @override
-  String get tutorial_inGameTutorialPage_L491 =>
+  String get tutorialQrRobberHint =>
       'My wanted QR code is displayed on the screen. Show it to the Cops to get arrested';
 
   @override
-  String get tutorial_inGameTutorialPage_L492 =>
+  String get tutorialQrCopHint =>
       'Camera turns on and you can scan a Robber\'s QR to arrest them';
 
   @override
-  String get tutorial_inGameTutorialPage_L509 =>
+  String get tutorialMissionParticipantsButton =>
       'Try pressing the view participants button';
 
   @override
-  String get tutorial_inGameTutorialPage_L509_1 => 'Try pressing the QR button';
+  String get tutorialMissionQrButton => 'Try pressing the QR button';
 
   @override
-  String get tutorial_inGameTutorialPage_L509_2 => 'Try returning to the map';
+  String get tutorialMissionMapButton => 'Try returning to the map';
 
   @override
-  String tutorial_inGameTutorialPage_L525(String _missionStep) {
-    return 'Mission $_missionStep/3';
+  String tutorialMissionProgress(String step) {
+    return 'Mission $step/3';
   }
 
   @override
-  String get tutorial_inGameTutorialPage_L608 =>
-      'Viewing from Robber\'s perspective';
+  String get tutorialPerspectiveRobber => 'Viewing from Robber\'s perspective';
 
   @override
-  String get tutorial_inGameTutorialPage_L608_1 =>
-      'Viewing from Cops\' perspective';
+  String get tutorialPerspectiveCop => 'Viewing from Cops\' perspective';
 
   @override
   String get dialoginGameTutorialPageMessageA1c5 =>
@@ -1915,15 +1913,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'In the actual game, you arrest Robbers by scanning their QR code';
 
   @override
-  String get tutorial_inGameTutorialPage_L688 => 'Currently';
+  String get tutorialCurrentLabel => 'Currently';
 
   @override
-  String tutorial_inGameTutorialPage_L690(int count) {
+  String tutorialPlayerCount(int count) {
     return '$count people';
   }
 
   @override
-  String get tutorial_inGameTutorialPage_L696 => 'running away!';
+  String get tutorialOnTheRun => 'running away!';
 
   @override
   String get dialoginGameTutorialPageMessage7650 =>
@@ -1934,114 +1932,114 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a message here to send it to team/global chat';
 
   @override
-  String get tutorial_inGameTutorialPage_L806 => 'Enter chat message';
+  String get tutorialChatHint => 'Enter chat message';
 
   @override
   String get dialogtutorialCatalogPageTitle => 'Create room';
 
   @override
-  String get tutorial_tutorialCatalogPage_L20 =>
+  String get tutorialCatalogAreaSubtitle =>
       'Playground/jail setup and slider controls';
 
   @override
   String get dialogtutorialCatalogPageTitle879f => 'Join room';
 
   @override
-  String get tutorial_tutorialCatalogPage_L25 =>
+  String get tutorialCatalogInviteSubtitle =>
       'Invite code entry and QR scanning';
 
   @override
   String get dialogtutorialCatalogPageTitle2421 => 'Waiting room';
 
   @override
-  String get tutorial_tutorialCatalogPage_L30 =>
+  String get tutorialCatalogLobbySubtitle =>
       'Team changes, game settings, and ready status';
 
   @override
   String get dialogtutorialCatalogPageTitle8700 => 'In-game';
 
   @override
-  String get tutorial_tutorialCatalogPage_L35 =>
+  String get tutorialCatalogGameSubtitle =>
       'Timer, map, participants, chat, and QR';
 
   @override
-  String get tutorial_tutorialCatalogPage_L62 => 'Tutorial';
+  String get pageTutorialCatalogTitle => 'Tutorial';
 
   @override
-  String get tutorial_tutorialCatalogPage_L69 =>
+  String get tutorialCatalogIntro =>
       'If it\'s your first time playing, take a look before starting';
 
   @override
-  String get tutorial_tutorialCatalogPage_L200 => 'In preparation';
+  String get tutorialCatalogComingSoon => 'In preparation';
 
   @override
-  String get credits_creditMember_L78 => 'Hong Eui-min';
+  String get creditMemberHongEuiMin => 'Hong Eui-min';
 
   @override
-  String get credits_creditMember_L97 => 'Park Chan-bin';
+  String get creditMemberParkChanBin => 'Park Chan-bin';
 
   @override
-  String get credits_creditMember_L110 => 'Lee Chang-hee';
+  String get creditMemberLeeChangHee => 'Lee Chang-hee';
 
   @override
-  String get credits_creditMember_L122 => 'Jeong Sang-hee';
+  String get creditMemberJeongSangHee => 'Jeong Sang-hee';
 
   @override
-  String get credits_creditMember_L137 => 'Hwang Hye-rim';
+  String get creditMemberHwangHyeRim => 'Hwang Hye-rim';
 
   @override
-  String get credits_creditMember_L149 => 'Yoon Ji-hee';
+  String get creditMemberYoonJiHee => 'Yoon Ji-hee';
 
   @override
-  String get credits_creditMember_L220 => 'Shin Ji-hoon';
+  String get creditMemberShinJiHoon => 'Shin Ji-hoon';
 
   @override
-  String get credits_creditMember_L227 => 'Nam Hae-yoon';
+  String get creditMemberNamHaeYoon => 'Nam Hae-yoon';
 
   @override
-  String get credits_creditMember_L233 => 'Song Hye-jung';
+  String get creditMemberSongHyeJung => 'Song Hye-jung';
 
   @override
-  String get credits_creditMember_L239 => 'Lee Jin';
+  String get creditMemberLeeJin => 'Lee Jin';
 
   @override
-  String get credits_creditMember_L246 => 'Ahn Geum-seo';
+  String get creditMemberAhnGeumSeo => 'Ahn Geum-seo';
 
   @override
-  String get credits_creditMember_L252 => 'Son Geon-woo';
+  String get creditMemberSonGeonWoo => 'Son Geon-woo';
 
   @override
-  String get credits_creditMember_L258 => 'Shin Hye-bin';
+  String get creditMemberShinHyeBin => 'Shin Hye-bin';
 
   @override
-  String get credits_creditMember_L264 => 'Jeong Chang-woo';
+  String get creditMemberJeongChangWoo => 'Jeong Chang-woo';
 
   @override
-  String get credits_creditMember_L270 => 'Heo Seok-jun';
+  String get creditMemberHeoSeokJun => 'Heo Seok-jun';
 
   @override
-  String get credits_creditMember_L276 => 'Seo Hyun-jin';
+  String get creditMemberSeoHyunJin => 'Seo Hyun-jin';
 
   @override
-  String get credits_creditMember_L282 => 'Oh Dong-hyun';
+  String get creditMemberOhDongHyun => 'Oh Dong-hyun';
 
   @override
-  String get credits_creditMember_L288 => 'Choi Seung-hoon';
+  String get creditMemberChoiSeungHoon => 'Choi Seung-hoon';
 
   @override
-  String get credits_creditMember_L294 => 'Kim Min-wook';
+  String get creditMemberKimMinWook => 'Kim Min-wook';
 
   @override
-  String get credits_creditMember_L300 => 'Jeong Myeong-jun';
+  String get creditMemberJeongMyeongJun => 'Jeong Myeong-jun';
 
   @override
-  String get credits_creditMember_L306 => 'Kang Dae-hyun';
+  String get creditMemberKangDaeHyun => 'Kang Dae-hyun';
 
   @override
-  String get credits_creditMember_L312 => 'Sim Hyuk';
+  String get creditMemberSimHyuk => 'Sim Hyuk';
 
   @override
-  String get credits_creditsPage_L45 => 'Creators of Cops and Robbers';
+  String get pageCreditsTitle => 'Creators of Cops and Robbers';
 
   @override
   String get dialogreportRepositoryImplMessage =>
