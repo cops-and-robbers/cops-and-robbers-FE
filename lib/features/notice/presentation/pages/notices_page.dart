@@ -104,7 +104,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
         final l10n = AppLocalizations.of(context);
         final msg = e is AppException
             ? l10n.errorByException(e)
-            : l10n.dialognoticesPageMessage4982;
+            : l10n.errorNoticeLoadFailed;
         AppSnackbar.show(context, message: msg, backgroundColor: AppColors.red);
       },
     );

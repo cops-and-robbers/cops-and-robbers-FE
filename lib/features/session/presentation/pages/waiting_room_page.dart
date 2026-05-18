@@ -548,7 +548,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       context: context,
       title: l10n.dialogwaitingRoomPageTitle,
       message: serverDetail ?? l10n.errorNotInGame,
-      confirmText: l10n.dialogwaitingRoomPageConfirm3ce8,
+      confirmText: l10n.buttonConfirm,
       barrierDismissible: false,
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
       isDarkMode: ref.read(roleThemeProvider),
@@ -683,7 +683,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final l10n = AppLocalizations.of(context);
     await AppDialog.show<void>(
       context: context,
-      title: l10n.dialogwaitingRoomPageTitle1946,
+      title: l10n.dialogInGamePreviewTitle,
       message: l10n.dialogwaitingRoomPageMessage,
       confirmText: l10n.dialogwaitingRoomPageConfirmA2d8,
       barrierDismissible: false,
@@ -938,8 +938,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       final l10n = AppLocalizations.of(context);
       await AppDialog.show(
         context: context,
-        title: l10n.dialogwaitingRoomPageTitle8208,
-        message: l10n.dialogwaitingRoomPageMessage64a2,
+        title: l10n.dialogKickedFromRoomTitle,
+        message: l10n.dialogKickedFromRoomMessage,
         isDarkMode: ref.read(roleThemeProvider),
       );
       if (!mounted) return;
@@ -951,7 +951,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       final l10n = AppLocalizations.of(context);
       AppSnackbar.show(
         context,
-        message: l10n.dialogwaitingRoomPageMessage36a5(kickedNickname),
+        message: l10n.messageMemberKicked(kickedNickname),
       );
     }
   }
@@ -1128,7 +1128,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       context: context,
       isDarkMode: isDark,
       title: l10n.dialogwaitingRoomPageTitleFfec,
-      message: l10n.dialogwaitingRoomPageMessage3930,
+      message: l10n.dialogLeaveRoomMessage,
       confirmText: l10n.dialogwaitingRoomPageConfirmC0a3,
       isDestructive: true,
       confirmTextColor: AppColors.white,
@@ -1196,7 +1196,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         context: context,
         isDarkMode: isDark,
         title: l10n.dialogwaitingRoomPageTitleA5bb,
-        message: l10n.dialogwaitingRoomPageMessage06a6,
+        message: l10n.dialogInviteCodeShareMessage,
         customContent: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1219,7 +1219,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                 if (!mounted) return;
                 AppSnackbar.show(
                   context,
-                  message: l10n.dialogwaitingRoomPageMessage4785,
+                  message: l10n.messageCodeCopied,
                   iconPath: 'assets/icons/icon_copy.svg',
                 );
               },
@@ -1253,8 +1253,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ),
           ],
         ),
-        cancelText: l10n.dialogwaitingRoomPageCancel218e,
-        confirmText: l10n.dialogwaitingRoomPageConfirm27f8,
+        cancelText: l10n.buttonClose,
+        confirmText: l10n.buttonShare,
         confirmColor: isDark ? null : AppColors.blue,
         confirmTextColor: isDark ? null : AppColors.white,
         onConfirm: () {

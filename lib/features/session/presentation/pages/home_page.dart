@@ -221,7 +221,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: l10n.dialoghomePageMessage50b3,
+          message: l10n.errorAlreadyInGame,
           backgroundColor: AppColors.red,
         );
         return;
@@ -243,7 +243,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: l10n.dialoghomePageMessage89ff,
+          message: l10n.errorUnknownGameState,
           backgroundColor: AppColors.red,
         );
       }
@@ -253,7 +253,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: l10n.dialoghomePageMessage50b3,
+          message: l10n.errorAlreadyInGame,
           backgroundColor: AppColors.red,
         );
       }
@@ -289,7 +289,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       context: context,
       title: text.title,
       message: text.message,
-      confirmText: l10n.dialoghomePageConfirm5435,
+      confirmText: l10n.buttonGoToSettings,
       cancelText: l10n.dialoghomePageCancel,
       onConfirm: () async {
         if (!serviceEnabled) {
@@ -339,7 +339,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       message:
           '${l10n.homePageBatteryGuideStep1}'
           '${l10n.homePageBatteryGuideStep2}',
-      confirmText: l10n.dialoghomePageConfirm5435,
+      confirmText: l10n.buttonGoToSettings,
       cancelText: l10n.dialoghomePageCancel,
       onConfirm: () async {
         await ref.read(backgroundServiceProvider).openAppSettings();
@@ -452,7 +452,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: l10n.dialoghomePageMessage8155,
+          message: l10n.errorJoinRetry,
           backgroundColor: AppColors.red,
         );
       }
@@ -495,7 +495,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     AppDialog.show(
       context: context,
-      title: l10n.dialoghomePageTitle879f,
+      title: l10n.dialogJoinRoomTitle,
       customContent: AppTextField(
         controller: codeController,
         hintText: l10n.fieldhomePageHint,
@@ -510,7 +510,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               context,
               MaterialPageRoute(
                 builder: (_) => QrScannerPage<String>(
-                  title: l10n.dialoghomePageTitle86c1,
+                  title: l10n.dialogScanInviteQrTitle,
                   onParse: (rawValue) {
                     try {
                       final json = jsonDecode(rawValue) as Map<String, dynamic>;
@@ -542,8 +542,8 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ),
       ),
-      cancelText: l10n.dialoghomePageCancel218e,
-      confirmText: l10n.dialoghomePageConfirm665b,
+      cancelText: l10n.buttonClose,
+      confirmText: l10n.buttonJoin,
       validator: () => codeController.text.trim().length == 6,
       onConfirm: () async {
         final code = codeController.text.trim().toUpperCase();
@@ -663,7 +663,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           onPressed: () {
                             AppSnackbar.show(
                               context,
-                              message: l10n.dialoghomePageMessage9e36,
+                              message: l10n.messageComingSoon,
                             );
                           },
                         ),

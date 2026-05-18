@@ -425,7 +425,7 @@ class _SessionCreationFlowPageState
         final l10n = AppLocalizations.of(context);
         AppSnackbar.show(
           context,
-          message: l10n.dialogsessionCreationFlowPageMessage89ff,
+          message: l10n.errorUnknownGameState,
           backgroundColor: AppColors.red,
         );
         setState(() => _isLoading = false);
