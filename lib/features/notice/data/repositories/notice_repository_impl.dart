@@ -47,6 +47,7 @@ class NoticeRepositoryImpl implements NoticeRepository {
       // UI는 `error is AppException`을 가정하므로 raw 예외가 새어나가지 않게 차단.
       throw ServerException(
         message: '공지사항을 불러오는 중 오류가 발생했습니다',
+        messageKey: 'dialognoticeRepositoryImplMessage',
         originalException: e,
       );
     }

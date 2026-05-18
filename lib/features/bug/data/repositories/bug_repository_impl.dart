@@ -23,6 +23,7 @@ class BugRepositoryImpl implements BugRepository {
     } catch (e) {
       throw ServerException(
         message: '버그 제보 처리 중 오류가 발생했습니다.',
+        messageKey: 'dialogbugRepositoryImplMessage',
         originalException: e,
       );
     }

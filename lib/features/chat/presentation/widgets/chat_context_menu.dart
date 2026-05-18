@@ -10,6 +10,7 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../../../report/domain/constants/report_categories.dart';
 
@@ -99,11 +100,12 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
   void _dismiss() => Navigator.of(context).pop();
 
   void _onCopy() {
+    final l10n = AppLocalizations.of(widget.callerContext);
     Clipboard.setData(ClipboardData(text: widget.message.message));
     _dismiss();
     AppSnackbar.show(
       widget.callerContext,
-      message: '메시지가 복사되었어요',
+      message: l10n.dialogchatContextMenuMessage,
       iconPath: 'assets/icons/icon_copy.svg',
       isDarkMode: widget.isDarkMode,
     );
@@ -114,17 +116,19 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
   }
 
   void _onBlockWithSnackbar() {
+    final l10n = AppLocalizations.of(widget.callerContext);
     _dismiss();
     widget.onBlock(widget.message.sender.participantId);
     AppSnackbar.show(
       widget.callerContext,
-      message: '해당 유저를 차단했어요',
+      message: l10n.dialogchatContextMenuMessage2c60,
       iconPath: 'assets/icons/icon_block.svg',
       isDarkMode: widget.isDarkMode,
     );
   }
 
   void _onCategorySelected(ReportCategory category) {
+    final l10n = AppLocalizations.of(widget.callerContext);
     _dismiss();
 
     final isDark = widget.isDarkMode;
@@ -134,10 +138,10 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       Navigator.of(widget.callerContext).push(
         MaterialPageRoute<void>(
           builder: (_) => TextSubmitPage(
-            title: '신고하기',
-            label: '신고 내용',
-            hintText: '신고 사유를 자세히 작성해 주세요\n(상황 또는 대화 내용을 포함해 주세요)',
-            submitText: '신고하기',
+            title: l10n.dialogchatContextMenuTitle,
+            label: l10n.fieldchatContextMenuLabel,
+            hintText: l10n.fieldchatContextMenuHint,
+            submitText: l10n.chat_chatContextMenu_L140,
             isDestructive: true,
             isDarkMode: isDark,
             onSubmit: (text) async {
@@ -152,7 +156,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
                 Navigator.of(widget.callerContext).pop();
                 AppSnackbar.show(
                   widget.callerContext,
-                  message: '신고가 접수되었어요',
+                  message: l10n.dialogchatContextMenuMessageDf78,
                   isDarkMode: isDark,
                 );
               } catch (e) {
@@ -160,7 +164,9 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
                 Navigator.of(widget.callerContext).pop();
                 AppSnackbar.show(
                   widget.callerContext,
-                  message: e is AppException ? e.message : '신고에 실패했어요',
+                  message: e is AppException
+                      ? e.message
+                      : l10n.dialogchatContextMenuMessage9d41,
                   backgroundColor: AppColors.red,
                   isDarkMode: isDark,
                 );
@@ -175,9 +181,9 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     // 나머지 카테고리: 확인 다이얼로그
     AppDialog.show(
       context: widget.callerContext,
-      title: '해당 유저를 신고할까요?',
-      cancelText: '취소',
-      confirmText: '신고하기',
+      title: l10n.dialogchatContextMenuTitle5ccb,
+      cancelText: l10n.dialogchatContextMenuCancel,
+      confirmText: l10n.dialogchatContextMenuConfirm,
       isDestructive: true,
       isDarkMode: isDark,
       cancelTextColor: isDark ? AppColors.black400 : AppColors.black600,
@@ -187,19 +193,19 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
         text: TextSpan(
           children: [
             TextSpan(
-              text: '선택한 신고 사유: ',
+              text: '${l10n.chat_chatContextMenu_L190} ',
               style: AppTextStyles.paragraph_14.copyWith(
                 color: isDark ? AppColors.black400 : AppColors.black600,
               ),
             ),
             TextSpan(
-              text: category.label,
+              text: category.localizedLabel(l10n),
               style: AppTextStyles.paragraph14Semibold.copyWith(
                 color: AppColors.red,
               ),
             ),
             TextSpan(
-              text: '\n신고된 내용은 검토 후 조치할게요',
+              text: l10n.chat_chatContextMenu_L202,
               style: AppTextStyles.paragraph_14.copyWith(
                 color: isDark ? AppColors.black400 : AppColors.black600,
               ),
@@ -217,14 +223,16 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
           if (!widget.callerContext.mounted) return;
           AppSnackbar.show(
             widget.callerContext,
-            message: '신고가 접수되었어요',
+            message: l10n.dialogchatContextMenuMessageDf78,
             isDarkMode: isDark,
           );
         } catch (e) {
           if (!widget.callerContext.mounted) return;
           AppSnackbar.show(
             widget.callerContext,
-            message: e is AppException ? e.message : '신고에 실패했어요',
+            message: e is AppException
+                ? e.message
+                : l10n.dialogchatContextMenuMessage9d41,
             backgroundColor: AppColors.red,
             isDarkMode: isDark,
           );
@@ -414,12 +422,13 @@ class _ActionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _MenuContainer(
       isDarkMode: isDarkMode,
       children: [
         _MenuItem(
           iconPath: 'assets/icons/icon_copy.svg',
-          label: '복사하기',
+          label: l10n.fieldchatContextMenuLabelA83e,
           textColor: isDarkMode ? AppColors.white : AppColors.black,
           iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,
           isDarkMode: isDarkMode,
@@ -429,7 +438,7 @@ class _ActionMenu extends StatelessWidget {
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
             iconPath: 'assets/icons/icon_siren.svg',
-            label: '신고하기',
+            label: l10n.fieldchatContextMenuLabel7812,
             textColor: AppColors.red,
             iconColor: AppColors.red900,
             isDarkMode: isDarkMode,
@@ -438,7 +447,7 @@ class _ActionMenu extends StatelessWidget {
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
             iconPath: 'assets/icons/icon_block.svg',
-            label: '차단하기',
+            label: l10n.fieldchatContextMenuLabel2f14,
             textColor: isDarkMode ? AppColors.white : AppColors.black,
             iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,
             isDarkMode: isDarkMode,
@@ -462,6 +471,7 @@ class _ReportCategoryMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final categories = ReportCategory.values;
 
     return _MenuContainer(
@@ -475,7 +485,7 @@ class _ReportCategoryMenu extends StatelessWidget {
             AppSpacing.vertical4,
           ),
           child: Text(
-            '신고 유형 선택',
+            l10n.chat_chatContextMenu_L478,
             style:
                 (isDarkMode
                         ? AppTextStyles.robberParagraph
@@ -497,7 +507,7 @@ class _ReportCategoryMenu extends StatelessWidget {
                 vertical: AppSpacing.vertical16,
               ),
               child: Text(
-                category.label,
+                category.localizedLabel(l10n),
                 style: AppTextStyles.label16Medium.copyWith(
                   color: isDarkMode ? AppColors.white : AppColors.black,
                 ),

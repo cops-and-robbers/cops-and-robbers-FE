@@ -1,6 +1,7 @@
 import 'package:flutter/painting.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// 소셜 링크 타입
 ///
@@ -207,6 +208,39 @@ extension ContributionTierColor on ContributionTier {
     ContributionTier.tier3 => AppColors.green800, // #7AF391 (196) — 밝은 초록
     ContributionTier.tier4 => AppColors.yellow, // #F5EF38 (220) — 선명 노랑
     ContributionTier.tier5 => AppColors.yellow900, // #F7F260 (227) — 가장 밝은 노랑
+  };
+}
+
+/// 멤버 이름 → 다국어 표시명 변환
+///
+/// const list 안의 [CreditMember.name] / [CreditHelper.name]은 한국어 상수이므로
+/// UI 렌더링 시점에 이 함수로 다국어 텍스트로 변환한다.
+/// 매핑이 없는 이름은 원본 그대로 반환 (fallback).
+String localizedMemberName(AppLocalizations l10n, String name) {
+  return switch (name) {
+    '홍의민' => l10n.credits_creditMember_L78,
+    '박찬빈' => l10n.credits_creditMember_L97,
+    '이창희' => l10n.credits_creditMember_L110,
+    '정상희' => l10n.credits_creditMember_L122,
+    '황혜림' => l10n.credits_creditMember_L137,
+    '윤지희' => l10n.credits_creditMember_L149,
+    '신지훈' => l10n.credits_creditMember_L220,
+    '남해윤' => l10n.credits_creditMember_L227,
+    '송혜정' => l10n.credits_creditMember_L233,
+    '이진' => l10n.credits_creditMember_L239,
+    '안금서' => l10n.credits_creditMember_L246,
+    '손건우' => l10n.credits_creditMember_L252,
+    '신혜빈' => l10n.credits_creditMember_L258,
+    '정창우' => l10n.credits_creditMember_L264,
+    '허석준' => l10n.credits_creditMember_L270,
+    '서현진' => l10n.credits_creditMember_L276,
+    '오동현' => l10n.credits_creditMember_L282,
+    '최승훈' => l10n.credits_creditMember_L288,
+    '김민욱' => l10n.credits_creditMember_L294,
+    '정명준' => l10n.credits_creditMember_L300,
+    '강대현' => l10n.credits_creditMember_L306,
+    '심 혁' => l10n.credits_creditMember_L312,
+    _ => name,
   };
 }
 

@@ -38,7 +38,18 @@ class ChatState {
   final List<ChatMessageDto> teamScopeMessages;
 
   final StompConnectionState connectionState;
+
+  /// 사용자 노출 메시지 (i18n 미적용 폴백 — 한국어).
+  ///
+  /// UI 레이어에서는 [errorMessageKey]가 있으면 우선 사용하고,
+  /// 없거나 알 수 없는 키이면 이 값을 표시한다.
   final String? errorMessage;
+
+  /// i18n 메시지 키 — UI 레이어에서 [AppLocalizations]로 변환.
+  ///
+  /// Notifier는 BuildContext를 갖지 않으므로 키만 노출한다.
+  final String? errorMessageKey;
+
   final Set<int> blockedParticipantIds;
 
   /// 전체 채팅 읽지 않은 메시지 수
@@ -55,6 +66,7 @@ class ChatState {
     this.teamScopeMessages = const [],
     this.connectionState = StompConnectionState.disconnected,
     this.errorMessage,
+    this.errorMessageKey,
     this.blockedParticipantIds = const {},
     this.unreadAllCount = 0,
     this.unreadTeamCount = 0,
@@ -66,6 +78,7 @@ class ChatState {
     List<ChatMessageDto>? teamScopeMessages,
     StompConnectionState? connectionState,
     Object? errorMessage = _sentinel,
+    Object? errorMessageKey = _sentinel,
     Set<int>? blockedParticipantIds,
     int? unreadAllCount,
     int? unreadTeamCount,
@@ -78,6 +91,9 @@ class ChatState {
       errorMessage: errorMessage == _sentinel
           ? this.errorMessage
           : errorMessage as String?,
+      errorMessageKey: errorMessageKey == _sentinel
+          ? this.errorMessageKey
+          : errorMessageKey as String?,
       blockedParticipantIds:
           blockedParticipantIds ?? this.blockedParticipantIds,
       unreadAllCount: unreadAllCount ?? this.unreadAllCount,
@@ -188,6 +204,7 @@ class ChatNotifier extends _$ChatNotifier {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다.',
+        errorMessageKey: 'chat_chatProvider_L190',
       );
       return;
     }
@@ -562,6 +579,7 @@ class ChatNotifier extends _$ChatNotifier {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+        errorMessageKey: 'chat_chatProvider_L564',
       );
       return;
     }
@@ -653,6 +671,7 @@ class ChatNotifier extends _$ChatNotifier {
         state = state.copyWith(
           connectionState: StompConnectionState.error,
           errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
+          errorMessageKey: 'chat_chatProvider_L655',
         );
         return;
       }
@@ -674,6 +693,7 @@ class ChatNotifier extends _$ChatNotifier {
         state = state.copyWith(
           connectionState: StompConnectionState.error,
           errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
+          errorMessageKey: 'chat_chatProvider_L676',
         );
         return;
       }

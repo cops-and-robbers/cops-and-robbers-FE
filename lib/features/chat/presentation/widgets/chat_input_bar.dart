@@ -9,6 +9,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/input_focus_guard.dart';
 
 /// 채팅 입력 바 위젯
@@ -94,9 +95,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
     final team = widget.unreadTeamCount;
     if (all == 0 && team == 0) return null;
 
+    final l10n = AppLocalizations.of(context);
     final parts = <String>[];
-    if (all > 0) parts.add('전체 $all개');
-    if (team > 0) parts.add('팀 $team개');
+    // 전체/팀 카운트 라벨은 ARB에 등록된 placeholder 키 사용 (단위는 로케일별로 다름)
+    if (all > 0) parts.add(l10n.chat_chatInputBar_L98(all.toString()));
+    if (team > 0) parts.add(l10n.chat_chatInputBar_L99(team.toString()));
+    // TODO(i18n): '안 읽은 메시지 [...]' wrapper는 매핑에는 있으나 ARB 미등록 — 추후 키 추가 시 교체
     return '안 읽은 메시지 [${parts.join(' · ')}]';
   }
 
@@ -120,6 +124,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       // 화면 아래에서 45px 위에 위치 (SafeArea 포함하여 외부에서 처리)
       padding: EdgeInsets.symmetric(
@@ -155,8 +160,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   ),
                   decoration: InputDecoration(
                     hintText: !widget.enabled
-                        ? '연결 중...'
-                        : _buildUnreadHint() ?? '채팅을 입력하세요',
+                        ? l10n.chat_chatInputBar_L158
+                        : _buildUnreadHint() ?? l10n.chat_chatInputBar_L159,
                     hintStyle: AppTextStyles.label16Medium.copyWith(
                       color: widget.isDarkMode
                           ? AppColors.black200

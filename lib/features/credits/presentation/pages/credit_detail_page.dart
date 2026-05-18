@@ -7,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/credit_member.dart';
 import '../widgets/flipping_profile_image.dart';
 
@@ -49,7 +50,7 @@ class CreditDetailPage extends StatelessWidget {
               SizedBox(height: AppSpacing.vertical24),
               // 이름
               Text(
-                member.name,
+                localizedMemberName(AppLocalizations.of(context), member.name),
                 style: AppTextStyles.heading_24.copyWith(
                   color: AppColors.white,
                 ),

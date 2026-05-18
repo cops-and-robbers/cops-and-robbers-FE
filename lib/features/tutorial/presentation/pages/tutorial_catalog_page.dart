@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -14,32 +15,37 @@ import '../../../../core/widgets/buttons/previous_button.dart';
 class TutorialCatalogPage extends StatelessWidget {
   const TutorialCatalogPage({super.key});
 
-  static const _items = <_TutorialCatalogItem>[
-    _TutorialCatalogItem(
-      title: '방 만들기',
-      subtitle: '플레이그라운드·감옥 설정과 슬라이더 조작',
-      icon: Icons.add_box_outlined,
-    ),
-    _TutorialCatalogItem(
-      title: '방 참여하기',
-      subtitle: '초대 코드 입력과 QR 스캔',
-      icon: Icons.qr_code_scanner_outlined,
-    ),
-    _TutorialCatalogItem(
-      title: '대기방',
-      subtitle: '팀 변경, 게임 설정, 준비 완료',
-      icon: Icons.groups_outlined,
-    ),
-    _TutorialCatalogItem(
-      title: '인게임',
-      subtitle: '타이머·지도·참가자·채팅·QR',
-      icon: Icons.map_outlined,
-      route: '/tutorial/in-game',
-    ),
-  ];
+  /// 카탈로그 항목은 l10n.* 호출 때문에 const 로 둘 수 없어 런타임에 빌드한다.
+  List<_TutorialCatalogItem> _buildItems(AppLocalizations l10n) {
+    return <_TutorialCatalogItem>[
+      _TutorialCatalogItem(
+        title: l10n.dialogtutorialCatalogPageTitle,
+        subtitle: l10n.tutorial_tutorialCatalogPage_L20,
+        icon: Icons.add_box_outlined,
+      ),
+      _TutorialCatalogItem(
+        title: l10n.dialogtutorialCatalogPageTitle879f,
+        subtitle: l10n.tutorial_tutorialCatalogPage_L25,
+        icon: Icons.qr_code_scanner_outlined,
+      ),
+      _TutorialCatalogItem(
+        title: l10n.dialogtutorialCatalogPageTitle2421,
+        subtitle: l10n.tutorial_tutorialCatalogPage_L30,
+        icon: Icons.groups_outlined,
+      ),
+      _TutorialCatalogItem(
+        title: l10n.dialogtutorialCatalogPageTitle8700,
+        subtitle: l10n.tutorial_tutorialCatalogPage_L35,
+        icon: Icons.map_outlined,
+        route: '/tutorial/in-game',
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final items = _buildItems(l10n);
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -59,14 +65,14 @@ class TutorialCatalogPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '튜토리얼',
+                          l10n.tutorial_tutorialCatalogPage_L62,
                           style: AppTextStyles.heading_24.copyWith(
                             color: AppColors.black,
                           ),
                         ),
                         SizedBox(height: AppSpacing.vertical16),
                         Text(
-                          '게임을 처음 한다면 한 번씩 보고 시작해보세요',
+                          l10n.tutorial_tutorialCatalogPage_L69,
                           style: AppTextStyles.paragraph_14.copyWith(
                             color: AppColors.black600,
                           ),
@@ -77,11 +83,11 @@ class TutorialCatalogPage extends StatelessWidget {
                   SizedBox(height: AppSpacing.vertical24),
                   Expanded(
                     child: ListView.separated(
-                      itemCount: _items.length,
+                      itemCount: items.length,
                       separatorBuilder: (_, _) =>
                           SizedBox(height: AppSpacing.vertical12),
                       itemBuilder: (_, i) =>
-                          _TutorialCatalogCard(item: _items[i]),
+                          _TutorialCatalogCard(item: items[i]),
                     ),
                   ),
                 ],
@@ -197,7 +203,9 @@ class _TutorialCatalogCard extends StatelessWidget {
                   borderRadius: AppRadius.medium,
                 ),
                 child: Text(
-                  '준비 중',
+                  AppLocalizations.of(
+                    context,
+                  ).tutorial_tutorialCatalogPage_L200,
                   style: AppTextStyles.tag_12.copyWith(
                     color: AppColors.black500,
                   ),

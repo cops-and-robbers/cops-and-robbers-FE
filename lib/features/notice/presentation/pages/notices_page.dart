@@ -8,10 +8,12 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/pagination_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notice_entity.dart';
 import '../providers/notice_provider.dart';
 
@@ -61,7 +63,10 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
   void _showLoadingPopup() {
     if (_isLoadingPopupShown) return;
     _isLoadingPopupShown = true;
-    AppPopup.showLoading(context: context, message: '공지사항을 불러오는 중...');
+    AppPopup.showLoading(
+      context: context,
+      message: AppLocalizations.of(context).dialognoticesPageMessage,
+    );
   }
 
   void _closeLoadingPopupIfShown() {
@@ -96,7 +101,10 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
         _closeLoadingPopupIfShown();
         // AuthInterceptor가 강제 로그아웃을 처리하므로 UI는 무반응.
         if (e is AuthException) return;
-        final msg = e is AppException ? e.message : '공지사항을 불러오지 못했어요';
+        final l10n = AppLocalizations.of(context);
+        final msg = e is AppException
+            ? l10n.errorByException(e)
+            : l10n.dialognoticesPageMessage4982;
         AppSnackbar.show(context, message: msg, backgroundColor: AppColors.red);
       },
     );
@@ -128,7 +136,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
         leading: PreviousButton(onPressed: () => context.pop()),
         centerTitle: true,
         title: Text(
-          '공지사항',
+          AppLocalizations.of(context).notice_noticesPage_L131,
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
@@ -149,7 +157,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     if (notices.isEmpty) {
       return Center(
         child: Text(
-          '등록된 공지사항이 없습니다',
+          AppLocalizations.of(context).notice_noticesPage_L152,
           style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black600),
         ),
       );

@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 import 'chat_message_bubble.dart';
 
@@ -135,6 +136,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // 차단된 유저 메시지 필터링
     final filteredMessages = widget.blockedParticipantIds.isEmpty
         ? widget.messages
@@ -149,7 +151,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
     if (filteredMessages.isEmpty) {
       return Center(
         child: Text(
-          '채팅을 시작해보세요',
+          l10n.chat_chatMessageList_L152,
           style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
         ),
       );
@@ -226,7 +228,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
             right: 24.w,
             bottom: 8.h,
             child: Semantics(
-              label: '최신 메시지로 이동',
+              label: l10n.fieldchatMessageListLabel,
               button: true,
               child: GestureDetector(
                 onTap: _scrollToBottom,
@@ -273,9 +275,24 @@ class _ChatMessageListState extends State<ChatMessageList> {
   Widget _buildDateDivider(DateTime? dt) {
     if (dt == null) return const SizedBox.shrink();
 
-    const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
+    final l10n = AppLocalizations.of(context);
+    // 요일 라벨 — 가독성을 위해 ARB 키 7개로 분리 관리 (월~일)
+    final weekdays = [
+      l10n.chat_chatMessageList_L276,
+      l10n.chat_chatMessageList_L276_1,
+      l10n.chat_chatMessageList_L276_2,
+      l10n.chat_chatMessageList_L276_3,
+      l10n.chat_chatMessageList_L276_4,
+      l10n.chat_chatMessageList_L276_5,
+      l10n.chat_chatMessageList_L276_6,
+    ];
     final weekday = weekdays[dt.weekday - 1];
-    final label = '${dt.year}년 ${dt.month}월 ${dt.day}일 $weekday요일';
+    final label = l10n.chat_chatMessageList_L278(
+      dt.year.toString(),
+      dt.month.toString(),
+      dt.day.toString(),
+      weekday,
+    );
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical12),

@@ -7,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/chat_constants.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 
 /// 새 채팅 메시지 프리뷰 카드
@@ -97,6 +98,7 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isTeam = widget.message.scope == ChatScope.team;
     final isSystem = _isSystemMessage;
     final dark = widget.isDarkMode;
@@ -113,15 +115,15 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
     if (isSystem) {
       tagBg = AppColors.red;
       tagText = AppColors.white;
-      tagLabel = '공지';
+      tagLabel = l10n.chat_chatPreviewCard_L116;
     } else if (isTeam) {
       tagBg = dark ? AppColors.green : AppColors.blue;
       tagText = dark ? AppColors.black : AppColors.white;
-      tagLabel = '팀';
+      tagLabel = l10n.chat_chatPreviewCard_L120;
     } else {
       tagBg = AppColors.black;
       tagText = AppColors.white;
-      tagLabel = '전체';
+      tagLabel = l10n.chat_chatPreviewCard_L124;
     }
 
     // 닉네임/메시지 색상 (채팅 버블과 동일)

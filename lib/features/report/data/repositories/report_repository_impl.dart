@@ -37,6 +37,7 @@ class ReportRepositoryImpl implements ReportRepository {
     } catch (e) {
       throw ServerException(
         message: '신고 처리 중 오류가 발생했습니다.',
+        messageKey: 'dialogreportRepositoryImplMessage',
         originalException: e,
       );
     }
