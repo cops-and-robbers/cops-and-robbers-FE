@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:cops_and_robbers/core/constants/spacing_and_radius.dart';
+import 'package:cops_and_robbers/core/i18n/error_message_mapper.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,8 +62,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _privacyRecognizer = TapGestureRecognizer()
       ..onTap = () => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => const LegalDocumentPage(
-            title: '개인정보 처리방침',
+          builder: (_) => LegalDocumentPage(
+            title: AppLocalizations.of(context).linkPrivacyPolicy,
             assetPath: 'assets/legals/privacy_policy.json',
             externalUrl: AppUrls.privacyPolicy,
           ),
@@ -70,8 +72,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _termsRecognizer = TapGestureRecognizer()
       ..onTap = () => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => const LegalDocumentPage(
-            title: '이용약관',
+          builder: (_) => LegalDocumentPage(
+            title: AppLocalizations.of(context).linkTermsOfService,
             assetPath: 'assets/legals/terms_of_service.json',
             externalUrl: AppUrls.termsOfService,
           ),
@@ -80,8 +82,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _locationRecognizer = TapGestureRecognizer()
       ..onTap = () => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => const LegalDocumentPage(
-            title: '위치정보 이용약관',
+          builder: (_) => LegalDocumentPage(
+            title: AppLocalizations.of(context).linkLocationTerms,
             assetPath: 'assets/legals/location_terms.json',
             externalUrl: AppUrls.locationTerms,
           ),
@@ -104,7 +106,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (accountDeleted == 'true') {
         AppSnackbar.show(
           context,
-          message: '회원탈퇴가 완료되었습니다.',
+          message: AppLocalizations.of(context).messageAccountDeleted,
           backgroundColor: AppColors.blue,
         );
       } else if (forceLogoutMessage != null) {
@@ -122,12 +124,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   /// 만 14세 이상 연령 확인 다이얼로그
   void _showAgeVerificationDialog() {
+    final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
-      title: '만 14세 이상이신가요?',
-      message: '경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요.',
-      confirmText: '네',
-      cancelText: '아니요',
+      title: l10n.dialogAge14ConfirmTitle,
+      message: l10n.dialogAge14ConfirmMessage,
+      confirmText: l10n.buttonYes,
+      cancelText: l10n.buttonNo,
       barrierDismissible: false,
       onConfirm: () {
         _ageVerified = true;
@@ -159,11 +162,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
     } on AuthCancelledException {
       if (!mounted) return;
-      // ignore: use_build_context_synchronously
-      AppSnackbar.show(context, message: '로그인이 취소되었습니다.');
+      // ignore_for_file: use_build_context_synchronously
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).errorAuthLoginCancelled,
+      );
     } catch (e) {
       if (!mounted) return;
-      _showLoginError('로그인 중 오류가 발생했습니다.');
+      _showLoginError(AppLocalizations.of(context).errorLoginGeneric);
     } finally {
       if (mounted) {
         setState(() => _isGoogleLoading = false);
@@ -184,11 +190,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // (_GoRouterRefreshNotifier가 auth 상태 변경 감지 → GoRouter redirect 실행)
     } on AuthCancelledException {
       if (!mounted) return;
-      // ignore: use_build_context_synchronously
-      AppSnackbar.show(context, message: '로그인이 취소되었습니다.');
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).errorAuthLoginCancelled,
+      );
     } catch (e) {
       if (!mounted) return;
-      _showLoginError('Apple 로그인 중 오류가 발생했습니다.');
+      _showLoginError(AppLocalizations.of(context).errorAppleLoginFailed);
     } finally {
       if (mounted) {
         setState(() => _isAppleLoading = false);
@@ -199,10 +207,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// 로그인 에러 SnackBar 표시
   void _showLoginError(String fallbackMessage) {
     final authState = ref.read(authNotifierProvider);
+    final l10n = AppLocalizations.of(context);
 
+    // AuthException이면 messageKey 기반 i18n 변환, 아니면 fallback
     final errorMessage =
         (authState.hasError && authState.error is AuthException)
-        ? (authState.error as AuthException).message
+        ? l10n.errorByException(authState.error as AuthException)
         : fallbackMessage;
 
     AppSnackbar.show(
@@ -214,6 +224,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -257,7 +268,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   if (_isUnder14) ...[
                     SizedBox(height: AppSpacing.vertical12),
                     Text(
-                      '만 14세 미만은 서비스를 이용할 수 없습니다.',
+                      l10n.errorAgeRestrictionUnder14,
                       style: AppTextStyles.tag_12.copyWith(
                         color: AppColors.red,
                       ),
@@ -281,9 +292,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       color: AppColors.black400,
                     ),
                     children: [
-                      const TextSpan(text: '로그인 시 '),
+                      TextSpan(text: l10n.loginPageAgreementPrefix),
                       TextSpan(
-                        text: '개인정보 처리방침',
+                        text: l10n.linkPrivacyPolicy,
                         style: AppTextStyles.tag_12.copyWith(
                           color: AppColors.black600,
                           decoration: TextDecoration.underline,
@@ -292,7 +303,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       const TextSpan(text: ', '),
                       TextSpan(
-                        text: '이용약관',
+                        text: l10n.linkTermsOfService,
                         style: AppTextStyles.tag_12.copyWith(
                           color: AppColors.black600,
                           decoration: TextDecoration.underline,
@@ -301,14 +312,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       const TextSpan(text: ', '),
                       TextSpan(
-                        text: '위치정보 이용약관',
+                        text: l10n.linkLocationTerms,
                         style: AppTextStyles.tag_12.copyWith(
                           color: AppColors.black600,
                           decoration: TextDecoration.underline,
                         ),
                         recognizer: _locationRecognizer,
                       ),
-                      const TextSpan(text: '에 동의합니다'),
+                      TextSpan(text: l10n.loginPageAgreementSuffix),
                     ],
                   ),
                 ),

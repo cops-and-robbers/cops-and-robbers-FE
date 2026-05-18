@@ -6,11 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:cops_and_robbers/core/config/env_config.dart';
+import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
 
 void main() async {
@@ -161,8 +163,6 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(routerProvider);
-
     return ScreenUtilInit(
       // 디자인 기준 화면 크기 (iPhone 16 기준)
       // Base design screen size (iPhone 16)
@@ -176,17 +176,40 @@ class MyApp extends ConsumerWidget {
       // Support for multi-window and foldable devices
       splitScreenMode: true,
 
-      builder: (context, child) {
-        return MaterialApp.router(
-          title: '경찰과도둑',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-            useMaterial3: true,
-          ),
-          routerConfig: router,
-        );
-      },
+      // locale watch는 _LocalizedApp 안으로 내려서 ScreenUtilInit child 캐싱을 회피.
+      // ScreenUtilInit는 한 번만 만들어지고, locale 변경 시 _LocalizedApp만 rebuild된다.
+      builder: (context, child) => const _LocalizedApp(),
+    );
+  }
+}
+
+/// Locale에 의존하는 MaterialApp wrapper
+///
+/// ScreenUtilInit 바깥에서 locale을 watch하면 builder 콜백이 재호출되지 않는 케이스가 있어
+/// (라이브러리가 child를 캐싱), ScreenUtilInit 안쪽 ConsumerWidget으로 분리한다.
+/// MaterialApp.router에 `ValueKey(locale.languageCode)`를 부여해 locale 변경 시
+/// Localizations widget을 포함한 전체 트리를 강제로 새로 만들어 즉시 반영되도록 한다.
+class _LocalizedApp extends ConsumerWidget {
+  const _LocalizedApp();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    final locale = ref.watch(appLocaleProvider).locale;
+
+    return MaterialApp.router(
+      key: ValueKey(locale.languageCode),
+      // i18n — title은 locale 변경 시 자동 재계산되도록 onGenerateTitle 사용
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
+      routerConfig: router,
     );
   }
 }

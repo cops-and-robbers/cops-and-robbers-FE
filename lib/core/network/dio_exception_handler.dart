@@ -36,9 +36,12 @@ class DioExceptionHandler {
     _logError(e, apiError);
 
     // 3. 타임아웃 / 연결 에러 우선 처리
+    //    백엔드 detail은 한국어 고정이라 비-ko 로케일에 노출되면 안 됨 → 로그용으로만 사용
+    //    (_logError에서 이미 debugPrint 처리됨). 사용자 노출은 항상 messageKey 기반.
     if (_isTimeoutError(e)) {
       return NetworkException(
-        message: apiError?.detail ?? '서버 연결 시간이 초과되었습니다.',
+        message: 'request timeout',
+        messageKey: 'errorNetworkTimeout',
         code: 'timeout',
         originalException: e,
       );
@@ -46,21 +49,24 @@ class DioExceptionHandler {
 
     if (_isConnectionError(e)) {
       return NetworkException(
-        message: apiError?.detail ?? '네트워크 연결을 확인하세요.',
+        message: 'connection error',
+        messageKey: 'errorNetworkOffline',
         code: 'connection-error',
         originalException: e,
       );
     }
 
     // 4. HTTP 상태 코드별 분기
+    //    백엔드 detail/title은 사용자 노출에 사용하지 않음 (한국어 고정 응답 한계)
+    //    code 필드도 백엔드 title이 한국어("필수 약관 미동의" 등) 식별자라 그대로 두면 분석/추적용
     final statusCode = e.response?.statusCode;
-    final detail = apiError?.detail ?? '';
     final title = apiError?.title ?? '';
 
     // 5xx 서버 에러 처리
     if (statusCode != null && statusCode >= 500) {
       return ServerException(
-        message: detail.isNotEmpty ? detail : '서버에 문제가 발생했습니다.',
+        message: 'server error',
+        messageKey: 'errorServerInternal',
         code: title.isNotEmpty ? title : 'server-error',
         originalException: e,
       );
@@ -68,36 +74,73 @@ class DioExceptionHandler {
 
     return switch (statusCode) {
       400 => ValidationException(
-        message: detail.isNotEmpty ? detail : '잘못된 요청입니다.',
+        message: 'bad request',
+        messageKey: 'errorBadRequest',
         code: title.isNotEmpty ? title : 'bad-request',
         originalException: e,
       ),
       401 => AuthException(
-        message: detail.isNotEmpty ? detail : '인증에 실패했습니다.',
+        message: 'unauthorized',
+        messageKey: 'errorUnauthorized',
         code: title.isNotEmpty ? title : 'unauthorized',
         originalException: e,
       ),
       403 => AuthException(
-        message: detail.isNotEmpty ? detail : '접근 권한이 없습니다.',
+        message: 'forbidden',
+        messageKey: 'errorForbidden',
         code: title.isNotEmpty ? title : 'forbidden',
         originalException: e,
       ),
       404 => ServerException(
-        message: detail.isNotEmpty ? detail : '요청한 리소스를 찾을 수 없습니다.',
+        message: 'not found',
+        messageKey: 'errorNotFound',
         code: title.isNotEmpty ? title : 'not-found',
         originalException: e,
       ),
       409 => ServerException(
-        message: detail.isNotEmpty ? detail : '요청이 현재 상태와 충돌합니다.',
+        message: 'conflict',
+        messageKey: 'errorConflict',
         code: title.isNotEmpty ? title : 'conflict',
         originalException: e,
       ),
-      _ => NetworkException(
-        message: detail.isNotEmpty ? detail : '네트워크 연결을 확인하세요.',
+      // 미처리 분기 — statusCode 유무로 네트워크 문제와 서버 응답을 분리
+      // (422/429 등을 NetworkException으로 묶으면 "네트워크 연결 확인" 안내 오진)
+      _ => _buildFallbackException(statusCode, title, e),
+    };
+  }
+
+  /// 명시 케이스에 잡히지 않은 응답을 statusCode 기준으로 분류
+  ///
+  /// - statusCode == null: 네트워크 자체 문제 (timeout/connection은 위에서 처리됨)
+  /// - 4xx: 미처리 클라이언트 오류 (422 Unprocessable, 429 Too Many Requests 등)
+  /// - 그 외: 서버측 오류 (5xx는 위에서 처리됐지만 안전망)
+  static AppException _buildFallbackException(
+    int? statusCode,
+    String title,
+    DioException e,
+  ) {
+    if (statusCode == null) {
+      return NetworkException(
+        message: 'network error',
+        messageKey: 'errorNetworkOffline',
         code: 'network-error',
         originalException: e,
-      ),
-    };
+      );
+    }
+    if (statusCode >= 400 && statusCode < 500) {
+      return ValidationException(
+        message: 'unhandled client error ($statusCode)',
+        messageKey: 'errorBadRequest',
+        code: title.isNotEmpty ? title : 'bad-request',
+        originalException: e,
+      );
+    }
+    return ServerException(
+      message: 'unhandled server error ($statusCode)',
+      messageKey: 'errorServerInternal',
+      code: title.isNotEmpty ? title : 'server-error',
+      originalException: e,
+    );
   }
 
   /// 타임아웃 에러 여부 확인

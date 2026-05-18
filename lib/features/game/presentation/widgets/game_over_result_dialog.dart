@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -320,8 +321,9 @@ class _ResultTitle extends StatelessWidget {
         ? AppTextStyles.robberHeading24
         : AppTextStyles.heading_24;
 
+    final l10n = AppLocalizations.of(context);
     return Text(
-      isWin ? '승리' : '패배',
+      isWin ? l10n.gameResultWin : l10n.gameResultLose,
       style: baseStyle.copyWith(color: color),
       textAlign: TextAlign.center,
     );
@@ -336,41 +338,57 @@ class _StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return resultAsync.when(
       data: (entity) => Column(
         children: [
           _StatRow(
             isDarkMode: isDarkMode,
-            label: '체포 횟수',
-            value: '${entity.totalArrestCount}회',
+            label: l10n.labelArrestCount,
+            value: l10n.gameResultArrestCount(entity.totalArrestCount),
           ),
           SizedBox(height: AppSpacing.vertical12),
           _StatRow(
             isDarkMode: isDarkMode,
-            label: '남은 도둑',
-            value: '${entity.remainingRobberCount}명',
+            label: l10n.fieldRemainingRobbers,
+            value: l10n.gameResultRemainingRobberCount(
+              entity.remainingRobberCount,
+            ),
           ),
           SizedBox(height: AppSpacing.vertical12),
           _StatRow(
             isDarkMode: isDarkMode,
-            label: '게임 진행 시간',
+            label: l10n.fieldGamePlaytime,
             value: formatDuration(entity.durationSeconds),
           ),
         ],
       ),
-      loading: () => _placeholderRows(),
-      error: (_, _) => _placeholderRows(),
+      loading: () => _placeholderRows(context),
+      error: (_, _) => _placeholderRows(context),
     );
   }
 
-  Widget _placeholderRows() {
+  Widget _placeholderRows(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
-        _StatRow(isDarkMode: isDarkMode, label: '체포 횟수', value: '-'),
+        _StatRow(
+          isDarkMode: isDarkMode,
+          label: l10n.labelArrestCount,
+          value: '-',
+        ),
         SizedBox(height: AppSpacing.vertical12),
-        _StatRow(isDarkMode: isDarkMode, label: '남은 도둑', value: '-'),
+        _StatRow(
+          isDarkMode: isDarkMode,
+          label: l10n.fieldRemainingRobbers,
+          value: '-',
+        ),
         SizedBox(height: AppSpacing.vertical12),
-        _StatRow(isDarkMode: isDarkMode, label: '게임 진행 시간', value: '-'),
+        _StatRow(
+          isDarkMode: isDarkMode,
+          label: l10n.fieldGamePlaytime,
+          value: '-',
+        ),
       ],
     );
   }
@@ -429,13 +447,14 @@ class _ActionButtons extends StatelessWidget {
     final cancelFg = isDarkMode ? AppColors.black400 : AppColors.black600;
     final confirmBg = isDarkMode ? AppColors.green : AppColors.blue;
     final confirmFg = isDarkMode ? AppColors.black : AppColors.white;
+    final l10n = AppLocalizations.of(context);
 
     return Row(
       children: [
         Expanded(
           child: AppButton(
             key: const ValueKey('game_over_go_home_button'),
-            text: '홈으로',
+            text: l10n.buttonGoHome,
             onPressed: onGoHome,
             backgroundColor: cancelBg,
             foregroundColor: cancelFg,
@@ -449,7 +468,7 @@ class _ActionButtons extends StatelessWidget {
         Expanded(
           child: AppButton(
             key: const ValueKey('game_over_rematch_button'),
-            text: '한 번 더',
+            text: l10n.buttonPlayAgain,
             onPressed: onRematch,
             backgroundColor: confirmBg,
             foregroundColor: confirmFg,

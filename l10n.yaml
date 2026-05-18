@@ -1,0 +1,23 @@
+# Flutter i18n 코드 생성 설정
+# 관련 문서: docs/i18n/README.md
+
+# ARB 파일이 위치한 디렉토리
+arb-dir: lib/l10n
+
+# 템플릿(베이스) ARB — 다른 로캘은 이 키 구조를 따라야 함
+template-arb-file: app_ko.arb
+
+# 자동 생성될 Dart 파일명 (lib/l10n/ 하위)
+output-localization-file: app_localizations.dart
+
+# 생성 클래스명 (AppLocalizations.of(context)! 형태로 접근)
+output-class: AppLocalizations
+
+# 누락된 번역 키 추적용 (CI에서 검증 가능)
+untranslated-messages-file: docs/i18n/untranslated.txt
+
+# nullable 반환 제거 → AppLocalizations.of(context)! 강제 (안전)
+nullable-getter: false
+
+# 출력 디렉토리: lib/l10n/ 하위에 생성
+output-dir: lib/l10n

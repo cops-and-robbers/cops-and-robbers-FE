@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -361,7 +362,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     final divisions = ((widget.maxRadius - widget.minRadius) / 10).round();
 
     return AppSlider(
-      label: '반경',
+      label: AppLocalizations.of(context).zoneRadiusLabel,
       value: _currentRadius,
       min: widget.minRadius,
       max: widget.maxRadius,
@@ -398,7 +399,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     return InfoRadiusChip(
       // 튜토리얼 타겟 키 (외부에서 주입된 경우)
       key: widget.radiusChipKey,
-      prefix: '반경',
+      prefix: AppLocalizations.of(context).zoneRadiusLabel,
       value: displayValue,
       backgroundColor:
           widget.radiusChipBackgroundColor ??

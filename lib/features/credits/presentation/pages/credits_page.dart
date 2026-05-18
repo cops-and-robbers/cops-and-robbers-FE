@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/credit_member.dart';
 import '../widgets/credit_card_widget.dart';
 import '../widgets/marquee_widget.dart';
@@ -42,7 +43,7 @@ class CreditsPage extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical12),
             // 서브타이틀
             Text(
-              '경찰과 도둑을 만든 사람들',
+              AppLocalizations.of(context).pageCreditsTitle,
               style: AppTextStyles.paragraph_14.copyWith(
                 color: AppColors.black400,
               ),
@@ -100,7 +101,7 @@ class CreditsPage extends StatelessWidget {
                               horizontal: AppSpacing.horizontal16,
                             ),
                             child: Text(
-                              '${helper.name} (${helper.role})',
+                              '${localizedMemberName(AppLocalizations.of(context), helper.name)} (${helper.role})',
                               style:
                                   (helper.tier == ContributionTier.tier5
                                           ? AppTextStyles.paragraph14Semibold

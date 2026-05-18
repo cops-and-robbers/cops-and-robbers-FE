@@ -8,6 +8,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/cards/info_card.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/zone_info.dart';
 
 /// 구역 목록 카드
@@ -44,11 +45,12 @@ class ZoneListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: InfoCard(
-        title: '구역',
+        title: l10n.sectionTitleZone,
         titleStyle: AppTextStyles.label_16.copyWith(
           color: isDarkMode ? AppColors.white : AppColors.black,
         ),
@@ -92,8 +94,21 @@ class _ZoneItem extends StatelessWidget {
   final ZoneInfo zone;
   final bool isDarkMode;
 
+  /// 화면 표시용 거리 문자열을 l10n 기반으로 생성
+  ///
+  /// 1000m 이상: "반경 1.50km"
+  /// 미만: "반경 400m"
+  String _displayDistance(AppLocalizations l10n) {
+    if (zone.radiusMeters >= 1000) {
+      final km = (zone.radiusMeters / 1000).toStringAsFixed(2);
+      return l10n.zoneRadiusKm(km);
+    }
+    return l10n.zoneRadiusMeters(zone.radiusMeters.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -104,7 +119,7 @@ class _ZoneItem extends StatelessWidget {
           ),
         ),
         Text(
-          zone.displayDistance,
+          _displayDistance(l10n),
           style: AppTextStyles.paragraph14Semibold.copyWith(
             color: isDarkMode ? AppColors.white : AppColors.black,
           ),

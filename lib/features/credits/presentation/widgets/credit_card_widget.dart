@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/credit_member.dart';
 import 'flipping_profile_image.dart';
 
@@ -53,7 +54,7 @@ class CreditCardWidget extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical16),
             // 이름
             Text(
-              member.name,
+              localizedMemberName(AppLocalizations.of(context), member.name),
               style: AppTextStyles.label_16.copyWith(color: AppColors.white),
               textAlign: TextAlign.center,
             ),

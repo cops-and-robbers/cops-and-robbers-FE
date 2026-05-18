@@ -1,11 +1,65 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-14T17:48:50Z",
-    "currentVersion": "1.8.34",
+    "lastUpdated": "2026-05-18T11:25:36Z",
+    "currentVersion": "1.8.35",
     "projectType": "flutter",
-    "totalReleases": 90
+    "totalReleases": 91
   },
   "releases": [
+    {
+      "version": "1.8.35",
+      "project_type": "flutter",
+      "date": "2026-05-18",
+      "pr_number": 367,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #366 from cops-and-robbers/20260517_#365_메시지_외부화_및_다국어_지원\n  * docs : i18n 가이드 파일 경로 갱신 + 코드 펜스 언어 식별자 추가 #365\n  * fix : DioExceptionHandler 미처리 HTTP 상태 분기 추가 #365\n  * fix : CI format #365\n  * refactor : locale_provider isFollowingSystem reactive화 (Record state) #365\n  * docs : i18n 가이드에 키 네이밍 컨벤션 + 금지 패턴 + PR 체크리스트 보강 #365\n  * refactor : prefix+파일명 ARB 키 70개 의미 기반으로 마이그레이션 #365\n  * chore : ARB 정리 및 자동 생성 파일 동기화 #365\n  * fix : 백엔드 detail 사용자 노출 제거 및 예외 메시지 i18n 일관성 #365\n  * refactor : hex suffix ARB 키 호출부 의미 기반으로 정리 #365\n  * refactor : i18n hex suffix 자동생성 키를 의미 기반 키로 마이그레이션 (settings/tutorial/user) #365\n  * refactor : i18n hex suffix 자동생성 키를 의미 기반 키로 마이그레이션 (game/chat) #365\n  * refactor : i18n hex suffix 자동생성 키를 의미 기반 키로 마이그레이션 (auth) #365\n  * refactor : i18n hex suffix 자동생성 키를 의미 기반 키로 마이그레이션 (session/notice) #365\n  * feat : 크레딧 멤버에 김다임 디자이너 추가 #365\n  * refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (session) #365\n  * refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (auth) #365\n  * refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (game) #365\n  * refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (settings/chat) #365\n  * docs : release note 문서 업데이트\n  * refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (credits/tutorial) #365\n  * refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (notice/router/lobby/report) #365\n  * chore : flutter gen-l10n 부산물(untranslated.txt) gitignore 처리 #365\n  * chore : i18n 마이그레이션 산출물 정리\n  * refactor : 채팅 미읽음 힌트 wrapper 다국어화 #365\n  * refactor : 게임 결과 다이얼로그 영어 표현 정리 #365\n  * fix : 체포 잠금 오버레이 다국어 환경 overflow 해결 #365\n  * refactor : 채팅 timezone 처리를 IsoTimestampParser로 통일 #365\n  * feat : 법적 문서 페이지 SafeArea 적용 및 비-ko 로케일 고지문 배너 추가 #365\n  * fix : 회원 탈퇴 다이얼로그 메시지 복원 및 검증 키워드 통일 #365\n  * refactor : 언어 설정 페이지 i18n 키/값 정리 #365\n  * docs : i18n 작업 가이드 및 ARB 매핑 노트 추가 #365\n  * feat : 기타 기능 메시지 외부화 (chat/lobby/notice/report/bug/credits/tutorial/user) #365\n  * feat : 설정 페이지 언어 변경 페이지 추가 및 메시지 외부화 #365\n  * feat : session 기능 메시지 외부화 #365\n  * feat : game 기능 메시지 외부화 #365\n  * feat : auth 기능 메시지 외부화 #365\n  * feat : core 모듈 메시지 외부화 #365\n  * feat : 다국어 지원 인프라 구축 (l10n, ARB, locale provider) #365\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #366 from cops-and-robbers/20260517_#365_메시지_외부화_및_다국어_지원",
+            "docs : i18n 가이드 파일 경로 갱신 + 코드 펜스 언어 식별자 추가 #365",
+            "fix : DioExceptionHandler 미처리 HTTP 상태 분기 추가 #365",
+            "fix : CI format #365",
+            "refactor : locale_provider isFollowingSystem reactive화 (Record state) #365",
+            "docs : i18n 가이드에 키 네이밍 컨벤션 + 금지 패턴 + PR 체크리스트 보강 #365",
+            "refactor : prefix+파일명 ARB 키 70개 의미 기반으로 마이그레이션 #365",
+            "chore : ARB 정리 및 자동 생성 파일 동기화 #365",
+            "fix : 백엔드 detail 사용자 노출 제거 및 예외 메시지 i18n 일관성 #365",
+            "refactor : hex suffix ARB 키 호출부 의미 기반으로 정리 #365",
+            "refactor : i18n hex suffix 자동생성 키를 의미 기반 키로 마이그레이션 (settings/tutorial/user) #365",
+            "refactor : i18n hex suffix 자동생성 키를 의미 기반 키로 마이그레이션 (game/chat) #365",
+            "refactor : i18n hex suffix 자동생성 키를 의미 기반 키로 마이그레이션 (auth) #365",
+            "refactor : i18n hex suffix 자동생성 키를 의미 기반 키로 마이그레이션 (session/notice) #365",
+            "feat : 크레딧 멤버에 김다임 디자이너 추가 #365",
+            "refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (session) #365",
+            "refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (auth) #365",
+            "refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (game) #365",
+            "refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (settings/chat) #365",
+            "docs : release note 문서 업데이트",
+            "refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (credits/tutorial) #365",
+            "refactor : i18n 자동생성 키를 의미 기반 키로 마이그레이션 (notice/router/lobby/report) #365",
+            "chore : flutter gen-l10n 부산물(untranslated.txt) gitignore 처리 #365",
+            "chore : i18n 마이그레이션 산출물 정리",
+            "refactor : 채팅 미읽음 힌트 wrapper 다국어화 #365",
+            "refactor : 게임 결과 다이얼로그 영어 표현 정리 #365",
+            "fix : 체포 잠금 오버레이 다국어 환경 overflow 해결 #365",
+            "refactor : 채팅 timezone 처리를 IsoTimestampParser로 통일 #365",
+            "feat : 법적 문서 페이지 SafeArea 적용 및 비-ko 로케일 고지문 배너 추가 #365",
+            "fix : 회원 탈퇴 다이얼로그 메시지 복원 및 검증 키워드 통일 #365",
+            "refactor : 언어 설정 페이지 i18n 키/값 정리 #365",
+            "docs : i18n 작업 가이드 및 ARB 매핑 노트 추가 #365",
+            "feat : 기타 기능 메시지 외부화 (chat/lobby/notice/report/bug/credits/tutorial/user) #365",
+            "feat : 설정 페이지 언어 변경 페이지 추가 및 메시지 외부화 #365",
+            "feat : session 기능 메시지 외부화 #365",
+            "feat : game 기능 메시지 외부화 #365",
+            "feat : auth 기능 메시지 외부화 #365",
+            "feat : core 모듈 메시지 외부화 #365",
+            "feat : 다국어 지원 인프라 구축 (l10n, ARB, locale provider) #365"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.8.34",
       "project_type": "flutter",

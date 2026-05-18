@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -55,37 +56,41 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   static const int _demoHostParticipantId = 1;
   static const int _demoMyParticipantId = 11;
 
-  /// 데모 경찰팀 (1명)
-  static const List<LobbyParticipantInfo> _demoPolice = [
-    LobbyParticipantInfo(
-      participantId: 1,
-      nickname: '경찰1',
-      team: 'POLICE',
-      isReady: true,
-    ),
-  ];
+  /// 데모 경찰팀 (1명) — 닉네임이 l10n 의존이라 런타임에 빌드
+  List<LobbyParticipantInfo> _buildDemoPolice(AppLocalizations l10n) {
+    return [
+      LobbyParticipantInfo(
+        participantId: 1,
+        nickname: l10n.tutorialDummyNicknameCop1,
+        team: 'POLICE',
+        isReady: true,
+      ),
+    ];
+  }
 
-  /// 데모 도둑팀 (3명: 도주 2 + 수감 1)
-  static const List<LobbyParticipantInfo> _demoRobbers = [
-    LobbyParticipantInfo(
-      participantId: 10,
-      nickname: '도둑킹',
-      team: 'ROBBER',
-      isReady: false, // ALIVE → 도주 중
-    ),
-    LobbyParticipantInfo(
-      participantId: 11,
-      nickname: '도둑이게아니게',
-      team: 'ROBBER',
-      isReady: false, // ALIVE → 도주 중 (본인)
-    ),
-    LobbyParticipantInfo(
-      participantId: 12,
-      nickname: '잡힌도둑',
-      team: 'ROBBER',
-      isReady: true, // JAILED
-    ),
-  ];
+  /// 데모 도둑팀 (3명: 도주 2 + 수감 1) — 닉네임이 l10n 의존이라 런타임에 빌드
+  List<LobbyParticipantInfo> _buildDemoRobbers(AppLocalizations l10n) {
+    return [
+      LobbyParticipantInfo(
+        participantId: 10,
+        nickname: l10n.tutorialDummyNicknameRobberKing,
+        team: 'ROBBER',
+        isReady: false, // ALIVE → 도주 중
+      ),
+      LobbyParticipantInfo(
+        participantId: 11,
+        nickname: l10n.tutorialDummyNicknameRobberOrNot,
+        team: 'ROBBER',
+        isReady: false, // ALIVE → 도주 중 (본인)
+      ),
+      LobbyParticipantInfo(
+        participantId: 12,
+        nickname: l10n.tutorialDummyNicknameCapturedRobber,
+        team: 'ROBBER',
+        isReady: true, // JAILED
+      ),
+    ];
+  }
 
   /// 게임 컨텍스트 상태 맵 (ParticipantCard 의 SVG 분기에 사용)
   Map<int, String> get _demoGameStatus => const {
@@ -134,11 +139,12 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   /// 완료 다이얼로그
   void _showCompletionDialog() {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     AppDialog.show<void>(
       context: context,
-      title: '튜토리얼 완료!',
-      message: '핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요',
-      confirmText: '튜토리얼 끝내기',
+      title: l10n.titleTutorialComplete,
+      message: l10n.messageTutorialComplete,
+      confirmText: l10n.buttonFinishTutorial,
       onConfirm: () => context.pop(),
       isDarkMode: _isDarkMode,
     );
@@ -259,7 +265,9 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                 onPressed: () {
                   AppSnackbar.show(
                     context,
-                    message: '내 위치로 카메라가 이동했어요',
+                    message: AppLocalizations.of(
+                      context,
+                    ).tutorialInGameMyLocation,
                     isDarkMode: _isDarkMode,
                   );
                 },
@@ -388,7 +396,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               ),
               SizedBox(height: AppSpacing.vertical8),
               Text(
-                '지도 미리보기',
+                AppLocalizations.of(context).tutorialMapPreviewLabel,
                 style: AppTextStyles.paragraph_14.copyWith(
                   color: _isDarkMode ? AppColors.black400 : AppColors.black500,
                 ),
@@ -431,7 +439,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               ),
               SizedBox(height: 6.h),
               Text(
-                '다음 도둑 위치 공개까지 04:30',
+                AppLocalizations.of(context).tutorialLocationRevealCountdown,
                 style: AppTextStyles.tag_12.copyWith(
                   color: _isDarkMode ? AppColors.black400 : AppColors.red,
                 ),
@@ -444,7 +452,9 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               onTap: () {
                 AppSnackbar.show(
                   context,
-                  message: '게임 룰 안내가 열려요',
+                  message: AppLocalizations.of(
+                    context,
+                  ).tutorialInGameRulesGuide,
                   isDarkMode: _isDarkMode,
                 );
               },
@@ -485,11 +495,12 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             : 'assets/icons/icon_qr_scan.svg',
         onPressed: () {
           _tryAdvanceMission(1);
+          final l10n = AppLocalizations.of(context);
           AppSnackbar.show(
             context,
             message: _isDarkMode
-                ? '내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포'
-                : '카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요',
+                ? l10n.tutorialQrRobberHint
+                : l10n.tutorialQrCopHint,
             isDarkMode: _isDarkMode,
           );
         },
@@ -506,7 +517,12 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   Widget _buildMissionBanner() {
     if (_missionStep >= 3) return const SizedBox.shrink();
 
-    const descriptions = ['참가자 보기 버튼을 눌러보세요', 'QR 버튼을 눌러보세요', '지도로 돌아가 보세요'];
+    final l10n = AppLocalizations.of(context);
+    final descriptions = [
+      l10n.tutorialMissionParticipantsButton,
+      l10n.tutorialMissionQrButton,
+      l10n.tutorialMissionMapButton,
+    ];
 
     final accentColor = _isDarkMode ? AppColors.green : AppColors.blue;
     final bgColor = _isDarkMode ? AppColors.black800 : AppColors.blue100;
@@ -522,7 +538,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
       child: Row(
         children: [
           Text(
-            '미션 ${_missionStep + 1}/3',
+            l10n.tutorialMissionProgress('${_missionStep + 1}'),
             style: AppTextStyles.tag12Semibold.copyWith(color: accentColor),
           ),
           SizedBox(width: AppSpacing.horizontal8),
@@ -605,7 +621,9 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             ),
             SizedBox(width: AppSpacing.horizontal6),
             Text(
-              _isDarkMode ? '도둑 시점 보는 중' : '경찰 시점 보는 중',
+              _isDarkMode
+                  ? AppLocalizations.of(context).tutorialPerspectiveRobber
+                  : AppLocalizations.of(context).tutorialPerspectiveCop,
               style: AppTextStyles.tag12Semibold.copyWith(
                 color: _isDarkMode ? AppColors.white : AppColors.black,
               ),
@@ -624,13 +642,16 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   ///
   /// 데이터는 정적 fixture, 의존성 0 (TeamSection은 stateless 순수 위젯).
   Widget _buildParticipantsList() {
+    final l10n = AppLocalizations.of(context);
+    final demoPolice = _buildDemoPolice(l10n);
+    final demoRobbers = _buildDemoRobbers(l10n);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TeamSection(
             team: 'POLICE',
-            members: _demoPolice,
+            members: demoPolice,
             isExpanded: _isPoliceExpanded,
             onToggle: () =>
                 setState(() => _isPoliceExpanded = !_isPoliceExpanded),
@@ -646,7 +667,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           ),
           TeamSection(
             team: 'ROBBER',
-            members: _demoRobbers,
+            members: demoRobbers,
             isExpanded: _isRobberExpanded,
             onToggle: () =>
                 setState(() => _isRobberExpanded = !_isRobberExpanded),
@@ -658,13 +679,13 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               if (_isDarkMode) {
                 AppSnackbar.show(
                   context,
-                  message: '본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요',
+                  message: l10n.tutorialInGameSelfEscape,
                   isDarkMode: true,
                 );
               } else {
                 AppSnackbar.show(
                   context,
-                  message: '실제 게임에서는 QR 스캔으로 도둑을 체포해요',
+                  message: l10n.tutorialInGameQrArrest,
                   isDarkMode: false,
                 );
               }
@@ -681,19 +702,20 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   Widget _buildRobberBadge(int count) {
     final badgeColor = _isDarkMode ? AppColors.green800 : AppColors.blue800;
     final badgeBoldColor = _isDarkMode ? AppColors.green : AppColors.blue;
+    final l10n = AppLocalizations.of(context);
     return RichText(
       text: TextSpan(
         style: AppTextStyles.tag_12.copyWith(color: badgeColor),
         children: [
-          const TextSpan(text: '현재 '),
+          TextSpan(text: '${l10n.tutorialCurrentLabel} '),
           TextSpan(
-            text: '$count명',
+            text: l10n.tutorialPlayerCount(count),
             style: AppTextStyles.tag_12.copyWith(
               color: badgeBoldColor,
               fontWeight: FontWeight.w700,
             ),
           ),
-          const TextSpan(text: ' 도주 중!'),
+          TextSpan(text: ' ${l10n.tutorialOnTheRun}'),
         ],
       ),
     );
@@ -753,7 +775,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
       onTap: () {
         AppSnackbar.show(
           context,
-          message: '핸들을 위로 드래그하면 채팅이 펼쳐져요',
+          message: AppLocalizations.of(context).tutorialInGameChatExpand,
           isDarkMode: _isDarkMode,
         );
       },
@@ -785,7 +807,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
         onTap: () {
           AppSnackbar.show(
             context,
-            message: '여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요',
+            message: AppLocalizations.of(context).tutorialInGameChatInput,
             isDarkMode: _isDarkMode,
           );
         },
@@ -803,7 +825,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             children: [
               Expanded(
                 child: Text(
-                  '채팅을 입력하세요',
+                  AppLocalizations.of(context).tutorialChatHint,
                   style: AppTextStyles.label16Medium.copyWith(
                     color: _isDarkMode
                         ? AppColors.black200

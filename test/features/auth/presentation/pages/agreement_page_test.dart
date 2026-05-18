@@ -4,6 +4,7 @@ import 'package:cops_and_robbers/features/auth/presentation/pages/agreement_page
 import 'package:cops_and_robbers/features/user/domain/entities/agreement_status_entity.dart';
 import 'package:cops_and_robbers/features/user/domain/repositories/user_repository.dart';
 import 'package:cops_and_robbers/features/user/presentation/providers/user_provider.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -50,7 +51,12 @@ Widget _wrap(WidgetTester tester) {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (context, child) => const MaterialApp(home: AgreementPage()),
+      builder: (context, child) => MaterialApp(
+        locale: const Locale('ko'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const AgreementPage(),
+      ),
     ),
   );
 }
@@ -61,7 +67,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('약관에 동의'), findsOneWidget);
-    expect(find.text('전체 동의하기'), findsOneWidget);
+    expect(find.text('전체 동의'), findsOneWidget);
     expect(find.text('이용약관'), findsOneWidget);
     expect(find.text('개인정보 처리방침'), findsOneWidget);
     expect(find.text('위치정보 이용약관'), findsOneWidget);
@@ -73,7 +79,7 @@ void main() {
     await tester.pumpWidget(_wrap(tester));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('전체 동의하기'));
+    await tester.tap(find.text('전체 동의'));
     await tester.pumpAndSettle();
 
     // 체크 아이콘(Icons.check)이 5개 이상 보여야 함 (전체 동의 + 4개 개별)

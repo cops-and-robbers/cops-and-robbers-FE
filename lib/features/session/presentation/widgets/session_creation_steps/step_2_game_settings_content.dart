@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/spacing_and_radius.dart';
 import '../../../../../core/widgets/inputs/app_slider.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// 세션 생성 Step 2: 게임 설정 컨텐츠
 ///
@@ -67,16 +68,17 @@ class Step2GameSettingsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     debugPrint('🔍 Step2 isDarkMode: $isDarkMode');
+    final l10n = AppLocalizations.of(context);
     return Column(
       key: settingsKey,
       children: [
         // 라운드 제한 시간
         AppSlider(
-          label: '라운드 제한 시간',
+          label: l10n.fieldstep2GameSettingsContentLabel,
           value: roundDurationMinutes.toDouble(),
           min: 10,
           max: 180,
-          unit: '분',
+          unit: l10n.unitMinutes,
           divisions: 170, // 10~180, 1분 단위
           onChanged: (value) => onRoundDurationChanged(value.toInt()),
           isDarkMode: isDarkMode,
@@ -89,33 +91,36 @@ class Step2GameSettingsContent extends StatelessWidget {
 
         // 위치 공유 간격
         AppSlider(
-          label: '도둑 위치 공유 간격',
+          label: l10n.fieldstep2GameSettingsContentLabel5ab2,
           value: locationShareMinutes.toDouble(),
 
           min: 0,
           max: 30,
-          unit: '분',
+          unit: l10n.unitMinutes,
           divisions: 30, // 1~30, 1분 단위
           onChanged: (value) => onLocationShareChanged(value.toInt()),
           isDarkMode: isDarkMode,
           valueColor: isDarkMode ? AppColors.white : null,
           valueTextStyle: valueTextStyle,
           editable: true,
-          warningText: locationShareMinutes == 0 ? '도둑의 위치가 공유되지 않아요!' : null,
+          warningText: locationShareMinutes == 0
+              ? l10n.gameSettingNoLocationShareWarning
+              : null,
         ),
 
         SizedBox(height: AppSpacing.vertical8),
 
         // 경찰 출동 시간 (도둑 도망 후)
         AppSlider(
-          label: '경찰 출동 시간',
+          label: l10n.fieldstep2GameSettingsContentLabelCe3b,
           value: policeWaitMinutes.toDouble(),
           min: 1,
           max: 10,
-          unit: '분',
+          unit: l10n.unitMinutes,
           divisions: 9, // 1~10, 1분 단위
-          displayPrefix: "도둑 도망 후 ",
-          displaySuffix: " 뒤",
+          // ARB는 양 끝 공백 없음 → 표시 시 공백 보강 (원본 UI 유지)
+          displayPrefix: '${l10n.gameSettingPoliceStartPrefix} ',
+          displaySuffix: ' ${l10n.gameSettingPoliceStartSuffix}',
           onChanged: (value) => onPoliceWaitChanged(value.toInt()),
           isDarkMode: isDarkMode,
           valueColor: isDarkMode ? AppColors.white : null,

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:cops_and_robbers/features/tutorial/presentation/pages/tutorial_catalog_page.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 
 GoRouter _testRouter() {
   return GoRouter(
@@ -32,7 +33,12 @@ Widget _wrap(WidgetTester tester, GoRouter router) {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (_, _) => MaterialApp.router(routerConfig: router),
+      builder: (_, _) => MaterialApp.router(
+        routerConfig: router,
+        locale: const Locale('ko'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
     ),
   );
 }

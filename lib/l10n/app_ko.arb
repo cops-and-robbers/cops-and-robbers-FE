@@ -1,0 +1,2324 @@
+{
+  "@@locale": "ko",
+  "appTitle": "경찰과도둑",
+  "@appTitle": {
+    "description": "앱 이름 (MaterialApp.title) — i18n 스모크 테스트용 첫 키"
+  },
+  "legalDocumentKoreanOnlyNotice": "",
+  "@legalDocumentKoreanOnlyNotice": {
+    "description": "법적 문서 페이지 상단 고지문 — 한국어 원본만 제공함을 비-ko 로케일에 안내 (ko는 빈 문자열 → 미표시)"
+  },
+  "loadingDefault": "처리 중...",
+  "@loadingDefault": {
+    "description": "auto-imported from lib/core/services/loading_message_service.dart:49"
+  },
+  "permissionLocationFallbackTitle": "위치 권한 안내",
+  "@permissionLocationFallbackTitle": {
+    "description": "auto-imported from lib/core/services/permission/location_permission_messages.dart:48"
+  },
+  "permissionLocationFallbackMessage": "위치 권한을 허용해주세요",
+  "@permissionLocationFallbackMessage": {
+    "description": "auto-imported from lib/core/services/permission/location_permission_messages.dart:49"
+  },
+  "dialogUpdateOptionalTitle": "새 버전 안내",
+  "@dialogUpdateOptionalTitle": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:53"
+  },
+  "dialogUpdateOptionalMessage": "더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?",
+  "@dialogUpdateOptionalMessage": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:54"
+  },
+  "dialogUpdateOptionalConfirm": "업데이트",
+  "@dialogUpdateOptionalConfirm": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:55"
+  },
+  "dialogUpdateOptionalCancel": "나중에",
+  "@dialogUpdateOptionalCancel": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:56"
+  },
+  "dialogUpdateMandatoryTitle": "업데이트 안내",
+  "@dialogUpdateMandatoryTitle": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:68"
+  },
+  "dialogUpdateMandatoryMessage": "새로운 버전이 출시되었어요.\n업데이트하시겠어요?",
+  "@dialogUpdateMandatoryMessage": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:69"
+  },
+  "dialogUpdateMandatoryConfirm": "업데이트",
+  "@dialogUpdateMandatoryConfirm": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:70"
+  },
+  "dialogUpdateMandatoryCancel": "나중에",
+  "@dialogUpdateMandatoryCancel": {
+    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:71"
+  },
+  "chatSystemGameStartTime": "제한 시간은 {minutes}분입니다",
+  "@chatSystemGameStartTime": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:11",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "chatSystemGameStartReady": "잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!",
+  "@chatSystemGameStartReady": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:14"
+  },
+  "chatSystemGameStartReportTip": "게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다",
+  "@chatSystemGameStartReportTip": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:17"
+  },
+  "chatSystemGameStartGo": "게임 시작!  행운을 빕니다!",
+  "@chatSystemGameStartGo": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:20"
+  },
+  "chatSystemPoliceMoveWarning": "경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!",
+  "@chatSystemPoliceMoveWarning": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:25"
+  },
+  "chatSystemPoliceMove": "경찰 출동!  도둑은 도망치세요!",
+  "@chatSystemPoliceMove": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:28"
+  },
+  "chatSystemLocationReveal": "현재 도둑의 위치가 공개됩니다!",
+  "@chatSystemLocationReveal": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:33"
+  },
+  "chatSystemRemainingRobbers": "현재 {count}명 도주 중!",
+  "@chatSystemRemainingRobbers": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:36",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatSystemArrest": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!",
+  "@chatSystemArrest": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:42",
+    "placeholders": {
+      "policeNickname": {
+        "type": "String"
+      },
+      "robberNickname": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSystemEscapeNotice": "도둑이 탈옥했습니다! 지금 바로 체포하세요!",
+  "@chatSystemEscapeNotice": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:47"
+  },
+  "chatSystemFiveMinutesLeft": "게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!",
+  "@chatSystemFiveMinutesLeft": {
+    "description": "auto-imported from lib/core/constants/game_event_messages.dart:52"
+  },
+  "errorNetworkTimeout": "서버 연결 시간이 초과되었습니다",
+  "@errorNetworkTimeout": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:41"
+  },
+  "errorNetworkOffline": "네트워크 연결을 확인하세요",
+  "@errorNetworkOffline": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:49"
+  },
+  "errorServerInternal": "서버에 문제가 발생했습니다",
+  "@errorServerInternal": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:63"
+  },
+  "errorBadRequest": "잘못된 요청입니다",
+  "@errorBadRequest": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:71"
+  },
+  "errorUnauthorized": "인증에 실패했습니다",
+  "@errorUnauthorized": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:76"
+  },
+  "errorForbidden": "접근 권한이 없습니다",
+  "@errorForbidden": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:81"
+  },
+  "errorNotFound": "요청한 리소스를 찾을 수 없습니다",
+  "@errorNotFound": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:86"
+  },
+  "errorConflict": "요청이 현재 상태와 충돌합니다",
+  "@errorConflict": {
+    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:91"
+  },
+  "buttonConfirm": "확인",
+  "@buttonConfirm": {
+    "description": "auto-imported from lib/core/widgets/dialogs/app_dialog.dart:79"
+  },
+  "buttonCancel": "취소",
+  "@buttonCancel": {
+    "description": "auto-imported from lib/core/widgets/dialogs/app_dialog.dart:267"
+  },
+  "dialogReconnectMessage": "연결이 끊어졌어요. 재연결이 필요해요",
+  "@dialogReconnectMessage": {
+    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:158"
+  },
+  "dialogReconnectButtonConnecting": "연결 중...",
+  "@dialogReconnectButtonConnecting": {
+    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169"
+  },
+  "dialogReconnectButtonRetry": "재연결",
+  "@dialogReconnectButtonRetry": {
+    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169"
+  },
+  "pageForceUpdateTitle": "업데이트 필요",
+  "@pageForceUpdateTitle": {
+    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:41"
+  },
+  "pageForceUpdateMessage": "새로운 버전이 출시되었어요\n업데이트 후 이용해 주세요!",
+  "@pageForceUpdateMessage": {
+    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:49"
+  },
+  "pageForceUpdateButton": "업데이트",
+  "@pageForceUpdateButton": {
+    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:60"
+  },
+  "pageMaintenanceTitle": "서버 점검 중",
+  "@pageMaintenanceTitle": {
+    "description": "auto-imported from lib/core/widgets/pages/maintenance_page.dart:39"
+  },
+  "pageMaintenanceMessage": "더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!",
+  "@pageMaintenanceMessage": {
+    "description": "auto-imported from lib/core/widgets/pages/maintenance_page.dart:47"
+  },
+  "buttonGoogleSignIn": "Google로 시작하기",
+  "@buttonGoogleSignIn": {
+    "description": "auto-imported from lib/core/widgets/buttons/social_login_button.dart:39"
+  },
+  "buttonAppleSignIn": "Apple로 시작하기",
+  "@buttonAppleSignIn": {
+    "description": "auto-imported from lib/core/widgets/buttons/social_login_button.dart:86"
+  },
+  "zoneRadiusKm": "반경 {km}km",
+  "@zoneRadiusKm": {
+    "description": "구역 정보 — 반경 (km 단위)",
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "zoneRadiusMeter": "반경 {radiusMeters}m",
+  "@zoneRadiusMeter": {
+    "description": "auto-imported from lib/core/widgets/buttons/zone_setting_button.dart:131",
+    "placeholders": {
+      "radiusMeters": {
+        "type": "String"
+      }
+    }
+  },
+  "zoneRadiusLabel": "반경",
+  "@zoneRadiusLabel": {
+    "description": "auto-imported from lib/core/widgets/map/zone_setting_widget.dart:364"
+  },
+  "dialogAgreementRequiredTermsTitle": "필수 약관 미동의",
+  "@dialogAgreementRequiredTermsTitle": {
+    "description": "auto-imported from lib/core/utils/agreement_error_handler.dart:15"
+  },
+  "errorAuthLoginCancelled": "로그인이 취소되었습니다",
+  "@errorAuthLoginCancelled": {
+    "description": "auto-imported from lib/core/errors/app_exception.dart:57"
+  },
+  "settingsLanguageLabel": "언어",
+  "@settingsLanguageLabel": {
+    "description": "설정 화면의 언어 설정 메뉴 라벨"
+  },
+  "settingsLanguageSubtitle": "앱 표시 언어를 변경할 수 있어요",
+  "@settingsLanguageSubtitle": {
+    "description": "언어 메뉴 부제 (서브타이틀)"
+  },
+  "settingsLanguagePageTitle": "언어 선택",
+  "@settingsLanguagePageTitle": {
+    "description": "언어 설정 페이지 AppBar 제목"
+  },
+  "settingsLanguageOptionSystem": "시스템",
+  "@settingsLanguageOptionSystem": {
+    "description": "언어 옵션: 단말 시스템 로캘 추종"
+  },
+  "settingsLanguageOptionKorean": "한국어",
+  "@settingsLanguageOptionKorean": {
+    "description": "언어 옵션: 한국어 — 모든 로캘에서 자국어 표기 유지"
+  },
+  "settingsLanguageOptionEnglish": "English",
+  "@settingsLanguageOptionEnglish": {
+    "description": "언어 옵션: 영어 — 모든 로캘에서 자국어 표기 유지"
+  },
+  "settingsLanguageOptionJapanese": "日本語",
+  "@settingsLanguageOptionJapanese": {
+    "description": "언어 옵션: 일본어 — 모든 로캘에서 자국어 표기 유지"
+  },
+  "asset_loading_joinRoom": "잠입 준비 중...",
+  "@asset_loading_joinRoom": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.0"
+  },
+  "asset_loading_joinRoom477c": "작전에 합류하는 중...",
+  "@asset_loading_joinRoom477c": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.1"
+  },
+  "asset_loading_joinRoom24a9": "비밀 통로로 진입 중...",
+  "@asset_loading_joinRoom24a9": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.2"
+  },
+  "asset_loading_joinRoomCb98": "변장 확인 중...",
+  "@asset_loading_joinRoomCb98": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.3"
+  },
+  "asset_loading_joinRoomF964": "작전 투입 인원 확인 중...",
+  "@asset_loading_joinRoomF964": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.4"
+  },
+  "asset_loading_joinRoomB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_joinRoomB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.5"
+  },
+  "asset_loading_joinRoomAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_joinRoomAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.6"
+  },
+  "asset_loading_joinRoom25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_joinRoom25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.7"
+  },
+  "asset_loading_createRoom": "작전 본부 설치 중...",
+  "@asset_loading_createRoom": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.0"
+  },
+  "asset_loading_createRoomF1fe": "비밀 아지트 준비 중...",
+  "@asset_loading_createRoomF1fe": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.1"
+  },
+  "asset_loading_createRoom01f8": "작전 구역 확보 중...",
+  "@asset_loading_createRoom01f8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.2"
+  },
+  "asset_loading_createRoom5076": "비밀 지도 펼치는 중...",
+  "@asset_loading_createRoom5076": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.3"
+  },
+  "asset_loading_createRoomDd9e": "무전기 주파수 맞추는 중...",
+  "@asset_loading_createRoomDd9e": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.4"
+  },
+  "asset_loading_createRoomB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_createRoomB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.5"
+  },
+  "asset_loading_createRoomAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_createRoomAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.6"
+  },
+  "asset_loading_createRoom25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_createRoom25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.7"
+  },
+  "asset_loading_changeTeam": "변장 중...",
+  "@asset_loading_changeTeam": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.0"
+  },
+  "asset_loading_changeTeam681d": "위장 신분 변경 중...",
+  "@asset_loading_changeTeam681d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.1"
+  },
+  "asset_loading_changeTeam1106": "신분 세탁 중...",
+  "@asset_loading_changeTeam1106": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.2"
+  },
+  "asset_loading_changeTeam4d7a": "이중 스파이 전환 중...",
+  "@asset_loading_changeTeam4d7a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.3"
+  },
+  "asset_loading_changeTeam4cdc": "새 신분증 발급 중...",
+  "@asset_loading_changeTeam4cdc": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.4"
+  },
+  "asset_loading_changeTeamB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_changeTeamB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.5"
+  },
+  "asset_loading_changeTeamAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_changeTeamAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.6"
+  },
+  "asset_loading_changeTeam25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_changeTeam25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.7"
+  },
+  "asset_loading_startGame": "작전 개시 준비 중...",
+  "@asset_loading_startGame": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.0"
+  },
+  "asset_loading_startGameA35d": "출동 준비 중...",
+  "@asset_loading_startGameA35d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.1"
+  },
+  "asset_loading_startGame64c3": "카운트다운 시작...",
+  "@asset_loading_startGame64c3": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.2"
+  },
+  "asset_loading_startGame7a2f": "무전기 켜는 중...",
+  "@asset_loading_startGame7a2f": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.3"
+  },
+  "asset_loading_startGame1b41": "현장 요원 배치 중...",
+  "@asset_loading_startGame1b41": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.4"
+  },
+  "asset_loading_startGameB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_startGameB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.5"
+  },
+  "asset_loading_startGameAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_startGameAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.6"
+  },
+  "asset_loading_startGame25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_startGame25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.7"
+  },
+  "asset_loading_updateArea": "작전 구역 설정 중...",
+  "@asset_loading_updateArea": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.0"
+  },
+  "asset_loading_updateArea8c32": "관할 구역 지정 중...",
+  "@asset_loading_updateArea8c32": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.1"
+  },
+  "asset_loading_updateArea0183": "지도 위에 점 찍는 중...",
+  "@asset_loading_updateArea0183": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.2"
+  },
+  "asset_loading_updateArea2433": "위성 사진 분석 중...",
+  "@asset_loading_updateArea2433": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.3"
+  },
+  "asset_loading_updateAreaDc8b": "작전 범위 계산 중...",
+  "@asset_loading_updateAreaDc8b": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.4"
+  },
+  "asset_loading_updateAreaB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_updateAreaB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.5"
+  },
+  "asset_loading_updateAreaAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_updateAreaAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.6"
+  },
+  "asset_loading_updateArea25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_updateArea25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.7"
+  },
+  "asset_loading_saveSettings": "작전 지침 수정 중...",
+  "@asset_loading_saveSettings": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.0"
+  },
+  "asset_loading_saveSettingsFb58": "규칙 업데이트 중...",
+  "@asset_loading_saveSettingsFb58": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.1"
+  },
+  "asset_loading_saveSettings65dc": "새로운 룰 적용 중...",
+  "@asset_loading_saveSettings65dc": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.2"
+  },
+  "asset_loading_saveSettings5e80": "암호 변경 중...",
+  "@asset_loading_saveSettings5e80": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.3"
+  },
+  "asset_loading_saveSettings128d": "새 작전 코드 적용 중...",
+  "@asset_loading_saveSettings128d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.4"
+  },
+  "asset_loading_saveSettingsB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_saveSettingsB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.5"
+  },
+  "asset_loading_saveSettingsAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_saveSettingsAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.6"
+  },
+  "asset_loading_saveSettings25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_saveSettings25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.7"
+  },
+  "asset_loading_loadProfile": "신원 조회 중...",
+  "@asset_loading_loadProfile": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.0"
+  },
+  "asset_loading_loadProfile27ee": "수배서 확인 중...",
+  "@asset_loading_loadProfile27ee": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.1"
+  },
+  "asset_loading_loadProfile6dac": "신분증 검사 중...",
+  "@asset_loading_loadProfile6dac": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.2"
+  },
+  "asset_loading_loadProfile23c6": "지문 대조 중...",
+  "@asset_loading_loadProfile23c6": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.3"
+  },
+  "asset_loading_loadProfile221d": "용의자 프로필 분석 중...",
+  "@asset_loading_loadProfile221d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.4"
+  },
+  "asset_loading_loadProfileB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_loadProfileB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.5"
+  },
+  "asset_loading_loadProfileAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_loadProfileAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.6"
+  },
+  "asset_loading_loadProfile25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_loadProfile25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.7"
+  },
+  "asset_loading_logout": "철수 중...",
+  "@asset_loading_logout": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.0"
+  },
+  "asset_loading_logout3031": "잠적 중...",
+  "@asset_loading_logout3031": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.1"
+  },
+  "asset_loading_logoutCe40": "흔적 지우는 중...",
+  "@asset_loading_logoutCe40": {
+    "description": "auto-imported from assets/messages/logout_messages.json :: logout.2"
+  },
+  "asset_loading_logout0ba9": "증거 인멸 중...",
+  "@asset_loading_logout0ba9": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.3"
+  },
+  "asset_loading_logoutFc0d": "비밀 통로로 탈출 중...",
+  "@asset_loading_logoutFc0d": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.4"
+  },
+  "asset_loading_logoutB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_logoutB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.5"
+  },
+  "asset_loading_logoutAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_logoutAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.6"
+  },
+  "asset_loading_logout25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_logout25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: logout.7"
+  },
+  "asset_loading_deleteAccount": "탈퇴 처리 중...",
+  "@asset_loading_deleteAccount": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.0"
+  },
+  "asset_loading_deleteAccountC5fd": "기록 말소 중...",
+  "@asset_loading_deleteAccountC5fd": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.1"
+  },
+  "asset_loading_deleteAccount517f": "신원 삭제 중...",
+  "@asset_loading_deleteAccount517f": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.2"
+  },
+  "asset_loading_reconnect": "다시 현장으로 복귀 중...",
+  "@asset_loading_reconnect": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.0"
+  },
+  "asset_loading_reconnectBa5f": "작전에 재합류하는 중...",
+  "@asset_loading_reconnectBa5f": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.1"
+  },
+  "asset_loading_reconnect098b": "현장 복귀 준비 중...",
+  "@asset_loading_reconnect098b": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.2"
+  },
+  "asset_loading_reconnect429b": "무전 채널 복구 중...",
+  "@asset_loading_reconnect429b": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.3"
+  },
+  "asset_loading_reconnect6b88": "비밀 주파수 재탐색 중...",
+  "@asset_loading_reconnect6b88": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.4"
+  },
+  "asset_loading_reconnectB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_reconnectB36a": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.5"
+  },
+  "asset_loading_reconnectAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_reconnectAaf8": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.6"
+  },
+  "asset_loading_reconnect25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_reconnect25aa": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.7"
+  },
+  "asset_loading_bugReport": "신고서 작성 중...",
+  "@asset_loading_bugReport": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.0"
+  },
+  "asset_loading_bugReportDd4b": "본부에 보고서 제출 중...",
+  "@asset_loading_bugReportDd4b": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.1"
+  },
+  "asset_loading_bugReport5d70": "현장 사진 첨부 중...",
+  "@asset_loading_bugReport5d70": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.2"
+  },
+  "asset_loading_bugReport3c49": "사건 번호 부여 중...",
+  "@asset_loading_bugReport3c49": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.3"
+  },
+  "asset_loading_bugReport83ca": "수사반에 인계 중...",
+  "@asset_loading_bugReport83ca": {
+    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.4"
+  },
+  "asset_locationpermission_serviceDisabledTitle": "위치 서비스가 꺼져 있습니다",
+  "@asset_locationpermission_serviceDisabledTitle": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.title"
+  },
+  "asset_locationpermission_serviceDisabledHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요",
+  "@asset_locationpermission_serviceDisabledHome": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.home"
+  },
+  "asset_locationpermission_serviceDisabledGame": "게임에 복귀하려면 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
+  "@asset_locationpermission_serviceDisabledGame": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.game"
+  },
+  "asset_locationpermission_serviceDisabledWaitingRoom": "게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
+  "@asset_locationpermission_serviceDisabledWaitingRoom": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.waiting_room"
+  },
+  "asset_locationpermission_permissionDeniedTitle": "위치 권한이 필요합니다",
+  "@asset_locationpermission_permissionDeniedTitle": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.title"
+  },
+  "asset_locationpermission_permissionDeniedHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다",
+  "@asset_locationpermission_permissionDeniedHome": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.home"
+  },
+  "asset_locationpermission_permissionDeniedGame": "게임에 복귀하려면 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
+  "@asset_locationpermission_permissionDeniedGame": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.game"
+  },
+  "asset_locationpermission_permissionDeniedWaitingRoom": "게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
+  "@asset_locationpermission_permissionDeniedWaitingRoom": {
+    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.waiting_room"
+  },
+  "errorGameRoomCreateUnexpected": "게임 방 생성 중 예기치 않은 오류가 발생했습니다",
+  "@errorGameRoomCreateUnexpected": {
+    "description": "게임 방 생성 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorActiveGameFetchUnexpected": "참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다",
+  "@errorActiveGameFetchUnexpected": {
+    "description": "참여 중인 게임 조회 실패 시 표시되는 예외 메시지"
+  },
+  "gameSettingMaxPlayers": "{count}명",
+  "@gameSettingMaxPlayers": {
+    "description": "게임 설정 — 최대 참가 인원수 표기 (단위: 명)",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "gameSettingRoundMinutes": "{minutes}분",
+  "@gameSettingRoundMinutes": {
+    "description": "게임 설정 — 라운드 시간 표기 (단위: 분)",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "gameSettingLocationShareMinutes": "{minutes}분",
+  "@gameSettingLocationShareMinutes": {
+    "description": "게임 설정 — 위치 공유 주기 표기 (단위: 분)",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "gameSettingPoliceStartDelay": "도둑 도망 후 {minutes}분 뒤",
+  "@gameSettingPoliceStartDelay": {
+    "description": "게임 설정 — 경찰 출동 시작 지연 시간 표기",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneRadiusMeters": "반경 {meters}m",
+  "@zoneRadiusMeters": {
+    "description": "구역 정보 — 반경 (m 단위)",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSettingsSaveFailed": "설정 저장에 실패했습니다",
+  "@errorSettingsSaveFailed": {
+    "description": "게임 설정 저장 실패 안내"
+  },
+  "pageGameSettingsEditTitle": "설정 수정",
+  "@pageGameSettingsEditTitle": {
+    "description": "게임 설정 수정 페이지 타이틀"
+  },
+  "buttonSaving": "저장 중...",
+  "@buttonSaving": {
+    "description": "저장 진행 중 버튼 라벨"
+  },
+  "buttonSave": "저장",
+  "@buttonSave": {
+    "description": "공통 — 저장 버튼"
+  },
+  "errorAreaSaveFailed": "영역 저장에 실패했습니다",
+  "@errorAreaSaveFailed": {
+    "description": "게임 구역 저장 실패 안내"
+  },
+  "pageGameSettingsTitle": "게임 설정",
+  "@pageGameSettingsTitle": {
+    "description": "게임 설정 페이지 타이틀"
+  },
+  "errorZoneInfoLoadFailed": "구역 정보를 불러올 수 없습니다",
+  "@errorZoneInfoLoadFailed": {
+    "description": "구역 정보 로드 실패 안내"
+  },
+  "errorSettingsLoadFailed": "설정 정보를 불러올 수 없습니다",
+  "@errorSettingsLoadFailed": {
+    "description": "게임 설정 로드 실패 안내"
+  },
+  "zonePlayground": "플레이그라운드",
+  "@zonePlayground": {
+    "description": "공통 — 플레이그라운드 라벨"
+  },
+  "zoneJail": "감옥",
+  "@zoneJail": {
+    "description": "공통 — 감옥 라벨"
+  },
+  "homePageCreateGameHint": "새로운 게임을 만들 수 있어요",
+  "@homePageCreateGameHint": {
+    "description": "홈 페이지 — 방 만들기 카드 안내"
+  },
+  "homePageJoinGameHint": "초대 코드를 입력하면 게임에 참가할 수 있어요",
+  "@homePageJoinGameHint": {
+    "description": "홈 페이지 — 방 참여하기 카드 안내"
+  },
+  "dialogSafetyWarningTitle": "주변을 확인하며 이용해 주세요",
+  "@dialogSafetyWarningTitle": {
+    "description": "홈 진입 시 표시되는 주변 안전 확인 다이얼로그 타이틀"
+  },
+  "dialogSafetyWarningMessage": "게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요",
+  "@dialogSafetyWarningMessage": {
+    "description": "홈 진입 시 표시되는 주변 안전 확인 다이얼로그 본문"
+  },
+  "buttonAcknowledgedSurroundings": "확인했어요!",
+  "@buttonAcknowledgedSurroundings": {
+    "description": "주변 안전 확인 다이얼로그의 동의 버튼 ('확인했어요!')"
+  },
+  "homePageDontShowToday": "오늘은 다시 보지 않기",
+  "@homePageDontShowToday": {
+    "description": "홈 페이지 — 안내 다이얼로그 오늘 숨김 옵션"
+  },
+  "errorAlreadyInGame": "이미 참가 중인 게임이 있습니다",
+  "@errorAlreadyInGame": {
+    "description": "이미 다른 게임에 참가 중일 때 안내"
+  },
+  "errorUnknownGameState": "알 수 없는 게임 상태입니다",
+  "@errorUnknownGameState": {
+    "description": "게임 상태를 식별할 수 없을 때 표시"
+  },
+  "buttonGoToSettings": "설정으로 이동",
+  "@buttonGoToSettings": {
+    "description": "기기 설정 화면으로 이동하는 버튼"
+  },
+  "dialogBatteryGuideTitle": "끊김 없는 게임을 위해",
+  "@dialogBatteryGuideTitle": {
+    "description": "홈 화면 배터리 최적화 안내 다이얼로그 타이틀"
+  },
+  "homePageBatteryGuideStep1": "앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n",
+  "@homePageBatteryGuideStep1": {
+    "description": "홈 페이지 — 배터리 최적화 해제 안내 1단계"
+  },
+  "homePageBatteryGuideStep2": "그래야 화면이 꺼져도 게임이 끊기지 않아요",
+  "@homePageBatteryGuideStep2": {
+    "description": "홈 페이지 — 배터리 최적화 해제 안내 2단계"
+  },
+  "errorJoinFailedCheckCode": "참여에 실패했습니다. 초대 코드를 확인해주세요",
+  "@errorJoinFailedCheckCode": {
+    "description": "방 참여 실패 — 초대 코드 확인 안내"
+  },
+  "errorJoinRetry": "참여에 실패했습니다. 다시 시도해주세요",
+  "@errorJoinRetry": {
+    "description": "방 참여 실패 — 일반 재시도 안내"
+  },
+  "dialogJoinRoomTitle": "방 참여하기",
+  "@dialogJoinRoomTitle": {
+    "description": "방 참여 다이얼로그 제목"
+  },
+  "fieldInviteCodeHint": "참여코드를 입력하세요",
+  "@fieldInviteCodeHint": {
+    "description": "초대 코드 입력 필드 placeholder"
+  },
+  "dialogScanInviteQrTitle": "초대코드 QR을 스캔하세요",
+  "@dialogScanInviteQrTitle": {
+    "description": "초대코드 QR 스캔 안내 다이얼로그 제목"
+  },
+  "buttonJoin": "참여하기",
+  "@buttonJoin": {
+    "description": "방 참여 액션 버튼"
+  },
+  "appBrandName": "경찰과도둑",
+  "@appBrandName": {
+    "description": "앱 브랜드명 — ko: 한글, en: 영문 'Cops and Robbers', ja: 카타카나 'コップス・アンド・ロバーズ'"
+  },
+  "messageComingSoon": "준비중입니다",
+  "@messageComingSoon": {
+    "description": "미구현 기능 안내 메시지"
+  },
+  "homePageWelcomeMessage": "너무 기대 돼\n이번에는 어떤 역할을 할까?",
+  "@homePageWelcomeMessage": {
+    "description": "홈 페이지 — 메인 환영 메시지"
+  },
+  "buttonCreateRoom": "방 만들기",
+  "@buttonCreateRoom": {
+    "description": "공통 — 방 만들기 버튼"
+  },
+  "buttonJoinRoom": "방 참여하기",
+  "@buttonJoinRoom": {
+    "description": "공통 — 방 참여하기 버튼"
+  },
+  "sessionCreationStepZoneSubtitle": "게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요",
+  "@sessionCreationStepZoneSubtitle": {
+    "description": "방 생성 — 구역 설정 단계 안내"
+  },
+  "sessionCreationStepRulesSubtitle": "게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요",
+  "@sessionCreationStepRulesSubtitle": {
+    "description": "방 생성 — 규칙 설정 단계 안내"
+  },
+  "errorCreateRoomFailed": "게임 방 생성에 실패했습니다. 다시 시도해주세요",
+  "@errorCreateRoomFailed": {
+    "description": "방 생성 실패 안내"
+  },
+  "sessionCreationZoneFirstQuestion": "구역 선택을 먼저 설정할까요?",
+  "@sessionCreationZoneFirstQuestion": {
+    "description": "방 생성 — 구역 미설정 시 안내"
+  },
+  "sessionCreationStepParticipantsTitle": "인원을 설정해요",
+  "@sessionCreationStepParticipantsTitle": {
+    "description": "방 생성 — 인원 설정 단계 타이틀"
+  },
+  "sessionCreationStepBasicTitle": "기본 정보를 설정해요",
+  "@sessionCreationStepBasicTitle": {
+    "description": "방 생성 — 기본 정보 설정 단계 타이틀"
+  },
+  "sessionCreationStepReviewTitle": "최종 설정을 확인해요",
+  "@sessionCreationStepReviewTitle": {
+    "description": "방 생성 — 최종 설정 확인 단계 타이틀"
+  },
+  "sessionCreationStepZoneIntro": "게임에 필요한 구역을 설정해요",
+  "@sessionCreationStepZoneIntro": {
+    "description": "방 생성 — 구역 설정 단계 보조 설명"
+  },
+  "sessionCreationStepParticipantsHint": "최소 2명부터 게임 진행이 가능해요",
+  "@sessionCreationStepParticipantsHint": {
+    "description": "방 생성 — 인원 설정 단계 보조 설명"
+  },
+  "sessionCreationStepBasicHint": "게임을 진행할 때, 꼭 필요한 정보들이에요",
+  "@sessionCreationStepBasicHint": {
+    "description": "방 생성 — 기본 정보 단계 보조 설명"
+  },
+  "sessionCreationStepReviewHint": "방 생성 전 마지막으로 설정을 확인할까요?",
+  "@sessionCreationStepReviewHint": {
+    "description": "방 생성 — 리뷰 단계 보조 설명"
+  },
+  "buttonNext": "다음",
+  "@buttonNext": {
+    "description": "공통 — 다음 단계 버튼"
+  },
+  "errorZoneNotConfigured": "구역 정보를 먼저 설정해주세요",
+  "@errorZoneNotConfigured": {
+    "description": "구역 미설정 상태에서 다음 단계 진입 시 안내"
+  },
+  "setupPlaygroundRadiusInputHint": "여기를 누르면 반경을 직접 입력할 수 있어요",
+  "@setupPlaygroundRadiusInputHint": {
+    "description": "플레이그라운드 설정 — 반경 입력 안내"
+  },
+  "setupPlaygroundDescription": "게임이 진행될 전체 구역의 크기를 설정해요",
+  "@setupPlaygroundDescription": {
+    "description": "플레이그라운드 설정 — 화면 안내문"
+  },
+  "buttonDone": "완료",
+  "@buttonDone": {
+    "description": "공통 — 완료 버튼"
+  },
+  "setupPrisonDescription": "도둑을 잡아둘 감옥의 위치와 크기를 설정해요",
+  "@setupPrisonDescription": {
+    "description": "감옥 설정 — 화면 안내문"
+  },
+  "errorPlaygroundFirst": "플레이그라운드를 먼저 설정해주세요",
+  "@errorPlaygroundFirst": {
+    "description": "감옥 설정 시 플레이그라운드 미설정 안내"
+  },
+  "errorJailOutsidePlayground": "감옥이 플레이그라운드 범위를 벗어났어요",
+  "@errorJailOutsidePlayground": {
+    "description": "감옥 설정 시 플레이그라운드 범위 이탈 안내"
+  },
+  "dummyNicknameBear": "포근포근곰...",
+  "@dummyNicknameBear": {
+    "description": "더미 닉네임 — 곰 (튜토리얼/스켈레톤용)"
+  },
+  "errorCannotJoinRoom": "방에 참여할 수 없어요",
+  "@errorCannotJoinRoom": {
+    "description": "방 참여 불가 다이얼로그 타이틀"
+  },
+  "errorNotInGame": "해당 게임에 참가하지 않은 사용자입니다",
+  "@errorNotInGame": {
+    "description": "권한 없음 — 해당 게임 참가자가 아닐 때 안내"
+  },
+  "waitingRoomTutorialTeamSwitch": "이 버튼을 눌러 다른 팀으로 이동할 수 있어요",
+  "@waitingRoomTutorialTeamSwitch": {
+    "description": "대기실 튜토리얼 — 팀 변경 버튼 안내"
+  },
+  "waitingRoomTutorialInvite": "친구에게 초대 코드를 공유할 수 있어요",
+  "@waitingRoomTutorialInvite": {
+    "description": "대기실 튜토리얼 — 초대 코드 공유 안내"
+  },
+  "waitingRoomTutorialSettings": "게임 설정을 확인할 수 있어요",
+  "@waitingRoomTutorialSettings": {
+    "description": "대기실 튜토리얼 — 설정 확인 안내"
+  },
+  "waitingRoomTutorialReady": "준비가 되면 눌러주세요",
+  "@waitingRoomTutorialReady": {
+    "description": "대기실 튜토리얼 — 준비 버튼 안내"
+  },
+  "dialogInGamePreviewTitle": "인게임 화면 미리 보기",
+  "@dialogInGamePreviewTitle": {
+    "description": "인게임 미리보기 다이얼로그 제목"
+  },
+  "dialogTutorialPromptMessage": "게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?",
+  "@dialogTutorialPromptMessage": {
+    "description": "대기실에서 튜토리얼 진행을 권유하는 다이얼로그 본문"
+  },
+  "buttonViewInGamePreview": "보러 가기",
+  "@buttonViewInGamePreview": {
+    "description": "인게임 튜토리얼 미리보기로 이동 버튼"
+  },
+  "dialogKickConfirmTitle": "{nickname}님을 내보낼까요?",
+  "@dialogKickConfirmTitle": {
+    "description": "강퇴 확인 다이얼로그 타이틀",
+    "placeholders": {
+      "nickname": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogKickConfirmMessage": "강퇴된 유저는 방에서 즉시 내보내져요\n다시 방에 참가하려면 초대코드를 입력해야 해요",
+  "@dialogKickConfirmMessage": {
+    "description": "강퇴 확인 다이얼로그 본문"
+  },
+  "buttonKick": "내보내기",
+  "@buttonKick": {
+    "description": "참가자 강퇴 확정 버튼"
+  },
+  "errorKickFailed": "강퇴 처리 중 오류가 발생했어요",
+  "@errorKickFailed": {
+    "description": "참가자 강퇴 실패 시 표시되는 에러 메시지"
+  },
+  "dialogKickedFromRoomTitle": "방에서 내보내졌어요",
+  "@dialogKickedFromRoomTitle": {
+    "description": "강퇴 알림 다이얼로그 제목"
+  },
+  "dialogKickedFromRoomMessage": "다시 참가하려면 초대코드를 입력해야 해요",
+  "@dialogKickedFromRoomMessage": {
+    "description": "강퇴 알림 다이얼로그 본문"
+  },
+  "messageMemberKicked": "{kickedNickname}님이 내보내졌어요",
+  "@messageMemberKicked": {
+    "description": "강퇴된 멤버 알림 (placeholder: 강퇴된 닉네임)",
+    "placeholders": {
+      "kickedNickname": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTeamChangeFailed": "팀 변경에 실패했어요",
+  "@errorTeamChangeFailed": {
+    "description": "대기실 — 팀 변경 실패 안내"
+  },
+  "errorReadyChangeFailed": "준비 상태 변경에 실패했어요",
+  "@errorReadyChangeFailed": {
+    "description": "대기실 — 준비 상태 변경 실패 안내"
+  },
+  "errorGameStartFailed": "게임 시작에 실패했어요",
+  "@errorGameStartFailed": {
+    "description": "대기실 — 게임 시작 실패 안내"
+  },
+  "dialogLeaveRoomTitle": "방을 나가시겠어요?",
+  "@dialogLeaveRoomTitle": {
+    "description": "대기실 퇴장 확인 다이얼로그 타이틀"
+  },
+  "dialogLeaveRoomMessage": "나가면 다시 초대코드를 입력해야 해요",
+  "@dialogLeaveRoomMessage": {
+    "description": "대기실 퇴장 확인 다이얼로그 본문"
+  },
+  "buttonLeave": "나가기",
+  "@buttonLeave": {
+    "description": "대기실 퇴장 확정 버튼"
+  },
+  "errorLeaveRoomFailed": "퇴장 처리 중 오류가 발생했습니다",
+  "@errorLeaveRoomFailed": {
+    "description": "대기실 — 퇴장 처리 실패 안내"
+  },
+  "dialogInviteCodeCreatedTitle": "초대코드를 생성했어요",
+  "@dialogInviteCodeCreatedTitle": {
+    "description": "초대코드 생성 완료 알림 다이얼로그 타이틀"
+  },
+  "dialogInviteCodeShareMessage": "친구에게 코드를 공유하고 게임에 참여해 보세요!",
+  "@dialogInviteCodeShareMessage": {
+    "description": "초대코드 공유 다이얼로그 본문"
+  },
+  "messageCodeCopied": "코드가 복사되었습니다",
+  "@messageCodeCopied": {
+    "description": "초대코드 클립보드 복사 완료 안내"
+  },
+  "buttonShare": "공유하기",
+  "@buttonShare": {
+    "description": "공유 액션 버튼"
+  },
+  "buttonStartGame": "게임 시작",
+  "@buttonStartGame": {
+    "description": "공통 — 게임 시작 버튼"
+  },
+  "buttonReadyDone": "준비 완료",
+  "@buttonReadyDone": {
+    "description": "대기실 — 준비 완료 버튼"
+  },
+  "buttonReady": "준비",
+  "@buttonReady": {
+    "description": "대기실 — 준비 버튼"
+  },
+  "pageZonePreviewTitle": "게임 구역",
+  "@pageZonePreviewTitle": {
+    "description": "구역 미리보기 페이지 타이틀"
+  },
+  "zonePreviewSubtitle": "현재 설정된 게임 구역이에요",
+  "@zonePreviewSubtitle": {
+    "description": "구역 미리보기 — 본문 안내"
+  },
+  "dummyNicknameRaccoon": "오동통 너구리",
+  "@dummyNicknameRaccoon": {
+    "description": "더미 닉네임 — 너구리 (튜토리얼/스켈레톤용)"
+  },
+  "defaultNicknameLabel": "닉네임",
+  "@defaultNicknameLabel": {
+    "description": "닉네임 누락 시 기본 표시 라벨"
+  },
+  "titleGameRules": "게임 규칙",
+  "@titleGameRules": {
+    "description": "게임 규칙 다이얼로그 타이틀"
+  },
+  "buttonViewInGame": "인게임 보기",
+  "@buttonViewInGame": {
+    "description": "게임 규칙 다이얼로그의 '인게임 보기' 버튼"
+  },
+  "gameRulesCopGoalPrefix": "경찰은 모든 도둑을 잡아서",
+  "@gameRulesCopGoalPrefix": {
+    "description": "게임 규칙 — 경찰 승리 조건 도입부"
+  },
+  "gameRulesCopGoalSuffix": "체포하면,",
+  "@gameRulesCopGoalSuffix": {
+    "description": "게임 규칙 — 경찰 승리 조건 강조부"
+  },
+  "gameRulesRobberGoalPrefix": "\n도둑은",
+  "@gameRulesRobberGoalPrefix": {
+    "description": "게임 규칙 — 도둑 승리 조건 도입부 (개행 포함)"
+  },
+  "gameRulesRobberGoalCondition": "제한 시간이 끝날 때까지 버티면",
+  "@gameRulesRobberGoalCondition": {
+    "description": "게임 규칙 — 도둑 승리 조건 본문"
+  },
+  "gameRulesWinSuffix": "승리해요",
+  "@gameRulesWinSuffix": {
+    "description": "게임 규칙 — 승리 조건 종결부"
+  },
+  "gameRulesLocationShareLine1": "도둑팀의 위치는",
+  "@gameRulesLocationShareLine1": {
+    "description": "게임 규칙 — 위치 공유 1줄 (한국어 어순 1행)"
+  },
+  "gameRulesLocationShareLine2": "{minutes}분마다",
+  "@gameRulesLocationShareLine2": {
+    "description": "게임 규칙 — 위치 공유 2줄 (주기 강조)",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "gameRulesLocationShareLine3": "경찰팀에게 공유돼요",
+  "@gameRulesLocationShareLine3": {
+    "description": "게임 규칙 — 위치 공유 3줄 (한국어 어순 종결)"
+  },
+  "gameRulesZoneRuleLine1": "지정된 게임 구역에서 벗어나면 안 돼요",
+  "@gameRulesZoneRuleLine1": {
+    "description": "게임 규칙 — 구역 이탈 금지 1줄"
+  },
+  "gameRulesZoneRuleLine2": "\n→ 구역 밖으로 나가면 화면이 잠겨요",
+  "@gameRulesZoneRuleLine2": {
+    "description": "게임 규칙 — 구역 이탈 금지 2줄 (개행 + 화살표 포함)"
+  },
+  "dialogstep0SelectAreaContentTitle": "플레이그라운드",
+  "@dialogstep0SelectAreaContentTitle": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:97"
+  },
+  "dialogstep0SelectAreaContentTitle5bc0": "감옥",
+  "@dialogstep0SelectAreaContentTitle5bc0": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:108"
+  },
+  "fieldstep1ParticipantSettingsContentLabel": "최대 참가자",
+  "@fieldstep1ParticipantSettingsContentLabel": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_1_participant_settings_content.dart:48"
+  },
+  "unitPerson": "명",
+  "@unitPerson": {
+    "description": "공통 — 인원수 단위 (명)"
+  },
+  "fieldstep2GameSettingsContentLabel": "라운드 제한 시간",
+  "@fieldstep2GameSettingsContentLabel": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:75"
+  },
+  "unitMinutes": "분",
+  "@unitMinutes": {
+    "description": "공통 — 시간 단위 (분)"
+  },
+  "fieldstep2GameSettingsContentLabel5ab2": "도둑 위치 공유 간격",
+  "@fieldstep2GameSettingsContentLabel5ab2": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:92"
+  },
+  "gameSettingNoLocationShareWarning": "도둑의 위치가 공유되지 않아요!",
+  "@gameSettingNoLocationShareWarning": {
+    "description": "게임 설정 — 위치 공유 비활성 경고"
+  },
+  "fieldstep2GameSettingsContentLabelCe3b": "경찰 출동 시간",
+  "@fieldstep2GameSettingsContentLabelCe3b": {
+    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:111"
+  },
+  "gameSettingPoliceStartPrefix": "도둑 도망 후",
+  "@gameSettingPoliceStartPrefix": {
+    "description": "게임 설정 — 경찰 출동 시간 prefix"
+  },
+  "gameSettingPoliceStartSuffix": "뒤",
+  "@gameSettingPoliceStartSuffix": {
+    "description": "게임 설정 — 경찰 출동 시간 suffix"
+  },
+  "sectionTitleSettings": "설정",
+  "@sectionTitleSettings": {
+    "description": "대기실 설정 카드 섹션 타이틀"
+  },
+  "labelParticipantCount": "참여 인원",
+  "@labelParticipantCount": {
+    "description": "대기실 설정 카드의 참여 인원 라벨"
+  },
+  "fieldRoundTimeLimit": "라운드 제한 시간",
+  "@fieldRoundTimeLimit": {
+    "description": "게임 설정 — 라운드 제한 시간 라벨"
+  },
+  "fieldLocationShareInterval": "위치 공유 간격",
+  "@fieldLocationShareInterval": {
+    "description": "게임 설정 — 위치 공유 간격 라벨"
+  },
+  "fieldPoliceDispatchTime": "경찰 출동 시간",
+  "@fieldPoliceDispatchTime": {
+    "description": "게임 설정 — 경찰 출동 시간 라벨"
+  },
+  "teamSectionCurrentCount": "현재 {count}명",
+  "@teamSectionCurrentCount": {
+    "description": "팀 섹션 — 현재 인원수 표기",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sectionTitleZone": "구역",
+  "@sectionTitleZone": {
+    "description": "대기실 구역 카드 섹션 타이틀"
+  },
+  "errorLogoutGeneric": "로그아웃 중 오류가 발생했습니다",
+  "@errorLogoutGeneric": {
+    "description": "로그아웃 처리 중 일반 오류 안내"
+  },
+  "errorAuthUserNotFound": "로그인 정보를 가져올 수 없습니다. 다시 시도해주세요",
+  "@errorAuthUserNotFound": {
+    "description": "Firebase 인증 — 사용자 정보 조회 실패"
+  },
+  "errorAuthTokenIssueFailed": "인증 토큰 발급에 실패했습니다. 다시 시도해주세요",
+  "@errorAuthTokenIssueFailed": {
+    "description": "Firebase 인증 — 토큰 발급 실패"
+  },
+  "errorAuthTokenValidationFailed": "Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요",
+  "@errorAuthTokenValidationFailed": {
+    "description": "Firebase 인증 — 토큰 검증 실패"
+  },
+  "errorAuthInvalidCredential": "잘못된 인증 정보입니다",
+  "@errorAuthInvalidCredential": {
+    "description": "Firebase 인증 — 잘못된 인증 정보"
+  },
+  "errorAuthAccountDisabled": "비활성화된 계정입니다",
+  "@errorAuthAccountDisabled": {
+    "description": "Firebase 인증 — 비활성화된 계정"
+  },
+  "errorAuthTooManyRequests": "너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요",
+  "@errorAuthTooManyRequests": {
+    "description": "Firebase 인증 — 요청 과다 (rate limit)"
+  },
+  "errorAuthSignInMethodUnavailable": "이 로그인 방법은 현재 사용할 수 없습니다",
+  "@errorAuthSignInMethodUnavailable": {
+    "description": "Firebase 인증 — 비활성화된 로그인 방법"
+  },
+  "errorAuthFirebaseConfig": "Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요",
+  "@errorAuthFirebaseConfig": {
+    "description": "Firebase 인증 — 설정 오류 (API 키 등)"
+  },
+  "errorAuthFirebaseInternal": "Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
+  "@errorAuthFirebaseInternal": {
+    "description": "Firebase 인증 — 내부 오류"
+  },
+  "errorAuthProviderLoginFailed": "{provider} 로그인에 실패했습니다. 다시 시도해주세요",
+  "@errorAuthProviderLoginFailed": {
+    "description": "Firebase 인증 — 특정 provider 로그인 실패 (Google/Apple 등)",
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAuthLoginFailed": "로그인에 실패했습니다. 다시 시도해주세요",
+  "@errorAuthLoginFailed": {
+    "description": "Firebase 인증 — 일반 로그인 실패 (provider 미지정)"
+  },
+  "linkMarketingConsent": "마케팅 정보 수신",
+  "@linkMarketingConsent": {
+    "description": "마케팅 정보 수신 동의 링크 라벨"
+  },
+  "agreementPageAgreeButton": "동의하고 시작하기",
+  "@agreementPageAgreeButton": {
+    "description": "약관 동의 페이지 — 동의 후 시작 버튼"
+  },
+  "agreementPageTitle": "서비스 이용을 위해\n약관에 동의해주세요",
+  "@agreementPageTitle": {
+    "description": "약관 동의 페이지 — 본문 타이틀"
+  },
+  "agreementPageRequiredNotice": "필수 약관에 모두 동의해야 서비스를 이용하실 수 있어요",
+  "@agreementPageRequiredNotice": {
+    "description": "약관 동의 페이지 — 필수 약관 안내"
+  },
+  "errorNetworkNotConnected": "아직 네트워크에 연결되지 않았어요",
+  "@errorNetworkNotConnected": {
+    "description": "네트워크 미연결 시 표시되는 안내 (약관 동의/스플래시 등 공용)"
+  },
+  "errorRequiredAgreementsMissing": "필수 약관에 모두 동의해주세요",
+  "@errorRequiredAgreementsMissing": {
+    "description": "필수 약관 미동의 안내"
+  },
+  "messageAccountDeleted": "회원탈퇴가 완료되었습니다",
+  "@messageAccountDeleted": {
+    "description": "회원 탈퇴 완료 토스트"
+  },
+  "dialogAge14ConfirmTitle": "만 14세 이상이신가요?",
+  "@dialogAge14ConfirmTitle": {
+    "description": "만 14세 이상 확인 다이얼로그 타이틀"
+  },
+  "dialogAge14ConfirmMessage": "경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요",
+  "@dialogAge14ConfirmMessage": {
+    "description": "만 14세 이상 확인 다이얼로그 본문"
+  },
+  "errorLoginGeneric": "로그인 중 오류가 발생했습니다",
+  "@errorLoginGeneric": {
+    "description": "로그인 처리 중 발생한 일반 오류"
+  },
+  "errorAppleLoginFailed": "Apple 로그인 중 오류가 발생했습니다",
+  "@errorAppleLoginFailed": {
+    "description": "Apple 로그인 전용 오류 메시지"
+  },
+  "errorAgeRestrictionUnder14": "만 14세 미만은 서비스를 이용할 수 없습니다",
+  "@errorAgeRestrictionUnder14": {
+    "description": "만 14세 미만 가입 차단 안내"
+  },
+  "loginPageAgreementPrefix": "로그인 시",
+  "@loginPageAgreementPrefix": {
+    "description": "로그인 페이지 약관 안내 접두사 (예: '로그인 시 ~ 에 동의합니다')"
+  },
+  "linkPrivacyPolicy": "개인정보 처리방침",
+  "@linkPrivacyPolicy": {
+    "description": "공통 — 개인정보 처리방침 링크 텍스트"
+  },
+  "linkTermsOfService": "이용약관",
+  "@linkTermsOfService": {
+    "description": "공통 — 이용약관 링크 텍스트"
+  },
+  "linkLocationTerms": "위치정보 이용약관",
+  "@linkLocationTerms": {
+    "description": "공통 — 위치정보 이용약관 링크 텍스트"
+  },
+  "loginPageAgreementSuffix": "에 동의합니다",
+  "@loginPageAgreementSuffix": {
+    "description": "로그인 페이지 약관 안내 접미사"
+  },
+  "messageNicknameSaved": "닉네임이 저장되었어요",
+  "@messageNicknameSaved": {
+    "description": "닉네임 저장 완료 토스트"
+  },
+  "nicknameSetupTitle": "닉네임을 설정해요",
+  "@nicknameSetupTitle": {
+    "description": "닉네임 설정 페이지 — 메인 타이틀"
+  },
+  "nicknameSetupSubtitle": "서비스 내에서 계속 사용될 닉네임이에요\n1~10글자로 생성할 수 있어요",
+  "@nicknameSetupSubtitle": {
+    "description": "닉네임 설정 페이지 — 보조 안내문"
+  },
+  "fieldNicknameHint": "닉네임을 입력하세요",
+  "@fieldNicknameHint": {
+    "description": "공통 — 닉네임 입력 필드 placeholder"
+  },
+  "buttonCheckNicknameDuplicate": "중복 확인",
+  "@buttonCheckNicknameDuplicate": {
+    "description": "닉네임 중복 확인 버튼"
+  },
+  "errorNicknameTooShort": "1글자 미만의 닉네임은 사용할 수 없어요",
+  "@errorNicknameTooShort": {
+    "description": "닉네임 검증 — 글자 수 부족"
+  },
+  "errorNicknameDuplicated": "중복된 닉네임이에요. 다른 닉네임을 입력하세요",
+  "@errorNicknameDuplicated": {
+    "description": "닉네임 검증 — 이미 사용 중"
+  },
+  "nicknameAvailable": "사용 가능한 닉네임이에요",
+  "@nicknameAvailable": {
+    "description": "닉네임 검증 — 사용 가능"
+  },
+  "splashReturningToScene": "다시 현장으로 복귀 중...",
+  "@splashReturningToScene": {
+    "description": "스플래시 — 자동 로그인 진행 안내"
+  },
+  "dialogNetworkConnectionFailedTitle": "네트워크 연결 실패",
+  "@dialogNetworkConnectionFailedTitle": {
+    "description": "네트워크 연결 실패 다이얼로그 타이틀"
+  },
+  "dialogSplashOfflineMessage": "인터넷 연결을 확인한 후\n다시 시도해주세요",
+  "@dialogSplashOfflineMessage": {
+    "description": "스플래시 — 오프라인 다이얼로그 본문 (스플래시 화면 본문 splashOfflineMessage와 별개)"
+  },
+  "splashPleaseWait": "잠시만 기다려주세요",
+  "@splashPleaseWait": {
+    "description": "스플래시 — 대기 안내"
+  },
+  "splashCreditTag": "by 동심지키미",
+  "@splashCreditTag": {
+    "description": "스플래시 — 제작 크레딧 태그라인"
+  },
+  "splashOfflineTitle": "인터넷 연결이 필요합니다",
+  "@splashOfflineTitle": {
+    "description": "스플래시 — 오프라인 상태 타이틀"
+  },
+  "splashOfflineMessage": "연결 상태를 확인한 후\n다시 시도해주세요",
+  "@splashOfflineMessage": {
+    "description": "스플래시 — 오프라인 상태 본문"
+  },
+  "errorUnknown": "알 수 없는 오류가 발생했습니다",
+  "@errorUnknown": {
+    "description": "원인을 특정할 수 없는 일반 오류 메시지 (auth fallback 등)"
+  },
+  "errorLogoutFailed": "로그아웃에 실패했습니다",
+  "@errorLogoutFailed": {
+    "description": "로그아웃 실패 안내"
+  },
+  "agreementAllCheckboxLabel": "전체 동의",
+  "@agreementAllCheckboxLabel": {
+    "description": "약관 — 전체 동의 체크박스 라벨"
+  },
+  "agreementItemRequiredTag": "[필수]",
+  "@agreementItemRequiredTag": {
+    "description": "약관 항목 — 필수 태그"
+  },
+  "agreementItemOptionalTag": "[선택]",
+  "@agreementItemOptionalTag": {
+    "description": "약관 항목 — 선택 태그"
+  },
+  "gameRobberOnTheRunBanner": "도둑이 도망치는 중이에요!",
+  "@gameRobberOnTheRunBanner": {
+    "description": "게임 시작 후 도둑 도주 시작 알림 배너"
+  },
+  "gameOverBannerTitle": "게임 종료!",
+  "@gameOverBannerTitle": {
+    "description": "게임 종료 시 화면 상단에 표시되는 배너 타이틀"
+  },
+  "gameOverReasonAllArrested": "도둑이 모두 체포되었습니다!",
+  "@gameOverReasonAllArrested": {
+    "description": "게임 종료 사유 — 도둑 전원 체포로 종료"
+  },
+  "gameOverReasonTimeUp": "제한 시간이 종료되었습니다!",
+  "@gameOverReasonTimeUp": {
+    "description": "게임 종료 사유 — 제한 시간 만료"
+  },
+  "gameTeamCop": "경찰팀",
+  "@gameTeamCop": {
+    "description": "경찰 팀 라벨 (팀명)"
+  },
+  "gameTeamRobber": "도둑팀",
+  "@gameTeamRobber": {
+    "description": "도둑 팀 라벨 (팀명)"
+  },
+  "gameResultWin": "승리",
+  "@gameResultWin": {
+    "description": "게임 결과 — 승리"
+  },
+  "gameResultLose": "패배",
+  "@gameResultLose": {
+    "description": "게임 결과 — 패배"
+  },
+  "messageGameOverWinner": "{winnerTeamLabel}의 승리입니다!",
+  "@messageGameOverWinner": {
+    "description": "게임 종료 다이얼로그 메시지 — 승리팀 안내"
+  },
+  "gameRoleCopLabel": "경찰",
+  "@gameRoleCopLabel": {
+    "description": "경찰 역할 단일 라벨 (닉네임 누락 시 fallback 포함)"
+  },
+  "gameRoleRobberLabel": "도둑",
+  "@gameRoleRobberLabel": {
+    "description": "도둑 역할 단일 라벨 (닉네임 누락 시 fallback 포함)"
+  },
+  "errorCannotArrestDuringWait": "경찰 대기 시간 중에는 도둑을 체포할 수 없습니다",
+  "@errorCannotArrestDuringWait": {
+    "description": "체포 실패 — 경찰 대기 시간 중"
+  },
+  "qrScannerWantedRobberTitle": "도둑의 수배 QR을 스캔하세요",
+  "@qrScannerWantedRobberTitle": {
+    "description": "도둑 수배 QR 스캐너 페이지 타이틀"
+  },
+  "errorExpiredQr": "만료된 QR입니다. QR 새로고침을 요청하세요",
+  "@errorExpiredQr": {
+    "description": "QR 스캔 실패 — QR 만료"
+  },
+  "errorAlreadyArrested": "이미 체포된 도둑입니다",
+  "@errorAlreadyArrested": {
+    "description": "체포 실패 — 이미 체포된 도둑"
+  },
+  "gameArrestOverlayTitle": "체포되었어요!",
+  "@gameArrestOverlayTitle": {
+    "description": "체포된 도둑에게 표시되는 잠금 오버레이 타이틀"
+  },
+  "gameArrestOverlayMessage": "체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!",
+  "@gameArrestOverlayMessage": {
+    "description": "체포 잠금 오버레이 안내 본문"
+  },
+  "gameArrestOverlayEscapeCompleteButton": "탈옥 완료",
+  "@gameArrestOverlayEscapeCompleteButton": {
+    "description": "체포 잠금 오버레이에서 탈옥을 확정하는 버튼"
+  },
+  "buttonEscape": "탈옥",
+  "@buttonEscape": {
+    "description": "공통 — 탈옥 액션 버튼 라벨"
+  },
+  "buttonNo": "아니요",
+  "@buttonNo": {
+    "description": "공통 — 부정 응답 버튼"
+  },
+  "labelArrestCount": "체포 횟수",
+  "@labelArrestCount": {
+    "description": "게임 종료 결과 다이얼로그의 체포 횟수 라벨"
+  },
+  "gameResultArrestCount": "{count}회",
+  "@gameResultArrestCount": {
+    "description": "게임 결과 — 총 체포 횟수 (단위: 회)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fieldRemainingRobbers": "남은 도둑",
+  "@fieldRemainingRobbers": {
+    "description": "게임 종료 결과 — 남은 도둑 라벨"
+  },
+  "gameResultRemainingRobberCount": "{count}명",
+  "@gameResultRemainingRobberCount": {
+    "description": "게임 결과 — 남은 도둑 인원수 (단위: 명)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fieldGamePlaytime": "게임 진행 시간",
+  "@fieldGamePlaytime": {
+    "description": "게임 종료 결과 — 게임 진행 시간 라벨"
+  },
+  "buttonGoHome": "홈으로",
+  "@buttonGoHome": {
+    "description": "공통 — 홈 화면으로 이동 버튼"
+  },
+  "buttonPlayAgain": "한 번 더",
+  "@buttonPlayAgain": {
+    "description": "공통 — 다시 플레이 버튼"
+  },
+  "gameLocationRevealCountdown": "다음 도둑 위치 공개까지 {formatted}",
+  "@gameLocationRevealCountdown": {
+    "description": "다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)",
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogArrestConfirmTitle": "해당 플레이어를 체포하셨나요?",
+  "@dialogArrestConfirmTitle": {
+    "description": "참가자 체포 확인 다이얼로그 타이틀"
+  },
+  "buttonYes": "네",
+  "@buttonYes": {
+    "description": "공통 — 긍정 응답 버튼"
+  },
+  "dialogEscapeAttemptMessage": "탈옥을 시도하시겠습니까?",
+  "@dialogEscapeAttemptMessage": {
+    "description": "탈옥 시도 확인 다이얼로그 본문"
+  },
+  "gameParticipantOverlayCurrent": "현재",
+  "@gameParticipantOverlayCurrent": {
+    "description": "참가자 오버레이 — 현재 인원 라벨"
+  },
+  "gameParticipantOverlayCount": "{count}명",
+  "@gameParticipantOverlayCount": {
+    "description": "참가자 오버레이 — 인원 수 표기 (단위: 명)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "gameRobberStatusEscaping": "도주 중!",
+  "@gameRobberStatusEscaping": {
+    "description": "도둑 상태 — 도주 중 표기"
+  },
+  "gamePoliceStartCountdown": "경찰 시작까지 {formatted}",
+  "@gamePoliceStartCountdown": {
+    "description": "경찰 출동 시작까지 남은 시간 카운트다운 (mm:ss 포함)",
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "gameQrDisplayTitle": "수배 QR",
+  "@gameQrDisplayTitle": {
+    "description": "도둑 수배 QR 다이얼로그 타이틀"
+  },
+  "gameQrDisplayMessage": "경찰에게 QR을 보여주세요",
+  "@gameQrDisplayMessage": {
+    "description": "도둑 수배 QR 다이얼로그 안내 본문"
+  },
+  "buttonClose": "닫기",
+  "@buttonClose": {
+    "description": "공통 — 닫기 버튼"
+  },
+  "dialogCameraPermissionTitle": "카메라 권한 필요",
+  "@dialogCameraPermissionTitle": {
+    "description": "카메라 권한 요청 다이얼로그 타이틀"
+  },
+  "dialogCameraPermissionMessage": "QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요",
+  "@dialogCameraPermissionMessage": {
+    "description": "카메라 권한 요청 다이얼로그 본문"
+  },
+  "errorCameraUnavailable": "카메라를 사용할 수 없습니다",
+  "@errorCameraUnavailable": {
+    "description": "QR 스캐너 — 카메라 초기화 실패 안내"
+  },
+  "gameZoneExitBanner": "플레이그라운드를 벗어났어요",
+  "@gameZoneExitBanner": {
+    "description": "플레이 영역 이탈 시 표시되는 배너"
+  },
+  "chatTeamPrefix": "[팀]",
+  "@chatTeamPrefix": {
+    "description": "팀 채팅 메시지 prefix 라벨 (예: [팀])"
+  },
+  "chatSystemGameTimeLimit30Min": "제한 시간은 30분입니다",
+  "@chatSystemGameTimeLimit30Min": {
+    "description": "더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)"
+  },
+  "chatSystemGoodLuckRobber": "도둑 잘 도망쳐 봐요~",
+  "@chatSystemGoodLuckRobber": {
+    "description": "더미 채팅 메시지 — 경찰의 도둑 응원 메시지"
+  },
+  "chatSystemLetsWin": "이겨봅시다!",
+  "@chatSystemLetsWin": {
+    "description": "더미 채팅 메시지 — 팀 응원 메시지"
+  },
+  "messageMessageCopied": "메시지가 복사되었어요",
+  "@messageMessageCopied": {
+    "description": "채팅 메시지 복사 완료 토스트"
+  },
+  "messageUserBlocked": "해당 유저를 차단했어요",
+  "@messageUserBlocked": {
+    "description": "사용자 차단 완료 안내"
+  },
+  "fieldReportContentLabel": "신고 내용",
+  "@fieldReportContentLabel": {
+    "description": "신고 사유 입력 필드 라벨"
+  },
+  "fieldReportReasonHint": "신고 사유를 자세히 작성해 주세요\n(상황 또는 대화 내용을 포함해 주세요)",
+  "@fieldReportReasonHint": {
+    "description": "신고 사유 입력 필드 placeholder"
+  },
+  "buttonReport": "신고하기",
+  "@buttonReport": {
+    "description": "신고 공통 버튼 라벨"
+  },
+  "messageReportSubmitted": "신고가 접수되었어요",
+  "@messageReportSubmitted": {
+    "description": "신고 제출 완료 안내 메시지"
+  },
+  "errorReportFailed": "신고에 실패했어요",
+  "@errorReportFailed": {
+    "description": "신고 제출 실패 안내"
+  },
+  "dialogReportConfirmTitle": "해당 유저를 신고할까요?",
+  "@dialogReportConfirmTitle": {
+    "description": "신고 확인 다이얼로그 제목"
+  },
+  "chatReportSelectedCategoryLabel": "선택한 신고 사유:",
+  "@chatReportSelectedCategoryLabel": {
+    "description": "신고 폼 — 선택한 카테고리 라벨 (뒤에 카테고리 이름 이어붙음)"
+  },
+  "chatReportSubmitNotice": "\n신고된 내용은 검토 후 조치할게요",
+  "@chatReportSubmitNotice": {
+    "description": "신고 폼 — 제출 시 검토 안내 (선두 줄바꿈은 위 라벨과 줄 분리 의도)"
+  },
+  "buttonCopy": "복사하기",
+  "@buttonCopy": {
+    "description": "텍스트 복사 액션 버튼"
+  },
+  "buttonBlock": "차단하기",
+  "@buttonBlock": {
+    "description": "사용자 차단 액션 버튼"
+  },
+  "chatReportCategoryTitle": "신고 유형 선택",
+  "@chatReportCategoryTitle": {
+    "description": "신고 폼 — 카테고리 선택 섹션 제목"
+  },
+  "chatInputBarUnreadAll": "전체 {all}개",
+  "@chatInputBarUnreadAll": {
+    "description": "미읽음 힌트 부분 — 전체 채팅 미읽음 수",
+    "placeholders": {
+      "all": {
+        "type": "String"
+      }
+    }
+  },
+  "chatInputBarUnreadTeam": "팀 {team}개",
+  "@chatInputBarUnreadTeam": {
+    "description": "미읽음 힌트 부분 — 팀 채팅 미읽음 수",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      }
+    }
+  },
+  "chatInputBarUnreadHint": "안 읽은 메시지 [{body}]",
+  "@chatInputBarUnreadHint": {
+    "description": "채팅 입력바 위 미읽음 힌트 wrapper — body에는 '전체 N개 · 팀 N개' 같은 부분 라벨이 들어감",
+    "placeholders": {
+      "body": {
+        "type": "String"
+      }
+    }
+  },
+  "chatInputBarConnecting": "연결 중...",
+  "@chatInputBarConnecting": {
+    "description": "채팅 입력바 — STOMP 연결 중 placeholder"
+  },
+  "chatInputBarHint": "채팅을 입력하세요",
+  "@chatInputBarHint": {
+    "description": "채팅 입력바 — 메시지 입력 placeholder"
+  },
+  "chatMessageListEmpty": "채팅을 시작해보세요",
+  "@chatMessageListEmpty": {
+    "description": "채팅 메시지 리스트 — 메시지 0건 빈 상태 안내"
+  },
+  "buttonGoToLatestMessage": "최신 메시지로 이동",
+  "@buttonGoToLatestMessage": {
+    "description": "채팅 화면에서 최신 메시지로 스크롤 이동하는 버튼 라벨"
+  },
+  "chatWeekdayMon": "월",
+  "@chatWeekdayMon": {
+    "description": "채팅 날짜 구분선 — 월요일 단축 라벨"
+  },
+  "chatWeekdayTue": "화",
+  "@chatWeekdayTue": {
+    "description": "채팅 날짜 구분선 — 화요일 단축 라벨"
+  },
+  "chatWeekdayWed": "수",
+  "@chatWeekdayWed": {
+    "description": "채팅 날짜 구분선 — 수요일 단축 라벨"
+  },
+  "chatWeekdayThu": "목",
+  "@chatWeekdayThu": {
+    "description": "채팅 날짜 구분선 — 목요일 단축 라벨"
+  },
+  "chatWeekdayFri": "금",
+  "@chatWeekdayFri": {
+    "description": "채팅 날짜 구분선 — 금요일 단축 라벨"
+  },
+  "chatWeekdaySat": "토",
+  "@chatWeekdaySat": {
+    "description": "채팅 날짜 구분선 — 토요일 단축 라벨"
+  },
+  "chatWeekdaySun": "일",
+  "@chatWeekdaySun": {
+    "description": "채팅 날짜 구분선 — 일요일 단축 라벨"
+  },
+  "chatDateSeparator": "{year}년 {month}월 {day}일 {weekday}요일",
+  "@chatDateSeparator": {
+    "description": "채팅 날짜 구분선 — 날짜+요일 라벨 (요일은 chatWeekday* 키 값이 들어감)",
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "chatScopeAllTitle": "전체 채팅",
+  "@chatScopeAllTitle": {
+    "description": "채팅 오버레이 — 전체 채팅 탭 제목"
+  },
+  "chatScopeTeamTitle": "팀 채팅",
+  "@chatScopeTeamTitle": {
+    "description": "채팅 오버레이 — 팀 채팅 탭 제목"
+  },
+  "chatPreviewTagNotice": "공지",
+  "@chatPreviewTagNotice": {
+    "description": "채팅 프리뷰 카드 — 시스템 공지 태그"
+  },
+  "chatPreviewTagTeam": "팀",
+  "@chatPreviewTagTeam": {
+    "description": "채팅 프리뷰 카드 — 팀 채팅 태그"
+  },
+  "chatPreviewTagAll": "전체",
+  "@chatPreviewTagAll": {
+    "description": "채팅 프리뷰 카드 — 전체 채팅 태그"
+  },
+  "messageChangesSaved": "변경사항이 저장되었어요",
+  "@messageChangesSaved": {
+    "description": "설정 변경사항 저장 완료 안내 메시지"
+  },
+  "errorTemporaryRetry": "일시적인 오류가 발생했습니다. 다시 시도해주세요",
+  "@errorTemporaryRetry": {
+    "description": "일시적 오류 발생 시 재시도 유도 공통 메시지"
+  },
+  "pageAgreementSettingsTitle": "이용약관 및 정책",
+  "@pageAgreementSettingsTitle": {
+    "description": "이용약관/정책 설정 페이지 타이틀"
+  },
+  "errorAgreementLoadFailed": "약관 동의 현황을 불러올 수 없습니다",
+  "@errorAgreementLoadFailed": {
+    "description": "약관 동의 정보 조회 실패 안내"
+  },
+  "buttonRetry": "다시 시도",
+  "@buttonRetry": {
+    "description": "재시도 공통 버튼 라벨"
+  },
+  "buttonSaveChanges": "변경사항 저장",
+  "@buttonSaveChanges": {
+    "description": "변경사항 저장 공통 버튼 라벨"
+  },
+  "errorLegalDocumentLoadFailed": "문서를 불러올 수 없습니다",
+  "@errorLegalDocumentLoadFailed": {
+    "description": "법적 문서(약관/정책) 로드 실패 안내"
+  },
+  "pageSettingsTitle": "설정",
+  "@pageSettingsTitle": {
+    "description": "설정 페이지 AppBar 타이틀"
+  },
+  "settingsSectionAccount": "계정",
+  "@settingsSectionAccount": {
+    "description": "설정 — 계정 섹션 헤더"
+  },
+  "settingsAccountChangeNickname": "닉네임 변경",
+  "@settingsAccountChangeNickname": {
+    "description": "설정 — 닉네임 변경 메뉴"
+  },
+  "settingsSectionAppPreferences": "앱 설정",
+  "@settingsSectionAppPreferences": {
+    "description": "설정 — 앱 설정 섹션 헤더"
+  },
+  "settingsAppGameNotification": "게임 알림",
+  "@settingsAppGameNotification": {
+    "description": "설정 — 게임 알림 토글 메뉴 라벨"
+  },
+  "settingsAppGameNotificationDescription": "게임 진행 중 발생하는 이벤트 알림을 설정해요",
+  "@settingsAppGameNotificationDescription": {
+    "description": "설정 — 게임 알림 토글 메뉴 부제"
+  },
+  "settingsAppGeneralNotification": "알림",
+  "@settingsAppGeneralNotification": {
+    "description": "설정 — 시스템 알림 설정 메뉴 라벨"
+  },
+  "settingsAppGeneralNotificationHighlight": "게임 중 알림",
+  "@settingsAppGeneralNotificationHighlight": {
+    "description": "설정 — 시스템 알림 설정 부제의 강조 토큰 (스타일 분리 위해 별도 키)"
+  },
+  "settingsAppGeneralNotificationDetail": "을 포함한 앱에서 보내는 모든 알림을 설정해요",
+  "@settingsAppGeneralNotificationDetail": {
+    "description": "설정 — 시스템 알림 설정 부제의 나머지 토큰 (Highlight 뒤에 이어붙임)"
+  },
+  "settingsAppLocationPermission": "위치 권한 관리",
+  "@settingsAppLocationPermission": {
+    "description": "설정 — 위치 권한 관리 메뉴 라벨"
+  },
+  "settingsAppLocationPermissionDescription": "기기 설정에서 위치 권한을 변경할 수 있어요",
+  "@settingsAppLocationPermissionDescription": {
+    "description": "설정 — 위치 권한 관리 메뉴 부제"
+  },
+  "settingsSectionGuide": "이용 안내",
+  "@settingsSectionGuide": {
+    "description": "설정 — 이용 안내 섹션 헤더"
+  },
+  "settingsGuideBugReport": "버그 제보",
+  "@settingsGuideBugReport": {
+    "description": "설정 — 버그 제보 메뉴 라벨"
+  },
+  "settingsGuideTutorialRewatch": "튜토리얼 다시 보기",
+  "@settingsGuideTutorialRewatch": {
+    "description": "설정 — 튜토리얼 다시 보기 메뉴"
+  },
+  "settingsGuideTutorialReset": "튜토리얼 초기화",
+  "@settingsGuideTutorialReset": {
+    "description": "설정 — 튜토리얼 초기화 메뉴"
+  },
+  "settingsGuideAgreements": "이용약관 및 정책",
+  "@settingsGuideAgreements": {
+    "description": "설정 — 이용약관 및 정책 메뉴 (페이지 진입)"
+  },
+  "settingsSectionEtc": "기타",
+  "@settingsSectionEtc": {
+    "description": "설정 — 기타 섹션 헤더 (로그아웃/탈퇴 등)"
+  },
+  "settingsEtcDeleteAccount": "회원 탈퇴",
+  "@settingsEtcDeleteAccount": {
+    "description": "설정 — 회원 탈퇴 메뉴 라벨"
+  },
+  "settingsAppVersionLabel": "앱 버전",
+  "@settingsAppVersionLabel": {
+    "description": "설정 — 앱 버전 표시 메뉴 라벨"
+  },
+  "errorGameNotificationToggleFailed": "게임 알림 설정을 변경하지 못했어요",
+  "@errorGameNotificationToggleFailed": {
+    "description": "게임 알림 설정 변경 실패 메시지"
+  },
+  "titleBugReport": "버그 제보",
+  "@titleBugReport": {
+    "description": "버그 제보 다이얼로그 타이틀"
+  },
+  "fieldBugReportLabel": "버그 내용",
+  "@fieldBugReportLabel": {
+    "description": "버그 제보 입력 필드 라벨"
+  },
+  "fieldBugReportHint": "어떤 문제가 발생했나요?\n발생 상황을 자세히 적어주세요(시간, 기기 정보 포함)",
+  "@fieldBugReportHint": {
+    "description": "버그 제보 입력 필드 placeholder"
+  },
+  "buttonSubmitReport": "제보하기",
+  "@buttonSubmitReport": {
+    "description": "버그 제보 다이얼로그 — 제출 버튼 라벨"
+  },
+  "messageBugReportSubmitted": "버그 제보가 접수되었어요",
+  "@messageBugReportSubmitted": {
+    "description": "버그 제보 접수 완료 안내"
+  },
+  "dialogTutorialResetTitle": "튜토리얼 초기화",
+  "@dialogTutorialResetTitle": {
+    "description": "튜토리얼 초기화 확인 다이얼로그 타이틀"
+  },
+  "dialogTutorialResetMessage": "모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?",
+  "@dialogTutorialResetMessage": {
+    "description": "튜토리얼 초기화 확인 다이얼로그 본문"
+  },
+  "buttonReset": "초기화",
+  "@buttonReset": {
+    "description": "초기화 확인 버튼"
+  },
+  "messageTutorialReset": "튜토리얼이 초기화되었어요",
+  "@messageTutorialReset": {
+    "description": "튜토리얼 초기화 완료 안내 메시지"
+  },
+  "dialogLogoutTitle": "로그아웃",
+  "@dialogLogoutTitle": {
+    "description": "로그아웃 확인 다이얼로그 제목"
+  },
+  "dialogLogoutMessage": "정말 로그아웃 하시겠어요?",
+  "@dialogLogoutMessage": {
+    "description": "로그아웃 확인 다이얼로그 본문"
+  },
+  "snackbarLogoutFailed": "로그아웃에 실패했습니다",
+  "@snackbarLogoutFailed": {
+    "description": "로그아웃 실패 스낵바 메시지"
+  },
+  "snackbarLogoutSuccess": "로그아웃되었습니다",
+  "@snackbarLogoutSuccess": {
+    "description": "로그아웃 성공 스낵바 메시지"
+  },
+  "dialogDeleteAccountTitle": "회원 탈퇴",
+  "@dialogDeleteAccountTitle": {
+    "description": "회원 탈퇴 확인 다이얼로그 제목"
+  },
+  "dialogDeleteAccountMessage": "탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요",
+  "@dialogDeleteAccountMessage": {
+    "description": "회원 탈퇴 확인 다이얼로그 본문 — 비가역성 경고 + 확인 키워드 입력 요구"
+  },
+  "fieldDeleteAccountHint": "delete",
+  "@fieldDeleteAccountHint": {
+    "description": "회원 탈퇴 확인 입력 필드 placeholder (사용자가 직접 입력해야 하는 키워드)"
+  },
+  "buttonDeleteAccount": "탈퇴",
+  "@buttonDeleteAccount": {
+    "description": "회원 탈퇴 확정 버튼"
+  },
+  "tutorialDummyNicknameCop1": "경찰1",
+  "@tutorialDummyNicknameCop1": {
+    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
+  },
+  "tutorialDummyNicknameRobberKing": "도둑킹",
+  "@tutorialDummyNicknameRobberKing": {
+    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
+  },
+  "tutorialDummyNicknameRobberOrNot": "도둑이게아니게",
+  "@tutorialDummyNicknameRobberOrNot": {
+    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
+  },
+  "tutorialDummyNicknameCapturedRobber": "잡힌도둑",
+  "@tutorialDummyNicknameCapturedRobber": {
+    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
+  },
+  "titleTutorialComplete": "튜토리얼 완료!",
+  "@titleTutorialComplete": {
+    "description": "튜토리얼 완료 다이얼로그 타이틀"
+  },
+  "messageTutorialComplete": "핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요",
+  "@messageTutorialComplete": {
+    "description": "튜토리얼 완료 다이얼로그 본문"
+  },
+  "buttonFinishTutorial": "튜토리얼 끝내기",
+  "@buttonFinishTutorial": {
+    "description": "튜토리얼 완료 다이얼로그의 종료 버튼"
+  },
+  "tutorialInGameMyLocation": "내 위치로 카메라가 이동했어요",
+  "@tutorialInGameMyLocation": {
+    "description": "튜토리얼 — 내 위치 버튼 동작 안내"
+  },
+  "tutorialMapPreviewLabel": "지도 미리보기",
+  "@tutorialMapPreviewLabel": {
+    "description": "튜토리얼 — 인게임 지도 미리보기 상단 라벨"
+  },
+  "tutorialLocationRevealCountdown": "다음 도둑 위치 공개까지 04:30",
+  "@tutorialLocationRevealCountdown": {
+    "description": "튜토리얼 — 도둑 위치 공개 카운트다운 (시연용 고정값)"
+  },
+  "tutorialInGameRulesGuide": "게임 룰 안내가 열려요",
+  "@tutorialInGameRulesGuide": {
+    "description": "튜토리얼 — 게임 룰 버튼 동작 안내"
+  },
+  "tutorialQrRobberHint": "내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포",
+  "@tutorialQrRobberHint": {
+    "description": "튜토리얼 — 도둑 시점 QR 안내 (수배 QR 표시)"
+  },
+  "tutorialQrCopHint": "카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요",
+  "@tutorialQrCopHint": {
+    "description": "튜토리얼 — 경찰 시점 QR 안내 (스캐너 사용)"
+  },
+  "tutorialMissionParticipantsButton": "참가자 보기 버튼을 눌러보세요",
+  "@tutorialMissionParticipantsButton": {
+    "description": "튜토리얼 미션 1/3 — 참가자 버튼 탭 안내"
+  },
+  "tutorialMissionQrButton": "QR 버튼을 눌러보세요",
+  "@tutorialMissionQrButton": {
+    "description": "튜토리얼 미션 2/3 — QR 버튼 탭 안내"
+  },
+  "tutorialMissionMapButton": "지도로 돌아가 보세요",
+  "@tutorialMissionMapButton": {
+    "description": "튜토리얼 미션 3/3 — 지도로 복귀 안내"
+  },
+  "tutorialMissionProgress": "미션 {step}/3",
+  "@tutorialMissionProgress": {
+    "description": "튜토리얼 진행도 라벨 (현재 미션 / 총 3)",
+    "placeholders": {
+      "step": {
+        "type": "String"
+      }
+    }
+  },
+  "tutorialPerspectiveRobber": "도둑 시점 보는 중",
+  "@tutorialPerspectiveRobber": {
+    "description": "튜토리얼 — 도둑 시점 시연 상태 표시"
+  },
+  "tutorialPerspectiveCop": "경찰 시점 보는 중",
+  "@tutorialPerspectiveCop": {
+    "description": "튜토리얼 — 경찰 시점 시연 상태 표시"
+  },
+  "tutorialInGameSelfEscape": "본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요",
+  "@tutorialInGameSelfEscape": {
+    "description": "튜토리얼 — 본인 수감 시 카드 탭으로 탈옥 시도 안내"
+  },
+  "tutorialInGameQrArrest": "실제 게임에서는 QR 스캔으로 도둑을 체포해요",
+  "@tutorialInGameQrArrest": {
+    "description": "튜토리얼 — 실제 게임 QR 체포 방식 안내"
+  },
+  "tutorialCurrentLabel": "현재",
+  "@tutorialCurrentLabel": {
+    "description": "튜토리얼 — '현재' 라벨 (현재 도주 중인 도둑 수 앞 텍스트)"
+  },
+  "tutorialPlayerCount": "{count}명",
+  "@tutorialPlayerCount": {
+    "description": "튜토리얼 — 인원수 표시 (예: 3명)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tutorialOnTheRun": "도주 중!",
+  "@tutorialOnTheRun": {
+    "description": "튜토리얼 — 도주 중 강조 텍스트"
+  },
+  "tutorialInGameChatExpand": "핸들을 위로 드래그하면 채팅이 펼쳐져요",
+  "@tutorialInGameChatExpand": {
+    "description": "튜토리얼 — 채팅 시트 확장 제스처 안내"
+  },
+  "tutorialInGameChatInput": "여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요",
+  "@tutorialInGameChatInput": {
+    "description": "튜토리얼 — 채팅 입력 영역 사용법 안내"
+  },
+  "tutorialChatHint": "채팅을 입력하세요",
+  "@tutorialChatHint": {
+    "description": "튜토리얼 — 채팅 입력바 placeholder (인게임 chat과 동일 문구지만 컨텍스트 분리)"
+  },
+  "tutorialCatalogAreaSubtitle": "플레이그라운드·감옥 설정과 슬라이더 조작",
+  "@tutorialCatalogAreaSubtitle": {
+    "description": "튜토리얼 카탈로그 — 방 만들기 단계 부제"
+  },
+  "tutorialCatalogInviteSubtitle": "초대 코드 입력과 QR 스캔",
+  "@tutorialCatalogInviteSubtitle": {
+    "description": "튜토리얼 카탈로그 — 방 참여하기 단계 부제"
+  },
+  "tutorialCatalogWaitingRoomTitle": "대기방",
+  "@tutorialCatalogWaitingRoomTitle": {
+    "description": "튜토리얼 카탈로그 — 대기방 단계 제목"
+  },
+  "tutorialCatalogLobbySubtitle": "팀 변경, 게임 설정, 준비 완료",
+  "@tutorialCatalogLobbySubtitle": {
+    "description": "튜토리얼 카탈로그 — 대기방 단계 부제"
+  },
+  "tutorialCatalogInGameTitle": "인게임",
+  "@tutorialCatalogInGameTitle": {
+    "description": "튜토리얼 카탈로그 — 인게임 단계 제목"
+  },
+  "tutorialCatalogGameSubtitle": "타이머·지도·참가자·채팅·QR",
+  "@tutorialCatalogGameSubtitle": {
+    "description": "튜토리얼 카탈로그 — 인게임 단계 부제"
+  },
+  "pageTutorialCatalogTitle": "튜토리얼",
+  "@pageTutorialCatalogTitle": {
+    "description": "튜토리얼 카탈로그 페이지 타이틀"
+  },
+  "tutorialCatalogIntro": "게임을 처음 한다면 한 번씩 보고 시작해보세요",
+  "@tutorialCatalogIntro": {
+    "description": "튜토리얼 카탈로그 페이지 인트로 안내"
+  },
+  "tutorialCatalogComingSoon": "준비 중",
+  "@tutorialCatalogComingSoon": {
+    "description": "튜토리얼 카탈로그 — 미구현 단계의 '준비 중' 라벨"
+  },
+  "creditMemberHongEuiMin": "홍의민",
+  "@creditMemberHongEuiMin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hong Eui-min)"
+  },
+  "creditMemberParkChanBin": "박찬빈",
+  "@creditMemberParkChanBin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Park Chan-bin)"
+  },
+  "creditMemberLeeChangHee": "이창희",
+  "@creditMemberLeeChangHee": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Chang-hee)"
+  },
+  "creditMemberJeongSangHee": "정상희",
+  "@creditMemberJeongSangHee": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Sang-hee)"
+  },
+  "creditMemberHwangHyeRim": "황혜림",
+  "@creditMemberHwangHyeRim": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hwang Hye-rim)"
+  },
+  "creditMemberYoonJiHee": "윤지희",
+  "@creditMemberYoonJiHee": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Yoon Ji-hee)"
+  },
+  "creditMemberKimDaim": "김다임",
+  "@creditMemberKimDaim": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Da-im)"
+  },
+  "creditMemberShinJiHoon": "신지훈",
+  "@creditMemberShinJiHoon": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Ji-hoon)"
+  },
+  "creditMemberNamHaeYoon": "남해윤",
+  "@creditMemberNamHaeYoon": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Nam Hae-yoon)"
+  },
+  "creditMemberSongHyeJung": "송혜정",
+  "@creditMemberSongHyeJung": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Song Hye-jung)"
+  },
+  "creditMemberLeeJin": "이진",
+  "@creditMemberLeeJin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Jin)"
+  },
+  "creditMemberAhnGeumSeo": "안금서",
+  "@creditMemberAhnGeumSeo": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Ahn Geum-seo)"
+  },
+  "creditMemberSonGeonWoo": "손건우",
+  "@creditMemberSonGeonWoo": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Son Geon-woo)"
+  },
+  "creditMemberShinHyeBin": "신혜빈",
+  "@creditMemberShinHyeBin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Hye-bin)"
+  },
+  "creditMemberJeongChangWoo": "정창우",
+  "@creditMemberJeongChangWoo": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Chang-woo)"
+  },
+  "creditMemberHeoSeokJun": "허석준",
+  "@creditMemberHeoSeokJun": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Heo Seok-jun)"
+  },
+  "creditMemberSeoHyunJin": "서현진",
+  "@creditMemberSeoHyunJin": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Seo Hyun-jin)"
+  },
+  "creditMemberOhDongHyun": "오동현",
+  "@creditMemberOhDongHyun": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Oh Dong-hyun)"
+  },
+  "creditMemberChoiSeungHoon": "최승훈",
+  "@creditMemberChoiSeungHoon": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Choi Seung-hoon)"
+  },
+  "creditMemberKimMinWook": "김민욱",
+  "@creditMemberKimMinWook": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Min-wook)"
+  },
+  "creditMemberJeongMyeongJun": "정명준",
+  "@creditMemberJeongMyeongJun": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Myeong-jun)"
+  },
+  "creditMemberKangDaeHyun": "강대현",
+  "@creditMemberKangDaeHyun": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kang Dae-hyun)"
+  },
+  "creditMemberSimHyuk": "심 혁",
+  "@creditMemberSimHyuk": {
+    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Sim Hyuk)"
+  },
+  "pageCreditsTitle": "경찰과 도둑을 만든 사람들",
+  "@pageCreditsTitle": {
+    "description": "크레딧 페이지 상단 헤더 — 제작진 소개"
+  },
+  "errorReportGeneric": "신고 처리 중 오류가 발생했습니다",
+  "@errorReportGeneric": {
+    "description": "신고 처리 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "reportCategoryBait": "낚시/놀람/도배",
+  "@reportCategoryBait": {
+    "description": "신고 카테고리 — 낚시/놀람/도배 (ReportCategory.bait)"
+  },
+  "reportCategoryAbuse": "욕설/비하",
+  "@reportCategoryAbuse": {
+    "description": "신고 카테고리 — 욕설/비하 (ReportCategory.abuse)"
+  },
+  "reportCategoryImpersonation": "사칭/사기",
+  "@reportCategoryImpersonation": {
+    "description": "신고 카테고리 — 사칭/사기 (ReportCategory.impersonation)"
+  },
+  "reportCategorySpam": "광고/스팸",
+  "@reportCategorySpam": {
+    "description": "신고 카테고리 — 광고/스팸 (ReportCategory.spam)"
+  },
+  "reportCategoryExploit": "부정 행위/버그 악용",
+  "@reportCategoryExploit": {
+    "description": "신고 카테고리 — 부정 행위/버그 악용 (ReportCategory.exploit)"
+  },
+  "reportCategoryTeamSabotage": "팀 사기 저하",
+  "@reportCategoryTeamSabotage": {
+    "description": "신고 카테고리 — 팀 사기 저하 (ReportCategory.teamSabotage)"
+  },
+  "reportCategoryOther": "기타(직접 작성)",
+  "@reportCategoryOther": {
+    "description": "신고 카테고리 — 기타 (ReportCategory.other, 직접 입력)"
+  },
+  "errorNicknameCheckUnexpected": "닉네임 확인 중 예기치 않은 오류가 발생했습니다",
+  "@errorNicknameCheckUnexpected": {
+    "description": "닉네임 중복 확인 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorNicknameUpdateUnexpected": "닉네임 변경 중 예기치 않은 오류가 발생했습니다",
+  "@errorNicknameUpdateUnexpected": {
+    "description": "닉네임 변경 실패 시 표시되는 예외 메시지"
+  },
+  "errorUserInfoFetch": "사용자 정보 조회 중 오류가 발생했습니다",
+  "@errorUserInfoFetch": {
+    "description": "사용자 정보 조회 실패 안내"
+  },
+  "errorDeleteAccountUnexpected": "회원 탈퇴 중 예기치 않은 오류가 발생했습니다",
+  "@errorDeleteAccountUnexpected": {
+    "description": "회원 탈퇴 처리 중 예기치 않은 오류 안내"
+  },
+  "errorAgreementFetchUnexpected": "약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다",
+  "@errorAgreementFetchUnexpected": {
+    "description": "약관 동의 상태 조회 중 예기치 않은 오류 안내"
+  },
+  "errorAgreementSaveUnexpected": "약관 동의 저장 중 예기치 않은 오류가 발생했습니다",
+  "@errorAgreementSaveUnexpected": {
+    "description": "약관 동의 저장 중 예기치 않은 오류 안내"
+  },
+  "errorGamePushFetchUnexpected": "게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다",
+  "@errorGamePushFetchUnexpected": {
+    "description": "게임 푸시 알림 동의 조회 중 예기치 않은 오류 안내"
+  },
+  "errorGamePushUpdateUnexpected": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다",
+  "@errorGamePushUpdateUnexpected": {
+    "description": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내"
+  },
+  "errorAuthTokenMissing": "인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다",
+  "@errorAuthTokenMissing": {
+    "description": "인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후"
+  },
+  "errorServerUnreachable": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "@errorServerUnreachable": {
+    "description": "서버 연결 실패 — STOMP/REST 모두 실패 시 재시도 권장 안내"
+  },
+  "errorAuthExpired": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "@errorAuthExpired": {
+    "description": "인증 토큰 만료 — 재로그인 유도"
+  },
+  "errorNoticesLoadGeneric": "공지사항을 불러오는 중 오류가 발생했습니다",
+  "@errorNoticesLoadGeneric": {
+    "description": "공지사항 로딩 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "messageLoadingNotices": "공지사항을 불러오는 중...",
+  "@messageLoadingNotices": {
+    "description": "공지사항 로딩 중 표시되는 안내"
+  },
+  "errorNoticeLoadFailed": "공지사항을 불러오지 못했어요",
+  "@errorNoticeLoadFailed": {
+    "description": "공지사항 로딩 실패 안내"
+  },
+  "pageNoticesTitle": "공지사항",
+  "@pageNoticesTitle": {
+    "description": "공지사항 페이지 AppBar 제목"
+  },
+  "pageNoticesEmpty": "등록된 공지사항이 없습니다",
+  "@pageNoticesEmpty": {
+    "description": "공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지"
+  },
+  "errorAreaLoadFailed": "구역 정보를 불러올 수 없습니다",
+  "@errorAreaLoadFailed": {
+    "description": "게임 진입 시 area(구역) 정보 로드 실패 안내"
+  },
+  "pageNotFoundTitle": "페이지를 찾을 수 없습니다",
+  "@pageNotFoundTitle": {
+    "description": "404 페이지 AppBar 제목"
+  },
+  "pageNotFoundMessage": "요청하신 페이지가 존재하지 않습니다",
+  "@pageNotFoundMessage": {
+    "description": "404 페이지 본문 — 잘못된 경로 진입 시 안내"
+  },
+  "pageNotFoundPath": "경로: {path}",
+  "@pageNotFoundPath": {
+    "description": "404 페이지 — 시도한 경로 표시 (디버깅 도움)",
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "buttonLogout": "로그아웃",
+  "@buttonLogout": {
+    "description": "로그아웃 공통 버튼 라벨"
+  },
+  "errorBugReportFailed": "버그 제보 처리 중 오류가 발생했습니다",
+  "@errorBugReportFailed": {
+    "description": "버그 제보 처리 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "gameEventStartTime": "제한 시간은 {minutes}분입니다.",
+  "@gameEventStartTime": {
+    "description": "START 1단계 — 제한 시간 안내",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "gameEventStartReady": "잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!",
+  "@gameEventStartReady": {
+    "description": "START 2단계 — 게임 시작 예고"
+  },
+  "gameEventStartReportTip": "게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.",
+  "@gameEventStartReportTip": {
+    "description": "START 3단계 — 신고/차단 안내"
+  },
+  "gameEventStartGo": "게임 시작!  행운을 빕니다!",
+  "@gameEventStartGo": {
+    "description": "START 4단계 — 게임 시작 확정"
+  },
+  "gameEventPoliceMove": "경찰 출동!  도둑은 도망치세요!",
+  "@gameEventPoliceMove": {
+    "description": "경찰 출동 확정"
+  },
+  "gameEventLocationReveal": "현재 도둑의 위치가 공개됩니다!",
+  "@gameEventLocationReveal": {
+    "description": "도둑 위치 공개 안내"
+  },
+  "gameEventArrestNotice": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!",
+  "@gameEventArrestNotice": {
+    "description": "체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환",
+    "placeholders": {
+      "policeNickname": {
+        "type": "String"
+      },
+      "robberNickname": {
+        "type": "String"
+      }
+    }
+  },
+  "gameEventEscapeNotice": "도둑이 탈옥했습니다! 지금 바로 체포하세요!",
+  "@gameEventEscapeNotice": {
+    "description": "탈옥 공지"
+  },
+  "mapErrorLoadFailed": "{mapName} 로드 실패",
+  "@mapErrorLoadFailed": {
+    "description": "지도 로드 실패 시 표시 메시지",
+    "placeholders": {
+      "mapName": {
+        "type": "String"
+      }
+    }
+  }
+}

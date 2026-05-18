@@ -1,25 +1,38 @@
 import 'package:cops_and_robbers/core/widgets/buttons/social_login_button.dart';
 import 'package:cops_and_robbers/features/auth/presentation/pages/login_page.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   /// 테스트용 ProviderScope로 감싼 MaterialApp 생성
   ///
+  /// LoginPage가 `GoRouterState.of(context)`를 사용하므로 GoRouter로 wrap.
   /// 테스트 화면 크기를 실제 기기 크기로 설정하여 overflow 방지
   Widget createTestableWidget(WidgetTester tester) {
     // 테스트 화면 크기를 iPhone X 크기로 설정
     tester.view.physicalSize = const Size(1125, 2436); // iPhone X 해상도
     tester.view.devicePixelRatio = 3.0; // iPhone X DPR
 
+    final router = GoRouter(
+      initialLocation: '/login',
+      routes: [GoRoute(path: '/login', builder: (_, _) => const LoginPage())],
+    );
+
     return ProviderScope(
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
         minTextAdapt: true,
         splitScreenMode: true,
-        builder: (context, child) => const MaterialApp(home: LoginPage()),
+        builder: (context, child) => MaterialApp.router(
+          routerConfig: router,
+          locale: const Locale('ko'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
       ),
     );
   }

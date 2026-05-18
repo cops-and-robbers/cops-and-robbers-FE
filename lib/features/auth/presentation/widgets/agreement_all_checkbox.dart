@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -32,7 +33,7 @@ class AgreementAllCheckbox extends StatelessWidget {
             AgreementCheckbox(checked: checked, onTap: onToggle, size: 20),
             SizedBox(width: AppSpacing.horizontal8),
             Text(
-              '전체 동의',
+              AppLocalizations.of(context).agreementAllCheckboxLabel,
               style: AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
           ],

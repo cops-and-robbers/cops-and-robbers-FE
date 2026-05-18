@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
 
@@ -76,7 +77,7 @@ class _PoliceStartCountdownState extends State<PoliceStartCountdown>
     final isUrgent = _remaining.inSeconds < 60;
 
     return Text(
-      '경찰 시작까지 $_formatted',
+      AppLocalizations.of(context).gamePoliceStartCountdown(_formatted),
       style: AppTextStyles.robberLabel.copyWith(
         color: isUrgent ? AppColors.red : AppColors.green,
       ),

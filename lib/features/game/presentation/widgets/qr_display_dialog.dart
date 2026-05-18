@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_config.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -46,6 +47,7 @@ class QrDisplayDialog extends StatelessWidget {
       now: DateTime.now(),
       ttl: GameConfig.qrPayloadTtl,
     ).toRaw();
+    final l10n = AppLocalizations.of(context);
 
     return Dialog(
       backgroundColor: AppColors.black,
@@ -59,7 +61,7 @@ class QrDisplayDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '수배 QR',
+              l10n.gameQrDisplayTitle,
               style: AppTextStyles.robberHeading.copyWith(
                 color: AppColors.green,
               ),
@@ -83,7 +85,7 @@ class QrDisplayDialog extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical20),
 
             Text(
-              '경찰에게 QR을 보여주세요',
+              l10n.gameQrDisplayMessage,
               style: AppTextStyles.paragraph_14.copyWith(
                 color: AppColors.black300,
               ),
@@ -94,7 +96,7 @@ class QrDisplayDialog extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: AppButton(
-                text: '닫기',
+                text: l10n.buttonClose,
                 onPressed: () => Navigator.of(context).pop(),
                 backgroundColor: AppColors.green,
                 foregroundColor: AppColors.black,

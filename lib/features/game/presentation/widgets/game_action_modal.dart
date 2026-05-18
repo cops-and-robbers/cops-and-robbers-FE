@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -50,6 +51,7 @@ class GameActionModal {
     bool isDarkMode = false,
   }) {
     final bool useAvatar = nickname != null;
+    final l10n = AppLocalizations.of(context);
     AppDialog.show(
       context: context,
       isDarkMode: isDarkMode,
@@ -60,7 +62,7 @@ class GameActionModal {
           : null,
       message: useAvatar ? null : message,
       confirmText: confirmLabel,
-      cancelText: useAvatar ? '아니요' : '취소',
+      cancelText: useAvatar ? l10n.buttonNo : l10n.buttonCancel,
       confirmColor: isDarkMode ? null : AppColors.blue,
       confirmTextColor: isDarkMode ? null : AppColors.white,
       onConfirm: onConfirm,

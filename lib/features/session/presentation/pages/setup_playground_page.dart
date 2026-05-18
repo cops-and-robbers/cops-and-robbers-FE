@@ -14,6 +14,7 @@ import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 플레이그라운드 구역 설정 화면
 ///
@@ -127,12 +128,13 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     await Future<void>.delayed(const Duration(milliseconds: 400));
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context);
     AppTutorialStyle.show(
       context: context,
       targets: [
         AppTutorialStyle.target(
           keyTarget: _tutorialKeyRadiusChip,
-          description: '여기를 누르면 반경을 직접 입력할 수 있어요',
+          description: l10n.setupPlaygroundRadiusInputHint,
           align: TutorialAlign.bottom,
         ),
       ],
@@ -186,13 +188,14 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     final titleStyle = isDark
         ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
         : AppTextStyles.heading_20.copyWith(color: AppColors.black);
+    final l10n = AppLocalizations.of(context);
 
     // 로딩 중일 때는 로딩 인디케이터 표시
     if (_isLoading) {
       return Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
-          title: Text('플레이그라운드', style: titleStyle),
+          title: Text(l10n.zonePlayground, style: titleStyle),
           backgroundColor: bgColor,
           elevation: 0,
           centerTitle: true,
@@ -209,7 +212,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text('플레이그라운드', style: titleStyle),
+        title: Text(l10n.zonePlayground, style: titleStyle),
         backgroundColor: bgColor,
         elevation: 0,
         centerTitle: true,
@@ -230,7 +233,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '게임이 진행될 전체 구역의 크기를 설정해요',
+                  l10n.setupPlaygroundDescription,
                   style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),
@@ -264,7 +267,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
             Padding(
               padding: AppPadding.all20,
               child: AppButton(
-                text: '완료',
+                text: l10n.buttonDone,
                 onPressed: _isMapReady ? _onComplete : null,
                 backgroundColor: AppColors.blue,
                 showBorder: false,

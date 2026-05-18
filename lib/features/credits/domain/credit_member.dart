@@ -1,6 +1,7 @@
 import 'package:flutter/painting.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// 소셜 링크 타입
 ///
@@ -164,6 +165,24 @@ const List<CreditMember> creditMembers = [
       ),
     ],
   ),
+  CreditMember(
+    name: '김다임',
+    role: 'Design',
+    profileAssets: [
+      'assets/credits/DESIGN-KIM1.png',
+      'assets/credits/DESIGN-KIM2.jpeg',
+    ],
+    links: [
+      SocialLink(
+        type: SocialType.instagram,
+        url: 'https://www.instagram.com/daimmmmi',
+      ),
+      SocialLink(
+        type: SocialType.linkedin,
+        url: 'https://www.linkedin.com/in/daim-kim',
+      ),
+    ],
+  ),
 ];
 
 /// 도움 준 사람 정보
@@ -207,6 +226,40 @@ extension ContributionTierColor on ContributionTier {
     ContributionTier.tier3 => AppColors.green800, // #7AF391 (196) — 밝은 초록
     ContributionTier.tier4 => AppColors.yellow, // #F5EF38 (220) — 선명 노랑
     ContributionTier.tier5 => AppColors.yellow900, // #F7F260 (227) — 가장 밝은 노랑
+  };
+}
+
+/// 멤버 이름 → 다국어 표시명 변환
+///
+/// const list 안의 [CreditMember.name] / [CreditHelper.name]은 한국어 상수이므로
+/// UI 렌더링 시점에 이 함수로 다국어 텍스트로 변환한다.
+/// 매핑이 없는 이름은 원본 그대로 반환 (fallback).
+String localizedMemberName(AppLocalizations l10n, String name) {
+  return switch (name) {
+    '홍의민' => l10n.creditMemberHongEuiMin,
+    '박찬빈' => l10n.creditMemberParkChanBin,
+    '이창희' => l10n.creditMemberLeeChangHee,
+    '정상희' => l10n.creditMemberJeongSangHee,
+    '황혜림' => l10n.creditMemberHwangHyeRim,
+    '윤지희' => l10n.creditMemberYoonJiHee,
+    '김다임' => l10n.creditMemberKimDaim,
+    '신지훈' => l10n.creditMemberShinJiHoon,
+    '남해윤' => l10n.creditMemberNamHaeYoon,
+    '송혜정' => l10n.creditMemberSongHyeJung,
+    '이진' => l10n.creditMemberLeeJin,
+    '안금서' => l10n.creditMemberAhnGeumSeo,
+    '손건우' => l10n.creditMemberSonGeonWoo,
+    '신혜빈' => l10n.creditMemberShinHyeBin,
+    '정창우' => l10n.creditMemberJeongChangWoo,
+    '허석준' => l10n.creditMemberHeoSeokJun,
+    '서현진' => l10n.creditMemberSeoHyunJin,
+    '오동현' => l10n.creditMemberOhDongHyun,
+    '최승훈' => l10n.creditMemberChoiSeungHoon,
+    '김민욱' => l10n.creditMemberKimMinWook,
+    '정명준' => l10n.creditMemberJeongMyeongJun,
+    '강대현' => l10n.creditMemberKangDaeHyun,
+    '심 혁' => l10n.creditMemberSimHyuk,
+    _ => name,
   };
 }
 
