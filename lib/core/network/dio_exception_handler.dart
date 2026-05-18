@@ -103,13 +103,44 @@ class DioExceptionHandler {
         code: title.isNotEmpty ? title : 'conflict',
         originalException: e,
       ),
-      _ => NetworkException(
+      // 미처리 분기 — statusCode 유무로 네트워크 문제와 서버 응답을 분리
+      // (422/429 등을 NetworkException으로 묶으면 "네트워크 연결 확인" 안내 오진)
+      _ => _buildFallbackException(statusCode, title, e),
+    };
+  }
+
+  /// 명시 케이스에 잡히지 않은 응답을 statusCode 기준으로 분류
+  ///
+  /// - statusCode == null: 네트워크 자체 문제 (timeout/connection은 위에서 처리됨)
+  /// - 4xx: 미처리 클라이언트 오류 (422 Unprocessable, 429 Too Many Requests 등)
+  /// - 그 외: 서버측 오류 (5xx는 위에서 처리됐지만 안전망)
+  static AppException _buildFallbackException(
+    int? statusCode,
+    String title,
+    DioException e,
+  ) {
+    if (statusCode == null) {
+      return NetworkException(
         message: 'network error',
         messageKey: 'errorNetworkOffline',
         code: 'network-error',
         originalException: e,
-      ),
-    };
+      );
+    }
+    if (statusCode >= 400 && statusCode < 500) {
+      return ValidationException(
+        message: 'unhandled client error ($statusCode)',
+        messageKey: 'errorBadRequest',
+        code: title.isNotEmpty ? title : 'bad-request',
+        originalException: e,
+      );
+    }
+    return ServerException(
+      message: 'unhandled server error ($statusCode)',
+      messageKey: 'errorServerInternal',
+      code: title.isNotEmpty ? title : 'server-error',
+      originalException: e,
+    );
   }
 
   /// 타임아웃 에러 여부 확인
