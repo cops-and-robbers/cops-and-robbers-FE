@@ -181,10 +181,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguageSubtitle => 'Change the app display language';
 
   @override
-  String get settingsLanguageSheetTitle => 'Select language';
+  String get settingsLanguagePageTitle => 'Select language';
 
   @override
-  String get settingsLanguageOptionSystem => 'System default';
+  String get settingsLanguageOptionSystem => 'System';
 
   @override
   String get settingsLanguageOptionKorean => '한국어';

@@ -170,10 +170,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsLanguageSubtitle => '앱 표시 언어를 변경할 수 있어요';
 
   @override
-  String get settingsLanguageSheetTitle => '언어 선택';
+  String get settingsLanguagePageTitle => '언어 선택';
 
   @override
-  String get settingsLanguageOptionSystem => 'System default';
+  String get settingsLanguageOptionSystem => '시스템';
 
   @override
   String get settingsLanguageOptionKorean => '한국어';

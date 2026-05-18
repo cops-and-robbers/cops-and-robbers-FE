@@ -47,7 +47,7 @@ class _LanguageSettingsPageState extends ConsumerState<LanguageSettingsPage> {
         leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
         centerTitle: true,
         title: Text(
-          l10n.settingsLanguageSheetTitle,
+          l10n.settingsLanguagePageTitle,
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
@@ -141,7 +141,7 @@ class _LanguageOptionTile extends StatelessWidget {
               ),
             ),
             if (selected)
-              Icon(Icons.check_rounded, size: 24.r, color: AppColors.blue),
+              Icon(Icons.check_rounded, size: 16.r, color: AppColors.blue),
           ],
         ),
       ),

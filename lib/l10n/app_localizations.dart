@@ -400,16 +400,16 @@ abstract class AppLocalizations {
   /// **'앱 표시 언어를 변경할 수 있어요'**
   String get settingsLanguageSubtitle;
 
-  /// 언어 선택 BottomSheet 제목
+  /// 언어 설정 페이지 AppBar 제목
   ///
   /// In ko, this message translates to:
   /// **'언어 선택'**
-  String get settingsLanguageSheetTitle;
+  String get settingsLanguagePageTitle;
 
   /// 언어 옵션: 단말 시스템 로캘 추종
   ///
   /// In ko, this message translates to:
-  /// **'System default'**
+  /// **'시스템'**
   String get settingsLanguageOptionSystem;
 
   /// 언어 옵션: 한국어 — 모든 로캘에서 자국어 표기 유지

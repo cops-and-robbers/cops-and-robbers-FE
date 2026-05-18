@@ -228,11 +228,11 @@
   "@settingsLanguageSubtitle": {
     "description": "언어 메뉴 부제 (서브타이틀)"
   },
-  "settingsLanguageSheetTitle": "언어 선택",
-  "@settingsLanguageSheetTitle": {
-    "description": "언어 선택 BottomSheet 제목"
+  "settingsLanguagePageTitle": "언어 선택",
+  "@settingsLanguagePageTitle": {
+    "description": "언어 설정 페이지 AppBar 제목"
   },
-  "settingsLanguageOptionSystem": "System default",
+  "settingsLanguageOptionSystem": "시스템",
   "@settingsLanguageOptionSystem": {
     "description": "언어 옵션: 단말 시스템 로캘 추종"
   },
