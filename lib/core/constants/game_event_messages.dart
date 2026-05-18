@@ -13,21 +13,20 @@ import '../../l10n/app_localizations.dart';
 ///
 /// 체포 공지 등 일부 메시지에는 `@icon_police` / `@icon_robber` 마커가 포함되며,
 /// `chat_message_bubble`의 `_buildSystemMessage`에서 인라인 SVG로 치환된다.
+///
+/// **참고:** 게임 시작 시퀀스(`startReady`/`startReportTip`/`startTime`)는
+/// game_page에서 직접 `l10n.gameEventStartXxx` 호출로 처리되므로 이 클래스에
+/// 상수를 두지 않는다. Notifier 경유가 필요한 키만 등록한다.
 abstract final class GameEventMessageKey {
-  // ── START 이벤트 (4단계 시퀀스) ──
-  static const startTime = 'gameEventStartTime'; // args: [int minutes]
-  static const startReady = 'gameEventStartReady';
-  static const startReportTip = 'gameEventStartReportTip';
+  // ── START 이벤트 ──
+  // startReady/startReportTip/startTime은 game_page.dart에서 직접 호출
   static const startGo = 'gameEventStartGo';
 
-  // ── POLICE_MOVE_START 이벤트 (2단계 시퀀스) ──
-  static const policeMoveWarning = 'gameEventPoliceMoveWarning';
+  // ── POLICE_MOVE_START 이벤트 ──
   static const policeMove = 'gameEventPoliceMove';
 
   // ── LOCATION_REVEAL 이벤트 ──
   static const locationReveal = 'gameEventLocationReveal';
-  static const remainingRobbers =
-      'gameEventRemainingRobbers'; // args: [int count]
 
   // ── ARREST 이벤트 ──
   // args: [String policeNickname, String robberNickname]
@@ -35,9 +34,6 @@ abstract final class GameEventMessageKey {
 
   // ── ESCAPE 이벤트 ──
   static const escapeNotice = 'gameEventEscapeNotice';
-
-  // ── 게임 종료 5분 전 ──
-  static const fiveMinutesLeft = 'gameEventFiveMinutesLeft';
 }
 
 /// 게임 이벤트 메시지를 ARB 키로 변환하는 헬퍼.
@@ -50,28 +46,17 @@ String resolveGameEventMessage(
   List<Object?>? args,
 ]) {
   switch (key) {
-    case GameEventMessageKey.startTime:
-      return l10n.gameEventStartTime(args![0] as int);
-    case GameEventMessageKey.startReady:
-      return l10n.gameEventStartReady;
-    case GameEventMessageKey.startReportTip:
-      return l10n.gameEventStartReportTip;
     case GameEventMessageKey.startGo:
       return l10n.gameEventStartGo;
-    case GameEventMessageKey.policeMoveWarning:
-      return l10n.gameEventPoliceMoveWarning;
     case GameEventMessageKey.policeMove:
       return l10n.gameEventPoliceMove;
     case GameEventMessageKey.locationReveal:
       return l10n.gameEventLocationReveal;
-    case GameEventMessageKey.remainingRobbers:
-      return l10n.gameEventRemainingRobbers(args![0] as int);
     case GameEventMessageKey.arrestNotice:
+      // 호출부에서 [String, String] 보장 (game_event_provider._handleArrest)
       return l10n.gameEventArrestNotice(args![0] as String, args[1] as String);
     case GameEventMessageKey.escapeNotice:
       return l10n.gameEventEscapeNotice;
-    case GameEventMessageKey.fiveMinutesLeft:
-      return l10n.gameEventFiveMinutesLeft;
     default:
       return key;
   }

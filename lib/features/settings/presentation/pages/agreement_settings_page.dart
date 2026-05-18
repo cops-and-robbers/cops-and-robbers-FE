@@ -7,6 +7,7 @@ import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
@@ -99,15 +100,13 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
 
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(
-          context,
-        ).dialogagreementSettingsPageMessageEfc5,
+        message: AppLocalizations.of(context).messageChangesSaved,
       );
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       final message = e is AppException
-          ? e.message
+          ? l10n.errorByException(e)
           : l10n.errorTemporaryRetry;
       AppSnackbar.show(
         context,
@@ -166,7 +165,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
   Widget _buildError(Object error) {
     final l10n = AppLocalizations.of(context);
     final message = error is AppException
-        ? error.message
+        ? l10n.errorByException(error)
         : l10n.errorAgreementLoadFailed;
     return Padding(
       padding: AppPadding.all20,
@@ -227,10 +226,10 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     checked: status.privacyPolicy,
                     required: true,
                     readOnly: true,
-                    title: l10n.dialogagreementSettingsPageTitleBe29,
+                    title: l10n.linkPrivacyPolicy,
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
-                      title: l10n.dialogagreementSettingsPageTitleBe29,
+                      title: l10n.linkPrivacyPolicy,
                       assetPath: 'assets/legals/privacy_policy.json',
                       externalUrl: AppUrls.privacyPolicy,
                     ),

@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -500,11 +501,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       await ref.read(gamePushNotifierProvider.notifier).toggle();
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       AppSnackbar.show(
         context,
         message: e is AppException
-            ? e.message
-            : AppLocalizations.of(context).dialogsettingsPageMessage,
+            ? l10n.errorByException(e)
+            : l10n.dialogsettingsPageMessage,
         backgroundColor: AppColors.red,
       );
     } finally {
@@ -533,7 +535,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: e.message,
+        message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
     } finally {
@@ -591,7 +593,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (navigator.canPop()) navigator.pop(); // loading만 닫고 입력 페이지는 유지
       AppSnackbar.show(
         context,
-        message: e.message,
+        message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
     }
@@ -606,8 +608,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final l10n = AppLocalizations.of(context);
     final result = await AppDialog.confirm(
       context: context,
-      title: l10n.dialogsettingsPageTitleD4a4,
-      message: l10n.dialogsettingsPageMessageA4c9,
+      title: l10n.dialogTutorialResetTitle,
+      message: l10n.dialogTutorialResetMessage,
       confirmText: l10n.dialogsettingsPageConfirm,
     );
     if (result != true || !mounted) return;
@@ -618,7 +620,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     ref.read(tutorialResetSignalProvider.notifier).state++;
     AppSnackbar.show(
       context,
-      message: AppLocalizations.of(context).dialogsettingsPageMessageC8cb,
+      message: AppLocalizations.of(context).messageTutorialReset,
     );
     context.go(RoutePaths.home);
   }
@@ -630,7 +632,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final result = await AppDialog.confirm(
       context: context,
       title: l10n.dialogLogoutTitle,
-      message: l10n.dialogsettingsPageMessageE675,
+      message: l10n.dialogLogoutMessage,
       confirmText: l10n.buttonLogout,
       isDestructive: true,
     );
@@ -718,7 +720,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (!mounted) return;
       AppSnackbar.show(
         context,
-        message: e.message,
+        message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
     }

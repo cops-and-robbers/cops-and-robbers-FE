@@ -126,7 +126,8 @@ class AgreementNotifier extends _$AgreementNotifier {
       lastError = e is AppException
           ? e
           : ServerException(
-              message: '일시적인 오류가 발생했습니다. 다시 시도해주세요.',
+              // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
+              message: 'temporary error, please retry',
               messageKey: 'dialogagreementProviderMessage',
               originalException: e,
             );

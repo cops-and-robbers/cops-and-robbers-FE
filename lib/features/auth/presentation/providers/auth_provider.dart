@@ -258,7 +258,8 @@ class AuthNotifier extends _$AuthNotifier {
       } else {
         state = AsyncValue.error(
           AuthException(
-            message: '알 수 없는 오류가 발생했습니다.',
+            // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
+            message: 'unknown auth error',
             messageKey: 'dialogauthProviderMessage',
             originalException: e,
           ),
@@ -298,7 +299,8 @@ class AuthNotifier extends _$AuthNotifier {
       } else {
         state = AsyncValue.error(
           AuthException(
-            message: '알 수 없는 오류가 발생했습니다.',
+            // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
+            message: 'unknown auth error',
             messageKey: 'dialogauthProviderMessage',
             originalException: e,
           ),
@@ -325,7 +327,8 @@ class AuthNotifier extends _$AuthNotifier {
     } catch (e, stack) {
       state = AsyncValue.error(
         AuthException(
-          message: '로그아웃에 실패했습니다.',
+          // message는 로그/디버그용 — 사용자 노출은 messageKey 경유
+          message: 'logout failed',
           messageKey: 'errorLogoutFailed',
           originalException: e,
         ),

@@ -36,12 +36,12 @@ class DioExceptionHandler {
     _logError(e, apiError);
 
     // 3. 타임아웃 / 연결 에러 우선 처리
-    //    backend의 detail 메시지가 있으면 우선 사용 (서버 측 사용자 메시지)
-    //    없으면 messageKey로 i18n 폴백 — UI 레이어에서 AppLocalizations로 변환
+    //    백엔드 detail은 한국어 고정이라 비-ko 로케일에 노출되면 안 됨 → 로그용으로만 사용
+    //    (_logError에서 이미 debugPrint 처리됨). 사용자 노출은 항상 messageKey 기반.
     if (_isTimeoutError(e)) {
       return NetworkException(
-        message: apiError?.detail ?? '서버 연결 시간이 초과되었습니다',
-        messageKey: apiError?.detail == null ? 'errorNetworkTimeout' : null,
+        message: 'request timeout',
+        messageKey: 'errorNetworkTimeout',
         code: 'timeout',
         originalException: e,
       );
@@ -49,24 +49,24 @@ class DioExceptionHandler {
 
     if (_isConnectionError(e)) {
       return NetworkException(
-        message: apiError?.detail ?? '네트워크 연결을 확인하세요',
-        messageKey: apiError?.detail == null ? 'errorNetworkOffline' : null,
+        message: 'connection error',
+        messageKey: 'errorNetworkOffline',
         code: 'connection-error',
         originalException: e,
       );
     }
 
     // 4. HTTP 상태 코드별 분기
+    //    백엔드 detail/title은 사용자 노출에 사용하지 않음 (한국어 고정 응답 한계)
+    //    code 필드도 백엔드 title이 한국어("필수 약관 미동의" 등) 식별자라 그대로 두면 분석/추적용
     final statusCode = e.response?.statusCode;
-    final detail = apiError?.detail ?? '';
     final title = apiError?.title ?? '';
-    final hasServerMessage = detail.isNotEmpty;
 
     // 5xx 서버 에러 처리
     if (statusCode != null && statusCode >= 500) {
       return ServerException(
-        message: hasServerMessage ? detail : '서버에 문제가 발생했습니다',
-        messageKey: hasServerMessage ? null : 'errorServerInternal',
+        message: 'server error',
+        messageKey: 'errorServerInternal',
         code: title.isNotEmpty ? title : 'server-error',
         originalException: e,
       );
@@ -74,38 +74,38 @@ class DioExceptionHandler {
 
     return switch (statusCode) {
       400 => ValidationException(
-        message: hasServerMessage ? detail : '잘못된 요청입니다',
-        messageKey: hasServerMessage ? null : 'errorBadRequest',
+        message: 'bad request',
+        messageKey: 'errorBadRequest',
         code: title.isNotEmpty ? title : 'bad-request',
         originalException: e,
       ),
       401 => AuthException(
-        message: hasServerMessage ? detail : '인증에 실패했습니다',
-        messageKey: hasServerMessage ? null : 'errorUnauthorized',
+        message: 'unauthorized',
+        messageKey: 'errorUnauthorized',
         code: title.isNotEmpty ? title : 'unauthorized',
         originalException: e,
       ),
       403 => AuthException(
-        message: hasServerMessage ? detail : '접근 권한이 없습니다',
-        messageKey: hasServerMessage ? null : 'errorForbidden',
+        message: 'forbidden',
+        messageKey: 'errorForbidden',
         code: title.isNotEmpty ? title : 'forbidden',
         originalException: e,
       ),
       404 => ServerException(
-        message: hasServerMessage ? detail : '요청한 리소스를 찾을 수 없습니다',
-        messageKey: hasServerMessage ? null : 'errorNotFound',
+        message: 'not found',
+        messageKey: 'errorNotFound',
         code: title.isNotEmpty ? title : 'not-found',
         originalException: e,
       ),
       409 => ServerException(
-        message: hasServerMessage ? detail : '요청이 현재 상태와 충돌합니다',
-        messageKey: hasServerMessage ? null : 'errorConflict',
+        message: 'conflict',
+        messageKey: 'errorConflict',
         code: title.isNotEmpty ? title : 'conflict',
         originalException: e,
       ),
       _ => NetworkException(
-        message: hasServerMessage ? detail : '네트워크 연결을 확인하세요',
-        messageKey: hasServerMessage ? null : 'errorNetworkOffline',
+        message: 'network error',
+        messageKey: 'errorNetworkOffline',
         code: 'network-error',
         originalException: e,
       ),

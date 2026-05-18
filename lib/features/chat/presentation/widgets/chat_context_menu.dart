@@ -9,6 +9,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
@@ -156,7 +157,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
                 Navigator.of(widget.callerContext).pop();
                 AppSnackbar.show(
                   widget.callerContext,
-                  message: l10n.dialogchatContextMenuMessageDf78,
+                  message: l10n.messageReportSubmitted,
                   isDarkMode: isDark,
                 );
               } catch (e) {
@@ -165,7 +166,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
                 AppSnackbar.show(
                   widget.callerContext,
                   message: e is AppException
-                      ? e.message
+                      ? l10n.errorByException(e)
                       : l10n.errorReportFailed,
                   backgroundColor: AppColors.red,
                   isDarkMode: isDark,
@@ -223,7 +224,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
           if (!widget.callerContext.mounted) return;
           AppSnackbar.show(
             widget.callerContext,
-            message: l10n.dialogchatContextMenuMessageDf78,
+            message: l10n.messageReportSubmitted,
             isDarkMode: isDark,
           );
         } catch (e) {
@@ -231,7 +232,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
           AppSnackbar.show(
             widget.callerContext,
             message: e is AppException
-                ? e.message
+                ? l10n.errorByException(e)
                 : l10n.errorReportFailed,
             backgroundColor: AppColors.red,
             isDarkMode: isDark,
@@ -428,7 +429,7 @@ class _ActionMenu extends StatelessWidget {
       children: [
         _MenuItem(
           iconPath: 'assets/icons/icon_copy.svg',
-          label: l10n.fieldchatContextMenuLabelA83e,
+          label: l10n.buttonCopy,
           textColor: isDarkMode ? AppColors.white : AppColors.black,
           iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,
           isDarkMode: isDarkMode,
