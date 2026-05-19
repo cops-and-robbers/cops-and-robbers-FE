@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 홈 화면 앱 이름 (일본어). ARB의 appBrandName과 일치 -->
+    <string name="app_name">ケイドロ</string>
+</resources>
