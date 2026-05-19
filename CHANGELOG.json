@@ -1,11 +1,35 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-18T11:58:54Z",
-    "currentVersion": "1.9.1",
+    "lastUpdated": "2026-05-19T09:46:45Z",
+    "currentVersion": "1.9.4",
     "projectType": "flutter",
-    "totalReleases": 92
+    "totalReleases": 93
   },
   "releases": [
+    {
+      "version": "1.9.4",
+      "project_type": "flutter",
+      "date": "2026-05-19",
+      "pr_number": 372,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **새로운 기능**\n  * 한국어 및 일본어 언어 지원 추가\n  * 지역별 앱 이름 지역화 구현 (일본어: ケイドロ, 한국어: 경찰과도둑)\n  * 모바일 플랫폼 다중 언어 설정 강화\n\n* **기타**\n  * 버전 1.9.4로 업데이트\n\n[![Review Change Stack](https://storage.googleapis.com/coderabbit_public_assets/review-stack-in-coderabbit-ui.svg)](https://app.coderabbit.ai/change-stack/cops-and-robbers/cops-and-robbers-FE/pull/372?utm_source=github_walkthrough&utm_medium=github&utm_campaign=change_stack)",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "한국어 및 일본어 언어 지원 추가",
+            "지역별 앱 이름 지역화 구현 (일본어: ケイドロ, 한국어: 경찰과도둑)",
+            "모바일 플랫폼 다중 언어 설정 강화"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "버전 1.9.4로 업데이트"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.9.1",
       "project_type": "flutter",
