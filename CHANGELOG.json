@@ -1,11 +1,28 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-19T09:46:45Z",
-    "currentVersion": "1.9.4",
+    "lastUpdated": "2026-05-19T11:45:42Z",
+    "currentVersion": "1.9.5",
     "projectType": "flutter",
-    "totalReleases": 93
+    "totalReleases": 94
   },
   "releases": [
+    {
+      "version": "1.9.5",
+      "project_type": "flutter",
+      "date": "2026-05-19",
+      "pr_number": 375,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #374 from cops-and-robbers/20260519_#373_약관_페이지_진입_시_서버_동의_상태_조회하여_체크박스_초기화\n  * feat : 약관 페이지 진입 시 서버 동의 상태 조회하여 체크박스 초기화 #373\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #374 from cops-and-robbers/20260519_#373_약관_페이지_진입_시_서버_동의_상태_조회하여_체크박스_초기화",
+            "feat : 약관 페이지 진입 시 서버 동의 상태 조회하여 체크박스 초기화 #373"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.9.4",
       "project_type": "flutter",
