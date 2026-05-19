@@ -108,10 +108,15 @@ class AgreementPage extends ConsumerWidget {
                 ),
                 AppButton(
                   text: l10n.agreementPageAgreeButton,
-                  onPressed: state.hasAllRequired && !state.isSubmitting
+                  // 초기 로드 중에는 서버 응답이 사용자 입력을 덮어쓸 수 있어
+                  // 버튼을 잠시 비활성화한다.
+                  onPressed:
+                      state.hasAllRequired &&
+                          !state.isSubmitting &&
+                          !state.isLoading
                       ? () => _onSubmit(context, ref)
                       : null,
-                  isLoading: state.isSubmitting,
+                  isLoading: state.isLoading || state.isSubmitting,
                   showBorder: false,
                 ),
               ],
