@@ -1174,7 +1174,7 @@ abstract class AppLocalizations {
   /// **'참여하기'**
   String get buttonJoin;
 
-  /// 앱 브랜드명 — ko: 한글, en: 영문 'Cops and Robbers', ja: 카타카나 'コップス・アンド・ロバーズ'
+  /// 앱 브랜드명 — ko: 한글 '경찰과도둑', en: 영문 'Cops and Robbers', ja: 일본 현지명 'ケイドロ'
   ///
   /// In ko, this message translates to:
   /// **'경찰과도둑'**
