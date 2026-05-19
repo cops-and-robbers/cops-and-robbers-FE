@@ -1,0 +1,2 @@
+/* 홈 화면 앱 이름 (default: 영어). 지원 외 OS 로케일에서 fallback으로 사용 */
+"CFBundleDisplayName" = "Cops and Robbers";

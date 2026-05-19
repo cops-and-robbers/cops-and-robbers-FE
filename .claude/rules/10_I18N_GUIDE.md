@@ -274,7 +274,7 @@ on DioException catch (e) {
 
 | 카테고리 | en | ja | ko |
 |---|---|---|---|
-| **게임 타이틀** (고유명사) | `Cops and Robbers` | `Cops and Robbers` (브랜드명 유지) | `경찰과도둑` |
+| **게임 타이틀** (고유명사) | `Cops and Robbers` | `ケイドロ` (일본 현지 게임명) | `경찰과도둑` |
 | **역할 라벨/팀명** (Among Us 톤) | `Cop` / `Robber`, `Cop team` / `Robber team` | `警察` / `泥棒`, `警察チーム` / `泥棒チーム` | `경찰` / `도둑`, `경찰팀` / `도둑팀` |
 | **본문 영어** (자연스러운 문법) | "A Robber escaped", "All Robbers arrested" 등 | 동일 패턴 | 동일 |
 
