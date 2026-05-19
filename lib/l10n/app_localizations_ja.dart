@@ -577,7 +577,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonJoin => '参加する';
 
   @override
-  String get appBrandName => 'コップス・アンド・ロバーズ';
+  String get appBrandName => 'ケイドロ';
 
   @override
   String get messageComingSoon => '準備中です';
@@ -1591,7 +1591,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get creditMemberSimHyuk => 'Sim Hyuk';
 
   @override
-  String get pageCreditsTitle => 'コップス・アンド・ロバーズを作った人々';
+  String get pageCreditsTitle => 'ケイドロを作った人々';
 
   @override
   String get errorReportGeneric => '通報処理中にエラーが発生しました';
