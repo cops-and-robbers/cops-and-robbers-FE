@@ -21,6 +21,7 @@ mixin _$AgreementState {
   bool get privacyPolicy => throw _privateConstructorUsedError;
   bool get locationTerms => throw _privateConstructorUsedError;
   bool get marketing => throw _privateConstructorUsedError;
+  bool get isLoading => throw _privateConstructorUsedError;
   bool get isSubmitting => throw _privateConstructorUsedError;
 
   /// Create a copy of AgreementState
@@ -42,6 +43,7 @@ abstract class $AgreementStateCopyWith<$Res> {
     bool privacyPolicy,
     bool locationTerms,
     bool marketing,
+    bool isLoading,
     bool isSubmitting,
   });
 }
@@ -65,6 +67,7 @@ class _$AgreementStateCopyWithImpl<$Res, $Val extends AgreementState>
     Object? privacyPolicy = null,
     Object? locationTerms = null,
     Object? marketing = null,
+    Object? isLoading = null,
     Object? isSubmitting = null,
   }) {
     return _then(
@@ -84,6 +87,10 @@ class _$AgreementStateCopyWithImpl<$Res, $Val extends AgreementState>
             marketing: null == marketing
                 ? _value.marketing
                 : marketing // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isLoading: null == isLoading
+                ? _value.isLoading
+                : isLoading // ignore: cast_nullable_to_non_nullable
                       as bool,
             isSubmitting: null == isSubmitting
                 ? _value.isSubmitting
@@ -109,6 +116,7 @@ abstract class _$$AgreementStateImplCopyWith<$Res>
     bool privacyPolicy,
     bool locationTerms,
     bool marketing,
+    bool isLoading,
     bool isSubmitting,
   });
 }
@@ -131,6 +139,7 @@ class __$$AgreementStateImplCopyWithImpl<$Res>
     Object? privacyPolicy = null,
     Object? locationTerms = null,
     Object? marketing = null,
+    Object? isLoading = null,
     Object? isSubmitting = null,
   }) {
     return _then(
@@ -151,6 +160,10 @@ class __$$AgreementStateImplCopyWithImpl<$Res>
             ? _value.marketing
             : marketing // ignore: cast_nullable_to_non_nullable
                   as bool,
+        isLoading: null == isLoading
+            ? _value.isLoading
+            : isLoading // ignore: cast_nullable_to_non_nullable
+                  as bool,
         isSubmitting: null == isSubmitting
             ? _value.isSubmitting
             : isSubmitting // ignore: cast_nullable_to_non_nullable
@@ -169,6 +182,7 @@ class _$AgreementStateImpl extends _AgreementState
     this.privacyPolicy = false,
     this.locationTerms = false,
     this.marketing = false,
+    this.isLoading = true,
     this.isSubmitting = false,
   }) : super._();
 
@@ -186,11 +200,14 @@ class _$AgreementStateImpl extends _AgreementState
   final bool marketing;
   @override
   @JsonKey()
+  final bool isLoading;
+  @override
+  @JsonKey()
   final bool isSubmitting;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'AgreementState(termsOfService: $termsOfService, privacyPolicy: $privacyPolicy, locationTerms: $locationTerms, marketing: $marketing, isSubmitting: $isSubmitting)';
+    return 'AgreementState(termsOfService: $termsOfService, privacyPolicy: $privacyPolicy, locationTerms: $locationTerms, marketing: $marketing, isLoading: $isLoading, isSubmitting: $isSubmitting)';
   }
 
   @override
@@ -202,6 +219,7 @@ class _$AgreementStateImpl extends _AgreementState
       ..add(DiagnosticsProperty('privacyPolicy', privacyPolicy))
       ..add(DiagnosticsProperty('locationTerms', locationTerms))
       ..add(DiagnosticsProperty('marketing', marketing))
+      ..add(DiagnosticsProperty('isLoading', isLoading))
       ..add(DiagnosticsProperty('isSubmitting', isSubmitting));
   }
 
@@ -218,6 +236,8 @@ class _$AgreementStateImpl extends _AgreementState
                 other.locationTerms == locationTerms) &&
             (identical(other.marketing, marketing) ||
                 other.marketing == marketing) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading) &&
             (identical(other.isSubmitting, isSubmitting) ||
                 other.isSubmitting == isSubmitting));
   }
@@ -229,6 +249,7 @@ class _$AgreementStateImpl extends _AgreementState
     privacyPolicy,
     locationTerms,
     marketing,
+    isLoading,
     isSubmitting,
   );
 
@@ -250,6 +271,7 @@ abstract class _AgreementState extends AgreementState {
     final bool privacyPolicy,
     final bool locationTerms,
     final bool marketing,
+    final bool isLoading,
     final bool isSubmitting,
   }) = _$AgreementStateImpl;
   const _AgreementState._() : super._();
@@ -262,6 +284,8 @@ abstract class _AgreementState extends AgreementState {
   bool get locationTerms;
   @override
   bool get marketing;
+  @override
+  bool get isLoading;
   @override
   bool get isSubmitting;
 
