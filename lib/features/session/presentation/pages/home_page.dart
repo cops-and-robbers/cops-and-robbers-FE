@@ -41,6 +41,7 @@ import '../../../game/presentation/widgets/qr_scanner_page.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
+import '../widgets/home_character_stack.dart';
 
 class _UpperCaseFormatter extends TextInputFormatter {
   @override
@@ -599,7 +600,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           padding: AppPadding.horizontal20,
           child: Column(
             children: [
-              SizedBox(height: AppSpacing.vertical16),
+              SizedBox(height: AppSpacing.vertical8),
 
               // ── Top Bar: LOGO + Settings (좌우 24px) ──
               Padding(
@@ -645,7 +646,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               Expanded(
                 child: Column(
                   children: [
-                    SizedBox(height: AppSpacing.vertical32),
+                    SizedBox(height: AppSpacing.vertical24),
 
                     // ── Icon Buttons Row (aligned right) ──
                     Row(
@@ -670,18 +671,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ],
                     ),
 
-                    SizedBox(height: AppSpacing.vertical48),
+                    SizedBox(height: AppSpacing.vertical58),
 
                     // ── Speech Bubble ──
                     SpeechBubble(text: l10n.homePageWelcomeMessage),
 
-                    // ── Avatar Placeholder ──
-                    Image.asset(
-                      'assets/app_icon.png',
-                      width: 240.w,
-                      height: 240.h,
-                      fit: BoxFit.contain,
-                    ),
+                    SizedBox(height: AppSpacing.vertical40),
+
+                    // ── 캐릭터 Stack (경찰 앞, 도둑 뒤) ──
+                    const HomeCharacterStack(),
                   ],
                 ),
               ),
@@ -704,7 +702,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
               SizedBox(
                 height: defaultTargetPlatform == TargetPlatform.android
-                    ? AppSpacing.vertical32
+                    ? AppSpacing.vertical40
                     : AppSpacing.vertical20,
               ),
             ],

@@ -32,7 +32,7 @@ String formatDuration(int seconds) {
 String resolveBodyAsset({required String myTeam, required String winnerTeam}) {
   final teamSlug = myTeam.toLowerCase();
   final resultSlug = myTeam == winnerTeam ? 'win' : 'lose';
-  return 'assets/characters/$teamSlug/result/${resultSlug}_body.svg';
+  return 'assets/characters/$teamSlug/result/default/${resultSlug}_body.svg';
 }
 
 /// 본인 팀과 승리 팀을 비교하여 승/패에 맞는 **왼쪽 팔** SVG 경로 반환.
@@ -44,7 +44,7 @@ String resolveLeftArmAsset({
 }) {
   final teamSlug = myTeam.toLowerCase();
   final resultSlug = myTeam == winnerTeam ? 'win' : 'lose';
-  return 'assets/characters/$teamSlug/result/${resultSlug}_arm_left.svg';
+  return 'assets/characters/$teamSlug/result/default/${resultSlug}_arm_left.svg';
 }
 
 /// 본인 팀과 승리 팀을 비교하여 승/패에 맞는 **오른쪽 팔** SVG 경로 반환.
@@ -54,7 +54,7 @@ String resolveRightArmAsset({
 }) {
   final teamSlug = myTeam.toLowerCase();
   final resultSlug = myTeam == winnerTeam ? 'win' : 'lose';
-  return 'assets/characters/$teamSlug/result/${resultSlug}_arm_right.svg';
+  return 'assets/characters/$teamSlug/result/default/${resultSlug}_arm_right.svg';
 }
 
 // ============================================================
