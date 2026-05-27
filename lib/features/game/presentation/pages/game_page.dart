@@ -1523,8 +1523,6 @@ class _GamePageState extends ConsumerState<GamePage>
                   SvgIconButton(
                     assetPath: 'assets/icons/icon_map.svg',
                     onPressed: () => setState(() => _showParticipants = false),
-                    containerSize: 48,
-                    iconSize: 24,
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
                   ),
@@ -1546,8 +1544,6 @@ class _GamePageState extends ConsumerState<GamePage>
                     SvgIconButton(
                       assetPath: 'assets/icons/icon_person.svg',
                       onPressed: () => setState(() => _showParticipants = true),
-                      containerSize: 48,
-                      iconSize: 24,
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
                     ),
@@ -1558,8 +1554,6 @@ class _GamePageState extends ConsumerState<GamePage>
                   MyLocationButton(
                     onPressed: _moveToCurrentLocation,
                     isFocused: _isLocationFocused,
-                    containerSize: 48,
-                    iconSize: 24,
                     focusedColor: _isDarkMode ? AppColors.green : null,
                     unfocusedColor: _isDarkMode ? AppColors.green500 : null,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
@@ -1714,9 +1708,6 @@ class _GamePageState extends ConsumerState<GamePage>
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
       onPressed: widget.team == 'POLICE' ? _openQrScanner : _showMyQrCode,
-      containerSize: 48,
-      iconSize: 24,
-      iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
       backgroundColor: _isDarkMode ? AppColors.black : null,
     );
   }

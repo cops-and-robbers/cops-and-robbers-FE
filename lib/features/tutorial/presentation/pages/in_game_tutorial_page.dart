@@ -254,8 +254,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                     _tryAdvanceMission(0);
                     setState(() => _showParticipants = true);
                   },
-                  containerSize: 48,
-                  iconSize: 24,
                   iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                   backgroundColor: _isDarkMode ? AppColors.black : null,
                 ),
@@ -272,8 +270,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                   );
                 },
                 isFocused: true,
-                containerSize: 48,
-                iconSize: 24,
                 focusedColor: _isDarkMode ? AppColors.green : null,
                 unfocusedColor: _isDarkMode ? AppColors.green500 : null,
                 backgroundColor: _isDarkMode ? AppColors.black : null,
@@ -342,8 +338,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                     _tryAdvanceMission(2);
                     setState(() => _showParticipants = false);
                   },
-                  containerSize: 48,
-                  iconSize: 24,
                   iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                   backgroundColor: _isDarkMode ? AppColors.black : null,
                 ),
@@ -504,9 +498,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             isDarkMode: _isDarkMode,
           );
         },
-        containerSize: 48,
-        iconSize: 24,
-        iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
         backgroundColor: _isDarkMode ? AppColors.black : null,
       ),
     );
