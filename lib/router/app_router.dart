@@ -38,6 +38,13 @@ import '../features/credits/presentation/pages/credits_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/pages/maintenance_page.dart';
 import '../core/widgets/pages/force_update_page.dart';
+import '../features/session/presentation/pages/deeplink_join_page.dart';
+
+/// 딥링크 수신 후 GoRouter 외부에서 네비게이션이 필요한 경우(Task 9: DeepLinkService)에
+/// Navigator 에 직접 접근하기 위한 루트 NavigatorKey.
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'root',
+);
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
 ///
@@ -87,6 +94,7 @@ import '../core/widgets/pages/force_update_page.dart';
 final routerProvider = Provider<GoRouter>((ref) {
   debugPrint('🔧 [routerProvider] GoRouter 생성 시작');
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
     // refreshListenable 활성화 (auth 상태 변경 감지)
@@ -523,6 +531,18 @@ final routerProvider = Provider<GoRouter>((ref) {
               isDummy: isDummy,
             ),
           );
+        },
+      ),
+
+      // ====================================================================
+      // Deep Link Routes (딥링크 초대 코드 진입 — 인증 여부 불문)
+      // ====================================================================
+      GoRoute(
+        path: '${RoutePaths.joinByInvite}/:inviteCode',
+        name: RoutePaths.joinByInviteName,
+        builder: (context, state) {
+          final code = state.pathParameters['inviteCode'] ?? '';
+          return DeepLinkJoinPage(inviteCode: code);
         },
       ),
 

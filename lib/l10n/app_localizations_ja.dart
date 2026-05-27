@@ -1720,4 +1720,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String mapErrorLoadFailed(String mapName) {
     return '$mapNameの読み込みに失敗しました';
   }
+
+  @override
+  String get errorGameJoinUnexpected => 'ゲーム参加中に予期しないエラーが発生しました';
+
+  @override
+  String get errorInviteCodeInvalid => '無効な招待コードです';
+
+  @override
+  String get errorGameFull => 'この部屋は既に満員です';
+
+  @override
+  String get errorAlreadyInAnotherRoom => '既に他の部屋に参加中です。今の部屋から退出してから再度お試しください';
+
+  @override
+  String get deeplinkJoinLoading => '部屋に入室中';
+
+  @override
+  String get buttonShareInvite => '招待リンクを共有';
+
+  @override
+  String shareInviteMessage(String inviteCode) {
+    return 'ケイドロの部屋に招待されました！招待コード: $inviteCode';
+  }
 }

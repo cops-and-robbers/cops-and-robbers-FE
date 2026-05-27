@@ -539,5 +539,12 @@
   "gameEventLocationReveal": "Robbers' locations are now revealed!",
   "gameEventArrestNotice": "@icon_police [{policeNickname}] arrested @icon_robber [{robberNickname}]!",
   "gameEventEscapeNotice": "A robber has escaped from jail! Arrest them now!",
-  "mapErrorLoadFailed": "Failed to load {mapName}"
+  "mapErrorLoadFailed": "Failed to load {mapName}",
+  "errorGameJoinUnexpected": "An unexpected error occurred while joining the game",
+  "errorInviteCodeInvalid": "Invalid invite code",
+  "errorGameFull": "This room is already full",
+  "errorAlreadyInAnotherRoom": "You're already in another room. Please leave it first",
+  "deeplinkJoinLoading": "Joining the room",
+  "buttonShareInvite": "Share invite link",
+  "shareInviteMessage": "You've been invited to a Cops and Robbers room! Code: {inviteCode}"
 }

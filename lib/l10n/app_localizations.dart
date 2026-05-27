@@ -3344,6 +3344,48 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{mapName} 로드 실패'**
   String mapErrorLoadFailed(String mapName);
+
+  /// 게임 입장 시 발생한 예기치 않은 오류
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 입장 중 예기치 않은 오류가 발생했습니다'**
+  String get errorGameJoinUnexpected;
+
+  /// 딥링크로 들어온 초대 코드가 잘못된 경우 (400)
+  ///
+  /// In ko, this message translates to:
+  /// **'유효하지 않은 초대 코드예요'**
+  String get errorInviteCodeInvalid;
+
+  /// 초대 코드는 유효하지만 방 정원이 초과된 경우 (400 게임 인원 초과)
+  ///
+  /// In ko, this message translates to:
+  /// **'방이 이미 가득 찼어요'**
+  String get errorGameFull;
+
+  /// 다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요'**
+  String get errorAlreadyInAnotherRoom;
+
+  /// 딥링크 진입 transient 화면 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'방으로 이동 중이에요'**
+  String get deeplinkJoinLoading;
+
+  /// 대기실 공유 버튼 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 링크 공유'**
+  String get buttonShareInvite;
+
+  /// 카톡 등 공유 시 본문 (URL 은 별도로 append)
+  ///
+  /// In ko, this message translates to:
+  /// **'친구가 경찰과도둑 방에 초대했어요! 초대 코드 {inviteCode}'**
+  String shareInviteMessage(String inviteCode);
 }
 
 class _AppLocalizationsDelegate

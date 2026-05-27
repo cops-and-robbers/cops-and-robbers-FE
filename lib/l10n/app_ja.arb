@@ -539,5 +539,12 @@
   "gameEventLocationReveal": "現在の泥棒の位置が公開されます!",
   "gameEventArrestNotice": "@icon_police [{policeNickname}]が@icon_robber [{robberNickname}]を逮捕しました!",
   "gameEventEscapeNotice": "泥棒が脱獄しました!今すぐ逮捕してください!",
-  "mapErrorLoadFailed": "{mapName}の読み込みに失敗しました"
+  "mapErrorLoadFailed": "{mapName}の読み込みに失敗しました",
+  "errorGameJoinUnexpected": "ゲーム参加中に予期しないエラーが発生しました",
+  "errorInviteCodeInvalid": "無効な招待コードです",
+  "errorGameFull": "この部屋は既に満員です",
+  "errorAlreadyInAnotherRoom": "既に他の部屋に参加中です。今の部屋から退出してから再度お試しください",
+  "deeplinkJoinLoading": "部屋に入室中",
+  "buttonShareInvite": "招待リンクを共有",
+  "shareInviteMessage": "ケイドロの部屋に招待されました！招待コード: {inviteCode}"
 }

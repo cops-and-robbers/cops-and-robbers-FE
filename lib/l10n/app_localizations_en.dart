@@ -1851,4 +1851,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String mapErrorLoadFailed(String mapName) {
     return 'Failed to load $mapName';
   }
+
+  @override
+  String get errorGameJoinUnexpected =>
+      'An unexpected error occurred while joining the game';
+
+  @override
+  String get errorInviteCodeInvalid => 'Invalid invite code';
+
+  @override
+  String get errorGameFull => 'This room is already full';
+
+  @override
+  String get errorAlreadyInAnotherRoom =>
+      'You\'re already in another room. Please leave it first';
+
+  @override
+  String get deeplinkJoinLoading => 'Joining the room';
+
+  @override
+  String get buttonShareInvite => 'Share invite link';
+
+  @override
+  String shareInviteMessage(String inviteCode) {
+    return 'You\'ve been invited to a Cops and Robbers room! Code: $inviteCode';
+  }
 }

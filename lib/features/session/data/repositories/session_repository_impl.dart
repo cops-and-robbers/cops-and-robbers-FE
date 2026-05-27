@@ -4,10 +4,12 @@ import 'package:flutter/foundation.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../domain/entities/create_session_result.dart';
+import '../../domain/entities/game_join_result.dart';
 import '../../domain/entities/user_game_status_entity.dart';
 import '../../domain/repositories/session_repository.dart';
 import '../datasources/session_remote_datasource.dart';
 import '../models/game_create_request_model.dart';
+import '../models/join_game_request.dart';
 
 /// Session Repository 구현체
 ///
@@ -105,6 +107,27 @@ class SessionRepositoryImpl implements SessionRepository {
       throw ServerException(
         message: '참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다.',
         messageKey: 'errorActiveGameFetchUnexpected',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<GameJoinResult> joinGameByInvite({required String inviteCode}) async {
+    try {
+      final response = await _dataSource.joinGame(
+        JoinGameRequest(inviteCode: inviteCode),
+      );
+      return GameJoinResult(
+        gameId: response.gameId,
+        participantId: response.participantId,
+      );
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '게임 방 참여 중 예기치 않은 오류가 발생했습니다.',
+        messageKey: 'errorGameJoinUnexpected',
         originalException: e,
       );
     }

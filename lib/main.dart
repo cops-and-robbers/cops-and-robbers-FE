@@ -1,19 +1,26 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:go_router/go_router.dart';
 import 'package:cops_and_robbers/core/config/env_config.dart';
+import 'package:cops_and_robbers/core/deeplink/deeplink_event.dart';
+import 'package:cops_and_robbers/core/deeplink/deeplink_service.dart';
 import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
+import 'package:cops_and_robbers/features/auth/domain/entities/auth_result_entity.dart';
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/session/presentation/providers/pending_invite_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
+import 'package:cops_and_robbers/router/route_paths.dart';
 
 void main() async {
   // Flutter 엔진 초기화 보장
@@ -196,6 +203,45 @@ class _LocalizedApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(appLocaleProvider).locale;
+
+    // 딥링크 URI 수신 시 GoRouter 로 dispatch
+    ref.listen<AsyncValue<DeeplinkEvent>>(deeplinkEventsProvider, (prev, next) {
+      next.whenData((event) {
+        switch (event) {
+          case InviteJoinEvent(:final inviteCode):
+            // rootNavigatorKey 로 context 를 얻어 push (MaterialApp 트리 밖에서도 안전)
+            final ctx = rootNavigatorKey.currentContext;
+            if (ctx != null) {
+              ctx.push(RoutePaths.joinByInviteWithCode(inviteCode));
+            }
+          case UnknownEvent():
+            // 의도된 무시 — 로깅은 DeepLinkService 내부에서 처리
+            break;
+        }
+      });
+    });
+
+    // 로그인 완료 직후 pending invite 가 있으면 자동으로 join 흐름 진입
+    ref.listen<AsyncValue<AuthResultEntity?>>(authNotifierProvider, (
+      prev,
+      next,
+    ) {
+      final user = next.valueOrNull;
+      if (user == null) return;
+
+      // pending invite 를 읽어 코드가 있으면 clear 후 라우터로 push.
+      // rootNavigatorKey 는 GlobalKey 이므로 async gap 이후에도 BuildContext 없이 안전하게 접근 가능.
+      Future(() async {
+        final pending = await ref.read(pendingInviteProvider.future);
+        if (pending == null) return;
+
+        await ref.read(pendingInviteProvider.notifier).clear();
+        // ignore: use_build_context_synchronously
+        rootNavigatorKey.currentContext?.push(
+          RoutePaths.joinByInviteWithCode(pending),
+        );
+      });
+    });
 
     return MaterialApp.router(
       key: ValueKey(locale.languageCode),

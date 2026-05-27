@@ -514,6 +514,17 @@ class _HomePageState extends ConsumerState<HomePage> {
                 builder: (_) => QrScannerPage<String>(
                   title: l10n.dialogScanInviteQrTitle,
                   onParse: (rawValue) {
+                    // 1) 딥링크 URL 형식 (https://copsnro66ers.site/join/{code}) 우선 파싱
+                    final uri = Uri.tryParse(rawValue);
+                    if (uri != null && uri.host == 'copsnro66ers.site') {
+                      final segments = uri.pathSegments;
+                      if (segments.length >= 2 &&
+                          segments[0] == 'join' &&
+                          segments[1].length == 6) {
+                        return segments[1];
+                      }
+                    }
+                    // 2) 레거시 JSON 형식 fallback (옛 QR 호환)
                     try {
                       final json = jsonDecode(rawValue) as Map<String, dynamic>;
                       final code = json['inviteCode'];
