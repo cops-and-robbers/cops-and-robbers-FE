@@ -100,7 +100,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
     12: 'JAILED',
   };
 
-  /// 미션 진행도 (0=참가자, 1=QR, 2=지도복귀, 3=완료)
+  /// 미션 진행도 (0=QR, 1=참가자, 2=지도복귀, 3=완료)
   int _missionStep = 0;
 
   /// 펄스 애니메이션 컨트롤러 (활성 미션 타깃 버튼 강조용).
@@ -150,52 +150,65 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
     );
   }
 
-  /// 활성 미션 타깃 버튼에 레이더 핑 펄스 애니메이션을 입힌다.
+  /// 활성 미션 타깃 버튼에 sin 곡선 scale 애니메이션만 적용.
   ///
-  /// 두 레이어:
-  /// 1. **외곽 ring** — 팀 컬러 보더만 있는 둥근 사각형이 1.0 → 1.8로 확장하며
-  ///    opacity 1.0 → 0.0 페이드아웃. 시각적으로 "핑" 신호처럼 퍼져나간다.
-  /// 2. **버튼 본체** — sin 곡선 기반 1.0 → 1.18 → 1.0 부드러운 왕복.
-  ///
-  /// `clipBehavior: Clip.none`으로 ring이 SizedBox 경계 밖으로 자연스럽게 확장.
-  Widget _pulseIfActive({required int step, required Widget child}) {
+  /// ring(확장하는 외곽선)은 [_pulseRing]으로 분리되어 부모 Stack의 마지막
+  /// 자식으로 별도 페인트된다. 같은 Column의 형제 버튼이 ring을 덮어버리는
+  /// z-order 문제를 피하기 위함 — Column children은 리스트 순서대로 페인트되어
+  /// 위에 있는 형제의 ring overflow가 아래 형제에게 가려진다.
+  Widget _pulseButtonScale({required int step, required Widget child}) {
     if (_missionStep != step) return child;
 
+    return AnimatedBuilder(
+      animation: _pulseController,
+      builder: (_, _) {
+        final t = _pulseController.value; // 0.0 → 1.0
+        final buttonScale = 1.0 + math.sin(t * math.pi) * 0.18;
+        return Transform.scale(scale: buttonScale, child: child);
+      },
+    );
+  }
+
+  /// 펄스 외곽 ring (1.0 → 1.8 확장 + opacity 페이드아웃).
+  ///
+  /// 부모 Stack의 마지막 자식으로 배치하여 다른 형제 위젯에 가려지지 않게 한다.
+  /// `IgnorePointer`로 감싸 ring이 하단 버튼의 터치를 막지 않도록 보호.
+  ///
+  /// 외곽 박스 크기는 [SvgIconButton.containerSize] 기본값(56)에 맞춘다.
+  /// 그래야 `Positioned(top:0)` / `Positioned(bottom:0)`로 배치했을 때
+  /// 56×56 버튼과 정확히 같은 영역을 차지하고, 그 안에서 ring(48×48)이
+  /// `Center`로 정중앙 정렬되어 버튼 중심과 일치한다.
+  Widget _pulseRing() {
     final accentColor = _isDarkMode ? AppColors.green : AppColors.blue;
 
-    return SizedBox(
-      width: 48.w,
-      height: 48.w,
-      child: AnimatedBuilder(
-        animation: _pulseController,
-        builder: (_, _) {
-          final t = _pulseController.value; // 0.0 → 1.0
-          final ringScale = 1.0 + t * 0.8; // 1.0 → 1.8
-          final ringOpacity = 1.0 - t; // 1.0 → 0.0
-          final buttonScale = 1.0 + math.sin(t * math.pi) * 0.18;
-
-          return Stack(
-            alignment: Alignment.center,
-            clipBehavior: Clip.none,
-            children: [
-              Opacity(
-                opacity: ringOpacity,
+    return IgnorePointer(
+      child: SizedBox(
+        width: 56.w,
+        height: 56.w,
+        child: AnimatedBuilder(
+          animation: _pulseController,
+          builder: (_, _) {
+            final t = _pulseController.value;
+            return Center(
+              child: Opacity(
+                opacity: 1.0 - t,
                 child: Transform.scale(
-                  scale: ringScale,
-                  child: Container(
+                  scale: 1.0 + t * 0.8,
+                  child: SizedBox(
                     width: 48.w,
                     height: 48.w,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: accentColor, width: 2.5),
-                      borderRadius: BorderRadius.circular(16.r),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: accentColor, width: 2.5),
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
                     ),
                   ),
                 ),
               ),
-              Transform.scale(scale: buttonScale, child: child),
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -240,45 +253,62 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           ),
         ),
 
-        // 2. 우측 액션 버튼 — 실제 GamePage와 동일하게 [참가자, 내 위치] 2개
+        // 2. 우측 액션 버튼 — 실제 GamePage와 동일하게 [참가자, QR] 2개
+        //
+        // Column children은 페인트 순서가 리스트 순서와 동일하므로, 위 참가자 ring이
+        // 아래 QR 버튼에 가려지는 z-order 문제가 발생한다. ring을 Stack의 마지막
+        // 자식으로 분리해 활성 버튼 위치에 오버레이로 띄움.
         Positioned(
           right: 20.w,
           bottom: actionButtonBottom,
-          child: Column(
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              _pulseIfActive(
-                step: 0,
-                child: SvgIconButton(
-                  assetPath: 'assets/icons/icon_person.svg',
-                  onPressed: () {
-                    _tryAdvanceMission(0);
-                    setState(() => _showParticipants = true);
-                  },
-                  containerSize: 48,
-                  iconSize: 24,
-                  iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                  backgroundColor: _isDarkMode ? AppColors.black : null,
-                ),
+              Column(
+                children: [
+                  _pulseButtonScale(
+                    step: 1,
+                    child: SvgIconButton(
+                      assetPath: 'assets/icons/icon_person.svg',
+                      onPressed: () {
+                        _tryAdvanceMission(1);
+                        setState(() => _showParticipants = true);
+                      },
+                      iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                      backgroundColor: _isDarkMode ? AppColors.black : null,
+                    ),
+                  ),
+                  SizedBox(height: AppSpacing.vertical8),
+                  _buildQrButton(),
+                ],
               ),
-              SizedBox(height: AppSpacing.vertical8),
-              MyLocationButton(
-                onPressed: () {
-                  AppSnackbar.show(
-                    context,
-                    message: AppLocalizations.of(
-                      context,
-                    ).tutorialInGameMyLocation,
-                    isDarkMode: _isDarkMode,
-                  );
-                },
-                isFocused: true,
-                containerSize: 48,
-                iconSize: 24,
-                focusedColor: _isDarkMode ? AppColors.green : null,
-                unfocusedColor: _isDarkMode ? AppColors.green500 : null,
-                backgroundColor: _isDarkMode ? AppColors.black : null,
-              ),
+              // 펄스 ring 오버레이 — Stack 마지막 자식이라 항상 최상위 페인트.
+              // step 1: 참가자(위), step 0: QR(아래) 위치에 맞춰 표시.
+              if (_missionStep == 1)
+                Positioned(top: 0, child: _pulseRing())
+              else if (_missionStep == 0)
+                Positioned(bottom: 0, child: _pulseRing()),
             ],
+          ),
+        ),
+
+        // 좌측 하단 내 위치 (실 게임 화면 미러링).
+        // 펄스 강조 없음 — 학습 대상이 아닌 정보용 버튼.
+        Positioned(
+          left: 20.w,
+          bottom: actionButtonBottom,
+          child: MyLocationButton(
+            onPressed: () {
+              AppSnackbar.show(
+                context,
+                message: AppLocalizations.of(context).tutorialInGameMyLocation,
+                isDarkMode: _isDarkMode,
+              );
+            },
+            isFocused: true,
+            focusedColor: _isDarkMode ? AppColors.green : null,
+            unfocusedColor: _isDarkMode ? AppColors.green500 : null,
+            backgroundColor: _isDarkMode ? AppColors.black : null,
           ),
         ),
 
@@ -328,28 +358,38 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           ),
         ),
 
-        // 우측 액션 [지도 복귀, QR]
+        // 우측 액션 [지도 복귀, QR] — _buildMapMode와 동일하게 ring을 Stack
+        // 오버레이로 분리해 형제 버튼이 ring을 덮는 z-order 문제 회피.
         Positioned(
           right: 20.w,
           bottom: actionButtonBottom,
-          child: Column(
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              _pulseIfActive(
-                step: 2,
-                child: SvgIconButton(
-                  assetPath: 'assets/icons/icon_map.svg',
-                  onPressed: () {
-                    _tryAdvanceMission(2);
-                    setState(() => _showParticipants = false);
-                  },
-                  containerSize: 48,
-                  iconSize: 24,
-                  iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                  backgroundColor: _isDarkMode ? AppColors.black : null,
-                ),
+              Column(
+                children: [
+                  _pulseButtonScale(
+                    step: 2,
+                    child: SvgIconButton(
+                      assetPath: 'assets/icons/icon_map.svg',
+                      onPressed: () {
+                        _tryAdvanceMission(2);
+                        setState(() => _showParticipants = false);
+                      },
+                      iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                      backgroundColor: _isDarkMode ? AppColors.black : null,
+                    ),
+                  ),
+                  SizedBox(height: AppSpacing.vertical8),
+                  _buildQrButton(),
+                ],
               ),
-              SizedBox(height: AppSpacing.vertical8),
-              _buildQrButton(),
+              // 참가자 모드에선 step 2(지도복귀)가 위, QR은 아래. step 0은 이미
+              // 진행이 지난 후라 보통 발생하지 않지만 안전하게 함께 처리.
+              if (_missionStep == 2)
+                Positioned(top: 0, child: _pulseRing())
+              else if (_missionStep == 0)
+                Positioned(bottom: 0, child: _pulseRing()),
             ],
           ),
         ),
@@ -486,15 +526,17 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   // ============================================================================
 
   /// QR 버튼 (경찰: 스캔 / 도둑: 표시)
+  ///
+  /// scale 애니메이션만 적용. ring은 부모 Stack의 [_pulseRing] 오버레이로 분리.
   Widget _buildQrButton() {
-    return _pulseIfActive(
-      step: 1,
+    return _pulseButtonScale(
+      step: 0,
       child: SvgIconButton(
         assetPath: _isDarkMode
             ? 'assets/icons/icon_qr_code.svg'
             : 'assets/icons/icon_qr_scan.svg',
         onPressed: () {
-          _tryAdvanceMission(1);
+          _tryAdvanceMission(0);
           final l10n = AppLocalizations.of(context);
           AppSnackbar.show(
             context,
@@ -504,9 +546,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             isDarkMode: _isDarkMode,
           );
         },
-        containerSize: 48,
-        iconSize: 24,
-        iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
         backgroundColor: _isDarkMode ? AppColors.black : null,
       ),
     );
@@ -519,9 +558,9 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
 
     final l10n = AppLocalizations.of(context);
     final descriptions = [
-      l10n.tutorialMissionParticipantsButton,
-      l10n.tutorialMissionQrButton,
-      l10n.tutorialMissionMapButton,
+      l10n.tutorialMissionQrButton, // step 0 (QR 먼저)
+      l10n.tutorialMissionParticipantsButton, // step 1
+      l10n.tutorialMissionMapButton, // step 2
     ];
 
     final accentColor = _isDarkMode ? AppColors.green : AppColors.blue;

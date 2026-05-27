@@ -1523,8 +1523,6 @@ class _GamePageState extends ConsumerState<GamePage>
                   SvgIconButton(
                     assetPath: 'assets/icons/icon_map.svg',
                     onPressed: () => setState(() => _showParticipants = false),
-                    containerSize: 48,
-                    iconSize: 24,
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
                   ),
@@ -1539,34 +1537,41 @@ class _GamePageState extends ConsumerState<GamePage>
               bottom: actionButtonBottom,
               child: Column(
                 children: [
-                  // 참가자 목록 버튼: 이탈 중에는 아예 숨김
-                  // (IgnorePointer로 비활성만 시키면 "있는데 안 눌리는" 혼란이 생기고,
-                  //  참가자 화면 진입 자체가 복귀 시야를 가려 위험하므로 시야에서 제거)
+                  // 참가자·QR 모두 이탈 중에는 숨김.
+                  // 구역 밖에선 체포/QR 액션 자체가 무의미 + 외적으로도 차단 필요.
+                  // 복귀 경로는 좌측 하단 내 위치 버튼이 담당.
                   if (!_isZoneExitWarningActive) ...[
                     SvgIconButton(
                       assetPath: 'assets/icons/icon_person.svg',
                       onPressed: () => setState(() => _showParticipants = true),
-                      containerSize: 48,
-                      iconSize: 24,
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
                     ),
                     SizedBox(height: AppSpacing.vertical8),
+                    _buildQrButton(),
                   ],
-                  // 내 위치 버튼: 이탈 중에도 활성화 유지
-                  // (오히려 복귀 경로 파악에 필수적인 동작이라 차단하면 UX 저해)
-                  MyLocationButton(
-                    onPressed: _moveToCurrentLocation,
-                    isFocused: _isLocationFocused,
-                    containerSize: 48,
-                    iconSize: 24,
-                    focusedColor: _isDarkMode ? AppColors.green : null,
-                    unfocusedColor: _isDarkMode ? AppColors.green500 : null,
-                    backgroundColor: _isDarkMode ? AppColors.black : null,
-                  ),
                 ],
               ),
             ),
+
+          /// index 5b: 좌측 하단 내 위치 버튼 (지도 모드 한정, if/else로 개수 고정)
+          ///
+          /// 이탈 중에도 활성화 유지 — 복귀 경로 파악에 필수적이라 차단하면 UX 저해.
+          /// 참가자 모드에서는 지도가 안 보이므로 의미 없음 → 숨김.
+          if (!_showParticipants)
+            Positioned(
+              left: 20.w,
+              bottom: actionButtonBottom,
+              child: MyLocationButton(
+                onPressed: _moveToCurrentLocation,
+                isFocused: _isLocationFocused,
+                focusedColor: _isDarkMode ? AppColors.green : null,
+                unfocusedColor: _isDarkMode ? AppColors.green500 : null,
+                backgroundColor: _isDarkMode ? AppColors.black : null,
+              ),
+            )
+          else
+            const SizedBox.shrink(),
 
           /// index 6: 체포 잠금 오버레이 (if/else로 개수 고정, 도둑팀 체포 시 표시)
           if (isArrestedNow)
@@ -1595,15 +1600,23 @@ class _GamePageState extends ConsumerState<GamePage>
           /// release 빌드에서는 kDebugMode = false로 dead-code 제거됨.
           if (kDebugMode)
             Positioned(
-              left: 12.w,
-              bottom: actionButtonBottom,
-              child: FloatingActionButton(
-                heroTag: 'game_debug',
-                mini: true,
-                backgroundColor: AppColors.black.withValues(alpha: 0.7),
-                foregroundColor: AppColors.white,
-                onPressed: widget.isDummy ? null : () => _showDebugMenu(),
-                child: const Icon(Icons.bug_report),
+              right: 12.w,
+              top: 0,
+              child: SafeArea(
+                bottom: false,
+                // 64.h: 상단 타이머 HUD Container 높이와 동일.
+                // HUD 아래로 살짝 띄워 디버그 버튼이 타이머/서브타이머와 겹치지 않게.
+                child: Padding(
+                  padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
+                  child: FloatingActionButton(
+                    heroTag: 'game_debug',
+                    mini: true,
+                    backgroundColor: AppColors.black.withValues(alpha: 0.7),
+                    foregroundColor: AppColors.white,
+                    onPressed: widget.isDummy ? null : () => _showDebugMenu(),
+                    child: const Icon(Icons.bug_report),
+                  ),
+                ),
               ),
             )
           else
@@ -1714,9 +1727,6 @@ class _GamePageState extends ConsumerState<GamePage>
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
       onPressed: widget.team == 'POLICE' ? _openQrScanner : _showMyQrCode,
-      containerSize: 48,
-      iconSize: 24,
-      iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
       backgroundColor: _isDarkMode ? AppColors.black : null,
     );
   }

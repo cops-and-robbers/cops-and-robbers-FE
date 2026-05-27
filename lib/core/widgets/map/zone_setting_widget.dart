@@ -257,6 +257,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                   isFocused: _isLocationFocused,
                   containerSize: 40,
                   iconSize: 24,
+                  borderRadius: 12,
                   focusedColor: widget.locationButtonColor ?? AppColors.blue,
                   unfocusedColor: _unfocusedLocationColor(),
                   backgroundColor: widget.isDarkMode ? AppColors.black : null,
