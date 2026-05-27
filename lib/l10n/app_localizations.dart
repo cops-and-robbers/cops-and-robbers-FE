@@ -1189,7 +1189,7 @@ abstract class AppLocalizations {
   /// 홈 페이지 — 메인 환영 메시지
   ///
   /// In ko, this message translates to:
-  /// **'너무 기대 돼\n이번에는 어떤 역할을 할까?'**
+  /// **'누가 내 치즈\n훔쳐갔어!!!!🧀'**
   String get homePageWelcomeMessage;
 
   /// 공통 — 방 만들기 버튼

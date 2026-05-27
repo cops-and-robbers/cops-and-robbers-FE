@@ -583,7 +583,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get messageComingSoon => '準備中です';
 
   @override
-  String get homePageWelcomeMessage => 'とても楽しみです\n今回はどんな役割になるでしょうか';
+  String get homePageWelcomeMessage => '誰がぼくのチーズを\n盗んだの!!!!🧀';
 
   @override
   String get buttonCreateRoom => '待機室を作る';
