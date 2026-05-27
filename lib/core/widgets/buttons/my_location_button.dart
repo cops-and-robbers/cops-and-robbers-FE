@@ -14,6 +14,7 @@ class MyLocationButton extends StatelessWidget {
     required this.isFocused,
     this.containerSize = 56,
     this.iconSize = 32,
+    this.borderRadius = 16,
     this.focusedColor,
     this.unfocusedColor,
     this.backgroundColor,
@@ -31,6 +32,9 @@ class MyLocationButton extends StatelessWidget {
 
   /// 아이콘 크기 (기본값: 32 )
   final double iconSize;
+
+  /// 모서리 반경 (기본값: 16) — [SvgIconButton.borderRadius]와 동일 의미
+  final double borderRadius;
 
   /// 포커싱 시 아이콘 색상 (null이면 SVG 원본 색상 사용)
   final Color? focusedColor;
@@ -51,6 +55,7 @@ class MyLocationButton extends StatelessWidget {
       onPressed: onPressed,
       containerSize: containerSize,
       iconSize: iconSize,
+      borderRadius: borderRadius,
       iconColor: isFocused ? focusedColor : unfocusedColor,
       backgroundColor: backgroundColor,
       isDarkMode: isDarkMode,
