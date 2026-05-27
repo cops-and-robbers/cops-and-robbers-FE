@@ -23,6 +23,7 @@ import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
@@ -41,6 +42,7 @@ import '../../../game/presentation/widgets/qr_scanner_page.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
+import '../widgets/home_character_stack.dart';
 
 class _UpperCaseFormatter extends TextInputFormatter {
   @override
@@ -599,7 +601,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           padding: AppPadding.horizontal20,
           child: Column(
             children: [
-              SizedBox(height: AppSpacing.vertical16),
+              SizedBox(height: AppSpacing.vertical8),
 
               // ── Top Bar: LOGO + Settings (좌우 24px) ──
               Padding(
@@ -645,7 +647,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               Expanded(
                 child: Column(
                   children: [
-                    SizedBox(height: AppSpacing.vertical32),
+                    SizedBox(height: AppSpacing.vertical24),
 
                     // ── Icon Buttons Row (aligned right) ──
                     Row(
@@ -670,18 +672,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ],
                     ),
 
-                    SizedBox(height: AppSpacing.vertical48),
+                    SizedBox(height: AppSpacing.vertical58),
 
                     // ── Speech Bubble ──
-                    SpeechBubble(text: l10n.homePageWelcomeMessage),
-
-                    // ── Avatar Placeholder ──
-                    Image.asset(
-                      'assets/app_icon.png',
-                      width: 240.w,
-                      height: 240.h,
-                      fit: BoxFit.contain,
+                    // 클래식 스킨(이스터에그)일 때는 옛 환영 메시지, 기본은 치즈 메시지
+                    SpeechBubble(
+                      text: ref.watch(characterSkinProvider) == 'classic'
+                          ? l10n.homePageWelcomeMessageClassic
+                          : l10n.homePageWelcomeMessage,
                     ),
+
+                    SizedBox(height: AppSpacing.vertical40),
+
+                    // ── 캐릭터 Stack (경찰 앞, 도둑 뒤) ──
+                    const HomeCharacterStack(),
                   ],
                 ),
               ),
@@ -704,7 +708,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
               SizedBox(
                 height: defaultTargetPlatform == TargetPlatform.android
-                    ? AppSpacing.vertical32
+                    ? AppSpacing.vertical40
                     : AppSpacing.vertical20,
               ),
             ],

@@ -81,6 +81,9 @@ class AppSpacing {
   /// 상하 48px 간격
   static double get vertical48 => 48.h;
 
+  /// 상하 58px 간격
+  static double get vertical58 => 58.h;
+
   /// 상하 64px 간격
   static double get vertical64 => 64.h;
 }

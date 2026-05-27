@@ -581,7 +581,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get messageComingSoon => '준비중입니다';
 
   @override
-  String get homePageWelcomeMessage => '너무 기대 돼\n이번에는 어떤 역할을 할까?';
+  String get homePageWelcomeMessage => '누가 내 치즈\n훔쳐갔어!!!!🧀';
+
+  @override
+  String get homePageWelcomeMessageClassic => '너무 기대 돼\n이번에는 어떤 역할을 할까?';
 
   @override
   String get buttonCreateRoom => '방 만들기';
