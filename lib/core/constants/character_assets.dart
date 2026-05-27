@@ -15,3 +15,20 @@ String characterAssetPath({
 }) {
   return 'assets/characters/$team/$skinId/$state.svg';
 }
+
+/// 게임 결과 화면 캐릭터 SVG 경로를 생성한다.
+///
+/// 규칙: `assets/characters/{team}/result/{skinId}/{result}_{part}.svg`
+///
+/// - [team]   `'police'` | `'robber'`
+/// - [skinId] 스킨 식별자. 기본값 `'default'`
+/// - [result] `'win'` | `'lose'`
+/// - [part]   `'body'` | `'arm_left'` | `'arm_right'`
+String resultCharacterAssetPath({
+  required String team,
+  String skinId = 'default',
+  required String result,
+  required String part,
+}) {
+  return 'assets/characters/$team/result/$skinId/${result}_$part.svg';
+}
