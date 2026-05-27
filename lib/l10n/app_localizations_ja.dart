@@ -586,6 +586,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homePageWelcomeMessage => '誰がぼくのチーズを\n盗んだの!!!!🧀';
 
   @override
+  String get homePageWelcomeMessageClassic => 'とても楽しみです\n今回はどんな役割になるでしょうか';
+
+  @override
   String get buttonCreateRoom => '待機室を作る';
 
   @override

@@ -5,8 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../domain/entities/game_result_entity.dart';
@@ -29,10 +31,21 @@ String formatDuration(int seconds) {
 /// 본인 팀과 승리 팀을 비교하여 승/패에 맞는 캐릭터 **몸통** SVG 경로 반환.
 ///
 /// 몸통은 다이얼로그 **뒤**에 배치되어 상단 튀어나온 부분만 보임.
-String resolveBodyAsset({required String myTeam, required String winnerTeam}) {
+///
+/// [skinId] 는 `characterSkinProvider` 가 제공하는 글로벌 스킨.
+String resolveBodyAsset({
+  required String myTeam,
+  required String winnerTeam,
+  String skinId = 'default',
+}) {
   final teamSlug = myTeam.toLowerCase();
   final resultSlug = myTeam == winnerTeam ? 'win' : 'lose';
-  return 'assets/characters/$teamSlug/result/default/${resultSlug}_body.svg';
+  return resultCharacterAssetPath(
+    team: teamSlug,
+    skinId: skinId,
+    result: resultSlug,
+    part: 'body',
+  );
 }
 
 /// 본인 팀과 승리 팀을 비교하여 승/패에 맞는 **왼쪽 팔** SVG 경로 반환.
@@ -41,20 +54,32 @@ String resolveBodyAsset({required String myTeam, required String winnerTeam}) {
 String resolveLeftArmAsset({
   required String myTeam,
   required String winnerTeam,
+  String skinId = 'default',
 }) {
   final teamSlug = myTeam.toLowerCase();
   final resultSlug = myTeam == winnerTeam ? 'win' : 'lose';
-  return 'assets/characters/$teamSlug/result/default/${resultSlug}_arm_left.svg';
+  return resultCharacterAssetPath(
+    team: teamSlug,
+    skinId: skinId,
+    result: resultSlug,
+    part: 'arm_left',
+  );
 }
 
 /// 본인 팀과 승리 팀을 비교하여 승/패에 맞는 **오른쪽 팔** SVG 경로 반환.
 String resolveRightArmAsset({
   required String myTeam,
   required String winnerTeam,
+  String skinId = 'default',
 }) {
   final teamSlug = myTeam.toLowerCase();
   final resultSlug = myTeam == winnerTeam ? 'win' : 'lose';
-  return 'assets/characters/$teamSlug/result/default/${resultSlug}_arm_right.svg';
+  return resultCharacterAssetPath(
+    team: teamSlug,
+    skinId: skinId,
+    result: resultSlug,
+    part: 'arm_right',
+  );
 }
 
 // ============================================================
@@ -181,14 +206,21 @@ class GameOverResultDialog extends ConsumerWidget {
     final resultAsync = ref.watch(gameResultProvider(gameResultId));
     final isWin = myTeam == winnerTeam;
     final isRobber = myTeam == 'ROBBER';
-    final bodyAsset = resolveBodyAsset(myTeam: myTeam, winnerTeam: winnerTeam);
+    final skinId = ref.watch(characterSkinProvider);
+    final bodyAsset = resolveBodyAsset(
+      myTeam: myTeam,
+      winnerTeam: winnerTeam,
+      skinId: skinId,
+    );
     final leftArmAsset = resolveLeftArmAsset(
       myTeam: myTeam,
       winnerTeam: winnerTeam,
+      skinId: skinId,
     );
     final rightArmAsset = resolveRightArmAsset(
       myTeam: myTeam,
       winnerTeam: winnerTeam,
+      skinId: skinId,
     );
 
     // 팀별 몸통 크기 / 겹침 깊이 / 가로 오프셋 선택

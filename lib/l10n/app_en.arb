@@ -182,6 +182,7 @@
   "appBrandName": "Cops and Robbers",
   "messageComingSoon": "In preparation",
   "homePageWelcomeMessage": "Who stole\nMy cheese!!!!🧀",
+  "homePageWelcomeMessageClassic": "I am so excited\nWhat role will I play this time?",
   "buttonCreateRoom": "Create room",
   "buttonJoinRoom": "Join room",
   "sessionCreationStepZoneSubtitle": "Set up the game area\nPlease designate the playground first",

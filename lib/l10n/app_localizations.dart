@@ -1186,11 +1186,17 @@ abstract class AppLocalizations {
   /// **'준비중입니다'**
   String get messageComingSoon;
 
-  /// 홈 페이지 — 메인 환영 메시지
+  /// 홈 페이지 — 메인 환영 메시지 (default 스킨)
   ///
   /// In ko, this message translates to:
   /// **'누가 내 치즈\n훔쳐갔어!!!!🧀'**
   String get homePageWelcomeMessage;
+
+  /// 홈 페이지 — 메인 환영 메시지 (classic 스킨 이스터에그)
+  ///
+  /// In ko, this message translates to:
+  /// **'너무 기대 돼\n이번에는 어떤 역할을 할까?'**
+  String get homePageWelcomeMessageClassic;
 
   /// 공통 — 방 만들기 버튼
   ///

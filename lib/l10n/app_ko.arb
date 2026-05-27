@@ -779,7 +779,11 @@
   },
   "homePageWelcomeMessage": "누가 내 치즈\n훔쳐갔어!!!!🧀",
   "@homePageWelcomeMessage": {
-    "description": "홈 페이지 — 메인 환영 메시지"
+    "description": "홈 페이지 — 메인 환영 메시지 (default 스킨)"
+  },
+  "homePageWelcomeMessageClassic": "너무 기대 돼\n이번에는 어떤 역할을 할까?",
+  "@homePageWelcomeMessageClassic": {
+    "description": "홈 페이지 — 메인 환영 메시지 (classic 스킨 이스터에그)"
   },
   "buttonCreateRoom": "방 만들기",
   "@buttonCreateRoom": {
