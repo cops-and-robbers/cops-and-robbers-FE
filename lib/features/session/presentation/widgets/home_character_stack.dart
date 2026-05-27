@@ -32,7 +32,8 @@ class _HomeCharacterStackState extends ConsumerState<HomeCharacterStack> {
   /// 마지막 탭으로부터 2초 초과 시 카운터 리셋, 5탭 도달 시 스킨 토글 + 페이드.
   void _onCharacterTap() {
     final now = DateTime.now();
-    if (_lastTap != null && now.difference(_lastTap!).inSeconds > 2) {
+    if (_lastTap != null &&
+        now.difference(_lastTap!) > const Duration(seconds: 2)) {
       _tapCount = 0;
     }
     _lastTap = now;
