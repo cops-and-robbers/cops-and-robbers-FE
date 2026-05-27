@@ -104,29 +104,29 @@ class GameOverResultDialog extends ConsumerWidget {
 
   // --- 경찰 몸통 ---
   /// 경찰 몸통 렌더 높이.
-  static const double _policeBodyHeight = 136;
+  static const double _policeBodyHeight = 140;
 
   /// 경찰 몸통 하단이 다이얼로그 상단에 겹쳐지는 깊이.
   /// 다이얼로그 radius와 비슷하게 두어 경계가 자연스럽게 보이도록.
-  static const double _policeBodyOverlapIntoDialog = 40;
+  static const double _policeBodyOverlapIntoDialog = 14;
 
   /// 경찰 몸통 가로 오프셋. 양수 = 우측으로 이동.
   static const double _policeBodyHorizontalShift = 0;
 
   // --- 도둑 몸통 ---
   /// 도둑 몸통 렌더 높이 (경찰과 별개로 조절 가능).
-  static const double _robberBodyHeight = 120;
+  static const double _robberBodyHeight = 100;
 
   /// 도둑 몸통 하단이 다이얼로그 상단에 겹쳐지는 깊이.
-  static const double _robberBodyOverlapIntoDialog = 36;
+  static const double _robberBodyOverlapIntoDialog = 5;
 
   /// 도둑 몸통 가로 오프셋 — SVG 비대칭(두건 매듭 등) 시각 보정.
   /// 양수 = 우측으로 이동.
-  static const double _robberBodyHorizontalShift = 8;
+  static const double _robberBodyHorizontalShift = 0;
 
   /// 팔 공통 top 오프셋 (다이얼로그 상단 기준).
   /// 음수 = 다이얼로그 위로, 양수 = 다이얼로그 안쪽으로.
-  static const double _armTopOffset = -10;
+  static const double _armTopOffset = -12;
 
   // --- 경찰 팔 ---
   /// 경찰 팔 렌더 크기 (원본 viewBox 47 × 26).
@@ -135,17 +135,17 @@ class GameOverResultDialog extends ConsumerWidget {
 
   /// 경찰 팔 좌/우 여백 (다이얼로그 가장자리 기준 안쪽).
   /// 값 ↑ = 팔 사이 좁아짐, 값 ↓ = 다이얼로그 모서리 가까이.
-  static const double _policeArmLeftInset = 100;
-  static const double _policeArmRightInset = 100;
+  static const double _policeArmLeftInset = 98;
+  static const double _policeArmRightInset = 98;
 
   // --- 도둑 팔 ---
   /// 도둑 팔 렌더 크기 (경찰과 별개로 조절 가능).
-  static const double _robberArmWidth = 47;
-  static const double _robberArmHeight = 26;
+  static const double _robberArmWidth = 40;
+  static const double _robberArmHeight = 22;
 
   /// 도둑 팔 좌/우 여백 (경찰과 별개로 조절 가능).
-  static const double _robberArmLeftInset = 100;
-  static const double _robberArmRightInset = 100;
+  static const double _robberArmLeftInset = 126;
+  static const double _robberArmRightInset = 126;
 
   /// 다이얼로그 호출 헬퍼 — `AppDialog`의 barrier 스타일을 따르되,
   /// 테스트 호환성 유지를 위해 `showDialog`의 기본 라우트를 사용한다.
