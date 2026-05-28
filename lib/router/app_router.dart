@@ -140,6 +140,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           if (publicPaths.contains(currentPath)) {
             return null;
           }
+          // 딥링크 진입 (/join/{code}) 도 허용 — DeepLinkJoinPage 가 자체적으로
+          // PendingInvite 를 저장한 후 로그인 화면으로 보낸다.
+          // 미로그인 상태에서 이 경로를 차단하면 pending invite 가 저장되지 않아
+          // 로그인 직후 자동 join 흐름이 깨진다.
+          if (currentPath.startsWith('${RoutePaths.joinByInvite}/')) {
+            return null;
+          }
           // 그 외 모든 페이지는 로그인으로 리다이렉트
           return RoutePaths.login;
         }

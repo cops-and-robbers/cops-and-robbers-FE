@@ -66,7 +66,7 @@
                 <data
                     android:scheme="https"
                     android:host="copsnro66ers.site"
-                    android:pathPrefix="/join" />
+                    android:pathPrefix="/join/" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

@@ -221,13 +221,23 @@ class _LocalizedApp extends ConsumerWidget {
       });
     });
 
-    // 로그인 완료 직후 pending invite 가 있으면 자동으로 join 흐름 진입
+    // 로그인 완료 + 진입 절차(약관 동의, 닉네임 설정) 모두 끝난 시점에만
+    // pending invite 를 소비해 자동 join 흐름으로 진입한다.
+    //
+    // 단순히 user != null 만으로 소비하면 GoRouter redirect 가
+    // /agreement 또는 /nickname-setup 으로 강제 이동시켜 push 가 무시되고
+    // pending invite 만 유실되는 문제가 발생한다. (신규 유저 / 약관 미동의 케이스)
+    //
+    // 본 listener 는 auth state 가 변할 때마다 발화되므로,
+    // 약관 동의 → 닉네임 설정 → 최종 완료 순서로 자연스럽게 마지막 발화에서만 consume 된다.
     ref.listen<AsyncValue<AuthResultEntity?>>(authNotifierProvider, (
       prev,
       next,
     ) {
       final user = next.valueOrNull;
       if (user == null) return;
+      // 진입 절차가 남아 있으면 invite 보존 (다음 발화에서 다시 평가)
+      if (user.isNewUser || user.requiresAgreement) return;
 
       // pending invite 를 읽어 코드가 있으면 clear 후 라우터로 push.
       // rootNavigatorKey 는 GlobalKey 이므로 async gap 이후에도 BuildContext 없이 안전하게 접근 가능.
