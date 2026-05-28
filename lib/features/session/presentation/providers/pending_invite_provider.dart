@@ -34,10 +34,17 @@ class PendingInvite extends _$PendingInvite {
   ///
   /// 저장 실패 시 [DatabaseException]을 던지고 state도 AsyncError로 반영해
   /// 상위 흐름이 일관된 상태 관찰 + 예외 catch 두 경로로 복구할 수 있게 한다.
+  /// SharedPreferences.setString은 시그니처상 false 반환이 가능하므로 ok도 검증.
   Future<void> save(String code) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_key, code);
+      final ok = await prefs.setString(_key, code);
+      if (!ok) {
+        throw const DatabaseException(
+          message: '초대 코드 저장에 실패했습니다',
+          messageKey: 'errorPendingInviteSave',
+        );
+      }
       state = AsyncValue.data(code);
     } catch (e, stack) {
       final exception = DatabaseException(
@@ -51,10 +58,18 @@ class PendingInvite extends _$PendingInvite {
   }
 
   /// 저장된 초대 코드를 삭제하고 상태를 null 로 초기화한다.
+  ///
+  /// SharedPreferences.remove도 시그니처상 false 반환이 가능하므로 ok 검증 후 throw.
   Future<void> clear() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_key);
+      final ok = await prefs.remove(_key);
+      if (!ok) {
+        throw const DatabaseException(
+          message: '초대 코드 삭제에 실패했습니다',
+          messageKey: 'errorPendingInviteClear',
+        );
+      }
       state = const AsyncValue.data(null);
     } catch (e, stack) {
       final exception = DatabaseException(
