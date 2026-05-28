@@ -104,7 +104,6 @@ flutter:
     - assets/fonts/
     - assets/icons/
     - assets/legals/
-    - assets/messages/
     - assets/credits/
     - assets/characters/police/default/
     - assets/characters/robber/default/

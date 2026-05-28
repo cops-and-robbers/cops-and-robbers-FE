@@ -57,40 +57,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get chatSystemGameStartReady =>
-      'The game will start shortly. All players, please get ready!';
-
-  @override
   String get chatSystemGameStartReportTip =>
       'During the game, you can long-press a chat message to report and block disruptive users';
-
-  @override
-  String get chatSystemGameStartGo => 'Game start! Good luck!';
 
   @override
   String get chatSystemPoliceMoveWarning =>
       'The Cops will move out shortly. Robbers, hurry up and move!';
 
   @override
-  String get chatSystemPoliceMove => 'Cops moving out! Robbers, run away!';
-
-  @override
-  String get chatSystemLocationReveal =>
-      'The Robbers\' current locations are being revealed!';
-
-  @override
   String chatSystemRemainingRobbers(int count) {
     return 'Currently $count people running away!';
   }
-
-  @override
-  String chatSystemArrest(String policeNickname, String robberNickname) {
-    return '@icon_police [$policeNickname] arrested @icon_robber [$robberNickname]!';
-  }
-
-  @override
-  String get chatSystemEscapeNotice =>
-      'A Robber has jailbroken! Arrest them right now!';
 
   @override
   String get chatSystemFiveMinutesLeft =>
@@ -203,276 +180,210 @@ class AppLocalizationsEn extends AppLocalizations {
   String get asset_loading_joinRoom => 'Preparing to infiltrate';
 
   @override
-  String get asset_loading_joinRoom477c => 'Joining the operation';
+  String get asset_loading_joinRoomJoinOperation => 'Joining the operation';
 
   @override
-  String get asset_loading_joinRoom24a9 =>
+  String get asset_loading_joinRoomEnterSecretPassage =>
       'Entering through the secret passage';
 
   @override
-  String get asset_loading_joinRoomCb98 => 'Checking the disguise';
+  String get asset_loading_joinRoomCheckDisguise => 'Checking the disguise';
 
   @override
-  String get asset_loading_joinRoomF964 =>
+  String get asset_loading_joinRoomCheckDeployment =>
       'Checking the operation deployment personnel';
-
-  @override
-  String get asset_loading_joinRoomB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_joinRoomAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_joinRoom25aa =>
-      'Rumor has it that someone hid a secret in the version number';
 
   @override
   String get asset_loading_createRoom =>
       'Setting up the operation headquarters';
 
   @override
-  String get asset_loading_createRoomF1fe => 'Preparing the secret hideout';
+  String get asset_loading_createRoomPrepareHideout =>
+      'Preparing the secret hideout';
 
   @override
-  String get asset_loading_createRoom01f8 => 'Securing the game area';
+  String get asset_loading_createRoomSecureArea => 'Securing the game area';
 
   @override
-  String get asset_loading_createRoom5076 => 'Unfolding the secret map';
+  String get asset_loading_createRoomUnfoldMap => 'Unfolding the secret map';
 
   @override
-  String get asset_loading_createRoomDd9e =>
+  String get asset_loading_createRoomTuneRadio =>
       'Tuning the walkie-talkie frequency';
-
-  @override
-  String get asset_loading_createRoomB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_createRoomAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_createRoom25aa =>
-      'Rumor has it that someone hid a secret in the version number';
 
   @override
   String get asset_loading_changeTeam => 'Disguising';
 
   @override
-  String get asset_loading_changeTeam681d => 'Changing the cover identity';
+  String get asset_loading_changeTeamChangeCoverIdentity =>
+      'Changing the cover identity';
 
   @override
-  String get asset_loading_changeTeam1106 => 'Laundering the identity';
+  String get asset_loading_changeTeamLaunderIdentity =>
+      'Laundering the identity';
 
   @override
-  String get asset_loading_changeTeam4d7a => 'Switching to double spy';
+  String get asset_loading_changeTeamSwitchToDoubleSpy =>
+      'Switching to double spy';
 
   @override
-  String get asset_loading_changeTeam4cdc => 'Issuing a new ID';
-
-  @override
-  String get asset_loading_changeTeamB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_changeTeamAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_changeTeam25aa =>
-      'Rumor has it that someone hid a secret in the version number';
+  String get asset_loading_changeTeamIssueNewId => 'Issuing a new ID';
 
   @override
   String get asset_loading_startGame => 'Preparing to start the operation';
 
   @override
-  String get asset_loading_startGameA35d => 'Preparing to move out';
+  String get asset_loading_startGamePrepareMoveOut => 'Preparing to move out';
 
   @override
-  String get asset_loading_startGame64c3 => 'Starting countdown';
+  String get asset_loading_startGameCountdownStart => 'Starting countdown';
 
   @override
-  String get asset_loading_startGame7a2f => 'Turning on the walkie-talkie';
+  String get asset_loading_startGameTurnOnRadio =>
+      'Turning on the walkie-talkie';
 
   @override
-  String get asset_loading_startGame1b41 => 'Deploying field agents';
-
-  @override
-  String get asset_loading_startGameB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_startGameAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_startGame25aa =>
-      'Rumor has it that someone hid a secret in the version number';
+  String get asset_loading_startGameDeployAgents => 'Deploying field agents';
 
   @override
   String get asset_loading_updateArea => 'Setting up the game area';
 
   @override
-  String get asset_loading_updateArea8c32 =>
+  String get asset_loading_updateAreaDesignateZone =>
       'Designating the jurisdiction zone';
 
   @override
-  String get asset_loading_updateArea0183 => 'Plotting points on the map';
+  String get asset_loading_updateAreaPlotOnMap => 'Plotting points on the map';
 
   @override
-  String get asset_loading_updateArea2433 => 'Analyzing satellite imagery';
+  String get asset_loading_updateAreaAnalyzeSatellite =>
+      'Analyzing satellite imagery';
 
   @override
-  String get asset_loading_updateAreaDc8b => 'Calculating the operation radius';
-
-  @override
-  String get asset_loading_updateAreaB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_updateAreaAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_updateArea25aa =>
-      'Rumor has it that someone hid a secret in the version number';
+  String get asset_loading_updateAreaCalculateRange =>
+      'Calculating the operation radius';
 
   @override
   String get asset_loading_saveSettings => 'Editing operation guidelines';
 
   @override
-  String get asset_loading_saveSettingsFb58 => 'Updating the rules';
+  String get asset_loading_saveSettingsUpdateRules => 'Updating the rules';
 
   @override
-  String get asset_loading_saveSettings65dc => 'Applying new rules';
+  String get asset_loading_saveSettingsApplyNewRules => 'Applying new rules';
 
   @override
-  String get asset_loading_saveSettings5e80 => 'Changing the passcode';
+  String get asset_loading_saveSettingsChangePasscode =>
+      'Changing the passcode';
 
   @override
-  String get asset_loading_saveSettings128d =>
+  String get asset_loading_saveSettingsApplyOperationCode =>
       'Applying the new operation code';
-
-  @override
-  String get asset_loading_saveSettingsB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_saveSettingsAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_saveSettings25aa =>
-      'Rumor has it that someone hid a secret in the version number';
 
   @override
   String get asset_loading_loadProfile => 'Verifying identity';
 
   @override
-  String get asset_loading_loadProfile27ee => 'Checking the wanted poster';
+  String get asset_loading_loadProfileCheckWantedPoster =>
+      'Checking the wanted poster';
 
   @override
-  String get asset_loading_loadProfile6dac => 'Inspecting the ID';
+  String get asset_loading_loadProfileInspectId => 'Inspecting the ID';
 
   @override
-  String get asset_loading_loadProfile23c6 => 'Matching fingerprints';
+  String get asset_loading_loadProfileMatchFingerprints =>
+      'Matching fingerprints';
 
   @override
-  String get asset_loading_loadProfile221d => 'Analyzing the suspect profile';
-
-  @override
-  String get asset_loading_loadProfileB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_loadProfileAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_loadProfile25aa =>
-      'Rumor has it that someone hid a secret in the version number';
+  String get asset_loading_loadProfileAnalyzeSuspect =>
+      'Analyzing the suspect profile';
 
   @override
   String get asset_loading_logout => 'Withdrawing';
 
   @override
-  String get asset_loading_logout3031 => 'Going into hiding';
+  String get asset_loading_logoutGoIntoHiding => 'Going into hiding';
 
   @override
-  String get asset_loading_logoutCe40 => 'Erasing traces';
+  String get asset_loading_logoutEraseTraces => 'Erasing traces';
 
   @override
-  String get asset_loading_logout0ba9 => 'Destroying evidence';
+  String get asset_loading_logoutDestroyEvidence => 'Destroying evidence';
 
   @override
-  String get asset_loading_logoutFc0d => 'Escaping through the secret passage';
-
-  @override
-  String get asset_loading_logoutB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_logoutAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_logout25aa =>
-      'Rumor has it that someone hid a secret in the version number';
+  String get asset_loading_logoutEscapeViaPassage =>
+      'Escaping through the secret passage';
 
   @override
   String get asset_loading_deleteAccount => 'Processing account deletion';
 
   @override
-  String get asset_loading_deleteAccountC5fd => 'Obliterating records';
+  String get asset_loading_deleteAccountObliterateRecords =>
+      'Obliterating records';
 
   @override
-  String get asset_loading_deleteAccount517f => 'Deleting identity';
+  String get asset_loading_deleteAccountDeleteIdentity => 'Deleting identity';
 
   @override
   String get asset_loading_reconnect => 'Returning to the field';
 
   @override
-  String get asset_loading_reconnectBa5f => 'Rejoining the operation';
+  String get asset_loading_reconnectRejoinOperation =>
+      'Rejoining the operation';
 
   @override
-  String get asset_loading_reconnect098b => 'Preparing to return to the field';
+  String get asset_loading_reconnectPrepareReturn =>
+      'Preparing to return to the field';
 
   @override
-  String get asset_loading_reconnect429b => 'Restoring the radio channel';
+  String get asset_loading_reconnectRestoreRadio =>
+      'Restoring the radio channel';
 
   @override
-  String get asset_loading_reconnect6b88 => 'Rescanning the secret frequency';
-
-  @override
-  String get asset_loading_reconnectB36a =>
-      'I heard a secret opens if you keep pressing somewhere in settings';
-
-  @override
-  String get asset_loading_reconnectAaf8 =>
-      'Something might appear if you keep tapping the app version...?';
-
-  @override
-  String get asset_loading_reconnect25aa =>
-      'Rumor has it that someone hid a secret in the version number';
+  String get asset_loading_reconnectRescanFrequency =>
+      'Rescanning the secret frequency';
 
   @override
   String get asset_loading_bugReport => 'Writing the report';
 
   @override
-  String get asset_loading_bugReportDd4b =>
+  String get asset_loading_bugReportSubmitReport =>
       'Submitting the report to headquarters';
 
   @override
-  String get asset_loading_bugReport5d70 => 'Attaching field photos';
+  String get asset_loading_bugReportAttachPhotos => 'Attaching field photos';
 
   @override
-  String get asset_loading_bugReport3c49 => 'Assigning a case number';
+  String get asset_loading_bugReportAssignCaseNumber =>
+      'Assigning a case number';
 
   @override
-  String get asset_loading_bugReport83ca =>
+  String get asset_loading_bugReportHandToInvestigation =>
       'Handing over to the investigation team';
+
+  @override
+  String get asset_loading_easterEggCharacterRumor =>
+      'Rumor has it the home character changes if you keep tapping it...';
+
+  @override
+  String get asset_loading_easterEggCharacterTap =>
+      'They say a new look appears if you tap the character a bunch of times...?';
+
+  @override
+  String get asset_loading_easterEggCharacterSecret =>
+      'Word is there\'s a hidden secret in the home character...';
+
+  @override
+  String get asset_loading_easterEggSettingsTap =>
+      'I heard a secret opens if you keep pressing somewhere in settings';
+
+  @override
+  String get asset_loading_easterEggVersionTap =>
+      'Something might appear if you keep tapping the app version...?';
+
+  @override
+  String get asset_loading_easterEggVersionSecret =>
+      'Rumor has it that someone hid a secret in the version number';
 
   @override
   String get asset_locationpermission_serviceDisabledTitle =>
