@@ -466,9 +466,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     if (response != null && mounted) {
       final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
-      // TODO(로비 조회 API): 현재 joinGame 응답에는 gameId, participantId만 포함됨.
-      // 로비 조회 API 연동 후 아래 항목들도 설정 필요:
-      //   - maxParticipants, locationRevealIntervalMinutes, nickname
+      // joinGame 응답에는 gameId, participantId만 포함되며, maxParticipants /
+      // locationRevealIntervalMinutes 등 나머지 정보는 대기실 진입 시
+      // fetchLobbyInfoProvider + fetchGameSettingsProvider 로 보정한다.
       ref
           .read(gameParticipantNotifierProvider.notifier)
           .setGameInfo(

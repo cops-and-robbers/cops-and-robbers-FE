@@ -33,10 +33,8 @@ class WaitingRoomParticipantsState {
 
 /// 대기실 참가자 목록 관리 Notifier
 ///
-/// STOMP 로비 이벤트를 처리하여 참가자 목록을 실시간 관리합니다.
-/// TODO(전체 조회 API): REST API로 초기 참가자 목록을 조회하는 메서드 추가 필요.
-/// API 연동 후 흐름: connectAndSubscribe 완료 → REST 전체 조회 → initParticipants() 호출
-/// → 이후 STOMP 이벤트로 증분 업데이트
+/// 흐름: WaitingRoomPage에서 fetchLobbyInfoProvider로 초기 목록 조회 →
+/// [initFromApi]로 상태 초기화 → 이후 STOMP 로비 이벤트로 증분 업데이트.
 @riverpod
 class WaitingRoomParticipants extends _$WaitingRoomParticipants {
   @override
@@ -47,17 +45,10 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
     state = state.copyWith(hostParticipantId: participantId);
   }
 
-  /// 전체 조회 API 응답으로 초기 참가자 목록 및 방장 설정
+  /// 로비 조회 응답으로 초기 참가자 목록 및 방장 설정.
   ///
-  /// TODO(전체 조회 API): STOMP 연결 직후 아래 흐름으로 호출:
-  /// ```
-  /// final result = await ref.read(fetchLobbyInfoProvider(gameId).future);
-  /// initFromApi(
-  ///   participants: result.participants,
-  ///   hostParticipantId: result.hostParticipantId,
-  /// );
-  /// ```
-  /// 호출 후에는 _listenLobbyEvents()의 STOMP 이벤트가 증분 업데이트만 처리.
+  /// WaitingRoomPage가 fetchLobbyInfoProvider(gameId) 결과를 받아 호출하며,
+  /// 이후 STOMP 로비 이벤트는 _listenLobbyEvents()에서 증분 업데이트만 담당.
   void initFromApi({
     required List<LobbyParticipantInfo> participants,
     required int hostParticipantId,
@@ -177,9 +168,8 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
       );
 
       if (!exists) {
-        // TODO(전체 조회 API): API 연동 후 이 fallback 제거.
-        // 현재는 TEAM_UPDATE/READY_UPDATE 이벤트가 왔을 때 목록에 없는 참가자를 임시 추가하는 방어 로직.
-        // API로 초기 목록을 받은 후에는 이 분기가 불필요해짐.
+        // 초기 fetch와 STOMP 이벤트 사이 race condition 방어 — 목록에 없는
+        // 참가자의 UPDATE 이벤트가 먼저 도달하면 신규 ENTER로 간주해 추가한다.
         state = state.copyWith(participants: [...state.participants, info]);
         return;
       }

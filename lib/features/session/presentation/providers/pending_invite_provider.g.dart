@@ -6,7 +6,7 @@ part of 'pending_invite_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$pendingInviteHash() => r'aa86fc5c5b27356a1b87d5c1b533acadf0c27dbc';
+String _$pendingInviteHash() => r'53207a416eaa7110ca0f88cb9f16d9b360569fd3';
 
 /// 미로그인 상태에서 들어온 딥링크 초대 코드를 임시 보존.
 ///
