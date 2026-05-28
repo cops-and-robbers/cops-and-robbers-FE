@@ -1002,6 +1002,7 @@ class _GamePageState extends ConsumerState<GamePage>
     // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단).
     // disconnect()는 시각 상태(arrestedParticipantIds 등)를 보존하므로,
     // 참가자 목록 오버레이는 마지막 체포 스냅샷을 유지한다.
+    ref.read(chatNotifierProvider.notifier).disconnectChat();
     ref.read(gameEventNotifierProvider.notifier).disconnect();
     // 혹시 열려있는 다른 팝업/다이얼로그 모두 닫기
     if (mounted) {
@@ -1132,6 +1133,12 @@ class _GamePageState extends ConsumerState<GamePage>
   /// dead 상태로 방치된 경우를 복구합니다.
   void _reconnectSocketsIfNeeded() {
     if (widget.isDummy) return;
+    if (GameOverGuard.shouldSkipResume(
+      gameOverDialogShown: _gameOverDialogShown,
+    )) {
+      debugPrint('[GamePage] GameOver 모달 표시 중 → 소켓 재연결 스킵');
+      return;
+    }
 
     final chatState = ref.read(chatNotifierProvider).connectionState;
     if (chatState != StompConnectionState.connected &&
@@ -1525,6 +1532,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     onPressed: () => setState(() => _showParticipants = false),
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
+                    isDarkMode: _isDarkMode,
                   ),
                   SizedBox(height: AppSpacing.vertical8),
                   _buildQrButton(),
@@ -1546,6 +1554,7 @@ class _GamePageState extends ConsumerState<GamePage>
                       onPressed: () => setState(() => _showParticipants = true),
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
+                      isDarkMode: _isDarkMode,
                     ),
                     SizedBox(height: AppSpacing.vertical8),
                     _buildQrButton(),
@@ -1565,9 +1574,12 @@ class _GamePageState extends ConsumerState<GamePage>
               child: MyLocationButton(
                 onPressed: _moveToCurrentLocation,
                 isFocused: _isLocationFocused,
-                focusedColor: _isDarkMode ? AppColors.green : null,
-                unfocusedColor: _isDarkMode ? AppColors.green500 : null,
+                focusedColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                unfocusedColor: _isDarkMode
+                    ? AppColors.green500
+                    : AppColors.blue500,
                 backgroundColor: _isDarkMode ? AppColors.black : null,
+                isDarkMode: _isDarkMode,
               ),
             )
           else
@@ -1728,6 +1740,7 @@ class _GamePageState extends ConsumerState<GamePage>
           : 'assets/icons/icon_qr_code.svg',
       onPressed: widget.team == 'POLICE' ? _openQrScanner : _showMyQrCode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
+      isDarkMode: _isDarkMode,
     );
   }
 

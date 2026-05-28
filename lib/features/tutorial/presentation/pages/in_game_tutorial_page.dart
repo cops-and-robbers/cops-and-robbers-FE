@@ -276,6 +276,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                       },
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
+                      isDarkMode: _isDarkMode,
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical8),
@@ -309,6 +310,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             focusedColor: _isDarkMode ? AppColors.green : null,
             unfocusedColor: _isDarkMode ? AppColors.green500 : null,
             backgroundColor: _isDarkMode ? AppColors.black : null,
+            isDarkMode: _isDarkMode,
           ),
         ),
 
@@ -378,6 +380,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                       },
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
+                      isDarkMode: _isDarkMode,
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical8),
@@ -547,6 +550,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           );
         },
         backgroundColor: _isDarkMode ? AppColors.black : null,
+        isDarkMode: _isDarkMode,
       ),
     );
   }
