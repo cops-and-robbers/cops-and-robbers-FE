@@ -34,10 +34,15 @@ Flutter 3.9.2+ / Feature-First + Clean Architecture / Riverpod·Freezed·Retrofi
 
 ## 필수 명령어
 
-bash flutter pub get dart run build_runner build --delete-conflicting-outputs flutter gen-l10n flutter test && flutter analyze
+```bash
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter gen-l10n
+flutter test && flutter analyze
+```
 
-코드 생성은 @riverpod, @freezed, @RestApi, @JsonSerializable 수정 후 실행한다.  
-i18n은 lib/l10n/app\_\*.arb 수정 후 flutter gen-l10n을 실행한다.
+코드 생성은 `@riverpod`, `@freezed`, `@RestApi`, `@JsonSerializable` 수정 후 실행한다.
+i18n은 `lib/l10n/app_*.arb` 수정 후 `flutter gen-l10n`을 실행한다.
 
 ---
 

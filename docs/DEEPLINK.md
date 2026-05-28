@@ -24,7 +24,7 @@ URL은 **path 방식**으로 통일한다 (`/join/ABC123`). 쿼리 스트링 방
 
 ## 전체 흐름
 
-```
+```text
 사용자가 공유 링크 클릭
        ↓
   앱 설치 여부 확인 (OS가 자동 판단)
@@ -62,7 +62,7 @@ Android와 iOS는 각각 "이 도메인 링크를 클릭하면 이 앱을 열어
 
 정적 파일과 Vercel 설정은 [`docs/deeplink-handoff/`](./deeplink-handoff/) 패키지를 정본으로 한다.
 
-```
+```text
 nextjs-project/
 └── public/
     └── .well-known/
@@ -264,7 +264,7 @@ iOS 14+ 부터 AASA 파일은 Apple 자체 CDN(`app-site-association.cdn-apple.c
 
 **수신 후 처리 로직:**
 
-```
+```text
 URI 수신 (예: https://copsnro66ers.site/join/ABC123)
   ↓
 path segments에서 inviteCode 추출 ("ABC123")
@@ -341,7 +341,7 @@ path segments에서 inviteCode 추출 ("ABC123")
 
 **공유 플로우:**
 
-```
+```text
 방장이 "초대 링크 공유" 버튼 클릭
        ↓
 URL 생성: "https://copsnro66ers.site/join/{inviteCode}"
