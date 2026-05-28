@@ -61,8 +61,17 @@ class DeepLinkJoinNotifier extends _$DeepLinkJoinNotifier {
     }
 
     if (user == null) {
-      // 로그인 후 join 흐름 재진입을 위해 코드를 영속 저장
-      await ref.read(pendingInviteProvider.notifier).save(inviteCode);
+      // 로그인 후 join 흐름 재진입을 위해 코드를 영속 저장.
+      // 저장 실패 시 LoginRedirect 대신 사용자에게 명시적 안내 — 그래야
+      // 사용자가 로그인 후 코드 미적용 상태에서 혼란을 겪지 않는다.
+      try {
+        await ref.read(pendingInviteProvider.notifier).save(inviteCode);
+      } catch (e) {
+        debugPrint('[DeepLinkJoinNotifier] 초대 코드 저장 실패: $e');
+        return const DeepLinkJoinOutcome.failure(
+          messageKey: 'errorPendingInviteSave',
+        );
+      }
       return const DeepLinkJoinOutcome.loginRedirect();
     }
 

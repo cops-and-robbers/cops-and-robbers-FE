@@ -1870,6 +1870,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deeplinkJoinLoading => 'Joining the room';
 
   @override
+  String get errorPendingInviteLoad => 'Failed to load the pending invite code';
+
+  @override
+  String get errorPendingInviteSave => 'Failed to save the invite code';
+
+  @override
+  String get errorPendingInviteClear => 'Failed to clear the invite code';
+
+  @override
   String shareInviteMessage(String inviteCode) {
     return 'You\'ve been invited to a Cops and Robbers room! Code: $inviteCode';
   }

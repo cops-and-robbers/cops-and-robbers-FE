@@ -37,9 +37,19 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
     if (_started) return;
     _started = true;
 
-    final outcome = await ref
-        .read(deepLinkJoinNotifierProvider.notifier)
-        .handle(widget.inviteCode);
+    // handle() 자체가 throw 하는 경로는 _classifyError로 거의 막혀있지만,
+    // 예상치 못한 예외가 새서 화면이 무한 로딩으로 갇히는 것을 막는 최종 안전망.
+    DeepLinkJoinOutcome outcome;
+    try {
+      outcome = await ref
+          .read(deepLinkJoinNotifierProvider.notifier)
+          .handle(widget.inviteCode);
+    } catch (e) {
+      debugPrint('[DeepLinkJoinPage] handle() 예외: $e');
+      outcome = const DeepLinkJoinOutcome.failure(
+        messageKey: 'errorServerInternal',
+      );
+    }
 
     // async gap 이후 context 유효성 확인 필수
     if (!mounted) return;
@@ -74,6 +84,7 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
       'errorInviteCodeInvalid' => l10n.errorInviteCodeInvalid,
       'errorGameFull' => l10n.errorGameFull,
       'errorNetworkOffline' => l10n.errorNetworkOffline,
+      'errorPendingInviteSave' => l10n.errorPendingInviteSave,
       _ => l10n.errorServerInternal,
     };
   }

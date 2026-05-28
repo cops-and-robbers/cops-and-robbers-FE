@@ -1740,6 +1740,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get deeplinkJoinLoading => '방으로 이동 중이에요';
 
   @override
+  String get errorPendingInviteLoad => '대기 중인 초대 코드를 불러오지 못했어요';
+
+  @override
+  String get errorPendingInviteSave => '초대 코드 저장에 실패했어요';
+
+  @override
+  String get errorPendingInviteClear => '초대 코드 삭제에 실패했어요';
+
+  @override
   String shareInviteMessage(String inviteCode) {
     return '친구가 경찰과도둑 방에 초대했어요! 초대 코드 $inviteCode';
   }

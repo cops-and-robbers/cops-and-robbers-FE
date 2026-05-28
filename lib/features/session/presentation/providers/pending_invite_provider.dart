@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/errors/app_exception.dart';
+
 part 'pending_invite_provider.g.dart';
 
 /// 미로그인 상태에서 들어온 딥링크 초대 코드를 임시 보존.
@@ -14,21 +16,54 @@ class PendingInvite extends _$PendingInvite {
 
   @override
   Future<String?> build() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_key);
+    // 로컬 스토리지 읽기 실패는 DatabaseException으로 래핑.
+    // 호출자가 AsyncError로 받아 사용자에게 안내할 수 있게 한다.
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(_key);
+    } catch (e) {
+      throw DatabaseException(
+        message: '대기 중인 초대 코드를 불러오지 못했습니다',
+        messageKey: 'errorPendingInviteLoad',
+        originalException: e,
+      );
+    }
   }
 
   /// 딥링크 초대 코드를 저장하고 상태를 즉시 갱신한다.
+  ///
+  /// 저장 실패 시 [DatabaseException]을 던지고 state도 AsyncError로 반영해
+  /// 상위 흐름이 일관된 상태 관찰 + 예외 catch 두 경로로 복구할 수 있게 한다.
   Future<void> save(String code) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_key, code);
-    state = AsyncValue.data(code);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_key, code);
+      state = AsyncValue.data(code);
+    } catch (e, stack) {
+      final exception = DatabaseException(
+        message: '초대 코드 저장에 실패했습니다',
+        messageKey: 'errorPendingInviteSave',
+        originalException: e,
+      );
+      state = AsyncValue.error(exception, stack);
+      throw exception;
+    }
   }
 
   /// 저장된 초대 코드를 삭제하고 상태를 null 로 초기화한다.
   Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_key);
-    state = const AsyncValue.data(null);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_key);
+      state = const AsyncValue.data(null);
+    } catch (e, stack) {
+      final exception = DatabaseException(
+        message: '초대 코드 삭제에 실패했습니다',
+        messageKey: 'errorPendingInviteClear',
+        originalException: e,
+      );
+      state = AsyncValue.error(exception, stack);
+      throw exception;
+    }
   }
 }

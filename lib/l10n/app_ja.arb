@@ -545,5 +545,8 @@
   "errorGameFull": "この部屋は既に満員です",
   "errorAlreadyInAnotherRoom": "既に他の部屋に参加中です。今の部屋から退出してから再度お試しください",
   "deeplinkJoinLoading": "部屋に入室中",
+  "errorPendingInviteLoad": "保留中の招待コードを読み込めませんでした",
+  "errorPendingInviteSave": "招待コードの保存に失敗しました",
+  "errorPendingInviteClear": "招待コードの削除に失敗しました",
   "shareInviteMessage": "ケイドロの部屋に招待されました！招待コード: {inviteCode}"
 }

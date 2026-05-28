@@ -545,5 +545,8 @@
   "errorGameFull": "This room is already full",
   "errorAlreadyInAnotherRoom": "You're already in another room. Please leave it first",
   "deeplinkJoinLoading": "Joining the room",
+  "errorPendingInviteLoad": "Failed to load the pending invite code",
+  "errorPendingInviteSave": "Failed to save the invite code",
+  "errorPendingInviteClear": "Failed to clear the invite code",
   "shareInviteMessage": "You've been invited to a Cops and Robbers room! Code: {inviteCode}"
 }

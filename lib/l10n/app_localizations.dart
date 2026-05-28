@@ -3375,6 +3375,24 @@ abstract class AppLocalizations {
   /// **'방으로 이동 중이에요'**
   String get deeplinkJoinLoading;
 
+  /// 로그인 후 자동 join 시 SharedPreferences 읽기 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 중인 초대 코드를 불러오지 못했어요'**
+  String get errorPendingInviteLoad;
+
+  /// 딥링크 → 로그인 리다이렉트 직전 SharedPreferences 쓰기 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 코드 저장에 실패했어요'**
+  String get errorPendingInviteSave;
+
+  /// join 완료 후 SharedPreferences 삭제 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 코드 삭제에 실패했어요'**
+  String get errorPendingInviteClear;
+
   /// 카톡 등 공유 시 본문 (URL 은 별도로 append)
   ///
   /// In ko, this message translates to:

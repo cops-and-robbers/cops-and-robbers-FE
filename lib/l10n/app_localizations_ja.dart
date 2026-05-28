@@ -1737,6 +1737,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deeplinkJoinLoading => '部屋に入室中';
 
   @override
+  String get errorPendingInviteLoad => '保留中の招待コードを読み込めませんでした';
+
+  @override
+  String get errorPendingInviteSave => '招待コードの保存に失敗しました';
+
+  @override
+  String get errorPendingInviteClear => '招待コードの削除に失敗しました';
+
+  @override
   String shareInviteMessage(String inviteCode) {
     return 'ケイドロの部屋に招待されました！招待コード: $inviteCode';
   }

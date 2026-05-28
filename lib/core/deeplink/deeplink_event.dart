@@ -19,7 +19,9 @@ sealed class DeeplinkEvent with _$DeeplinkEvent {
       return DeeplinkEvent.unknown(uri: uri);
     }
     final segments = uri.pathSegments;
-    if (segments.length >= 2 &&
+    // /join/{inviteCode} 형태만 통과시킨다.
+    // pathPrefix="/join/"로 가로챈 그 외 경로(/join/ABC/extra 등)는 unknown으로 분류.
+    if (segments.length == 2 &&
         segments[0] == 'join' &&
         segments[1].isNotEmpty) {
       return DeeplinkEvent.inviteJoin(inviteCode: segments[1]);

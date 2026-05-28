@@ -2345,6 +2345,18 @@
   "@deeplinkJoinLoading": {
     "description": "딥링크 진입 transient 화면 안내"
   },
+  "errorPendingInviteLoad": "대기 중인 초대 코드를 불러오지 못했어요",
+  "@errorPendingInviteLoad": {
+    "description": "로그인 후 자동 join 시 SharedPreferences 읽기 실패"
+  },
+  "errorPendingInviteSave": "초대 코드 저장에 실패했어요",
+  "@errorPendingInviteSave": {
+    "description": "딥링크 → 로그인 리다이렉트 직전 SharedPreferences 쓰기 실패"
+  },
+  "errorPendingInviteClear": "초대 코드 삭제에 실패했어요",
+  "@errorPendingInviteClear": {
+    "description": "join 완료 후 SharedPreferences 삭제 실패"
+  },
   "shareInviteMessage": "친구가 경찰과도둑 방에 초대했어요! 초대 코드 {inviteCode}",
   "@shareInviteMessage": {
     "description": "카톡 등 공유 시 본문 (URL 은 별도로 append)",
