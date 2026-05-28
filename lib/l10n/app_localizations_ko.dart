@@ -1740,9 +1740,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get deeplinkJoinLoading => '방으로 이동 중이에요';
 
   @override
-  String get buttonShareInvite => '초대 링크 공유';
-
-  @override
   String shareInviteMessage(String inviteCode) {
     return '친구가 경찰과도둑 방에 초대했어요! 초대 코드 $inviteCode';
   }

@@ -545,6 +545,5 @@
   "errorGameFull": "This room is already full",
   "errorAlreadyInAnotherRoom": "You're already in another room. Please leave it first",
   "deeplinkJoinLoading": "Joining the room",
-  "buttonShareInvite": "Share invite link",
   "shareInviteMessage": "You've been invited to a Cops and Robbers room! Code: {inviteCode}"
 }

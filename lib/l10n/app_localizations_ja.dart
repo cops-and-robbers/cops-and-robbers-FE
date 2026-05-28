@@ -1737,9 +1737,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deeplinkJoinLoading => '部屋に入室中';
 
   @override
-  String get buttonShareInvite => '招待リンクを共有';
-
-  @override
   String shareInviteMessage(String inviteCode) {
     return 'ケイドロの部屋に招待されました！招待コード: $inviteCode';
   }

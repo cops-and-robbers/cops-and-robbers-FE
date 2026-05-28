@@ -1870,9 +1870,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deeplinkJoinLoading => 'Joining the room';
 
   @override
-  String get buttonShareInvite => 'Share invite link';
-
-  @override
   String shareInviteMessage(String inviteCode) {
     return 'You\'ve been invited to a Cops and Robbers room! Code: $inviteCode';
   }

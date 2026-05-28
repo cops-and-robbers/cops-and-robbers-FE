@@ -15,7 +15,6 @@ import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/config/env_config.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -1182,16 +1181,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     );
   }
 
-  /// 딥링크 초대 공유 (feature flag 활성화 시)
-  ///
-  /// 초대 코드와 딥링크 URL을 함께 OS 공유 시트로 전달한다.
-  Future<void> _shareInviteLink(String inviteCode) async {
-    final l10n = AppLocalizations.of(context);
-    final message = l10n.shareInviteMessage(inviteCode);
-    final url = 'https://copsnro66ers.site/join/$inviteCode';
-    await shareText('$message\n$url');
-  }
-
   /// 초대코드 모달 (방 생성 직후 표시)
   Future<void> _showInviteCodeDialog() async {
     // 다이얼로그가 열려 있는 동안 리스너/STOMP 경로가 튜토리얼을 띄우지
@@ -1212,14 +1201,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           mainAxisSize: MainAxisSize.min,
           children: [
             // QR 코드 이미지
-            // flag on: 딥링크 URL 인코딩 (스캔 즉시 앱/웹 진입)
-            // flag off: 초대코드 JSON 인코딩 (수동 입력용 기존 방식)
+            // 초대코드 JSON 인코딩 — 앱 내 QR 스캐너 (home_page 의 _showJoinRoomDialogInternal)
+            // 가 같은 자리 친구 빠른 입장에 사용. 카톡 등 원격 공유는 별도 공유 버튼이 딥링크 URL 을
+            // 전송하므로 QR 까지 URL 로 만들 필요는 없다.
             ClipRRect(
               borderRadius: AppRadius.xxlarge,
               child: QrImageView(
-                data: EnvConfig.showInviteDeeplinkSharing
-                    ? 'https://copsnro66ers.site/join/$code'
-                    : jsonEncode({'inviteCode': code}),
+                data: jsonEncode({'inviteCode': code}),
                 version: QrVersions.auto,
                 size: 220.w,
                 backgroundColor: isDark ? AppColors.white : AppColors.black100,
@@ -1273,7 +1261,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         confirmColor: isDark ? null : AppColors.blue,
         confirmTextColor: isDark ? null : AppColors.white,
         onConfirm: () {
-          shareText(code);
+          shareInviteCode(code, l10n.shareInviteMessage(code));
         },
       );
     } finally {
@@ -1485,23 +1473,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             )
           : null,
       actions: [
-        // 딥링크 공유 버튼 — feature flag 활성화 시에만 표시
-        if (EnvConfig.showInviteDeeplinkSharing && _inviteCode != null)
-          GestureDetector(
-            onTap: () => _shareInviteLink(_inviteCode!),
-            behavior: HitTestBehavior.opaque,
-            child: SizedBox(
-              width: 48.w,
-              height: 48.w,
-              child: Center(
-                child: Icon(
-                  Icons.share,
-                  size: 24.w,
-                  color: isDark ? AppColors.black200 : AppColors.black800,
-                ),
-              ),
-            ),
-          ),
         GestureDetector(
           onTap: _showGameRulesDialog,
           behavior: HitTestBehavior.opaque,

@@ -545,6 +545,5 @@
   "errorGameFull": "この部屋は既に満員です",
   "errorAlreadyInAnotherRoom": "既に他の部屋に参加中です。今の部屋から退出してから再度お試しください",
   "deeplinkJoinLoading": "部屋に入室中",
-  "buttonShareInvite": "招待リンクを共有",
   "shareInviteMessage": "ケイドロの部屋に招待されました！招待コード: {inviteCode}"
 }

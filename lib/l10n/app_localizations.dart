@@ -3375,12 +3375,6 @@ abstract class AppLocalizations {
   /// **'방으로 이동 중이에요'**
   String get deeplinkJoinLoading;
 
-  /// 대기실 공유 버튼 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'초대 링크 공유'**
-  String get buttonShareInvite;
-
   /// 카톡 등 공유 시 본문 (URL 은 별도로 append)
   ///
   /// In ko, this message translates to:
