@@ -1027,6 +1027,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameOverReasonTimeUp => 'The time limit has expired!';
 
   @override
+  String get gameOverFallbackMessage => 'The game has ended.';
+
+  @override
   String get gameTeamCop => 'Cop team';
 
   @override
@@ -1778,7 +1781,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You\'re already in another room. Please leave it first';
 
   @override
-  String get deeplinkJoinLoading => 'Joining the room';
+  String get deeplinkAlreadyInRoom => 'You\'re already in a room';
 
   @override
   String get errorPendingInviteLoad => 'Failed to load the pending invite code';

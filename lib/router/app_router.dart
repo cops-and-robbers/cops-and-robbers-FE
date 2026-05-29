@@ -547,9 +547,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '${RoutePaths.joinByInvite}/:inviteCode',
         name: RoutePaths.joinByInviteName,
-        builder: (context, state) {
+        // 다른 라우트와 톤을 맞춰 플랫폼 기본 전환 제거 (즉시 전환)
+        pageBuilder: (context, state) {
           final code = state.pathParameters['inviteCode'] ?? '';
-          return DeepLinkJoinPage(inviteCode: code);
+          return buildInstantTransition(
+            key: state.pageKey,
+            child: DeepLinkJoinPage(inviteCode: code),
+          );
         },
       ),
 

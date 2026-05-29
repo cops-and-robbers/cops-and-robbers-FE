@@ -1870,6 +1870,12 @@ abstract class AppLocalizations {
   /// **'제한 시간이 종료되었습니다!'**
   String get gameOverReasonTimeUp;
 
+  /// GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 종료되었습니다.'**
+  String get gameOverFallbackMessage;
+
   /// 경찰 팀 라벨 (팀명)
   ///
   /// In ko, this message translates to:
@@ -3207,11 +3213,11 @@ abstract class AppLocalizations {
   /// **'이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요'**
   String get errorAlreadyInAnotherRoom;
 
-  /// 딥링크 진입 transient 화면 안내
+  /// 딥링크로 새 방 참가 시도 시 이미 참여 중인 방이 있어 현재 방으로 복귀할 때 표시하는 안내 (409)
   ///
   /// In ko, this message translates to:
-  /// **'방으로 이동 중이에요'**
-  String get deeplinkJoinLoading;
+  /// **'이미 참여 중인 방이 있어요'**
+  String get deeplinkAlreadyInRoom;
 
   /// 로그인 후 자동 join 시 SharedPreferences 읽기 실패
   ///

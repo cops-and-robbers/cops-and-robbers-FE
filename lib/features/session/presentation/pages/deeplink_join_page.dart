@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/widgets/loading/loading_page.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../router/active_game_route.dart';
 import '../../../../router/route_paths.dart';
 import '../providers/deeplink_join_notifier.dart';
 
@@ -26,11 +29,25 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
   // 중복 실행 방지 — initState 가 두 번 호출되는 경우 대비
   bool _started = false;
 
+  // 로딩 메시지는 한 번만 뽑아 고정한다. getMessage 가 호출마다 랜덤이라
+  // build() 에서 직접 호출하면 rebuild 시 메시지가 바뀌어 깜빡인다.
+  String? _loadingMessage;
+
   @override
   void initState() {
     super.initState();
     // build() 가 완료된 후 실행하여 context 가 유효한 시점에 라우팅
     WidgetsBinding.instance.addPostFrameCallback((_) => _run());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // context(l10n) 가 유효한 첫 시점에 "방 잠입" 카테고리 메시지 1회 선택
+    _loadingMessage ??= LoadingMessageService.getMessage(
+      context,
+      LoadingCategory.joinRoom,
+    );
   }
 
   Future<void> _run() async {
@@ -64,14 +81,22 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
         // join 성공 — 해당 gameId 의 대기실로 이동
         context.go(RoutePaths.waitingRoomWithId(gameId.toString()));
 
-      case AlreadyInRoomOutcome():
-        // 이미 다른 방 참가 중 — 안내 메시지 후 홈으로
-        _showSnackBar(l10n.errorAlreadyInAnotherRoom);
-        context.go(RoutePaths.home);
+      case AlreadyInRoomOutcome(:final participation):
+        // 이미 방에 참가 중 — 홈이 아니라 현재 활성 방으로 복귀 + 중립 안내.
+        // 활성 게임 조회 실패(participation == null)면 홈으로 폴백.
+        AppSnackbar.show(context, message: l10n.deeplinkAlreadyInRoom);
+        final route = participation == null
+            ? null
+            : activeGameRoute(participation);
+        context.go(route ?? RoutePaths.home);
 
       case FailureOutcome(:final messageKey):
         // 처리 불가 에러 — 메시지 키로 사용자에게 표시 후 홈으로
-        _showSnackBar(_resolveErrorMessage(l10n, messageKey));
+        AppSnackbar.show(
+          context,
+          message: _resolveErrorMessage(l10n, messageKey),
+          backgroundColor: AppColors.red,
+        );
         context.go(RoutePaths.home);
     }
   }
@@ -89,33 +114,14 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
     };
   }
 
-  void _showSnackBar(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(
-              l10n.deeplinkJoinLoading,
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: AppColors.black800,
-              ),
-            ),
-          ],
-        ),
-      ),
+    // 전체화면 로딩은 앱 공통 LoadingPage 로 통일 (splash 재접속 로딩과 동일 룩)
+    // 메시지는 didChangeDependencies 에서 이미 고정됨 (?? 는 방어적 폴백)
+    return LoadingPage(
+      message:
+          _loadingMessage ??
+          LoadingMessageService.getMessage(context, LoadingCategory.joinRoom),
     );
   }
 }

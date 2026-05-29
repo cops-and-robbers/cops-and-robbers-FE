@@ -935,6 +935,10 @@
   "@gameOverReasonTimeUp": {
     "description": "게임 종료 사유 — 제한 시간 만료"
   },
+  "gameOverFallbackMessage": "게임이 종료되었습니다.",
+  "@gameOverFallbackMessage": {
+    "description": "GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지"
+  },
   "gameTeamCop": "경찰팀",
   "@gameTeamCop": {
     "description": "경찰 팀 라벨 (팀명)"
@@ -1910,9 +1914,9 @@
   "@errorAlreadyInAnotherRoom": {
     "description": "다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)"
   },
-  "deeplinkJoinLoading": "방으로 이동 중이에요",
-  "@deeplinkJoinLoading": {
-    "description": "딥링크 진입 transient 화면 안내"
+  "deeplinkAlreadyInRoom": "이미 참여 중인 방이 있어요",
+  "@deeplinkAlreadyInRoom": {
+    "description": "딥링크로 새 방 참가 시도 시 이미 참여 중인 방이 있어 현재 방으로 복귀할 때 표시하는 안내 (409)"
   },
   "errorPendingInviteLoad": "대기 중인 초대 코드를 불러오지 못했어요",
   "@errorPendingInviteLoad": {

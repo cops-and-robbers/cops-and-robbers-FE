@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../auth/domain/entities/auth_result_entity.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../domain/entities/user_game_status_entity.dart';
 import 'pending_invite_provider.dart';
 import 'session_provider.dart';
 
@@ -23,8 +24,14 @@ sealed class DeepLinkJoinOutcome with _$DeepLinkJoinOutcome {
   const factory DeepLinkJoinOutcome.joinedRoom({required int gameId}) =
       JoinedRoomOutcome;
 
-  /// 이미 해당 게임에 참가 중 — 해당 게임의 대기실로 이동하거나 안내 토스트 표시
-  const factory DeepLinkJoinOutcome.alreadyInRoom() = AlreadyInRoomOutcome;
+  /// 이미 방에 참가 중 — [participation] 의 활성 게임으로 복귀 + 안내 토스트.
+  ///
+  /// 백엔드 409 응답은 "참가 중인 게임이 어디인지"를 알려주지 않으므로,
+  /// Notifier 가 활성 게임을 별도 조회해 채운다. 조회 실패/미참가 시 null 이며
+  /// 호출자(Page)는 홈으로 폴백한다.
+  const factory DeepLinkJoinOutcome.alreadyInRoom({
+    UserGameParticipationEntity? participation,
+  }) = AlreadyInRoomOutcome;
 
   /// 처리 불가 에러 — [messageKey] 로 사용자에게 메시지 표시
   const factory DeepLinkJoinOutcome.failure({required String messageKey}) =
@@ -86,6 +93,23 @@ class DeepLinkJoinNotifier extends _$DeepLinkJoinNotifier {
     }
   }
 
+  /// 409 "이미 방 참가 중"을 현재 활성 게임 복귀 outcome 으로 해소한다.
+  ///
+  /// 활성 게임 조회 실패/미참가 시 participation 이 null 인 outcome 을 반환하며,
+  /// Page 는 이를 홈 폴백으로 처리한다.
+  Future<DeepLinkJoinOutcome> _resolveAlreadyInRoom() async {
+    try {
+      final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
+      final info = status.participationInfo;
+      if (status.isParticipating && info != null) {
+        return DeepLinkJoinOutcome.alreadyInRoom(participation: info);
+      }
+    } catch (e) {
+      debugPrint('[DeepLinkJoinNotifier] 활성 게임 조회 실패: $e');
+    }
+    return const DeepLinkJoinOutcome.alreadyInRoom();
+  }
+
   /// 에러를 [DeepLinkJoinOutcome] 으로 분류합니다.
   ///
   /// [DioExceptionHandler] 가 DioException 을 AppException 으로 변환할 때
@@ -94,11 +118,11 @@ class DeepLinkJoinNotifier extends _$DeepLinkJoinNotifier {
   /// messageKey / code 필드로 분기해야 합니다.
   ///
   /// TODO: 백엔드가 errorCode 필드를 도입하면 한국어 title 매칭을 코드 매칭으로 교체하세요.
-  DeepLinkJoinOutcome _classifyError(Object error) {
+  Future<DeepLinkJoinOutcome> _classifyError(Object error) async {
     // 409 Conflict — join 흐름에서는 "이미 다른 방 참가 중" 의미
     if (error is ServerException) {
       if (error.messageKey == 'errorConflict') {
-        return const DeepLinkJoinOutcome.alreadyInRoom();
+        return _resolveAlreadyInRoom();
       }
       return DeepLinkJoinOutcome.failure(
         messageKey: error.messageKey ?? 'errorServerInternal',

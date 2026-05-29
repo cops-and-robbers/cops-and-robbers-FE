@@ -7,6 +7,8 @@ import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/auth/domain/entities/auth_result_entity.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/session/domain/entities/game_join_result.dart';
+import 'package:cops_and_robbers/features/session/domain/entities/user_game_status_entity.dart';
+import 'package:cops_and_robbers/features/session/domain/usecases/get_my_active_game_usecase.dart';
 import 'package:cops_and_robbers/features/session/domain/usecases/join_game_by_invite_usecase.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/deeplink_join_notifier.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/pending_invite_provider.dart';
@@ -14,11 +16,15 @@ import 'package:cops_and_robbers/features/session/presentation/providers/session
 
 class _MockJoinUseCase extends Mock implements JoinGameByInviteUseCase {}
 
+class _MockActiveGameUseCase extends Mock implements GetMyActiveGameUsecase {}
+
 void main() {
   late _MockJoinUseCase joinUseCase;
+  late _MockActiveGameUseCase activeGameUseCase;
 
   setUp(() {
     joinUseCase = _MockJoinUseCase();
+    activeGameUseCase = _MockActiveGameUseCase();
     // PendingInvite.build() 가 SharedPreferences 를 사용하므로 mock 초기화 필요
     SharedPreferences.setMockInitialValues({});
   });
@@ -29,9 +35,17 @@ void main() {
       overrides: [
         authNotifierProvider.overrideWith(() => _FakeAuthNotifier(user)),
         joinGameByInviteUseCaseProvider.overrideWithValue(joinUseCase),
+        getMyActiveGameUsecaseProvider.overrideWithValue(activeGameUseCase),
       ],
     );
   }
+
+  const loggedInUser = AuthResultEntity(
+    userId: 1,
+    nickname: 'u',
+    isNewUser: false,
+    requiresAgreement: false,
+  );
 
   test('미로그인이면 PendingInvite 저장 후 LoginRedirect 결과 반환', () async {
     final container = makeContainer(user: null);
@@ -67,31 +81,124 @@ void main() {
     expect(outcome, equals(const DeepLinkJoinOutcome.joinedRoom(gameId: 7)));
   });
 
-  test('409 conflict 응답시 AlreadyInRoom 결과 반환', () async {
+  group('409 conflict — 이미 방 참가 중', () {
     // DioExceptionHandler 는 409 를 ServerException(messageKey: 'errorConflict') 으로 변환한다.
     // 한국어 message 문자열 매칭이 아닌 messageKey 로 분기해야 한다.
-    final container = makeContainer(
-      user: const AuthResultEntity(
-        userId: 1,
-        nickname: 'u',
-        isNewUser: false,
-        requiresAgreement: false,
-      ),
-    );
-    addTearDown(container.dispose);
-    when(() => joinUseCase.execute('ABC123')).thenThrow(
-      const ServerException(
-        message: 'conflict',
-        messageKey: 'errorConflict',
-        code: 'conflict',
-      ),
+    const conflict = ServerException(
+      message: 'conflict',
+      messageKey: 'errorConflict',
+      code: 'conflict',
     );
 
-    final outcome = await container
-        .read(deepLinkJoinNotifierProvider.notifier)
-        .handle('ABC123');
+    test(
+      '활성 게임이 WAITING 이면 해당 대기실 participation 을 실어 AlreadyInRoom 반환',
+      () async {
+        final container = makeContainer(user: loggedInUser);
+        addTearDown(container.dispose);
+        when(() => joinUseCase.execute('ABC123')).thenThrow(conflict);
+        when(() => activeGameUseCase.execute()).thenAnswer(
+          (_) async => const UserGameStatusEntity(
+            isParticipating: true,
+            participationInfo: UserGameParticipationEntity(
+              gameId: 7,
+              participantId: 2,
+              gameStatus: 'WAITING',
+              team: 'POLICE',
+            ),
+          ),
+        );
 
-    expect(outcome, equals(const DeepLinkJoinOutcome.alreadyInRoom()));
+        final outcome = await container
+            .read(deepLinkJoinNotifierProvider.notifier)
+            .handle('ABC123');
+
+        expect(
+          outcome,
+          equals(
+            const DeepLinkJoinOutcome.alreadyInRoom(
+              participation: UserGameParticipationEntity(
+                gameId: 7,
+                participantId: 2,
+                gameStatus: 'WAITING',
+                team: 'POLICE',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      '활성 게임이 IN_PROGRESS 이면 해당 게임 participation 을 실어 AlreadyInRoom 반환',
+      () async {
+        final container = makeContainer(user: loggedInUser);
+        addTearDown(container.dispose);
+        when(() => joinUseCase.execute('ABC123')).thenThrow(conflict);
+        when(() => activeGameUseCase.execute()).thenAnswer(
+          (_) async => const UserGameStatusEntity(
+            isParticipating: true,
+            participationInfo: UserGameParticipationEntity(
+              gameId: 9,
+              participantId: 5,
+              gameStatus: 'IN_PROGRESS',
+              team: 'ROBBER',
+            ),
+          ),
+        );
+
+        final outcome = await container
+            .read(deepLinkJoinNotifierProvider.notifier)
+            .handle('ABC123');
+
+        expect(
+          (outcome as AlreadyInRoomOutcome).participation,
+          equals(
+            const UserGameParticipationEntity(
+              gameId: 9,
+              participantId: 5,
+              gameStatus: 'IN_PROGRESS',
+              team: 'ROBBER',
+            ),
+          ),
+        );
+      },
+    );
+
+    test('활성 게임 조회가 실패하면 participation 없는 AlreadyInRoom 으로 폴백', () async {
+      final container = makeContainer(user: loggedInUser);
+      addTearDown(container.dispose);
+      when(() => joinUseCase.execute('ABC123')).thenThrow(conflict);
+      when(() => activeGameUseCase.execute()).thenThrow(
+        const ServerException(
+          message: 'boom',
+          messageKey: 'errorServerInternal',
+        ),
+      );
+
+      final outcome = await container
+          .read(deepLinkJoinNotifierProvider.notifier)
+          .handle('ABC123');
+
+      expect(outcome, equals(const DeepLinkJoinOutcome.alreadyInRoom()));
+    });
+
+    test(
+      '미참가(isParticipating=false)면 participation 없는 AlreadyInRoom 으로 폴백',
+      () async {
+        final container = makeContainer(user: loggedInUser);
+        addTearDown(container.dispose);
+        when(() => joinUseCase.execute('ABC123')).thenThrow(conflict);
+        when(() => activeGameUseCase.execute()).thenAnswer(
+          (_) async => const UserGameStatusEntity(isParticipating: false),
+        );
+
+        final outcome = await container
+            .read(deepLinkJoinNotifierProvider.notifier)
+            .handle('ABC123');
+
+        expect(outcome, equals(const DeepLinkJoinOutcome.alreadyInRoom()));
+      },
+    );
   });
 
   test('NetworkException 은 errorNetworkOffline Failure 결과 반환', () async {

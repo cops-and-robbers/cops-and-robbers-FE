@@ -944,6 +944,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameOverReasonTimeUp => '제한 시간이 종료되었습니다!';
 
   @override
+  String get gameOverFallbackMessage => '게임이 종료되었습니다.';
+
+  @override
   String get gameTeamCop => '경찰팀';
 
   @override
@@ -1659,7 +1662,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요';
 
   @override
-  String get deeplinkJoinLoading => '방으로 이동 중이에요';
+  String get deeplinkAlreadyInRoom => '이미 참여 중인 방이 있어요';
 
   @override
   String get errorPendingInviteLoad => '대기 중인 초대 코드를 불러오지 못했어요';

@@ -946,6 +946,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameOverReasonTimeUp => '制限時間が終了しました！';
 
   @override
+  String get gameOverFallbackMessage => 'ゲームが終了しました。';
+
+  @override
   String get gameTeamCop => '警察チーム';
 
   @override
@@ -1656,7 +1659,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorAlreadyInAnotherRoom => '既に他の部屋に参加中です。今の部屋から退出してから再度お試しください';
 
   @override
-  String get deeplinkJoinLoading => '部屋に入室中';
+  String get deeplinkAlreadyInRoom => '既に参加中の部屋があります';
 
   @override
   String get errorPendingInviteLoad => '保留中の招待コードを読み込めませんでした';
