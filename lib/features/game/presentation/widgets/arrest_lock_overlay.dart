@@ -12,6 +12,7 @@ import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../providers/game_event_provider.dart';
 import 'game_action_modal.dart';
+import 'package:cops_and_robbers/core/constants/game_team.dart';
 
 /// 도둑 체포 시 화면 잠금 오버레이
 ///
@@ -63,7 +64,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                       height: 108.h,
                       child: SvgPicture.asset(
                         characterAssetPath(
-                          team: 'robber',
+                          team: GameTeam.toLowerKey(GameTeam.robber),
                           skinId: skinId,
                           state: 'jailed',
                         ),

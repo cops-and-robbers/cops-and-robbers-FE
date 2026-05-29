@@ -17,6 +17,7 @@ import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
@@ -192,12 +193,12 @@ class _HomePageState extends ConsumerState<HomePage> {
 
       final info = status.participationInfo!;
 
-      if (info.gameStatus == 'WAITING') {
+      if (info.gameStatus == GameStatus.waiting) {
         context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
         return;
       }
 
-      if (info.gameStatus == 'IN_PROGRESS') {
+      if (info.gameStatus == GameStatus.inProgress) {
         context.go(
           '${RoutePaths.gameWithId(info.gameId.toString())}'
           '?team=${info.team}&pid=${info.participantId}',
@@ -231,9 +232,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
       final info = status.participationInfo!;
 
-      if (info.gameStatus == 'WAITING') {
+      if (info.gameStatus == GameStatus.waiting) {
         context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
-      } else if (info.gameStatus == 'IN_PROGRESS') {
+      } else if (info.gameStatus == GameStatus.inProgress) {
         context.go(
           '${RoutePaths.gameWithId(info.gameId.toString())}'
           '?team=${info.team}&pid=${info.participantId}',

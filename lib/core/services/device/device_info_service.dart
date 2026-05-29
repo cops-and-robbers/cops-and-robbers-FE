@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cops_and_robbers/core/constants/device_type.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 
@@ -62,11 +63,11 @@ class DeviceInfoService {
   /// - "UNKNOWN": 기타 플랫폼 (웹, 데스크톱 등)
   static String getDeviceType() {
     if (Platform.isIOS) {
-      return 'IOS';
+      return DeviceType.ios;
     } else if (Platform.isAndroid) {
-      return 'ANDROID';
+      return DeviceType.android;
     }
-    return 'UNKNOWN';
+    return DeviceType.unknown;
   }
 
   /// 전체 기기 정보를 가져옵니다 (디버깅용)

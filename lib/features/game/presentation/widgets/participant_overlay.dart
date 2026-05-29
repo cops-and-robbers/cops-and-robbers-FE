@@ -14,6 +14,8 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/team_section.dart';
 import '../providers/game_event_provider.dart';
 import 'game_action_modal.dart';
+import 'package:cops_and_robbers/core/constants/game_team.dart';
+import 'package:cops_and_robbers/core/constants/participant_status.dart';
 
 /// 게임 중 참가자 목록 오버레이
 ///
@@ -84,11 +86,11 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     InGameParticipant p, {
     required bool isPolice,
   }) {
-    final isReady = isPolice || p.status == 'JAILED';
+    final isReady = isPolice || p.status == ParticipantStatus.jailed;
     return LobbyParticipantInfo(
       participantId: p.participantId,
       nickname: p.nickname,
-      team: isPolice ? 'POLICE' : 'ROBBER',
+      team: isPolice ? GameTeam.police : GameTeam.robber,
       isReady: isReady,
     );
   }
@@ -100,8 +102,8 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     required bool isArrested,
     required bool isEscaped,
   }) {
-    if (isEscaped) return 'ALIVE';
-    if (isArrested) return 'JAILED';
+    if (isEscaped) return ParticipantStatus.alive;
+    if (isArrested) return ParticipantStatus.jailed;
     return p.status;
   }
 
@@ -110,7 +112,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
   /// 실제 게임에서는 QR 스캔(대면 확인)으로만 체포 가능하다.
   /// 카드 탭 체포는 디버그 빌드 전용 — 시뮬레이터/에뮬레이터로 흐름을 검증하기 위함.
   void _onRobberCardTap(LobbyParticipantInfo member) {
-    if (widget.myTeam != 'POLICE') return;
+    if (!GameTeam.isPolice(widget.myTeam)) return;
     if (!kDebugMode) return;
 
     final gameEventState = ref.read(gameEventNotifierProvider);
@@ -130,10 +132,10 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
       orElse: () => InGameParticipant(
         participantId: member.participantId,
         nickname: member.nickname,
-        status: 'JAILED',
+        status: ParticipantStatus.jailed,
       ),
     );
-    if (participant?.status == 'JAILED') return;
+    if (participant?.status == ParticipantStatus.jailed) return;
 
     FocusScope.of(context).unfocus();
     final l10n = AppLocalizations.of(context);
@@ -154,7 +156,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
   /// - 경찰 역할: ALIVE 도둑 체포 모달 표시
   /// - 도둑 역할 + 본인 카드 + JAILED 상태: 탈옥 모달 표시
   void _onRobberTeamCardTap(LobbyParticipantInfo member) {
-    if (widget.myTeam == 'POLICE') {
+    if (GameTeam.isPolice(widget.myTeam)) {
       _onRobberCardTap(member);
     } else {
       // 도둑 역할: 본인 카드 + JAILED 상태일 때만 탈옥
@@ -213,8 +215,10 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
           return LobbyParticipantInfo(
             participantId: p.participantId,
             nickname: p.nickname,
-            team: 'ROBBER',
-            isReady: (isArrested || p.status == 'JAILED') && !isEscaped,
+            team: GameTeam.robber,
+            isReady:
+                (isArrested || p.status == ParticipantStatus.jailed) &&
+                !isEscaped,
           );
         }).toList() ??
         const [];
@@ -251,7 +255,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
           children: [
             // 경찰팀 섹션 (인원 카운트·빈 슬롯 미표시)
             TeamSection(
-              team: 'POLICE',
+              team: GameTeam.police,
               members: policeMembers,
               isExpanded: _isPoliceExpanded,
               onToggle: () =>
@@ -270,7 +274,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
             ),
             // 도둑팀 섹션 (도주 중 배지 표시, 빈 슬롯 미표시)
             TeamSection(
-              team: 'ROBBER',
+              team: GameTeam.robber,
               members: robberMembers,
               isExpanded: _isRobberExpanded,
               onToggle: () =>

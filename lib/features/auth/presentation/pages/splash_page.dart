@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -220,12 +221,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
         final info = status.participationInfo!;
 
-        if (info.gameStatus == 'WAITING') {
+        if (info.gameStatus == GameStatus.waiting) {
           context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
           return;
         }
 
-        if (info.gameStatus == 'IN_PROGRESS') {
+        if (info.gameStatus == GameStatus.inProgress) {
           context.go(
             '${RoutePaths.gameWithId(info.gameId.toString())}'
             '?team=${info.team}&pid=${info.participantId}',

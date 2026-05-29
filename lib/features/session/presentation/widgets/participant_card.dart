@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/character_assets.dart';
+import '../../../../core/constants/game_team.dart';
+import '../../../../core/constants/participant_status.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/theme/character_skin_provider.dart';
@@ -55,7 +57,8 @@ class ParticipantCard extends ConsumerWidget {
     final skinId = ref.watch(characterSkinProvider);
     // 수감 상태(JAILED 도둑)는 시각적으로 흐릿하게 처리해 활성 참가자와 구분
     final isJailed =
-        gameStatus == 'JAILED' && participant.team.toLowerCase() == 'robber';
+        gameStatus == ParticipantStatus.jailed &&
+        GameTeam.isRobber(participant.team);
     final characterOpacity = isJailed ? (isDarkMode ? 0.7 : 0.5) : 1.0;
 
     return GestureDetector(
@@ -127,13 +130,13 @@ class ParticipantCard extends ConsumerWidget {
   ///
   /// [skinId] 는 `characterSkinProvider` 가 제공하는 글로벌 스킨.
   String _resolveCharacterAssetPath(String skinId) {
-    final team = participant.team.toLowerCase();
+    final team = GameTeam.toLowerKey(participant.team);
 
     // 게임방 컨텍스트
     if (gameStatus != null) {
-      if (gameStatus == 'JAILED' && team == 'robber') {
+      if (gameStatus == ParticipantStatus.jailed && GameTeam.isRobber(team)) {
         return characterAssetPath(
-          team: 'robber',
+          team: GameTeam.toLowerKey(GameTeam.robber),
           skinId: skinId,
           state: 'jailed',
         );

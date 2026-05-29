@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/constants/game_team.dart';
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
 import '../core/utils/custom_page_transitions.dart';
@@ -525,7 +526,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         // 몰입감을 위해 즉시 전환이 더 적합하다.
         pageBuilder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
-          final team = state.uri.queryParameters['team'] ?? 'POLICE';
+          final team = state.uri.queryParameters['team'] ?? GameTeam.police;
           final participantId =
               int.tryParse(state.uri.queryParameters['pid'] ?? '') ?? 1;
           final isDummy = state.uri.queryParameters['dummy'] == 'true';

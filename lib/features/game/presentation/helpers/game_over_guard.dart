@@ -1,3 +1,5 @@
+import 'package:cops_and_robbers/core/constants/game_status.dart';
+
 /// 게임 종료(GameOver 결과 모달 표시) 상태에서 발생할 수 있는
 /// 잘못된 자동 동작을 막기 위한 pure 가드 함수 모음.
 ///
@@ -33,8 +35,8 @@ class GameOverGuard {
     required String? gameStatus,
   }) {
     return !isParticipating ||
-        gameStatus == 'FINISHED' ||
-        gameStatus == 'CANCELED';
+        gameStatus == GameStatus.finished ||
+        gameStatus == GameStatus.canceled;
   }
 
   /// 게임 상태 동기화 API가 게임 종료 후 반환하는 400인지 판단한다.

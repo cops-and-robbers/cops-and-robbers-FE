@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/constants/game_team.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
 
 part 'waiting_room_participants_provider.g.dart';
@@ -70,25 +71,25 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
         LobbyParticipantInfo(
           participantId: 3,
           nickname: '포근포근곰...',
-          team: 'POLICE',
+          team: GameTeam.police,
           isReady: false,
         ),
         LobbyParticipantInfo(
           participantId: 1,
           nickname: '오동통 너구리',
-          team: 'POLICE',
+          team: GameTeam.police,
           isReady: true,
         ),
         LobbyParticipantInfo(
           participantId: 2,
           nickname: '닉네임',
-          team: 'POLICE',
+          team: GameTeam.police,
           isReady: true,
         ),
         LobbyParticipantInfo(
           participantId: 4,
           nickname: '닉네임',
-          team: 'ROBBER',
+          team: GameTeam.robber,
           isReady: true,
         ),
       ],

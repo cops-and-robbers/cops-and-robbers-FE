@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/constants/chat_constants.dart';
@@ -134,7 +135,7 @@ class ChatMessageBubble extends StatelessWidget {
         );
       }
       // 아이콘 WidgetSpan (원본 SVG 색상 유지 — colorFilter 미적용)
-      final isPolice = match.group(1) == 'police';
+      final isPolice = GameTeam.isPolice(match.group(1));
       final iconPath = isPolice
           ? (isDarkMode
                 ? 'assets/icons/icon_police_darkmode.svg'
