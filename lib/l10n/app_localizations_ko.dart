@@ -53,36 +53,16 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get chatSystemGameStartReady => '잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!';
-
-  @override
   String get chatSystemGameStartReportTip =>
       '게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다';
-
-  @override
-  String get chatSystemGameStartGo => '게임 시작!  행운을 빕니다!';
 
   @override
   String get chatSystemPoliceMoveWarning => '경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!';
 
   @override
-  String get chatSystemPoliceMove => '경찰 출동!  도둑은 도망치세요!';
-
-  @override
-  String get chatSystemLocationReveal => '현재 도둑의 위치가 공개됩니다!';
-
-  @override
   String chatSystemRemainingRobbers(int count) {
     return '현재 $count명 도주 중!';
   }
-
-  @override
-  String chatSystemArrest(String policeNickname, String robberNickname) {
-    return '@icon_police [$policeNickname]님이 @icon_robber [$robberNickname]님을 체포했습니다!';
-  }
-
-  @override
-  String get chatSystemEscapeNotice => '도둑이 탈옥했습니다! 지금 바로 체포하세요!';
 
   @override
   String get chatSystemFiveMinutesLeft => '게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!';
@@ -191,241 +171,183 @@ class AppLocalizationsKo extends AppLocalizations {
   String get asset_loading_joinRoom => '잠입 준비 중...';
 
   @override
-  String get asset_loading_joinRoom477c => '작전에 합류하는 중...';
+  String get asset_loading_joinRoomJoinOperation => '작전에 합류하는 중...';
 
   @override
-  String get asset_loading_joinRoom24a9 => '비밀 통로로 진입 중...';
+  String get asset_loading_joinRoomEnterSecretPassage => '비밀 통로로 진입 중...';
 
   @override
-  String get asset_loading_joinRoomCb98 => '변장 확인 중...';
+  String get asset_loading_joinRoomCheckDisguise => '변장 확인 중...';
 
   @override
-  String get asset_loading_joinRoomF964 => '작전 투입 인원 확인 중...';
-
-  @override
-  String get asset_loading_joinRoomB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_joinRoomAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_joinRoom25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_joinRoomCheckDeployment => '작전 투입 인원 확인 중...';
 
   @override
   String get asset_loading_createRoom => '작전 본부 설치 중...';
 
   @override
-  String get asset_loading_createRoomF1fe => '비밀 아지트 준비 중...';
+  String get asset_loading_createRoomPrepareHideout => '비밀 아지트 준비 중...';
 
   @override
-  String get asset_loading_createRoom01f8 => '작전 구역 확보 중...';
+  String get asset_loading_createRoomSecureArea => '작전 구역 확보 중...';
 
   @override
-  String get asset_loading_createRoom5076 => '비밀 지도 펼치는 중...';
+  String get asset_loading_createRoomUnfoldMap => '비밀 지도 펼치는 중...';
 
   @override
-  String get asset_loading_createRoomDd9e => '무전기 주파수 맞추는 중...';
-
-  @override
-  String get asset_loading_createRoomB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_createRoomAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_createRoom25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_createRoomTuneRadio => '무전기 주파수 맞추는 중...';
 
   @override
   String get asset_loading_changeTeam => '변장 중...';
 
   @override
-  String get asset_loading_changeTeam681d => '위장 신분 변경 중...';
+  String get asset_loading_changeTeamChangeCoverIdentity => '위장 신분 변경 중...';
 
   @override
-  String get asset_loading_changeTeam1106 => '신분 세탁 중...';
+  String get asset_loading_changeTeamLaunderIdentity => '신분 세탁 중...';
 
   @override
-  String get asset_loading_changeTeam4d7a => '이중 스파이 전환 중...';
+  String get asset_loading_changeTeamSwitchToDoubleSpy => '이중 스파이 전환 중...';
 
   @override
-  String get asset_loading_changeTeam4cdc => '새 신분증 발급 중...';
-
-  @override
-  String get asset_loading_changeTeamB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_changeTeamAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_changeTeam25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_changeTeamIssueNewId => '새 신분증 발급 중...';
 
   @override
   String get asset_loading_startGame => '작전 개시 준비 중...';
 
   @override
-  String get asset_loading_startGameA35d => '출동 준비 중...';
+  String get asset_loading_startGamePrepareMoveOut => '출동 준비 중...';
 
   @override
-  String get asset_loading_startGame64c3 => '카운트다운 시작...';
+  String get asset_loading_startGameCountdownStart => '카운트다운 시작...';
 
   @override
-  String get asset_loading_startGame7a2f => '무전기 켜는 중...';
+  String get asset_loading_startGameTurnOnRadio => '무전기 켜는 중...';
 
   @override
-  String get asset_loading_startGame1b41 => '현장 요원 배치 중...';
-
-  @override
-  String get asset_loading_startGameB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_startGameAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_startGame25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_startGameDeployAgents => '현장 요원 배치 중...';
 
   @override
   String get asset_loading_updateArea => '작전 구역 설정 중...';
 
   @override
-  String get asset_loading_updateArea8c32 => '관할 구역 지정 중...';
+  String get asset_loading_updateAreaDesignateZone => '관할 구역 지정 중...';
 
   @override
-  String get asset_loading_updateArea0183 => '지도 위에 점 찍는 중...';
+  String get asset_loading_updateAreaPlotOnMap => '지도 위에 점 찍는 중...';
 
   @override
-  String get asset_loading_updateArea2433 => '위성 사진 분석 중...';
+  String get asset_loading_updateAreaAnalyzeSatellite => '위성 사진 분석 중...';
 
   @override
-  String get asset_loading_updateAreaDc8b => '작전 범위 계산 중...';
-
-  @override
-  String get asset_loading_updateAreaB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_updateAreaAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_updateArea25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_updateAreaCalculateRange => '작전 범위 계산 중...';
 
   @override
   String get asset_loading_saveSettings => '작전 지침 수정 중...';
 
   @override
-  String get asset_loading_saveSettingsFb58 => '규칙 업데이트 중...';
+  String get asset_loading_saveSettingsUpdateRules => '규칙 업데이트 중...';
 
   @override
-  String get asset_loading_saveSettings65dc => '새로운 룰 적용 중...';
+  String get asset_loading_saveSettingsApplyNewRules => '새로운 룰 적용 중...';
 
   @override
-  String get asset_loading_saveSettings5e80 => '암호 변경 중...';
+  String get asset_loading_saveSettingsChangePasscode => '암호 변경 중...';
 
   @override
-  String get asset_loading_saveSettings128d => '새 작전 코드 적용 중...';
-
-  @override
-  String get asset_loading_saveSettingsB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_saveSettingsAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_saveSettings25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_saveSettingsApplyOperationCode => '새 작전 코드 적용 중...';
 
   @override
   String get asset_loading_loadProfile => '신원 조회 중...';
 
   @override
-  String get asset_loading_loadProfile27ee => '수배서 확인 중...';
+  String get asset_loading_loadProfileCheckWantedPoster => '수배서 확인 중...';
 
   @override
-  String get asset_loading_loadProfile6dac => '신분증 검사 중...';
+  String get asset_loading_loadProfileInspectId => '신분증 검사 중...';
 
   @override
-  String get asset_loading_loadProfile23c6 => '지문 대조 중...';
+  String get asset_loading_loadProfileMatchFingerprints => '지문 대조 중...';
 
   @override
-  String get asset_loading_loadProfile221d => '용의자 프로필 분석 중...';
-
-  @override
-  String get asset_loading_loadProfileB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_loadProfileAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_loadProfile25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_loadProfileAnalyzeSuspect => '용의자 프로필 분석 중...';
 
   @override
   String get asset_loading_logout => '철수 중...';
 
   @override
-  String get asset_loading_logout3031 => '잠적 중...';
+  String get asset_loading_logoutGoIntoHiding => '잠적 중...';
 
   @override
-  String get asset_loading_logoutCe40 => '흔적 지우는 중...';
+  String get asset_loading_logoutEraseTraces => '흔적 지우는 중...';
 
   @override
-  String get asset_loading_logout0ba9 => '증거 인멸 중...';
+  String get asset_loading_logoutDestroyEvidence => '증거 인멸 중...';
 
   @override
-  String get asset_loading_logoutFc0d => '비밀 통로로 탈출 중...';
-
-  @override
-  String get asset_loading_logoutB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_logoutAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_logout25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_logoutEscapeViaPassage => '비밀 통로로 탈출 중...';
 
   @override
   String get asset_loading_deleteAccount => '탈퇴 처리 중...';
 
   @override
-  String get asset_loading_deleteAccountC5fd => '기록 말소 중...';
+  String get asset_loading_deleteAccountObliterateRecords => '기록 말소 중...';
 
   @override
-  String get asset_loading_deleteAccount517f => '신원 삭제 중...';
+  String get asset_loading_deleteAccountDeleteIdentity => '신원 삭제 중...';
 
   @override
   String get asset_loading_reconnect => '다시 현장으로 복귀 중...';
 
   @override
-  String get asset_loading_reconnectBa5f => '작전에 재합류하는 중...';
+  String get asset_loading_reconnectRejoinOperation => '작전에 재합류하는 중...';
 
   @override
-  String get asset_loading_reconnect098b => '현장 복귀 준비 중...';
+  String get asset_loading_reconnectPrepareReturn => '현장 복귀 준비 중...';
 
   @override
-  String get asset_loading_reconnect429b => '무전 채널 복구 중...';
+  String get asset_loading_reconnectRestoreRadio => '무전 채널 복구 중...';
 
   @override
-  String get asset_loading_reconnect6b88 => '비밀 주파수 재탐색 중...';
-
-  @override
-  String get asset_loading_reconnectB36a => '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
-
-  @override
-  String get asset_loading_reconnectAaf8 => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
-
-  @override
-  String get asset_loading_reconnect25aa => '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
+  String get asset_loading_reconnectRescanFrequency => '비밀 주파수 재탐색 중...';
 
   @override
   String get asset_loading_bugReport => '신고서 작성 중...';
 
   @override
-  String get asset_loading_bugReportDd4b => '본부에 보고서 제출 중...';
+  String get asset_loading_bugReportSubmitReport => '본부에 보고서 제출 중...';
 
   @override
-  String get asset_loading_bugReport5d70 => '현장 사진 첨부 중...';
+  String get asset_loading_bugReportAttachPhotos => '현장 사진 첨부 중...';
 
   @override
-  String get asset_loading_bugReport3c49 => '사건 번호 부여 중...';
+  String get asset_loading_bugReportAssignCaseNumber => '사건 번호 부여 중...';
 
   @override
-  String get asset_loading_bugReport83ca => '수사반에 인계 중...';
+  String get asset_loading_bugReportHandToInvestigation => '수사반에 인계 중...';
+
+  @override
+  String get asset_loading_easterEggCharacterRumor =>
+      '홈 화면 캐릭터를 자꾸 누르면 뭔가 변한다는 소문이...';
+
+  @override
+  String get asset_loading_easterEggCharacterTap =>
+      '캐릭터를 여러 번 두드리면 새로운 모습이 나타난다던데...?';
+
+  @override
+  String get asset_loading_easterEggCharacterSecret =>
+      '홈 화면 캐릭터에 숨겨진 비밀이 있다고 한다...';
+
+  @override
+  String get asset_loading_easterEggSettingsTap =>
+      '설정 어딘가를 계속 누르면 비밀이 열린다던데...';
+
+  @override
+  String get asset_loading_easterEggVersionTap => '앱 버전을 자꾸 누르면 뭔가 나올지도...?';
+
+  @override
+  String get asset_loading_easterEggVersionSecret =>
+      '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
 
   @override
   String get asset_locationpermission_serviceDisabledTitle => '위치 서비스가 꺼져 있습니다';

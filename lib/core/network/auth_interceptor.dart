@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -109,93 +110,80 @@ class AuthInterceptor extends QueuedInterceptor {
       return handler.next(err);
     }
 
-    // 토큰 재발급 시도
+    final refreshToken = await _tokenStorage.getRefreshToken();
+
+    if (refreshToken == null || refreshToken.trim().isEmpty) {
+      // Refresh Token이 없으면 강제 로그아웃
+      await _handleForceLogout();
+      return handler.next(err);
+    }
+
+    final Response<dynamic> response;
     try {
-      final refreshToken = await _tokenStorage.getRefreshToken();
-
-      if (refreshToken == null) {
-        // Refresh Token이 없으면 강제 로그아웃
-        await _handleForceLogout();
-        return handler.next(err);
-      }
-
-      // /api/auth/reissue 호출 (plain Dio 사용 — 인터셉터 재진입 방지)
-      if (kDebugMode) {
-        debugPrint('🔑 [Reissue] 토큰 재발급 요청 시작');
-        debugPrint(
-          '   URL: ${_plainDio.options.baseUrl}${ApiEndpoints.reissue}',
-        );
-        debugPrint('   refreshToken: $refreshToken');
-      }
-
-      final response = await _plainDio.post(
+      response = await _plainDio.post(
         ApiEndpoints.reissue,
         data: {'refreshToken': refreshToken},
       );
-
-      if (kDebugMode) {
-        debugPrint('🔑 [Reissue] 응답 수신: statusCode=${response.statusCode}');
-        debugPrint('   responseData: ${response.data}');
-      }
-
-      if (response.statusCode == 200) {
-        final tokens = response.data['tokens'] as Map<String, dynamic>?;
-        final newAccessToken = tokens?['accessToken'] as String?;
-        final newRefreshToken = tokens?['refreshToken'] as String?;
-
-        if (newAccessToken == null || newRefreshToken == null) {
-          if (kDebugMode) {
-            debugPrint('❌ 토큰 재발급 응답 파싱 실패: tokens=$tokens');
-          }
-          await _handleForceLogout();
-          return handler.next(err);
-        }
-
-        // 새 토큰 저장
-        await _tokenStorage.saveTokens(
-          accessToken: newAccessToken,
-          refreshToken: newRefreshToken,
-        );
-
-        if (kDebugMode) {
-          debugPrint('🔄 토큰 재발급 성공');
-        }
-
-        // 원래 요청 재시도
-        final retryResponse = await _retryRequest(
-          err.requestOptions,
-          newAccessToken,
-        );
-        return handler.resolve(retryResponse);
-      } else {
-        // 재발급 실패
-        await _handleForceLogout();
+    } catch (e) {
+      final errorDetail = _logReissueFailure(e);
+      if (_isRefreshTokenRejected(e)) {
+        await _handleForceLogout(message: errorDetail);
         return handler.next(err);
       }
-    } catch (e) {
-      String? errorDetail;
+
       if (kDebugMode) {
-        if (e is DioException) {
-          debugPrint('❌ [Reissue] 토큰 재발급 실패');
-          debugPrint('   statusCode: ${e.response?.statusCode}');
-          debugPrint('   responseData: ${e.response?.data}');
-          debugPrint('   requestURL: ${e.requestOptions.uri}');
-          debugPrint('   requestData: ${e.requestOptions.data}');
-          final apiError = ApiErrorResponse.tryParse(e.response?.data);
-          if (apiError != null) {
-            debugPrint('   RFC7807 title: ${apiError.title}');
-            debugPrint('   RFC7807 detail: ${apiError.detail}');
-            debugPrint('   RFC7807 instance: ${apiError.instance}');
-            errorDetail = apiError.detail;
-          }
-        } else {
-          debugPrint('❌ [Reissue] 토큰 재발급 실패 (non-Dio): $e');
-        }
-      } else if (e is DioException) {
-        errorDetail = ApiErrorResponse.tryParse(e.response?.data)?.detail;
+        debugPrint('ℹ️ [Reissue] 일시 실패로 판단하여 토큰을 유지합니다.');
       }
-      await _handleForceLogout(message: errorDetail);
+      _logTransientReissueFailure(originalError: err, reissueError: e);
+      return handler.next(
+        e is DioException ? _asOriginalRequestError(e, err) : err,
+      );
+    }
+
+    if (kDebugMode) {
+      debugPrint('🔑 [Reissue] 응답 수신: statusCode=${response.statusCode}');
+      debugPrint('   responseData: ${response.data}');
+    }
+
+    if (response.statusCode != 200) {
+      if (_shouldForceLogoutForReissueStatus(response.statusCode)) {
+        await _handleForceLogout(
+          message: ApiErrorResponse.tryParse(response.data)?.detail,
+        );
+      }
       return handler.next(err);
+    }
+
+    final tokens = _parseTokens(response.data);
+    if (tokens == null) {
+      if (kDebugMode) {
+        debugPrint('❌ 토큰 재발급 응답 파싱 실패: responseData=${response.data}');
+      }
+      await _handleForceLogout();
+      return handler.next(err);
+    }
+
+    // 새 토큰 저장
+    await _tokenStorage.saveTokens(
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    );
+
+    if (kDebugMode) {
+      debugPrint('🔄 토큰 재발급 성공');
+    }
+
+    try {
+      final retryResponse = await _retryRequest(
+        err.requestOptions,
+        tokens.accessToken,
+      );
+      return handler.resolve(retryResponse);
+    } catch (e) {
+      if (_isAccessTokenRejected(e)) {
+        await _handleForceLogout();
+      }
+      return handler.next(e is DioException ? e : err);
     }
   }
 
@@ -220,6 +208,103 @@ class AuthInterceptor extends QueuedInterceptor {
     return await _plainDio.fetch(retryOptions);
   }
 
+  _ReissuedTokens? _parseTokens(dynamic data) {
+    if (data is! Map<String, dynamic>) return null;
+
+    final tokens = data['tokens'];
+    if (tokens is! Map<String, dynamic>) return null;
+
+    final accessToken = tokens['accessToken'];
+    final refreshToken = tokens['refreshToken'];
+    if (accessToken is! String || refreshToken is! String) return null;
+    if (accessToken.trim().isEmpty || refreshToken.trim().isEmpty) return null;
+
+    return _ReissuedTokens(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    );
+  }
+
+  String? _logReissueFailure(Object error) {
+    String? errorDetail;
+    if (kDebugMode) {
+      if (error is DioException) {
+        debugPrint('❌ [Reissue] 토큰 재발급 실패');
+        debugPrint('   statusCode: ${error.response?.statusCode}');
+        debugPrint('   responseData: ${error.response?.data}');
+        debugPrint('   requestURL: ${error.requestOptions.uri}');
+        debugPrint('   requestData: ${error.requestOptions.data}');
+        final apiError = ApiErrorResponse.tryParse(error.response?.data);
+        if (apiError != null) {
+          debugPrint('   RFC7807 title: ${apiError.title}');
+          debugPrint('   RFC7807 detail: ${apiError.detail}');
+          debugPrint('   RFC7807 instance: ${apiError.instance}');
+          errorDetail = apiError.detail;
+        }
+      } else {
+        debugPrint('❌ [Reissue] 토큰 재발급 실패 (non-Dio): $error');
+      }
+    } else if (error is DioException) {
+      errorDetail = ApiErrorResponse.tryParse(error.response?.data)?.detail;
+    }
+
+    return errorDetail;
+  }
+
+  void _logTransientReissueFailure({
+    required DioException originalError,
+    required Object reissueError,
+  }) {
+    final statusCode = reissueError is DioException
+        ? reissueError.response?.statusCode
+        : null;
+    final type = reissueError is DioException ? reissueError.type.name : null;
+
+    developer.log(
+      'Transient token reissue failure; keeping stored tokens. '
+      'originalPath=${originalError.requestOptions.path}, '
+      'reissueStatus=$statusCode, reissueType=$type',
+      name: 'AuthInterceptor',
+      error: reissueError,
+      stackTrace: reissueError is DioException ? reissueError.stackTrace : null,
+    );
+  }
+
+  DioException _asOriginalRequestError(
+    DioException reissueError,
+    DioException originalError,
+  ) {
+    return DioException(
+      requestOptions: originalError.requestOptions,
+      response: reissueError.response,
+      type: reissueError.type,
+      error: reissueError.error,
+      stackTrace: reissueError.stackTrace,
+      message: reissueError.message,
+    );
+  }
+
+  /// refresh token이 서버에서 명시적으로 거부된 경우만 강제 로그아웃한다.
+  ///
+  /// 네트워크 단절/타임아웃/서버 일시 장애는 refresh token 만료와 다르므로
+  /// 토큰을 삭제하면 안 된다. 해당 요청만 실패로 전달하고 다음 요청에서
+  /// 재발급을 다시 시도하도록 둔다.
+  bool _isRefreshTokenRejected(Object error) {
+    if (error is! DioException) return false;
+    return _shouldForceLogoutForReissueStatus(error.response?.statusCode);
+  }
+
+  bool _shouldForceLogoutForReissueStatus(int? statusCode) {
+    // 현재 reissue API spec은 400/401/500만 정의하지만,
+    // 403은 refresh token 명시 거부로 해석 가능한 방어 분기로 유지한다.
+    return statusCode == 400 || statusCode == 401 || statusCode == 403;
+  }
+
+  bool _isAccessTokenRejected(Object error) {
+    if (error is! DioException) return false;
+    return error.response?.statusCode == 401;
+  }
+
   /// 강제 로그아웃 처리
   ///
   /// 토큰 삭제 후 콜백을 통해 Firebase 로그아웃 및 화면 이동을 수행합니다.
@@ -231,4 +316,14 @@ class AuthInterceptor extends QueuedInterceptor {
     await _tokenStorage.clearTokens();
     await onForceLogout(message: message);
   }
+}
+
+class _ReissuedTokens {
+  const _ReissuedTokens({
+    required this.accessToken,
+    required this.refreshToken,
+  });
+
+  final String accessToken;
+  final String refreshToken;
 }
