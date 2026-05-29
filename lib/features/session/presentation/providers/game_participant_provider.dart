@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/constants/game_team.dart';
+
 part 'game_participant_provider.g.dart';
 
 /// 현재 게임 참가 정보
@@ -96,7 +98,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
   void setGameInfo({
     required int gameId,
     required String nickname,
-    String team = 'POLICE',
+    String team = GameTeam.police,
     int? participantId,
     int? maxParticipants,
     int? locationRevealIntervalMinutes,

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/character_assets.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/widgets/fade_skin_transition.dart';
 
@@ -71,7 +72,7 @@ class _HomeCharacterStackState extends ConsumerState<HomeCharacterStack> {
               onTap: _onCharacterTap,
               child: SvgPicture.asset(
                 characterAssetPath(
-                  team: 'robber',
+                  team: GameTeam.toLowerKey(GameTeam.robber),
                   skinId: skinId,
                   state: 'home',
                 ),
@@ -90,7 +91,7 @@ class _HomeCharacterStackState extends ConsumerState<HomeCharacterStack> {
               onTap: _onCharacterTap,
               child: SvgPicture.asset(
                 characterAssetPath(
-                  team: 'police',
+                  team: GameTeam.toLowerKey(GameTeam.police),
                   skinId: skinId,
                   state: 'home',
                 ),

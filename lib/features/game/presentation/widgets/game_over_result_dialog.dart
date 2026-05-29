@@ -12,6 +12,7 @@ import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../domain/entities/game_result_entity.dart';
+import 'package:cops_and_robbers/core/constants/game_team.dart';
 import '../providers/game_result_provider.dart';
 
 // ============================================================
@@ -205,7 +206,7 @@ class GameOverResultDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final resultAsync = ref.watch(gameResultProvider(gameResultId));
     final isWin = myTeam == winnerTeam;
-    final isRobber = myTeam == 'ROBBER';
+    final isRobber = GameTeam.isRobber(myTeam);
     final skinId = ref.watch(characterSkinProvider);
     final bodyAsset = resolveBodyAsset(
       myTeam: myTeam,

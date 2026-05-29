@@ -60,6 +60,10 @@ import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
 import '../widgets/zone_exit_banner.dart';
 import '../widgets/zone_exit_vignette.dart';
+import 'package:cops_and_robbers/core/constants/game_status.dart';
+import 'package:cops_and_robbers/core/constants/game_team.dart';
+import 'package:cops_and_robbers/core/constants/game_result_reason.dart';
+import 'package:cops_and_robbers/core/constants/participant_status.dart';
 
 /// 인게임 지도 화면
 ///
@@ -179,7 +183,7 @@ class _GamePageState extends ConsumerState<GamePage>
   ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
-  bool get _isDarkMode => widget.team == 'ROBBER';
+  bool get _isDarkMode => GameTeam.isRobber(widget.team);
 
   @override
   void initState() {
@@ -359,7 +363,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 경찰 대기 타이머 팝업 (경찰 팀만, 서버 startTime 기준 남은 시간)
   void _showPoliceTimerIfNeeded() {
-    if (widget.isDummy || widget.team != 'POLICE') return;
+    if (widget.isDummy || !GameTeam.isPolice(widget.team)) return;
 
     final info = ref.read(gameParticipantNotifierProvider);
     final startTimeStr = info?.gameStartTime;
@@ -442,7 +446,7 @@ class _GamePageState extends ConsumerState<GamePage>
   ///
   /// gameStartTime + policeWaitMinutes. 경찰팀이거나 대기 시간이 없으면 null.
   DateTime? _computePoliceStartTime() {
-    if (widget.team != 'ROBBER') return null;
+    if (!GameTeam.isRobber(widget.team)) return null;
 
     final info = ref.read(gameParticipantNotifierProvider);
     final waitMinutes = info?.policeWaitMinutes;
@@ -459,7 +463,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 채팅 연결 및 구독
   void _connectChat() {
-    final team = widget.team.toLowerCase();
+    final team = GameTeam.toLowerKey(widget.team);
     _chatNotifier = ref.read(chatNotifierProvider.notifier);
 
     if (widget.isDummy) {
@@ -478,7 +482,7 @@ class _GamePageState extends ConsumerState<GamePage>
     _gameEventNotifier = ref.read(gameEventNotifierProvider.notifier);
     _gameEventDatasource = ref.read(gameEventStompDatasourceProvider);
     _gameEventNotifier!.connectAndSubscribe(_gameId);
-    if (widget.team == 'ROBBER') _startLocationSending();
+    if (GameTeam.isRobber(widget.team)) _startLocationSending();
     _startHeadingTracking();
 
     // 게임 시작 시스템 채팅 4단계 시퀀스는 _initSettingsFromApiIfNeeded 완료 후 호출
@@ -580,7 +584,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
       // 서버 snapshot 기반 수감자 집합
       final serverArrested = result.robbers
-          .where((p) => p.status == 'JAILED')
+          .where((p) => p.status == ParticipantStatus.jailed)
           .map((p) => p.participantId)
           .toSet();
 
@@ -593,7 +597,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
       // 서버 기준 생존 수에 sync 창 delta를 반영 (0 ~ 전체 도둑 수 범위로 clamp)
       final serverAlive = result.robbers
-          .where((p) => p.status == 'ALIVE')
+          .where((p) => p.status == ParticipantStatus.alive)
           .length;
       final remainingThieves =
           (serverAlive - stompNewArrests.length + stompNewEscapes.length).clamp(
@@ -982,7 +986,7 @@ class _GamePageState extends ConsumerState<GamePage>
     );
     _googleMapKey.currentState?.updateRobberMarkers(
       latLngs,
-      isPolice: widget.team == 'POLICE',
+      isPolice: GameTeam.isPolice(widget.team),
     );
   }
 
@@ -1077,7 +1081,7 @@ class _GamePageState extends ConsumerState<GamePage>
           ),
           SizedBox(height: AppSpacing.vertical8),
           Text(
-            reason == 'ALL_ARRESTED'
+            reason == GameResultReason.allArrested
                 ? l10n.gameOverReasonAllArrested
                 : l10n.gameOverReasonTimeUp,
             style: _isDarkMode
@@ -1134,9 +1138,10 @@ class _GamePageState extends ConsumerState<GamePage>
     int? gameId,
   ) async {
     final l10n = AppLocalizations.of(context);
-    final hasWinnerTeam = winnerTeam == 'POLICE' || winnerTeam == 'ROBBER';
+    final hasWinnerTeam =
+        GameTeam.isPolice(winnerTeam) || GameTeam.isRobber(winnerTeam);
     final isWin = hasWinnerTeam && winnerTeam == widget.team;
-    final winnerTeamLabel = winnerTeam == 'POLICE'
+    final winnerTeamLabel = GameTeam.isPolice(winnerTeam)
         ? l10n.gameTeamCop
         : l10n.gameTeamRobber;
 
@@ -1200,7 +1205,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final chatState = ref.read(chatNotifierProvider).connectionState;
     if (chatState != StompConnectionState.connected &&
         chatState != StompConnectionState.connecting) {
-      final team = widget.team.toLowerCase();
+      final team = GameTeam.toLowerKey(widget.team);
       _chatNotifier?.connectAndSubscribe(gameId: _gameId, team: team);
     }
 
@@ -1211,7 +1216,7 @@ class _GamePageState extends ConsumerState<GamePage>
     }
 
     // 도둑 팀: 위치 전송 스트림이 끊겼으면 재시작
-    if (widget.team == 'ROBBER' && _locationSubscription == null) {
+    if (GameTeam.isRobber(widget.team) && _locationSubscription == null) {
       _startLocationSending();
     }
 
@@ -1267,7 +1272,7 @@ class _GamePageState extends ConsumerState<GamePage>
           'gameStatus=${info?.gameStatus}',
         );
         await _showMissedGameOverFallbackDialog();
-      } else if (info.gameStatus == 'WAITING') {
+      } else if (info.gameStatus == GameStatus.waiting) {
         // 대기실 상태 → 로비로 복귀
         debugPrint('[GamePage] WAITING 감지 → 로비 이동');
         context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
@@ -1394,7 +1399,7 @@ class _GamePageState extends ConsumerState<GamePage>
     );
 
     final isArrestedNow =
-        widget.team == 'ROBBER' &&
+        GameTeam.isRobber(widget.team) &&
         ref.watch(
           gameEventNotifierProvider.select(
             (s) =>
@@ -1420,7 +1425,7 @@ class _GamePageState extends ConsumerState<GamePage>
         // HTTP 응답을 기다리다 지연되지 않도록. 에러는 메서드 내부 try-catch에서 처리.
         unawaited(_syncGameStateOnReconnect());
 
-        if (widget.team == 'ROBBER' && !widget.isDummy) {
+        if (GameTeam.isRobber(widget.team) && !widget.isDummy) {
           if (_lastSentPosition != null) {
             _sendPositionNow();
           } else if (_locationSubscription == null) {
@@ -1799,10 +1804,12 @@ class _GamePageState extends ConsumerState<GamePage>
   /// QR 버튼 (경찰: 스캔, 도둑: QR 표시)
   Widget _buildQrButton() {
     return SvgIconButton(
-      assetPath: widget.team == 'POLICE'
+      assetPath: GameTeam.isPolice(widget.team)
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
-      onPressed: widget.team == 'POLICE' ? _openQrScanner : _showMyQrCode,
+      onPressed: GameTeam.isPolice(widget.team)
+          ? _openQrScanner
+          : _showMyQrCode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
       isDarkMode: _isDarkMode,
     );

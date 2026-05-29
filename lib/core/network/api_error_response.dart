@@ -10,7 +10,7 @@
 /// }
 /// ```
 ///
-/// [API_SPEC.md - 6. 공통 스키마 - ErrorResponse] 참조
+/// 명세: docs/api-docs.json 의 components.schemas.ErrorResponse 참조
 class ApiErrorResponse {
   /// 에러 제목 (예: "유효하지 않은 입력값", "소셜 로그인 실패")
   final String title;

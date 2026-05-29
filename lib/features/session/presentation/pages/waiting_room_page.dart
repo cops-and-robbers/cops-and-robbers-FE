@@ -13,6 +13,8 @@ import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_status.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/utils/share_util.dart';
@@ -241,7 +243,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
     final team = ref.read(gameParticipantNotifierProvider)?.team;
-    ref.read(roleThemeProvider.notifier).setDarkMode(team == 'ROBBER');
+    ref.read(roleThemeProvider.notifier).setDarkMode(GameTeam.isRobber(team));
 
     // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
     _pendingInviteDialog = widget.showInviteDialog && _inviteCode != null;
@@ -304,7 +306,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         ref.read(waitingRoomParticipantsProvider.notifier).clear();
         context.go(RoutePaths.home);
-      } else if (info.gameStatus == 'IN_PROGRESS') {
+      } else if (info.gameStatus == GameStatus.inProgress) {
         // 게임 시작됨 → 게임 설정 재조회로 gameStartTime 확보 후 게임 화면으로 이동
         final gameId = int.tryParse(widget.sessionId);
         if (gameId != null) {
@@ -483,7 +485,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       ref.read(gameParticipantNotifierProvider.notifier).setIsHost(isHost);
 
       // 역할 기반 다크/라이트 모드 동기화
-      ref.read(roleThemeProvider.notifier).setDarkMode(myTeam == 'ROBBER');
+      ref
+          .read(roleThemeProvider.notifier)
+          .setDarkMode(GameTeam.isRobber(myTeam));
 
       // 방 생성 직후 초대코드 다이얼로그 표시 (팀 확정 후)
       // 다이얼로그 닫힌 후 튜토리얼 트리거 (겹침 방지)
@@ -623,7 +627,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     if (currentTeam != team) return;
 
     // 1번 스텝 타겟: 현재 팀 기준 반대 팀의 첫 빈 AddSlotCard.
-    final isPolice = team == 'POLICE';
+    final isPolice = GameTeam.isPolice(team);
     final opponentKey = isPolice
         ? _tutorialKeyAddSlotRobber
         : _tutorialKeyAddSlotPolice;
@@ -888,7 +892,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                   .setTeam(newTeam);
               ref
                   .read(roleThemeProvider.notifier)
-                  .setDarkMode(newTeam == 'ROBBER');
+                  .setDarkMode(GameTeam.isRobber(newTeam));
             }
           }
         }
@@ -1035,7 +1039,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     try {
       await ref.read(changeTeamProvider(gameId, targetTeam: targetTeam).future);
       if (navigator.canPop()) navigator.pop();
-      ref.read(roleThemeProvider.notifier).setDarkMode(targetTeam == 'ROBBER');
+      ref
+          .read(roleThemeProvider.notifier)
+          .setDarkMode(GameTeam.isRobber(targetTeam));
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
       if (!mounted) return;
@@ -1288,8 +1294,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final isHost = participantInfo?.isHost ?? false;
     final isDark = ref.watch(roleThemeProvider);
 
-    final policeMembers = participantsState.byTeam('POLICE');
-    final robberMembers = participantsState.byTeam('ROBBER');
+    final policeMembers = participantsState.byTeam(GameTeam.police);
+    final robberMembers = participantsState.byTeam(GameTeam.robber);
 
     // 위치 권한 미허용 → 다이얼로그가 표시되는 동안 빈 화면
     if (_isLocationPermissionDenied) {
@@ -1326,7 +1332,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                         children: [
                           // 경찰팀
                           TeamSection(
-                            team: 'POLICE',
+                            team: GameTeam.police,
                             members: policeMembers,
                             isExpanded: _isPoliceExpanded,
                             onToggle: () => setState(
@@ -1337,7 +1343,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             myParticipantId: participantInfo?.participantId,
                             currentUserTeam: participantInfo?.team,
                             onAddSlotTap: !_isReady
-                                ? () => _changeTeam('POLICE')
+                                ? () => _changeTeam(GameTeam.police)
                                 : null,
                             addSlotKey: _tutorialKeyAddSlotPolice,
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
@@ -1363,7 +1369,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                           ),
                           // 도둑팀
                           TeamSection(
-                            team: 'ROBBER',
+                            team: GameTeam.robber,
                             members: robberMembers,
                             isExpanded: _isRobberExpanded,
                             onToggle: () => setState(
@@ -1374,7 +1380,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             myParticipantId: participantInfo?.participantId,
                             currentUserTeam: participantInfo?.team,
                             onAddSlotTap: !_isReady
-                                ? () => _changeTeam('ROBBER')
+                                ? () => _changeTeam(GameTeam.robber)
                                 : null,
                             addSlotKey: _tutorialKeyAddSlotRobber,
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시

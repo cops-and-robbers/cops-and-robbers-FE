@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,6 +13,8 @@ import '../datasources/auth_remote_datasource.dart';
 import '../models/login_request_model.dart';
 import '../models/logout_request_model.dart';
 import '../../../../core/services/device/device_id_manager.dart';
+import '../../../../core/services/device/device_info_service.dart';
+import '../../../auth/domain/constants/social_provider.dart';
 
 /// Auth Repository 구현체
 ///
@@ -51,7 +51,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<AuthResultEntity> signInWithGoogle() async {
     return _performSocialLogin(
-      provider: 'GOOGLE',
+      provider: SocialProvider.google,
       firebaseSignIn: () => _firebaseAuthDataSource.signInWithGoogle(),
     );
   }
@@ -59,7 +59,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<AuthResultEntity> signInWithApple() async {
     return _performSocialLogin(
-      provider: 'APPLE',
+      provider: SocialProvider.apple,
       firebaseSignIn: () => _firebaseAuthDataSource.signInWithApple(),
     );
   }
@@ -89,7 +89,7 @@ class AuthRepositoryImpl implements AuthRepository {
         }
       }
       final deviceId = await DeviceIdManager.getOrCreateDeviceId();
-      final deviceType = Platform.isIOS ? 'IOS' : 'ANDROID';
+      final deviceType = DeviceInfoService.getDeviceType();
 
       // 4. 백엔드 로그인 API 호출
       final response = await _authRemoteDataSource.login(
