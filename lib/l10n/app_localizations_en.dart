@@ -1784,19 +1784,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deeplinkAlreadyInRoom => 'You\'re already in a room';
 
   @override
-  String get errorGameAlreadyStarted => '이미 시작되어 입장할 수 없는 게임이에요';
+  String get errorGameAlreadyStarted =>
+      'This game has already started, so you can\'t join';
 
   @override
-  String get errorRoomSwitchFailed => '새 방에 입장하지 못했어요. 이전 방에서는 나온 상태예요';
+  String get errorRoomSwitchFailed =>
+      'Couldn\'t join the new room. You\'ve already left the previous one';
 
   @override
-  String get deeplinkSwitchRoomTitle => '방을 이동할까요?';
+  String get deeplinkSwitchRoomTitle => 'Move to this room?';
 
   @override
-  String get deeplinkSwitchRoomMessage => '현재 참여 중인 방에서 나가고 새 방에 참가해요';
+  String get deeplinkSwitchRoomMessage =>
+      'You\'ll leave your current room and join this new one';
 
   @override
-  String get deeplinkSwitchRoomConfirm => '나가고 참가';
+  String get deeplinkSwitchRoomConfirm => 'Leave and join';
 
   @override
   String get errorPendingInviteLoad => 'Failed to load the pending invite code';
