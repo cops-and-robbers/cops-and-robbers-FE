@@ -18,7 +18,7 @@ import '../../domain/utils/firebase_auth_error_handler.dart';
 // NOTE: Cross-feature dependency — 로그인 후 활성 게임 복원을 위해 session provider 참조
 // (splash_page.dart와 동일한 패턴)
 import '../../../session/presentation/providers/session_provider.dart';
-import '../../../../router/route_paths.dart';
+import '../../../../router/active_game_route.dart';
 import '../pages/login_page.dart';
 import '../../../session/presentation/pages/home_page.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
@@ -212,13 +212,7 @@ class AuthNotifier extends _$AuthNotifier {
       if (!status.isParticipating || status.participationInfo == null) return;
 
       final info = status.participationInfo!;
-      final destination = switch (info.gameStatus) {
-        'WAITING' => RoutePaths.waitingRoomWithId(info.gameId.toString()),
-        'IN_PROGRESS' =>
-          '${RoutePaths.gameWithId(info.gameId.toString())}'
-              '?team=${info.team}&pid=${info.participantId}',
-        _ => null,
-      };
+      final destination = activeGameRoute(info);
 
       if (destination != null) {
         ref.read(postLoginDestinationProvider.notifier).state = destination;
