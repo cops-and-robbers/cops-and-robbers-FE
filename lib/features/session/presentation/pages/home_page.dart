@@ -466,9 +466,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     if (response != null && mounted) {
       final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
-      // TODO(로비 조회 API): 현재 joinGame 응답에는 gameId, participantId만 포함됨.
-      // 로비 조회 API 연동 후 아래 항목들도 설정 필요:
-      //   - maxParticipants, locationRevealIntervalMinutes, nickname
+      // joinGame 응답에는 gameId, participantId만 포함되며, maxParticipants /
+      // locationRevealIntervalMinutes 등 나머지 정보는 대기실 진입 시
+      // fetchLobbyInfoProvider + fetchGameSettingsProvider 로 보정한다.
       ref
           .read(gameParticipantNotifierProvider.notifier)
           .setGameInfo(
@@ -514,6 +514,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                 builder: (_) => QrScannerPage<String>(
                   title: l10n.dialogScanInviteQrTitle,
                   onParse: (rawValue) {
+                    // 1) 딥링크 URL 형식 (https://copsnro66ers.site/join/{code}) 우선 파싱.
+                    // 경로는 정확히 /join/{code}만 허용하고, 결과는 대문자로 정규화해
+                    // 수동 입력 경로(toUpperCase)와 동작을 일치시킨다.
+                    final uri = Uri.tryParse(rawValue);
+                    if (uri != null && uri.host == 'copsnro66ers.site') {
+                      final segments = uri.pathSegments;
+                      if (segments.length == 2 &&
+                          segments[0] == 'join' &&
+                          segments[1].length == 6) {
+                        return segments[1].toUpperCase();
+                      }
+                    }
+                    // 2) 레거시 JSON 형식 fallback (옛 QR 호환)
                     try {
                       final json = jsonDecode(rawValue) as Map<String, dynamic>;
                       final code = json['inviteCode'];

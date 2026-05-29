@@ -946,6 +946,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameOverReasonTimeUp => '制限時間が終了しました！';
 
   @override
+  String get gameOverFallbackMessage => 'ゲームが終了しました。';
+
+  @override
   String get gameTeamCop => '警察チーム';
 
   @override
@@ -1641,5 +1644,34 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String mapErrorLoadFailed(String mapName) {
     return '$mapNameの読み込みに失敗しました';
+  }
+
+  @override
+  String get errorGameJoinUnexpected => 'ゲーム参加中に予期しないエラーが発生しました';
+
+  @override
+  String get errorInviteCodeInvalid => '無効な招待コードです';
+
+  @override
+  String get errorGameFull => 'この部屋は既に満員です';
+
+  @override
+  String get errorAlreadyInAnotherRoom => '既に他の部屋に参加中です。今の部屋から退出してから再度お試しください';
+
+  @override
+  String get deeplinkAlreadyInRoom => '既に参加中の部屋があります';
+
+  @override
+  String get errorPendingInviteLoad => '保留中の招待コードを読み込めませんでした';
+
+  @override
+  String get errorPendingInviteSave => '招待コードの保存に失敗しました';
+
+  @override
+  String get errorPendingInviteClear => '招待コードの削除に失敗しました';
+
+  @override
+  String shareInviteMessage(String inviteCode) {
+    return 'ケイドロの部屋に招待されました！招待コード: $inviteCode';
   }
 }

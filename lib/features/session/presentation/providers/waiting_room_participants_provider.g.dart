@@ -11,10 +11,8 @@ String _$waitingRoomParticipantsHash() =>
 
 /// 대기실 참가자 목록 관리 Notifier
 ///
-/// STOMP 로비 이벤트를 처리하여 참가자 목록을 실시간 관리합니다.
-/// TODO(전체 조회 API): REST API로 초기 참가자 목록을 조회하는 메서드 추가 필요.
-/// API 연동 후 흐름: connectAndSubscribe 완료 → REST 전체 조회 → initParticipants() 호출
-/// → 이후 STOMP 이벤트로 증분 업데이트
+/// 흐름: WaitingRoomPage에서 fetchLobbyInfoProvider로 초기 목록 조회 →
+/// [initFromApi]로 상태 초기화 → 이후 STOMP 로비 이벤트로 증분 업데이트.
 ///
 /// Copied from [WaitingRoomParticipants].
 @ProviderFor(WaitingRoomParticipants)

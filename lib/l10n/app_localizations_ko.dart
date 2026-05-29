@@ -944,6 +944,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameOverReasonTimeUp => '제한 시간이 종료되었습니다!';
 
   @override
+  String get gameOverFallbackMessage => '게임이 종료되었습니다.';
+
+  @override
   String get gameTeamCop => '경찰팀';
 
   @override
@@ -1643,5 +1646,35 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String mapErrorLoadFailed(String mapName) {
     return '$mapName 로드 실패';
+  }
+
+  @override
+  String get errorGameJoinUnexpected => '게임 입장 중 예기치 않은 오류가 발생했습니다';
+
+  @override
+  String get errorInviteCodeInvalid => '유효하지 않은 초대 코드예요';
+
+  @override
+  String get errorGameFull => '방이 이미 가득 찼어요';
+
+  @override
+  String get errorAlreadyInAnotherRoom =>
+      '이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요';
+
+  @override
+  String get deeplinkAlreadyInRoom => '이미 참여 중인 방이 있어요';
+
+  @override
+  String get errorPendingInviteLoad => '대기 중인 초대 코드를 불러오지 못했어요';
+
+  @override
+  String get errorPendingInviteSave => '초대 코드 저장에 실패했어요';
+
+  @override
+  String get errorPendingInviteClear => '초대 코드 삭제에 실패했어요';
+
+  @override
+  String shareInviteMessage(String inviteCode) {
+    return '친구가 경찰과도둑 방에 초대했어요! 초대 코드 $inviteCode';
   }
 }

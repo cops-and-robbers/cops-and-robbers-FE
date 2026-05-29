@@ -295,6 +295,7 @@
   "gameOverBannerTitle": "ゲーム終了！",
   "gameOverReasonAllArrested": "泥棒が全員逮捕されました！",
   "gameOverReasonTimeUp": "制限時間が終了しました！",
+  "gameOverFallbackMessage": "ゲームが終了しました。",
   "gameTeamCop": "警察チーム",
   "gameTeamRobber": "泥棒チーム",
   "gameResultWin": "勝利",
@@ -512,5 +513,14 @@
   "gameEventLocationReveal": "現在の泥棒の位置が公開されます!",
   "gameEventArrestNotice": "@icon_police [{policeNickname}]が@icon_robber [{robberNickname}]を逮捕しました!",
   "gameEventEscapeNotice": "泥棒が脱獄しました!今すぐ逮捕してください!",
-  "mapErrorLoadFailed": "{mapName}の読み込みに失敗しました"
+  "mapErrorLoadFailed": "{mapName}の読み込みに失敗しました",
+  "errorGameJoinUnexpected": "ゲーム参加中に予期しないエラーが発生しました",
+  "errorInviteCodeInvalid": "無効な招待コードです",
+  "errorGameFull": "この部屋は既に満員です",
+  "errorAlreadyInAnotherRoom": "既に他の部屋に参加中です。今の部屋から退出してから再度お試しください",
+  "deeplinkAlreadyInRoom": "既に参加中の部屋があります",
+  "errorPendingInviteLoad": "保留中の招待コードを読み込めませんでした",
+  "errorPendingInviteSave": "招待コードの保存に失敗しました",
+  "errorPendingInviteClear": "招待コードの削除に失敗しました",
+  "shareInviteMessage": "ケイドロの部屋に招待されました！招待コード: {inviteCode}"
 }

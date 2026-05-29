@@ -1,9 +1,9 @@
-/// 환경 변수 설정 관리
+/// 환경 변수 설정 및 feature flag 관리
 library;
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// 환경 변수 설정 클래스
+/// 환경 변수 설정 및 feature flag 클래스
 ///
 /// 사용 예시:
 /// ```dart
@@ -26,11 +26,5 @@ class EnvConfig {
   /// WebSocket 연결 URL. 환경변수 `WS_URL` 미설정 시 `ws://localhost:8080/ws`.
   static String get webSocketUrl {
     return dotenv.env['WS_URL'] ?? 'ws://localhost:8080/ws';
-  }
-
-  /// Mock API 사용 여부. 환경변수 `USE_MOCK_API`가 `'true'` 또는 `'1'`이면 활성화.
-  static bool get useMockApi {
-    final value = dotenv.env['USE_MOCK_API']?.toLowerCase();
-    return value == 'true' || value == '1';
   }
 }

@@ -152,6 +152,9 @@ class RoutePaths {
   static String gameSettingsWithId(String sessionId) =>
       '/waiting-room/$sessionId/game-settings';
 
+  /// 딥링크 초대 코드 진입용 path builder (예: /join/ABC123)
+  static String joinByInviteWithCode(String code) => '/join/$code';
+
   // ============================================================================
   // Route Names (for named navigation)
   // ============================================================================
@@ -176,4 +179,12 @@ class RoutePaths {
   static const String maintenanceName = 'maintenance';
   static const String forceUpdateName = 'forceUpdate';
   static const String lifecycleTestName = 'lifecycleTest';
+  static const String joinByInviteName = 'joinByInvite';
+
+  // ============================================================================
+  // Deep Link Path Constants
+  // ============================================================================
+
+  /// 딥링크 초대 코드 진입 (예: /join/ABC123)
+  static const String joinByInvite = '/join';
 }

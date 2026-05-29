@@ -9,7 +9,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// **사용 가능한 환경 변수**:
 /// - `API_BASE_URL`: 백엔드 API Base URL
 /// - `WS_URL`: WebSocket 연결 URL
-/// - `USE_MOCK_API`: Mock API 사용 여부 (true/false)
 class ApiEndpoints {
   // Private 생성자 - 인스턴스화 방지
   // Private constructor to prevent instantiation
@@ -41,14 +40,6 @@ class ApiEndpoints {
   /// .env의 WS_URL을 직접 사용합니다.
   ///
   static String get gameConnectionUrl => wsUrl;
-
-  /// Mock API 사용 여부 (.env에서 로드)
-  /// Whether to use Mock API (loaded from .env)
-  ///
-  /// **기본값**: `false`
-  /// **Default**: `false`
-  static bool get useMockApi =>
-      dotenv.env['USE_MOCK_API']?.toLowerCase() == 'true';
 
   // ============================================
   // Auth API - 소셜 로그인 및 토큰 관리

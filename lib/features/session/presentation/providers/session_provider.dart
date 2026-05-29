@@ -18,6 +18,7 @@ import '../../data/repositories/session_repository_impl.dart';
 import '../../domain/entities/create_session_result.dart';
 import '../../domain/repositories/session_repository.dart';
 import '../../domain/usecases/get_my_active_game_usecase.dart';
+import '../../domain/usecases/join_game_by_invite_usecase.dart';
 
 part 'session_provider.g.dart';
 
@@ -46,6 +47,14 @@ SessionRepository sessionRepository(Ref ref) {
 @riverpod
 GetMyActiveGameUsecase getMyActiveGameUsecase(Ref ref) {
   return GetMyActiveGameUsecase(
+    repository: ref.watch(sessionRepositoryProvider),
+  );
+}
+
+/// JoinGameByInviteUseCase Provider
+@riverpod
+JoinGameByInviteUseCase joinGameByInviteUseCase(Ref ref) {
+  return JoinGameByInviteUseCase(
     repository: ref.watch(sessionRepositoryProvider),
   );
 }

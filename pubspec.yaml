@@ -26,6 +26,7 @@ dependencies:
   # iOS 스타일 아이콘 (Cupertino 디자인)
   cupertino_icons: ^1.0.8
   go_router: ^17.0.1 # 화면 라우팅 및 내비게이션
+  app_links: ^6.4.0 # 딥링크 URI 수신 (Android App Links / iOS Universal Links)
   # 상태 관리 및 데이터 모델
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
@@ -82,6 +83,8 @@ dev_dependencies:
   # Flutter 테스트 프레임워크
   flutter_test:
     sdk: flutter
+  # 테스트 Mock 생성 (Classist TDD 스타일, 시스템 경계에서만 사용)
+  mocktail: ^1.0.4
   # 코드 품질 및 자동화 도구
   flutter_lints: ^6.0.0 # 추천 코드 린트 규칙
   build_runner: ^2.4.14 # 코드 자동 생성 툴
