@@ -367,7 +367,7 @@ static const List<String> _publicPaths = [
 
 새 API 연동 시 아래 항목 확인:
 
-- [ ] `api-docs.json` / `API_SPEC.md` 에서 요청/응답 스키마 확인
+- [ ] `api-docs.json` (OpenAPI 정본)에서 요청/응답 스키마 확인
 - [ ] Data: DTO (`@freezed` + `@JsonSerializable`) 작성
 - [ ] Data: Retrofit DataSource 메서드 추가
 - [ ] Domain: Entity (`@freezed`) 작성

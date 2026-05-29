@@ -58,7 +58,7 @@ i18n은 `lib/l10n/app_*.arb` 수정 후 `flutter gen-l10n`을 실행한다.
 - .claude/rules/10_I18N_GUIDE.md
 - .claude/rules/Agents.md
 - .claude/rules/UI_Design_System.md
-- docs/API_SPEC.md
+- docs/api-docs.json
 - docs/경찰과도둑\_PRD_2.md
 
 ---
