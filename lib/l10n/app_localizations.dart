@@ -3219,6 +3219,36 @@ abstract class AppLocalizations {
   /// **'이미 참여 중인 방이 있어요'**
   String get deeplinkAlreadyInRoom;
 
+  /// 초대 코드는 유효하지만 게임이 이미 시작된 경우 (400 이미 시작된 게임)
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 시작되어 입장할 수 없는 게임이에요'**
+  String get errorGameAlreadyStarted;
+
+  /// 방 이동 중 현재 방 퇴장 후 새 방 입장에 실패한 경우
+  ///
+  /// In ko, this message translates to:
+  /// **'새 방에 입장하지 못했어요. 이전 방에서는 나온 상태예요'**
+  String get errorRoomSwitchFailed;
+
+  /// 이미 다른 대기방 참가 중 딥링크 진입 시 방 이동 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'방을 이동할까요?'**
+  String get deeplinkSwitchRoomTitle;
+
+  /// 방 이동 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 참여 중인 방에서 나가고 새 방에 참가해요'**
+  String get deeplinkSwitchRoomMessage;
+
+  /// 방 이동 확인 다이얼로그 확인 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'나가고 참가'**
+  String get deeplinkSwitchRoomConfirm;
+
   /// 로그인 후 자동 join 시 SharedPreferences 읽기 실패
   ///
   /// In ko, this message translates to:
