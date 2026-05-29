@@ -23,4 +23,31 @@ class GameOverGuard {
   /// 결과 모달 콜백 실행 시 caller(GamePage)가 dispose됐다면 ref/context 사용 금지.
   /// FCM 강퇴, 네트워크 강제 종료 등 외부 사유로 dispose된 경우의 안전망.
   static bool shouldSkipDialogCallback({required bool isMounted}) => !isMounted;
+
+  /// GAME_OVER 이벤트를 놓친 상태에서 REST 상태만으로 게임 종료 fallback을 띄울지 판단한다.
+  ///
+  /// 백엔드가 결과 ID를 재조회할 수 있는 API를 제공하지 않으므로, 이 경우 승패/통계
+  /// 결과 모달 대신 중립 종료 다이얼로그를 보여준다.
+  static bool shouldShowMissedGameOverFallback({
+    required bool isParticipating,
+    required String? gameStatus,
+  }) {
+    return !isParticipating ||
+        gameStatus == 'FINISHED' ||
+        gameStatus == 'CANCELED';
+  }
+
+  /// 게임 상태 동기화 API가 게임 종료 후 반환하는 400인지 판단한다.
+  static bool isGameNotInProgressError({
+    required int? statusCode,
+    required String? title,
+  }) {
+    return statusCode == 400 && title == '게임 진행 중 아님';
+  }
+
+  /// GAME_OVER 이후 홈 이동은 로컬 라우팅만 수행한다.
+  ///
+  /// 이미 서버 게임이 종료된 상태라 별도 퇴장 API는 불필요하며, 종료 직후 부가 REST
+  /// 요청이 401을 받으면 전역 AuthInterceptor가 강제 로그아웃을 실행할 수 있다.
+  static bool shouldRequestLeaveGameAfterGameOver() => false;
 }

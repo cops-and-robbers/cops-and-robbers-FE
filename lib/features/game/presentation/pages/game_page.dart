@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/network/api_error_response.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -605,6 +607,18 @@ class _GamePageState extends ConsumerState<GamePage>
             arrestedIds: finalArrested,
             remainingThieves: remainingThieves,
           );
+    } on DioException catch (e) {
+      final apiError = ApiErrorResponse.tryParse(e.response?.data);
+      if (GameOverGuard.isGameNotInProgressError(
+        statusCode: e.response?.statusCode,
+        title: apiError?.title,
+      )) {
+        debugPrint('[GamePage] GAME_OVER 유실 의심 — 상태 동기화 API가 게임 종료 응답');
+        await _showMissedGameOverFallbackDialog();
+        return;
+      }
+      // 동기화 실패 시 게임 진행에 지장을 주지 않도록 예외를 삼킴
+      debugPrint('[GamePage] ⚠️ 재연결 후 상태 동기화 실패 (무시): $e');
     } catch (e) {
       // 동기화 실패 시 게임 진행에 지장을 주지 않도록 예외를 삼킴
       debugPrint('[GamePage] ⚠️ 재연결 후 상태 동기화 실패 (무시): $e');
@@ -972,17 +986,8 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  /// 게임 종료 → 결과 팝업 2단계 시퀀스
-  ///
-  /// 1단계: "게임 종료" 알림 팝업 (3초 자동 닫힘)
-  /// 2단계: GameOverResultDialog — 캐릭터 오버레이 + 통계 + 홈으로/한 번 더
-  ///
-  /// 1단계 진입 직전에 [gameResultProvider]를 사전 트리거하여,
-  /// 2단계 다이얼로그가 뜰 때 API 응답이 이미 준비되도록 한다.
-  Future<void> _showGameOverDialog(String? winnerTeam, String? reason) async {
-    if (_gameOverDialogShown) return;
-    _gameOverDialogShown = true;
-
+  /// 게임 종료 다이얼로그를 띄우기 전 화면/소켓/위치 리소스를 정리한다.
+  void _prepareGameOverPresentation() {
     // 종료 시점에 구역 밖이었다면 진동 타이머·시각 신호가 살아있을 수 있다.
     // 결과 다이얼로그 위에 펄스/배너가 깜빡이고 진동이 폭주하지 않도록 정리한다.
     _clearZoneExitWarning();
@@ -993,9 +998,6 @@ class _GamePageState extends ConsumerState<GamePage>
     _locationSubscription = null;
     _headingSubscription?.cancel();
     _headingSubscription = null;
-
-    // GAME_OVER 이벤트 state에서 gameResultId 캡처.
-    final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
 
     // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
     ref.invalidate(chatNotificationEnabledProvider);
@@ -1008,12 +1010,53 @@ class _GamePageState extends ConsumerState<GamePage>
     if (mounted) {
       Navigator.of(context).popUntil((route) => route is! PopupRoute);
     }
+  }
+
+  /// GAME_OVER 이벤트를 놓쳤지만 REST 상태로 종료가 감지된 경우의 중립 fallback.
+  Future<void> _showMissedGameOverFallbackDialog() async {
+    if (_gameOverDialogShown) return;
+    _gameOverDialogShown = true;
+
+    debugPrint('[GamePage] GAME_OVER 유실 fallback 다이얼로그 표시');
+    _prepareGameOverPresentation();
+
+    if (!mounted) return;
+
+    final gameId = int.tryParse(widget.sessionId);
+    await _showFallbackResultDialog(null, gameId);
+  }
+
+  /// 게임 종료 → 결과 팝업 2단계 시퀀스
+  ///
+  /// 1단계: "게임 종료" 알림 팝업 (3초 자동 닫힘)
+  /// 2단계: GameOverResultDialog — 캐릭터 오버레이 + 통계 + 홈으로/한 번 더
+  ///
+  /// 1단계 진입 직전에 [gameResultProvider]를 사전 트리거하여,
+  /// 2단계 다이얼로그가 뜰 때 API 응답이 이미 준비되도록 한다.
+  Future<void> _showGameOverDialog(String? winnerTeam, String? reason) async {
+    if (_gameOverDialogShown) return;
+    _gameOverDialogShown = true;
+
+    // GAME_OVER 이벤트 state에서 gameResultId 캡처.
+    final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
+
+    _prepareGameOverPresentation();
 
     // 결과 API 사전 트리거 (1단계 3초 동안 백그라운드에서 로딩)
     if (gameResultId != null) {
-      // fire-and-forget — 다이얼로그에서 ref.watch로 같은 Provider를 구독한다
-      // ignore: unawaited_futures
-      ref.read(gameResultProvider(gameResultId).future);
+      // fire-and-forget — 다이얼로그에서 ref.watch로 같은 Provider를 구독한다.
+      // 에러는 Provider에 캐시되어 결과 다이얼로그의 AsyncValue.error 분기로 표시된다.
+      // 여기서는 미소비 Future 에러가 전역 에러로 번지지 않도록 소비만 한다.
+      unawaited(
+        ref
+            .read(gameResultProvider(gameResultId).future)
+            .then<void>(
+              (_) {},
+              onError: (Object e, StackTrace st) {
+                debugPrint('[GamePage] ⚠️ 게임 결과 사전 조회 실패: $e');
+              },
+            ),
+      );
     }
 
     // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)
@@ -1070,7 +1113,10 @@ class _GamePageState extends ConsumerState<GamePage>
       onGoHome: () {
         // GamePage가 외부 사유로 이미 dispose된 경우 ref/context 사용 금지 (안전망)
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
-        if (gameId != null) ref.read(leaveGameProvider(gameId).future);
+        if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
+            gameId != null) {
+          ref.read(leaveGameProvider(gameId).future);
+        }
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.home);
       },
@@ -1087,16 +1133,21 @@ class _GamePageState extends ConsumerState<GamePage>
     String? winnerTeam,
     int? gameId,
   ) async {
-    final isWin = winnerTeam == widget.team;
     final l10n = AppLocalizations.of(context);
+    final hasWinnerTeam = winnerTeam == 'POLICE' || winnerTeam == 'ROBBER';
+    final isWin = hasWinnerTeam && winnerTeam == widget.team;
     final winnerTeamLabel = winnerTeam == 'POLICE'
         ? l10n.gameTeamCop
         : l10n.gameTeamRobber;
 
-    AppDialog.show(
+    await AppDialog.show(
       context: context,
-      title: isWin ? l10n.gameResultWin : l10n.gameResultLose,
-      message: l10n.messageGameOverWinner(winnerTeamLabel),
+      title: hasWinnerTeam
+          ? (isWin ? l10n.gameResultWin : l10n.gameResultLose)
+          : l10n.gameOverBannerTitle,
+      message: hasWinnerTeam
+          ? l10n.messageGameOverWinner(winnerTeamLabel)
+          : l10n.gameOverFallbackMessage,
       titleStyle:
           (_isDarkMode
                   ? AppTextStyles.robberHeading24
@@ -1104,7 +1155,9 @@ class _GamePageState extends ConsumerState<GamePage>
               .copyWith(
                 color: _isDarkMode
                     ? AppColors.green
-                    : (isWin ? AppColors.blue : AppColors.red),
+                    : hasWinnerTeam
+                    ? (isWin ? AppColors.blue : AppColors.red)
+                    : AppColors.black,
               ),
       cancelText: l10n.buttonGoHome,
       confirmText: l10n.buttonPlayAgain,
@@ -1115,7 +1168,11 @@ class _GamePageState extends ConsumerState<GamePage>
       barrierDismissible: false,
       onCancel: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
-        if (gameId != null) ref.read(leaveGameProvider(gameId).future);
+        if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
+            hasWinnerTeam &&
+            gameId != null) {
+          ref.read(leaveGameProvider(gameId).future);
+        }
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.home);
       },
@@ -1199,10 +1256,17 @@ class _GamePageState extends ConsumerState<GamePage>
 
       final info = status.participationInfo;
 
-      if (!status.isParticipating || info == null) {
-        // 게임 종료 → 홈
-        debugPrint('[GamePage] 게임 종료 감지 → 홈 이동');
-        context.go(RoutePaths.home);
+      if (info == null ||
+          GameOverGuard.shouldShowMissedGameOverFallback(
+            isParticipating: status.isParticipating,
+            gameStatus: info.gameStatus,
+          )) {
+        debugPrint(
+          '[GamePage] GAME_OVER 유실 의심 — resume 상태: '
+          'isParticipating=${status.isParticipating}, '
+          'gameStatus=${info?.gameStatus}',
+        );
+        await _showMissedGameOverFallbackDialog();
       } else if (info.gameStatus == 'WAITING') {
         // 대기실 상태 → 로비로 복귀
         debugPrint('[GamePage] WAITING 감지 → 로비 이동');
