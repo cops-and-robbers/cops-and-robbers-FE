@@ -1,9 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/network/api_error_response.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -12,6 +14,7 @@ import '../../../session/data/models/in_game_participants_response.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/team_section.dart';
+import '../helpers/game_over_guard.dart';
 import '../providers/game_event_provider.dart';
 import 'game_action_modal.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
@@ -64,17 +67,31 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
 
   Future<void> _loadParticipants() async {
     if (!mounted) return;
+    if (ref.read(gameEventNotifierProvider).isGameOver) return;
+
     final gameInfo = ref.read(gameParticipantNotifierProvider);
     if (gameInfo == null) return;
+
     try {
       final result = await ref.read(
         fetchGameParticipantsProvider(gameInfo.gameId).future,
       );
       if (!mounted) return;
+      if (ref.read(gameEventNotifierProvider).isGameOver) return;
       setState(() => _participants = result);
     } catch (e) {
+      if (_isGameNotInProgressError(e)) return;
       debugPrint('[ParticipantOverlay] 참가자 조회 실패: $e');
     }
+  }
+
+  bool _isGameNotInProgressError(Object error) {
+    if (error is! DioException) return false;
+    final apiError = ApiErrorResponse.tryParse(error.response?.data);
+    return GameOverGuard.isGameNotInProgressError(
+      statusCode: error.response?.statusCode,
+      title: apiError?.title,
+    );
   }
 
   /// [InGameParticipant] → [LobbyParticipantInfo] 변환
@@ -193,6 +210,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
 
     // 체포 이벤트 수신 시 참가자 목록 갱신
     ref.listen(gameEventNotifierProvider, (prev, next) {
+      if (next.isGameOver) return;
       if (prev?.arrestedParticipantIds != next.arrestedParticipantIds ||
           prev?.escapedParticipantIds != next.escapedParticipantIds) {
         _loadParticipants();
