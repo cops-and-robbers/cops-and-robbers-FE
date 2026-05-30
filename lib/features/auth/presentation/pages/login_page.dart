@@ -7,11 +7,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -235,15 +237,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 앱 로고
-                  Image.asset(
-                    'assets/app_icon.png',
-                    width: 224.w,
-                    height: 224.w,
+                  SizedBox(height: 120.h),
+                  // 앱 로고 (로케일별 워드마크) — 폭 고정, 높이는 비율 자동
+                  SvgPicture.asset(
+                    localizedAppLogo(Localizations.localeOf(context)),
+                    width: 220.w,
                   ),
 
-                  // 로고와 버튼 사이 간격 (플랫폼별)
-                  SizedBox(height: Platform.isIOS ? 155.h : 185.h),
+                  // 로고와 한 줄 소개 사이 간격
+                  SizedBox(height: AppSpacing.vertical16),
+
+                  // 앱 한 줄 소개 카피
+                  Text(
+                    l10n.loginPageTagline,
+                    style: AppTextStyles.paragraph_14.copyWith(
+                      color: AppColors.black800,
+                    ),
+                  ),
+
+                  // 로고·카피 블록과 버튼 사이 간격 (플랫폼별)
+                  SizedBox(height: Platform.isIOS ? 180.h : 210.h),
 
                   // Google 로그인 버튼
                   GoogleLoginButton(
@@ -293,6 +306,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     children: [
                       TextSpan(text: l10n.loginPageAgreementPrefix),
+                      const TextSpan(text: ' '),
+
                       TextSpan(
                         text: l10n.linkPrivacyPolicy,
                         style: AppTextStyles.tag_12.copyWith(

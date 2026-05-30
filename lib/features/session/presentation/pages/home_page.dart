@@ -20,6 +20,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
@@ -625,11 +626,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      l10n.appBrandName,
-                      style: AppTextStyles.heading_20.copyWith(
-                        color: AppColors.black,
-                      ),
+                    // 로케일별 워드마크 로고 — en은 세로 비중이 커 40, ko/ja는 20
+                    SvgPicture.asset(
+                      localizedAppLogo(Localizations.localeOf(context)),
+                      height:
+                          (Localizations.localeOf(context).languageCode == 'en'
+                                  ? 40
+                                  : 20)
+                              .h,
                     ),
                     GestureDetector(
                       onTap: () {

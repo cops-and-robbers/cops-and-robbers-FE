@@ -856,6 +856,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorAgeRestrictionUnder14 => '만 14세 미만은 서비스를 이용할 수 없습니다';
 
   @override
+  String get loginPageTagline => '실시간 GPS 기반 오프라인 추격 레이스';
+
+  @override
   String get loginPageAgreementPrefix => '로그인 시';
 
   @override

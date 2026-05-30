@@ -819,6 +819,10 @@
   "@errorAgeRestrictionUnder14": {
     "description": "만 14세 미만 가입 차단 안내"
   },
+  "loginPageTagline": "실시간 GPS 기반 오프라인 추격 레이스",
+  "@loginPageTagline": {
+    "description": "로그인 페이지 로고 아래 표시되는 앱 한 줄 소개 카피"
+  },
   "loginPageAgreementPrefix": "로그인 시",
   "@loginPageAgreementPrefix": {
     "description": "로그인 페이지 약관 안내 접두사 (예: '로그인 시 ~ 에 동의합니다')"

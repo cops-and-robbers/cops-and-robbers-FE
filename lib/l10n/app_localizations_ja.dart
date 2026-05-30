@@ -859,6 +859,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorAgeRestrictionUnder14 => '14歳未満はサービスを利用できません';
 
   @override
+  String get loginPageTagline => 'リアルタイムGPS オフライン・チェイス・レース';
+
+  @override
   String get loginPageAgreementPrefix => 'ログインすると、';
 
   @override
