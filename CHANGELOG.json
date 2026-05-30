@@ -1,11 +1,64 @@
 {
   "metadata": {
-    "lastUpdated": "2026-05-27T09:09:33Z",
-    "currentVersion": "1.9.7",
+    "lastUpdated": "2026-05-30T17:20:01Z",
+    "currentVersion": "2.0.1",
     "projectType": "flutter",
-    "totalReleases": 95
+    "totalReleases": 96
   },
   "releases": [
+    {
+      "version": "2.0.1",
+      "project_type": "flutter",
+      "date": "2026-05-30",
+      "pr_number": 392,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Update version.yml\n  * Update app_router.dart\n  * Merge pull request #391 from cops-and-robbers/20260530_#390_스플래시_화면_및_인앱_로고_이미지_변경\n  * style : 홈 화면 공지 아이콘 설정 버튼 옆으로 이동 #390\n  * refactor : 상단바 아이콘 버튼 FlatIconButton 공통 컴포넌트로 분리 #390\n  * chore : 캐릭터 SVG 에셋 및 알림 아이콘 업데이트 #390\n  * feat : 로케일별 워드마크 로고·스플래시 SVG 적용 #390\n  * Merge pull request #389 from cops-and-robbers/20260528_#383_Remote_Config_기반_동적_앱_아이콘_변경\n  * fix : 부팅 앱 아이콘 적용 실패 시 예외 흡수 처리 #383\n  * fix : CI format\n  * fix : 미지원 언어 기본 로케일 ko→en 변경 #383\n  * feat : 로케일 기반 동적 앱 아이콘 Android 지원 및 자체 네이티브 채널 전환 #383\n  * feat : 로케일 기반 동적 앱 아이콘 전환 기능 추가 (iOS) #383\n  * Merge pull request #388 from cops-and-robbers/20260529_#387_게임_상태_팀_참가자_상태_등_매직_스트링_상수화\n  * fix : 딥링크 방 이동 문구 en/ja 번역 누락 보완 #381\n  * fix : 게임 종료 후 참가자 오버레이 조회 차단 및 종료 에러 무시 #381\n  * feat : 딥링크 참가 에러 메시지 및 l10n 키 추가 #381\n  * docs : API_SPEC.md 삭제 및 api-docs.json 참조로 일원화\n  * refactor : 게임 상태·팀·참가자 상태 등 매직 스트링 상수화 #387\n  * Merge pull request #382 from cops-and-robbers/20260527_#381_방_초대_링크_Native_딥링크_구현\n  * fix : GAME_OVER 이벤트 유실 시 게임 종료 fallback 처리 #381\n  * feat : 딥링크 초대 참가 플로우 정리 및 중복 참가 시 활성 방 복귀 #381\n  * refactor : 활성 게임 복귀 라우트 매핑을 공통 함수로 추출 #381\n  * Merge branch 'main' of https://github.com/cops-and-robbers/cops-and-robbers-FE into 20260527_#381_방_초대_링크_Native_딥링크_구현\n  * Merge pull request #385 from cops-and-robbers/20260528_#384_토큰_재발급_엣지_케이스_분기_보강_및_관측성_추가\n  * refactor : i18n 키 의미 기반으로 정리 및 미사용 JSON 자산 제거 #384\n  * fix : 게임 종료 처리 보강 및 라이트모드 UI 일관성 확보 #384\n  * refactor : 토큰 재발급 엣지 케이스 분기 보강 및 관측성 추가 #384\n  * fix : SharedPreferences set/remove 반환값 검증 추가 #381\n  * chore : 이미 구현됐거나 낡은 TODO 주석 정리 #381\n  * docs : 코드레빗 지적 반영해 markdown 포맷 정리 #381\n  * fix : 딥링크 join 흐름 에러 처리 및 경로 정규화 #381\n  * chore : result dialog body 사진 변경 #376\n  * docs : 딥링크 가이드 문서 #381\n  * docs : Codex agents.md 문서 추가\n  * refactor : 초대 QR/공유 정책 정리 및 feature flag 제거 #381\n  * fix : 딥링크 진입 흐름 및 플랫폼 설정 보강 #381\n  * feat : 방 초대 링크 Native 딥링크 join 플로우 구현 #381\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Update version.yml",
+            "Update app_router.dart",
+            "Merge pull request #391 from cops-and-robbers/20260530_#390_스플래시_화면_및_인앱_로고_이미지_변경",
+            "style : 홈 화면 공지 아이콘 설정 버튼 옆으로 이동 #390",
+            "refactor : 상단바 아이콘 버튼 FlatIconButton 공통 컴포넌트로 분리 #390",
+            "chore : 캐릭터 SVG 에셋 및 알림 아이콘 업데이트 #390",
+            "feat : 로케일별 워드마크 로고·스플래시 SVG 적용 #390",
+            "Merge pull request #389 from cops-and-robbers/20260528_#383_Remote_Config_기반_동적_앱_아이콘_변경",
+            "fix : 부팅 앱 아이콘 적용 실패 시 예외 흡수 처리 #383",
+            "fix : CI format",
+            "fix : 미지원 언어 기본 로케일 ko→en 변경 #383",
+            "feat : 로케일 기반 동적 앱 아이콘 Android 지원 및 자체 네이티브 채널 전환 #383",
+            "feat : 로케일 기반 동적 앱 아이콘 전환 기능 추가 (iOS) #383",
+            "Merge pull request #388 from cops-and-robbers/20260529_#387_게임_상태_팀_참가자_상태_등_매직_스트링_상수화",
+            "fix : 딥링크 방 이동 문구 en/ja 번역 누락 보완 #381",
+            "fix : 게임 종료 후 참가자 오버레이 조회 차단 및 종료 에러 무시 #381",
+            "feat : 딥링크 참가 에러 메시지 및 l10n 키 추가 #381",
+            "docs : API_SPEC.md 삭제 및 api-docs.json 참조로 일원화",
+            "refactor : 게임 상태·팀·참가자 상태 등 매직 스트링 상수화 #387",
+            "Merge pull request #382 from cops-and-robbers/20260527_#381_방_초대_링크_Native_딥링크_구현",
+            "fix : GAME_OVER 이벤트 유실 시 게임 종료 fallback 처리 #381",
+            "feat : 딥링크 초대 참가 플로우 정리 및 중복 참가 시 활성 방 복귀 #381",
+            "refactor : 활성 게임 복귀 라우트 매핑을 공통 함수로 추출 #381",
+            "Merge branch 'main' of https://github.com/cops-and-robbers/cops-and-robbers-FE into 20260527_#381_방_초대_링크_Native_딥링크_구현",
+            "Merge pull request #385 from cops-and-robbers/20260528_#384_토큰_재발급_엣지_케이스_분기_보강_및_관측성_추가",
+            "refactor : i18n 키 의미 기반으로 정리 및 미사용 JSON 자산 제거 #384",
+            "fix : 게임 종료 처리 보강 및 라이트모드 UI 일관성 확보 #384",
+            "refactor : 토큰 재발급 엣지 케이스 분기 보강 및 관측성 추가 #384",
+            "fix : SharedPreferences set/remove 반환값 검증 추가 #381",
+            "chore : 이미 구현됐거나 낡은 TODO 주석 정리 #381",
+            "docs : 코드레빗 지적 반영해 markdown 포맷 정리 #381",
+            "fix : 딥링크 join 흐름 에러 처리 및 경로 정규화 #381",
+            "chore : result dialog body 사진 변경 #376",
+            "docs : 딥링크 가이드 문서 #381",
+            "docs : Codex agents.md 문서 추가",
+            "refactor : 초대 QR/공유 정책 정리 및 feature flag 제거 #381",
+            "fix : 딥링크 진입 흐름 및 플랫폼 설정 보강 #381",
+            "feat : 방 초대 링크 Native 딥링크 join 플로우 구현 #381"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "1.9.7",
       "project_type": "flutter",
