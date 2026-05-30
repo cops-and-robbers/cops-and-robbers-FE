@@ -19,6 +19,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
@@ -1428,24 +1429,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       centerTitle: true,
       leading: Padding(
         padding: EdgeInsets.only(left: 18.w),
-        child: SizedBox(
-          width: 44.w,
-          height: 44.w,
-          child: GestureDetector(
-            onTap: _confirmLeaveRoom,
-            behavior: HitTestBehavior.opaque,
-            child: Center(
-              child: SvgPicture.asset(
-                'assets/icons/icon_exit.svg',
-                width: 24.w,
-                height: 24.w,
-                colorFilter: ColorFilter.mode(
-                  isDark ? AppColors.black200 : AppColors.black800,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
+        child: FlatIconButton(
+          assetPath: 'assets/icons/icon_exit.svg',
+          iconColor: isDark ? AppColors.black200 : AppColors.black800,
+          onPressed: _confirmLeaveRoom,
         ),
       ),
       title: _inviteCode != null
@@ -1479,47 +1466,19 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             )
           : null,
       actions: [
-        GestureDetector(
-          onTap: _showGameRulesDialog,
-          behavior: HitTestBehavior.opaque,
-          child: SizedBox(
-            width: 48.w,
-            height: 48.w,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: SvgPicture.asset(
-                'assets/icons/icon_info.svg',
-                width: 24.w,
-                height: 24.w,
-                colorFilter: ColorFilter.mode(
-                  isDark ? AppColors.black200 : AppColors.black800,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
+        FlatIconButton(
+          assetPath: 'assets/icons/icon_info.svg',
+          alignment: Alignment.centerRight,
+          iconColor: isDark ? AppColors.black200 : AppColors.black800,
+          onPressed: _showGameRulesDialog,
         ),
-        GestureDetector(
+        FlatIconButton(
           // 게임 설정 버튼 — 튜토리얼 하이라이트 대상
           key: _tutorialKeyGameRules,
-          onTap: () =>
+          assetPath: 'assets/icons/icon_settiing_2.svg',
+          iconColor: isDark ? AppColors.black200 : AppColors.black800,
+          onPressed: () =>
               context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
-          behavior: HitTestBehavior.opaque,
-          child: SizedBox(
-            width: 48.w,
-            height: 48.w,
-            child: Center(
-              child: SvgPicture.asset(
-                'assets/icons/icon_settiing_2.svg',
-                width: 24.w,
-                height: 24.w,
-                colorFilter: ColorFilter.mode(
-                  isDark ? AppColors.black200 : AppColors.black800,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
         ),
         SizedBox(width: 12.w),
       ],
