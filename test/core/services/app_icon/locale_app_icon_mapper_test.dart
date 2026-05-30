@@ -18,9 +18,13 @@ void main() {
       expect(alternateIconNameFor(const Locale('ja')), AppIconIdentifiers.ja);
     });
 
-    test('mapper_falls_back_to_ko_when_locale_unsupported', () {
-      // 지원 외 로케일(프랑스어)은 kDefaultLocale(ko)로 폴백 — 인앱 UI 폴백과 일치
-      expect(alternateIconNameFor(const Locale('fr')), AppIconIdentifiers.ko);
+    test('mapper_falls_back_to_en_primary_when_locale_unsupported', () {
+      // 지원 외 로케일(프랑스어)은 기본 로케일(en=Primary)로 폴백 — 영어 앱 이름/UI와 일치
+      expect(alternateIconNameFor(const Locale('fr')), isNull);
     });
+  });
+
+  test('AppIconIdentifiers_en_equals_app_icon_en', () {
+    expect(AppIconIdentifiers.en, 'app_icon_en');
   });
 }

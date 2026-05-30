@@ -6,8 +6,8 @@ import 'package:cops_and_robbers/core/services/app_icon/app_icon_identifiers.dar
 /// 인앱 유효 로케일 → iOS alternate 아이콘 식별자.
 ///
 /// 반환 `null` = Primary(영어) 아이콘 사용.
-/// 지원 외 로케일은 [kDefaultLocale](현재 ko) 기준으로 매핑하여
-/// 인앱 UI 폴백과 아이콘을 일치시킨다.
+/// 지원 외 로케일은 [kDefaultLocale](현재 en=Primary) 기준으로 매핑하여
+/// 인앱 UI 폴백·영어 런처 이름과 아이콘을 일치시킨다.
 String? alternateIconNameFor(Locale locale) {
   final code = _supportedCodeOrDefault(locale.languageCode);
   switch (code) {
