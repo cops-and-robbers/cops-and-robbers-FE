@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -25,6 +24,7 @@ import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
@@ -1961,27 +1961,13 @@ class _GamePageState extends ConsumerState<GamePage>
               ),
             ],
           ),
-          // 우측: info 버튼 (터치 영역 48x48)
+          // 우측: info 버튼
           Align(
             alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: _showGameRulesDialog,
-              behavior: HitTestBehavior.opaque,
-              child: SizedBox(
-                width: 48.w,
-                height: 48.w,
-                child: Center(
-                  child: SvgPicture.asset(
-                    'assets/icons/icon_info.svg',
-                    width: 24.w,
-                    height: 24.w,
-                    colorFilter: ColorFilter.mode(
-                      _isDarkMode ? AppColors.black200 : AppColors.black800,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-              ),
+            child: FlatIconButton(
+              assetPath: 'assets/icons/icon_info.svg',
+              iconColor: _isDarkMode ? AppColors.black200 : AppColors.black800,
+              onPressed: _showGameRulesDialog,
             ),
           ),
         ],

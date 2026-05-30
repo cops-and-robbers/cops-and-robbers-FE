@@ -107,6 +107,8 @@ flutter:
   generate: true
   assets:
     - assets/
+    - assets/app_logos/
+    - assets/app_splashs/
     - assets/fonts/
     - assets/icons/
     - assets/legals/

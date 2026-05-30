@@ -266,6 +266,7 @@
   "errorLoginGeneric": "ログイン中にエラーが発生しました",
   "errorAppleLoginFailed": "Appleログイン中にエラーが発生しました",
   "errorAgeRestrictionUnder14": "14歳未満はサービスを利用できません",
+  "loginPageTagline": "リアルタイムGPS オフライン・チェイス・レース",
   "loginPageAgreementPrefix": "ログインすると、",
   "linkPrivacyPolicy": "個人情報処理方針",
   "linkTermsOfService": "利用規約",

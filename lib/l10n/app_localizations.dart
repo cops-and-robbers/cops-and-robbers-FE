@@ -1696,6 +1696,12 @@ abstract class AppLocalizations {
   /// **'만 14세 미만은 서비스를 이용할 수 없습니다'**
   String get errorAgeRestrictionUnder14;
 
+  /// 로그인 페이지 로고 아래 표시되는 앱 한 줄 소개 카피
+  ///
+  /// In ko, this message translates to:
+  /// **'실시간 GPS 기반 오프라인 추격 레이스'**
+  String get loginPageTagline;
+
   /// 로그인 페이지 약관 안내 접두사 (예: '로그인 시 ~ 에 동의합니다')
   ///
   /// In ko, this message translates to:

@@ -131,10 +131,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'We are performing maintenance to provide better service\nPlease reconnect in a moment!';
 
   @override
-  String get buttonGoogleSignIn => 'Get started with Google';
+  String get buttonGoogleSignIn => 'Continue with Google';
 
   @override
-  String get buttonAppleSignIn => 'Get started with Apple';
+  String get buttonAppleSignIn => 'Continue with Apple';
 
   @override
   String zoneRadiusKm(String km) {
@@ -933,6 +933,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorAgeRestrictionUnder14 =>
       'Users under 14 cannot use the service';
+
+  @override
+  String get loginPageTagline => 'Real-Time GPS Offline Tag Race';
 
   @override
   String get loginPageAgreementPrefix => 'By signing in, you agree to the';

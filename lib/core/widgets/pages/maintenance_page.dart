@@ -1,10 +1,12 @@
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
+import '../../i18n/locale_brand_assets.dart';
 import '../../services/remote_config/remote_config_service.dart';
 
 /// 서버 점검 중 안내 페이지
@@ -31,12 +33,11 @@ class MaintenancePage extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(
-                        'assets/app_icon.png',
-                        width: 223.w,
-                        height: 260.w,
+                      SvgPicture.asset(
+                        localizedAppSplash(Localizations.localeOf(context)),
+                        width: 302.w,
                       ),
-                      SizedBox(height: AppSpacing.vertical24),
+                      SizedBox(height: AppSpacing.vertical40),
                       Text(
                         l10n.pageMaintenanceTitle,
                         style: AppTextStyles.heading_24.copyWith(
