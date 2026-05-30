@@ -33,7 +33,7 @@ void main() {
   test('applies_ja_icon_when_stored_locale_is_ja', () async {
     SharedPreferences.setMockInitialValues({'app_locale_code': 'ja'});
     final client = _CapturingClient();
-    final service = AppIconService(client: client, isIOS: true);
+    final service = AppIconService(client: client);
 
     await applyStartupLocaleIcon(service: service);
 
@@ -44,7 +44,7 @@ void main() {
   test('applies_ko_icon_when_stored_locale_is_ko', () async {
     SharedPreferences.setMockInitialValues({'app_locale_code': 'ko'});
     final client = _CapturingClient();
-    final service = AppIconService(client: client, isIOS: true);
+    final service = AppIconService(client: client);
 
     await applyStartupLocaleIcon(service: service);
 
@@ -54,7 +54,7 @@ void main() {
   test('applies_primary_when_stored_locale_is_en', () async {
     SharedPreferences.setMockInitialValues({'app_locale_code': 'en'});
     final client = _CapturingClient();
-    final service = AppIconService(client: client, isIOS: true);
+    final service = AppIconService(client: client);
 
     await applyStartupLocaleIcon(service: service);
 
@@ -64,7 +64,7 @@ void main() {
 
   test('applies_primary_icon_when_locale_changes_to_en', () async {
     final client = _CapturingClient(current: 'app_icon_ko');
-    final service = AppIconService(client: client, isIOS: true);
+    final service = AppIconService(client: client);
 
     await applyLocaleIcon(const Locale('en'), service: service);
 

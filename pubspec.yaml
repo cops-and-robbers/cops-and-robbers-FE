@@ -60,7 +60,6 @@ dependencies:
   # 알림 & 실시간 통신
   firebase_core: ^4.1.0
   firebase_remote_config: ^6.3.0 # 앱 버전 관리 및 점검 모드 (Remote Config)
-  flutter_dynamic_icon: 2.1.0 # iOS alternate app icon 런타임 전환
   firebase_messaging: ^16.0.1 # 푸시 알림(Firebase Cloud Messaging)
   firebase_crashlytics: ^5.0.6 # 에러 리포팅 및 크래시 수집
   flutter_local_notifications: ^19.4.2 # 로컬 알림 생성 및 관리
@@ -77,6 +76,9 @@ dependencies:
   shimmer: ^3.0.0
   # 네트워크 연결 상태 체크 (스플래시 오프라인 가드용)
   connectivity_plus: ^6.1.0
+  # 로케일 기반 동적 앱 아이콘은 third-party 없이 자체 네이티브 채널(cops_and_robbers/app_icon)로 구현.
+  #   iOS: AppDelegate에서 UIApplication.setAlternateIconName / Android: MainActivity activity-alias 토글
+  #   (flutter_dynamic_icon=AGP8·v1 embedding 비호환, flutter_dynamic_icon_plus=iOS SwiftTryCatch 원본 삭제로 모두 제거)
 # --------------------------------------------
 # 개발 의존성 (개발/빌드 시에만 필요한 패키지)
 # --------------------------------------------
@@ -150,7 +152,10 @@ flutter:
       fonts:
         - asset: assets/fonts/Moneygraphy-Pixel.ttf
 flutter_launcher_icons:
-  android: true
+  # ⚠️ Android는 로케일별 activity-alias 아이콘(ic_launcher_{en,ko,ja})을 손으로 관리한다.
+  # 이 생성기를 android:true로 재실행하면 ic_launcher* 및 로케일 변형을 덮어쓰므로 금지.
+  # 아이콘 변경 시 res/ 리소스를 직접 수정할 것. (이슈 #383)
+  android: false
   ios: true
   image_path: "assets/app_icon_1024.png" # Android 폴백(기존 유지)
   image_path_ios: "assets/app_icons/app_icon_en.png" # iOS Primary = 영어

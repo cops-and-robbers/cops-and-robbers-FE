@@ -53,10 +53,6 @@
             <meta-data
                 android:name="flutter_deeplinking_enabled"
                 android:value="false" />
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
             <!-- App Links intent-filter for /join/* deep links -->
             <!-- autoVerify=true: Play Store will verify domain ownership via .well-known/assetlinks.json -->
             <intent-filter android:autoVerify="true">
@@ -69,6 +65,45 @@
                     android:pathPrefix="/join/" />
             </intent-filter>
         </activity>
+        <!-- 로케일별 런처 아이콘 (activity-alias). 동시에 1개만 enabled. -->
+        <!-- 기본 enabled = en. ko/ja는 런타임 토글로 활성화(DONT_KILL_APP). -->
+        <!-- roundIcon은 의도적으로 생략 — 기존 ic_launcher도 round 변형이 없어 정책 일치. -->
+        <activity-alias
+            android:name=".app_icon_en"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_en"
+            android:label="@string/app_name"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".app_icon_ko"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_ko"
+            android:label="@string/app_name"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".app_icon_ja"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_ja"
+            android:label="@string/app_name"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
