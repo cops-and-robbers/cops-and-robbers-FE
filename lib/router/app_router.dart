@@ -37,6 +37,7 @@ import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
 import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
 import '../features/credits/presentation/pages/credits_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
+import '../core/widgets/buttons/previous_button.dart';
 import '../core/widgets/pages/maintenance_page.dart';
 import '../core/widgets/pages/force_update_page.dart';
 import '../features/session/presentation/pages/deeplink_join_page.dart';
@@ -487,7 +488,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       key: state.pageKey,
                       child: Scaffold(
                         appBar: AppBar(
-                          leading: BackButton(
+                          leading: PreviousButton(
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                         ),
