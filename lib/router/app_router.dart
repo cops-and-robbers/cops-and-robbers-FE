@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/constants/game_team.dart';
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
 import '../core/utils/custom_page_transitions.dart';
@@ -36,8 +37,16 @@ import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
 import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
 import '../features/credits/presentation/pages/credits_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
+import '../core/widgets/buttons/previous_button.dart';
 import '../core/widgets/pages/maintenance_page.dart';
 import '../core/widgets/pages/force_update_page.dart';
+import '../features/session/presentation/pages/deeplink_join_page.dart';
+
+/// 딥링크 수신 후 GoRouter 외부에서 네비게이션이 필요한 경우(Task 9: DeepLinkService)에
+/// Navigator 에 직접 접근하기 위한 루트 NavigatorKey.
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'root',
+);
 
 /// GoRouter 인스턴스를 제공하는 Riverpod Provider
 ///
@@ -87,6 +96,7 @@ import '../core/widgets/pages/force_update_page.dart';
 final routerProvider = Provider<GoRouter>((ref) {
   debugPrint('🔧 [routerProvider] GoRouter 생성 시작');
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
     // refreshListenable 활성화 (auth 상태 변경 감지)
@@ -130,6 +140,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (!isAuthenticated) {
           // 스플래시, 로그인 페이지, 개발자 도구는 허용
           if (publicPaths.contains(currentPath)) {
+            return null;
+          }
+          // 딥링크 진입 (/join/{code}) 도 허용 — DeepLinkJoinPage 가 자체적으로
+          // PendingInvite 를 저장한 후 로그인 화면으로 보낸다.
+          // 미로그인 상태에서 이 경로를 차단하면 pending invite 가 저장되지 않아
+          // 로그인 직후 자동 join 흐름이 깨진다.
+          if (currentPath.startsWith('${RoutePaths.joinByInvite}/')) {
             return null;
           }
           // 그 외 모든 페이지는 로그인으로 리다이렉트
@@ -471,7 +488,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       key: state.pageKey,
                       child: Scaffold(
                         appBar: AppBar(
-                          leading: BackButton(
+                          leading: PreviousButton(
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                         ),
@@ -510,7 +527,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         // 몰입감을 위해 즉시 전환이 더 적합하다.
         pageBuilder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
-          final team = state.uri.queryParameters['team'] ?? 'POLICE';
+          final team = state.uri.queryParameters['team'] ?? GameTeam.police;
           final participantId =
               int.tryParse(state.uri.queryParameters['pid'] ?? '') ?? 1;
           final isDummy = state.uri.queryParameters['dummy'] == 'true';
@@ -522,6 +539,22 @@ final routerProvider = Provider<GoRouter>((ref) {
               participantId: participantId,
               isDummy: isDummy,
             ),
+          );
+        },
+      ),
+
+      // ====================================================================
+      // Deep Link Routes (딥링크 초대 코드 진입 — 인증 여부 불문)
+      // ====================================================================
+      GoRoute(
+        path: '${RoutePaths.joinByInvite}/:inviteCode',
+        name: RoutePaths.joinByInviteName,
+        // 다른 라우트와 톤을 맞춰 플랫폼 기본 전환 제거 (즉시 전환)
+        pageBuilder: (context, state) {
+          final code = state.pathParameters['inviteCode'] ?? '';
+          return buildInstantTransition(
+            key: state.pageKey,
+            child: DeepLinkJoinPage(inviteCode: code),
           );
         },
       ),

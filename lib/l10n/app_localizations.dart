@@ -112,253 +112,217 @@ abstract class AppLocalizations {
   /// **''**
   String get legalDocumentKoreanOnlyNotice;
 
-  /// auto-imported from lib/core/services/loading_message_service.dart:49
+  /// No description provided for @loadingDefault.
   ///
   /// In ko, this message translates to:
   /// **'처리 중...'**
   String get loadingDefault;
 
-  /// auto-imported from lib/core/services/permission/location_permission_messages.dart:48
+  /// No description provided for @permissionLocationFallbackTitle.
   ///
   /// In ko, this message translates to:
   /// **'위치 권한 안내'**
   String get permissionLocationFallbackTitle;
 
-  /// auto-imported from lib/core/services/permission/location_permission_messages.dart:49
+  /// No description provided for @permissionLocationFallbackMessage.
   ///
   /// In ko, this message translates to:
   /// **'위치 권한을 허용해주세요'**
   String get permissionLocationFallbackMessage;
 
-  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:53
+  /// No description provided for @dialogUpdateOptionalTitle.
   ///
   /// In ko, this message translates to:
   /// **'새 버전 안내'**
   String get dialogUpdateOptionalTitle;
 
-  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:54
+  /// No description provided for @dialogUpdateOptionalMessage.
   ///
   /// In ko, this message translates to:
   /// **'더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?'**
   String get dialogUpdateOptionalMessage;
 
-  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:55
+  /// No description provided for @dialogUpdateOptionalConfirm.
   ///
   /// In ko, this message translates to:
   /// **'업데이트'**
   String get dialogUpdateOptionalConfirm;
 
-  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:56
+  /// No description provided for @dialogUpdateOptionalCancel.
   ///
   /// In ko, this message translates to:
   /// **'나중에'**
   String get dialogUpdateOptionalCancel;
 
-  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:68
+  /// No description provided for @dialogUpdateMandatoryTitle.
   ///
   /// In ko, this message translates to:
   /// **'업데이트 안내'**
   String get dialogUpdateMandatoryTitle;
 
-  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:69
+  /// No description provided for @dialogUpdateMandatoryMessage.
   ///
   /// In ko, this message translates to:
   /// **'새로운 버전이 출시되었어요.\n업데이트하시겠어요?'**
   String get dialogUpdateMandatoryMessage;
 
-  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:70
+  /// No description provided for @dialogUpdateMandatoryConfirm.
   ///
   /// In ko, this message translates to:
   /// **'업데이트'**
   String get dialogUpdateMandatoryConfirm;
 
-  /// auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:71
+  /// No description provided for @dialogUpdateMandatoryCancel.
   ///
   /// In ko, this message translates to:
   /// **'나중에'**
   String get dialogUpdateMandatoryCancel;
 
-  /// auto-imported from lib/core/constants/game_event_messages.dart:11
+  /// No description provided for @chatSystemGameStartTime.
   ///
   /// In ko, this message translates to:
   /// **'제한 시간은 {minutes}분입니다'**
   String chatSystemGameStartTime(int minutes);
 
-  /// auto-imported from lib/core/constants/game_event_messages.dart:14
-  ///
-  /// In ko, this message translates to:
-  /// **'잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!'**
-  String get chatSystemGameStartReady;
-
-  /// auto-imported from lib/core/constants/game_event_messages.dart:17
+  /// No description provided for @chatSystemGameStartReportTip.
   ///
   /// In ko, this message translates to:
   /// **'게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다'**
   String get chatSystemGameStartReportTip;
 
-  /// auto-imported from lib/core/constants/game_event_messages.dart:20
-  ///
-  /// In ko, this message translates to:
-  /// **'게임 시작!  행운을 빕니다!'**
-  String get chatSystemGameStartGo;
-
-  /// auto-imported from lib/core/constants/game_event_messages.dart:25
+  /// No description provided for @chatSystemPoliceMoveWarning.
   ///
   /// In ko, this message translates to:
   /// **'경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!'**
   String get chatSystemPoliceMoveWarning;
 
-  /// auto-imported from lib/core/constants/game_event_messages.dart:28
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰 출동!  도둑은 도망치세요!'**
-  String get chatSystemPoliceMove;
-
-  /// auto-imported from lib/core/constants/game_event_messages.dart:33
-  ///
-  /// In ko, this message translates to:
-  /// **'현재 도둑의 위치가 공개됩니다!'**
-  String get chatSystemLocationReveal;
-
-  /// auto-imported from lib/core/constants/game_event_messages.dart:36
+  /// No description provided for @chatSystemRemainingRobbers.
   ///
   /// In ko, this message translates to:
   /// **'현재 {count}명 도주 중!'**
   String chatSystemRemainingRobbers(int count);
 
-  /// auto-imported from lib/core/constants/game_event_messages.dart:42
-  ///
-  /// In ko, this message translates to:
-  /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!'**
-  String chatSystemArrest(String policeNickname, String robberNickname);
-
-  /// auto-imported from lib/core/constants/game_event_messages.dart:47
-  ///
-  /// In ko, this message translates to:
-  /// **'도둑이 탈옥했습니다! 지금 바로 체포하세요!'**
-  String get chatSystemEscapeNotice;
-
-  /// auto-imported from lib/core/constants/game_event_messages.dart:52
+  /// No description provided for @chatSystemFiveMinutesLeft.
   ///
   /// In ko, this message translates to:
   /// **'게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!'**
   String get chatSystemFiveMinutesLeft;
 
-  /// auto-imported from lib/core/network/dio_exception_handler.dart:41
+  /// No description provided for @errorNetworkTimeout.
   ///
   /// In ko, this message translates to:
   /// **'서버 연결 시간이 초과되었습니다'**
   String get errorNetworkTimeout;
 
-  /// auto-imported from lib/core/network/dio_exception_handler.dart:49
+  /// No description provided for @errorNetworkOffline.
   ///
   /// In ko, this message translates to:
   /// **'네트워크 연결을 확인하세요'**
   String get errorNetworkOffline;
 
-  /// auto-imported from lib/core/network/dio_exception_handler.dart:63
+  /// No description provided for @errorServerInternal.
   ///
   /// In ko, this message translates to:
   /// **'서버에 문제가 발생했습니다'**
   String get errorServerInternal;
 
-  /// auto-imported from lib/core/network/dio_exception_handler.dart:71
+  /// No description provided for @errorBadRequest.
   ///
   /// In ko, this message translates to:
   /// **'잘못된 요청입니다'**
   String get errorBadRequest;
 
-  /// auto-imported from lib/core/network/dio_exception_handler.dart:76
+  /// No description provided for @errorUnauthorized.
   ///
   /// In ko, this message translates to:
   /// **'인증에 실패했습니다'**
   String get errorUnauthorized;
 
-  /// auto-imported from lib/core/network/dio_exception_handler.dart:81
+  /// No description provided for @errorForbidden.
   ///
   /// In ko, this message translates to:
   /// **'접근 권한이 없습니다'**
   String get errorForbidden;
 
-  /// auto-imported from lib/core/network/dio_exception_handler.dart:86
+  /// No description provided for @errorNotFound.
   ///
   /// In ko, this message translates to:
   /// **'요청한 리소스를 찾을 수 없습니다'**
   String get errorNotFound;
 
-  /// auto-imported from lib/core/network/dio_exception_handler.dart:91
+  /// No description provided for @errorConflict.
   ///
   /// In ko, this message translates to:
   /// **'요청이 현재 상태와 충돌합니다'**
   String get errorConflict;
 
-  /// auto-imported from lib/core/widgets/dialogs/app_dialog.dart:79
+  /// No description provided for @buttonConfirm.
   ///
   /// In ko, this message translates to:
   /// **'확인'**
   String get buttonConfirm;
 
-  /// auto-imported from lib/core/widgets/dialogs/app_dialog.dart:267
+  /// No description provided for @buttonCancel.
   ///
   /// In ko, this message translates to:
   /// **'취소'**
   String get buttonCancel;
 
-  /// auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:158
+  /// No description provided for @dialogReconnectMessage.
   ///
   /// In ko, this message translates to:
   /// **'연결이 끊어졌어요. 재연결이 필요해요'**
   String get dialogReconnectMessage;
 
-  /// auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169
+  /// No description provided for @dialogReconnectButtonConnecting.
   ///
   /// In ko, this message translates to:
   /// **'연결 중...'**
   String get dialogReconnectButtonConnecting;
 
-  /// auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169
+  /// No description provided for @dialogReconnectButtonRetry.
   ///
   /// In ko, this message translates to:
   /// **'재연결'**
   String get dialogReconnectButtonRetry;
 
-  /// auto-imported from lib/core/widgets/pages/force_update_page.dart:41
+  /// No description provided for @pageForceUpdateTitle.
   ///
   /// In ko, this message translates to:
   /// **'업데이트 필요'**
   String get pageForceUpdateTitle;
 
-  /// auto-imported from lib/core/widgets/pages/force_update_page.dart:49
+  /// No description provided for @pageForceUpdateMessage.
   ///
   /// In ko, this message translates to:
   /// **'새로운 버전이 출시되었어요\n업데이트 후 이용해 주세요!'**
   String get pageForceUpdateMessage;
 
-  /// auto-imported from lib/core/widgets/pages/force_update_page.dart:60
+  /// No description provided for @pageForceUpdateButton.
   ///
   /// In ko, this message translates to:
   /// **'업데이트'**
   String get pageForceUpdateButton;
 
-  /// auto-imported from lib/core/widgets/pages/maintenance_page.dart:39
+  /// No description provided for @pageMaintenanceTitle.
   ///
   /// In ko, this message translates to:
   /// **'서버 점검 중'**
   String get pageMaintenanceTitle;
 
-  /// auto-imported from lib/core/widgets/pages/maintenance_page.dart:47
+  /// No description provided for @pageMaintenanceMessage.
   ///
   /// In ko, this message translates to:
   /// **'더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!'**
   String get pageMaintenanceMessage;
 
-  /// auto-imported from lib/core/widgets/buttons/social_login_button.dart:39
+  /// No description provided for @buttonGoogleSignIn.
   ///
   /// In ko, this message translates to:
   /// **'Google로 시작하기'**
   String get buttonGoogleSignIn;
 
-  /// auto-imported from lib/core/widgets/buttons/social_login_button.dart:86
+  /// No description provided for @buttonAppleSignIn.
   ///
   /// In ko, this message translates to:
   /// **'Apple로 시작하기'**
@@ -370,25 +334,25 @@ abstract class AppLocalizations {
   /// **'반경 {km}km'**
   String zoneRadiusKm(String km);
 
-  /// auto-imported from lib/core/widgets/buttons/zone_setting_button.dart:131
+  /// No description provided for @zoneRadiusMeter.
   ///
   /// In ko, this message translates to:
   /// **'반경 {radiusMeters}m'**
   String zoneRadiusMeter(String radiusMeters);
 
-  /// auto-imported from lib/core/widgets/map/zone_setting_widget.dart:364
+  /// No description provided for @zoneRadiusLabel.
   ///
   /// In ko, this message translates to:
   /// **'반경'**
   String get zoneRadiusLabel;
 
-  /// auto-imported from lib/core/utils/agreement_error_handler.dart:15
+  /// No description provided for @dialogAgreementRequiredTermsTitle.
   ///
   /// In ko, this message translates to:
   /// **'필수 약관 미동의'**
   String get dialogAgreementRequiredTermsTitle;
 
-  /// auto-imported from lib/core/errors/app_exception.dart:57
+  /// No description provided for @errorAuthLoginCancelled.
   ///
   /// In ko, this message translates to:
   /// **'로그인이 취소되었습니다'**
@@ -436,529 +400,403 @@ abstract class AppLocalizations {
   /// **'日本語'**
   String get settingsLanguageOptionJapanese;
 
-  /// auto-imported from assets/messages/loading_messages.json :: join_room.0
+  /// No description provided for @asset_loading_joinRoom.
   ///
   /// In ko, this message translates to:
   /// **'잠입 준비 중...'**
   String get asset_loading_joinRoom;
 
-  /// auto-imported from assets/messages/loading_messages.json :: join_room.1
+  /// No description provided for @asset_loading_joinRoomJoinOperation.
   ///
   /// In ko, this message translates to:
   /// **'작전에 합류하는 중...'**
-  String get asset_loading_joinRoom477c;
+  String get asset_loading_joinRoomJoinOperation;
 
-  /// auto-imported from assets/messages/loading_messages.json :: join_room.2
+  /// No description provided for @asset_loading_joinRoomEnterSecretPassage.
   ///
   /// In ko, this message translates to:
   /// **'비밀 통로로 진입 중...'**
-  String get asset_loading_joinRoom24a9;
+  String get asset_loading_joinRoomEnterSecretPassage;
 
-  /// auto-imported from assets/messages/loading_messages.json :: join_room.3
+  /// No description provided for @asset_loading_joinRoomCheckDisguise.
   ///
   /// In ko, this message translates to:
   /// **'변장 확인 중...'**
-  String get asset_loading_joinRoomCb98;
+  String get asset_loading_joinRoomCheckDisguise;
 
-  /// auto-imported from assets/messages/loading_messages.json :: join_room.4
+  /// No description provided for @asset_loading_joinRoomCheckDeployment.
   ///
   /// In ko, this message translates to:
   /// **'작전 투입 인원 확인 중...'**
-  String get asset_loading_joinRoomF964;
+  String get asset_loading_joinRoomCheckDeployment;
 
-  /// auto-imported from assets/messages/loading_messages.json :: join_room.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_joinRoomB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: join_room.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_joinRoomAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: join_room.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_joinRoom25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: create_room.0
+  /// No description provided for @asset_loading_createRoom.
   ///
   /// In ko, this message translates to:
   /// **'작전 본부 설치 중...'**
   String get asset_loading_createRoom;
 
-  /// auto-imported from assets/messages/loading_messages.json :: create_room.1
+  /// No description provided for @asset_loading_createRoomPrepareHideout.
   ///
   /// In ko, this message translates to:
   /// **'비밀 아지트 준비 중...'**
-  String get asset_loading_createRoomF1fe;
+  String get asset_loading_createRoomPrepareHideout;
 
-  /// auto-imported from assets/messages/loading_messages.json :: create_room.2
+  /// No description provided for @asset_loading_createRoomSecureArea.
   ///
   /// In ko, this message translates to:
   /// **'작전 구역 확보 중...'**
-  String get asset_loading_createRoom01f8;
+  String get asset_loading_createRoomSecureArea;
 
-  /// auto-imported from assets/messages/loading_messages.json :: create_room.3
+  /// No description provided for @asset_loading_createRoomUnfoldMap.
   ///
   /// In ko, this message translates to:
   /// **'비밀 지도 펼치는 중...'**
-  String get asset_loading_createRoom5076;
+  String get asset_loading_createRoomUnfoldMap;
 
-  /// auto-imported from assets/messages/loading_messages.json :: create_room.4
+  /// No description provided for @asset_loading_createRoomTuneRadio.
   ///
   /// In ko, this message translates to:
   /// **'무전기 주파수 맞추는 중...'**
-  String get asset_loading_createRoomDd9e;
+  String get asset_loading_createRoomTuneRadio;
 
-  /// auto-imported from assets/messages/loading_messages.json :: create_room.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_createRoomB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: create_room.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_createRoomAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: create_room.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_createRoom25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: change_team.0
+  /// No description provided for @asset_loading_changeTeam.
   ///
   /// In ko, this message translates to:
   /// **'변장 중...'**
   String get asset_loading_changeTeam;
 
-  /// auto-imported from assets/messages/loading_messages.json :: change_team.1
+  /// No description provided for @asset_loading_changeTeamChangeCoverIdentity.
   ///
   /// In ko, this message translates to:
   /// **'위장 신분 변경 중...'**
-  String get asset_loading_changeTeam681d;
+  String get asset_loading_changeTeamChangeCoverIdentity;
 
-  /// auto-imported from assets/messages/loading_messages.json :: change_team.2
+  /// No description provided for @asset_loading_changeTeamLaunderIdentity.
   ///
   /// In ko, this message translates to:
   /// **'신분 세탁 중...'**
-  String get asset_loading_changeTeam1106;
+  String get asset_loading_changeTeamLaunderIdentity;
 
-  /// auto-imported from assets/messages/loading_messages.json :: change_team.3
+  /// No description provided for @asset_loading_changeTeamSwitchToDoubleSpy.
   ///
   /// In ko, this message translates to:
   /// **'이중 스파이 전환 중...'**
-  String get asset_loading_changeTeam4d7a;
+  String get asset_loading_changeTeamSwitchToDoubleSpy;
 
-  /// auto-imported from assets/messages/loading_messages.json :: change_team.4
+  /// No description provided for @asset_loading_changeTeamIssueNewId.
   ///
   /// In ko, this message translates to:
   /// **'새 신분증 발급 중...'**
-  String get asset_loading_changeTeam4cdc;
+  String get asset_loading_changeTeamIssueNewId;
 
-  /// auto-imported from assets/messages/loading_messages.json :: change_team.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_changeTeamB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: change_team.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_changeTeamAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: change_team.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_changeTeam25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: start_game.0
+  /// No description provided for @asset_loading_startGame.
   ///
   /// In ko, this message translates to:
   /// **'작전 개시 준비 중...'**
   String get asset_loading_startGame;
 
-  /// auto-imported from assets/messages/loading_messages.json :: start_game.1
+  /// No description provided for @asset_loading_startGamePrepareMoveOut.
   ///
   /// In ko, this message translates to:
   /// **'출동 준비 중...'**
-  String get asset_loading_startGameA35d;
+  String get asset_loading_startGamePrepareMoveOut;
 
-  /// auto-imported from assets/messages/loading_messages.json :: start_game.2
+  /// No description provided for @asset_loading_startGameCountdownStart.
   ///
   /// In ko, this message translates to:
   /// **'카운트다운 시작...'**
-  String get asset_loading_startGame64c3;
+  String get asset_loading_startGameCountdownStart;
 
-  /// auto-imported from assets/messages/loading_messages.json :: start_game.3
+  /// No description provided for @asset_loading_startGameTurnOnRadio.
   ///
   /// In ko, this message translates to:
   /// **'무전기 켜는 중...'**
-  String get asset_loading_startGame7a2f;
+  String get asset_loading_startGameTurnOnRadio;
 
-  /// auto-imported from assets/messages/loading_messages.json :: start_game.4
+  /// No description provided for @asset_loading_startGameDeployAgents.
   ///
   /// In ko, this message translates to:
   /// **'현장 요원 배치 중...'**
-  String get asset_loading_startGame1b41;
+  String get asset_loading_startGameDeployAgents;
 
-  /// auto-imported from assets/messages/loading_messages.json :: start_game.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_startGameB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: start_game.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_startGameAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: start_game.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_startGame25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: update_area.0
+  /// No description provided for @asset_loading_updateArea.
   ///
   /// In ko, this message translates to:
   /// **'작전 구역 설정 중...'**
   String get asset_loading_updateArea;
 
-  /// auto-imported from assets/messages/loading_messages.json :: update_area.1
+  /// No description provided for @asset_loading_updateAreaDesignateZone.
   ///
   /// In ko, this message translates to:
   /// **'관할 구역 지정 중...'**
-  String get asset_loading_updateArea8c32;
+  String get asset_loading_updateAreaDesignateZone;
 
-  /// auto-imported from assets/messages/loading_messages.json :: update_area.2
+  /// No description provided for @asset_loading_updateAreaPlotOnMap.
   ///
   /// In ko, this message translates to:
   /// **'지도 위에 점 찍는 중...'**
-  String get asset_loading_updateArea0183;
+  String get asset_loading_updateAreaPlotOnMap;
 
-  /// auto-imported from assets/messages/loading_messages.json :: update_area.3
+  /// No description provided for @asset_loading_updateAreaAnalyzeSatellite.
   ///
   /// In ko, this message translates to:
   /// **'위성 사진 분석 중...'**
-  String get asset_loading_updateArea2433;
+  String get asset_loading_updateAreaAnalyzeSatellite;
 
-  /// auto-imported from assets/messages/loading_messages.json :: update_area.4
+  /// No description provided for @asset_loading_updateAreaCalculateRange.
   ///
   /// In ko, this message translates to:
   /// **'작전 범위 계산 중...'**
-  String get asset_loading_updateAreaDc8b;
+  String get asset_loading_updateAreaCalculateRange;
 
-  /// auto-imported from assets/messages/loading_messages.json :: update_area.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_updateAreaB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: update_area.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_updateAreaAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: update_area.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_updateArea25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: save_settings.0
+  /// No description provided for @asset_loading_saveSettings.
   ///
   /// In ko, this message translates to:
   /// **'작전 지침 수정 중...'**
   String get asset_loading_saveSettings;
 
-  /// auto-imported from assets/messages/loading_messages.json :: save_settings.1
+  /// No description provided for @asset_loading_saveSettingsUpdateRules.
   ///
   /// In ko, this message translates to:
   /// **'규칙 업데이트 중...'**
-  String get asset_loading_saveSettingsFb58;
+  String get asset_loading_saveSettingsUpdateRules;
 
-  /// auto-imported from assets/messages/loading_messages.json :: save_settings.2
+  /// No description provided for @asset_loading_saveSettingsApplyNewRules.
   ///
   /// In ko, this message translates to:
   /// **'새로운 룰 적용 중...'**
-  String get asset_loading_saveSettings65dc;
+  String get asset_loading_saveSettingsApplyNewRules;
 
-  /// auto-imported from assets/messages/loading_messages.json :: save_settings.3
+  /// No description provided for @asset_loading_saveSettingsChangePasscode.
   ///
   /// In ko, this message translates to:
   /// **'암호 변경 중...'**
-  String get asset_loading_saveSettings5e80;
+  String get asset_loading_saveSettingsChangePasscode;
 
-  /// auto-imported from assets/messages/loading_messages.json :: save_settings.4
+  /// No description provided for @asset_loading_saveSettingsApplyOperationCode.
   ///
   /// In ko, this message translates to:
   /// **'새 작전 코드 적용 중...'**
-  String get asset_loading_saveSettings128d;
+  String get asset_loading_saveSettingsApplyOperationCode;
 
-  /// auto-imported from assets/messages/loading_messages.json :: save_settings.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_saveSettingsB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: save_settings.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_saveSettingsAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: save_settings.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_saveSettings25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: load_profile.0
+  /// No description provided for @asset_loading_loadProfile.
   ///
   /// In ko, this message translates to:
   /// **'신원 조회 중...'**
   String get asset_loading_loadProfile;
 
-  /// auto-imported from assets/messages/loading_messages.json :: load_profile.1
+  /// No description provided for @asset_loading_loadProfileCheckWantedPoster.
   ///
   /// In ko, this message translates to:
   /// **'수배서 확인 중...'**
-  String get asset_loading_loadProfile27ee;
+  String get asset_loading_loadProfileCheckWantedPoster;
 
-  /// auto-imported from assets/messages/loading_messages.json :: load_profile.2
+  /// No description provided for @asset_loading_loadProfileInspectId.
   ///
   /// In ko, this message translates to:
   /// **'신분증 검사 중...'**
-  String get asset_loading_loadProfile6dac;
+  String get asset_loading_loadProfileInspectId;
 
-  /// auto-imported from assets/messages/loading_messages.json :: load_profile.3
+  /// No description provided for @asset_loading_loadProfileMatchFingerprints.
   ///
   /// In ko, this message translates to:
   /// **'지문 대조 중...'**
-  String get asset_loading_loadProfile23c6;
+  String get asset_loading_loadProfileMatchFingerprints;
 
-  /// auto-imported from assets/messages/loading_messages.json :: load_profile.4
+  /// No description provided for @asset_loading_loadProfileAnalyzeSuspect.
   ///
   /// In ko, this message translates to:
   /// **'용의자 프로필 분석 중...'**
-  String get asset_loading_loadProfile221d;
+  String get asset_loading_loadProfileAnalyzeSuspect;
 
-  /// auto-imported from assets/messages/loading_messages.json :: load_profile.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_loadProfileB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: load_profile.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_loadProfileAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: load_profile.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_loadProfile25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: logout.0
+  /// No description provided for @asset_loading_logout.
   ///
   /// In ko, this message translates to:
   /// **'철수 중...'**
   String get asset_loading_logout;
 
-  /// auto-imported from assets/messages/loading_messages.json :: logout.1
+  /// No description provided for @asset_loading_logoutGoIntoHiding.
   ///
   /// In ko, this message translates to:
   /// **'잠적 중...'**
-  String get asset_loading_logout3031;
+  String get asset_loading_logoutGoIntoHiding;
 
-  /// auto-imported from assets/messages/logout_messages.json :: logout.2
+  /// No description provided for @asset_loading_logoutEraseTraces.
   ///
   /// In ko, this message translates to:
   /// **'흔적 지우는 중...'**
-  String get asset_loading_logoutCe40;
+  String get asset_loading_logoutEraseTraces;
 
-  /// auto-imported from assets/messages/loading_messages.json :: logout.3
+  /// No description provided for @asset_loading_logoutDestroyEvidence.
   ///
   /// In ko, this message translates to:
   /// **'증거 인멸 중...'**
-  String get asset_loading_logout0ba9;
+  String get asset_loading_logoutDestroyEvidence;
 
-  /// auto-imported from assets/messages/loading_messages.json :: logout.4
+  /// No description provided for @asset_loading_logoutEscapeViaPassage.
   ///
   /// In ko, this message translates to:
   /// **'비밀 통로로 탈출 중...'**
-  String get asset_loading_logoutFc0d;
+  String get asset_loading_logoutEscapeViaPassage;
 
-  /// auto-imported from assets/messages/loading_messages.json :: logout.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_logoutB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: logout.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_logoutAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: logout.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_logout25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: delete_account.0
+  /// No description provided for @asset_loading_deleteAccount.
   ///
   /// In ko, this message translates to:
   /// **'탈퇴 처리 중...'**
   String get asset_loading_deleteAccount;
 
-  /// auto-imported from assets/messages/loading_messages.json :: delete_account.1
+  /// No description provided for @asset_loading_deleteAccountObliterateRecords.
   ///
   /// In ko, this message translates to:
   /// **'기록 말소 중...'**
-  String get asset_loading_deleteAccountC5fd;
+  String get asset_loading_deleteAccountObliterateRecords;
 
-  /// auto-imported from assets/messages/loading_messages.json :: delete_account.2
+  /// No description provided for @asset_loading_deleteAccountDeleteIdentity.
   ///
   /// In ko, this message translates to:
   /// **'신원 삭제 중...'**
-  String get asset_loading_deleteAccount517f;
+  String get asset_loading_deleteAccountDeleteIdentity;
 
-  /// auto-imported from assets/messages/loading_messages.json :: reconnect.0
+  /// No description provided for @asset_loading_reconnect.
   ///
   /// In ko, this message translates to:
   /// **'다시 현장으로 복귀 중...'**
   String get asset_loading_reconnect;
 
-  /// auto-imported from assets/messages/loading_messages.json :: reconnect.1
+  /// No description provided for @asset_loading_reconnectRejoinOperation.
   ///
   /// In ko, this message translates to:
   /// **'작전에 재합류하는 중...'**
-  String get asset_loading_reconnectBa5f;
+  String get asset_loading_reconnectRejoinOperation;
 
-  /// auto-imported from assets/messages/loading_messages.json :: reconnect.2
+  /// No description provided for @asset_loading_reconnectPrepareReturn.
   ///
   /// In ko, this message translates to:
   /// **'현장 복귀 준비 중...'**
-  String get asset_loading_reconnect098b;
+  String get asset_loading_reconnectPrepareReturn;
 
-  /// auto-imported from assets/messages/loading_messages.json :: reconnect.3
+  /// No description provided for @asset_loading_reconnectRestoreRadio.
   ///
   /// In ko, this message translates to:
   /// **'무전 채널 복구 중...'**
-  String get asset_loading_reconnect429b;
+  String get asset_loading_reconnectRestoreRadio;
 
-  /// auto-imported from assets/messages/loading_messages.json :: reconnect.4
+  /// No description provided for @asset_loading_reconnectRescanFrequency.
   ///
   /// In ko, this message translates to:
   /// **'비밀 주파수 재탐색 중...'**
-  String get asset_loading_reconnect6b88;
+  String get asset_loading_reconnectRescanFrequency;
 
-  /// auto-imported from assets/messages/loading_messages.json :: reconnect.5
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
-  String get asset_loading_reconnectB36a;
-
-  /// auto-imported from assets/messages/loading_messages.json :: reconnect.6
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
-  String get asset_loading_reconnectAaf8;
-
-  /// auto-imported from assets/messages/loading_messages.json :: reconnect.7
-  ///
-  /// In ko, this message translates to:
-  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
-  String get asset_loading_reconnect25aa;
-
-  /// auto-imported from assets/messages/loading_messages.json :: bug_report.0
+  /// No description provided for @asset_loading_bugReport.
   ///
   /// In ko, this message translates to:
   /// **'신고서 작성 중...'**
   String get asset_loading_bugReport;
 
-  /// auto-imported from assets/messages/loading_messages.json :: bug_report.1
+  /// No description provided for @asset_loading_bugReportSubmitReport.
   ///
   /// In ko, this message translates to:
   /// **'본부에 보고서 제출 중...'**
-  String get asset_loading_bugReportDd4b;
+  String get asset_loading_bugReportSubmitReport;
 
-  /// auto-imported from assets/messages/loading_messages.json :: bug_report.2
+  /// No description provided for @asset_loading_bugReportAttachPhotos.
   ///
   /// In ko, this message translates to:
   /// **'현장 사진 첨부 중...'**
-  String get asset_loading_bugReport5d70;
+  String get asset_loading_bugReportAttachPhotos;
 
-  /// auto-imported from assets/messages/loading_messages.json :: bug_report.3
+  /// No description provided for @asset_loading_bugReportAssignCaseNumber.
   ///
   /// In ko, this message translates to:
   /// **'사건 번호 부여 중...'**
-  String get asset_loading_bugReport3c49;
+  String get asset_loading_bugReportAssignCaseNumber;
 
-  /// auto-imported from assets/messages/loading_messages.json :: bug_report.4
+  /// No description provided for @asset_loading_bugReportHandToInvestigation.
   ///
   /// In ko, this message translates to:
   /// **'수사반에 인계 중...'**
-  String get asset_loading_bugReport83ca;
+  String get asset_loading_bugReportHandToInvestigation;
 
-  /// auto-imported from assets/messages/location_permission_messages.json :: service_disabled.title
+  /// 로딩 화면 이스터에그 힌트 — 홈 화면 캐릭터 변경 (9개 카테고리 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'홈 화면 캐릭터를 자꾸 누르면 뭔가 변한다는 소문이...'**
+  String get asset_loading_easterEggCharacterRumor;
+
+  /// 로딩 화면 이스터에그 힌트 — 홈 화면 캐릭터 변경 (9개 카테고리 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'캐릭터를 여러 번 두드리면 새로운 모습이 나타난다던데...?'**
+  String get asset_loading_easterEggCharacterTap;
+
+  /// 로딩 화면 이스터에그 힌트 — 홈 화면 캐릭터 변경 (9개 카테고리 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'홈 화면 캐릭터에 숨겨진 비밀이 있다고 한다...'**
+  String get asset_loading_easterEggCharacterSecret;
+
+  /// 로딩 화면 이스터에그 힌트 — 설정 화면 숨김 진입 (9개 카테고리 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 어딘가를 계속 누르면 비밀이 열린다던데...'**
+  String get asset_loading_easterEggSettingsTap;
+
+  /// 로딩 화면 이스터에그 힌트 — 앱 버전 탭 (9개 카테고리 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전을 자꾸 누르면 뭔가 나올지도...?'**
+  String get asset_loading_easterEggVersionTap;
+
+  /// 로딩 화면 이스터에그 힌트 — 버전 번호 비밀 (9개 카테고리 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...'**
+  String get asset_loading_easterEggVersionSecret;
+
+  /// No description provided for @asset_locationpermission_serviceDisabledTitle.
   ///
   /// In ko, this message translates to:
   /// **'위치 서비스가 꺼져 있습니다'**
   String get asset_locationpermission_serviceDisabledTitle;
 
-  /// auto-imported from assets/messages/location_permission_messages.json :: service_disabled.home
+  /// No description provided for @asset_locationpermission_serviceDisabledHome.
   ///
   /// In ko, this message translates to:
   /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요'**
   String get asset_locationpermission_serviceDisabledHome;
 
-  /// auto-imported from assets/messages/location_permission_messages.json :: service_disabled.game
+  /// No description provided for @asset_locationpermission_serviceDisabledGame.
   ///
   /// In ko, this message translates to:
   /// **'게임에 복귀하려면 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요'**
   String get asset_locationpermission_serviceDisabledGame;
 
-  /// auto-imported from assets/messages/location_permission_messages.json :: service_disabled.waiting_room
+  /// No description provided for @asset_locationpermission_serviceDisabledWaitingRoom.
   ///
   /// In ko, this message translates to:
   /// **'게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요'**
   String get asset_locationpermission_serviceDisabledWaitingRoom;
 
-  /// auto-imported from assets/messages/location_permission_messages.json :: permission_denied.title
+  /// No description provided for @asset_locationpermission_permissionDeniedTitle.
   ///
   /// In ko, this message translates to:
   /// **'위치 권한이 필요합니다'**
   String get asset_locationpermission_permissionDeniedTitle;
 
-  /// auto-imported from assets/messages/location_permission_messages.json :: permission_denied.home
+  /// No description provided for @asset_locationpermission_permissionDeniedHome.
   ///
   /// In ko, this message translates to:
   /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다'**
   String get asset_locationpermission_permissionDeniedHome;
 
-  /// auto-imported from assets/messages/location_permission_messages.json :: permission_denied.game
+  /// No description provided for @asset_locationpermission_permissionDeniedGame.
   ///
   /// In ko, this message translates to:
   /// **'게임에 복귀하려면 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요'**
   String get asset_locationpermission_permissionDeniedGame;
 
-  /// auto-imported from assets/messages/location_permission_messages.json :: permission_denied.waiting_room
+  /// No description provided for @asset_locationpermission_permissionDeniedWaitingRoom.
   ///
   /// In ko, this message translates to:
   /// **'게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요'**
@@ -1606,19 +1444,19 @@ abstract class AppLocalizations {
   /// **'\n→ 구역 밖으로 나가면 화면이 잠겨요'**
   String get gameRulesZoneRuleLine2;
 
-  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:97
+  /// No description provided for @dialogstep0SelectAreaContentTitle.
   ///
   /// In ko, this message translates to:
   /// **'플레이그라운드'**
   String get dialogstep0SelectAreaContentTitle;
 
-  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:108
+  /// No description provided for @dialogstep0SelectAreaContentTitle5bc0.
   ///
   /// In ko, this message translates to:
   /// **'감옥'**
   String get dialogstep0SelectAreaContentTitle5bc0;
 
-  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_1_participant_settings_content.dart:48
+  /// No description provided for @fieldstep1ParticipantSettingsContentLabel.
   ///
   /// In ko, this message translates to:
   /// **'최대 참가자'**
@@ -1630,7 +1468,7 @@ abstract class AppLocalizations {
   /// **'명'**
   String get unitPerson;
 
-  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:75
+  /// No description provided for @fieldstep2GameSettingsContentLabel.
   ///
   /// In ko, this message translates to:
   /// **'라운드 제한 시간'**
@@ -1642,7 +1480,7 @@ abstract class AppLocalizations {
   /// **'분'**
   String get unitMinutes;
 
-  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:92
+  /// No description provided for @fieldstep2GameSettingsContentLabel5ab2.
   ///
   /// In ko, this message translates to:
   /// **'도둑 위치 공유 간격'**
@@ -1654,7 +1492,7 @@ abstract class AppLocalizations {
   /// **'도둑의 위치가 공유되지 않아요!'**
   String get gameSettingNoLocationShareWarning;
 
-  /// auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:111
+  /// No description provided for @fieldstep2GameSettingsContentLabelCe3b.
   ///
   /// In ko, this message translates to:
   /// **'경찰 출동 시간'**
@@ -1858,6 +1696,12 @@ abstract class AppLocalizations {
   /// **'만 14세 미만은 서비스를 이용할 수 없습니다'**
   String get errorAgeRestrictionUnder14;
 
+  /// 로그인 페이지 로고 아래 표시되는 앱 한 줄 소개 카피
+  ///
+  /// In ko, this message translates to:
+  /// **'실시간 GPS 기반 오프라인 추격 레이스'**
+  String get loginPageTagline;
+
   /// 로그인 페이지 약관 안내 접두사 (예: '로그인 시 ~ 에 동의합니다')
   ///
   /// In ko, this message translates to:
@@ -2031,6 +1875,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'제한 시간이 종료되었습니다!'**
   String get gameOverReasonTimeUp;
+
+  /// GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 종료되었습니다.'**
+  String get gameOverFallbackMessage;
 
   /// 경찰 팀 라벨 (팀명)
   ///
@@ -3344,6 +3194,90 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{mapName} 로드 실패'**
   String mapErrorLoadFailed(String mapName);
+
+  /// 게임 입장 시 발생한 예기치 않은 오류
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 입장 중 예기치 않은 오류가 발생했습니다'**
+  String get errorGameJoinUnexpected;
+
+  /// 딥링크로 들어온 초대 코드가 잘못된 경우 (400)
+  ///
+  /// In ko, this message translates to:
+  /// **'유효하지 않은 초대 코드예요'**
+  String get errorInviteCodeInvalid;
+
+  /// 초대 코드는 유효하지만 방 정원이 초과된 경우 (400 게임 인원 초과)
+  ///
+  /// In ko, this message translates to:
+  /// **'방이 이미 가득 찼어요'**
+  String get errorGameFull;
+
+  /// 다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요'**
+  String get errorAlreadyInAnotherRoom;
+
+  /// 딥링크로 새 방 참가 시도 시 이미 참여 중인 방이 있어 현재 방으로 복귀할 때 표시하는 안내 (409)
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 참여 중인 방이 있어요'**
+  String get deeplinkAlreadyInRoom;
+
+  /// 초대 코드는 유효하지만 게임이 이미 시작된 경우 (400 이미 시작된 게임)
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 시작되어 입장할 수 없는 게임이에요'**
+  String get errorGameAlreadyStarted;
+
+  /// 방 이동 중 현재 방 퇴장 후 새 방 입장에 실패한 경우
+  ///
+  /// In ko, this message translates to:
+  /// **'새 방에 입장하지 못했어요. 이전 방에서는 나온 상태예요'**
+  String get errorRoomSwitchFailed;
+
+  /// 이미 다른 대기방 참가 중 딥링크 진입 시 방 이동 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'방을 이동할까요?'**
+  String get deeplinkSwitchRoomTitle;
+
+  /// 방 이동 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 참여 중인 방에서 나가고 새 방에 참가해요'**
+  String get deeplinkSwitchRoomMessage;
+
+  /// 방 이동 확인 다이얼로그 확인 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'나가고 참가'**
+  String get deeplinkSwitchRoomConfirm;
+
+  /// 로그인 후 자동 join 시 SharedPreferences 읽기 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 중인 초대 코드를 불러오지 못했어요'**
+  String get errorPendingInviteLoad;
+
+  /// 딥링크 → 로그인 리다이렉트 직전 SharedPreferences 쓰기 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 코드 저장에 실패했어요'**
+  String get errorPendingInviteSave;
+
+  /// join 완료 후 SharedPreferences 삭제 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 코드 삭제에 실패했어요'**
+  String get errorPendingInviteClear;
+
+  /// 카톡 등 공유 시 본문 (URL 은 별도로 append)
+  ///
+  /// In ko, this message translates to:
+  /// **'친구가 경찰과도둑 방에 초대했어요! 초대 코드 {inviteCode}'**
+  String shareInviteMessage(String inviteCode);
 }
 
 class _AppLocalizationsDelegate

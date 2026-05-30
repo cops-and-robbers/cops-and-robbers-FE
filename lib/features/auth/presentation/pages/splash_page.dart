@@ -5,12 +5,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/network/network_failure_detector.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -220,12 +223,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
         final info = status.participationInfo!;
 
-        if (info.gameStatus == 'WAITING') {
+        if (info.gameStatus == GameStatus.waiting) {
           context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
           return;
         }
 
-        if (info.gameStatus == 'IN_PROGRESS') {
+        if (info.gameStatus == GameStatus.inProgress) {
           context.go(
             '${RoutePaths.gameWithId(info.gameId.toString())}'
             '?team=${info.team}&pid=${info.participantId}',
@@ -408,9 +411,9 @@ class _SplashPageState extends ConsumerState<SplashPage> {
           children: [
             Expanded(
               child: Center(
-                child: Image.asset(
-                  'assets/splash.png',
-                  width: 300.w,
+                child: SvgPicture.asset(
+                  localizedAppSplash(Localizations.localeOf(context)),
+                  width: 302.w,
                   fit: BoxFit.contain,
                 ),
               ),

@@ -9,191 +9,55 @@
     "description": "법적 문서 페이지 상단 고지문 — 한국어 원본만 제공함을 비-ko 로케일에 안내 (ko는 빈 문자열 → 미표시)"
   },
   "loadingDefault": "처리 중...",
-  "@loadingDefault": {
-    "description": "auto-imported from lib/core/services/loading_message_service.dart:49"
-  },
   "permissionLocationFallbackTitle": "위치 권한 안내",
-  "@permissionLocationFallbackTitle": {
-    "description": "auto-imported from lib/core/services/permission/location_permission_messages.dart:48"
-  },
   "permissionLocationFallbackMessage": "위치 권한을 허용해주세요",
-  "@permissionLocationFallbackMessage": {
-    "description": "auto-imported from lib/core/services/permission/location_permission_messages.dart:49"
-  },
   "dialogUpdateOptionalTitle": "새 버전 안내",
-  "@dialogUpdateOptionalTitle": {
-    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:53"
-  },
   "dialogUpdateOptionalMessage": "더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?",
-  "@dialogUpdateOptionalMessage": {
-    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:54"
-  },
   "dialogUpdateOptionalConfirm": "업데이트",
-  "@dialogUpdateOptionalConfirm": {
-    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:55"
-  },
   "dialogUpdateOptionalCancel": "나중에",
-  "@dialogUpdateOptionalCancel": {
-    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:56"
-  },
   "dialogUpdateMandatoryTitle": "업데이트 안내",
-  "@dialogUpdateMandatoryTitle": {
-    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:68"
-  },
   "dialogUpdateMandatoryMessage": "새로운 버전이 출시되었어요.\n업데이트하시겠어요?",
-  "@dialogUpdateMandatoryMessage": {
-    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:69"
-  },
   "dialogUpdateMandatoryConfirm": "업데이트",
-  "@dialogUpdateMandatoryConfirm": {
-    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:70"
-  },
   "dialogUpdateMandatoryCancel": "나중에",
-  "@dialogUpdateMandatoryCancel": {
-    "description": "auto-imported from lib/core/services/remote_config/update_dialog_helper.dart:71"
-  },
   "chatSystemGameStartTime": "제한 시간은 {minutes}분입니다",
   "@chatSystemGameStartTime": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:11",
     "placeholders": {
       "minutes": {
         "type": "int"
       }
     }
   },
-  "chatSystemGameStartReady": "잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!",
-  "@chatSystemGameStartReady": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:14"
-  },
   "chatSystemGameStartReportTip": "게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다",
-  "@chatSystemGameStartReportTip": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:17"
-  },
-  "chatSystemGameStartGo": "게임 시작!  행운을 빕니다!",
-  "@chatSystemGameStartGo": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:20"
-  },
   "chatSystemPoliceMoveWarning": "경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!",
-  "@chatSystemPoliceMoveWarning": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:25"
-  },
-  "chatSystemPoliceMove": "경찰 출동!  도둑은 도망치세요!",
-  "@chatSystemPoliceMove": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:28"
-  },
-  "chatSystemLocationReveal": "현재 도둑의 위치가 공개됩니다!",
-  "@chatSystemLocationReveal": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:33"
-  },
   "chatSystemRemainingRobbers": "현재 {count}명 도주 중!",
   "@chatSystemRemainingRobbers": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:36",
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "chatSystemArrest": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!",
-  "@chatSystemArrest": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:42",
-    "placeholders": {
-      "policeNickname": {
-        "type": "String"
-      },
-      "robberNickname": {
-        "type": "String"
-      }
-    }
-  },
-  "chatSystemEscapeNotice": "도둑이 탈옥했습니다! 지금 바로 체포하세요!",
-  "@chatSystemEscapeNotice": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:47"
-  },
   "chatSystemFiveMinutesLeft": "게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!",
-  "@chatSystemFiveMinutesLeft": {
-    "description": "auto-imported from lib/core/constants/game_event_messages.dart:52"
-  },
   "errorNetworkTimeout": "서버 연결 시간이 초과되었습니다",
-  "@errorNetworkTimeout": {
-    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:41"
-  },
   "errorNetworkOffline": "네트워크 연결을 확인하세요",
-  "@errorNetworkOffline": {
-    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:49"
-  },
   "errorServerInternal": "서버에 문제가 발생했습니다",
-  "@errorServerInternal": {
-    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:63"
-  },
   "errorBadRequest": "잘못된 요청입니다",
-  "@errorBadRequest": {
-    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:71"
-  },
   "errorUnauthorized": "인증에 실패했습니다",
-  "@errorUnauthorized": {
-    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:76"
-  },
   "errorForbidden": "접근 권한이 없습니다",
-  "@errorForbidden": {
-    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:81"
-  },
   "errorNotFound": "요청한 리소스를 찾을 수 없습니다",
-  "@errorNotFound": {
-    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:86"
-  },
   "errorConflict": "요청이 현재 상태와 충돌합니다",
-  "@errorConflict": {
-    "description": "auto-imported from lib/core/network/dio_exception_handler.dart:91"
-  },
   "buttonConfirm": "확인",
-  "@buttonConfirm": {
-    "description": "auto-imported from lib/core/widgets/dialogs/app_dialog.dart:79"
-  },
   "buttonCancel": "취소",
-  "@buttonCancel": {
-    "description": "auto-imported from lib/core/widgets/dialogs/app_dialog.dart:267"
-  },
   "dialogReconnectMessage": "연결이 끊어졌어요. 재연결이 필요해요",
-  "@dialogReconnectMessage": {
-    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:158"
-  },
   "dialogReconnectButtonConnecting": "연결 중...",
-  "@dialogReconnectButtonConnecting": {
-    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169"
-  },
   "dialogReconnectButtonRetry": "재연결",
-  "@dialogReconnectButtonRetry": {
-    "description": "auto-imported from lib/core/widgets/dialogs/reconnect_modal.dart:169"
-  },
   "pageForceUpdateTitle": "업데이트 필요",
-  "@pageForceUpdateTitle": {
-    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:41"
-  },
   "pageForceUpdateMessage": "새로운 버전이 출시되었어요\n업데이트 후 이용해 주세요!",
-  "@pageForceUpdateMessage": {
-    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:49"
-  },
   "pageForceUpdateButton": "업데이트",
-  "@pageForceUpdateButton": {
-    "description": "auto-imported from lib/core/widgets/pages/force_update_page.dart:60"
-  },
   "pageMaintenanceTitle": "서버 점검 중",
-  "@pageMaintenanceTitle": {
-    "description": "auto-imported from lib/core/widgets/pages/maintenance_page.dart:39"
-  },
   "pageMaintenanceMessage": "더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!",
-  "@pageMaintenanceMessage": {
-    "description": "auto-imported from lib/core/widgets/pages/maintenance_page.dart:47"
-  },
   "buttonGoogleSignIn": "Google로 시작하기",
-  "@buttonGoogleSignIn": {
-    "description": "auto-imported from lib/core/widgets/buttons/social_login_button.dart:39"
-  },
   "buttonAppleSignIn": "Apple로 시작하기",
-  "@buttonAppleSignIn": {
-    "description": "auto-imported from lib/core/widgets/buttons/social_login_button.dart:86"
-  },
   "zoneRadiusKm": "반경 {km}km",
   "@zoneRadiusKm": {
     "description": "구역 정보 — 반경 (km 단위)",
@@ -205,7 +69,6 @@
   },
   "zoneRadiusMeter": "반경 {radiusMeters}m",
   "@zoneRadiusMeter": {
-    "description": "auto-imported from lib/core/widgets/buttons/zone_setting_button.dart:131",
     "placeholders": {
       "radiusMeters": {
         "type": "String"
@@ -213,17 +76,8 @@
     }
   },
   "zoneRadiusLabel": "반경",
-  "@zoneRadiusLabel": {
-    "description": "auto-imported from lib/core/widgets/map/zone_setting_widget.dart:364"
-  },
   "dialogAgreementRequiredTermsTitle": "필수 약관 미동의",
-  "@dialogAgreementRequiredTermsTitle": {
-    "description": "auto-imported from lib/core/utils/agreement_error_handler.dart:15"
-  },
   "errorAuthLoginCancelled": "로그인이 취소되었습니다",
-  "@errorAuthLoginCancelled": {
-    "description": "auto-imported from lib/core/errors/app_exception.dart:57"
-  },
   "settingsLanguageLabel": "언어",
   "@settingsLanguageLabel": {
     "description": "설정 화면의 언어 설정 메뉴 라벨"
@@ -253,357 +107,90 @@
     "description": "언어 옵션: 일본어 — 모든 로캘에서 자국어 표기 유지"
   },
   "asset_loading_joinRoom": "잠입 준비 중...",
-  "@asset_loading_joinRoom": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.0"
-  },
-  "asset_loading_joinRoom477c": "작전에 합류하는 중...",
-  "@asset_loading_joinRoom477c": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.1"
-  },
-  "asset_loading_joinRoom24a9": "비밀 통로로 진입 중...",
-  "@asset_loading_joinRoom24a9": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.2"
-  },
-  "asset_loading_joinRoomCb98": "변장 확인 중...",
-  "@asset_loading_joinRoomCb98": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.3"
-  },
-  "asset_loading_joinRoomF964": "작전 투입 인원 확인 중...",
-  "@asset_loading_joinRoomF964": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.4"
-  },
-  "asset_loading_joinRoomB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_joinRoomB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.5"
-  },
-  "asset_loading_joinRoomAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_joinRoomAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.6"
-  },
-  "asset_loading_joinRoom25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_joinRoom25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: join_room.7"
-  },
+  "asset_loading_joinRoomJoinOperation": "작전에 합류하는 중...",
+  "asset_loading_joinRoomEnterSecretPassage": "비밀 통로로 진입 중...",
+  "asset_loading_joinRoomCheckDisguise": "변장 확인 중...",
+  "asset_loading_joinRoomCheckDeployment": "작전 투입 인원 확인 중...",
   "asset_loading_createRoom": "작전 본부 설치 중...",
-  "@asset_loading_createRoom": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.0"
-  },
-  "asset_loading_createRoomF1fe": "비밀 아지트 준비 중...",
-  "@asset_loading_createRoomF1fe": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.1"
-  },
-  "asset_loading_createRoom01f8": "작전 구역 확보 중...",
-  "@asset_loading_createRoom01f8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.2"
-  },
-  "asset_loading_createRoom5076": "비밀 지도 펼치는 중...",
-  "@asset_loading_createRoom5076": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.3"
-  },
-  "asset_loading_createRoomDd9e": "무전기 주파수 맞추는 중...",
-  "@asset_loading_createRoomDd9e": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.4"
-  },
-  "asset_loading_createRoomB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_createRoomB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.5"
-  },
-  "asset_loading_createRoomAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_createRoomAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.6"
-  },
-  "asset_loading_createRoom25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_createRoom25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: create_room.7"
-  },
+  "asset_loading_createRoomPrepareHideout": "비밀 아지트 준비 중...",
+  "asset_loading_createRoomSecureArea": "작전 구역 확보 중...",
+  "asset_loading_createRoomUnfoldMap": "비밀 지도 펼치는 중...",
+  "asset_loading_createRoomTuneRadio": "무전기 주파수 맞추는 중...",
   "asset_loading_changeTeam": "변장 중...",
-  "@asset_loading_changeTeam": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.0"
-  },
-  "asset_loading_changeTeam681d": "위장 신분 변경 중...",
-  "@asset_loading_changeTeam681d": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.1"
-  },
-  "asset_loading_changeTeam1106": "신분 세탁 중...",
-  "@asset_loading_changeTeam1106": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.2"
-  },
-  "asset_loading_changeTeam4d7a": "이중 스파이 전환 중...",
-  "@asset_loading_changeTeam4d7a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.3"
-  },
-  "asset_loading_changeTeam4cdc": "새 신분증 발급 중...",
-  "@asset_loading_changeTeam4cdc": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.4"
-  },
-  "asset_loading_changeTeamB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_changeTeamB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.5"
-  },
-  "asset_loading_changeTeamAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_changeTeamAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.6"
-  },
-  "asset_loading_changeTeam25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_changeTeam25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: change_team.7"
-  },
+  "asset_loading_changeTeamChangeCoverIdentity": "위장 신분 변경 중...",
+  "asset_loading_changeTeamLaunderIdentity": "신분 세탁 중...",
+  "asset_loading_changeTeamSwitchToDoubleSpy": "이중 스파이 전환 중...",
+  "asset_loading_changeTeamIssueNewId": "새 신분증 발급 중...",
   "asset_loading_startGame": "작전 개시 준비 중...",
-  "@asset_loading_startGame": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.0"
-  },
-  "asset_loading_startGameA35d": "출동 준비 중...",
-  "@asset_loading_startGameA35d": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.1"
-  },
-  "asset_loading_startGame64c3": "카운트다운 시작...",
-  "@asset_loading_startGame64c3": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.2"
-  },
-  "asset_loading_startGame7a2f": "무전기 켜는 중...",
-  "@asset_loading_startGame7a2f": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.3"
-  },
-  "asset_loading_startGame1b41": "현장 요원 배치 중...",
-  "@asset_loading_startGame1b41": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.4"
-  },
-  "asset_loading_startGameB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_startGameB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.5"
-  },
-  "asset_loading_startGameAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_startGameAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.6"
-  },
-  "asset_loading_startGame25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_startGame25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: start_game.7"
-  },
+  "asset_loading_startGamePrepareMoveOut": "출동 준비 중...",
+  "asset_loading_startGameCountdownStart": "카운트다운 시작...",
+  "asset_loading_startGameTurnOnRadio": "무전기 켜는 중...",
+  "asset_loading_startGameDeployAgents": "현장 요원 배치 중...",
   "asset_loading_updateArea": "작전 구역 설정 중...",
-  "@asset_loading_updateArea": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.0"
-  },
-  "asset_loading_updateArea8c32": "관할 구역 지정 중...",
-  "@asset_loading_updateArea8c32": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.1"
-  },
-  "asset_loading_updateArea0183": "지도 위에 점 찍는 중...",
-  "@asset_loading_updateArea0183": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.2"
-  },
-  "asset_loading_updateArea2433": "위성 사진 분석 중...",
-  "@asset_loading_updateArea2433": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.3"
-  },
-  "asset_loading_updateAreaDc8b": "작전 범위 계산 중...",
-  "@asset_loading_updateAreaDc8b": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.4"
-  },
-  "asset_loading_updateAreaB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_updateAreaB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.5"
-  },
-  "asset_loading_updateAreaAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_updateAreaAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.6"
-  },
-  "asset_loading_updateArea25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_updateArea25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: update_area.7"
-  },
+  "asset_loading_updateAreaDesignateZone": "관할 구역 지정 중...",
+  "asset_loading_updateAreaPlotOnMap": "지도 위에 점 찍는 중...",
+  "asset_loading_updateAreaAnalyzeSatellite": "위성 사진 분석 중...",
+  "asset_loading_updateAreaCalculateRange": "작전 범위 계산 중...",
   "asset_loading_saveSettings": "작전 지침 수정 중...",
-  "@asset_loading_saveSettings": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.0"
-  },
-  "asset_loading_saveSettingsFb58": "규칙 업데이트 중...",
-  "@asset_loading_saveSettingsFb58": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.1"
-  },
-  "asset_loading_saveSettings65dc": "새로운 룰 적용 중...",
-  "@asset_loading_saveSettings65dc": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.2"
-  },
-  "asset_loading_saveSettings5e80": "암호 변경 중...",
-  "@asset_loading_saveSettings5e80": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.3"
-  },
-  "asset_loading_saveSettings128d": "새 작전 코드 적용 중...",
-  "@asset_loading_saveSettings128d": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.4"
-  },
-  "asset_loading_saveSettingsB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_saveSettingsB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.5"
-  },
-  "asset_loading_saveSettingsAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_saveSettingsAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.6"
-  },
-  "asset_loading_saveSettings25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_saveSettings25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: save_settings.7"
-  },
+  "asset_loading_saveSettingsUpdateRules": "규칙 업데이트 중...",
+  "asset_loading_saveSettingsApplyNewRules": "새로운 룰 적용 중...",
+  "asset_loading_saveSettingsChangePasscode": "암호 변경 중...",
+  "asset_loading_saveSettingsApplyOperationCode": "새 작전 코드 적용 중...",
   "asset_loading_loadProfile": "신원 조회 중...",
-  "@asset_loading_loadProfile": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.0"
-  },
-  "asset_loading_loadProfile27ee": "수배서 확인 중...",
-  "@asset_loading_loadProfile27ee": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.1"
-  },
-  "asset_loading_loadProfile6dac": "신분증 검사 중...",
-  "@asset_loading_loadProfile6dac": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.2"
-  },
-  "asset_loading_loadProfile23c6": "지문 대조 중...",
-  "@asset_loading_loadProfile23c6": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.3"
-  },
-  "asset_loading_loadProfile221d": "용의자 프로필 분석 중...",
-  "@asset_loading_loadProfile221d": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.4"
-  },
-  "asset_loading_loadProfileB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_loadProfileB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.5"
-  },
-  "asset_loading_loadProfileAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_loadProfileAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.6"
-  },
-  "asset_loading_loadProfile25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_loadProfile25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: load_profile.7"
-  },
+  "asset_loading_loadProfileCheckWantedPoster": "수배서 확인 중...",
+  "asset_loading_loadProfileInspectId": "신분증 검사 중...",
+  "asset_loading_loadProfileMatchFingerprints": "지문 대조 중...",
+  "asset_loading_loadProfileAnalyzeSuspect": "용의자 프로필 분석 중...",
   "asset_loading_logout": "철수 중...",
-  "@asset_loading_logout": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: logout.0"
-  },
-  "asset_loading_logout3031": "잠적 중...",
-  "@asset_loading_logout3031": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: logout.1"
-  },
-  "asset_loading_logoutCe40": "흔적 지우는 중...",
-  "@asset_loading_logoutCe40": {
-    "description": "auto-imported from assets/messages/logout_messages.json :: logout.2"
-  },
-  "asset_loading_logout0ba9": "증거 인멸 중...",
-  "@asset_loading_logout0ba9": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: logout.3"
-  },
-  "asset_loading_logoutFc0d": "비밀 통로로 탈출 중...",
-  "@asset_loading_logoutFc0d": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: logout.4"
-  },
-  "asset_loading_logoutB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_logoutB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: logout.5"
-  },
-  "asset_loading_logoutAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_logoutAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: logout.6"
-  },
-  "asset_loading_logout25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_logout25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: logout.7"
-  },
+  "asset_loading_logoutGoIntoHiding": "잠적 중...",
+  "asset_loading_logoutEraseTraces": "흔적 지우는 중...",
+  "asset_loading_logoutDestroyEvidence": "증거 인멸 중...",
+  "asset_loading_logoutEscapeViaPassage": "비밀 통로로 탈출 중...",
   "asset_loading_deleteAccount": "탈퇴 처리 중...",
-  "@asset_loading_deleteAccount": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.0"
-  },
-  "asset_loading_deleteAccountC5fd": "기록 말소 중...",
-  "@asset_loading_deleteAccountC5fd": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.1"
-  },
-  "asset_loading_deleteAccount517f": "신원 삭제 중...",
-  "@asset_loading_deleteAccount517f": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: delete_account.2"
-  },
+  "asset_loading_deleteAccountObliterateRecords": "기록 말소 중...",
+  "asset_loading_deleteAccountDeleteIdentity": "신원 삭제 중...",
   "asset_loading_reconnect": "다시 현장으로 복귀 중...",
-  "@asset_loading_reconnect": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.0"
-  },
-  "asset_loading_reconnectBa5f": "작전에 재합류하는 중...",
-  "@asset_loading_reconnectBa5f": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.1"
-  },
-  "asset_loading_reconnect098b": "현장 복귀 준비 중...",
-  "@asset_loading_reconnect098b": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.2"
-  },
-  "asset_loading_reconnect429b": "무전 채널 복구 중...",
-  "@asset_loading_reconnect429b": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.3"
-  },
-  "asset_loading_reconnect6b88": "비밀 주파수 재탐색 중...",
-  "@asset_loading_reconnect6b88": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.4"
-  },
-  "asset_loading_reconnectB36a": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
-  "@asset_loading_reconnectB36a": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.5"
-  },
-  "asset_loading_reconnectAaf8": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
-  "@asset_loading_reconnectAaf8": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.6"
-  },
-  "asset_loading_reconnect25aa": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
-  "@asset_loading_reconnect25aa": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: reconnect.7"
-  },
+  "asset_loading_reconnectRejoinOperation": "작전에 재합류하는 중...",
+  "asset_loading_reconnectPrepareReturn": "현장 복귀 준비 중...",
+  "asset_loading_reconnectRestoreRadio": "무전 채널 복구 중...",
+  "asset_loading_reconnectRescanFrequency": "비밀 주파수 재탐색 중...",
   "asset_loading_bugReport": "신고서 작성 중...",
-  "@asset_loading_bugReport": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.0"
+  "asset_loading_bugReportSubmitReport": "본부에 보고서 제출 중...",
+  "asset_loading_bugReportAttachPhotos": "현장 사진 첨부 중...",
+  "asset_loading_bugReportAssignCaseNumber": "사건 번호 부여 중...",
+  "asset_loading_bugReportHandToInvestigation": "수사반에 인계 중...",
+  "asset_loading_easterEggCharacterRumor": "홈 화면 캐릭터를 자꾸 누르면 뭔가 변한다는 소문이...",
+  "@asset_loading_easterEggCharacterRumor": {
+    "description": "로딩 화면 이스터에그 힌트 — 홈 화면 캐릭터 변경 (9개 카테고리 공용)"
   },
-  "asset_loading_bugReportDd4b": "본부에 보고서 제출 중...",
-  "@asset_loading_bugReportDd4b": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.1"
+  "asset_loading_easterEggCharacterTap": "캐릭터를 여러 번 두드리면 새로운 모습이 나타난다던데...?",
+  "@asset_loading_easterEggCharacterTap": {
+    "description": "로딩 화면 이스터에그 힌트 — 홈 화면 캐릭터 변경 (9개 카테고리 공용)"
   },
-  "asset_loading_bugReport5d70": "현장 사진 첨부 중...",
-  "@asset_loading_bugReport5d70": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.2"
+  "asset_loading_easterEggCharacterSecret": "홈 화면 캐릭터에 숨겨진 비밀이 있다고 한다...",
+  "@asset_loading_easterEggCharacterSecret": {
+    "description": "로딩 화면 이스터에그 힌트 — 홈 화면 캐릭터 변경 (9개 카테고리 공용)"
   },
-  "asset_loading_bugReport3c49": "사건 번호 부여 중...",
-  "@asset_loading_bugReport3c49": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.3"
+  "asset_loading_easterEggSettingsTap": "설정 어딘가를 계속 누르면 비밀이 열린다던데...",
+  "@asset_loading_easterEggSettingsTap": {
+    "description": "로딩 화면 이스터에그 힌트 — 설정 화면 숨김 진입 (9개 카테고리 공용)"
   },
-  "asset_loading_bugReport83ca": "수사반에 인계 중...",
-  "@asset_loading_bugReport83ca": {
-    "description": "auto-imported from assets/messages/loading_messages.json :: bug_report.4"
+  "asset_loading_easterEggVersionTap": "앱 버전을 자꾸 누르면 뭔가 나올지도...?",
+  "@asset_loading_easterEggVersionTap": {
+    "description": "로딩 화면 이스터에그 힌트 — 앱 버전 탭 (9개 카테고리 공용)"
+  },
+  "asset_loading_easterEggVersionSecret": "누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...",
+  "@asset_loading_easterEggVersionSecret": {
+    "description": "로딩 화면 이스터에그 힌트 — 버전 번호 비밀 (9개 카테고리 공용)"
   },
   "asset_locationpermission_serviceDisabledTitle": "위치 서비스가 꺼져 있습니다",
-  "@asset_locationpermission_serviceDisabledTitle": {
-    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.title"
-  },
   "asset_locationpermission_serviceDisabledHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요",
-  "@asset_locationpermission_serviceDisabledHome": {
-    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.home"
-  },
   "asset_locationpermission_serviceDisabledGame": "게임에 복귀하려면 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
-  "@asset_locationpermission_serviceDisabledGame": {
-    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.game"
-  },
   "asset_locationpermission_serviceDisabledWaitingRoom": "게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
-  "@asset_locationpermission_serviceDisabledWaitingRoom": {
-    "description": "auto-imported from assets/messages/location_permission_messages.json :: service_disabled.waiting_room"
-  },
   "asset_locationpermission_permissionDeniedTitle": "위치 권한이 필요합니다",
-  "@asset_locationpermission_permissionDeniedTitle": {
-    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.title"
-  },
   "asset_locationpermission_permissionDeniedHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다",
-  "@asset_locationpermission_permissionDeniedHome": {
-    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.home"
-  },
   "asset_locationpermission_permissionDeniedGame": "게임에 복귀하려면 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
-  "@asset_locationpermission_permissionDeniedGame": {
-    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.game"
-  },
   "asset_locationpermission_permissionDeniedWaitingRoom": "게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
-  "@asset_locationpermission_permissionDeniedWaitingRoom": {
-    "description": "auto-imported from assets/messages/location_permission_messages.json :: permission_denied.waiting_room"
-  },
   "errorGameRoomCreateUnexpected": "게임 방 생성 중 예기치 않은 오류가 발생했습니다",
   "@errorGameRoomCreateUnexpected": {
     "description": "게임 방 생성 중 예외가 발생했을 때 표시되는 메시지"
@@ -1073,41 +660,23 @@
     "description": "게임 규칙 — 구역 이탈 금지 2줄 (개행 + 화살표 포함)"
   },
   "dialogstep0SelectAreaContentTitle": "플레이그라운드",
-  "@dialogstep0SelectAreaContentTitle": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:97"
-  },
   "dialogstep0SelectAreaContentTitle5bc0": "감옥",
-  "@dialogstep0SelectAreaContentTitle5bc0": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_0_select_area_content.dart:108"
-  },
   "fieldstep1ParticipantSettingsContentLabel": "최대 참가자",
-  "@fieldstep1ParticipantSettingsContentLabel": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_1_participant_settings_content.dart:48"
-  },
   "unitPerson": "명",
   "@unitPerson": {
     "description": "공통 — 인원수 단위 (명)"
   },
   "fieldstep2GameSettingsContentLabel": "라운드 제한 시간",
-  "@fieldstep2GameSettingsContentLabel": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:75"
-  },
   "unitMinutes": "분",
   "@unitMinutes": {
     "description": "공통 — 시간 단위 (분)"
   },
   "fieldstep2GameSettingsContentLabel5ab2": "도둑 위치 공유 간격",
-  "@fieldstep2GameSettingsContentLabel5ab2": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:92"
-  },
   "gameSettingNoLocationShareWarning": "도둑의 위치가 공유되지 않아요!",
   "@gameSettingNoLocationShareWarning": {
     "description": "게임 설정 — 위치 공유 비활성 경고"
   },
   "fieldstep2GameSettingsContentLabelCe3b": "경찰 출동 시간",
-  "@fieldstep2GameSettingsContentLabelCe3b": {
-    "description": "auto-imported from lib/features/session/presentation/widgets/session_creation_steps/step_2_game_settings_content.dart:111"
-  },
   "gameSettingPoliceStartPrefix": "도둑 도망 후",
   "@gameSettingPoliceStartPrefix": {
     "description": "게임 설정 — 경찰 출동 시간 prefix"
@@ -1250,6 +819,10 @@
   "@errorAgeRestrictionUnder14": {
     "description": "만 14세 미만 가입 차단 안내"
   },
+  "loginPageTagline": "실시간 GPS 기반 오프라인 추격 레이스",
+  "@loginPageTagline": {
+    "description": "로그인 페이지 로고 아래 표시되는 앱 한 줄 소개 카피"
+  },
   "loginPageAgreementPrefix": "로그인 시",
   "@loginPageAgreementPrefix": {
     "description": "로그인 페이지 약관 안내 접두사 (예: '로그인 시 ~ 에 동의합니다')"
@@ -1365,6 +938,10 @@
   "gameOverReasonTimeUp": "제한 시간이 종료되었습니다!",
   "@gameOverReasonTimeUp": {
     "description": "게임 종료 사유 — 제한 시간 만료"
+  },
+  "gameOverFallbackMessage": "게임이 종료되었습니다.",
+  "@gameOverFallbackMessage": {
+    "description": "GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지"
   },
   "gameTeamCop": "경찰팀",
   "@gameTeamCop": {
@@ -2321,6 +1898,67 @@
     "description": "지도 로드 실패 시 표시 메시지",
     "placeholders": {
       "mapName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorGameJoinUnexpected": "게임 입장 중 예기치 않은 오류가 발생했습니다",
+  "@errorGameJoinUnexpected": {
+    "description": "게임 입장 시 발생한 예기치 않은 오류"
+  },
+  "errorInviteCodeInvalid": "유효하지 않은 초대 코드예요",
+  "@errorInviteCodeInvalid": {
+    "description": "딥링크로 들어온 초대 코드가 잘못된 경우 (400)"
+  },
+  "errorGameFull": "방이 이미 가득 찼어요",
+  "@errorGameFull": {
+    "description": "초대 코드는 유효하지만 방 정원이 초과된 경우 (400 게임 인원 초과)"
+  },
+  "errorAlreadyInAnotherRoom": "이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요",
+  "@errorAlreadyInAnotherRoom": {
+    "description": "다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)"
+  },
+  "deeplinkAlreadyInRoom": "이미 참여 중인 방이 있어요",
+  "@deeplinkAlreadyInRoom": {
+    "description": "딥링크로 새 방 참가 시도 시 이미 참여 중인 방이 있어 현재 방으로 복귀할 때 표시하는 안내 (409)"
+  },
+  "errorGameAlreadyStarted": "이미 시작되어 입장할 수 없는 게임이에요",
+  "@errorGameAlreadyStarted": {
+    "description": "초대 코드는 유효하지만 게임이 이미 시작된 경우 (400 이미 시작된 게임)"
+  },
+  "errorRoomSwitchFailed": "새 방에 입장하지 못했어요. 이전 방에서는 나온 상태예요",
+  "@errorRoomSwitchFailed": {
+    "description": "방 이동 중 현재 방 퇴장 후 새 방 입장에 실패한 경우"
+  },
+  "deeplinkSwitchRoomTitle": "방을 이동할까요?",
+  "@deeplinkSwitchRoomTitle": {
+    "description": "이미 다른 대기방 참가 중 딥링크 진입 시 방 이동 확인 다이얼로그 제목"
+  },
+  "deeplinkSwitchRoomMessage": "현재 참여 중인 방에서 나가고 새 방에 참가해요",
+  "@deeplinkSwitchRoomMessage": {
+    "description": "방 이동 확인 다이얼로그 본문"
+  },
+  "deeplinkSwitchRoomConfirm": "나가고 참가",
+  "@deeplinkSwitchRoomConfirm": {
+    "description": "방 이동 확인 다이얼로그 확인 버튼"
+  },
+  "errorPendingInviteLoad": "대기 중인 초대 코드를 불러오지 못했어요",
+  "@errorPendingInviteLoad": {
+    "description": "로그인 후 자동 join 시 SharedPreferences 읽기 실패"
+  },
+  "errorPendingInviteSave": "초대 코드 저장에 실패했어요",
+  "@errorPendingInviteSave": {
+    "description": "딥링크 → 로그인 리다이렉트 직전 SharedPreferences 쓰기 실패"
+  },
+  "errorPendingInviteClear": "초대 코드 삭제에 실패했어요",
+  "@errorPendingInviteClear": {
+    "description": "join 완료 후 SharedPreferences 삭제 실패"
+  },
+  "shareInviteMessage": "친구가 경찰과도둑 방에 초대했어요! 초대 코드 {inviteCode}",
+  "@shareInviteMessage": {
+    "description": "카톡 등 공유 시 본문 (URL 은 별도로 append)",
+    "placeholders": {
+      "inviteCode": {
         "type": "String"
       }
     }

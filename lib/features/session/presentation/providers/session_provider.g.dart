@@ -70,6 +70,28 @@ final getMyActiveGameUsecaseProvider =
 // ignore: unused_element
 typedef GetMyActiveGameUsecaseRef =
     AutoDisposeProviderRef<GetMyActiveGameUsecase>;
+String _$joinGameByInviteUseCaseHash() =>
+    r'f0c594bce615f2a61a6349719910e5205e62e0f0';
+
+/// JoinGameByInviteUseCase Provider
+///
+/// Copied from [joinGameByInviteUseCase].
+@ProviderFor(joinGameByInviteUseCase)
+final joinGameByInviteUseCaseProvider =
+    AutoDisposeProvider<JoinGameByInviteUseCase>.internal(
+      joinGameByInviteUseCase,
+      name: r'joinGameByInviteUseCaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$joinGameByInviteUseCaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef JoinGameByInviteUseCaseRef =
+    AutoDisposeProviderRef<JoinGameByInviteUseCase>;
 String _$leaveGameHash() => r'9b80aaeda230ae5777cea0ae3d301b6470310dc3';
 
 /// Copied from Dart SDK

@@ -2,17 +2,53 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/network/dio_client.dart';
+import '../../../../core/config/env_config.dart';
 import '../../../../core/network/dio_exception_handler.dart';
+import '../../../../core/storage/secure_token_storage.dart';
 import '../../data/datasources/game_result_api_datasource.dart';
 import '../../domain/entities/game_result_entity.dart';
 
 part 'game_result_provider.g.dart';
 
+/// 게임 결과 조회 전용 Dio.
+///
+/// 게임 종료 결과 통계는 부가 정보이므로, 이 요청의 401이 앱 전체 강제 로그아웃으로
+/// 이어지면 안 된다. 전역 [dioProvider]의 AuthInterceptor를 사용하지 않고 저장된
+/// access token만 수동 첨부해 실패를 [AsyncValue.error]로 제한한다.
+final gameResultDioProvider = Provider<Dio>((ref) {
+  final tokenStorage = ref.watch(secureTokenStorageProvider);
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: EnvConfig.apiBaseUrl,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      sendTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ),
+  );
+
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final accessToken = await tokenStorage.getAccessToken();
+        if (accessToken != null) {
+          options.headers['Authorization'] = 'Bearer $accessToken';
+        }
+        handler.next(options);
+      },
+    ),
+  );
+
+  return dio;
+});
+
 /// GameResultApi Retrofit 인스턴스 Provider
 @riverpod
 GameResultApi gameResultApi(Ref ref) {
-  final dio = ref.watch(dioProvider);
+  final dio = ref.watch(gameResultDioProvider);
   return GameResultApi(dio);
 }
 

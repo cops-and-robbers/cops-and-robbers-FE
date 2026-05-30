@@ -25,29 +25,29 @@ void main() {
   group('resolveBodyAsset', () {
     test('returns_police_win_body_when_my_police_team_wins', () {
       final path = resolveBodyAsset(myTeam: 'POLICE', winnerTeam: 'POLICE');
-      expect(path, 'assets/characters/police/result/win_body.svg');
+      expect(path, 'assets/characters/police/result/default/win_body.svg');
     });
 
     test('returns_police_lose_body_when_robber_team_wins_and_im_police', () {
       final path = resolveBodyAsset(myTeam: 'POLICE', winnerTeam: 'ROBBER');
-      expect(path, 'assets/characters/police/result/lose_body.svg');
+      expect(path, 'assets/characters/police/result/default/lose_body.svg');
     });
 
     test('returns_robber_win_body_when_my_robber_team_wins', () {
       final path = resolveBodyAsset(myTeam: 'ROBBER', winnerTeam: 'ROBBER');
-      expect(path, 'assets/characters/robber/result/win_body.svg');
+      expect(path, 'assets/characters/robber/result/default/win_body.svg');
     });
 
     test('returns_robber_lose_body_when_police_team_wins_and_im_robber', () {
       final path = resolveBodyAsset(myTeam: 'ROBBER', winnerTeam: 'POLICE');
-      expect(path, 'assets/characters/robber/result/lose_body.svg');
+      expect(path, 'assets/characters/robber/result/default/lose_body.svg');
     });
   });
 
   group('resolveLeftArmAsset', () {
     test('returns_police_win_left_arm_when_my_police_team_wins', () {
       final path = resolveLeftArmAsset(myTeam: 'POLICE', winnerTeam: 'POLICE');
-      expect(path, 'assets/characters/police/result/win_arm_left.svg');
+      expect(path, 'assets/characters/police/result/default/win_arm_left.svg');
     });
 
     test(
@@ -57,13 +57,16 @@ void main() {
           myTeam: 'POLICE',
           winnerTeam: 'ROBBER',
         );
-        expect(path, 'assets/characters/police/result/lose_arm_left.svg');
+        expect(
+          path,
+          'assets/characters/police/result/default/lose_arm_left.svg',
+        );
       },
     );
 
     test('returns_robber_win_left_arm_when_my_robber_team_wins', () {
       final path = resolveLeftArmAsset(myTeam: 'ROBBER', winnerTeam: 'ROBBER');
-      expect(path, 'assets/characters/robber/result/win_arm_left.svg');
+      expect(path, 'assets/characters/robber/result/default/win_arm_left.svg');
     });
 
     test(
@@ -73,7 +76,10 @@ void main() {
           myTeam: 'ROBBER',
           winnerTeam: 'POLICE',
         );
-        expect(path, 'assets/characters/robber/result/lose_arm_left.svg');
+        expect(
+          path,
+          'assets/characters/robber/result/default/lose_arm_left.svg',
+        );
       },
     );
   });
@@ -81,7 +87,7 @@ void main() {
   group('resolveRightArmAsset', () {
     test('returns_police_win_right_arm_when_my_police_team_wins', () {
       final path = resolveRightArmAsset(myTeam: 'POLICE', winnerTeam: 'POLICE');
-      expect(path, 'assets/characters/police/result/win_arm_right.svg');
+      expect(path, 'assets/characters/police/result/default/win_arm_right.svg');
     });
 
     test(
@@ -91,13 +97,16 @@ void main() {
           myTeam: 'POLICE',
           winnerTeam: 'ROBBER',
         );
-        expect(path, 'assets/characters/police/result/lose_arm_right.svg');
+        expect(
+          path,
+          'assets/characters/police/result/default/lose_arm_right.svg',
+        );
       },
     );
 
     test('returns_robber_win_right_arm_when_my_robber_team_wins', () {
       final path = resolveRightArmAsset(myTeam: 'ROBBER', winnerTeam: 'ROBBER');
-      expect(path, 'assets/characters/robber/result/win_arm_right.svg');
+      expect(path, 'assets/characters/robber/result/default/win_arm_right.svg');
     });
 
     test(
@@ -107,7 +116,10 @@ void main() {
           myTeam: 'ROBBER',
           winnerTeam: 'POLICE',
         );
-        expect(path, 'assets/characters/robber/result/lose_arm_right.svg');
+        expect(
+          path,
+          'assets/characters/robber/result/default/lose_arm_right.svg',
+        );
       },
     );
   });

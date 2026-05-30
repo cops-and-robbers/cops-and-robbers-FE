@@ -47,7 +47,7 @@ flutter test && flutter analyze                                  # 테스트 / �
 - [Agents.md](.claude/rules/Agents.md) — **테스트 작성 룰 (최우선)**: Classist 스타일, 시스템 경계만 모킹, PR Red Flags
 - [Design.md](.claude/rules/Design.md) — 디자인 패턴 (아키텍처 레벨)
 - [UI_Design_System.md](.claude/rules/UI_Design_System.md) — UI 시스템: AppColors·AppTextStyles·팀 테마
-- [API_SPEC.md](docs/API_SPEC.md) — API 명세
+- [api-docs.json](docs/api-docs.json) — API 명세 (OpenAPI 3.0.1, 백엔드 자동 생성 정본)
 - [경찰과도둑\_PRD_2.md](docs/경찰과도둑_PRD_2.md) — 제품 요구사항
 
 ---

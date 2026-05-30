@@ -10,7 +10,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
+import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -276,6 +278,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                       },
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
+                      isDarkMode: _isDarkMode,
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical8),
@@ -309,6 +312,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             focusedColor: _isDarkMode ? AppColors.green : null,
             unfocusedColor: _isDarkMode ? AppColors.green500 : null,
             backgroundColor: _isDarkMode ? AppColors.black : null,
+            isDarkMode: _isDarkMode,
           ),
         ),
 
@@ -324,7 +328,22 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
         Positioned(
           top: 0,
           left: 0,
-          child: SafeArea(bottom: false, child: _buildBackButton()),
+          child: SafeArea(
+            bottom: false,
+            // 상단 바(_buildTopBar)와 동일한 64.h 높이로 세로 중앙 정렬 —
+            // 우측 정보 버튼·타이머와 아이콘 중심을 맞춘다.
+            child: SizedBox(
+              height: 64.h,
+              child: Padding(
+                padding: EdgeInsets.only(left: AppSpacing.horizontal4),
+                child: PreviousButton(
+                  onPressed: () => context.pop(),
+                  size: 24.w,
+                  color: _isDarkMode ? AppColors.white : AppColors.black,
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -378,6 +397,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                       },
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
+                      isDarkMode: _isDarkMode,
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical8),
@@ -406,7 +426,22 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
         Positioned(
           top: 0,
           left: 0,
-          child: SafeArea(bottom: false, child: _buildBackButton()),
+          child: SafeArea(
+            bottom: false,
+            // 상단 바(_buildTopBar)와 동일한 64.h 높이로 세로 중앙 정렬 —
+            // 우측 정보 버튼·타이머와 아이콘 중심을 맞춘다.
+            child: SizedBox(
+              height: 64.h,
+              child: Padding(
+                padding: EdgeInsets.only(left: AppSpacing.horizontal4),
+                child: PreviousButton(
+                  onPressed: () => context.pop(),
+                  size: 24.w,
+                  color: _isDarkMode ? AppColors.white : AppColors.black,
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -488,8 +523,10 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           ),
           Align(
             alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: () {
+            child: FlatIconButton(
+              assetPath: 'assets/icons/icon_info.svg',
+              iconColor: _isDarkMode ? AppColors.black200 : AppColors.black800,
+              onPressed: () {
                 AppSnackbar.show(
                   context,
                   message: AppLocalizations.of(
@@ -498,22 +535,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
                   isDarkMode: _isDarkMode,
                 );
               },
-              behavior: HitTestBehavior.opaque,
-              child: SizedBox(
-                width: 48.w,
-                height: 48.w,
-                child: Center(
-                  child: SvgPicture.asset(
-                    'assets/icons/icon_info.svg',
-                    width: 24.w,
-                    height: 24.w,
-                    colorFilter: ColorFilter.mode(
-                      _isDarkMode ? AppColors.black200 : AppColors.black800,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-              ),
             ),
           ),
         ],
@@ -547,6 +568,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           );
         },
         backgroundColor: _isDarkMode ? AppColors.black : null,
+        isDarkMode: _isDarkMode,
       ),
     );
   }
@@ -604,25 +626,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             }),
           ),
         ],
-      ),
-    );
-  }
-
-  /// 좌측 상단 뒤로가기 버튼
-  Widget _buildBackButton() {
-    return Padding(
-      padding: EdgeInsets.only(left: AppSpacing.horizontal4),
-      child: IconButton(
-        icon: SvgPicture.asset(
-          'assets/icons/icon_previous.svg',
-          width: 24.w,
-          height: 24.w,
-          colorFilter: ColorFilter.mode(
-            _isDarkMode ? AppColors.white : AppColors.black,
-            BlendMode.srcIn,
-          ),
-        ),
-        onPressed: () => context.pop(),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import '../entities/create_session_result.dart';
+import '../entities/game_join_result.dart';
 import '../entities/user_game_status_entity.dart';
 
 /// Session Repository 인터페이스
@@ -26,6 +27,16 @@ abstract class SessionRepository {
     required int policeWaitMinutes,
     required int maxParticipants,
   });
+
+  /// 초대 코드로 게임 방 참여
+  ///
+  /// 성공 시 [GameJoinResult]를 반환합니다.
+  ///
+  /// Throws:
+  /// - [ValidationException]: 초대 코드 누락 또는 유효하지 않음 (400)
+  /// - [AuthException]: 인증 실패 (401)
+  /// - [ServerException]: 이미 다른 활성 게임 참여 중 (409) 또는 서버 오류
+  Future<GameJoinResult> joinGameByInvite({required String inviteCode});
 
   /// 참여 중인 게임 정보 조회
   ///

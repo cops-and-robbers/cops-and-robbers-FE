@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/network/api_error_response.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -23,6 +24,7 @@ import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
@@ -58,6 +60,10 @@ import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
 import '../widgets/zone_exit_banner.dart';
 import '../widgets/zone_exit_vignette.dart';
+import 'package:cops_and_robbers/core/constants/game_status.dart';
+import 'package:cops_and_robbers/core/constants/game_team.dart';
+import 'package:cops_and_robbers/core/constants/game_result_reason.dart';
+import 'package:cops_and_robbers/core/constants/participant_status.dart';
 
 /// 인게임 지도 화면
 ///
@@ -177,7 +183,7 @@ class _GamePageState extends ConsumerState<GamePage>
   ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
 
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
-  bool get _isDarkMode => widget.team == 'ROBBER';
+  bool get _isDarkMode => GameTeam.isRobber(widget.team);
 
   @override
   void initState() {
@@ -357,7 +363,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 경찰 대기 타이머 팝업 (경찰 팀만, 서버 startTime 기준 남은 시간)
   void _showPoliceTimerIfNeeded() {
-    if (widget.isDummy || widget.team != 'POLICE') return;
+    if (widget.isDummy || !GameTeam.isPolice(widget.team)) return;
 
     final info = ref.read(gameParticipantNotifierProvider);
     final startTimeStr = info?.gameStartTime;
@@ -440,7 +446,7 @@ class _GamePageState extends ConsumerState<GamePage>
   ///
   /// gameStartTime + policeWaitMinutes. 경찰팀이거나 대기 시간이 없으면 null.
   DateTime? _computePoliceStartTime() {
-    if (widget.team != 'ROBBER') return null;
+    if (!GameTeam.isRobber(widget.team)) return null;
 
     final info = ref.read(gameParticipantNotifierProvider);
     final waitMinutes = info?.policeWaitMinutes;
@@ -457,7 +463,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 채팅 연결 및 구독
   void _connectChat() {
-    final team = widget.team.toLowerCase();
+    final team = GameTeam.toLowerKey(widget.team);
     _chatNotifier = ref.read(chatNotifierProvider.notifier);
 
     if (widget.isDummy) {
@@ -476,7 +482,7 @@ class _GamePageState extends ConsumerState<GamePage>
     _gameEventNotifier = ref.read(gameEventNotifierProvider.notifier);
     _gameEventDatasource = ref.read(gameEventStompDatasourceProvider);
     _gameEventNotifier!.connectAndSubscribe(_gameId);
-    if (widget.team == 'ROBBER') _startLocationSending();
+    if (GameTeam.isRobber(widget.team)) _startLocationSending();
     _startHeadingTracking();
 
     // 게임 시작 시스템 채팅 4단계 시퀀스는 _initSettingsFromApiIfNeeded 완료 후 호출
@@ -578,7 +584,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
       // 서버 snapshot 기반 수감자 집합
       final serverArrested = result.robbers
-          .where((p) => p.status == 'JAILED')
+          .where((p) => p.status == ParticipantStatus.jailed)
           .map((p) => p.participantId)
           .toSet();
 
@@ -591,7 +597,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
       // 서버 기준 생존 수에 sync 창 delta를 반영 (0 ~ 전체 도둑 수 범위로 clamp)
       final serverAlive = result.robbers
-          .where((p) => p.status == 'ALIVE')
+          .where((p) => p.status == ParticipantStatus.alive)
           .length;
       final remainingThieves =
           (serverAlive - stompNewArrests.length + stompNewEscapes.length).clamp(
@@ -605,6 +611,18 @@ class _GamePageState extends ConsumerState<GamePage>
             arrestedIds: finalArrested,
             remainingThieves: remainingThieves,
           );
+    } on DioException catch (e) {
+      final apiError = ApiErrorResponse.tryParse(e.response?.data);
+      if (GameOverGuard.isGameNotInProgressError(
+        statusCode: e.response?.statusCode,
+        title: apiError?.title,
+      )) {
+        debugPrint('[GamePage] GAME_OVER 유실 의심 — 상태 동기화 API가 게임 종료 응답');
+        await _showMissedGameOverFallbackDialog();
+        return;
+      }
+      // 동기화 실패 시 게임 진행에 지장을 주지 않도록 예외를 삼킴
+      debugPrint('[GamePage] ⚠️ 재연결 후 상태 동기화 실패 (무시): $e');
     } catch (e) {
       // 동기화 실패 시 게임 진행에 지장을 주지 않도록 예외를 삼킴
       debugPrint('[GamePage] ⚠️ 재연결 후 상태 동기화 실패 (무시): $e');
@@ -968,8 +986,48 @@ class _GamePageState extends ConsumerState<GamePage>
     );
     _googleMapKey.currentState?.updateRobberMarkers(
       latLngs,
-      isPolice: widget.team == 'POLICE',
+      isPolice: GameTeam.isPolice(widget.team),
     );
+  }
+
+  /// 게임 종료 다이얼로그를 띄우기 전 화면/소켓/위치 리소스를 정리한다.
+  void _prepareGameOverPresentation() {
+    // 종료 시점에 구역 밖이었다면 진동 타이머·시각 신호가 살아있을 수 있다.
+    // 결과 다이얼로그 위에 펄스/배너가 깜빡이고 진동이 폭주하지 않도록 정리한다.
+    _clearZoneExitWarning();
+
+    // iOS 파란 위치 인디케이터 즉시 해제: 게임 종료 이후 위치 수집 불필요.
+    // dispose()까지 미루면 결과 다이얼로그 표시 시간 내내 인디케이터가 유지된다.
+    _locationSubscription?.cancel();
+    _locationSubscription = null;
+    _headingSubscription?.cancel();
+    _headingSubscription = null;
+
+    // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
+    ref.invalidate(chatNotificationEnabledProvider);
+    // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단).
+    // disconnect()는 시각 상태(arrestedParticipantIds 등)를 보존하므로,
+    // 참가자 목록 오버레이는 마지막 체포 스냅샷을 유지한다.
+    ref.read(chatNotifierProvider.notifier).disconnectChat();
+    ref.read(gameEventNotifierProvider.notifier).disconnect();
+    // 혹시 열려있는 다른 팝업/다이얼로그 모두 닫기
+    if (mounted) {
+      Navigator.of(context).popUntil((route) => route is! PopupRoute);
+    }
+  }
+
+  /// GAME_OVER 이벤트를 놓쳤지만 REST 상태로 종료가 감지된 경우의 중립 fallback.
+  Future<void> _showMissedGameOverFallbackDialog() async {
+    if (_gameOverDialogShown) return;
+    _gameOverDialogShown = true;
+
+    debugPrint('[GamePage] GAME_OVER 유실 fallback 다이얼로그 표시');
+    _prepareGameOverPresentation();
+
+    if (!mounted) return;
+
+    final gameId = int.tryParse(widget.sessionId);
+    await _showFallbackResultDialog(null, gameId);
   }
 
   /// 게임 종료 → 결과 팝업 2단계 시퀀스
@@ -983,36 +1041,26 @@ class _GamePageState extends ConsumerState<GamePage>
     if (_gameOverDialogShown) return;
     _gameOverDialogShown = true;
 
-    // 종료 시점에 구역 밖이었다면 진동 타이머·시각 신호가 살아있을 수 있다.
-    // 결과 다이얼로그 위에 펄스/배너가 깜빡이고 진동이 폭주하지 않도록 정리한다.
-    _clearZoneExitWarning();
-
-    // iOS 파란 위치 인디케이터 즉시 해제: 게임 종료 이후 위치 수집 불필요.
-    // dispose()까지 미루면 결과 다이얼로그 표시 시간 내내 인디케이터가 유지된다.
-    _locationSubscription?.cancel();
-    _locationSubscription = null;
-    _headingSubscription?.cancel();
-    _headingSubscription = null;
-
     // GAME_OVER 이벤트 state에서 gameResultId 캡처.
     final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
 
-    // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
-    ref.invalidate(chatNotificationEnabledProvider);
-    // STOMP 구독 즉시 해제 (늦게 도달하는 이벤트 차단).
-    // disconnect()는 시각 상태(arrestedParticipantIds 등)를 보존하므로,
-    // 참가자 목록 오버레이는 마지막 체포 스냅샷을 유지한다.
-    ref.read(gameEventNotifierProvider.notifier).disconnect();
-    // 혹시 열려있는 다른 팝업/다이얼로그 모두 닫기
-    if (mounted) {
-      Navigator.of(context).popUntil((route) => route is! PopupRoute);
-    }
+    _prepareGameOverPresentation();
 
     // 결과 API 사전 트리거 (1단계 3초 동안 백그라운드에서 로딩)
     if (gameResultId != null) {
-      // fire-and-forget — 다이얼로그에서 ref.watch로 같은 Provider를 구독한다
-      // ignore: unawaited_futures
-      ref.read(gameResultProvider(gameResultId).future);
+      // fire-and-forget — 다이얼로그에서 ref.watch로 같은 Provider를 구독한다.
+      // 에러는 Provider에 캐시되어 결과 다이얼로그의 AsyncValue.error 분기로 표시된다.
+      // 여기서는 미소비 Future 에러가 전역 에러로 번지지 않도록 소비만 한다.
+      unawaited(
+        ref
+            .read(gameResultProvider(gameResultId).future)
+            .then<void>(
+              (_) {},
+              onError: (Object e, StackTrace st) {
+                debugPrint('[GamePage] ⚠️ 게임 결과 사전 조회 실패: $e');
+              },
+            ),
+      );
     }
 
     // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)
@@ -1033,7 +1081,7 @@ class _GamePageState extends ConsumerState<GamePage>
           ),
           SizedBox(height: AppSpacing.vertical8),
           Text(
-            reason == 'ALL_ARRESTED'
+            reason == GameResultReason.allArrested
                 ? l10n.gameOverReasonAllArrested
                 : l10n.gameOverReasonTimeUp,
             style: _isDarkMode
@@ -1069,7 +1117,10 @@ class _GamePageState extends ConsumerState<GamePage>
       onGoHome: () {
         // GamePage가 외부 사유로 이미 dispose된 경우 ref/context 사용 금지 (안전망)
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
-        if (gameId != null) ref.read(leaveGameProvider(gameId).future);
+        if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
+            gameId != null) {
+          ref.read(leaveGameProvider(gameId).future);
+        }
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.home);
       },
@@ -1086,16 +1137,22 @@ class _GamePageState extends ConsumerState<GamePage>
     String? winnerTeam,
     int? gameId,
   ) async {
-    final isWin = winnerTeam == widget.team;
     final l10n = AppLocalizations.of(context);
-    final winnerTeamLabel = winnerTeam == 'POLICE'
+    final hasWinnerTeam =
+        GameTeam.isPolice(winnerTeam) || GameTeam.isRobber(winnerTeam);
+    final isWin = hasWinnerTeam && winnerTeam == widget.team;
+    final winnerTeamLabel = GameTeam.isPolice(winnerTeam)
         ? l10n.gameTeamCop
         : l10n.gameTeamRobber;
 
-    AppDialog.show(
+    await AppDialog.show(
       context: context,
-      title: isWin ? l10n.gameResultWin : l10n.gameResultLose,
-      message: l10n.messageGameOverWinner(winnerTeamLabel),
+      title: hasWinnerTeam
+          ? (isWin ? l10n.gameResultWin : l10n.gameResultLose)
+          : l10n.gameOverBannerTitle,
+      message: hasWinnerTeam
+          ? l10n.messageGameOverWinner(winnerTeamLabel)
+          : l10n.gameOverFallbackMessage,
       titleStyle:
           (_isDarkMode
                   ? AppTextStyles.robberHeading24
@@ -1103,7 +1160,9 @@ class _GamePageState extends ConsumerState<GamePage>
               .copyWith(
                 color: _isDarkMode
                     ? AppColors.green
-                    : (isWin ? AppColors.blue : AppColors.red),
+                    : hasWinnerTeam
+                    ? (isWin ? AppColors.blue : AppColors.red)
+                    : AppColors.black,
               ),
       cancelText: l10n.buttonGoHome,
       confirmText: l10n.buttonPlayAgain,
@@ -1114,7 +1173,11 @@ class _GamePageState extends ConsumerState<GamePage>
       barrierDismissible: false,
       onCancel: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
-        if (gameId != null) ref.read(leaveGameProvider(gameId).future);
+        if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
+            hasWinnerTeam &&
+            gameId != null) {
+          ref.read(leaveGameProvider(gameId).future);
+        }
         ref.read(gameParticipantNotifierProvider.notifier).clear();
         context.go(RoutePaths.home);
       },
@@ -1132,11 +1195,17 @@ class _GamePageState extends ConsumerState<GamePage>
   /// dead 상태로 방치된 경우를 복구합니다.
   void _reconnectSocketsIfNeeded() {
     if (widget.isDummy) return;
+    if (GameOverGuard.shouldSkipResume(
+      gameOverDialogShown: _gameOverDialogShown,
+    )) {
+      debugPrint('[GamePage] GameOver 모달 표시 중 → 소켓 재연결 스킵');
+      return;
+    }
 
     final chatState = ref.read(chatNotifierProvider).connectionState;
     if (chatState != StompConnectionState.connected &&
         chatState != StompConnectionState.connecting) {
-      final team = widget.team.toLowerCase();
+      final team = GameTeam.toLowerKey(widget.team);
       _chatNotifier?.connectAndSubscribe(gameId: _gameId, team: team);
     }
 
@@ -1147,7 +1216,7 @@ class _GamePageState extends ConsumerState<GamePage>
     }
 
     // 도둑 팀: 위치 전송 스트림이 끊겼으면 재시작
-    if (widget.team == 'ROBBER' && _locationSubscription == null) {
+    if (GameTeam.isRobber(widget.team) && _locationSubscription == null) {
       _startLocationSending();
     }
 
@@ -1192,11 +1261,18 @@ class _GamePageState extends ConsumerState<GamePage>
 
       final info = status.participationInfo;
 
-      if (!status.isParticipating || info == null) {
-        // 게임 종료 → 홈
-        debugPrint('[GamePage] 게임 종료 감지 → 홈 이동');
-        context.go(RoutePaths.home);
-      } else if (info.gameStatus == 'WAITING') {
+      if (info == null ||
+          GameOverGuard.shouldShowMissedGameOverFallback(
+            isParticipating: status.isParticipating,
+            gameStatus: info.gameStatus,
+          )) {
+        debugPrint(
+          '[GamePage] GAME_OVER 유실 의심 — resume 상태: '
+          'isParticipating=${status.isParticipating}, '
+          'gameStatus=${info?.gameStatus}',
+        );
+        await _showMissedGameOverFallbackDialog();
+      } else if (info.gameStatus == GameStatus.waiting) {
         // 대기실 상태 → 로비로 복귀
         debugPrint('[GamePage] WAITING 감지 → 로비 이동');
         context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
@@ -1323,7 +1399,7 @@ class _GamePageState extends ConsumerState<GamePage>
     );
 
     final isArrestedNow =
-        widget.team == 'ROBBER' &&
+        GameTeam.isRobber(widget.team) &&
         ref.watch(
           gameEventNotifierProvider.select(
             (s) =>
@@ -1349,7 +1425,7 @@ class _GamePageState extends ConsumerState<GamePage>
         // HTTP 응답을 기다리다 지연되지 않도록. 에러는 메서드 내부 try-catch에서 처리.
         unawaited(_syncGameStateOnReconnect());
 
-        if (widget.team == 'ROBBER' && !widget.isDummy) {
+        if (GameTeam.isRobber(widget.team) && !widget.isDummy) {
           if (_lastSentPosition != null) {
             _sendPositionNow();
           } else if (_locationSubscription == null) {
@@ -1525,6 +1601,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     onPressed: () => setState(() => _showParticipants = false),
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
+                    isDarkMode: _isDarkMode,
                   ),
                   SizedBox(height: AppSpacing.vertical8),
                   _buildQrButton(),
@@ -1546,6 +1623,7 @@ class _GamePageState extends ConsumerState<GamePage>
                       onPressed: () => setState(() => _showParticipants = true),
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
+                      isDarkMode: _isDarkMode,
                     ),
                     SizedBox(height: AppSpacing.vertical8),
                     _buildQrButton(),
@@ -1565,9 +1643,12 @@ class _GamePageState extends ConsumerState<GamePage>
               child: MyLocationButton(
                 onPressed: _moveToCurrentLocation,
                 isFocused: _isLocationFocused,
-                focusedColor: _isDarkMode ? AppColors.green : null,
-                unfocusedColor: _isDarkMode ? AppColors.green500 : null,
+                focusedColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                unfocusedColor: _isDarkMode
+                    ? AppColors.green500
+                    : AppColors.blue500,
                 backgroundColor: _isDarkMode ? AppColors.black : null,
+                isDarkMode: _isDarkMode,
               ),
             )
           else
@@ -1723,11 +1804,14 @@ class _GamePageState extends ConsumerState<GamePage>
   /// QR 버튼 (경찰: 스캔, 도둑: QR 표시)
   Widget _buildQrButton() {
     return SvgIconButton(
-      assetPath: widget.team == 'POLICE'
+      assetPath: GameTeam.isPolice(widget.team)
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
-      onPressed: widget.team == 'POLICE' ? _openQrScanner : _showMyQrCode,
+      onPressed: GameTeam.isPolice(widget.team)
+          ? _openQrScanner
+          : _showMyQrCode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
+      isDarkMode: _isDarkMode,
     );
   }
 
@@ -1877,27 +1961,13 @@ class _GamePageState extends ConsumerState<GamePage>
               ),
             ],
           ),
-          // 우측: info 버튼 (터치 영역 48x48)
+          // 우측: info 버튼
           Align(
             alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: _showGameRulesDialog,
-              behavior: HitTestBehavior.opaque,
-              child: SizedBox(
-                width: 48.w,
-                height: 48.w,
-                child: Center(
-                  child: SvgPicture.asset(
-                    'assets/icons/icon_info.svg',
-                    width: 24.w,
-                    height: 24.w,
-                    colorFilter: ColorFilter.mode(
-                      _isDarkMode ? AppColors.black200 : AppColors.black800,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-              ),
+            child: FlatIconButton(
+              assetPath: 'assets/icons/icon_info.svg',
+              iconColor: _isDarkMode ? AppColors.black200 : AppColors.black800,
+              onPressed: _showGameRulesDialog,
             ),
           ),
         ],

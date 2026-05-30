@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_status.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -318,7 +320,7 @@ class _SessionCreationFlowPageState
           .setGameInfo(
             gameId: result.gameId,
             nickname: myNickname,
-            team: 'POLICE',
+            team: GameTeam.police,
             maxParticipants: result.maxParticipants,
             locationRevealIntervalMinutes: result.locationRevealIntervalMinutes,
             isHost: true,
@@ -411,9 +413,9 @@ class _SessionCreationFlowPageState
 
       final info = status.participationInfo!;
 
-      if (info.gameStatus == 'WAITING') {
+      if (info.gameStatus == GameStatus.waiting) {
         context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
-      } else if (info.gameStatus == 'IN_PROGRESS') {
+      } else if (info.gameStatus == GameStatus.inProgress) {
         context.go(
           '${RoutePaths.gameWithId(info.gameId.toString())}'
           '?team=${info.team}&pid=${info.participantId}',

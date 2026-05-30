@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 1.9.7+246
+version: 2.0.1+254
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -26,6 +26,7 @@ dependencies:
   # iOS 스타일 아이콘 (Cupertino 디자인)
   cupertino_icons: ^1.0.8
   go_router: ^17.0.1 # 화면 라우팅 및 내비게이션
+  app_links: ^6.4.0 # 딥링크 URI 수신 (Android App Links / iOS Universal Links)
   # 상태 관리 및 데이터 모델
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
@@ -75,6 +76,9 @@ dependencies:
   shimmer: ^3.0.0
   # 네트워크 연결 상태 체크 (스플래시 오프라인 가드용)
   connectivity_plus: ^6.1.0
+  # 로케일 기반 동적 앱 아이콘은 third-party 없이 자체 네이티브 채널(cops_and_robbers/app_icon)로 구현.
+  #   iOS: AppDelegate에서 UIApplication.setAlternateIconName / Android: MainActivity activity-alias 토글
+  #   (flutter_dynamic_icon=AGP8·v1 embedding 비호환, flutter_dynamic_icon_plus=iOS SwiftTryCatch 원본 삭제로 모두 제거)
 # --------------------------------------------
 # 개발 의존성 (개발/빌드 시에만 필요한 패키지)
 # --------------------------------------------
@@ -82,6 +86,8 @@ dev_dependencies:
   # Flutter 테스트 프레임워크
   flutter_test:
     sdk: flutter
+  # 테스트 Mock 생성 (Classist TDD 스타일, 시스템 경계에서만 사용)
+  mocktail: ^1.0.4
   # 코드 품질 및 자동화 도구
   flutter_lints: ^6.0.0 # 추천 코드 린트 규칙
   build_runner: ^2.4.14 # 코드 자동 생성 툴
@@ -101,10 +107,11 @@ flutter:
   generate: true
   assets:
     - assets/
+    - assets/app_logos/
+    - assets/app_splashs/
     - assets/fonts/
     - assets/icons/
     - assets/legals/
-    - assets/messages/
     - assets/credits/
     - assets/characters/police/default/
     - assets/characters/robber/default/
@@ -147,9 +154,13 @@ flutter:
       fonts:
         - asset: assets/fonts/Moneygraphy-Pixel.ttf
 flutter_launcher_icons:
-  android: true
+  # ⚠️ Android는 로케일별 activity-alias 아이콘(ic_launcher_{en,ko,ja})을 손으로 관리한다.
+  # 이 생성기를 android:true로 재실행하면 ic_launcher* 및 로케일 변형을 덮어쓰므로 금지.
+  # 아이콘 변경 시 res/ 리소스를 직접 수정할 것. (이슈 #383)
+  android: false
   ios: true
-  image_path: "assets/app_icon_1024.png"
+  image_path: "assets/app_icon_1024.png" # Android 폴백(기존 유지)
+  image_path_ios: "assets/app_icons/app_icon_en.png" # iOS Primary = 영어
   adaptive_icon_background: "#FFFFFF" # Android 전용 배경 (흰색)
   adaptive_icon_foreground: "assets/app_icon_1024.png"
   remove_alpha_ios: true # iOS는 알파 제거 후 단색 배경

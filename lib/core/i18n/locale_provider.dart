@@ -14,8 +14,11 @@ const List<Locale> kSupportedLocales = [
   Locale('ja'),
 ];
 
-/// 기본 로캘 — 지원 외 시스템 로캘이거나 첫 실행 시 폴백
-const Locale kDefaultLocale = Locale('ko');
+/// 기본 로캘 — 지원 외 시스템 로캘이거나 첫 실행 시 폴백.
+///
+/// en(영어)을 기본으로 둔다: Android 런처 이름(`values/strings.xml` 기본값)이 영어이고,
+/// 앱 아이콘 Primary도 en이라, 미지원 언어 폰에서 이름·아이콘·인앱 UI가 모두 영어로 일관된다.
+const Locale kDefaultLocale = Locale('en');
 
 /// SharedPreferences 키 — 명시적으로 선택한 언어 코드 저장 (없으면 시스템 따름)
 const String _kStorageKey = 'app_locale_code';
@@ -38,7 +41,7 @@ Locale _resolveSystemLocale() {
 /// 우선순위:
 /// 1. SharedPreferences에 저장된 사용자 선택 언어
 /// 2. 시스템 로캘 (지원 목록 내)
-/// 3. [kDefaultLocale] (ko)
+/// 3. [kDefaultLocale] (en)
 ///
 /// 첫 프레임은 시스템 로캘로 시작 → SharedPreferences 비동기 로드 후 갱신
 ///
@@ -102,4 +105,20 @@ class AppLocale extends _$AppLocale {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kStorageKey);
   }
+}
+
+/// 부팅 시점의 유효 로케일을 1회 해석한다.
+///
+/// 우선순위: 저장된 사용자 선택 → 시스템 로캘(지원 내) → [kDefaultLocale].
+/// 위젯 트리와 무관하게 동작하므로, 앱 시작 시 아이콘 적용 등 1회성 부팅 작업에 쓴다.
+/// (provider의 비동기 storage 로드 타이밍에 의존하지 않기 위함)
+Future<Locale> resolveStartupLocale() async {
+  final prefs = await SharedPreferences.getInstance();
+  final stored = prefs.getString(_kStorageKey);
+  final isSupported =
+      stored != null && kSupportedLocales.any((l) => l.languageCode == stored);
+  if (isSupported) {
+    return Locale(stored);
+  }
+  return _resolveSystemLocale();
 }

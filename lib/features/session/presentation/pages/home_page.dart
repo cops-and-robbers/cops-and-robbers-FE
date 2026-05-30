@@ -17,8 +17,10 @@ import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
@@ -26,6 +28,7 @@ import '../../../../core/services/vibration_service.dart';
 import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
@@ -192,12 +195,12 @@ class _HomePageState extends ConsumerState<HomePage> {
 
       final info = status.participationInfo!;
 
-      if (info.gameStatus == 'WAITING') {
+      if (info.gameStatus == GameStatus.waiting) {
         context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
         return;
       }
 
-      if (info.gameStatus == 'IN_PROGRESS') {
+      if (info.gameStatus == GameStatus.inProgress) {
         context.go(
           '${RoutePaths.gameWithId(info.gameId.toString())}'
           '?team=${info.team}&pid=${info.participantId}',
@@ -231,9 +234,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
       final info = status.participationInfo!;
 
-      if (info.gameStatus == 'WAITING') {
+      if (info.gameStatus == GameStatus.waiting) {
         context.go(RoutePaths.waitingRoomWithId(info.gameId.toString()));
-      } else if (info.gameStatus == 'IN_PROGRESS') {
+      } else if (info.gameStatus == GameStatus.inProgress) {
         context.go(
           '${RoutePaths.gameWithId(info.gameId.toString())}'
           '?team=${info.team}&pid=${info.participantId}',
@@ -466,9 +469,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     if (response != null && mounted) {
       final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
-      // TODO(로비 조회 API): 현재 joinGame 응답에는 gameId, participantId만 포함됨.
-      // 로비 조회 API 연동 후 아래 항목들도 설정 필요:
-      //   - maxParticipants, locationRevealIntervalMinutes, nickname
+      // joinGame 응답에는 gameId, participantId만 포함되며, maxParticipants /
+      // locationRevealIntervalMinutes 등 나머지 정보는 대기실 진입 시
+      // fetchLobbyInfoProvider + fetchGameSettingsProvider 로 보정한다.
       ref
           .read(gameParticipantNotifierProvider.notifier)
           .setGameInfo(
@@ -514,6 +517,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                 builder: (_) => QrScannerPage<String>(
                   title: l10n.dialogScanInviteQrTitle,
                   onParse: (rawValue) {
+                    // 1) 딥링크 URL 형식 (https://copsnro66ers.site/join/{code}) 우선 파싱.
+                    // 경로는 정확히 /join/{code}만 허용하고, 결과는 대문자로 정규화해
+                    // 수동 입력 경로(toUpperCase)와 동작을 일치시킨다.
+                    final uri = Uri.tryParse(rawValue);
+                    if (uri != null && uri.host == 'copsnro66ers.site') {
+                      final segments = uri.pathSegments;
+                      if (segments.length == 2 &&
+                          segments[0] == 'join' &&
+                          segments[1].length == 6) {
+                        return segments[1].toUpperCase();
+                      }
+                    }
+                    // 2) 레거시 JSON 형식 fallback (옛 QR 호환)
                     try {
                       final json = jsonDecode(rawValue) as Map<String, dynamic>;
                       final code = json['inviteCode'];
@@ -611,33 +627,37 @@ class _HomePageState extends ConsumerState<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      l10n.appBrandName,
-                      style: AppTextStyles.heading_20.copyWith(
-                        color: AppColors.black,
-                      ),
+                    // 로케일별 워드마크 로고 — en은 세로 비중이 커 40, ko/ja는 20
+                    SvgPicture.asset(
+                      localizedAppLogo(Localizations.localeOf(context)),
+                      height:
+                          (Localizations.localeOf(context).languageCode == 'en'
+                                  ? 40
+                                  : 20)
+                              .h,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        context.push(RoutePaths.settings);
-                      },
-                      behavior: HitTestBehavior.opaque,
-                      child: SizedBox(
-                        width: 48.w,
-                        height: 48.w,
-                        child: Align(
+                    // 우측 아이콘 그룹 (공지 + 설정)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FlatIconButton(
+                          assetPath: 'assets/icons/icon_alert.svg',
+                          iconColor: AppColors.black800,
+                          iconSize: 22,
+                          onPressed: () {
+                            context.push(RoutePaths.notices);
+                          },
                           alignment: Alignment.centerRight,
-                          child: SvgPicture.asset(
-                            'assets/icons/icon_setting_1.svg',
-                            width: 24.w,
-                            height: 24.w,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.black800,
-                              BlendMode.srcIn,
-                            ),
-                          ),
                         ),
-                      ),
+                        FlatIconButton(
+                          assetPath: 'assets/icons/icon_setting_1.svg',
+                          iconColor: AppColors.black800,
+                          onPressed: () {
+                            context.push(RoutePaths.settings);
+                          },
+                          alignment: Alignment.centerRight,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -653,13 +673,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SvgIconButton(
-                          assetPath: 'assets/icons/icon_notice.svg',
-                          onPressed: () {
-                            context.push(RoutePaths.notices);
-                          },
-                        ),
-                        SizedBox(width: AppSpacing.horizontal8),
                         SvgIconButton(
                           assetPath: 'assets/icons/Top_hat.svg',
                           onPressed: () {

@@ -1,19 +1,30 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:go_router/go_router.dart';
 import 'package:cops_and_robbers/core/config/env_config.dart';
+import 'package:cops_and_robbers/core/deeplink/deeplink_event.dart';
+import 'package:cops_and_robbers/core/deeplink/deeplink_service.dart';
 import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
+import 'package:cops_and_robbers/core/services/app_icon/startup_app_icon.dart';
+import 'package:cops_and_robbers/core/services/app_icon/locale_app_icon_observer.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
+import 'package:cops_and_robbers/features/auth/domain/entities/auth_result_entity.dart';
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/session/presentation/providers/pending_invite_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
+import 'package:cops_and_robbers/router/route_paths.dart';
 
 void main() async {
   // Flutter 엔진 초기화 보장
@@ -154,6 +165,14 @@ void main() async {
   runApp(
     ProviderScope(child: MyApp(isFirebaseInitialized: isFirebaseInitialized)),
   );
+
+  // 콜드 부팅 시 1회: 인앱 로케일에 맞는 iOS 앱 아이콘 적용(비차단).
+  // 첫 프레임을 막지 않도록 await 하지 않는다. iOS 외/미지원/동일 아이콘이면 no-op.
+  unawaited(applyStartupLocaleIcon());
+
+  // Android 전용: 백그라운드 전환 시 저장 로케일 기준으로 아이콘 reconcile.
+  // 사용 중 강제 종료를 피하려고 즉시 적용 대신 안전 시점에 토글한다(iOS는 no-op).
+  startLocaleAppIconObserver();
 }
 
 class MyApp extends ConsumerWidget {
@@ -196,6 +215,55 @@ class _LocalizedApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(appLocaleProvider).locale;
+
+    // 딥링크 URI 수신 시 GoRouter 로 dispatch
+    ref.listen<AsyncValue<DeeplinkEvent>>(deeplinkEventsProvider, (prev, next) {
+      next.whenData((event) {
+        switch (event) {
+          case InviteJoinEvent(:final inviteCode):
+            // rootNavigatorKey 로 context 를 얻어 push (MaterialApp 트리 밖에서도 안전)
+            final ctx = rootNavigatorKey.currentContext;
+            if (ctx != null) {
+              ctx.push(RoutePaths.joinByInviteWithCode(inviteCode));
+            }
+          case UnknownEvent():
+            // 의도된 무시 — 로깅은 DeepLinkService 내부에서 처리
+            break;
+        }
+      });
+    });
+
+    // 로그인 완료 + 진입 절차(약관 동의, 닉네임 설정) 모두 끝난 시점에만
+    // pending invite 를 소비해 자동 join 흐름으로 진입한다.
+    //
+    // 단순히 user != null 만으로 소비하면 GoRouter redirect 가
+    // /agreement 또는 /nickname-setup 으로 강제 이동시켜 push 가 무시되고
+    // pending invite 만 유실되는 문제가 발생한다. (신규 유저 / 약관 미동의 케이스)
+    //
+    // 본 listener 는 auth state 가 변할 때마다 발화되므로,
+    // 약관 동의 → 닉네임 설정 → 최종 완료 순서로 자연스럽게 마지막 발화에서만 consume 된다.
+    ref.listen<AsyncValue<AuthResultEntity?>>(authNotifierProvider, (
+      prev,
+      next,
+    ) {
+      final user = next.valueOrNull;
+      if (user == null) return;
+      // 진입 절차가 남아 있으면 invite 보존 (다음 발화에서 다시 평가)
+      if (user.isNewUser || user.requiresAgreement) return;
+
+      // pending invite 를 읽어 코드가 있으면 clear 후 라우터로 push.
+      // rootNavigatorKey 는 GlobalKey 이므로 async gap 이후에도 BuildContext 없이 안전하게 접근 가능.
+      Future(() async {
+        final pending = await ref.read(pendingInviteProvider.future);
+        if (pending == null) return;
+
+        await ref.read(pendingInviteProvider.notifier).clear();
+        // ignore: use_build_context_synchronously
+        rootNavigatorKey.currentContext?.push(
+          RoutePaths.joinByInviteWithCode(pending),
+        );
+      });
+    });
 
     return MaterialApp.router(
       key: ValueKey(locale.languageCode),

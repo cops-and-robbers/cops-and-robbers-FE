@@ -329,9 +329,6 @@ class FirebaseMessagingService {
       debugPrint('[FCM] 게임 시스템 이벤트 수신(알림 탭): $messageType');
       _gameSystemEventController.add(messageType);
     }
-
-    // TODO: Add navigation or specific handling based on message data
-    // TODO: 메시지 데이터를 기반으로 화면 이동 또는 특정 처리를 추가하세요
   }
 
   /// StreamController 정리

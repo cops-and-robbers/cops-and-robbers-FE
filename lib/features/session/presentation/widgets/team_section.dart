@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
@@ -112,7 +113,7 @@ class TeamSection extends StatelessWidget {
   /// 인게임 오버레이에서만 채워지고, 대기실 팀 섹션에서는 생략된다.
   final Map<int, String>? gameStatusByParticipantId;
 
-  bool get _isPolice => team.toUpperCase() == 'POLICE';
+  bool get _isPolice => GameTeam.isPolice(team);
 
   String _teamName(AppLocalizations l10n) =>
       _isPolice ? l10n.gameTeamCop : l10n.gameTeamRobber;
