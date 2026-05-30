@@ -46,7 +46,9 @@ class NoopIconClient implements DynamicIconClient {
 class NativeAppIconClient implements DynamicIconClient {
   const NativeAppIconClient();
 
-  static const MethodChannel _channel = MethodChannel('cops_and_robbers/app_icon');
+  static const MethodChannel _channel = MethodChannel(
+    'cops_and_robbers/app_icon',
+  );
 
   @override
   Future<bool> supportsAlternateIcons() async {

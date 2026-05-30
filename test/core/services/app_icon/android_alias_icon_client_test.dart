@@ -24,19 +24,22 @@ void main() {
   group('NativeAppIconClient', () {
     test('current_icon_returns_null_when_native_reports_en', () async {
       mockHandler((_) async => 'app_icon_en');
-      final result = await const NativeAppIconClient().currentAlternateIconName();
+      final result = await const NativeAppIconClient()
+          .currentAlternateIconName();
       expect(result, isNull); // en → null 역변환 (iOS와 동일 의미)
     });
 
     test('current_icon_returns_alias_when_native_reports_ko', () async {
       mockHandler((_) async => 'app_icon_ko');
-      final result = await const NativeAppIconClient().currentAlternateIconName();
+      final result = await const NativeAppIconClient()
+          .currentAlternateIconName();
       expect(result, 'app_icon_ko');
     });
 
     test('current_icon_returns_null_when_channel_throws', () async {
       mockHandler((_) async => throw PlatformException(code: 'x'));
-      final result = await const NativeAppIconClient().currentAlternateIconName();
+      final result = await const NativeAppIconClient()
+          .currentAlternateIconName();
       expect(result, isNull);
     });
 
@@ -62,12 +65,18 @@ void main() {
 
     test('supports_returns_true_when_native_true', () async {
       mockHandler((_) async => true);
-      expect(await const NativeAppIconClient().supportsAlternateIcons(), isTrue);
+      expect(
+        await const NativeAppIconClient().supportsAlternateIcons(),
+        isTrue,
+      );
     });
 
     test('supports_returns_false_when_channel_throws', () async {
       mockHandler((_) async => throw MissingPluginException());
-      expect(await const NativeAppIconClient().supportsAlternateIcons(), isFalse);
+      expect(
+        await const NativeAppIconClient().supportsAlternateIcons(),
+        isFalse,
+      );
     });
   });
 }
