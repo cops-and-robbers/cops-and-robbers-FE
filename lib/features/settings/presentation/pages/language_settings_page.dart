@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +8,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/locale_provider.dart';
+import '../../../../core/services/app_icon/startup_app_icon.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -49,25 +52,25 @@ class LanguageSettingsPage extends ConsumerWidget {
             _LanguageOptionTile(
               label: l10n.settingsLanguageOptionSystem,
               selected: isFollowingSystem,
-              onTap: () => notifier.followSystem(),
+              onTap: () => _followSystemAndApplyIcon(notifier),
             ),
             _buildItemDivider(),
             _LanguageOptionTile(
               label: l10n.settingsLanguageOptionKorean,
               selected: !isFollowingSystem && currentCode == 'ko',
-              onTap: () => notifier.setLocale(const Locale('ko')),
+              onTap: () => _setLocaleAndApplyIcon(notifier, const Locale('ko')),
             ),
             _buildItemDivider(),
             _LanguageOptionTile(
               label: l10n.settingsLanguageOptionEnglish,
               selected: !isFollowingSystem && currentCode == 'en',
-              onTap: () => notifier.setLocale(const Locale('en')),
+              onTap: () => _setLocaleAndApplyIcon(notifier, const Locale('en')),
             ),
             _buildItemDivider(),
             _LanguageOptionTile(
               label: l10n.settingsLanguageOptionJapanese,
               selected: !isFollowingSystem && currentCode == 'ja',
-              onTap: () => notifier.setLocale(const Locale('ja')),
+              onTap: () => _setLocaleAndApplyIcon(notifier, const Locale('ja')),
             ),
           ],
         ),
@@ -83,6 +86,20 @@ class LanguageSettingsPage extends ConsumerWidget {
       child: const Divider(color: AppColors.black100, height: 1),
     );
   }
+}
+
+void _setLocaleAndApplyIcon(AppLocale notifier, Locale locale) {
+  unawaited(() async {
+    await notifier.setLocale(locale);
+    await applyLocaleIcon(locale);
+  }());
+}
+
+void _followSystemAndApplyIcon(AppLocale notifier) {
+  unawaited(() async {
+    await notifier.followSystem();
+    await applyStartupLocaleIcon();
+  }());
 }
 
 /// 언어 옵션 행 — 라벨 + 선택 시 우측 체크 아이콘

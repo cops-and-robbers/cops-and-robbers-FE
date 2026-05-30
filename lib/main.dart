@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +12,7 @@ import 'package:cops_and_robbers/core/config/env_config.dart';
 import 'package:cops_and_robbers/core/deeplink/deeplink_event.dart';
 import 'package:cops_and_robbers/core/deeplink/deeplink_service.dart';
 import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
+import 'package:cops_and_robbers/core/services/app_icon/startup_app_icon.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
@@ -161,6 +164,10 @@ void main() async {
   runApp(
     ProviderScope(child: MyApp(isFirebaseInitialized: isFirebaseInitialized)),
   );
+
+  // 콜드 부팅 시 1회: 인앱 로케일에 맞는 iOS 앱 아이콘 적용(비차단).
+  // 첫 프레임을 막지 않도록 await 하지 않는다. iOS 외/미지원/동일 아이콘이면 no-op.
+  unawaited(applyStartupLocaleIcon());
 }
 
 class MyApp extends ConsumerWidget {

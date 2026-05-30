@@ -103,3 +103,19 @@ class AppLocale extends _$AppLocale {
     await prefs.remove(_kStorageKey);
   }
 }
+
+/// 부팅 시점의 유효 로케일을 1회 해석한다.
+///
+/// 우선순위: 저장된 사용자 선택 → 시스템 로캘(지원 내) → [kDefaultLocale].
+/// 위젯 트리와 무관하게 동작하므로, 앱 시작 시 아이콘 적용 등 1회성 부팅 작업에 쓴다.
+/// (provider의 비동기 storage 로드 타이밍에 의존하지 않기 위함)
+Future<Locale> resolveStartupLocale() async {
+  final prefs = await SharedPreferences.getInstance();
+  final stored = prefs.getString(_kStorageKey);
+  final isSupported =
+      stored != null && kSupportedLocales.any((l) => l.languageCode == stored);
+  if (isSupported) {
+    return Locale(stored);
+  }
+  return _resolveSystemLocale();
+}
