@@ -110,4 +110,39 @@ void main() {
       expect(obs.needsInitialReconcile(), isFalse);
     });
   });
+
+  group('LocaleAppIconObserver.maybeRunInitialReconcile', () {
+    test('reconciles_when_still_in_trigger_state_at_callback', () {
+      var calls = 0;
+      final obs = LocaleAppIconObserver(
+        triggers: const {AppLifecycleState.resumed},
+        onReconcile: () async => calls++,
+        currentState: () => AppLifecycleState.resumed,
+      );
+
+      obs.maybeRunInitialReconcile();
+
+      expect(calls, 1);
+    });
+
+    test('does_not_reconcile_when_state_left_trigger_before_frame', () {
+      var calls = 0;
+      // 등록 시점엔 resumed였다가 첫 프레임 전 inactive로 전환되는 상황 모사
+      var state = AppLifecycleState.resumed;
+      final obs = LocaleAppIconObserver(
+        triggers: const {AppLifecycleState.resumed},
+        onReconcile: () async => calls++,
+        currentState: () => state,
+      );
+
+      // 등록 시점엔 catch-up이 예약될 조건(trigger 상태)
+      expect(obs.needsInitialReconcile(), isTrue);
+
+      // 콜백 실행 전 lifecycle이 trigger를 벗어남 (iOS not-active)
+      state = AppLifecycleState.inactive;
+      obs.maybeRunInitialReconcile();
+
+      expect(calls, 0, reason: 'iOS not-active 상태에서 reconcile 시도하면 안 됨');
+    });
+  });
 }

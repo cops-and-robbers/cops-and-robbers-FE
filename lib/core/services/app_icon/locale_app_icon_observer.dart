@@ -63,9 +63,24 @@ class LocaleAppIconObserver with WidgetsBindingObserver {
     // 초기 catch-up: 동기 즉시 호출은 runApp 직후 타이밍과 겹쳐 iOS "cancelled"를
     // 재현할 수 있으므로, 1프레임 뒤로 미뤄 앱이 확실히 그려진 뒤 적용한다.
     if (needsInitialReconcile()) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        unawaited(_onReconcile());
-      });
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => maybeRunInitialReconcile(),
+      );
+    }
+  }
+
+  /// 예약된 초기 catch-up 콜백의 본문.
+  ///
+  /// 등록 시점엔 trigger 상태였더라도 첫 프레임 전에 lifecycle이 바뀌어
+  /// trigger를 벗어났을 수 있다(예: iOS resumed→inactive). 그 상태에서 호출하면
+  /// 다시 iOS "cancelled" 실패 케이스를 밟으므로, 콜백 시점에 상태를 재확인해
+  /// 아직 trigger일 때만 reconcile한다. 벗어났다면 이후 [didChangeAppLifecycleState]가
+  /// 다음 trigger 전이에서 catch-up 한다.
+  @visibleForTesting
+  void maybeRunInitialReconcile() {
+    if (needsInitialReconcile()) {
+      // 비차단 — reconcile 실패해도 앱 흐름에 영향 없음(서비스가 swallow)
+      unawaited(_onReconcile());
     }
   }
 
