@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v2.7.0 업데이트 내역\n\n### ✅ 신규 API\n- 게임 푸시 알림 수신 동의 여부 조회 API 추가 (GET /api/user/agreements/game-push)\n- 게임 푸시 알림 수신 동의 여부 업데이트 API 추가 (PUT /api/user/agreements/game-push)\n\n### 🛠 변경 및 수정\n- 이전 API에 운동장 -\u003E 플레이그라운드로 스웨거 명세 수정\n- 게임 알림에 이모지 제거\n- timezone suffix 누락 버그 수정: 아래 필드들이 +09:00 포함된 형식으로 변경됨\n  - GET /api/games/{gameId} → gameStartTime\n  - POST /api/games → createdAt\n  - GET /api/notices, GET /api/notices/{noticeId} → createdAt, updatedAt\n\n## v2.6.0 업데이트 내역\n\n### ✅ 신규 API\n\n**게임 상태 조회** `GET /api/games/{gameId}/state`\n- 앱 재접속·소켓 재연결 시 게임 화면 복원에 사용 (기존 도둑 위치 조회 API를 대체)\n- 응답: 마지막 위치 공개 주기의 생존 도둑 위치 스냅샷 + 전체 참여자 팀·상태\n- `robberLocations` 반환 조건\n  - 경찰 대기 시간 중 (POLICE_WAITING): 도둑 위치 빈 배열 — 경찰·도둑 모두 위치 비공개\n  - 경찰 출동 후 첫 공개 주기 전: 도둑 위치 빈 배열\n  - 첫 도둑 위치 공개 이후: 생존 도둑 위치 목록 (JAILED 도둑 제외)\n- 자세한 내용은 해당 API 항목을 확인하세요.\n\n### ⚠️ Deprecated API\n\n**도둑 위치 조회** `GET /api/games/{gameId}/robbers/location`\n- 기존 강제 종료 후 재접속 시 위치 공개 버그는 해결된 상태입니다.\n- `state` API의 `robberLocations` 필드로 동일한 데이터를 제공받을 수 있습니다 (위 `state` API로 마이그레이션 필요)\n- 현재는 호출 가능하나, 프론트 마이그레이션 완료 후 삭제됩니다\n",
-    "version": "2.7.0"
+    "description": "## v2.8.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- 모든 에러 응답에 `errorCode` 필드 추가 (예: `INVALID_INVITE_CODE`, `GAME_NOT_FOUND`)\n- STOMP 에러 응답에도 동일하게 적용\n",
+    "version": "2.8.0"
   },
   "servers": [
     {
@@ -95,6 +95,7 @@
                   "존재하지 않는 회원": {
                     "summary": "존재하지 않는 회원",
                     "value": {
+                      "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
                       "detail": "해당 유저을 찾을 수 없습니다.",
@@ -116,6 +117,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -158,6 +160,7 @@
                   "존재하지 않는 회원": {
                     "summary": "존재하지 않는 회원",
                     "value": {
+                      "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
                       "detail": "해당 유저을 찾을 수 없습니다.",
@@ -179,6 +182,7 @@
                   "필수 약관 미동의": {
                     "summary": "필수 약관 미동의",
                     "value": {
+                      "errorCode": "REQUIRED_TERMS_NOT_AGREED",
                       "title": "필수 약관 미동의",
                       "status": 400,
                       "detail": "필수 약관은 모두 동의해야 합니다.",
@@ -188,6 +192,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -209,6 +214,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -250,6 +256,7 @@
                   "존재하지 않는 회원": {
                     "summary": "존재하지 않는 회원",
                     "value": {
+                      "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
                       "detail": "해당 유저을 찾을 수 없습니다.",
@@ -271,6 +278,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -313,6 +321,7 @@
                   "존재하지 않는 회원": {
                     "summary": "존재하지 않는 회원",
                     "value": {
+                      "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
                       "detail": "해당 유저을 찾을 수 없습니다.",
@@ -334,6 +343,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -355,6 +365,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -407,6 +418,7 @@
                   "공지사항을 찾을 수 없음": {
                     "summary": "공지사항을 찾을 수 없음",
                     "value": {
+                      "errorCode": "NOTICE_NOT_FOUND",
                       "title": "공지사항을 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 공지사항을 찾을 수 없습니다.",
@@ -428,6 +440,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -449,6 +462,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -509,6 +523,7 @@
                   "공지사항을 찾을 수 없음": {
                     "summary": "공지사항을 찾을 수 없음",
                     "value": {
+                      "errorCode": "NOTICE_NOT_FOUND",
                       "title": "공지사항을 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 공지사항을 찾을 수 없습니다.",
@@ -530,6 +545,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -551,6 +567,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -594,6 +611,7 @@
                   "공지사항을 찾을 수 없음": {
                     "summary": "공지사항을 찾을 수 없음",
                     "value": {
+                      "errorCode": "NOTICE_NOT_FOUND",
                       "title": "공지사항을 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 공지사항을 찾을 수 없습니다.",
@@ -615,6 +633,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -636,6 +655,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -700,6 +720,7 @@
                   "호스트 권한 필요": {
                     "summary": "호스트 권한 필요",
                     "value": {
+                      "errorCode": "NOT_HOST",
                       "title": "호스트 권한 필요",
                       "status": 403,
                       "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
@@ -721,6 +742,7 @@
                   "대기 중인 게임이 아님": {
                     "summary": "대기 중인 게임이 아님",
                     "value": {
+                      "errorCode": "GAME_NOT_WAITING",
                       "title": "대기 중인 게임이 아님",
                       "status": 400,
                       "detail": "대기 중인 게임에서만 설정을 변경할 수 있습니다.",
@@ -730,6 +752,7 @@
                   "유효하지 않은 위치 공개 주기": {
                     "summary": "유효하지 않은 위치 공개 주기",
                     "value": {
+                      "errorCode": "INVALID_LOCATION_INTERVAL",
                       "title": "유효하지 않은 위치 공개 주기",
                       "status": 400,
                       "detail": "위치 공개 주기는 라운드 시간보다 짧아야 합니다.",
@@ -739,6 +762,7 @@
                   "유효하지 않은 경찰 대기 시간": {
                     "summary": "유효하지 않은 경찰 대기 시간",
                     "value": {
+                      "errorCode": "INVALID_POLICE_WAIT_TIME",
                       "title": "유효하지 않은 경찰 대기 시간",
                       "status": 400,
                       "detail": "경찰 대기 시간은 라운드 시간보다 짧아야 합니다.",
@@ -748,6 +772,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -769,6 +794,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -790,6 +816,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -844,6 +871,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -853,6 +881,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -862,6 +891,7 @@
                   "게임 구역을 찾을 수 없음": {
                     "summary": "게임 구역을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_AREA_NOT_FOUND",
                       "title": "게임 구역을 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임 구역을 찾을 수 없습니다.",
@@ -883,6 +913,7 @@
                   "비활성 게임": {
                     "summary": "비활성 게임",
                     "value": {
+                      "errorCode": "GAME_NOT_ACTIVE",
                       "title": "비활성 게임",
                       "status": 400,
                       "detail": "대기 중이거나 진행 중인 게임에서만 조회할 수 있습니다.",
@@ -904,6 +935,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -925,6 +957,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -987,6 +1020,7 @@
                   "호스트 권한 필요": {
                     "summary": "호스트 권한 필요",
                     "value": {
+                      "errorCode": "NOT_HOST",
                       "title": "호스트 권한 필요",
                       "status": 403,
                       "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
@@ -1008,6 +1042,7 @@
                   "대기 중인 게임이 아님": {
                     "summary": "대기 중인 게임이 아님",
                     "value": {
+                      "errorCode": "GAME_NOT_WAITING",
                       "title": "대기 중인 게임이 아님",
                       "status": 400,
                       "detail": "대기 중인 게임에서만 설정을 변경할 수 있습니다.",
@@ -1017,6 +1052,7 @@
                   "유효하지 않은 감옥 반지름": {
                     "summary": "유효하지 않은 감옥 반지름",
                     "value": {
+                      "errorCode": "INVALID_JAIL_RADIUS",
                       "title": "유효하지 않은 감옥 반지름",
                       "status": 400,
                       "detail": "감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없습니다.",
@@ -1026,6 +1062,7 @@
                   "감옥 영역 벗어남": {
                     "summary": "감옥 영역 벗어남",
                     "value": {
+                      "errorCode": "JAIL_OUTSIDE_PLAYGROUND",
                       "title": "감옥 영역 벗어남",
                       "status": 400,
                       "detail": "감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다.",
@@ -1035,6 +1072,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -1056,6 +1094,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -1077,6 +1116,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -1121,6 +1161,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -1130,6 +1171,7 @@
                   "신고 대상을 찾을 수 없습니다.": {
                     "summary": "신고 대상을 찾을 수 없습니다.",
                     "value": {
+                      "errorCode": "REPORT_TARGET_NOT_FOUND",
                       "title": "신고 대상을 찾을 수 없습니다.",
                       "status": 404,
                       "detail": "해당 게임에 존재하지 않는 참가자입니다.",
@@ -1151,6 +1193,7 @@
                   "게임 진행 중 아님": {
                     "summary": "게임 진행 중 아님",
                     "value": {
+                      "errorCode": "GAME_NOT_IN_PROGRESS",
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
@@ -1160,6 +1203,7 @@
                   "본인을 신고할 수 없습니다.": {
                     "summary": "본인을 신고할 수 없습니다.",
                     "value": {
+                      "errorCode": "SELF_REPORT",
                       "title": "본인을 신고할 수 없습니다.",
                       "status": 400,
                       "detail": "본인을 신고할 수 없습니다.",
@@ -1181,6 +1225,7 @@
                   "이미 신고한 사용자입니다.": {
                     "summary": "이미 신고한 사용자입니다.",
                     "value": {
+                      "errorCode": "DUPLICATE_REPORT",
                       "title": "이미 신고한 사용자입니다.",
                       "status": 409,
                       "detail": "해당 게임에서 이미 신고한 사용자입니다.",
@@ -1202,6 +1247,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -1223,6 +1269,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -1290,6 +1337,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -1311,6 +1359,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -1360,6 +1409,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -1381,6 +1431,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -1432,6 +1483,7 @@
                   "유효하지 않은 감옥 반지름": {
                     "summary": "유효하지 않은 감옥 반지름",
                     "value": {
+                      "errorCode": "INVALID_JAIL_RADIUS",
                       "title": "유효하지 않은 감옥 반지름",
                       "status": 400,
                       "detail": "감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없습니다.",
@@ -1441,6 +1493,7 @@
                   "감옥 영역 벗어남": {
                     "summary": "감옥 영역 벗어남",
                     "value": {
+                      "errorCode": "JAIL_OUTSIDE_PLAYGROUND",
                       "title": "감옥 영역 벗어남",
                       "status": 400,
                       "detail": "감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다.",
@@ -1450,6 +1503,7 @@
                   "필수 약관 미동의": {
                     "summary": "필수 약관 미동의",
                     "value": {
+                      "errorCode": "REQUIRED_TERMS_NOT_AGREED",
                       "title": "필수 약관 미동의",
                       "status": 400,
                       "detail": "필수 약관은 모두 동의해야 합니다.",
@@ -1459,6 +1513,7 @@
                   "유효하지 않은 위치 공개 주기": {
                     "summary": "유효하지 않은 위치 공개 주기",
                     "value": {
+                      "errorCode": "INVALID_LOCATION_INTERVAL",
                       "title": "유효하지 않은 위치 공개 주기",
                       "status": 400,
                       "detail": "위치 공개 주기는 라운드 시간보다 짧아야 합니다.",
@@ -1468,6 +1523,7 @@
                   "유효하지 않은 경찰 대기 시간": {
                     "summary": "유효하지 않은 경찰 대기 시간",
                     "value": {
+                      "errorCode": "INVALID_POLICE_WAIT_TIME",
                       "title": "유효하지 않은 경찰 대기 시간",
                       "status": 400,
                       "detail": "경찰 대기 시간은 라운드 시간보다 짧아야 합니다.",
@@ -1477,6 +1533,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -1498,6 +1555,7 @@
                   "이미 참가 중인 게임": {
                     "summary": "이미 참가 중인 게임",
                     "value": {
+                      "errorCode": "ALREADY_PARTICIPATING",
                       "title": "이미 참가 중인 게임",
                       "status": 409,
                       "detail": "이미 해당 게임에 참가하고 있습니다.",
@@ -1519,6 +1577,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -1540,6 +1599,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -1587,6 +1647,7 @@
                   "게임 진행 중 아님": {
                     "summary": "게임 진행 중 아님",
                     "value": {
+                      "errorCode": "GAME_NOT_IN_PROGRESS",
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
@@ -1596,6 +1657,7 @@
                   "수감되지 않음": {
                     "summary": "수감되지 않음",
                     "value": {
+                      "errorCode": "NOT_JAILED",
                       "title": "수감되지 않음",
                       "status": 400,
                       "detail": "수감된 상태에서만 탈옥할 수 있습니다.",
@@ -1605,6 +1667,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -1626,6 +1689,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -1635,6 +1699,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -1656,6 +1721,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -1677,6 +1743,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -1741,6 +1808,7 @@
                   "게임 진행 중 아님": {
                     "summary": "게임 진행 중 아님",
                     "value": {
+                      "errorCode": "GAME_NOT_IN_PROGRESS",
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
@@ -1750,6 +1818,7 @@
                   "경찰만이 체포 가능": {
                     "summary": "경찰만이 체포 가능",
                     "value": {
+                      "errorCode": "ONLY_POLICE_CAN_ARREST",
                       "title": "경찰만이 체포 가능",
                       "status": 400,
                       "detail": "경찰 팀만 도둑을 체포할 수 있습니다.",
@@ -1759,6 +1828,7 @@
                   "경찰 대기 시간": {
                     "summary": "경찰 대기 시간",
                     "value": {
+                      "errorCode": "POLICE_WAITING_TIME",
                       "title": "경찰 대기 시간",
                       "status": 400,
                       "detail": "경찰은 대기 시간 동안 도둑을 체포할 수 없습니다.",
@@ -1768,6 +1838,7 @@
                   "도둑만을 체포 가능": {
                     "summary": "도둑만을 체포 가능",
                     "value": {
+                      "errorCode": "ONLY_ROBBER_CAN_BE_ARRESTED",
                       "title": "도둑만을 체포 가능",
                       "status": 400,
                       "detail": "도둑 팀만 체포될 수 있습니다.",
@@ -1777,6 +1848,7 @@
                   "참가자 게임 불일치": {
                     "summary": "참가자 게임 불일치",
                     "value": {
+                      "errorCode": "PARTICIPANT_GAME_MISMATCH",
                       "title": "참가자 게임 불일치",
                       "status": 400,
                       "detail": "경찰과 도둑이 서로 다른 게임에 참여하고 있습니다.",
@@ -1786,6 +1858,7 @@
                   "이미 체포됨": {
                     "summary": "이미 체포됨",
                     "value": {
+                      "errorCode": "ALREADY_ARRESTED",
                       "title": "이미 체포됨",
                       "status": 400,
                       "detail": "이미 수감된 도둑입니다.",
@@ -1795,6 +1868,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -1816,6 +1890,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -1825,6 +1900,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -1846,6 +1922,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -1867,6 +1944,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -1914,6 +1992,7 @@
                   "호스트 권한 필요": {
                     "summary": "호스트 권한 필요",
                     "value": {
+                      "errorCode": "NOT_HOST",
                       "title": "호스트 권한 필요",
                       "status": 403,
                       "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
@@ -1935,6 +2014,7 @@
                   "팀 구성 오류": {
                     "summary": "팀 구성 오류",
                     "value": {
+                      "errorCode": "INVALID_TEAM_COMPOSITION",
                       "title": "팀 구성 오류",
                       "status": 400,
                       "detail": "게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다.",
@@ -1944,6 +2024,7 @@
                   "준비 미완료": {
                     "summary": "준비 미완료",
                     "value": {
+                      "errorCode": "NOT_ALL_READY",
                       "title": "준비 미완료",
                       "status": 400,
                       "detail": "모든 참가자가 준비 상태여야 게임을 시작할 수 있습니다.",
@@ -1953,6 +2034,7 @@
                   "이미 시작된 게임": {
                     "summary": "이미 시작된 게임",
                     "value": {
+                      "errorCode": "GAME_ALREADY_STARTED",
                       "title": "이미 시작된 게임",
                       "status": 400,
                       "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
@@ -1962,6 +2044,7 @@
                   "로비 조작 불가": {
                     "summary": "로비 조작 불가",
                     "value": {
+                      "errorCode": "LOBBY_ACTION_NOT_ALLOWED",
                       "title": "로비 조작 불가",
                       "status": 400,
                       "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
@@ -1983,6 +2066,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -1992,6 +2076,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -2013,6 +2098,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -2034,6 +2120,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -2085,6 +2172,7 @@
                   "이미 참가 중인 게임": {
                     "summary": "이미 참가 중인 게임",
                     "value": {
+                      "errorCode": "ALREADY_PARTICIPATING",
                       "title": "이미 참가 중인 게임",
                       "status": 409,
                       "detail": "이미 해당 게임에 참가하고 있습니다.",
@@ -2106,6 +2194,7 @@
                   "이미 시작된 게임": {
                     "summary": "이미 시작된 게임",
                     "value": {
+                      "errorCode": "GAME_ALREADY_STARTED",
                       "title": "이미 시작된 게임",
                       "status": 400,
                       "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
@@ -2115,6 +2204,7 @@
                   "게임 인원 초과": {
                     "summary": "게임 인원 초과",
                     "value": {
+                      "errorCode": "GAME_FULL",
                       "title": "게임 인원 초과",
                       "status": 400,
                       "detail": "게임에 참가할 수 있는 최대 인원을 초과했습니다.",
@@ -2124,6 +2214,7 @@
                   "초대 코드 오류": {
                     "summary": "초대 코드 오류",
                     "value": {
+                      "errorCode": "INVALID_INVITE_CODE",
                       "title": "초대 코드 오류",
                       "status": 400,
                       "detail": "입력하신 초대 코드가 유효하지 않습니다.",
@@ -2133,6 +2224,7 @@
                   "필수 약관 미동의": {
                     "summary": "필수 약관 미동의",
                     "value": {
+                      "errorCode": "REQUIRED_TERMS_NOT_AGREED",
                       "title": "필수 약관 미동의",
                       "status": 400,
                       "detail": "필수 약관은 모두 동의해야 합니다.",
@@ -2142,6 +2234,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -2163,6 +2256,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -2184,6 +2278,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -2228,6 +2323,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -2249,6 +2345,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -2300,6 +2397,7 @@
                   "로그인 만료": {
                     "summary": "로그인 만료",
                     "value": {
+                      "errorCode": "REFRESH_TOKEN_EXPIRED",
                       "title": "로그인 만료",
                       "status": 401,
                       "detail": "로그인이 만료되었습니다. 다시 로그인해주세요.",
@@ -2309,6 +2407,7 @@
                   "유효하지 않은 인증 정보": {
                     "summary": "유효하지 않은 인증 정보",
                     "value": {
+                      "errorCode": "INVALID_TOKEN",
                       "title": "유효하지 않은 인증 정보",
                       "status": 401,
                       "detail": "인증 정보가 올바르지 않습니다. 다시 로그인해주세요.",
@@ -2330,6 +2429,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -2351,6 +2451,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -2395,6 +2496,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -2416,6 +2518,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -2507,6 +2610,7 @@
                   "Firebase 인증 실패": {
                     "summary": "Firebase 인증 실패",
                     "value": {
+                      "errorCode": "INVALID_FIREBASE_TOKEN",
                       "title": "Firebase 인증 실패",
                       "status": 401,
                       "detail": "유효하지 않은 Firebase 토큰입니다.",
@@ -2516,6 +2620,7 @@
                   "Firebase 인증 만료": {
                     "summary": "Firebase 인증 만료",
                     "value": {
+                      "errorCode": "EXPIRED_FIREBASE_TOKEN",
                       "title": "Firebase 인증 만료",
                       "status": 401,
                       "detail": "Firebase 토큰이 만료되었습니다. 다시 인증해주세요.",
@@ -2537,6 +2642,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -2558,6 +2664,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -2602,6 +2709,7 @@
                   "존재하지 않는 회원": {
                     "summary": "존재하지 않는 회원",
                     "value": {
+                      "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
                       "detail": "해당 유저을 찾을 수 없습니다.",
@@ -2623,6 +2731,7 @@
                   "닉네임 중복": {
                     "summary": "닉네임 중복",
                     "value": {
+                      "errorCode": "DUPLICATED_NICKNAME",
                       "title": "닉네임 중복",
                       "status": 409,
                       "detail": "이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.",
@@ -2644,6 +2753,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -2665,6 +2775,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -2722,6 +2833,7 @@
                   "이미 시작된 게임": {
                     "summary": "이미 시작된 게임",
                     "value": {
+                      "errorCode": "GAME_ALREADY_STARTED",
                       "title": "이미 시작된 게임",
                       "status": 400,
                       "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
@@ -2731,6 +2843,7 @@
                   "로비 조작 불가": {
                     "summary": "로비 조작 불가",
                     "value": {
+                      "errorCode": "LOBBY_ACTION_NOT_ALLOWED",
                       "title": "로비 조작 불가",
                       "status": 400,
                       "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
@@ -2740,6 +2853,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -2761,6 +2875,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -2770,6 +2885,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -2791,6 +2907,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -2812,6 +2929,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -2869,6 +2987,7 @@
                   "방장 레디 해제 불가": {
                     "summary": "방장 레디 해제 불가",
                     "value": {
+                      "errorCode": "HOST_CANNOT_UNREADY",
                       "title": "방장 레디 해제 불가",
                       "status": 400,
                       "detail": "방장은 항상 준비 상태여야 합니다.",
@@ -2878,6 +2997,7 @@
                   "이미 시작된 게임": {
                     "summary": "이미 시작된 게임",
                     "value": {
+                      "errorCode": "GAME_ALREADY_STARTED",
                       "title": "이미 시작된 게임",
                       "status": 400,
                       "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
@@ -2887,6 +3007,7 @@
                   "로비 조작 불가": {
                     "summary": "로비 조작 불가",
                     "value": {
+                      "errorCode": "LOBBY_ACTION_NOT_ALLOWED",
                       "title": "로비 조작 불가",
                       "status": 400,
                       "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
@@ -2896,6 +3017,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -2917,6 +3039,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -2926,6 +3049,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -2947,6 +3071,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -2968,6 +3093,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3009,6 +3135,7 @@
                   "존재하지 않는 회원": {
                     "summary": "존재하지 않는 회원",
                     "value": {
+                      "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
                       "detail": "해당 유저을 찾을 수 없습니다.",
@@ -3030,6 +3157,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3069,6 +3197,7 @@
                   "존재하지 않는 회원": {
                     "summary": "존재하지 않는 회원",
                     "value": {
+                      "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
                       "detail": "해당 유저을 찾을 수 없습니다.",
@@ -3090,6 +3219,7 @@
                   "회원 탈퇴 불가": {
                     "summary": "회원 탈퇴 불가",
                     "value": {
+                      "errorCode": "CANNOT_WITHDRAW",
                       "title": "회원 탈퇴 불가",
                       "status": 409,
                       "detail": "진행 중인 게임 세션이 있어 탈퇴할 수 없습니다.",
@@ -3111,6 +3241,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3152,6 +3283,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -3173,6 +3305,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3226,6 +3359,7 @@
                   "유효하지 않은 입력값": {
                     "summary": "유효하지 않은 입력값",
                     "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
                       "title": "유효하지 않은 입력값",
                       "status": 400,
                       "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
@@ -3247,6 +3381,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3301,6 +3436,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -3310,6 +3446,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -3331,6 +3468,7 @@
                   "비활성 게임": {
                     "summary": "비활성 게임",
                     "value": {
+                      "errorCode": "GAME_NOT_ACTIVE",
                       "title": "비활성 게임",
                       "status": 400,
                       "detail": "대기 중이거나 진행 중인 게임에서만 조회할 수 있습니다.",
@@ -3352,6 +3490,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -3373,6 +3512,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3517,6 +3657,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -3526,6 +3667,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -3547,6 +3689,7 @@
                   "게임 진행 중 아님": {
                     "summary": "게임 진행 중 아님",
                     "value": {
+                      "errorCode": "GAME_NOT_IN_PROGRESS",
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
@@ -3568,6 +3711,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -3589,6 +3733,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3646,6 +3791,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -3655,6 +3801,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -3676,6 +3823,7 @@
                   "게임 진행 중 아님": {
                     "summary": "게임 진행 중 아님",
                     "value": {
+                      "errorCode": "GAME_NOT_IN_PROGRESS",
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
@@ -3697,6 +3845,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -3718,6 +3867,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3773,6 +3923,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -3782,6 +3933,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -3803,6 +3955,7 @@
                   "게임 진행 중 아님": {
                     "summary": "게임 진행 중 아님",
                     "value": {
+                      "errorCode": "GAME_NOT_IN_PROGRESS",
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
@@ -3824,6 +3977,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -3845,6 +3999,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -3899,6 +4054,7 @@
                   "이미 시작된 게임": {
                     "summary": "이미 시작된 게임",
                     "value": {
+                      "errorCode": "GAME_ALREADY_STARTED",
                       "title": "이미 시작된 게임",
                       "status": 400,
                       "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
@@ -3920,6 +4076,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -3929,6 +4086,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -3950,6 +4108,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -3971,6 +4130,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -4025,6 +4185,7 @@
                   "게임 결과를 찾을 수 없음": {
                     "summary": "게임 결과를 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_RESULT_NOT_FOUND",
                       "title": "게임 결과를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임 결과를 찾을 수 없습니다.",
@@ -4034,6 +4195,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -4055,6 +4217,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -4076,6 +4239,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -4139,6 +4303,7 @@
                   "호스트 권한 필요": {
                     "summary": "호스트 권한 필요",
                     "value": {
+                      "errorCode": "NOT_HOST",
                       "title": "호스트 권한 필요",
                       "status": 403,
                       "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
@@ -4160,6 +4325,7 @@
                   "자기 자신 강퇴 불가": {
                     "summary": "자기 자신 강퇴 불가",
                     "value": {
+                      "errorCode": "CANNOT_KICK_YOURSELF",
                       "title": "자기 자신 강퇴 불가",
                       "status": 400,
                       "detail": "방장은 자기 자신을 강퇴할 수 없습니다.",
@@ -4169,6 +4335,7 @@
                   "이미 시작된 게임": {
                     "summary": "이미 시작된 게임",
                     "value": {
+                      "errorCode": "GAME_ALREADY_STARTED",
                       "title": "이미 시작된 게임",
                       "status": 400,
                       "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
@@ -4178,6 +4345,7 @@
                   "로비 조작 불가": {
                     "summary": "로비 조작 불가",
                     "value": {
+                      "errorCode": "LOBBY_ACTION_NOT_ALLOWED",
                       "title": "로비 조작 불가",
                       "status": 400,
                       "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
@@ -4199,6 +4367,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -4208,6 +4377,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -4229,6 +4399,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -4250,6 +4421,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -4304,6 +4476,7 @@
                   "게임을 찾을 수 없음": {
                     "summary": "게임을 찾을 수 없음",
                     "value": {
+                      "errorCode": "GAME_NOT_FOUND",
                       "title": "게임을 찾을 수 없음",
                       "status": 404,
                       "detail": "요청하신 게임 정보가 존재하지 않습니다.",
@@ -4313,6 +4486,7 @@
                   "참가자를 찾을 수 없음": {
                     "summary": "참가자를 찾을 수 없음",
                     "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
                       "title": "참가자를 찾을 수 없음",
                       "status": 404,
                       "detail": "해당 게임에 참가하지 않은 사용자입니다.",
@@ -4334,6 +4508,7 @@
                   "인증되지 않은 요청": {
                     "summary": "인증되지 않은 요청",
                     "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
@@ -4355,6 +4530,7 @@
                   "알 수 없는 오류": {
                     "summary": "알 수 없는 오류",
                     "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
                       "title": "알 수 없는 오류",
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
@@ -4374,6 +4550,11 @@
       "ErrorResponse": {
         "type": "object",
         "properties": {
+          "errorCode": {
+            "type": "string",
+            "description": "에러 코드",
+            "example": "INVALID_INPUT_VALUE"
+          },
           "title": {
             "type": "string",
             "description": "에러 제목",
