@@ -442,10 +442,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get zoneJail => '감옥';
 
   @override
-  String get homePageCreateGameHint => '새로운 게임을 만들 수 있어요';
-
-  @override
-  String get homePageJoinGameHint => '초대 코드를 입력하면 게임에 참가할 수 있어요';
+  String get homePageGameButtonsHint => '게임을 만들거나 초대 코드로 참가할 수 있어요';
 
   @override
   String get dialogSafetyWarningTitle => '주변을 확인하며 이용해 주세요';

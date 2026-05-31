@@ -904,17 +904,11 @@ abstract class AppLocalizations {
   /// **'감옥'**
   String get zoneJail;
 
-  /// 홈 페이지 — 방 만들기 카드 안내
+  /// 홈 페이지 — 방 만들기/참여하기 버튼 통합 안내
   ///
   /// In ko, this message translates to:
-  /// **'새로운 게임을 만들 수 있어요'**
-  String get homePageCreateGameHint;
-
-  /// 홈 페이지 — 방 참여하기 카드 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'초대 코드를 입력하면 게임에 참가할 수 있어요'**
-  String get homePageJoinGameHint;
+  /// **'게임을 만들거나 초대 코드로 참가할 수 있어요'**
+  String get homePageGameButtonsHint;
 
   /// 홈 진입 시 표시되는 주변 안전 확인 다이얼로그 타이틀
   ///
