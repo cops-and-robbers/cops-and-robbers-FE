@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +10,6 @@ import 'package:cops_and_robbers/core/config/env_config.dart';
 import 'package:cops_and_robbers/core/deeplink/deeplink_event.dart';
 import 'package:cops_and_robbers/core/deeplink/deeplink_service.dart';
 import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
-import 'package:cops_and_robbers/core/services/app_icon/startup_app_icon.dart';
 import 'package:cops_and_robbers/core/services/app_icon/locale_app_icon_observer.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
@@ -166,12 +163,12 @@ void main() async {
     ProviderScope(child: MyApp(isFirebaseInitialized: isFirebaseInitialized)),
   );
 
-  // 콜드 부팅 시 1회: 인앱 로케일에 맞는 iOS 앱 아이콘 적용(비차단).
-  // 첫 프레임을 막지 않도록 await 하지 않는다. iOS 외/미지원/동일 아이콘이면 no-op.
-  unawaited(applyStartupLocaleIcon());
-
-  // Android 전용: 백그라운드 전환 시 저장 로케일 기준으로 아이콘 reconcile.
-  // 사용 중 강제 종료를 피하려고 즉시 적용 대신 안전 시점에 토글한다(iOS는 no-op).
+  // 로케일 기반 앱 아이콘은 lifecycle 옵저버로만 적용한다.
+  // - iOS: 앱이 active(resumed)된 뒤 적용 — runApp 직후 호출은 active 전이라
+  //   "작업이 취소되었습니다"로 실패하므로 제거했다.
+  // - Android: 백그라운드 전환 시 적용 — 포그라운드 activity-alias 토글은
+  //   런처 재시작/강퇴를 유발한다.
+  // 그 외 플랫폼은 no-op(미등록).
   startLocaleAppIconObserver();
 }
 
