@@ -83,9 +83,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   /// 홈 진입 시 활성 게임 체크 완료 여부 (세션당 1회)
   static bool _activeGameChecked = false;
 
-  // 튜토리얼 대상 버튼을 특정하기 위한 GlobalKey
-  final _tutorialKeyCreateRoom = GlobalKey();
-  final _tutorialKeyJoinRoom = GlobalKey();
+  // 튜토리얼 대상(방 만들기 + 참여하기 버튼)을 한 영역으로 특정하기 위한 GlobalKey
+  final _tutorialKeyGameButtons = GlobalKey();
 
   @override
   void initState() {
@@ -111,13 +110,8 @@ class _HomePageState extends ConsumerState<HomePage> {
       context: context,
       targets: [
         AppTutorialStyle.target(
-          keyTarget: _tutorialKeyCreateRoom,
-          description: l10n.homePageCreateGameHint,
-          align: TutorialAlign.top,
-        ),
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyJoinRoom,
-          description: l10n.homePageJoinGameHint,
+          keyTarget: _tutorialKeyGameButtons,
+          description: l10n.homePageGameButtonsHint,
           align: TutorialAlign.top,
         ),
       ],
@@ -704,20 +698,27 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
 
               // ── Bottom Buttons ──
-              AppButton(
-                key: _tutorialKeyCreateRoom,
-                text: l10n.buttonCreateRoom,
-                onPressed: _onCreateSession,
-                showBorder: false,
-              ),
-              SizedBox(height: AppSpacing.vertical12),
-              AppButton(
-                key: _tutorialKeyJoinRoom,
-                text: l10n.buttonJoinRoom,
-                onPressed: _showJoinRoomDialog,
-                backgroundColor: AppColors.black100,
-                foregroundColor: AppColors.black600,
-                showBorder: false,
+              // 코치마크가 두 버튼을 한 영역으로 하이라이트하도록 Column으로 묶어
+              // 단일 GlobalKey를 부여한다. 하단 여백 SizedBox는 영역 밖으로 둔다.
+              // (부모 Column이 비-flex 자식에 무한 높이 제약을 주므로 min 필수)
+              Column(
+                key: _tutorialKeyGameButtons,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppButton(
+                    text: l10n.buttonCreateRoom,
+                    onPressed: _onCreateSession,
+                    showBorder: false,
+                  ),
+                  SizedBox(height: AppSpacing.vertical12),
+                  AppButton(
+                    text: l10n.buttonJoinRoom,
+                    onPressed: _showJoinRoomDialog,
+                    backgroundColor: AppColors.black100,
+                    foregroundColor: AppColors.black600,
+                    showBorder: false,
+                  ),
+                ],
               ),
               SizedBox(
                 height: defaultTargetPlatform == TargetPlatform.android

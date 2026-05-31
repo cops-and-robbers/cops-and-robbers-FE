@@ -481,10 +481,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneJail => 'Jail';
 
   @override
-  String get homePageCreateGameHint => 'You can create a new game';
-
-  @override
-  String get homePageJoinGameHint => 'Enter the invite code to join the game';
+  String get homePageGameButtonsHint =>
+      'You can create a game or join with an invite code';
 
   @override
   String get dialogSafetyWarningTitle =>

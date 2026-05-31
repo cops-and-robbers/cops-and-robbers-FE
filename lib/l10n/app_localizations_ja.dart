@@ -444,10 +444,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zoneJail => '牢屋';
 
   @override
-  String get homePageCreateGameHint => '新しいゲームを作成できます';
-
-  @override
-  String get homePageJoinGameHint => '招待コードを入力するとゲームに参加できます';
+  String get homePageGameButtonsHint => 'ゲームを作成したり、招待コードで参加したりできます';
 
   @override
   String get dialogSafetyWarningTitle => '周囲を確認しながらご利用ください';
