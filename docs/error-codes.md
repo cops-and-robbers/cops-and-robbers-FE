@@ -58,7 +58,7 @@
 
 | errorCode | status | title | detail |
 |-----------|--------|-------|--------|
-| `USER_NOT_FOUND` | 401 | 존재하지 않는 회원 | 해당 유저을 찾을 수 없습니다. |
+| `USER_NOT_FOUND` | 401 | 존재하지 않는 회원 | 해당 유저를 찾을 수 없습니다. |
 | `DUPLICATED_NICKNAME` | 409 | 닉네임 중복 | 이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요. |
 | `CANNOT_WITHDRAW` | 409 | 회원 탈퇴 불가 | 진행 중인 게임 세션이 있어 탈퇴할 수 없습니다. |
 | `REQUIRED_TERMS_NOT_AGREED` | 400 | 필수 약관 미동의 | 필수 약관은 모두 동의해야 합니다. |
