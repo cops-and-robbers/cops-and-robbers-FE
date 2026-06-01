@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-01T04:59:48Z",
-    "currentVersion": "2.0.4",
+    "lastUpdated": "2026-06-01T09:03:26Z",
+    "currentVersion": "2.0.5",
     "projectType": "flutter",
-    "totalReleases": 99
+    "totalReleases": 100
   },
   "releases": [
+    {
+      "version": "2.0.5",
+      "project_type": "flutter",
+      "date": "2026-06-01",
+      "pr_number": 401,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #400 from cops-and-robbers/20260530_#390_스플래시_화면_및_인앱_로고_이미지_변경\n  * docs : 커밋 커맨드에 dart format 실행 단계 추가\n  * style : 홈 화면 Top_hat 버튼 제거 및 여백·캐릭터 위치 조정 #390\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #400 from cops-and-robbers/20260530_#390_스플래시_화면_및_인앱_로고_이미지_변경",
+            "docs : 커밋 커맨드에 dart format 실행 단계 추가",
+            "style : 홈 화면 Top_hat 버튼 제거 및 여백·캐릭터 위치 조정 #390"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.0.4",
       "project_type": "flutter",
