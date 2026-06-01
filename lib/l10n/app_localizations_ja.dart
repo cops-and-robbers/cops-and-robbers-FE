@@ -1808,10 +1808,10 @@ class AppLocalizationsJa extends AppLocalizations {
       '招待コードの生成に失敗しました。しばらくしてからもう一度お試しください';
 
   @override
-  String get errorCodeInvalidJailRadius => '刑務所の半径はプレイグラウンドより小さくしてください';
+  String get errorCodeInvalidJailRadius => '牢屋の半径はプレイグラウンドより小さくしてください';
 
   @override
-  String get errorCodeJailOutsidePlayground => '刑務所はプレイグラウンド内に設置してください';
+  String get errorCodeJailOutsidePlayground => '牢屋はプレイグラウンド内に設置してください';
 
   @override
   String get errorCodeGameAreaNotFound => 'ゲームエリアが見つかりません';
