@@ -8,6 +8,7 @@ DioException _dioErrorWithTitle(
   int statusCode = 400,
   String detail = '필수 약관은 모두 동의해야 합니다.',
   String instance = '/api/games',
+  String? errorCode,
 }) {
   return DioException(
     requestOptions: RequestOptions(path: instance),
@@ -19,6 +20,7 @@ DioException _dioErrorWithTitle(
         'status': statusCode,
         'detail': detail,
         'instance': instance,
+        if (errorCode != null) 'errorCode': errorCode,
       },
     ),
     type: DioExceptionType.badResponse,
@@ -34,7 +36,10 @@ void main() {
     test(
       'AppException(originalException=DioException title="필수 약관 미동의") → true',
       () {
-        final dio = _dioErrorWithTitle('필수 약관 미동의');
+        final dio = _dioErrorWithTitle(
+          '필수 약관 미동의',
+          errorCode: 'REQUIRED_TERMS_NOT_AGREED',
+        );
         final appError = ValidationException(
           message: '필수 약관은 모두 동의해야 합니다.',
           originalException: dio,
@@ -44,7 +49,11 @@ void main() {
     );
 
     test('DioException title="필수 약관 미동의" → true (home_page 케이스)', () {
-      final dio = _dioErrorWithTitle('필수 약관 미동의', instance: '/api/games/join');
+      final dio = _dioErrorWithTitle(
+        '필수 약관 미동의',
+        instance: '/api/games/join',
+        errorCode: 'REQUIRED_TERMS_NOT_AGREED',
+      );
       expect(isRequiredTermsMissingError(dio), isTrue);
     });
 

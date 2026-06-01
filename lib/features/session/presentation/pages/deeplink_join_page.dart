@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -90,24 +91,22 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
             : activeGameRoute(participation);
         context.go(route ?? RoutePaths.home);
 
-      case FailureOutcome(:final messageKey):
-        // 처리 불가 에러 — 메시지 키로 사용자에게 표시 후 홈으로
-        AppSnackbar.show(
-          context,
-          message: _resolveErrorMessage(l10n, messageKey),
-          backgroundColor: AppColors.red,
-        );
+      case FailureOutcome(:final errorCode, :final messageKey):
+        // 처리 불가 에러 — errorCode 가 있으면 errorByCode, 없으면 messageKey 로 표시 후 홈으로
+        final msg = errorCode != null
+            ? l10n.errorByCode(errorCode)
+            : _resolveErrorMessage(l10n, messageKey);
+        AppSnackbar.show(context, message: msg, backgroundColor: AppColors.red);
         context.go(RoutePaths.home);
     }
   }
 
-  /// ARB 키를 사용자에게 표시할 문자열로 변환합니다.
+  /// messageKey 를 사용자에게 표시할 문자열로 변환합니다.
   ///
-  /// 새 에러 키 추가 시 ARB 파일과 이 switch 를 함께 업데이트하세요.
-  String _resolveErrorMessage(AppLocalizations l10n, String key) {
+  /// 백엔드 errorCode 경로(ValidationException 등)는 호출자가 errorByCode 로
+  /// 처리하므로 이 메서드에는 도달하지 않습니다.
+  String _resolveErrorMessage(AppLocalizations l10n, String? key) {
     return switch (key) {
-      'errorInviteCodeInvalid' => l10n.errorInviteCodeInvalid,
-      'errorGameFull' => l10n.errorGameFull,
       'errorNetworkOffline' => l10n.errorNetworkOffline,
       'errorPendingInviteSave' => l10n.errorPendingInviteSave,
       _ => l10n.errorServerInternal,

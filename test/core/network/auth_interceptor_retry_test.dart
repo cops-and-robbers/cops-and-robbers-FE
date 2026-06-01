@@ -101,7 +101,7 @@ Future<SecureTokenStorage> _storageWithTokens({
 Dio _protectedDio({
   required SecureTokenStorage storage,
   required Dio plainDio,
-  required Future<void> Function({String? message}) onForceLogout,
+  required Future<void> Function({String? messageKey}) onForceLogout,
 }) {
   final dio = Dio(BaseOptions(baseUrl: 'https://test.api'));
   dio.interceptors.add(
@@ -151,7 +151,7 @@ void main() {
       AuthInterceptor(
         tokenStorage: SecureTokenStorage(),
         plainDio: plainDio,
-        onForceLogout: ({String? message}) async {},
+        onForceLogout: ({String? messageKey}) async {},
       );
     });
 
@@ -219,7 +219,7 @@ void main() {
       final dio = _protectedDio(
         storage: storage,
         plainDio: reissueDio,
-        onForceLogout: ({String? message}) async {
+        onForceLogout: ({String? messageKey}) async {
           forceLogoutCalled = true;
         },
       );
@@ -250,7 +250,7 @@ void main() {
       final dio = _protectedDio(
         storage: storage,
         plainDio: reissueDio,
-        onForceLogout: ({String? message}) async {
+        onForceLogout: ({String? messageKey}) async {
           forceLogoutCalled = true;
         },
       );
@@ -281,7 +281,7 @@ void main() {
       final dio = _protectedDio(
         storage: storage,
         plainDio: reissueDio,
-        onForceLogout: ({String? message}) async {
+        onForceLogout: ({String? messageKey}) async {
           forceLogoutCalled = true;
         },
       );
@@ -318,7 +318,7 @@ void main() {
         final dio = _protectedDio(
           storage: storage,
           plainDio: reissueDio,
-          onForceLogout: ({String? message}) async {
+          onForceLogout: ({String? messageKey}) async {
             forceLogoutCalled = true;
           },
         );
@@ -349,7 +349,7 @@ void main() {
       final dio = _protectedDio(
         storage: storage,
         plainDio: reissueDio,
-        onForceLogout: ({String? message}) async {
+        onForceLogout: ({String? messageKey}) async {
           forceLogoutCalled = true;
         },
       );
@@ -383,7 +383,7 @@ void main() {
       final dio = _protectedDio(
         storage: storage,
         plainDio: reissueDio,
-        onForceLogout: ({String? message}) async {
+        onForceLogout: ({String? messageKey}) async {
           forceLogoutCalled = true;
         },
       );
@@ -423,7 +423,7 @@ void main() {
       final dio = _protectedDio(
         storage: storage,
         plainDio: reissueDio,
-        onForceLogout: ({String? message}) async {
+        onForceLogout: ({String? messageKey}) async {
           forceLogoutCalled = true;
         },
       );
@@ -463,7 +463,7 @@ void main() {
       final dio = _protectedDio(
         storage: storage,
         plainDio: reissueDio,
-        onForceLogout: ({String? message}) async {
+        onForceLogout: ({String? messageKey}) async {
           forceLogoutCalled = true;
         },
       );
@@ -501,7 +501,7 @@ void main() {
       final dio = _protectedDio(
         storage: storage,
         plainDio: reissueDio,
-        onForceLogout: ({String? message}) async {
+        onForceLogout: ({String? messageKey}) async {
           forceLogoutCalled = true;
         },
       );
