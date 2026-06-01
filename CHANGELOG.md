@@ -1,7 +1,26 @@
 # Changelog
 
-**현재 버전:** 2.0.2  
-**마지막 업데이트:** 2026-05-31T13:31:39Z  
+**현재 버전:** 2.0.3  
+**마지막 업데이트:** 2026-06-01T03:43:58Z  
+
+---
+
+## [2.0.3] - 2026-06-01
+
+**PR:** #397  
+
+**기타**
+- Merge pull request #396 from cops-and-robbers/20260529_#386_errorCode_기반_실패_응답_분기_및_다국어_메시지_매핑_도입
+- test : errorCode 매퍼 테스트 이름 정정 및 null 케이스 추가 #386
+- fix : 일본어 감옥 errorCode 메시지 용어 통일 (刑務所→牢屋) #386
+- docs : USER_NOT_FOUND detail 오탈자 수정 (유저을→유저를) #386
+- Update error_message_mapper.dart
+- chore : build_runner 재생성으로 stale 생성파일 최신화 #386
+- fix : iso_timestamp 나노초 절단 테스트 검증 오류 수정 #386
+- refactor : 에러 분기·표시를 errorCode 기반 i18n으로 전환 #386
+- feat : errorCode i18n 메시지 추가·정리 (ko/en/ja) #386
+- feat : errorCode 기반 에러 매퍼·예외 변환 인프라 추가 #386
+- docs : error code 문서 작성 #386
 
 ---
 
