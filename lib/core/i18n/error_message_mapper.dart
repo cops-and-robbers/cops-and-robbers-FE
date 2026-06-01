@@ -32,8 +32,9 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
     }
     // ② messageKey (네트워크 레벨 / Firebase provider code 등)
     final key = e.messageKey;
-    if (key != null && key.isNotEmpty)
+    if (key != null && key.isNotEmpty) {
       return errorByKey(key, fallback: e.message);
+    }
     // ③ 최종 message 폴백
     return e.message;
   }
