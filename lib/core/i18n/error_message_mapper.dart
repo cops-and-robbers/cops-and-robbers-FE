@@ -1,10 +1,15 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 
-/// [AppException.messageKey] → [AppLocalizations] 메서드 매핑
+/// [AppException.messageKey] / 백엔드 [AppException.code] → [AppLocalizations] 메서드 매핑
 ///
 /// 정적 클래스(DioExceptionHandler 등)는 BuildContext를 갖지 않기에 키만 결정한다.
 /// UI 레이어(catch 블록, ErrorWidget 등)에서 이 헬퍼로 사용자 노출 메시지를 얻는다.
+///
+/// 우선순위:
+/// 1. 백엔드 errorCode ([shouldUseBackendErrorCode] 조건 충족 시) → [errorByCode]
+/// 2. messageKey (네트워크 레벨 / Firebase provider code 등) → [errorByKey]
+/// 3. [AppException.message] 폴백
 ///
 /// 사용 예:
 /// ```dart
@@ -17,14 +22,203 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 ///   );
 /// }
 /// ```
-///
-/// 알 수 없는 키 / 키 없음 → [AppException.message] 폴백 (레거시 코드 호환).
 extension AppLocalizationsErrorMapping on AppLocalizations {
-  /// 예외의 messageKey를 사용자 노출 문자열로 변환
+  /// 예외를 사용자 노출 문자열로 변환 (3단계 우선순위 적용)
   String errorByException(AppException e) {
+    // ① docs/error-codes.md 기반 백엔드 errorCode 우선
+    if (shouldUseBackendErrorCode(e)) {
+      // errorByCode: 매핑 누락 시 내부에서 errorTemporaryRetry 반환
+      return errorByCode(e.code!);
+    }
+    // ② messageKey (네트워크 레벨 / Firebase provider code 등)
     final key = e.messageKey;
-    if (key == null || key.isEmpty) return e.message;
-    return errorByKey(key, fallback: e.message);
+    if (key != null && key.isNotEmpty)
+      return errorByKey(key, fallback: e.message);
+    // ③ 최종 message 폴백
+    return e.message;
+  }
+
+  /// 백엔드 errorCode를 직접 사용해야 하는지 판별
+  ///
+  /// ⚠️ 결합점: DioExceptionHandler가 모든 서버 응답 에러에 messageKey='errorTemporaryRetry'를
+  ///    세팅한다는 전제에 의존한다(dio_exception_handler.dart 참조). 한쪽을 바꾸면 이 가드가 깨진다.
+  ///
+  /// 조건:
+  /// - code가 null/empty가 아님
+  /// - messageKey가 'errorTemporaryRetry' (서버 발 에러를 DioExceptionHandler가 표준화한 키)
+  /// - code 형식이 대문자+언더스코어 식별자 (백엔드 errorCode 포맷)
+  ///   — Firebase provider code('invalid-credential' 등)는 소문자+하이픈이므로 자연스럽게 제외됨
+  bool shouldUseBackendErrorCode(AppException e) {
+    final code = e.code;
+    if (code == null || code.isEmpty) return false;
+    return e.messageKey == 'errorTemporaryRetry' &&
+        RegExp(r'^[A-Z][A-Z0-9_]*$').hasMatch(code);
+  }
+
+  /// 공개 API — 백엔드 errorCode를 사용자 노출 문자열로 변환
+  ///
+  /// STOMP Notifier 등에서 errorCode를 직접 보유하는 경우 바로 호출 가능.
+  /// 매핑 테이블에 없는 코드는 [errorTemporaryRetry] 공통 문구 반환 (non-null 보장).
+  String errorByCode(String code) =>
+      _errorByCodeOrNull(code) ?? errorTemporaryRetry;
+
+  /// 내부 — 매핑 없으면 null 반환 (errorByCode가 폴백 처리)
+  String? _errorByCodeOrNull(String code) {
+    switch (code) {
+      // ── 요청 검증 에러 ──────────────────────────────────────────────
+      case 'MISSING_REQUEST_PART':
+        return errorCodeMissingRequestPart;
+      case 'INVALID_REQUEST_BODY':
+        return errorCodeInvalidRequestBody;
+      case 'INVALID_QUERY_PARAMETER':
+        return errorCodeInvalidQueryParameter;
+      case 'QUERY_PARAMETER_TYPE_MISMATCH':
+        return errorCodeQueryParameterTypeMismatch;
+      case 'INVALID_INPUT_VALUE':
+        return errorCodeInvalidInputValue;
+      case 'INVALID_DESTINATION':
+        return errorCodeInvalidDestination;
+      case 'UNSUPPORTED_MEDIA_TYPE':
+        return errorCodeUnsupportedMediaType;
+      case 'METHOD_NOT_ALLOWED':
+        return errorCodeMethodNotAllowed;
+      case 'ENDPOINT_NOT_FOUND':
+        return errorCodeEndpointNotFound;
+      // ── WebSocket/STOMP 에러 ────────────────────────────────────────
+      case 'INVALID_SOCKET_SESSION':
+        return errorCodeInvalidSocketSession;
+      case 'UNAUTHORIZED_SUBSCRIPTION':
+        return errorCodeUnauthorizedSubscription;
+      // ── 서버 내부 에러 ──────────────────────────────────────────────
+      case 'INTERNAL_SERVER_ERROR':
+        return errorCodeInternalServerError;
+      case 'FIREBASE_INIT_ERROR':
+        return errorCodeFirebaseInitError;
+      case 'FIREBASE_CONFIG_NOT_FOUND':
+        return errorCodeFirebaseConfigNotFound;
+      case 'ENCRYPTION_FAILED':
+        return errorCodeEncryptionFailed;
+      case 'DECRYPTION_FAILED':
+        return errorCodeDecryptionFailed;
+      case 'INVALID_ENCRYPTION_KEY':
+        return errorCodeInvalidEncryptionKey;
+      // ── 인증/보안 에러 ──────────────────────────────────────────────
+      case 'SOCIAL_LOGIN_FAILED':
+        return errorCodeSocialLoginFailed;
+      case 'ACCESS_TOKEN_EXPIRED':
+        return errorCodeAccessTokenExpired;
+      case 'REFRESH_TOKEN_EXPIRED':
+        return errorCodeRefreshTokenExpired;
+      case 'INVALID_TOKEN':
+        return errorCodeInvalidToken;
+      case 'UNAUTHENTICATED_REQUEST':
+        return errorCodeUnauthenticatedRequest;
+      case 'EXPIRED_FIREBASE_TOKEN':
+        return errorCodeExpiredFirebaseToken;
+      case 'INVALID_FIREBASE_TOKEN':
+        return errorCodeInvalidFirebaseToken;
+      case 'UNSUPPORTED_SOCIAL_TYPE':
+        return errorCodeUnsupportedSocialType;
+      case 'FORBIDDEN_ADMIN_ONLY':
+        return errorCodeForbiddenAdminOnly;
+      // ── 닉네임/유저 에러 ────────────────────────────────────────────
+      case 'NICKNAME_GENERATION_FAILED':
+        return errorCodeNicknameGenerationFailed;
+      case 'FIREBASE_SERVER_ERROR':
+        return errorCodeFirebaseServerError;
+      case 'USER_NOT_FOUND':
+        return errorCodeUserNotFound;
+      case 'DUPLICATED_NICKNAME':
+        return errorCodeDuplicatedNickname;
+      case 'CANNOT_WITHDRAW':
+        return errorCodeCannotWithdraw;
+      case 'REQUIRED_TERMS_NOT_AGREED':
+        return errorCodeRequiredTermsNotAgreed;
+      // ── 게임 설정/상태 에러 ─────────────────────────────────────────
+      case 'GAME_NOT_FOUND':
+        return errorCodeGameNotFound;
+      case 'GAME_NOT_IN_PROGRESS':
+        return errorCodeGameNotInProgress;
+      case 'GAME_NOT_ACTIVE':
+        return errorCodeGameNotActive;
+      case 'GAME_NOT_WAITING':
+        return errorCodeGameNotWaiting;
+      case 'INVALID_LOCATION_INTERVAL':
+        return errorCodeInvalidLocationInterval;
+      case 'INVALID_POLICE_WAIT_TIME':
+        return errorCodeInvalidPoliceWaitTime;
+      case 'INVITE_CODE_GENERATION_FAILED':
+        return errorCodeInviteCodeGenerationFailed;
+      case 'INVALID_JAIL_RADIUS':
+        return errorCodeInvalidJailRadius;
+      case 'JAIL_OUTSIDE_PLAYGROUND':
+        return errorCodeJailOutsidePlayground;
+      case 'GAME_AREA_NOT_FOUND':
+        return errorCodeGameAreaNotFound;
+      // ── 참가자/입장 에러 ─────────────────────────────────────────────
+      case 'ALREADY_PARTICIPATING':
+        return errorCodeAlreadyParticipating;
+      case 'GAME_ALREADY_STARTED':
+        return errorCodeGameAlreadyStarted;
+      case 'GAME_FULL':
+        return errorCodeGameFull;
+      case 'INVALID_INVITE_CODE':
+        return errorCodeInvalidInviteCode;
+      case 'PARTICIPANT_NOT_FOUND':
+        return errorCodeParticipantNotFound;
+      case 'NOT_A_PARTICIPANT':
+        return errorCodeNotAParticipant;
+      case 'CANNOT_LEAVE_DURING_GAME':
+        return errorCodeCannotLeaveDuringGame;
+      // ── 로비 에러 ────────────────────────────────────────────────────
+      case 'LOBBY_ACTION_NOT_ALLOWED':
+        return errorCodeLobbyActionNotAllowed;
+      case 'NOT_HOST':
+        return errorCodeNotHost;
+      case 'INVALID_TEAM_COMPOSITION':
+        return errorCodeInvalidTeamComposition;
+      case 'NOT_ALL_READY':
+        return errorCodeNotAllReady;
+      case 'NOT_ROBBER_TEAM':
+        return errorCodeNotRobberTeam;
+      case 'HOST_CANNOT_UNREADY':
+        return errorCodeHostCannotUnready;
+      // ── 게임 플레이 에러 ─────────────────────────────────────────────
+      case 'PARTICIPANT_GAME_MISMATCH':
+        return errorCodeParticipantGameMismatch;
+      case 'ONLY_POLICE_CAN_ARREST':
+        return errorCodeOnlyPoliceCanArrest;
+      case 'ONLY_ROBBER_CAN_BE_ARRESTED':
+        return errorCodeOnlyRobberCanBeArrested;
+      case 'ONLY_ROBBER_CAN_ESCAPE':
+        return errorCodeOnlyRobberCanEscape;
+      case 'ALREADY_ARRESTED':
+        return errorCodeAlreadyArrested;
+      case 'NOT_JAILED':
+        return errorCodeNotJailed;
+      case 'POLICE_WAITING_TIME':
+        return errorCodePoliceWaitingTime;
+      case 'CANNOT_KICK_YOURSELF':
+        return errorCodeCannotKickYourself;
+      // ── 공지/게임 결과 에러 ──────────────────────────────────────────
+      case 'NOTICE_NOT_FOUND':
+        return errorCodeNoticeNotFound;
+      case 'GAME_RESULT_NOT_FOUND':
+        return errorCodeGameResultNotFound;
+      // ── 신고 에러 ────────────────────────────────────────────────────
+      case 'ETC_REASON_REQUIRED':
+        return errorCodeEtcReasonRequired;
+      case 'SELF_REPORT':
+        return errorCodeSelfReport;
+      case 'DUPLICATE_REPORT':
+        return errorCodeDuplicateReport;
+      case 'REPORT_NOT_FOUND':
+        return errorCodeReportNotFound;
+      case 'REPORT_TARGET_NOT_FOUND':
+        return errorCodeReportTargetNotFound;
+      default:
+        return null;
+    }
   }
 
   /// 키로부터 직접 메시지 조회 (예외 객체 없이도 사용 가능)
@@ -33,6 +227,9 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
   /// (자동화 가능하지만 일단 명시적 매핑으로 시작 — 컴파일 타임 안전성 우선)
   String errorByKey(String key, {String? fallback}) {
     switch (key) {
+      // 공통 에러 (서버 응답 에러의 DioExceptionHandler 표준 키)
+      case 'errorTemporaryRetry':
+        return errorTemporaryRetry;
       // 네트워크/API 에러 (dio_exception_handler.dart)
       case 'errorNetworkTimeout':
         return errorNetworkTimeout;
