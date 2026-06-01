@@ -32,10 +32,13 @@ void main() {
     });
 
     test('truncates_subsecond_to_microsecond_precision', () {
-      // Dart DateTime은 microsecond(6자리)까지만 지원.
+      // 나노초(9자리) .731399999 → 마이크로초(6자리) .731399 로 절단.
+      // Dart의 millisecond/microsecond getter는 각각 0~999 자리값이므로
+      // .731399초 = 731(ms) + 399(µs) 로 검증한다 (.microsecond 단독은 0~999 범위).
       final result = IsoTimestampParser.parse('2026-05-11T14:53:38.731399999Z');
 
-      expect(result?.toUtc().microsecond, 731399);
+      expect(result?.toUtc().millisecond, 731);
+      expect(result?.toUtc().microsecond, 399);
     });
 
     test('returns_same_instant_for_naive_and_kst_suffixed_inputs', () {

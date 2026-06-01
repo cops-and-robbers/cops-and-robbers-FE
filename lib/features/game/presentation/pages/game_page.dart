@@ -615,7 +615,7 @@ class _GamePageState extends ConsumerState<GamePage>
       final apiError = ApiErrorResponse.tryParse(e.response?.data);
       if (GameOverGuard.isGameNotInProgressError(
         statusCode: e.response?.statusCode,
-        title: apiError?.title,
+        errorCode: apiError?.errorCode,
       )) {
         debugPrint('[GamePage] GAME_OVER 유실 의심 — 상태 동기화 API가 게임 종료 응답');
         await _showMissedGameOverFallbackDialog();

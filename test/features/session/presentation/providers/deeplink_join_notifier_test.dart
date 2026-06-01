@@ -82,12 +82,12 @@ void main() {
   });
 
   group('409 conflict — 이미 방 참가 중', () {
-    // DioExceptionHandler 는 409 를 ServerException(messageKey: 'errorConflict') 으로 변환한다.
-    // 한국어 message 문자열 매칭이 아닌 messageKey 로 분기해야 한다.
+    // DioExceptionHandler 는 409 를 ServerException(messageKey: 'errorTemporaryRetry',
+    // code: 백엔드 errorCode) 으로 변환한다. deeplink 는 code == 'ALREADY_PARTICIPATING' 로 분기한다.
     const conflict = ServerException(
       message: 'conflict',
-      messageKey: 'errorConflict',
-      code: 'conflict',
+      messageKey: 'errorTemporaryRetry',
+      code: 'ALREADY_PARTICIPATING',
     );
 
     test(
@@ -230,35 +230,38 @@ void main() {
     );
   });
 
-  test('인원 초과 ValidationException 은 errorGameFull Failure 결과 반환', () async {
-    // DioExceptionHandler 는 400 을 ValidationException 으로 변환하며
-    // code 필드에 RFC 7807 title('게임 인원 초과')을 전달한다.
-    final container = makeContainer(
-      user: const AuthResultEntity(
-        userId: 1,
-        nickname: 'u',
-        isNewUser: false,
-        requiresAgreement: false,
-      ),
-    );
-    addTearDown(container.dispose);
-    when(() => joinUseCase.execute('ABC123')).thenThrow(
-      const ValidationException(
-        message: 'bad request',
-        messageKey: 'errorBadRequest',
-        code: '게임 인원 초과',
-      ),
-    );
+  test(
+    '인원 초과 ValidationException 은 errorCode=GAME_FULL Failure 결과 반환',
+    () async {
+      // DioExceptionHandler 는 400 을 ValidationException 으로 변환하며
+      // code 필드에 백엔드 errorCode('GAME_FULL')를 전달한다.
+      // Notifier 는 errorCode 를 그대로 FailureOutcome 에 실어 UI 에 위임한다.
+      final container = makeContainer(
+        user: const AuthResultEntity(
+          userId: 1,
+          nickname: 'u',
+          isNewUser: false,
+          requiresAgreement: false,
+        ),
+      );
+      addTearDown(container.dispose);
+      when(() => joinUseCase.execute('ABC123')).thenThrow(
+        const ValidationException(
+          message: 'bad request',
+          messageKey: 'errorBadRequest',
+          code: 'GAME_FULL',
+        ),
+      );
 
-    final outcome = await container
-        .read(deepLinkJoinNotifierProvider.notifier)
-        .handle('ABC123');
+      final outcome = await container
+          .read(deepLinkJoinNotifierProvider.notifier)
+          .handle('ABC123');
 
-    expect(
-      outcome,
-      equals(const DeepLinkJoinOutcome.failure(messageKey: 'errorGameFull')),
-    );
-  });
+      expect(outcome, isA<FailureOutcome>());
+      expect((outcome as FailureOutcome).errorCode, equals('GAME_FULL'));
+      expect(outcome.messageKey, isNull);
+    },
+  );
 
   test('AuthNotifier 가 throw 하면 errorServerInternal Failure 결과 반환', () async {
     // authNotifierProvider.future 가 throw 해도 Notifier 가 Outcome 으로 감싸서 반환한다.

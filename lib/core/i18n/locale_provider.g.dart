@@ -13,7 +13,7 @@ String _$appLocaleHash() => r'c275539744ef9fbdf938ba5ca87e97ba6488e10d';
 /// 우선순위:
 /// 1. SharedPreferences에 저장된 사용자 선택 언어
 /// 2. 시스템 로캘 (지원 목록 내)
-/// 3. [kDefaultLocale] (ko)
+/// 3. [kDefaultLocale] (en)
 ///
 /// 첫 프레임은 시스템 로캘로 시작 → SharedPreferences 비동기 로드 후 갱신
 ///

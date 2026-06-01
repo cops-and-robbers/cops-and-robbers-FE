@@ -42,9 +42,9 @@ class GameOverGuard {
   /// 게임 상태 동기화 API가 게임 종료 후 반환하는 400인지 판단한다.
   static bool isGameNotInProgressError({
     required int? statusCode,
-    required String? title,
+    required String? errorCode,
   }) {
-    return statusCode == 400 && title == '게임 진행 중 아님';
+    return statusCode == 400 && errorCode == 'GAME_NOT_IN_PROGRESS';
   }
 
   /// GAME_OVER 이후 홈 이동은 로컬 라우팅만 수행한다.

@@ -5,15 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../constants/app_colors.dart';
 import '../errors/app_exception.dart';
+import '../i18n/error_message_mapper.dart';
 import '../network/api_error_response.dart';
 import '../widgets/snackbars/app_snackbar.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 
-/// 백엔드가 RFC 7807 응답으로 내려주는 "필수 약관 미동의" 에러의 title 식별자.
+/// 백엔드가 RFC 7807 응답으로 내려주는 "필수 약관 미동의" 에러의 errorCode 식별자.
 ///
-/// 이 값은 UI 로케일과 무관하게 백엔드가 항상 동일한 한국어 문자열로 내려주는
-/// **고정 식별자**이므로 i18n과 무관하게 리터럴 비교를 한다.
-/// (i18n 처리된 `AppLocalizations.dialogAgreementRequiredTermsTitle`은 UI 표시용)
-const String _requiredTermsErrorTitle = '필수 약관 미동의';
+/// title(한국어 문자열)이 아닌 머신 식별자를 비교하므로 로케일과 무관하다.
+const String _requiredTermsErrorCode = 'REQUIRED_TERMS_NOT_AGREED';
 
 /// 에러에서 RFC 7807 응답을 추출합니다.
 ///
@@ -33,10 +33,10 @@ ApiErrorResponse? _extractApiError(Object? error) {
 
 /// "필수 약관 미동의" 에러인지 판별합니다.
 ///
-/// 백엔드의 RFC 7807 응답 `title`이 고정 식별자와 일치하면 true.
+/// 백엔드의 RFC 7807 응답 `errorCode`가 머신 식별자와 일치하면 true.
 bool isRequiredTermsMissingError(Object? error) {
   final api = _extractApiError(error);
-  return api?.title == _requiredTermsErrorTitle;
+  return api?.errorCode == _requiredTermsErrorCode;
 }
 
 /// 에러가 "필수 약관 미동의"면 스낵바 + 상태 변경으로 `/agreement` 리디렉트를 수행합니다.
@@ -45,7 +45,7 @@ bool isRequiredTermsMissingError(Object? error) {
 /// 호출부는 false일 때만 자신의 에러 처리(기본 스낵바 등)를 계속 진행하면 됩니다.
 ///
 /// **동작**:
-/// - 백엔드 `detail` 문구 그대로 스낵바 표시
+/// - errorCode 기반 i18n 메시지로 스낵바 표시
 /// - [AuthNotifier.markNeedsAgreement] 호출 → `requiresAgreement=true` 변경
 /// - `_GoRouterRefreshNotifier`가 감지 → `app_router.dart` redirect step 2에서
 ///   `/agreement`로 자동 이동
@@ -55,11 +55,11 @@ bool handleRequiredTermsErrorIfNeeded({
   required Object? error,
 }) {
   final api = _extractApiError(error);
-  if (api?.title != _requiredTermsErrorTitle) return false;
+  if (api?.errorCode != _requiredTermsErrorCode) return false;
 
   AppSnackbar.show(
     context,
-    message: api!.detail,
+    message: AppLocalizations.of(context).errorByCode(_requiredTermsErrorCode),
     backgroundColor: AppColors.red,
   );
   ref.read(authNotifierProvider.notifier).markNeedsAgreement();

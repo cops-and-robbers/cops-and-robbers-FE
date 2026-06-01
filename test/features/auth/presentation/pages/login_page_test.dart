@@ -4,6 +4,7 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,14 +43,8 @@ void main() {
       // Given
       await tester.pumpWidget(createTestableWidget(tester));
 
-      // Then - 로고 확인
-      final logoFinder = find.byWidgetPredicate(
-        (widget) =>
-            widget is Image &&
-            widget.image is AssetImage &&
-            (widget.image as AssetImage).assetName == 'assets/app_icon.png',
-      );
-      expect(logoFinder, findsOneWidget);
+      // Then - 로고 확인 (SvgPicture로 렌더링)
+      expect(find.byType(SvgPicture), findsWidgets);
 
       // Then - Google 로그인 버튼 확인
       expect(find.byType(GoogleLoginButton), findsOneWidget);
@@ -83,8 +78,8 @@ void main() {
       // Given
       await tester.pumpWidget(createTestableWidget(tester));
 
-      // Then - 로고와 버튼이 표시됨
-      expect(find.byType(Image), findsOneWidget);
+      // Then - 로고와 버튼이 표시됨 (로고는 SvgPicture로 렌더링)
+      expect(find.byType(SvgPicture), findsWidgets);
       expect(find.byType(GoogleLoginButton), findsOneWidget);
     });
   });
@@ -179,14 +174,8 @@ void main() {
       // Given
       await tester.pumpWidget(createTestableWidget(tester));
 
-      // Then - 로고 이미지 존재
-      final logoFinder = find.byWidgetPredicate(
-        (widget) =>
-            widget is Image &&
-            widget.image is AssetImage &&
-            (widget.image as AssetImage).assetName == 'assets/app_icon.png',
-      );
-      expect(logoFinder, findsOneWidget);
+      // Then - 로고 SVG 이미지 존재 (SvgPicture로 렌더링)
+      expect(find.byType(SvgPicture), findsWidgets);
     });
 
     testWidgets('약관 동의 텍스트가 표시된다', (tester) async {

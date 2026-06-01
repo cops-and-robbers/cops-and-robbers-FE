@@ -10,7 +10,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
-import '../../../../core/network/api_error_response.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_status.dart';
@@ -415,8 +416,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         // 404 "참가자 아님" — 강퇴/게임 삭제/세션 만료 등으로 더 이상 참가자가 아닌 경우.
         // 무한 로딩과 STOMP 재연결 루프를 막고 사용자를 홈으로 안내한다.
         if (e.response?.statusCode == 404 && mounted && !_isDisposed) {
-          final apiError = ApiErrorResponse.tryParse(e.response?.data);
-          await _handleNotParticipating(apiError?.detail);
+          await _handleNotParticipating(DioExceptionHandler.handle(e));
           return;
         }
         debugPrint('[WaitingRoomPage] 로비 조회 실패: $e');
@@ -512,12 +512,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 강퇴/게임 삭제/세션 만료 등으로 더 이상 게임 참가자가 아닐 때:
   ///   1) LobbyNotifier의 STOMP 재연결 루프를 명시적으로 끊고
-  ///   2) 서버가 보낸 RFC 7807 detail 메시지를 그대로 안내하고
+  ///   2) i18n 메시지(errorCode 기반)를 안내하고
   ///   3) 확인 시 홈으로 이동시킨다.
   ///
   /// 클라이언트는 KICKED 이벤트를 직접 받지 않아 강퇴 단정은 위험하므로,
   /// "강퇴" 단어 대신 "방에 참여할 수 없어요"로 톤을 부드럽게 한다.
-  Future<void> _handleNotParticipating(String? serverDetail) async {
+  Future<void> _handleNotParticipating(AppException? appException) async {
     if (_isDisposed || !mounted) return;
 
     // 진행 플래그 셋팅 — _showReconnectModal.then() 재귀 호출과 외부 listener가
@@ -549,10 +549,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
 
     final l10n = AppLocalizations.of(context);
+    // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)
+    final dialogMessage = appException != null
+        ? l10n.errorByException(appException)
+        : l10n.errorNotInGame;
     await AppDialog.show(
       context: context,
       title: l10n.errorCannotJoinRoom,
-      message: serverDetail ?? l10n.errorNotInGame,
+      message: dialogMessage,
       confirmText: l10n.buttonConfirm,
       barrierDismissible: false,
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
@@ -564,25 +568,24 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   }
 
   /// 사용자 액션 catch 공통 처리: 404 "참가자 아님" 이면 [_handleNotParticipating]
-  /// 흐름으로, 그 외에는 [fallbackMessage] 또는 서버 detail로 스낵바 표시.
+  /// 흐름으로, 그 외에는 errorCode 기반 i18n 메시지(errorByException)로 스낵바 표시.
   ///
   /// 호출자는 결과를 분기할 필요 없이 await만 하면 된다. 404 흐름은 내부에서
   /// 다이얼로그 → 홈 라우팅까지 완료한다.
-  Future<void> _handleApiErrorOrNotParticipating(
-    DioException e, {
-    required String fallbackMessage,
-  }) async {
+  Future<void> _handleApiErrorOrNotParticipating(DioException e) async {
     if (_isDisposed) return;
+    // DioException → AppException 변환 (i18n 메시지 해석에 사용)
+    final ex = DioExceptionHandler.handle(e);
     if (e.response?.statusCode == 404 && mounted) {
-      final apiError = ApiErrorResponse.tryParse(e.response?.data);
-      await _handleNotParticipating(apiError?.detail);
+      await _handleNotParticipating(ex);
       return;
     }
     if (mounted && !_isDisposed) {
-      final apiError = ApiErrorResponse.tryParse(e.response?.data);
+      // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)
+      final l10n = AppLocalizations.of(context);
       AppSnackbar.show(
         context,
-        message: apiError?.detail ?? fallbackMessage,
+        message: l10n.errorByException(ex),
         backgroundColor: AppColors.red,
       );
     }
@@ -804,7 +807,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       );
     } on DioException catch (e) {
       if (!mounted) return;
-      final message = DioExceptionHandler.handle(e).message;
+      // 백엔드 영문 message 대신 errorCode 기반 i18n 메시지 사용
+      final message = l10n.errorByException(DioExceptionHandler.handle(e));
       AppSnackbar.show(
         context,
         message: message,
@@ -1046,11 +1050,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context);
-      await _handleApiErrorOrNotParticipating(
-        e,
-        fallbackMessage: l10n.errorTeamChangeFailed,
-      );
+      await _handleApiErrorOrNotParticipating(e);
     }
   }
 
@@ -1080,11 +1080,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       setState(() => _isReady = newReadyState);
     } on DioException catch (e) {
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context);
-      await _handleApiErrorOrNotParticipating(
-        e,
-        fallbackMessage: l10n.errorReadyChangeFailed,
-      );
+      await _handleApiErrorOrNotParticipating(e);
     } finally {
       if (mounted) {
         setState(() => _isUpdatingReady = false);
@@ -1119,11 +1115,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     } on DioException catch (e) {
       if (navigator.canPop()) navigator.pop();
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context);
-      await _handleApiErrorOrNotParticipating(
-        e,
-        fallbackMessage: l10n.errorGameStartFailed,
-      );
+      await _handleApiErrorOrNotParticipating(e);
     }
   }
 
@@ -1154,11 +1146,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       } on DioException catch (e) {
         if (!mounted) return;
         final l10n = AppLocalizations.of(context);
-        final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? l10n.errorLeaveRoomFailed;
+        // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)
+        final ex = DioExceptionHandler.handle(e);
         AppSnackbar.show(
           context,
-          message: message,
+          message: l10n.errorByException(ex),
           backgroundColor: AppColors.red,
         );
         return;

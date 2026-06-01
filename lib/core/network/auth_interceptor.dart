@@ -36,8 +36,8 @@ class AuthInterceptor extends QueuedInterceptor {
   ///
   /// 토큰 재발급 실패 시 호출됩니다.
   /// Presentation Layer에서 Firebase 로그아웃 + 로그인 화면 이동을 처리합니다.
-  /// [message]: 백엔드 에러 메시지 (RFC 7807 detail) — 로그인 화면에서 스낵바로 표시
-  final Future<void> Function({String? message}) onForceLogout;
+  /// [messageKey]: 사유 식별자 — login_page에서 errorByKey로 i18n 변환하여 스낵바 표시
+  final Future<void> Function({String? messageKey}) onForceLogout;
 
   AuthInterceptor({
     required SecureTokenStorage tokenStorage,
@@ -95,7 +95,8 @@ class AuthInterceptor extends QueuedInterceptor {
     // reissue API 자체가 401이면 강제 로그아웃
     if (err.requestOptions.path.contains(ApiEndpoints.reissue)) {
       final apiError = ApiErrorResponse.tryParse(err.response?.data);
-      await _handleForceLogout(message: apiError?.detail);
+      // errorCode로 정확한 원인을 파악해 messageKey 결정 — 백엔드 한국어 detail 대신 i18n 키 전달
+      await _handleForceLogout(messageKey: _reissueMessageKey(apiError));
       return handler.next(err);
     }
 
@@ -105,16 +106,17 @@ class AuthInterceptor extends QueuedInterceptor {
     }
 
     // 이미 재시도한 요청이 다시 401이면 무한 루프 방지 → 강제 로그아웃
+    // 재시도 후에도 인증 거부 = 토큰이 유효하지 않음
     if (err.requestOptions.extra['_isRetry'] == true) {
-      await _handleForceLogout();
+      await _handleForceLogout(messageKey: 'errorAuthExpired');
       return handler.next(err);
     }
 
     final refreshToken = await _tokenStorage.getRefreshToken();
 
     if (refreshToken == null || refreshToken.trim().isEmpty) {
-      // Refresh Token이 없으면 강제 로그아웃
-      await _handleForceLogout();
+      // Refresh Token이 없으면 강제 로그아웃 (세션 만료와 동일한 UX)
+      await _handleForceLogout(messageKey: 'errorAuthExpired');
       return handler.next(err);
     }
 
@@ -125,9 +127,10 @@ class AuthInterceptor extends QueuedInterceptor {
         data: {'refreshToken': refreshToken},
       );
     } catch (e) {
-      final errorDetail = _logReissueFailure(e);
+      _logReissueFailure(e);
       if (_isRefreshTokenRejected(e)) {
-        await _handleForceLogout(message: errorDetail);
+        // 서버가 명시적으로 refresh token을 거부(400/401/403) — 재시도해도 소용 없음
+        await _handleForceLogout(messageKey: 'errorAuthExpired');
         return handler.next(err);
       }
 
@@ -147,9 +150,8 @@ class AuthInterceptor extends QueuedInterceptor {
 
     if (response.statusCode != 200) {
       if (_shouldForceLogoutForReissueStatus(response.statusCode)) {
-        await _handleForceLogout(
-          message: ApiErrorResponse.tryParse(response.data)?.detail,
-        );
+        // 400/401/403 — reissue 서버가 거부한 케이스. 재시도해도 동일한 결과일 가능성 높음
+        await _handleForceLogout(messageKey: 'errorAuthExpired');
       }
       return handler.next(err);
     }
@@ -159,7 +161,8 @@ class AuthInterceptor extends QueuedInterceptor {
       if (kDebugMode) {
         debugPrint('❌ 토큰 재발급 응답 파싱 실패: responseData=${response.data}');
       }
-      await _handleForceLogout();
+      // 200이지만 토큰 형식이 잘못됨 → 서버 응답 이상, 일시 오류로 안내
+      await _handleForceLogout(messageKey: 'errorTemporaryRetry');
       return handler.next(err);
     }
 
@@ -181,7 +184,8 @@ class AuthInterceptor extends QueuedInterceptor {
       return handler.resolve(retryResponse);
     } catch (e) {
       if (_isAccessTokenRejected(e)) {
-        await _handleForceLogout();
+        // 새 토큰으로 재시도했는데도 401 — access token 자체가 무효
+        await _handleForceLogout(messageKey: 'errorAuthExpired');
       }
       return handler.next(e is DioException ? e : err);
     }
@@ -225,8 +229,7 @@ class AuthInterceptor extends QueuedInterceptor {
     );
   }
 
-  String? _logReissueFailure(Object error) {
-    String? errorDetail;
+  void _logReissueFailure(Object error) {
     if (kDebugMode) {
       if (error is DioException) {
         debugPrint('❌ [Reissue] 토큰 재발급 실패');
@@ -237,18 +240,14 @@ class AuthInterceptor extends QueuedInterceptor {
         final apiError = ApiErrorResponse.tryParse(error.response?.data);
         if (apiError != null) {
           debugPrint('   RFC7807 title: ${apiError.title}');
+          debugPrint('   RFC7807 errorCode: ${apiError.errorCode}');
           debugPrint('   RFC7807 detail: ${apiError.detail}');
           debugPrint('   RFC7807 instance: ${apiError.instance}');
-          errorDetail = apiError.detail;
         }
       } else {
         debugPrint('❌ [Reissue] 토큰 재발급 실패 (non-Dio): $error');
       }
-    } else if (error is DioException) {
-      errorDetail = ApiErrorResponse.tryParse(error.response?.data)?.detail;
     }
-
-    return errorDetail;
   }
 
   void _logTransientReissueFailure({
@@ -305,16 +304,32 @@ class AuthInterceptor extends QueuedInterceptor {
     return error.response?.statusCode == 401;
   }
 
+  /// reissue 에러 응답을 분석해 강제 로그아웃 messageKey를 결정합니다.
+  ///
+  /// 토큰 관련 errorCode → 세션 만료 키, 그 외 → 일시 오류 키로 매핑.
+  String _reissueMessageKey(ApiErrorResponse? apiError) {
+    switch (apiError?.errorCode) {
+      case 'REFRESH_TOKEN_EXPIRED':
+      case 'ACCESS_TOKEN_EXPIRED':
+      case 'INVALID_TOKEN':
+        return 'errorAuthExpired';
+      default:
+        return 'errorTemporaryRetry';
+    }
+  }
+
   /// 강제 로그아웃 처리
   ///
   /// 토큰 삭제 후 콜백을 통해 Firebase 로그아웃 및 화면 이동을 수행합니다.
-  /// [message]: 백엔드 에러 메시지 — 로그인 화면에서 스낵바로 표시
-  Future<void> _handleForceLogout({String? message}) async {
+  /// [messageKey]: 로그인 화면에서 errorByKey로 i18n 변환해 스낵바로 표시할 식별자
+  Future<void> _handleForceLogout({String? messageKey}) async {
     if (kDebugMode) {
-      debugPrint('🚨 강제 로그아웃 실행${message != null ? ' (사유: $message)' : ''}');
+      debugPrint(
+        '🚨 강제 로그아웃 실행${messageKey != null ? ' (사유키: $messageKey)' : ''}',
+      );
     }
     await _tokenStorage.clearTokens();
-    await onForceLogout(message: message);
+    await onForceLogout(messageKey: messageKey);
   }
 }
 

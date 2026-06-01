@@ -7,7 +7,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/network/api_error_response.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -137,12 +138,12 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
       if (navigator.canPop()) navigator.pop();
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      final errorMsg =
-          ApiErrorResponse.tryParse(e.response?.data)?.detail ??
-          l10n.errorAreaSaveFailed;
+      // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)
+      final ex = DioExceptionHandler.handle(e);
+      final message = l10n.errorByException(ex);
       AppSnackbar.show(
         context,
-        message: errorMsg,
+        message: message,
         backgroundColor: AppColors.red,
       );
     }

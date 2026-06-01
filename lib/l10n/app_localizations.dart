@@ -3195,18 +3195,6 @@ abstract class AppLocalizations {
   /// **'게임 입장 중 예기치 않은 오류가 발생했습니다'**
   String get errorGameJoinUnexpected;
 
-  /// 딥링크로 들어온 초대 코드가 잘못된 경우 (400)
-  ///
-  /// In ko, this message translates to:
-  /// **'유효하지 않은 초대 코드예요'**
-  String get errorInviteCodeInvalid;
-
-  /// 초대 코드는 유효하지만 방 정원이 초과된 경우 (400 게임 인원 초과)
-  ///
-  /// In ko, this message translates to:
-  /// **'방이 이미 가득 찼어요'**
-  String get errorGameFull;
-
   /// 다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)
   ///
   /// In ko, this message translates to:
@@ -3272,6 +3260,426 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'친구가 경찰과도둑 방에 초대했어요! 초대 코드 {inviteCode}'**
   String shareInviteMessage(String inviteCode);
+
+  /// No description provided for @errorCodeMissingRequestPart.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청에 필요한 정보가 누락되었습니다'**
+  String get errorCodeMissingRequestPart;
+
+  /// No description provided for @errorCodeInvalidRequestBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청 형식이 올바르지 않습니다'**
+  String get errorCodeInvalidRequestBody;
+
+  /// No description provided for @errorCodeInvalidQueryParameter.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청 형식이 올바르지 않습니다'**
+  String get errorCodeInvalidQueryParameter;
+
+  /// No description provided for @errorCodeQueryParameterTypeMismatch.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청 형식이 올바르지 않습니다'**
+  String get errorCodeQueryParameterTypeMismatch;
+
+  /// No description provided for @errorCodeInvalidInputValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력값을 다시 확인해주세요'**
+  String get errorCodeInvalidInputValue;
+
+  /// No description provided for @errorCodeInvalidDestination.
+  ///
+  /// In ko, this message translates to:
+  /// **'잘못된 연결 경로입니다'**
+  String get errorCodeInvalidDestination;
+
+  /// No description provided for @errorCodeUnsupportedMediaType.
+  ///
+  /// In ko, this message translates to:
+  /// **'지원하지 않는 형식입니다'**
+  String get errorCodeUnsupportedMediaType;
+
+  /// No description provided for @errorCodeMethodNotAllowed.
+  ///
+  /// In ko, this message translates to:
+  /// **'허용되지 않은 요청입니다'**
+  String get errorCodeMethodNotAllowed;
+
+  /// No description provided for @errorCodeEndpointNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청 경로를 찾을 수 없습니다'**
+  String get errorCodeEndpointNotFound;
+
+  /// No description provided for @errorCodeInvalidSocketSession.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결이 끊겼습니다. 다시 연결해주세요'**
+  String get errorCodeInvalidSocketSession;
+
+  /// No description provided for @errorCodeUnauthorizedSubscription.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 채널을 구독할 권한이 없습니다'**
+  String get errorCodeUnauthorizedSubscription;
+
+  /// No description provided for @errorCodeInternalServerError.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeInternalServerError;
+
+  /// No description provided for @errorCodeFirebaseInitError.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeFirebaseInitError;
+
+  /// No description provided for @errorCodeFirebaseConfigNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeFirebaseConfigNotFound;
+
+  /// No description provided for @errorCodeEncryptionFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeEncryptionFailed;
+
+  /// No description provided for @errorCodeDecryptionFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeDecryptionFailed;
+
+  /// No description provided for @errorCodeInvalidEncryptionKey.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeInvalidEncryptionKey;
+
+  /// No description provided for @errorCodeSocialLoginFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'소셜 로그인에 실패했습니다'**
+  String get errorCodeSocialLoginFailed;
+
+  /// No description provided for @errorCodeAccessTokenExpired.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증이 만료되었습니다'**
+  String get errorCodeAccessTokenExpired;
+
+  /// No description provided for @errorCodeRefreshTokenExpired.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인이 만료되었습니다. 다시 로그인해주세요'**
+  String get errorCodeRefreshTokenExpired;
+
+  /// No description provided for @errorCodeInvalidToken.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 정보가 올바르지 않습니다. 다시 로그인해주세요'**
+  String get errorCodeInvalidToken;
+
+  /// No description provided for @errorCodeUnauthenticatedRequest.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인이 필요합니다'**
+  String get errorCodeUnauthenticatedRequest;
+
+  /// No description provided for @errorCodeExpiredFirebaseToken.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증이 만료되었습니다. 다시 시도해주세요'**
+  String get errorCodeExpiredFirebaseToken;
+
+  /// No description provided for @errorCodeInvalidFirebaseToken.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증에 실패했습니다. 다시 시도해주세요'**
+  String get errorCodeInvalidFirebaseToken;
+
+  /// No description provided for @errorCodeUnsupportedSocialType.
+  ///
+  /// In ko, this message translates to:
+  /// **'지원하지 않는 로그인 방식입니다'**
+  String get errorCodeUnsupportedSocialType;
+
+  /// No description provided for @errorCodeForbiddenAdminOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'관리자 권한이 필요합니다'**
+  String get errorCodeForbiddenAdminOnly;
+
+  /// No description provided for @errorCodeNicknameGenerationFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'회원가입에 실패했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeNicknameGenerationFailed;
+
+  /// No description provided for @errorCodeFirebaseServerError.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeFirebaseServerError;
+
+  /// No description provided for @errorCodeUserNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'사용자를 찾을 수 없습니다'**
+  String get errorCodeUserNotFound;
+
+  /// No description provided for @errorCodeDuplicatedNickname.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 사용 중인 닉네임입니다'**
+  String get errorCodeDuplicatedNickname;
+
+  /// No description provided for @errorCodeCannotWithdraw.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중인 게임이 있어 탈퇴할 수 없습니다'**
+  String get errorCodeCannotWithdraw;
+
+  /// No description provided for @errorCodeRequiredTermsNotAgreed.
+  ///
+  /// In ko, this message translates to:
+  /// **'필수 약관에 모두 동의해주세요'**
+  String get errorCodeRequiredTermsNotAgreed;
+
+  /// No description provided for @errorCodeGameNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임을 찾을 수 없습니다'**
+  String get errorCodeGameNotFound;
+
+  /// No description provided for @errorCodeGameNotInProgress.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중인 게임이 아닙니다'**
+  String get errorCodeGameNotInProgress;
+
+  /// No description provided for @errorCodeGameNotActive.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 중이거나 진행 중인 게임에서만 가능합니다'**
+  String get errorCodeGameNotActive;
+
+  /// No description provided for @errorCodeGameNotWaiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 중인 게임에서만 변경할 수 있습니다'**
+  String get errorCodeGameNotWaiting;
+
+  /// No description provided for @errorCodeInvalidLocationInterval.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공개 주기는 라운드 시간보다 짧아야 합니다'**
+  String get errorCodeInvalidLocationInterval;
+
+  /// No description provided for @errorCodeInvalidPoliceWaitTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 대기 시간은 라운드 시간보다 짧아야 합니다'**
+  String get errorCodeInvalidPoliceWaitTime;
+
+  /// No description provided for @errorCodeInviteCodeGenerationFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 코드 생성에 실패했습니다. 잠시 후 다시 시도해주세요'**
+  String get errorCodeInviteCodeGenerationFailed;
+
+  /// No description provided for @errorCodeInvalidJailRadius.
+  ///
+  /// In ko, this message translates to:
+  /// **'감옥 반경은 플레이그라운드보다 작아야 합니다'**
+  String get errorCodeInvalidJailRadius;
+
+  /// No description provided for @errorCodeJailOutsidePlayground.
+  ///
+  /// In ko, this message translates to:
+  /// **'감옥은 플레이그라운드 안에 있어야 합니다'**
+  String get errorCodeJailOutsidePlayground;
+
+  /// No description provided for @errorCodeGameAreaNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 구역을 찾을 수 없습니다'**
+  String get errorCodeGameAreaNotFound;
+
+  /// No description provided for @errorCodeAlreadyParticipating.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 참가 중인 게임입니다'**
+  String get errorCodeAlreadyParticipating;
+
+  /// No description provided for @errorCodeGameAlreadyStarted.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 시작된 게임입니다'**
+  String get errorCodeGameAlreadyStarted;
+
+  /// No description provided for @errorCodeGameFull.
+  ///
+  /// In ko, this message translates to:
+  /// **'정원이 가득 찼습니다'**
+  String get errorCodeGameFull;
+
+  /// No description provided for @errorCodeInvalidInviteCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'잘못된 초대 코드입니다'**
+  String get errorCodeInvalidInviteCode;
+
+  /// No description provided for @errorCodeParticipantNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임에 참가하지 않은 사용자입니다'**
+  String get errorCodeParticipantNotFound;
+
+  /// No description provided for @errorCodeNotAParticipant.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임의 참가자가 아닙니다'**
+  String get errorCodeNotAParticipant;
+
+  /// No description provided for @errorCodeCannotLeaveDuringGame.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시작 후에는 나갈 수 없습니다'**
+  String get errorCodeCannotLeaveDuringGame;
+
+  /// No description provided for @errorCodeLobbyActionNotAllowed.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시작 후에는 변경할 수 없습니다'**
+  String get errorCodeLobbyActionNotAllowed;
+
+  /// No description provided for @errorCodeNotHost.
+  ///
+  /// In ko, this message translates to:
+  /// **'방장만 할 수 있습니다'**
+  String get errorCodeNotHost;
+
+  /// No description provided for @errorCodeInvalidTeamComposition.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰과 도둑 팀에 각각 한 명 이상 필요합니다'**
+  String get errorCodeInvalidTeamComposition;
+
+  /// No description provided for @errorCodeNotAllReady.
+  ///
+  /// In ko, this message translates to:
+  /// **'모두 준비를 마쳐야 시작할 수 있습니다'**
+  String get errorCodeNotAllReady;
+
+  /// No description provided for @errorCodeNotRobberTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 팀만 위치를 전송할 수 있습니다'**
+  String get errorCodeNotRobberTeam;
+
+  /// No description provided for @errorCodeHostCannotUnready.
+  ///
+  /// In ko, this message translates to:
+  /// **'방장은 항상 준비 상태입니다'**
+  String get errorCodeHostCannotUnready;
+
+  /// No description provided for @errorCodeParticipantGameMismatch.
+  ///
+  /// In ko, this message translates to:
+  /// **'서로 다른 게임에 참여하고 있습니다'**
+  String get errorCodeParticipantGameMismatch;
+
+  /// No description provided for @errorCodeOnlyPoliceCanArrest.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰만 체포할 수 있습니다'**
+  String get errorCodeOnlyPoliceCanArrest;
+
+  /// No description provided for @errorCodeOnlyRobberCanBeArrested.
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑만 체포될 수 있습니다'**
+  String get errorCodeOnlyRobberCanBeArrested;
+
+  /// No description provided for @errorCodeOnlyRobberCanEscape.
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑만 탈옥할 수 있습니다'**
+  String get errorCodeOnlyRobberCanEscape;
+
+  /// No description provided for @errorCodeAlreadyArrested.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 수감된 도둑입니다'**
+  String get errorCodeAlreadyArrested;
+
+  /// No description provided for @errorCodeNotJailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'수감 상태에서만 탈옥할 수 있습니다'**
+  String get errorCodeNotJailed;
+
+  /// No description provided for @errorCodePoliceWaitingTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 대기 시간에는 체포할 수 없습니다'**
+  String get errorCodePoliceWaitingTime;
+
+  /// No description provided for @errorCodeCannotKickYourself.
+  ///
+  /// In ko, this message translates to:
+  /// **'자기 자신은 강퇴할 수 없습니다'**
+  String get errorCodeCannotKickYourself;
+
+  /// No description provided for @errorCodeNoticeNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지사항을 찾을 수 없습니다'**
+  String get errorCodeNoticeNotFound;
+
+  /// No description provided for @errorCodeGameResultNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 결과를 찾을 수 없습니다'**
+  String get errorCodeGameResultNotFound;
+
+  /// No description provided for @errorCodeEtcReasonRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타 사유를 입력해주세요'**
+  String get errorCodeEtcReasonRequired;
+
+  /// No description provided for @errorCodeSelfReport.
+  ///
+  /// In ko, this message translates to:
+  /// **'본인은 신고할 수 없습니다'**
+  String get errorCodeSelfReport;
+
+  /// No description provided for @errorCodeDuplicateReport.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 신고한 사용자입니다'**
+  String get errorCodeDuplicateReport;
+
+  /// No description provided for @errorCodeReportNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 내역을 찾을 수 없습니다'**
+  String get errorCodeReportNotFound;
+
+  /// No description provided for @errorCodeReportTargetNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 대상을 찾을 수 없습니다'**
+  String get errorCodeReportTargetNotFound;
 }
 
 class _AppLocalizationsDelegate

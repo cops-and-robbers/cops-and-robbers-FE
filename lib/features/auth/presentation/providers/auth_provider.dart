@@ -115,18 +115,19 @@ class AuthNotifier extends _$AuthNotifier {
     // Future.microtask로 지연: build() 중 다른 provider 수정 금지 (Riverpod 제약)
     Future.microtask(() {
       ref.read(forceLogoutCallbackNotifierProvider.notifier).register(({
-        String? message,
+        String? messageKey,
       }) async {
         final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
         await firebaseDataSource.signOut();
         await ref.read(secureTokenStorageProvider).clearTokens();
-        if (message != null) {
-          ref.read(forceLogoutMessageProvider.notifier).state = message;
+        if (messageKey != null) {
+          // login_page에서 errorByKey로 i18n 변환하여 스낵바로 표시
+          ref.read(forceLogoutMessageKeyProvider.notifier).state = messageKey;
         }
         forceLogout();
         debugPrint(
           '🚨 강제 로그아웃 완료 (토큰 만료/재발급 실패)'
-          '${message != null ? ' 사유: $message' : ''}',
+          '${messageKey != null ? ' 사유키: $messageKey' : ''}',
         );
       });
     });

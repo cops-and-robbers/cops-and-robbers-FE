@@ -58,16 +58,17 @@ class DioExceptionHandler {
 
     // 4. HTTP 상태 코드별 분기
     //    백엔드 detail/title은 사용자 노출에 사용하지 않음 (한국어 고정 응답 한계)
-    //    code 필드도 백엔드 title이 한국어("필수 약관 미동의" 등) 식별자라 그대로 두면 분석/추적용
+    //    errorCode(SCREAMING_SNAKE)를 code에 저장 → error_message_mapper의 shouldUseBackendErrorCode 가드가 사용
     final statusCode = e.response?.statusCode;
-    final title = apiError?.title ?? '';
+    final errorCode = apiError?.errorCode;
 
     // 5xx 서버 에러 처리
+    // messageKey는 공통 'errorTemporaryRetry' — error_message_mapper가 errorCode로 세분화
     if (statusCode != null && statusCode >= 500) {
       return ServerException(
         message: 'server error',
-        messageKey: 'errorServerInternal',
-        code: title.isNotEmpty ? title : 'server-error',
+        messageKey: 'errorTemporaryRetry',
+        code: errorCode,
         originalException: e,
       );
     }
@@ -75,37 +76,38 @@ class DioExceptionHandler {
     return switch (statusCode) {
       400 => ValidationException(
         message: 'bad request',
-        messageKey: 'errorBadRequest',
-        code: title.isNotEmpty ? title : 'bad-request',
+        messageKey:
+            'errorTemporaryRetry', // shouldUseBackendErrorCode 가드의 전제 (error_message_mapper.dart)
+        code: errorCode, // 백엔드 errorCode (없으면 null)
         originalException: e,
       ),
       401 => AuthException(
         message: 'unauthorized',
-        messageKey: 'errorUnauthorized',
-        code: title.isNotEmpty ? title : 'unauthorized',
+        messageKey: 'errorTemporaryRetry',
+        code: errorCode,
         originalException: e,
       ),
       403 => AuthException(
         message: 'forbidden',
-        messageKey: 'errorForbidden',
-        code: title.isNotEmpty ? title : 'forbidden',
+        messageKey: 'errorTemporaryRetry',
+        code: errorCode,
         originalException: e,
       ),
       404 => ServerException(
         message: 'not found',
-        messageKey: 'errorNotFound',
-        code: title.isNotEmpty ? title : 'not-found',
+        messageKey: 'errorTemporaryRetry',
+        code: errorCode,
         originalException: e,
       ),
       409 => ServerException(
         message: 'conflict',
-        messageKey: 'errorConflict',
-        code: title.isNotEmpty ? title : 'conflict',
+        messageKey: 'errorTemporaryRetry',
+        code: errorCode,
         originalException: e,
       ),
       // 미처리 분기 — statusCode 유무로 네트워크 문제와 서버 응답을 분리
       // (422/429 등을 NetworkException으로 묶으면 "네트워크 연결 확인" 안내 오진)
-      _ => _buildFallbackException(statusCode, title, e),
+      _ => _buildFallbackException(statusCode, errorCode, e),
     };
   }
 
@@ -116,29 +118,30 @@ class DioExceptionHandler {
   /// - 그 외: 서버측 오류 (5xx는 위에서 처리됐지만 안전망)
   static AppException _buildFallbackException(
     int? statusCode,
-    String title,
+    String? errorCode, // 백엔드 errorCode — null이면 code도 null
     DioException e,
   ) {
     if (statusCode == null) {
+      // 오프라인/미확인 에러 — errorCode는 null이 맞음
       return NetworkException(
         message: 'network error',
         messageKey: 'errorNetworkOffline',
-        code: 'network-error',
+        code: errorCode, // 오프라인 시 null, 정상
         originalException: e,
       );
     }
     if (statusCode >= 400 && statusCode < 500) {
       return ValidationException(
         message: 'unhandled client error ($statusCode)',
-        messageKey: 'errorBadRequest',
-        code: title.isNotEmpty ? title : 'bad-request',
+        messageKey: 'errorTemporaryRetry',
+        code: errorCode,
         originalException: e,
       );
     }
     return ServerException(
       message: 'unhandled server error ($statusCode)',
-      messageKey: 'errorServerInternal',
-      code: title.isNotEmpty ? title : 'server-error',
+      messageKey: 'errorTemporaryRetry',
+      code: errorCode,
       originalException: e,
     );
   }

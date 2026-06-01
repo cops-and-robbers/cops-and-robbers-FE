@@ -11,7 +11,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/network/api_error_response.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
@@ -436,8 +437,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       }
       if (mounted) {
         final l10n = AppLocalizations.of(context);
-        final apiError = ApiErrorResponse.tryParse(e.response?.data);
-        final message = apiError?.detail ?? l10n.errorJoinFailedCheckCode;
+        // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)
+        final ex = DioExceptionHandler.handle(e);
+        final message = l10n.errorByException(ex);
         AppSnackbar.show(
           context,
           message: message,

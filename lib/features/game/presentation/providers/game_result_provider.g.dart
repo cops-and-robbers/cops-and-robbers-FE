@@ -6,7 +6,7 @@ part of 'game_result_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameResultApiHash() => r'1d2e8797127d28b2271bb13cd6d548f514b0d4b1';
+String _$gameResultApiHash() => r'c4da19a6ab7db474966d1672034ab0540403f995';
 
 /// GameResultApi Retrofit 인스턴스 Provider
 ///
