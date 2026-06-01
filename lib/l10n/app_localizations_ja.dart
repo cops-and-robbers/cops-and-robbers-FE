@@ -1685,19 +1685,19 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get errorCodeMissingRequestPart => 'リクエストに必要な情報が不足しています';
+  String get errorCodeMissingRequestPart => 'リクエストに必要なパートが不足しています';
 
   @override
-  String get errorCodeInvalidRequestBody => 'リクエストの形式が正しくありません';
+  String get errorCodeInvalidRequestBody => 'リクエストボディの形式が正しくありません';
 
   @override
-  String get errorCodeInvalidQueryParameter => 'リクエストの形式が正しくありません';
+  String get errorCodeInvalidQueryParameter => 'クエリパラメータの形式が正しくありません';
 
   @override
-  String get errorCodeQueryParameterTypeMismatch => 'リクエストの形式が正しくありません';
+  String get errorCodeQueryParameterTypeMismatch => 'リクエストパラメータの型が正しくありません';
 
   @override
-  String get errorCodeInvalidInputValue => '入力内容を確認してください';
+  String get errorCodeInvalidInputValue => '入力値が検証を通過しませんでした';
 
   @override
   String get errorCodeInvalidDestination => '接続先が正しくありません';
@@ -1712,10 +1712,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeEndpointNotFound => 'リクエストパスが見つかりません';
 
   @override
-  String get errorCodeInvalidSocketSession => '接続が切れました。再接続してください';
+  String get errorCodeInvalidSocketSession => 'セッション情報が見つかりません。再接続してください';
 
   @override
-  String get errorCodeUnauthorizedSubscription => 'このチャンネルを購読する権限がありません';
+  String get errorCodeUnauthorizedSubscription => 'このチーム専用チャンネルを購読する権限がありません';
 
   @override
   String get errorCodeInternalServerError =>
@@ -1760,7 +1760,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeInvalidFirebaseToken => '認証に失敗しました。もう一度お試しください';
 
   @override
-  String get errorCodeUnsupportedSocialType => 'サポートされていないログイン方法です';
+  String get errorCodeUnsupportedSocialType => 'サポートされていないソーシャルログイン方法です';
 
   @override
   String get errorCodeForbiddenAdminOnly => '管理者権限が必要です';
@@ -1777,25 +1777,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeUserNotFound => 'ユーザーが見つかりません';
 
   @override
-  String get errorCodeDuplicatedNickname => 'このニックネームはすでに使われています';
+  String get errorCodeDuplicatedNickname =>
+      'このニックネームはすでに使われています。別のニックネームを選択してください';
 
   @override
-  String get errorCodeCannotWithdraw => '進行中のゲームがあるため退会できません';
+  String get errorCodeCannotWithdraw => '進行中のゲームセッションがあるため退会できません';
 
   @override
-  String get errorCodeRequiredTermsNotAgreed => '必須規約にすべて同意してください';
+  String get errorCodeRequiredTermsNotAgreed => '必須規約にはすべて同意する必要があります';
 
   @override
-  String get errorCodeGameNotFound => 'ゲームが見つかりません';
+  String get errorCodeGameNotFound => 'リクエストされたゲーム情報が存在しません';
 
   @override
-  String get errorCodeGameNotInProgress => '進行中のゲームではありません';
+  String get errorCodeGameNotInProgress => 'ゲームが進行中の状態ではありません';
 
   @override
-  String get errorCodeGameNotActive => '待機中または進行中のゲームでのみ可能です';
+  String get errorCodeGameNotActive => '待機中または進行中のゲームでのみ照会できます';
 
   @override
-  String get errorCodeGameNotWaiting => '待機中のゲームのみ変更できます';
+  String get errorCodeGameNotWaiting => '待機中のゲームのみ設定を変更できます';
 
   @override
   String get errorCodeInvalidLocationInterval => '位置公開間隔はラウンド時間より短くしてください';
@@ -1808,64 +1809,65 @@ class AppLocalizationsJa extends AppLocalizations {
       '招待コードの生成に失敗しました。しばらくしてからもう一度お試しください';
 
   @override
-  String get errorCodeInvalidJailRadius => '牢屋の半径はプレイグラウンドより小さくしてください';
+  String get errorCodeInvalidJailRadius => '牢屋の半径はプレイグラウンドの半径以上にはできません';
 
   @override
-  String get errorCodeJailOutsidePlayground => '牢屋はプレイグラウンド内に設置してください';
+  String get errorCodeJailOutsidePlayground => '牢屋はプレイグラウンド内に完全に含まれる必要があります';
 
   @override
   String get errorCodeGameAreaNotFound => 'ゲームエリアが見つかりません';
 
   @override
-  String get errorCodeAlreadyParticipating => 'すでにゲームに参加しています';
+  String get errorCodeAlreadyParticipating => 'すでにこのゲームに参加しています';
 
   @override
-  String get errorCodeGameAlreadyStarted => 'ゲームはすでに開始されています';
+  String get errorCodeGameAlreadyStarted => 'すでに開始されたゲームには参加できません';
 
   @override
-  String get errorCodeGameFull => '定員に達しています';
+  String get errorCodeGameFull => 'ゲームに参加できる最大人数を超えています';
 
   @override
-  String get errorCodeInvalidInviteCode => '招待コードが正しくありません';
+  String get errorCodeInvalidInviteCode => '入力された招待コードが無効です';
 
   @override
-  String get errorCodeParticipantNotFound => 'このユーザーはゲームに参加していません';
+  String get errorCodeParticipantNotFound => 'このユーザーはこのゲームに参加していません';
 
   @override
   String get errorCodeNotAParticipant => 'このゲームの参加者ではありません';
 
   @override
-  String get errorCodeCannotLeaveDuringGame => 'ゲーム開始後は退出できません';
+  String get errorCodeCannotLeaveDuringGame => 'ゲーム開始後は部屋を退出できません';
 
   @override
-  String get errorCodeLobbyActionNotAllowed => 'ゲーム開始後は変更できません';
+  String get errorCodeLobbyActionNotAllowed => 'ゲーム開始後はロビーの状態を変更できません';
 
   @override
   String get errorCodeNotHost => 'ホストのみ操作できます';
 
   @override
-  String get errorCodeInvalidTeamComposition => '警察と泥棒チームにそれぞれ1名以上必要です';
+  String get errorCodeInvalidTeamComposition =>
+      'ゲームを開始するには、警察と泥棒チームにそれぞれ1名以上の参加者が必要です';
 
   @override
-  String get errorCodeNotAllReady => '全員が準備完了にならないと開始できません';
+  String get errorCodeNotAllReady => 'すべての参加者が準備完了状態でないとゲームを開始できません';
 
   @override
   String get errorCodeNotRobberTeam => '泥棒チームのみ位置を送信できます';
 
   @override
-  String get errorCodeHostCannotUnready => 'ホストは常に準備完了状態です';
+  String get errorCodeHostCannotUnready => 'ホストは常に準備完了状態でなければなりません';
 
   @override
-  String get errorCodeParticipantGameMismatch => '異なるゲームに参加しています';
+  String get errorCodeParticipantGameMismatch => '警察と泥棒が異なるゲームに参加しています';
 
   @override
-  String get errorCodeOnlyPoliceCanArrest => '警察のみ逮捕できます';
+  String get errorCodeOnlyPoliceCanArrest => '警察チームのみ泥棒を逮捕できます';
 
   @override
-  String get errorCodeOnlyRobberCanBeArrested => '泥棒のみ逮捕されます';
+  String get errorCodeOnlyRobberCanBeArrested => '泥棒チームのみ逮捕されます';
 
   @override
-  String get errorCodeOnlyRobberCanEscape => '泥棒のみ脱獄できます';
+  String get errorCodeOnlyRobberCanEscape => '泥棒チームのみ脱獄できます';
 
   @override
   String get errorCodeAlreadyArrested => 'すでに収監されている泥棒です';
@@ -1874,10 +1876,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeNotJailed => '収監中のみ脱獄できます';
 
   @override
-  String get errorCodePoliceWaitingTime => '警察の待機時間中は逮捕できません';
+  String get errorCodePoliceWaitingTime => '警察は待機時間中、泥棒を逮捕できません';
 
   @override
-  String get errorCodeCannotKickYourself => '自分自身を追放することはできません';
+  String get errorCodeCannotKickYourself => 'ホストは自分自身を追放することはできません';
 
   @override
   String get errorCodeNoticeNotFound => 'お知らせが見つかりません';
@@ -1886,17 +1888,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeGameResultNotFound => 'ゲーム結果が見つかりません';
 
   @override
-  String get errorCodeEtcReasonRequired => 'その他の理由を入力してください';
+  String get errorCodeEtcReasonRequired => '通報タイプがその他の場合は理由を入力してください';
 
   @override
   String get errorCodeSelfReport => '自分自身は通報できません';
 
   @override
-  String get errorCodeDuplicateReport => 'すでにこのユーザーを通報しています';
+  String get errorCodeDuplicateReport => 'このゲームですでにこのユーザーを通報しています';
 
   @override
-  String get errorCodeReportNotFound => '通報履歴が見つかりません';
+  String get errorCodeReportNotFound => '該当する通報履歴が存在しません';
 
   @override
-  String get errorCodeReportTargetNotFound => '通報対象が見つかりません';
+  String get errorCodeReportTargetNotFound => 'このゲームに存在しない参加者です';
 }

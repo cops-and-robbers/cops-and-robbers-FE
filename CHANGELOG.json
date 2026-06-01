@@ -1,11 +1,28 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-01T03:43:58Z",
-    "currentVersion": "2.0.3",
+    "lastUpdated": "2026-06-01T04:59:48Z",
+    "currentVersion": "2.0.4",
     "projectType": "flutter",
-    "totalReleases": 98
+    "totalReleases": 99
   },
   "releases": [
+    {
+      "version": "2.0.4",
+      "project_type": "flutter",
+      "date": "2026-06-01",
+      "pr_number": 399,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #398 from cops-and-robbers/20260529_#386_errorCode_기반_실패_응답_분기_및_다국어_메시지_매핑_도입\n  * fix : errorCode i18n 메시지를 백엔드 detail 기준으로 정렬 #386\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #398 from cops-and-robbers/20260529_#386_errorCode_기반_실패_응답_분기_및_다국어_메시지_매핑_도입",
+            "fix : errorCode i18n 메시지를 백엔드 detail 기준으로 정렬 #386"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.0.3",
       "project_type": "flutter",
