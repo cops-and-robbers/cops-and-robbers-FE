@@ -1812,20 +1812,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeMissingRequestPart =>
-      'Required information is missing from the request';
+      'A required part of the request is missing';
 
   @override
-  String get errorCodeInvalidRequestBody => 'Invalid request format';
+  String get errorCodeInvalidRequestBody =>
+      'The request body format is invalid';
 
   @override
-  String get errorCodeInvalidQueryParameter => 'Invalid request format';
+  String get errorCodeInvalidQueryParameter =>
+      'The query parameter format is invalid';
 
   @override
-  String get errorCodeQueryParameterTypeMismatch => 'Invalid request format';
+  String get errorCodeQueryParameterTypeMismatch =>
+      'The request parameter type is invalid';
 
   @override
-  String get errorCodeInvalidInputValue =>
-      'Please check your input and try again';
+  String get errorCodeInvalidInputValue => 'The input failed validation';
 
   @override
   String get errorCodeInvalidDestination => 'Invalid connection path';
@@ -1842,11 +1844,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeInvalidSocketSession =>
-      'Connection lost. Please reconnect';
+      'Session not found. Please reconnect';
 
   @override
   String get errorCodeUnauthorizedSubscription =>
-      'You don\'t have permission to subscribe to this channel';
+      'You don\'t have permission to subscribe to this team\'s channel';
 
   @override
   String get errorCodeInternalServerError =>
@@ -1899,7 +1901,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeUnsupportedSocialType =>
-      'This login method is not supported';
+      'This social login method is not supported';
 
   @override
   String get errorCodeForbiddenAdminOnly => 'Admin permission is required';
@@ -1916,29 +1918,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeUserNotFound => 'User not found';
 
   @override
-  String get errorCodeDuplicatedNickname => 'This nickname is already taken';
+  String get errorCodeDuplicatedNickname =>
+      'This nickname is already taken. Please choose another one';
 
   @override
   String get errorCodeCannotWithdraw =>
-      'You can\'t withdraw while a game is in progress';
+      'You can\'t withdraw while a game session is in progress';
 
   @override
   String get errorCodeRequiredTermsNotAgreed =>
-      'Please agree to all required terms';
+      'You must agree to all required terms';
 
   @override
-  String get errorCodeGameNotFound => 'Game not found';
+  String get errorCodeGameNotFound => 'The requested game does not exist';
 
   @override
   String get errorCodeGameNotInProgress => 'The game is not in progress';
 
   @override
   String get errorCodeGameNotActive =>
-      'Only available in a waiting or active game';
+      'Can only be viewed in a waiting or in-progress game';
 
   @override
   String get errorCodeGameNotWaiting =>
-      'Changes can only be made while the game is waiting';
+      'Settings can only be changed while the game is waiting';
 
   @override
   String get errorCodeInvalidLocationInterval =>
@@ -1954,29 +1957,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeInvalidJailRadius =>
-      'Jail radius must be smaller than the playground';
+      'The jail radius cannot be greater than or equal to the playground radius';
 
   @override
   String get errorCodeJailOutsidePlayground =>
-      'The jail must be inside the playground';
+      'The jail must be completely inside the playground';
 
   @override
   String get errorCodeGameAreaNotFound => 'Game area not found';
 
   @override
-  String get errorCodeAlreadyParticipating => 'You are already in a game';
+  String get errorCodeAlreadyParticipating =>
+      'You are already participating in this game';
 
   @override
-  String get errorCodeGameAlreadyStarted => 'The game has already started';
+  String get errorCodeGameAlreadyStarted =>
+      'You can\'t join a game that has already started';
 
   @override
-  String get errorCodeGameFull => 'The game is full';
+  String get errorCodeGameFull =>
+      'The game has reached its maximum number of players';
 
   @override
-  String get errorCodeInvalidInviteCode => 'Invalid invite code';
+  String get errorCodeInvalidInviteCode =>
+      'The invite code you entered is invalid';
 
   @override
-  String get errorCodeParticipantNotFound => 'This user is not in the game';
+  String get errorCodeParticipantNotFound => 'This user is not in this game';
 
   @override
   String get errorCodeNotAParticipant =>
@@ -1984,39 +1991,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeCannotLeaveDuringGame =>
-      'You can\'t leave after the game has started';
+      'You can\'t leave the room after the game has started';
 
   @override
   String get errorCodeLobbyActionNotAllowed =>
-      'Changes are not allowed after the game has started';
+      'Lobby changes are not allowed after the game has started';
 
   @override
   String get errorCodeNotHost => 'Only the host can do this';
 
   @override
   String get errorCodeInvalidTeamComposition =>
-      'Each team must have at least one player';
+      'To start the game, the police and robber teams each need at least one player';
 
   @override
-  String get errorCodeNotAllReady => 'Everyone must be ready before starting';
+  String get errorCodeNotAllReady =>
+      'All participants must be ready to start the game';
 
   @override
   String get errorCodeNotRobberTeam => 'Only the robber team can send location';
 
   @override
-  String get errorCodeHostCannotUnready => 'The host is always ready';
+  String get errorCodeHostCannotUnready => 'The host must always be ready';
 
   @override
-  String get errorCodeParticipantGameMismatch => 'You are in different games';
+  String get errorCodeParticipantGameMismatch =>
+      'The police and robber are in different games';
 
   @override
-  String get errorCodeOnlyPoliceCanArrest => 'Only police can make arrests';
+  String get errorCodeOnlyPoliceCanArrest =>
+      'Only the police team can arrest robbers';
 
   @override
-  String get errorCodeOnlyRobberCanBeArrested => 'Only robbers can be arrested';
+  String get errorCodeOnlyRobberCanBeArrested =>
+      'Only the robber team can be arrested';
 
   @override
-  String get errorCodeOnlyRobberCanEscape => 'Only robbers can escape';
+  String get errorCodeOnlyRobberCanEscape => 'Only the robber team can escape';
 
   @override
   String get errorCodeAlreadyArrested => 'This robber is already jailed';
@@ -2026,10 +2037,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodePoliceWaitingTime =>
-      'Arrests are not allowed during the police wait time';
+      'Police can\'t arrest robbers during the wait time';
 
   @override
-  String get errorCodeCannotKickYourself => 'You can\'t kick yourself';
+  String get errorCodeCannotKickYourself => 'The host can\'t kick themselves';
 
   @override
   String get errorCodeNoticeNotFound => 'Notice not found';
@@ -2038,17 +2049,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeGameResultNotFound => 'Game result not found';
 
   @override
-  String get errorCodeEtcReasonRequired => 'Please enter a reason';
+  String get errorCodeEtcReasonRequired =>
+      'A reason is required when the report type is Other';
 
   @override
   String get errorCodeSelfReport => 'You can\'t report yourself';
 
   @override
-  String get errorCodeDuplicateReport => 'You\'ve already reported this user';
+  String get errorCodeDuplicateReport =>
+      'You\'ve already reported this user in this game';
 
   @override
-  String get errorCodeReportNotFound => 'Report not found';
+  String get errorCodeReportNotFound => 'The report does not exist';
 
   @override
-  String get errorCodeReportTargetNotFound => 'Report target not found';
+  String get errorCodeReportTargetNotFound =>
+      'This participant does not exist in the game';
 }
