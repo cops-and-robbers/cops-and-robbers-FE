@@ -1650,12 +1650,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGameJoinUnexpected => 'ゲーム参加中に予期しないエラーが発生しました';
 
   @override
-  String get errorInviteCodeInvalid => '無効な招待コードです';
-
-  @override
-  String get errorGameFull => 'この部屋は既に満員です';
-
-  @override
   String get errorAlreadyInAnotherRoom => '既に他の部屋に参加中です。今の部屋から退出してから再度お試しください';
 
   @override
@@ -1689,4 +1683,220 @@ class AppLocalizationsJa extends AppLocalizations {
   String shareInviteMessage(String inviteCode) {
     return 'ケイドロの部屋に招待されました！招待コード: $inviteCode';
   }
+
+  @override
+  String get errorCodeMissingRequestPart => 'リクエストに必要な情報が不足しています';
+
+  @override
+  String get errorCodeInvalidRequestBody => 'リクエストの形式が正しくありません';
+
+  @override
+  String get errorCodeInvalidQueryParameter => 'リクエストの形式が正しくありません';
+
+  @override
+  String get errorCodeQueryParameterTypeMismatch => 'リクエストの形式が正しくありません';
+
+  @override
+  String get errorCodeInvalidInputValue => '入力内容を確認してください';
+
+  @override
+  String get errorCodeInvalidDestination => '接続先が正しくありません';
+
+  @override
+  String get errorCodeUnsupportedMediaType => 'サポートされていない形式です';
+
+  @override
+  String get errorCodeMethodNotAllowed => '許可されていないリクエストです';
+
+  @override
+  String get errorCodeEndpointNotFound => 'リクエストパスが見つかりません';
+
+  @override
+  String get errorCodeInvalidSocketSession => '接続が切れました。再接続してください';
+
+  @override
+  String get errorCodeUnauthorizedSubscription => 'このチャンネルを購読する権限がありません';
+
+  @override
+  String get errorCodeInternalServerError =>
+      '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeFirebaseInitError => '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeFirebaseConfigNotFound =>
+      '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeEncryptionFailed => '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeDecryptionFailed => '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeInvalidEncryptionKey =>
+      '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeSocialLoginFailed => 'ソーシャルログインに失敗しました';
+
+  @override
+  String get errorCodeAccessTokenExpired => '認証の有効期限が切れました';
+
+  @override
+  String get errorCodeRefreshTokenExpired => 'ログインの有効期限が切れました。再度ログインしてください';
+
+  @override
+  String get errorCodeInvalidToken => '認証情報が正しくありません。再度ログインしてください';
+
+  @override
+  String get errorCodeUnauthenticatedRequest => 'ログインが必要です';
+
+  @override
+  String get errorCodeExpiredFirebaseToken => '認証の有効期限が切れました。もう一度お試しください';
+
+  @override
+  String get errorCodeInvalidFirebaseToken => '認証に失敗しました。もう一度お試しください';
+
+  @override
+  String get errorCodeUnsupportedSocialType => 'サポートされていないログイン方法です';
+
+  @override
+  String get errorCodeForbiddenAdminOnly => '管理者権限が必要です';
+
+  @override
+  String get errorCodeNicknameGenerationFailed =>
+      '会員登録に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeFirebaseServerError =>
+      '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeUserNotFound => 'ユーザーが見つかりません';
+
+  @override
+  String get errorCodeDuplicatedNickname => 'このニックネームはすでに使われています';
+
+  @override
+  String get errorCodeCannotWithdraw => '進行中のゲームがあるため退会できません';
+
+  @override
+  String get errorCodeRequiredTermsNotAgreed => '必須規約にすべて同意してください';
+
+  @override
+  String get errorCodeGameNotFound => 'ゲームが見つかりません';
+
+  @override
+  String get errorCodeGameNotInProgress => '進行中のゲームではありません';
+
+  @override
+  String get errorCodeGameNotActive => '待機中または進行中のゲームでのみ可能です';
+
+  @override
+  String get errorCodeGameNotWaiting => '待機中のゲームのみ変更できます';
+
+  @override
+  String get errorCodeInvalidLocationInterval => '位置公開間隔はラウンド時間より短くしてください';
+
+  @override
+  String get errorCodeInvalidPoliceWaitTime => '警察の待機時間はラウンド時間より短くしてください';
+
+  @override
+  String get errorCodeInviteCodeGenerationFailed =>
+      '招待コードの生成に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeInvalidJailRadius => '刑務所の半径はプレイグラウンドより小さくしてください';
+
+  @override
+  String get errorCodeJailOutsidePlayground => '刑務所はプレイグラウンド内に設置してください';
+
+  @override
+  String get errorCodeGameAreaNotFound => 'ゲームエリアが見つかりません';
+
+  @override
+  String get errorCodeAlreadyParticipating => 'すでにゲームに参加しています';
+
+  @override
+  String get errorCodeGameAlreadyStarted => 'ゲームはすでに開始されています';
+
+  @override
+  String get errorCodeGameFull => '定員に達しています';
+
+  @override
+  String get errorCodeInvalidInviteCode => '招待コードが正しくありません';
+
+  @override
+  String get errorCodeParticipantNotFound => 'このユーザーはゲームに参加していません';
+
+  @override
+  String get errorCodeNotAParticipant => 'このゲームの参加者ではありません';
+
+  @override
+  String get errorCodeCannotLeaveDuringGame => 'ゲーム開始後は退出できません';
+
+  @override
+  String get errorCodeLobbyActionNotAllowed => 'ゲーム開始後は変更できません';
+
+  @override
+  String get errorCodeNotHost => 'ホストのみ操作できます';
+
+  @override
+  String get errorCodeInvalidTeamComposition => '警察と泥棒チームにそれぞれ1名以上必要です';
+
+  @override
+  String get errorCodeNotAllReady => '全員が準備完了にならないと開始できません';
+
+  @override
+  String get errorCodeNotRobberTeam => '泥棒チームのみ位置を送信できます';
+
+  @override
+  String get errorCodeHostCannotUnready => 'ホストは常に準備完了状態です';
+
+  @override
+  String get errorCodeParticipantGameMismatch => '異なるゲームに参加しています';
+
+  @override
+  String get errorCodeOnlyPoliceCanArrest => '警察のみ逮捕できます';
+
+  @override
+  String get errorCodeOnlyRobberCanBeArrested => '泥棒のみ逮捕されます';
+
+  @override
+  String get errorCodeOnlyRobberCanEscape => '泥棒のみ脱獄できます';
+
+  @override
+  String get errorCodeAlreadyArrested => 'すでに収監されている泥棒です';
+
+  @override
+  String get errorCodeNotJailed => '収監中のみ脱獄できます';
+
+  @override
+  String get errorCodePoliceWaitingTime => '警察の待機時間中は逮捕できません';
+
+  @override
+  String get errorCodeCannotKickYourself => '自分自身を追放することはできません';
+
+  @override
+  String get errorCodeNoticeNotFound => 'お知らせが見つかりません';
+
+  @override
+  String get errorCodeGameResultNotFound => 'ゲーム結果が見つかりません';
+
+  @override
+  String get errorCodeEtcReasonRequired => 'その他の理由を入力してください';
+
+  @override
+  String get errorCodeSelfReport => '自分自身は通報できません';
+
+  @override
+  String get errorCodeDuplicateReport => 'すでにこのユーザーを通報しています';
+
+  @override
+  String get errorCodeReportNotFound => '通報履歴が見つかりません';
+
+  @override
+  String get errorCodeReportTargetNotFound => '通報対象が見つかりません';
 }

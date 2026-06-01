@@ -1772,12 +1772,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while joining the game';
 
   @override
-  String get errorInviteCodeInvalid => 'Invalid invite code';
-
-  @override
-  String get errorGameFull => 'This room is already full';
-
-  @override
   String get errorAlreadyInAnotherRoom =>
       'You\'re already in another room. Please leave it first';
 
@@ -1815,4 +1809,246 @@ class AppLocalizationsEn extends AppLocalizations {
   String shareInviteMessage(String inviteCode) {
     return 'You\'ve been invited to a Cops and Robbers room! Code: $inviteCode';
   }
+
+  @override
+  String get errorCodeMissingRequestPart =>
+      'Required information is missing from the request';
+
+  @override
+  String get errorCodeInvalidRequestBody => 'Invalid request format';
+
+  @override
+  String get errorCodeInvalidQueryParameter => 'Invalid request format';
+
+  @override
+  String get errorCodeQueryParameterTypeMismatch => 'Invalid request format';
+
+  @override
+  String get errorCodeInvalidInputValue =>
+      'Please check your input and try again';
+
+  @override
+  String get errorCodeInvalidDestination => 'Invalid connection path';
+
+  @override
+  String get errorCodeUnsupportedMediaType => 'Unsupported format';
+
+  @override
+  String get errorCodeMethodNotAllowed => 'This request is not allowed';
+
+  @override
+  String get errorCodeEndpointNotFound =>
+      'The requested path could not be found';
+
+  @override
+  String get errorCodeInvalidSocketSession =>
+      'Connection lost. Please reconnect';
+
+  @override
+  String get errorCodeUnauthorizedSubscription =>
+      'You don\'t have permission to subscribe to this channel';
+
+  @override
+  String get errorCodeInternalServerError =>
+      'A temporary error occurred. Please try again later';
+
+  @override
+  String get errorCodeFirebaseInitError =>
+      'A temporary error occurred. Please try again later';
+
+  @override
+  String get errorCodeFirebaseConfigNotFound =>
+      'A temporary error occurred. Please try again later';
+
+  @override
+  String get errorCodeEncryptionFailed =>
+      'A temporary error occurred. Please try again later';
+
+  @override
+  String get errorCodeDecryptionFailed =>
+      'A temporary error occurred. Please try again later';
+
+  @override
+  String get errorCodeInvalidEncryptionKey =>
+      'A temporary error occurred. Please try again later';
+
+  @override
+  String get errorCodeSocialLoginFailed => 'Social login failed';
+
+  @override
+  String get errorCodeAccessTokenExpired => 'Your session has expired';
+
+  @override
+  String get errorCodeRefreshTokenExpired =>
+      'Your login has expired. Please sign in again';
+
+  @override
+  String get errorCodeInvalidToken =>
+      'Invalid credentials. Please sign in again';
+
+  @override
+  String get errorCodeUnauthenticatedRequest => 'Please sign in to continue';
+
+  @override
+  String get errorCodeExpiredFirebaseToken =>
+      'Your session has expired. Please try again';
+
+  @override
+  String get errorCodeInvalidFirebaseToken =>
+      'Authentication failed. Please try again';
+
+  @override
+  String get errorCodeUnsupportedSocialType =>
+      'This login method is not supported';
+
+  @override
+  String get errorCodeForbiddenAdminOnly => 'Admin permission is required';
+
+  @override
+  String get errorCodeNicknameGenerationFailed =>
+      'Sign-up failed. Please try again later';
+
+  @override
+  String get errorCodeFirebaseServerError =>
+      'A temporary error occurred. Please try again later';
+
+  @override
+  String get errorCodeUserNotFound => 'User not found';
+
+  @override
+  String get errorCodeDuplicatedNickname => 'This nickname is already taken';
+
+  @override
+  String get errorCodeCannotWithdraw =>
+      'You can\'t withdraw while a game is in progress';
+
+  @override
+  String get errorCodeRequiredTermsNotAgreed =>
+      'Please agree to all required terms';
+
+  @override
+  String get errorCodeGameNotFound => 'Game not found';
+
+  @override
+  String get errorCodeGameNotInProgress => 'The game is not in progress';
+
+  @override
+  String get errorCodeGameNotActive =>
+      'Only available in a waiting or active game';
+
+  @override
+  String get errorCodeGameNotWaiting =>
+      'Changes can only be made while the game is waiting';
+
+  @override
+  String get errorCodeInvalidLocationInterval =>
+      'Location reveal interval must be shorter than the round time';
+
+  @override
+  String get errorCodeInvalidPoliceWaitTime =>
+      'Police wait time must be shorter than the round time';
+
+  @override
+  String get errorCodeInviteCodeGenerationFailed =>
+      'Failed to generate invite code. Please try again later';
+
+  @override
+  String get errorCodeInvalidJailRadius =>
+      'Jail radius must be smaller than the playground';
+
+  @override
+  String get errorCodeJailOutsidePlayground =>
+      'The jail must be inside the playground';
+
+  @override
+  String get errorCodeGameAreaNotFound => 'Game area not found';
+
+  @override
+  String get errorCodeAlreadyParticipating => 'You are already in a game';
+
+  @override
+  String get errorCodeGameAlreadyStarted => 'The game has already started';
+
+  @override
+  String get errorCodeGameFull => 'The game is full';
+
+  @override
+  String get errorCodeInvalidInviteCode => 'Invalid invite code';
+
+  @override
+  String get errorCodeParticipantNotFound => 'This user is not in the game';
+
+  @override
+  String get errorCodeNotAParticipant =>
+      'You are not a participant in this game';
+
+  @override
+  String get errorCodeCannotLeaveDuringGame =>
+      'You can\'t leave after the game has started';
+
+  @override
+  String get errorCodeLobbyActionNotAllowed =>
+      'Changes are not allowed after the game has started';
+
+  @override
+  String get errorCodeNotHost => 'Only the host can do this';
+
+  @override
+  String get errorCodeInvalidTeamComposition =>
+      'Each team must have at least one player';
+
+  @override
+  String get errorCodeNotAllReady => 'Everyone must be ready before starting';
+
+  @override
+  String get errorCodeNotRobberTeam => 'Only the robber team can send location';
+
+  @override
+  String get errorCodeHostCannotUnready => 'The host is always ready';
+
+  @override
+  String get errorCodeParticipantGameMismatch => 'You are in different games';
+
+  @override
+  String get errorCodeOnlyPoliceCanArrest => 'Only police can make arrests';
+
+  @override
+  String get errorCodeOnlyRobberCanBeArrested => 'Only robbers can be arrested';
+
+  @override
+  String get errorCodeOnlyRobberCanEscape => 'Only robbers can escape';
+
+  @override
+  String get errorCodeAlreadyArrested => 'This robber is already jailed';
+
+  @override
+  String get errorCodeNotJailed => 'You can only escape from jail';
+
+  @override
+  String get errorCodePoliceWaitingTime =>
+      'Arrests are not allowed during the police wait time';
+
+  @override
+  String get errorCodeCannotKickYourself => 'You can\'t kick yourself';
+
+  @override
+  String get errorCodeNoticeNotFound => 'Notice not found';
+
+  @override
+  String get errorCodeGameResultNotFound => 'Game result not found';
+
+  @override
+  String get errorCodeEtcReasonRequired => 'Please enter a reason';
+
+  @override
+  String get errorCodeSelfReport => 'You can\'t report yourself';
+
+  @override
+  String get errorCodeDuplicateReport => 'You\'ve already reported this user';
+
+  @override
+  String get errorCodeReportNotFound => 'Report not found';
+
+  @override
+  String get errorCodeReportTargetNotFound => 'Report target not found';
 }
