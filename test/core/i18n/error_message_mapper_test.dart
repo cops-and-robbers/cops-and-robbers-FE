@@ -50,13 +50,22 @@ void main() {
       expect(l10n.shouldUseBackendErrorCode(e), isFalse);
     });
 
-    test('false_when_code_is_null', () {
+    test('false_for_lowercase_code', () {
       const e = NetworkException(
         message: 'timeout',
         messageKey: 'errorNetworkTimeout',
         code: 'timeout',
       );
       // 'timeout'은 소문자이므로 백엔드 errorCode 포맷 정규식 불일치
+      expect(l10n.shouldUseBackendErrorCode(e), isFalse);
+    });
+
+    test('false_when_code_is_null', () {
+      // code 미지정 → null. 정규식 평가 이전 null/empty 가드(54행)에서 false
+      const e = NetworkException(
+        message: 'timeout',
+        messageKey: 'errorNetworkTimeout',
+      );
       expect(l10n.shouldUseBackendErrorCode(e), isFalse);
     });
   });
@@ -80,11 +89,20 @@ void main() {
       expect(l10n.errorByException(e), l10n.errorAuthInvalidCredential);
     });
 
-    test('uses_messageKey_when_code_is_null', () {
+    test('uses_messageKey_for_lowercase_code', () {
       const e = NetworkException(
         message: 'timeout',
         messageKey: 'errorNetworkTimeout',
         code: 'timeout',
+      );
+      expect(l10n.errorByException(e), l10n.errorNetworkTimeout);
+    });
+
+    test('uses_messageKey_when_code_is_null', () {
+      // code 미지정 → null. backend errorCode 경로 제외, messageKey 경로 사용
+      const e = NetworkException(
+        message: 'timeout',
+        messageKey: 'errorNetworkTimeout',
       );
       expect(l10n.errorByException(e), l10n.errorNetworkTimeout);
     });
