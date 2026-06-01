@@ -65,7 +65,7 @@ class _HomeCharacterStackState extends ConsumerState<HomeCharacterStack> {
         children: [
           // 뒤: 도둑 (우측, 하단 정렬)
           Positioned(
-            right: -16.w,
+            right: -24.w,
             bottom: 0,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -84,7 +84,7 @@ class _HomeCharacterStackState extends ConsumerState<HomeCharacterStack> {
           ),
           // 앞: 경찰 (좌측, 하단 정렬)
           Positioned(
-            left: -12.w,
+            left: -20.w,
             bottom: 0,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,

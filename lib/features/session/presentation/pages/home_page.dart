@@ -30,7 +30,6 @@ import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
-import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
@@ -663,25 +662,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               Expanded(
                 child: Column(
                   children: [
-                    SizedBox(height: AppSpacing.vertical24),
-
-                    // ── Icon Buttons Row (aligned right) ──
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SvgIconButton(
-                          assetPath: 'assets/icons/Top_hat.svg',
-                          onPressed: () {
-                            AppSnackbar.show(
-                              context,
-                              message: l10n.messageComingSoon,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: AppSpacing.vertical58),
+                    SizedBox(height: 134.h),
 
                     // ── Speech Bubble ──
                     // 클래식 스킨(이스터에그)일 때는 옛 환영 메시지, 기본은 치즈 메시지
