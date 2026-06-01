@@ -33,9 +33,14 @@ sealed class DeepLinkJoinOutcome with _$DeepLinkJoinOutcome {
     UserGameParticipationEntity? participation,
   }) = AlreadyInRoomOutcome;
 
-  /// 처리 불가 에러 — [messageKey] 로 사용자에게 메시지 표시
-  const factory DeepLinkJoinOutcome.failure({required String messageKey}) =
-      FailureOutcome;
+  /// 처리 불가 에러 — [messageKey] 또는 [errorCode] 로 사용자에게 메시지 표시.
+  ///
+  /// [errorCode] 가 있으면 UI 가 errorByCode 로 직접 변환한다.
+  /// [messageKey] 는 네트워크/내부 에러처럼 errorCode 가 없는 경로에 사용한다.
+  const factory DeepLinkJoinOutcome.failure({
+    String? messageKey,
+    String? errorCode,
+  }) = FailureOutcome;
 }
 
 /// 딥링크 초대 코드 수신 후 인증 확인 + join API 호출 + 에러 분기.
@@ -113,31 +118,31 @@ class DeepLinkJoinNotifier extends _$DeepLinkJoinNotifier {
   /// 에러를 [DeepLinkJoinOutcome] 으로 분류합니다.
   ///
   /// [DioExceptionHandler] 가 DioException 을 AppException 으로 변환할 때
-  /// message 는 영문 고정값('conflict', 'bad request' 등)이고, 백엔드 한국어 detail 은
-  /// code 필드(= RFC 7807 title)에 담깁니다. 따라서 message 한국어 매칭이 아닌
-  /// messageKey / code 필드로 분기해야 합니다.
-  ///
-  /// TODO: 백엔드가 errorCode 필드를 도입하면 한국어 title 매칭을 코드 매칭으로 교체하세요.
+  /// message 는 영문 고정값('conflict', 'bad request' 등)이고,
+  /// code 필드에 백엔드 errorCode 가 담깁니다.
+  /// ValidationException 은 errorCode 를 [FailureOutcome.errorCode] 로 전달하고
+  /// UI 가 errorByCode 로 사용자 메시지를 결정합니다.
   Future<DeepLinkJoinOutcome> _classifyError(Object error) async {
-    // 409 Conflict — join 흐름에서는 "이미 다른 방 참가 중" 의미
+    // 409 Conflict — join 흐름에서는 "이미 다른 방 참가 중" 의미.
+    // DioExceptionHandler 가 409 를 ServerException(messageKey: 'errorTemporaryRetry',
+    // code: 백엔드 errorCode) 으로 변환하므로, messageKey 가 아니라 errorCode 로 판별한다.
     if (error is ServerException) {
-      if (error.messageKey == 'errorConflict') {
+      if (error.code == 'ALREADY_PARTICIPATING') {
         return _resolveAlreadyInRoom();
+      }
+      if (error.code != null) {
+        return DeepLinkJoinOutcome.failure(errorCode: error.code);
       }
       return DeepLinkJoinOutcome.failure(
         messageKey: error.messageKey ?? 'errorServerInternal',
       );
     }
 
-    // 400 — 백엔드 title(code 필드)로 인원 초과 vs 일반 검증 실패 분기.
-    // DioExceptionHandler 가 400 응답을 ValidationException 으로 변환하며
-    // code 필드에 RFC 7807 title('게임 인원 초과' 등)을 그대로 전달합니다.
+    // 400 — 백엔드 errorCode를 그대로 UI 로 전달, UI 가 errorByCode 로 변환한다.
+    // errorCode 가 없는 드문 경우(파싱 실패 등)는 INVALID_INVITE_CODE 로 폴백.
     if (error is ValidationException) {
-      if (error.code == '게임 인원 초과') {
-        return const DeepLinkJoinOutcome.failure(messageKey: 'errorGameFull');
-      }
-      return const DeepLinkJoinOutcome.failure(
-        messageKey: 'errorInviteCodeInvalid',
+      return DeepLinkJoinOutcome.failure(
+        errorCode: error.code ?? 'INVALID_INVITE_CODE',
       );
     }
 

@@ -18,6 +18,10 @@ abstract class AppException implements Exception {
 
   /// 에러 코드 (선택사항)
   /// Error code (optional)
+  ///
+  /// `DioExceptionHandler`가 서버 응답으로 생성하는 경우 백엔드 errorCode(SCREAMING_SNAKE)를 담는다.
+  /// Firebase/소셜 인증 흐름은 provider 에러 코드(kebab-case 등)를 담는다 — 의미가 경로별로 다르므로
+  /// 사용자 노출 변환은 `error_message_mapper.shouldUseBackendErrorCode` 가드로 구분한다.
   final String? code;
 
   /// 원인이 된 예외 (선택사항)

@@ -161,6 +161,7 @@ DioException _gameNotInProgressException() {
         'status': 400,
         'detail': '게임이 진행 중인 상태가 아닙니다.',
         'instance': '/api/games/1/participants',
+        'errorCode': 'GAME_NOT_IN_PROGRESS',
       },
     ),
   );

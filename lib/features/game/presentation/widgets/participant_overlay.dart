@@ -90,7 +90,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     final apiError = ApiErrorResponse.tryParse(error.response?.data);
     return GameOverGuard.isGameNotInProgressError(
       statusCode: error.response?.statusCode,
-      title: apiError?.title,
+      errorCode: apiError?.errorCode,
     );
   }
 

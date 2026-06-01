@@ -11,6 +11,7 @@ import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/fcm/firebase_messaging_service.dart';
 import '../../../../core/constants/game_event_messages.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -334,9 +335,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     final accessToken = await tokenProvider.getAccessToken();
     if (accessToken == null) {
       debugPrint('[GameEventNotifier] ❌ 토큰 획득 실패');
+      final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
       state = state.copyWith(
         connectionState: StompConnectionState.error,
-        errorMessage: '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다.',
+        errorMessage: l10n.errorByCode('ACCESS_TOKEN_EXPIRED'),
       );
       return;
     }
@@ -517,9 +519,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     // 마이크로태스크에서 error로 덮어씌워 최종 상태를 error로 확정
     await Future.microtask(() {
       if (_isDisposed) return;
+      final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
       state = state.copyWith(
         connectionState: StompConnectionState.error,
-        errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+        errorMessage: l10n.errorServerUnreachable,
       );
       _intentionalDisconnect = false; // 수동 재연결(manualReconnect)은 허용
     });
@@ -886,9 +889,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     _reconnectCount++;
     if (_reconnectCount > _maxReconnectRetries) {
       debugPrint('[GameEventNotifier] ❌ 최대 재연결 횟수 초과 ($_maxReconnectRetries)');
+      final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
       state = state.copyWith(
         connectionState: StompConnectionState.error,
-        errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+        errorMessage: l10n.errorServerUnreachable,
       );
       return;
     }
@@ -957,9 +961,10 @@ class GameEventNotifier extends _$GameEventNotifier {
 
       if (_authRetryCount > _maxAuthRetries) {
         debugPrint('[GameEventNotifier] ❌ 인증 만료 - 최대 재시도 횟수 초과');
+        final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
         state = state.copyWith(
           connectionState: StompConnectionState.error,
-          errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
+          errorMessage: l10n.errorByCode('ACCESS_TOKEN_EXPIRED'),
         );
         return;
       }
@@ -971,9 +976,10 @@ class GameEventNotifier extends _$GameEventNotifier {
       if (_intentionalDisconnect || _gameId == null) return;
 
       if (newToken == null) {
+        final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
         state = state.copyWith(
           connectionState: StompConnectionState.error,
-          errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
+          errorMessage: l10n.errorByCode('ACCESS_TOKEN_EXPIRED'),
         );
         return;
       }
@@ -983,11 +989,13 @@ class GameEventNotifier extends _$GameEventNotifier {
       datasource.connect(ApiEndpoints.gameConnectionUrl, newToken);
       _isHandlingError = false;
     } else {
+      // 비-401 STOMP 에러: errorCode 기반 i18n 메시지 표시
+      final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
       state = state.copyWith(
         connectionState: StompConnectionState.error,
-        errorMessage: errorInfo.detail.isNotEmpty
-            ? errorInfo.detail
-            : 'STOMP 에러가 발생했습니다.',
+        errorMessage: errorInfo.errorCode != null
+            ? l10n.errorByCode(errorInfo.errorCode!)
+            : l10n.errorTemporaryRetry,
       );
       _isHandlingError = false; // 비-인증 에러: WebSocket 종료 후 재연결 허용
     }

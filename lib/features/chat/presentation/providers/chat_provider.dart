@@ -7,7 +7,10 @@ import 'package:uuid/uuid.dart';
 
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'chat_notification_provider.dart';
 import '../../data/datasources/chat_stomp_datasource.dart';
 import '../../../../core/constants/chat_constants.dart';
@@ -201,9 +204,10 @@ class ChatNotifier extends _$ChatNotifier {
     final accessToken = await tokenProvider.getAccessToken();
     if (accessToken == null) {
       debugPrint('[ChatNotifier] ❌ 토큰 획득 실패');
+      final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
       state = state.copyWith(
         connectionState: StompConnectionState.error,
-        errorMessage: '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다.',
+        errorMessage: l10n.errorByCode('ACCESS_TOKEN_EXPIRED'),
         errorMessageKey: 'errorAuthTokenMissing',
       );
       return;
@@ -576,9 +580,10 @@ class ChatNotifier extends _$ChatNotifier {
     _reconnectCount++;
     if (_reconnectCount > _maxReconnectRetries) {
       debugPrint('[ChatNotifier] ❌ 최대 재연결 횟수 초과 ($_maxReconnectRetries)');
+      final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
       state = state.copyWith(
         connectionState: StompConnectionState.error,
-        errorMessage: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+        errorMessage: l10n.errorServerUnreachable,
         errorMessageKey: 'errorServerUnreachable',
       );
       return;
@@ -668,9 +673,10 @@ class ChatNotifier extends _$ChatNotifier {
       // 무한 재연결 루프 방지
       if (_authRetryCount > _maxAuthRetries) {
         debugPrint('[ChatNotifier] ❌ 인증 만료 - 최대 재시도 횟수 초과 ($_maxAuthRetries)');
+        final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
         state = state.copyWith(
           connectionState: StompConnectionState.error,
-          errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
+          errorMessage: l10n.errorByCode('ACCESS_TOKEN_EXPIRED'),
           errorMessageKey: 'errorAuthExpired',
         );
         return;
@@ -690,9 +696,10 @@ class ChatNotifier extends _$ChatNotifier {
 
       if (newToken == null) {
         debugPrint('[ChatNotifier] ❌ 토큰 갱신 실패 - 재로그인 필요');
+        final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
         state = state.copyWith(
           connectionState: StompConnectionState.error,
-          errorMessage: '인증이 만료되었습니다. 재로그인이 필요합니다.',
+          errorMessage: l10n.errorByCode('ACCESS_TOKEN_EXPIRED'),
           errorMessageKey: 'errorAuthExpired',
         );
         return;
@@ -706,12 +713,14 @@ class ChatNotifier extends _$ChatNotifier {
       datasource.connect(wsUrl, newToken);
       _isHandlingError = false;
     } else {
-      // 비-401 STOMP 에러: 에러 메시지 표시
+      // 비-401 STOMP 에러: errorCode 기반 i18n 메시지 표시
+      // errorCode가 있으면 매핑 테이블에서, 없으면 공통 문구(errorTemporaryRetry) 반환
+      final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
       state = state.copyWith(
         connectionState: StompConnectionState.error,
-        errorMessage: errorInfo.detail.isNotEmpty
-            ? errorInfo.detail
-            : 'STOMP 에러가 발생했습니다.',
+        errorMessage: errorInfo.errorCode != null
+            ? l10n.errorByCode(errorInfo.errorCode!)
+            : l10n.errorTemporaryRetry,
       );
       _isHandlingError = false; // 비-인증 에러: WebSocket 종료 후 재연결 허용
     }

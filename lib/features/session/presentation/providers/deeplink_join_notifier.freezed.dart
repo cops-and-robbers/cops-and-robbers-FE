@@ -23,7 +23,7 @@ mixin _$DeepLinkJoinOutcome {
     required TResult Function(int gameId) joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
-    required TResult Function(String messageKey) failure,
+    required TResult Function(String? messageKey, String? errorCode) failure,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -31,14 +31,14 @@ mixin _$DeepLinkJoinOutcome {
     TResult? Function(int gameId)? joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
-    TResult? Function(String messageKey)? failure,
+    TResult? Function(String? messageKey, String? errorCode)? failure,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loginRedirect,
     TResult Function(int gameId)? joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
-    TResult Function(String messageKey)? failure,
+    TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -144,7 +144,7 @@ class _$LoginRedirectOutcomeImpl
     required TResult Function(int gameId) joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
-    required TResult Function(String messageKey) failure,
+    required TResult Function(String? messageKey, String? errorCode) failure,
   }) {
     return loginRedirect();
   }
@@ -156,7 +156,7 @@ class _$LoginRedirectOutcomeImpl
     TResult? Function(int gameId)? joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
-    TResult? Function(String messageKey)? failure,
+    TResult? Function(String? messageKey, String? errorCode)? failure,
   }) {
     return loginRedirect?.call();
   }
@@ -167,7 +167,7 @@ class _$LoginRedirectOutcomeImpl
     TResult Function()? loginRedirect,
     TResult Function(int gameId)? joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
-    TResult Function(String messageKey)? failure,
+    TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
   }) {
     if (loginRedirect != null) {
@@ -305,7 +305,7 @@ class _$JoinedRoomOutcomeImpl
     required TResult Function(int gameId) joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
-    required TResult Function(String messageKey) failure,
+    required TResult Function(String? messageKey, String? errorCode) failure,
   }) {
     return joinedRoom(gameId);
   }
@@ -317,7 +317,7 @@ class _$JoinedRoomOutcomeImpl
     TResult? Function(int gameId)? joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
-    TResult? Function(String messageKey)? failure,
+    TResult? Function(String? messageKey, String? errorCode)? failure,
   }) {
     return joinedRoom?.call(gameId);
   }
@@ -328,7 +328,7 @@ class _$JoinedRoomOutcomeImpl
     TResult Function()? loginRedirect,
     TResult Function(int gameId)? joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
-    TResult Function(String messageKey)? failure,
+    TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
   }) {
     if (joinedRoom != null) {
@@ -495,7 +495,7 @@ class _$AlreadyInRoomOutcomeImpl
     required TResult Function(int gameId) joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
-    required TResult Function(String messageKey) failure,
+    required TResult Function(String? messageKey, String? errorCode) failure,
   }) {
     return alreadyInRoom(participation);
   }
@@ -507,7 +507,7 @@ class _$AlreadyInRoomOutcomeImpl
     TResult? Function(int gameId)? joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
-    TResult? Function(String messageKey)? failure,
+    TResult? Function(String? messageKey, String? errorCode)? failure,
   }) {
     return alreadyInRoom?.call(participation);
   }
@@ -518,7 +518,7 @@ class _$AlreadyInRoomOutcomeImpl
     TResult Function()? loginRedirect,
     TResult Function(int gameId)? joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
-    TResult Function(String messageKey)? failure,
+    TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
   }) {
     if (alreadyInRoom != null) {
@@ -586,7 +586,7 @@ abstract class _$$FailureOutcomeImplCopyWith<$Res> {
     $Res Function(_$FailureOutcomeImpl) then,
   ) = __$$FailureOutcomeImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String messageKey});
+  $Res call({String? messageKey, String? errorCode});
 }
 
 /// @nodoc
@@ -602,13 +602,17 @@ class __$$FailureOutcomeImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? messageKey = null}) {
+  $Res call({Object? messageKey = freezed, Object? errorCode = freezed}) {
     return _then(
       _$FailureOutcomeImpl(
-        messageKey: null == messageKey
+        messageKey: freezed == messageKey
             ? _value.messageKey
             : messageKey // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
+        errorCode: freezed == errorCode
+            ? _value.errorCode
+            : errorCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -619,14 +623,16 @@ class __$$FailureOutcomeImplCopyWithImpl<$Res>
 class _$FailureOutcomeImpl
     with DiagnosticableTreeMixin
     implements FailureOutcome {
-  const _$FailureOutcomeImpl({required this.messageKey});
+  const _$FailureOutcomeImpl({this.messageKey, this.errorCode});
 
   @override
-  final String messageKey;
+  final String? messageKey;
+  @override
+  final String? errorCode;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'DeepLinkJoinOutcome.failure(messageKey: $messageKey)';
+    return 'DeepLinkJoinOutcome.failure(messageKey: $messageKey, errorCode: $errorCode)';
   }
 
   @override
@@ -634,7 +640,8 @@ class _$FailureOutcomeImpl
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'DeepLinkJoinOutcome.failure'))
-      ..add(DiagnosticsProperty('messageKey', messageKey));
+      ..add(DiagnosticsProperty('messageKey', messageKey))
+      ..add(DiagnosticsProperty('errorCode', errorCode));
   }
 
   @override
@@ -643,11 +650,13 @@ class _$FailureOutcomeImpl
         (other.runtimeType == runtimeType &&
             other is _$FailureOutcomeImpl &&
             (identical(other.messageKey, messageKey) ||
-                other.messageKey == messageKey));
+                other.messageKey == messageKey) &&
+            (identical(other.errorCode, errorCode) ||
+                other.errorCode == errorCode));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, messageKey);
+  int get hashCode => Object.hash(runtimeType, messageKey, errorCode);
 
   /// Create a copy of DeepLinkJoinOutcome
   /// with the given fields replaced by the non-null parameter values.
@@ -667,9 +676,9 @@ class _$FailureOutcomeImpl
     required TResult Function(int gameId) joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
-    required TResult Function(String messageKey) failure,
+    required TResult Function(String? messageKey, String? errorCode) failure,
   }) {
-    return failure(messageKey);
+    return failure(messageKey, errorCode);
   }
 
   @override
@@ -679,9 +688,9 @@ class _$FailureOutcomeImpl
     TResult? Function(int gameId)? joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
-    TResult? Function(String messageKey)? failure,
+    TResult? Function(String? messageKey, String? errorCode)? failure,
   }) {
-    return failure?.call(messageKey);
+    return failure?.call(messageKey, errorCode);
   }
 
   @override
@@ -690,11 +699,11 @@ class _$FailureOutcomeImpl
     TResult Function()? loginRedirect,
     TResult Function(int gameId)? joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
-    TResult Function(String messageKey)? failure,
+    TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
   }) {
     if (failure != null) {
-      return failure(messageKey);
+      return failure(messageKey, errorCode);
     }
     return orElse();
   }
@@ -738,10 +747,13 @@ class _$FailureOutcomeImpl
 }
 
 abstract class FailureOutcome implements DeepLinkJoinOutcome {
-  const factory FailureOutcome({required final String messageKey}) =
-      _$FailureOutcomeImpl;
+  const factory FailureOutcome({
+    final String? messageKey,
+    final String? errorCode,
+  }) = _$FailureOutcomeImpl;
 
-  String get messageKey;
+  String? get messageKey;
+  String? get errorCode;
 
   /// Create a copy of DeepLinkJoinOutcome
   /// with the given fields replaced by the non-null parameter values.

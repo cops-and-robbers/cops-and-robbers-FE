@@ -7,7 +7,7 @@ part of 'waiting_room_participants_provider.dart';
 // **************************************************************************
 
 String _$waitingRoomParticipantsHash() =>
-    r'7a4276ae06e255343a2a3e0c797ea0babb3e5300';
+    r'6acb835c3a710097a4cc889b4c356ac11af4f7e9';
 
 /// 대기실 참가자 목록 관리 Notifier
 ///

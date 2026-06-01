@@ -7,12 +7,16 @@ enum StompConnectionState { disconnected, connecting, connected, error }
 
 /// STOMP ERROR 프레임에서 파싱된 에러 정보
 class StompErrorInfo {
+  // 백엔드 v2.8.0+에서 추가된 에러 코드 (예: 'ACCESS_TOKEN_EXPIRED')
+  // 이전 버전 호환을 위해 optional 처리
+  final String? errorCode;
   final String title;
   final int status;
   final String detail;
   final String instance;
 
   const StompErrorInfo({
+    this.errorCode,
     required this.title,
     required this.status,
     required this.detail,
@@ -21,6 +25,7 @@ class StompErrorInfo {
 
   factory StompErrorInfo.fromJson(Map<String, dynamic> json) {
     return StompErrorInfo(
+      errorCode: json['errorCode'] as String?,
       title: json['title'] as String? ?? '',
       status: json['status'] as int? ?? 0,
       detail: json['detail'] as String? ?? '',

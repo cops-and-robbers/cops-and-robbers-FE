@@ -99,10 +99,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final accountDeleted = GoRouterState.of(
         context,
       ).uri.queryParameters['accountDeleted'];
-      // 강제 로그아웃 사유 메시지 (토큰 재발급 실패 등)
-      final forceLogoutMessage = ref.read(forceLogoutMessageProvider);
-      if (forceLogoutMessage != null) {
-        ref.read(forceLogoutMessageProvider.notifier).state = null;
+      // 강제 로그아웃 사유 messageKey (토큰 재발급 실패 등) — errorByKey로 i18n 변환
+      final forceLogoutKey = ref.read(forceLogoutMessageKeyProvider);
+      if (forceLogoutKey != null) {
+        ref.read(forceLogoutMessageKeyProvider.notifier).state = null;
       }
 
       if (accountDeleted == 'true') {
@@ -111,10 +111,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           message: AppLocalizations.of(context).messageAccountDeleted,
           backgroundColor: AppColors.blue,
         );
-      } else if (forceLogoutMessage != null) {
+      } else if (forceLogoutKey != null) {
         AppSnackbar.show(
           context,
-          message: forceLogoutMessage,
+          message: AppLocalizations.of(context).errorByKey(forceLogoutKey),
           backgroundColor: AppColors.red,
         );
       }

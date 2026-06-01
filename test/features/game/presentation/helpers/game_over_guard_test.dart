@@ -85,21 +85,31 @@ void main() {
   });
 
   group('GameOverGuard.isGameNotInProgressError', () {
-    test('returns_true_for_state_api_game_not_in_progress_400', () {
+    test('true_when_400_and_game_not_in_progress_code', () {
       expect(
         GameOverGuard.isGameNotInProgressError(
           statusCode: 400,
-          title: '게임 진행 중 아님',
+          errorCode: 'GAME_NOT_IN_PROGRESS',
         ),
         isTrue,
       );
     });
 
-    test('returns_false_for_other_400_errors', () {
+    test('false_when_other_errorCode', () {
       expect(
         GameOverGuard.isGameNotInProgressError(
           statusCode: 400,
-          title: '유효하지 않은 입력값',
+          errorCode: 'GAME_FULL',
+        ),
+        isFalse,
+      );
+    });
+
+    test('false_when_status_not_400', () {
+      expect(
+        GameOverGuard.isGameNotInProgressError(
+          statusCode: 409,
+          errorCode: 'GAME_NOT_IN_PROGRESS',
         ),
         isFalse,
       );
