@@ -137,7 +137,7 @@ const List<CreditMember> creditMembers = [
   CreditMember(
     name: '황혜림',
     role: 'Backend',
-    profileAssets: ['assets/credits/BE-HWANG.png'],
+    profileAssets: ['assets/credits/BE-HWANG.jpg'],
     links: [
       SocialLink(type: SocialType.github, url: 'https://github.com/HyerimH'),
       SocialLink(
