@@ -2,4 +2,10 @@
 <resources>
     <!-- 홈 화면 앱 이름 (일본어). ARB의 appBrandName과 일치 -->
     <string name="app_name">ケイドロ</string>
+
+    <!-- 게임 진행 중 포그라운드 서비스 알림 (일본어) -->
+    <string name="fgs_channel_name">ゲーム進行中</string>
+    <string name="fgs_channel_description">ケイドロのゲームが進行中であることを示す通知</string>
+    <string name="fgs_notification_title">ケイドロ</string>
+    <string name="fgs_notification_text">ゲームが進行中です</string>
 </resources>
