@@ -124,10 +124,10 @@ class AppLocalizationsJa extends AppLocalizations {
       'より良いサービスのためにメンテナンス中です\nしばらくしてからもう一度お試しください！';
 
   @override
-  String get buttonGoogleSignIn => 'Googleで始める';
+  String get buttonGoogleSignIn => 'Googleで続ける';
 
   @override
-  String get buttonAppleSignIn => 'Appleで始める';
+  String get buttonAppleSignIn => 'Appleで続ける';
 
   @override
   String zoneRadiusKm(String km) {

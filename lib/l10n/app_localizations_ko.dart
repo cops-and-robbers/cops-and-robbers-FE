@@ -122,10 +122,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageMaintenanceMessage => '더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!';
 
   @override
-  String get buttonGoogleSignIn => 'Google로 시작하기';
+  String get buttonGoogleSignIn => 'Google로 계속하기';
 
   @override
-  String get buttonAppleSignIn => 'Apple로 시작하기';
+  String get buttonAppleSignIn => 'Apple로 계속하기';
 
   @override
   String zoneRadiusKm(String km) {
