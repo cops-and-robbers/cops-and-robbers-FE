@@ -1,2 +1,8 @@
 /* 홈 화면 앱 이름 (한국어) */
 "CFBundleDisplayName" = "경찰과도둑";
+
+/* 권한 요청 문구 (한국어) */
+"NSLocationWhenInUseUsageDescription" = "게임 중 도둑 위치 공유와 구역 이탈 감지를 위해 위치 정보를 사용합니다. 화면이 꺼져 있거나 다른 앱을 사용 중일 때도 게임이 끝날 때까지 위치를 사용합니다. 위치는 같은 게임의 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "게임 중 도둑 위치 공유와 구역 이탈 감지를 위해 위치 정보를 사용합니다. 화면이 꺼져 있거나 다른 앱을 사용 중일 때도 게임이 끝날 때까지 위치를 사용합니다. 위치는 같은 게임의 참가자에게만 공유되며, 게임 종료 시 즉시 중단됩니다.";
+"NSCameraUsageDescription" = "게임 중 상대방의 QR코드를 스캔하여 체포를 수행합니다.";
+"NSUserNotificationsUsageDescription" = "게임 초대, 게임 시작, 체포 알림 등 게임 진행에 필요한 알림을 받기 위해 사용됩니다.";
