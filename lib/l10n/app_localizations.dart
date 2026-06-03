@@ -319,13 +319,13 @@ abstract class AppLocalizations {
   /// No description provided for @buttonGoogleSignIn.
   ///
   /// In ko, this message translates to:
-  /// **'Google로 시작하기'**
+  /// **'Google로 계속하기'**
   String get buttonGoogleSignIn;
 
   /// No description provided for @buttonAppleSignIn.
   ///
   /// In ko, this message translates to:
-  /// **'Apple로 시작하기'**
+  /// **'Apple로 계속하기'**
   String get buttonAppleSignIn;
 
   /// 구역 정보 — 반경 (km 단위)

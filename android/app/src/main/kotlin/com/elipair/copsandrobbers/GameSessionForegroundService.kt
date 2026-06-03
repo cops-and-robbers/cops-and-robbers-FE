@@ -27,7 +27,6 @@ class GameSessionForegroundService : android.app.Service() {
     companion object {
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "game_session_channel"
-        private const val CHANNEL_NAME = "게임 진행 중"
     }
 
     override fun onCreate() {
@@ -58,10 +57,10 @@ class GameSessionForegroundService : android.app.Service() {
 
         val channel = NotificationChannel(
             CHANNEL_ID,
-            CHANNEL_NAME,
+            getString(R.string.fgs_channel_name),
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
-            description = "경찰과 도둑 게임 진행 중 표시 알림"
+            description = getString(R.string.fgs_channel_description)
             setShowBadge(false)
         }
 
@@ -86,8 +85,8 @@ class GameSessionForegroundService : android.app.Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("경찰과 도둑")
-            .setContentText("게임이 진행 중입니다")
+            .setContentTitle(getString(R.string.fgs_notification_title))
+            .setContentText(getString(R.string.fgs_notification_text))
             .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
