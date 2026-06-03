@@ -7,6 +7,8 @@
 - 입력: 커밋 로그, 이슈 내용, 보고서 파일 등 어떤 형태든 받음
 - 출력: `.release-note/vX.Y.Z.md` 파일로 저장
 - 톤: **간결하고 담백하게**. 사실만
+- 인코딩: **완성형 한글(NFC)만 사용**. 자소 분리(NFD)·보이지 않는 문자는 App Store Connect가 "테스트 내용에 하나 이상의 잘못된 문자가 포함되어 있습니다" 오류로 거부함 → 반드시 검증 단계(4단계)를 거친다
+- **복사는 채팅이 아니라 저장된 파일에서**: 채팅 출력 과정에서 한글이 자소 분리될 수 있으므로, 본문 전체를 채팅에 출력하지 않고 파일로만 저장한다
 - **출력은 3개 섹션**:
   1. **Android (Google Play)** — `<ko-KR>` / `<en-US>` / `<ja-JP>` 태그로 감싼 요약 (콘솔에 통째로 붙여넣기)
   2. **iOS (App Store)** — `[한국어]` / `[English]` / `[日本語]` 블록 요약 (언어별 입력칸에 각각 붙여넣기)
@@ -22,6 +24,7 @@
 - 과장·재치있는 표현 금지 (사실만 담백하게)
 - `Claude`, `AI`, `자동 생성` 등 AI 관련 표현 금지
 - 작성자/작성일 메타 정보 금지
+- 자소 분리된 한글(NFD), 보이지 않는 문자(zero-width space, BOM, soft hyphen), 제어 문자 포함 금지
 
 ## 처리 절차
 
@@ -143,12 +146,52 @@ Key changes in this version:
 - Detail
 ```
 
-## 파일 저장
+## 파일 저장 및 문자 검증 (필수)
 
 1. `.release-note/` 폴더가 없으면 생성
 2. `.release-note/v{VERSION}.md` 경로에 저장
 3. 이미 파일이 있으면 덮어쓰기 전에 사용자에게 확인
-4. 저장 후 경로만 출력하고 종료
+4. **저장 직후 아래 스크립트를 반드시 실행**한다. 저장된 파일을 NFC로 강제 정규화하여 다시 쓰고, App Store Connect가 거부하는 위험 문자(자소 분리 한글·보이지 않는 문자·제어 문자)를 스캔한다. 이 단계를 건너뛰면 안 된다.
+
+```bash
+python3 - "$VERSION" <<'PY'
+import sys, unicodedata, pathlib
+
+version = sys.argv[1]
+path = pathlib.Path(".release-note") / f"v{version}.md"
+raw = path.read_text(encoding="utf-8")
+
+# 1) NFC 강제 정규화 (자소 분리 NFD → 완성형으로 복원)
+nfc = unicodedata.normalize("NFC", raw)
+if nfc != raw:
+    path.write_text(nfc, encoding="utf-8")
+    print(f"🔧 NFC 정규화 적용: 자소 분리 문자를 완성형으로 복원했습니다")
+
+# 2) 위험 문자 스캔
+INVISIBLE = {0x200B, 0x200C, 0x200D, 0xFEFF, 0x00AD, 0x00A0}
+bad = []
+for i, ch in enumerate(nfc):
+    cp = ord(ch)
+    if 0x1100 <= cp <= 0x11FF or 0xA960 <= cp <= 0xA97F or 0xD7B0 <= cp <= 0xD7FF:
+        bad.append((i, "자소분리(jamo)", hex(cp)))
+    elif unicodedata.combining(ch):
+        bad.append((i, "결합문자", hex(cp)))
+    elif cp in INVISIBLE:
+        bad.append((i, "보이지않는문자", hex(cp)))
+    elif cp < 0x20 and ch not in "\n\t":
+        bad.append((i, "제어문자", hex(cp)))
+
+if bad:
+    print(f"❌ 위험 문자 {len(bad)}건 발견 — 수동 확인 필요:")
+    for i, kind, cp in bad[:20]:
+        print(f"   위치 {i}: {kind} {cp}")
+    sys.exit(1)
+
+print(f"✅ 검증 통과: {path} (완성형 NFC, 위험 문자 0건 — App Store/Play 콘솔에 붙여넣기 안전)")
+PY
+```
+
+5. 스크립트가 `❌`로 실패하면 해당 문자를 직접 수정한 뒤 다시 검증하여 `✅`가 나올 때까지 반복한다.
 
 ## 작성 예시
 
@@ -265,4 +308,6 @@ Key changes in this version:
 
 ## 출력 후
 
-저장된 파일 경로만 간단히 안내하고 끝냅니다.
+- 릴리즈 노트 **본문 전체를 채팅에 다시 출력하지 않는다** (채팅 복사 시 자소 분리 위험).
+- 검증 스크립트의 `✅`/`❌` 결과와 **저장된 파일 경로만** 안내한다.
+- "콘솔에 붙여넣을 때는 채팅이 아니라 저장된 파일(`.release-note/vX.Y.Z.md`)을 열어 복사하세요"라고 한 줄 덧붙인다.

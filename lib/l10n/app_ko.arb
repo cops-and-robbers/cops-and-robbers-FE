@@ -56,8 +56,8 @@
   "pageForceUpdateButton": "업데이트",
   "pageMaintenanceTitle": "서버 점검 중",
   "pageMaintenanceMessage": "더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!",
-  "buttonGoogleSignIn": "Google로 시작하기",
-  "buttonAppleSignIn": "Apple로 시작하기",
+  "buttonGoogleSignIn": "Google로 계속하기",
+  "buttonAppleSignIn": "Apple로 계속하기",
   "zoneRadiusKm": "반경 {km}km",
   "@zoneRadiusKm": {
     "description": "구역 정보 — 반경 (km 단위)",

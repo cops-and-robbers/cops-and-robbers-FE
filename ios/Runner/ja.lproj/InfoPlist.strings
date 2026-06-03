@@ -1,2 +1,8 @@
 /* 홈 화면 앱 이름 (일본어). ARB의 appBrandName과 일치 */
 "CFBundleDisplayName" = "ケイドロ";
+
+/* 권한 요청 문구 (일본어) */
+"NSLocationWhenInUseUsageDescription" = "ゲーム中に泥棒の位置共有とエリア離脱の検知のために位置情報を使用します。画面がオフのときや他のアプリを使用中でも、ゲームが終了するまで位置情報を使用します。位置情報は同じゲームの参加者にのみ共有され、ゲーム終了時にただちに停止します。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "ゲーム中に泥棒の位置共有とエリア離脱の検知のために位置情報を使用します。画面がオフのときや他のアプリを使用中でも、ゲームが終了するまで位置情報を使用します。位置情報は同じゲームの参加者にのみ共有され、ゲーム終了時にただちに停止します。";
+"NSCameraUsageDescription" = "ゲーム中に相手のQRコードをスキャンして逮捕を行うために使用します。";
+"NSUserNotificationsUsageDescription" = "ゲームの招待、ゲーム開始、逮捕通知など、ゲーム進行に必要な通知を受け取るために使用します。";
