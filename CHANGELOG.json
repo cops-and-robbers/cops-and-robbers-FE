@@ -1,11 +1,31 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-05T05:04:10Z",
-    "currentVersion": "2.1.0",
+    "lastUpdated": "2026-06-05T11:18:31Z",
+    "currentVersion": "2.1.2",
     "projectType": "flutter",
-    "totalReleases": 103
+    "totalReleases": 104
   },
   "releases": [
+    {
+      "version": "2.1.2",
+      "project_type": "flutter",
+      "date": "2026-06-05",
+      "pr_number": 413,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #412 from cops-and-robbers/20260605_#410_Fastlane_배포_시_multi_json_누락으로_fastlane_실행_실패\n  * fix : Fastlane 배포 시 multi_json 누락 수정 #410\n  * Merge pull request #411 from cops-and-robbers/20260605_#406_설치_상태에서_초대_링크가_앱_대신_스토어로_이동\n  * fix : 콜드 스타트 딥링크 네비게이션 경합으로 홈에 갇히는 문제 수정 #406\n  * feat : 커스텀 스킴 딥링크(copsandrobbers://) 등록 및 파싱 #406\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #412 from cops-and-robbers/20260605_#410_Fastlane_배포_시_multi_json_누락으로_fastlane_실행_실패",
+            "fix : Fastlane 배포 시 multi_json 누락 수정 #410",
+            "Merge pull request #411 from cops-and-robbers/20260605_#406_설치_상태에서_초대_링크가_앱_대신_스토어로_이동",
+            "fix : 콜드 스타트 딥링크 네비게이션 경합으로 홈에 갇히는 문제 수정 #406",
+            "feat : 커스텀 스킴 딥링크(copsandrobbers://) 등록 및 파싱 #406"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.1.0",
       "project_type": "flutter",
