@@ -562,7 +562,7 @@ jobs:
       # Fastlane 설치 (Bundler 방식으로 CFPropertyList 의존성 충돌 방지)
       - name: Install Fastlane
         run: |
-          printf 'source "https://rubygems.org"\ngem "fastlane"\n' > Gemfile
+          printf 'source "https://rubygems.org"\ngem "fastlane"\ngem "multi_json"\n' > Gemfile
           bundle install
           echo "✅ Fastlane 설치 완료"
           bundle exec fastlane --version
