@@ -54,8 +54,11 @@ import '../widgets/qr_display_dialog.dart';
 import '../widgets/qr_scanner_page.dart';
 import '../widgets/game_timer_text.dart';
 import '../widgets/location_reveal_countdown.dart';
+import '../../domain/entities/ping.dart';
+import '../providers/ping_provider.dart';
 import '../widgets/google_map_view.dart';
 import '../widgets/participant_overlay.dart';
+import '../widgets/ping_selection_card.dart';
 import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
 import '../widgets/zone_exit_banner.dart';
@@ -105,6 +108,11 @@ class _GamePageState extends ConsumerState<GamePage>
 
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
+
+  // 핑 선택 카드 위치(logical px). null이면 카드 미표시.
+  Offset? _pingCardOffset;
+  // 카드에서 선택 시 사용할 롱프레스 좌표
+  LatLng? _pendingPingLatLng;
   bool _isCheckingGameStatus = false;
   bool _isLocationPermissionDenied = false;
   bool _isLocationFocused = true;
@@ -481,7 +489,10 @@ class _GamePageState extends ConsumerState<GamePage>
     if (widget.isDummy) return;
     _gameEventNotifier = ref.read(gameEventNotifierProvider.notifier);
     _gameEventDatasource = ref.read(gameEventStompDatasourceProvider);
-    _gameEventNotifier!.connectAndSubscribe(_gameId);
+    _gameEventNotifier!.connectAndSubscribe(
+      _gameId,
+      team: GameTeam.toLowerKey(widget.team),
+    );
     if (GameTeam.isRobber(widget.team)) _startLocationSending();
     _startHeadingTracking();
 
@@ -870,12 +881,64 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   void _onMapCameraMoved() {
+    _closePingCard();
     if (_isProgrammaticMove) {
       _isProgrammaticMove = false;
       return;
     }
     if (_isLocationFocused) {
       setState(() => _isLocationFocused = false);
+    }
+  }
+
+  /// 맵 롱프레스 → 화면 좌표 변환 후 선택 카드 표시
+  Future<void> _onMapLongPress(LatLng latLng) async {
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+    final offset = await _googleMapKey.currentState?.latLngToScreenOffset(
+      latLng,
+      dpr,
+    );
+    if (!mounted || offset == null) return;
+
+    final size = MediaQuery.of(context).size;
+    final clamped = Offset(
+      offset.dx.clamp(60.w, size.width - 60.w),
+      offset.dy.clamp(80.h, size.height - 80.h),
+    );
+
+    setState(() {
+      _pendingPingLatLng = latLng;
+      _pingCardOffset = clamped;
+    });
+  }
+
+  void _closePingCard() {
+    if (_pingCardOffset == null) return;
+    setState(() {
+      _pingCardOffset = null;
+      _pendingPingLatLng = null;
+    });
+  }
+
+  /// 발견/의심 선택 → addPing(rate-limit) → 카드 닫기
+  void _onSelectPing(PingType type) {
+    final latLng = _pendingPingLatLng;
+    if (latLng == null) return;
+    final ok = ref
+        .read(pingNotifierProvider.notifier)
+        .addPing(
+          type: type,
+          latitude: latLng.latitude,
+          longitude: latLng.longitude,
+          gameId: _gameId,
+        );
+    _closePingCard();
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).pingCooldownNotice),
+        ),
+      );
     }
   }
 
@@ -1212,7 +1275,10 @@ class _GamePageState extends ConsumerState<GamePage>
     final gameEventState = ref.read(gameEventNotifierProvider).connectionState;
     if (gameEventState != StompConnectionState.connected &&
         gameEventState != StompConnectionState.connecting) {
-      _gameEventNotifier?.connectAndSubscribe(_gameId);
+      _gameEventNotifier?.connectAndSubscribe(
+        _gameId,
+        team: GameTeam.toLowerKey(widget.team),
+      );
     }
 
     // 도둑 팀: 위치 전송 스트림이 끊겼으면 재시작
@@ -1476,6 +1542,12 @@ class _GamePageState extends ConsumerState<GamePage>
       });
     });
 
+    // 핑 provider 생존 유지(autoDispose) — 2.5초 타이머 도중 dispose 방지
+    ref.watch(pingNotifierProvider);
+    ref.listen(pingNotifierProvider, (prev, next) {
+      _googleMapKey.currentState?.updatePingMarkers(next, isDark: _isDarkMode);
+    });
+
     // 위치 권한 미허용 → 다이얼로그가 표시되는 동안 빈 화면
     if (_isLocationPermissionDenied) {
       return Scaffold(
@@ -1506,6 +1578,7 @@ class _GamePageState extends ConsumerState<GamePage>
             child: GoogleMapView(
               key: _googleMapKey,
               onCameraMoveStarted: _onMapCameraMoved,
+              onLongPress: _onMapLongPress,
               isDarkMode: _isDarkMode,
             ),
           ),
@@ -1659,6 +1732,34 @@ class _GamePageState extends ConsumerState<GamePage>
             ArrestLockOverlay(
               gameId: _gameId,
               myParticipantId: widget.participantId,
+            )
+          else
+            const SizedBox.shrink(),
+
+          /// index 6b: 핑 선택 카드 (if/else로 개수 고정 — ChatOverlay State 보존)
+          if (_pingCardOffset != null)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  GestureDetector(
+                    onTap: _closePingCard,
+                    behavior: HitTestBehavior.opaque,
+                    child: const SizedBox.expand(),
+                  ),
+                  Positioned(
+                    left: _pingCardOffset!.dx,
+                    top: _pingCardOffset!.dy,
+                    child: FractionalTranslation(
+                      translation: const Offset(-0.5, -1.0),
+                      child: PingSelectionCard(
+                        isDarkMode: _isDarkMode,
+                        onFound: () => _onSelectPing(PingType.found),
+                        onSuspect: () => _onSelectPing(PingType.suspect),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             )
           else
             const SizedBox.shrink(),

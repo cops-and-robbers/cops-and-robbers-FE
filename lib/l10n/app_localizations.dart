@@ -3680,6 +3680,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'해당 게임에 존재하지 않는 참가자입니다'**
   String get errorCodeReportTargetNotFound;
+
+  /// 맵 핑 선택 카드 — 상대 발견 핑 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'발견'**
+  String get pingFound;
+
+  /// 맵 핑 선택 카드 — 상대 의심 핑 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'의심'**
+  String get pingSuspect;
+
+  /// 핑 rate-limit 쿨다운 중 안내 (마침표 없음)
+  ///
+  /// In ko, this message translates to:
+  /// **'잠시 후 다시 시도해주세요'**
+  String get pingCooldownNotice;
 }
 
 class _AppLocalizationsDelegate

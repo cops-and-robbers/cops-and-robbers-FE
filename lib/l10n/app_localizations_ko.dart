@@ -1901,4 +1901,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeReportTargetNotFound => '해당 게임에 존재하지 않는 참가자입니다';
+
+  @override
+  String get pingFound => '발견';
+
+  @override
+  String get pingSuspect => '의심';
+
+  @override
+  String get pingCooldownNotice => '잠시 후 다시 시도해주세요';
 }

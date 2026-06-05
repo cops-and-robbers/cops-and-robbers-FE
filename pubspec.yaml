@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 2.0.8+261
+version: 2.0.9+262
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -39,6 +39,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4 # 민감 데이터 안전 저장
   flutter_dotenv: ^6.0.0 # 환경 변수 관리 (.env 파일)
   uuid: ^4.5.2 # 앱 내 고유 식별자 생성
+  clock: ^1.1.2 # 테스트에서 시간 제어 가능한 now() (rate-limit)
   # 소셜 로그인
   google_sign_in: ^6.2.3 # Google 소셜 로그인
   sign_in_with_apple: ^6.1.3 # Apple 소셜 로그인
@@ -88,6 +89,7 @@ dev_dependencies:
     sdk: flutter
   # 테스트 Mock 생성 (Classist TDD 스타일, 시스템 경계에서만 사용)
   mocktail: ^1.0.4
+  fake_async: ^1.3.3 # Timer/clock 가상 시간 (핑 소멸·rate-limit 테스트)
   # 코드 품질 및 자동화 도구
   flutter_lints: ^6.0.0 # 추천 코드 린트 규칙
   build_runner: ^2.4.14 # 코드 자동 생성 툴
