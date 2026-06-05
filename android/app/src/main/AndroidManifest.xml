@@ -64,6 +64,14 @@
                     android:host="copsnro66ers.site"
                     android:pathPrefix="/join/" />
             </intent-filter>
+            <!-- Custom scheme intent-filter: copsandrobbers://join/{code} -->
+            <!-- 인앱 브라우저(카톡 등)/QR에서 웹 브릿지가 앱을 깨울 때 사용. https App Links와 별개 폴백 경로 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="copsandrobbers" android:host="join" />
+            </intent-filter>
         </activity>
         <!-- 로케일별 런처 아이콘 (activity-alias). 동시에 1개만 enabled. -->
         <!-- 기본 enabled = en. ko/ja는 런타임 토글로 활성화(DONT_KILL_APP). -->

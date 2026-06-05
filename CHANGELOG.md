@@ -1,7 +1,20 @@
 # Changelog
 
-**현재 버전:** 2.1.0  
-**마지막 업데이트:** 2026-06-05T05:04:10Z  
+**현재 버전:** 2.1.2  
+**마지막 업데이트:** 2026-06-05T11:18:31Z  
+
+---
+
+## [2.1.2] - 2026-06-05
+
+**PR:** #413  
+
+**기타**
+- Merge pull request #412 from cops-and-robbers/20260605_#410_Fastlane_배포_시_multi_json_누락으로_fastlane_실행_실패
+- fix : Fastlane 배포 시 multi_json 누락 수정 #410
+- Merge pull request #411 from cops-and-robbers/20260605_#406_설치_상태에서_초대_링크가_앱_대신_스토어로_이동
+- fix : 콜드 스타트 딥링크 네비게이션 경합으로 홈에 갇히는 문제 수정 #406
+- feat : 커스텀 스킴 딥링크(copsandrobbers://) 등록 및 파싱 #406
 
 ---
 

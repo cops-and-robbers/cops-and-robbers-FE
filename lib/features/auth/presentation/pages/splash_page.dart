@@ -14,6 +14,8 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
+import '../../../../core/deeplink/deeplink_event.dart';
+import '../../../../core/deeplink/deeplink_service.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/network/network_failure_detector.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -147,6 +149,32 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         // Remote Config 실패 시 앱 정상 진행 (fail-open)
       }
 
+      if (!mounted) return;
+
+      // ================================================================
+      // 콜드 스타트 딥링크 양보 (cold-start 네비게이션 경합 방지)
+      // 초기 딥링크(초대)가 있으면 DeepLinkJoinPage 가 join + 대기방 이동을 단독
+      // 담당한다. splash 가 여기서 home/활성게임으로 이동하면, 토큰 만료로 join API
+      // 가 지연될 때 splash 의 go(home) 이 딥링크 페이지를 언마운트시켜, 뒤늦게 끝난
+      // go(대기방) 이 !mounted 로 폐기되고 사용자가 home 에 갇힌다.
+      // → 초대가 있으면 splash 는 네비게이션을 양보한다.
+      // coldStartDeeplinkProvider 는 deeplinkEvents 의 emit 과 동일한 dedup 을
+      // 공유하므로, 양보했는데 딥링크가 스킵돼 splash 에 갇히는 불일치는 없다.
+      // ================================================================
+      try {
+        final coldEvent = await ref
+            .read(coldStartDeeplinkProvider.future)
+            .timeout(const Duration(seconds: 2));
+        if (coldEvent is InviteJoinEvent) {
+          debugPrint('🔗 SplashPage: 콜드 스타트 딥링크 감지 → 네비게이션 양보');
+          return;
+        }
+      } on TimeoutException {
+        // 프로브 지연 시 양보하지 않고 정상 진행 (기존 동작 유지)
+        debugPrint('⚠️ SplashPage: 콜드 스타트 딥링크 프로브 타임아웃, 정상 진행');
+      } catch (e) {
+        debugPrint('⚠️ SplashPage: 콜드 스타트 딥링크 확인 실패, 정상 진행 - $e');
+      }
       if (!mounted) return;
 
       // auth 초기화 완료를 Riverpod future로 대기 (최대 5초)
