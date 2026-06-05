@@ -34,13 +34,10 @@ class PingSelectionCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
+          // 카드 padding은 각 셀(_cell)의 Padding으로 옮겨 탭 영역을 넓힌다.
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: AppRadius.medium,
-          ),
-          padding: EdgeInsets.symmetric(
-            horizontal: AppSpacing.horizontal16,
-            vertical: AppSpacing.vertical8,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -50,10 +47,10 @@ class PingSelectionCard extends StatelessWidget {
                 label: l10n.pingFound,
                 onTap: onFound,
               ),
+              // divider는 좌우 셀의 Padding이 간격을 만들어 주므로 margin 불필요.
               Container(
                 width: 2.w,
                 height: AppSpacing.vertical40,
-                margin: AppPadding.horizontal16,
                 decoration: BoxDecoration(
                   color: dividerColor,
                   borderRadius: BorderRadius.circular(2.r),
@@ -85,18 +82,26 @@ class PingSelectionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(iconAsset, width: 24.w, height: 24.w),
-          SizedBox(height: AppSpacing.vertical4),
-          Text(
-            label,
-            style: AppTextStyles.tag_12.copyWith(
-              color: isDarkMode ? AppColors.green : AppColors.white,
+      child: Padding(
+        // 기존 카드 padding(좌우16/상하8) + divider margin(16)을 셀로 흡수.
+        // → 아이콘/텍스트 주변 여백과 divider 경계까지 탭 영역이 확장된다.
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.horizontal16,
+          vertical: AppSpacing.vertical8,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(iconAsset, width: 24.w, height: 24.w),
+            SizedBox(height: AppSpacing.vertical4),
+            Text(
+              label,
+              style: AppTextStyles.tag_12.copyWith(
+                color: isDarkMode ? AppColors.green : AppColors.white,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
