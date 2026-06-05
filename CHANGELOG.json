@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-03T12:47:39Z",
-    "currentVersion": "2.0.8",
+    "lastUpdated": "2026-06-05T03:31:03Z",
+    "currentVersion": "2.0.9",
     "projectType": "flutter",
-    "totalReleases": 101
+    "totalReleases": 102
   },
   "releases": [
+    {
+      "version": "2.0.9",
+      "project_type": "flutter",
+      "date": "2026-06-05",
+      "pr_number": 408,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새로운 기능**\n  * 팀 팀원 간 좌표 공유를 위한 핑(Ping) 기능 추가: 지도에서 장시간 누르면 \"발견\" 또는 \"의심\" 핑을 전송할 수 있습니다.\n  * 핑 마커는 일정 시간 후 자동으로 제거되며, 전송 횟수 제한(쿨다운) 기능이 포함되어 있습니다.\n  * 영어, 일본어, 한국어로 지원합니다.\n\n* **문서**\n  * API 명세서 및 웹소켓 기반 핑 기능 문서 업데이트\n\n* **테스트**\n  * 핑 기능 동작 검증 테스트 추가",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "팀 팀원 간 좌표 공유를 위한 핑(Ping) 기능 추가: 지도에서 장시간 누르면 \"발견\" 또는 \"의심\" 핑을 전송할 수 있습니다.",
+            "핑 마커는 일정 시간 후 자동으로 제거되며, 전송 횟수 제한(쿨다운) 기능이 포함되어 있습니다.",
+            "영어, 일본어, 한국어로 지원합니다."
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "API 명세서 및 웹소켓 기반 핑 기능 문서 업데이트"
+          ]
+        },
+        "테스트": {
+          "title": "테스트",
+          "items": [
+            "핑 기능 동작 검증 테스트 추가"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.0.8",
       "project_type": "flutter",
