@@ -19,7 +19,7 @@
 - 헤더
   ```json
   {
-    "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMyIsImlhdCI6MTc4MDMyMTQwNywiZXhwIjoxNzgwMzI1MDA3fQ.Cemr6_NN9O_TWRsZhHB90Rhm4ltRq3-Wf4g2HwpJ5DTdH8UDwxp3RuGuH5AwMXyeTaDQVsZsgWZBbEWabUT5Yw"
+    "Authorization": "Bearer {Access_Token}"
   }
   ```
 
@@ -114,4 +114,4 @@
 | ------------------ | ----------------------------------------- |
 | 게임 미진행        | 게임이 시작되지 않았거나 이미 종료된 경우 |
 | 구역 이탈          | 전송 좌표가 플레이그라운드 반경 밖인 경우 |
-| 참여자가 아닌 경우 | ㅁㄴㅇ                                    |
+| 참여자가 아닌 경우 | 해당 게임의 참여자가 아닌 사용자가 핑을 전송한 경우 |
