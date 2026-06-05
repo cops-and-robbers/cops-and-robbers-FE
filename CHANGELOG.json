@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-05T03:31:03Z",
-    "currentVersion": "2.0.9",
+    "lastUpdated": "2026-06-05T05:04:10Z",
+    "currentVersion": "2.1.0",
     "projectType": "flutter",
-    "totalReleases": 102
+    "totalReleases": 103
   },
   "releases": [
+    {
+      "version": "2.1.0",
+      "project_type": "flutter",
+      "date": "2026-06-05",
+      "pr_number": 409,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **Chores**\n  * 애플리케이션 버전이 2.0.9에서 2.1.0으로 업데이트되었습니다.\n  * 빌드 번호가 264로 증가했습니다.\n  * 릴리스 날짜: 2026-06-05",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전이 2.0.9에서 2.1.0으로 업데이트되었습니다.",
+            "빌드 번호가 264로 증가했습니다.",
+            "릴리스 날짜: 2026-06-05"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.0.9",
       "project_type": "flutter",
