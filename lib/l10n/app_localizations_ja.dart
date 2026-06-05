@@ -1901,4 +1901,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeReportTargetNotFound => 'このゲームに存在しない参加者です';
+
+  @override
+  String get pingFound => '発見';
+
+  @override
+  String get pingSuspect => '疑い';
+
+  @override
+  String get pingCooldownNotice => 'しばらくしてからもう一度お試しください';
 }

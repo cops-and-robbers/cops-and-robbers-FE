@@ -91,4 +91,24 @@ class GameConfig {
   /// 리플레이 공격을 차단하기 위한 값이며, 정상 대면 체포 플로우(수 초 이내)는
   /// 충분히 여유 있게 커버한다.
   static const Duration qrPayloadTtl = Duration(seconds: 30);
+
+  // ============================================
+  // 핑 설정 (Ping Settings)
+  // ============================================
+
+  /// 핑 표시 후 자동 소멸 시간 (2.5초)
+  /// Ping auto-dismiss lifetime (2.5 seconds)
+  static const Duration pingLifetime = Duration(milliseconds: 2500);
+
+  /// 핑 rate-limit 관측 윈도우 (5초)
+  /// Ping rate-limit sliding window (5 seconds)
+  static const Duration pingRateWindow = Duration(seconds: 5);
+
+  /// 윈도우 내 허용 핑 횟수 (8회)
+  /// Allowed pings within the window (8 times)
+  static const int pingRateMaxCount = 8;
+
+  /// rate-limit 초과 시 핑 금지 시간 (3초)
+  /// Cooldown after exceeding the rate-limit (3 seconds)
+  static const Duration pingRateCooldown = Duration(seconds: 3);
 }

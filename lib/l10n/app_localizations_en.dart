@@ -2065,4 +2065,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeReportTargetNotFound =>
       'This participant does not exist in the game';
+
+  @override
+  String get pingFound => 'Found';
+
+  @override
+  String get pingSuspect => 'Suspect';
+
+  @override
+  String get pingCooldownNotice => 'Please try again shortly';
 }

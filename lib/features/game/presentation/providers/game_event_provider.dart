@@ -257,6 +257,7 @@ class GameEventNotifier extends _$GameEventNotifier {
   bool _isDisposed = false;
   bool _isManualReconnecting = false; // 수동 재연결 중복 호출 방지
   int? _gameId;
+  String? _team;
 
   @override
   GameEventState build() {
@@ -315,7 +316,8 @@ class GameEventNotifier extends _$GameEventNotifier {
   /// STOMP 연결 후 게임 이벤트 구독
   ///
   /// [gameId] 게임 ID
-  Future<void> connectAndSubscribe(int gameId) async {
+  /// [team] 팀 소문자 키 ('police' 또는 'robber')
+  Future<void> connectAndSubscribe(int gameId, {required String team}) async {
     final datasource = ref.read(gameEventStompDatasourceProvider);
 
     if (datasource.currentState == StompConnectionState.connecting ||
@@ -326,6 +328,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
     _gameId = gameId;
+    _team = team;
     _intentionalDisconnect = false;
     _isHandlingError = false;
     _reconnectCount = 0;
@@ -344,7 +347,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     }
 
     _setupStreams();
-    datasource.subscribeEvents(gameId);
+    datasource.subscribeEvents(gameId, team: team);
 
     final wsUrl = ApiEndpoints.gameConnectionUrl;
     debugPrint('[GameEventNotifier] 🔗 STOMP 연결 시도: $wsUrl (gameId: $gameId)');
@@ -396,6 +399,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     _reconnectCount = 0;
     _isHandlingError = false;
     _gameId = null;
+    _team = null;
 
     ref.read(gameEventStompDatasourceProvider).disconnect();
     state = state.copyWith(
@@ -929,7 +933,7 @@ class GameEventNotifier extends _$GameEventNotifier {
   }
 
   Future<void> _attemptReconnect() async {
-    if (_intentionalDisconnect || _gameId == null) return;
+    if (_intentionalDisconnect || _gameId == null || _team == null) return;
 
     final datasource = ref.read(gameEventStompDatasourceProvider);
     if (datasource.currentState == StompConnectionState.connecting ||
@@ -944,14 +948,14 @@ class GameEventNotifier extends _$GameEventNotifier {
     final tokenProvider = ref.read(tokenProviderProvider);
     final accessToken = await tokenProvider.getAccessToken();
 
-    if (_intentionalDisconnect || _gameId == null) return;
+    if (_intentionalDisconnect || _gameId == null || _team == null) return;
 
     if (accessToken == null) {
       _scheduleReconnect();
       return;
     }
 
-    datasource.subscribeEvents(_gameId!);
+    datasource.subscribeEvents(_gameId!, team: _team!);
     datasource.connect(ApiEndpoints.gameConnectionUrl, accessToken);
   }
 
@@ -985,7 +989,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       }
 
       debugPrint('[GameEventNotifier] ✅ 토큰 갱신 성공 - 재연결 시도');
-      datasource.subscribeEvents(_gameId!);
+      datasource.subscribeEvents(_gameId!, team: _team!);
       datasource.connect(ApiEndpoints.gameConnectionUrl, newToken);
       _isHandlingError = false;
     } else {

@@ -595,5 +595,17 @@
   "errorCodeSelfReport": "自分自身は通報できません",
   "errorCodeDuplicateReport": "このゲームですでにこのユーザーを通報しています",
   "errorCodeReportNotFound": "該当する通報履歴が存在しません",
-  "errorCodeReportTargetNotFound": "このゲームに存在しない参加者です"
+  "errorCodeReportTargetNotFound": "このゲームに存在しない参加者です",
+  "pingFound": "発見",
+  "@pingFound": {
+    "description": "マップピン選択カード — 相手を発見したピンのラベル"
+  },
+  "pingSuspect": "疑い",
+  "@pingSuspect": {
+    "description": "マップピン選択カード — 相手を疑うピンのラベル"
+  },
+  "pingCooldownNotice": "しばらくしてからもう一度お試しください",
+  "@pingCooldownNotice": {
+    "description": "ピンのレート制限クールダウン中に表示"
+  }
 }
