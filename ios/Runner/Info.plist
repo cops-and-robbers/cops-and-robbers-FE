@@ -38,6 +38,16 @@
 				<string>com.googleusercontent.apps.54954969671-6j0msdb9a037soorjjsnnf4a36sniep8</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.elipair.copsandrobbers.invite</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>copsandrobbers</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>

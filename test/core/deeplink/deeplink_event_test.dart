@@ -35,6 +35,23 @@ void main() {
         'https://copsnro66ers.site/join/A%2DB%2DC',
         () => const DeeplinkEvent.inviteJoin(inviteCode: 'A-B-C'),
       ),
+      (
+        '커스텀 스킴 정상 invite',
+        'copsandrobbers://join/ABC123',
+        () => const DeeplinkEvent.inviteJoin(inviteCode: 'ABC123'),
+      ),
+      (
+        '커스텀 스킴 코드 없음',
+        'copsandrobbers://join/',
+        () => DeeplinkEvent.unknown(uri: Uri.parse('copsandrobbers://join/')),
+      ),
+      (
+        '커스텀 스킴 허용되지 않은 host',
+        'copsandrobbers://friend/USER1',
+        () => DeeplinkEvent.unknown(
+          uri: Uri.parse('copsandrobbers://friend/USER1'),
+        ),
+      ),
     ];
 
     for (final (name, urlStr, expected) in cases) {
