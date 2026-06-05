@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // SvgStringLoader + vg const re-export
@@ -10,7 +11,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/services/location/device_location_service.dart';
+import '../../domain/entities/ping.dart';
 import 'map_error_widget.dart';
+import 'ping_marker_factory.dart';
 
 /// Google Maps 기반 게임 지도 뷰
 ///
@@ -20,10 +23,12 @@ class GoogleMapView extends StatefulWidget {
   const GoogleMapView({
     super.key,
     this.onCameraMoveStarted,
+    this.onLongPress,
     this.isDarkMode = false,
   });
 
   final VoidCallback? onCameraMoveStarted;
+  final ValueChanged<LatLng>? onLongPress;
   final bool isDarkMode;
 
   @override
@@ -44,6 +49,9 @@ class GoogleMapViewState extends State<GoogleMapView> {
   BitmapDescriptor? _redRobberMarker;
   BitmapDescriptor? _greenRobberMarker;
   Set<Marker> _robberMarkers = {};
+
+  // 핑 마커 (도둑 마커와 별도 세트, build에서 병합)
+  Set<Marker> _pingMarkers = {};
 
   // 페이드 애니메이션용 마커 원본 데이터 (alpha 재계산 시 사용)
   Map<int, LatLng> _robberLocations = {};
@@ -256,6 +264,49 @@ class GoogleMapViewState extends State<GoogleMapView> {
     _startFadeAnimation(rotationApplied: isFirstAppearance);
   }
 
+  /// LatLng → Flutter logical-pixel Offset 변환
+  ///
+  /// `getScreenCoordinate`가 반환하는 좌표 단위는 플랫폼마다 다르다:
+  /// - **Android**: device(physical) pixels → Positioned(logical)에 쓰려면 dpr로 나눠야 함
+  /// - **iOS**: 이미 logical pixels → 그대로 사용
+  ///
+  /// 이 차이를 무시하면 Android에서 카드가 dpr배 아래/오른쪽으로 밀린다(#405).
+  Future<Offset?> latLngToScreenOffset(
+    LatLng latLng,
+    double devicePixelRatio,
+  ) async {
+    final controller = _controller;
+    if (controller == null) return null;
+    final sc = await controller.getScreenCoordinate(latLng);
+    final divisor = defaultTargetPlatform == TargetPlatform.android
+        ? devicePixelRatio
+        : 1.0;
+    return Offset(sc.x / divisor, sc.y / divisor);
+  }
+
+  /// 핑 마커 갱신 (도둑 마커와 독립 — build에서 병합)
+  Future<void> updatePingMarkers(
+    List<Ping> pings, {
+    required bool isDark,
+  }) async {
+    final markers = <Marker>{};
+    for (final p in pings) {
+      final icon = await PingMarkerFactory.create(type: p.type, isDark: isDark);
+      markers.add(
+        Marker(
+          markerId: MarkerId('ping_${p.id}'),
+          position: LatLng(p.latitude, p.longitude),
+          icon: icon,
+          anchor: PingMarkerFactory.anchor,
+          consumeTapEvents: false,
+          zIndexInt: 1,
+        ),
+      );
+    }
+    if (!mounted) return;
+    setState(() => _pingMarkers = markers);
+  }
+
   /// 1사이클(1400ms): 페이드 아웃 → 완전 비표시 → 페이드 인 → 완전 표시
   /// [_blinkCycles]회 반복 후 영구 표시
   ///
@@ -345,6 +396,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
         },
 
         onCameraMoveStarted: widget.onCameraMoveStarted,
+        onLongPress: widget.onLongPress,
 
         // OS 내장 위치 마커 사용 — 커스텀 마커 대비 반응성 우수
         myLocationEnabled: true,
@@ -355,7 +407,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
         compassEnabled: false,
         circles: _areaCircles,
         polygons: _areaPolygons,
-        markers: _robberMarkers,
+        markers: {..._robberMarkers, ..._pingMarkers},
       );
     } catch (e, stack) {
       debugPrint('❌ GoogleMap 생성 실패: $e');

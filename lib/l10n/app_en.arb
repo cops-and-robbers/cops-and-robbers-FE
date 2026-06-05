@@ -595,5 +595,17 @@
   "errorCodeSelfReport": "You can't report yourself",
   "errorCodeDuplicateReport": "You've already reported this user in this game",
   "errorCodeReportNotFound": "The report does not exist",
-  "errorCodeReportTargetNotFound": "This participant does not exist in the game"
+  "errorCodeReportTargetNotFound": "This participant does not exist in the game",
+  "pingFound": "Found",
+  "@pingFound": {
+    "description": "Map ping selection card — spotted-enemy ping label"
+  },
+  "pingSuspect": "Suspect",
+  "@pingSuspect": {
+    "description": "Map ping selection card — suspected-enemy ping label"
+  },
+  "pingCooldownNotice": "Please try again shortly",
+  "@pingCooldownNotice": {
+    "description": "Shown during ping rate-limit cooldown (no trailing period)"
+  }
 }

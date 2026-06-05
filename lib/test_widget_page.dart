@@ -33,6 +33,7 @@ import 'features/auth/presentation/pages/nickname_setup_page.dart';
 import 'features/game/domain/entities/game_result_entity.dart';
 import 'features/game/presentation/providers/game_result_provider.dart';
 import 'features/game/presentation/widgets/game_over_result_dialog.dart';
+import 'features/game/presentation/widgets/ping_selection_card.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
 import 'features/session/presentation/widgets/session_info_view.dart';
@@ -1374,6 +1375,101 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // 맵 핑 (PingSelectionCard) 테스트
+                // ============================================
+                _buildSectionTitle('맵 핑 선택 카드 테스트'),
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  '롱프레스 시 좌표 위에 뜨는 발견/의심 선택 카드. 셀을 탭하면 스낵바로 표시돼요.',
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black400,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 경찰 (light) — 파란 카드
+                Text(
+                  '경찰 (light)',
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black600,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical8),
+                Center(
+                  child: PingSelectionCard(
+                    isDarkMode: false,
+                    onFound: () => _showPingSnack('발견 (경찰)'),
+                    onSuspect: () => _showPingSnack('의심 (경찰)'),
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical24),
+
+                // 도둑 (dark) — 검정 카드 (어두운 배경 위에서 확인)
+                Text(
+                  '도둑 (dark)',
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black600,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical8),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    vertical: AppSpacing.vertical24,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.black900,
+                    borderRadius: AppRadius.medium,
+                  ),
+                  child: Center(
+                    child: PingSelectionCard(
+                      isDarkMode: true,
+                      onFound: () => _showPingSnack('발견 (도둑)'),
+                      onSuspect: () => _showPingSnack('의심 (도둑)'),
+                    ),
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical24),
+
+                // 핑 마커 미리보기 (지도에 찍히는 핑은 종류 심볼 단독, 핀 꼬리 없음)
+                Text(
+                  '핑 마커 미리보기 (지도에는 종류 심볼만 — 핀 꼬리는 선택 카드 전용)',
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black600,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+                Row(
+                  children: [
+                    // light 마커 2종 (흰 배경)
+                    _buildPingMarkerPreview(type: 'found', isDark: false),
+                    SizedBox(width: AppSpacing.horizontal24),
+                    _buildPingMarkerPreview(type: 'suspect', isDark: false),
+                    SizedBox(width: AppSpacing.horizontal24),
+                    // dark 마커 2종 (어두운 배경)
+                    Container(
+                      padding: EdgeInsets.all(AppSpacing.horizontal12),
+                      decoration: BoxDecoration(
+                        color: AppColors.black900,
+                        borderRadius: AppRadius.medium,
+                      ),
+                      child: Row(
+                        children: [
+                          _buildPingMarkerPreview(type: 'found', isDark: true),
+                          SizedBox(width: AppSpacing.horizontal24),
+                          _buildPingMarkerPreview(
+                            type: 'suspect',
+                            isDark: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
               ],
             ),
           ),
@@ -1415,6 +1511,27 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
           onRematch: () => Navigator.of(context).pop(),
         ),
       ),
+    );
+  }
+
+  /// 핑 선택 카드 셀 탭 → 어떤 셀을 눌렀는지 스낵바로 표시 (시각 테스트용)
+  void _showPingSnack(String label) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('핑: $label', style: AppTextStyles.paragraph_14),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  /// 핑 마커 미리보기 (지도에 찍히는 핑은 종류 심볼 단독 — 핀 꼬리 없음)
+  Widget _buildPingMarkerPreview({required String type, required bool isDark}) {
+    final theme = isDark ? 'darkmode' : 'lightmode';
+    return SvgPicture.asset(
+      'assets/icons/icon_ping_${type}_marker_$theme.svg',
+      width: 24.w,
+      height: 24.w,
     );
   }
 
