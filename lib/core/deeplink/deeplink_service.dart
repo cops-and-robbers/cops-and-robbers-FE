@@ -10,75 +10,100 @@ import 'deeplink_event.dart';
 
 part 'deeplink_service.g.dart';
 
-/// `app_links` 를 래핑하여 cold start + warm 양쪽의 URI 를 Broadcast Stream 으로 노출.
+/// 마지막으로 처리한 딥링크 URI 를 기록하는 SharedPreferences 키.
 ///
-/// 앱 전역 단일 인스턴스 (keepAlive). 여러 listener 가능.
+/// cold-start 중복 처리 방지(dedup)에 쓰이며, [coldStartDeeplink] 와
+/// [deeplinkEvents] 의 warm 처리가 같은 키를 공유한다.
+const _lastHandledDeeplinkKey = 'last_handled_deeplink_uri';
+
+/// 콜드 스타트로 앱을 실행시킨 초기 딥링크를 1회 평가한다.
+///
+/// `getInitialLink()` 를 단 한 번 읽고 dedup(직전 처리 URI 비교)까지 적용해,
+/// "이번 콜드 스타트에서 실제로 처리할 [DeeplinkEvent]"(없으면 null)를 반환한다.
+///
+/// ## 왜 별도 단일 소스인가 (cold-start 네비게이션 경합 방지)
+/// [deeplinkEvents] 의 콜드 스타트 emit 과 SplashPage 의 "네비게이션 양보" 판단이
+/// 이 프로바이더 하나를 공유한다. 두 곳이 "처리함/안 함"에 대해 **같은 결론**을 갖게
+/// 만들어, splash 가 양보(home 이동 생략)했는데 딥링크 흐름은 dedup 으로 스킵해서
+/// 화면이 splash 에 갇히는 불일치를 원천 차단한다.
+///
+/// keepAlive 라 1회만 계산·캐시되므로 getInitialLink/dedup 도 정확히 1회만 수행된다.
 ///
 /// ## cold-start 중복 처리 방지 (idempotency)
 /// Android `singleTop` 액티비티는 앱을 실행시킨 VIEW intent(딥링크 URI)를 보관한다.
-/// 최근 앱 목록(recents)에서 재실행하면 OS 가 그 intent 를 다시 전달하고,
-/// `getInitialLink()` 는 매 실행마다 동일한 URI 를 반환한다. 가드가 없으면
-/// 앱 재실행마다 같은 초대 링크로 자동 재진입/재시도가 발생한다.
-/// → 직전 처리한 URI 를 영속 기록해, 동일 URI 의 cold-start 는 스킵한다.
+/// recents 에서 재실행하면 OS 가 그 intent 를 다시 전달하고 `getInitialLink()` 가
+/// 매번 같은 URI 를 반환하므로, 직전 처리 URI 와 같으면 스킵한다.
+@Riverpod(keepAlive: true)
+Future<DeeplinkEvent?> coldStartDeeplink(Ref ref) async {
+  final Uri? initial;
+  try {
+    initial = await AppLinks().getInitialLink();
+  } catch (e, st) {
+    debugPrint('[DeepLink] cold start 초기 링크 읽기 실패: $e\n$st');
+    return null;
+  }
+  if (initial == null) return null;
+
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString(_lastHandledDeeplinkKey) == initial.toString()) {
+      // 새 클릭이 아니라 OS 가 보관한 launch intent 재전달 → 자동 재진입 차단
+      debugPrint('[DeepLink] cold start 중복 스킵: $initial');
+      return null;
+    }
+    await prefs.setString(_lastHandledDeeplinkKey, initial.toString());
+  } catch (e) {
+    // prefs 실패 시 dedup 을 포기하고 처리 진행 (자동 진입을 막느니 한 번 더 시도)
+    debugPrint('[DeepLink] cold start last-handled 접근 실패(처리 진행): $e');
+  }
+
+  final event = DeeplinkEvent.fromUri(initial);
+  debugPrint('[DeepLink] cold start: $event');
+  return event;
+}
+
+/// `app_links` 를 래핑하여 cold start + warm 양쪽의 URI 를 Broadcast Stream 으로 노출.
+///
+/// 앱 전역 단일 인스턴스 (keepAlive). 여러 listener 가능.
+/// 콜드 스타트는 [coldStartDeeplink] 의 결과(dedup 적용 완료)를 emit 하고,
+/// warm(앱 실행 중 클릭)은 항상 처리하되 last-handled 를 갱신한다.
 @Riverpod(keepAlive: true)
 Stream<DeeplinkEvent> deeplinkEvents(Ref ref) {
   final appLinks = AppLinks();
   final controller = StreamController<DeeplinkEvent>.broadcast();
 
-  // 마지막으로 처리한 딥링크 URI (SharedPreferences 키)
-  const lastHandledKey = 'last_handled_deeplink_uri';
-
-  // 처리한 URI 를 기록한다. 이후 cold-start 에서 동일 URI 재전달 시 스킵 판단에 사용.
+  // warm 에서 처리한 URI 를 기록 — 이후 recents 재실행 cold-start 의 중복 처리 방지.
   Future<void> markHandled(Uri uri) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(lastHandledKey, uri.toString());
+      await prefs.setString(_lastHandledDeeplinkKey, uri.toString());
     } catch (e) {
       // 기록 실패는 치명적이지 않음 — 다음 실행에서 한 번 더 처리될 뿐이므로 무시
       debugPrint('[DeepLink] last-handled 저장 실패(무시): $e');
     }
   }
 
-  // 1. cold start URI 1회 처리 — 직전 처리한 URI 와 같으면 스킵(재실행 재전달).
-  Future<void> handleInitial() async {
+  // 1. cold start — 공유 프로브가 dedup 까지 끝낸 이벤트를 emit.
+  //    SplashPage 도 동일 프로브를 보고 네비게이션을 양보하므로 결론이 일치한다.
+  Future<void> emitColdStart() async {
     try {
-      final initial = await appLinks.getInitialLink();
-      if (initial == null) return;
-
-      String? last;
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        last = prefs.getString(lastHandledKey);
-      } catch (e) {
-        // 읽기 실패 시 가드를 포기하고 처리 진행 (자동 진입을 막느니 한 번 더 시도)
-        debugPrint('[DeepLink] last-handled 읽기 실패(처리 진행): $e');
-      }
-
-      if (initial.toString() == last) {
-        // 새 클릭이 아니라 OS 가 보관한 launch intent 재전달 → 자동 재시도 차단
-        debugPrint('[DeepLink] cold start 중복 스킵: $initial');
-        return;
-      }
-
-      await markHandled(initial);
-      final event = DeeplinkEvent.fromUri(initial);
-      debugPrint('[DeepLink] cold start: $event');
+      final event = await ref.read(coldStartDeeplinkProvider.future);
+      if (event == null || controller.isClosed) return;
       controller.add(event);
     } catch (e, st) {
-      debugPrint('[DeepLink] cold start error: $e\n$st');
+      debugPrint('[DeepLink] cold start emit error: $e\n$st');
     }
   }
 
-  unawaited(handleInitial());
+  unawaited(emitColdStart());
 
-  // 2. warm URI 스트림 구독 — 명시적 클릭이므로 항상 처리하되, marker 를 갱신해
-  //    이후 recents 재실행 시 같은 URI cold-start 가 중복 처리되지 않게 한다.
+  // 2. warm URI 스트림 구독 — 명시적 클릭이므로 항상 처리한다.
   final sub = appLinks.uriLinkStream.listen(
     (uri) {
       unawaited(markHandled(uri));
       final event = DeeplinkEvent.fromUri(uri);
       debugPrint('[DeepLink] warm: $event');
-      controller.add(event);
+      if (!controller.isClosed) controller.add(event);
     },
     onError: (e, st) {
       debugPrint('[DeepLink] stream error: $e\n$st');
