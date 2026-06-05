@@ -139,9 +139,20 @@ class GameEventStompDatasource extends BaseStompDatasource {
   void _handlePing(StompFrame frame) {
     if (isDisposed) return;
     if (frame.body == null || frame.body!.isEmpty) return;
+
+    if (kDebugMode) {
+      debugPrint('[$logTag] 📩 핑 수신 raw: ${frame.body}');
+    }
+
     try {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final dto = PingMessageDto.fromJson(json);
+      if (kDebugMode) {
+        debugPrint(
+          '[$logTag] 📩 핑 파싱 완료: ${dto.pingType} '
+          'from ${dto.pingSender.nickname}',
+        );
+      }
       _pingController.add(dto);
     } catch (e) {
       debugPrint('[$logTag] ❌ 핑 파싱 실패: $e');
