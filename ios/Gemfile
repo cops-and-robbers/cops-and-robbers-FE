@@ -7,3 +7,8 @@ gem "fastlane", "~> 2.225"
 
 # CocoaPods - iOS 의존성 관리
 gem "cocoapods", "~> 1.15"
+
+# multi_json - fastlane 액션(create_app_on_managed_play_store → google-apis →
+# representable)이 런타임에 require하지만, signet/googleauth가 더 이상 transitive
+# 의존으로 끌어오지 않아 직접 명시해야 번들에서 누락되지 않음
+gem "multi_json"
