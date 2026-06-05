@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v2.8.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- 모든 에러 응답에 `errorCode` 필드 추가 (예: `INVALID_INVITE_CODE`, `GAME_NOT_FOUND`)\n- STOMP 에러 응답에도 동일하게 적용\n",
+    "description": "## v2.9.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- 모든 에러 응답에 `errorCode` 필드 추가 (예: `INVALID_INVITE_CODE`, `GAME_NOT_FOUND`)\n- STOMP 에러 응답에도 동일하게 적용\n- USER_NOT_FOUND 응답 오타 수정\n- 핑 기능 추가 (노션 명세 \"핑\" 문서 참고)\n",
     "version": "2.8.0"
   },
   "servers": [
@@ -98,7 +98,7 @@
                       "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
-                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "detail": "해당 유저를 찾을 수 없습니다.",
                       "instance": "/api/user/agreements"
                     }
                   }
@@ -163,7 +163,7 @@
                       "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
-                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "detail": "해당 유저를 찾을 수 없습니다.",
                       "instance": "/api/user/agreements"
                     }
                   }
@@ -259,7 +259,7 @@
                       "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
-                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "detail": "해당 유저를 찾을 수 없습니다.",
                       "instance": "/api/user/agreements/game-push"
                     }
                   }
@@ -324,7 +324,7 @@
                       "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
-                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "detail": "해당 유저를 찾을 수 없습니다.",
                       "instance": "/api/user/agreements/game-push"
                     }
                   }
@@ -2712,7 +2712,7 @@
                       "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
-                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "detail": "해당 유저를 찾을 수 없습니다.",
                       "instance": "/api/user/me/nickname"
                     }
                   }
@@ -3138,7 +3138,7 @@
                       "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
-                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "detail": "해당 유저를 찾을 수 없습니다.",
                       "instance": "/api/user/me"
                     }
                   }
@@ -3200,7 +3200,7 @@
                       "errorCode": "USER_NOT_FOUND",
                       "title": "존재하지 않는 회원",
                       "status": 401,
-                      "detail": "해당 유저을 찾을 수 없습니다.",
+                      "detail": "해당 유저를 찾을 수 없습니다.",
                       "instance": "/api/user/me"
                     }
                   }
