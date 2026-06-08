@@ -397,7 +397,7 @@
   "settingsSectionEtc": "その他",
   "settingsEtcDeleteAccount": "退会",
   "settingsAppVersionLabel": "アプリバージョン",
-  "settingsSnsPrompt": "最新情報が気になるなら 👀",
+  "settingsSnsPrompt": "最新情報が気になるなら",
   "errorGameNotificationToggleFailed": "ゲーム通知の設定を変更できませんでした",
   "titleBugReport": "バグ報告",
   "fieldBugReportLabel": "バグ内容",

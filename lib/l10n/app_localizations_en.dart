@@ -1370,7 +1370,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAppVersionLabel => 'App version';
 
   @override
-  String get settingsSnsPrompt => 'Curious about updates? 👀';
+  String get settingsSnsPrompt => 'Curious about updates?';
 
   @override
   String get errorGameNotificationToggleFailed =>
