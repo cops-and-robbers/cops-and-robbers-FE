@@ -397,6 +397,7 @@
   "settingsSectionEtc": "Others",
   "settingsEtcDeleteAccount": "Delete account",
   "settingsAppVersionLabel": "App version",
+  "settingsSnsPrompt": "Curious about updates? 👀",
   "errorGameNotificationToggleFailed": "Failed to change game notification settings",
   "titleBugReport": "Bug report",
   "fieldBugReportLabel": "Bug details",

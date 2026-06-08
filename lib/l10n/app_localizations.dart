@@ -2487,6 +2487,12 @@ abstract class AppLocalizations {
   /// **'앱 버전'**
   String get settingsAppVersionLabel;
 
+  /// 설정 — 공식 SNS 채널 아이콘 행 상단 안내 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'소식이 궁금하다면 👀'**
+  String get settingsSnsPrompt;
+
   /// 게임 알림 설정 변경 실패 메시지
   ///
   /// In ko, this message translates to:
