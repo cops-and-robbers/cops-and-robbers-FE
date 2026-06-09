@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // SvgStringLoader + vg
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -15,8 +16,11 @@ import '../../domain/entities/ping.dart';
 class PingMarkerFactory {
   PingMarkerFactory._();
 
-  /// 마커 논리 크기 (24×24)
-  static const double _size = 24.0;
+  /// 마커 논리 크기 (24×24 기준, 기기 폭에 비례 — 튜토리얼 위젯과 동일 스케일)
+  ///
+  /// 위젯이 아닌 비트맵 렌더 컨텍스트지만, ScreenUtil의 `.w`는 전역 싱글턴이라
+  /// 위젯 밖에서도 동작한다(앱 루트 ScreenUtilInit 이후 항상 초기화됨).
+  static double get _size => 24.w;
 
   /// 좌표를 가리키는 anchor — 심볼 단독이라 중심 정렬 (기존 robber 마커와 동일)
   static const Offset anchor = Offset(0.5, 0.5);
