@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -1200,13 +1198,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           mainAxisSize: MainAxisSize.min,
           children: [
             // QR 코드 이미지
-            // 초대코드 JSON 인코딩 — 앱 내 QR 스캐너 (home_page 의 _showJoinRoomDialogInternal)
-            // 가 같은 자리 친구 빠른 입장에 사용. 카톡 등 원격 공유는 별도 공유 버튼이 딥링크 URL 을
-            // 전송하므로 QR 까지 URL 로 만들 필요는 없다.
+            // 딥링크 URL 인코딩 (share_util 의 공유 버튼과 동일 형식).
+            // 앱 내 QR 스캐너는 URL 뒤 초대코드를 파싱해 입장하고, 일반 카메라로
+            // 촬영하면 딥링크로 앱이 실행돼 자동 참가한다.
             ClipRRect(
               borderRadius: AppRadius.xxlarge,
               child: QrImageView(
-                data: jsonEncode({'inviteCode': code}),
+                data: buildInviteDeeplink(code),
                 version: QrVersions.auto,
                 size: 220.w,
                 backgroundColor: isDark ? AppColors.white : AppColors.black100,

@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'deeplink_constants.dart';
+
 part 'deeplink_event.freezed.dart';
 
 /// 딥링크 URI 를 의미 있는 sealed event 로 normalize.
@@ -26,8 +28,8 @@ sealed class DeeplinkEvent with _$DeeplinkEvent {
       return DeeplinkEvent.unknown(uri: uri);
     }
 
-    // https App Links / Universal Links: https://copsnro66ers.site/join/{inviteCode}
-    const allowedHosts = {'copsnro66ers.site'};
+    // https App Links / Universal Links: https://{host}/join/{inviteCode}
+    const allowedHosts = {DeeplinkConstants.host};
     if (!allowedHosts.contains(uri.host)) {
       return DeeplinkEvent.unknown(uri: uri);
     }
