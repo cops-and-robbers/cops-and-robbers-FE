@@ -1527,19 +1527,27 @@
   },
   "tutorialMissionParticipantsButton": "참가자 보기 버튼을 눌러보세요",
   "@tutorialMissionParticipantsButton": {
-    "description": "튜토리얼 미션 1/3 — 참가자 버튼 탭 안내"
+    "description": "튜토리얼 미션 — 참가자 버튼 탭 안내 (총 4 중 하나)"
   },
   "tutorialMissionQrButton": "QR 버튼을 눌러보세요",
   "@tutorialMissionQrButton": {
-    "description": "튜토리얼 미션 2/3 — QR 버튼 탭 안내"
+    "description": "튜토리얼 미션 — QR 버튼 탭 안내 (총 4 중 하나)"
   },
   "tutorialMissionMapButton": "지도로 돌아가 보세요",
   "@tutorialMissionMapButton": {
-    "description": "튜토리얼 미션 3/3 — 지도로 복귀 안내"
+    "description": "튜토리얼 미션 3/4 — 지도로 복귀 안내"
   },
-  "tutorialMissionProgress": "미션 {step}/3",
+  "tutorialMissionDropPing": "지도를 길게 눌러 핀을 찍어보세요",
+  "@tutorialMissionDropPing": {
+    "description": "튜토리얼 미션 4/4 — 지도 롱프레스로 핀 찍기 안내"
+  },
+  "tutorialPingLongPressHint": "맵 아무 곳이나 길게 눌러보세요",
+  "@tutorialPingLongPressHint": {
+    "description": "튜토리얼 — 지도 롱프레스 핀 찍기 힌트 인디케이터"
+  },
+  "tutorialMissionProgress": "미션 {step}/4",
   "@tutorialMissionProgress": {
-    "description": "튜토리얼 진행도 라벨 (현재 미션 / 총 3)",
+    "description": "튜토리얼 진행도 라벨 (현재 미션 / 총 4)",
     "placeholders": {
       "step": {
         "type": "String"
