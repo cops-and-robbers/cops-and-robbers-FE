@@ -26,17 +26,17 @@ class SnsChannelRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSpacing.horizontal24,
-        vertical: AppSpacing.vertical16,
-      ),
+      padding: AppPadding.all24,
       child: Column(
         children: [
           Text(
             l10n.settingsSnsPrompt,
-            style: AppTextStyles.tag_12.copyWith(color: AppColors.black500),
+            style: AppTextStyles.paragraph14Semibold.copyWith(
+              color: AppColors.black500,
+            ),
             textAlign: TextAlign.center,
           ),
+          // 안내 문구와 채널 아이콘을 시각적으로 한 묶음으로 보이도록 좁게 둔다
           SizedBox(height: AppSpacing.vertical24),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
