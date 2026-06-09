@@ -1,7 +1,27 @@
 # Changelog
 
-**현재 버전:** 2.1.2  
-**마지막 업데이트:** 2026-06-05T11:18:31Z  
+**현재 버전:** 2.2.0  
+**마지막 업데이트:** 2026-06-09T05:45:04Z  
+
+---
+
+## [2.2.0] - 2026-06-09
+
+**PR:** #421  
+
+**기타**
+- Update version.yml
+- Merge pull request #420 from cops-and-robbers/20260609_#419_길게_클릭_진동_피드백_추가_및_지도_핀_찍기_튜토리얼_안내_추가
+- feat : 공통 버튼 탭 햅틱 중앙화 #419
+- style : 핑 마커 크기 ScreenUtil 반응형 처리 #419
+- feat : 지도 핀 찍기 튜토리얼 안내 추가 #419
+- feat : 인게임 롱프레스·액션 버튼 진동 피드백 추가 #419
+- Merge pull request #418 from cops-and-robbers/20260609_#417_대기방_QR_코드를_딥링크_URL로_전환
+- feat : 대기방 QR 코드를 딥링크 URL로 전환 #417
+- Merge pull request #416 from cops-and-robbers/20260605_#414_공식_SNS_홍보_채널_바로가기_추가
+- style : SNS 안내 문구 문안 변경 및 여백·텍스트 스타일 조정 #414
+- style : SNS 안내 문구 이모지(👀) 제거 #414
+- feat : 설정 화면 공식 SNS 홍보 채널 바로가기 추가 #414
 
 ---
 
