@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../services/vibration_service.dart';
+
 /// 배경·그림자 없는 플랫 SVG 아이콘 버튼
 ///
 /// 상단바·툴바의 단순 탭 아이콘에 사용한다.
@@ -47,7 +49,10 @@ class FlatIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: () {
+        VibrationService.instance().buttonTap();
+        onPressed();
+      },
       // 아이콘 주변 여백까지 탭 영역으로 잡아 터치 실패 방지
       behavior: HitTestBehavior.opaque,
       child: SizedBox(

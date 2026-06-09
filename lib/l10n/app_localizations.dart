@@ -2679,28 +2679,40 @@ abstract class AppLocalizations {
   /// **'카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요'**
   String get tutorialQrCopHint;
 
-  /// 튜토리얼 미션 1/3 — 참가자 버튼 탭 안내
+  /// 튜토리얼 미션 — 참가자 버튼 탭 안내 (총 4 중 하나)
   ///
   /// In ko, this message translates to:
   /// **'참가자 보기 버튼을 눌러보세요'**
   String get tutorialMissionParticipantsButton;
 
-  /// 튜토리얼 미션 2/3 — QR 버튼 탭 안내
+  /// 튜토리얼 미션 — QR 버튼 탭 안내 (총 4 중 하나)
   ///
   /// In ko, this message translates to:
   /// **'QR 버튼을 눌러보세요'**
   String get tutorialMissionQrButton;
 
-  /// 튜토리얼 미션 3/3 — 지도로 복귀 안내
+  /// 튜토리얼 미션 3/4 — 지도로 복귀 안내
   ///
   /// In ko, this message translates to:
   /// **'지도로 돌아가 보세요'**
   String get tutorialMissionMapButton;
 
-  /// 튜토리얼 진행도 라벨 (현재 미션 / 총 3)
+  /// 튜토리얼 미션 4/4 — 지도 롱프레스로 핀 찍기 안내
   ///
   /// In ko, this message translates to:
-  /// **'미션 {step}/3'**
+  /// **'지도를 길게 눌러 핀을 찍어보세요'**
+  String get tutorialMissionDropPing;
+
+  /// 튜토리얼 — 지도 롱프레스 핀 찍기 힌트 인디케이터
+  ///
+  /// In ko, this message translates to:
+  /// **'맵 아무 곳이나 길게 눌러보세요'**
+  String get tutorialPingLongPressHint;
+
+  /// 튜토리얼 진행도 라벨 (현재 미션 / 총 4)
+  ///
+  /// In ko, this message translates to:
+  /// **'미션 {step}/4'**
   String tutorialMissionProgress(String step);
 
   /// 튜토리얼 — 도둑 시점 시연 상태 표시

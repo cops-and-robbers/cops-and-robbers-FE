@@ -1389,8 +1389,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tutorialMissionMapButton => '地図に戻ってみてください';
 
   @override
+  String get tutorialMissionDropPing => '地図を長押ししてピンを置いてみてください';
+
+  @override
+  String get tutorialPingLongPressHint => '地図のどこでも長押し';
+
+  @override
   String tutorialMissionProgress(String step) {
-    return 'ミッション $step/3';
+    return 'ミッション $step/4';
   }
 
   @override
