@@ -893,6 +893,8 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 맵 롱프레스 → 화면 좌표 변환 후 선택 카드 표시
   Future<void> _onMapLongPress(LatLng latLng) async {
+    // 롱프레스 인식 즉시 1회 — offset/mounted 분기와 무관하게 발생(= "인식 시")
+    VibrationService.instance().longPress();
     final dpr = MediaQuery.of(context).devicePixelRatio;
     final offset = await _googleMapKey.currentState?.latLngToScreenOffset(
       latLng,
@@ -1671,7 +1673,10 @@ class _GamePageState extends ConsumerState<GamePage>
                 children: [
                   SvgIconButton(
                     assetPath: 'assets/icons/icon_map.svg',
-                    onPressed: () => setState(() => _showParticipants = false),
+                    onPressed: () {
+                      VibrationService.instance().buttonTap();
+                      setState(() => _showParticipants = false);
+                    },
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
                     isDarkMode: _isDarkMode,
@@ -1693,7 +1698,10 @@ class _GamePageState extends ConsumerState<GamePage>
                   if (!_isZoneExitWarningActive) ...[
                     SvgIconButton(
                       assetPath: 'assets/icons/icon_person.svg',
-                      onPressed: () => setState(() => _showParticipants = true),
+                      onPressed: () {
+                        VibrationService.instance().buttonTap();
+                        setState(() => _showParticipants = true);
+                      },
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
                       isDarkMode: _isDarkMode,
@@ -1714,7 +1722,10 @@ class _GamePageState extends ConsumerState<GamePage>
               left: 20.w,
               bottom: actionButtonBottom,
               child: MyLocationButton(
-                onPressed: _moveToCurrentLocation,
+                onPressed: () {
+                  VibrationService.instance().buttonTap();
+                  _moveToCurrentLocation();
+                },
                 isFocused: _isLocationFocused,
                 focusedColor: _isDarkMode ? AppColors.green : AppColors.blue,
                 unfocusedColor: _isDarkMode
@@ -1908,9 +1919,14 @@ class _GamePageState extends ConsumerState<GamePage>
       assetPath: GameTeam.isPolice(widget.team)
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
-      onPressed: GameTeam.isPolice(widget.team)
-          ? _openQrScanner
-          : _showMyQrCode,
+      onPressed: () {
+        VibrationService.instance().buttonTap();
+        if (GameTeam.isPolice(widget.team)) {
+          _openQrScanner();
+        } else {
+          _showMyQrCode();
+        }
+      },
       backgroundColor: _isDarkMode ? AppColors.black : null,
       isDarkMode: _isDarkMode,
     );

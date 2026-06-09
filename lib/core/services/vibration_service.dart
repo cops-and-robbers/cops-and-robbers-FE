@@ -90,6 +90,9 @@ class VibrationService {
   /// 버튼 탭 햅틱 (OS 네이티브 — UI 피드백에 자연스러움)
   void buttonTap() => HapticFeedback.lightImpact();
 
+  /// 맵 롱프레스 햅틱 (OS 네이티브 — 의도적 제스처라 medium 임팩트)
+  void longPress() => HapticFeedback.mediumImpact();
+
   // ═══════════════════════════════════════════════════════════════════════
   // 채팅
   // ═══════════════════════════════════════════════════════════════════════
