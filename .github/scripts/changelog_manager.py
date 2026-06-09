@@ -391,6 +391,54 @@ def cmd_generate_md() -> int:
         return 1
 
 
+# ── 릴리즈 노트 정리 유틸 ──────────────────────────────────────────────
+# 머지/버전 관리 등 사용자에게 의미 없는 커밋 라인 (출시 노트에서 제외)
+_RELEASE_NOTE_NOISE_PREFIXES = (
+    "Merge pull request",
+    "Merge branch",
+    "Merge remote-tracking",
+    "Update version.yml",
+)
+_RELEASE_NOTE_TYPE_PREFIX = re.compile(
+    r"^(feat|fix|refactor|chore|docs|test|ci|perf|style|build)\s*:\s*",
+    re.IGNORECASE,
+)
+# Play Store는 언어별 출시 노트를 500자로 제한 (초과 시 업로드 거부됨)
+RELEASE_NOTE_MAX_CHARS = 500
+
+
+def _clean_release_item(item: str) -> str | None:
+    """raw 커밋 메시지를 사용자용 한 줄로 정리. 노이즈면 None 반환."""
+    s = (item or "").strip()
+    if not s:
+        return None
+    # 머지 커밋·버전 관리 커밋 제거
+    if s.startswith(_RELEASE_NOTE_NOISE_PREFIXES) or s.lower().startswith("merge "):
+        return None
+    # 'feat : ' 등 타입 접두어 제거
+    s = _RELEASE_NOTE_TYPE_PREFIX.sub("", s).strip()
+    # 끝의 ' #419' 같은 이슈 번호 제거
+    s = re.sub(r"\s*#\d+\s*$", "", s).strip()
+    return s or None
+
+
+def _truncate_release_notes(text: str, limit: int = RELEASE_NOTE_MAX_CHARS) -> str:
+    """언어별 길이 제한(Play 500자)을 넘으면 라인 경계로 안전하게 자른다."""
+    if len(text) <= limit:
+        return text
+    kept: list[str] = []
+    length = 0
+    for line in text.split("\n"):
+        addition = len(line) + (1 if kept else 0)  # 개행 1자 포함
+        if length + addition > limit:
+            break
+        kept.append(line)
+        length += addition
+    result = "\n".join(kept).rstrip()
+    # 첫 라인조차 제한을 넘으면 강제로 자른다(극히 드묾)
+    return result if result else text[:limit].rstrip()
+
+
 def cmd_export_release_notes(version: str, output_path: str | None) -> int:
     """CHANGELOG에서 해당 버전 릴리즈 노트를 생성."""
     notes_text = ""
@@ -409,11 +457,21 @@ def cmd_export_release_notes(version: str, output_path: str | None) -> int:
                     category_blocks: list[str] = []
                     for _, value in parsed_changes.items():
                         title = (value.get('title') or '').strip()
-                        items = [it for it in (value.get('items') or []) if it]
+                        items = [
+                            cleaned
+                            for it in (value.get('items') or [])
+                            if (cleaned := _clean_release_item(it))
+                        ]
                         if title and items:
                             block = "**" + title + "**\n" + "\n".join("- " + it for it in items)
                             category_blocks.append(block)
-                    body = "\n\n".join(category_blocks) if category_blocks else (matched.get('raw_summary') or '').strip()
+                    # 필터 후 남는 항목이 없으면(전부 노이즈) raw_summary 대신
+                    # 일반 문구 사용 — 노이즈 재유입 방지
+                    body = (
+                        "\n\n".join(category_blocks)
+                        if category_blocks
+                        else "앱 안정성 및 사용자 경험이 개선되었습니다."
+                    )
                 else:
                     body = (matched.get('raw_summary') or '').strip()
                 notes_text = (header + (body or "")).strip()
@@ -439,6 +497,9 @@ def cmd_export_release_notes(version: str, output_path: str | None) -> int:
     # 3) 최종 폴백
     if not notes_text:
         notes_text = f"버전 {version} 업데이트\n앱 안정성 및 사용자 경험이 개선되었습니다."
+
+    # 언어별 길이 제한(Play 500자) 안전망 — 모든 경로 공통 적용
+    notes_text = _truncate_release_notes(notes_text)
 
     if output_path:
         with open(output_path, 'w', encoding='utf-8') as f:
