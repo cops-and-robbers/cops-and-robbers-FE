@@ -20,6 +20,8 @@ import '../../../chat/presentation/widgets/chat_overlay.dart'
     show kChatOverlayCollapsedFixedHeight;
 import '../../../lobby/data/models/lobby_event_dto.dart';
 import '../../../session/presentation/widgets/team_section.dart';
+import '../../../game/domain/entities/ping.dart';
+import '../../../game/presentation/widgets/ping_selection_card.dart';
 
 /// 인게임 화면 튜토리얼
 ///
@@ -102,8 +104,18 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
     12: 'JAILED',
   };
 
-  /// 미션 진행도 (0=QR, 1=참가자, 2=지도복귀, 3=완료)
+  /// 미션 진행도 (0=QR, 1=참가자, 2=지도복귀, 3=핀찍기, 4=완료)
   int _missionStep = 0;
+
+  /// step 3 핀 선택 카드 표시 위치 (clamp 적용, null = 미표시)
+  Offset? _pingCardOffset;
+
+  /// step 3 롱프레스 원본 좌표 (배치 마커 기준점)
+  Offset? _pingTouchOffset;
+
+  /// 배치된 핀 (null = 아직 안 찍음)
+  Offset? _placedPingOffset;
+  PingType? _placedPingType;
 
   /// 펄스 애니메이션 컨트롤러 (활성 미션 타깃 버튼 강조용).
   ///
@@ -130,12 +142,45 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   /// 정답 버튼 탭 시 미션 진행
   void _tryAdvanceMission(int expectedStep) {
     if (_missionStep != expectedStep) return;
-    VibrationService.instance().buttonTap();
     setState(() => _missionStep++);
-    if (_missionStep >= 3) {
+    if (_missionStep >= 4) {
       // 화면 전환(_showParticipants=false) 후 살짝 텀 두고 다이얼로그
       Future.delayed(const Duration(milliseconds: 500), _showCompletionDialog);
     }
+  }
+
+  /// 지도 롱프레스 (step 3에서만 활성) — 햅틱 + 선택 카드 표시
+  ///
+  /// `localPosition`은 [_buildMapPlaceholder]가 `_buildMapMode` 최상위 Stack을
+  /// 가득 채우므로(Positioned.fill) 오버레이 Positioned와 동일 좌표계를 공유한다.
+  void _onTutorialMapLongPress(LongPressStartDetails details) {
+    if (_missionStep != 3) return; // step 3 전용(가이드 흐름 보호)
+    if (_placedPingOffset != null) return; // 이미 찍었으면 무시
+    VibrationService.instance().longPress();
+    final size = MediaQuery.of(context).size;
+    final raw = details.localPosition;
+    // 실 게임과 동일한 clamp(좌우 60.w, 상하 80.h) — 카드가 화면 밖으로 안 나가게
+    final clamped = Offset(
+      raw.dx.clamp(60.w, size.width - 60.w),
+      raw.dy.clamp(80.h, size.height - 80.h),
+    );
+    setState(() {
+      _pingTouchOffset = raw;
+      _pingCardOffset = clamped;
+    });
+  }
+
+  /// 발견/의심 선택 → 그 자리에 마커 배치 + 미션 진행
+  void _onTutorialSelectPing(PingType type) {
+    // 핀 선택 탭 햅틱 — PingSelectionCard는 공통 버튼이 아니라 자체 햅틱이 없어
+    // 여기서 직접 발동(SvgIconButton 미션 탭은 위젯 내장 햅틱이 담당)
+    VibrationService.instance().buttonTap();
+    setState(() {
+      _placedPingOffset = _pingTouchOffset;
+      _placedPingType = type;
+      _pingCardOffset = null; // 카드 닫기
+    });
+    _tryAdvanceMission(3);
   }
 
   /// 완료 다이얼로그
@@ -345,6 +390,49 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
             ),
           ),
         ),
+
+        // 5. 배치된 핀 마커 (step 3 선택 후) — center anchor 24×24 (실 게임 마커 동일)
+        if (_placedPingOffset != null && _placedPingType != null)
+          Positioned(
+            left: _placedPingOffset!.dx,
+            top: _placedPingOffset!.dy,
+            child: FractionalTranslation(
+              translation: const Offset(-0.5, -0.5),
+              child: SvgPicture.asset(
+                'assets/icons/icon_ping_'
+                '${_placedPingType == PingType.found ? 'found' : 'suspect'}'
+                '_marker_${_isDarkMode ? 'darkmode' : 'lightmode'}.svg',
+                width: 24.w,
+                height: 24.w,
+              ),
+            ),
+          ),
+
+        // 6. 핀 선택 카드 (롱프레스 시) — 바깥 탭으로 닫힘 (실 게임 구조 미러링)
+        if (_pingCardOffset != null)
+          Positioned.fill(
+            child: Stack(
+              children: [
+                GestureDetector(
+                  onTap: () => setState(() => _pingCardOffset = null),
+                  behavior: HitTestBehavior.opaque,
+                  child: const SizedBox.expand(),
+                ),
+                Positioned(
+                  left: _pingCardOffset!.dx,
+                  top: _pingCardOffset!.dy,
+                  child: FractionalTranslation(
+                    translation: const Offset(-0.5, -1.0),
+                    child: PingSelectionCard(
+                      isDarkMode: _isDarkMode,
+                      onFound: () => _onTutorialSelectPing(PingType.found),
+                      onSuspect: () => _onTutorialSelectPing(PingType.suspect),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -456,29 +544,41 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   /// 실제 [GoogleMapView]는 위치 권한을 요청하므로 튜토리얼에선 격자로 대체.
   /// 토글은 가독성을 위해 placeholder 중앙에 배치한다.
   Widget _buildMapPlaceholder() {
-    return Container(
-      color: _isDarkMode ? AppColors.black800 : AppColors.black100,
-      child: CustomPaint(
-        painter: _MapGridPainter(isDarkMode: _isDarkMode),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.map_outlined,
-                size: 56.w,
-                color: _isDarkMode ? AppColors.black600 : AppColors.black300,
-              ),
-              SizedBox(height: AppSpacing.vertical8),
-              Text(
-                AppLocalizations.of(context).tutorialMapPreviewLabel,
-                style: AppTextStyles.paragraph_14.copyWith(
-                  color: _isDarkMode ? AppColors.black400 : AppColors.black500,
+    return GestureDetector(
+      // step 3 전에는 핸들러가 즉시 return → 무반응
+      onLongPressStart: _onTutorialMapLongPress,
+      child: Container(
+        color: _isDarkMode ? AppColors.black800 : AppColors.black100,
+        child: CustomPaint(
+          painter: _MapGridPainter(isDarkMode: _isDarkMode),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.map_outlined,
+                  size: 56.w,
+                  color: _isDarkMode ? AppColors.black600 : AppColors.black300,
                 ),
-              ),
-              SizedBox(height: AppSpacing.vertical16),
-              _buildTeamToggle(),
-            ],
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  AppLocalizations.of(context).tutorialMapPreviewLabel,
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: _isDarkMode
+                        ? AppColors.black400
+                        : AppColors.black500,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+                _buildTeamToggle(),
+                if (_missionStep == 3 &&
+                    _pingCardOffset == null &&
+                    _placedPingOffset == null) ...[
+                  SizedBox(height: AppSpacing.vertical16),
+                  _buildLongPressHint(),
+                ],
+              ],
+            ),
           ),
         ),
       ),
@@ -574,15 +674,16 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   }
 
   /// 미션 배너 — 상단 타이머 바 바로 아래에 표시.
-  /// 3개 미션 모두 완료되면 숨김.
+  /// 4개 미션 모두 완료되면 숨김.
   Widget _buildMissionBanner() {
-    if (_missionStep >= 3) return const SizedBox.shrink();
+    if (_missionStep >= 4) return const SizedBox.shrink();
 
     final l10n = AppLocalizations.of(context);
     final descriptions = [
       l10n.tutorialMissionQrButton, // step 0 (QR 먼저)
       l10n.tutorialMissionParticipantsButton, // step 1
       l10n.tutorialMissionMapButton, // step 2
+      l10n.tutorialMissionDropPing, // step 3 (핀 찍기)
     ];
 
     final accentColor = _isDarkMode ? AppColors.green : AppColors.blue;
@@ -611,7 +712,7 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
-            children: List.generate(3, (i) {
+            children: List.generate(4, (i) {
               return Padding(
                 padding: EdgeInsets.only(left: 4.w),
                 child: Container(
@@ -669,6 +770,41 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
               style: AppTextStyles.tag12Semibold.copyWith(
                 color: _isDarkMode ? AppColors.white : AppColors.black,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// step 3 롱프레스 안내 힌트 — 펄스 scale로 주목도 부여(지도 중앙, 토글 아래)
+  Widget _buildLongPressHint() {
+    final accentColor = _isDarkMode ? AppColors.green : AppColors.blue;
+    return AnimatedBuilder(
+      animation: _pulseController,
+      builder: (_, child) {
+        final t = _pulseController.value; // 0.0 → 1.0
+        final scale = 1.0 + math.sin(t * math.pi) * 0.08;
+        return Transform.scale(scale: scale, child: child);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.horizontal16,
+          vertical: AppSpacing.vertical8,
+        ),
+        decoration: BoxDecoration(
+          color: _isDarkMode ? AppColors.black900 : AppColors.white,
+          borderRadius: AppRadius.xlarge,
+          border: Border.all(color: accentColor, width: 1.5),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.touch_app_outlined, size: 16.w, color: accentColor),
+            SizedBox(width: AppSpacing.horizontal6),
+            Text(
+              AppLocalizations.of(context).tutorialPingLongPressHint,
+              style: AppTextStyles.tag12Semibold.copyWith(color: accentColor),
             ),
           ],
         ),

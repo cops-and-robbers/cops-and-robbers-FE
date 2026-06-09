@@ -893,6 +893,8 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 맵 롱프레스 → 화면 좌표 변환 후 선택 카드 표시
   Future<void> _onMapLongPress(LatLng latLng) async {
+    // 롱프레스 인식 즉시 1회 — offset/mounted 분기와 무관하게 발생(= "인식 시")
+    VibrationService.instance().longPress();
     final dpr = MediaQuery.of(context).devicePixelRatio;
     final offset = await _googleMapKey.currentState?.latLngToScreenOffset(
       latLng,

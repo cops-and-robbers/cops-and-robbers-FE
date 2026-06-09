@@ -32,6 +32,7 @@ import '../../../user/presentation/providers/user_provider.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../credits/presentation/pages/credits_page.dart';
 import 'agreement_settings_page.dart';
+import '../widgets/sns_channel_row.dart';
 
 /// 설정 페이지
 ///
@@ -238,6 +239,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               textColor: AppColors.black600,
               onTap: _showDeleteAccountDialog,
             ),
+            SizedBox(height: AppSpacing.vertical8),
+
+            // ══════════════════════════════════════════
+            // 공식 SNS 채널
+            // ══════════════════════════════════════════
+            _buildSectionDivider(),
+            const SnsChannelRow(),
 
             SizedBox(height: AppSpacing.vertical64),
           ],

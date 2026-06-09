@@ -1281,6 +1281,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAppVersionLabel => '앱 버전';
 
   @override
+  String get settingsSnsPrompt => '더 많은 소식이 궁금하다면 👀';
+
+  @override
   String get errorGameNotificationToggleFailed => '게임 알림 설정을 변경하지 못했어요';
 
   @override
@@ -1385,8 +1388,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tutorialMissionMapButton => '지도로 돌아가 보세요';
 
   @override
+  String get tutorialMissionDropPing => '지도를 길게 눌러 핀을 찍어보세요';
+
+  @override
+  String get tutorialPingLongPressHint => '맵 아무 곳이나 길게 눌러보세요';
+
+  @override
   String tutorialMissionProgress(String step) {
-    return '미션 $step/3';
+    return '미션 $step/4';
   }
 
   @override

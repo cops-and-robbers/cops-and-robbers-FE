@@ -63,6 +63,19 @@ class AppColors {
   static const Color black100 = Color(0xFFEDF0F2);
 
   // ============================================
+  // 슬레이트 계열 (Slate Scale)
+  // 웹 디자인 레퍼런스와 동일 톤 — black 계열과 미묘하게 달라 별도 유지
+  // ============================================
+
+  /// 슬레이트 500 — SNS 글리프 색
+  /// Slate 500
+  static const Color slate500 = Color(0xFF64748B);
+
+  /// 슬레이트 100 — SNS 칩 원형 배경
+  /// Slate 100
+  static const Color slate100 = Color(0xFFF1F5F9);
+
+  // ============================================
   // 초록 계열 (Green Scale)
   // ============================================
 

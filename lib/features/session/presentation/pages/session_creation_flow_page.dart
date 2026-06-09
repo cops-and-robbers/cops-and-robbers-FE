@@ -19,7 +19,6 @@ import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
-import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
@@ -233,7 +232,6 @@ class _SessionCreationFlowPageState
 
   /// 다음 단계로 이동 (Step 0~2: "다음" / Step 3: "방 생성하기")
   Future<void> _goToNextStep() async {
-    VibrationService.instance().buttonTap();
     // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
     FocusScope.of(context).unfocus();
     if (_currentStep < 3) {

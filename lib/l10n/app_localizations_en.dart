@@ -1370,6 +1370,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAppVersionLabel => 'App version';
 
   @override
+  String get settingsSnsPrompt => 'Curious about more updates? 👀';
+
+  @override
   String get errorGameNotificationToggleFailed =>
       'Failed to change game notification settings';
 
@@ -1481,8 +1484,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tutorialMissionMapButton => 'Try returning to the map';
 
   @override
+  String get tutorialMissionDropPing =>
+      'Try long-pressing the map to drop a pin';
+
+  @override
+  String get tutorialPingLongPressHint => 'Long-press anywhere on the map';
+
+  @override
   String tutorialMissionProgress(String step) {
-    return 'Mission $step/3';
+    return 'Mission $step/4';
   }
 
   @override

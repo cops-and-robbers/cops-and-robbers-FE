@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/deeplink/deeplink_constants.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
@@ -25,7 +26,6 @@ import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/services/vibration_service.dart';
 import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -350,7 +350,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   ///
   /// 위치 권한 확인 후 세션 생성 플로우로 이동합니다.
   void _onCreateSession() {
-    VibrationService.instance().buttonTap();
     _ensureLocationPermission(
       onGranted: () => _ensureBatteryOptimization(
         onGranted: () async {
@@ -512,11 +511,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                 builder: (_) => QrScannerPage<String>(
                   title: l10n.dialogScanInviteQrTitle,
                   onParse: (rawValue) {
-                    // 1) 딥링크 URL 형식 (https://copsnro66ers.site/join/{code}) 우선 파싱.
+                    // 1) 딥링크 URL 형식 (https://{host}/join/{code}) 우선 파싱.
                     // 경로는 정확히 /join/{code}만 허용하고, 결과는 대문자로 정규화해
                     // 수동 입력 경로(toUpperCase)와 동작을 일치시킨다.
                     final uri = Uri.tryParse(rawValue);
-                    if (uri != null && uri.host == 'copsnro66ers.site') {
+                    if (uri != null && uri.host == DeeplinkConstants.host) {
                       final segments = uri.pathSegments;
                       if (segments.length == 2 &&
                           segments[0] == 'join' &&

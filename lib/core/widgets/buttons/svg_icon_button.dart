@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
+import '../../services/vibration_service.dart';
 
 /// SVG 아이콘을 감싼 컨테이너 버튼
 ///
@@ -56,7 +57,10 @@ class SvgIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: () {
+        VibrationService.instance().buttonTap();
+        onPressed();
+      },
       child: Container(
         width: containerSize.w,
         height: containerSize.w,
