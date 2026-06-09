@@ -13,21 +13,13 @@
       "pr_number": 421,
       "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Update version.yml\n  * Merge pull request #420 from cops-and-robbers/20260609_#419_길게_클릭_진동_피드백_추가_및_지도_핀_찍기_튜토리얼_안내_추가\n  * feat : 공통 버튼 탭 햅틱 중앙화 #419\n  * style : 핑 마커 크기 ScreenUtil 반응형 처리 #419\n  * feat : 지도 핀 찍기 튜토리얼 안내 추가 #419\n  * feat : 인게임 롱프레스·액션 버튼 진동 피드백 추가 #419\n  * Merge pull request #418 from cops-and-robbers/20260609_#417_대기방_QR_코드를_딥링크_URL로_전환\n  * feat : 대기방 QR 코드를 딥링크 URL로 전환 #417\n  * Merge pull request #416 from cops-and-robbers/20260605_#414_공식_SNS_홍보_채널_바로가기_추가\n  * style : SNS 안내 문구 문안 변경 및 여백·텍스트 스타일 조정 #414\n  * style : SNS 안내 문구 이모지(👀) 제거 #414\n  * feat : 설정 화면 공식 SNS 홍보 채널 바로가기 추가 #414\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
       "parsed_changes": {
-        "기타": {
-          "title": "기타",
+        "업데이트": {
+          "title": "업데이트",
           "items": [
-            "Update version.yml",
-            "Merge pull request #420 from cops-and-robbers/20260609_#419_길게_클릭_진동_피드백_추가_및_지도_핀_찍기_튜토리얼_안내_추가",
-            "feat : 공통 버튼 탭 햅틱 중앙화 #419",
-            "style : 핑 마커 크기 ScreenUtil 반응형 처리 #419",
-            "feat : 지도 핀 찍기 튜토리얼 안내 추가 #419",
-            "feat : 인게임 롱프레스·액션 버튼 진동 피드백 추가 #419",
-            "Merge pull request #418 from cops-and-robbers/20260609_#417_대기방_QR_코드를_딥링크_URL로_전환",
-            "feat : 대기방 QR 코드를 딥링크 URL로 전환 #417",
-            "Merge pull request #416 from cops-and-robbers/20260605_#414_공식_SNS_홍보_채널_바로가기_추가",
-            "style : SNS 안내 문구 문안 변경 및 여백·텍스트 스타일 조정 #414",
-            "style : SNS 안내 문구 이모지(👀) 제거 #414",
-            "feat : 설정 화면 공식 SNS 홍보 채널 바로가기 추가 #414"
+            "설정 화면에 공식 SNS 채널 바로가기를 추가했습니다",
+            "대기방 QR 코드로 더 간편하게 방에 참여할 수 있습니다",
+            "버튼과 지도 조작에 진동 피드백을 추가했습니다",
+            "지도에 핀 찍는 법 튜토리얼 안내를 추가했습니다"
           ]
         }
       },
