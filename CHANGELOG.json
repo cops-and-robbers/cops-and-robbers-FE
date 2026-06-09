@@ -1,11 +1,27 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-09T05:45:04Z",
-    "currentVersion": "2.2.0",
+    "lastUpdated": "2026-06-09T06:33:28Z",
+    "currentVersion": "2.2.1",
     "projectType": "flutter",
-    "totalReleases": 105
+    "totalReleases": 106
   },
   "releases": [
+    {
+      "version": "2.2.1",
+      "project_type": "flutter",
+      "date": "2026-06-09",
+      "pr_number": 422,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * fix : 릴리즈 노트 길이 초과로 인한 배포 실패 수정\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "fix : 릴리즈 노트 길이 초과로 인한 배포 실패 수정"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.2.0",
       "project_type": "flutter",
