@@ -1397,6 +1397,10 @@
   "@settingsAppVersionLabel": {
     "description": "설정 — 앱 버전 표시 메뉴 라벨"
   },
+  "settingsSnsPrompt": "더 많은 소식이 궁금하다면 👀",
+  "@settingsSnsPrompt": {
+    "description": "설정 — 공식 SNS 채널 아이콘 행 상단 안내 문구"
+  },
   "errorGameNotificationToggleFailed": "게임 알림 설정을 변경하지 못했어요",
   "@errorGameNotificationToggleFailed": {
     "description": "게임 알림 설정 변경 실패 메시지"

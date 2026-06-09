@@ -1281,6 +1281,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAppVersionLabel => 'アプリバージョン';
 
   @override
+  String get settingsSnsPrompt => 'もっと最新情報が気になるなら 👀';
+
+  @override
   String get errorGameNotificationToggleFailed => 'ゲーム通知の設定を変更できませんでした';
 
   @override

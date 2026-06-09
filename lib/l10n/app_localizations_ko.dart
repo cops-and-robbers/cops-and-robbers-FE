@@ -1281,6 +1281,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAppVersionLabel => '앱 버전';
 
   @override
+  String get settingsSnsPrompt => '더 많은 소식이 궁금하다면 👀';
+
+  @override
   String get errorGameNotificationToggleFailed => '게임 알림 설정을 변경하지 못했어요';
 
   @override
