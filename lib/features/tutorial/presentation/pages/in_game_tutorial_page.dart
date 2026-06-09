@@ -142,7 +142,6 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
   /// 정답 버튼 탭 시 미션 진행
   void _tryAdvanceMission(int expectedStep) {
     if (_missionStep != expectedStep) return;
-    VibrationService.instance().buttonTap();
     setState(() => _missionStep++);
     if (_missionStep >= 4) {
       // 화면 전환(_showParticipants=false) 후 살짝 텀 두고 다이얼로그
@@ -173,12 +172,14 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
 
   /// 발견/의심 선택 → 그 자리에 마커 배치 + 미션 진행
   void _onTutorialSelectPing(PingType type) {
+    // 핀 선택 탭 햅틱 — PingSelectionCard는 공통 버튼이 아니라 자체 햅틱이 없어
+    // 여기서 직접 발동(SvgIconButton 미션 탭은 위젯 내장 햅틱이 담당)
+    VibrationService.instance().buttonTap();
     setState(() {
       _placedPingOffset = _pingTouchOffset;
       _placedPingType = type;
       _pingCardOffset = null; // 카드 닫기
     });
-    // 선택 탭의 light 햅틱은 _tryAdvanceMission이 담당(다른 미션 탭과 동일, 의도된 동작)
     _tryAdvanceMission(3);
   }
 

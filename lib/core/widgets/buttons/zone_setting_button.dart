@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
+import '../../services/vibration_service.dart';
 
 /// 구역 타입 Enum
 ///
@@ -141,7 +142,10 @@ class ZoneSettingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final subtitle = _subtitleOf(context);
     return InkWell(
-      onTap: onPressed,
+      onTap: () {
+        VibrationService.instance().buttonTap();
+        onPressed();
+      },
       borderRadius: AppRadius.xlarge,
       child: Container(
         width: 353.w,

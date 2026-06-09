@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
+import '../../services/vibration_service.dart';
 
 /// 아이콘 위치를 정의하는 Enum
 ///
@@ -205,7 +206,13 @@ class AppButton extends StatelessWidget {
             : null,
       ),
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: (isLoading || onPressed == null)
+            ? null
+            : () {
+                // 공통 탭 햅틱 — 활성 상태에서만 발동(로딩·비활성 시 미발동)
+                VibrationService.instance().buttonTap();
+                onPressed!();
+              },
         style: ElevatedButton.styleFrom(
           fixedSize: Size(_effectiveWidth, _effectiveHeight),
           backgroundColor: _effectiveBackgroundColor,

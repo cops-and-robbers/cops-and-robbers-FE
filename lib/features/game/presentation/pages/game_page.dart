@@ -1673,10 +1673,7 @@ class _GamePageState extends ConsumerState<GamePage>
                 children: [
                   SvgIconButton(
                     assetPath: 'assets/icons/icon_map.svg',
-                    onPressed: () {
-                      VibrationService.instance().buttonTap();
-                      setState(() => _showParticipants = false);
-                    },
+                    onPressed: () => setState(() => _showParticipants = false),
                     iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                     backgroundColor: _isDarkMode ? AppColors.black : null,
                     isDarkMode: _isDarkMode,
@@ -1698,10 +1695,7 @@ class _GamePageState extends ConsumerState<GamePage>
                   if (!_isZoneExitWarningActive) ...[
                     SvgIconButton(
                       assetPath: 'assets/icons/icon_person.svg',
-                      onPressed: () {
-                        VibrationService.instance().buttonTap();
-                        setState(() => _showParticipants = true);
-                      },
+                      onPressed: () => setState(() => _showParticipants = true),
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
                       isDarkMode: _isDarkMode,
@@ -1722,10 +1716,7 @@ class _GamePageState extends ConsumerState<GamePage>
               left: 20.w,
               bottom: actionButtonBottom,
               child: MyLocationButton(
-                onPressed: () {
-                  VibrationService.instance().buttonTap();
-                  _moveToCurrentLocation();
-                },
+                onPressed: _moveToCurrentLocation,
                 isFocused: _isLocationFocused,
                 focusedColor: _isDarkMode ? AppColors.green : AppColors.blue,
                 unfocusedColor: _isDarkMode
@@ -1919,14 +1910,9 @@ class _GamePageState extends ConsumerState<GamePage>
       assetPath: GameTeam.isPolice(widget.team)
           ? 'assets/icons/icon_qr_scan.svg'
           : 'assets/icons/icon_qr_code.svg',
-      onPressed: () {
-        VibrationService.instance().buttonTap();
-        if (GameTeam.isPolice(widget.team)) {
-          _openQrScanner();
-        } else {
-          _showMyQrCode();
-        }
-      },
+      onPressed: GameTeam.isPolice(widget.team)
+          ? _openQrScanner
+          : _showMyQrCode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
       isDarkMode: _isDarkMode,
     );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../services/vibration_service.dart';
+
 /// 뒤로가기 버튼 위젯
 ///
 /// SVG 아이콘을 사용한 통일된 뒤로가기 버튼.
@@ -41,7 +43,10 @@ class PreviousButton extends StatelessWidget {
             ? ColorFilter.mode(color!, BlendMode.srcIn)
             : null,
       ),
-      onPressed: onPressed,
+      onPressed: () {
+        VibrationService.instance().buttonTap();
+        onPressed();
+      },
     );
   }
 }

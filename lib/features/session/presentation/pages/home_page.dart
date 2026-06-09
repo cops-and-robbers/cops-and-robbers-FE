@@ -26,7 +26,6 @@ import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/services/vibration_service.dart';
 import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -351,7 +350,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   ///
   /// 위치 권한 확인 후 세션 생성 플로우로 이동합니다.
   void _onCreateSession() {
-    VibrationService.instance().buttonTap();
     _ensureLocationPermission(
       onGranted: () => _ensureBatteryOptimization(
         onGranted: () async {

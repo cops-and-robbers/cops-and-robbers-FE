@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../services/vibration_service.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
@@ -557,7 +556,6 @@ class _AppDialogState extends State<AppDialog>
             child: AppButton(
               text: widget.confirmText,
               onPressed: () {
-                VibrationService.instance().buttonTap();
                 widget.onConfirm?.call();
               },
               backgroundColor: _resolvedConfirmColor,
@@ -576,7 +574,6 @@ class _AppDialogState extends State<AppDialog>
     return AppButton(
       text: widget.confirmText,
       onPressed: () {
-        VibrationService.instance().buttonTap();
         widget.onConfirm?.call();
       },
       backgroundColor: _resolvedConfirmColor,

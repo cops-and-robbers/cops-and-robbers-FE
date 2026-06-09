@@ -1054,7 +1054,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 준비 상태 토글
   Future<void> _toggleReady() async {
-    VibrationService.instance().buttonTap();
     // 더미 모드: 로컬에서 즉시 토글
     if (_isDummyMode) {
       ref
@@ -1088,7 +1087,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 게임 시작 (방장 전용)
   Future<void> _startGame() async {
-    VibrationService.instance().buttonTap();
     if (_isDummyMode) {
       if (mounted) {
         context.go(
