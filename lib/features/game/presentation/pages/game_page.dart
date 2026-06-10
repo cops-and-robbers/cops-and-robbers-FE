@@ -39,6 +39,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import '../../domain/location_send_policy.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
 import '../helpers/game_over_guard.dart';
@@ -129,7 +130,6 @@ class _GamePageState extends ConsumerState<GamePage>
   late final BackgroundService _backgroundService;
 
   StreamSubscription<Position>? _locationSubscription;
-  StreamSubscription<Position>? _headingSubscription; // POLICE 전용 heading 스트림
   Position? _lastSentPosition;
   DateTime? _lastSentTime;
 
@@ -305,8 +305,6 @@ class _GamePageState extends ConsumerState<GamePage>
     // 위치 스트림 중단
     _locationSubscription?.cancel();
     _locationSubscription = null;
-    _headingSubscription?.cancel();
-    _headingSubscription = null;
 
     setState(() => _isLocationPermissionDenied = true);
     await _showLocationPermissionDialog();
@@ -347,7 +345,6 @@ class _GamePageState extends ConsumerState<GamePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _locationSubscription?.cancel();
-    _headingSubscription?.cancel();
     _zoneExitVibrationTimer?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
@@ -493,8 +490,10 @@ class _GamePageState extends ConsumerState<GamePage>
       _gameId,
       team: GameTeam.toLowerKey(widget.team),
     );
-    if (GameTeam.isRobber(widget.team)) _startLocationSending();
-    _startHeadingTracking();
+    // 단일 GPS 스트림 시작(양 팀): 구역 이탈 감지 + (도둑) 위치 전송 통합.
+    _startLocationStream();
+    // 도둑: STOMP 연결 후 초기 위치 1회 전송.
+    if (GameTeam.isRobber(widget.team)) _sendInitialLocation();
 
     // 게임 시작 시스템 채팅 4단계 시퀀스는 _initSettingsFromApiIfNeeded 완료 후 호출
     // (START 이벤트는 로비 STOMP에서 수신되므로 게임 이벤트 STOMP로는 오지 않음.
@@ -640,12 +639,10 @@ class _GamePageState extends ConsumerState<GamePage>
     }
   }
 
-  /// 도둑 팀 GPS 위치 스트림 구독 및 서버 전송 시작
+  /// 도둑 초기 위치 1회 전송 (STOMP 연결 대기 후, best-effort)
   ///
-  /// distanceFilter 10m로 OS 레벨에서 필터링하고,
-  /// 추가로 5초 throttle을 적용하여 서버 부하를 제한한다.
-  /// 방향 갱신은 [_startHeadingTracking]의 별도 스트림이 담당한다.
-  Future<void> _startLocationSending() async {
+  /// 이후의 주기적 전송과 구역 이탈 감지는 [_startLocationStream]의 단일 스트림이 담당한다.
+  Future<void> _sendInitialLocation() async {
     // GPS 조회 (STOMP 연결 대기와 병렬 수행)
     Position? initial;
     try {
@@ -676,35 +673,57 @@ class _GamePageState extends ConsumerState<GamePage>
       _lastSentPosition = initial;
       _lastSentTime = DateTime.now();
     }
+  }
 
-    // 위치 스트림 구독: 10m 이상 이동 시 이벤트 발생, 5초 throttle 적용
+  /// 단일 GPS 스트림(양 팀): 구역 이탈 감지 + (도둑·연결됨) 위치 전송
+  ///
+  /// 기존 전송용(distanceFilter 10m)·구역감지용(0) 두 스트림을 하나로 통합하여
+  /// 도둑 팀의 GPS 구독을 2개→1개로 줄인다(배터리 절감).
+  /// - 구역 이탈 감지: 양 팀, 매 틱 ([_checkZoneExit])
+  /// - 위치 전송: 도둑 팀, STOMP 연결 상태에서 [shouldSendLocation] 게이트
+  ///   (체포·5초 throttle·10m 이동)를 통과할 때만. OS 10m 필터를 코드 레벨 거리로 대체.
+  void _startLocationStream() {
+    if (widget.isDummy) return;
     _locationSubscription =
-        DeviceLocationService.getPositionStream(distanceFilter: 10).listen(
+        DeviceLocationService.getPositionStream(distanceFilter: 0).listen(
           (pos) {
             if (!mounted) return;
 
-            if (ref
-                .read(gameEventNotifierProvider)
-                .arrestedParticipantIds
-                .contains(widget.participantId)) {
+            // 1) 구역 이탈 감지 — 양 팀, 매 틱
+            _checkZoneExit(pos);
+
+            // 2) 위치 전송 — 도둑 팀, STOMP 연결 상태에서만
+            if (!GameTeam.isRobber(widget.team)) return;
+            final gameState = ref.read(gameEventNotifierProvider);
+            if (gameState.connectionState != StompConnectionState.connected) {
               return;
             }
-
-            // 5초 미만이면 서버 전송 스킵 (서버 부하 제한)
-            final now = DateTime.now();
-            if (_lastSentTime != null &&
-                now.difference(_lastSentTime!).inSeconds < 5) {
+            final isArrested = gameState.arrestedParticipantIds.contains(
+              widget.participantId,
+            );
+            if (!shouldSendLocation(
+              lastSentTime: _lastSentTime,
+              now: DateTime.now(),
+              lastLat: _lastSentPosition?.latitude,
+              lastLng: _lastSentPosition?.longitude,
+              newLat: pos.latitude,
+              newLng: pos.longitude,
+              isArrested: isArrested,
+            )) {
               return;
             }
-
             _gameEventDatasource?.publishLocation(
               _gameId,
               pos.latitude,
               pos.longitude,
             );
             _lastSentPosition = pos;
-            _lastSentTime = now;
+            _lastSentTime = DateTime.now();
           },
+          // 스트림 에러/종료 시 구독을 null로 리셋한다.
+          // 누락 시 _locationSubscription이 non-null로 남아 포그라운드 복귀 시
+          // 재시작 가드(_locationSubscription == null)가 막혀 위치 전송·구역
+          // 감지가 영구 중단된다.
           onError: (e) {
             debugPrint('[위치] 위치 스트림 에러: $e');
             _locationSubscription = null;
@@ -713,20 +732,6 @@ class _GamePageState extends ConsumerState<GamePage>
             _locationSubscription = null;
           },
         );
-  }
-
-  /// 방향 인디케이터 실시간 갱신 스트림 시작 (양 팀 공통, 서버 전송 없음)
-  /// 추가로 플레이그라운드 영역 이탈 감지 → 진동 피드백 제공
-  void _startHeadingTracking() {
-    if (widget.isDummy) return;
-    _headingSubscription =
-        DeviceLocationService.getPositionStream(distanceFilter: 0).listen((
-          pos,
-        ) {
-          if (mounted) {
-            _checkZoneExit(pos);
-          }
-        });
   }
 
   /// 플레이그라운드 영역 이탈 여부 판단 → 이탈 시 진동 + 경고 배너
@@ -1065,8 +1070,6 @@ class _GamePageState extends ConsumerState<GamePage>
     // dispose()까지 미루면 결과 다이얼로그 표시 시간 내내 인디케이터가 유지된다.
     _locationSubscription?.cancel();
     _locationSubscription = null;
-    _headingSubscription?.cancel();
-    _headingSubscription = null;
 
     // 채팅 알림 상태 초기화 (다음 게임에서 기본값 ON으로 시작)
     ref.invalidate(chatNotificationEnabledProvider);
@@ -1283,14 +1286,10 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
-    // 도둑 팀: 위치 전송 스트림이 끊겼으면 재시작
-    if (GameTeam.isRobber(widget.team) && _locationSubscription == null) {
-      _startLocationSending();
-    }
-
-    // 양 팀: heading 스트림이 끊겼으면 재시작 (백그라운드 복귀 시 복구)
-    if (_headingSubscription == null) {
-      _startHeadingTracking();
+    // 양 팀: 위치/구역 감지 스트림이 끊겼으면 재시작 (백그라운드 복귀 시 복구).
+    // 도둑 위치 즉시 재전송은 STOMP connected 핸들러(_sendPositionNow)가 담당한다.
+    if (_locationSubscription == null) {
+      _startLocationStream();
     }
   }
 
@@ -1497,7 +1496,7 @@ class _GamePageState extends ConsumerState<GamePage>
           if (_lastSentPosition != null) {
             _sendPositionNow();
           } else if (_locationSubscription == null) {
-            _startLocationSending();
+            _startLocationStream();
           }
         }
       }
