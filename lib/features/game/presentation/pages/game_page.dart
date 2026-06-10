@@ -698,9 +698,14 @@ class _GamePageState extends ConsumerState<GamePage>
             if (gameState.connectionState != StompConnectionState.connected) {
               return;
             }
-            final isArrested = gameState.arrestedParticipantIds.contains(
-              widget.participantId,
-            );
+            // 'escaped > arrested' 우선순위(_effectiveRobberStatus·isArrestedNow와 동일 정의).
+            // 이벤트 핸들러가 두 집합을 disjoint하게 유지하지만, 표준 정의로 통일해
+            // 향후 불변식이 깨져도 탈옥자가 전송 차단되지 않도록 한다.
+            final isArrested =
+                gameState.arrestedParticipantIds.contains(
+                  widget.participantId,
+                ) &&
+                !gameState.escapedParticipantIds.contains(widget.participantId);
             if (!shouldSendLocation(
               lastSentTime: _lastSentTime,
               now: DateTime.now(),
