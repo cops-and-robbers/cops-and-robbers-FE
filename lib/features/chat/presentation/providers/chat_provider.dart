@@ -133,6 +133,10 @@ class ChatNotifier extends _$ChatNotifier {
   /// 의도적 연결 해제 여부
   bool _intentionalDisconnect = false;
 
+  /// Notifier dispose 여부 — await 이후 dead provider의 state/ref 접근으로 인한
+  /// 크래시를 막는다. (GameEventNotifier와 동일 패턴으로 일관성 유지)
+  bool _isDisposed = false;
+
   /// STOMP 에러 처리 중 여부 (일반 재연결 방지용)
   bool _isHandlingError = false;
 
@@ -164,6 +168,7 @@ class ChatNotifier extends _$ChatNotifier {
     ref.watch(chatStompDatasourceProvider);
 
     ref.onDispose(() {
+      _isDisposed = true;
       _messageSub?.cancel();
       _connectionSub?.cancel();
       _errorSub?.cancel();
@@ -202,6 +207,8 @@ class ChatNotifier extends _$ChatNotifier {
     // Access Token 획득
     final tokenProvider = ref.read(tokenProviderProvider);
     final accessToken = await tokenProvider.getAccessToken();
+    // await 도중 dispose되었으면 중단 (dead provider의 state 접근 방지)
+    if (_isDisposed) return;
     if (accessToken == null) {
       debugPrint('[ChatNotifier] ❌ 토큰 획득 실패');
       final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
@@ -575,7 +582,11 @@ class ChatNotifier extends _$ChatNotifier {
   ///
   /// 1s → 2s → 4s → 8s → 10s(최대), 최대 [_maxReconnectRetries]회
   void _scheduleReconnect() {
-    if (_intentionalDisconnect || _gameId == null || _team == null) return;
+    if (_isDisposed ||
+        _intentionalDisconnect ||
+        _gameId == null ||
+        _team == null)
+      return;
 
     _reconnectCount++;
     if (_reconnectCount > _maxReconnectRetries) {
@@ -608,7 +619,11 @@ class ChatNotifier extends _$ChatNotifier {
 
   /// 재연결 시도
   Future<void> _attemptReconnect() async {
-    if (_intentionalDisconnect || _gameId == null || _team == null) return;
+    if (_isDisposed ||
+        _intentionalDisconnect ||
+        _gameId == null ||
+        _team == null)
+      return;
 
     final datasource = ref.read(chatStompDatasourceProvider);
 
@@ -625,7 +640,11 @@ class ChatNotifier extends _$ChatNotifier {
     final tokenProvider = ref.read(tokenProviderProvider);
     final accessToken = await tokenProvider.getAccessToken();
 
-    if (_intentionalDisconnect || _gameId == null || _team == null) return;
+    if (_isDisposed ||
+        _intentionalDisconnect ||
+        _gameId == null ||
+        _team == null)
+      return;
 
     if (accessToken == null) {
       debugPrint('[ChatNotifier] ❌ 재연결 토큰 획득 실패');
@@ -667,6 +686,7 @@ class ChatNotifier extends _$ChatNotifier {
   // ============================================
 
   Future<void> _handleStompError(StompErrorInfo errorInfo) async {
+    if (_isDisposed) return;
     if (errorInfo.isAuthExpired) {
       _authRetryCount++;
 
@@ -692,7 +712,11 @@ class ChatNotifier extends _$ChatNotifier {
       final datasource = ref.read(chatStompDatasourceProvider);
       final newToken = await tokenProvider.refreshAccessTokenIfNeeded();
 
-      if (_intentionalDisconnect || _gameId == null || _team == null) return;
+      if (_isDisposed ||
+          _intentionalDisconnect ||
+          _gameId == null ||
+          _team == null)
+        return;
 
       if (newToken == null) {
         debugPrint('[ChatNotifier] ❌ 토큰 갱신 실패 - 재로그인 필요');

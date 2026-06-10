@@ -28,6 +28,14 @@ void main() async {
   // Ensure Flutter engine is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
+  // 릴리스 빌드에서는 debugPrint를 비활성화한다.
+  // debugPrint는 릴리스에서도 strip되지 않고 플랫폼 로그(logcat/iOS 콘솔)에 그대로 출력되므로,
+  // 로그 노이즈와 민감정보(토큰·위치·유저 ID 등) 노출을 막기 위해 no-op으로 교체한다.
+  // (개발 빌드에서는 기존대로 출력되어 디버깅에 영향 없음)
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
+
   // 재설치 시 이전 토큰 초기화 (iOS: Keychain 잔존 토큰 삭제, Android: 자동 삭제되므로 no-op)
   // Clear stale tokens on fresh install (iOS: Keychain persists after uninstall, Android: no-op)
   await SecureTokenStorage().clearTokensIfReinstalled();

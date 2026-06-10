@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../constants/app_colors.dart';
@@ -120,7 +121,7 @@ class TutorialTarget {
             return Padding(
               padding:
                   padding ??
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               child: Text(
                 description,
                 style: AppTextStyles.paragraph_14.copyWith(
