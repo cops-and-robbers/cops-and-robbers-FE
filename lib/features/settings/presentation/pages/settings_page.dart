@@ -310,7 +310,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget _buildSectionDivider() {
     return Container(
       width: double.infinity,
-      height: 4,
+      height: AppSpacing.vertical4,
       color: AppColors.black100,
     );
   }
