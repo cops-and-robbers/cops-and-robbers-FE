@@ -67,6 +67,14 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   double _sheetSize = 0;
   double _prevKeyboardHeight = 0;
 
+  /// 키보드 열림 상태에서 배경 탭 시 "키보드 닫힌 뒤 시트 접기" 예약 플래그.
+  ///
+  /// 키보드 닫힘 중에는 effectiveMinSize가 75%로 고정되어 즉시 collapse가
+  /// 불가능하므로, 닫힘 완료 시점에 한 번만 소비한다. 다이얼로그 등 외부
+  /// 요인의 unfocus로는 이 플래그가 켜지지 않아 시트가 움직이지 않는다.
+  /// (#166/#177 실패 교훈: 위젯 로컬 단방향 플래그로만 관리, provider 전파 금지)
+  bool _pendingCollapse = false;
+
   static const double _snap50 = 0.5;
   static const double _snap75 = 0.75;
 
@@ -134,6 +142,9 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   }
 
   void _onInputFocused() {
+    // 배경 탭 직후 입력창을 다시 탭해 포커스를 되찾으면 접기 예약 취소
+    // (잔류 플래그로 인한 뒤늦은 collapse 방지)
+    _pendingCollapse = false;
     if (_sheetController.isAttached && _sheetController.size < _snap50) {
       _sheetController.animateTo(
         _snap50,
@@ -216,6 +227,19 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     );
   }
 
+  /// 배경 탭 핸들러 — 키보드 상태에 따라 즉시 접기/접기 예약 분기
+  void _onBackgroundTap() {
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    if (isKeyboardOpen) {
+      // 키보드 열림: unfocus만 하고 접기는 예약. 키보드 닫힘 애니메이션과
+      // 시트 애니메이션의 경합을 피하기 위해 닫힘 완료 후 build에서 소비한다.
+      _pendingCollapse = true;
+      FocusScope.of(context).unfocus();
+    } else {
+      _collapseSheet();
+    }
+  }
+
   @override
   void dispose() {
     _sheetController.removeListener(_onSheetChanged);
@@ -268,13 +292,21 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
         // 키보드 열림: 시트 75% 고정, 닫힘: 기본 minSize
         final effectiveMinSize = isKeyboardOpen ? _snap75 : _minSize;
 
+        // 배경 탭으로 예약된 접기를 키보드 닫힘 완료 시점에 한 번 소비
+        if (_pendingCollapse && !isKeyboardOpen) {
+          _pendingCollapse = false;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _collapseSheet();
+          });
+        }
+
         return Stack(
           children: [
-            // 시트 바깥 영역 탭 → 시트 접기 (키보드 닫힌 + 펼쳐진 상태에서만)
-            if (_isExpanded && !isKeyboardOpen)
+            // 시트 바깥 영역 탭 → 시트 접기 (펼쳐진 상태에서만, 키보드 열림 포함)
+            if (_isExpanded)
               Positioned.fill(
                 child: GestureDetector(
-                  onTap: _collapseSheet,
+                  onTap: _onBackgroundTap,
                   behavior: HitTestBehavior.opaque,
                 ),
               ),
