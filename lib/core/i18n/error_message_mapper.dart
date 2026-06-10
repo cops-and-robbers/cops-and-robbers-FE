@@ -283,6 +283,52 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       // 게임 영역
       case 'errorAreaLoadFailed':
         return errorAreaLoadFailed;
+      // ── 기능별 예기치 못한 실패 ─────────────────────────────────────
+      // 각 Notifier/Repository가 catch에서 messageKey로 세팅하는 키들.
+      // 누락 시 errorByException의 fallback(=하드코딩 한국어 message)으로 떨어져
+      // en/ja 로케일 사용자에게 한국어가 노출되므로, 로케일 메시지로 매핑한다.
+      case 'errorLoginGeneric':
+        return errorLoginGeneric;
+      case 'errorLogoutGeneric':
+        return errorLogoutGeneric;
+      case 'errorLogoutFailed':
+        return errorLogoutFailed;
+      case 'errorUserInfoFetch':
+        return errorUserInfoFetch;
+      case 'errorNicknameCheckUnexpected':
+        return errorNicknameCheckUnexpected;
+      case 'errorNicknameUpdateUnexpected':
+        return errorNicknameUpdateUnexpected;
+      case 'errorDeleteAccountUnexpected':
+        return errorDeleteAccountUnexpected;
+      case 'errorAgreementFetchUnexpected':
+        return errorAgreementFetchUnexpected;
+      case 'errorAgreementSaveUnexpected':
+        return errorAgreementSaveUnexpected;
+      case 'errorGameRoomCreateUnexpected':
+        return errorGameRoomCreateUnexpected;
+      case 'errorGameJoinUnexpected':
+        return errorGameJoinUnexpected;
+      case 'errorActiveGameFetchUnexpected':
+        return errorActiveGameFetchUnexpected;
+      case 'errorGamePushFetchUnexpected':
+        return errorGamePushFetchUnexpected;
+      case 'errorGamePushUpdateUnexpected':
+        return errorGamePushUpdateUnexpected;
+      case 'errorPendingInviteSave':
+        return errorPendingInviteSave;
+      case 'errorPendingInviteLoad':
+        return errorPendingInviteLoad;
+      case 'errorPendingInviteClear':
+        return errorPendingInviteClear;
+      case 'errorNoticesLoadGeneric':
+        return errorNoticesLoadGeneric;
+      case 'errorReportGeneric':
+        return errorReportGeneric;
+      case 'errorBugReportFailed':
+        return errorBugReportFailed;
+      case 'errorUnknown':
+        return errorUnknown;
       default:
         return fallback ?? key;
     }
