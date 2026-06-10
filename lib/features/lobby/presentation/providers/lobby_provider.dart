@@ -99,6 +99,10 @@ class LobbyNotifier extends _$LobbyNotifier {
   /// 의도적 연결 해제 여부
   bool _intentionalDisconnect = false;
 
+  /// Notifier dispose 여부 — await 이후 dead provider의 state/ref 접근으로 인한
+  /// 크래시를 막는다. (GameEventNotifier·ChatNotifier와 동일 패턴)
+  bool _isDisposed = false;
+
   /// STOMP 에러 처리 중 여부
   bool _isHandlingError = false;
 
@@ -113,6 +117,7 @@ class LobbyNotifier extends _$LobbyNotifier {
     ref.watch(lobbyStompDatasourceProvider);
 
     ref.onDispose(() {
+      _isDisposed = true;
       _eventSub?.cancel();
       _connectionSub?.cancel();
       _errorSub?.cancel();
@@ -150,6 +155,8 @@ class LobbyNotifier extends _$LobbyNotifier {
     // Access Token 획득
     final tokenProvider = ref.read(tokenProviderProvider);
     final accessToken = await tokenProvider.getAccessToken();
+    // await 도중 dispose되었으면 중단 (dead provider의 state 접근 방지)
+    if (_isDisposed) return;
     if (accessToken == null) {
       debugPrint('[LobbyNotifier] ❌ 토큰 획득 실패');
       final l10n = lookupAppLocalizations(ref.read(appLocaleProvider).locale);
@@ -331,7 +338,7 @@ class LobbyNotifier extends _$LobbyNotifier {
   // ============================================
 
   void _scheduleReconnect() {
-    if (_intentionalDisconnect || _gameId == null) return;
+    if (_isDisposed || _intentionalDisconnect || _gameId == null) return;
 
     _reconnectCount++;
     if (_reconnectCount > _maxReconnectRetries) {
@@ -361,7 +368,7 @@ class LobbyNotifier extends _$LobbyNotifier {
   }
 
   Future<void> _attemptReconnect() async {
-    if (_intentionalDisconnect || _gameId == null) return;
+    if (_isDisposed || _intentionalDisconnect || _gameId == null) return;
 
     final datasource = ref.read(lobbyStompDatasourceProvider);
 
@@ -377,7 +384,7 @@ class LobbyNotifier extends _$LobbyNotifier {
     final tokenProvider = ref.read(tokenProviderProvider);
     final accessToken = await tokenProvider.getAccessToken();
 
-    if (_intentionalDisconnect || _gameId == null) return;
+    if (_isDisposed || _intentionalDisconnect || _gameId == null) return;
 
     if (accessToken == null) {
       debugPrint('[LobbyNotifier] ❌ 재연결 토큰 획득 실패');
@@ -395,6 +402,7 @@ class LobbyNotifier extends _$LobbyNotifier {
   // ============================================
 
   Future<void> _handleStompError(StompErrorInfo errorInfo) async {
+    if (_isDisposed) return;
     if (errorInfo.isAuthExpired) {
       _authRetryCount++;
 
@@ -416,7 +424,7 @@ class LobbyNotifier extends _$LobbyNotifier {
       final datasource = ref.read(lobbyStompDatasourceProvider);
       final newToken = await tokenProvider.refreshAccessTokenIfNeeded();
 
-      if (_intentionalDisconnect || _gameId == null) return;
+      if (_isDisposed || _intentionalDisconnect || _gameId == null) return;
 
       if (newToken == null) {
         debugPrint('[LobbyNotifier] ❌ 토큰 갱신 실패');

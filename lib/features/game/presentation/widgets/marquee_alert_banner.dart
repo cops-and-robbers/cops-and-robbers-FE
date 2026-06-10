@@ -179,7 +179,18 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
   /// OverflowBox가 레이아웃 제약을 해제하여 텍스트 전체 렌더링,
   /// ClipRect가 컨테이너 밖은 시각적으로 클리핑한다.
   Widget _buildMarquee() {
-    final containerWidth = 1.sw - 40.w - 32.w - 20.w - 8.w;
+    // 가용 너비 = 화면폭 − (바깥 패딩 좌우 + 컨테이너 패딩 좌우 + 아이콘 폭 + 아이콘·텍스트 간격)
+    // 각 값의 출처는 build()의 동일 위젯 — 해당 패딩/아이콘을 바꾸면 여기도 함께 수정.
+    const outerPaddingTotal = 40.0; // AppPadding.horizontal20 좌우 (20 × 2)
+    const containerPaddingTotal = 32.0; // Container 패딩 horizontal 16 × 2
+    const iconWidth = 20.0; // Loudspeaker 아이콘 폭
+    const gapWidth = 8.0; // AppSpacing.horizontal8 (아이콘·텍스트 간격)
+    final containerWidth =
+        1.sw -
+        outerPaddingTotal.w -
+        containerPaddingTotal.w -
+        iconWidth.w -
+        gapWidth.w;
     final textWidth = _measureTextWidth(widget.message);
     final totalDistance = containerWidth + textWidth;
 

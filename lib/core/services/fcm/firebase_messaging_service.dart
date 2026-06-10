@@ -97,7 +97,11 @@ class FirebaseMessagingService {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
-        debugPrint('[FCM] ✅ 토큰 가져오기 성공: ${token.toString()}');
+        // 토큰은 인증 식별자이므로 전체를 로그에 남기지 않고 앞 12자만 마스킹 출력
+        final masked = token.length > 12
+            ? '${token.substring(0, 12)}…(len:${token.length})'
+            : '***';
+        debugPrint('[FCM] ✅ 토큰 가져오기 성공: $masked');
       } else {
         debugPrint('[FCM] ⚠️ 토큰 없음 (시뮬레이터 또는 권한 거부)');
       }
@@ -222,7 +226,11 @@ class FirebaseMessagingService {
     // 3. 초기 토큰 조회 전에 갱신 리스너 등록 (초기 토큰이 null이어도 이후 발급분 캡처 보장)
     FirebaseMessaging.instance.onTokenRefresh
         .listen((fcmToken) {
-          debugPrint('🔄 FCM token refreshed: $fcmToken');
+          // 토큰 전체 노출 방지 — 앞 12자만 마스킹 출력
+          final masked = fcmToken.length > 12
+              ? '${fcmToken.substring(0, 12)}…(len:${fcmToken.length})'
+              : '***';
+          debugPrint('🔄 FCM token refreshed: $masked');
           debugPrint('✅ Updated token will be sent on next login.');
         })
         .onError((error) {
