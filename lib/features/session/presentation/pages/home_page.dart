@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -13,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/deeplink/deeplink_constants.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/background/background_service_provider.dart';
@@ -462,6 +464,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
 
     if (response != null && mounted) {
+      // 방 참가 퍼널 이벤트 (코드 입력/QR 스캔 공용 경로)
+      unawaited(ref.read(analyticsServiceProvider).logGameJoin(method: 'code'));
       final myNickname = ref.read(authNotifierProvider).value?.nickname ?? '';
       // joinGame 응답에는 gameId, participantId만 포함되며, maxParticipants /
       // locationRevealIntervalMinutes 등 나머지 정보는 대기실 진입 시

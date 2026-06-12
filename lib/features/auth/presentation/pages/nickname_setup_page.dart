@@ -16,6 +16,7 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/chips/action_chip.dart' as custom_chip;
 import '../../../../core/widgets/inputs/app_text_field.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 import '../providers/auth_provider.dart';
 import '../../../../router/route_paths.dart';
@@ -184,6 +185,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       await ref.read(userRepositoryProvider).updateNickname(nickname);
 
       if (!mounted) return;
+
+      // 닉네임 변경 퍼널 이벤트
+      unawaited(ref.read(analyticsServiceProvider).logNicknameChange());
 
       // 성공 피드백: 네비게이션 전에 띄우면 루트 Overlay에 등록되어
       // pop/go 이후 복귀한 화면에서도 그대로 표시됨

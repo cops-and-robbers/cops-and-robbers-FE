@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -79,6 +82,10 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
         context.go(RoutePaths.login);
 
       case JoinedRoomOutcome(:final gameId):
+        // 딥링크 참가 퍼널 이벤트
+        unawaited(
+          ref.read(analyticsServiceProvider).logGameJoin(method: 'deeplink'),
+        );
         // join 성공 — 해당 gameId 의 대기실로 이동
         context.go(RoutePaths.waitingRoomWithId(gameId.toString()));
 
