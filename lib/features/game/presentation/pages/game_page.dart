@@ -16,6 +16,8 @@ import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/ads/ad_service.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/background/background_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
@@ -109,6 +111,8 @@ class _GamePageState extends ConsumerState<GamePage>
 
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
+  // 결과 다이얼로그 버튼 연타 가드 — 라우팅·Analytics 중복 기록 방지
+  bool _exitTriggered = false;
 
   // 핑 선택 카드 위치(logical px). null이면 카드 미표시.
   Offset? _pingCardOffset;
@@ -1097,10 +1101,48 @@ class _GamePageState extends ConsumerState<GamePage>
     debugPrint('[GamePage] GAME_OVER 유실 fallback 다이얼로그 표시');
     _prepareGameOverPresentation();
 
+    // 유실 fallback 경로도 이탈 시 광고 노출 대상 (더미 모드 제외)
+    if (!widget.isDummy) {
+      unawaited(ref.read(adServiceProvider).preloadGameEndInterstitial());
+    }
+
     if (!mounted) return;
 
     final gameId = int.tryParse(widget.sessionId);
     await _showFallbackResultDialog(null, gameId);
+  }
+
+  /// 결과 다이얼로그 이탈 선택 처리 — 전면 광고 1회 표시 후 목적지로 이동.
+  ///
+  /// 광고 미로드/표시 실패 시 즉시 이동한다 (fail-open).
+  /// 광고 표시 중 GamePage는 네이티브 오버레이 아래에 살아있으므로
+  /// 닫힘 콜백에서 mounted를 재확인한 뒤 라우팅한다.
+  void _exitGameAfterAd({required String choice, required String destination}) {
+    // 광고 미로드 시 라우트 전환 완료 전 프레임에 두 번째 탭이 들어오면
+    // 이벤트 중복 기록 + context.go 재호출이 발생하므로 첫 호출만 처리한다
+    if (_exitTriggered) return;
+    _exitTriggered = true;
+
+    unawaited(
+      ref.read(analyticsServiceProvider).logGameExitChoice(choice: choice),
+    );
+
+    final result = ref
+        .read(adServiceProvider)
+        .showGameEndInterstitial(
+          onComplete: () {
+            if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) {
+              return;
+            }
+            context.go(destination);
+          },
+        );
+
+    unawaited(
+      ref
+          .read(analyticsServiceProvider)
+          .logAdInterstitialResult(status: result.analyticsValue),
+    );
   }
 
   /// 게임 종료 → 결과 팝업 2단계 시퀀스
@@ -1118,6 +1160,27 @@ class _GamePageState extends ConsumerState<GamePage>
     final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
 
     _prepareGameOverPresentation();
+
+    // 전면 광고 사전 로드 — 결과 확인 후 이탈(홈으로/한 번 더) 시점에 1회 노출.
+    // 더미 모드 제외, 로드 실패해도 무시 (fail-open)
+    if (!widget.isDummy) {
+      unawaited(ref.read(adServiceProvider).preloadGameEndInterstitial());
+    }
+
+    // game_over 퍼널 이벤트 (_gameOverDialogShown 가드 직후라 게임당 1회 보장)
+    final gameStartTime = ref.read(gameEventNotifierProvider).gameStartTime;
+    unawaited(
+      ref
+          .read(analyticsServiceProvider)
+          .logGameOver(
+            result: winnerTeam == widget.team ? 'win' : 'lose',
+            team: widget.team,
+            reason: reason ?? 'unknown',
+            durationMinutes: gameStartTime == null
+                ? 0
+                : DateTime.now().difference(gameStartTime).inMinutes,
+          ),
+    );
 
     // 결과 API 사전 트리거 (1단계 3초 동안 백그라운드에서 로딩)
     if (gameResultId != null) {
@@ -1195,12 +1258,15 @@ class _GamePageState extends ConsumerState<GamePage>
           ref.read(leaveGameProvider(gameId).future);
         }
         ref.read(gameParticipantNotifierProvider.notifier).clear();
-        context.go(RoutePaths.home);
+        _exitGameAfterAd(choice: 'home', destination: RoutePaths.home);
       },
       onRematch: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         ref.read(gameParticipantNotifierProvider.notifier).clear();
-        context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
+        _exitGameAfterAd(
+          choice: 'rematch',
+          destination: RoutePaths.waitingRoomWithId(widget.sessionId),
+        );
       },
     );
   }
@@ -1252,12 +1318,15 @@ class _GamePageState extends ConsumerState<GamePage>
           ref.read(leaveGameProvider(gameId).future);
         }
         ref.read(gameParticipantNotifierProvider.notifier).clear();
-        context.go(RoutePaths.home);
+        _exitGameAfterAd(choice: 'home', destination: RoutePaths.home);
       },
       onConfirm: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         ref.read(gameParticipantNotifierProvider.notifier).clear();
-        context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
+        _exitGameAfterAd(
+          choice: 'rematch',
+          destination: RoutePaths.waitingRoomWithId(widget.sessionId),
+        );
       },
     );
   }
