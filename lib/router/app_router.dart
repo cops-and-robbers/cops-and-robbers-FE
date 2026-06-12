@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -99,6 +101,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: rootNavigatorKey,
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
+    // 화면 전환 자동 수집 (screen_view) — Firebase 미초기화 시 생략 (fail-open)
+    observers: [
+      if (Firebase.apps.isNotEmpty)
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    ],
     // refreshListenable 활성화 (auth 상태 변경 감지)
     // authNotifierProvider 사용: 즉시 반영되는 인증 상태
     refreshListenable: _GoRouterRefreshNotifier(ref, authNotifierProvider),
