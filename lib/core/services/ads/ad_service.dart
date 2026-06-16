@@ -117,7 +117,9 @@ class AdService {
     final ad = _gameEndAd;
     _gameEndAd = null;
 
-    if (ad == null) {
+    // 킬 스위치 방어: preload 이후 ads_enabled가 꺼졌다면 이미 로드된 광고도
+    // 노출하지 않고 즉시 통과시킨다 (fail-open). 표시 경로의 최종 게이트.
+    if (ad == null || !_isAdsEnabled()) {
       onComplete();
       return AdShowResult.notLoaded;
     }

@@ -1189,12 +1189,16 @@ class _GamePageState extends ConsumerState<GamePage>
     }
 
     // game_over 퍼널 이벤트 (_gameOverDialogShown 가드 직후라 게임당 1회 보장)
+    // winnerTeam이 null이면 승패 미상이므로 lose로 오기록하지 않고 unknown으로 분류
     final gameStartTime = ref.read(gameEventNotifierProvider).gameStartTime;
+    final gameOverResult = winnerTeam == null
+        ? 'unknown'
+        : (winnerTeam == widget.team ? 'win' : 'lose');
     unawaited(
       ref
           .read(analyticsServiceProvider)
           .logGameOver(
-            result: winnerTeam == widget.team ? 'win' : 'lose',
+            result: gameOverResult,
             team: widget.team,
             reason: reason ?? 'unknown',
             durationMinutes: gameStartTime == null

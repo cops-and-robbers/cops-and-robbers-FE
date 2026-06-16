@@ -132,6 +132,30 @@ void main() {
       expect(completed, isTrue); // fail-open
     });
 
+    test('show_skips_loaded_ad_when_kill_switch_disabled_after_load', () async {
+      var adsEnabled = true; // 로드 시점엔 켜짐
+      final fakeAd = _FakeLoadedInterstitial();
+      final service = AdService(
+        isAdsEnabled: () => adsEnabled,
+        sdkInitializer: () async => true,
+        loader: (_) async => fakeAd,
+      );
+      await service.initialize();
+      await service.preloadGameEndInterstitial(); // 광고 로드됨
+
+      adsEnabled = false; // 표시 직전 킬 스위치 OFF
+
+      var completed = false;
+      final result = service.showGameEndInterstitial(
+        onComplete: () => completed = true,
+      );
+
+      // 이미 로드된 광고라도 노출하지 않고 즉시 통과 (킬 스위치 방어)
+      expect(result, AdShowResult.notLoaded);
+      expect(fakeAd.showCallCount, 0);
+      expect(completed, isTrue);
+    });
+
     test('preload_loads_only_once_when_ad_already_cached', () async {
       var loaderCalls = 0;
       final service = AdService(
