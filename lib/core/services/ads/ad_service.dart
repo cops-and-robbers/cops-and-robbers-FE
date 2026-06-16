@@ -50,13 +50,19 @@ class AdService {
     required bool Function() isAdsEnabled,
     InterstitialLoader? loader,
     SdkInitializer? sdkInitializer,
+    Duration retryBaseDelay = const Duration(seconds: 2),
   }) : _isAdsEnabled = isAdsEnabled,
        _loader = loader ?? _loadGmaInterstitial,
-       _sdkInitializer = sdkInitializer ?? _initializeGmaSdk;
+       _sdkInitializer = sdkInitializer ?? _initializeGmaSdk,
+       _retryBaseDelay = retryBaseDelay;
+
+  /// no-fill 재시도 횟수 상한 (첫 시도 포함 총 3회)
+  static const int _maxLoadAttempts = 3;
 
   final bool Function() _isAdsEnabled;
   final InterstitialLoader _loader;
   final SdkInitializer _sdkInitializer;
+  final Duration _retryBaseDelay;
 
   bool _sdkInitialized = false;
   bool _isLoading = false;
@@ -72,16 +78,28 @@ class AdService {
   /// 게임 종료 전면 광고 사전 로드 (GAME_OVER 수신 시점에 호출)
   ///
   /// 게이팅: SDK 초기화 완료 + Remote Config ads_enabled + 미로드 상태일 때만.
+  /// 일시적 no-fill("No ad to show")은 백오프 재시도로 회복한다 —
+  /// 결과 화면 체류 시간(수 초~수십 초) 동안 로드가 따라잡으면 노출 기회 유지.
   Future<void> preloadGameEndInterstitial() async {
     if (!_sdkInitialized || _isLoading || _gameEndAd != null) return;
     if (!_isAdsEnabled()) return;
 
     _isLoading = true;
     try {
-      _gameEndAd = await _loader(AdUnitIds.gameEndInterstitial);
-      if (_gameEndAd != null) {
-        debugPrint('[AdService] ✅ 게임 종료 전면 광고 로드 완료');
+      for (var attempt = 1; attempt <= _maxLoadAttempts; attempt++) {
+        _gameEndAd = await _loader(AdUnitIds.gameEndInterstitial);
+        if (_gameEndAd != null) {
+          debugPrint('[AdService] ✅ 게임 종료 전면 광고 로드 완료 (시도 $attempt)');
+          return;
+        }
+        if (attempt < _maxLoadAttempts) {
+          // 2초 → 4초 백오프. 그 사이 사용자가 이탈하면 fail-open으로 광고 없이 진행
+          await Future.delayed(_retryBaseDelay * attempt);
+        }
       }
+      debugPrint(
+        '[AdService] ⚠️ 전면 광고 로드 $_maxLoadAttempts회 모두 실패 — 이번 게임 광고 생략',
+      );
     } catch (e) {
       // 로더는 null 반환 계약이지만, 예외가 새어 나와도 흐름을 막지 않는다
       debugPrint('[AdService] ⚠️ 전면 광고 로드 예외: $e');

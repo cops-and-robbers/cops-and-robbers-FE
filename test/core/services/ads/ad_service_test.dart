@@ -149,5 +149,54 @@ void main() {
 
       expect(loaderCalls, 1);
     });
+
+    test('preload_retries_with_backoff_when_no_fill', () async {
+      var loaderCalls = 0;
+      final service = AdService(
+        isAdsEnabled: () => true,
+        sdkInitializer: () async => true,
+        retryBaseDelay: Duration.zero, // 테스트에서 실제 대기 제거
+        loader: (_) async {
+          loaderCalls++;
+          // 2회 no-fill 후 3번째 성공 (일시적 "No ad to show" 회복 시나리오)
+          return loaderCalls < 3 ? null : _FakeLoadedInterstitial();
+        },
+      );
+      await service.initialize();
+
+      await service.preloadGameEndInterstitial();
+
+      expect(loaderCalls, 3);
+      expect(
+        service.showGameEndInterstitial(onComplete: () {}),
+        AdShowResult.shown,
+      );
+    });
+
+    test('preload_gives_up_after_max_attempts_when_always_no_fill', () async {
+      var loaderCalls = 0;
+      final service = AdService(
+        isAdsEnabled: () => true,
+        sdkInitializer: () async => true,
+        retryBaseDelay: Duration.zero,
+        loader: (_) async {
+          loaderCalls++;
+          return null;
+        },
+      );
+      await service.initialize();
+
+      await service.preloadGameEndInterstitial();
+
+      expect(loaderCalls, 3); // 첫 시도 + 재시도 2회에서 멈춤
+
+      // 끝내 실패해도 fail-open — 이탈 흐름은 즉시 진행
+      var completed = false;
+      expect(
+        service.showGameEndInterstitial(onComplete: () => completed = true),
+        AdShowResult.notLoaded,
+      );
+      expect(completed, isTrue);
+    });
   });
 }

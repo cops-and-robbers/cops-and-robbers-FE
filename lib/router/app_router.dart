@@ -285,8 +285,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.home,
         name: RoutePaths.homeName,
-        pageBuilder: (context, state) =>
-            buildSmoothFade(key: state.pageKey, child: const HomePage()),
+        pageBuilder: (context, state) => buildSmoothFade(
+          key: state.pageKey,
+          // fromGameExit: 게임 종료 후 "홈으로" 이탈 직후 진입 —
+          // 퇴장 API가 비행 중일 수 있어 활성 게임 안전망을 1회 건너뛴다
+          child: HomePage(
+            skipActiveGameCheck:
+                state.uri.queryParameters['fromGameExit'] == 'true',
+          ),
+        ),
         routes: [
           // ==============================================================
           // Settings Page

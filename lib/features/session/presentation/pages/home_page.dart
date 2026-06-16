@@ -62,7 +62,13 @@ class _UpperCaseFormatter extends TextInputFormatter {
 /// 게임 세션 생성 또는 참가를 선택할 수 있는 메인 화면입니다.
 /// 디자인: LOGO + 설정, 공지/역할 아이콘, 말풍선, 아바타, 방만들기/참여하기 버튼
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, this.skipActiveGameCheck = false});
+
+  /// 게임 종료 후 "홈으로" 이탈 직후 진입이면 true.
+  ///
+  /// 퇴장 API(leave)가 아직 비행 중일 수 있어, 활성 게임 안전망이 stale
+  /// WAITING 참가 상태를 보고 대기방으로 되돌리는 레이스를 1회 차단한다.
+  final bool skipActiveGameCheck;
 
   /// 안전 안내 다이얼로그 상태 초기화 (로그아웃/강제 로그아웃 시 호출)
   static Future<void> resetSafetyNotice() async {
@@ -180,6 +186,12 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   /// 활성 게임 존재 시 자동 리다이렉트 (스플래시 실패 안전망)
   Future<void> _checkActiveGameAndRedirect() async {
+    // 게임 종료 후 "홈으로" 이탈 직후엔 방금 떠난 세션의 WAITING 참가 상태가
+    // (퇴장 API 완료 전까지) 서버에 남아 있어 대기방으로 되돌려질 수 있다 — 스킵
+    if (widget.skipActiveGameCheck) {
+      _activeGameChecked = true;
+      return;
+    }
     if (_activeGameChecked) return;
     _activeGameChecked = true;
 
