@@ -349,7 +349,7 @@
       "content": "경찰과 도둑은 서비스 운영을 위해 다음과 같이 개인정보 처리를 위탁하고 있습니다.",
       "items": [
         {
-          "text": "Google LLC (Firebase)",
+          "text": "Google LLC (Firebase, AdMob)",
           "subItems": [
             "위탁업무 내용: 소셜 로그인 인증 (Google, Apple), 푸시 알림 발송, 앱 충돌 분석, 서비스 이용 분석, 광고 게재",
             "보유 및 이용 기간: 회원 탈퇴 시 또는 위탁 계약 종료 시까지"
