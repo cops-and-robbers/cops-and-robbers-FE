@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart'
-    show TargetPlatform, defaultTargetPlatform, visibleForTesting;
+    show TargetPlatform, defaultTargetPlatform, kDebugMode, visibleForTesting;
 import 'package:flutter/widgets.dart';
 
 import 'package:cops_and_robbers/core/services/app_icon/startup_app_icon.dart';
@@ -100,7 +100,13 @@ class LocaleAppIconObserver with WidgetsBindingObserver {
 /// iOS·Android만 등록(트리거 시점이 다름). 그 외 플랫폼은 null 반환(no-op).
 /// WidgetsBinding이 옵저버 참조를 보유하므로 GC되지 않는다.
 LocaleAppIconObserver? startLocaleAppIconObserver({TargetPlatform? platform}) {
-  final triggers = iconReconcileTriggers(platform ?? defaultTargetPlatform);
+  final resolved = platform ?? defaultTargetPlatform;
+  // 디버그 Android에서는 미등록 — 아이콘 reconcile이 activity-alias를 토글해
+  // 기본 런처(app_icon_en)가 비활성화되면 이후 `flutter run`이
+  // "Activity class ... does not exist"(Error type 3)로 실패하기 때문.
+  // 릴리스/프로파일 빌드와 iOS 디버깅에는 영향 없다.
+  if (kDebugMode && resolved == TargetPlatform.android) return null;
+  final triggers = iconReconcileTriggers(resolved);
   if (triggers == null) return null;
   return LocaleAppIconObserver(triggers: triggers)..start();
 }
