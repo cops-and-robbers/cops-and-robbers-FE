@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -17,9 +16,8 @@ import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
-import '../../../../core/services/background/background_service_provider.dart';
+import '../../../../core/services/permission/game_entry_gate.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
-import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -273,107 +271,23 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
-  /// 위치 권한 확인 후 [onGranted] 실행
-  ///
-  /// 권한이 이미 허용된 경우 즉시 콜백 실행.
-  /// 미허용 시 안내 다이얼로그 → 확인 버튼으로 설정 이동.
-  Future<void> _ensureLocationPermission({
-    required VoidCallback onGranted,
-  }) async {
-    // 이미 권한 있으면 바로 진행
-    final canAccess = await LocationPermissionService.canAccessLocation();
-    if (canAccess) {
-      onGranted();
-      return;
-    }
-
-    // 권한 없음 → 상태별 다이얼로그 메시지 분기
-    final serviceEnabled = await LocationPermissionService.isServiceEnabled();
-    if (!mounted) return;
-
-    final text = LocationPermissionMessages.getText(
-      context: context,
-      isServiceDisabled: !serviceEnabled,
-      locationContext: LocationPermissionContext.home,
-    );
-
-    final l10n = AppLocalizations.of(context);
-    AppDialog.show(
-      context: context,
-      title: text.title,
-      message: text.message,
-      confirmText: l10n.buttonGoToSettings,
-      cancelText: l10n.buttonCancel,
-      onConfirm: () async {
-        if (!serviceEnabled) {
-          await LocationPermissionService.openLocationSettings();
-        } else {
-          await LocationPermissionService.openAppSettings();
-        }
-      },
-    );
-  }
-
-  /// 배터리 최적화 무시 권한 확인 후 [onGranted] 실행.
-  ///
-  /// Android만 체크. iOS는 즉시 onGranted 호출.
-  /// Samsung 등 OEM에서 백그라운드에서 STOMP/위치가 끊기는 문제 방지.
-  /// 위치 권한과 동일 패턴 (AppDialog 재사용, 신규 위젯 X).
-  Future<void> _ensureBatteryOptimization({
-    required VoidCallback onGranted,
-  }) async {
-    // iOS는 해당 사항 없음 → 바로 진행
-    if (!Platform.isAndroid) {
-      onGranted();
-      return;
-    }
-
-    // 디버그 빌드에서는 테스트 편의를 위해 배터리 최적화 체크 생략
-    if (kDebugMode) {
-      onGranted();
-      return;
-    }
-
-    // 이미 설정됨 → 바로 진행
-    final isIgnoring = await ref
-        .read(backgroundServiceProvider)
-        .isIgnoringBatteryOptimizations();
-    if (isIgnoring) {
-      onGranted();
-      return;
-    }
-
-    // 미설정 → 차단 다이얼로그 (위치 권한과 동일 패턴)
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context);
-    AppDialog.show(
-      context: context,
-      title: l10n.dialogBatteryGuideTitle,
-      message:
-          '${l10n.homePageBatteryGuideStep1}'
-          '${l10n.homePageBatteryGuideStep2}',
-      confirmText: l10n.buttonGoToSettings,
-      cancelText: l10n.buttonCancel,
-      onConfirm: () async {
-        await ref.read(backgroundServiceProvider).openAppSettings();
-      },
-    );
-  }
-
   /// 방 만들기 버튼 클릭 시
   ///
-  /// 위치 권한 확인 후 세션 생성 플로우로 이동합니다.
-  void _onCreateSession() {
-    _ensureLocationPermission(
-      onGranted: () => _ensureBatteryOptimization(
-        onGranted: () async {
-          await SessionDraftStorageService().clearDraft();
-          if (mounted) {
-            context.go(RoutePaths.sessionCreationFlow);
-          }
-        },
-      ),
-    );
+  /// 위치 권한 + (Android) 배터리 최적화 게이트 통과 후 세션 생성 플로우로 이동.
+  Future<void> _onCreateSession() async {
+    final passed = await ref
+        .read(gameEntryGateProvider)
+        .ensure(
+          context: context,
+          locationContext: LocationPermissionContext.home,
+        );
+    // 미통과 시 헬퍼가 이미 안내 다이얼로그를 띄운 상태 → 홈에 머무름
+    if (!passed || !mounted) return;
+
+    await SessionDraftStorageService().clearDraft();
+    if (mounted) {
+      context.go(RoutePaths.sessionCreationFlow);
+    }
   }
 
   /// 개발자 도구 메뉴 표시
@@ -410,12 +324,15 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   /// 방 참여 다이얼로그 표시
-  void _showJoinRoomDialog() {
-    _ensureLocationPermission(
-      onGranted: () => _ensureBatteryOptimization(
-        onGranted: () => _showJoinRoomDialogInternal(),
-      ),
-    );
+  Future<void> _showJoinRoomDialog() async {
+    final passed = await ref
+        .read(gameEntryGateProvider)
+        .ensure(
+          context: context,
+          locationContext: LocationPermissionContext.home,
+        );
+    if (!passed || !mounted) return;
+    _showJoinRoomDialogInternal();
   }
 
   /// 초대 코드로 방 참여 (API 호출 → 대기실 이동)
