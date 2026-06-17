@@ -75,7 +75,7 @@ ERROR: Error installing fastlane:
   ```
 
 - Ruby 버전은 **3.3**을 사용합니다. (Android/iOS 공통)
-- iOS의 CocoaPods용 Ruby 설정(ruby 3.1, bundler-cache: true)은 별도이며, Fastlane 설치와 무관합니다.
+- iOS의 CocoaPods용 Ruby 설정(ruby 3.2, bundler-cache: true)은 별도이며, Fastlane 설치와 무관합니다. (i18n 1.15.0/activesupport 7.2가 Ruby 3.2+ `Fiber[]` API를 요구하여 3.1에서 `pod install` crash 발생 → 3.2로 상향)
 
 ---
 
