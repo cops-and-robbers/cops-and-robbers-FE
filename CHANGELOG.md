@@ -1,7 +1,30 @@
 # Changelog
 
-**현재 버전:** 2.2.5  
-**마지막 업데이트:** 2026-06-10T09:56:45Z  
+**현재 버전:** 2.2.7  
+**마지막 업데이트:** 2026-06-17T02:06:37Z  
+
+---
+
+## [2.2.7] - 2026-06-17
+
+**PR:** #431  
+
+**기타**
+- Merge pull request #430 from cops-and-robbers/20260612_#429_Firebase_Analytics_및_Google_AdMob_연동
+- chore : AdMob 전면광고 로드 실패 로그에 에러 code 추가 및 google-services.json SHA 지문 갱신 #429
+- docs : 리포트 마크다운 lint 수정 (MD001 헤딩 레벨, MD040 코드펜스 언어) #429
+- docs : 개인정보처리방침 수탁자 표기에 AdMob 명시 (CodeRabbit 리뷰) #429
+- fix : CodeRabbit 리뷰 반영 — 킬스위치 표시경로 게이트 추가 및 game_over 결과 unknown 분기 #429
+- docs : 리포트 작성 #429
+- fix : 디버그 빌드에서 앱 아이콘 reconcile 옵저버 미등록으로 flutter run 실패 방지 #429
+- fix : 게임 종료 광고 흐름 수정 (navigate-first + stale UI 방지) #429
+- docs : AdMob·Analytics 도입 반영 개인정보처리방침·이용약관 개정 #429
+- docs : 리포트 문서 작성 #429
+- feat : 주요 화면에 Analytics 퍼널 이벤트 삽입 #429
+- feat : 게임 종료 시점 AdMob 전면 광고 통합 #429
+- feat : Firebase Analytics 인프라 추가 #429
+- feat : AdMob 광고 인프라 및 SDK 설정 추가 #429
+- docs : commt 과 report 문서 병렬 실행 커맨드 생성
 
 ---
 
