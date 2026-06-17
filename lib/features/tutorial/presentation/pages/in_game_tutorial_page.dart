@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
@@ -35,14 +38,14 @@ import '../../../game/presentation/widgets/ping_selection_card.dart';
 /// - 채팅 시트는 collapsed 시각을 정밀 복제 (드래그/입력 동작 없음).
 /// - 팀 시점 토글은 지도 placeholder 중앙에 배치 (가독성).
 /// - 참가자 목록은 실 [TeamSection] + [ParticipantCard] 재사용.
-class InGameTutorialPage extends StatefulWidget {
+class InGameTutorialPage extends ConsumerStatefulWidget {
   const InGameTutorialPage({super.key});
 
   @override
-  State<InGameTutorialPage> createState() => _InGameTutorialPageState();
+  ConsumerState<InGameTutorialPage> createState() => _InGameTutorialPageState();
 }
 
-class _InGameTutorialPageState extends State<InGameTutorialPage>
+class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
     with SingleTickerProviderStateMixin {
   /// 도둑 모드 토글 (false = 경찰/라이트, true = 도둑/다크)
   bool _isDarkMode = false;
@@ -144,6 +147,8 @@ class _InGameTutorialPageState extends State<InGameTutorialPage>
     if (_missionStep != expectedStep) return;
     setState(() => _missionStep++);
     if (_missionStep >= 4) {
+      // 튜토리얼 완주 퍼널 이벤트
+      unawaited(ref.read(analyticsServiceProvider).logTutorialComplete());
       // 화면 전환(_showParticipants=false) 후 살짝 텀 두고 다이얼로그
       Future.delayed(const Duration(milliseconds: 500), _showCompletionDialog);
     }

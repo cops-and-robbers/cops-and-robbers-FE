@@ -118,9 +118,12 @@ void main() {
 
   group('GameOverGuard.shouldRequestLeaveGameAfterGameOver', () {
     test(
-      'returns_false_because_game_over_cleanup_is_local_navigation_only',
+      'returns_true_because_server_keeps_user_in_waiting_lobby_after_game_over',
       () {
-        expect(GameOverGuard.shouldRequestLeaveGameAfterGameOver(), isFalse);
+        // 서버는 게임 종료 후 세션을 WAITING 재대결 대기방으로 되돌리고 참가자를
+        // 유지하므로, 퇴장하지 않으면 활성 게임 복귀 안전망(스플래시·홈·resume)이
+        // 사용자를 대기방으로 되돌린다
+        expect(GameOverGuard.shouldRequestLeaveGameAfterGameOver(), isTrue);
       },
     );
   });

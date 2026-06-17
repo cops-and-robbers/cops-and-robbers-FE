@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -99,6 +101,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: rootNavigatorKey,
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
+    // 화면 전환 자동 수집 (screen_view) — Firebase 미초기화 시 생략 (fail-open)
+    observers: [
+      if (Firebase.apps.isNotEmpty)
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    ],
     // refreshListenable 활성화 (auth 상태 변경 감지)
     // authNotifierProvider 사용: 즉시 반영되는 인증 상태
     refreshListenable: _GoRouterRefreshNotifier(ref, authNotifierProvider),
@@ -278,8 +285,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.home,
         name: RoutePaths.homeName,
-        pageBuilder: (context, state) =>
-            buildSmoothFade(key: state.pageKey, child: const HomePage()),
+        pageBuilder: (context, state) => buildSmoothFade(
+          key: state.pageKey,
+          // fromGameExit: 게임 종료 후 "홈으로" 이탈 직후 진입 —
+          // 퇴장 API가 비행 중일 수 있어 활성 게임 안전망을 1회 건너뛴다
+          child: HomePage(
+            skipActiveGameCheck:
+                state.uri.queryParameters['fromGameExit'] == 'true',
+          ),
+        ),
         routes: [
           // ==============================================================
           // Settings Page

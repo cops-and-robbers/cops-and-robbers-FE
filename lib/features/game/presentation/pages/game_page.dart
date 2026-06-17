@@ -16,6 +16,8 @@ import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/ads/ad_service.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/background/background_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
@@ -109,6 +111,8 @@ class _GamePageState extends ConsumerState<GamePage>
 
   bool _showParticipants = false;
   bool _gameOverDialogShown = false;
+  // 결과 다이얼로그 버튼 연타 가드 — 라우팅·Analytics 중복 기록 방지
+  bool _exitTriggered = false;
 
   // 핑 선택 카드 위치(logical px). null이면 카드 미표시.
   Offset? _pingCardOffset;
@@ -1097,10 +1101,69 @@ class _GamePageState extends ConsumerState<GamePage>
     debugPrint('[GamePage] GAME_OVER 유실 fallback 다이얼로그 표시');
     _prepareGameOverPresentation();
 
+    // 유실 fallback 경로도 이탈 시 광고 노출 대상 (더미 모드 제외)
+    if (!widget.isDummy) {
+      unawaited(ref.read(adServiceProvider).preloadGameEndInterstitial());
+    }
+
     if (!mounted) return;
 
     final gameId = int.tryParse(widget.sessionId);
     await _showFallbackResultDialog(null, gameId);
+  }
+
+  /// 게임 종료 후 "홈으로" 선택 시 홈 목적지.
+  ///
+  /// fromGameExit: 방금 퇴장 요청을 보냈으므로 홈의 활성 게임 안전망이
+  /// (leave 완료 전의) stale WAITING 참가 상태를 보고 대기방으로 되돌리는
+  /// 레이스를 1회 차단한다.
+  static const String _homeAfterGameExit =
+      '${RoutePaths.home}?fromGameExit=true';
+
+  /// 서버 퇴장 요청 (fire-and-forget) — 실패해도 이탈 흐름을 막지 않는다.
+  ///
+  /// 실패 시 서버엔 WAITING 참가 상태가 남지만, 이후 콜드 스타트 복구 등
+  /// 안전망이 서버 상태에 수렴하므로 재시도하지 않는다.
+  void _requestLeaveGameSilently(int gameId) {
+    unawaited(
+      ref
+          .read(leaveGameProvider(gameId).future)
+          .then<void>(
+            (_) => debugPrint('[GamePage] ✅ 게임 종료 후 퇴장 완료'),
+            onError: (Object e, StackTrace st) {
+              debugPrint('[GamePage] ⚠️ 게임 종료 후 퇴장 실패(무시): $e');
+            },
+          ),
+    );
+  }
+
+  /// 결과 다이얼로그 이탈 선택 처리 — 먼저 목적지로 이동하고 전면 광고를 그 위에 덮는다.
+  ///
+  /// 라우팅을 광고 닫힘 콜백에 의존시키면 안 된다:
+  /// - 콜백 유실/가드 차단 시 PopScope(canPop:false) 다이얼로그에 사용자가 갇히고,
+  /// - 이동이 광고 닫힘 직후(paused→resumed 전환 중)에 일어나 목적지 화면의
+  ///   초기화(API/STOMP)가 누락되어 stale UI가 보이는 문제가 실기기에서 재현됐다.
+  /// 먼저 이동하면 목적지 화면이 앱 active 상태에서 즉시 초기화되고,
+  /// 광고는 전환 위에 떴다가 사라질 뿐이라 두 문제 모두 구조적으로 사라진다.
+  void _exitGameAfterAd({required String choice, required String destination}) {
+    // 라우트 전환 완료 전 프레임의 두 번째 탭이 이벤트 중복 기록을 만들지 않도록
+    if (_exitTriggered) return;
+    _exitTriggered = true;
+
+    // context.go 이후 GamePage가 dispose되면 ref를 쓸 수 없으므로 미리 확보
+    // (둘 다 keepAlive 싱글턴이라 dispose 이후 사용해도 안전)
+    final analytics = ref.read(analyticsServiceProvider);
+    final adService = ref.read(adServiceProvider);
+
+    unawaited(analytics.logGameExitChoice(choice: choice));
+
+    // 1. 이동 먼저 — 광고 성공/실패와 무관하게 항상 실행된다
+    context.go(destination);
+
+    // 2. 광고를 전환 위에 표시 — 닫힘 시 할 일 없음 (이동은 이미 끝남)
+    final result = adService.showGameEndInterstitial(onComplete: () {});
+
+    unawaited(analytics.logAdInterstitialResult(status: result.analyticsValue));
   }
 
   /// 게임 종료 → 결과 팝업 2단계 시퀀스
@@ -1118,6 +1181,31 @@ class _GamePageState extends ConsumerState<GamePage>
     final gameResultId = ref.read(gameEventNotifierProvider).gameResultId;
 
     _prepareGameOverPresentation();
+
+    // 전면 광고 사전 로드 — 결과 확인 후 이탈(홈으로/한 번 더) 시점에 1회 노출.
+    // 더미 모드 제외, 로드 실패해도 무시 (fail-open)
+    if (!widget.isDummy) {
+      unawaited(ref.read(adServiceProvider).preloadGameEndInterstitial());
+    }
+
+    // game_over 퍼널 이벤트 (_gameOverDialogShown 가드 직후라 게임당 1회 보장)
+    // winnerTeam이 null이면 승패 미상이므로 lose로 오기록하지 않고 unknown으로 분류
+    final gameStartTime = ref.read(gameEventNotifierProvider).gameStartTime;
+    final gameOverResult = winnerTeam == null
+        ? 'unknown'
+        : (winnerTeam == widget.team ? 'win' : 'lose');
+    unawaited(
+      ref
+          .read(analyticsServiceProvider)
+          .logGameOver(
+            result: gameOverResult,
+            team: widget.team,
+            reason: reason ?? 'unknown',
+            durationMinutes: gameStartTime == null
+                ? 0
+                : DateTime.now().difference(gameStartTime).inMinutes,
+          ),
+    );
 
     // 결과 API 사전 트리거 (1단계 3초 동안 백그라운드에서 로딩)
     if (gameResultId != null) {
@@ -1192,15 +1280,18 @@ class _GamePageState extends ConsumerState<GamePage>
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
             gameId != null) {
-          ref.read(leaveGameProvider(gameId).future);
+          _requestLeaveGameSilently(gameId);
         }
         ref.read(gameParticipantNotifierProvider.notifier).clear();
-        context.go(RoutePaths.home);
+        _exitGameAfterAd(choice: 'home', destination: _homeAfterGameExit);
       },
       onRematch: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         ref.read(gameParticipantNotifierProvider.notifier).clear();
-        context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
+        _exitGameAfterAd(
+          choice: 'rematch',
+          destination: RoutePaths.waitingRoomWithId(widget.sessionId),
+        );
       },
     );
   }
@@ -1246,18 +1337,22 @@ class _GamePageState extends ConsumerState<GamePage>
       barrierDismissible: false,
       onCancel: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
+        // GAME_OVER 유실 fallback(승패 미상)도 서버상 WAITING 참가자로 남으므로
+        // 동일하게 퇴장한다 — hasWinnerTeam 여부와 무관
         if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
-            hasWinnerTeam &&
             gameId != null) {
-          ref.read(leaveGameProvider(gameId).future);
+          _requestLeaveGameSilently(gameId);
         }
         ref.read(gameParticipantNotifierProvider.notifier).clear();
-        context.go(RoutePaths.home);
+        _exitGameAfterAd(choice: 'home', destination: _homeAfterGameExit);
       },
       onConfirm: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
         ref.read(gameParticipantNotifierProvider.notifier).clear();
-        context.go(RoutePaths.waitingRoomWithId(widget.sessionId));
+        _exitGameAfterAd(
+          choice: 'rematch',
+          destination: RoutePaths.waitingRoomWithId(widget.sessionId),
+        );
       },
     );
   }
