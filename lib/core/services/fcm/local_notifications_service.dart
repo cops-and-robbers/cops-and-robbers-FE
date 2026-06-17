@@ -21,10 +21,12 @@ class LocalNotificationsService {
   // 알림 처리를 위한 메인 플러그인 인스턴스
   late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
 
-  // Android-specific initialization settings using app launcher icon
-  // 앱 런처 아이콘을 사용하는 Android 전용 초기화 설정
+  // Android 상태바 알림 아이콘은 모노크롬 실루엣(@drawable/ic_stat_notification)을 사용한다.
+  // Android는 status bar small icon의 알파 채널만 렌더링하므로 컬러 런처 아이콘을 쓰면
+  // 순정/타 제조사 기기에서 흰 실루엣으로 뭉개진다. 컬러 캐릭터는 알림 패널 좌측에
+  // 시스템이 앱 런처 아이콘으로 자동 표시하므로 여기서 별도 지정하지 않는다.
   final _androidInitializationSettings = const AndroidInitializationSettings(
-    '@mipmap/ic_launcher',
+    '@drawable/ic_stat_notification',
   );
 
   // iOS-specific initialization settings with permission requests

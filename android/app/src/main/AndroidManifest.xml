@@ -124,11 +124,12 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${GOOGLE_MAPS_API_KEY}" />
 
-        <!-- FCM 기본 알림 아이콘 -->
-        <!-- FCM default notification icon -->
+        <!-- FCM 기본 알림 아이콘 (상태바 small icon — 모노크롬 실루엣) -->
+        <!-- FCM default notification icon (status bar small icon — monochrome silhouette) -->
+        <!-- 컬러 캐릭터는 알림 패널 좌측에 시스템이 @mipmap/ic_launcher로 자동 표시 -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/ic_launcher" />
+            android:resource="@drawable/ic_stat_notification" />
 
         <!-- FCM 기본 알림 색상 -->
         <!-- FCM default notification color -->
