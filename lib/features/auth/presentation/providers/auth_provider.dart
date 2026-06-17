@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +23,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../../router/active_game_route.dart';
 import '../pages/login_page.dart';
 import '../../../session/presentation/pages/home_page.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 
@@ -235,6 +238,9 @@ class AuthNotifier extends _$AuthNotifier {
       final useCase = ref.read(signInWithGoogleUseCaseProvider);
       final result = await useCase.execute();
 
+      // 로그인 퍼널 이벤트 (GA4 표준 login 이벤트)
+      unawaited(ref.read(analyticsServiceProvider).logLogin(method: 'google'));
+
       // 기존 회원: 활성 게임 체크 → 목적지 결정 (state 설정 전)
       if (!result.isNewUser) {
         await _resolvePostLoginDestination();
@@ -275,6 +281,9 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       final useCase = ref.read(signInWithAppleUseCaseProvider);
       final result = await useCase.execute();
+
+      // 로그인 퍼널 이벤트 (GA4 표준 login 이벤트)
+      unawaited(ref.read(analyticsServiceProvider).logLogin(method: 'apple'));
 
       // 기존 회원: 활성 게임 체크 → 목적지 결정 (state 설정 전)
       if (!result.isNewUser) {

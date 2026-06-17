@@ -13,6 +13,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 /// - `force_update` (bool): 강제 업데이트 여부
 /// - `maintenance` (bool): 서버 점검 모드
 /// - `maintenance_message` (String): 점검 안내 메시지 (시간 등)
+/// - `ads_enabled` (bool): 광고 전역 스위치 (kill switch)
 class RemoteConfigService {
   RemoteConfigService._();
 
@@ -49,6 +50,7 @@ class RemoteConfigService {
       'force_update': false,
       'maintenance': false,
       'maintenance_message': '',
+      'ads_enabled': false,
     });
 
     // 서버에서 최신 값 가져오기
@@ -74,6 +76,7 @@ class RemoteConfigService {
       debugPrint('   force_update:    $forceUpdate');
       debugPrint('   maintenance:     $maintenance');
       debugPrint('   maintenance_msg: $maintenanceMessage');
+      debugPrint('   ads_enabled:     $adsEnabled');
       debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     }
   }
@@ -93,4 +96,10 @@ class RemoteConfigService {
   /// 점검 안내 메시지 (시간 등, 빈 문자열이면 기본 메시지 사용)
   String get maintenanceMessage =>
       _remoteConfig.getString('maintenance_message');
+
+  /// 광고 전역 스위치 (kill switch)
+  ///
+  /// 기본값 false — 배포 후 Firebase 콘솔에서 켜는 안전한 롤아웃.
+  /// 미초기화(Firebase 실패 등) 시에도 false (광고 끔 = fail-safe)
+  bool get adsEnabled => _isInitialized && _remoteConfig.getBool('ads_enabled');
 }

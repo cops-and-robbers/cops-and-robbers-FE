@@ -28,6 +28,7 @@ import '../../../session/domain/entities/user_game_status_entity.dart';
 import '../../domain/entities/auth_result_entity.dart';
 import '../providers/auth_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
+import '../../../../core/services/ads/ad_service.dart';
 import '../../../../core/services/remote_config/remote_config_service.dart';
 import '../../../../core/services/remote_config/app_version_checker.dart';
 import '../../../../core/services/remote_config/update_dialog_helper.dart';
@@ -148,6 +149,13 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         debugPrint('⚠️ SplashPage: Remote Config 체크 실패, 앱 진행: $e');
         // Remote Config 실패 시 앱 정상 진행 (fail-open)
       }
+
+      // ================================================================
+      // AdMob SDK 초기화 (UMP 동의 → SDK init)
+      // UMP 동의 폼은 첫 프레임 이후에만 표시 가능하므로 main()이 아닌 여기서 수행.
+      // fire-and-forget — 광고 초기화가 스플래시 진행을 막지 않는다 (fail-open)
+      // ================================================================
+      unawaited(ref.read(adServiceProvider).initialize());
 
       if (!mounted) return;
 

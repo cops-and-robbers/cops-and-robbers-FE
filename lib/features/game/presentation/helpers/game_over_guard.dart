@@ -47,9 +47,11 @@ class GameOverGuard {
     return statusCode == 400 && errorCode == 'GAME_NOT_IN_PROGRESS';
   }
 
-  /// GAME_OVER 이후 홈 이동은 로컬 라우팅만 수행한다.
+  /// GAME_OVER 이후 "홈으로" 선택 시 서버 퇴장 API를 호출한다.
   ///
-  /// 이미 서버 게임이 종료된 상태라 별도 퇴장 API는 불필요하며, 종료 직후 부가 REST
-  /// 요청이 401을 받으면 전역 AuthInterceptor가 강제 로그아웃을 실행할 수 있다.
-  static bool shouldRequestLeaveGameAfterGameOver() => false;
+  /// 서버는 게임 종료 후 세션을 재대결용 WAITING 대기방으로 되돌리고 참가자를
+  /// 유지한다. 퇴장하지 않으면 활성 게임 복귀 안전망(스플래시 복구·홈 안전망·
+  /// resume 체크)이 사용자를 대기방으로 되돌리는 버그가 발생한다(실기기 재현).
+  /// "한 번 더"는 대기방 잔류가 의도이므로 호출하지 않는다.
+  static bool shouldRequestLeaveGameAfterGameOver() => true;
 }

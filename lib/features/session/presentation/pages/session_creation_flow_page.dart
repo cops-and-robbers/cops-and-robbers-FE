@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
@@ -308,6 +311,16 @@ class _SessionCreationFlowPageState
       }
 
       if (!mounted) return;
+
+      // 방 생성 퍼널 이벤트
+      unawaited(
+        ref
+            .read(analyticsServiceProvider)
+            .logGameCreate(
+              participantLimit: _maxParticipants,
+              roundMinutes: _roundDurationMinutes,
+            ),
+      );
 
       // 게임 참가 정보 설정 (방장은 기본적으로 POLICE 팀)
       // authNotifierProvider는 signInWithGoogle/Apple 직후 서버 닉네임으로 설정되므로

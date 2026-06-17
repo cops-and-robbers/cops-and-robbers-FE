@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,7 @@ import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -999,6 +1002,19 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _gameStartRetryCount = 0;
     final team = participantInfo.team;
     final participantId = participantInfo.participantId!;
+
+    // 게임 시작 퍼널 이벤트
+    unawaited(
+      ref
+          .read(analyticsServiceProvider)
+          .logGameStart(
+            team: team,
+            participantCount: ref
+                .read(waitingRoomParticipantsProvider)
+                .participants
+                .length,
+          ),
+    );
 
     // startTime을 직접 추출 (GameStartData.fromJson은 message 필드 누락 시 예외 발생 가능)
     final startTimeStr = event.data['startTime'] as String?;

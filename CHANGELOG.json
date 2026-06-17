@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-10T09:56:45Z",
-    "currentVersion": "2.2.5",
+    "lastUpdated": "2026-06-17T02:06:37Z",
+    "currentVersion": "2.2.7",
     "projectType": "flutter",
-    "totalReleases": 107
+    "totalReleases": 108
   },
   "releases": [
+    {
+      "version": "2.2.7",
+      "project_type": "flutter",
+      "date": "2026-06-17",
+      "pr_number": 431,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #430 from cops-and-robbers/20260612_#429_Firebase_Analytics_및_Google_AdMob_연동\n  * chore : AdMob 전면광고 로드 실패 로그에 에러 code 추가 및 google-services.json SHA 지문 갱신 #429\n  * docs : 리포트 마크다운 lint 수정 (MD001 헤딩 레벨, MD040 코드펜스 언어) #429\n  * docs : 개인정보처리방침 수탁자 표기에 AdMob 명시 (CodeRabbit 리뷰) #429\n  * fix : CodeRabbit 리뷰 반영 — 킬스위치 표시경로 게이트 추가 및 game_over 결과 unknown 분기 #429\n  * docs : 리포트 작성 #429\n  * fix : 디버그 빌드에서 앱 아이콘 reconcile 옵저버 미등록으로 flutter run 실패 방지 #429\n  * fix : 게임 종료 광고 흐름 수정 (navigate-first + stale UI 방지) #429\n  * docs : AdMob·Analytics 도입 반영 개인정보처리방침·이용약관 개정 #429\n  * docs : 리포트 문서 작성 #429\n  * feat : 주요 화면에 Analytics 퍼널 이벤트 삽입 #429\n  * feat : 게임 종료 시점 AdMob 전면 광고 통합 #429\n  * feat : Firebase Analytics 인프라 추가 #429\n  * feat : AdMob 광고 인프라 및 SDK 설정 추가 #429\n  * docs : commt 과 report 문서 병렬 실행 커맨드 생성\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #430 from cops-and-robbers/20260612_#429_Firebase_Analytics_및_Google_AdMob_연동",
+            "chore : AdMob 전면광고 로드 실패 로그에 에러 code 추가 및 google-services.json SHA 지문 갱신 #429",
+            "docs : 리포트 마크다운 lint 수정 (MD001 헤딩 레벨, MD040 코드펜스 언어) #429",
+            "docs : 개인정보처리방침 수탁자 표기에 AdMob 명시 (CodeRabbit 리뷰) #429",
+            "fix : CodeRabbit 리뷰 반영 — 킬스위치 표시경로 게이트 추가 및 game_over 결과 unknown 분기 #429",
+            "docs : 리포트 작성 #429",
+            "fix : 디버그 빌드에서 앱 아이콘 reconcile 옵저버 미등록으로 flutter run 실패 방지 #429",
+            "fix : 게임 종료 광고 흐름 수정 (navigate-first + stale UI 방지) #429",
+            "docs : AdMob·Analytics 도입 반영 개인정보처리방침·이용약관 개정 #429",
+            "docs : 리포트 문서 작성 #429",
+            "feat : 주요 화면에 Analytics 퍼널 이벤트 삽입 #429",
+            "feat : 게임 종료 시점 AdMob 전면 광고 통합 #429",
+            "feat : Firebase Analytics 인프라 추가 #429",
+            "feat : AdMob 광고 인프라 및 SDK 설정 추가 #429",
+            "docs : commt 과 report 문서 병렬 실행 커맨드 생성"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.2.5",
       "project_type": "flutter",
