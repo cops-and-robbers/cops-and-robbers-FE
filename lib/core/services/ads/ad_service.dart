@@ -189,7 +189,10 @@ Future<LoadedInterstitial?> _loadGmaInterstitial(String adUnitId) {
     adLoadCallback: InterstitialAdLoadCallback(
       onAdLoaded: (ad) => completer.complete(_GmaLoadedInterstitial(ad)),
       onAdFailedToLoad: (error) {
-        debugPrint('[AdService] ⚠️ 전면 광고 로드 실패: ${error.message}');
+        // code 동반: iOS no-fill(1)/Android no-fill(3) 등 실패 성격 구분용
+        debugPrint(
+          '[AdService] ⚠️ 전면 광고 로드 실패: code=${error.code}, ${error.message}',
+        );
         completer.complete(null);
       },
     ),
