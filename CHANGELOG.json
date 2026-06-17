@@ -1,11 +1,35 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-17T02:06:37Z",
-    "currentVersion": "2.2.7",
+    "lastUpdated": "2026-06-17T15:04:01Z",
+    "currentVersion": "2.2.9",
     "projectType": "flutter",
-    "totalReleases": 108
+    "totalReleases": 109
   },
   "releases": [
+    {
+      "version": "2.2.9",
+      "project_type": "flutter",
+      "date": "2026-06-17",
+      "pr_number": 435,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #433 from cops-and-robbers/20260606_#415_FCM_푸시_알림_아이콘이_옛날_캐릭터로_표시되는_문제\n  * Merge pull request #434 from cops-and-robbers/20260617_#432_딥링크로_게임방_우회\n  * docs : 리포트 작성 #432\n  * test : 딥링크 진입 게이트 분기 위젯 테스트 추가 #432\n  * fix : 딥링크 진입 시 위치/배터리 게이트 적용 및 미로그인 invite 보존 #432\n  * refactor : home_page 진입 게이트를 GameEntryGate로 위임 #432\n  * feat : 게임 진입 위치/배터리 게이트 공용 헬퍼(GameEntryGate) 추가 #432\n  * fix : 알림 상태바 아이콘을 모노크롬 실루엣으로 교체 #415\n  * fix : FCM 알림 아이콘을 현재 캐릭터로 교체 #415\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #433 from cops-and-robbers/20260606_#415_FCM_푸시_알림_아이콘이_옛날_캐릭터로_표시되는_문제",
+            "Merge pull request #434 from cops-and-robbers/20260617_#432_딥링크로_게임방_우회",
+            "docs : 리포트 작성 #432",
+            "test : 딥링크 진입 게이트 분기 위젯 테스트 추가 #432",
+            "fix : 딥링크 진입 시 위치/배터리 게이트 적용 및 미로그인 invite 보존 #432",
+            "refactor : home_page 진입 게이트를 GameEntryGate로 위임 #432",
+            "feat : 게임 진입 위치/배터리 게이트 공용 헬퍼(GameEntryGate) 추가 #432",
+            "fix : 알림 상태바 아이콘을 모노크롬 실루엣으로 교체 #415",
+            "fix : FCM 알림 아이콘을 현재 캐릭터로 교체 #415"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.2.7",
       "project_type": "flutter",

@@ -8,11 +8,15 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/services/permission/game_entry_gate.dart';
+import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/active_game_route.dart';
 import '../../../../router/route_paths.dart';
+import '../../../auth/domain/entities/auth_result_entity.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/deeplink_join_notifier.dart';
 
 /// 딥링크(/join/:inviteCode) 진입 시 표시되는 transient 화면.
@@ -57,6 +61,28 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
   Future<void> _run() async {
     if (_started) return;
     _started = true;
+
+    // 로그인 상태면 join API(handle) 전에 위치/배터리 게이트를 태운다.
+    // 미로그인은 게이트 없이 handle() 로 보내야 한다 — handle() 내부에서만
+    // pending invite 저장 + 로그인 이동이 일어나므로, 게이트를 먼저 태우면
+    // 거부 시 invite 가 저장되지 않은 채 흐름이 끊긴다.
+    final user = await _readUserSafely();
+    if (!mounted) return;
+
+    if (user != null) {
+      final passed = await ref
+          .read(gameEntryGateProvider)
+          .ensure(
+            context: context,
+            locationContext: LocationPermissionContext.waitingRoom,
+          );
+      if (!mounted) return;
+      if (!passed) {
+        // 게이트 미통과 — 안내 다이얼로그가 닫힌 뒤 홈으로 (무한 로딩 방지)
+        context.go(RoutePaths.home);
+        return;
+      }
+    }
 
     // handle() 자체가 throw 하는 경로는 _classifyError로 거의 막혀있지만,
     // 예상치 못한 예외가 새서 화면이 무한 로딩으로 갇히는 것을 막는 최종 안전망.
@@ -105,6 +131,19 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
             : _resolveErrorMessage(l10n, messageKey);
         AppSnackbar.show(context, message: msg, backgroundColor: AppColors.red);
         context.go(RoutePaths.home);
+    }
+  }
+
+  /// 인증 상태를 안전하게 읽는다. 실패 시 null(미로그인 취급)로 폴백한다.
+  ///
+  /// handle() 도 동일하게 authNotifierProvider.future 를 읽으므로,
+  /// 여기서 null 로 폴백해도 handle() 단계에서 일관되게 재처리된다.
+  Future<AuthResultEntity?> _readUserSafely() async {
+    try {
+      return await ref.read(authNotifierProvider.future);
+    } catch (e) {
+      debugPrint('[DeepLinkJoinPage] 인증 상태 읽기 실패: $e');
+      return null;
     }
   }
 
