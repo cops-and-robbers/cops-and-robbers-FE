@@ -107,8 +107,8 @@ class GameEntryGateImpl implements GameEntryGate {
     try {
       // 다이얼로그 await 중 _ref 무효화 위험을 피하려 서비스 인스턴스를 미리 캡처
       final backgroundService = _ref.read(backgroundServiceProvider);
-      final isIgnoring =
-          await backgroundService.isIgnoringBatteryOptimizations();
+      final isIgnoring = await backgroundService
+          .isIgnoringBatteryOptimizations();
       if (isIgnoring) return true;
 
       if (!context.mounted) return false;

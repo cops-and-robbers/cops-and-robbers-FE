@@ -86,7 +86,10 @@ void main() {
           builder: (_, state) =>
               DeepLinkJoinPage(inviteCode: state.pathParameters['code']!),
         ),
-        GoRoute(path: RoutePaths.home, builder: (_, _) => const Text('HOME_PAGE')),
+        GoRoute(
+          path: RoutePaths.home,
+          builder: (_, _) => const Text('HOME_PAGE'),
+        ),
         GoRoute(
           path: RoutePaths.login,
           builder: (_, _) => const Text('LOGIN_PAGE'),
@@ -134,19 +137,20 @@ void main() {
     },
   );
 
-  testWidgets('calls_join_and_routes_waiting_room_when_logged_in_and_gate_passed', (
-    tester,
-  ) async {
-    final gate = _FakeGate(true);
-    when(() => joinUseCase.execute(any())).thenAnswer(
-      (_) async => const GameJoinResult(gameId: 7, participantId: 1),
-    );
-    await pumpPage(tester, gate: gate, user: loggedInUser);
+  testWidgets(
+    'calls_join_and_routes_waiting_room_when_logged_in_and_gate_passed',
+    (tester) async {
+      final gate = _FakeGate(true);
+      when(() => joinUseCase.execute(any())).thenAnswer(
+        (_) async => const GameJoinResult(gameId: 7, participantId: 1),
+      );
+      await pumpPage(tester, gate: gate, user: loggedInUser);
 
-    expect(gate.called, isTrue);
-    verify(() => joinUseCase.execute('ABC123')).called(1);
-    expect(find.text('WAITING_ROOM'), findsOneWidget);
-  });
+      expect(gate.called, isTrue);
+      verify(() => joinUseCase.execute('ABC123')).called(1);
+      expect(find.text('WAITING_ROOM'), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'skips_gate_and_saves_pending_invite_and_routes_login_when_not_logged_in',

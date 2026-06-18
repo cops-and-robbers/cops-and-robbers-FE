@@ -1,11 +1,40 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-17T17:24:42Z",
-    "currentVersion": "2.2.10",
+    "lastUpdated": "2026-06-18T05:24:03Z",
+    "currentVersion": "2.2.11",
     "projectType": "flutter",
-    "totalReleases": 110
+    "totalReleases": 111
   },
   "releases": [
+    {
+      "version": "2.2.11",
+      "project_type": "flutter",
+      "date": "2026-06-18",
+      "pr_number": 437,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **New Features**\n  * AdMob 광고 ID 권한 지원이 추가되었습니다.\n\n* **Tests**\n  * 딥링크를 통한 게임 조인 시나리오 테스트가 강화되었습니다.\n\n* **Chores**\n  * 앱 버전이 2.2.11로 업데이트되었습니다.\n  * 코드 포맷팅 및 가독성이 개선되었습니다.",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "AdMob 광고 ID 권한 지원이 추가되었습니다."
+          ]
+        },
+        "tests": {
+          "title": "Tests",
+          "items": [
+            "딥링크를 통한 게임 조인 시나리오 테스트가 강화되었습니다."
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "앱 버전이 2.2.11로 업데이트되었습니다.",
+            "코드 포맷팅 및 가독성이 개선되었습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.2.10",
       "project_type": "flutter",
