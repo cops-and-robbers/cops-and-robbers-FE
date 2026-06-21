@@ -1041,6 +1041,50 @@
   "@buttonPlayAgain": {
     "description": "공통 — 다시 플레이 버튼"
   },
+  "buttonViewMyRecord": "내 기록 보기",
+  "@buttonViewMyRecord": {
+    "description": "게임 결과 — 내 기록 다이얼로그 진입 버튼"
+  },
+  "labelMyRecord": "내 기록",
+  "@labelMyRecord": {
+    "description": "내 기록 다이얼로그 — 제목"
+  },
+  "labelTravelDistance": "내가 이동한 거리",
+  "@labelTravelDistance": {
+    "description": "내 기록 — 이동 거리 라벨(대표 숫자 하단)"
+  },
+  "labelMyArrestCount": "내가 잡은 도둑",
+  "@labelMyArrestCount": {
+    "description": "내 기록 — 경찰: 내가 잡은 도둑 수 라벨"
+  },
+  "labelMyEscapeCount": "내 탈옥 횟수",
+  "@labelMyEscapeCount": {
+    "description": "내 기록 — 도둑: 내가 탈옥한 횟수 라벨"
+  },
+  "labelResult": "결과",
+  "@labelResult": {
+    "description": "내 기록 — 승패 결과 라벨"
+  },
+  "messageSaveComplete": "갤러리에 저장했어요",
+  "@messageSaveComplete": {
+    "description": "내 기록 — 저장 성공 스낵바"
+  },
+  "messageSaveFailed": "저장에 실패했어요",
+  "@messageSaveFailed": {
+    "description": "내 기록 — 저장 실패 스낵바"
+  },
+  "labelNoRoute": "이동 기록 없음",
+  "@labelNoRoute": {
+    "description": "내 기록 — 경로가 없을 때 표시"
+  },
+  "legendArrestSpot": "잡은 곳",
+  "@legendArrestSpot": {
+    "description": "내 기록 — 경찰: 도둑을 잡은 위치 마커 범례"
+  },
+  "legendCaughtSpot": "잡힌 곳",
+  "@legendCaughtSpot": {
+    "description": "내 기록 — 도둑: 내가 잡힌 위치 마커 범례"
+  },
   "gameLocationRevealCountdown": "다음 도둑 위치 공개까지 {formatted}",
   "@gameLocationRevealCountdown": {
     "description": "다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)",

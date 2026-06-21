@@ -1023,6 +1023,39 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonPlayAgain => '한 번 더';
 
   @override
+  String get buttonViewMyRecord => '내 기록 보기';
+
+  @override
+  String get labelMyRecord => '내 기록';
+
+  @override
+  String get labelTravelDistance => '내가 이동한 거리';
+
+  @override
+  String get labelMyArrestCount => '내가 잡은 도둑';
+
+  @override
+  String get labelMyEscapeCount => '내 탈옥 횟수';
+
+  @override
+  String get labelResult => '결과';
+
+  @override
+  String get messageSaveComplete => '갤러리에 저장했어요';
+
+  @override
+  String get messageSaveFailed => '저장에 실패했어요';
+
+  @override
+  String get labelNoRoute => '이동 기록 없음';
+
+  @override
+  String get legendArrestSpot => '잡은 곳';
+
+  @override
+  String get legendCaughtSpot => '잡힌 곳';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return '다음 도둑 위치 공개까지 $formatted';
   }
