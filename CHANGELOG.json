@@ -1,11 +1,31 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-18T05:24:03Z",
-    "currentVersion": "2.2.11",
+    "lastUpdated": "2026-06-21T15:30:56Z",
+    "currentVersion": "2.2.12",
     "projectType": "flutter",
-    "totalReleases": 111
+    "totalReleases": 112
   },
   "releases": [
+    {
+      "version": "2.2.12",
+      "project_type": "flutter",
+      "date": "2026-06-21",
+      "pr_number": 442,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #441 from cops-and-robbers/20260621_#440_게임_진행_중_중도_퇴장_기능_프론트엔드_연동\n  * docs : 리포트 작성 #440\n  * docs : 인게임 중도 퇴장 백엔드 스펙 반영 #440\n  * test : 인게임 중도 퇴장 단위 테스트 추가 #440\n  * feat : 인게임 중도 퇴장 기능 프론트엔드 연동 #440\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #441 from cops-and-robbers/20260621_#440_게임_진행_중_중도_퇴장_기능_프론트엔드_연동",
+            "docs : 리포트 작성 #440",
+            "docs : 인게임 중도 퇴장 백엔드 스펙 반영 #440",
+            "test : 인게임 중도 퇴장 단위 테스트 추가 #440",
+            "feat : 인게임 중도 퇴장 기능 프론트엔드 연동 #440"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.2.11",
       "project_type": "flutter",
