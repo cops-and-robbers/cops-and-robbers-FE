@@ -58,13 +58,18 @@ class FirebaseMessagingService {
   /// 백엔드에서 게임 진행 중 발생하는 시스템 이벤트의 FCM data.type 값 집합.
   ///
   /// BE PR #84의 SystemEventType.name() 결과와 일치한다.
-  /// (ARREST, ESCAPE, GAME_OVER, ROBBER_LOCATION_REVEAL, POLICE_MOVE_START)
+  /// (ARREST, ESCAPE, GAME_OVER, ROBBER_LOCATION_REVEAL, POLICE_MOVE_START, PLAYER_LEFT)
+  ///
+  /// 이 set은 포그라운드(`_onForegroundMessage`)와 알림탭/콜드스타트(`_onMessageOpenedApp`)
+  /// 발행 경로에서 STOMP 좀비 연결 자동 복구 트리거로 사용된다.
+  /// 백그라운드 핸들러(`onBackgroundMessage`)는 스트림을 발행하지 않으므로 즉시 복구는 아니다.
   static const Set<String> _gameSystemEventTypes = {
     'ARREST',
     'ESCAPE',
     'GAME_OVER',
     'ROBBER_LOCATION_REVEAL',
     'POLICE_MOVE_START',
+    'PLAYER_LEFT',
   };
 
   /// 게임 시스템 이벤트 FCM 도착 시 발행되는 StreamController.

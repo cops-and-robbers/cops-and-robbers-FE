@@ -81,6 +81,30 @@ void main() {
         isEmpty,
       );
     });
+
+    testWidgets('leftParticipantIds 변경 시 참가자 목록을 재조회한다', (tester) async {
+      var fetchCount = 0;
+      late _TestGameEventNotifier gameEventNotifier;
+
+      await _pumpOverlay(
+        tester,
+        initialGameEventState: const GameEventState(),
+        fetchParticipants: () async {
+          fetchCount++;
+          return _participants;
+        },
+        onGameEventNotifierReady: (notifier) {
+          gameEventNotifier = notifier;
+        },
+      );
+      await tester.pump();
+      expect(fetchCount, 1);
+
+      gameEventNotifier.setState(const GameEventState(leftParticipantIds: {2}));
+      await tester.pump();
+
+      expect(fetchCount, 2);
+    });
   });
 }
 

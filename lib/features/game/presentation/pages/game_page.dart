@@ -114,6 +114,9 @@ class _GamePageState extends ConsumerState<GamePage>
   // 결과 다이얼로그 버튼 연타 가드 — 라우팅·Analytics 중복 기록 방지
   bool _exitTriggered = false;
 
+  /// 능동 중도 퇴장 진행 중 — 자기 몰수 GAME_OVER 모달/resume 라우팅 차단 + 연타 방지
+  bool _isLeaving = false;
+
   // 핑 선택 카드 위치(logical px). null이면 카드 미표시.
   Offset? _pingCardOffset;
   // 카드에서 선택 시 사용할 롱프레스 좌표
@@ -301,6 +304,7 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 위치 스트림을 중단하고 권한 요청 다이얼로그를 표시합니다.
   /// 권한 허용 후에는 앱 재시작이 필요합니다.
   Future<void> _checkLocationPermissionOnResume() async {
+    if (_isLeaving) return;
     if (_isLocationPermissionDenied) return;
 
     final canAccess = await LocationPermissionService.canAccessLocation();
@@ -823,7 +827,13 @@ class _GamePageState extends ConsumerState<GamePage>
   void _showReconnectModalIfNeeded() {
     // 게임 종료 다이얼로그 시퀀스 시작 후에는 재연결 모달 표시 금지
     // (_gameOverDialogShown은 disconnect()보다 먼저 세팅되므로 isGameOver 리셋 영향 없음)
-    if (!mounted || _isReconnectModalShown || _gameOverDialogShown) return;
+    // 능동 퇴장 중에는 disconnect()가 동기 발화시키는 재연결 모달을 막는다
+    if (!mounted ||
+        _isReconnectModalShown ||
+        _gameOverDialogShown ||
+        _isLeaving) {
+      return;
+    }
 
     final currentState = ref.read(gameEventNotifierProvider);
     if (currentState.isGameOver ||
@@ -1120,6 +1130,84 @@ class _GamePageState extends ConsumerState<GamePage>
   static const String _homeAfterGameExit =
       '${RoutePaths.home}?fromGameExit=true';
 
+  /// 게임 중 나가기 진입점 — AppBar 나가기 버튼 / 시스템 뒤로가기 공통.
+  ///
+  /// 단순 확인 다이얼로그(대기방 톤) → 확인 시 [_leaveGameActively].
+  Future<void> _confirmLeaveGame() async {
+    // 이미 나가는 중이거나 게임 종료 다이얼로그가 떠 있으면 무시(중복/충돌 방지)
+    if (_isLeaving || _gameOverDialogShown) return;
+
+    // 더미 모드는 서버 호출 없이 즉시 홈
+    if (widget.isDummy) {
+      if (mounted) context.go(RoutePaths.home);
+      return;
+    }
+
+    // 확인 다이얼로그를 읽는 동안 종료 광고를 미리 로드(표시 성공률 ↑)
+    unawaited(ref.read(adServiceProvider).preloadGameEndInterstitial());
+
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await AppDialog.confirm(
+      context: context,
+      title: l10n.gameLeaveConfirmTitle,
+      message: l10n.gameLeaveConfirmMessage,
+      confirmText: l10n.buttonLeave,
+      cancelText: l10n.buttonCancel,
+      isDestructive: true,
+      confirmTextColor: AppColors.white,
+      isDarkMode: _isDarkMode,
+      backgroundColor: _isDarkMode ? AppColors.black : null,
+    );
+    if (confirmed != true || !mounted) return;
+    await _leaveGameActively();
+  }
+
+  /// 능동 퇴장 실행 — API 우선 await. 실패 시 잔류, 성공 시에만 소켓 정리 + 홈 이동.
+  ///
+  /// [_isLeaving] 가드를 먼저 세워, await 동안 서버가 브로드캐스트한 내 몰수
+  /// GAME_OVER가 결과 다이얼로그로 뜨는 것을 막는다(B-3 타이밍).
+  Future<void> _leaveGameActively() async {
+    if (_isLeaving) return; // 중복 진입 방지
+    _isLeaving = true; // GAME_OVER 리스너 / resume 가드 ON
+
+    final l10n = AppLocalizations.of(context);
+    try {
+      // ① 서버 퇴장 먼저 await
+      await ref.read(leaveGameProvider(_gameId).future);
+    } catch (e) {
+      debugPrint('[GamePage] ⚠️ 퇴장 API 실패: $e');
+      _isLeaving = false;
+      if (!mounted) return;
+      // 클라이언트 실패 사이 서버가 (마지막 플레이어 몰수 등으로) 게임을 종료했을 수 있다.
+      // await 창에서 도착한 GAME_OVER를 _isLeaving 가드가 한 번 삼켰으므로,
+      // 이미 종료 상태면 정상 결과창으로 복구한다(소켓 정리는 _showGameOverDialog가 수행).
+      final eventState = ref.read(gameEventNotifierProvider);
+      if (eventState.isGameOver) {
+        _showGameOverDialog(eventState.winnerTeam, eventState.gameOverReason);
+        return;
+      }
+      // 게임이 계속됨 → 잔류(소켓 유지) + 안내
+      AppSnackbar.show(
+        context,
+        message: l10n.gameLeaveFailedMessage,
+        backgroundColor: AppColors.red,
+        isDarkMode: _isDarkMode,
+      );
+      return;
+    }
+
+    if (!mounted) return;
+
+    // ② 로컬 참가자 상태 clear (게임 종료 홈경로와 동일)
+    ref.read(gameParticipantNotifierProvider.notifier).clear();
+
+    // ③ 소켓/위치/채팅 정리 — 게임 종료와 동일 cleanup 재사용
+    _prepareGameOverPresentation();
+
+    // ④ 홈 이동 + 종료 광고(이동 먼저, 광고는 전환 위)
+    _exitGameAfterAd(choice: 'leave_mid_game', destination: _homeAfterGameExit);
+  }
+
   /// 서버 퇴장 요청 (fire-and-forget) — 실패해도 이탈 흐름을 막지 않는다.
   ///
   /// 실패 시 서버엔 WAITING 참가 상태가 남지만, 이후 콜드 스타트 복구 등
@@ -1242,9 +1330,7 @@ class _GamePageState extends ConsumerState<GamePage>
           ),
           SizedBox(height: AppSpacing.vertical8),
           Text(
-            reason == GameResultReason.allArrested
-                ? l10n.gameOverReasonAllArrested
-                : l10n.gameOverReasonTimeUp,
+            gameOverReasonMessage(l10n, reason),
             style: _isDarkMode
                 ? AppTextStyles.paragraph_14_100.copyWith(
                     color: AppColors.black400,
@@ -1363,6 +1449,8 @@ class _GamePageState extends ConsumerState<GamePage>
   /// dead 상태로 방치된 경우를 복구합니다.
   void _reconnectSocketsIfNeeded() {
     if (widget.isDummy) return;
+    // 능동 퇴장 중 백그라운드→포그라운드 복귀 시 소켓 재연결 금지(끊는 흐름과 충돌)
+    if (_isLeaving) return;
     if (GameOverGuard.shouldSkipResume(
       gameOverDialogShown: _gameOverDialogShown,
     )) {
@@ -1398,6 +1486,7 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 백그라운드 중 게임이 끝났을 경우 홈으로 이동,
   /// 대기실로 돌아간 경우 로비로 이동합니다.
   Future<void> _checkGameStatusOnResume() async {
+    if (_isLeaving) return;
     // GameOver 모달 표시 중에는 lifecycle resume의 자동 라우팅을 스킵한다.
     // 사용자가 모달의 '홈으로'/'한 번 더'를 명시 선택하면 그 콜백에서 라우팅된다.
     // 가드가 없으면 백그라운드 중 GAME_OVER 후 포그라운드 복귀 시 GamePage가 dispose되어
@@ -1482,6 +1571,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
     // 게임 이벤트 감지 → 게임 종료 다이얼로그
     ref.listen(gameEventNotifierProvider, (prev, next) {
+      if (_isLeaving) return;
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
         _showGameOverDialog(next.winnerTeam, next.gameOverReason);
       }
@@ -1670,131 +1760,118 @@ class _GamePageState extends ConsumerState<GamePage>
         _kActionButtonChatGap.h +
         bottomInset;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          /// index 0: 지도 (항상 존재)
-          Positioned.fill(
-            child: GoogleMapView(
-              key: _googleMapKey,
-              onCameraMoveStarted: _onMapCameraMoved,
-              onLongPress: _onMapLongPress,
-              isDarkMode: _isDarkMode,
-            ),
-          ),
-
-          /// index 1: 참가자 목록 오버레이 (if/else로 개수 고정)
-          if (_showParticipants)
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _confirmLeaveGame();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            /// index 0: 지도 (항상 존재)
             Positioned.fill(
-              child: Container(
-                color: _isDarkMode ? AppColors.black900 : AppColors.white,
-                child: SafeArea(
-                  bottom: false,
-                  child: Column(
-                    children: [
-                      _buildAppBar(),
-                      Expanded(
-                        child: ParticipantOverlay(
-                          onClose: () =>
-                              setState(() => _showParticipants = false),
-                          gameId: _gameId,
-                          myTeam: widget.team,
-                          myParticipantId: widget.participantId,
-                          isDarkMode: _isDarkMode,
+              child: GoogleMapView(
+                key: _googleMapKey,
+                onCameraMoveStarted: _onMapCameraMoved,
+                onLongPress: _onMapLongPress,
+                isDarkMode: _isDarkMode,
+              ),
+            ),
+
+            /// index 1: 참가자 목록 오버레이 (if/else로 개수 고정)
+            if (_showParticipants)
+              Positioned.fill(
+                child: Container(
+                  color: _isDarkMode ? AppColors.black900 : AppColors.white,
+                  child: SafeArea(
+                    bottom: false,
+                    child: Column(
+                      children: [
+                        _buildAppBar(),
+                        Expanded(
+                          child: ParticipantOverlay(
+                            onClose: () =>
+                                setState(() => _showParticipants = false),
+                            gameId: _gameId,
+                            myTeam: widget.team,
+                            myParticipantId: widget.participantId,
+                            isDarkMode: _isDarkMode,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )
-          else
-            const SizedBox.shrink(),
+              )
+            else
+              const SizedBox.shrink(),
 
-          /// index 2: 상단 앱바 (if/else로 개수 고정, 지도 모드일 때만 표시)
-          if (!_showParticipants)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: _isDarkMode ? AppColors.black900 : AppColors.white,
-                child: SafeArea(bottom: false, child: _buildAppBar()),
-              ),
-            )
-          else
-            const SizedBox.shrink(),
-
-          /// index 3: 도둑팀 경찰 시작 카운트다운 (if/else로 개수 고정)
-          if (!_showParticipants && policeStartTime != null)
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: EdgeInsets.only(top: 64.h + 24.h),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: PoliceStartCountdown(policeStartTime: policeStartTime),
+            /// index 2: 상단 앱바 (if/else로 개수 고정, 지도 모드일 때만 표시)
+            if (!_showParticipants)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: _isDarkMode ? AppColors.black900 : AppColors.white,
+                  child: SafeArea(bottom: false, child: _buildAppBar()),
                 ),
-              ),
-            )
-          else
-            const SizedBox.shrink(),
+              )
+            else
+              const SizedBox.shrink(),
 
-          /// index 4: 알림 배너 (if/else로 개수 고정, 카운트다운보다 위에 표시)
-          /// 구역 이탈 중에는 ZoneExitBanner가 같은 자리를 점유하므로 표시 차단.
-          /// (어차피 가려지는 정보를 띄워봐야 손실되므로 표시 자체를 막는다)
-          if (!_showParticipants &&
-              bannerMessage != null &&
-              !_isZoneExitWarningActive)
-            SafeArea(
-              bottom: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 64.h + 8.h),
-                  MarqueeAlertBanner(
-                    message: bannerMessage,
-                    isDarkMode: _isDarkMode,
+            /// index 3: 도둑팀 경찰 시작 카운트다운 (if/else로 개수 고정)
+            if (!_showParticipants && policeStartTime != null)
+              SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 64.h + 24.h),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: PoliceStartCountdown(
+                      policeStartTime: policeStartTime,
+                    ),
                   ),
-                ],
-              ),
-            )
-          else
-            const SizedBox.shrink(),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
 
-          /// index 5: 우측 버튼 (if/else로 개수 고정)
-          if (_showParticipants)
-            Positioned(
-              right: 20.w,
-              bottom: actionButtonBottom,
-              child: Column(
-                children: [
-                  SvgIconButton(
-                    assetPath: 'assets/icons/icon_map.svg',
-                    onPressed: () => setState(() => _showParticipants = false),
-                    iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                    backgroundColor: _isDarkMode ? AppColors.black : null,
-                    isDarkMode: _isDarkMode,
-                  ),
-                  SizedBox(height: AppSpacing.vertical8),
-                  _buildQrButton(),
-                ],
-              ),
-            )
-          else
-            Positioned(
-              right: 20.w,
-              bottom: actionButtonBottom,
-              child: Column(
-                children: [
-                  // 참가자·QR 모두 이탈 중에는 숨김.
-                  // 구역 밖에선 체포/QR 액션 자체가 무의미 + 외적으로도 차단 필요.
-                  // 복귀 경로는 좌측 하단 내 위치 버튼이 담당.
-                  if (!_isZoneExitWarningActive) ...[
+            /// index 4: 알림 배너 (if/else로 개수 고정, 카운트다운보다 위에 표시)
+            /// 구역 이탈 중에는 ZoneExitBanner가 같은 자리를 점유하므로 표시 차단.
+            /// (어차피 가려지는 정보를 띄워봐야 손실되므로 표시 자체를 막는다)
+            if (!_showParticipants &&
+                bannerMessage != null &&
+                !_isZoneExitWarningActive)
+              SafeArea(
+                bottom: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 64.h + 8.h),
+                    MarqueeAlertBanner(
+                      message: bannerMessage,
+                      isDarkMode: _isDarkMode,
+                    ),
+                  ],
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+
+            /// index 5: 우측 버튼 (if/else로 개수 고정)
+            if (_showParticipants)
+              Positioned(
+                right: 20.w,
+                bottom: actionButtonBottom,
+                child: Column(
+                  children: [
                     SvgIconButton(
-                      assetPath: 'assets/icons/icon_person.svg',
-                      onPressed: () => setState(() => _showParticipants = true),
+                      assetPath: 'assets/icons/icon_map.svg',
+                      onPressed: () =>
+                          setState(() => _showParticipants = false),
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
                       backgroundColor: _isDarkMode ? AppColors.black : null,
                       isDarkMode: _isDarkMode,
@@ -1802,162 +1879,188 @@ class _GamePageState extends ConsumerState<GamePage>
                     SizedBox(height: AppSpacing.vertical8),
                     _buildQrButton(),
                   ],
-                ],
-              ),
-            ),
-
-          /// index 5b: 좌측 하단 내 위치 버튼 (지도 모드 한정, if/else로 개수 고정)
-          ///
-          /// 이탈 중에도 활성화 유지 — 복귀 경로 파악에 필수적이라 차단하면 UX 저해.
-          /// 참가자 모드에서는 지도가 안 보이므로 의미 없음 → 숨김.
-          if (!_showParticipants)
-            Positioned(
-              left: 20.w,
-              bottom: actionButtonBottom,
-              child: MyLocationButton(
-                onPressed: _moveToCurrentLocation,
-                isFocused: _isLocationFocused,
-                focusedColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                unfocusedColor: _isDarkMode
-                    ? AppColors.green500
-                    : AppColors.blue500,
-                backgroundColor: _isDarkMode ? AppColors.black : null,
-                isDarkMode: _isDarkMode,
-              ),
-            )
-          else
-            const SizedBox.shrink(),
-
-          /// index 6: 체포 잠금 오버레이 (if/else로 개수 고정, 도둑팀 체포 시 표시)
-          if (isArrestedNow)
-            ArrestLockOverlay(
-              gameId: _gameId,
-              myParticipantId: widget.participantId,
-            )
-          else
-            const SizedBox.shrink(),
-
-          /// index 6b: 핑 선택 카드 (if/else로 개수 고정 — ChatOverlay State 보존)
-          if (_pingCardOffset != null)
-            Positioned.fill(
-              child: Stack(
-                children: [
-                  GestureDetector(
-                    onTap: _closePingCard,
-                    behavior: HitTestBehavior.opaque,
-                    child: const SizedBox.expand(),
-                  ),
-                  Positioned(
-                    left: _pingCardOffset!.dx,
-                    top: _pingCardOffset!.dy,
-                    child: FractionalTranslation(
-                      translation: const Offset(-0.5, -1.0),
-                      child: PingSelectionCard(
+                ),
+              )
+            else
+              Positioned(
+                right: 20.w,
+                bottom: actionButtonBottom,
+                child: Column(
+                  children: [
+                    // 참가자·QR 모두 이탈 중에는 숨김.
+                    // 구역 밖에선 체포/QR 액션 자체가 무의미 + 외적으로도 차단 필요.
+                    // 복귀 경로는 좌측 하단 내 위치 버튼이 담당.
+                    if (!_isZoneExitWarningActive) ...[
+                      SvgIconButton(
+                        assetPath: 'assets/icons/icon_person.svg',
+                        onPressed: () =>
+                            setState(() => _showParticipants = true),
+                        iconColor: _isDarkMode
+                            ? AppColors.green
+                            : AppColors.blue,
+                        backgroundColor: _isDarkMode ? AppColors.black : null,
                         isDarkMode: _isDarkMode,
-                        onFound: () => _onSelectPing(PingType.found),
-                        onSuspect: () => _onSelectPing(PingType.suspect),
+                      ),
+                      SizedBox(height: AppSpacing.vertical8),
+                      _buildQrButton(),
+                    ],
+                  ],
+                ),
+              ),
+
+            /// index 5b: 좌측 하단 내 위치 버튼 (지도 모드 한정, if/else로 개수 고정)
+            ///
+            /// 이탈 중에도 활성화 유지 — 복귀 경로 파악에 필수적이라 차단하면 UX 저해.
+            /// 참가자 모드에서는 지도가 안 보이므로 의미 없음 → 숨김.
+            if (!_showParticipants)
+              Positioned(
+                left: 20.w,
+                bottom: actionButtonBottom,
+                child: MyLocationButton(
+                  onPressed: _moveToCurrentLocation,
+                  isFocused: _isLocationFocused,
+                  focusedColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                  unfocusedColor: _isDarkMode
+                      ? AppColors.green500
+                      : AppColors.blue500,
+                  backgroundColor: _isDarkMode ? AppColors.black : null,
+                  isDarkMode: _isDarkMode,
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+
+            /// index 6: 체포 잠금 오버레이 (if/else로 개수 고정, 도둑팀 체포 시 표시)
+            if (isArrestedNow)
+              ArrestLockOverlay(
+                gameId: _gameId,
+                myParticipantId: widget.participantId,
+              )
+            else
+              const SizedBox.shrink(),
+
+            /// index 6b: 핑 선택 카드 (if/else로 개수 고정 — ChatOverlay State 보존)
+            if (_pingCardOffset != null)
+              Positioned.fill(
+                child: Stack(
+                  children: [
+                    GestureDetector(
+                      onTap: _closePingCard,
+                      behavior: HitTestBehavior.opaque,
+                      child: const SizedBox.expand(),
+                    ),
+                    Positioned(
+                      left: _pingCardOffset!.dx,
+                      top: _pingCardOffset!.dy,
+                      child: FractionalTranslation(
+                        translation: const Offset(-0.5, -1.0),
+                        child: PingSelectionCard(
+                          isDarkMode: _isDarkMode,
+                          onFound: () => _onSelectPing(PingType.found),
+                          onSuspect: () => _onSelectPing(PingType.suspect),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          else
-            const SizedBox.shrink(),
+                  ],
+                ),
+              )
+            else
+              const SizedBox.shrink(),
 
-          /// index 7: 하단 채팅 오버레이 (항상 마지막 고정)
-          ///
-          /// Stack children 개수가 변하면 ChatOverlay의 index가 바뀌어
-          /// Flutter가 기존 State를 dispose하고 새로 생성해버린다.
-          /// 위의 if/else 구조로 항상 index 7에 고정해 State를 보존한다.
-          ChatOverlay(
-            gameId: _gameId,
-            myParticipantId: widget.participantId,
-            myTeam: widget.team,
-            isDarkMode: _isDarkMode,
-          ),
+            /// index 7: 하단 채팅 오버레이 (항상 마지막 고정)
+            ///
+            /// Stack children 개수가 변하면 ChatOverlay의 index가 바뀌어
+            /// Flutter가 기존 State를 dispose하고 새로 생성해버린다.
+            /// 위의 if/else 구조로 항상 index 7에 고정해 State를 보존한다.
+            ChatOverlay(
+              gameId: _gameId,
+              myParticipantId: widget.participantId,
+              myTeam: widget.team,
+              isDarkMode: _isDarkMode,
+            ),
 
-          /// index 8: [DEBUG] 개발자 도구 버튼 (if/else로 개수 고정)
-          ///
-          /// 홈 페이지 FloatingActionButton 패턴과 동일하게 단일 버그 아이콘으로 진입.
-          /// release 빌드에서는 kDebugMode = false로 dead-code 제거됨.
-          if (kDebugMode)
-            Positioned(
-              right: 12.w,
-              top: 0,
-              child: SafeArea(
-                bottom: false,
-                // 64.h: 상단 타이머 HUD Container 높이와 동일.
-                // HUD 아래로 살짝 띄워 디버그 버튼이 타이머/서브타이머와 겹치지 않게.
-                child: Padding(
-                  padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
-                  child: FloatingActionButton(
-                    heroTag: 'game_debug',
-                    mini: true,
-                    backgroundColor: AppColors.black.withValues(alpha: 0.7),
-                    foregroundColor: AppColors.white,
-                    onPressed: widget.isDummy ? null : () => _showDebugMenu(),
-                    child: const Icon(Icons.bug_report),
+            /// index 8: [DEBUG] 개발자 도구 버튼 (if/else로 개수 고정)
+            ///
+            /// 홈 페이지 FloatingActionButton 패턴과 동일하게 단일 버그 아이콘으로 진입.
+            /// release 빌드에서는 kDebugMode = false로 dead-code 제거됨.
+            if (kDebugMode)
+              Positioned(
+                right: 12.w,
+                top: 0,
+                child: SafeArea(
+                  bottom: false,
+                  // 64.h: 상단 타이머 HUD Container 높이와 동일.
+                  // HUD 아래로 살짝 띄워 디버그 버튼이 타이머/서브타이머와 겹치지 않게.
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
+                    child: FloatingActionButton(
+                      heroTag: 'game_debug',
+                      mini: true,
+                      backgroundColor: AppColors.black.withValues(alpha: 0.7),
+                      foregroundColor: AppColors.white,
+                      onPressed: widget.isDummy ? null : () => _showDebugMenu(),
+                      child: const Icon(Icons.bug_report),
+                    ),
                   ),
                 ),
-              ),
-            )
-          else
-            const SizedBox.shrink(),
+              )
+            else
+              const SizedBox.shrink(),
 
-          /// index 9: 구역 이탈 슬림 배너 (지도 모드 + 구역 밖)
-          ///
-          /// 화면 가시성 우선 정책: 큰 모달/dim 없이 상단 슬림 배너로만 알림.
-          /// MarqueeAlertBanner와 동일 톤(빨강 + BR large + 외부 horizontal 20).
-          /// 잠금/페널티 의미는 펄스 보더(index 11), 반복 진동(Timer),
-          /// 우측 액션 버튼 IgnorePointer 가드(index 5)가 담당한다.
-          ///
-          /// AnimatedSwitcher + SlideTransition으로 enter/exit 모두 슬라이드 처리한다
-          /// (자식 위젯이 unmount되며 펑 사라지는 잘림 현상 방지).
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                // 64.h: 상단 HUD(타이머·서브타이머) Container 높이와 동일.
-                // HUD 아래에 배너가 겹쳐 들어가지 않도록 같은 값을 패딩으로 둔다.
-                padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  reverseDuration: const Duration(milliseconds: 200),
-                  switchInCurve: Curves.easeOut,
-                  switchOutCurve: Curves.easeIn,
-                  transitionBuilder: (child, anim) => SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, -1),
-                      end: Offset.zero,
-                    ).animate(anim),
-                    child: FadeTransition(opacity: anim, child: child),
+            /// index 9: 구역 이탈 슬림 배너 (지도 모드 + 구역 밖)
+            ///
+            /// 화면 가시성 우선 정책: 큰 모달/dim 없이 상단 슬림 배너로만 알림.
+            /// MarqueeAlertBanner와 동일 톤(빨강 + BR large + 외부 horizontal 20).
+            /// 잠금/페널티 의미는 펄스 보더(index 11), 반복 진동(Timer),
+            /// 우측 액션 버튼 IgnorePointer 가드(index 5)가 담당한다.
+            ///
+            /// AnimatedSwitcher + SlideTransition으로 enter/exit 모두 슬라이드 처리한다
+            /// (자식 위젯이 unmount되며 펑 사라지는 잘림 현상 방지).
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  // 64.h: 상단 HUD(타이머·서브타이머) Container 높이와 동일.
+                  // HUD 아래에 배너가 겹쳐 들어가지 않도록 같은 값을 패딩으로 둔다.
+                  padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    reverseDuration: const Duration(milliseconds: 200),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    transitionBuilder: (child, anim) => SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, -1),
+                        end: Offset.zero,
+                      ).animate(anim),
+                      child: FadeTransition(opacity: anim, child: child),
+                    ),
+                    child: (_isZoneExitWarningActive && !_showParticipants)
+                        ? ZoneExitBanner(
+                            key: const ValueKey('zone-exit-banner'),
+                            isDarkMode: _isDarkMode,
+                          )
+                        : const SizedBox.shrink(
+                            key: ValueKey('zone-exit-banner-empty'),
+                          ),
                   ),
-                  child: (_isZoneExitWarningActive && !_showParticipants)
-                      ? ZoneExitBanner(
-                          key: const ValueKey('zone-exit-banner'),
-                          isDarkMode: _isDarkMode,
-                        )
-                      : const SizedBox.shrink(
-                          key: ValueKey('zone-exit-banner-empty'),
-                        ),
                 ),
               ),
             ),
-          ),
 
-          /// index 10: 구역 이탈 비네트 (가장 위, 터치 차단 없음)
-          /// 화면 가장자리에 부드러운 빨강 그라데이션을 깔아 이탈 상태를 알린다.
-          /// 중앙은 투명하게 유지되어 지도·플레이그라운드 원·내 위치를 가리지 않음.
-          /// 팀 테마 분기는 위젯 내부에서 처리.
-          if (_isZoneExitWarningActive)
-            Positioned.fill(child: ZoneExitVignette(isDarkMode: _isDarkMode))
-          else
-            const SizedBox.shrink(),
-        ],
+            /// index 10: 구역 이탈 비네트 (가장 위, 터치 차단 없음)
+            /// 화면 가장자리에 부드러운 빨강 그라데이션을 깔아 이탈 상태를 알린다.
+            /// 중앙은 투명하게 유지되어 지도·플레이그라운드 원·내 위치를 가리지 않음.
+            /// 팀 테마 분기는 위젯 내부에서 처리.
+            if (_isZoneExitWarningActive)
+              Positioned.fill(child: ZoneExitVignette(isDarkMode: _isDarkMode))
+            else
+              const SizedBox.shrink(),
+          ],
+        ),
       ),
     );
   }
@@ -2130,7 +2233,8 @@ class _GamePageState extends ConsumerState<GamePage>
     return Container(
       height: 64.h,
       color: _isDarkMode ? AppColors.black900 : AppColors.white,
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal12),
+      // 좌우 인셋은 각 버튼의 Padding으로 부여(나가기 18.w / info 12.w) —
+      // 일괄 패딩을 두면 대기방 leading의 18.w 값을 그대로 못 쓰기 때문.
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -2163,13 +2267,32 @@ class _GamePageState extends ConsumerState<GamePage>
               ),
             ],
           ),
-          // 우측: info 버튼
+          // 좌측: 나가기 버튼 (대기방 leading과 동일 — 화면 좌측에서 18.w)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 18.w),
+              child: FlatIconButton(
+                assetPath: 'assets/icons/icon_exit.svg',
+                iconColor: _isDarkMode
+                    ? AppColors.black200
+                    : AppColors.black800,
+                onPressed: _confirmLeaveGame,
+              ),
+            ),
+          ),
+          // 우측: info 버튼 (화면 우측에서 12.w)
           Align(
             alignment: Alignment.centerRight,
-            child: FlatIconButton(
-              assetPath: 'assets/icons/icon_info.svg',
-              iconColor: _isDarkMode ? AppColors.black200 : AppColors.black800,
-              onPressed: _showGameRulesDialog,
+            child: Padding(
+              padding: EdgeInsets.only(right: AppSpacing.horizontal12),
+              child: FlatIconButton(
+                assetPath: 'assets/icons/icon_info.svg',
+                iconColor: _isDarkMode
+                    ? AppColors.black200
+                    : AppColors.black800,
+                onPressed: _showGameRulesDialog,
+              ),
             ),
           ),
         ],

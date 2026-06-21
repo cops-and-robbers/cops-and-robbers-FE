@@ -20,6 +20,8 @@ enum GameEventType {
   locationReveal,
   @JsonValue('ROBBER_LOCATION_REVEAL')
   robberLocationReveal,
+  @JsonValue('PLAYER_LEFT')
+  playerLeft,
   @JsonValue('UNKNOWN')
   unknown,
 }
