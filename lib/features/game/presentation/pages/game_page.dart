@@ -59,6 +59,7 @@ import '../widgets/game_timer_text.dart';
 import '../widgets/location_reveal_countdown.dart';
 import '../../domain/entities/ping.dart';
 import '../providers/ping_provider.dart';
+import '../providers/player_game_record_provider.dart';
 import '../widgets/google_map_view.dart';
 import '../widgets/participant_overlay.dart';
 import '../widgets/ping_selection_card.dart';
@@ -133,6 +134,9 @@ class _GamePageState extends ConsumerState<GamePage>
   /// initState에서 동기 할당 (post-frame 이전 dispose 시 LateInitializationError 방지)
   late final BackgroundService _backgroundService;
 
+  /// dispose 이후 ref 무효화 대비, 사전에 저장한 내 기록 notifier.
+  late final PlayerGameRecordNotifier _recordNotifier;
+
   StreamSubscription<Position>? _locationSubscription;
   Position? _lastSentPosition;
   DateTime? _lastSentTime;
@@ -205,6 +209,9 @@ class _GamePageState extends ConsumerState<GamePage>
     // keepAlive 서비스 — 동기 할당해서 첫 프레임 전 dispose에도 안전.
     // ref.read는 initState에서 합법 (ref.watch만 금지).
     _backgroundService = ref.read(backgroundServiceProvider);
+    _recordNotifier = ref.read(playerGameRecordNotifierProvider.notifier);
+    // 새 게임 진입마다 이전 기록 초기화(앱 resume 시에는 initState 미실행 → 보존).
+    if (!widget.isDummy) _recordNotifier.reset();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // 위치 권한 + STOMP 초기화 + participantInfo 로드를 끝까지 기다린 뒤
       // 재진입 가드를 호출해야 콜드 재시작 케이스에서 participantInfo.gameStartTime
@@ -489,6 +496,7 @@ class _GamePageState extends ConsumerState<GamePage>
   void _connectGameEvents() {
     if (widget.isDummy) return;
     _gameEventNotifier = ref.read(gameEventNotifierProvider.notifier);
+    _gameEventNotifier!.setLocalParticipantId(widget.participantId);
     _gameEventDatasource = ref.read(gameEventStompDatasourceProvider);
     _gameEventNotifier!.connectAndSubscribe(
       _gameId,
@@ -695,6 +703,11 @@ class _GamePageState extends ConsumerState<GamePage>
 
             // 1) 구역 이탈 감지 — 양 팀, 매 틱
             _checkZoneExit(pos);
+
+            // 내 이동 경로 누적(양 팀, 휘발성). 잡힌 도둑도 로컬 수신은 계속된다.
+            _recordNotifier.addPoint(
+              LatLngModel(latitude: pos.latitude, longitude: pos.longitude),
+            );
 
             // 2) 위치 전송 — 도둑 팀, STOMP 연결 상태에서만
             if (!GameTeam.isRobber(widget.team)) return;
@@ -1074,6 +1087,9 @@ class _GamePageState extends ConsumerState<GamePage>
     // 종료 시점에 구역 밖이었다면 진동 타이머·시각 신호가 살아있을 수 있다.
     // 결과 다이얼로그 위에 펄스/배너가 깜빡이고 진동이 폭주하지 않도록 정리한다.
     _clearZoneExitWarning();
+
+    // 위치 스트림 종료 전에 누적 경로/거리의 종료 시각을 확정한다.
+    if (!widget.isDummy) _recordNotifier.markEnd(DateTime.now());
 
     // iOS 파란 위치 인디케이터 즉시 해제: 게임 종료 이후 위치 수집 불필요.
     // dispose()까지 미루면 결과 다이얼로그 표시 시간 내내 인디케이터가 유지된다.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cops_and_robbers/core/constants/game_team.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -12,22 +13,13 @@ import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../domain/entities/game_result_entity.dart';
-import 'package:cops_and_robbers/core/constants/game_team.dart';
 import '../providers/game_result_provider.dart';
+import 'my_record_dialog.dart';
+import 'record_format.dart';
 
 // ============================================================
 // 순수 함수
 // ============================================================
-
-/// `durationSeconds`(초)를 "분:초" 포맷 문자열로 변환.
-///
-/// - 초는 2자리 0 패딩 (`"5:07"`)
-/// - 분은 60분 이상도 cap 없이 누적 (`3661 → "61:01"`)
-String formatDuration(int seconds) {
-  final m = seconds ~/ 60;
-  final s = seconds % 60;
-  return '$m:${s.toString().padLeft(2, '0')}';
-}
 
 /// 본인 팀과 승리 팀을 비교하여 승/패에 맞는 캐릭터 **몸통** SVG 경로 반환.
 ///
@@ -299,6 +291,13 @@ class GameOverResultDialog extends ConsumerWidget {
                     onGoHome: onGoHome,
                     onRematch: onRematch,
                   ),
+                  SizedBox(height: AppSpacing.vertical12),
+                  _MyRecordEntryButton(
+                    isDarkMode: isDarkMode,
+                    myTeam: myTeam,
+                    winnerTeam: winnerTeam,
+                    gameResultId: gameResultId,
+                  ),
                 ],
               ),
             ),
@@ -512,6 +511,43 @@ class _ActionButtons extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// 결과 다이얼로그 하단의 "내 기록 보기" 보조 버튼.
+class _MyRecordEntryButton extends StatelessWidget {
+  const _MyRecordEntryButton({
+    required this.isDarkMode,
+    required this.myTeam,
+    required this.winnerTeam,
+    required this.gameResultId,
+  });
+
+  final bool isDarkMode;
+  final String myTeam;
+  final String winnerTeam;
+  final int gameResultId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AppButton(
+      key: const ValueKey('game_over_view_record_button'),
+      text: l10n.buttonViewMyRecord,
+      onPressed: () => MyRecordDialog.show(
+        context: context,
+        isDarkMode: isDarkMode,
+        myTeam: myTeam,
+        winnerTeam: winnerTeam,
+        gameResultId: gameResultId,
+      ),
+      backgroundColor: isDarkMode ? AppColors.black900 : AppColors.black100,
+      foregroundColor: isDarkMode ? AppColors.black400 : AppColors.black600,
+      borderRadius: AppRadius.medium,
+      showBorder: false,
+      height: 48.h,
+      textStyle: isDarkMode ? AppTextStyles.robberLabel : null,
     );
   }
 }
