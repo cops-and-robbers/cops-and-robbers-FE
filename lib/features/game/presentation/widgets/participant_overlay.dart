@@ -212,7 +212,8 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     ref.listen(gameEventNotifierProvider, (prev, next) {
       if (next.isGameOver) return;
       if (prev?.arrestedParticipantIds != next.arrestedParticipantIds ||
-          prev?.escapedParticipantIds != next.escapedParticipantIds) {
+          prev?.escapedParticipantIds != next.escapedParticipantIds ||
+          prev?.leftParticipantIds != next.leftParticipantIds) {
         _loadParticipants();
       }
     });

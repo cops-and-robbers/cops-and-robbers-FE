@@ -35,5 +35,6 @@ const _$GameEventTypeEnumMap = {
   GameEventType.policeMoveStart: 'POLICE_MOVE_START',
   GameEventType.locationReveal: 'LOCATION_REVEAL',
   GameEventType.robberLocationReveal: 'ROBBER_LOCATION_REVEAL',
+  GameEventType.playerLeft: 'PLAYER_LEFT',
   GameEventType.unknown: 'UNKNOWN',
 };

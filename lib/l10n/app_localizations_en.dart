@@ -1028,6 +1028,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameOverReasonTimeUp => 'The time limit has expired!';
 
   @override
+  String get gameOverReasonPoliceForfeited => 'All Cops have left the game!';
+
+  @override
+  String get gameOverReasonRobberForfeited => 'All Robbers have left the game!';
+
+  @override
   String get gameOverFallbackMessage => 'The game has ended.';
 
   @override
@@ -1773,6 +1779,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'A robber has escaped from jail! Arrest them now!';
 
   @override
+  String gameEventPlayerLeftNotice(String nickname, String teamLabel) {
+    return '[$nickname] ($teamLabel) has left the game';
+  }
+
+  @override
   String mapErrorLoadFailed(String mapName) {
     return 'Failed to load $mapName';
   }
@@ -2084,4 +2095,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pingCooldownNotice => 'Please try again shortly';
+
+  @override
+  String get gameLeaveConfirmTitle => 'Leave the game?';
+
+  @override
+  String get gameLeaveConfirmMessage => 'You will leave the game in progress';
+
+  @override
+  String get gameLeaveFailedMessage =>
+      'Couldn\'t leave the game. Please try again';
 }

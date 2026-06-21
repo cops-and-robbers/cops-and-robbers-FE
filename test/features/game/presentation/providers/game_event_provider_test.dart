@@ -210,6 +210,25 @@ void main() {
     });
   });
 
+  group('GameEventState.leftParticipantIds', () {
+    test('defaults_to_empty_set', () {
+      const state = GameEventState();
+      expect(state.leftParticipantIds, isEmpty);
+    });
+
+    test('copyWith_updates_left_participant_ids', () {
+      const state = GameEventState();
+      final next = state.copyWith(leftParticipantIds: {2, 3});
+      expect(next.leftParticipantIds, {2, 3});
+    });
+
+    test('copyWith_preserves_left_participant_ids_when_omitted', () {
+      const state = GameEventState(leftParticipantIds: {2});
+      final next = state.copyWith(isPoliceMoving: true);
+      expect(next.leftParticipantIds, {2});
+    });
+  });
+
   group('GameEventNotifier.escape', () {
     test('moves_from_arrested_to_escaped_when_api_succeeds', () async {
       final api = _FakeGameSystemApi();
