@@ -22,6 +22,7 @@ import '../../data/models/arrest_request_model.dart';
 import '../../data/models/game_area_model.dart';
 import '../../data/models/game_event_model.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
+import 'player_game_record_provider.dart';
 
 export '../../data/datasources/game_event_stomp_datasource.dart'
     show StompConnectionState;
@@ -258,6 +259,14 @@ class GameEventNotifier extends _$GameEventNotifier {
   bool _isManualReconnecting = false; // 수동 재연결 중복 호출 방지
   int? _gameId;
   String? _team;
+
+  /// 로컬 플레이어 participantId — 개인 체포/탈옥 카운트 판정용.
+  int? _myParticipantId;
+
+  /// game_page가 연결 시 1회 주입(개인 기록 카운트 판정용).
+  void setLocalParticipantId(int participantId) {
+    _myParticipantId = participantId;
+  }
 
   @override
   GameEventState build() {
@@ -710,6 +719,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     // 경찰 정보 파싱
     final police = data['police'] as Map<String, dynamic>?;
     final policeNickname = police?['nickname'] as String?;
+    final policePid = (police?['participantId'] as num?)?.toInt();
 
     // race condition 방어: STOMP가 API 응답보다 먼저 도착한 경우 pending 해제
     if (robberPid == _pendingArrestId) {
@@ -737,6 +747,14 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().arrested();
+    // 내가 잡은 경우에만 개인 카운트 증가(STOMP 확정 기준).
+    if (policePid != null && policePid == _myParticipantId) {
+      ref.read(playerGameRecordNotifierProvider.notifier).incrementArrest();
+    }
+    // 내가 잡힌 경우(도둑) 잡힌 위치 기록.
+    if (robberPid == _myParticipantId) {
+      ref.read(playerGameRecordNotifierProvider.notifier).recordCaught();
+    }
     debugPrint(
       '[GameEventNotifier] ✅ ARREST 이벤트 → robberPid: $robberPid, 남은: $remaining',
     );
@@ -761,6 +779,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().escaped();
+    // 내가 탈옥한 경우에만 개인 카운트 증가(STOMP 확정 기준).
+    if (escapedId == _myParticipantId) {
+      ref.read(playerGameRecordNotifierProvider.notifier).incrementEscape();
+    }
     debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedId');
   }
 

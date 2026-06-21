@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:gal/gal.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../deeplink/deeplink_constants.dart';
@@ -32,4 +36,35 @@ String buildInviteDeeplink(String code) =>
 /// 호출 측이 i18n 메시지를 전달해서 ARB 키를 한 곳에서 관리하지 않아도 되게 함.
 Future<void> shareInviteCode(String code, String shareMessage) async {
   await shareText('$shareMessage\n${buildInviteDeeplink(code)}');
+}
+
+/// PNG 바이트를 임시 파일로 저장한 뒤 네이티브 공유 시트로 공유.
+///
+/// 플랫폼 예외 발생 시 디버그 로그를 남기고 무시한다(기존 [shareText] 패턴).
+Future<void> shareImageBytes(
+  Uint8List bytes, {
+  String filename = 'cops_record.png',
+}) async {
+  try {
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/$filename');
+    await file.writeAsBytes(bytes);
+    await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+  } catch (e) {
+    debugPrint('이미지 공유 실패: $e');
+  }
+}
+
+/// PNG 바이트를 사진 갤러리에 저장. 성공 여부를 반환한다(호출 측 스낵바 분기용).
+Future<bool> saveImageBytesToGallery(
+  Uint8List bytes, {
+  String name = 'cops_record',
+}) async {
+  try {
+    await Gal.putImageBytes(bytes, name: name);
+    return true;
+  } catch (e) {
+    debugPrint('갤러리 저장 실패: $e');
+    return false;
+  }
 }
