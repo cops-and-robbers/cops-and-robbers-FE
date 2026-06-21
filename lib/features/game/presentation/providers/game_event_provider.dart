@@ -60,6 +60,9 @@ class GameEventState {
   /// 탈옥한 참가자 ID 집합 (ESCAPE 이벤트 누적)
   final Set<int> escapedParticipantIds;
 
+  /// 중도 퇴장한 참가자 ID 집합 (PLAYER_LEFT 이벤트 누적, 참가자 목록 재조회 트리거)
+  final Set<int> leftParticipantIds;
+
   /// 경찰 이동 시작 여부 (POLICE_MOVE_START 이후 true)
   final bool isPoliceMoving;
 
@@ -136,6 +139,7 @@ class GameEventState {
     this.errorMessage,
     this.arrestedParticipantIds = const {},
     this.escapedParticipantIds = const {},
+    this.leftParticipantIds = const {},
     this.isPoliceMoving = false,
     this.remainingThieves,
     this.lastArrestNickname,
@@ -160,6 +164,7 @@ class GameEventState {
     Object? errorMessage = _sentinel,
     Set<int>? arrestedParticipantIds,
     Set<int>? escapedParticipantIds,
+    Set<int>? leftParticipantIds,
     bool? isPoliceMoving,
     Object? remainingThieves = _sentinel,
     Object? lastArrestNickname = _sentinel,
@@ -187,6 +192,7 @@ class GameEventState {
           arrestedParticipantIds ?? this.arrestedParticipantIds,
       escapedParticipantIds:
           escapedParticipantIds ?? this.escapedParticipantIds,
+      leftParticipantIds: leftParticipantIds ?? this.leftParticipantIds,
       isPoliceMoving: isPoliceMoving ?? this.isPoliceMoving,
       remainingThieves: remainingThieves == _sentinel
           ? this.remainingThieves
@@ -609,6 +615,8 @@ class GameEventNotifier extends _$GameEventNotifier {
         _handleArrest(event.data);
       case GameEventType.escape:
         _handleEscape(event.data);
+      case GameEventType.playerLeft:
+        _handlePlayerLeft(event.data);
       case GameEventType.gameOver:
         _handleGameOver(event.data);
       case GameEventType.start:
@@ -762,6 +770,36 @@ class GameEventNotifier extends _$GameEventNotifier {
     _startBannerTimer();
     VibrationService.instance().escaped();
     debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedId');
+  }
+
+  /// PLAYER_LEFT 이벤트 — 인게임 중도 퇴장한 참가자 처리.
+  ///
+  /// data는 flat 구조: {participantId, nickname, team}.
+  /// 배너로 퇴장 사실(닉네임+팀)을 알리고, leftParticipantIds에 누적해
+  /// 열린 참가자 목록이 재조회되도록 트리거한다.
+  void _handlePlayerLeft(Map<String, dynamic> data) {
+    final pid = (data['participantId'] as num?)?.toInt();
+    if (pid == null) return;
+    final nickname = data['nickname'] as String?;
+    final team = data['team'] as String?;
+
+    // 서버 enum 'POLICE' | 'ROBBER' → 역할 라벨 i18n (미지정 값은 도둑 라벨로 폴백)
+    if (team != 'POLICE' && team != 'ROBBER') {
+      debugPrint('[GameEventNotifier] ⚠️ PLAYER_LEFT 알 수 없는 팀: $team');
+    }
+    final teamLabel = team == 'POLICE'
+        ? _localizePoliceLabel()
+        : _localizeRobberLabel();
+
+    state = state.copyWith(
+      leftParticipantIds: {...state.leftParticipantIds, pid},
+      bannerMessage: _localizeGameEvent(GameEventMessageKey.playerLeftNotice, [
+        nickname ?? teamLabel,
+        teamLabel,
+      ]),
+    );
+    _startBannerTimer();
+    debugPrint('[GameEventNotifier] ✅ PLAYER_LEFT → pid: $pid, team: $team');
   }
 
   void _handleGameOver(Map<String, dynamic> data) {

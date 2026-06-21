@@ -34,6 +34,10 @@ abstract final class GameEventMessageKey {
 
   // ── ESCAPE 이벤트 ──
   static const escapeNotice = 'gameEventEscapeNotice';
+
+  // ── PLAYER_LEFT 이벤트 (인게임 중도 퇴장) ──
+  // args: [String nickname, String teamLabel]
+  static const playerLeftNotice = 'gameEventPlayerLeftNotice';
 }
 
 /// 게임 이벤트 메시지를 ARB 키로 변환하는 헬퍼.
@@ -57,6 +61,12 @@ String resolveGameEventMessage(
       return l10n.gameEventArrestNotice(args![0] as String, args[1] as String);
     case GameEventMessageKey.escapeNotice:
       return l10n.gameEventEscapeNotice;
+    case GameEventMessageKey.playerLeftNotice:
+      // 호출부에서 [nickname, teamLabel] 보장 (game_event_provider._handlePlayerLeft)
+      return l10n.gameEventPlayerLeftNotice(
+        args![0] as String,
+        args[1] as String,
+      );
     default:
       return key;
   }

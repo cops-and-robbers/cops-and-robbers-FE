@@ -944,6 +944,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameOverReasonTimeUp => '제한 시간이 종료되었습니다!';
 
   @override
+  String get gameOverReasonPoliceForfeited => '경찰이 모두 퇴장했습니다!';
+
+  @override
+  String get gameOverReasonRobberForfeited => '도둑이 모두 퇴장했습니다!';
+
+  @override
   String get gameOverFallbackMessage => '게임이 종료되었습니다.';
 
   @override
@@ -1653,6 +1659,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameEventEscapeNotice => '도둑이 탈옥했습니다! 지금 바로 체포하세요!';
 
   @override
+  String gameEventPlayerLeftNotice(String nickname, String teamLabel) {
+    return '[$nickname]($teamLabel) 님이 게임에서 나갔어요';
+  }
+
+  @override
   String mapErrorLoadFailed(String mapName) {
     return '$mapName 로드 실패';
   }
@@ -1919,4 +1930,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pingCooldownNotice => '잠시 후 다시 시도해주세요';
+
+  @override
+  String get gameLeaveConfirmTitle => '게임에서 나가시겠어요?';
+
+  @override
+  String get gameLeaveConfirmMessage => '진행 중인 게임에서 나갑니다';
+
+  @override
+  String get gameLeaveFailedMessage => '퇴장하지 못했어요. 잠시 후 다시 시도해주세요';
 }
