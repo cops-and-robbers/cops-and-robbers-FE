@@ -1939,4 +1939,23 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get gameLeaveFailedMessage => '退場できませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get gameEventArrestSuccessTitle => '確保';
+
+  @override
+  String gameEventArrestSuccessMessage(String nickname) {
+    return '$nicknameを確保';
+  }
+
+  @override
+  String get gameEventArrestSuccessConfirm => '確認';
+
+  @override
+  String get gameEventResultTitle => '捜査終了';
+
+  @override
+  String gameEventResultArrestCount(int count) {
+    return '運営$count名を確保';
+  }
 }

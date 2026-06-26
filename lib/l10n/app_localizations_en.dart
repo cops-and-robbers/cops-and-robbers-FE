@@ -2105,4 +2105,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get gameLeaveFailedMessage =>
       'Couldn\'t leave the game. Please try again';
+
+  @override
+  String get gameEventArrestSuccessTitle => 'Suspect Caught';
+
+  @override
+  String gameEventArrestSuccessMessage(String nickname) {
+    return 'Caught $nickname';
+  }
+
+  @override
+  String get gameEventArrestSuccessConfirm => 'OK';
+
+  @override
+  String get gameEventResultTitle => 'Investigation Closed';
+
+  @override
+  String gameEventResultArrestCount(int count) {
+    return '$count staff caught';
+  }
 }

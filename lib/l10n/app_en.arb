@@ -616,5 +616,10 @@
   },
   "gameLeaveConfirmTitle": "Leave the game?",
   "gameLeaveConfirmMessage": "You will leave the game in progress",
-  "gameLeaveFailedMessage": "Couldn't leave the game. Please try again"
+  "gameLeaveFailedMessage": "Couldn't leave the game. Please try again",
+  "gameEventArrestSuccessTitle": "Suspect Caught",
+  "gameEventArrestSuccessMessage": "Caught {nickname}",
+  "gameEventArrestSuccessConfirm": "OK",
+  "gameEventResultTitle": "Investigation Closed",
+  "gameEventResultArrestCount": "{count} staff caught"
 }

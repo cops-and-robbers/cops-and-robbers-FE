@@ -2075,5 +2075,18 @@
   "gameLeaveFailedMessage": "퇴장하지 못했어요. 잠시 후 다시 시도해주세요",
   "@gameLeaveFailedMessage": {
     "description": "인게임 중도 퇴장 실패 시 스낵바 메시지"
+  },
+  "gameEventArrestSuccessTitle": "운영진 검거",
+  "gameEventArrestSuccessMessage": "{nickname} 검거 성공",
+  "@gameEventArrestSuccessMessage": {
+    "description": "이벤트 모드 — 체포 성공 메시지",
+    "placeholders": { "nickname": { "type": "String" } }
+  },
+  "gameEventArrestSuccessConfirm": "확인",
+  "gameEventResultTitle": "수사 종료",
+  "gameEventResultArrestCount": "운영진 {count}명 검거",
+  "@gameEventResultArrestCount": {
+    "description": "이벤트 모드 결과 — 검거한 운영진 수",
+    "placeholders": { "count": { "type": "int" } }
   }
 }

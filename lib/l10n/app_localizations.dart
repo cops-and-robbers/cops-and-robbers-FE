@@ -3752,6 +3752,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'퇴장하지 못했어요. 잠시 후 다시 시도해주세요'**
   String get gameLeaveFailedMessage;
+
+  /// No description provided for @gameEventArrestSuccessTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영진 검거'**
+  String get gameEventArrestSuccessTitle;
+
+  /// 이벤트 모드 — 체포 성공 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname} 검거 성공'**
+  String gameEventArrestSuccessMessage(String nickname);
+
+  /// No description provided for @gameEventArrestSuccessConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get gameEventArrestSuccessConfirm;
+
+  /// No description provided for @gameEventResultTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'수사 종료'**
+  String get gameEventResultTitle;
+
+  /// 이벤트 모드 결과 — 검거한 운영진 수
+  ///
+  /// In ko, this message translates to:
+  /// **'운영진 {count}명 검거'**
+  String gameEventResultArrestCount(int count);
 }
 
 class _AppLocalizationsDelegate
