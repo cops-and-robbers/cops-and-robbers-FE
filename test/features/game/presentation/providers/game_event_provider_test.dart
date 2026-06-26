@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cops_and_robbers/features/game/data/datasources/game_event_stomp_datasource.dart';
 import 'package:cops_and_robbers/features/game/data/datasources/game_system_api_datasource.dart';
 import 'package:cops_and_robbers/features/game/data/models/arrest_request_model.dart';
 import 'package:cops_and_robbers/features/game/data/models/arrest_response_model.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_area_model.dart';
+import 'package:cops_and_robbers/features/game/data/services/event_arrest_storage.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_event_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -258,4 +260,105 @@ void main() {
       expect(state.errorMessage, isNotNull);
     });
   });
+
+  group('GameEventNotifier event-mode arrest', () {
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+    tearDown(() => SharedPreferences.setMockInitialValues({}));
+
+    test('arrestForEvent_adds_local_set_returns_index_and_leaves_global_empty',
+        () async {
+      final api = _FakeGameSystemApi();
+      final c = _container(api: api);
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+
+      final result = await notifier.arrestRobberForEvent(1, 7);
+
+      expect(result?.evidenceIndex, 1);
+      expect(result?.robberNickname, '도둑');
+      final s = c.read(gameEventNotifierProvider);
+      expect(s.myArrestedRobberIds, {7});
+      expect(s.arrestedParticipantIds, isEmpty); // 전역 수감 집합 미변경(도둑 ALIVE)
+    });
+
+    test('arrestForEvent_returns_null_and_keeps_set_when_api_fails', () async {
+      final api = _FakeGameSystemApi()..arrestError = Exception('boom');
+      final c = _container(api: api);
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+
+      final result = await notifier.arrestRobberForEvent(1, 7);
+
+      expect(result, isNull);
+      expect(c.read(gameEventNotifierProvider).myArrestedRobberIds, isEmpty);
+    });
+
+    test('loadMyArrests_restores_persisted_set_for_same_game', () async {
+      SharedPreferences.setMockInitialValues({
+        'event_game_arrest': '{"gameId":1,"arrestedRobberIds":[7,8]}',
+      });
+      final c = _container(api: _FakeGameSystemApi());
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+
+      await notifier.loadMyArrests(1);
+
+      expect(c.read(gameEventNotifierProvider).myArrestedRobberIds, {7, 8});
+    });
+
+    test('loadMyArrests_merges_without_overwriting_in_flight_arrest', () async {
+      // 영속값 {7} 이 있는데, 복원 전에 신규 체포 8이 반영된 상태에서 복원이 늦게 완료돼도
+      // 8이 유실되지 않고 {7,8} 로 병합돼야 한다.
+      SharedPreferences.setMockInitialValues({
+        'event_game_arrest': '{"gameId":1,"arrestedRobberIds":[7]}',
+      });
+      final c = _container(api: _FakeGameSystemApi());
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+      await notifier.arrestRobberForEvent(1, 8); // 신규 체포 먼저 반영
+
+      await notifier.loadMyArrests(1); // 늦은 복원
+
+      expect(c.read(gameEventNotifierProvider).myArrestedRobberIds, {7, 8});
+    });
+
+    test('arrestForEvent_ignores_second_call_while_first_in_flight', () async {
+      final api = _FakeGameSystemApi()..arrestGate = Completer<void>();
+      final c = _container(api: api);
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+
+      final first = notifier.arrestRobberForEvent(1, 7); // gate에서 대기
+      final second = await notifier.arrestRobberForEvent(1, 8); // pending → 즉시 null
+
+      expect(second, isNull);
+      expect(api.arrestCount, 1); // 두 번째는 API 호출 자체가 차단됨
+
+      api.arrestGate!.complete();
+      expect((await first)?.evidenceIndex, 1);
+      expect(c.read(gameEventNotifierProvider).myArrestedRobberIds, {7});
+    });
+
+    test('arrestForEvent_still_succeeds_when_persistence_throws', () async {
+      final c = ProviderContainer(
+        overrides: [
+          gameEventStompDatasourceProvider.overrideWithValue(_FakeDatasource()),
+          gameSystemApiProvider.overrideWithValue(_FakeGameSystemApi()),
+          eventArrestStorageProvider.overrideWithValue(_ThrowingArrestStorage()),
+        ],
+      );
+      c.listen(gameEventNotifierProvider, (_, _) {}, fireImmediately: true);
+      addTearDown(c.dispose);
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+
+      final result = await notifier.arrestRobberForEvent(1, 7);
+
+      expect(result, isNotNull); // 영속화 실패해도 체포 성공 피드백 유지
+      expect(result?.robberNickname, '도둑');
+      expect(c.read(gameEventNotifierProvider).myArrestedRobberIds, contains(7));
+    });
+  });
+}
+
+/// load/save 모두 throw — 영속화 실패가 체포 성공을 무효화하지 않는지 검증용.
+class _ThrowingArrestStorage extends EventArrestStorage {
+  @override
+  Future<Set<int>> load(int gameId) async => throw Exception('io');
+  @override
+  Future<void> save(int gameId, Set<int> ids) async => throw Exception('io');
 }

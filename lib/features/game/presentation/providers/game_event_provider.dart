@@ -19,6 +19,7 @@ import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/datasources/game_system_api_datasource.dart';
 import '../../data/models/arrest_request_model.dart';
+import '../../data/services/event_arrest_storage.dart';
 import '../../data/models/game_area_model.dart';
 import '../../data/models/game_event_model.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
@@ -90,7 +91,7 @@ class GameEventState {
   /// 승리 팀 ("POLICE" | "ROBBER")
   final String? winnerTeam;
 
-  /// 게임 종료 이유 ("TIME_OVER" | "ALL_ARRESTED")
+  /// 게임 종료 이유 ("TIME_OVER" | "ALL_ARRESTED" | "ROBBER_FORFEITED" | "POLICE_FORFEITED")
   final String? gameOverReason;
 
   /// 게임 결과 ID
@@ -113,6 +114,10 @@ class GameEventState {
 
   /// LOCATION_REVEAL 수신 시 갱신되는 도둑 위치 목록 (participantId → 위치)
   final Map<int, LatLngModel> robberLocations;
+
+  /// 경찰이 검거한 운영진(도둑) ID 집합 (이벤트 모드 전용, 로컬 영속).
+  /// 전역 arrestedParticipantIds와 분리 — 재동기화/도둑 ALIVE에 영향 없음.
+  final Set<int> myArrestedRobberIds;
 
   /// 경찰이 현재 체포 가능한 상태인지 판단
   ///
@@ -157,6 +162,7 @@ class GameEventState {
     this.bannerMessage,
     this.isApiLoading = false,
     this.robberLocations = const {},
+    this.myArrestedRobberIds = const {},
   });
 
   GameEventState copyWith({
@@ -182,6 +188,7 @@ class GameEventState {
     Object? bannerMessage = _sentinel,
     bool? isApiLoading,
     Map<int, LatLngModel>? robberLocations,
+    Set<int>? myArrestedRobberIds,
   }) {
     return GameEventState(
       connectionState: connectionState ?? this.connectionState,
@@ -232,6 +239,7 @@ class GameEventState {
           : bannerMessage as String?,
       isApiLoading: isApiLoading ?? this.isApiLoading,
       robberLocations: robberLocations ?? this.robberLocations,
+      myArrestedRobberIds: myArrestedRobberIds ?? this.myArrestedRobberIds,
     );
   }
 }
@@ -467,6 +475,67 @@ class GameEventNotifier extends _$GameEventNotifier {
         );
       }
     }
+  }
+
+  /// 이벤트 모드 — 인게임 진입 시 로컬 검거 집합 복원.
+  ///
+  /// 복원과 동시 체포가 겹쳐도 신규 검거가 유실되지 않도록 **union 병합**한다
+  /// (덮어쓰기 금지). 호출자(game_page)는 체포 가능 시점 이전에 이 메서드를 await한다.
+  Future<void> loadMyArrests(int gameId) async {
+    final ids = await ref.read(eventArrestStorageProvider).load(gameId);
+    if (_isDisposed) return;
+    state = state.copyWith(
+      myArrestedRobberIds: {...state.myArrestedRobberIds, ...ids},
+    );
+  }
+
+  /// 이벤트 모드 — 운영진 체포.
+  ///
+  /// 전역 수감 집합([arrestedParticipantIds])은 건드리지 않아 도둑이 ALIVE로 유지된다.
+  /// 로컬 검거 집합만 갱신·영속화하고, 증거 인덱스와 도둑 닉네임을 반환한다(실패 시 null).
+  /// 체포 API 성공 이후의 로컬 영속화 I/O 실패는 체포 성공을 무효화하지 않는다.
+  Future<({int evidenceIndex, String robberNickname})?> arrestRobberForEvent(
+    int gameId,
+    int robberParticipantId,
+  ) async {
+    if (_pendingArrestId != null) return null; // 재진입 방어
+    _pendingArrestId = robberParticipantId;
+    state = state.copyWith(isApiLoading: true);
+
+    final String robberNickname;
+    try {
+      final res = await ref.read(gameSystemApiProvider).arrest(
+            gameId,
+            ArrestRequestModel(robberParticipantId: robberParticipantId),
+          );
+      robberNickname = res.robberNickname;
+    } catch (e) {
+      debugPrint('[GameEventNotifier] ❌ 이벤트 체포 실패: $e');
+      _pendingArrestId = null;
+      state = state.copyWith(isApiLoading: false, errorMessage: '체포 요청 실패');
+      return null;
+    }
+
+    // 체포는 서버 확정됨 — 이후 로컬 I/O 실패는 체포 성공 피드백을 막지 않는다.
+    Set<int> persisted;
+    try {
+      persisted = await ref.read(eventArrestStorageProvider).load(gameId);
+    } catch (_) {
+      persisted = <int>{};
+    }
+    // dispose된 Notifier에 state 쓰기 방지 (StateError 회피, 다른 메서드 패턴 일치)
+    if (_isDisposed) return null;
+    // evidenceIndex = 이번 게임 누적 검거 수.
+    // persisted는 load()의 gameId 필터로 현재 게임 ID만 포함되므로 타 게임 혼입 없음.
+    final next = {...state.myArrestedRobberIds, ...persisted, robberParticipantId};
+    state = state.copyWith(myArrestedRobberIds: next, isApiLoading: false);
+    try {
+      await ref.read(eventArrestStorageProvider).save(gameId, next);
+    } catch (e) {
+      debugPrint('[GameEventNotifier] ⚠️ 검거 영속화 실패(체포는 유효): $e');
+    }
+    _pendingArrestId = null;
+    return (evidenceIndex: next.length, robberNickname: robberNickname);
   }
 
   /// 탈옥 API 호출 (수감된 도둑 전용)
@@ -718,6 +787,24 @@ class GameEventNotifier extends _$GameEventNotifier {
     // 경찰 정보 파싱
     final police = data['police'] as Map<String, dynamic>?;
     final policeNickname = police?['nickname'] as String?;
+
+    // 이벤트 모드: 도둑 ALIVE 유지 — 전역 수감 집합/remainingThieves 미변경, 배너/진동만.
+    final isEvent =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    if (isEvent) {
+      // _pendingArrestId는 arrestRobberForEvent가 HTTP+영속화 완료 후 직접 해제한다.
+      // 여기서 조기 해제하면 STOMP가 HTTP보다 먼저 도착할 때 저장 중 두 번째 체포가
+      // 시작돼 SharedPreferences 저장 순서에 따라 최신 검거 집합이 유실될 수 있다.
+      state = state.copyWith(
+        bannerMessage: _localizeGameEvent(GameEventMessageKey.arrestNotice, [
+          policeNickname ?? _localizePoliceLabel(),
+          robberNickname ?? _localizeRobberLabel(),
+        ]).replaceAll(RegExp(r'@icon_(police|robber)\s*'), ''),
+      );
+      _startBannerTimer();
+      VibrationService.instance().arrested();
+      return;
+    }
 
     // race condition 방어: STOMP가 API 응답보다 먼저 도착한 경우 pending 해제
     if (robberPid == _pendingArrestId) {
