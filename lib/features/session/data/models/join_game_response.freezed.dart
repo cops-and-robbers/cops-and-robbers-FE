@@ -27,6 +27,9 @@ mixin _$JoinGameResponse {
   /// 참여자 ID
   int get participantId => throw _privateConstructorUsedError;
 
+  /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false)
+  bool get isEventGame => throw _privateConstructorUsedError;
+
   /// Serializes this JoinGameResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -44,7 +47,7 @@ abstract class $JoinGameResponseCopyWith<$Res> {
     $Res Function(JoinGameResponse) then,
   ) = _$JoinGameResponseCopyWithImpl<$Res, JoinGameResponse>;
   @useResult
-  $Res call({int gameId, int participantId});
+  $Res call({int gameId, int participantId, bool isEventGame});
 }
 
 /// @nodoc
@@ -61,7 +64,11 @@ class _$JoinGameResponseCopyWithImpl<$Res, $Val extends JoinGameResponse>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? gameId = null, Object? participantId = null}) {
+  $Res call({
+    Object? gameId = null,
+    Object? participantId = null,
+    Object? isEventGame = null,
+  }) {
     return _then(
       _value.copyWith(
             gameId: null == gameId
@@ -72,6 +79,10 @@ class _$JoinGameResponseCopyWithImpl<$Res, $Val extends JoinGameResponse>
                 ? _value.participantId
                 : participantId // ignore: cast_nullable_to_non_nullable
                       as int,
+            isEventGame: null == isEventGame
+                ? _value.isEventGame
+                : isEventGame // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -87,7 +98,7 @@ abstract class _$$JoinGameResponseImplCopyWith<$Res>
   ) = __$$JoinGameResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int gameId, int participantId});
+  $Res call({int gameId, int participantId, bool isEventGame});
 }
 
 /// @nodoc
@@ -103,7 +114,11 @@ class __$$JoinGameResponseImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? gameId = null, Object? participantId = null}) {
+  $Res call({
+    Object? gameId = null,
+    Object? participantId = null,
+    Object? isEventGame = null,
+  }) {
     return _then(
       _$JoinGameResponseImpl(
         gameId: null == gameId
@@ -114,6 +129,10 @@ class __$$JoinGameResponseImplCopyWithImpl<$Res>
             ? _value.participantId
             : participantId // ignore: cast_nullable_to_non_nullable
                   as int,
+        isEventGame: null == isEventGame
+            ? _value.isEventGame
+            : isEventGame // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -125,6 +144,7 @@ class _$JoinGameResponseImpl implements _JoinGameResponse {
   const _$JoinGameResponseImpl({
     required this.gameId,
     required this.participantId,
+    this.isEventGame = false,
   });
 
   factory _$JoinGameResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -138,9 +158,14 @@ class _$JoinGameResponseImpl implements _JoinGameResponse {
   @override
   final int participantId;
 
+  /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false)
+  @override
+  @JsonKey()
+  final bool isEventGame;
+
   @override
   String toString() {
-    return 'JoinGameResponse(gameId: $gameId, participantId: $participantId)';
+    return 'JoinGameResponse(gameId: $gameId, participantId: $participantId, isEventGame: $isEventGame)';
   }
 
   @override
@@ -150,12 +175,15 @@ class _$JoinGameResponseImpl implements _JoinGameResponse {
             other is _$JoinGameResponseImpl &&
             (identical(other.gameId, gameId) || other.gameId == gameId) &&
             (identical(other.participantId, participantId) ||
-                other.participantId == participantId));
+                other.participantId == participantId) &&
+            (identical(other.isEventGame, isEventGame) ||
+                other.isEventGame == isEventGame));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, gameId, participantId);
+  int get hashCode =>
+      Object.hash(runtimeType, gameId, participantId, isEventGame);
 
   /// Create a copy of JoinGameResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -178,6 +206,7 @@ abstract class _JoinGameResponse implements JoinGameResponse {
   const factory _JoinGameResponse({
     required final int gameId,
     required final int participantId,
+    final bool isEventGame,
   }) = _$JoinGameResponseImpl;
 
   factory _JoinGameResponse.fromJson(Map<String, dynamic> json) =
@@ -190,6 +219,10 @@ abstract class _JoinGameResponse implements JoinGameResponse {
   /// 참여자 ID
   @override
   int get participantId;
+
+  /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false)
+  @override
+  bool get isEventGame;
 
   /// Create a copy of JoinGameResponse
   /// with the given fields replaced by the non-null parameter values.

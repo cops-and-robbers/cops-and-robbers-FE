@@ -22,6 +22,9 @@ class JoinGameResponse with _$JoinGameResponse {
 
     /// 참여자 ID
     required int participantId,
+
+    /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false)
+    @Default(false) bool isEventGame,
   }) = _JoinGameResponse;
 
   factory JoinGameResponse.fromJson(Map<String, dynamic> json) =>

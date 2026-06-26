@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/dev_flags.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
@@ -107,13 +109,21 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
         // 미로그인 — 로그인 화면으로 이동 (PendingInvite 에 코드 저장 완료)
         context.go(RoutePaths.login);
 
-      case JoinedRoomOutcome(:final gameId):
+      case JoinedRoomOutcome(:final gameId, :final participantId, :final isEventGame):
         // 딥링크 참가 퍼널 이벤트
         unawaited(
           ref.read(analyticsServiceProvider).logGameJoin(method: 'deeplink'),
         );
-        // join 성공 — 해당 gameId 의 대기실로 이동
-        context.go(RoutePaths.waitingRoomWithId(gameId.toString()));
+        if (isEventGame || kEventGameDevOverride) {
+          // 이벤트 모드 — 로비 스킵, 경찰로 인게임 직행
+          context.go(
+            '${RoutePaths.gameWithId(gameId.toString())}'
+            '?team=${GameTeam.police}&pid=$participantId',
+          );
+        } else {
+          // 일반 모드 — 해당 gameId 의 대기실로 이동
+          context.go(RoutePaths.waitingRoomWithId(gameId.toString()));
+        }
 
       case AlreadyInRoomOutcome(:final participation):
         // 이미 방에 참가 중 — 홈이 아니라 현재 활성 방으로 복귀 + 중립 안내.

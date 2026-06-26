@@ -121,6 +121,7 @@ class SessionRepositoryImpl implements SessionRepository {
       return GameJoinResult(
         gameId: response.gameId,
         participantId: response.participantId,
+        isEventGame: response.isEventGame,
       );
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
