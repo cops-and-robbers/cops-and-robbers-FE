@@ -11,6 +11,7 @@ part 'event_arrest_storage.g.dart';
 /// 단일 레코드(키 1개)에 `{gameId, arrestedRobberIds}`를 저장한다.
 /// 같은 gameId 재진입 시 복원, 다른 gameId면 빈 집합(자동 리셋).
 /// 기기(=경찰)별 저장이라 경찰 간 공유되지 않는다.
+/// 게임 종료 시 삭제하지 않고, 다음 진입 시 gameId가 달라지면 자동 리셋된다.
 class EventArrestStorage {
   static const String _key = 'event_game_arrest';
 
