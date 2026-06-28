@@ -78,7 +78,37 @@ void main() {
         .read(deepLinkJoinNotifierProvider.notifier)
         .handle('ABC123');
 
-    expect(outcome, equals(const DeepLinkJoinOutcome.joinedRoom(gameId: 7)));
+    expect(
+      outcome,
+      equals(
+        const DeepLinkJoinOutcome.joinedRoom(gameId: 7, participantId: 2),
+      ),
+    );
+  });
+
+  test('이벤트 게임 응답이면 JoinedRoom에 isEventGame=true, participantId 전파', () async {
+    // join API 가 isEventGame=true 를 반환하면 Notifier 가 그대로 JoinedRoomOutcome 에 실어야 한다.
+    final container = makeContainer(user: loggedInUser);
+    addTearDown(container.dispose);
+    when(() => joinUseCase.execute('ABC123')).thenAnswer(
+      (_) async =>
+          const GameJoinResult(gameId: 9, participantId: 42, isEventGame: true),
+    );
+
+    final outcome = await container
+        .read(deepLinkJoinNotifierProvider.notifier)
+        .handle('ABC123');
+
+    expect(
+      outcome,
+      equals(
+        const DeepLinkJoinOutcome.joinedRoom(
+          gameId: 9,
+          participantId: 42,
+          isEventGame: true,
+        ),
+      ),
+    );
   });
 
   group('409 conflict — 이미 방 참가 중', () {

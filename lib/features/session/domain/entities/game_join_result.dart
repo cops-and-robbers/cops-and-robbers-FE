@@ -14,5 +14,8 @@ class GameJoinResult with _$GameJoinResult {
 
     /// 해당 게임에서 부여받은 참여자 고유 ID
     required int participantId,
+
+    /// 이벤트 게임 여부 (true면 로비 스킵 인게임 직행)
+    @Default(false) bool isEventGame,
   }) = _GameJoinResult;
 }

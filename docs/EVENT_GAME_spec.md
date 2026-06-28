@@ -28,9 +28,11 @@
 
 **백엔드가 반드시 해야 하는 것 (프론트가 대체 불가):**
 
-1. 🔧 **이벤트 방 생성 경로** — 운영진이 `isEventGame=true` 방을 만드는 경로. **현재 스펙에 누락** (§1-A 참고)
-2. 🔧 **`join` 응답에 `isEventGame`** 필드 추가 (§1)
-3. ❓ **엔진 룰 분기** — 체포 시 `JAILED` 안 함 / `remainingThieves` 안 깎음 / `ALL_ARRESTED`·`POLICE_FORFEITED` 종료 안 함 / FCM 없음 (§3, §4)
+1. ✅ **이벤트 방 생성·시작 라이프사이클** — 별도 생성 API 없이 *일반 방 생성 후 어드민이 DB에서 `isEventGame=true`로 플립* (§1-A). 확정.
+2. ✅ **`join` 응답에 `isEventGame`** 필드 (§1) — api-docs v2.11.0 완료.
+3. ✅ **`GET /api/games/{gameId}` 응답에 `isEventGame`** 필드 (§2) — api-docs v2.12.0 완료. 중간(QR)·콜드 재진입 복원 소스.
+4. ✅ **`/lobby/start` 이벤트 완화** — `isEventGame=true`면 "경찰1+도둑1 + 전원레디" 검사 스킵, *도둑만으로 시작 허용* (§1-A). 확정.
+5. ❓ **엔진 룰 분기** — 체포 시 `JAILED` 안 함 / `remainingThieves` 안 깎음 / `ALL_ARRESTED`·`POLICE_FORFEITED` 종료 안 함 / FCM 없음 (§3, §4)
 
 **프론트가 자체 처리 (백엔드 작업 없음):**
 
@@ -65,15 +67,22 @@
 - 🔧 `isEventGame`: **응답 신규 필드.** `true`이면 로비 화면을 스킵하고 인게임 화면으로 이동.
   - 현재 `api-docs.json`의 `GameJoinResponse`에는 `gameId`, `participantId`만 있음 → 필드 추가 필요.
 
-### 🔧 [누락] 1-A. 이벤트 방 *생성* 경로
+### ✅ 1-A. 이벤트 방 *생성·시작* 라이프사이클 (확정)
 
-`join`은 "참가(소비)"만 다루고, **운영진이 이벤트 방을 *생성*하는 경로가 스펙에 없습니다.**
-어딘가에서 방이 `isEventGame=true`로 마킹되어야 위 `join` 응답이 `true`를 내려줄 수 있습니다.
+별도 생성 API/UI 없이 **일반 방 생성 흐름을 그대로** 쓴다.
 
-- ❓ 게임 생성 API(`POST /api/games` 등)에 "이벤트 게임 여부" 설정이 추가되는지?
-- ❓ 추가된다면 요청 필드명/기본값은? (예: `isEventGame: false` 기본)
+1. 운영진이 **일반 방 생성** → 대기방 입장 (생성 시점엔 `isEventGame=false`)
+2. **어드민이 DB에서 해당 방 `isEventGame=true`로 플립** (코드/API 아님, 운영 작업)
+3. 운영진이 **앱 재시작** → 세션 복원이 `GET /{id}`를 다시 읽어 `isEventGame=true` 반영
+   → 대기방 시작 버튼 활성 (FE가 `participant.isEventGame`로 시작 게이팅 완화)
+   - ⚠️ 운영진은 *이미 대기방에 있는 상태*에서 플립되므로 **재조회가 필요**. 나갔다 재입장은
+     이벤트 WAITING이라 `join`이 `GAME_NOT_IN_PROGRESS`로 막히므로, **앱 재시작(세션 복원)**으로 새로고침한다.
+     (운영자 1명만의 불편이라 자동 갱신 코드는 생략)
+4. 운영진 시작 탭 → **`/lobby/start`(이벤트 완화: 도둑만으로 시작)** → IN_PROGRESS
+5. `GAME_START` → 운영진 인게임 전환 / 경찰은 QR로 진행 중 게임에 난입(`join` → 인게임 직행)
 
-이 부분 확정 후 프론트도 (필요 시) 생성 UI를 붙입니다.
+> 핵심: 이벤트 게임의 본질은 "진행 중(IN_PROGRESS) 게임에 중간 입장". 그 IN_PROGRESS 상태는
+> 위 1~4(일반 생성 + 어드민 플립 + 이벤트 완화 시작)로 도달한다.
 
 ---
 
@@ -99,11 +108,17 @@ QR 스캔
 
 | 데이터 | 엔드포인트 |
 | --- | --- |
-| 게임 설정 / `gameStartTime` | `GET /api/games/{gameId}` |
+| 게임 설정 / `gameStartTime` / 🔧 **`isEventGame`** | `GET /api/games/{gameId}` |
 | 게임 영역(운동장/감옥) | `GET /api/games/{gameId}/area` |
 | 참가자 상태 + 기존 공개된 도둑 위치 | `GET /api/games/{gameId}/state` |
 
 > ❓ 확인만: 위 3개가 **중간 입장 직후(IN_PROGRESS)에도** 정상 응답하는지. (`/state`는 IN_PROGRESS 전용이라 OK로 보임)
+>
+> 🔧 **추가(필수): `GET /api/games/{gameId}` 응답에도 `isEventGame` 필드 추가.**
+> 중간 입장(QR)·콜드 재진입자는 `join` 응답을 다시 받지 못한다. 인게임 진입 시마다 호출되는
+> 이 API가 프론트의 `isEventGame` **단일 복원 소스**다. 프론트는 이미 `GameSettingsResponse.isEventGame`을
+> 소비하도록 구현돼 있으므로, **이 필드가 없으면 실서비스 인게임에서 이벤트 모드가 켜지지 않는다**
+> (현재는 `--dart-define=EVENT_GAME_DEV=true` dev 오버라이드로만 동작). `join` 응답 필드만으론 부족.
 
 ### QR 입장 시 발생 가능한 에러 (원안 유지)
 
@@ -224,8 +239,10 @@ QR로 중간 입장한 경찰의 초기 상태는 경찰 이동 시작 시간 �
 
 ## 7. 백엔드 확인/작업 체크리스트
 
-- [ ] 🔧 **이벤트 방 생성 경로** — 방을 `isEventGame=true`로 만드는 방법 (§1-A)
-- [ ] 🔧 **`join` 응답에 `isEventGame` 필드** 추가 (§1)
+- [x] ✅ **이벤트 방 생성·시작 라이프사이클** — 일반 생성 + 어드민 DB 플립 + `/lobby/start` 이벤트 완화 (§1-A)
+- [x] ✅ **`join` 응답에 `isEventGame` 필드** (§1) — api-docs v2.11.0
+- [x] ✅ **`GET /api/games/{gameId}` 응답에 `isEventGame` 필드** (§2) — api-docs v2.12.0
+- [x] ✅ **`/lobby/start` 이벤트 완화** — `isEventGame=true`면 팀구성·전원레디 검사 스킵 (§1-A)
 - [ ] ❓ **엔진 룰 분기** — `JAILED` 미전환 / `remainingThieves` 불변 / `ALL_ARRESTED`·`POLICE_FORFEITED` 미발생 / FCM 없음 (§3, §4)
 - [ ] ❓ **`*_FORFEITED` 종료 의미** — 이벤트 모드에서 forfeit 발생 조건 정의 (§4)
 - [ ] ❓ **부트스트랩 API** — `GET /{id}` · `/area` · `/state`가 중간 입장 직후에도 정상 응답하는지 (§2)

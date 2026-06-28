@@ -118,6 +118,7 @@ flutter:
     - assets/icons/
     - assets/legals/
     - assets/credits/
+    - assets/events/
     - assets/characters/police/default/
     - assets/characters/robber/default/
     - assets/characters/police/classic/

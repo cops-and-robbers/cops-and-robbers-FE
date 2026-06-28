@@ -20,7 +20,8 @@ mixin _$DeepLinkJoinOutcome {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loginRedirect,
-    required TResult Function(int gameId) joinedRoom,
+    required TResult Function(int gameId, int participantId, bool isEventGame)
+    joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
     required TResult Function(String? messageKey, String? errorCode) failure,
@@ -28,7 +29,8 @@ mixin _$DeepLinkJoinOutcome {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? loginRedirect,
-    TResult? Function(int gameId)? joinedRoom,
+    TResult? Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
     TResult? Function(String? messageKey, String? errorCode)? failure,
@@ -36,7 +38,8 @@ mixin _$DeepLinkJoinOutcome {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loginRedirect,
-    TResult Function(int gameId)? joinedRoom,
+    TResult Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
     TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
@@ -141,7 +144,8 @@ class _$LoginRedirectOutcomeImpl
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loginRedirect,
-    required TResult Function(int gameId) joinedRoom,
+    required TResult Function(int gameId, int participantId, bool isEventGame)
+    joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
     required TResult Function(String? messageKey, String? errorCode) failure,
@@ -153,7 +157,8 @@ class _$LoginRedirectOutcomeImpl
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? loginRedirect,
-    TResult? Function(int gameId)? joinedRoom,
+    TResult? Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
     TResult? Function(String? messageKey, String? errorCode)? failure,
@@ -165,7 +170,8 @@ class _$LoginRedirectOutcomeImpl
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loginRedirect,
-    TResult Function(int gameId)? joinedRoom,
+    TResult Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
     TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
@@ -225,7 +231,7 @@ abstract class _$$JoinedRoomOutcomeImplCopyWith<$Res> {
     $Res Function(_$JoinedRoomOutcomeImpl) then,
   ) = __$$JoinedRoomOutcomeImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({int gameId});
+  $Res call({int gameId, int participantId, bool isEventGame});
 }
 
 /// @nodoc
@@ -241,13 +247,25 @@ class __$$JoinedRoomOutcomeImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? gameId = null}) {
+  $Res call({
+    Object? gameId = null,
+    Object? participantId = null,
+    Object? isEventGame = null,
+  }) {
     return _then(
       _$JoinedRoomOutcomeImpl(
         gameId: null == gameId
             ? _value.gameId
             : gameId // ignore: cast_nullable_to_non_nullable
                   as int,
+        participantId: null == participantId
+            ? _value.participantId
+            : participantId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        isEventGame: null == isEventGame
+            ? _value.isEventGame
+            : isEventGame // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -258,14 +276,23 @@ class __$$JoinedRoomOutcomeImplCopyWithImpl<$Res>
 class _$JoinedRoomOutcomeImpl
     with DiagnosticableTreeMixin
     implements JoinedRoomOutcome {
-  const _$JoinedRoomOutcomeImpl({required this.gameId});
+  const _$JoinedRoomOutcomeImpl({
+    required this.gameId,
+    required this.participantId,
+    this.isEventGame = false,
+  });
 
   @override
   final int gameId;
+  @override
+  final int participantId;
+  @override
+  @JsonKey()
+  final bool isEventGame;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'DeepLinkJoinOutcome.joinedRoom(gameId: $gameId)';
+    return 'DeepLinkJoinOutcome.joinedRoom(gameId: $gameId, participantId: $participantId, isEventGame: $isEventGame)';
   }
 
   @override
@@ -273,7 +300,9 @@ class _$JoinedRoomOutcomeImpl
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'DeepLinkJoinOutcome.joinedRoom'))
-      ..add(DiagnosticsProperty('gameId', gameId));
+      ..add(DiagnosticsProperty('gameId', gameId))
+      ..add(DiagnosticsProperty('participantId', participantId))
+      ..add(DiagnosticsProperty('isEventGame', isEventGame));
   }
 
   @override
@@ -281,11 +310,16 @@ class _$JoinedRoomOutcomeImpl
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$JoinedRoomOutcomeImpl &&
-            (identical(other.gameId, gameId) || other.gameId == gameId));
+            (identical(other.gameId, gameId) || other.gameId == gameId) &&
+            (identical(other.participantId, participantId) ||
+                other.participantId == participantId) &&
+            (identical(other.isEventGame, isEventGame) ||
+                other.isEventGame == isEventGame));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, gameId);
+  int get hashCode =>
+      Object.hash(runtimeType, gameId, participantId, isEventGame);
 
   /// Create a copy of DeepLinkJoinOutcome
   /// with the given fields replaced by the non-null parameter values.
@@ -302,37 +336,40 @@ class _$JoinedRoomOutcomeImpl
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loginRedirect,
-    required TResult Function(int gameId) joinedRoom,
+    required TResult Function(int gameId, int participantId, bool isEventGame)
+    joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
     required TResult Function(String? messageKey, String? errorCode) failure,
   }) {
-    return joinedRoom(gameId);
+    return joinedRoom(gameId, participantId, isEventGame);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? loginRedirect,
-    TResult? Function(int gameId)? joinedRoom,
+    TResult? Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
     TResult? Function(String? messageKey, String? errorCode)? failure,
   }) {
-    return joinedRoom?.call(gameId);
+    return joinedRoom?.call(gameId, participantId, isEventGame);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loginRedirect,
-    TResult Function(int gameId)? joinedRoom,
+    TResult Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
     TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
   }) {
     if (joinedRoom != null) {
-      return joinedRoom(gameId);
+      return joinedRoom(gameId, participantId, isEventGame);
     }
     return orElse();
   }
@@ -376,10 +413,15 @@ class _$JoinedRoomOutcomeImpl
 }
 
 abstract class JoinedRoomOutcome implements DeepLinkJoinOutcome {
-  const factory JoinedRoomOutcome({required final int gameId}) =
-      _$JoinedRoomOutcomeImpl;
+  const factory JoinedRoomOutcome({
+    required final int gameId,
+    required final int participantId,
+    final bool isEventGame,
+  }) = _$JoinedRoomOutcomeImpl;
 
   int get gameId;
+  int get participantId;
+  bool get isEventGame;
 
   /// Create a copy of DeepLinkJoinOutcome
   /// with the given fields replaced by the non-null parameter values.
@@ -492,7 +534,8 @@ class _$AlreadyInRoomOutcomeImpl
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loginRedirect,
-    required TResult Function(int gameId) joinedRoom,
+    required TResult Function(int gameId, int participantId, bool isEventGame)
+    joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
     required TResult Function(String? messageKey, String? errorCode) failure,
@@ -504,7 +547,8 @@ class _$AlreadyInRoomOutcomeImpl
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? loginRedirect,
-    TResult? Function(int gameId)? joinedRoom,
+    TResult? Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
     TResult? Function(String? messageKey, String? errorCode)? failure,
@@ -516,7 +560,8 @@ class _$AlreadyInRoomOutcomeImpl
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loginRedirect,
-    TResult Function(int gameId)? joinedRoom,
+    TResult Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
     TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),
@@ -673,7 +718,8 @@ class _$FailureOutcomeImpl
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loginRedirect,
-    required TResult Function(int gameId) joinedRoom,
+    required TResult Function(int gameId, int participantId, bool isEventGame)
+    joinedRoom,
     required TResult Function(UserGameParticipationEntity? participation)
     alreadyInRoom,
     required TResult Function(String? messageKey, String? errorCode) failure,
@@ -685,7 +731,8 @@ class _$FailureOutcomeImpl
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? loginRedirect,
-    TResult? Function(int gameId)? joinedRoom,
+    TResult? Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult? Function(UserGameParticipationEntity? participation)?
     alreadyInRoom,
     TResult? Function(String? messageKey, String? errorCode)? failure,
@@ -697,7 +744,8 @@ class _$FailureOutcomeImpl
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loginRedirect,
-    TResult Function(int gameId)? joinedRoom,
+    TResult Function(int gameId, int participantId, bool isEventGame)?
+    joinedRoom,
     TResult Function(UserGameParticipationEntity? participation)? alreadyInRoom,
     TResult Function(String? messageKey, String? errorCode)? failure,
     required TResult orElse(),

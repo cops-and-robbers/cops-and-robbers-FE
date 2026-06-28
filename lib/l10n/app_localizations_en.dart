@@ -2105,4 +2105,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get gameLeaveFailedMessage =>
       'Couldn\'t leave the game. Please try again';
+
+  @override
+  String get gameEventArrestSuccessTitle => 'Suspect Caught';
+
+  @override
+  String gameEventArrestSuccessMessage(String nickname) {
+    return 'Caught $nickname';
+  }
+
+  @override
+  String get gameEventArrestSuccessConfirm => 'OK';
+
+  @override
+  String get errorEventArrestRequestFailed =>
+      'Failed to send arrest request. Please try again';
+
+  @override
+  String get gameEventResultTitle => 'Investigation Closed';
+
+  @override
+  String get gameEventProgressTitle => 'Catch Progress';
+
+  @override
+  String gameEventResultArrestCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count staff caught',
+      one: '1 staff member caught',
+    );
+    return '$_temp0';
+  }
 }
