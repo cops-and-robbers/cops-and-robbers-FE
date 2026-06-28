@@ -41,6 +41,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import '../../domain/arrest_lock_visibility.dart';
 import '../../domain/location_send_policy.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
@@ -70,6 +71,9 @@ import 'package:cops_and_robbers/core/constants/game_status.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
 import 'package:cops_and_robbers/core/constants/game_result_reason.dart';
 import 'package:cops_and_robbers/core/constants/participant_status.dart';
+import '../../../../core/constants/dev_flags.dart';
+import '../widgets/event_arrest_success_dialog.dart';
+import '../widgets/event_result_board.dart';
 
 /// 인게임 지도 화면
 ///
@@ -145,6 +149,7 @@ class _GamePageState extends ConsumerState<GamePage>
   DateTime? _lastHandledLocationReveal;
   int _lastHandledArrestCount = 0;
   int _lastHandledEscapeCount = 0;
+  int _lastHandledMyArrestSeq = 0;
 
   /// 더미 모드 전용 타이머 시작 시각
   DateTime? _dummyStartTime;
@@ -292,6 +297,22 @@ class _GamePageState extends ConsumerState<GamePage>
     await _initSettingsFromApiIfNeeded();
     if (!mounted) return;
 
+    // 이벤트 모드: 로컬 검거 집합 복원이 끝나야 재체포 차단/카운트/증거 인덱스가 정확하다.
+    // 반드시 await — unawaited면 복원 전 QR 체포가 가능해 재체포/유실 위험(코드리뷰 P1).
+    // (loadMyArrests는 union 병합이라 만약의 겹침에도 신규 검거를 잃지 않는다.)
+    // 복원 실패(저장소 I/O 예외)가 게임 초기화 전체를 막지 않도록 비치명 처리한다.
+    // 빈 집합으로 시작 — _persistMyArrests의 영속화 실패 비치명 처리와 동일 철학.
+    if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) {
+      try {
+        await ref
+            .read(gameEventNotifierProvider.notifier)
+            .loadMyArrests(_gameId);
+        if (!mounted) return;
+      } catch (e) {
+        debugPrint('[GamePage] ⚠️ 이벤트 검거 복원 실패(무시): $e');
+      }
+    }
+
     _connectGameEvents();
     _loadGameArea();
     _showPoliceTimerIfNeeded();
@@ -417,6 +438,8 @@ class _GamePageState extends ConsumerState<GamePage>
       );
       if (!mounted) return;
 
+      final isEvent = settings.isEventGame || kEventGameDevOverride;
+
       // state가 null이면 (splash 재접속) 기본값으로 초기화
       if (ref.read(gameParticipantNotifierProvider) == null) {
         ref
@@ -426,6 +449,7 @@ class _GamePageState extends ConsumerState<GamePage>
               nickname: '',
               team: widget.team,
               participantId: widget.participantId,
+              isEventGame: isEvent,
             );
       }
 
@@ -438,6 +462,7 @@ class _GamePageState extends ConsumerState<GamePage>
                 settings.locationRevealIntervalMinutes,
             policeWaitMinutes: settings.policeWaitMinutes,
             roundTimeMinutes: settings.roundDurationMinutes,
+            isEventGame: isEvent,
           );
 
       if (!mounted) return;
@@ -1349,6 +1374,30 @@ class _GamePageState extends ConsumerState<GamePage>
     // 2단계: 결과 다이얼로그 (캐릭터 오버레이 + 통계)
     final gameId = int.tryParse(widget.sessionId);
 
+    // 이벤트 모드: 서버 통계 대신 로컬 검거 카운트 + 증거 보드.
+    if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) {
+      final arrestCount = ref
+          .read(gameEventNotifierProvider)
+          .myArrestedRobberIds
+          .length;
+      await EventResultBoard.show(
+        context: context,
+        arrestCount: arrestCount,
+        onGoHome: () {
+          if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted))
+            return;
+          if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
+              gameId != null) {
+            _requestLeaveGameSilently(gameId);
+          }
+          ref.read(gameParticipantNotifierProvider.notifier).clear();
+          _exitGameAfterAd(choice: 'home', destination: _homeAfterGameExit);
+        },
+      );
+      if (!mounted) return;
+      return;
+    }
+
     // gameResultId가 null인 경우 기존 방식으로 fallback (AppDialog 최소 정보만)
     if (gameResultId == null || winnerTeam == null) {
       await _showFallbackResultDialog(winnerTeam, gameId);
@@ -1635,6 +1684,25 @@ class _GamePageState extends ConsumerState<GamePage>
       },
     );
 
+    // 이벤트 모드 — 내 검거 성공(STOMP ARREST 수신, 스펙 §3) 시 증거 공개 다이얼로그.
+    // HTTP 응답이 아니라 ARREST 수신을 트리거로 삼아 네트워크 불안정에도 정확히 노출.
+    ref.listen(gameEventNotifierProvider.select((s) => s.myArrestSeq), (
+      prev,
+      next,
+    ) {
+      if (next > _lastHandledMyArrestSeq && mounted) {
+        _lastHandledMyArrestSeq = next;
+        final s = ref.read(gameEventNotifierProvider);
+        EventArrestSuccessDialog.show(
+          context: context,
+          evidenceIndex: s.myArrestedRobberIds.length,
+          robberNickname:
+              s.lastMyArrestNickname ??
+              AppLocalizations.of(context).gameRoleRobberLabel,
+        );
+      }
+    });
+
     // 탈옥 이벤트 → 전체채팅 시스템 메시지 (STOMP 확정 카운터 기반 dedup)
     ref.listen(gameEventNotifierProvider.select((s) => s.escapeEventCount), (
       prev,
@@ -1655,15 +1723,26 @@ class _GamePageState extends ConsumerState<GamePage>
       gameEventNotifierProvider.select((s) => s.bannerMessage),
     );
 
-    final isArrestedNow =
-        GameTeam.isRobber(widget.team) &&
-        ref.watch(
-          gameEventNotifierProvider.select(
-            (s) =>
-                s.arrestedParticipantIds.contains(widget.participantId) &&
-                !s.escapedParticipantIds.contains(widget.participantId),
-          ),
-        );
+    final isEventGame = ref.watch(
+      gameParticipantNotifierProvider.select((p) => p?.isEventGame ?? false),
+    );
+    final l10n = AppLocalizations.of(context);
+    final isArrested = ref.watch(
+      gameEventNotifierProvider.select(
+        (s) => s.arrestedParticipantIds.contains(widget.participantId),
+      ),
+    );
+    final isEscaped = ref.watch(
+      gameEventNotifierProvider.select(
+        (s) => s.escapedParticipantIds.contains(widget.participantId),
+      ),
+    );
+    final isArrestedNow = shouldShowArrestLock(
+      isRobber: GameTeam.isRobber(widget.team),
+      isEventGame: isEventGame,
+      isArrested: isArrested,
+      isEscaped: isEscaped,
+    );
 
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
     final policeStartTime = _computePoliceStartTime();
@@ -1887,6 +1966,26 @@ class _GamePageState extends ConsumerState<GamePage>
                 bottom: actionButtonBottom,
                 child: Column(
                   children: [
+                    // 증거보드: 읽기 전용 검거 현황 조회 → 이탈 경고 중에도 항상 노출(가드 밖).
+                    // 이벤트 모드 경찰 전용(도둑/일반 게임은 검거 카운트 의미 없음).
+                    if (isEventGame && GameTeam.isPolice(widget.team)) ...[
+                      SvgIconButton(
+                        assetPath: 'assets/characters/robber/default/home.svg',
+                        onPressed: () => EventResultBoard.show(
+                          context: context,
+                          arrestCount: ref
+                              .read(gameEventNotifierProvider)
+                              .myArrestedRobberIds
+                              .length,
+                          title: l10n.gameEventProgressTitle,
+                          buttonText: l10n.buttonClose,
+                          onGoHome: () => Navigator.of(context).pop(),
+                        ),
+                        backgroundColor: _isDarkMode ? AppColors.black : null,
+                        isDarkMode: _isDarkMode,
+                      ),
+                      SizedBox(height: AppSpacing.vertical8),
+                    ],
                     // 참가자·QR 모두 이탈 중에는 숨김.
                     // 구역 밖에선 체포/QR 액션 자체가 무의미 + 외적으로도 차단 필요.
                     // 복귀 경로는 좌측 하단 내 위치 버튼이 담당.
@@ -2156,6 +2255,35 @@ class _GamePageState extends ConsumerState<GamePage>
     }
 
     final participantId = payload.participantId;
+
+    final isEvent =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    if (isEvent) {
+      // 이벤트 모드: 내가 이미 검거한 운영진이면 차단
+      if (ref
+          .read(gameEventNotifierProvider)
+          .myArrestedRobberIds
+          .contains(participantId)) {
+        AppSnackbar.show(
+          context,
+          message: AppLocalizations.of(context).errorAlreadyArrested,
+        );
+        return;
+      }
+      // 체포 요청만 전송. 카운트·증거 다이얼로그는 STOMP ARREST 수신 시 처리(스펙 §3).
+      final ok = await ref
+          .read(gameEventNotifierProvider.notifier)
+          .requestEventArrest(_gameId, participantId);
+      if (!ok && mounted) {
+        AppSnackbar.show(
+          context,
+          message: AppLocalizations.of(context).errorEventArrestRequestFailed,
+        );
+      }
+      return;
+    }
+
+    // --- 이하 기존 일반 모드 로직(전역 arrestedParticipantIds 기반) ---
 
     // 이미 체포된 도둑 체크
     final arrestedIds = ref

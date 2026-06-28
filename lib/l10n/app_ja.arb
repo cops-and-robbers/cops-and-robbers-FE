@@ -616,5 +616,12 @@
   },
   "gameLeaveConfirmTitle": "ゲームから退場しますか",
   "gameLeaveConfirmMessage": "進行中のゲームから退場します",
-  "gameLeaveFailedMessage": "退場できませんでした。しばらくしてからもう一度お試しください"
+  "gameLeaveFailedMessage": "退場できませんでした。しばらくしてからもう一度お試しください",
+  "gameEventArrestSuccessTitle": "確保",
+  "gameEventArrestSuccessMessage": "{nickname}を確保",
+  "gameEventArrestSuccessConfirm": "確認",
+  "errorEventArrestRequestFailed": "逮捕リクエストの送信に失敗しました。もう一度お試しください",
+  "gameEventResultTitle": "捜査終了",
+  "gameEventProgressTitle": "確保状況",
+  "gameEventResultArrestCount": "{count, plural, other{運営{count}名を確保}}"
 }

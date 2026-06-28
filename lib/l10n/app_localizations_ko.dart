@@ -1939,4 +1939,34 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gameLeaveFailedMessage => '퇴장하지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
+  String get gameEventArrestSuccessTitle => '운영진 검거';
+
+  @override
+  String gameEventArrestSuccessMessage(String nickname) {
+    return '$nickname 검거 성공';
+  }
+
+  @override
+  String get gameEventArrestSuccessConfirm => '확인';
+
+  @override
+  String get errorEventArrestRequestFailed => '체포 요청 전송에 실패했어요. 다시 시도해 주세요';
+
+  @override
+  String get gameEventResultTitle => '수사 종료';
+
+  @override
+  String get gameEventProgressTitle => '검거 현황';
+
+  @override
+  String gameEventResultArrestCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '운영진 $count명 검거',
+    );
+    return '$_temp0';
+  }
 }

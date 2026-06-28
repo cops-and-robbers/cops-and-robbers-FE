@@ -20,9 +20,12 @@ sealed class DeepLinkJoinOutcome with _$DeepLinkJoinOutcome {
   /// 미로그인 상태 — 로그인 화면으로 이동해야 함
   const factory DeepLinkJoinOutcome.loginRedirect() = LoginRedirectOutcome;
 
-  /// join 성공 — [gameId] 의 대기실로 이동해야 함
-  const factory DeepLinkJoinOutcome.joinedRoom({required int gameId}) =
-      JoinedRoomOutcome;
+  /// join 성공 — [isEventGame]이면 인게임 직행, 아니면 [gameId] 대기실로 이동.
+  const factory DeepLinkJoinOutcome.joinedRoom({
+    required int gameId,
+    required int participantId,
+    @Default(false) bool isEventGame,
+  }) = JoinedRoomOutcome;
 
   /// 이미 방에 참가 중 — [participation] 의 활성 게임으로 복귀 + 안내 토스트.
   ///
@@ -92,7 +95,11 @@ class DeepLinkJoinNotifier extends _$DeepLinkJoinNotifier {
       final result = await ref
           .read(joinGameByInviteUseCaseProvider)
           .execute(inviteCode);
-      return DeepLinkJoinOutcome.joinedRoom(gameId: result.gameId);
+      return DeepLinkJoinOutcome.joinedRoom(
+        gameId: result.gameId,
+        participantId: result.participantId,
+        isEventGame: result.isEventGame,
+      );
     } catch (e) {
       return _classifyError(e);
     }

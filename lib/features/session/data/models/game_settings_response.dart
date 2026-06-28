@@ -36,6 +36,9 @@ class GameSettingsResponse with _$GameSettingsResponse {
     /// v2.7.0부터 `+09:00` timezone suffix 포함. 소비 시 `IsoTimestampParser`
     /// 또는 `DateTime.parse(...).toLocal()`로 단말 local 시간 정규화.
     String? gameStartTime,
+
+    /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false) — 콜드 재진입 복원용
+    @Default(false) bool isEventGame,
   }) = _GameSettingsResponse;
 
   factory GameSettingsResponse.fromJson(Map<String, dynamic> json) =>

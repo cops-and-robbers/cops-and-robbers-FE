@@ -19,6 +19,7 @@ import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/datasources/game_system_api_datasource.dart';
 import '../../data/models/arrest_request_model.dart';
+import '../../data/services/event_arrest_storage.dart';
 import '../../data/models/game_area_model.dart';
 import '../../data/models/game_event_model.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
@@ -90,7 +91,7 @@ class GameEventState {
   /// 승리 팀 ("POLICE" | "ROBBER")
   final String? winnerTeam;
 
-  /// 게임 종료 이유 ("TIME_OVER" | "ALL_ARRESTED")
+  /// 게임 종료 이유 ("TIME_OVER" | "ALL_ARRESTED" | "ROBBER_FORFEITED" | "POLICE_FORFEITED")
   final String? gameOverReason;
 
   /// 게임 결과 ID
@@ -113,6 +114,17 @@ class GameEventState {
 
   /// LOCATION_REVEAL 수신 시 갱신되는 도둑 위치 목록 (participantId → 위치)
   final Map<int, LatLngModel> robberLocations;
+
+  /// 경찰이 검거한 운영진(도둑) ID 집합 (이벤트 모드 전용, 로컬 영속).
+  /// 전역 arrestedParticipantIds와 분리 — 재동기화/도둑 ALIVE에 영향 없음.
+  final Set<int> myArrestedRobberIds;
+
+  /// 이벤트 모드 — 내가 검거에 성공할 때마다 +1 (STOMP `ARREST` 수신 기준, 스펙 §3).
+  /// game_page가 이 시퀀스 변화를 감지해 증거 공개 다이얼로그를 띄운다.
+  final int myArrestSeq;
+
+  /// 이벤트 모드 — 직전에 내가 검거한 운영진 닉네임 (증거 다이얼로그 표시용).
+  final String? lastMyArrestNickname;
 
   /// 경찰이 현재 체포 가능한 상태인지 판단
   ///
@@ -157,6 +169,9 @@ class GameEventState {
     this.bannerMessage,
     this.isApiLoading = false,
     this.robberLocations = const {},
+    this.myArrestedRobberIds = const {},
+    this.myArrestSeq = 0,
+    this.lastMyArrestNickname,
   });
 
   GameEventState copyWith({
@@ -182,6 +197,9 @@ class GameEventState {
     Object? bannerMessage = _sentinel,
     bool? isApiLoading,
     Map<int, LatLngModel>? robberLocations,
+    Set<int>? myArrestedRobberIds,
+    int? myArrestSeq,
+    Object? lastMyArrestNickname = _sentinel,
   }) {
     return GameEventState(
       connectionState: connectionState ?? this.connectionState,
@@ -232,6 +250,11 @@ class GameEventState {
           : bannerMessage as String?,
       isApiLoading: isApiLoading ?? this.isApiLoading,
       robberLocations: robberLocations ?? this.robberLocations,
+      myArrestedRobberIds: myArrestedRobberIds ?? this.myArrestedRobberIds,
+      myArrestSeq: myArrestSeq ?? this.myArrestSeq,
+      lastMyArrestNickname: lastMyArrestNickname == _sentinel
+          ? this.lastMyArrestNickname
+          : lastMyArrestNickname as String?,
     );
   }
 }
@@ -466,6 +489,56 @@ class GameEventNotifier extends _$GameEventNotifier {
           errorMessage: '체포 요청 실패',
         );
       }
+    }
+  }
+
+  /// 이벤트 모드 — 인게임 진입 시 로컬 검거 집합 복원.
+  ///
+  /// 복원과 동시 체포가 겹쳐도 신규 검거가 유실되지 않도록 **union 병합**한다
+  /// (덮어쓰기 금지). 호출자(game_page)는 체포 가능 시점 이전에 이 메서드를 await한다.
+  Future<void> loadMyArrests(int gameId) async {
+    final ids = await ref.read(eventArrestStorageProvider).load(gameId);
+    if (_isDisposed) return;
+    state = state.copyWith(
+      myArrestedRobberIds: {...state.myArrestedRobberIds, ...ids},
+    );
+  }
+
+  /// 이벤트 모드 — 운영진 체포 요청(서버 트리거 전용).
+  ///
+  /// 스펙 §3: 검거 카운트·영속화·증거 다이얼로그는 STOMP `ARREST` 수신([_handleArrest])이
+  /// **단일 권위 신호**로 처리한다. 이 메서드는 서버에 체포를 알리는 HTTP 트리거만 담당하며
+  /// 로컬 검거 집합을 직접 건드리지 않는다 — HTTP 응답이 유실돼도 서버가 ARREST를
+  /// 브로드캐스트하기만 하면 카운트가 정확히 반영된다(네트워크 불안정 내성).
+  ///
+  /// 반환: 요청 전송 성공 여부(false면 호출측이 재시도 안내).
+  Future<bool> requestEventArrest(int gameId, int robberParticipantId) async {
+    if (_pendingArrestId != null) return false; // 동시 중복 요청 방어
+    _pendingArrestId = robberParticipantId;
+    state = state.copyWith(isApiLoading: true);
+    try {
+      await ref.read(gameSystemApiProvider).arrest(
+            gameId,
+            ArrestRequestModel(robberParticipantId: robberParticipantId),
+          );
+      return true;
+    } catch (e) {
+      debugPrint('[GameEventNotifier] ❌ 이벤트 체포 요청 실패: $e');
+      return false;
+    } finally {
+      _pendingArrestId = null;
+      if (!_isDisposed) state = state.copyWith(isApiLoading: false);
+    }
+  }
+
+  /// 이벤트 모드 — 내 검거 집합을 best-effort 영속화한다.
+  ///
+  /// 영속화 실패는 메모리 집계를 무효화하지 않는다(스펙 §3: 같은 폰 재접속 복원용).
+  Future<void> _persistMyArrests(int gameId, Set<int> ids) async {
+    try {
+      await ref.read(eventArrestStorageProvider).save(gameId, ids);
+    } catch (e) {
+      debugPrint('[GameEventNotifier] ⚠️ 검거 영속화 실패(집계는 유효): $e');
     }
   }
 
@@ -718,6 +791,42 @@ class GameEventNotifier extends _$GameEventNotifier {
     // 경찰 정보 파싱
     final police = data['police'] as Map<String, dynamic>?;
     final policeNickname = police?['nickname'] as String?;
+
+    // 이벤트 모드: 도둑 ALIVE 유지 — 전역 수감 집합/remainingThieves 미변경.
+    // 스펙 §3: ARREST 수신을 단일 권위 신호로 사용. data.police.participantId == 내 id일 때만
+    // 로컬 검거 집합 +1 & 영속화 & 증거 다이얼로그 신호(myArrestSeq)를 올린다(HTTP 응답과 분리).
+    final isEvent =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    if (isEvent) {
+      final banner = _localizeGameEvent(GameEventMessageKey.arrestNotice, [
+        policeNickname ?? _localizePoliceLabel(),
+        robberNickname ?? _localizeRobberLabel(),
+      ]).replaceAll(RegExp(r'@icon_(police|robber)\s*'), '');
+
+      final myPid = ref.read(gameParticipantNotifierProvider)?.participantId;
+      final policePid = (police?['participantId'] as num?)?.toInt();
+
+      if (myPid != null &&
+          policePid == myPid &&
+          !state.myArrestedRobberIds.contains(robberPid)) {
+        // 내가 검거 → 로컬 집계·영속화 + 증거 다이얼로그 신호.
+        final next = {...state.myArrestedRobberIds, robberPid};
+        state = state.copyWith(
+          myArrestedRobberIds: next,
+          myArrestSeq: state.myArrestSeq + 1,
+          lastMyArrestNickname: robberNickname,
+          bannerMessage: banner,
+        );
+        final gameId = _gameId;
+        if (gameId != null) unawaited(_persistMyArrests(gameId, next));
+      } else {
+        // 타 경찰 검거 or 이미 집계된 ID(STOMP 중복) → 배너만.
+        state = state.copyWith(bannerMessage: banner);
+      }
+      _startBannerTimer();
+      VibrationService.instance().arrested();
+      return;
+    }
 
     // race condition 방어: STOMP가 API 응답보다 먼저 도착한 경우 pending 해제
     if (robberPid == _pendingArrestId) {

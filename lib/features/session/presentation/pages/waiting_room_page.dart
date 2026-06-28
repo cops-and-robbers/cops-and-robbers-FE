@@ -14,6 +14,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/dev_flags.dart';
 import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -481,6 +482,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             policeWaitMinutes: settings?.policeWaitMinutes,
             roundTimeMinutes: settings?.roundDurationMinutes,
             hostParticipantId: lobbyInfo.hostParticipantId,
+            // 이벤트방 여부를 participant에 주입 — 시작 버튼 게이팅 완화에 필요.
+            // GET /games/{id} settings의 isEventGame(DB 필드) 기준. 미포함 시 false.
+            isEventGame: (settings?.isEventGame ?? false) || kEventGameDevOverride,
           );
 
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
@@ -1498,9 +1502,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       final nonHostParticipants = participantsState.participants
           .where((p) => p.participantId != hostPid)
           .toList();
+      // 이벤트방은 운영진(도둑)만 있고 경찰은 코드로 중간 참여하므로,
+      // 레디/인원 조건 없이 방장이 바로 시작 가능. 실제 시작 가부는 백엔드가 판단.
+      final isEvent =
+          ref.watch(gameParticipantNotifierProvider)?.isEventGame ?? false;
       final allReady =
-          nonHostParticipants.isNotEmpty &&
-          nonHostParticipants.every((p) => p.isReady);
+          isEvent ||
+          (nonHostParticipants.isNotEmpty &&
+              nonHostParticipants.every((p) => p.isReady));
 
       return AppButton(
         text: l10n.buttonStartGame,
