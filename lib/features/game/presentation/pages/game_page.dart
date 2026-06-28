@@ -299,9 +299,17 @@ class _GamePageState extends ConsumerState<GamePage>
     // 이벤트 모드: 로컬 검거 집합 복원이 끝나야 재체포 차단/카운트/증거 인덱스가 정확하다.
     // 반드시 await — unawaited면 복원 전 QR 체포가 가능해 재체포/유실 위험(코드리뷰 P1).
     // (loadMyArrests는 union 병합이라 만약의 겹침에도 신규 검거를 잃지 않는다.)
+    // 복원 실패(저장소 I/O 예외)가 게임 초기화 전체를 막지 않도록 비치명 처리한다.
+    // 빈 집합으로 시작 — arrestRobberForEvent의 영속화 실패 비치명 처리와 동일 철학.
     if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) {
-      await ref.read(gameEventNotifierProvider.notifier).loadMyArrests(_gameId);
-      if (!mounted) return;
+      try {
+        await ref
+            .read(gameEventNotifierProvider.notifier)
+            .loadMyArrests(_gameId);
+        if (!mounted) return;
+      } catch (e) {
+        debugPrint('[GamePage] ⚠️ 이벤트 검거 복원 실패(무시): $e');
+      }
     }
 
     _connectGameEvents();
