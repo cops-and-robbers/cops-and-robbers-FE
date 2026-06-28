@@ -1956,6 +1956,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String gameEventResultArrestCount(int count) {
-    return '운영진 $count명 검거';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '운영진 $count명 검거',
+    );
+    return '$_temp0';
   }
 }

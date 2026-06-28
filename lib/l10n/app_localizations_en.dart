@@ -2122,6 +2122,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String gameEventResultArrestCount(int count) {
-    return '$count staff caught';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count staff caught',
+      one: '1 staff member caught',
+    );
+    return '$_temp0';
   }
 }

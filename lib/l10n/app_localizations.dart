@@ -3780,7 +3780,7 @@ abstract class AppLocalizations {
   /// 이벤트 모드 결과 — 검거한 운영진 수
   ///
   /// In ko, this message translates to:
-  /// **'운영진 {count}명 검거'**
+  /// **'{count, plural, other{운영진 {count}명 검거}}'**
   String gameEventResultArrestCount(int count);
 }
 

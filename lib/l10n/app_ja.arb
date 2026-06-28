@@ -621,5 +621,5 @@
   "gameEventArrestSuccessMessage": "{nickname}を確保",
   "gameEventArrestSuccessConfirm": "確認",
   "gameEventResultTitle": "捜査終了",
-  "gameEventResultArrestCount": "運営{count}名を確保"
+  "gameEventResultArrestCount": "{count, plural, other{運営{count}名を確保}}"
 }

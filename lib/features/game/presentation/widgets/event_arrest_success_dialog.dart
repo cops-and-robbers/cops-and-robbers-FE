@@ -37,7 +37,7 @@ class EventArrestSuccessDialog extends StatelessWidget {
     return showGeneralDialog<void>(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'EventArrestSuccess',
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierColor: DialogAnimation.barrierColor,
       transitionDuration: DialogAnimation.duration,
       pageBuilder: (_, _, _) => EventArrestSuccessDialog(

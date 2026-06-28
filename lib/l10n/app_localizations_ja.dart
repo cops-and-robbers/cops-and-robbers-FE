@@ -1956,6 +1956,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String gameEventResultArrestCount(int count) {
-    return '運営$count名を確保';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '運営$count名を確保',
+    );
+    return '$_temp0';
   }
 }

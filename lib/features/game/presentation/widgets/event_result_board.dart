@@ -49,7 +49,6 @@ class EventResultBoard extends StatelessWidget {
     return showGeneralDialog<void>(
       context: context,
       barrierDismissible: false,
-      barrierLabel: 'EventResultBoard',
       barrierColor: DialogAnimation.barrierColor,
       transitionDuration: DialogAnimation.duration,
       pageBuilder: (_, _, _) => PopScope(

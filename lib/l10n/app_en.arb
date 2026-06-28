@@ -621,5 +621,5 @@
   "gameEventArrestSuccessMessage": "Caught {nickname}",
   "gameEventArrestSuccessConfirm": "OK",
   "gameEventResultTitle": "Investigation Closed",
-  "gameEventResultArrestCount": "{count} staff caught"
+  "gameEventResultArrestCount": "{count, plural, one{1 staff member caught} other{{count} staff caught}}"
 }
