@@ -6,7 +6,12 @@
 
 **Architecture:** 인게임 분기의 단일 소스는 `GameParticipantInfo.isEventGame`. 경찰의 검거 카운트/재체포는 전역 수감 집합과 분리된 로컬 집합(`myArrestedRobberIds`)으로 처리하고 `shared_preferences` 단일 레코드로 영속화한다. 백엔드 미구현분은 `--dart-define=EVENT_GAME_DEV=true` dev 플래그로 강제해 선개발한다.
 
-**Tech Stack:** Flutter / Riverpod(코드생성) / Freezed / Retrofit / shared_preferences / flutter_svg / flutter_screenutil.
+**Tech Stack:** Flutter / Riverpod(코드생성) / Freezed / Retrofit / shared_preferences / flutter_screenutil.
+
+> ⚠️ **구현 변경(2026-06): 증거 에셋은 SVG가 아니라 PNG로 최종 구현됨.**
+> 실제 구현은 `assets/events/evidence{N}.png` + `Image.asset`을 사용한다(flutter_svg 미사용).
+> 아래 본문/코드 스니펫의 `.svg`·`flutter_svg`는 초안 계획이며 최종 구현과 다르다 —
+> 후속 작업은 `lib/features/game/presentation/widgets/`의 실제 코드를 정본으로 따른다.
 
 **설계 근거:** [EVENT_GAME_DESIGN.md](EVENT_GAME_DESIGN.md), [EVENT_GAME_spec.md](EVENT_GAME_spec.md)
 
