@@ -1952,7 +1952,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameEventArrestSuccessConfirm => '確認';
 
   @override
+  String get errorEventArrestRequestFailed => '逮捕リクエストの送信に失敗しました。もう一度お試しください';
+
+  @override
   String get gameEventResultTitle => '捜査終了';
+
+  @override
+  String get gameEventProgressTitle => '確保状況';
 
   @override
   String gameEventResultArrestCount(int count) {

@@ -45,4 +45,25 @@ void main() {
     expect(find.text(l10n.buttonGoHome), findsOneWidget);
     expect(find.text(l10n.buttonPlayAgain), findsNothing); // 한 번 더 숨김
   });
+
+  testWidgets('renders_overridden_title_and_button_when_provided', (tester) async {
+    await _pump(
+      tester,
+      EventResultBoard(
+        arrestCount: 1,
+        onGoHome: () {},
+        title: 'PROGRESS_TITLE',
+        buttonText: 'CLOSE_BTN',
+      ),
+    );
+    final l10n =
+        AppLocalizations.of(tester.element(find.byType(EventResultBoard)));
+
+    // 오버라이드 문구 렌더
+    expect(find.text('PROGRESS_TITLE'), findsOneWidget);
+    expect(find.text('CLOSE_BTN'), findsOneWidget);
+    // 기본 게임종료 문구는 노출 안 됨
+    expect(find.text(l10n.gameEventResultTitle), findsNothing); // "수사 종료"
+    expect(find.text(l10n.buttonGoHome), findsNothing); // "홈으로"
+  });
 }

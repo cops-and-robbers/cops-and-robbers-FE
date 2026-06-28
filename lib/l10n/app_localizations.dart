@@ -3771,11 +3771,23 @@ abstract class AppLocalizations {
   /// **'확인'**
   String get gameEventArrestSuccessConfirm;
 
+  /// No description provided for @errorEventArrestRequestFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'체포 요청 전송에 실패했어요. 다시 시도해 주세요'**
+  String get errorEventArrestRequestFailed;
+
   /// No description provided for @gameEventResultTitle.
   ///
   /// In ko, this message translates to:
   /// **'수사 종료'**
   String get gameEventResultTitle;
+
+  /// 이벤트 모드 인게임 — 증거보드 진행판 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'검거 현황'**
+  String get gameEventProgressTitle;
 
   /// 이벤트 모드 결과 — 검거한 운영진 수
   ///

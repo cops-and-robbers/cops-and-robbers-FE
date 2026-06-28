@@ -863,7 +863,7 @@ git commit -m "chore: 이벤트 모드 i18n 키 + assets/events 에셋 등록"
 - Test: `test/features/game/presentation/widgets/event_arrest_success_dialog_test.dart`
 
 **Interfaces:**
-- Consumes: i18n 키(Task 6), `assets/events/evidence{1,2,3}.svg`(Task 6 등록).
+- Consumes: i18n 키(Task 6), `assets/events/evidence{1,2,3}.png`(Task 6 등록).
 - Produces: `EventArrestSuccessDialog.show({required BuildContext context, required int evidenceIndex, required String robberNickname})`.
 
 - [ ] **Step 1: 실패 테스트 작성** — `event_arrest_success_dialog_test.dart`
@@ -1051,7 +1051,7 @@ git commit -m "feat: 이벤트 모드 체포 성공(증거 공개) 다이얼로�
 - Test: `test/features/game/presentation/widgets/event_result_board_test.dart`
 
 **Interfaces:**
-- Consumes: i18n 키(Task 6), `assets/events/evidence{1,2,3}.svg`.
+- Consumes: i18n 키(Task 6), `assets/events/evidence{1,2,3}.png`.
 - Produces: `EventResultBoard.show({required BuildContext context, required int arrestCount, required VoidCallback onGoHome})`.
 
 - [ ] **Step 1: 실패 테스트 작성** — `event_result_board_test.dart`

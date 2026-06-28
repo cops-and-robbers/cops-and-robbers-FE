@@ -2118,7 +2118,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameEventArrestSuccessConfirm => 'OK';
 
   @override
+  String get errorEventArrestRequestFailed =>
+      'Failed to send arrest request. Please try again';
+
+  @override
   String get gameEventResultTitle => 'Investigation Closed';
+
+  @override
+  String get gameEventProgressTitle => 'Catch Progress';
 
   @override
   String gameEventResultArrestCount(int count) {

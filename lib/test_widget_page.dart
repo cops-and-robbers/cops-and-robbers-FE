@@ -32,8 +32,6 @@ import 'features/auth/presentation/pages/agreement_page.dart';
 import 'features/auth/presentation/pages/nickname_setup_page.dart';
 import 'features/game/domain/entities/game_result_entity.dart';
 import 'features/game/presentation/providers/game_result_provider.dart';
-import 'features/game/presentation/widgets/event_arrest_success_dialog.dart';
-import 'features/game/presentation/widgets/event_result_board.dart';
 import 'features/game/presentation/widgets/game_over_result_dialog.dart';
 import 'features/game/presentation/widgets/ping_selection_card.dart';
 import 'features/session/domain/entities/session_settings.dart';
@@ -1470,51 +1468,6 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                     ),
                   ],
                 ),
-
-                SizedBox(height: AppSpacing.vertical64),
-
-                // ============================================
-                // 이벤트 모드 모달 테스트
-                // ============================================
-                _buildSectionTitle('이벤트 모드 모달 테스트'),
-                SizedBox(height: AppSpacing.vertical8),
-                Text(
-                  '운영진 체포 성공(증거 공개) + 게임 종료 결과 보드. 경찰 화면 전용(라이트).',
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black400,
-                  ),
-                ),
-                SizedBox(height: AppSpacing.vertical16),
-
-                // 체포 성공 다이얼로그 — 증거 1~3
-                for (var i = 1; i <= 3; i++) ...[
-                  AppButton(
-                    text: '체포 성공 다이얼로그 (증거 $i)',
-                    onPressed: () => EventArrestSuccessDialog.show(
-                      context: context,
-                      evidenceIndex: i,
-                      robberNickname: '운영진$i',
-                    ),
-                    backgroundColor: AppColors.blue,
-                    showBorder: false,
-                  ),
-                  SizedBox(height: AppSpacing.vertical12),
-                ],
-
-                // 결과 보드 — 검거 0~3명
-                for (var count = 0; count <= 3; count++) ...[
-                  AppButton(
-                    text: '결과 보드 (검거 $count명)',
-                    onPressed: () => EventResultBoard.show(
-                      context: context,
-                      arrestCount: count,
-                      onGoHome: () => Navigator.of(context).pop(),
-                    ),
-                    backgroundColor: AppColors.black800,
-                    showBorder: false,
-                  ),
-                  SizedBox(height: AppSpacing.vertical12),
-                ],
 
                 SizedBox(height: AppSpacing.vertical64),
               ],

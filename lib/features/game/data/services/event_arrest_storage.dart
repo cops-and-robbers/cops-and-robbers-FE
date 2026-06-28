@@ -41,12 +41,18 @@ class EventArrestStorage {
   }
 
   /// 현재 [gameId] 기준으로 검거 집합을 덮어쓴다.
+  ///
+  /// setString이 false(디스크 기록 실패)면 조용히 넘기지 않고 throw한다.
+  /// 호출측(_persistMyArrests)이 catch해 로그를 남기며, 인메모리 집계는 유지된다.
   Future<void> save(int gameId, Set<int> robberIds) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
+    final ok = await prefs.setString(
       _key,
       jsonEncode({'gameId': gameId, 'arrestedRobberIds': robberIds.toList()}),
     );
+    if (!ok) {
+      throw Exception('event arrest 저장 실패 (gameId=$gameId)');
+    }
   }
 }
 

@@ -17,14 +17,22 @@ class EventResultBoard extends StatelessWidget {
   const EventResultBoard({
     required this.arrestCount,
     required this.onGoHome,
+    this.title,
+    this.buttonText,
     super.key,
   });
 
   /// 검거한 운영진 수 (0~3).
   final int arrestCount;
 
-  /// "홈으로" 버튼 콜백.
+  /// 하단 버튼 콜백 (게임종료=홈 이동 / 인게임=오버레이 닫기).
   final VoidCallback onGoHome;
+
+  /// 보드 제목 (null이면 게임종료 기본 문구 "수사 종료").
+  final String? title;
+
+  /// 하단 버튼 라벨 (null이면 "홈으로").
+  final String? buttonText;
 
   /// 고정 증거 에셋 수(evidence1~3).
   static const int _total = 3;
@@ -45,6 +53,8 @@ class EventResultBoard extends StatelessWidget {
     required BuildContext context,
     required int arrestCount,
     required VoidCallback onGoHome,
+    String? title,
+    String? buttonText,
   }) {
     return showGeneralDialog<void>(
       context: context,
@@ -56,6 +66,8 @@ class EventResultBoard extends StatelessWidget {
         child: EventResultBoard(
           arrestCount: arrestCount,
           onGoHome: onGoHome,
+          title: title,
+          buttonText: buttonText,
         ),
       ),
       transitionBuilder: DialogAnimation.buildTransition,
@@ -79,7 +91,7 @@ class EventResultBoard extends StatelessWidget {
           children: [
             // 결과 타이틀 ("수사 종료")
             Text(
-              l10n.gameEventResultTitle,
+              title ?? l10n.gameEventResultTitle,
               style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
               textAlign: TextAlign.center,
             ),
@@ -105,7 +117,7 @@ class EventResultBoard extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical20),
             // "홈으로" 버튼 (이벤트 모드: rematch 없음)
             AppButton(
-              text: l10n.buttonGoHome,
+              text: buttonText ?? l10n.buttonGoHome,
               onPressed: onGoHome,
               backgroundColor: AppColors.blue,
               foregroundColor: AppColors.white,

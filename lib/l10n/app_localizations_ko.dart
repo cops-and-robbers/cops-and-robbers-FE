@@ -1952,7 +1952,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameEventArrestSuccessConfirm => '확인';
 
   @override
+  String get errorEventArrestRequestFailed => '체포 요청 전송에 실패했어요. 다시 시도해 주세요';
+
+  @override
   String get gameEventResultTitle => '수사 종료';
+
+  @override
+  String get gameEventProgressTitle => '검거 현황';
 
   @override
   String gameEventResultArrestCount(int count) {
