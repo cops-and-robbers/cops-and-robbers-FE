@@ -1,7 +1,30 @@
 # Changelog
 
-**현재 버전:** 2.2.12  
-**마지막 업데이트:** 2026-06-21T15:30:56Z  
+**현재 버전:** 2.3.0  
+**마지막 업데이트:** 2026-06-28T17:01:37Z  
+
+---
+
+## [2.3.0] - 2026-06-28
+
+**PR:** #445  
+
+**기타**
+- Update version.yml
+- Merge pull request #444 from cops-and-robbers/20260623_#443_이벤트_게임_모드_로직_분기_구현
+- docs : 리포트 문서 작성 #443
+- 이벤트 게임 모드 로직 분기 구현 : fix : 체포 카운트를 STOMP ARREST 수신 기준으로 전환(스펙 §3) https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- 이벤트 게임 모드 로직 분기 구현 : docs : 이벤트 생성·시작 라이프사이클 확정 및 api-docs v2.12.0 반영 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- 이벤트 게임 모드 로직 분기 구현 : fix : 이벤트 다이얼로그 barrierLabel 현지화 및 검거 수 ICU plural 적용 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- 이벤트 게임 모드 로직 분기 구현 : fix : 검거 복원 실패 비치명 처리 및 dev 오버라이드 디버그 빌드 한정 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- 이벤트 게임 모드 로직 분기 구현 : feat : 대기실 isEventGame 주입 및 운영진 시작 버튼 게이팅 완화 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- Update event_arrest_storage.dart
+- docs : 리포트 문서 작성 #443
+- 이벤트 게임 모드 로직 분기 구현 : feat : 이벤트 모드 운영진 검거 흐름(증거 다이얼로그·결과 보드·로컬 영속화) 구현 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- 이벤트 게임 모드 로직 분기 구현 : feat : 세션·딥링크 isEventGame 분기 및 참가 흐름 연동 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- 이벤트 게임 모드 로직 분기 구현 : feat : 이벤트 모드 UI 문자열 ko/en/ja 추가 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- 이벤트 게임 모드 로직 분기 구현 : chore : 이벤트 증거 이미지 에셋 추가 및 pubspec 등록 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
+- 이벤트 게임 모드 로직 분기 구현 : docs : 이벤트 게임 설계·구현 계획 문서 추가 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/443
 
 ---
 
