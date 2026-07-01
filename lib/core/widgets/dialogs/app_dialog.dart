@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
@@ -75,7 +76,7 @@ class AppDialog extends StatefulWidget {
     super.key,
     this.title,
     this.message,
-    this.confirmText = '확인',
+    required this.confirmText,
     this.cancelText,
     this.onConfirm,
     this.onCancel,
@@ -193,7 +194,7 @@ class AppDialog extends StatefulWidget {
     required BuildContext context,
     String? title,
     String? message,
-    String confirmText = '확인',
+    String? confirmText,
     String? cancelText,
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
@@ -215,6 +216,7 @@ class AppDialog extends StatefulWidget {
     bool isDarkMode = false,
   }) {
     final dialogKey = GlobalKey<_AppDialogState>();
+    final l10n = AppLocalizations.of(context);
 
     return _buildAndShow<T>(
       context: context,
@@ -223,7 +225,7 @@ class AppDialog extends StatefulWidget {
         key: dialogKey,
         title: title,
         message: message,
-        confirmText: confirmText,
+        confirmText: confirmText ?? l10n.buttonConfirm,
         cancelText: cancelText,
         isDestructive: isDestructive,
         showButtons: showButtons,
@@ -262,8 +264,8 @@ class AppDialog extends StatefulWidget {
     required BuildContext context,
     String? title,
     String? message,
-    String confirmText = '확인',
-    String cancelText = '취소',
+    String? confirmText,
+    String? cancelText,
     bool isDestructive = false,
     bool showAvatar = false,
     Widget? avatarWidget,
@@ -278,14 +280,15 @@ class AppDialog extends StatefulWidget {
     Color? backgroundColor,
     bool isDarkMode = false,
   }) {
+    final l10n = AppLocalizations.of(context);
     return _buildAndShow<bool>(
       context: context,
       barrierDismissible: barrierDismissible,
       builder: (dialogContext) => AppDialog(
         title: title,
         message: message,
-        confirmText: confirmText,
-        cancelText: cancelText,
+        confirmText: confirmText ?? l10n.buttonConfirm,
+        cancelText: cancelText ?? l10n.buttonCancel,
         isDestructive: isDestructive,
         showAvatar: showAvatar,
         avatarWidget: avatarWidget,
