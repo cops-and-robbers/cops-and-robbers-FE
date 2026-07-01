@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-06-28T17:01:37Z",
-    "currentVersion": "2.3.0",
+    "lastUpdated": "2026-07-01T12:13:42Z",
+    "currentVersion": "2.3.1",
     "projectType": "flutter",
-    "totalReleases": 113
+    "totalReleases": 114
   },
   "releases": [
+    {
+      "version": "2.3.1",
+      "project_type": "flutter",
+      "date": "2026-07-01",
+      "pr_number": 448,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #447 from cops-and-robbers/20260701_#446_영어_기기에서_다이얼로그_취소_확인_버튼이_한국어로_노출_App_Store_Guideline_4_리젝\n  * docs : 리포트 작성 #446\n  * fix : AppDialog 확인/취소 버튼 기본값 한국어 하드코딩 제거, l10n 적용 #446\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #447 from cops-and-robbers/20260701_#446_영어_기기에서_다이얼로그_취소_확인_버튼이_한국어로_노출_App_Store_Guideline_4_리젝",
+            "docs : 리포트 작성 #446",
+            "fix : AppDialog 확인/취소 버튼 기본값 한국어 하드코딩 제거, l10n 적용 #446"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.3.0",
       "project_type": "flutter",
