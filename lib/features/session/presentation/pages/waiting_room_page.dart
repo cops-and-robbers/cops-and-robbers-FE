@@ -484,7 +484,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             hostParticipantId: lobbyInfo.hostParticipantId,
             // 이벤트방 여부를 participant에 주입 — 시작 버튼 게이팅 완화에 필요.
             // GET /games/{id} settings의 isEventGame(DB 필드) 기준. 미포함 시 false.
-            isEventGame: (settings?.isEventGame ?? false) || kEventGameDevOverride,
+            isEventGame:
+                (settings?.isEventGame ?? false) || kEventGameDevOverride,
           );
 
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정

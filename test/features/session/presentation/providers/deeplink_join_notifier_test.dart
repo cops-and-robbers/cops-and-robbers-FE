@@ -80,9 +80,7 @@ void main() {
 
     expect(
       outcome,
-      equals(
-        const DeepLinkJoinOutcome.joinedRoom(gameId: 7, participantId: 2),
-      ),
+      equals(const DeepLinkJoinOutcome.joinedRoom(gameId: 7, participantId: 2)),
     );
   });
 

@@ -526,7 +526,9 @@ class GameEventNotifier extends _$GameEventNotifier {
     _pendingArrestId = robberParticipantId;
     state = state.copyWith(isApiLoading: true);
     try {
-      await ref.read(gameSystemApiProvider).arrest(
+      await ref
+          .read(gameSystemApiProvider)
+          .arrest(
             gameId,
             ArrestRequestModel(robberParticipantId: robberParticipantId),
           );

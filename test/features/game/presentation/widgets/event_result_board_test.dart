@@ -23,7 +23,9 @@ Future<void> _pump(WidgetTester tester, Widget child) async {
 }
 
 void main() {
-  testWidgets('collected_slots_unlocked_and_remaining_slots_locked', (tester) async {
+  testWidgets('collected_slots_unlocked_and_remaining_slots_locked', (
+    tester,
+  ) async {
     await _pump(tester, EventResultBoard(arrestCount: 2, onGoHome: () {}));
 
     // 3개 슬롯 모두 존재
@@ -38,15 +40,18 @@ void main() {
 
   testWidgets('shows_arrest_count_text_and_only_home_button', (tester) async {
     await _pump(tester, EventResultBoard(arrestCount: 2, onGoHome: () {}));
-    final l10n =
-        AppLocalizations.of(tester.element(find.byType(EventResultBoard)));
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(EventResultBoard)),
+    );
 
     expect(find.text(l10n.gameEventResultArrestCount(2)), findsOneWidget);
     expect(find.text(l10n.buttonGoHome), findsOneWidget);
     expect(find.text(l10n.buttonPlayAgain), findsNothing); // 한 번 더 숨김
   });
 
-  testWidgets('renders_overridden_title_and_button_when_provided', (tester) async {
+  testWidgets('renders_overridden_title_and_button_when_provided', (
+    tester,
+  ) async {
     await _pump(
       tester,
       EventResultBoard(
@@ -56,8 +61,9 @@ void main() {
         buttonText: 'CLOSE_BTN',
       ),
     );
-    final l10n =
-        AppLocalizations.of(tester.element(find.byType(EventResultBoard)));
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(EventResultBoard)),
+    );
 
     // 오버라이드 문구 렌더
     expect(find.text('PROGRESS_TITLE'), findsOneWidget);
