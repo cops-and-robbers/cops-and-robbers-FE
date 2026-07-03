@@ -33,10 +33,6 @@
     <!-- Advertising ID permission for AdMob - must match Play Console ads ID declaration -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
-    <!-- 갤러리 저장 권한 (API 28 이하 레거시 저장소용 — API 29+는 scoped storage로 불필요) -->
-    <!-- Write external storage for legacy gallery save on API ≤28; API 29+ uses scoped storage via gal -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
-
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"

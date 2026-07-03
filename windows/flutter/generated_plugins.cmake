@@ -9,7 +9,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   firebase_remote_config
   flutter_secure_storage_windows
-  gal
   geolocator_windows
   share_plus
   url_launcher_windows
