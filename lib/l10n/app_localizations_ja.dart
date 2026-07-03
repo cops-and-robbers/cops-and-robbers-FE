@@ -1049,10 +1049,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelResult => '結果';
 
   @override
-  String get messageSaveComplete => 'ギャラリーに保存しました';
+  String get messageSaveFailed => '保存に失敗しました';
 
   @override
-  String get messageSaveFailed => '保存に失敗しました';
+  String get messageShareComplete => '共有しました';
 
   @override
   String get labelNoRoute => '移動記録なし';

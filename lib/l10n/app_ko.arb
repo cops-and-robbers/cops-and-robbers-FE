@@ -1073,13 +1073,13 @@
   "@labelResult": {
     "description": "내 기록 — 승패 결과 라벨"
   },
-  "messageSaveComplete": "갤러리에 저장했어요",
-  "@messageSaveComplete": {
-    "description": "내 기록 — 저장 성공 스낵바"
-  },
   "messageSaveFailed": "저장에 실패했어요",
   "@messageSaveFailed": {
     "description": "내 기록 — 저장 실패 스낵바"
+  },
+  "messageShareComplete": "공유했어요",
+  "@messageShareComplete": {
+    "description": "내 기록 — 공유 완료 스낵바"
   },
   "labelNoRoute": "이동 기록 없음",
   "@labelNoRoute": {

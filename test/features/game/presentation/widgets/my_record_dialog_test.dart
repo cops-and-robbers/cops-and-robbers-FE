@@ -52,6 +52,7 @@ void main() {
     expect(find.text('2.54 km'), findsOneWidget);
     expect(find.text('내가 잡은 도둑'), findsOneWidget);
     expect(find.text('내 탈옥 횟수'), findsNothing); // 경찰은 탈옥 숨김
+    expect(find.text('승리'), findsOneWidget); // 승패 배지
   });
 
   testWidgets('robber_record_shows_escape_count', (tester) async {
@@ -77,6 +78,7 @@ void main() {
     expect(find.text('540 m'), findsOneWidget);
     expect(find.text('내 탈옥 횟수'), findsOneWidget);
     expect(find.text('내가 잡은 도둑'), findsNothing);
+    expect(find.text('패배'), findsOneWidget); // 승패 배지 (ROBBER 패배)
   });
 }
 

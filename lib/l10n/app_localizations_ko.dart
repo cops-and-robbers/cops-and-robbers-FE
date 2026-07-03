@@ -1047,10 +1047,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelResult => '결과';
 
   @override
-  String get messageSaveComplete => '갤러리에 저장했어요';
+  String get messageSaveFailed => '저장에 실패했어요';
 
   @override
-  String get messageSaveFailed => '저장에 실패했어요';
+  String get messageShareComplete => '공유했어요';
 
   @override
   String get labelNoRoute => '이동 기록 없음';

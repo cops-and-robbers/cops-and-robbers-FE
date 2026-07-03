@@ -2062,17 +2062,17 @@ abstract class AppLocalizations {
   /// **'결과'**
   String get labelResult;
 
-  /// 내 기록 — 저장 성공 스낵바
-  ///
-  /// In ko, this message translates to:
-  /// **'갤러리에 저장했어요'**
-  String get messageSaveComplete;
-
   /// 내 기록 — 저장 실패 스낵바
   ///
   /// In ko, this message translates to:
   /// **'저장에 실패했어요'**
   String get messageSaveFailed;
+
+  /// 내 기록 — 공유 완료 스낵바
+  ///
+  /// In ko, this message translates to:
+  /// **'공유했어요'**
+  String get messageShareComplete;
 
   /// 내 기록 — 경로가 없을 때 표시
   ///

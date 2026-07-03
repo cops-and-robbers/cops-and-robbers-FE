@@ -1133,10 +1133,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelResult => 'Result';
 
   @override
-  String get messageSaveComplete => 'Saved to gallery';
+  String get messageSaveFailed => 'Failed to save';
 
   @override
-  String get messageSaveFailed => 'Failed to save';
+  String get messageShareComplete => 'Shared';
 
   @override
   String get labelNoRoute => 'No movement recorded';

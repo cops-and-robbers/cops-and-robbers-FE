@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -40,8 +39,9 @@ Future<void> shareInviteCode(String code, String shareMessage) async {
 
 /// PNG 바이트를 임시 파일로 저장한 뒤 네이티브 공유 시트로 공유.
 ///
-/// 플랫폼 예외 발생 시 디버그 로그를 남기고 무시한다(기존 [shareText] 패턴).
-Future<void> shareImageBytes(
+/// 사용자가 공유/저장을 완료했으면 true, 시트를 닫거나 실패하면 false
+/// (호출 측 완료 스낵바 분기용). 플랫폼 예외는 디버그 로그 후 false.
+Future<bool> shareImageBytes(
   Uint8List bytes, {
   String filename = 'cops_record.png',
 }) async {
@@ -49,22 +49,12 @@ Future<void> shareImageBytes(
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/$filename');
     await file.writeAsBytes(bytes);
-    await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+    final result = await SharePlus.instance.share(
+      ShareParams(files: [XFile(file.path)]),
+    );
+    return result.status == ShareResultStatus.success;
   } catch (e) {
     debugPrint('이미지 공유 실패: $e');
-  }
-}
-
-/// PNG 바이트를 사진 갤러리에 저장. 성공 여부를 반환한다(호출 측 스낵바 분기용).
-Future<bool> saveImageBytesToGallery(
-  Uint8List bytes, {
-  String name = 'cops_record',
-}) async {
-  try {
-    await Gal.putImageBytes(bytes, name: name);
-    return true;
-  } catch (e) {
-    debugPrint('갤러리 저장 실패: $e');
     return false;
   }
 }

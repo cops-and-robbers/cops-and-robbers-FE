@@ -107,19 +107,12 @@ class _MyRecordBodyState extends ConsumerState<_MyRecordBody> {
       );
       return;
     }
-    await shareImageBytes(bytes);
-  }
-
-  Future<void> _onSave() async {
-    final l10n = AppLocalizations.of(context);
-    final bytes = await captureBoundaryToPng(_captureKey);
-    if (bytes == null) return;
-    final ok = await saveImageBytesToGallery(bytes);
-    if (!mounted) return;
+    // 공유 시트에서 실제로 공유/저장을 완료했을 때만 확인 스낵바(취소 시 무반응).
+    final shared = await shareImageBytes(bytes);
+    if (!mounted || !shared) return;
     AppSnackbar.show(
       context,
-      message: ok ? l10n.messageSaveComplete : l10n.messageSaveFailed,
-      backgroundColor: ok ? null : AppColors.red,
+      message: l10n.messageShareComplete,
       isDarkMode: widget.isDarkMode,
     );
   }
@@ -143,10 +136,21 @@ class _MyRecordBodyState extends ConsumerState<_MyRecordBody> {
         ? AppColors.green
         : AppColors.blue;
 
-    return Stack(
+    // 로딩 중 disabled 버튼 톤 — 기본 disabled(black100+white)는 다크에서 튀고
+    // 텍스트가 안 보이므로 팀 테마에 맞춰 회색 처리.
+    final disabledBg = widget.isDarkMode
+        ? AppColors.black900
+        : AppColors.black100;
+    final disabledFg = widget.isDarkMode
+        ? AppColors.black600
+        : AppColors.black400;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
+        // 로딩 오버레이는 캡처 카드만 덮는다 — 버튼까지 덮으면 오버레이의
+        // xxlarge 라운드 모서리 밖으로 밑에 깔린 버튼 모서리가 삐져나온다.
+        Stack(
           children: [
             RepaintBoundary(
               key: _captureKey,
@@ -160,59 +164,58 @@ class _MyRecordBodyState extends ConsumerState<_MyRecordBody> {
                 },
               ),
             ),
-            SizedBox(height: AppSpacing.vertical12),
-            Row(
-              children: [
-                Expanded(
-                  child: AppButton(
-                    text: l10n.buttonSave,
-                    onPressed: canCapture ? _onSave : null,
-                    backgroundColor: widget.isDarkMode
-                        ? AppColors.black900
-                        : AppColors.black100,
-                    foregroundColor: widget.isDarkMode
-                        ? AppColors.black400
-                        : AppColors.black600,
-                    borderRadius: AppRadius.medium,
-                    showBorder: false,
-                    height: 48.h,
-                    textStyle: widget.isDarkMode
-                        ? AppTextStyles.robberLabel
-                        : null,
-                  ),
+            // 로딩 중에는 지도·정보를 모두 가리고 스피너만 표시 → 확정 시 한 번에 공개.
+            // (지도는 가려진 채 백그라운드에서 렌더·스냅샷되어야 하므로 트리에는 유지)
+            if (loading)
+              Positioned.fill(
+                child: _LoadingCard(
+                  isDarkMode: widget.isDarkMode,
+                  spinnerColor: spinnerColor,
                 ),
-                SizedBox(width: AppSpacing.horizontal8),
-                Expanded(
-                  child: AppButton(
-                    text: l10n.buttonShare,
-                    onPressed: canCapture ? _onShare : null,
-                    backgroundColor: widget.isDarkMode
-                        ? AppColors.green
-                        : AppColors.blue,
-                    foregroundColor: widget.isDarkMode
-                        ? AppColors.black
-                        : AppColors.white,
-                    borderRadius: AppRadius.medium,
-                    showBorder: false,
-                    height: 48.h,
-                    textStyle: widget.isDarkMode
-                        ? AppTextStyles.robberLabel
-                        : null,
-                  ),
-                ),
-              ],
+              ),
+          ],
+        ),
+        SizedBox(height: AppSpacing.vertical12),
+        Row(
+          children: [
+            Expanded(
+              child: AppButton(
+                text: l10n.buttonClose,
+                // 저장은 공유 시트의 "이미지 저장"으로 대체 — 닫기는 로딩 중에도 가능.
+                onPressed: () => Navigator.of(context).pop(),
+                backgroundColor: widget.isDarkMode
+                    ? AppColors.black900
+                    : AppColors.black100,
+                foregroundColor: widget.isDarkMode
+                    ? AppColors.black400
+                    : AppColors.black600,
+                borderRadius: AppRadius.medium,
+                showBorder: false,
+                height: 48.h,
+                textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
+              ),
+            ),
+            SizedBox(width: AppSpacing.horizontal8),
+            Expanded(
+              child: AppButton(
+                text: l10n.buttonShare,
+                onPressed: canCapture ? _onShare : null,
+                backgroundColor: widget.isDarkMode
+                    ? AppColors.green
+                    : AppColors.blue,
+                foregroundColor: widget.isDarkMode
+                    ? AppColors.black
+                    : AppColors.white,
+                disabledBackgroundColor: disabledBg,
+                disabledForegroundColor: disabledFg,
+                borderRadius: AppRadius.medium,
+                showBorder: false,
+                height: 48.h,
+                textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
+              ),
             ),
           ],
         ),
-        // 로딩 중에는 지도·정보를 모두 가리고 스피너만 표시 → 확정 시 한 번에 공개.
-        // (지도는 가려진 채 백그라운드에서 렌더·스냅샷되어야 하므로 트리에는 유지)
-        if (loading)
-          Positioned.fill(
-            child: _LoadingCard(
-              isDarkMode: widget.isDarkMode,
-              spinnerColor: spinnerColor,
-            ),
-          ),
       ],
     );
   }
@@ -277,81 +280,95 @@ class MyRecordCard extends ConsumerWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (record.endedAt != null)
-            Text(
-              formatRecordDate(record.endedAt!),
-              style: AppTextStyles.tag_12.copyWith(color: subFg),
-            ),
-          SizedBox(height: AppSpacing.vertical12),
-          // 대표 숫자
-          Text(
-            formatDistance(record.distanceMeters),
-            style: AppTextStyles.semibold_44.copyWith(color: fg),
+          // 헤더 — 승패 배지(기존 "결과" 행 승격) + 종료 일시
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _ResultBadge(isDarkMode: isDarkMode, isWin: isWin),
+              if (record.endedAt != null)
+                Text(
+                  formatRecordDate(record.endedAt!),
+                  style: AppTextStyles.tag_12.copyWith(color: subFg),
+                ),
+            ],
           ),
+          SizedBox(height: AppSpacing.vertical16),
+          // 대표 숫자 — 라벨 위 + 값 아래, 좌측 정렬
           Text(
             l10n.labelTravelDistance,
             style: AppTextStyles.label16Medium.copyWith(color: subFg),
           ),
-          SizedBox(height: AppSpacing.vertical20),
-          // 경로(실제 지도 스냅샷, 실패 시 스타일라이즈드 폴백) + 캐릭터
-          SizedBox(
-            height: 160.h,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                if (record.route.isEmpty)
-                  Text(
-                    l10n.labelNoRoute,
-                    style: AppTextStyles.tag_12.copyWith(color: subFg),
-                  )
-                else
-                  Positioned.fill(
-                    child: RouteMapSnapshot(
-                      route: record.route,
-                      markerPoints: isRobber
-                          ? record.caughtLocations
-                          : record.arrestLocations,
-                      isDarkMode: isDarkMode,
-                      lineColor: lineColor,
-                      onResolved: onMapResolved ?? () {},
-                      fallback: CustomPaint(
-                        size: Size(double.infinity, 160.h),
-                        painter: RoutePainter(
-                          route: record.route,
-                          lineColor: lineColor,
-                          startColor: isDarkMode
-                              ? AppColors.white
-                              : AppColors.black600,
-                          endColor: lineColor,
-                          // 경찰=체포 지점 / 도둑=잡힌 지점 (둘 다 빨강)
-                          markers: [
-                            RouteMarker(
-                              isRobber
-                                  ? record.caughtLocations
-                                  : record.arrestLocations,
-                              AppColors.red,
-                            ),
-                          ],
+          SizedBox(height: AppSpacing.vertical4),
+          Text(
+            formatDistance(record.distanceMeters),
+            style: AppTextStyles.semibold_44.copyWith(color: fg),
+          ),
+          SizedBox(height: AppSpacing.vertical16),
+          // 경로 블록(실제 지도 스냅샷, 실패 시 스타일라이즈드 폴백) + 캐릭터.
+          // 빈 경로여도 타일 배경을 깔아 카드 내 블록 경계를 유지한다.
+          ClipRRect(
+            borderRadius: AppRadius.large,
+            child: Container(
+              height: 160.h,
+              color: isDarkMode ? AppColors.black900 : AppColors.black100,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (record.route.isEmpty)
+                    Text(
+                      l10n.labelNoRoute,
+                      style: AppTextStyles.tag_12.copyWith(color: subFg),
+                    )
+                  else
+                    Positioned.fill(
+                      child: RouteMapSnapshot(
+                        route: record.route,
+                        markerPoints: isRobber
+                            ? record.caughtLocations
+                            : record.arrestLocations,
+                        isDarkMode: isDarkMode,
+                        lineColor: lineColor,
+                        onResolved: onMapResolved ?? () {},
+                        fallback: CustomPaint(
+                          size: Size(double.infinity, 160.h),
+                          painter: RoutePainter(
+                            route: record.route,
+                            lineColor: lineColor,
+                            startColor: isDarkMode
+                                ? AppColors.white
+                                : AppColors.black600,
+                            endColor: lineColor,
+                            // 경찰=체포 지점 / 도둑=잡힌 지점 (둘 다 빨강)
+                            markers: [
+                              RouteMarker(
+                                isRobber
+                                    ? record.caughtLocations
+                                    : record.arrestLocations,
+                                AppColors.red,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: SvgPicture.asset(
-                    resultCharacterAssetPath(
-                      team: myTeam.toLowerCase(),
-                      skinId: skinId,
-                      result: isWin ? 'win' : 'lose',
-                      part: 'body',
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: SvgPicture.asset(
+                      resultCharacterAssetPath(
+                        team: myTeam.toLowerCase(),
+                        skinId: skinId,
+                        result: isWin ? 'win' : 'lose',
+                        part: 'body',
+                      ),
+                      height: (isRobber ? 64 : 80).h,
+                      fit: BoxFit.contain,
                     ),
-                    height: (isRobber ? 64 : 80).h,
-                    fit: BoxFit.contain,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           if (legend.isNotEmpty) ...[
@@ -363,35 +380,38 @@ class MyRecordCard extends ConsumerWidget {
               children: legend,
             ),
           ],
-          SizedBox(height: AppSpacing.vertical20),
-          // 통계 행
-          _RecordRow(
-            label: l10n.fieldGamePlaytime,
-            value: formatDuration(durationSeconds),
-            fg: fg,
-            subFg: subFg,
-            isDarkMode: isDarkMode,
+          SizedBox(height: AppSpacing.vertical16),
+          // 통계 타일 그리드 (승패는 상단 배지로 이동)
+          Row(
+            children: [
+              Expanded(
+                child: _StatTile(
+                  label: l10n.fieldGamePlaytime,
+                  value: formatDuration(durationSeconds),
+                  isDarkMode: isDarkMode,
+                ),
+              ),
+              SizedBox(width: AppSpacing.horizontal8),
+              // 단위 재사용: 잡은 도둑은 "N명"(gameResultRemainingRobberCount),
+              // 탈옥은 "N회"(gameResultArrestCount) — 표면 단위만 차용(렌더 텍스트 정확).
+              Expanded(
+                child: _StatTile(
+                  label: isRobber
+                      ? l10n.labelMyEscapeCount
+                      : l10n.labelMyArrestCount,
+                  value: isRobber
+                      ? l10n.gameResultArrestCount(record.myEscapeCount)
+                      : l10n.gameResultRemainingRobberCount(
+                          record.myArrestCount,
+                        ),
+                  isDarkMode: isDarkMode,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: AppSpacing.vertical12),
-          // 단위 재사용: 잡은 도둑은 "N명"(gameResultRemainingRobberCount),
-          // 탈옥은 "N회"(gameResultArrestCount) — 표면 단위만 차용(렌더 텍스트 정확).
-          _RecordRow(
-            label: isRobber ? l10n.labelMyEscapeCount : l10n.labelMyArrestCount,
-            value: isRobber
-                ? l10n.gameResultArrestCount(record.myEscapeCount)
-                : l10n.gameResultRemainingRobberCount(record.myArrestCount),
-            fg: fg,
-            subFg: subFg,
-            isDarkMode: isDarkMode,
-          ),
-          SizedBox(height: AppSpacing.vertical12),
-          _RecordRow(
-            label: l10n.labelResult,
-            value: isWin ? l10n.gameResultWin : l10n.gameResultLose,
-            fg: fg,
-            subFg: subFg,
-            isDarkMode: isDarkMode,
-          ),
+          SizedBox(height: AppSpacing.vertical16),
+          // 브랜드 워터마크 — 공유 이미지에서 앱 식별용
+          Center(child: _BrandWatermark(color: subFg)),
         ],
       ),
     );
@@ -452,34 +472,98 @@ class _LoadingCard extends StatelessWidget {
   }
 }
 
-class _RecordRow extends StatelessWidget {
-  const _RecordRow({
+/// 승패 배지 칩 — 승리 시 팀 컬러, 패배 시 중립 톤.
+class _ResultBadge extends StatelessWidget {
+  const _ResultBadge({required this.isDarkMode, required this.isWin});
+
+  final bool isDarkMode;
+  final bool isWin;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final bg = isDarkMode
+        ? AppColors.black900
+        : (isWin ? AppColors.blue100 : AppColors.black100);
+    final fg = isDarkMode
+        ? (isWin ? AppColors.green : AppColors.black400)
+        : (isWin ? AppColors.blue : AppColors.black600);
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal12,
+        vertical: AppSpacing.vertical6,
+      ),
+      decoration: BoxDecoration(color: bg, borderRadius: AppRadius.pill),
+      child: Text(
+        isWin ? l10n.gameResultWin : l10n.gameResultLose,
+        style: AppTextStyles.tag12Semibold.copyWith(color: fg),
+      ),
+    );
+  }
+}
+
+/// 통계 타일 한 칸 — 라벨(위) + 값(아래).
+class _StatTile extends StatelessWidget {
+  const _StatTile({
     required this.label,
     required this.value,
-    required this.fg,
-    required this.subFg,
     required this.isDarkMode,
   });
 
   final String label;
   final String value;
-  final Color fg;
-  final Color subFg;
   final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(label, style: AppTextStyles.label16Medium.copyWith(color: subFg)),
-        const Spacer(),
-        Text(
-          value,
-          style: isDarkMode
-              ? AppTextStyles.robberLabel.copyWith(color: fg)
-              : AppTextStyles.label_16.copyWith(color: fg),
-        ),
-      ],
+    final subFg = isDarkMode ? AppColors.black400 : AppColors.black600;
+    final fg = isDarkMode ? AppColors.white : AppColors.black;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal12,
+        vertical: AppSpacing.vertical12,
+      ),
+      decoration: BoxDecoration(
+        color: isDarkMode ? AppColors.black900 : AppColors.black100,
+        borderRadius: AppRadius.large,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: AppTextStyles.tag_12.copyWith(color: subFg)),
+          SizedBox(height: AppSpacing.vertical4),
+          Text(
+            value,
+            style: isDarkMode
+                ? AppTextStyles.robberSubHeading.copyWith(color: fg)
+                : AppTextStyles.subHeading_18.copyWith(color: fg),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 로케일별 앱 로고 워터마크 — 카드 톤에 맞게 단색 틴트.
+class _BrandWatermark extends StatelessWidget {
+  const _BrandWatermark({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final lang = Localizations.localeOf(context).languageCode;
+    final asset = switch (lang) {
+      'ko' => 'assets/app_logos/app_logo_ko.svg',
+      'ja' => 'assets/app_logos/app_logo_ja.svg',
+      _ => 'assets/app_logos/app_logo_en.svg',
+    };
+    return SvgPicture.asset(
+      asset,
+      height: 14.h,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
     );
   }
 }
