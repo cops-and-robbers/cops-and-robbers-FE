@@ -946,6 +946,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameOverReasonTimeUp => '制限時間が終了しました！';
 
   @override
+  String get gameOverReasonPoliceForfeited => '警察が全員退場しました！';
+
+  @override
+  String get gameOverReasonRobberForfeited => '泥棒が全員退場しました！';
+
+  @override
   String get gameOverFallbackMessage => 'ゲームが終了しました。';
 
   @override
@@ -1684,6 +1690,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameEventEscapeNotice => '泥棒が脱獄しました!今すぐ逮捕してください!';
 
   @override
+  String gameEventPlayerLeftNotice(String nickname, String teamLabel) {
+    return '[$nickname]($teamLabel)さんがゲームから退場しました';
+  }
+
+  @override
   String mapErrorLoadFailed(String mapName) {
     return '$mapNameの読み込みに失敗しました';
   }
@@ -1952,4 +1963,43 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pingCooldownNotice => 'しばらくしてからもう一度お試しください';
+
+  @override
+  String get gameLeaveConfirmTitle => 'ゲームから退場しますか';
+
+  @override
+  String get gameLeaveConfirmMessage => '進行中のゲームから退場します';
+
+  @override
+  String get gameLeaveFailedMessage => '退場できませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get gameEventArrestSuccessTitle => '確保';
+
+  @override
+  String gameEventArrestSuccessMessage(String nickname) {
+    return '$nicknameを確保';
+  }
+
+  @override
+  String get gameEventArrestSuccessConfirm => '確認';
+
+  @override
+  String get errorEventArrestRequestFailed => '逮捕リクエストの送信に失敗しました。もう一度お試しください';
+
+  @override
+  String get gameEventResultTitle => '捜査終了';
+
+  @override
+  String get gameEventProgressTitle => '確保状況';
+
+  @override
+  String gameEventResultArrestCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '運営$count名を確保',
+    );
+    return '$_temp0';
+  }
 }

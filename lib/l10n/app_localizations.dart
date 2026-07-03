@@ -1870,6 +1870,18 @@ abstract class AppLocalizations {
   /// **'제한 시간이 종료되었습니다!'**
   String get gameOverReasonTimeUp;
 
+  /// 게임 종료 사유 — 경찰 전원 퇴장(몰수)으로 도둑 승리
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰이 모두 퇴장했습니다!'**
+  String get gameOverReasonPoliceForfeited;
+
+  /// 게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑이 모두 퇴장했습니다!'**
+  String get gameOverReasonRobberForfeited;
+
   /// GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지
   ///
   /// In ko, this message translates to:
@@ -3267,6 +3279,12 @@ abstract class AppLocalizations {
   /// **'도둑이 탈옥했습니다! 지금 바로 체포하세요!'**
   String get gameEventEscapeNotice;
 
+  /// 인게임 중도 퇴장 공지 배너 — 닉네임과 팀 라벨 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'[{nickname}]({teamLabel}) 님이 게임에서 나갔어요'**
+  String gameEventPlayerLeftNotice(String nickname, String teamLabel);
+
   /// 지도 로드 실패 시 표시 메시지
   ///
   /// In ko, this message translates to:
@@ -3782,6 +3800,66 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'잠시 후 다시 시도해주세요'**
   String get pingCooldownNotice;
+
+  /// 인게임 중도 퇴장 확인 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'게임에서 나가시겠어요?'**
+  String get gameLeaveConfirmTitle;
+
+  /// 인게임 중도 퇴장 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중인 게임에서 나갑니다'**
+  String get gameLeaveConfirmMessage;
+
+  /// 인게임 중도 퇴장 실패 시 스낵바 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'퇴장하지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get gameLeaveFailedMessage;
+
+  /// No description provided for @gameEventArrestSuccessTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영진 검거'**
+  String get gameEventArrestSuccessTitle;
+
+  /// 이벤트 모드 — 체포 성공 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname} 검거 성공'**
+  String gameEventArrestSuccessMessage(String nickname);
+
+  /// No description provided for @gameEventArrestSuccessConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get gameEventArrestSuccessConfirm;
+
+  /// No description provided for @errorEventArrestRequestFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'체포 요청 전송에 실패했어요. 다시 시도해 주세요'**
+  String get errorEventArrestRequestFailed;
+
+  /// No description provided for @gameEventResultTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'수사 종료'**
+  String get gameEventResultTitle;
+
+  /// 이벤트 모드 인게임 — 증거보드 진행판 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'검거 현황'**
+  String get gameEventProgressTitle;
+
+  /// 이벤트 모드 결과 — 검거한 운영진 수
+  ///
+  /// In ko, this message translates to:
+  /// **'{count, plural, other{운영진 {count}명 검거}}'**
+  String gameEventResultArrestCount(int count);
 }
 
 class _AppLocalizationsDelegate

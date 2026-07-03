@@ -19,7 +19,9 @@ import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/permission/game_entry_gate.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/dev_flags.dart';
 import '../../../../core/constants/game_status.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
@@ -406,6 +408,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             nickname: myNickname,
             participantId: response.participantId,
             isHost: false,
+            isEventGame: response.isEventGame || kEventGameDevOverride,
           );
       // 다이얼로그 닫힘 애니메이션 완료 + overlay cleanup frame 대기
       final elapsed = DateTime.now().difference(dialogCloseStart);
@@ -413,9 +416,17 @@ class _HomePageState extends ConsumerState<HomePage> {
           DialogAnimation.duration + const Duration(milliseconds: 32) - elapsed;
       if (remaining > Duration.zero) await Future.delayed(remaining);
       if (mounted) {
-        context.go(
-          '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
-        );
+        if (response.isEventGame || kEventGameDevOverride) {
+          // 이벤트 모드 — 로비 스킵, 경찰로 인게임 직행
+          context.go(
+            '${RoutePaths.gameWithId('${response.gameId}')}'
+            '?team=${GameTeam.police}&pid=${response.participantId}',
+          );
+        } else {
+          context.go(
+            '${RoutePaths.waitingRoomWithId('${response.gameId}')}?inviteCode=$code',
+          );
+        }
       }
     }
   }

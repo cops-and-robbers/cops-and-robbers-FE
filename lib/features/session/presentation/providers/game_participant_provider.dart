@@ -41,6 +41,9 @@ class GameParticipantInfo {
   /// 방장 participantId (참가자 오버레이 정렬용)
   final int? hostParticipantId;
 
+  /// 이벤트 게임 여부 (인게임 분기 단일 소스 — 도둑 ALIVE UI / 체포 / 결과)
+  final bool isEventGame;
+
   const GameParticipantInfo({
     required this.gameId,
     required this.team,
@@ -53,6 +56,7 @@ class GameParticipantInfo {
     this.gameStartTime,
     this.isHost = false,
     this.hostParticipantId,
+    this.isEventGame = false,
   });
 
   GameParticipantInfo copyWith({
@@ -67,6 +71,7 @@ class GameParticipantInfo {
     String? gameStartTime,
     bool? isHost,
     int? hostParticipantId,
+    bool? isEventGame,
   }) {
     return GameParticipantInfo(
       gameId: gameId ?? this.gameId,
@@ -81,6 +86,7 @@ class GameParticipantInfo {
       gameStartTime: gameStartTime ?? this.gameStartTime,
       isHost: isHost ?? this.isHost,
       hostParticipantId: hostParticipantId ?? this.hostParticipantId,
+      isEventGame: isEventGame ?? this.isEventGame,
     );
   }
 }
@@ -103,6 +109,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     int? maxParticipants,
     int? locationRevealIntervalMinutes,
     bool isHost = false,
+    bool isEventGame = false,
   }) {
     state = GameParticipantInfo(
       gameId: gameId,
@@ -112,6 +119,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       maxParticipants: maxParticipants,
       locationRevealIntervalMinutes: locationRevealIntervalMinutes,
       isHost: isHost,
+      isEventGame: isEventGame,
     );
   }
 
@@ -155,6 +163,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     int? policeWaitMinutes,
     int? roundTimeMinutes,
     int? hostParticipantId,
+    bool? isEventGame,
   }) {
     if (state == null) return;
     state = state!.copyWith(
@@ -165,6 +174,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       policeWaitMinutes: policeWaitMinutes,
       roundTimeMinutes: roundTimeMinutes,
       hostParticipantId: hostParticipantId,
+      isEventGame: isEventGame,
     );
   }
 

@@ -935,6 +935,14 @@
   "@gameOverReasonTimeUp": {
     "description": "게임 종료 사유 — 제한 시간 만료"
   },
+  "gameOverReasonPoliceForfeited": "경찰이 모두 퇴장했습니다!",
+  "@gameOverReasonPoliceForfeited": {
+    "description": "게임 종료 사유 — 경찰 전원 퇴장(몰수)으로 도둑 승리"
+  },
+  "gameOverReasonRobberForfeited": "도둑이 모두 퇴장했습니다!",
+  "@gameOverReasonRobberForfeited": {
+    "description": "게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리"
+  },
   "gameOverFallbackMessage": "게임이 종료되었습니다.",
   "@gameOverFallbackMessage": {
     "description": "GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지"
@@ -1945,6 +1953,14 @@
   "@gameEventEscapeNotice": {
     "description": "탈옥 공지"
   },
+  "gameEventPlayerLeftNotice": "[{nickname}]({teamLabel}) 님이 게임에서 나갔어요",
+  "@gameEventPlayerLeftNotice": {
+    "description": "인게임 중도 퇴장 공지 배너 — 닉네임과 팀 라벨 표시",
+    "placeholders": {
+      "nickname": { "type": "String" },
+      "teamLabel": { "type": "String" }
+    }
+  },
   "mapErrorLoadFailed": "{mapName} 로드 실패",
   "@mapErrorLoadFailed": {
     "description": "지도 로드 실패 시 표시 메시지",
@@ -2091,5 +2107,35 @@
   "pingCooldownNotice": "잠시 후 다시 시도해주세요",
   "@pingCooldownNotice": {
     "description": "핑 rate-limit 쿨다운 중 안내 (마침표 없음)"
+  },
+  "gameLeaveConfirmTitle": "게임에서 나가시겠어요?",
+  "@gameLeaveConfirmTitle": {
+    "description": "인게임 중도 퇴장 확인 다이얼로그 타이틀"
+  },
+  "gameLeaveConfirmMessage": "진행 중인 게임에서 나갑니다",
+  "@gameLeaveConfirmMessage": {
+    "description": "인게임 중도 퇴장 확인 다이얼로그 본문"
+  },
+  "gameLeaveFailedMessage": "퇴장하지 못했어요. 잠시 후 다시 시도해주세요",
+  "@gameLeaveFailedMessage": {
+    "description": "인게임 중도 퇴장 실패 시 스낵바 메시지"
+  },
+  "gameEventArrestSuccessTitle": "운영진 검거",
+  "gameEventArrestSuccessMessage": "{nickname} 검거 성공",
+  "@gameEventArrestSuccessMessage": {
+    "description": "이벤트 모드 — 체포 성공 메시지",
+    "placeholders": { "nickname": { "type": "String" } }
+  },
+  "gameEventArrestSuccessConfirm": "확인",
+  "errorEventArrestRequestFailed": "체포 요청 전송에 실패했어요. 다시 시도해 주세요",
+  "gameEventResultTitle": "수사 종료",
+  "gameEventProgressTitle": "검거 현황",
+  "@gameEventProgressTitle": {
+    "description": "이벤트 모드 인게임 — 증거보드 진행판 제목"
+  },
+  "gameEventResultArrestCount": "{count, plural, other{운영진 {count}명 검거}}",
+  "@gameEventResultArrestCount": {
+    "description": "이벤트 모드 결과 — 검거한 운영진 수",
+    "placeholders": { "count": { "type": "int" } }
   }
 }

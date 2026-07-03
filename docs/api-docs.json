@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v2.9.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- 모든 에러 응답에 `errorCode` 필드 추가 (예: `INVALID_INVITE_CODE`, `GAME_NOT_FOUND`)\n- STOMP 에러 응답에도 동일하게 적용\n- USER_NOT_FOUND 응답 오타 수정\n- 핑 기능 추가 (노션 명세 \"핑\" 문서 참고)\n",
-    "version": "2.8.0"
+    "description": "## v2.12.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/games/{gameId} 응답에 isEventGame 필드 추가\n  - 이벤트 게임 여부를 클라이언트에서 구분할 수 있도록 지원\n\n## v2.11.0 업데이트 내역\n\n### ✨ 신규\n- POST /api/games/join 이벤트 게임 QR 입장 지원\n  - 진행 중인 이벤트 게임에 초대 코드로 입장 시 경찰로 즉시 합류\n  - 응답에 isEventGame 필드 추가 (클라이언트 인게임/로비 화면 분기용)\n\n## v2.10.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- DELETE /api/games/{gameId}/leave API 인게임 중도 퇴장 분기처리 추가\n  (제세한 변경 내용은 해당 항목 참고)\n",
+    "version": "2.12.0"
   },
   "servers": [
     {
@@ -2138,7 +2138,7 @@
       "post": {
         "tags": ["Game Participant"],
         "summary": "게임 방 참여",
-        "description": "초대 코드를 사용하여 게임 방에 참여합니다. 이미 다른 활성 게임에 참여 중이거나, 게임이 이미 시작되었거나, 최대 참여 인원에 도달한 경우 참여할 수 없습니다.",
+        "description": "초대 코드를 사용하여 게임 방에 참여합니다.\n\n- **일반 게임**: 게임이 WAITING 상태일 때만 입장 가능하며, 최대 인원 초과 시 참여 불가\n- **이벤트 게임** (`isEventGame: true`): 게임이 IN_PROGRESS 상태에서도 자유롭게 입장 가능하며 인원 제한 없음. 항상 경찰 팀으로 배정됨.\n\n응답의 `isEventGame` 필드가 `true`이면 클라이언트는 로비 화면 없이 인게임 화면으로 직접 진입해야 합니다.\n",
         "operationId": "joinGame",
         "requestBody": {
           "content": {
@@ -2218,6 +2218,16 @@
                       "title": "초대 코드 오류",
                       "status": 400,
                       "detail": "입력하신 초대 코드가 유효하지 않습니다.",
+                      "instance": "/api/games/join"
+                    }
+                  },
+                  "게임 진행 중 아님": {
+                    "summary": "게임 진행 중 아님",
+                    "value": {
+                      "errorCode": "GAME_NOT_IN_PROGRESS",
+                      "title": "게임 진행 중 아님",
+                      "status": 400,
+                      "detail": "게임이 진행 중인 상태가 아닙니다.",
                       "instance": "/api/games/join"
                     }
                   },
@@ -4439,7 +4449,7 @@
       "delete": {
         "tags": ["Game Participant"],
         "summary": "게임 방 퇴장",
-        "description": "현재 참여 중인 게임 방에서 퇴장합니다. 방장이 퇴장하는 경우 가장 먼저 참여한 참여자에게 방장 권한이 이전됩니다. 마지막 참여자가 퇴장하면 게임 방이 자동으로 삭제됩니다.",
+        "description": "게임 상태(로비 / 인게임)에 따라 퇴장 처리가 다르게 동작합니다.\n\n---\n\n**[로비 상태 (WAITING)]**\n\n- 방장이 퇴장하면 가장 먼저 참여한 참여자에게 방장이 이전됩니다.\n  → `/subscribe/game/{gameId}/lobby` 채널로 `HOST_CHANGED` 이벤트 수신\n- 마지막 참여자가 퇴장하면 게임 방이 삭제됩니다. (이벤트 없음)\n- 그 외 일반 퇴장: `/subscribe/game/{gameId}/lobby` 채널로 `EXIT` 이벤트 수신\n\n---\n\n**[인게임 상태 (IN_PROGRESS)]**\n\n퇴장자의 팀과 상태에 따라 아래 네 가지 케이스로 분기됩니다.\n\n■ 경찰 퇴장 & 경찰이 아직 남아 있는 경우\n→ `/subscribe/game/{gameId}/system` 채널로 `PLAYER_LEFT` 이벤트 수신\n\n■ 경찰 퇴장 & 마지막 경찰인 경우 (도둑팀 몰수(forfeit) 승리)\n→ `/subscribe/game/{gameId}/system` 채널로 `GAME_OVER` 이벤트 수신\n```json\n{ \"winnerTeam\": \"ROBBER\", \"reason\": \"POLICE_FORFEITED\" }\n```\n\n■ 생존(ALIVE) 도둑 퇴장 & 생존 도둑이 아직 남아 있는 경우\n→ `/subscribe/game/{gameId}/system` 채널로 `PLAYER_LEFT` 이벤트 수신\n\n■ 생존(ALIVE) 도둑 퇴장 & 마지막 생존 도둑인 경우 (경찰팀 forfeit 승리)\n→ `/subscribe/game/{gameId}/system` 채널로 `GAME_OVER` 이벤트 수신\n```json\n{ \"winnerTeam\": \"POLICE\", \"reason\": \"ROBBER_FORFEITED\" }\n```\n\n■ JAILED 도둑 퇴장 (게임 종료 조건 무관)\n→ `/subscribe/game/{gameId}/system` 채널로 `PLAYER_LEFT` 이벤트 수신\n(JAILED 상태의 도둑은 생존 도둑 카운트에 포함되지 않으므로 forfeit 조건을 체크하지 않습니다.)\n\n---\n\n**[PLAYER_LEFT 이벤트 페이로드]**\n```json\n{\n  \"eventId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"gameId\": 1,\n  \"type\": \"PLAYER_LEFT\",\n  \"timestamp\": \"2026-06-15T10:00:00+09:00\",\n  \"data\": {\n    \"participantId\": 42,\n    \"nickname\": \"닉네임\",\n    \"team\": \"POLICE 또는 ROBBER\"\n  }\n}\n```\n\n**[GAME_OVER 이벤트 페이로드]**\n```json\n{\n  \"eventId\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"gameId\": 1,\n  \"type\": \"GAME_OVER\",\n  \"timestamp\": \"2026-06-15T10:00:05+09:00\",\n  \"data\": {\n    \"gameResultId\": 1,\n    \"winnerTeam\": \"POLICE 또는 ROBBER\",\n    \"reason\": \"POLICE_FORFEITED 또는 ROBBER_FORFEITED\"\n  }\n}\n```\n\n---\n\n**[방장 위임]**\n\n방장이 퇴장하는 경우, 게임 상태(로비/인게임)와 무관하게 다음 참여자에게 방장이 이전됩니다.\n→ `/subscribe/game/{gameId}/lobby` 채널로 `HOST_CHANGED` 이벤트 추가 수신\n",
         "operationId": "leaveGame",
         "parameters": [
           {
@@ -5036,6 +5046,11 @@
             "description": "참가자 ID",
             "format": "int64",
             "example": 2
+          },
+          "isEventGame": {
+            "type": "boolean",
+            "description": "이벤트 게임 여부 (true면 인게임 직접 입장)",
+            "example": false
           }
         }
       },
@@ -5405,6 +5420,11 @@
             "type": "string",
             "description": "게임 시작 시간 (진행 중일 때만 포함)",
             "example": "2026-03-21T15:30:00+09:00"
+          },
+          "isEventGame": {
+            "type": "boolean",
+            "description": "이벤트 게임 여부",
+            "example": false
           }
         }
       },

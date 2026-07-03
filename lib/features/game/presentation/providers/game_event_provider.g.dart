@@ -47,7 +47,7 @@ final gameSystemApiProvider = AutoDisposeProvider<GameSystemApi>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GameSystemApiRef = AutoDisposeProviderRef<GameSystemApi>;
-String _$gameEventNotifierHash() => r'772b0e256fadfb507d94af18d060a85961521d9d';
+String _$gameEventNotifierHash() => r'3a3709fa14897bb1e9f9e16b6a7d31cf66e394d0';
 
 /// 게임 이벤트 상태 관리 Notifier
 ///

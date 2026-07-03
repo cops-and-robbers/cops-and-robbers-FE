@@ -11,6 +11,7 @@ _$JoinGameResponseImpl _$$JoinGameResponseImplFromJson(
 ) => _$JoinGameResponseImpl(
   gameId: (json['gameId'] as num).toInt(),
   participantId: (json['participantId'] as num).toInt(),
+  isEventGame: json['isEventGame'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$$JoinGameResponseImplToJson(
@@ -18,4 +19,5 @@ Map<String, dynamic> _$$JoinGameResponseImplToJson(
 ) => <String, dynamic>{
   'gameId': instance.gameId,
   'participantId': instance.participantId,
+  'isEventGame': instance.isEventGame,
 };

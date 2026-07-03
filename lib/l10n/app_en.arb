@@ -295,6 +295,8 @@
   "gameOverBannerTitle": "Game over!",
   "gameOverReasonAllArrested": "All Robbers have been arrested!",
   "gameOverReasonTimeUp": "The time limit has expired!",
+  "gameOverReasonPoliceForfeited": "All Cops have left the game!",
+  "gameOverReasonRobberForfeited": "All Robbers have left the game!",
   "gameOverFallbackMessage": "The game has ended.",
   "gameTeamCop": "Cop team",
   "gameTeamRobber": "Robber team",
@@ -527,6 +529,7 @@
   "gameEventLocationReveal": "Robbers' locations are now revealed!",
   "gameEventArrestNotice": "@icon_police [{policeNickname}] arrested @icon_robber [{robberNickname}]!",
   "gameEventEscapeNotice": "A robber has escaped from jail! Arrest them now!",
+  "gameEventPlayerLeftNotice": "[{nickname}] ({teamLabel}) has left the game",
   "mapErrorLoadFailed": "Failed to load {mapName}",
   "errorGameJoinUnexpected": "An unexpected error occurred while joining the game",
   "errorAlreadyInAnotherRoom": "You're already in another room. Please leave it first",
@@ -621,5 +624,15 @@
   "pingCooldownNotice": "Please try again shortly",
   "@pingCooldownNotice": {
     "description": "Shown during ping rate-limit cooldown (no trailing period)"
-  }
+  },
+  "gameLeaveConfirmTitle": "Leave the game?",
+  "gameLeaveConfirmMessage": "You will leave the game in progress",
+  "gameLeaveFailedMessage": "Couldn't leave the game. Please try again",
+  "gameEventArrestSuccessTitle": "Suspect Caught",
+  "gameEventArrestSuccessMessage": "Caught {nickname}",
+  "gameEventArrestSuccessConfirm": "OK",
+  "errorEventArrestRequestFailed": "Failed to send arrest request. Please try again",
+  "gameEventResultTitle": "Investigation Closed",
+  "gameEventProgressTitle": "Catch Progress",
+  "gameEventResultArrestCount": "{count, plural, one{1 staff member caught} other{{count} staff caught}}"
 }
