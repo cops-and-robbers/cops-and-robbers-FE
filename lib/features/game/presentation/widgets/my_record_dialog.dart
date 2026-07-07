@@ -19,7 +19,6 @@ import '../providers/game_result_provider.dart';
 import '../providers/player_game_record_provider.dart';
 import 'record_format.dart';
 import 'route_painter.dart';
-import 'route_map_snapshot.dart';
 
 /// 내 기록 다이얼로그 — 거리/경로/개인 카운트/플레이시간/승패 + 공유·저장.
 class MyRecordDialog extends StatelessWidget {
@@ -92,7 +91,6 @@ class _MyRecordBody extends ConsumerStatefulWidget {
 
 class _MyRecordBodyState extends ConsumerState<_MyRecordBody> {
   final GlobalKey _captureKey = GlobalKey();
-  bool _mapReady = false;
 
   Future<void> _onShare() async {
     final l10n = AppLocalizations.of(context);
@@ -126,54 +124,17 @@ class _MyRecordBodyState extends ConsumerState<_MyRecordBody> {
       orElse: () => 0,
     );
 
-    // 경로가 있으면 지도 스냅샷/폴백이 확정(_mapReady)되기 전엔 캡처 금지
-    // (라이브 플랫폼 뷰가 빈 이미지로 캡처되는 것 방지). 빈 경로면 즉시 가능.
-    final record = ref.watch(playerGameRecordNotifierProvider);
-    final canCapture = record.route.isEmpty || _mapReady;
-    // 지도 로딩 중에는 카드 전체를 로딩 오버레이로 가린다(빈 경로면 즉시 공개).
-    final loading = record.route.isNotEmpty && !_mapReady;
-    final spinnerColor = GameTeam.isRobber(widget.myTeam)
-        ? AppColors.green
-        : AppColors.blue;
-
-    // 로딩 중 disabled 버튼 톤 — 기본 disabled(black100+white)는 다크에서 튀고
-    // 텍스트가 안 보이므로 팀 테마에 맞춰 회색 처리.
-    final disabledBg = widget.isDarkMode
-        ? AppColors.black900
-        : AppColors.black100;
-    final disabledFg = widget.isDarkMode
-        ? AppColors.black600
-        : AppColors.black400;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // 로딩 오버레이는 캡처 카드만 덮는다 — 버튼까지 덮으면 오버레이의
-        // xxlarge 라운드 모서리 밖으로 밑에 깔린 버튼 모서리가 삐져나온다.
-        Stack(
-          children: [
-            RepaintBoundary(
-              key: _captureKey,
-              child: MyRecordCard(
-                isDarkMode: widget.isDarkMode,
-                myTeam: widget.myTeam,
-                winnerTeam: widget.winnerTeam,
-                durationSeconds: durationSeconds,
-                onMapResolved: () {
-                  if (mounted && !_mapReady) setState(() => _mapReady = true);
-                },
-              ),
-            ),
-            // 로딩 중에는 지도·정보를 모두 가리고 스피너만 표시 → 확정 시 한 번에 공개.
-            // (지도는 가려진 채 백그라운드에서 렌더·스냅샷되어야 하므로 트리에는 유지)
-            if (loading)
-              Positioned.fill(
-                child: _LoadingCard(
-                  isDarkMode: widget.isDarkMode,
-                  spinnerColor: spinnerColor,
-                ),
-              ),
-          ],
+        RepaintBoundary(
+          key: _captureKey,
+          child: MyRecordCard(
+            isDarkMode: widget.isDarkMode,
+            myTeam: widget.myTeam,
+            winnerTeam: widget.winnerTeam,
+            durationSeconds: durationSeconds,
+          ),
         ),
         SizedBox(height: AppSpacing.vertical12),
         Row(
@@ -181,7 +142,7 @@ class _MyRecordBodyState extends ConsumerState<_MyRecordBody> {
             Expanded(
               child: AppButton(
                 text: l10n.buttonClose,
-                // 저장은 공유 시트의 "이미지 저장"으로 대체 — 닫기는 로딩 중에도 가능.
+                // 저장은 공유 시트의 "이미지 저장"으로 대체.
                 onPressed: () => Navigator.of(context).pop(),
                 backgroundColor: widget.isDarkMode
                     ? AppColors.black900
@@ -199,15 +160,13 @@ class _MyRecordBodyState extends ConsumerState<_MyRecordBody> {
             Expanded(
               child: AppButton(
                 text: l10n.buttonShare,
-                onPressed: canCapture ? _onShare : null,
+                onPressed: _onShare,
                 backgroundColor: widget.isDarkMode
                     ? AppColors.green
                     : AppColors.blue,
                 foregroundColor: widget.isDarkMode
                     ? AppColors.black
                     : AppColors.white,
-                disabledBackgroundColor: disabledBg,
-                disabledForegroundColor: disabledFg,
                 borderRadius: AppRadius.medium,
                 showBorder: false,
                 height: 48.h,
@@ -229,16 +188,12 @@ class MyRecordCard extends ConsumerWidget {
     required this.myTeam,
     required this.winnerTeam,
     required this.durationSeconds,
-    this.onMapResolved,
   });
 
   final bool isDarkMode;
   final String myTeam;
   final String winnerTeam;
   final int durationSeconds;
-
-  /// 지도 스냅샷/폴백 확정 시 호출(부모의 저장·공유 버튼 게이팅용). 빈 경로면 미호출.
-  final VoidCallback? onMapResolved;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -306,8 +261,10 @@ class MyRecordCard extends ConsumerWidget {
             style: AppTextStyles.semibold_44.copyWith(color: fg),
           ),
           SizedBox(height: AppSpacing.vertical16),
-          // 경로 블록(실제 지도 스냅샷, 실패 시 스타일라이즈드 폴백) + 캐릭터.
-          // 빈 경로여도 타일 배경을 깔아 카드 내 블록 경계를 유지한다.
+          // 경로 블록(약도 — 스타일라이즈드 궤적) + 캐릭터.
+          // 실지도 타일 대신 순수 궤적을 그린다: 즉시 렌더·오프라인 무관이고,
+          // 공유 이미지에 실제 위치(동네·골목)가 노출되지 않는다.
+          // 빈 경로여도 배경을 깔아 카드 내 블록 경계를 유지한다.
           ClipRRect(
             borderRadius: AppRadius.large,
             child: Container(
@@ -323,33 +280,23 @@ class MyRecordCard extends ConsumerWidget {
                     )
                   else
                     Positioned.fill(
-                      child: RouteMapSnapshot(
-                        route: record.route,
-                        markerPoints: isRobber
-                            ? record.caughtLocations
-                            : record.arrestLocations,
-                        isDarkMode: isDarkMode,
-                        lineColor: lineColor,
-                        onResolved: onMapResolved ?? () {},
-                        fallback: CustomPaint(
-                          size: Size(double.infinity, 160.h),
-                          painter: RoutePainter(
-                            route: record.route,
-                            lineColor: lineColor,
-                            startColor: isDarkMode
-                                ? AppColors.white
-                                : AppColors.black600,
-                            endColor: lineColor,
-                            // 경찰=체포 지점 / 도둑=잡힌 지점 (둘 다 빨강)
-                            markers: [
-                              RouteMarker(
-                                isRobber
-                                    ? record.caughtLocations
-                                    : record.arrestLocations,
-                                AppColors.red,
-                              ),
-                            ],
-                          ),
+                      child: CustomPaint(
+                        painter: RoutePainter(
+                          route: record.route,
+                          lineColor: lineColor,
+                          startColor: isDarkMode
+                              ? AppColors.white
+                              : AppColors.black600,
+                          endColor: lineColor,
+                          // 경찰=체포 지점 / 도둑=잡힌 지점 (둘 다 빨강)
+                          markers: [
+                            RouteMarker(
+                              isRobber
+                                  ? record.caughtLocations
+                                  : record.arrestLocations,
+                              AppColors.red,
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -443,31 +390,6 @@ class _LegendDot extends StatelessWidget {
         SizedBox(width: AppSpacing.horizontal4),
         Text(label, style: AppTextStyles.tag_12.copyWith(color: subFg)),
       ],
-    );
-  }
-}
-
-/// 지도 스냅샷이 준비될 때까지 카드 전체를 덮는 로딩 인디케이터.
-class _LoadingCard extends StatelessWidget {
-  const _LoadingCard({required this.isDarkMode, required this.spinnerColor});
-
-  final bool isDarkMode;
-  final Color spinnerColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.black : AppColors.white,
-        borderRadius: AppRadius.xxlarge,
-      ),
-      child: Center(
-        child: SizedBox(
-          width: 40.w,
-          height: 40.w,
-          child: CircularProgressIndicator(strokeWidth: 3, color: spinnerColor),
-        ),
-      ),
     );
   }
 }
