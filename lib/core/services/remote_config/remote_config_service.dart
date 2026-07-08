@@ -2,6 +2,8 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'remote_config_keys.dart';
+
 /// Firebase Remote Config 서비스
 ///
 /// 앱 버전 관리 및 점검 모드 파라미터를 서버에서 가져온다.
@@ -43,15 +45,8 @@ class RemoteConfigService {
       ),
     );
 
-    // 기본값 설정 (서버 연결 실패 시 사용)
-    await _remoteConfig.setDefaults({
-      'minimum_version': '1.0.0',
-      'latest_version': '1.0.0',
-      'force_update': false,
-      'maintenance': false,
-      'maintenance_message': '',
-      'ads_enabled': false,
-    });
+    // 기본값 설정 (서버 연결 실패 시 사용) — RemoteConfigDefaults 단일 정의
+    await _remoteConfig.setDefaults(RemoteConfigDefaults.values);
 
     // 서버에서 최신 값 가져오기
     try {
@@ -82,24 +77,27 @@ class RemoteConfigService {
   }
 
   /// 최소 허용 버전
-  String get minimumVersion => _remoteConfig.getString('minimum_version');
+  String get minimumVersion =>
+      _remoteConfig.getString(RemoteConfigKeys.minimumVersion);
 
   /// 최신 버전 (권고 업데이트용)
-  String get latestVersion => _remoteConfig.getString('latest_version');
+  String get latestVersion =>
+      _remoteConfig.getString(RemoteConfigKeys.latestVersion);
 
   /// 강제 업데이트 여부
-  bool get forceUpdate => _remoteConfig.getBool('force_update');
+  bool get forceUpdate => _remoteConfig.getBool(RemoteConfigKeys.forceUpdate);
 
   /// 서버 점검 모드 여부
-  bool get maintenance => _remoteConfig.getBool('maintenance');
+  bool get maintenance => _remoteConfig.getBool(RemoteConfigKeys.maintenance);
 
   /// 점검 안내 메시지 (시간 등, 빈 문자열이면 기본 메시지 사용)
   String get maintenanceMessage =>
-      _remoteConfig.getString('maintenance_message');
+      _remoteConfig.getString(RemoteConfigKeys.maintenanceMessage);
 
   /// 광고 전역 스위치 (kill switch)
   ///
   /// 기본값 false — 배포 후 Firebase 콘솔에서 켜는 안전한 롤아웃.
   /// 미초기화(Firebase 실패 등) 시에도 false (광고 끔 = fail-safe)
-  bool get adsEnabled => _isInitialized && _remoteConfig.getBool('ads_enabled');
+  bool get adsEnabled =>
+      _isInitialized && _remoteConfig.getBool(RemoteConfigKeys.adsEnabled);
 }
