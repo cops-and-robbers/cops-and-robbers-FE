@@ -11,6 +11,7 @@ import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/fcm/firebase_messaging_service.dart';
 import '../../../../core/constants/game_event_messages.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/dio_client.dart';
@@ -917,10 +918,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     final team = data['team'] as String?;
 
     // 서버 enum 'POLICE' | 'ROBBER' → 역할 라벨 i18n (미지정 값은 도둑 라벨로 폴백)
-    if (team != 'POLICE' && team != 'ROBBER') {
+    if (!GameTeam.isPolice(team) && !GameTeam.isRobber(team)) {
       debugPrint('[GameEventNotifier] ⚠️ PLAYER_LEFT 알 수 없는 팀: $team');
     }
-    final teamLabel = team == 'POLICE'
+    final teamLabel = GameTeam.isPolice(team)
         ? _localizePoliceLabel()
         : _localizeRobberLabel();
 
