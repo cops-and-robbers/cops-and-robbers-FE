@@ -173,10 +173,16 @@ class AuthRepositoryImpl implements AuthRepository {
         }
       }
 
-      // 2. Firebase 로그아웃 (Google/Apple 세션 정리)
-      await _firebaseAuthDataSource.signOut();
+      // 2. Firebase 로그아웃 (실패해도 로컬 정리는 계속 진행)
+      // Firebase signOut 실패로 3단계 토큰 삭제가 스킵되면 로컬에 토큰이 남아
+      // 재시작 시 세션이 되살아난다. 로컬 정리는 무조건 보장한다.
+      try {
+        await _firebaseAuthDataSource.signOut();
+      } catch (e) {
+        debugPrint('⚠️ Firebase 로그아웃 실패 (무시하고 계속 진행): $e');
+      }
 
-      // 3. 로컬 토큰 삭제
+      // 3. 로컬 토큰 삭제 (항상 실행)
       await _tokenStorage.clearTokens();
 
       if (kDebugMode) {
