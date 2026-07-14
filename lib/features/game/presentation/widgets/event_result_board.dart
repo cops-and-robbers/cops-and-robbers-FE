@@ -103,7 +103,8 @@ class EventResultBoard extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  for (int i = 1; i <= _total; i++) _buildSlot(i, i <= arrestCount),
+                  for (int i = 1; i <= _total; i++)
+                    _buildSlot(i, i <= arrestCount),
                 ],
               ),
             ),

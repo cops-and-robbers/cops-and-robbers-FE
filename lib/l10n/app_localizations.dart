@@ -2026,6 +2026,72 @@ abstract class AppLocalizations {
   /// **'한 번 더'**
   String get buttonPlayAgain;
 
+  /// 게임 결과 — 내 기록 다이얼로그 진입 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'내 기록 보기'**
+  String get buttonViewMyRecord;
+
+  /// 내 기록 다이얼로그 — 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'내 기록'**
+  String get labelMyRecord;
+
+  /// 내 기록 — 이동 거리 라벨(대표 숫자 하단)
+  ///
+  /// In ko, this message translates to:
+  /// **'내가 이동한 거리'**
+  String get labelTravelDistance;
+
+  /// 내 기록 — 경찰: 내가 잡은 도둑 수 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'내가 잡은 도둑'**
+  String get labelMyArrestCount;
+
+  /// 내 기록 — 도둑: 내가 탈옥한 횟수 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'내 탈옥 횟수'**
+  String get labelMyEscapeCount;
+
+  /// 내 기록 — 승패 결과 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'결과'**
+  String get labelResult;
+
+  /// 내 기록 — 저장 실패 스낵바
+  ///
+  /// In ko, this message translates to:
+  /// **'저장에 실패했어요'**
+  String get messageSaveFailed;
+
+  /// 내 기록 — 공유 완료 스낵바
+  ///
+  /// In ko, this message translates to:
+  /// **'공유했어요'**
+  String get messageShareComplete;
+
+  /// 내 기록 — 경로가 없을 때 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'이동 기록 없음'**
+  String get labelNoRoute;
+
+  /// 내 기록 — 경찰: 도둑을 잡은 위치 마커 범례
+  ///
+  /// In ko, this message translates to:
+  /// **'잡은 곳'**
+  String get legendArrestSpot;
+
+  /// 내 기록 — 도둑: 내가 잡힌 위치 마커 범례
+  ///
+  /// In ko, this message translates to:
+  /// **'잡힌 곳'**
+  String get legendCaughtSpot;
+
   /// 다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)
   ///
   /// In ko, this message translates to:

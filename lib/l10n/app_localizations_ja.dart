@@ -1031,6 +1031,39 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonPlayAgain => 'もう一度';
 
   @override
+  String get buttonViewMyRecord => 'マイ記録を見る';
+
+  @override
+  String get labelMyRecord => 'マイ記録';
+
+  @override
+  String get labelTravelDistance => '移動した距離';
+
+  @override
+  String get labelMyArrestCount => '捕まえた泥棒';
+
+  @override
+  String get labelMyEscapeCount => '脱獄回数';
+
+  @override
+  String get labelResult => '結果';
+
+  @override
+  String get messageSaveFailed => '保存に失敗しました';
+
+  @override
+  String get messageShareComplete => '共有しました';
+
+  @override
+  String get labelNoRoute => '移動記録なし';
+
+  @override
+  String get legendArrestSpot => '捕獲地点';
+
+  @override
+  String get legendCaughtSpot => '逮捕地点';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return '次の泥棒の位置公開まで $formatted';
   }

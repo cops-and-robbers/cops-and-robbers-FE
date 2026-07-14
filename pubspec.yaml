@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 2.3.1+284
+version: 2.3.3+286
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -54,6 +54,7 @@ dependencies:
   # 외부 링크
   url_launcher: ^6.3.2 # 외부 URL 브라우저 열기
   share_plus: ^12.0.1 # 네이티브 공유 시트
+  path_provider: ^2.1.5 # 공유용 임시 파일 경로 (현재 transitive → 명시화)
   # 지도
   google_maps_flutter: ^2.14.0 # Google Maps SDK (Flutter)
   # 위치 추적

@@ -1115,6 +1115,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonPlayAgain => 'One more time';
 
   @override
+  String get buttonViewMyRecord => 'View my record';
+
+  @override
+  String get labelMyRecord => 'My record';
+
+  @override
+  String get labelTravelDistance => 'Distance I moved';
+
+  @override
+  String get labelMyArrestCount => 'Robbers I caught';
+
+  @override
+  String get labelMyEscapeCount => 'My jailbreaks';
+
+  @override
+  String get labelResult => 'Result';
+
+  @override
+  String get messageSaveFailed => 'Failed to save';
+
+  @override
+  String get messageShareComplete => 'Shared';
+
+  @override
+  String get labelNoRoute => 'No movement recorded';
+
+  @override
+  String get legendArrestSpot => 'Catch spot';
+
+  @override
+  String get legendCaughtSpot => 'Caught spot';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return 'Until next Robber location reveal: $formatted';
   }

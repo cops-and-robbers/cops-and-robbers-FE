@@ -69,6 +69,8 @@
 	<string>The camera is used to scan an opponent's QR code to make arrests during the game.</string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Notifications are used to keep you informed about game events such as invitations, game start, and arrests.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save your game record image to your photo library.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

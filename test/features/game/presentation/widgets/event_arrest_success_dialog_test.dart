@@ -23,7 +23,9 @@ Future<void> _pump(WidgetTester tester, Widget child) async {
 }
 
 void main() {
-  testWidgets('shows_evidence_slot_for_given_index_and_nickname', (tester) async {
+  testWidgets('shows_evidence_slot_for_given_index_and_nickname', (
+    tester,
+  ) async {
     await _pump(
       tester,
       const EventArrestSuccessDialog(evidenceIndex: 2, robberNickname: '도둑1'),
@@ -33,7 +35,10 @@ void main() {
     final l10n = AppLocalizations.of(
       tester.element(find.byType(EventArrestSuccessDialog)),
     );
-    expect(find.text(l10n.gameEventArrestSuccessMessage('도둑1')), findsOneWidget);
+    expect(
+      find.text(l10n.gameEventArrestSuccessMessage('도둑1')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('caps_evidence_index_at_three', (tester) async {

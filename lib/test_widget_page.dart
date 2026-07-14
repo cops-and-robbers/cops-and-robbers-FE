@@ -33,6 +33,9 @@ import 'features/auth/presentation/pages/nickname_setup_page.dart';
 import 'features/game/domain/entities/game_result_entity.dart';
 import 'features/game/presentation/providers/game_result_provider.dart';
 import 'features/game/presentation/widgets/game_over_result_dialog.dart';
+import 'features/game/presentation/widgets/my_record_dialog.dart';
+import 'features/game/presentation/providers/player_game_record_provider.dart';
+import 'features/game/data/models/game_area_model.dart';
 import 'features/game/presentation/widgets/ping_selection_card.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
@@ -1283,6 +1286,73 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 SizedBox(height: AppSpacing.vertical64),
 
                 // ============================================
+                // MyRecordDialog 테스트
+                // ============================================
+                _buildSectionTitle('MyRecordDialog 테스트'),
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  '예시 경로·거리·카운트 mock으로 내 기록 다이얼로그 표시',
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black400,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                AppButton(
+                  text: '내 기록 — 경찰 승리 (light)',
+                  onPressed: () => _showMockMyRecordDialog(
+                    context: context,
+                    isDarkMode: false,
+                    myTeam: 'POLICE',
+                    winnerTeam: 'POLICE',
+                  ),
+                  backgroundColor: AppColors.blue,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                AppButton(
+                  text: '내 기록 — 경찰 패배 (light)',
+                  onPressed: () => _showMockMyRecordDialog(
+                    context: context,
+                    isDarkMode: false,
+                    myTeam: 'POLICE',
+                    winnerTeam: 'ROBBER',
+                  ),
+                  backgroundColor: AppColors.red,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                AppButton(
+                  text: '내 기록 — 도둑 승리 (dark)',
+                  onPressed: () => _showMockMyRecordDialog(
+                    context: context,
+                    isDarkMode: true,
+                    myTeam: 'ROBBER',
+                    winnerTeam: 'ROBBER',
+                  ),
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.black,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                AppButton(
+                  text: '내 기록 — 도둑 패배 (dark)',
+                  onPressed: () => _showMockMyRecordDialog(
+                    context: context,
+                    isDarkMode: true,
+                    myTeam: 'ROBBER',
+                    winnerTeam: 'POLICE',
+                  ),
+                  backgroundColor: AppColors.black800,
+                  showBorder: false,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
                 // ReconnectModal 테스트
                 // ============================================
                 _buildSectionTitle('ReconnectModal 테스트'),
@@ -1514,6 +1584,53 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
     );
   }
 
+  /// 내 기록 다이얼로그 시각 테스트용 — gameResult + playerGameRecord를 mock override
+  void _showMockMyRecordDialog({
+    required BuildContext context,
+    required bool isDarkMode,
+    required String myTeam,
+    required String winnerTeam,
+  }) {
+    const mockGameResultId = 998;
+    const mockEntity = GameResultEntity(
+      winnerTeam: 'POLICE',
+      durationSeconds: 1845, // 30:45
+      totalArrestCount: 12,
+      remainingRobberCount: 2,
+    );
+    final isRobber = myTeam == 'ROBBER';
+    final mockRecord = PlayerGameRecord(
+      route: _exampleMyRecordRoute,
+      distanceMeters: 2543,
+      myArrestCount: isRobber ? 0 : 3,
+      myEscapeCount: isRobber ? 2 : 0,
+      arrestLocations: isRobber ? const [] : _exampleArrestLocations,
+      caughtLocations: isRobber ? _exampleCaughtLocations : const [],
+      endedAt: DateTime.now(),
+    );
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => ProviderScope(
+        overrides: [
+          gameResultProvider(
+            mockGameResultId,
+          ).overrideWith((_) async => mockEntity),
+          playerGameRecordNotifierProvider.overrideWith(
+            () => _MockPlayerGameRecord(mockRecord),
+          ),
+        ],
+        child: MyRecordDialog(
+          isDarkMode: isDarkMode,
+          myTeam: myTeam,
+          winnerTeam: winnerTeam,
+          gameResultId: mockGameResultId,
+        ),
+      ),
+    );
+  }
+
   /// 핑 선택 카드 셀 탭 → 어떤 셀을 눌렀는지 스낵바로 표시 (시각 테스트용)
   void _showPingSnack(String label) {
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -1542,4 +1659,58 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
       style: AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
     );
   }
+}
+
+/// 내 기록 다이얼로그 미리보기용 예시 경로 (서울 시청 인근 가상 러닝 루프).
+///
+/// 상승 → 우상단 → 상단 좌측 횡단 → 좌측 하강 → 하단 복귀로 사방향 이동을 보여준다.
+const List<LatLngModel> _exampleMyRecordRoute = [
+  // 하단 시작 (남쪽)
+  LatLngModel(latitude: 37.5651, longitude: 126.9779),
+  LatLngModel(latitude: 37.5656, longitude: 126.9777),
+  LatLngModel(latitude: 37.5661, longitude: 126.9776),
+  // 북동으로 상승
+  LatLngModel(latitude: 37.5666, longitude: 126.9780),
+  LatLngModel(latitude: 37.5670, longitude: 126.9786),
+  LatLngModel(latitude: 37.5673, longitude: 126.9793),
+  // 우상단 꼭짓점
+  LatLngModel(latitude: 37.5677, longitude: 126.9799),
+  LatLngModel(latitude: 37.5682, longitude: 126.9802),
+  // 좌측으로 꺾어 상단 횡단
+  LatLngModel(latitude: 37.5686, longitude: 126.9799),
+  LatLngModel(latitude: 37.5688, longitude: 126.9792),
+  LatLngModel(latitude: 37.5689, longitude: 126.9785),
+  LatLngModel(latitude: 37.5687, longitude: 126.9778),
+  // 좌측 하강
+  LatLngModel(latitude: 37.5683, longitude: 126.9773),
+  LatLngModel(latitude: 37.5678, longitude: 126.9769),
+  LatLngModel(latitude: 37.5672, longitude: 126.9767),
+  // 하단으로 복귀 (살짝 동쪽)
+  LatLngModel(latitude: 37.5666, longitude: 126.9768),
+  LatLngModel(latitude: 37.5660, longitude: 126.9771),
+  LatLngModel(latitude: 37.5655, longitude: 126.9775),
+];
+
+/// 경찰 미리보기용 — 내가 도둑을 잡은 지점(경로 위 점들).
+const List<LatLngModel> _exampleArrestLocations = [
+  LatLngModel(latitude: 37.5673, longitude: 126.9793),
+  LatLngModel(latitude: 37.5688, longitude: 126.9792),
+  LatLngModel(latitude: 37.5672, longitude: 126.9767),
+];
+
+/// 도둑 미리보기용 — 내가 잡힌 지점(경로 위 점들).
+const List<LatLngModel> _exampleCaughtLocations = [
+  LatLngModel(latitude: 37.5670, longitude: 126.9786),
+  LatLngModel(latitude: 37.5666, longitude: 126.9768),
+  LatLngModel(latitude: 37.5660, longitude: 126.9771),
+];
+
+/// 미리보기용 mock 내 기록 Notifier — 고정 데이터를 반환.
+class _MockPlayerGameRecord extends PlayerGameRecordNotifier {
+  _MockPlayerGameRecord(this._data);
+
+  final PlayerGameRecord _data;
+
+  @override
+  PlayerGameRecord build() => _data;
 }

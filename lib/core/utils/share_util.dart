@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../deeplink/deeplink_constants.dart';
@@ -32,4 +35,26 @@ String buildInviteDeeplink(String code) =>
 /// 호출 측이 i18n 메시지를 전달해서 ARB 키를 한 곳에서 관리하지 않아도 되게 함.
 Future<void> shareInviteCode(String code, String shareMessage) async {
   await shareText('$shareMessage\n${buildInviteDeeplink(code)}');
+}
+
+/// PNG 바이트를 임시 파일로 저장한 뒤 네이티브 공유 시트로 공유.
+///
+/// 사용자가 공유/저장을 완료했으면 true, 시트를 닫거나 실패하면 false
+/// (호출 측 완료 스낵바 분기용). 플랫폼 예외는 디버그 로그 후 false.
+Future<bool> shareImageBytes(
+  Uint8List bytes, {
+  String filename = 'cops_record.png',
+}) async {
+  try {
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/$filename');
+    await file.writeAsBytes(bytes);
+    final result = await SharePlus.instance.share(
+      ShareParams(files: [XFile(file.path)]),
+    );
+    return result.status == ShareResultStatus.success;
+  } catch (e) {
+    debugPrint('이미지 공유 실패: $e');
+    return false;
+  }
 }
