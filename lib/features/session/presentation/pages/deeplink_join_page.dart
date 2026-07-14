@@ -109,7 +109,11 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
         // 미로그인 — 로그인 화면으로 이동 (PendingInvite 에 코드 저장 완료)
         context.go(RoutePaths.login);
 
-      case JoinedRoomOutcome(:final gameId, :final participantId, :final isEventGame):
+      case JoinedRoomOutcome(
+        :final gameId,
+        :final participantId,
+        :final isEventGame,
+      ):
         // 딥링크 참가 퍼널 이벤트
         unawaited(
           ref.read(analyticsServiceProvider).logGameJoin(method: 'deeplink'),

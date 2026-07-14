@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cops_and_robbers/features/game/domain/entities/game_result_entity.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_result_provider.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/game_over_result_dialog.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/record_format.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 
 void main() {

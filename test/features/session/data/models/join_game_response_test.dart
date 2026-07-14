@@ -9,9 +9,11 @@ void main() {
     });
 
     test('isEventGame_is_true_when_present', () {
-      final r = JoinGameResponse.fromJson(
-        {'gameId': 1, 'participantId': 2, 'isEventGame': true},
-      );
+      final r = JoinGameResponse.fromJson({
+        'gameId': 1,
+        'participantId': 2,
+        'isEventGame': true,
+      });
       expect(r.isEventGame, isTrue);
     });
   });

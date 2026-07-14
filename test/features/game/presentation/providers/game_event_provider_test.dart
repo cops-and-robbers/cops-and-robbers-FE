@@ -350,22 +350,24 @@ void main() {
   });
 
   group('GameEventNotifier.requestEventArrest (체포 트리거 전용)', () {
-    test('returns_true_and_leaves_local_set_untouched_when_api_succeeds',
-        () async {
-      final api = _FakeGameSystemApi();
-      final c = _container(api: api);
-      final notifier = c.read(gameEventNotifierProvider.notifier);
+    test(
+      'returns_true_and_leaves_local_set_untouched_when_api_succeeds',
+      () async {
+        final api = _FakeGameSystemApi();
+        final c = _container(api: api);
+        final notifier = c.read(gameEventNotifierProvider.notifier);
 
-      final ok = await notifier.requestEventArrest(1, 7);
+        final ok = await notifier.requestEventArrest(1, 7);
 
-      expect(ok, isTrue);
-      expect(api.lastArrest, (1, 7));
-      final s = c.read(gameEventNotifierProvider);
-      // 카운트·집합은 STOMP ARREST 수신이 담당 — 트리거만으로는 비어 있어야 함
-      expect(s.myArrestedRobberIds, isEmpty);
-      expect(s.arrestedParticipantIds, isEmpty);
-      expect(s.isApiLoading, isFalse);
-    });
+        expect(ok, isTrue);
+        expect(api.lastArrest, (1, 7));
+        final s = c.read(gameEventNotifierProvider);
+        // 카운트·집합은 STOMP ARREST 수신이 담당 — 트리거만으로는 비어 있어야 함
+        expect(s.myArrestedRobberIds, isEmpty);
+        expect(s.arrestedParticipantIds, isEmpty);
+        expect(s.isApiLoading, isFalse);
+      },
+    );
 
     test('returns_false_and_keeps_set_empty_when_api_fails', () async {
       final api = _FakeGameSystemApi()..arrestError = Exception('boom');

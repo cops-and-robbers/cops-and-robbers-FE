@@ -6,3 +6,4 @@
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "Your location is used to share the Robber's location and detect when someone leaves the play area during the game. Location is used until the game ends even when the screen is off or you are using another app. It is shared only with participants in the same game and stops immediately when the game ends.";
 "NSCameraUsageDescription" = "The camera is used to scan an opponent's QR code to make arrests during the game.";
 "NSUserNotificationsUsageDescription" = "Notifications are used to keep you informed about game events such as invitations, game start, and arrests.";
+"NSPhotoLibraryAddUsageDescription" = "Save your game record image to your photo library.";

@@ -11,6 +11,7 @@ import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/fcm/firebase_messaging_service.dart';
 import '../../../../core/constants/game_event_messages.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/dio_client.dart';
@@ -23,6 +24,7 @@ import '../../data/services/event_arrest_storage.dart';
 import '../../data/models/game_area_model.dart';
 import '../../data/models/game_event_model.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
+import 'player_game_record_provider.dart';
 
 export '../../data/datasources/game_event_stomp_datasource.dart'
     show StompConnectionState;
@@ -288,6 +290,14 @@ class GameEventNotifier extends _$GameEventNotifier {
   int? _gameId;
   String? _team;
 
+  /// 로컬 플레이어 participantId — 개인 체포/탈옥 카운트 판정용.
+  int? _myParticipantId;
+
+  /// game_page가 연결 시 1회 주입(개인 기록 카운트 판정용).
+  void setLocalParticipantId(int participantId) {
+    _myParticipantId = participantId;
+  }
+
   @override
   GameEventState build() {
     ref.watch(gameEventStompDatasourceProvider);
@@ -517,7 +527,9 @@ class GameEventNotifier extends _$GameEventNotifier {
     _pendingArrestId = robberParticipantId;
     state = state.copyWith(isApiLoading: true);
     try {
-      await ref.read(gameSystemApiProvider).arrest(
+      await ref
+          .read(gameSystemApiProvider)
+          .arrest(
             gameId,
             ArrestRequestModel(robberParticipantId: robberParticipantId),
           );
@@ -791,6 +803,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     // 경찰 정보 파싱
     final police = data['police'] as Map<String, dynamic>?;
     final policeNickname = police?['nickname'] as String?;
+    final policePid = (police?['participantId'] as num?)?.toInt();
 
     // 이벤트 모드: 도둑 ALIVE 유지 — 전역 수감 집합/remainingThieves 미변경.
     // 스펙 §3: ARREST 수신을 단일 권위 신호로 사용. data.police.participantId == 내 id일 때만
@@ -854,6 +867,14 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().arrested();
+    // 내가 잡은 경우에만 개인 카운트 증가(STOMP 확정 기준).
+    if (policePid != null && policePid == _myParticipantId) {
+      ref.read(playerGameRecordNotifierProvider.notifier).incrementArrest();
+    }
+    // 내가 잡힌 경우(도둑) 잡힌 위치 기록.
+    if (robberPid == _myParticipantId) {
+      ref.read(playerGameRecordNotifierProvider.notifier).recordCaught();
+    }
     debugPrint(
       '[GameEventNotifier] ✅ ARREST 이벤트 → robberPid: $robberPid, 남은: $remaining',
     );
@@ -878,6 +899,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().escaped();
+    // 내가 탈옥한 경우에만 개인 카운트 증가(STOMP 확정 기준).
+    if (escapedId == _myParticipantId) {
+      ref.read(playerGameRecordNotifierProvider.notifier).incrementEscape();
+    }
     debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedId');
   }
 
@@ -893,10 +918,10 @@ class GameEventNotifier extends _$GameEventNotifier {
     final team = data['team'] as String?;
 
     // 서버 enum 'POLICE' | 'ROBBER' → 역할 라벨 i18n (미지정 값은 도둑 라벨로 폴백)
-    if (team != 'POLICE' && team != 'ROBBER') {
+    if (!GameTeam.isPolice(team) && !GameTeam.isRobber(team)) {
       debugPrint('[GameEventNotifier] ⚠️ PLAYER_LEFT 알 수 없는 팀: $team');
     }
-    final teamLabel = team == 'POLICE'
+    final teamLabel = GameTeam.isPolice(team)
         ? _localizePoliceLabel()
         : _localizeRobberLabel();
 
