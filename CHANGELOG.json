@@ -1,11 +1,29 @@
 {
   "metadata": {
-    "lastUpdated": "2026-07-14T08:24:08Z",
-    "currentVersion": "2.3.3",
+    "lastUpdated": "2026-07-15T07:33:00Z",
+    "currentVersion": "2.3.4",
     "projectType": "flutter",
-    "totalReleases": 115
+    "totalReleases": 116
   },
   "releases": [
+    {
+      "version": "2.3.4",
+      "project_type": "flutter",
+      "date": "2026-07-15",
+      "pr_number": 451,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **변경 사항**\n  * 앱 버전이 2.3.4로 업데이트되었습니다.\n  * 배포 빌드 번호가 288로 증가했습니다.\n  * 최신 버전 안내가 v2.3.3에서 v2.3.4로 갱신되었습니다.",
+      "parsed_changes": {
+        "변경_사항": {
+          "title": "변경 사항",
+          "items": [
+            "앱 버전이 2.3.4로 업데이트되었습니다.",
+            "배포 빌드 번호가 288로 증가했습니다.",
+            "최신 버전 안내가 v2.3.3에서 v2.3.4로 갱신되었습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "2.3.3",
       "project_type": "flutter",
