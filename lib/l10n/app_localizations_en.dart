@@ -177,6 +177,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguageOptionJapanese => '日本語';
 
   @override
+  String get asset_loading_sub_joinRoom =>
+      'If you close the app now, joining will be canceled. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_createRoom =>
+      'We\'re setting up the hideout. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_changeTeam =>
+      'We\'re issuing your new ID. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_startGame =>
+      'The operation is about to begin. Please don\'t close the app';
+
+  @override
+  String get asset_loading_sub_updateArea =>
+      'We\'re saving the operation zone. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_saveSettings =>
+      'We\'re saving your settings. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_loadProfile =>
+      'We\'re loading your agent profile. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_logout =>
+      'We\'re pulling you out safely. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_deleteAccount =>
+      'We\'re erasing your records. Please don\'t close the app';
+
+  @override
+  String get asset_loading_sub_bugReport =>
+      'We\'re filing your report. Please wait a moment';
+
+  @override
   String get asset_loading_joinRoom => 'Preparing to infiltrate';
 
   @override

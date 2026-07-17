@@ -400,6 +400,66 @@ abstract class AppLocalizations {
   /// **'日本語'**
   String get settingsLanguageOptionJapanese;
 
+  /// No description provided for @asset_loading_sub_joinRoom.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 앱을 끄면 합류가 취소돼요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_joinRoom;
+
+  /// No description provided for @asset_loading_sub_createRoom.
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 본부를 세우는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_createRoom;
+
+  /// No description provided for @asset_loading_sub_changeTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 신분증을 발급하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_changeTeam;
+
+  /// No description provided for @asset_loading_sub_startGame.
+  ///
+  /// In ko, this message translates to:
+  /// **'곧 작전이 시작돼요. 앱을 끄지 말아주세요'**
+  String get asset_loading_sub_startGame;
+
+  /// No description provided for @asset_loading_sub_updateArea.
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 구역을 저장하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_updateArea;
+
+  /// No description provided for @asset_loading_sub_saveSettings.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정을 저장하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_saveSettings;
+
+  /// No description provided for @asset_loading_sub_loadProfile.
+  ///
+  /// In ko, this message translates to:
+  /// **'요원 정보를 불러오는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_loadProfile;
+
+  /// No description provided for @asset_loading_sub_logout.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전하게 철수하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_logout;
+
+  /// No description provided for @asset_loading_sub_deleteAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록을 지우는 중이에요. 앱을 끄지 말아주세요'**
+  String get asset_loading_sub_deleteAccount;
+
+  /// No description provided for @asset_loading_sub_bugReport.
+  ///
+  /// In ko, this message translates to:
+  /// **'제보를 접수하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_bugReport;
+
   /// No description provided for @asset_loading_joinRoom.
   ///
   /// In ko, this message translates to:

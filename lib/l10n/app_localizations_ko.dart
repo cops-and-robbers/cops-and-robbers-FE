@@ -168,6 +168,36 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsLanguageOptionJapanese => '日本語';
 
   @override
+  String get asset_loading_sub_joinRoom => '지금 앱을 끄면 합류가 취소돼요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_createRoom => '작전 본부를 세우는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_changeTeam => '새 신분증을 발급하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_startGame => '곧 작전이 시작돼요. 앱을 끄지 말아주세요';
+
+  @override
+  String get asset_loading_sub_updateArea => '작전 구역을 저장하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_saveSettings => '설정을 저장하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_loadProfile => '요원 정보를 불러오는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_logout => '안전하게 철수하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_deleteAccount => '기록을 지우는 중이에요. 앱을 끄지 말아주세요';
+
+  @override
+  String get asset_loading_sub_bugReport => '제보를 접수하는 중이에요. 잠시만 기다려주세요';
+
+  @override
   String get asset_loading_joinRoom => '잠입 준비 중...';
 
   @override

@@ -106,6 +106,16 @@
   "@settingsLanguageOptionJapanese": {
     "description": "언어 옵션: 일본어 — 모든 로캘에서 자국어 표기 유지"
   },
+  "asset_loading_sub_joinRoom": "지금 앱을 끄면 합류가 취소돼요. 잠시만 기다려주세요",
+  "asset_loading_sub_createRoom": "작전 본부를 세우는 중이에요. 잠시만 기다려주세요",
+  "asset_loading_sub_changeTeam": "새 신분증을 발급하는 중이에요. 잠시만 기다려주세요",
+  "asset_loading_sub_startGame": "곧 작전이 시작돼요. 앱을 끄지 말아주세요",
+  "asset_loading_sub_updateArea": "작전 구역을 저장하는 중이에요. 잠시만 기다려주세요",
+  "asset_loading_sub_saveSettings": "설정을 저장하는 중이에요. 잠시만 기다려주세요",
+  "asset_loading_sub_loadProfile": "요원 정보를 불러오는 중이에요. 잠시만 기다려주세요",
+  "asset_loading_sub_logout": "안전하게 철수하는 중이에요. 잠시만 기다려주세요",
+  "asset_loading_sub_deleteAccount": "기록을 지우는 중이에요. 앱을 끄지 말아주세요",
+  "asset_loading_sub_bugReport": "제보를 접수하는 중이에요. 잠시만 기다려주세요",
   "asset_loading_joinRoom": "잠입 준비 중...",
   "asset_loading_joinRoomJoinOperation": "작전에 합류하는 중...",
   "asset_loading_joinRoomEnterSecretPassage": "비밀 통로로 진입 중...",
