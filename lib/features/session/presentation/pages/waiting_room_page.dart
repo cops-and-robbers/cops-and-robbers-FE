@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
@@ -23,7 +24,6 @@ import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
@@ -1053,21 +1053,17 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
-    final navigator = Navigator.of(context);
 
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.changeTeam,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.changeTeam);
 
     try {
       await ref.read(changeTeamProvider(gameId, targetTeam: targetTeam).future);
-      if (navigator.canPop()) navigator.pop();
+      await loading.close();
       ref
           .read(roleThemeProvider.notifier)
           .setDarkMode(GameTeam.isRobber(targetTeam));
     } on DioException catch (e) {
-      if (navigator.canPop()) navigator.pop();
+      await loading.close();
       if (!mounted) return;
       await _handleApiErrorOrNotParticipating(e);
     }
@@ -1119,18 +1115,14 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
-    final navigator = Navigator.of(context);
 
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.startGame,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.startGame);
 
     try {
       await ref.read(startGameProvider(gameId).future);
-      if (navigator.canPop()) navigator.pop();
+      await loading.close();
     } on DioException catch (e) {
-      if (navigator.canPop()) navigator.pop();
+      await loading.close();
       if (!mounted) return;
       await _handleApiErrorOrNotParticipating(e);
     }
