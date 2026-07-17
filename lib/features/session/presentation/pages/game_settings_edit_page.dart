@@ -9,11 +9,11 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/dio_exception_handler.dart';
-import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
@@ -81,12 +81,8 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
     setState(() => _isSaving = true);
-    final navigator = Navigator.of(context);
 
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.saveSettings,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.saveSettings);
 
     try {
       await ref.read(
@@ -101,11 +97,11 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
         ).future,
       );
 
+      await loading.close();
       if (!mounted) return;
-      if (navigator.canPop()) navigator.pop(); // 로딩 팝업 닫기
       context.pop(); // 설정 수정 페이지 닫기
     } on DioException catch (e) {
-      if (navigator.canPop()) navigator.pop(); // 로딩 팝업 닫기
+      await loading.close();
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)

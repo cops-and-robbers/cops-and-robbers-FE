@@ -9,10 +9,10 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/dio_exception_handler.dart';
-import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../game/data/models/game_area_model.dart';
 import '../../data/models/game_create_request_model.dart';
@@ -107,12 +107,8 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   }) async {
     final gameId = _gameId;
     if (gameId == null) return;
-    final navigator = Navigator.of(context);
 
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.updateArea,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.updateArea);
 
     try {
       await ref.read(
@@ -132,10 +128,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
           ),
         ).future,
       );
-      if (navigator.canPop()) navigator.pop();
+      await loading.close();
       debugPrint('[GameSettingsPage] ✅ 영역 수정 성공');
     } on DioException catch (e) {
-      if (navigator.canPop()) navigator.pop();
+      await loading.close();
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)

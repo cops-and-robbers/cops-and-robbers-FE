@@ -18,8 +18,8 @@ import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
-import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -262,32 +262,30 @@ class _SessionCreationFlowPageState
     }
 
     setState(() => _isLoading = true);
-    final navigator = Navigator.of(context);
 
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.createRoom,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.createRoom);
 
-    await ref
-        .read(sessionCreationNotifierProvider.notifier)
-        .createGame(
-          playgroundLatitude: _playgroundCenter!.latitude,
-          playgroundLongitude: _playgroundCenter!.longitude,
-          playgroundRadiusInMeters: _playgroundRadiusMeters!.toInt(),
-          jailLatitude: _prisonCenter!.latitude,
-          jailLongitude: _prisonCenter!.longitude,
-          jailRadiusInMeters: _prisonRadiusMeters!.toInt(),
-          roundDurationMinutes: _roundDurationMinutes,
-          locationRevealIntervalMinutes: _locationShareMinutes,
-          policeWaitMinutes: _policeWaitMinutes,
-          maxParticipants: _maxParticipants,
-        );
+    try {
+      await ref
+          .read(sessionCreationNotifierProvider.notifier)
+          .createGame(
+            playgroundLatitude: _playgroundCenter!.latitude,
+            playgroundLongitude: _playgroundCenter!.longitude,
+            playgroundRadiusInMeters: _playgroundRadiusMeters!.toInt(),
+            jailLatitude: _prisonCenter!.latitude,
+            jailLongitude: _prisonCenter!.longitude,
+            jailRadiusInMeters: _prisonRadiusMeters!.toInt(),
+            roundDurationMinutes: _roundDurationMinutes,
+            locationRevealIntervalMinutes: _locationShareMinutes,
+            policeWaitMinutes: _policeWaitMinutes,
+            maxParticipants: _maxParticipants,
+          );
+    } finally {
+      // 성공/실패 무관하게 로딩 종료 보장 (최소 표시 시간은 핸들이 처리)
+      await loading.close();
+    }
 
     if (!mounted) return;
-
-    // 로딩 팝업 닫기
-    if (navigator.canPop()) navigator.pop();
 
     final sessionState = ref.read(sessionCreationNotifierProvider);
 
