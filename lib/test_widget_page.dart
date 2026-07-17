@@ -823,8 +823,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       MaterialPageRoute(
                         builder: (context) => const LoadingPage(
                           message: '로딩 중...',
-                          backgroundColor: AppColors.black,
-                          textColor: AppColors.white,
+                          isDarkMode: true,
                           progress: 0.3,
                           showPercentage: true,
                         ),
