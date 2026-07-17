@@ -17,7 +17,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/services/loading_message_service.dart';
-import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
@@ -520,30 +520,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   /// 닉네임 변경
   Future<void> _onNicknameChange() async {
     final router = GoRouter.of(context);
-    final navigator = Navigator.of(context);
 
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.loadProfile,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.loadProfile);
 
     try {
       final profile = await ref.read(userRepositoryProvider).getMyProfile();
+      await loading.close();
       if (!mounted) return;
       final encodedNickname = Uri.encodeComponent(profile.nickname);
       router.push('${RoutePaths.nicknameSetup}?nickname=$encodedNickname');
     } on AuthException {
+      await loading.close();
       return;
     } on AppException catch (e) {
+      await loading.close();
       if (!mounted) return;
       AppSnackbar.show(
         context,
         message: AppLocalizations.of(context).errorByException(e),
         backgroundColor: AppColors.red,
       );
-    } finally {
-      // 로딩 팝업 종료 보장
-      if (navigator.canPop()) navigator.pop();
     }
   }
 
@@ -572,15 +568,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Future<void> _submitBugReport(String content) async {
     final navigator = Navigator.of(context);
 
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.bugReport,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.bugReport);
 
     try {
       await ref.read(bugRepositoryProvider).reportBug(content: content);
+      await loading.close();
       if (!mounted) return;
-      if (navigator.canPop()) navigator.pop(); // loading 닫기
       if (navigator.canPop()) navigator.pop(); // TextSubmitPage 닫기
       AppSnackbar.show(
         context,
@@ -588,12 +581,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       );
     } on AuthException {
       // AuthInterceptor가 강제 로그아웃 + 로그인 화면 이동을 처리
-      // 다이얼로그는 Navigator 스택에 남으므로 명시적으로 닫아준다
-      if (navigator.canPop()) navigator.pop(); // loading 닫기
+      await loading.close();
       return;
     } on AppException catch (e) {
+      // 로딩만 닫고 입력 페이지는 유지(재시도 가능)
+      await loading.close();
       if (!mounted) return;
-      if (navigator.canPop()) navigator.pop(); // loading만 닫고 입력 페이지는 유지
       AppSnackbar.show(
         context,
         message: AppLocalizations.of(context).errorByException(e),
@@ -630,7 +623,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   /// 로그아웃
   Future<void> _onLogout() async {
-    final navigator = Navigator.of(context);
     final l10n = AppLocalizations.of(context);
     final result = await AppDialog.confirm(
       context: context,
@@ -641,16 +633,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
     if (result != true || !mounted) return;
 
-    await AppPopup.showRandomLoading(
-      // ignore: use_build_context_synchronously
-      context: context,
-      category: LoadingCategory.logout,
-    );
+    // ignore: use_build_context_synchronously
+    final loading = AppLoading.show(context, LoadingCategory.logout);
 
-    await ref.read(authNotifierProvider.notifier).signOut();
+    try {
+      await ref.read(authNotifierProvider.notifier).signOut();
+    } finally {
+      await loading.close();
+    }
     if (!mounted) return;
-
-    if (navigator.canPop()) navigator.pop();
 
     final authState = ref.read(authNotifierProvider);
     AppSnackbar.show(
@@ -697,29 +688,31 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   /// 회원 탈퇴 실행
   Future<void> _executeDeleteAccount() async {
-    final navigator = Navigator.of(context);
-
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.deleteAccount,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.deleteAccount);
 
     try {
       await ref.read(deleteAccountUseCaseProvider).execute();
-      if (!mounted) return;
+      if (!mounted) {
+        await loading.close();
+        return;
+      }
 
       await ref
           .read(authNotifierProvider.notifier)
           .cleanupAfterAccountDeletion();
+
+      // 로그인 화면 위에 로딩이 남지 않도록 이동 전에 닫는다
+      await loading.close();
       if (!mounted) return;
 
       context.go('${RoutePaths.login}?accountDeleted=true');
       ref.read(authNotifierProvider.notifier).forceLogout();
       return;
     } on AuthException {
+      await loading.close();
       return;
     } on AppException catch (e) {
-      if (navigator.canPop()) navigator.pop();
+      await loading.close();
       if (!mounted) return;
       AppSnackbar.show(
         context,
