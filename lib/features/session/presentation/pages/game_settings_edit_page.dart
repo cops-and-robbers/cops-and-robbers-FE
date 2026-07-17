@@ -113,6 +113,9 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
         backgroundColor: AppColors.red,
       );
     } finally {
+      // 안전망: 위에서 처리하지 못한 예외 타입으로 인해 close()가 호출되지
+      // 않는 경로를 막는다. close()는 멱등이므로 정상 경로에는 영향 없음.
+      await loading.close();
       if (mounted) {
         setState(() => _isSaving = false);
       }
