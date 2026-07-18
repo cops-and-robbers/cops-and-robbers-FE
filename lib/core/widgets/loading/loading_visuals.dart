@@ -3,13 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
-import '../../constants/character_assets.dart';
-import '../../constants/game_team.dart';
 
 /// 로딩 화면 비주얼 — 파동 링 3겹 + 팀 캐릭터
 ///
-/// **자산 교체 지점**: 디자이너 SVG/GIF/Lottie 수령 시 이 파일만 교체한다.
-/// 현재는 기존 캐릭터 SVG + 코드 모션으로 만든 플레이스홀더다.
+/// **자산 교체 지점**: 로딩 전용 에셋은 `assets/loading/`에 격리되어 있다.
+/// 디자이너가 실제 디자인/애니메이션(SVG·GIF·Lottie)을 주면 그 폴더의
+/// [_assetPolice]·[_assetRobber] 파일만 교체하면 된다(포맷이 SVG면 코드 무변경,
+/// GIF/Lottie면 이 파일의 로더만 교체). 공유 캐릭터 에셋과 의도적으로 분리한다.
 ///
 /// 팀 테마는 상위에서 prop으로 받는다(하위 위젯 직접 watch 금지).
 class LoadingVisual extends StatefulWidget {
@@ -24,6 +24,10 @@ class LoadingVisual extends StatefulWidget {
 
 class _LoadingVisualState extends State<LoadingVisual>
     with SingleTickerProviderStateMixin {
+  /// 로딩 전용 캐릭터 에셋 (공유 캐릭터와 분리 — 디자이너 자산 교체 지점)
+  static const String _assetPolice = 'assets/loading/police.svg';
+  static const String _assetRobber = 'assets/loading/robber.svg';
+
   /// 링 3겹의 스태거 시작 지점 (0.0 → 0.33 → 0.66)
   static const List<double> _ringOffsets = [0.0, 0.33, 0.66];
 
@@ -42,13 +46,8 @@ class _LoadingVisualState extends State<LoadingVisual>
       ? const [AppColors.green800, AppColors.green500, AppColors.green100]
       : const [AppColors.blue800, AppColors.blue500, AppColors.blue100];
 
-  String get _characterAsset => characterAssetPath(
-    // 팀 문자열은 다른 호출부와 동일하게 GameTeam 상수로 중앙화 (리터럴 금지)
-    team: GameTeam.toLowerKey(
-      widget.isDarkMode ? GameTeam.robber : GameTeam.police,
-    ),
-    state: 'home',
-  );
+  String get _characterAsset =>
+      widget.isDarkMode ? _assetRobber : _assetPolice;
 
   @override
   Widget build(BuildContext context) {

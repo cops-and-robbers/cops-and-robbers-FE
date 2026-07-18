@@ -31,13 +31,13 @@ void main() {
     testWidgets('renders_police_character_when_light_mode', (tester) async {
       await _pump(tester, isDarkMode: false);
 
-      expect(_assetOf(tester), 'assets/characters/police/default/home.svg');
+      expect(_assetOf(tester), 'assets/loading/police.svg');
     });
 
     testWidgets('renders_robber_character_when_dark_mode', (tester) async {
       await _pump(tester, isDarkMode: true);
 
-      expect(_assetOf(tester), 'assets/characters/robber/default/home.svg');
+      expect(_assetOf(tester), 'assets/loading/robber.svg');
     });
 
     testWidgets('disposes_animation_without_error_when_removed', (tester) async {
