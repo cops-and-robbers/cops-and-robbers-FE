@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/character_assets.dart';
+import '../../constants/game_team.dart';
 
 /// 로딩 화면 비주얼 — 파동 링 3겹 + 팀 캐릭터
 ///
@@ -42,7 +43,10 @@ class _LoadingVisualState extends State<LoadingVisual>
       : const [AppColors.blue800, AppColors.blue500, AppColors.blue100];
 
   String get _characterAsset => characterAssetPath(
-    team: widget.isDarkMode ? 'robber' : 'police',
+    // 팀 문자열은 다른 호출부와 동일하게 GameTeam 상수로 중앙화 (리터럴 금지)
+    team: GameTeam.toLowerKey(
+      widget.isDarkMode ? GameTeam.robber : GameTeam.police,
+    ),
     state: 'home',
   );
 

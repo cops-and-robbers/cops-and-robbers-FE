@@ -1059,6 +1059,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     try {
       await ref.read(changeTeamProvider(gameId, targetTeam: targetTeam).future);
       await loading.close();
+      // close()의 최소 표시 대기 동안 대기실이 dispose될 수 있어(KICKED/GAME_START 등
+      // 웹소켓 이벤트가 화면을 날림) ref 사용 전 mounted 확인
+      if (!mounted) return;
       ref
           .read(roleThemeProvider.notifier)
           .setDarkMode(GameTeam.isRobber(targetTeam));
