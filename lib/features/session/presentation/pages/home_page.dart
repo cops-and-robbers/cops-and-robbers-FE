@@ -33,9 +33,9 @@ import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
+import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
@@ -343,15 +343,14 @@ class _HomePageState extends ConsumerState<HomePage> {
   Future<void> _joinRoom(String code) async {
     final dialogCloseStart = DateTime.now();
 
-    await AppPopup.showRandomLoading(
-      context: context,
-      category: LoadingCategory.joinRoom,
-    );
+    final loading = AppLoading.show(context, LoadingCategory.joinRoom);
 
     JoinGameResponse? response;
     try {
       response = await ref.read(joinGameProvider(inviteCode: code).future);
+      await loading.close();
     } on DioException catch (e) {
+      await loading.close();
       // 필수 약관 미동의 차단 → 스낵바 + /agreement 리디렉트
       if (mounted &&
           handleRequiredTermsErrorIfNeeded(
@@ -379,6 +378,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       }
       return;
     } catch (_) {
+      await loading.close();
       // 예상치 못한 예외 (FormatException, StateError 등)
       if (mounted) {
         final l10n = AppLocalizations.of(context);
@@ -389,9 +389,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         );
       }
       return;
-    } finally {
-      // 로딩 팝업 닫기 — 성공/실패 무관하게 보장
-      if (mounted) Navigator.of(context).pop();
     }
 
     if (response != null && mounted) {

@@ -170,6 +170,36 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsLanguageOptionJapanese => '日本語';
 
   @override
+  String get asset_loading_sub_joinRoom => '今アプリを閉じると合流がキャンセルされます。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_createRoom => '作戦本部を設営しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_changeTeam => '新しい身分証を発行しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_startGame => 'まもなく作戦が始まります。アプリを閉じないでください';
+
+  @override
+  String get asset_loading_sub_updateArea => '作戦区域を保存しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_saveSettings => '設定を保存しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_loadProfile => 'エージェント情報を読み込んでいます。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_logout => '安全に撤収しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_deleteAccount => '記録を削除しています。アプリを閉じないでください';
+
+  @override
+  String get asset_loading_sub_bugReport => '報告を受け付けています。少々お待ちください';
+
+  @override
   String get asset_loading_joinRoom => '潜入の準備中です';
 
   @override

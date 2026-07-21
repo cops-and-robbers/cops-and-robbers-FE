@@ -1,3 +1,5 @@
+import 'dart:async'; // unawaited
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +12,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
-import '../../../../core/widgets/dialogs/app_popup.dart';
+import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/pagination_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -36,8 +38,8 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
   /// 현재 펼쳐진 공지사항 인덱스 (-1이면 모두 접힌 상태)
   int _expandedIndex = -1;
 
-  /// 로딩 팝업 노출 중인지 추적 (이중 close 방지)
-  bool _isLoadingPopupShown = false;
+  /// 로딩 오버레이 핸들 (null이면 미표시)
+  LoadingHandle? _loadingHandle;
 
   @override
   void initState() {
@@ -56,24 +58,28 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
 
   @override
   void dispose() {
+    // 화면이 먼저 사라져도 로딩 라우트가 남지 않도록 정리
+    final handle = _loadingHandle;
+    _loadingHandle = null;
+    if (handle != null) unawaited(handle.close());
     _scrollController.dispose();
     super.dispose();
   }
 
   void _showLoadingPopup() {
-    if (_isLoadingPopupShown) return;
-    _isLoadingPopupShown = true;
-    AppPopup.showLoading(
-      context: context,
+    if (_loadingHandle != null) return;
+    _loadingHandle = AppLoading.showMessage(
+      context,
       message: AppLocalizations.of(context).messageLoadingNotices,
     );
   }
 
   void _closeLoadingPopupIfShown() {
-    if (!_isLoadingPopupShown) return;
-    _isLoadingPopupShown = false;
-    final navigator = Navigator.of(context);
-    if (navigator.canPop()) navigator.pop();
+    final handle = _loadingHandle;
+    if (handle == null) return;
+    _loadingHandle = null;
+    // 리스너 콜백이라 await할 수 없다. 최소 표시 시간은 핸들이 알아서 지킨다.
+    unawaited(handle.close());
   }
 
   void _handleStateChange(

@@ -26,6 +26,7 @@ import 'core/widgets/inputs/app_slider.dart';
 import 'core/widgets/inputs/app_text_field.dart';
 import 'core/widgets/buttons/zone_setting_button_example.dart';
 import 'core/widgets/indicators/step_indicator.dart';
+import 'core/widgets/loading/app_loading.dart';
 import 'core/widgets/loading/custom_progress_bar.dart';
 import 'core/widgets/loading/loading_page.dart';
 import 'features/auth/presentation/pages/agreement_page.dart';
@@ -823,8 +824,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       MaterialPageRoute(
                         builder: (context) => const LoadingPage(
                           message: '로딩 중...',
-                          backgroundColor: AppColors.black,
-                          textColor: AppColors.white,
+                          isDarkMode: true,
                           progress: 0.3,
                           showPercentage: true,
                         ),
@@ -1185,13 +1185,12 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: '랜덤 로딩 팝업 (2초)',
                   onPressed: () async {
-                    final navigator = Navigator.of(context);
-                    await AppPopup.showRandomLoading(
-                      context: context,
-                      category: LoadingCategory.joinRoom,
+                    final loading = AppLoading.show(
+                      context,
+                      LoadingCategory.joinRoom,
                     );
-                    await Future.delayed(const Duration(seconds: 2));
-                    if (navigator.canPop()) navigator.pop();
+                    await Future<void>.delayed(const Duration(seconds: 2));
+                    await loading.close();
                   },
                   backgroundColor: AppColors.black600,
                   showBorder: false,
