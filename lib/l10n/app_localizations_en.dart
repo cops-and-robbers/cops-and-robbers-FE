@@ -92,10 +92,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorForbidden => 'Access denied';
 
   @override
-  String get errorNotFound => 'The requested resource could not be found';
+  String get errorNotFound => 'The requested information could not be found';
 
   @override
-  String get errorConflict => 'The request conflicts with the current state';
+  String get errorConflict =>
+      'We couldn\'t process your request. Please try again in a moment';
 
   @override
   String get buttonConfirm => 'Confirm';
@@ -895,11 +896,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAuthTokenIssueFailed =>
-      'Failed to issue the authentication token. Please try again';
+      'Authentication failed. Please try again';
 
   @override
   String get errorAuthTokenValidationFailed =>
-      'Failed to verify the Firebase authentication token. Please sign in again';
+      'Your login session has expired. Please sign in again';
 
   @override
   String get errorAuthInvalidCredential => 'Invalid credentials';
@@ -917,11 +918,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAuthFirebaseConfig =>
-      'There is an issue with the Firebase configuration. Please try again in a moment';
+      'A temporary error occurred. Please try again in a moment';
 
   @override
   String get errorAuthFirebaseInternal =>
-      'A Firebase internal error occurred. Please try again in a moment';
+      'A temporary error occurred. Please try again in a moment';
 
   @override
   String errorAuthProviderLoginFailed(String provider) {
@@ -1773,7 +1774,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAuthTokenMissing =>
-      'Unable to retrieve the authentication token. Re-login is required';
+      'We couldn\'t verify your login. Please sign in again';
 
   @override
   String get errorServerUnreachable =>
