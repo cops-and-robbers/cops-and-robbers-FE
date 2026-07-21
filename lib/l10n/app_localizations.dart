@@ -247,13 +247,13 @@ abstract class AppLocalizations {
   /// No description provided for @errorNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'요청한 리소스를 찾을 수 없습니다'**
+  /// **'요청한 정보를 찾을 수 없습니다'**
   String get errorNotFound;
 
   /// No description provided for @errorConflict.
   ///
   /// In ko, this message translates to:
-  /// **'요청이 현재 상태와 충돌합니다'**
+  /// **'요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요'**
   String get errorConflict;
 
   /// No description provided for @buttonConfirm.
@@ -1621,13 +1621,13 @@ abstract class AppLocalizations {
   /// Firebase 인증 — 토큰 발급 실패
   ///
   /// In ko, this message translates to:
-  /// **'인증 토큰 발급에 실패했습니다. 다시 시도해주세요'**
+  /// **'인증에 실패했습니다. 다시 시도해주세요'**
   String get errorAuthTokenIssueFailed;
 
   /// Firebase 인증 — 토큰 검증 실패
   ///
   /// In ko, this message translates to:
-  /// **'Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요'**
+  /// **'로그인 정보가 만료되었습니다. 다시 로그인해주세요'**
   String get errorAuthTokenValidationFailed;
 
   /// Firebase 인증 — 잘못된 인증 정보
@@ -1657,13 +1657,13 @@ abstract class AppLocalizations {
   /// Firebase 인증 — 설정 오류 (API 키 등)
   ///
   /// In ko, this message translates to:
-  /// **'Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
   String get errorAuthFirebaseConfig;
 
   /// Firebase 인증 — 내부 오류
   ///
   /// In ko, this message translates to:
-  /// **'Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
   String get errorAuthFirebaseInternal;
 
   /// Firebase 인증 — 특정 provider 로그인 실패 (Google/Apple 등)
@@ -3210,7 +3210,7 @@ abstract class AppLocalizations {
   /// 인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후
   ///
   /// In ko, this message translates to:
-  /// **'인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다'**
+  /// **'로그인 정보를 확인할 수 없습니다. 다시 로그인해주세요'**
   String get errorAuthTokenMissing;
 
   /// 서버 연결 실패 — STOMP/REST 모두 실패 시 재시도 권장 안내

@@ -86,10 +86,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorForbidden => '접근 권한이 없습니다';
 
   @override
-  String get errorNotFound => '요청한 리소스를 찾을 수 없습니다';
+  String get errorNotFound => '요청한 정보를 찾을 수 없습니다';
 
   @override
-  String get errorConflict => '요청이 현재 상태와 충돌합니다';
+  String get errorConflict => '요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요';
 
   @override
   String get buttonConfirm => '확인';
@@ -812,11 +812,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorAuthUserNotFound => '로그인 정보를 가져올 수 없습니다. 다시 시도해주세요';
 
   @override
-  String get errorAuthTokenIssueFailed => '인증 토큰 발급에 실패했습니다. 다시 시도해주세요';
+  String get errorAuthTokenIssueFailed => '인증에 실패했습니다. 다시 시도해주세요';
 
   @override
-  String get errorAuthTokenValidationFailed =>
-      'Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요';
+  String get errorAuthTokenValidationFailed => '로그인 정보가 만료되었습니다. 다시 로그인해주세요';
 
   @override
   String get errorAuthInvalidCredential => '잘못된 인증 정보입니다';
@@ -831,11 +830,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorAuthSignInMethodUnavailable => '이 로그인 방법은 현재 사용할 수 없습니다';
 
   @override
-  String get errorAuthFirebaseConfig => 'Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요';
+  String get errorAuthFirebaseConfig => '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorAuthFirebaseInternal =>
-      'Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorAuthFirebaseInternal => '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
 
   @override
   String errorAuthProviderLoginFailed(String provider) {
@@ -1649,7 +1647,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다';
 
   @override
-  String get errorAuthTokenMissing => '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다';
+  String get errorAuthTokenMissing => '로그인 정보를 확인할 수 없습니다. 다시 로그인해주세요';
 
   @override
   String get errorServerUnreachable => '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요';

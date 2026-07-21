@@ -87,10 +87,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorForbidden => 'アクセス権限がありません';
 
   @override
-  String get errorNotFound => '要求されたリソースが見つかりません';
+  String get errorNotFound => '要求された情報が見つかりません';
 
   @override
-  String get errorConflict => 'リクエストが現在の状態と衝突しています';
+  String get errorConflict => 'リクエストを処理できません。しばらくしてからもう一度お試しください';
 
   @override
   String get buttonConfirm => '確認';
@@ -814,11 +814,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorAuthUserNotFound => 'ログイン情報を取得できません。もう一度お試しください';
 
   @override
-  String get errorAuthTokenIssueFailed => '認証トークンの発行に失敗しました。もう一度お試しください';
+  String get errorAuthTokenIssueFailed => '認証に失敗しました。もう一度お試しください';
 
   @override
-  String get errorAuthTokenValidationFailed =>
-      'Firebase認証トークンの検証に失敗しました。再度ログインしてください';
+  String get errorAuthTokenValidationFailed => 'ログイン情報の有効期限が切れました。再度ログインしてください';
 
   @override
   String get errorAuthInvalidCredential => '不正な認証情報です';
@@ -833,12 +832,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorAuthSignInMethodUnavailable => 'このログイン方法は現在ご利用いただけません';
 
   @override
-  String get errorAuthFirebaseConfig =>
-      'Firebase設定に問題があります。しばらくしてからもう一度お試しください';
+  String get errorAuthFirebaseConfig => '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
 
   @override
-  String get errorAuthFirebaseInternal =>
-      'Firebase内部エラーが発生しました。しばらくしてからもう一度お試しください';
+  String get errorAuthFirebaseInternal => '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
 
   @override
   String errorAuthProviderLoginFailed(String provider) {
@@ -1648,7 +1645,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGamePushUpdateUnexpected => 'ゲームプッシュ通知の同意更新中に予期しないエラーが発生しました';
 
   @override
-  String get errorAuthTokenMissing => '認証トークンを取得できません。再ログインが必要です';
+  String get errorAuthTokenMissing => 'ログイン情報を確認できません。再度ログインしてください';
 
   @override
   String get errorServerUnreachable => 'サーバーに接続できません。しばらくしてからもう一度お試しください';

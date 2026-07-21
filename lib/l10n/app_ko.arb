@@ -44,8 +44,8 @@
   "errorBadRequest": "잘못된 요청입니다",
   "errorUnauthorized": "인증에 실패했습니다",
   "errorForbidden": "접근 권한이 없습니다",
-  "errorNotFound": "요청한 리소스를 찾을 수 없습니다",
-  "errorConflict": "요청이 현재 상태와 충돌합니다",
+  "errorNotFound": "요청한 정보를 찾을 수 없습니다",
+  "errorConflict": "요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요",
   "buttonConfirm": "확인",
   "buttonCancel": "취소",
   "dialogReconnectMessage": "연결이 끊어졌어요. 재연결이 필요해요",
@@ -732,11 +732,11 @@
   "@errorAuthUserNotFound": {
     "description": "Firebase 인증 — 사용자 정보 조회 실패"
   },
-  "errorAuthTokenIssueFailed": "인증 토큰 발급에 실패했습니다. 다시 시도해주세요",
+  "errorAuthTokenIssueFailed": "인증에 실패했습니다. 다시 시도해주세요",
   "@errorAuthTokenIssueFailed": {
     "description": "Firebase 인증 — 토큰 발급 실패"
   },
-  "errorAuthTokenValidationFailed": "Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요",
+  "errorAuthTokenValidationFailed": "로그인 정보가 만료되었습니다. 다시 로그인해주세요",
   "@errorAuthTokenValidationFailed": {
     "description": "Firebase 인증 — 토큰 검증 실패"
   },
@@ -756,11 +756,11 @@
   "@errorAuthSignInMethodUnavailable": {
     "description": "Firebase 인증 — 비활성화된 로그인 방법"
   },
-  "errorAuthFirebaseConfig": "Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요",
+  "errorAuthFirebaseConfig": "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
   "@errorAuthFirebaseConfig": {
     "description": "Firebase 인증 — 설정 오류 (API 키 등)"
   },
-  "errorAuthFirebaseInternal": "Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
+  "errorAuthFirebaseInternal": "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
   "@errorAuthFirebaseInternal": {
     "description": "Firebase 인증 — 내부 오류"
   },
@@ -1857,7 +1857,7 @@
   "@errorGamePushUpdateUnexpected": {
     "description": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내"
   },
-  "errorAuthTokenMissing": "인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다",
+  "errorAuthTokenMissing": "로그인 정보를 확인할 수 없습니다. 다시 로그인해주세요",
   "@errorAuthTokenMissing": {
     "description": "인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후"
   },
