@@ -151,6 +151,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneRadiusLabel => 'Radius';
 
   @override
+  String get areaTypeSetByDistance => 'Set by distance';
+
+  @override
+  String get areaTypeSetByPin => 'Set by pins';
+
+  @override
+  String get setupPlaygroundPinDescription =>
+      'Select the whole area where the game will take place';
+
+  @override
+  String get setupPrisonPinDescription =>
+      'Select the jail area to hold the thieves';
+
+  @override
+  String get zoneAreaLabel => 'Area';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return 'You can place up to $count pins';
+  }
+
+  @override
+  String get pinTooCloseMessage => 'Pins are too close together';
+
+  @override
   String get dialogAgreementRequiredTermsTitle => 'Required terms not agreed';
 
   @override

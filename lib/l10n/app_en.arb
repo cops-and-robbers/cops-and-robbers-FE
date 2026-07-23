@@ -41,6 +41,16 @@
   "zoneRadiusKm": "Radius {km}km",
   "zoneRadiusMeter": "Radius {radiusMeters}m",
   "zoneRadiusLabel": "Radius",
+  "areaTypeSetByDistance": "Set by distance",
+  "areaTypeSetByPin": "Set by pins",
+  "setupPlaygroundPinDescription": "Select the whole area where the game will take place",
+  "setupPrisonPinDescription": "Select the jail area to hold the thieves",
+  "zoneAreaLabel": "Area",
+  "pinMaxCountMessage": "You can place up to {count} pins",
+  "@pinMaxCountMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "pinTooCloseMessage": "Pins are too close together",
   "dialogAgreementRequiredTermsTitle": "Required terms not agreed",
   "errorAuthLoginCancelled": "Sign in was cancelled",
   "settingsLanguageLabel": "Language",

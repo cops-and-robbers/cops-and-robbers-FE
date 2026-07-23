@@ -141,6 +141,29 @@ class AppLocalizationsKo extends AppLocalizations {
   String get zoneRadiusLabel => '반경';
 
   @override
+  String get areaTypeSetByDistance => '거리로 설정';
+
+  @override
+  String get areaTypeSetByPin => '핀으로 설정';
+
+  @override
+  String get setupPlaygroundPinDescription => '게임이 진행될 전체 구역을 선택해요';
+
+  @override
+  String get setupPrisonPinDescription => '도둑을 잡아둘 감옥 구역을 선택해요';
+
+  @override
+  String get zoneAreaLabel => '면적';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return '핀은 최대 $count개까지 찍을 수 있어요';
+  }
+
+  @override
+  String get pinTooCloseMessage => '핀이 너무 가까워요';
+
+  @override
   String get dialogAgreementRequiredTermsTitle => '필수 약관 미동의';
 
   @override

@@ -346,6 +346,48 @@ abstract class AppLocalizations {
   /// **'반경'**
   String get zoneRadiusLabel;
 
+  /// No description provided for @areaTypeSetByDistance.
+  ///
+  /// In ko, this message translates to:
+  /// **'거리로 설정'**
+  String get areaTypeSetByDistance;
+
+  /// No description provided for @areaTypeSetByPin.
+  ///
+  /// In ko, this message translates to:
+  /// **'핀으로 설정'**
+  String get areaTypeSetByPin;
+
+  /// No description provided for @setupPlaygroundPinDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 진행될 전체 구역을 선택해요'**
+  String get setupPlaygroundPinDescription;
+
+  /// No description provided for @setupPrisonPinDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑을 잡아둘 감옥 구역을 선택해요'**
+  String get setupPrisonPinDescription;
+
+  /// No description provided for @zoneAreaLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'면적'**
+  String get zoneAreaLabel;
+
+  /// No description provided for @pinMaxCountMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'핀은 최대 {count}개까지 찍을 수 있어요'**
+  String pinMaxCountMessage(int count);
+
+  /// No description provided for @pinTooCloseMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'핀이 너무 가까워요'**
+  String get pinTooCloseMessage;
+
   /// No description provided for @dialogAgreementRequiredTermsTitle.
   ///
   /// In ko, this message translates to:

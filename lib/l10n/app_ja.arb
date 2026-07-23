@@ -41,6 +41,16 @@
   "zoneRadiusKm": "半径 {km}km",
   "zoneRadiusMeter": "半径 {radiusMeters}m",
   "zoneRadiusLabel": "半径",
+  "areaTypeSetByDistance": "距離で設定",
+  "areaTypeSetByPin": "ピンで設定",
+  "setupPlaygroundPinDescription": "ゲームが進行されるエリア全体を選択します",
+  "setupPrisonPinDescription": "泥棒を拘束しておく牢屋エリアを選択します",
+  "zoneAreaLabel": "面積",
+  "pinMaxCountMessage": "ピンは最大{count}個まで置けます",
+  "@pinMaxCountMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "pinTooCloseMessage": "ピン同士が近すぎます",
   "dialogAgreementRequiredTermsTitle": "必須規約未同意",
   "errorAuthLoginCancelled": "ログインがキャンセルされました",
   "settingsLanguageLabel": "言語",

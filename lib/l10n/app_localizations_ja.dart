@@ -143,6 +143,29 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zoneRadiusLabel => '半径';
 
   @override
+  String get areaTypeSetByDistance => '距離で設定';
+
+  @override
+  String get areaTypeSetByPin => 'ピンで設定';
+
+  @override
+  String get setupPlaygroundPinDescription => 'ゲームが進行されるエリア全体を選択します';
+
+  @override
+  String get setupPrisonPinDescription => '泥棒を拘束しておく牢屋エリアを選択します';
+
+  @override
+  String get zoneAreaLabel => '面積';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return 'ピンは最大$count個まで置けます';
+  }
+
+  @override
+  String get pinTooCloseMessage => 'ピン同士が近すぎます';
+
+  @override
   String get dialogAgreementRequiredTermsTitle => '必須規約未同意';
 
   @override

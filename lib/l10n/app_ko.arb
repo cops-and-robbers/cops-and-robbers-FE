@@ -76,6 +76,16 @@
     }
   },
   "zoneRadiusLabel": "반경",
+  "areaTypeSetByDistance": "거리로 설정",
+  "areaTypeSetByPin": "핀으로 설정",
+  "setupPlaygroundPinDescription": "게임이 진행될 전체 구역을 선택해요",
+  "setupPrisonPinDescription": "도둑을 잡아둘 감옥 구역을 선택해요",
+  "zoneAreaLabel": "면적",
+  "pinMaxCountMessage": "핀은 최대 {count}개까지 찍을 수 있어요",
+  "@pinMaxCountMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "pinTooCloseMessage": "핀이 너무 가까워요",
   "dialogAgreementRequiredTermsTitle": "필수 약관 미동의",
   "errorAuthLoginCancelled": "로그인이 취소되었습니다",
   "settingsLanguageLabel": "언어",
