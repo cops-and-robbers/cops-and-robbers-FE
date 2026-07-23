@@ -111,4 +111,20 @@ class GameConfig {
   /// rate-limit 초과 시 핑 금지 시간 (3초)
   /// Cooldown after exceeding the rate-limit (3 seconds)
   static const Duration pingRateCooldown = Duration(seconds: 3);
+
+  // ============================================
+  // 폴리곤 구역 설정 (Polygon Area Settings)
+  // ============================================
+
+  /// 폴리곤 최소 꼭짓점 수 (3개)
+  /// Minimum polygon vertex count (3)
+  static const int minPolygonVertexCount = 3;
+
+  /// 폴리곤 최대 꼭짓점 수 (10개)
+  /// Maximum polygon vertex count (10)
+  static const int maxPolygonVertexCount = 10;
+
+  /// 핀 간 최소 간격 (10m) — 연타·중복 꼭짓점으로 인한 퇴화 다각형 방지
+  /// Minimum spacing between pins (10 meters)
+  static const double minPinSpacingInMeters = 10.0;
 }
