@@ -376,6 +376,12 @@ abstract class AppLocalizations {
   /// **'면적'**
   String get zoneAreaLabel;
 
+  /// No description provided for @zoneClearAllPins.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 해제'**
+  String get zoneClearAllPins;
+
   /// No description provided for @pinMaxCountMessage.
   ///
   /// In ko, this message translates to:

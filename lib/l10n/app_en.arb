@@ -46,6 +46,7 @@
   "setupPlaygroundPinDescription": "Select the whole area where the game will take place",
   "setupPrisonPinDescription": "Select the jail area to hold the thieves",
   "zoneAreaLabel": "Area",
+  "zoneClearAllPins": "Clear all",
   "pinMaxCountMessage": "You can place up to {count} pins",
   "@pinMaxCountMessage": {
     "placeholders": { "count": { "type": "int" } }

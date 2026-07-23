@@ -46,6 +46,7 @@
   "setupPlaygroundPinDescription": "ゲームが進行されるエリア全体を選択します",
   "setupPrisonPinDescription": "泥棒を拘束しておく牢屋エリアを選択します",
   "zoneAreaLabel": "面積",
+  "zoneClearAllPins": "すべて解除",
   "pinMaxCountMessage": "ピンは最大{count}個まで置けます",
   "@pinMaxCountMessage": {
     "placeholders": { "count": { "type": "int" } }

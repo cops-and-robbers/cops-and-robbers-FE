@@ -156,6 +156,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get zoneAreaLabel => '면적';
 
   @override
+  String get zoneClearAllPins => '전체 해제';
+
+  @override
   String pinMaxCountMessage(int count) {
     return '핀은 최대 $count개까지 찍을 수 있어요';
   }

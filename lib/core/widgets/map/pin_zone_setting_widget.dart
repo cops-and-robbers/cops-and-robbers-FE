@@ -12,7 +12,9 @@ import '../../constants/app_colors.dart';
 import '../../constants/game_config.dart';
 import '../../constants/map_styles.dart';
 import '../../services/location/device_location_service.dart';
+import '../../services/vibration_service.dart';
 import '../buttons/my_location_button.dart';
+import '../chips/action_chip.dart' as custom_chip;
 import '../chips/info_radius_chip.dart';
 import '../snackbars/app_snackbar.dart';
 import 'polygon_pin_marker_factory.dart';
@@ -74,12 +76,17 @@ class PinZoneSettingWidget extends StatefulWidget {
 class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
   final List<LatLng> _points = [];
   BitmapDescriptor? _pinIcon;
+  BitmapDescriptor? _hitboxIcon;
   GoogleMapController? _mapController;
   bool _isLocationFocused = true;
   bool _isInitialized = false;
 
+  /// 최근 카메라 위치 — 마커 삭제 시 카메라 튐을 상쇄해 복원하는 데 쓴다
+  CameraPosition? _lastCamera;
+
   // Fallback 위치 (어린이대공원)
   static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
+  static const double _initialZoom = 15;
   late LatLng _initialCamera;
 
   @override
@@ -96,8 +103,9 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
   }
 
   Future<void> _initialize() async {
-    // 마커 아이콘 로드
+    // 마커 아이콘 + 투명 확장 히트박스 로드
     _pinIcon = await PolygonPinMarkerFactory.create(color: widget.pinColor);
+    _hitboxIcon = await PolygonPinMarkerFactory.createHitbox();
 
     // 초기 카메라: 기존 핀 있으면 그 중심, 없으면 현재 위치 → fallback
     if (_points.isNotEmpty) {
@@ -105,6 +113,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     } else {
       _initialCamera = await _currentLocation() ?? _fallbackLocation;
     }
+    _lastCamera = CameraPosition(target: _initialCamera, zoom: _initialZoom);
 
     if (mounted) setState(() => _isInitialized = true);
   }
@@ -124,6 +133,17 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     final lng =
         pts.map((p) => p.longitude).reduce((a, b) => a + b) / pts.length;
     return LatLng(lat, lng);
+  }
+
+  /// 면적을 표준 단위(km²/m²)로 압축 표기.
+  ///
+  /// SI 심볼(m²·km²)은 로케일과 무관하므로 국제화에 안전하다. 0.01km²(=1만 m²)
+  /// 이상은 km²로 올려 자릿수를 억제한다(칩 오버플로 방지).
+  String _formatArea(double squareMeters) {
+    if (squareMeters >= 10000) {
+      return '${(squareMeters / 1000000).toStringAsFixed(2)}km²';
+    }
+    return '${squareMeters.round()}m²';
   }
 
   List<GeoPoint> get _geoPoints => [
@@ -171,21 +191,63 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     widget.onPointsChanged(sortedPoints);
   }
 
-  void _removePin(int index) {
-    setState(() => _points.removeAt(index));
-    widget.onPointsChanged(sortedPoints);
+  /// 모든 핀 제거 (전체 해제)
+  void _clearAll() {
+    if (_points.isEmpty) return;
+    VibrationService.instance().buttonTap();
+    setState(() => _points.clear());
+    widget.onPointsChanged(const []);
   }
 
-  Set<Marker> _buildMarkers() => {
-    for (var i = 0; i < _points.length; i++)
-      Marker(
-        markerId: MarkerId('polygon_pin_$i'),
-        position: _points[i],
-        icon: _pinIcon ?? BitmapDescriptor.defaultMarker,
-        anchor: PolygonPinMarkerFactory.anchor,
-        onTap: () => _removePin(i),
-      ),
-  };
+  void _removePin(int index) {
+    // 마커 탭 시 지도가 그 마커로 카메라를 옮기는 기본 동작이 있어,
+    // 삭제 직전 카메라 위치를 다음 프레임에 즉시(moveCamera) 복원해 화면 튐을 막는다.
+    final restore = _lastCamera;
+    setState(() => _points.removeAt(index));
+    widget.onPointsChanged(sortedPoints);
+    if (restore != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _mapController?.moveCamera(CameraUpdate.newCameraPosition(restore));
+      });
+    }
+  }
+
+  Set<Marker> _buildMarkers() {
+    final markers = <Marker>{};
+    for (var i = 0; i < _points.length; i++) {
+      final p = _points[i];
+      // 식별자를 인덱스가 아닌 위치 기반으로 — 중간 핀 삭제 시 뒤 핀들의
+      // 인덱스가 당겨지며 SDK가 "id가 이동했다"고 오해해 마커가 미끄러지는
+      // 현상을 막는다(핀 간 최소 간격 보장으로 위치는 항상 고유).
+      final id = '${p.latitude}_${p.longitude}';
+
+      // 투명 확장 히트박스 — 핀 근처를 눌러도 삭제되게 (터치 영역 확대).
+      // 로드 전(null)엔 기본 마커가 잠깐 보이지 않도록 생략한다.
+      if (_hitboxIcon != null) {
+        markers.add(
+          Marker(
+            markerId: MarkerId('polygon_pin_hit_$id'),
+            position: p,
+            icon: _hitboxIcon!,
+            anchor: PolygonPinMarkerFactory.hitboxAnchor,
+            onTap: () => _removePin(i),
+          ),
+        );
+      }
+
+      // 보이는 핀
+      markers.add(
+        Marker(
+          markerId: MarkerId('polygon_pin_$id'),
+          position: p,
+          icon: _pinIcon ?? BitmapDescriptor.defaultMarker,
+          anchor: PolygonPinMarkerFactory.anchor,
+          onTap: () => _removePin(i),
+        ),
+      );
+    }
+    return markers;
+  }
 
   Set<Polygon> _buildPolygons() {
     final polygons = <Polygon>{};
@@ -245,12 +307,16 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _initialCamera,
-              zoom: 15,
+              zoom: _initialZoom,
             ),
+            // 폴리곤이 화면 밖으로 벗어날 만큼 과도하게 축소되는 것을 막는다.
+            // 폴리곤은 반경이 없어 완화된 고정 하한을 사용한다.
+            minMaxZoomPreference: const MinMaxZoomPreference(11, 20),
             style: widget.isDarkMode ? MapStyles.dark : null,
             onMapCreated: (controller) => _mapController = controller,
             onTap: _onMapTap,
-            onCameraMove: (_) {
+            onCameraMove: (pos) {
+              _lastCamera = pos;
               if (_isLocationFocused) {
                 setState(() => _isLocationFocused = false);
               }
@@ -285,6 +351,18 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
             ),
           ),
 
+          // 전체 해제 버튼 (핀 1개 이상일 때만, 우상단) — 공용 ActionChip 재사용
+          if (_points.isNotEmpty)
+            Positioned(
+              top: 16.h,
+              right: 20.w,
+              child: custom_chip.ActionChip(
+                text: AppLocalizations.of(context).zoneClearAllPins,
+                onTap: _clearAll,
+                backgroundColor: widget.pinColor,
+              ),
+            ),
+
           // 면적 칩 (꼭짓점 3개 이상일 때만, 우하단)
           if (sortedPoints.length >= GameConfig.minPolygonVertexCount)
             Positioned(
@@ -292,8 +370,11 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
               right: 20.w,
               child: InfoRadiusChip(
                 prefix: AppLocalizations.of(context).zoneAreaLabel,
-                value:
-                    '${polygonAreaInSquareMeters(sortByAngleAroundCentroid(_geoPoints)).round()}m²',
+                value: _formatArea(
+                  polygonAreaInSquareMeters(
+                    sortByAngleAroundCentroid(_geoPoints),
+                  ),
+                ),
                 backgroundColor:
                     widget.areaChipBackgroundColor ?? widget.pinColor,
                 isDarkMode: widget.isDarkMode,

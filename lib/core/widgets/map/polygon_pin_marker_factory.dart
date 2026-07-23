@@ -71,4 +71,49 @@ class PolygonPinMarkerFactory {
       image.dispose();
     }
   }
+
+  /// 투명 확장 히트박스 anchor — 핀과 동일하게 tip(bottom-center)을 좌표에 맞춤
+  static const Offset hitboxAnchor = Offset(0.5, 1.0);
+
+  /// 히트박스 논리 크기 (권장 최소 터치 타깃 44) — 핀(15×28)을 여유 있게 감쌈
+  static double get _hitboxSize => 44.w;
+
+  static BitmapDescriptor? _hitboxCache;
+
+  /// 핀 근처 탭도 삭제로 인식되도록 하는 투명 확장 히트박스 비트맵.
+  ///
+  /// 마커의 터치 판정은 아이콘 사각형 전체(투명 픽셀 포함)라, 투명한 큰
+  /// 정사각형을 핀 아래 겹쳐 두면 시각 변화 없이 터치 영역만 넓힐 수 있다.
+  static Future<BitmapDescriptor> createHitbox() async {
+    final cached = _hitboxCache;
+    if (cached != null) return cached;
+
+    final dpr =
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    final phys = (_hitboxSize * dpr).round();
+
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    // 완전 투명 사각형 — 보이진 않지만 사각형 영역 전체가 탭 가능
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, phys.toDouble(), phys.toDouble()),
+      Paint()..color = const Color(0x00000000),
+    );
+    final image = await recorder.endRecording().toImage(phys, phys);
+
+    try {
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytes == null) {
+        throw StateError('히트박스 비트맵 인코딩 실패 (toByteData returned null)');
+      }
+      final descriptor = BitmapDescriptor.bytes(
+        bytes.buffer.asUint8List(),
+        imagePixelRatio: dpr,
+      );
+      _hitboxCache = descriptor;
+      return descriptor;
+    } finally {
+      image.dispose();
+    }
+  }
 }

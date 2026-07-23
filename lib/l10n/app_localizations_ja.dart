@@ -158,6 +158,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zoneAreaLabel => '面積';
 
   @override
+  String get zoneClearAllPins => 'すべて解除';
+
+  @override
   String pinMaxCountMessage(int count) {
     return 'ピンは最大$count個まで置けます';
   }

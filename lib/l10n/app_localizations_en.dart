@@ -168,6 +168,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneAreaLabel => 'Area';
 
   @override
+  String get zoneClearAllPins => 'Clear all';
+
+  @override
   String pinMaxCountMessage(int count) {
     return 'You can place up to $count pins';
   }
