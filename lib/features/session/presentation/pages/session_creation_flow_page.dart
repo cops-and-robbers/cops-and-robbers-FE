@@ -514,6 +514,11 @@ class _SessionCreationFlowPageState
       ? (_playgroundPinPoints?.length ?? 0) >= GameConfig.minPolygonVertexCount
       : (_playgroundCenter != null && _playgroundRadiusMeters != null);
 
+  /// 감옥 설정 완료 여부 (최초 생성 시 자동 연속 진입 판단용)
+  bool get _isPrisonSet => _areaType == GameAreaType.polygon
+      ? (_prisonPinPoints?.length ?? 0) >= GameConfig.minPolygonVertexCount
+      : (_prisonCenter != null && _prisonRadiusMeters != null);
+
   /// 구역 설정 전체 완료 여부 (Step3 표시·방 생성 가능 조건)
   bool get _isAreaComplete {
     if (_areaType == GameAreaType.polygon) {
@@ -748,6 +753,7 @@ class _SessionCreationFlowPageState
                 ? _prisonRadiusMeters
                 : null,
             isPlaygroundSet: _isPlaygroundSet,
+            isPrisonSet: _isPrisonSet,
             onPlaygroundResult: _onPlaygroundResult,
             onPrisonResult: _onPrisonResult,
             playgroundKey: _tutorialKeyPlayground,

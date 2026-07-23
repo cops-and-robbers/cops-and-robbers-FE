@@ -18,6 +18,7 @@ class Step0SelectAreaContent extends StatelessWidget {
     required this.playgroundRadiusMeters,
     required this.prisonRadiusMeters,
     required this.isPlaygroundSet,
+    required this.isPrisonSet,
     required this.onPlaygroundResult,
     required this.onPrisonResult,
     this.playgroundKey,
@@ -37,6 +38,9 @@ class Step0SelectAreaContent extends StatelessWidget {
   /// 플레이그라운드 설정 완료 여부 (원형/폴리곤 공통)
   final bool isPlaygroundSet;
 
+  /// 감옥 설정 완료 여부 (최초 생성 시 자동 연속 진입 판단용)
+  final bool isPrisonSet;
+
   /// 플레이그라운드 설정 결과 콜백 (원형: {lat,lng,radius} / 폴리곤: {points})
   final Function(Map<String, dynamic> result) onPlaygroundResult;
 
@@ -54,9 +58,18 @@ class Step0SelectAreaContent extends StatelessWidget {
   // ============================================
 
   /// 플레이그라운드 설정 버튼 클릭 시
+  ///
+  /// 최초 생성(감옥 미설정) 흐름에서는 플레이그라운드 완료 직후 감옥 설정으로
+  /// 자동 연결해 이탈을 줄인다. 감옥이 이미 설정된 뒤(재설정)에는 허브로 돌아온다.
   Future<void> _onPlaygroundPressed(BuildContext context) async {
+    final wasPrisonSet = isPrisonSet;
     final result = await context.pushNamed('setupPlaygroundFromFlow');
-    if (result is Map<String, dynamic>) onPlaygroundResult(result);
+    if (result is! Map<String, dynamic>) return;
+    onPlaygroundResult(result);
+
+    if (!wasPrisonSet && context.mounted) {
+      await _onPrisonPressed(context);
+    }
   }
 
   /// 감옥 설정 버튼 클릭 시

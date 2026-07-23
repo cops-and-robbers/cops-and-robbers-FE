@@ -67,6 +67,13 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   /// 현재 선택된 구역 설정 방식 (거리=원형 / 핀=폴리곤)
   GameAreaType _areaType = GameAreaType.circle;
 
+  /// 실제로 진입한 적 있는 구역 방식.
+  ///
+  /// 토글 시 지도 위젯을 교체하면 GoogleMap이 dispose→재생성되어 매번
+  /// Maps SDK map-load가 발생한다. IndexedStack으로 위젯을 유지하되,
+  /// 방문한 모드만 실제 렌더링해 불필요한 지도 로드를 막는다.
+  final Set<GameAreaType> _visitedAreaTypes = {};
+
   /// 핀 모드 정렬된 꼭짓점 목록 (PinZoneSettingWidget 콜백으로 갱신)
   List<LatLng> _pinPoints = [];
 
@@ -258,6 +265,9 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
       );
     }
 
+    // 현재 모드를 방문 처리 — IndexedStack이 해당 지도 위젯을 실제 렌더링한다.
+    _visitedAreaTypes.add(_areaType);
+
     // 로딩 완료 후 정상 UI 렌더링
     return Scaffold(
       backgroundColor: bgColor,
@@ -309,36 +319,53 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
             SizedBox(height: AppSpacing.vertical20),
 
             // 지도 영역 (모드에 따라 원형/핀 위젯 스위칭)
+            //
+            // IndexedStack으로 두 위젯을 유지해 토글 시 GoogleMap이
+            // dispose→재생성되며 매번 지도를 다시 로드하는 것을 막는다.
+            // 방문하지 않은 모드는 빈 위젯으로 두어 최초 지도 로드도 지연시킨다.
             Expanded(
               key: _tutorialKeyMap,
-              child: _areaType == GameAreaType.polygon
-                  ? PinZoneSettingWidget(
-                      initialPoints: _pinPoints,
-                      pinColor: AppColors.blue,
-                      fillColor: AppColors.blue500,
-                      strokeColor: AppColors.blue800,
-                      locationButtonColor: AppColors.blue,
-                      isDarkMode: isDark,
-                      mapHeight: double.infinity,
-                      onPointsChanged: (points) {
-                        setState(() => _pinPoints = points);
-                      },
-                    )
-                  : ZoneSettingWidget(
-                      initialCenter: _currentCenter,
-                      initialRadius: _currentRadius,
-                      minRadius: 100,
-                      maxRadius: 1000,
-                      // 플레이그라운드 색상 (파란색 계열)
-                      centerColor: AppColors.blue,
-                      borderColor: AppColors.blue800,
-                      fillColor: AppColors.blue500,
-                      locationButtonColor: AppColors.blue,
-                      onZoneChanged: _onZoneChanged,
-                      isDarkMode: isDark,
-                      valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
-                      radiusChipKey: _tutorialKeyRadiusChip,
-                    ),
+              child: IndexedStack(
+                sizing: StackFit.expand,
+                index: _areaType == GameAreaType.polygon ? 1 : 0,
+                children: [
+                  // 0: 원형(거리) 모드
+                  _visitedAreaTypes.contains(GameAreaType.circle)
+                      ? ZoneSettingWidget(
+                          initialCenter: _currentCenter,
+                          initialRadius: _currentRadius,
+                          minRadius: 100,
+                          maxRadius: 1000,
+                          // 플레이그라운드 색상 (파란색 계열)
+                          centerColor: AppColors.blue,
+                          borderColor: AppColors.blue800,
+                          fillColor: AppColors.blue500,
+                          locationButtonColor: AppColors.blue,
+                          onZoneChanged: _onZoneChanged,
+                          isDarkMode: isDark,
+                          valueTextStyle: isDark
+                              ? AppTextStyles.robberLabel
+                              : null,
+                          radiusChipKey: _tutorialKeyRadiusChip,
+                        )
+                      : const SizedBox.shrink(),
+                  // 1: 핀(폴리곤) 모드
+                  _visitedAreaTypes.contains(GameAreaType.polygon)
+                      ? PinZoneSettingWidget(
+                          initialPoints: _pinPoints,
+                          pinColor: AppColors.blue,
+                          fillColor: AppColors.blue500,
+                          strokeColor: AppColors.blue800,
+                          locationButtonColor: AppColors.blue,
+                          isDarkMode: isDark,
+                          mapHeight: double.infinity,
+                          onPointsChanged: (points) {
+                            setState(() => _pinPoints = points);
+                          },
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ),
 
             // 하단 버튼 영역

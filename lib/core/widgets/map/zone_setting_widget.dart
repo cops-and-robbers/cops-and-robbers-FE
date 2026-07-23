@@ -307,6 +307,12 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                 target: _currentCenter,
                 zoom: _calculateZoom(_currentRadius),
               ),
+              // 구역이 화면 밖으로 벗어날 만큼 축소되는 것을 막는다.
+              // 인게임(google_map_view) 기준보다 한 단계 완화해 설정 편의성을 높인다.
+              minMaxZoomPreference: MinMaxZoomPreference(
+                _minZoomForRadius(_currentRadius),
+                20,
+              ),
               style: widget.isDarkMode ? MapStyles.dark : null,
               onMapCreated: (controller) {
                 _mapController = controller;
@@ -355,6 +361,17 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       },
     );
   }
+
+  /// 플레이그라운드 반경(미터)으로부터 최소 줌 레벨을 계산한다.
+  ///
+  /// 인게임(GoogleMapView)보다 한 단계씩 낮춰 더 넓게 축소할 수 있게 완화한다.
+  static double _minZoomForRadius(double radiusInMeters) =>
+      switch (radiusInMeters) {
+        <= 200 => 14.0,
+        <= 500 => 13.0,
+        <= 1000 => 12.0,
+        _ => 11.0,
+      };
 
   /// 반경 슬라이더 위젯
   /// Radius slider widget
