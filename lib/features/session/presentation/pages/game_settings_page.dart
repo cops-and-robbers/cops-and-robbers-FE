@@ -15,6 +15,7 @@ import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../game/data/models/game_area_model.dart';
+import '../../../game/domain/entities/area_shape.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../domain/entities/session_settings.dart';
@@ -49,16 +50,27 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   /// 생성 플로우와 동일하게, 플레이그라운드 변경 시 감옥 구역을
   /// 초기화하고 다시 설정하도록 합니다 (감옥이 새 플레이그라운드 밖에
   /// 위치할 수 있으므로).
-  Future<void> _navigateToEditPlayground(GameAreaModel currentArea) async {
+  Future<void> _navigateToEditPlayground(GameAreaEntity currentArea) async {
+    final playground = currentArea.playground;
+    final jail = currentArea.jail;
+
+    if (playground is PolygonShape && jail is PolygonShape) {
+      await _editPolygonArea(playground, jail);
+    } else if (playground is CircleShape && jail is CircleShape) {
+      await _editCircleArea(playground, jail);
+    }
+  }
+
+  /// 원형 구역 수정: 플레이그라운드 → 감옥 순으로 재설정 후 PUT
+  Future<void> _editCircleArea(CircleShape playground, CircleShape jail) async {
     final router = GoRouter.of(context);
 
-    // 1. 플레이그라운드 수정
     final playgroundResult = await router.push<Map<String, dynamic>>(
       '/waiting-room/${widget.sessionId}/game-settings/edit-playground',
       extra: {
-        'lat': currentArea.playgroundCenter.latitude,
-        'lng': currentArea.playgroundCenter.longitude,
-        'radius': currentArea.playgroundRadiusInMeters,
+        'lat': playground.center.latitude,
+        'lng': playground.center.longitude,
+        'radius': playground.radiusInMeters,
       },
     );
 
@@ -70,14 +82,12 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     );
     final newPlaygroundRadius = playgroundResult['radius'] as double;
 
-    // 2. 감옥 재설정 (새 플레이그라운드 기준, 기존 감옥 위치를 초기값으로 표시)
-    //    기존 감옥이 새 플레이그라운드 밖이면 _isJailInsidePlayground 검증에서 차단됨
     final prisonResult = await router.push<Map<String, dynamic>>(
       '/waiting-room/${widget.sessionId}/game-settings/edit-prison',
       extra: {
-        'lat': currentArea.jailCenter.latitude,
-        'lng': currentArea.jailCenter.longitude,
-        'radius': currentArea.jailRadiusInMeters,
+        'lat': jail.center.latitude,
+        'lng': jail.center.longitude,
+        'radius': jail.radiusInMeters,
         'playgroundLat': newPlaygroundCenter.latitude,
         'playgroundLng': newPlaygroundCenter.longitude,
         'playgroundRadius': newPlaygroundRadius,
@@ -86,48 +96,80 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
     if (prisonResult == null || !mounted) return;
 
-    // 3. 둘 다 완료 → PUT /area 호출
     await _updateArea(
-      playgroundCenter: newPlaygroundCenter,
-      playgroundRadius: newPlaygroundRadius,
-      jailCenter: LatLng(
-        prisonResult['lat'] as double,
-        prisonResult['lng'] as double,
+      GameAreaRequestModel(
+        areaType: GameAreaType.circle,
+        circle: CircleAreaRequestModel(
+          playgroundCenter: CoordinatesRequestModel(
+            latitude: newPlaygroundCenter.latitude,
+            longitude: newPlaygroundCenter.longitude,
+          ),
+          playgroundRadiusInMeters: newPlaygroundRadius.toInt(),
+          jailCenter: CoordinatesRequestModel(
+            latitude: prisonResult['lat'] as double,
+            longitude: prisonResult['lng'] as double,
+          ),
+          jailRadiusInMeters: (prisonResult['radius'] as double).toInt(),
+        ),
       ),
-      jailRadius: prisonResult['radius'] as double,
     );
   }
 
+  /// 폴리곤 구역 수정: 플레이그라운드 핀 → 감옥 핀 순으로 재설정 후 PUT
+  Future<void> _editPolygonArea(
+    PolygonShape playground,
+    PolygonShape jail,
+  ) async {
+    final router = GoRouter.of(context);
+
+    final playgroundResult = await router.push<Map<String, dynamic>>(
+      '/waiting-room/${widget.sessionId}/game-settings/edit-playground',
+      extra: {'points': _toLatLngList(playground.points)},
+    );
+
+    if (playgroundResult == null || !mounted) return;
+    final newPlaygroundPoints = playgroundResult['points'] as List<LatLng>;
+
+    final prisonResult = await router.push<Map<String, dynamic>>(
+      '/waiting-room/${widget.sessionId}/game-settings/edit-prison',
+      extra: {
+        'points': _toLatLngList(jail.points),
+        'playgroundPoints': newPlaygroundPoints,
+      },
+    );
+
+    if (prisonResult == null || !mounted) return;
+    final newJailPoints = prisonResult['points'] as List<LatLng>;
+
+    await _updateArea(
+      GameAreaRequestModel(
+        areaType: GameAreaType.polygon,
+        polygon: PolygonAreaRequestModel(
+          playgroundPolygon: _toCoordinatesList(newPlaygroundPoints),
+          jailPolygon: _toCoordinatesList(newJailPoints),
+        ),
+      ),
+    );
+  }
+
+  List<LatLng> _toLatLngList(List<GeoPoint> points) => [
+    for (final p in points) LatLng(p.latitude, p.longitude),
+  ];
+
+  List<CoordinatesRequestModel> _toCoordinatesList(List<LatLng> points) => [
+    for (final p in points)
+      CoordinatesRequestModel(latitude: p.latitude, longitude: p.longitude),
+  ];
+
   /// PUT /api/games/{gameId}/area 호출
-  Future<void> _updateArea({
-    required LatLng playgroundCenter,
-    required double playgroundRadius,
-    required LatLng jailCenter,
-    required double jailRadius,
-  }) async {
+  Future<void> _updateArea(GameAreaRequestModel request) async {
     final gameId = _gameId;
     if (gameId == null) return;
 
     final loading = AppLoading.show(context, LoadingCategory.updateArea);
 
     try {
-      await ref.read(
-        updateGameAreaProvider(
-          gameId,
-          request: AreaRequestModel(
-            playgroundCenter: CoordinatesRequestModel(
-              latitude: playgroundCenter.latitude,
-              longitude: playgroundCenter.longitude,
-            ),
-            playgroundRadiusInMeters: playgroundRadius.toInt(),
-            jailCenter: CoordinatesRequestModel(
-              latitude: jailCenter.latitude,
-              longitude: jailCenter.longitude,
-            ),
-            jailRadiusInMeters: jailRadius.toInt(),
-          ),
-        ).future,
-      );
+      await ref.read(updateGameAreaProvider(gameId, request: request).future);
       await loading.close();
       debugPrint('[GameSettingsPage] ✅ 영역 수정 성공');
     } on DioException catch (e) {
@@ -248,18 +290,11 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     );
   }
 
-  /// 구역 프리뷰 페이지로 이동 (비방장용)
-  void _navigateToZonePreview(GameAreaModel area) {
+  /// 구역 프리뷰 페이지로 이동 (비방장용) — 엔티티를 그대로 전달
+  void _navigateToZonePreview(GameAreaEntity area) {
     context.push(
       '/waiting-room/${widget.sessionId}/game-settings/zone-preview',
-      extra: {
-        'playgroundLat': area.playgroundCenter.latitude,
-        'playgroundLng': area.playgroundCenter.longitude,
-        'playgroundRadius': area.playgroundRadiusInMeters,
-        'jailLat': area.jailCenter.latitude,
-        'jailLng': area.jailCenter.longitude,
-        'jailRadius': area.jailRadiusInMeters,
-      },
+      extra: area,
     );
   }
 
@@ -268,21 +303,22 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   /// 호스트: 구역 탭 → 수정 페이지로 이동
   /// 비호스트: 구역 탭 → 읽기전용 프리뷰 페이지로 이동
   Widget _buildZoneSection(
-    GameAreaModel area, {
+    GameAreaEntity area, {
     required bool isHost,
     required bool isDark,
     required AppLocalizations l10n,
   }) {
+    // 원형은 반경, 폴리곤은 외접 반경으로 대략적 크기를 표시한다.
     final zones = [
       ZoneInfo(
         id: 'playground',
         name: l10n.zonePlayground,
-        radiusMeters: area.playgroundRadiusInMeters.toInt(),
+        radiusMeters: area.playground.boundingRadiusInMeters.toInt(),
       ),
       ZoneInfo(
         id: 'prison',
         name: l10n.zoneJail,
-        radiusMeters: area.jailRadiusInMeters.toInt(),
+        radiusMeters: area.jail.boundingRadiusInMeters.toInt(),
       ),
     ];
 

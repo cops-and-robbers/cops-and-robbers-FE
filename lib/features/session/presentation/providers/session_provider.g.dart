@@ -1485,11 +1485,11 @@ class _FetchGameParticipantsProviderElement
   int get gameId => (origin as FetchGameParticipantsProvider).gameId;
 }
 
-String _$fetchGameAreaHash() => r'8729a1f2480e35f20d05aa88ecd8cb32c79597cd';
+String _$fetchGameAreaHash() => r'd03b7897fcd5312d6f667c5b72f87f212371922a';
 
 /// 게임 영역 조회
 ///
-/// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+/// 플레이그라운드·감옥 구역을 도메인 엔티티로 변환해 반환합니다.
 ///
 /// Copied from [fetchGameArea].
 @ProviderFor(fetchGameArea)
@@ -1497,20 +1497,20 @@ const fetchGameAreaProvider = FetchGameAreaFamily();
 
 /// 게임 영역 조회
 ///
-/// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+/// 플레이그라운드·감옥 구역을 도메인 엔티티로 변환해 반환합니다.
 ///
 /// Copied from [fetchGameArea].
-class FetchGameAreaFamily extends Family<AsyncValue<GameAreaModel>> {
+class FetchGameAreaFamily extends Family<AsyncValue<GameAreaEntity>> {
   /// 게임 영역 조회
   ///
-  /// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+  /// 플레이그라운드·감옥 구역을 도메인 엔티티로 변환해 반환합니다.
   ///
   /// Copied from [fetchGameArea].
   const FetchGameAreaFamily();
 
   /// 게임 영역 조회
   ///
-  /// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+  /// 플레이그라운드·감옥 구역을 도메인 엔티티로 변환해 반환합니다.
   ///
   /// Copied from [fetchGameArea].
   FetchGameAreaProvider call(int gameId) {
@@ -1541,13 +1541,13 @@ class FetchGameAreaFamily extends Family<AsyncValue<GameAreaModel>> {
 
 /// 게임 영역 조회
 ///
-/// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+/// 플레이그라운드·감옥 구역을 도메인 엔티티로 변환해 반환합니다.
 ///
 /// Copied from [fetchGameArea].
-class FetchGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
+class FetchGameAreaProvider extends AutoDisposeFutureProvider<GameAreaEntity> {
   /// 게임 영역 조회
   ///
-  /// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+  /// 플레이그라운드·감옥 구역을 도메인 엔티티로 변환해 반환합니다.
   ///
   /// Copied from [fetchGameArea].
   FetchGameAreaProvider(int gameId)
@@ -1578,7 +1578,7 @@ class FetchGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
 
   @override
   Override overrideWith(
-    FutureOr<GameAreaModel> Function(FetchGameAreaRef provider) create,
+    FutureOr<GameAreaEntity> Function(FetchGameAreaRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -1595,7 +1595,7 @@ class FetchGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<GameAreaModel> createElement() {
+  AutoDisposeFutureProviderElement<GameAreaEntity> createElement() {
     return _FetchGameAreaProviderElement(this);
   }
 
@@ -1615,13 +1615,13 @@ class FetchGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin FetchGameAreaRef on AutoDisposeFutureProviderRef<GameAreaModel> {
+mixin FetchGameAreaRef on AutoDisposeFutureProviderRef<GameAreaEntity> {
   /// The parameter `gameId` of this provider.
   int get gameId;
 }
 
 class _FetchGameAreaProviderElement
-    extends AutoDisposeFutureProviderElement<GameAreaModel>
+    extends AutoDisposeFutureProviderElement<GameAreaEntity>
     with FetchGameAreaRef {
   _FetchGameAreaProviderElement(super.provider);
 
@@ -1800,11 +1800,11 @@ class _UpdateGameSettingsProviderElement
       (origin as UpdateGameSettingsProvider).request;
 }
 
-String _$updateGameAreaHash() => r'aa2152158972c2dab5cc25babc3ec5b8a444a5a2';
+String _$updateGameAreaHash() => r'42befbc1143f1f826e8cd468e026ebc14cfa1297';
 
 /// 게임 영역 수정
 ///
-/// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+/// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
 ///
 /// Copied from [updateGameArea].
 @ProviderFor(updateGameArea)
@@ -1812,23 +1812,26 @@ const updateGameAreaProvider = UpdateGameAreaFamily();
 
 /// 게임 영역 수정
 ///
-/// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+/// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
 ///
 /// Copied from [updateGameArea].
-class UpdateGameAreaFamily extends Family<AsyncValue<GameAreaModel>> {
+class UpdateGameAreaFamily extends Family<AsyncValue<GameAreaEntity>> {
   /// 게임 영역 수정
   ///
-  /// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+  /// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
   ///
   /// Copied from [updateGameArea].
   const UpdateGameAreaFamily();
 
   /// 게임 영역 수정
   ///
-  /// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+  /// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
   ///
   /// Copied from [updateGameArea].
-  UpdateGameAreaProvider call(int gameId, {required AreaRequestModel request}) {
+  UpdateGameAreaProvider call(
+    int gameId, {
+    required GameAreaRequestModel request,
+  }) {
     return UpdateGameAreaProvider(gameId, request: request);
   }
 
@@ -1856,16 +1859,16 @@ class UpdateGameAreaFamily extends Family<AsyncValue<GameAreaModel>> {
 
 /// 게임 영역 수정
 ///
-/// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+/// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
 ///
 /// Copied from [updateGameArea].
-class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
+class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaEntity> {
   /// 게임 영역 수정
   ///
-  /// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+  /// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
   ///
   /// Copied from [updateGameArea].
-  UpdateGameAreaProvider(int gameId, {required AreaRequestModel request})
+  UpdateGameAreaProvider(int gameId, {required GameAreaRequestModel request})
     : this._internal(
         (ref) =>
             updateGameArea(ref as UpdateGameAreaRef, gameId, request: request),
@@ -1893,11 +1896,11 @@ class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
   }) : super.internal();
 
   final int gameId;
-  final AreaRequestModel request;
+  final GameAreaRequestModel request;
 
   @override
   Override overrideWith(
-    FutureOr<GameAreaModel> Function(UpdateGameAreaRef provider) create,
+    FutureOr<GameAreaEntity> Function(UpdateGameAreaRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -1915,7 +1918,7 @@ class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<GameAreaModel> createElement() {
+  AutoDisposeFutureProviderElement<GameAreaEntity> createElement() {
     return _UpdateGameAreaProviderElement(this);
   }
 
@@ -1938,27 +1941,28 @@ class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin UpdateGameAreaRef on AutoDisposeFutureProviderRef<GameAreaModel> {
+mixin UpdateGameAreaRef on AutoDisposeFutureProviderRef<GameAreaEntity> {
   /// The parameter `gameId` of this provider.
   int get gameId;
 
   /// The parameter `request` of this provider.
-  AreaRequestModel get request;
+  GameAreaRequestModel get request;
 }
 
 class _UpdateGameAreaProviderElement
-    extends AutoDisposeFutureProviderElement<GameAreaModel>
+    extends AutoDisposeFutureProviderElement<GameAreaEntity>
     with UpdateGameAreaRef {
   _UpdateGameAreaProviderElement(super.provider);
 
   @override
   int get gameId => (origin as UpdateGameAreaProvider).gameId;
   @override
-  AreaRequestModel get request => (origin as UpdateGameAreaProvider).request;
+  GameAreaRequestModel get request =>
+      (origin as UpdateGameAreaProvider).request;
 }
 
 String _$sessionCreationNotifierHash() =>
-    r'371323e1f00197619d881ff5dfd62103f3f7b80b';
+    r'87c400464374e262a67d77450c3a4fe95cef2573';
 
 /// 세션 생성 상태 관리 Notifier
 ///

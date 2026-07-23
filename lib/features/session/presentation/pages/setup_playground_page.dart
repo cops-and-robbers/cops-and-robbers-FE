@@ -13,7 +13,13 @@ import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/constants/game_config.dart';
+import '../../../../core/widgets/map/pin_zone_setting_widget.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
+import '../../../game/data/models/game_area_model.dart';
+import '../../../game/domain/entities/area_shape.dart';
+import '../../../game/domain/polygon_geometry.dart';
+import '../widgets/area_type_toggle.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 플레이그라운드 구역 설정 화면
@@ -30,6 +36,7 @@ class SetupPlaygroundPage extends ConsumerStatefulWidget {
     super.key,
     this.editInitialCenter,
     this.editInitialRadius,
+    this.editInitialPoints,
   });
 
   /// 편집 모드 초기 중심 좌표 (null이면 생성 모드)
@@ -37,6 +44,9 @@ class SetupPlaygroundPage extends ConsumerStatefulWidget {
 
   /// 편집 모드 초기 반경 (미터)
   final double? editInitialRadius;
+
+  /// 편집 모드 초기 핀 목록 (폴리곤 구역 편집 시)
+  final List<LatLng>? editInitialPoints;
 
   @override
   ConsumerState<SetupPlaygroundPage> createState() =>
@@ -53,6 +63,12 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
 
   /// 현재 설정 중인 구역 반경 (미터)
   double _currentRadius = 500.0; // 기본값: 500m
+
+  /// 현재 선택된 구역 설정 방식 (거리=원형 / 핀=폴리곤)
+  GameAreaType _areaType = GameAreaType.circle;
+
+  /// 핀 모드 정렬된 꼭짓점 목록 (PinZoneSettingWidget 콜백으로 갱신)
+  List<LatLng> _pinPoints = [];
 
   /// 로딩 상태 (데이터 로드 중 여부)
   bool _isLoading = true;
@@ -84,7 +100,8 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   }
 
   /// 편집 모드 여부
-  bool get _isEditMode => widget.editInitialCenter != null;
+  bool get _isEditMode =>
+      widget.editInitialCenter != null || widget.editInitialPoints != null;
 
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
@@ -92,8 +109,14 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     if (_isEditMode) {
       if (mounted) {
         setState(() {
-          _currentCenter = widget.editInitialCenter;
-          _currentRadius = widget.editInitialRadius ?? 500.0;
+          final editPoints = widget.editInitialPoints;
+          if (editPoints != null) {
+            _areaType = GameAreaType.polygon;
+            _pinPoints = List.of(editPoints);
+          } else {
+            _currentCenter = widget.editInitialCenter;
+            _currentRadius = widget.editInitialRadius ?? 500.0;
+          }
           _isLoading = false;
         });
       }
@@ -104,6 +127,8 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     final draft = await _storageService.loadDraft();
     if (mounted) {
       setState(() {
+        _areaType = draft?.areaType ?? GameAreaType.circle;
+        _pinPoints = List.of(draft?.playgroundPinPoints ?? const []);
         _currentCenter = draft?.playgroundCenter;
         _currentRadius = draft?.playgroundRadiusInMeters ?? 500.0;
         _isLoading = false;
@@ -156,13 +181,38 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     });
   }
 
+  /// 핀 모드 완료 가능 여부 (꼭짓점 수 충족 + 자기교차 없음)
+  bool get _isPinComplete {
+    if (_pinPoints.length < GameConfig.minPolygonVertexCount) return false;
+    final geo = [
+      for (final p in _pinPoints)
+        GeoPoint(latitude: p.latitude, longitude: p.longitude),
+    ];
+    return !hasSelfIntersection(geo);
+  }
+
+  /// 완료 버튼 활성화 여부
+  bool get _canComplete =>
+      _areaType == GameAreaType.polygon ? _isPinComplete : _isMapReady;
+
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
+    // 핀 모드: 정렬된 꼭짓점 목록 반환
+    if (_areaType == GameAreaType.polygon) {
+      if (!_isEditMode) {
+        await _storageService.updatePlaygroundPinZone(_pinPoints);
+      }
+      if (mounted) context.pop({'points': _pinPoints});
+      return;
+    }
+
+    // 원형 모드
     final center = _currentCenter;
     if (center == null) return;
 
     // 생성 모드에서만 로컬 저장소에 저장
     if (!_isEditMode) {
+      await _storageService.updateAreaType(GameAreaType.circle);
       await _storageService.updatePlaygroundZone(center, _currentRadius);
     }
 
@@ -227,13 +277,29 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
             // 간격 20px
             SizedBox(height: AppSpacing.vertical20),
 
+            // 구역 설정 방식 토글 (거리/핀)
+            Center(
+              child: AreaTypeToggle(
+                selected: _areaType,
+                onChanged: (type) {
+                  // 각 모드의 입력값은 유지 — 완료 시 선택된 모드 것만 사용
+                  setState(() => _areaType = type);
+                },
+              ),
+            ),
+
+            // 간격 20px
+            SizedBox(height: AppSpacing.vertical20),
+
             // 설명 텍스트
             Padding(
               padding: AppPadding.horizontal24,
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  l10n.setupPlaygroundDescription,
+                  _areaType == GameAreaType.polygon
+                      ? l10n.setupPlaygroundPinDescription
+                      : l10n.setupPlaygroundDescription,
                   style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),
@@ -242,25 +308,37 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
             // 간격 20px
             SizedBox(height: AppSpacing.vertical20),
 
-            // ZoneSettingWidget (지도 + 슬라이더)
+            // 지도 영역 (모드에 따라 원형/핀 위젯 스위칭)
             Expanded(
-              // 지도 영역 전체를 튜토리얼 타겟으로 지정
               key: _tutorialKeyMap,
-              child: ZoneSettingWidget(
-                initialCenter: _currentCenter,
-                initialRadius: _currentRadius,
-                minRadius: 100,
-                maxRadius: 1000,
-                // 플레이그라운드 색상 (파란색 계열)
-                centerColor: AppColors.blue,
-                borderColor: AppColors.blue800,
-                fillColor: AppColors.blue500,
-                locationButtonColor: AppColors.blue,
-                onZoneChanged: _onZoneChanged,
-                isDarkMode: isDark,
-                valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
-                radiusChipKey: _tutorialKeyRadiusChip,
-              ),
+              child: _areaType == GameAreaType.polygon
+                  ? PinZoneSettingWidget(
+                      initialPoints: _pinPoints,
+                      pinColor: AppColors.blue,
+                      fillColor: AppColors.blue500,
+                      strokeColor: AppColors.blue800,
+                      locationButtonColor: AppColors.blue,
+                      isDarkMode: isDark,
+                      mapHeight: double.infinity,
+                      onPointsChanged: (points) {
+                        setState(() => _pinPoints = points);
+                      },
+                    )
+                  : ZoneSettingWidget(
+                      initialCenter: _currentCenter,
+                      initialRadius: _currentRadius,
+                      minRadius: 100,
+                      maxRadius: 1000,
+                      // 플레이그라운드 색상 (파란색 계열)
+                      centerColor: AppColors.blue,
+                      borderColor: AppColors.blue800,
+                      fillColor: AppColors.blue500,
+                      locationButtonColor: AppColors.blue,
+                      onZoneChanged: _onZoneChanged,
+                      isDarkMode: isDark,
+                      valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
+                      radiusChipKey: _tutorialKeyRadiusChip,
+                    ),
             ),
 
             // 하단 버튼 영역
@@ -268,7 +346,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
               padding: AppPadding.all20,
               child: AppButton(
                 text: l10n.buttonDone,
-                onPressed: _isMapReady ? _onComplete : null,
+                onPressed: _canComplete ? _onComplete : null,
                 backgroundColor: AppColors.blue,
                 showBorder: false,
               ),

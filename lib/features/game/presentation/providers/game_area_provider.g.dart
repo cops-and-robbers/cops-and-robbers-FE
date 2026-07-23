@@ -6,7 +6,7 @@ part of 'game_area_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameAreaHash() => r'4bbe03329d51b172385f0800f54efdd74923b44d';
+String _$gameAreaHash() => r'e6207baa34e5c46aed34f27effb82e95bd9dd890';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -31,8 +31,8 @@ class _SystemHash {
 
 /// 게임 맵 영역 FutureProvider
 ///
-/// `GET /api/games/{gameId}/area` 응답을 캐시합니다.
-/// GamePage 진입 시 트리거하여 플레이그라운드·감옥 원을 지도에 표시합니다.
+/// `GET /api/games/{gameId}/area` 응답을 도메인 엔티티로 변환해 캐시합니다.
+/// GamePage 진입 시 트리거하여 플레이그라운드·감옥 구역을 지도에 표시합니다.
 ///
 /// Copied from [gameArea].
 @ProviderFor(gameArea)
@@ -40,23 +40,23 @@ const gameAreaProvider = GameAreaFamily();
 
 /// 게임 맵 영역 FutureProvider
 ///
-/// `GET /api/games/{gameId}/area` 응답을 캐시합니다.
-/// GamePage 진입 시 트리거하여 플레이그라운드·감옥 원을 지도에 표시합니다.
+/// `GET /api/games/{gameId}/area` 응답을 도메인 엔티티로 변환해 캐시합니다.
+/// GamePage 진입 시 트리거하여 플레이그라운드·감옥 구역을 지도에 표시합니다.
 ///
 /// Copied from [gameArea].
-class GameAreaFamily extends Family<AsyncValue<GameAreaModel>> {
+class GameAreaFamily extends Family<AsyncValue<GameAreaEntity>> {
   /// 게임 맵 영역 FutureProvider
   ///
-  /// `GET /api/games/{gameId}/area` 응답을 캐시합니다.
-  /// GamePage 진입 시 트리거하여 플레이그라운드·감옥 원을 지도에 표시합니다.
+  /// `GET /api/games/{gameId}/area` 응답을 도메인 엔티티로 변환해 캐시합니다.
+  /// GamePage 진입 시 트리거하여 플레이그라운드·감옥 구역을 지도에 표시합니다.
   ///
   /// Copied from [gameArea].
   const GameAreaFamily();
 
   /// 게임 맵 영역 FutureProvider
   ///
-  /// `GET /api/games/{gameId}/area` 응답을 캐시합니다.
-  /// GamePage 진입 시 트리거하여 플레이그라운드·감옥 원을 지도에 표시합니다.
+  /// `GET /api/games/{gameId}/area` 응답을 도메인 엔티티로 변환해 캐시합니다.
+  /// GamePage 진입 시 트리거하여 플레이그라운드·감옥 구역을 지도에 표시합니다.
   ///
   /// Copied from [gameArea].
   GameAreaProvider call(int gameId) {
@@ -85,15 +85,15 @@ class GameAreaFamily extends Family<AsyncValue<GameAreaModel>> {
 
 /// 게임 맵 영역 FutureProvider
 ///
-/// `GET /api/games/{gameId}/area` 응답을 캐시합니다.
-/// GamePage 진입 시 트리거하여 플레이그라운드·감옥 원을 지도에 표시합니다.
+/// `GET /api/games/{gameId}/area` 응답을 도메인 엔티티로 변환해 캐시합니다.
+/// GamePage 진입 시 트리거하여 플레이그라운드·감옥 구역을 지도에 표시합니다.
 ///
 /// Copied from [gameArea].
-class GameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
+class GameAreaProvider extends AutoDisposeFutureProvider<GameAreaEntity> {
   /// 게임 맵 영역 FutureProvider
   ///
-  /// `GET /api/games/{gameId}/area` 응답을 캐시합니다.
-  /// GamePage 진입 시 트리거하여 플레이그라운드·감옥 원을 지도에 표시합니다.
+  /// `GET /api/games/{gameId}/area` 응답을 도메인 엔티티로 변환해 캐시합니다.
+  /// GamePage 진입 시 트리거하여 플레이그라운드·감옥 구역을 지도에 표시합니다.
   ///
   /// Copied from [gameArea].
   GameAreaProvider(int gameId)
@@ -123,7 +123,7 @@ class GameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
 
   @override
   Override overrideWith(
-    FutureOr<GameAreaModel> Function(GameAreaRef provider) create,
+    FutureOr<GameAreaEntity> Function(GameAreaRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -140,7 +140,7 @@ class GameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<GameAreaModel> createElement() {
+  AutoDisposeFutureProviderElement<GameAreaEntity> createElement() {
     return _GameAreaProviderElement(this);
   }
 
@@ -160,13 +160,13 @@ class GameAreaProvider extends AutoDisposeFutureProvider<GameAreaModel> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin GameAreaRef on AutoDisposeFutureProviderRef<GameAreaModel> {
+mixin GameAreaRef on AutoDisposeFutureProviderRef<GameAreaEntity> {
   /// The parameter `gameId` of this provider.
   int get gameId;
 }
 
 class _GameAreaProviderElement
-    extends AutoDisposeFutureProviderElement<GameAreaModel>
+    extends AutoDisposeFutureProviderElement<GameAreaEntity>
     with GameAreaRef {
   _GameAreaProviderElement(super.provider);
 

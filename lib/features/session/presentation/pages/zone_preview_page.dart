@@ -13,32 +13,18 @@ import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
+import '../../../game/domain/entities/area_shape.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 구역 읽기전용 프리뷰 페이지
 ///
-/// 플레이그라운드와 감옥 구역을 지도 위에 동시에 표시합니다.
+/// 플레이그라운드와 감옥 구역(원형/폴리곤)을 지도 위에 동시에 표시합니다.
 /// 비방장 참가자가 현재 설정된 구역을 확인하는 용도입니다.
 class ZonePreviewPage extends ConsumerStatefulWidget {
-  const ZonePreviewPage({
-    super.key,
-    required this.playgroundCenter,
-    required this.playgroundRadius,
-    required this.jailCenter,
-    required this.jailRadius,
-  });
+  const ZonePreviewPage({super.key, required this.area});
 
-  /// 플레이그라운드 중심 좌표
-  final LatLng playgroundCenter;
-
-  /// 플레이그라운드 반경 (미터)
-  final double playgroundRadius;
-
-  /// 감옥 중심 좌표
-  final LatLng jailCenter;
-
-  /// 감옥 반경 (미터)
-  final double jailRadius;
+  /// 표시할 게임 구역 (원형/폴리곤 공통)
+  final GameAreaEntity area;
 
   @override
   ConsumerState<ZonePreviewPage> createState() => _ZonePreviewPageState();
@@ -49,34 +35,85 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
   bool _isCentered = true;
   bool _isProgrammaticMove = true;
 
-  late final CircleZoneShape _playgroundZone;
-  late final CircleZoneShape _jailZone;
-
-  @override
-  void initState() {
-    super.initState();
-    _playgroundZone = CircleZoneShape(
-      center: widget.playgroundCenter,
-      radius: widget.playgroundRadius,
-      fillColor: AppColors.blue500,
-      strokeColor: AppColors.blue800,
-      strokeWidth: 2,
-      circleId: 'playground_preview',
-    );
-    _jailZone = CircleZoneShape(
-      center: widget.jailCenter,
-      radius: widget.jailRadius,
-      fillColor: AppColors.red500,
-      strokeColor: AppColors.red800,
-      strokeWidth: 2,
-      circleId: 'jail_preview',
-    );
+  /// 플레이그라운드 중심 (카메라 타겟)
+  LatLng get _playgroundCenter {
+    final c = widget.area.playground.centroid;
+    return LatLng(c.latitude, c.longitude);
   }
+
+  /// 플레이그라운드 외접 반경 (줌 계산)
+  double get _playgroundRadius => widget.area.playground.boundingRadiusInMeters;
 
   @override
   void dispose() {
     _mapController?.dispose();
     super.dispose();
+  }
+
+  /// 구역 경계 원 오버레이 (원형 구역만)
+  Set<Circle> _buildCircles() {
+    final circles = <Circle>{};
+    final pg = widget.area.playground;
+    if (pg is CircleShape) {
+      circles.addAll(
+        CircleZoneShape(
+          center: LatLng(pg.center.latitude, pg.center.longitude),
+          radius: pg.radiusInMeters,
+          fillColor: AppColors.blue500,
+          strokeColor: AppColors.blue800,
+          strokeWidth: 2,
+          circleId: 'playground_preview',
+        ).toMapOverlay(),
+      );
+    }
+    final jail = widget.area.jail;
+    if (jail is CircleShape) {
+      circles.addAll(
+        CircleZoneShape(
+          center: LatLng(jail.center.latitude, jail.center.longitude),
+          radius: jail.radiusInMeters,
+          fillColor: AppColors.red500,
+          strokeColor: AppColors.red800,
+          strokeWidth: 2,
+          circleId: 'jail_preview',
+        ).toMapOverlay(),
+      );
+    }
+    return circles;
+  }
+
+  /// 구역 경계 다각형 오버레이 (폴리곤 구역만)
+  Set<Polygon> _buildPolygons() {
+    final polygons = <Polygon>{};
+    final pg = widget.area.playground;
+    if (pg is PolygonShape) {
+      polygons.add(
+        Polygon(
+          polygonId: const PolygonId('playground_preview'),
+          points: [for (final p in pg.points) LatLng(p.latitude, p.longitude)],
+          fillColor: AppColors.blue500.withValues(alpha: 0.2),
+          strokeColor: AppColors.blue800,
+          strokeWidth: 2,
+          consumeTapEvents: false,
+        ),
+      );
+    }
+    final jail = widget.area.jail;
+    if (jail is PolygonShape) {
+      polygons.add(
+        Polygon(
+          polygonId: const PolygonId('jail_preview'),
+          points: [
+            for (final p in jail.points) LatLng(p.latitude, p.longitude),
+          ],
+          fillColor: AppColors.red500.withValues(alpha: 0.2),
+          strokeColor: AppColors.red800,
+          strokeWidth: 2,
+          consumeTapEvents: false,
+        ),
+      );
+    }
+    return polygons;
   }
 
   /// 반경에 따른 적절한 zoom 레벨 계산
@@ -103,8 +140,8 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
     await _mapController?.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
-          target: widget.playgroundCenter,
-          zoom: _calculateZoom(widget.playgroundRadius),
+          target: _playgroundCenter,
+          zoom: _calculateZoom(_playgroundRadius),
         ),
       ),
     );
@@ -159,12 +196,12 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
                   // Google Map
                   GoogleMap(
                     initialCameraPosition: CameraPosition(
-                      target: widget.playgroundCenter,
-                      zoom: _calculateZoom(widget.playgroundRadius),
+                      target: _playgroundCenter,
+                      zoom: _calculateZoom(_playgroundRadius),
                     ),
                     style: isDark ? MapStyles.dark : null,
                     minMaxZoomPreference: MinMaxZoomPreference(
-                      _minZoomForRadius(widget.playgroundRadius),
+                      _minZoomForRadius(_playgroundRadius),
                       null,
                     ),
                     onMapCreated: (controller) {
@@ -179,10 +216,8 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
                     onCameraIdle: () {
                       _isProgrammaticMove = false;
                     },
-                    circles: {
-                      ..._playgroundZone.toMapOverlay(),
-                      ..._jailZone.toMapOverlay(),
-                    },
+                    circles: _buildCircles(),
+                    polygons: _buildPolygons(),
                     gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
                       Factory<PanGestureRecognizer>(
                         () => PanGestureRecognizer(),

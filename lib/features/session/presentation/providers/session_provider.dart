@@ -8,6 +8,7 @@ import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../data/models/in_game_participants_response.dart';
 import '../../../game/data/models/game_area_model.dart';
+import '../../../game/domain/entities/area_shape.dart';
 import '../../data/models/join_game_request.dart';
 import '../../data/models/join_game_response.dart';
 import '../../data/models/leave_game_response.dart';
@@ -77,12 +78,7 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
   /// 성공 시 state에 [CreateSessionResult]가 저장됩니다.
   /// 실패 시 state에 에러가 저장되며, Presentation에서 처리합니다.
   Future<void> createGame({
-    required double playgroundLatitude,
-    required double playgroundLongitude,
-    required int playgroundRadiusInMeters,
-    required double jailLatitude,
-    required double jailLongitude,
-    required int jailRadiusInMeters,
+    required GameAreaRequestModel area,
     required int roundDurationMinutes,
     required int locationRevealIntervalMinutes,
     required int policeWaitMinutes,
@@ -93,12 +89,7 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
       return await ref
           .read(sessionRepositoryProvider)
           .createGame(
-            playgroundLatitude: playgroundLatitude,
-            playgroundLongitude: playgroundLongitude,
-            playgroundRadiusInMeters: playgroundRadiusInMeters,
-            jailLatitude: jailLatitude,
-            jailLongitude: jailLongitude,
-            jailRadiusInMeters: jailRadiusInMeters,
+            area: area,
             roundDurationMinutes: roundDurationMinutes,
             locationRevealIntervalMinutes: locationRevealIntervalMinutes,
             policeWaitMinutes: policeWaitMinutes,
@@ -219,10 +210,14 @@ Future<InGameParticipantsResponse> fetchGameParticipants(Ref ref, int gameId) =>
 
 /// 게임 영역 조회
 ///
-/// 플레이그라운드·감옥 중심 좌표 및 반경을 반환합니다.
+/// 플레이그라운드·감옥 구역을 도메인 엔티티로 변환해 반환합니다.
 @riverpod
-Future<GameAreaModel> fetchGameArea(Ref ref, int gameId) =>
-    ref.watch(sessionRemoteDataSourceProvider).fetchGameArea(gameId);
+Future<GameAreaEntity> fetchGameArea(Ref ref, int gameId) async {
+  final model = await ref
+      .watch(sessionRemoteDataSourceProvider)
+      .fetchGameArea(gameId);
+  return model.toEntity();
+}
 
 /// 게임 설정 수정
 ///
@@ -243,17 +238,17 @@ Future<GameSettingsResponse> updateGameSettings(
 
 /// 게임 영역 수정
 ///
-/// 성공 시 갱신된 [GameAreaModel]을 반환합니다.
+/// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
 @riverpod
-Future<GameAreaModel> updateGameArea(
+Future<GameAreaEntity> updateGameArea(
   Ref ref,
   int gameId, {
-  required AreaRequestModel request,
+  required GameAreaRequestModel request,
 }) async {
   final dataSource = ref.read(sessionRemoteDataSourceProvider);
   final response = await dataSource.updateGameArea(gameId, request);
   // 영역 캐시 무효화 → 다음 watch 시 재조회
   ref.invalidate(fetchGameAreaProvider(gameId));
   debugPrint('[Session] ✅ 게임 영역 수정 성공: gameId=$gameId');
-  return response;
+  return response.toEntity();
 }

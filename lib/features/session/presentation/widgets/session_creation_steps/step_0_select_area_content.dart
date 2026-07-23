@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/constants/spacing_and_radius.dart';
 import '../../../../../core/widgets/buttons/zone_setting_button.dart';
@@ -16,12 +15,11 @@ import '../../../../../l10n/app_localizations.dart';
 class Step0SelectAreaContent extends StatelessWidget {
   const Step0SelectAreaContent({
     super.key,
-    required this.playgroundCenter,
     required this.playgroundRadiusMeters,
-    required this.prisonCenter,
     required this.prisonRadiusMeters,
-    required this.onPlaygroundSet,
-    required this.onPrisonSet,
+    required this.isPlaygroundSet,
+    required this.onPlaygroundResult,
+    required this.onPrisonResult,
     this.playgroundKey,
     this.prisonKey,
   });
@@ -30,23 +28,20 @@ class Step0SelectAreaContent extends StatelessWidget {
   // Properties
   // ============================================
 
-  /// 플레이그라운드 중심 좌표
-  final LatLng? playgroundCenter;
-
-  /// 플레이그라운드 반경 (미터)
+  /// 플레이그라운드 반경 (미터, 원형일 때만 — 폴리곤이면 null)
   final double? playgroundRadiusMeters;
 
-  /// 감옥 중심 좌표
-  final LatLng? prisonCenter;
-
-  /// 감옥 반경 (미터)
+  /// 감옥 반경 (미터, 원형일 때만 — 폴리곤이면 null)
   final double? prisonRadiusMeters;
 
-  /// 플레이그라운드 설정 완료 콜백
-  final Function(LatLng center, double radius) onPlaygroundSet;
+  /// 플레이그라운드 설정 완료 여부 (원형/폴리곤 공통)
+  final bool isPlaygroundSet;
 
-  /// 감옥 설정 완료 콜백
-  final Function(LatLng center, double radius) onPrisonSet;
+  /// 플레이그라운드 설정 결과 콜백 (원형: {lat,lng,radius} / 폴리곤: {points})
+  final Function(Map<String, dynamic> result) onPlaygroundResult;
+
+  /// 감옥 설정 결과 콜백 (원형: {lat,lng,radius} / 폴리곤: {points})
+  final Function(Map<String, dynamic> result) onPrisonResult;
 
   /// 튜토리얼 하이라이트용 — 플레이그라운드 버튼
   final GlobalKey? playgroundKey;
@@ -61,23 +56,13 @@ class Step0SelectAreaContent extends StatelessWidget {
   /// 플레이그라운드 설정 버튼 클릭 시
   Future<void> _onPlaygroundPressed(BuildContext context) async {
     final result = await context.pushNamed('setupPlaygroundFromFlow');
-
-    if (result is Map<String, dynamic>) {
-      final center = LatLng(result['lat'] as double, result['lng'] as double);
-      final radius = result['radius'] as double;
-      onPlaygroundSet(center, radius);
-    }
+    if (result is Map<String, dynamic>) onPlaygroundResult(result);
   }
 
   /// 감옥 설정 버튼 클릭 시
   Future<void> _onPrisonPressed(BuildContext context) async {
     final result = await context.pushNamed('setupPrisonFromFlow');
-
-    if (result is Map<String, dynamic>) {
-      final center = LatLng(result['lat'] as double, result['lng'] as double);
-      final radius = result['radius'] as double;
-      onPrisonSet(center, radius);
-    }
+    if (result is Map<String, dynamic>) onPrisonResult(result);
   }
 
   // ============================================
@@ -87,8 +72,6 @@ class Step0SelectAreaContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isPlaygroundSet =
-        playgroundCenter != null && playgroundRadiusMeters != null;
 
     return Column(
       children: [
