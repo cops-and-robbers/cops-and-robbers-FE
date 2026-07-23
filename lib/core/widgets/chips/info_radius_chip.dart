@@ -237,32 +237,25 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
       child: Container(
         width: _effectiveWidth,
         height: _effectiveHeight,
+        padding: EdgeInsets.symmetric(horizontal: 14.w),
         decoration: BoxDecoration(
           color: _effectiveBackgroundColor,
           borderRadius: BorderRadius.circular(_effectiveBorderRadius),
         ),
-        child: Stack(
+        child: Row(
           children: [
-            // prefix: 절대 위치 고정 (왼쪽에서 AppSpacing.horizontal12)
-            Positioned(
-              left: 14.w,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: Text(
-                  widget.prefix,
-                  style: AppTextStyles.paragraph_14_100.copyWith(
-                    color: _effectivePrefixColor,
-                  ),
-                ),
+            // prefix: 좌측 고정 — value가 길어도 위치 불변
+            Text(
+              widget.prefix,
+              style: AppTextStyles.paragraph_14_100.copyWith(
+                color: _effectivePrefixColor,
               ),
             ),
-            // value: 오른쪽 정렬 (우측 공간 최소화)
-            Positioned(
-              right: 14.w,
-              top: 0,
-              bottom: 0,
-              child: Center(
+            SizedBox(width: 8.w),
+            // value: 남은 폭에서 우측 정렬. 폭을 넘으면 축소되어 prefix와 겹치지 않음
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
                 child: _isEditing ? _buildTextField() : _buildValueText(),
               ),
             ),
@@ -273,11 +266,19 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
   }
 
   /// 읽기 전용 value 텍스트
+  ///
+  /// 남은 폭을 넘으면 FittedBox가 축소해 prefix와 겹치지 않게 한다
+  /// (긴 면적 값·다국어 prefix 대응).
   Widget _buildValueText() {
-    return Text(
-      widget.value,
-      style: (widget.valueTextStyle ?? AppTextStyles.label_16).copyWith(
-        color: _effectiveValueColor,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerRight,
+      child: Text(
+        widget.value,
+        maxLines: 1,
+        style: (widget.valueTextStyle ?? AppTextStyles.label_16).copyWith(
+          color: _effectiveValueColor,
+        ),
       ),
     );
   }
