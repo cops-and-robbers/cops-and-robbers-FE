@@ -6,16 +6,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../game/data/models/game_area_model.dart';
 
 /// 구역 설정 방식 토글 (거리로 설정 = 원형 / 핀으로 설정 = 폴리곤)
 ///
 /// 선택 pill이 좌우로 이동할 때 물방울처럼 늘어났다 뭉치는 squash-stretch로
-/// 다이나믹하게 전환한다. 이동 중 pill이 가로로 넓어지며(세로 수축) 도착하면
-/// 원래 캡슐로 되돌아온다. 위치는 easeInOutCubic, 늘어남은 sin 벨커브(양끝 0·
-/// 중앙 최대)라 정지 상태에선 왜곡이 없다. ClipRRect로 늘어난 pill이 캡슐 안에서
-/// 뭉치도록(gooey) 클립한다.
+/// 다이나믹하게 전환한다. 늘어남을 위치 진행도(공간 중앙에서 최대)에 묶어,
+/// 시간 커브(easeOut)와 무관하게 항상 "이동 중 늘어남"으로 읽힌다.
+///
+/// 타이밍은 Doherty 임계값(400ms) 안쪽의 300ms + 시작 빠른 easeOut으로 잡아
+/// 반응성을 확보하되, squash-stretch가 읽힐 최소 시간은 확보한다. 선택 변경 시
+/// 가장 약한 selectionClick 햅틱으로 시각·촉각을 교차 강화한다.
 ///
 /// 디자인 스펙: w350×h40, radius 38(pill), 배경 black100, 선택 세그먼트는
 /// 내부 5 인셋의 white pill.
@@ -42,8 +45,8 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
   late double _toX;
 
   /// 이동 중 최대 늘어남/수축 비율
-  static const double _stretchX = 0.30;
-  static const double _squashY = 0.12;
+  static const double _stretchX = 0.34;
+  static const double _squashY = 0.14;
 
   static double _targetX(GameAreaType type) =>
       type == GameAreaType.circle ? -1.0 : 1.0;
@@ -53,7 +56,7 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 460),
+      duration: const Duration(milliseconds: 300),
       value: 1, // 초기엔 정지 상태(도착 완료)
     );
     _fromX = _toX = _targetX(widget.selected);
@@ -70,11 +73,11 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
     }
   }
 
-  /// 현재 프레임의 pill x (easeInOutCubic 보간)
-  double get _currentX {
-    final t = Curves.easeInOutCubic.transform(_controller.value);
-    return _fromX + (_toX - _fromX) * t;
-  }
+  /// 위치 진행도 (시작 빠른 easeOut — 탭 직후 즉시 움직여 반응성 확보)
+  double get _progress => Curves.easeOutCubic.transform(_controller.value);
+
+  /// 현재 프레임의 pill x
+  double get _currentX => _fromX + (_toX - _fromX) * _progress;
 
   @override
   void dispose() {
@@ -101,14 +104,15 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 물방울 pill — 이동하며 늘어났다 도착 시 뭉침
+            // 물방울 pill — 공간 중앙에서 가장 늘어났다 도착 시 뭉침
             AnimatedBuilder(
               animation: _controller,
               builder: (context, _) {
-                // 이동 중 늘어남 벨커브 (양끝 0, 중앙 1) — 정지 시 왜곡 0
-                final stretch = math.sin(math.pi * _controller.value);
+                final p = _progress;
+                // 늘어남 벨커브를 위치 진행도에 묶음 (공간 중앙=최대, 양끝=0)
+                final stretch = math.sin(math.pi * p);
                 return Align(
-                  alignment: Alignment(_currentX, 0),
+                  alignment: Alignment(_fromX + (_toX - _fromX) * p, 0),
                   child: FractionallySizedBox(
                     widthFactor: 0.5,
                     heightFactor: 1,
@@ -146,12 +150,15 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
-          if (!isSelected) widget.onChanged(type);
+          if (isSelected) return;
+          // 실제 변경 시에만 앱 공통 탭 햅틱 — AppButton과 동일(일관성)
+          VibrationService.instance().buttonTap();
+          widget.onChanged(type);
         },
         child: Center(
           child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
             style: AppTextStyles.paragraph_14.copyWith(
               color: isSelected ? AppColors.black800 : AppColors.black400,
             ),
