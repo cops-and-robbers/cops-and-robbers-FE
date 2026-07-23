@@ -27,6 +27,7 @@ import '../features/session/presentation/pages/home_page.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
 import '../features/session/presentation/pages/setup_playground_page.dart';
 import '../features/session/presentation/pages/setup_prison_page.dart';
+import '../features/game/domain/entities/area_shape.dart';
 import '../features/session/presentation/pages/zone_preview_page.dart';
 import '../features/session/presentation/pages/waiting_room_page.dart';
 import '../features/session/presentation/pages/game_settings_page.dart';
@@ -450,6 +451,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           ? LatLng(lat, lng)
                           : null,
                       editInitialRadius: extra?['radius'] as double?,
+                      editInitialPoints: extra?['points'] as List<LatLng>?,
                     ),
                     isForward: true,
                   );
@@ -477,6 +479,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                           : null,
                       editPlaygroundRadius:
                           extra?['playgroundRadius'] as double?,
+                      editInitialPoints: extra?['points'] as List<LatLng>?,
+                      editPlaygroundPoints:
+                          extra?['playgroundPoints'] as List<LatLng>?,
                     ),
                     isForward: true,
                   );
@@ -487,17 +492,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'zone-preview',
                 name: RoutePaths.gameSettingsZonePreviewName,
                 pageBuilder: (context, state) {
-                  final extra = state.extra as Map<String, dynamic>?;
-                  final pgLat = extra?['playgroundLat'] as double?;
-                  final pgLng = extra?['playgroundLng'] as double?;
-                  final jLat = extra?['jailLat'] as double?;
-                  final jLng = extra?['jailLng'] as double?;
+                  final area = state.extra as GameAreaEntity?;
 
-                  // 필수 좌표가 없으면 빈 페이지 (비정상 접근 방어)
-                  if (pgLat == null ||
-                      pgLng == null ||
-                      jLat == null ||
-                      jLng == null) {
+                  // 구역 정보가 없으면 빈 페이지 (비정상 접근 방어)
+                  if (area == null) {
                     return buildDirectionalSlide(
                       key: state.pageKey,
                       child: Scaffold(
@@ -518,13 +516,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
                   return buildDirectionalSlide(
                     key: state.pageKey,
-                    child: ZonePreviewPage(
-                      playgroundCenter: LatLng(pgLat, pgLng),
-                      playgroundRadius:
-                          extra?['playgroundRadius'] as double? ?? 500,
-                      jailCenter: LatLng(jLat, jLng),
-                      jailRadius: extra?['jailRadius'] as double? ?? 100,
-                    ),
+                    child: ZonePreviewPage(area: area),
                     isForward: true,
                   );
                 },
