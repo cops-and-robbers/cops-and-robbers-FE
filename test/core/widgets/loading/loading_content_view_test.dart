@@ -33,11 +33,7 @@ Future<void> _pump(
 void main() {
   group('LoadingContentView', () {
     testWidgets('renders_message_and_subtitle', (tester) async {
-      await _pump(
-        tester,
-        message: '잠입 준비 중...',
-        subtitle: '지금 앱을 끄면 합류가 취소돼요',
-      );
+      await _pump(tester, message: '잠입 준비 중...', subtitle: '지금 앱을 끄면 합류가 취소돼요');
 
       expect(find.text('잠입 준비 중...'), findsOneWidget);
       expect(find.text('지금 앱을 끄면 합류가 취소돼요'), findsOneWidget);
@@ -82,11 +78,7 @@ void main() {
     });
 
     testWidgets('renders_bottom_slot_when_provided', (tester) async {
-      await _pump(
-        tester,
-        message: '방 입장 중...',
-        bottom: const Text('진행률 70%'),
-      );
+      await _pump(tester, message: '방 입장 중...', bottom: const Text('진행률 70%'));
 
       expect(find.text('진행률 70%'), findsOneWidget);
     });
