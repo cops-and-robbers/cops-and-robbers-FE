@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/converters/latlng_converter.dart';
+import '../../../game/data/models/game_area_model.dart';
 
 part 'session_creation_draft_model.freezed.dart';
 part 'session_creation_draft_model.g.dart';
@@ -45,6 +46,15 @@ class SessionCreationDraftModel with _$SessionCreationDraftModel {
 
     /// 감옥 반경 (미터)
     double? jailRadiusInMeters,
+
+    /// 구역 타입 (거리로 설정 = circle / 핀으로 설정 = polygon)
+    @Default(GameAreaType.circle) GameAreaType areaType,
+
+    /// 플레이그라운드 핀 목록 (찍은 순서 그대로 — 정렬은 표시·전송 시점에)
+    @LatLngListConverter() List<LatLng>? playgroundPinPoints,
+
+    /// 감옥 핀 목록 (찍은 순서 그대로)
+    @LatLngListConverter() List<LatLng>? jailPinPoints,
 
     // ============================================
     // 게임 설정 (2단계: 인원 설정, 3단계: 기본정보 설정)

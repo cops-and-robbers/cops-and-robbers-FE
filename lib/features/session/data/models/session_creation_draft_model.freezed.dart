@@ -38,8 +38,18 @@ mixin _$SessionCreationDraftModel {
   LatLng? get jailCenter => throw _privateConstructorUsedError;
 
   /// 감옥 반경 (미터)
-  double? get jailRadiusInMeters =>
-      throw _privateConstructorUsedError; // ============================================
+  double? get jailRadiusInMeters => throw _privateConstructorUsedError;
+
+  /// 구역 타입 (거리로 설정 = circle / 핀으로 설정 = polygon)
+  GameAreaType get areaType => throw _privateConstructorUsedError;
+
+  /// 플레이그라운드 핀 목록 (찍은 순서 그대로 — 정렬은 표시·전송 시점에)
+  @LatLngListConverter()
+  List<LatLng>? get playgroundPinPoints => throw _privateConstructorUsedError;
+
+  /// 감옥 핀 목록 (찍은 순서 그대로)
+  @LatLngListConverter()
+  List<LatLng>? get jailPinPoints => throw _privateConstructorUsedError; // ============================================
   // 게임 설정 (2단계: 인원 설정, 3단계: 기본정보 설정)
   // ============================================
   /// 라운드 시간 (분)
@@ -76,6 +86,9 @@ abstract class $SessionCreationDraftModelCopyWith<$Res> {
     double? playgroundRadiusInMeters,
     @LatLngConverter() LatLng? jailCenter,
     double? jailRadiusInMeters,
+    GameAreaType areaType,
+    @LatLngListConverter() List<LatLng>? playgroundPinPoints,
+    @LatLngListConverter() List<LatLng>? jailPinPoints,
     int? roundDurationMinutes,
     int? locationShareMinutes,
     int? policeWaitMinutes,
@@ -105,6 +118,9 @@ class _$SessionCreationDraftModelCopyWithImpl<
     Object? playgroundRadiusInMeters = freezed,
     Object? jailCenter = freezed,
     Object? jailRadiusInMeters = freezed,
+    Object? areaType = null,
+    Object? playgroundPinPoints = freezed,
+    Object? jailPinPoints = freezed,
     Object? roundDurationMinutes = freezed,
     Object? locationShareMinutes = freezed,
     Object? policeWaitMinutes = freezed,
@@ -128,6 +144,18 @@ class _$SessionCreationDraftModelCopyWithImpl<
                 ? _value.jailRadiusInMeters
                 : jailRadiusInMeters // ignore: cast_nullable_to_non_nullable
                       as double?,
+            areaType: null == areaType
+                ? _value.areaType
+                : areaType // ignore: cast_nullable_to_non_nullable
+                      as GameAreaType,
+            playgroundPinPoints: freezed == playgroundPinPoints
+                ? _value.playgroundPinPoints
+                : playgroundPinPoints // ignore: cast_nullable_to_non_nullable
+                      as List<LatLng>?,
+            jailPinPoints: freezed == jailPinPoints
+                ? _value.jailPinPoints
+                : jailPinPoints // ignore: cast_nullable_to_non_nullable
+                      as List<LatLng>?,
             roundDurationMinutes: freezed == roundDurationMinutes
                 ? _value.roundDurationMinutes
                 : roundDurationMinutes // ignore: cast_nullable_to_non_nullable
@@ -164,6 +192,9 @@ abstract class _$$SessionCreationDraftModelImplCopyWith<$Res>
     double? playgroundRadiusInMeters,
     @LatLngConverter() LatLng? jailCenter,
     double? jailRadiusInMeters,
+    GameAreaType areaType,
+    @LatLngListConverter() List<LatLng>? playgroundPinPoints,
+    @LatLngListConverter() List<LatLng>? jailPinPoints,
     int? roundDurationMinutes,
     int? locationShareMinutes,
     int? policeWaitMinutes,
@@ -193,6 +224,9 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
     Object? playgroundRadiusInMeters = freezed,
     Object? jailCenter = freezed,
     Object? jailRadiusInMeters = freezed,
+    Object? areaType = null,
+    Object? playgroundPinPoints = freezed,
+    Object? jailPinPoints = freezed,
     Object? roundDurationMinutes = freezed,
     Object? locationShareMinutes = freezed,
     Object? policeWaitMinutes = freezed,
@@ -216,6 +250,18 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
             ? _value.jailRadiusInMeters
             : jailRadiusInMeters // ignore: cast_nullable_to_non_nullable
                   as double?,
+        areaType: null == areaType
+            ? _value.areaType
+            : areaType // ignore: cast_nullable_to_non_nullable
+                  as GameAreaType,
+        playgroundPinPoints: freezed == playgroundPinPoints
+            ? _value._playgroundPinPoints
+            : playgroundPinPoints // ignore: cast_nullable_to_non_nullable
+                  as List<LatLng>?,
+        jailPinPoints: freezed == jailPinPoints
+            ? _value._jailPinPoints
+            : jailPinPoints // ignore: cast_nullable_to_non_nullable
+                  as List<LatLng>?,
         roundDurationMinutes: freezed == roundDurationMinutes
             ? _value.roundDurationMinutes
             : roundDurationMinutes // ignore: cast_nullable_to_non_nullable
@@ -245,11 +291,15 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
     this.playgroundRadiusInMeters,
     @LatLngConverter() this.jailCenter,
     this.jailRadiusInMeters,
+    this.areaType = GameAreaType.circle,
+    @LatLngListConverter() final List<LatLng>? playgroundPinPoints,
+    @LatLngListConverter() final List<LatLng>? jailPinPoints,
     this.roundDurationMinutes,
     this.locationShareMinutes,
     this.policeWaitMinutes,
     this.maxParticipants,
-  });
+  }) : _playgroundPinPoints = playgroundPinPoints,
+       _jailPinPoints = jailPinPoints;
 
   factory _$SessionCreationDraftModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$SessionCreationDraftModelImplFromJson(json);
@@ -274,6 +324,41 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
   /// 감옥 반경 (미터)
   @override
   final double? jailRadiusInMeters;
+
+  /// 구역 타입 (거리로 설정 = circle / 핀으로 설정 = polygon)
+  @override
+  @JsonKey()
+  final GameAreaType areaType;
+
+  /// 플레이그라운드 핀 목록 (찍은 순서 그대로 — 정렬은 표시·전송 시점에)
+  final List<LatLng>? _playgroundPinPoints;
+
+  /// 플레이그라운드 핀 목록 (찍은 순서 그대로 — 정렬은 표시·전송 시점에)
+  @override
+  @LatLngListConverter()
+  List<LatLng>? get playgroundPinPoints {
+    final value = _playgroundPinPoints;
+    if (value == null) return null;
+    if (_playgroundPinPoints is EqualUnmodifiableListView)
+      return _playgroundPinPoints;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  /// 감옥 핀 목록 (찍은 순서 그대로)
+  final List<LatLng>? _jailPinPoints;
+
+  /// 감옥 핀 목록 (찍은 순서 그대로)
+  @override
+  @LatLngListConverter()
+  List<LatLng>? get jailPinPoints {
+    final value = _jailPinPoints;
+    if (value == null) return null;
+    if (_jailPinPoints is EqualUnmodifiableListView) return _jailPinPoints;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   // ============================================
   // 게임 설정 (2단계: 인원 설정, 3단계: 기본정보 설정)
   // ============================================
@@ -295,7 +380,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
 
   @override
   String toString() {
-    return 'SessionCreationDraftModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
+    return 'SessionCreationDraftModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters, areaType: $areaType, playgroundPinPoints: $playgroundPinPoints, jailPinPoints: $jailPinPoints, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
   }
 
   @override
@@ -314,6 +399,16 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
                 other.jailCenter == jailCenter) &&
             (identical(other.jailRadiusInMeters, jailRadiusInMeters) ||
                 other.jailRadiusInMeters == jailRadiusInMeters) &&
+            (identical(other.areaType, areaType) ||
+                other.areaType == areaType) &&
+            const DeepCollectionEquality().equals(
+              other._playgroundPinPoints,
+              _playgroundPinPoints,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._jailPinPoints,
+              _jailPinPoints,
+            ) &&
             (identical(other.roundDurationMinutes, roundDurationMinutes) ||
                 other.roundDurationMinutes == roundDurationMinutes) &&
             (identical(other.locationShareMinutes, locationShareMinutes) ||
@@ -332,6 +427,9 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
     playgroundRadiusInMeters,
     jailCenter,
     jailRadiusInMeters,
+    areaType,
+    const DeepCollectionEquality().hash(_playgroundPinPoints),
+    const DeepCollectionEquality().hash(_jailPinPoints),
     roundDurationMinutes,
     locationShareMinutes,
     policeWaitMinutes,
@@ -361,6 +459,9 @@ abstract class _SessionCreationDraftModel implements SessionCreationDraftModel {
     final double? playgroundRadiusInMeters,
     @LatLngConverter() final LatLng? jailCenter,
     final double? jailRadiusInMeters,
+    final GameAreaType areaType,
+    @LatLngListConverter() final List<LatLng>? playgroundPinPoints,
+    @LatLngListConverter() final List<LatLng>? jailPinPoints,
     final int? roundDurationMinutes,
     final int? locationShareMinutes,
     final int? policeWaitMinutes,
@@ -389,7 +490,21 @@ abstract class _SessionCreationDraftModel implements SessionCreationDraftModel {
 
   /// 감옥 반경 (미터)
   @override
-  double? get jailRadiusInMeters; // ============================================
+  double? get jailRadiusInMeters;
+
+  /// 구역 타입 (거리로 설정 = circle / 핀으로 설정 = polygon)
+  @override
+  GameAreaType get areaType;
+
+  /// 플레이그라운드 핀 목록 (찍은 순서 그대로 — 정렬은 표시·전송 시점에)
+  @override
+  @LatLngListConverter()
+  List<LatLng>? get playgroundPinPoints;
+
+  /// 감옥 핀 목록 (찍은 순서 그대로)
+  @override
+  @LatLngListConverter()
+  List<LatLng>? get jailPinPoints; // ============================================
   // 게임 설정 (2단계: 인원 설정, 3단계: 기본정보 설정)
   // ============================================
   /// 라운드 시간 (분)
