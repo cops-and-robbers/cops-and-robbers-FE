@@ -70,8 +70,10 @@ class _FakeSessionRemoteDataSource implements SessionRemoteDataSource {
   ) => throw UnimplementedError();
 
   @override
-  Future<GameAreaModel> updateGameArea(int gameId, AreaRequestModel request) =>
-      throw UnimplementedError();
+  Future<GameAreaModel> updateGameArea(
+    int gameId,
+    GameAreaRequestModel request,
+  ) => throw UnimplementedError();
 
   @override
   Future<void> kickMember(int gameId, int participantId) =>
@@ -98,12 +100,18 @@ DioException _dioError(int statusCode) => DioException(
 
 /// 테스트용 createGame 호출 헬퍼 (필수 인자 보일러플레이트 줄이기).
 Future<dynamic> _callCreateGame(SessionRepositoryImpl repo) => repo.createGame(
-  playgroundLatitude: 37.5,
-  playgroundLongitude: 127.0,
-  playgroundRadiusInMeters: 500,
-  jailLatitude: 37.5,
-  jailLongitude: 127.0,
-  jailRadiusInMeters: 50,
+  area: const GameAreaRequestModel(
+    areaType: GameAreaType.circle,
+    circle: CircleAreaRequestModel(
+      playgroundCenter: CoordinatesRequestModel(
+        latitude: 37.5,
+        longitude: 127.0,
+      ),
+      playgroundRadiusInMeters: 500,
+      jailCenter: CoordinatesRequestModel(latitude: 37.5, longitude: 127.0),
+      jailRadiusInMeters: 50,
+    ),
+  ),
   roundDurationMinutes: 30,
   locationRevealIntervalMinutes: 5,
   policeWaitMinutes: 3,

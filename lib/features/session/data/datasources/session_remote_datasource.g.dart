@@ -298,7 +298,7 @@ class _SessionRemoteDataSource implements SessionRemoteDataSource {
   @override
   Future<GameAreaModel> updateGameArea(
     int gameId,
-    AreaRequestModel request,
+    GameAreaRequestModel request,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

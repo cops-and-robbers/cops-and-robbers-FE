@@ -22,12 +22,7 @@ class SessionRepositoryImpl implements SessionRepository {
 
   @override
   Future<CreateSessionResult> createGame({
-    required double playgroundLatitude,
-    required double playgroundLongitude,
-    required int playgroundRadiusInMeters,
-    required double jailLatitude,
-    required double jailLongitude,
-    required int jailRadiusInMeters,
+    required GameAreaRequestModel area,
     required int roundDurationMinutes,
     required int locationRevealIntervalMinutes,
     required int policeWaitMinutes,
@@ -35,18 +30,7 @@ class SessionRepositoryImpl implements SessionRepository {
   }) async {
     try {
       final request = GameCreateRequestModel(
-        area: AreaRequestModel(
-          playgroundCenter: CoordinatesRequestModel(
-            latitude: playgroundLatitude,
-            longitude: playgroundLongitude,
-          ),
-          playgroundRadiusInMeters: playgroundRadiusInMeters,
-          jailCenter: CoordinatesRequestModel(
-            latitude: jailLatitude,
-            longitude: jailLongitude,
-          ),
-          jailRadiusInMeters: jailRadiusInMeters,
-        ),
+        area: area,
         settings: GameSettingsRequestModel(
           roundDurationMinutes: roundDurationMinutes,
           locationRevealIntervalMinutes: locationRevealIntervalMinutes,

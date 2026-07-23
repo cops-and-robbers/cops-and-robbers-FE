@@ -9,7 +9,7 @@ part of 'game_create_request_model.dart';
 _$GameCreateRequestModelImpl _$$GameCreateRequestModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$GameCreateRequestModelImpl(
-  area: AreaRequestModel.fromJson(json['area'] as Map<String, dynamic>),
+  area: GameAreaRequestModel.fromJson(json['area'] as Map<String, dynamic>),
   settings: GameSettingsRequestModel.fromJson(
     json['settings'] as Map<String, dynamic>,
   ),
@@ -22,9 +22,36 @@ Map<String, dynamic> _$$GameCreateRequestModelImplToJson(
   'settings': instance.settings.toJson(),
 };
 
-_$AreaRequestModelImpl _$$AreaRequestModelImplFromJson(
+_$GameAreaRequestModelImpl _$$GameAreaRequestModelImplFromJson(
   Map<String, dynamic> json,
-) => _$AreaRequestModelImpl(
+) => _$GameAreaRequestModelImpl(
+  areaType: $enumDecode(_$GameAreaTypeEnumMap, json['areaType']),
+  circle: json['circle'] == null
+      ? null
+      : CircleAreaRequestModel.fromJson(json['circle'] as Map<String, dynamic>),
+  polygon: json['polygon'] == null
+      ? null
+      : PolygonAreaRequestModel.fromJson(
+          json['polygon'] as Map<String, dynamic>,
+        ),
+);
+
+Map<String, dynamic> _$$GameAreaRequestModelImplToJson(
+  _$GameAreaRequestModelImpl instance,
+) => <String, dynamic>{
+  'areaType': _$GameAreaTypeEnumMap[instance.areaType]!,
+  if (instance.circle?.toJson() case final value?) 'circle': value,
+  if (instance.polygon?.toJson() case final value?) 'polygon': value,
+};
+
+const _$GameAreaTypeEnumMap = {
+  GameAreaType.circle: 'CIRCLE',
+  GameAreaType.polygon: 'POLYGON',
+};
+
+_$CircleAreaRequestModelImpl _$$CircleAreaRequestModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$CircleAreaRequestModelImpl(
   playgroundCenter: CoordinatesRequestModel.fromJson(
     json['playgroundCenter'] as Map<String, dynamic>,
   ),
@@ -35,13 +62,33 @@ _$AreaRequestModelImpl _$$AreaRequestModelImplFromJson(
   jailRadiusInMeters: (json['jailRadiusInMeters'] as num).toInt(),
 );
 
-Map<String, dynamic> _$$AreaRequestModelImplToJson(
-  _$AreaRequestModelImpl instance,
+Map<String, dynamic> _$$CircleAreaRequestModelImplToJson(
+  _$CircleAreaRequestModelImpl instance,
 ) => <String, dynamic>{
   'playgroundCenter': instance.playgroundCenter.toJson(),
   'playgroundRadiusInMeters': instance.playgroundRadiusInMeters,
   'jailCenter': instance.jailCenter.toJson(),
   'jailRadiusInMeters': instance.jailRadiusInMeters,
+};
+
+_$PolygonAreaRequestModelImpl _$$PolygonAreaRequestModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$PolygonAreaRequestModelImpl(
+  playgroundPolygon: (json['playgroundPolygon'] as List<dynamic>)
+      .map((e) => CoordinatesRequestModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  jailPolygon: (json['jailPolygon'] as List<dynamic>)
+      .map((e) => CoordinatesRequestModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$$PolygonAreaRequestModelImplToJson(
+  _$PolygonAreaRequestModelImpl instance,
+) => <String, dynamic>{
+  'playgroundPolygon': instance.playgroundPolygon
+      .map((e) => e.toJson())
+      .toList(),
+  'jailPolygon': instance.jailPolygon.map((e) => e.toJson()).toList(),
 };
 
 _$CoordinatesRequestModelImpl _$$CoordinatesRequestModelImplFromJson(

@@ -35,3 +35,30 @@ class LatLngConverter implements JsonConverter<LatLng?, Map<String, dynamic>?> {
     return {'latitude': latLng.latitude, 'longitude': latLng.longitude};
   }
 }
+
+/// List&lt;LatLng&gt; <-> JSON 변환 (핀 목록 draft 저장용)
+class LatLngListConverter
+    implements JsonConverter<List<LatLng>?, List<dynamic>?> {
+  const LatLngListConverter();
+
+  @override
+  List<LatLng>? fromJson(List<dynamic>? json) {
+    if (json == null) return null;
+    return [
+      for (final item in json.cast<Map<String, dynamic>>())
+        LatLng(
+          (item['latitude'] as num).toDouble(),
+          (item['longitude'] as num).toDouble(),
+        ),
+    ];
+  }
+
+  @override
+  List<dynamic>? toJson(List<LatLng>? points) {
+    if (points == null) return null;
+    return [
+      for (final p in points)
+        {'latitude': p.latitude, 'longitude': p.longitude},
+    ];
+  }
+}
