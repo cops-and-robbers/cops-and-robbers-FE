@@ -147,22 +147,28 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
   Widget _buildSegment(String label, GameAreaType type) {
     final isSelected = widget.selected == type;
     return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          if (isSelected) return;
-          // 실제 변경 시에만 앱 공통 탭 햅틱 — AppButton과 동일(일관성)
-          VibrationService.instance().buttonTap();
-          widget.onChanged(type);
-        },
-        child: Center(
-          child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOut,
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: isSelected ? AppColors.black800 : AppColors.black400,
+      child: Semantics(
+        button: true,
+        selected: isSelected,
+        label: label,
+        excludeSemantics: true,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            if (isSelected) return;
+            // 실제 변경 시에만 앱 공통 탭 햅틱 — AppButton과 동일(일관성)
+            VibrationService.instance().buttonTap();
+            widget.onChanged(type);
+          },
+          child: Center(
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOut,
+              style: AppTextStyles.paragraph_14.copyWith(
+                color: isSelected ? AppColors.black800 : AppColors.black400,
+              ),
+              child: Text(label),
             ),
-            child: Text(label),
           ),
         ),
       ),
