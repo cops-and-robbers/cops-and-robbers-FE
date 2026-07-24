@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -30,7 +31,7 @@ import '../../../../router/route_paths.dart';
 import '../../../../core/constants/game_config.dart';
 import '../../../game/data/models/game_area_model.dart';
 import '../../../game/domain/entities/area_shape.dart';
-import '../../data/models/game_create_request_model.dart';
+import '../../../game/domain/polygon_geometry.dart';
 import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
 import '../../domain/entities/session_settings.dart';
@@ -272,7 +273,8 @@ class _SessionCreationFlowPageState
 
   /// 세션 생성 API 호출 후 대기실로 이동
   Future<void> _createSessionAndNavigate() async {
-    if (!_isAreaComplete) {
+    final area = _buildAreaEntity();
+    if (area == null) {
       if (kDebugMode) {
         debugPrint('❌ [SessionCreationFlow] 구역 정보가 없습니다');
       }
@@ -287,7 +289,7 @@ class _SessionCreationFlowPageState
       await ref
           .read(sessionCreationNotifierProvider.notifier)
           .createGame(
-            area: _buildAreaRequest(),
+            area: area,
             roundDurationMinutes: _roundDurationMinutes,
             locationRevealIntervalMinutes: _locationShareMinutes,
             policeWaitMinutes: _policeWaitMinutes,
@@ -471,20 +473,25 @@ class _SessionCreationFlowPageState
   // Step Callbacks
   // ============================================
 
-  /// 플레이그라운드 설정 결과 처리 (원형: {lat,lng,radius} / 폴리곤: {points})
-  void _onPlaygroundResult(Map<String, dynamic> result) {
+  /// 플레이그라운드 설정 결과 처리
+  void _onPlaygroundResult(AreaShape result) {
     setState(() {
-      final points = result['points'];
-      if (points is List<LatLng>) {
+      if (result is PolygonShape) {
         _areaType = GameAreaType.polygon;
-        _playgroundPinPoints = List.of(points);
-      } else {
+        _playgroundPinPoints = [
+          for (final point in result.points)
+            LatLng(point.latitude, point.longitude),
+        ];
+        _playgroundCenter = null;
+        _playgroundRadiusMeters = null;
+      } else if (result is CircleShape) {
         _areaType = GameAreaType.circle;
         _playgroundCenter = LatLng(
-          result['lat'] as double,
-          result['lng'] as double,
+          result.center.latitude,
+          result.center.longitude,
         );
-        _playgroundRadiusMeters = result['radius'] as double;
+        _playgroundRadiusMeters = result.radiusInMeters;
+        _playgroundPinPoints = null;
       }
       // 플레이그라운드 변경 시 감옥 초기화 (새 범위 내에서 재설정 필요)
       _prisonCenter = null;
@@ -493,44 +500,48 @@ class _SessionCreationFlowPageState
     });
   }
 
-  /// 감옥 설정 결과 처리 (원형: {lat,lng,radius} / 폴리곤: {points})
-  void _onPrisonResult(Map<String, dynamic> result) {
+  /// 감옥 설정 결과 처리
+  void _onPrisonResult(AreaShape result) {
     setState(() {
-      final points = result['points'];
-      if (points is List<LatLng>) {
-        _prisonPinPoints = List.of(points);
-      } else {
-        _prisonCenter = LatLng(
-          result['lat'] as double,
-          result['lng'] as double,
-        );
-        _prisonRadiusMeters = result['radius'] as double;
+      if (result is PolygonShape) {
+        _prisonPinPoints = [
+          for (final point in result.points)
+            LatLng(point.latitude, point.longitude),
+        ];
+        _prisonCenter = null;
+        _prisonRadiusMeters = null;
+      } else if (result is CircleShape) {
+        _prisonCenter = LatLng(result.center.latitude, result.center.longitude);
+        _prisonRadiusMeters = result.radiusInMeters;
+        _prisonPinPoints = null;
       }
     });
   }
 
   /// 플레이그라운드 설정 완료 여부 (감옥 버튼 노출 조건)
   bool get _isPlaygroundSet => _areaType == GameAreaType.polygon
-      ? (_playgroundPinPoints?.length ?? 0) >= GameConfig.minPolygonVertexCount
+      ? _isValidPolygonPoints(_playgroundPinPoints)
       : (_playgroundCenter != null && _playgroundRadiusMeters != null);
 
   /// 감옥 설정 완료 여부 (최초 생성 시 자동 연속 진입 판단용)
   bool get _isPrisonSet => _areaType == GameAreaType.polygon
-      ? (_prisonPinPoints?.length ?? 0) >= GameConfig.minPolygonVertexCount
+      ? _isValidPolygonPoints(_prisonPinPoints)
       : (_prisonCenter != null && _prisonRadiusMeters != null);
 
   /// 구역 설정 전체 완료 여부 (Step3 표시·방 생성 가능 조건)
-  bool get _isAreaComplete {
-    if (_areaType == GameAreaType.polygon) {
-      return (_playgroundPinPoints?.length ?? 0) >=
-              GameConfig.minPolygonVertexCount &&
-          (_prisonPinPoints?.length ?? 0) >= GameConfig.minPolygonVertexCount;
+  bool get _isAreaComplete => _buildAreaEntity() != null;
+
+  bool _isValidPolygonPoints(List<LatLng>? points) {
+    if (points == null || points.length < GameConfig.minPolygonVertexCount) {
+      return false;
     }
-    return _playgroundCenter != null &&
-        _playgroundRadiusMeters != null &&
-        _prisonCenter != null &&
-        _prisonRadiusMeters != null;
+    return isValidPolygon(_toGeoPoints(points));
   }
+
+  List<GeoPoint> _toGeoPoints(List<LatLng> points) => [
+    for (final point in points)
+      GeoPoint(latitude: point.latitude, longitude: point.longitude),
+  ];
 
   /// 폴리곤 목록의 외접 반경(m) — Step3 요약 표시용
   int _polygonDisplayRadius(List<LatLng> points) {
@@ -543,42 +554,59 @@ class _SessionCreationFlowPageState
     return shape.boundingRadiusInMeters.round();
   }
 
-  /// 구역 설정을 서버 요청 DTO로 조립 (원형/폴리곤 분기)
-  GameAreaRequestModel _buildAreaRequest() {
+  /// 현재 입력이 유효하면 도메인 구역 엔티티로 조립한다.
+  GameAreaEntity? _buildAreaEntity() {
     if (_areaType == GameAreaType.polygon) {
-      return GameAreaRequestModel(
-        areaType: GameAreaType.polygon,
-        polygon: PolygonAreaRequestModel(
-          playgroundPolygon: [
-            for (final p in _playgroundPinPoints!)
-              CoordinatesRequestModel(
-                latitude: p.latitude,
-                longitude: p.longitude,
-              ),
-          ],
-          jailPolygon: [
-            for (final p in _prisonPinPoints!)
-              CoordinatesRequestModel(
-                latitude: p.latitude,
-                longitude: p.longitude,
-              ),
-          ],
-        ),
+      final playgroundPoints = _playgroundPinPoints;
+      final jailPoints = _prisonPinPoints;
+      if (!_isValidPolygonPoints(playgroundPoints) ||
+          !_isValidPolygonPoints(jailPoints)) {
+        return null;
+      }
+
+      final playground = _toGeoPoints(playgroundPoints!);
+      final jail = _toGeoPoints(jailPoints!);
+      if (!isPolygonInsidePolygon(jail, playground)) return null;
+
+      return GameAreaEntity(
+        playground: AreaShape.polygon(points: playground),
+        jail: AreaShape.polygon(points: jail),
       );
     }
-    return GameAreaRequestModel(
-      areaType: GameAreaType.circle,
-      circle: CircleAreaRequestModel(
-        playgroundCenter: CoordinatesRequestModel(
-          latitude: _playgroundCenter!.latitude,
-          longitude: _playgroundCenter!.longitude,
+
+    final playgroundCenter = _playgroundCenter;
+    final playgroundRadius = _playgroundRadiusMeters;
+    final jailCenter = _prisonCenter;
+    final jailRadius = _prisonRadiusMeters;
+    if (playgroundCenter == null ||
+        playgroundRadius == null ||
+        jailCenter == null ||
+        jailRadius == null) {
+      return null;
+    }
+
+    final centerDistance = Geolocator.distanceBetween(
+      playgroundCenter.latitude,
+      playgroundCenter.longitude,
+      jailCenter.latitude,
+      jailCenter.longitude,
+    );
+    if (centerDistance + jailRadius > playgroundRadius + 1.0) return null;
+
+    return GameAreaEntity(
+      playground: AreaShape.circle(
+        center: GeoPoint(
+          latitude: playgroundCenter.latitude,
+          longitude: playgroundCenter.longitude,
         ),
-        playgroundRadiusInMeters: _playgroundRadiusMeters!.toInt(),
-        jailCenter: CoordinatesRequestModel(
-          latitude: _prisonCenter!.latitude,
-          longitude: _prisonCenter!.longitude,
+        radiusInMeters: playgroundRadius,
+      ),
+      jail: AreaShape.circle(
+        center: GeoPoint(
+          latitude: jailCenter.latitude,
+          longitude: jailCenter.longitude,
         ),
-        jailRadiusInMeters: _prisonRadiusMeters!.toInt(),
+        radiusInMeters: jailRadius,
       ),
     );
   }
@@ -637,10 +665,7 @@ class _SessionCreationFlowPageState
   bool get _isNextButtonEnabled {
     switch (_currentStep) {
       case 0:
-        return _playgroundCenter != null &&
-            _playgroundRadiusMeters != null &&
-            _prisonCenter != null &&
-            _prisonRadiusMeters != null;
+        return _isAreaComplete;
       case 1:
         return true; // 항상 활성화 (슬라이더 기본값 존재)
       case 2:

@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/constants/spacing_and_radius.dart';
 import '../../../../../core/widgets/buttons/zone_setting_button.dart';
+import '../../../../../features/game/domain/entities/area_shape.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../router/route_paths.dart';
 
 /// 세션 생성 Step 0: 구역 선택 컨텐츠
 ///
@@ -41,11 +43,11 @@ class Step0SelectAreaContent extends StatelessWidget {
   /// 감옥 설정 완료 여부 (최초 생성 시 자동 연속 진입 판단용)
   final bool isPrisonSet;
 
-  /// 플레이그라운드 설정 결과 콜백 (원형: {lat,lng,radius} / 폴리곤: {points})
-  final Function(Map<String, dynamic> result) onPlaygroundResult;
+  /// 플레이그라운드 설정 결과 콜백
+  final ValueChanged<AreaShape> onPlaygroundResult;
 
-  /// 감옥 설정 결과 콜백 (원형: {lat,lng,radius} / 폴리곤: {points})
-  final Function(Map<String, dynamic> result) onPrisonResult;
+  /// 감옥 설정 결과 콜백
+  final ValueChanged<AreaShape> onPrisonResult;
 
   /// 튜토리얼 하이라이트용 — 플레이그라운드 버튼
   final GlobalKey? playgroundKey;
@@ -63,8 +65,10 @@ class Step0SelectAreaContent extends StatelessWidget {
   /// 자동 연결해 이탈을 줄인다. 감옥이 이미 설정된 뒤(재설정)에는 허브로 돌아온다.
   Future<void> _onPlaygroundPressed(BuildContext context) async {
     final wasPrisonSet = isPrisonSet;
-    final result = await context.pushNamed('setupPlaygroundFromFlow');
-    if (result is! Map<String, dynamic>) return;
+    final result = await context.pushNamed<AreaShape>(
+      RoutePaths.setupPlaygroundFromFlowName,
+    );
+    if (result == null) return;
     onPlaygroundResult(result);
 
     if (!wasPrisonSet && context.mounted) {
@@ -74,8 +78,10 @@ class Step0SelectAreaContent extends StatelessWidget {
 
   /// 감옥 설정 버튼 클릭 시
   Future<void> _onPrisonPressed(BuildContext context) async {
-    final result = await context.pushNamed('setupPrisonFromFlow');
-    if (result is Map<String, dynamic>) onPrisonResult(result);
+    final result = await context.pushNamed<AreaShape>(
+      RoutePaths.setupPrisonFromFlowName,
+    );
+    if (result != null) onPrisonResult(result);
   }
 
   // ============================================

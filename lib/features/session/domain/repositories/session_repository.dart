@@ -1,4 +1,4 @@
-import '../../data/models/game_create_request_model.dart';
+import '../../../game/domain/entities/area_shape.dart';
 import '../entities/create_session_result.dart';
 import '../entities/game_join_result.dart';
 import '../entities/user_game_status_entity.dart';
@@ -17,7 +17,7 @@ abstract class SessionRepository {
   /// - [AuthException]: 인증 실패 (401)
   /// - [ServerException]: 이미 활성 게임 참여 중 (409) 또는 서버 오류
   Future<CreateSessionResult> createGame({
-    required GameAreaRequestModel area,
+    required GameAreaEntity area,
     required int roundDurationMinutes,
     required int locationRevealIntervalMinutes,
     required int policeWaitMinutes,

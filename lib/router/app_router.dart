@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../core/constants/app_colors.dart';
 import '../core/constants/game_team.dart';
@@ -348,7 +347,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               // 플레이그라운드 설정 (모달 페이지)
               GoRoute(
                 path: 'playground',
-                name: 'setupPlaygroundFromFlow',
+                name: RoutePaths.setupPlaygroundFromFlowName,
                 pageBuilder: (context, state) => buildDirectionalSlide(
                   key: state.pageKey,
                   child: const SetupPlaygroundPage(),
@@ -358,7 +357,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               // 감옥 설정 (모달 페이지)
               GoRoute(
                 path: 'prison',
-                name: 'setupPrisonFromFlow',
+                name: RoutePaths.setupPrisonFromFlowName,
                 pageBuilder: (context, state) => buildDirectionalSlide(
                   key: state.pageKey,
                   child: const SetupPrisonPage(),
@@ -441,17 +440,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'edit-playground',
                 name: RoutePaths.gameSettingsPlaygroundName,
                 pageBuilder: (context, state) {
-                  final extra = state.extra as Map<String, dynamic>?;
-                  final lat = extra?['lat'] as double?;
-                  final lng = extra?['lng'] as double?;
                   return buildDirectionalSlide(
                     key: state.pageKey,
                     child: SetupPlaygroundPage(
-                      editInitialCenter: lat != null && lng != null
-                          ? LatLng(lat, lng)
-                          : null,
-                      editInitialRadius: extra?['radius'] as double?,
-                      editInitialPoints: extra?['points'] as List<LatLng>?,
+                      editInitialShape: state.extra as AreaShape?,
                     ),
                     isForward: true,
                   );
@@ -462,26 +454,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'edit-prison',
                 name: RoutePaths.gameSettingsPrisonName,
                 pageBuilder: (context, state) {
-                  final extra = state.extra as Map<String, dynamic>?;
-                  final lat = extra?['lat'] as double?;
-                  final lng = extra?['lng'] as double?;
-                  final pgLat = extra?['playgroundLat'] as double?;
-                  final pgLng = extra?['playgroundLng'] as double?;
                   return buildDirectionalSlide(
                     key: state.pageKey,
                     child: SetupPrisonPage(
-                      editInitialCenter: lat != null && lng != null
-                          ? LatLng(lat, lng)
-                          : null,
-                      editInitialRadius: extra?['radius'] as double?,
-                      editPlaygroundCenter: pgLat != null && pgLng != null
-                          ? LatLng(pgLat, pgLng)
-                          : null,
-                      editPlaygroundRadius:
-                          extra?['playgroundRadius'] as double?,
-                      editInitialPoints: extra?['points'] as List<LatLng>?,
-                      editPlaygroundPoints:
-                          extra?['playgroundPoints'] as List<LatLng>?,
+                      editArgs: state.extra as PrisonEditArgs?,
                     ),
                     isForward: true,
                   );

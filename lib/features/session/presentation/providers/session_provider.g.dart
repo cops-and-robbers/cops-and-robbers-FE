@@ -1800,7 +1800,7 @@ class _UpdateGameSettingsProviderElement
       (origin as UpdateGameSettingsProvider).request;
 }
 
-String _$updateGameAreaHash() => r'42befbc1143f1f826e8cd468e026ebc14cfa1297';
+String _$updateGameAreaHash() => r'b514691c81746e9abb8bbbdd1df46d7ba7ee1080';
 
 /// 게임 영역 수정
 ///
@@ -1828,18 +1828,15 @@ class UpdateGameAreaFamily extends Family<AsyncValue<GameAreaEntity>> {
   /// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
   ///
   /// Copied from [updateGameArea].
-  UpdateGameAreaProvider call(
-    int gameId, {
-    required GameAreaRequestModel request,
-  }) {
-    return UpdateGameAreaProvider(gameId, request: request);
+  UpdateGameAreaProvider call(int gameId, {required GameAreaEntity area}) {
+    return UpdateGameAreaProvider(gameId, area: area);
   }
 
   @override
   UpdateGameAreaProvider getProviderOverride(
     covariant UpdateGameAreaProvider provider,
   ) {
-    return call(provider.gameId, request: provider.request);
+    return call(provider.gameId, area: provider.area);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -1868,10 +1865,9 @@ class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaEntity> {
   /// 성공 시 갱신된 [GameAreaEntity]를 반환합니다.
   ///
   /// Copied from [updateGameArea].
-  UpdateGameAreaProvider(int gameId, {required GameAreaRequestModel request})
+  UpdateGameAreaProvider(int gameId, {required GameAreaEntity area})
     : this._internal(
-        (ref) =>
-            updateGameArea(ref as UpdateGameAreaRef, gameId, request: request),
+        (ref) => updateGameArea(ref as UpdateGameAreaRef, gameId, area: area),
         from: updateGameAreaProvider,
         name: r'updateGameAreaProvider',
         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -1881,7 +1877,7 @@ class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaEntity> {
         allTransitiveDependencies:
             UpdateGameAreaFamily._allTransitiveDependencies,
         gameId: gameId,
-        request: request,
+        area: area,
       );
 
   UpdateGameAreaProvider._internal(
@@ -1892,11 +1888,11 @@ class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaEntity> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.gameId,
-    required this.request,
+    required this.area,
   }) : super.internal();
 
   final int gameId;
-  final GameAreaRequestModel request;
+  final GameAreaEntity area;
 
   @override
   Override overrideWith(
@@ -1912,7 +1908,7 @@ class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaEntity> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         gameId: gameId,
-        request: request,
+        area: area,
       ),
     );
   }
@@ -1926,14 +1922,14 @@ class UpdateGameAreaProvider extends AutoDisposeFutureProvider<GameAreaEntity> {
   bool operator ==(Object other) {
     return other is UpdateGameAreaProvider &&
         other.gameId == gameId &&
-        other.request == request;
+        other.area == area;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, gameId.hashCode);
-    hash = _SystemHash.combine(hash, request.hashCode);
+    hash = _SystemHash.combine(hash, area.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -1945,8 +1941,8 @@ mixin UpdateGameAreaRef on AutoDisposeFutureProviderRef<GameAreaEntity> {
   /// The parameter `gameId` of this provider.
   int get gameId;
 
-  /// The parameter `request` of this provider.
-  GameAreaRequestModel get request;
+  /// The parameter `area` of this provider.
+  GameAreaEntity get area;
 }
 
 class _UpdateGameAreaProviderElement
@@ -1957,12 +1953,11 @@ class _UpdateGameAreaProviderElement
   @override
   int get gameId => (origin as UpdateGameAreaProvider).gameId;
   @override
-  GameAreaRequestModel get request =>
-      (origin as UpdateGameAreaProvider).request;
+  GameAreaEntity get area => (origin as UpdateGameAreaProvider).area;
 }
 
 String _$sessionCreationNotifierHash() =>
-    r'87c400464374e262a67d77450c3a4fe95cef2573';
+    r'd733c592dd55cab110f00578a7f341c0481309d3';
 
 /// 세션 생성 상태 관리 Notifier
 ///

@@ -28,25 +28,14 @@ import '../../../../l10n/app_localizations.dart';
 /// ZoneSettingWidget을 통해 중심점과 반경을 설정하고,
 /// 설정 완료 시 데이터를 로컬 저장소에 저장한 후 이전 페이지로 반환합니다.
 ///
-/// **편집 모드**: [editInitialCenter]와 [editInitialRadius]가 제공되면
+/// **편집 모드**: [editInitialShape]이 제공되면
 /// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
 /// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
 class SetupPlaygroundPage extends ConsumerStatefulWidget {
-  const SetupPlaygroundPage({
-    super.key,
-    this.editInitialCenter,
-    this.editInitialRadius,
-    this.editInitialPoints,
-  });
+  const SetupPlaygroundPage({super.key, this.editInitialShape});
 
-  /// 편집 모드 초기 중심 좌표 (null이면 생성 모드)
-  final LatLng? editInitialCenter;
-
-  /// 편집 모드 초기 반경 (미터)
-  final double? editInitialRadius;
-
-  /// 편집 모드 초기 핀 목록 (폴리곤 구역 편집 시)
-  final List<LatLng>? editInitialPoints;
+  /// 편집 모드 초기 구역 (null이면 생성 모드)
+  final AreaShape? editInitialShape;
 
   @override
   ConsumerState<SetupPlaygroundPage> createState() =>
@@ -107,8 +96,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   }
 
   /// 편집 모드 여부
-  bool get _isEditMode =>
-      widget.editInitialCenter != null || widget.editInitialPoints != null;
+  bool get _isEditMode => widget.editInitialShape != null;
 
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
@@ -116,13 +104,19 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     if (_isEditMode) {
       if (mounted) {
         setState(() {
-          final editPoints = widget.editInitialPoints;
-          if (editPoints != null) {
+          final initialShape = widget.editInitialShape!;
+          if (initialShape is PolygonShape) {
             _areaType = GameAreaType.polygon;
-            _pinPoints = List.of(editPoints);
-          } else {
-            _currentCenter = widget.editInitialCenter;
-            _currentRadius = widget.editInitialRadius ?? 500.0;
+            _pinPoints = [
+              for (final point in initialShape.points)
+                LatLng(point.latitude, point.longitude),
+            ];
+          } else if (initialShape is CircleShape) {
+            _currentCenter = LatLng(
+              initialShape.center.latitude,
+              initialShape.center.longitude,
+            );
+            _currentRadius = initialShape.radiusInMeters;
           }
           _isLoading = false;
         });
@@ -188,14 +182,14 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     });
   }
 
-  /// 핀 모드 완료 가능 여부 (꼭짓점 수 충족 + 자기교차 없음)
+  /// 핀 모드 완료 가능 여부
   bool get _isPinComplete {
     if (_pinPoints.length < GameConfig.minPolygonVertexCount) return false;
     final geo = [
       for (final p in _pinPoints)
         GeoPoint(latitude: p.latitude, longitude: p.longitude),
     ];
-    return !hasSelfIntersection(geo);
+    return isValidPolygon(geo);
   }
 
   /// 완료 버튼 활성화 여부
@@ -209,7 +203,16 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
       if (!_isEditMode) {
         await _storageService.updatePlaygroundPinZone(_pinPoints);
       }
-      if (mounted) context.pop({'points': _pinPoints});
+      if (mounted) {
+        context.pop<AreaShape>(
+          AreaShape.polygon(
+            points: [
+              for (final point in _pinPoints)
+                GeoPoint(latitude: point.latitude, longitude: point.longitude),
+            ],
+          ),
+        );
+      }
       return;
     }
 
@@ -219,17 +222,19 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
 
     // 생성 모드에서만 로컬 저장소에 저장
     if (!_isEditMode) {
-      await _storageService.updateAreaType(GameAreaType.circle);
       await _storageService.updatePlaygroundZone(center, _currentRadius);
     }
 
-    // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({
-        'lat': center.latitude,
-        'lng': center.longitude,
-        'radius': _currentRadius,
-      });
+      context.pop<AreaShape>(
+        AreaShape.circle(
+          center: GeoPoint(
+            latitude: center.latitude,
+            longitude: center.longitude,
+          ),
+          radiusInMeters: _currentRadius,
+        ),
+      );
     }
   }
 
@@ -354,7 +359,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                       ? PinZoneSettingWidget(
                           initialPoints: _pinPoints,
                           pinColor: AppColors.blue,
-                          fillColor: AppColors.blue500,
+                          fillColor: AppColors.blue500Alpha20,
                           strokeColor: AppColors.blue800,
                           locationButtonColor: AppColors.blue,
                           isDarkMode: isDark,

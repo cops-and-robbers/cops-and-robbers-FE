@@ -78,7 +78,7 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
   /// 성공 시 state에 [CreateSessionResult]가 저장됩니다.
   /// 실패 시 state에 에러가 저장되며, Presentation에서 처리합니다.
   Future<void> createGame({
-    required GameAreaRequestModel area,
+    required GameAreaEntity area,
     required int roundDurationMinutes,
     required int locationRevealIntervalMinutes,
     required int policeWaitMinutes,
@@ -243,10 +243,13 @@ Future<GameSettingsResponse> updateGameSettings(
 Future<GameAreaEntity> updateGameArea(
   Ref ref,
   int gameId, {
-  required GameAreaRequestModel request,
+  required GameAreaEntity area,
 }) async {
   final dataSource = ref.read(sessionRemoteDataSourceProvider);
-  final response = await dataSource.updateGameArea(gameId, request);
+  final response = await dataSource.updateGameArea(
+    gameId,
+    area.toRequestModel(),
+  );
   // 영역 캐시 무효화 → 다음 watch 시 재조회
   ref.invalidate(fetchGameAreaProvider(gameId));
   debugPrint('[Session] ✅ 게임 영역 수정 성공: gameId=$gameId');

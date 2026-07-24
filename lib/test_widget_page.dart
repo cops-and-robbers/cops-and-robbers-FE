@@ -42,6 +42,7 @@ import 'features/game/presentation/widgets/game_over_result_dialog.dart';
 import 'features/game/presentation/widgets/my_record_dialog.dart';
 import 'features/game/presentation/providers/player_game_record_provider.dart';
 import 'features/game/data/models/game_area_model.dart';
+import 'features/game/domain/entities/area_shape.dart';
 import 'features/game/presentation/widgets/ping_selection_card.dart';
 import 'features/session/domain/entities/session_settings.dart';
 import 'features/session/domain/entities/zone_info.dart';
@@ -1602,7 +1603,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   child: PinZoneSettingWidget(
                     initialPoints: const [],
                     pinColor: AppColors.blue,
-                    fillColor: AppColors.blue500,
+                    fillColor: AppColors.blue500Alpha20,
                     strokeColor: AppColors.blue800,
                     locationButtonColor: AppColors.blue,
                     mapHeight: 320.h,
@@ -1628,7 +1629,15 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => SetupPlaygroundPage(
-                          editInitialPoints: _mockPlaygroundPolygon,
+                          editInitialShape: AreaShape.polygon(
+                            points: [
+                              for (final point in _mockPlaygroundPolygon)
+                                GeoPoint(
+                                  latitude: point.latitude,
+                                  longitude: point.longitude,
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -1651,8 +1660,13 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => const SetupPlaygroundPage(
-                          editInitialCenter: LatLng(37.5665, 126.9780),
-                          editInitialRadius: 400,
+                          editInitialShape: AreaShape.circle(
+                            center: GeoPoint(
+                              latitude: 37.5665,
+                              longitude: 126.9780,
+                            ),
+                            radiusInMeters: 400,
+                          ),
                         ),
                       ),
                     );
@@ -1669,8 +1683,26 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => SetupPrisonPage(
-                          editPlaygroundPoints: _mockPlaygroundPolygon,
-                          editInitialPoints: _mockJailPolygon,
+                          editArgs: PrisonEditArgs(
+                            playground: AreaShape.polygon(
+                              points: [
+                                for (final point in _mockPlaygroundPolygon)
+                                  GeoPoint(
+                                    latitude: point.latitude,
+                                    longitude: point.longitude,
+                                  ),
+                              ],
+                            ),
+                            initialJail: AreaShape.polygon(
+                              points: [
+                                for (final point in _mockJailPolygon)
+                                  GeoPoint(
+                                    latitude: point.latitude,
+                                    longitude: point.longitude,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     );

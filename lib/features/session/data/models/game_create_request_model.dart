@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/errors/app_exception.dart';
 import '../../../game/data/models/game_area_model.dart';
+import '../../../game/domain/entities/area_shape.dart';
 
 part 'game_create_request_model.freezed.dart';
 part 'game_create_request_model.g.dart';
@@ -137,3 +139,48 @@ class GameSettingsRequestModel with _$GameSettingsRequestModel {
   factory GameSettingsRequestModel.fromJson(Map<String, dynamic> json) =>
       _$GameSettingsRequestModelFromJson(json);
 }
+
+/// 도메인 게임 구역을 API 요청 DTO로 변환한다.
+extension GameAreaEntityRequestMapper on GameAreaEntity {
+  GameAreaRequestModel toRequestModel() {
+    final playgroundShape = playground;
+    final jailShape = jail;
+
+    if (playgroundShape is CircleShape && jailShape is CircleShape) {
+      return GameAreaRequestModel(
+        areaType: GameAreaType.circle,
+        circle: CircleAreaRequestModel(
+          playgroundCenter: _toCoordinates(playgroundShape.center),
+          playgroundRadiusInMeters: playgroundShape.radiusInMeters.toInt(),
+          jailCenter: _toCoordinates(jailShape.center),
+          jailRadiusInMeters: jailShape.radiusInMeters.toInt(),
+        ),
+      );
+    }
+
+    if (playgroundShape is PolygonShape && jailShape is PolygonShape) {
+      return GameAreaRequestModel(
+        areaType: GameAreaType.polygon,
+        polygon: PolygonAreaRequestModel(
+          playgroundPolygon: [
+            for (final point in playgroundShape.points) _toCoordinates(point),
+          ],
+          jailPolygon: [
+            for (final point in jailShape.points) _toCoordinates(point),
+          ],
+        ),
+      );
+    }
+
+    throw const ValidationException(
+      message: '플레이그라운드와 감옥의 구역 타입이 일치하지 않습니다.',
+      messageKey: 'errorCodeInvalidInputValue',
+    );
+  }
+}
+
+CoordinatesRequestModel _toCoordinates(GeoPoint point) =>
+    CoordinatesRequestModel(
+      latitude: point.latitude,
+      longitude: point.longitude,
+    );

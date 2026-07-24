@@ -20,43 +20,31 @@ import '../../../game/domain/entities/area_shape.dart';
 import '../../../game/domain/polygon_geometry.dart';
 import '../../../../l10n/app_localizations.dart';
 
+/// 감옥 편집 화면에 전달하는 타입 안전한 라우트 인자
+class PrisonEditArgs {
+  const PrisonEditArgs({required this.playground, this.initialJail});
+
+  /// 변경된 플레이그라운드 구역
+  final AreaShape playground;
+
+  /// 기존 감옥 구역. 타입 전환 시에는 null로 전달한다.
+  final AreaShape? initialJail;
+}
+
 /// 감옥 구역 설정 화면
 ///
 /// 지도에서 잡힌 도둑이 갇히는 감옥 범위를 지정합니다.
 /// ZoneSettingWidget을 통해 중심점과 반경을 설정하고,
 /// 설정 완료 시 데이터를 로컬 저장소에 저장한 후 이전 페이지로 반환합니다.
 ///
-/// **편집 모드**: [editInitialCenter]와 [editInitialRadius]가 제공되면
+/// **편집 모드**: [editArgs]가 제공되면
 /// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
 /// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
 class SetupPrisonPage extends ConsumerStatefulWidget {
-  const SetupPrisonPage({
-    super.key,
-    this.editInitialCenter,
-    this.editInitialRadius,
-    this.editPlaygroundCenter,
-    this.editPlaygroundRadius,
-    this.editInitialPoints,
-    this.editPlaygroundPoints,
-  });
+  const SetupPrisonPage({super.key, this.editArgs});
 
-  /// 편집 모드 초기 중심 좌표 (null이면 생성 모드)
-  final LatLng? editInitialCenter;
-
-  /// 편집 모드 초기 반경 (미터)
-  final double? editInitialRadius;
-
-  /// 편집 모드 플레이그라운드 중심 좌표 (검증용)
-  final LatLng? editPlaygroundCenter;
-
-  /// 편집 모드 플레이그라운드 반경 (검증용)
-  final double? editPlaygroundRadius;
-
-  /// 편집 모드 초기 감옥 핀 목록 (폴리곤 구역)
-  final List<LatLng>? editInitialPoints;
-
-  /// 편집 모드 플레이그라운드 핀 목록 (폴리곤 검증·참조용)
-  final List<LatLng>? editPlaygroundPoints;
+  /// 편집 모드 구역 정보 (null이면 생성 모드)
+  final PrisonEditArgs? editArgs;
 
   @override
   ConsumerState<SetupPrisonPage> createState() => _SetupPrisonPageState();
@@ -108,12 +96,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
   /// 편집 모드 여부
   ///
   /// 감옥 초기값 또는 플레이그라운드 편집값이 전달되면 편집 모드로 동작합니다.
-  /// 플레이그라운드 변경 후 감옥 재설정 시에는 editInitialCenter가 null이지만
-  /// editPlaygroundCenter가 전달되므로 편집 모드로 판단해야 합니다.
-  bool get _isEditMode =>
-      widget.editInitialCenter != null ||
-      widget.editPlaygroundCenter != null ||
-      widget.editPlaygroundPoints != null;
+  bool get _isEditMode => widget.editArgs != null;
 
   /// 핀(폴리곤) 모드 여부 — 플레이그라운드가 정한 타입을 따른다
   bool get _isPinMode => _areaType == GameAreaType.polygon;
@@ -124,16 +107,34 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     if (_isEditMode) {
       if (mounted) {
         setState(() {
-          final editPlaygroundPoints = widget.editPlaygroundPoints;
-          if (editPlaygroundPoints != null) {
+          final args = widget.editArgs!;
+          final playground = args.playground;
+          final initialJail = args.initialJail;
+          if (playground is PolygonShape) {
             _areaType = GameAreaType.polygon;
-            _playgroundPinPoints = List.of(editPlaygroundPoints);
-            _pinPoints = List.of(widget.editInitialPoints ?? const []);
-          } else {
-            _currentCenter = widget.editInitialCenter;
-            _currentRadius = widget.editInitialRadius ?? 100.0;
-            _playgroundCenter = widget.editPlaygroundCenter;
-            _playgroundRadius = widget.editPlaygroundRadius;
+            _playgroundPinPoints = [
+              for (final point in playground.points)
+                LatLng(point.latitude, point.longitude),
+            ];
+            if (initialJail is PolygonShape) {
+              _pinPoints = [
+                for (final point in initialJail.points)
+                  LatLng(point.latitude, point.longitude),
+              ];
+            }
+          } else if (playground is CircleShape) {
+            _playgroundCenter = LatLng(
+              playground.center.latitude,
+              playground.center.longitude,
+            );
+            _playgroundRadius = playground.radiusInMeters;
+            if (initialJail is CircleShape) {
+              _currentCenter = LatLng(
+                initialJail.center.latitude,
+                initialJail.center.longitude,
+              );
+              _currentRadius = initialJail.radiusInMeters;
+            }
           }
           _isLoading = false;
         });
@@ -188,7 +189,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
       for (final p in playground)
         GeoPoint(latitude: p.latitude, longitude: p.longitude),
     ];
-    return !hasSelfIntersection(jail) && isPolygonInsidePolygon(jail, outer);
+    return isPolygonInsidePolygon(jail, outer);
   }
 
   /// 완료 버튼 활성화 여부
@@ -203,7 +204,16 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
       if (!_isEditMode) {
         await _storageService.updatePrisonPinZone(_pinPoints);
       }
-      if (mounted) context.pop({'points': _pinPoints});
+      if (mounted) {
+        context.pop<AreaShape>(
+          AreaShape.polygon(
+            points: [
+              for (final point in _pinPoints)
+                GeoPoint(latitude: point.latitude, longitude: point.longitude),
+            ],
+          ),
+        );
+      }
       return;
     }
 
@@ -216,13 +226,16 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
       await _storageService.updatePrisonZone(center, _currentRadius);
     }
 
-    // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({
-        'lat': center.latitude,
-        'lng': center.longitude,
-        'radius': _currentRadius,
-      });
+      context.pop<AreaShape>(
+        AreaShape.circle(
+          center: GeoPoint(
+            latitude: center.latitude,
+            longitude: center.longitude,
+          ),
+          radiusInMeters: _currentRadius,
+        ),
+      );
     }
   }
 
@@ -337,7 +350,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                   ? PinZoneSettingWidget(
                       initialPoints: _pinPoints,
                       pinColor: AppColors.red,
-                      fillColor: AppColors.red500,
+                      fillColor: AppColors.red500Alpha20,
                       strokeColor: AppColors.red800,
                       locationButtonColor: AppColors.red,
                       referencePolygon: _playgroundPinPoints,

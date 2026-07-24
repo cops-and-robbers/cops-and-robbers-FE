@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -14,15 +13,15 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../game/data/models/game_area_model.dart';
+import '../../../../router/route_paths.dart';
 import '../../../game/domain/entities/area_shape.dart';
-import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../domain/entities/zone_info.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
+import 'setup_prison_page.dart';
 import '../widgets/setting_list_card.dart';
 import '../widgets/zone_list_card.dart';
 
@@ -51,125 +50,41 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   /// 초기화하고 다시 설정하도록 합니다 (감옥이 새 플레이그라운드 밖에
   /// 위치할 수 있으므로).
   Future<void> _navigateToEditPlayground(GameAreaEntity currentArea) async {
-    final playground = currentArea.playground;
-    final jail = currentArea.jail;
-
-    if (playground is PolygonShape && jail is PolygonShape) {
-      await _editPolygonArea(playground, jail);
-    } else if (playground is CircleShape && jail is CircleShape) {
-      await _editCircleArea(playground, jail);
-    }
-  }
-
-  /// 원형 구역 수정: 플레이그라운드 → 감옥 순으로 재설정 후 PUT
-  Future<void> _editCircleArea(CircleShape playground, CircleShape jail) async {
     final router = GoRouter.of(context);
 
-    final playgroundResult = await router.push<Map<String, dynamic>>(
-      '/waiting-room/${widget.sessionId}/game-settings/edit-playground',
-      extra: {
-        'lat': playground.center.latitude,
-        'lng': playground.center.longitude,
-        'radius': playground.radiusInMeters,
-      },
+    final playground = await router.pushNamed<AreaShape>(
+      RoutePaths.gameSettingsPlaygroundName,
+      pathParameters: {'sessionId': widget.sessionId},
+      extra: currentArea.playground,
     );
+    if (playground == null || !mounted) return;
 
-    if (playgroundResult == null || !mounted) return;
+    final currentJail = currentArea.jail;
+    final initialJail =
+        (playground is CircleShape && currentJail is CircleShape) ||
+            (playground is PolygonShape && currentJail is PolygonShape)
+        ? currentJail
+        : null;
 
-    final newPlaygroundCenter = LatLng(
-      playgroundResult['lat'] as double,
-      playgroundResult['lng'] as double,
+    final jail = await router.pushNamed<AreaShape>(
+      RoutePaths.gameSettingsPrisonName,
+      pathParameters: {'sessionId': widget.sessionId},
+      extra: PrisonEditArgs(playground: playground, initialJail: initialJail),
     );
-    final newPlaygroundRadius = playgroundResult['radius'] as double;
+    if (jail == null || !mounted) return;
 
-    final prisonResult = await router.push<Map<String, dynamic>>(
-      '/waiting-room/${widget.sessionId}/game-settings/edit-prison',
-      extra: {
-        'lat': jail.center.latitude,
-        'lng': jail.center.longitude,
-        'radius': jail.radiusInMeters,
-        'playgroundLat': newPlaygroundCenter.latitude,
-        'playgroundLng': newPlaygroundCenter.longitude,
-        'playgroundRadius': newPlaygroundRadius,
-      },
-    );
-
-    if (prisonResult == null || !mounted) return;
-
-    await _updateArea(
-      GameAreaRequestModel(
-        areaType: GameAreaType.circle,
-        circle: CircleAreaRequestModel(
-          playgroundCenter: CoordinatesRequestModel(
-            latitude: newPlaygroundCenter.latitude,
-            longitude: newPlaygroundCenter.longitude,
-          ),
-          playgroundRadiusInMeters: newPlaygroundRadius.toInt(),
-          jailCenter: CoordinatesRequestModel(
-            latitude: prisonResult['lat'] as double,
-            longitude: prisonResult['lng'] as double,
-          ),
-          jailRadiusInMeters: (prisonResult['radius'] as double).toInt(),
-        ),
-      ),
-    );
+    await _updateArea(GameAreaEntity(playground: playground, jail: jail));
   }
-
-  /// 폴리곤 구역 수정: 플레이그라운드 핀 → 감옥 핀 순으로 재설정 후 PUT
-  Future<void> _editPolygonArea(
-    PolygonShape playground,
-    PolygonShape jail,
-  ) async {
-    final router = GoRouter.of(context);
-
-    final playgroundResult = await router.push<Map<String, dynamic>>(
-      '/waiting-room/${widget.sessionId}/game-settings/edit-playground',
-      extra: {'points': _toLatLngList(playground.points)},
-    );
-
-    if (playgroundResult == null || !mounted) return;
-    final newPlaygroundPoints = playgroundResult['points'] as List<LatLng>;
-
-    final prisonResult = await router.push<Map<String, dynamic>>(
-      '/waiting-room/${widget.sessionId}/game-settings/edit-prison',
-      extra: {
-        'points': _toLatLngList(jail.points),
-        'playgroundPoints': newPlaygroundPoints,
-      },
-    );
-
-    if (prisonResult == null || !mounted) return;
-    final newJailPoints = prisonResult['points'] as List<LatLng>;
-
-    await _updateArea(
-      GameAreaRequestModel(
-        areaType: GameAreaType.polygon,
-        polygon: PolygonAreaRequestModel(
-          playgroundPolygon: _toCoordinatesList(newPlaygroundPoints),
-          jailPolygon: _toCoordinatesList(newJailPoints),
-        ),
-      ),
-    );
-  }
-
-  List<LatLng> _toLatLngList(List<GeoPoint> points) => [
-    for (final p in points) LatLng(p.latitude, p.longitude),
-  ];
-
-  List<CoordinatesRequestModel> _toCoordinatesList(List<LatLng> points) => [
-    for (final p in points)
-      CoordinatesRequestModel(latitude: p.latitude, longitude: p.longitude),
-  ];
 
   /// PUT /api/games/{gameId}/area 호출
-  Future<void> _updateArea(GameAreaRequestModel request) async {
+  Future<void> _updateArea(GameAreaEntity area) async {
     final gameId = _gameId;
     if (gameId == null) return;
 
     final loading = AppLoading.show(context, LoadingCategory.updateArea);
 
     try {
-      await ref.read(updateGameAreaProvider(gameId, request: request).future);
+      await ref.read(updateGameAreaProvider(gameId, area: area).future);
       await loading.close();
       debugPrint('[GameSettingsPage] ✅ 영역 수정 성공');
     } on DioException catch (e) {
@@ -225,7 +140,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
       backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: bgColor,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.transparent,
         elevation: 0,
         leading: PreviousButton(
           onPressed: () => context.pop(),
