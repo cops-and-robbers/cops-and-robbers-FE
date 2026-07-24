@@ -91,7 +91,7 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
         Polygon(
           polygonId: const PolygonId('playground_preview'),
           points: [for (final p in pg.points) LatLng(p.latitude, p.longitude)],
-          fillColor: AppColors.blue500.withValues(alpha: 0.2),
+          fillColor: AppColors.blue500Alpha20,
           strokeColor: AppColors.blue800,
           strokeWidth: 2,
           consumeTapEvents: false,
@@ -106,7 +106,7 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
           points: [
             for (final p in jail.points) LatLng(p.latitude, p.longitude),
           ],
-          fillColor: AppColors.red500.withValues(alpha: 0.2),
+          fillColor: AppColors.red500Alpha20,
           strokeColor: AppColors.red800,
           strokeWidth: 2,
           consumeTapEvents: false,

@@ -11,6 +11,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/game_config.dart';
 import '../../constants/map_styles.dart';
+import '../../constants/spacing_and_radius.dart';
 import '../../services/location/device_location_service.dart';
 import '../../services/vibration_service.dart';
 import '../buttons/my_location_button.dart';
@@ -45,7 +46,7 @@ class PinZoneSettingWidget extends StatefulWidget {
   /// 핀 마커 색상 (플레이그라운드 blue / 감옥 red)
   final Color pinColor;
 
-  /// 미리보기 다각형 채움 색상 (alpha 0.2 적용)
+  /// 미리보기 다각형 채움 색상
   final Color fillColor;
 
   /// 미리보기 다각형 외곽선 색상
@@ -259,7 +260,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
         Polygon(
           polygonId: const PolygonId('reference_polygon'),
           points: ref,
-          fillColor: AppColors.blue500.withValues(alpha: 0.2),
+          fillColor: AppColors.blue500Alpha20,
           strokeColor: AppColors.blue800,
           strokeWidth: 2,
           consumeTapEvents: false,
@@ -274,7 +275,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
         Polygon(
           polygonId: const PolygonId('editing_polygon'),
           points: sorted,
-          fillColor: widget.fillColor.withValues(alpha: 0.2),
+          fillColor: widget.fillColor,
           strokeColor: widget.strokeColor,
           strokeWidth: 2,
           consumeTapEvents: false,
@@ -336,8 +337,8 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
 
           // 내 위치 버튼 (좌하단)
           Positioned(
-            bottom: 16.h,
-            left: 20.w,
+            bottom: AppSpacing.vertical16,
+            left: AppSpacing.horizontal20,
             child: MyLocationButton(
               onPressed: _resetToCurrentLocation,
               isFocused: _isLocationFocused,
@@ -354,8 +355,8 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
           // 전체 해제 버튼 (핀 1개 이상일 때만, 우상단) — 공용 ActionChip 재사용
           if (_points.isNotEmpty)
             Positioned(
-              top: 16.h,
-              right: 20.w,
+              top: AppSpacing.vertical16,
+              right: AppSpacing.horizontal20,
               child: custom_chip.ActionChip(
                 text: AppLocalizations.of(context).zoneClearAllPins,
                 onTap: _clearAll,
@@ -366,8 +367,8 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
           // 면적 칩 (꼭짓점 3개 이상일 때만, 우하단)
           if (sortedPoints.length >= GameConfig.minPolygonVertexCount)
             Positioned(
-              bottom: 16.h,
-              right: 20.w,
+              bottom: AppSpacing.vertical16,
+              right: AppSpacing.horizontal20,
               child: InfoRadiusChip(
                 prefix: AppLocalizations.of(context).zoneAreaLabel,
                 value: _formatArea(

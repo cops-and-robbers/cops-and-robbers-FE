@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 
 /// 정보 표시용 칩 컴포넌트
@@ -251,7 +252,7 @@ class _InfoRadiusChipState extends State<InfoRadiusChip> {
                 color: _effectivePrefixColor,
               ),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: AppSpacing.horizontal8),
             // value: 남은 폭에서 우측 정렬. 폭을 넘으면 축소되어 prefix와 겹치지 않음
             Expanded(
               child: Align(

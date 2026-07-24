@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // SvgStringLoader + vg
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../constants/app_colors.dart';
+
 /// 폴리곤 꼭짓점 핀 마커 BitmapDescriptor 생성기
 ///
 /// `polygon_pin.svg`(15×28, 단색)를 팀 색상으로 틴트해 렌더한다.
@@ -97,7 +99,7 @@ class PolygonPinMarkerFactory {
     // 완전 투명 사각형 — 보이진 않지만 사각형 영역 전체가 탭 가능
     canvas.drawRect(
       Rect.fromLTWH(0, 0, phys.toDouble(), phys.toDouble()),
-      Paint()..color = const Color(0x00000000),
+      Paint()..color = AppColors.transparent,
     );
     final image = await recorder.endRecording().toImage(phys, phys);
 
