@@ -109,7 +109,15 @@ class SessionDraftStorageService {
     try {
       final currentDraft = await loadDraft();
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(playgroundCenter: center, playgroundRadiusInMeters: radius);
+          .copyWith(
+            areaType: GameAreaType.circle,
+            playgroundCenter: center,
+            playgroundRadiusInMeters: radius,
+            playgroundPinPoints: null,
+            jailCenter: null,
+            jailRadiusInMeters: null,
+            jailPinPoints: null,
+          );
       await saveDraft(updatedDraft);
       if (kDebugMode) {
         debugPrint('✅ 플레이그라운드 업데이트: center=$center, radius=${radius}m');
@@ -127,26 +135,15 @@ class SessionDraftStorageService {
     try {
       final currentDraft = await loadDraft();
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(jailCenter: center, jailRadiusInMeters: radius);
+          .copyWith(
+            jailCenter: center,
+            jailRadiusInMeters: radius,
+            jailPinPoints: null,
+          );
       await saveDraft(updatedDraft);
       debugPrint('✅ 감옥 업데이트: center=$center, radius=${radius}m');
     } catch (e, stack) {
       debugPrint('❌ 감옥 업데이트 실패: $e');
-      debugPrint('Stack: $stack');
-    }
-  }
-
-  /// 구역 타입(거리/핀) 업데이트
-  ///
-  /// **사용 시점**: 구역 설정 방식 토글 전환 또는 원형 완료 시
-  Future<void> updateAreaType(GameAreaType areaType) async {
-    try {
-      final currentDraft = await loadDraft();
-      final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(areaType: areaType);
-      await saveDraft(updatedDraft);
-    } catch (e, stack) {
-      debugPrint('❌ 구역 타입 업데이트 실패: $e');
       debugPrint('Stack: $stack');
     }
   }
@@ -160,7 +157,12 @@ class SessionDraftStorageService {
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
           .copyWith(
             areaType: GameAreaType.polygon,
+            playgroundCenter: null,
+            playgroundRadiusInMeters: null,
             playgroundPinPoints: points,
+            jailCenter: null,
+            jailRadiusInMeters: null,
+            jailPinPoints: null,
           );
       await saveDraft(updatedDraft);
       if (kDebugMode) {
@@ -179,7 +181,12 @@ class SessionDraftStorageService {
     try {
       final currentDraft = await loadDraft();
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(areaType: GameAreaType.polygon, jailPinPoints: points);
+          .copyWith(
+            areaType: GameAreaType.polygon,
+            jailCenter: null,
+            jailRadiusInMeters: null,
+            jailPinPoints: points,
+          );
       await saveDraft(updatedDraft);
       if (kDebugMode) {
         debugPrint('✅ 감옥 핀 업데이트: ${points.length}개');
