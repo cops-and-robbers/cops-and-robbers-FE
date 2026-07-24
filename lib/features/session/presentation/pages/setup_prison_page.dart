@@ -355,7 +355,6 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                       locationButtonColor: AppColors.red,
                       referencePolygon: _playgroundPinPoints,
                       isDarkMode: isDark,
-                      mapHeight: double.infinity,
                       onPointsChanged: (points) {
                         setState(() => _pinPoints = points);
                       },

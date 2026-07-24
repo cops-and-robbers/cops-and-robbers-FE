@@ -79,7 +79,9 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
   BitmapDescriptor? _pinIcon;
   BitmapDescriptor? _hitboxIcon;
   GoogleMapController? _mapController;
-  bool _isLocationFocused = true;
+  LatLng? _locationFocusTarget;
+  bool _isLocationFocused = false;
+  bool _isProgrammaticMove = false;
   bool _isInitialized = false;
 
   /// 최근 카메라 위치 — 마커 삭제 시 카메라 튐을 상쇄해 복원하는 데 쓴다
@@ -88,6 +90,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
   // Fallback 위치 (어린이대공원)
   static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
   static const double _initialZoom = 15;
+  static const double _locationFocusToleranceInMeters = 5;
   late LatLng _initialCamera;
 
   @override
@@ -108,13 +111,17 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     _pinIcon = await PolygonPinMarkerFactory.create(color: widget.pinColor);
     _hitboxIcon = await PolygonPinMarkerFactory.createHitbox();
 
+    final currentLocation = await _currentLocation();
+    _locationFocusTarget = currentLocation;
+
     // 초기 카메라: 기존 핀 있으면 그 중심, 없으면 현재 위치 → fallback
     if (_points.isNotEmpty) {
       _initialCamera = _centroidOf(_points);
     } else {
-      _initialCamera = await _currentLocation() ?? _fallbackLocation;
+      _initialCamera = currentLocation ?? _fallbackLocation;
     }
     _lastCamera = CameraPosition(target: _initialCamera, zoom: _initialZoom);
+    _isLocationFocused = _isCameraFocusedOnLocation(_lastCamera!);
 
     if (mounted) setState(() => _isInitialized = true);
   }
@@ -134,6 +141,24 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     final lng =
         pts.map((p) => p.longitude).reduce((a, b) => a + b) / pts.length;
     return LatLng(lat, lng);
+  }
+
+  bool _isCameraFocusedOnLocation(CameraPosition camera) {
+    final location = _locationFocusTarget;
+    if (location == null) return false;
+    return Geolocator.distanceBetween(
+          camera.target.latitude,
+          camera.target.longitude,
+          location.latitude,
+          location.longitude,
+        ) <=
+        _locationFocusToleranceInMeters;
+  }
+
+  void _updateLocationFocus(CameraPosition camera) {
+    final isFocused = _isCameraFocusedOnLocation(camera);
+    if (isFocused == _isLocationFocused) return;
+    setState(() => _isLocationFocused = isFocused);
   }
 
   /// 면적을 표준 단위(km²/m²)로 압축 표기.
@@ -288,6 +313,8 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
   Future<void> _resetToCurrentLocation() async {
     final loc = await _currentLocation();
     if (loc == null || !mounted) return;
+    _locationFocusTarget = loc;
+    _isProgrammaticMove = true;
     setState(() => _isLocationFocused = true);
     await _mapController?.animateCamera(CameraUpdate.newLatLng(loc));
   }
@@ -301,7 +328,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
       );
     }
 
-    return SizedBox(
+    final map = SizedBox(
       height: widget.mapHeight ?? 360.h,
       child: Stack(
         children: [
@@ -318,9 +345,13 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
             onTap: _onMapTap,
             onCameraMove: (pos) {
               _lastCamera = pos;
-              if (_isLocationFocused) {
-                setState(() => _isLocationFocused = false);
-              }
+              if (_isProgrammaticMove) return;
+              _updateLocationFocus(pos);
+            },
+            onCameraIdle: () {
+              _isProgrammaticMove = false;
+              final camera = _lastCamera;
+              if (camera != null) _updateLocationFocus(camera);
             },
             markers: _buildMarkers(),
             polygons: _buildPolygons(),
@@ -352,18 +383,6 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
             ),
           ),
 
-          // 전체 해제 버튼 (핀 1개 이상일 때만, 우상단) — 공용 ActionChip 재사용
-          if (_points.isNotEmpty)
-            Positioned(
-              top: AppSpacing.vertical16,
-              right: AppSpacing.horizontal20,
-              child: custom_chip.ActionChip(
-                text: AppLocalizations.of(context).zoneClearAllPins,
-                onTap: _clearAll,
-                backgroundColor: widget.pinColor,
-              ),
-            ),
-
           // 면적 칩 (꼭짓점 3개 이상일 때만, 우하단)
           if (sortedPoints.length >= GameConfig.minPolygonVertexCount)
             Positioned(
@@ -383,6 +402,24 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
             ),
         ],
       ),
+    );
+
+    return Column(
+      children: [
+        map,
+        SizedBox(height: AppSpacing.vertical20),
+        Padding(
+          padding: AppPadding.horizontal20,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: custom_chip.ActionChip(
+              text: AppLocalizations.of(context).zoneClearAllPins,
+              onTap: _points.isEmpty ? null : _clearAll,
+              backgroundColor: widget.pinColor,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

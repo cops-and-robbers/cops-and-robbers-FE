@@ -363,7 +363,6 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                           strokeColor: AppColors.blue800,
                           locationButtonColor: AppColors.blue,
                           isDarkMode: isDark,
-                          mapHeight: double.infinity,
                           onPointsChanged: (points) {
                             setState(() => _pinPoints = points);
                           },
