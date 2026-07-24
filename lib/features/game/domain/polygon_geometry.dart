@@ -35,7 +35,7 @@ bool hasSelfIntersection(List<GeoPoint> polygon) {
     for (var j = i + 1; j < n; j++) {
       // 꼭짓점을 공유하는 인접 변은 제외
       if ((i + 1) % n == j || (j + 1) % n == i) continue;
-      if (_segmentsIntersect(
+      if (_segmentsTouchOrIntersect(
         polygon[i],
         polygon[(i + 1) % n],
         polygon[j],
@@ -55,32 +55,39 @@ double polygonAreaInSquareMeters(List<GeoPoint> polygon) {
   const metersPerDegLat = 111320.0;
   final refLatRad = polygon.first.latitude * math.pi / 180;
   final metersPerDegLng = metersPerDegLat * math.cos(refLatRad);
+  final origin = polygon.first;
   var sum = 0.0;
   for (var i = 0; i < polygon.length; i++) {
     final a = polygon[i];
     final b = polygon[(i + 1) % polygon.length];
-    final ax = a.longitude * metersPerDegLng;
-    final ay = a.latitude * metersPerDegLat;
-    final bx = b.longitude * metersPerDegLng;
-    final by = b.latitude * metersPerDegLat;
+    final ax = (a.longitude - origin.longitude) * metersPerDegLng;
+    final ay = (a.latitude - origin.latitude) * metersPerDegLat;
+    final bx = (b.longitude - origin.longitude) * metersPerDegLng;
+    final by = (b.latitude - origin.latitude) * metersPerDegLat;
     sum += ax * by - bx * ay;
   }
   return sum.abs() / 2;
 }
+
+/// 면적이 있고 자기교차하지 않는 유효한 다각형인지 검사한다.
+bool isValidPolygon(List<GeoPoint> polygon) =>
+    polygon.length >= 3 &&
+    polygonAreaInSquareMeters(polygon) > 0.01 &&
+    !hasSelfIntersection(polygon);
 
 /// inner 다각형이 outer 다각형 내부에 완전히 포함되는지 검사 (감옥⊂플레이그라운드)
 ///
 /// 꼭짓점 전부 내부 + 변 교차 없음 두 조건 모두 필요 — 오목한 outer에서는
 /// 꼭짓점이 모두 안이어도 변이 경계를 가로지를 수 있다.
 bool isPolygonInsidePolygon(List<GeoPoint> inner, List<GeoPoint> outer) {
-  if (inner.length < 3 || outer.length < 3) return false;
+  if (!isValidPolygon(inner) || !isValidPolygon(outer)) return false;
   final outerShape = AreaShape.polygon(points: outer);
   if (!inner.every(outerShape.contains)) return false;
   final ni = inner.length;
   final no = outer.length;
   for (var i = 0; i < ni; i++) {
     for (var j = 0; j < no; j++) {
-      if (_segmentsIntersect(
+      if (_segmentsProperlyIntersect(
         inner[i],
         inner[(i + 1) % ni],
         outer[j],
@@ -99,11 +106,43 @@ double _cross(GeoPoint o, GeoPoint a, GeoPoint b) =>
     (a.latitude - o.latitude) * (b.longitude - o.longitude);
 
 /// 선분 (p1,p2)와 (p3,p4)의 진성 교차(끝점 접촉 제외) 판정
-bool _segmentsIntersect(GeoPoint p1, GeoPoint p2, GeoPoint p3, GeoPoint p4) {
+bool _segmentsProperlyIntersect(
+  GeoPoint p1,
+  GeoPoint p2,
+  GeoPoint p3,
+  GeoPoint p4,
+) {
   final d1 = _cross(p3, p4, p1);
   final d2 = _cross(p3, p4, p2);
   final d3 = _cross(p1, p2, p3);
   final d4 = _cross(p1, p2, p4);
   return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) &&
       ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
+}
+
+/// 비인접 선분의 교차·끝점 접촉·겹침을 모두 판정한다.
+bool _segmentsTouchOrIntersect(
+  GeoPoint p1,
+  GeoPoint p2,
+  GeoPoint p3,
+  GeoPoint p4,
+) {
+  if (_segmentsProperlyIntersect(p1, p2, p3, p4)) return true;
+
+  const epsilon = 1e-12;
+  return (_cross(p1, p2, p3).abs() <= epsilon && _isPointBetween(p1, p2, p3)) ||
+      (_cross(p1, p2, p4).abs() <= epsilon && _isPointBetween(p1, p2, p4)) ||
+      (_cross(p3, p4, p1).abs() <= epsilon && _isPointBetween(p3, p4, p1)) ||
+      (_cross(p3, p4, p2).abs() <= epsilon && _isPointBetween(p3, p4, p2));
+}
+
+bool _isPointBetween(GeoPoint a, GeoPoint b, GeoPoint point) {
+  final minLatitude = math.min(a.latitude, b.latitude);
+  final maxLatitude = math.max(a.latitude, b.latitude);
+  final minLongitude = math.min(a.longitude, b.longitude);
+  final maxLongitude = math.max(a.longitude, b.longitude);
+  return point.latitude >= minLatitude &&
+      point.latitude <= maxLatitude &&
+      point.longitude >= minLongitude &&
+      point.longitude <= maxLongitude;
 }

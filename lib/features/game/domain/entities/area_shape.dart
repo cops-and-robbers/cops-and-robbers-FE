@@ -90,10 +90,14 @@ class GameAreaEntity with _$GameAreaEntity {
 /// ray casting 내부 판정 — 점에서 수평 반직선을 쏘아 변과의 교차 횟수가
 /// 홀수면 내부. 위경도 축 스케일 차이는 교차 '횟수'에 영향 없음(위상 판정).
 bool _rayCastContains(List<GeoPoint> pts, GeoPoint p) {
+  if (pts.length < 3) return false;
+
   var inside = false;
   for (var i = 0, j = pts.length - 1; i < pts.length; j = i++) {
     final a = pts[i];
     final b = pts[j];
+    if (_isPointOnSegment(a, b, p)) return true;
+
     final intersects =
         ((a.latitude > p.latitude) != (b.latitude > p.latitude)) &&
         (p.longitude <
@@ -104,4 +108,23 @@ bool _rayCastContains(List<GeoPoint> pts, GeoPoint p) {
     if (intersects) inside = !inside;
   }
   return inside;
+}
+
+/// 부동소수점 좌표에서 점이 선분 위에 있는지 판정한다.
+bool _isPointOnSegment(GeoPoint a, GeoPoint b, GeoPoint p) {
+  const epsilon = 1e-12;
+  final cross =
+      (p.longitude - a.longitude) * (b.latitude - a.latitude) -
+      (p.latitude - a.latitude) * (b.longitude - a.longitude);
+  if (cross.abs() > epsilon) return false;
+
+  final minLatitude = a.latitude < b.latitude ? a.latitude : b.latitude;
+  final maxLatitude = a.latitude > b.latitude ? a.latitude : b.latitude;
+  final minLongitude = a.longitude < b.longitude ? a.longitude : b.longitude;
+  final maxLongitude = a.longitude > b.longitude ? a.longitude : b.longitude;
+
+  return p.latitude >= minLatitude - epsilon &&
+      p.latitude <= maxLatitude + epsilon &&
+      p.longitude >= minLongitude - epsilon &&
+      p.longitude <= maxLongitude + epsilon;
 }

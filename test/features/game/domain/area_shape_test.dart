@@ -49,6 +49,13 @@ void main() {
       );
     });
 
+    test('returns_true_when_point_is_on_polygon_boundary', () {
+      expect(
+        square.contains(const GeoPoint(latitude: 37.5685, longitude: 126.9780)),
+        isTrue,
+      );
+    });
+
     test('handles_concave_polygon_notch_correctly', () {
       // ㄷ자(오목) 폴리곤 — 바닥에 파인 홈은 외부여야 한다
       const concave = AreaShape.polygon(

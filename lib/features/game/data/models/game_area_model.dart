@@ -78,6 +78,7 @@ extension GameAreaModelMapper on GameAreaModel {
           // areaType과 데이터 객체 불일치 — 서버 응답 계약 위반
           throw const ServerException(
             message: '게임 구역 응답 형식이 올바르지 않습니다 (CIRCLE 데이터 누락)',
+            messageKey: 'errorAreaLoadFailed',
           );
         }
         return GameAreaEntity(
@@ -104,6 +105,7 @@ extension GameAreaModelMapper on GameAreaModel {
           // 꼭짓점 3개 미만은 다각형이 아님 — 판정·렌더링 모두 무의미
           throw const ServerException(
             message: '게임 구역 응답 형식이 올바르지 않습니다 (POLYGON 데이터 불량)',
+            messageKey: 'errorAreaLoadFailed',
           );
         }
         return GameAreaEntity(

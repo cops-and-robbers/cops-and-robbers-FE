@@ -71,6 +71,22 @@ void main() {
     });
   });
 
+  group('isValidPolygon', () {
+    test('returns_false_when_three_vertices_are_collinear', () {
+      const collinear = [
+        GeoPoint(latitude: 37.5660, longitude: 126.9780),
+        GeoPoint(latitude: 37.5670, longitude: 126.9780),
+        GeoPoint(latitude: 37.5680, longitude: 126.9780),
+      ];
+
+      expect(isValidPolygon(collinear), isFalse);
+    });
+
+    test('returns_true_when_polygon_has_area_and_no_intersection', () {
+      expect(isValidPolygon(square), isTrue);
+    });
+  });
+
   group('isPolygonInsidePolygon', () {
     // square 안쪽의 작은 삼각형
     const innerTriangle = [
