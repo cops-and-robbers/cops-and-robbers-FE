@@ -14,6 +14,7 @@ import '../../constants/map_styles.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../services/location/device_location_service.dart';
 import '../../services/vibration_service.dart';
+import '../../utils/zone_metric_formatter.dart';
 import '../buttons/my_location_button.dart';
 import '../chips/action_chip.dart' as custom_chip;
 import '../chips/info_radius_chip.dart';
@@ -159,17 +160,6 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     final isFocused = _isCameraFocusedOnLocation(camera);
     if (isFocused == _isLocationFocused) return;
     setState(() => _isLocationFocused = isFocused);
-  }
-
-  /// 면적을 표준 단위(km²/m²)로 압축 표기.
-  ///
-  /// SI 심볼(m²·km²)은 로케일과 무관하므로 국제화에 안전하다. 0.01km²(=1만 m²)
-  /// 이상은 km²로 올려 자릿수를 억제한다(칩 오버플로 방지).
-  String _formatArea(double squareMeters) {
-    if (squareMeters >= 10000) {
-      return '${(squareMeters / 1000000).toStringAsFixed(2)}km²';
-    }
-    return '${squareMeters.round()}m²';
   }
 
   List<GeoPoint> get _geoPoints => [
@@ -390,7 +380,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
               right: AppSpacing.horizontal20,
               child: InfoRadiusChip(
                 prefix: AppLocalizations.of(context).zoneAreaLabel,
-                value: _formatArea(
+                value: formatAreaValue(
                   polygonAreaInSquareMeters(
                     sortByAngleAroundCentroid(_geoPoints),
                   ),

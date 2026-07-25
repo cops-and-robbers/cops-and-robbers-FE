@@ -18,7 +18,6 @@ import '../../../game/domain/entities/area_shape.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../../../core/theme/role_theme_provider.dart';
-import '../../domain/entities/zone_info.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import 'setup_prison_page.dart';
@@ -164,12 +163,8 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
               // ── 구역 섹션 ──
               areaAsync.when(
-                data: (area) => _buildZoneSection(
-                  area,
-                  isHost: isHost,
-                  isDark: isDark,
-                  l10n: l10n,
-                ),
+                data: (area) =>
+                    _buildZoneSection(area, isHost: isHost, isDark: isDark),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
                   l10n.errorZoneInfoLoadFailed,
@@ -221,24 +216,9 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     GameAreaEntity area, {
     required bool isHost,
     required bool isDark,
-    required AppLocalizations l10n,
   }) {
-    // 원형은 반경, 폴리곤은 외접 반경으로 대략적 크기를 표시한다.
-    final zones = [
-      ZoneInfo(
-        id: 'playground',
-        name: l10n.zonePlayground,
-        radiusMeters: area.playground.boundingRadiusInMeters.toInt(),
-      ),
-      ZoneInfo(
-        id: 'prison',
-        name: l10n.zoneJail,
-        radiusMeters: area.jail.boundingRadiusInMeters.toInt(),
-      ),
-    ];
-
     return ZoneListCard(
-      zones: zones,
+      area: area,
       onTap: isHost
           ? () => _navigateToEditPlayground(area)
           : () => _navigateToZonePreview(area),

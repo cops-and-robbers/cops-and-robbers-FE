@@ -35,7 +35,6 @@ import '../../../game/domain/polygon_geometry.dart';
 import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
 import '../../domain/entities/session_settings.dart';
-import '../../domain/entities/zone_info.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
@@ -518,15 +517,38 @@ class _SessionCreationFlowPageState
     });
   }
 
-  /// 플레이그라운드 설정 완료 여부 (감옥 버튼 노출 조건)
-  bool get _isPlaygroundSet => _areaType == GameAreaType.polygon
-      ? _isValidPolygonPoints(_playgroundPinPoints)
-      : (_playgroundCenter != null && _playgroundRadiusMeters != null);
+  /// 플레이그라운드 도형 — 현재 모드 입력이 유효할 때만 non-null
+  ///
+  /// 원형/폴리곤 분기를 이 게터 안에 가두어, 완료 판정·버튼 표시·엔티티 조립이
+  /// 같은 판단을 각자 반복하지 않게 한다.
+  AreaShape? get _playgroundShape => _areaType == GameAreaType.polygon
+      ? (_isValidPolygonPoints(_playgroundPinPoints)
+            ? AreaShape.polygon(points: _toGeoPoints(_playgroundPinPoints!))
+            : null)
+      : (_playgroundCenter != null && _playgroundRadiusMeters != null
+            ? AreaShape.circle(
+                center: GeoPoint(
+                  latitude: _playgroundCenter!.latitude,
+                  longitude: _playgroundCenter!.longitude,
+                ),
+                radiusInMeters: _playgroundRadiusMeters!,
+              )
+            : null);
 
-  /// 감옥 설정 완료 여부 (최초 생성 시 자동 연속 진입 판단용)
-  bool get _isPrisonSet => _areaType == GameAreaType.polygon
-      ? _isValidPolygonPoints(_prisonPinPoints)
-      : (_prisonCenter != null && _prisonRadiusMeters != null);
+  /// 감옥 도형 — 현재 모드 입력이 유효할 때만 non-null
+  AreaShape? get _prisonShape => _areaType == GameAreaType.polygon
+      ? (_isValidPolygonPoints(_prisonPinPoints)
+            ? AreaShape.polygon(points: _toGeoPoints(_prisonPinPoints!))
+            : null)
+      : (_prisonCenter != null && _prisonRadiusMeters != null
+            ? AreaShape.circle(
+                center: GeoPoint(
+                  latitude: _prisonCenter!.latitude,
+                  longitude: _prisonCenter!.longitude,
+                ),
+                radiusInMeters: _prisonRadiusMeters!,
+              )
+            : null);
 
   /// 구역 설정 전체 완료 여부 (Step3 표시·방 생성 가능 조건)
   bool get _isAreaComplete => _buildAreaEntity() != null;
@@ -543,72 +565,37 @@ class _SessionCreationFlowPageState
       GeoPoint(latitude: point.latitude, longitude: point.longitude),
   ];
 
-  /// 폴리곤 목록의 외접 반경(m) — Step3 요약 표시용
-  int _polygonDisplayRadius(List<LatLng> points) {
-    final shape = AreaShape.polygon(
-      points: [
-        for (final p in points)
-          GeoPoint(latitude: p.latitude, longitude: p.longitude),
-      ],
-    );
-    return shape.boundingRadiusInMeters.round();
-  }
-
   /// 현재 입력이 유효하면 도메인 구역 엔티티로 조립한다.
+  ///
+  /// 도형 조립은 [_playgroundShape]·[_prisonShape]가 담당하고, 여기서는 두 구역의
+  /// 포함 관계만 검증한다.
   GameAreaEntity? _buildAreaEntity() {
-    if (_areaType == GameAreaType.polygon) {
-      final playgroundPoints = _playgroundPinPoints;
-      final jailPoints = _prisonPinPoints;
-      if (!_isValidPolygonPoints(playgroundPoints) ||
-          !_isValidPolygonPoints(jailPoints)) {
+    final playground = _playgroundShape;
+    final jail = _prisonShape;
+    if (playground == null || jail == null) return null;
+
+    if (playground is PolygonShape && jail is PolygonShape) {
+      if (!isPolygonInsidePolygon(jail.points, playground.points)) return null;
+      return GameAreaEntity(playground: playground, jail: jail);
+    }
+
+    if (playground is CircleShape && jail is CircleShape) {
+      final centerDistance = Geolocator.distanceBetween(
+        playground.center.latitude,
+        playground.center.longitude,
+        jail.center.latitude,
+        jail.center.longitude,
+      );
+      if (centerDistance + jail.radiusInMeters >
+          playground.radiusInMeters +
+              GameConfig.zoneContainmentToleranceInMeters) {
         return null;
       }
-
-      final playground = _toGeoPoints(playgroundPoints!);
-      final jail = _toGeoPoints(jailPoints!);
-      if (!isPolygonInsidePolygon(jail, playground)) return null;
-
-      return GameAreaEntity(
-        playground: AreaShape.polygon(points: playground),
-        jail: AreaShape.polygon(points: jail),
-      );
+      return GameAreaEntity(playground: playground, jail: jail);
     }
 
-    final playgroundCenter = _playgroundCenter;
-    final playgroundRadius = _playgroundRadiusMeters;
-    final jailCenter = _prisonCenter;
-    final jailRadius = _prisonRadiusMeters;
-    if (playgroundCenter == null ||
-        playgroundRadius == null ||
-        jailCenter == null ||
-        jailRadius == null) {
-      return null;
-    }
-
-    final centerDistance = Geolocator.distanceBetween(
-      playgroundCenter.latitude,
-      playgroundCenter.longitude,
-      jailCenter.latitude,
-      jailCenter.longitude,
-    );
-    if (centerDistance + jailRadius > playgroundRadius + 1.0) return null;
-
-    return GameAreaEntity(
-      playground: AreaShape.circle(
-        center: GeoPoint(
-          latitude: playgroundCenter.latitude,
-          longitude: playgroundCenter.longitude,
-        ),
-        radiusInMeters: playgroundRadius,
-      ),
-      jail: AreaShape.circle(
-        center: GeoPoint(
-          latitude: jailCenter.latitude,
-          longitude: jailCenter.longitude,
-        ),
-        radiusInMeters: jailRadius,
-      ),
-    );
+    // 타입 혼합은 서버 제약상 불가 — 도달 시 미완성으로 취급한다
+    return null;
   }
 
   void _onMaxParticipantsChanged(int value) {
@@ -770,15 +757,8 @@ class _SessionCreationFlowPageState
         // Step 0: 구역 선택
         SingleChildScrollView(
           child: Step0SelectAreaContent(
-            // 폴리곤 모드에서는 반경 표시 없음(null)
-            playgroundRadiusMeters: _areaType == GameAreaType.circle
-                ? _playgroundRadiusMeters
-                : null,
-            prisonRadiusMeters: _areaType == GameAreaType.circle
-                ? _prisonRadiusMeters
-                : null,
-            isPlaygroundSet: _isPlaygroundSet,
-            isPrisonSet: _isPrisonSet,
+            playgroundShape: _playgroundShape,
+            prisonShape: _prisonShape,
             onPlaygroundResult: _onPlaygroundResult,
             onPrisonResult: _onPrisonResult,
             playgroundKey: _tutorialKeyPlayground,
@@ -810,23 +790,7 @@ class _SessionCreationFlowPageState
         SingleChildScrollView(
           child: _isAreaComplete
               ? Step3InviteCodeContent(
-                  zones: [
-                    ZoneInfo(
-                      id: 'playground',
-                      name: l10n.zonePlayground,
-                      // 폴리곤은 외접 반경으로 대략적 크기 표시
-                      radiusMeters: _areaType == GameAreaType.polygon
-                          ? _polygonDisplayRadius(_playgroundPinPoints!)
-                          : _playgroundRadiusMeters!.toInt(),
-                    ),
-                    ZoneInfo(
-                      id: 'prison',
-                      name: l10n.zoneJail,
-                      radiusMeters: _areaType == GameAreaType.polygon
-                          ? _polygonDisplayRadius(_prisonPinPoints!)
-                          : _prisonRadiusMeters!.toInt(),
-                    ),
-                  ],
+                  area: _buildAreaEntity()!,
                   settings: SessionSettings(
                     maxPlayers: _maxParticipants,
                     roundTimeMinutes: _roundDurationMinutes,

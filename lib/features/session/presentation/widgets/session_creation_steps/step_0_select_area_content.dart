@@ -17,10 +17,8 @@ import '../../../../../router/route_paths.dart';
 class Step0SelectAreaContent extends StatelessWidget {
   const Step0SelectAreaContent({
     super.key,
-    required this.playgroundRadiusMeters,
-    required this.prisonRadiusMeters,
-    required this.isPlaygroundSet,
-    required this.isPrisonSet,
+    required this.playgroundShape,
+    required this.prisonShape,
     required this.onPlaygroundResult,
     required this.onPrisonResult,
     this.playgroundKey,
@@ -31,17 +29,11 @@ class Step0SelectAreaContent extends StatelessWidget {
   // Properties
   // ============================================
 
-  /// 플레이그라운드 반경 (미터, 원형일 때만 — 폴리곤이면 null)
-  final double? playgroundRadiusMeters;
+  /// 설정된 플레이그라운드 도형 (미설정이면 null)
+  final AreaShape? playgroundShape;
 
-  /// 감옥 반경 (미터, 원형일 때만 — 폴리곤이면 null)
-  final double? prisonRadiusMeters;
-
-  /// 플레이그라운드 설정 완료 여부 (원형/폴리곤 공통)
-  final bool isPlaygroundSet;
-
-  /// 감옥 설정 완료 여부 (최초 생성 시 자동 연속 진입 판단용)
-  final bool isPrisonSet;
+  /// 설정된 감옥 도형 (미설정이면 null)
+  final AreaShape? prisonShape;
 
   /// 플레이그라운드 설정 결과 콜백
   final ValueChanged<AreaShape> onPlaygroundResult;
@@ -64,7 +56,7 @@ class Step0SelectAreaContent extends StatelessWidget {
   /// 최초 생성(감옥 미설정) 흐름에서는 플레이그라운드 완료 직후 감옥 설정으로
   /// 자동 연결해 이탈을 줄인다. 감옥이 이미 설정된 뒤(재설정)에는 허브로 돌아온다.
   Future<void> _onPlaygroundPressed(BuildContext context) async {
-    final wasPrisonSet = isPrisonSet;
+    final wasPrisonSet = prisonShape != null;
     final result = await context.pushNamed<AreaShape>(
       RoutePaths.setupPlaygroundFromFlowName,
     );
@@ -99,18 +91,18 @@ class Step0SelectAreaContent extends StatelessWidget {
           key: playgroundKey,
           zoneType: ZoneType.playground,
           title: l10n.dialogstep0SelectAreaContentTitle,
-          radiusMeters: playgroundRadiusMeters,
+          shape: playgroundShape,
           onPressed: () => _onPlaygroundPressed(context),
         ),
 
         // 감옥 버튼 (플레이그라운드 설정 완료 후에만 노출)
-        if (isPlaygroundSet) ...[
+        if (playgroundShape != null) ...[
           SizedBox(height: AppSpacing.vertical8),
           ZoneSettingButton(
             key: prisonKey,
             zoneType: ZoneType.prison,
             title: l10n.dialogstep0SelectAreaContentTitle5bc0,
-            radiusMeters: prisonRadiusMeters,
+            shape: prisonShape,
             onPressed: () => _onPrisonPressed(context),
           ),
         ],

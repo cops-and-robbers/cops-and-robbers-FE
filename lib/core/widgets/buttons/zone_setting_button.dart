@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../features/game/domain/entities/area_shape.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../../services/vibration_service.dart';
+import '../../utils/zone_metric_formatter.dart';
 
 /// 구역 타입 Enum
 ///
@@ -23,20 +25,21 @@ enum ZoneType {
 ///
 /// **기능**:
 /// - 구역 타입별 색상 자동 적용 (Playground: blue, Prison: red)
-/// - 반경 설정 전/후 상태에 따른 동적 색상 변경
+/// - 구역 설정 전/후 상태에 따른 동적 색상 변경
+/// - 서브텍스트는 도형에 맞게 표시 (원형=반경, 폴리곤=면적)
 /// - 우측 화살표 아이콘 표시
 /// - Column-Row 구조로 레이아웃 구성 (label + icon을 Row로, 그 아래 subtitle)
 ///
 /// **색상 규칙**:
 /// - **플레이그라운드 (Playground)**:
 ///   - 배경: blue100
-///   - 반경 미설정: label_16 blue800, tag_12 blue800
-///   - 반경 설정됨: label_16 blue, tag_12 blue800
+///   - 구역 미설정: label_16 blue800, tag_12 blue800
+///   - 구역 설정됨: label_16 blue, tag_12 blue800
 ///
 /// - **감옥 (Prison)**:
 ///   - 배경: red100
-///   - 반경 미설정: label_16 red800, tag_12 red800
-///   - 반경 설정됨: label_16 red, tag_12 red800
+///   - 구역 미설정: label_16 red800, tag_12 red800
+///   - 구역 설정됨: label_16 red, tag_12 red800
 ///
 /// **레이아웃 구조**:
 /// ```
@@ -50,18 +53,18 @@ enum ZoneType {
 ///
 /// **사용 예시**:
 /// ```dart
-/// // 반경 미설정
+/// // 구역 미설정
 /// ZoneSettingButton(
 ///   zoneType: ZoneType.playground,
 ///   title: '플레이그라운드',
 ///   onPressed: () => Navigator.push(...),
 /// )
 ///
-/// // 반경 설정됨 (subtitle 자동 표시, 높이 자동 증가)
+/// // 구역 설정됨 (subtitle 자동 표시, 높이 자동 증가)
 /// ZoneSettingButton(
 ///   zoneType: ZoneType.playground,
 ///   title: '플레이그라운드',
-///   radiusMeters: 400,
+///   shape: AreaShape.circle(center: center, radiusInMeters: 400),
 ///   onPressed: () => Navigator.push(...),
 /// )
 /// ```
@@ -71,7 +74,7 @@ class ZoneSettingButton extends StatelessWidget {
     required this.zoneType,
     required this.title,
     required this.onPressed,
-    this.radiusMeters,
+    this.shape,
   });
 
   /// 구역 타입 (Playground / Prison)
@@ -80,8 +83,8 @@ class ZoneSettingButton extends StatelessWidget {
   /// 구역 이름 (예: "플레이그라운드", "감옥")
   final String title;
 
-  /// 반경 (미터 단위, null이면 미설정 상태)
-  final double? radiusMeters;
+  /// 설정된 구역 도형 (null이면 미설정 상태)
+  final AreaShape? shape;
 
   /// 버튼 클릭 핸들러
   final VoidCallback onPressed;
@@ -97,13 +100,13 @@ class ZoneSettingButton extends StatelessWidget {
         : AppColors.red100;
   }
 
-  /// 메인 텍스트 색상 (반경 설정 여부에 따라 변경)
+  /// 메인 텍스트 색상 (구역 설정 여부에 따라 변경)
   Color get _mainTextColor {
-    if (radiusMeters != null) {
-      // 반경 설정됨: 진한 색상 (blue / red)
+    if (shape != null) {
+      // 구역 설정됨: 진한 색상 (blue / red)
       return zoneType == ZoneType.playground ? AppColors.blue : AppColors.red;
     } else {
-      // 반경 미설정: 중간 색상 (blue800 / red800)
+      // 구역 미설정: 중간 색상 (blue800 / red800)
       return zoneType == ZoneType.playground
           ? AppColors.blue800
           : AppColors.red800;
@@ -120,19 +123,11 @@ class ZoneSettingButton extends StatelessWidget {
   /// 아이콘 색상 (메인 텍스트와 동일)
   Color get _iconColor => _mainTextColor;
 
-  /// 서브텍스트 (반경 미터 정보) — locale에 따라 i18n 적용
+  /// 서브텍스트 (구역 크기) — 원형은 반경, 폴리곤은 면적
   ///
-  /// 1000m 미만: "반경 400m" / "Radius 400m"
-  /// 1000m 이상: "반경 1.50km" / "Radius 1.50km" (소수점 2자리 고정)
-  String? _subtitleOf(BuildContext context) {
-    if (radiusMeters == null) return null;
-    final l10n = AppLocalizations.of(context);
-    if (radiusMeters! >= 1000) {
-      final km = (radiusMeters! / 1000).toStringAsFixed(2);
-      return l10n.zoneRadiusKm(km);
-    }
-    return l10n.zoneRadiusMeter(radiusMeters!.toInt().toString());
-  }
+  /// 예: "반경 400m" / "반경 1.50km" / "면적 31,416m²" (locale에 따라 i18n 적용)
+  String? _subtitleOf(BuildContext context) =>
+      shape?.metricText(AppLocalizations.of(context));
 
   // ============================================
   // Widget Build

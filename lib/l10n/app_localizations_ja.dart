@@ -130,17 +130,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonAppleSignIn => 'Appleで続ける';
 
   @override
-  String zoneRadiusKm(String km) {
-    return '半径 ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return '半径 ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => '半径';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return '半径 $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return '面積 $value';
+  }
 
   @override
   String get areaTypeSetByDistance => '距離で設定';
@@ -462,11 +462,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String gameSettingPoliceStartDelay(int minutes) {
     return '泥棒が逃げたあと $minutes分後';
-  }
-
-  @override
-  String zoneRadiusMeters(String meters) {
-    return '半径 ${meters}m';
   }
 
   @override

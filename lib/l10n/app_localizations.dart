@@ -328,23 +328,23 @@ abstract class AppLocalizations {
   /// **'Apple로 계속하기'**
   String get buttonAppleSignIn;
 
-  /// 구역 정보 — 반경 (km 단위)
-  ///
-  /// In ko, this message translates to:
-  /// **'반경 {km}km'**
-  String zoneRadiusKm(String km);
-
-  /// No description provided for @zoneRadiusMeter.
-  ///
-  /// In ko, this message translates to:
-  /// **'반경 {radiusMeters}m'**
-  String zoneRadiusMeter(String radiusMeters);
-
   /// No description provided for @zoneRadiusLabel.
   ///
   /// In ko, this message translates to:
   /// **'반경'**
   String get zoneRadiusLabel;
+
+  /// 구역 크기 — 원형 반경. 값+단위는 formatRadiusValue가 생성한다
+  ///
+  /// In ko, this message translates to:
+  /// **'반경 {value}'**
+  String zoneRadiusValue(String value);
+
+  /// 구역 크기 — 폴리곤 면적. 값+단위는 formatAreaValue가 생성한다
+  ///
+  /// In ko, this message translates to:
+  /// **'면적 {value}'**
+  String zoneAreaValue(String value);
 
   /// No description provided for @areaTypeSetByDistance.
   ///
@@ -945,12 +945,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'도둑 도망 후 {minutes}분 뒤'**
   String gameSettingPoliceStartDelay(int minutes);
-
-  /// 구역 정보 — 반경 (m 단위)
-  ///
-  /// In ko, this message translates to:
-  /// **'반경 {meters}m'**
-  String zoneRadiusMeters(String meters);
 
   /// 게임 설정 저장 실패 안내
   ///

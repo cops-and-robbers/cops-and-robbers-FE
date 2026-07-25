@@ -45,7 +45,6 @@ import 'features/game/data/models/game_area_model.dart';
 import 'features/game/domain/entities/area_shape.dart';
 import 'features/game/presentation/widgets/ping_selection_card.dart';
 import 'features/session/domain/entities/session_settings.dart';
-import 'features/session/domain/entities/zone_info.dart';
 import 'features/session/presentation/widgets/session_info_view.dart';
 
 /// 공용 컴포넌트 테스트 페이지
@@ -502,10 +501,16 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
                 const SessionInfoView(
                   sessionCode: 'A1B2C3',
-                  zones: [
-                    ZoneInfo(id: '1', name: '플레이그라운드', radiusMeters: 400),
-                    ZoneInfo(id: '2', name: '감옥', radiusMeters: 200),
-                  ],
+                  area: GameAreaEntity(
+                    playground: AreaShape.circle(
+                      center: GeoPoint(latitude: 37.5665, longitude: 126.9780),
+                      radiusInMeters: 400,
+                    ),
+                    jail: AreaShape.circle(
+                      center: GeoPoint(latitude: 37.5665, longitude: 126.9780),
+                      radiusInMeters: 200,
+                    ),
+                  ),
                   settings: SessionSettings(
                     maxPlayers: 50,
                     roundTimeMinutes: 30,

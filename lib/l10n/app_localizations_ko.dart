@@ -128,17 +128,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonAppleSignIn => 'Apple로 계속하기';
 
   @override
-  String zoneRadiusKm(String km) {
-    return '반경 ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return '반경 ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => '반경';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return '반경 $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return '면적 $value';
+  }
 
   @override
   String get areaTypeSetByDistance => '거리로 설정';
@@ -460,11 +460,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String gameSettingPoliceStartDelay(int minutes) {
     return '도둑 도망 후 $minutes분 뒤';
-  }
-
-  @override
-  String zoneRadiusMeters(String meters) {
-    return '반경 ${meters}m';
   }
 
   @override

@@ -138,17 +138,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonAppleSignIn => 'Continue with Apple';
 
   @override
-  String zoneRadiusKm(String km) {
-    return 'Radius ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return 'Radius ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => 'Radius';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return 'Radius $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return 'Area $value';
+  }
 
   @override
   String get areaTypeSetByDistance => 'Set by distance';
@@ -512,11 +512,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String gameSettingPoliceStartDelay(int minutes) {
     return '$minutes min after Robbers run away';
-  }
-
-  @override
-  String zoneRadiusMeters(String meters) {
-    return 'Radius ${meters}m';
   }
 
   @override
