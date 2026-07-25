@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:cops_and_robbers/core/utils/zone_metric_formatter.dart';
 import 'package:cops_and_robbers/core/widgets/inputs/app_slider.dart';
 
 /// AppSlider를 ScreenUtil 환경에서 띄우는 테스트 헬퍼
@@ -260,6 +261,89 @@ void main() {
       // prefix/suffix는 여전히 보임
       expect(find.textContaining('도둑 도망 후'), findsOneWidget);
       expect(find.textContaining('뒤'), findsOneWidget);
+    });
+  });
+
+  group('AppSlider valueFormatter', () {
+    testWidgets('shows_integer_with_unit_when_formatter_absent', (
+      tester,
+    ) async {
+      await _pumpSlider(
+        tester,
+        child: AppSlider(
+          label: '참여 인원',
+          value: 8,
+          min: 2,
+          max: 50,
+          unit: '명',
+          onChanged: (_) {},
+        ),
+      );
+
+      expect(find.text('8명'), findsOneWidget);
+      expect(find.text('2명'), findsOneWidget); // min 라벨
+      expect(find.text('50명'), findsOneWidget); // max 라벨
+    });
+
+    testWidgets('applies_formatter_to_value_and_min_max_labels', (
+      tester,
+    ) async {
+      await _pumpSlider(
+        tester,
+        child: AppSlider(
+          label: '반경',
+          value: 500,
+          min: 100,
+          max: 1000,
+          unit: 'm',
+          valueFormatter: formatRadiusValue,
+          onChanged: (_) {},
+        ),
+      );
+
+      expect(find.text('500m'), findsOneWidget);
+      expect(find.text('100m'), findsOneWidget);
+      // max는 1km 이상이라 단위가 바뀐다 — min/max도 값과 같은 규칙을 탄다
+      expect(find.text('1.00km'), findsOneWidget);
+    });
+
+    testWidgets('keeps_unit_consistent_when_value_reaches_kilometer_range', (
+      tester,
+    ) async {
+      // 반경 슬라이더를 최대(1000m)까지 끌었을 때. valueFormatter가 배선되기
+      // 전에는 unit만 'km'로 바뀌고 값은 toInt()라서 "1000km"로 1000배 오표기됐다.
+      await _pumpSlider(
+        tester,
+        child: AppSlider(
+          label: '반경',
+          value: 1000,
+          min: 100,
+          max: 1000,
+          unit: 'm',
+          valueFormatter: formatRadiusValue,
+          onChanged: (_) {},
+        ),
+      );
+
+      expect(find.text('1000km'), findsNothing);
+      expect(find.text('1.00km'), findsNWidgets(2)); // 값 텍스트 + max 라벨
+      expect(find.text('100m'), findsOneWidget); // min 라벨은 m 유지
+    });
+
+    test('editable=true와 valueFormatter 동시 사용 시 assert 실패', () {
+      expect(
+        () => AppSlider(
+          label: '반경',
+          value: 500,
+          min: 100,
+          max: 1000,
+          unit: 'm',
+          editable: true,
+          valueFormatter: formatRadiusValue,
+          onChanged: (_) {},
+        ),
+        throwsAssertionError,
+      );
     });
   });
 
