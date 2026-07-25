@@ -252,9 +252,6 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     );
   }
 
-  /// 부동소수점 오차 방지를 위한 허용 오차 (미터)
-  static const double _epsilonMeters = 1.0;
-
   /// 감옥이 플레이그라운드 안에 있는지 검증
   bool _isJailInsidePlayground() {
     final center = _currentCenter;
@@ -273,7 +270,8 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     );
 
     // 감옥 중심 ~ 플레이그라운드 중심 거리 + 감옥 반경 ≤ 플레이그라운드 반경
-    return (distance + _currentRadius) <= (playgroundRadius + _epsilonMeters);
+    return (distance + _currentRadius) <=
+        (playgroundRadius + GameConfig.zoneContainmentToleranceInMeters);
   }
 
   // ============================================
