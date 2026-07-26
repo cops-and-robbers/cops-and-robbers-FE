@@ -197,6 +197,30 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
       ? _isJailPolygonInsidePlayground()
       : (_isMapReady && _isJailInsidePlayground());
 
+  /// 검증 실패 안내 문구 — null이면 표시하지 않는다
+  ///
+  /// 완료 버튼이 비활성인 이유를 사용자에게 알려준다. 단 핀 모드에서 감옥 꼭짓점이
+  /// 아직 3개 미만인 상태는 그리는 중인 정상 상태이므로 이탈 경고를 띄우지 않는다.
+  String? _validationMessage(AppLocalizations l10n) {
+    if (_isPinMode) {
+      final playground = _playgroundPinPoints;
+      if (playground == null ||
+          playground.length < GameConfig.minPolygonVertexCount) {
+        return l10n.errorPlaygroundFirst;
+      }
+      if (_pinPoints.length < GameConfig.minPolygonVertexCount) return null;
+      return _isJailPolygonInsidePlayground()
+          ? null
+          : l10n.errorJailOutsidePlayground;
+    }
+
+    // 원형 모드: 지도 초기화 전에는 판정 자체가 불가
+    if (!_isMapReady || _isJailInsidePlayground()) return null;
+    return _playgroundCenter == null
+        ? l10n.errorPlaygroundFirst
+        : l10n.errorJailOutsidePlayground;
+  }
+
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
     // 핀 모드: 정렬된 감옥 꼭짓점 목록 반환
@@ -307,6 +331,8 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     }
 
     // 로딩 완료 후 정상 UI 렌더링
+    final validationMessage = _validationMessage(l10n);
+
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
@@ -376,16 +402,14 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                     ),
             ),
 
-            // 검증 실패 안내 문구 (원형 모드 전용)
-            if (!_isPinMode && _isMapReady && !_isJailInsidePlayground())
+            // 검증 실패 안내 문구 (원형·핀 공통)
+            if (validationMessage != null)
               Padding(
                 padding: AppPadding.horizontal24,
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
-                    _playgroundCenter == null
-                        ? l10n.errorPlaygroundFirst
-                        : l10n.errorJailOutsidePlayground,
+                    validationMessage,
                     style: AppTextStyles.label16Medium.copyWith(
                       color: AppColors.red,
                     ),
