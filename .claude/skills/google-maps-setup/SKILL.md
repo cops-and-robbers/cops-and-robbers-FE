@@ -1,3 +1,8 @@
+---
+name: google-maps-setup
+description: Google Maps API Key 설정 — Android local.properties / iOS Secrets.xcconfig 주입 흐름과 트러블슈팅. 지도 키 관련 빌드 오류나 최초 환경 설정 시 사용.
+---
+
 # Google Maps API Key 설정 가이드
 
 > **작성일**: 2026-01-16

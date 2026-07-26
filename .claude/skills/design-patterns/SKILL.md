@@ -1,3 +1,8 @@
+---
+name: design-patterns
+description: 프로젝트에서 실제 사용 중인 디자인 패턴 카탈로그 — Repository/UseCase/Riverpod/STOMP Observer/에러 처리, 그리고 사용하지 않는 패턴. 새 기능 구조 설계 시 사용.
+---
+
 # 디자인 패턴 가이드 (Design Patterns Guide)
 
 > **작성일**: 2026-04-15
@@ -660,12 +665,12 @@ Q5. 불변 데이터 객체가 필요한가?
 
 ## 참고 문서
 
-- [01_ARCHITECTURE.md](01_ARCHITECTURE.md) — 아키텍처 상세 설계
-- [02_FOLDER_STRUCTURE.md](02_FOLDER_STRUCTURE.md) — 폴더 구조 및 네이밍
-- [03_CODE_CONVENTIONS.md](03_CODE_CONVENTIONS.md) — 코드 작성 규칙
-- [04_CODE_GENERATION_GUIDE.md](04_CODE_GENERATION_GUIDE.md) — Riverpod/Freezed/Retrofit 사용법
-- [06_API_INTEGRATION_GUIDE.md](06_API_INTEGRATION_GUIDE.md) — API 연동 절차
-- [08_TIMER_ARCHITECTURE.md](08_TIMER_ARCHITECTURE.md) — 타이머 로직 참고
+- `flutter-architecture` 스킬 — 계층 구조·의존성 규칙과 설계 결정 근거
+- `folder-structure` 스킬 — 폴더 배치 및 네이밍
+- `code-conventions` 스킬 — 코드 작성 규칙
+- `code-generation` 스킬 — build_runner 코드 생성
+- `api-integration` 스킬 — 새 API 연동 절차
+- `timer-architecture` 스킬 — 타이머 로직
 
 ---
 

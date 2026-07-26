@@ -1,3 +1,8 @@
+---
+name: ui-design-system
+description: UI 디자인 시스템 — AppColors/AppTextStyles/AppSpacing 사용 규칙, 경찰(라이트)/도둑(다크) 팀 테마 isDarkMode 전파 패턴, 금지 사항. 위젯 작성·수정 시 사용.
+---
+
 # UI 디자인 시스템 가이드 (UI Design System Guide)
 
 > **작성일**: 2026-04-15
@@ -587,10 +592,9 @@ Widget build(BuildContext context, WidgetRef ref) {
 
 ## 참고 문서
 
-- [00_QUICK_REFERENCE.md](00_QUICK_REFERENCE.md) — 빠른 참조
-- [01_ARCHITECTURE.md](01_ARCHITECTURE.md) — 아키텍처 상세
-- [03_CODE_CONVENTIONS.md](03_CODE_CONVENTIONS.md) — 코드 컨벤션
-- [Design.md](Design.md) — 디자인 패턴(아키텍처 레벨)
+- `flutter-architecture` 스킬 — 계층 구조·의존성 규칙과 설계 결정 근거
+- `code-conventions` 스킬 — 코드 작성 규칙
+- `design-patterns` 스킬 — 디자인 패턴 카탈로그
 - `lib/core/constants/app_colors.dart` — 컬러 팔레트 정본
 - `lib/core/constants/text_styles.dart` — 타이포 정본
 - `lib/core/constants/spacing_and_radius.dart` — 스페이싱/래디우스 정본

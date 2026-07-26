@@ -1,3 +1,8 @@
+---
+name: cicd-guide
+description: GitHub Actions 워크플로우, Fastlane(Bundler) 설치 방식, version.yml 버전 관리, 필수 GitHub Secrets 목록. 배포 파이프라인 작업 시 사용.
+---
+
 # CI/CD 가이드
 
 ## 워크플로우 파일 목록
