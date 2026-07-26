@@ -75,6 +75,8 @@ skills-lock.json
 # Claude
 .superpowers/
 docs/superpowers/
+docs/suh-template/review/
+docs/suh-template/troubleshoot/
 
 # 임시 공지사항 페이로드 (백오피스 입력용, 커밋 대상 아님)
 docs/notices/

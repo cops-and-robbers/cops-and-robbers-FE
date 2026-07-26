@@ -1,5 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/errors/app_exception.dart';
+import '../../../game/data/models/game_area_model.dart';
+import '../../../game/domain/entities/area_shape.dart';
+
 part 'game_create_request_model.freezed.dart';
 part 'game_create_request_model.g.dart';
 
@@ -8,17 +12,20 @@ part 'game_create_request_model.g.dart';
 /// `POST /api/games` 요청 본문
 ///
 /// API 스펙에 맞춰 중첩 구조로 구성됩니다:
-/// - `area`: 영역 설정 (플레이그라운드, 감옥)
+/// - `area`: 영역 설정 (areaType + circle/polygon)
 /// - `settings`: 게임 규칙 설정
 ///
-/// **요청 예시**:
+/// **요청 예시 (원형)**:
 /// ```json
 /// {
 ///   "area": {
-///     "playgroundCenter": { "latitude": 37.5665, "longitude": 126.978 },
-///     "playgroundRadiusInMeters": 1000,
-///     "jailCenter": { "latitude": 37.5665, "longitude": 126.978 },
-///     "jailRadiusInMeters": 100
+///     "areaType": "CIRCLE",
+///     "circle": {
+///       "playgroundCenter": { "latitude": 37.5665, "longitude": 126.978 },
+///       "playgroundRadiusInMeters": 1000,
+///       "jailCenter": { "latitude": 37.5665, "longitude": 126.978 },
+///       "jailRadiusInMeters": 100
+///     }
 ///   },
 ///   "settings": {
 ///     "roundDurationMinutes": 30,
@@ -31,8 +38,8 @@ part 'game_create_request_model.g.dart';
 @freezed
 class GameCreateRequestModel with _$GameCreateRequestModel {
   const factory GameCreateRequestModel({
-    /// 영역 설정 (플레이그라운드, 감옥)
-    required AreaRequestModel area,
+    /// 영역 설정 (areaType + circle/polygon)
+    required GameAreaRequestModel area,
 
     /// 게임 규칙 설정
     required GameSettingsRequestModel settings,
@@ -42,12 +49,25 @@ class GameCreateRequestModel with _$GameCreateRequestModel {
       _$GameCreateRequestModelFromJson(json);
 }
 
-/// 영역 설정 요청 DTO
+/// 영역 설정 요청 DTO (v2.13.0 areaType 중첩 구조)
 ///
-/// 플레이그라운드와 감옥의 중심 좌표 및 반경을 포함합니다.
+/// areaType에 해당하는 객체 하나만 채워 전송한다. null 필드는 직렬화에서 제외.
 @freezed
-class AreaRequestModel with _$AreaRequestModel {
-  const factory AreaRequestModel({
+class GameAreaRequestModel with _$GameAreaRequestModel {
+  const factory GameAreaRequestModel({
+    required GameAreaType areaType,
+    @JsonKey(includeIfNull: false) CircleAreaRequestModel? circle,
+    @JsonKey(includeIfNull: false) PolygonAreaRequestModel? polygon,
+  }) = _GameAreaRequestModel;
+
+  factory GameAreaRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$GameAreaRequestModelFromJson(json);
+}
+
+/// 원형 구역 요청 DTO
+@freezed
+class CircleAreaRequestModel with _$CircleAreaRequestModel {
+  const factory CircleAreaRequestModel({
     /// 플레이그라운드 중심 좌표
     required CoordinatesRequestModel playgroundCenter,
 
@@ -59,10 +79,25 @@ class AreaRequestModel with _$AreaRequestModel {
 
     /// 감옥 반경 (미터, 최소 5m, 정수)
     required int jailRadiusInMeters,
-  }) = _AreaRequestModel;
+  }) = _CircleAreaRequestModel;
 
-  factory AreaRequestModel.fromJson(Map<String, dynamic> json) =>
-      _$AreaRequestModelFromJson(json);
+  factory CircleAreaRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$CircleAreaRequestModelFromJson(json);
+}
+
+/// 다각형 구역 요청 DTO (꼭짓점은 경계 순서로 정렬된 상태로 전송)
+@freezed
+class PolygonAreaRequestModel with _$PolygonAreaRequestModel {
+  const factory PolygonAreaRequestModel({
+    /// 플레이그라운드 꼭짓점 좌표 목록
+    required List<CoordinatesRequestModel> playgroundPolygon,
+
+    /// 감옥 꼭짓점 좌표 목록
+    required List<CoordinatesRequestModel> jailPolygon,
+  }) = _PolygonAreaRequestModel;
+
+  factory PolygonAreaRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$PolygonAreaRequestModelFromJson(json);
 }
 
 /// 좌표 요청 DTO
@@ -104,3 +139,50 @@ class GameSettingsRequestModel with _$GameSettingsRequestModel {
   factory GameSettingsRequestModel.fromJson(Map<String, dynamic> json) =>
       _$GameSettingsRequestModelFromJson(json);
 }
+
+/// 도메인 게임 구역을 API 요청 DTO로 변환한다.
+extension GameAreaEntityRequestMapper on GameAreaEntity {
+  GameAreaRequestModel toRequestModel() {
+    final playgroundShape = playground;
+    final jailShape = jail;
+
+    if (playgroundShape is CircleShape && jailShape is CircleShape) {
+      return GameAreaRequestModel(
+        areaType: GameAreaType.circle,
+        circle: CircleAreaRequestModel(
+          playgroundCenter: _toCoordinates(playgroundShape.center),
+          // round() — 감옥 슬라이더는 스텝이 9.83m라 반경이 소수로 나온다.
+          // toInt()(내림)를 쓰면 UI 표시값(formatRadiusValue의 round)과 전송값이 어긋난다.
+          playgroundRadiusInMeters: playgroundShape.radiusInMeters.round(),
+          jailCenter: _toCoordinates(jailShape.center),
+          jailRadiusInMeters: jailShape.radiusInMeters.round(),
+        ),
+      );
+    }
+
+    if (playgroundShape is PolygonShape && jailShape is PolygonShape) {
+      return GameAreaRequestModel(
+        areaType: GameAreaType.polygon,
+        polygon: PolygonAreaRequestModel(
+          playgroundPolygon: [
+            for (final point in playgroundShape.points) _toCoordinates(point),
+          ],
+          jailPolygon: [
+            for (final point in jailShape.points) _toCoordinates(point),
+          ],
+        ),
+      );
+    }
+
+    throw const ValidationException(
+      message: '플레이그라운드와 감옥의 구역 타입이 일치하지 않습니다.',
+      messageKey: 'errorCodeInvalidInputValue',
+    );
+  }
+}
+
+CoordinatesRequestModel _toCoordinates(GeoPoint point) =>
+    CoordinatesRequestModel(
+      latitude: point.latitude,
+      longitude: point.longitude,
+    );

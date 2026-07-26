@@ -31,9 +31,10 @@ class _LoadingVisualState extends State<LoadingVisual>
   /// 링 3겹의 스태거 시작 지점 (0.0 → 0.33 → 0.66)
   static const List<double> _ringOffsets = [0.0, 0.33, 0.66];
 
-  late final AnimationController _controller =
-      AnimationController(vsync: this, duration: const Duration(seconds: 2))
-        ..repeat();
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 2),
+  )..repeat();
 
   @override
   void dispose() {
@@ -46,8 +47,7 @@ class _LoadingVisualState extends State<LoadingVisual>
       ? const [AppColors.green800, AppColors.green500, AppColors.green100]
       : const [AppColors.blue800, AppColors.blue500, AppColors.blue100];
 
-  String get _characterAsset =>
-      widget.isDarkMode ? _assetRobber : _assetPolice;
+  String get _characterAsset => widget.isDarkMode ? _assetRobber : _assetPolice;
 
   @override
   Widget build(BuildContext context) {

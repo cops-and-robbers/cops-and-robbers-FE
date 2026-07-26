@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../features/game/data/models/game_area_model.dart';
 import '../../../features/session/data/models/session_creation_draft_model.dart';
 
 /// 세션 생성 Draft 데이터 로컬 저장소 서비스
@@ -108,7 +109,15 @@ class SessionDraftStorageService {
     try {
       final currentDraft = await loadDraft();
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(playgroundCenter: center, playgroundRadiusInMeters: radius);
+          .copyWith(
+            areaType: GameAreaType.circle,
+            playgroundCenter: center,
+            playgroundRadiusInMeters: radius,
+            playgroundPinPoints: null,
+            jailCenter: null,
+            jailRadiusInMeters: null,
+            jailPinPoints: null,
+          );
       await saveDraft(updatedDraft);
       if (kDebugMode) {
         debugPrint('✅ 플레이그라운드 업데이트: center=$center, radius=${radius}m');
@@ -126,11 +135,64 @@ class SessionDraftStorageService {
     try {
       final currentDraft = await loadDraft();
       final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(jailCenter: center, jailRadiusInMeters: radius);
+          .copyWith(
+            jailCenter: center,
+            jailRadiusInMeters: radius,
+            jailPinPoints: null,
+          );
       await saveDraft(updatedDraft);
       debugPrint('✅ 감옥 업데이트: center=$center, radius=${radius}m');
     } catch (e, stack) {
       debugPrint('❌ 감옥 업데이트 실패: $e');
+      debugPrint('Stack: $stack');
+    }
+  }
+
+  /// 플레이그라운드 핀 목록 업데이트 (핀 모드)
+  ///
+  /// **사용 시점**: SetupPlaygroundPage 핀 모드 완료 시
+  Future<void> updatePlaygroundPinZone(List<LatLng> points) async {
+    try {
+      final currentDraft = await loadDraft();
+      final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
+          .copyWith(
+            areaType: GameAreaType.polygon,
+            playgroundCenter: null,
+            playgroundRadiusInMeters: null,
+            playgroundPinPoints: points,
+            jailCenter: null,
+            jailRadiusInMeters: null,
+            jailPinPoints: null,
+          );
+      await saveDraft(updatedDraft);
+      if (kDebugMode) {
+        debugPrint('✅ 플레이그라운드 핀 업데이트: ${points.length}개');
+      }
+    } catch (e, stack) {
+      debugPrint('❌ 플레이그라운드 핀 업데이트 실패: $e');
+      debugPrint('Stack: $stack');
+    }
+  }
+
+  /// 감옥 핀 목록 업데이트 (핀 모드)
+  ///
+  /// **사용 시점**: SetupPrisonPage 핀 모드 완료 시
+  Future<void> updatePrisonPinZone(List<LatLng> points) async {
+    try {
+      final currentDraft = await loadDraft();
+      final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
+          .copyWith(
+            areaType: GameAreaType.polygon,
+            jailCenter: null,
+            jailRadiusInMeters: null,
+            jailPinPoints: points,
+          );
+      await saveDraft(updatedDraft);
+      if (kDebugMode) {
+        debugPrint('✅ 감옥 핀 업데이트: ${points.length}개');
+      }
+    } catch (e, stack) {
+      debugPrint('❌ 감옥 핀 업데이트 실패: $e');
       debugPrint('Stack: $stack');
     }
   }

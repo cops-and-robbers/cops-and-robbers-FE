@@ -130,17 +130,43 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonAppleSignIn => 'Appleで続ける';
 
   @override
-  String zoneRadiusKm(String km) {
-    return '半径 ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return '半径 ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => '半径';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return '半径 $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return '面積 $value';
+  }
+
+  @override
+  String get areaTypeSetByDistance => '距離で設定';
+
+  @override
+  String get areaTypeSetByPin => 'ピンで設定';
+
+  @override
+  String get setupPlaygroundPinDescription => 'ゲームを行うエリア全体を選択します';
+
+  @override
+  String get setupPrisonPinDescription => '泥棒を拘束しておく牢屋エリアを選択します';
+
+  @override
+  String get zoneAreaLabel => '面積';
+
+  @override
+  String get zoneClearAllPins => 'すべて解除';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return 'ピンは最大$count個まで置けます';
+  }
+
+  @override
+  String get pinTooCloseMessage => 'ピン同士が近すぎます';
 
   @override
   String get dialogAgreementRequiredTermsTitle => '必須規約未同意';
@@ -439,11 +465,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String zoneRadiusMeters(String meters) {
-    return '半径 ${meters}m';
-  }
-
-  @override
   String get errorSettingsSaveFailed => '設定の保存に失敗しました';
 
   @override
@@ -588,7 +609,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get setupPlaygroundRadiusInputHint => 'ここをタップすると半径を直接入力できます';
 
   @override
-  String get setupPlaygroundDescription => 'ゲームが進行されるエリア全体の大きさを設定します';
+  String get setupPlaygroundDescription => 'ゲームを行うエリア全体の大きさを設定します';
 
   @override
   String get buttonDone => '完了';

@@ -171,6 +171,8 @@ class RoutePaths {
   static const String settingsName = 'settings';
   static const String noticesName = 'notices';
   static const String creditsName = 'credits';
+  static const String setupPlaygroundFromFlowName = 'setupPlaygroundFromFlow';
+  static const String setupPrisonFromFlowName = 'setupPrisonFromFlow';
   static const String gameSettingsName = 'gameSettings';
   static const String gameSettingsEditName = 'gameSettingsEdit';
   static const String gameSettingsPlaygroundName = 'gameSettingsPlayground';

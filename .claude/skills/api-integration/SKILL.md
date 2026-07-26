@@ -1,3 +1,8 @@
+---
+name: api-integration
+description: 새 백엔드 REST API 연동 절차 — DTO/DataSource/Repository/Provider 4단계, DioExceptionHandler 에러 처리, 204 No Content 응답 처리. API를 새로 붙일 때 사용.
+---
+
 # API 연동 가이드
 
 새로운 백엔드 API를 연동할 때 참고하는 문서입니다.

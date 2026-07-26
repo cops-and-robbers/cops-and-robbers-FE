@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'core/utils/share_util.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,10 @@ import 'core/widgets/chips/action_chip.dart' as custom_chips;
 import 'core/widgets/chips/info_radius_chip.dart';
 import 'core/widgets/inputs/app_slider.dart';
 import 'core/widgets/inputs/app_text_field.dart';
+import 'core/widgets/map/pin_zone_setting_widget.dart';
+import 'features/session/presentation/widgets/area_type_toggle.dart';
+import 'features/session/presentation/pages/setup_playground_page.dart';
+import 'features/session/presentation/pages/setup_prison_page.dart';
 import 'core/widgets/buttons/zone_setting_button_example.dart';
 import 'core/widgets/indicators/step_indicator.dart';
 import 'core/widgets/loading/app_loading.dart';
@@ -37,9 +42,9 @@ import 'features/game/presentation/widgets/game_over_result_dialog.dart';
 import 'features/game/presentation/widgets/my_record_dialog.dart';
 import 'features/game/presentation/providers/player_game_record_provider.dart';
 import 'features/game/data/models/game_area_model.dart';
+import 'features/game/domain/entities/area_shape.dart';
 import 'features/game/presentation/widgets/ping_selection_card.dart';
 import 'features/session/domain/entities/session_settings.dart';
-import 'features/session/domain/entities/zone_info.dart';
 import 'features/session/presentation/widgets/session_info_view.dart';
 
 /// 공용 컴포넌트 테스트 페이지
@@ -72,6 +77,10 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
   // CustomProgressBar 테스트용 상태
   double _progress = 0.0;
+
+  // 폴리곤 구역(#456) 테스트용 상태
+  GameAreaType _areaTypePreview = GameAreaType.circle;
+  int _pinPreviewCount = 0;
 
   @override
   void dispose() {
@@ -492,10 +501,16 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
                 const SessionInfoView(
                   sessionCode: 'A1B2C3',
-                  zones: [
-                    ZoneInfo(id: '1', name: '플레이그라운드', radiusMeters: 400),
-                    ZoneInfo(id: '2', name: '감옥', radiusMeters: 200),
-                  ],
+                  area: GameAreaEntity(
+                    playground: AreaShape.circle(
+                      center: GeoPoint(latitude: 37.5665, longitude: 126.9780),
+                      radiusInMeters: 400,
+                    ),
+                    jail: AreaShape.circle(
+                      center: GeoPoint(latitude: 37.5665, longitude: 126.9780),
+                      radiusInMeters: 200,
+                    ),
+                  ),
                   settings: SessionSettings(
                     maxPlayers: 50,
                     roundTimeMinutes: 30,
@@ -1539,6 +1554,175 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 ),
 
                 SizedBox(height: AppSpacing.vertical64),
+
+                // ============================================
+                // 폴리곤 구역 (#456) 테스트
+                // ============================================
+                _buildSectionTitle('폴리곤 구역 (#456) 테스트'),
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  'API 미연결 미리보기. 토글로 원형/핀 전환, 핀 위젯은 지도 탭으로 꼭짓점 추가·핀 탭으로 삭제.',
+                  style: AppTextStyles.paragraph_14.copyWith(
+                    color: AppColors.black400,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical16),
+
+                // 1) AreaTypeToggle (거리로/핀으로)
+                Text(
+                  'AreaTypeToggle',
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black600,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical8),
+                Center(
+                  child: AreaTypeToggle(
+                    selected: _areaTypePreview,
+                    onChanged: (type) {
+                      setState(() => _areaTypePreview = type);
+                    },
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical8),
+                Center(
+                  child: Text(
+                    '선택: ${_areaTypePreview == GameAreaType.circle ? '거리로 설정(원형)' : '핀으로 설정(폴리곤)'}',
+                    style: AppTextStyles.tag_12.copyWith(
+                      color: AppColors.black400,
+                    ),
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical24),
+
+                // 2) PinZoneSettingWidget 인라인 (플레이그라운드 blue)
+                Text(
+                  'PinZoneSettingWidget (지도 탭 = 핀 추가 / 핀 탭 = 삭제)',
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black600,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical8),
+                ClipRRect(
+                  borderRadius: AppRadius.medium,
+                  child: PinZoneSettingWidget(
+                    initialPoints: const [],
+                    pinColor: AppColors.blue,
+                    fillColor: AppColors.blue500Alpha20,
+                    strokeColor: AppColors.blue800,
+                    locationButtonColor: AppColors.blue,
+                    mapHeight: 320.h,
+                    onPointsChanged: (points) {
+                      setState(() => _pinPreviewCount = points.length);
+                    },
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  '현재 꼭짓점: $_pinPreviewCount개 (3~10개, 3개 이상부터 면적 칩 표시)',
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black400,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical24),
+
+                // 3) 실제 설정 페이지 열기 (로컬 draft만, 백엔드 미연결)
+                AppButton(
+                  text: '플레이그라운드 설정 열기 (핀 모드, 폴리곤 시드)',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SetupPlaygroundPage(
+                          editInitialShape: AreaShape.polygon(
+                            points: [
+                              for (final point in _mockPlaygroundPolygon)
+                                GeoPoint(
+                                  latitude: point.latitude,
+                                  longitude: point.longitude,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.blue,
+                  showBorder: false,
+                  icon: Icon(
+                    Icons.map_outlined,
+                    size: 20.w,
+                    color: AppColors.white,
+                  ),
+                  iconPosition: IconPosition.leading,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                AppButton(
+                  text: '플레이그라운드 설정 열기 (원형 모드)',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SetupPlaygroundPage(
+                          editInitialShape: AreaShape.circle(
+                            center: GeoPoint(
+                              latitude: 37.5665,
+                              longitude: 126.9780,
+                            ),
+                            radiusInMeters: 400,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.blue800,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+
+                AppButton(
+                  text: '감옥 설정 열기 (핀 모드, 참조 폴리곤 + 포함 검증)',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SetupPrisonPage(
+                          editArgs: PrisonEditArgs(
+                            playground: AreaShape.polygon(
+                              points: [
+                                for (final point in _mockPlaygroundPolygon)
+                                  GeoPoint(
+                                    latitude: point.latitude,
+                                    longitude: point.longitude,
+                                  ),
+                              ],
+                            ),
+                            initialJail: AreaShape.polygon(
+                              points: [
+                                for (final point in _mockJailPolygon)
+                                  GeoPoint(
+                                    latitude: point.latitude,
+                                    longitude: point.longitude,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.red,
+                  showBorder: false,
+                  icon: Icon(
+                    Icons.map_outlined,
+                    size: 20.w,
+                    color: AppColors.white,
+                  ),
+                  iconPosition: IconPosition.leading,
+                ),
+
+                SizedBox(height: AppSpacing.vertical64),
               ],
             ),
           ),
@@ -1702,6 +1886,21 @@ const List<LatLngModel> _exampleCaughtLocations = [
   LatLngModel(latitude: 37.5670, longitude: 126.9786),
   LatLngModel(latitude: 37.5666, longitude: 126.9768),
   LatLngModel(latitude: 37.5660, longitude: 126.9771),
+];
+
+/// 폴리곤 구역 미리보기용 — 플레이그라운드 사각형 (서울 시청 인근).
+const List<LatLng> _mockPlaygroundPolygon = [
+  LatLng(37.5680, 126.9760),
+  LatLng(37.5680, 126.9800),
+  LatLng(37.5650, 126.9800),
+  LatLng(37.5650, 126.9760),
+];
+
+/// 폴리곤 구역 미리보기용 — 플레이그라운드 안쪽의 감옥 삼각형.
+const List<LatLng> _mockJailPolygon = [
+  LatLng(37.5668, 126.9775),
+  LatLng(37.5668, 126.9785),
+  LatLng(37.5660, 126.9780),
 ];
 
 /// 미리보기용 mock 내 기록 Notifier — 고정 데이터를 반환.

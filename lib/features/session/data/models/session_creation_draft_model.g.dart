@@ -18,6 +18,15 @@ _$SessionCreationDraftModelImpl _$$SessionCreationDraftModelImplFromJson(
     json['jailCenter'] as Map<String, dynamic>?,
   ),
   jailRadiusInMeters: (json['jailRadiusInMeters'] as num?)?.toDouble(),
+  areaType:
+      $enumDecodeNullable(_$GameAreaTypeEnumMap, json['areaType']) ??
+      GameAreaType.circle,
+  playgroundPinPoints: const LatLngListConverter().fromJson(
+    json['playgroundPinPoints'] as List?,
+  ),
+  jailPinPoints: const LatLngListConverter().fromJson(
+    json['jailPinPoints'] as List?,
+  ),
   roundDurationMinutes: (json['roundDurationMinutes'] as num?)?.toInt(),
   locationShareMinutes: (json['locationShareMinutes'] as num?)?.toInt(),
   policeWaitMinutes: (json['policeWaitMinutes'] as num?)?.toInt(),
@@ -31,8 +40,18 @@ Map<String, dynamic> _$$SessionCreationDraftModelImplToJson(
   'playgroundRadiusInMeters': instance.playgroundRadiusInMeters,
   'jailCenter': const LatLngConverter().toJson(instance.jailCenter),
   'jailRadiusInMeters': instance.jailRadiusInMeters,
+  'areaType': _$GameAreaTypeEnumMap[instance.areaType]!,
+  'playgroundPinPoints': const LatLngListConverter().toJson(
+    instance.playgroundPinPoints,
+  ),
+  'jailPinPoints': const LatLngListConverter().toJson(instance.jailPinPoints),
   'roundDurationMinutes': instance.roundDurationMinutes,
   'locationShareMinutes': instance.locationShareMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
+};
+
+const _$GameAreaTypeEnumMap = {
+  GameAreaType.circle: 'CIRCLE',
+  GameAreaType.polygon: 'POLYGON',
 };

@@ -1,5 +1,6 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_area_model.dart';
+import 'package:cops_and_robbers/features/game/domain/entities/area_shape.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
 import 'package:cops_and_robbers/features/session/data/models/create_session_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/game_create_request_model.dart';
@@ -21,12 +22,14 @@ import 'package:flutter_test/flutter_test.dart';
 class _FakeSessionRemoteDataSource implements SessionRemoteDataSource {
   CreateSessionResponse? responseToReturn;
   Object? errorToThrow;
+  GameCreateRequestModel? lastRequest;
 
   @override
   Future<CreateSessionResponse> createGame(
     GameCreateRequestModel request,
   ) async {
     if (errorToThrow != null) throw errorToThrow!;
+    lastRequest = request;
     return responseToReturn!;
   }
 
@@ -70,8 +73,10 @@ class _FakeSessionRemoteDataSource implements SessionRemoteDataSource {
   ) => throw UnimplementedError();
 
   @override
-  Future<GameAreaModel> updateGameArea(int gameId, AreaRequestModel request) =>
-      throw UnimplementedError();
+  Future<GameAreaModel> updateGameArea(
+    int gameId,
+    GameAreaRequestModel request,
+  ) => throw UnimplementedError();
 
   @override
   Future<void> kickMember(int gameId, int participantId) =>
@@ -98,20 +103,103 @@ DioException _dioError(int statusCode) => DioException(
 
 /// 테스트용 createGame 호출 헬퍼 (필수 인자 보일러플레이트 줄이기).
 Future<dynamic> _callCreateGame(SessionRepositoryImpl repo) => repo.createGame(
-  playgroundLatitude: 37.5,
-  playgroundLongitude: 127.0,
-  playgroundRadiusInMeters: 500,
-  jailLatitude: 37.5,
-  jailLongitude: 127.0,
-  jailRadiusInMeters: 50,
+  area: const GameAreaEntity(
+    playground: AreaShape.circle(
+      center: GeoPoint(latitude: 37.5, longitude: 127.0),
+      radiusInMeters: 500,
+    ),
+    jail: AreaShape.circle(
+      center: GeoPoint(latitude: 37.5, longitude: 127.0),
+      radiusInMeters: 50,
+    ),
+  ),
   roundDurationMinutes: 30,
   locationRevealIntervalMinutes: 5,
   policeWaitMinutes: 3,
   maxParticipants: 10,
 );
 
+CreateSessionResponse _createSessionResponse() =>
+    CreateSessionResponse.fromJson({
+      'gameId': 1,
+      'inviteCode': 'ABC123',
+      'status': 'WAITING',
+      'roundDurationMinutes': 30,
+      'locationRevealIntervalMinutes': 5,
+      'policeWaitMinutes': 3,
+      'maxParticipants': 10,
+      'createdAt': '2026-01-16T01:25:37+09:00',
+    });
+
 void main() {
   group('SessionRepositoryImpl.createGame', () {
+    test('circle_area_is_mapped_to_request_when_game_is_created', () async {
+      final fake = _FakeSessionRemoteDataSource()
+        ..responseToReturn = _createSessionResponse();
+      final repo = SessionRepositoryImpl(fake);
+
+      await _callCreateGame(repo);
+
+      expect(
+        fake.lastRequest?.area,
+        const GameAreaRequestModel(
+          areaType: GameAreaType.circle,
+          circle: CircleAreaRequestModel(
+            playgroundCenter: CoordinatesRequestModel(
+              latitude: 37.5,
+              longitude: 127.0,
+            ),
+            playgroundRadiusInMeters: 500,
+            jailCenter: CoordinatesRequestModel(
+              latitude: 37.5,
+              longitude: 127.0,
+            ),
+            jailRadiusInMeters: 50,
+          ),
+        ),
+      );
+    });
+
+    test('polygon_area_is_mapped_to_request_model', () {
+      const area = GameAreaEntity(
+        playground: AreaShape.polygon(
+          points: [
+            GeoPoint(latitude: 37.5685, longitude: 126.9760),
+            GeoPoint(latitude: 37.5685, longitude: 126.9800),
+            GeoPoint(latitude: 37.5645, longitude: 126.9780),
+          ],
+        ),
+        jail: AreaShape.polygon(
+          points: [
+            GeoPoint(latitude: 37.5670, longitude: 126.9775),
+            GeoPoint(latitude: 37.5670, longitude: 126.9785),
+            GeoPoint(latitude: 37.5660, longitude: 126.9780),
+          ],
+        ),
+      );
+
+      final request = area.toRequestModel();
+
+      expect(
+        request,
+        const GameAreaRequestModel(
+          areaType: GameAreaType.polygon,
+          polygon: PolygonAreaRequestModel(
+            playgroundPolygon: [
+              CoordinatesRequestModel(latitude: 37.5685, longitude: 126.9760),
+              CoordinatesRequestModel(latitude: 37.5685, longitude: 126.9800),
+              CoordinatesRequestModel(latitude: 37.5645, longitude: 126.9780),
+            ],
+            jailPolygon: [
+              CoordinatesRequestModel(latitude: 37.5670, longitude: 126.9775),
+              CoordinatesRequestModel(latitude: 37.5670, longitude: 126.9785),
+              CoordinatesRequestModel(latitude: 37.5660, longitude: 126.9780),
+            ],
+          ),
+        ),
+      );
+    });
+
     test(
       'createdAt_is_normalized_to_local_datetime_when_response_has_kst_offset',
       () async {

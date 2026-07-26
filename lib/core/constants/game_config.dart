@@ -111,4 +111,26 @@ class GameConfig {
   /// rate-limit 초과 시 핑 금지 시간 (3초)
   /// Cooldown after exceeding the rate-limit (3 seconds)
   static const Duration pingRateCooldown = Duration(seconds: 3);
+
+  // ============================================
+  // 폴리곤 구역 설정 (Polygon Area Settings)
+  // ============================================
+
+  /// 폴리곤 최소 꼭짓점 수 (3개)
+  /// Minimum polygon vertex count (3)
+  static const int minPolygonVertexCount = 3;
+
+  /// 폴리곤 최대 꼭짓점 수 (10개)
+  /// Maximum polygon vertex count (10)
+  static const int maxPolygonVertexCount = 10;
+
+  /// 핀 간 최소 간격 (10m) — 연타·중복 꼭짓점으로 인한 퇴화 다각형 방지
+  /// Minimum spacing between pins (10 meters)
+  static const double minPinSpacingInMeters = 10.0;
+
+  /// 감옥 ⊂ 플레이그라운드 포함 판정 허용 오차 (1m)
+  ///
+  /// 좌표·거리 계산의 부동소수점 오차로 경계에 딱 맞춘 배치가 반려되는 것을 막는다.
+  /// Tolerance for the jail-inside-playground check (1 meter)
+  static const double zoneContainmentToleranceInMeters = 1.0;
 }

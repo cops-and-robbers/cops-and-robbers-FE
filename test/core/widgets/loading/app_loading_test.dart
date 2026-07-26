@@ -92,10 +92,7 @@ void main() {
       await _settleOverlayIn(tester);
 
       expect(find.byType(LoadingContentView), findsOneWidget);
-      expect(
-        find.text('지금 앱을 끄면 합류가 취소돼요. 잠시만 기다려주세요'),
-        findsOneWidget,
-      );
+      expect(find.text('지금 앱을 끄면 합류가 취소돼요. 잠시만 기다려주세요'), findsOneWidget);
     });
 
     testWidgets('keeps_loading_visible_until_minimum_duration_elapses', (

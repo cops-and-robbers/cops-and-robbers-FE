@@ -1,3 +1,8 @@
+---
+name: realtime-spec
+description: WebSocket STOMP 실시간 통신 명세 정본 — 연결/채팅/로비/게임 이벤트 payload. STOMP 구독·발행 코드 작업 시 사용.
+---
+
 ## 1. 소켓 연결 요청
 
 | **항목** | **값**                               | **비고**                                            |

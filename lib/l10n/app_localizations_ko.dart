@@ -128,17 +128,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonAppleSignIn => 'Apple로 계속하기';
 
   @override
-  String zoneRadiusKm(String km) {
-    return '반경 ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return '반경 ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => '반경';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return '반경 $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return '면적 $value';
+  }
+
+  @override
+  String get areaTypeSetByDistance => '거리로 설정';
+
+  @override
+  String get areaTypeSetByPin => '핀으로 설정';
+
+  @override
+  String get setupPlaygroundPinDescription => '게임이 진행될 전체 구역을 선택해요';
+
+  @override
+  String get setupPrisonPinDescription => '도둑을 잡아둘 감옥 구역을 선택해요';
+
+  @override
+  String get zoneAreaLabel => '면적';
+
+  @override
+  String get zoneClearAllPins => '전체 해제';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return '핀은 최대 $count개까지 찍을 수 있어요';
+  }
+
+  @override
+  String get pinTooCloseMessage => '핀이 너무 가까워요';
 
   @override
   String get dialogAgreementRequiredTermsTitle => '필수 약관 미동의';
@@ -434,11 +460,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String gameSettingPoliceStartDelay(int minutes) {
     return '도둑 도망 후 $minutes분 뒤';
-  }
-
-  @override
-  String zoneRadiusMeters(String meters) {
-    return '반경 ${meters}m';
   }
 
   @override

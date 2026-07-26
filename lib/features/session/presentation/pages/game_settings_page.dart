@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -14,14 +13,14 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../game/data/models/game_area_model.dart';
-import '../../data/models/game_create_request_model.dart';
+import '../../../../router/route_paths.dart';
+import '../../../game/domain/entities/area_shape.dart';
 import '../../data/models/game_settings_response.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../../../core/theme/role_theme_provider.dart';
-import '../../domain/entities/zone_info.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
+import 'setup_prison_page.dart';
 import '../widgets/setting_list_card.dart';
 import '../widgets/zone_list_card.dart';
 
@@ -49,85 +48,42 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   /// 생성 플로우와 동일하게, 플레이그라운드 변경 시 감옥 구역을
   /// 초기화하고 다시 설정하도록 합니다 (감옥이 새 플레이그라운드 밖에
   /// 위치할 수 있으므로).
-  Future<void> _navigateToEditPlayground(GameAreaModel currentArea) async {
+  Future<void> _navigateToEditPlayground(GameAreaEntity currentArea) async {
     final router = GoRouter.of(context);
 
-    // 1. 플레이그라운드 수정
-    final playgroundResult = await router.push<Map<String, dynamic>>(
-      '/waiting-room/${widget.sessionId}/game-settings/edit-playground',
-      extra: {
-        'lat': currentArea.playgroundCenter.latitude,
-        'lng': currentArea.playgroundCenter.longitude,
-        'radius': currentArea.playgroundRadiusInMeters,
-      },
+    final playground = await router.pushNamed<AreaShape>(
+      RoutePaths.gameSettingsPlaygroundName,
+      pathParameters: {'sessionId': widget.sessionId},
+      extra: currentArea.playground,
     );
+    if (playground == null || !mounted) return;
 
-    if (playgroundResult == null || !mounted) return;
+    final currentJail = currentArea.jail;
+    final initialJail =
+        (playground is CircleShape && currentJail is CircleShape) ||
+            (playground is PolygonShape && currentJail is PolygonShape)
+        ? currentJail
+        : null;
 
-    final newPlaygroundCenter = LatLng(
-      playgroundResult['lat'] as double,
-      playgroundResult['lng'] as double,
+    final jail = await router.pushNamed<AreaShape>(
+      RoutePaths.gameSettingsPrisonName,
+      pathParameters: {'sessionId': widget.sessionId},
+      extra: PrisonEditArgs(playground: playground, initialJail: initialJail),
     );
-    final newPlaygroundRadius = playgroundResult['radius'] as double;
+    if (jail == null || !mounted) return;
 
-    // 2. 감옥 재설정 (새 플레이그라운드 기준, 기존 감옥 위치를 초기값으로 표시)
-    //    기존 감옥이 새 플레이그라운드 밖이면 _isJailInsidePlayground 검증에서 차단됨
-    final prisonResult = await router.push<Map<String, dynamic>>(
-      '/waiting-room/${widget.sessionId}/game-settings/edit-prison',
-      extra: {
-        'lat': currentArea.jailCenter.latitude,
-        'lng': currentArea.jailCenter.longitude,
-        'radius': currentArea.jailRadiusInMeters,
-        'playgroundLat': newPlaygroundCenter.latitude,
-        'playgroundLng': newPlaygroundCenter.longitude,
-        'playgroundRadius': newPlaygroundRadius,
-      },
-    );
-
-    if (prisonResult == null || !mounted) return;
-
-    // 3. 둘 다 완료 → PUT /area 호출
-    await _updateArea(
-      playgroundCenter: newPlaygroundCenter,
-      playgroundRadius: newPlaygroundRadius,
-      jailCenter: LatLng(
-        prisonResult['lat'] as double,
-        prisonResult['lng'] as double,
-      ),
-      jailRadius: prisonResult['radius'] as double,
-    );
+    await _updateArea(GameAreaEntity(playground: playground, jail: jail));
   }
 
   /// PUT /api/games/{gameId}/area 호출
-  Future<void> _updateArea({
-    required LatLng playgroundCenter,
-    required double playgroundRadius,
-    required LatLng jailCenter,
-    required double jailRadius,
-  }) async {
+  Future<void> _updateArea(GameAreaEntity area) async {
     final gameId = _gameId;
     if (gameId == null) return;
 
     final loading = AppLoading.show(context, LoadingCategory.updateArea);
 
     try {
-      await ref.read(
-        updateGameAreaProvider(
-          gameId,
-          request: AreaRequestModel(
-            playgroundCenter: CoordinatesRequestModel(
-              latitude: playgroundCenter.latitude,
-              longitude: playgroundCenter.longitude,
-            ),
-            playgroundRadiusInMeters: playgroundRadius.toInt(),
-            jailCenter: CoordinatesRequestModel(
-              latitude: jailCenter.latitude,
-              longitude: jailCenter.longitude,
-            ),
-            jailRadiusInMeters: jailRadius.toInt(),
-          ),
-        ).future,
-      );
+      await ref.read(updateGameAreaProvider(gameId, area: area).future);
       await loading.close();
       debugPrint('[GameSettingsPage] ✅ 영역 수정 성공');
     } on DioException catch (e) {
@@ -183,7 +139,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
       backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: bgColor,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.transparent,
         elevation: 0,
         leading: PreviousButton(
           onPressed: () => context.pop(),
@@ -207,12 +163,8 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
 
               // ── 구역 섹션 ──
               areaAsync.when(
-                data: (area) => _buildZoneSection(
-                  area,
-                  isHost: isHost,
-                  isDark: isDark,
-                  l10n: l10n,
-                ),
+                data: (area) =>
+                    _buildZoneSection(area, isHost: isHost, isDark: isDark),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
                   l10n.errorZoneInfoLoadFailed,
@@ -248,18 +200,11 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     );
   }
 
-  /// 구역 프리뷰 페이지로 이동 (비방장용)
-  void _navigateToZonePreview(GameAreaModel area) {
+  /// 구역 프리뷰 페이지로 이동 (비방장용) — 엔티티를 그대로 전달
+  void _navigateToZonePreview(GameAreaEntity area) {
     context.push(
       '/waiting-room/${widget.sessionId}/game-settings/zone-preview',
-      extra: {
-        'playgroundLat': area.playgroundCenter.latitude,
-        'playgroundLng': area.playgroundCenter.longitude,
-        'playgroundRadius': area.playgroundRadiusInMeters,
-        'jailLat': area.jailCenter.latitude,
-        'jailLng': area.jailCenter.longitude,
-        'jailRadius': area.jailRadiusInMeters,
-      },
+      extra: area,
     );
   }
 
@@ -268,26 +213,12 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   /// 호스트: 구역 탭 → 수정 페이지로 이동
   /// 비호스트: 구역 탭 → 읽기전용 프리뷰 페이지로 이동
   Widget _buildZoneSection(
-    GameAreaModel area, {
+    GameAreaEntity area, {
     required bool isHost,
     required bool isDark,
-    required AppLocalizations l10n,
   }) {
-    final zones = [
-      ZoneInfo(
-        id: 'playground',
-        name: l10n.zonePlayground,
-        radiusMeters: area.playgroundRadiusInMeters.toInt(),
-      ),
-      ZoneInfo(
-        id: 'prison',
-        name: l10n.zoneJail,
-        radiusMeters: area.jailRadiusInMeters.toInt(),
-      ),
-    ];
-
     return ZoneListCard(
-      zones: zones,
+      area: area,
       onTap: isHost
           ? () => _navigateToEditPlayground(area)
           : () => _navigateToZonePreview(area),

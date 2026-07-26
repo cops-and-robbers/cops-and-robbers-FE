@@ -41,6 +41,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/game_rules_content.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
+import '../../domain/entities/area_shape.dart';
 import '../../domain/arrest_lock_visibility.dart';
 import '../../domain/location_send_policy.dart';
 import '../../domain/qr_payload.dart';
@@ -800,15 +801,11 @@ class _GamePageState extends ConsumerState<GamePage>
     final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
     if (area == null) return;
 
-    final distance = Geolocator.distanceBetween(
-      area.playgroundCenter.latitude,
-      area.playgroundCenter.longitude,
-      pos.latitude,
-      pos.longitude,
+    // 원형/폴리곤 무관하게 shape.contains로 판정 (분기는 AreaShape 내부에 은닉)
+    final isOutside = !area.playground.contains(
+      GeoPoint(latitude: pos.latitude, longitude: pos.longitude),
     );
-    _zoneExitDetector.update(
-      isOutside: distance > area.playgroundRadiusInMeters,
-    );
+    _zoneExitDetector.update(isOutside: isOutside);
   }
 
   /// 구역 이탈 진입 처리: 진동(즉시 + 5초 주기 반복) + 배너 표시 + 지도 리다이렉트
@@ -1025,31 +1022,79 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  /// 맵 영역 원 빌드 (Google Map용)
-  Set<Circle> _buildGoogleCircles(GameAreaModel area) {
-    return {
-      Circle(
-        circleId: const CircleId('playground'),
-        center: LatLng(
-          area.playgroundCenter.latitude,
-          area.playgroundCenter.longitude,
+  /// 구역 경계 Circle 오버레이 (원형 구역만 해당)
+  ///
+  /// 폴리곤 구역은 [_buildAreaBorderPolygons]가 담당한다.
+  Set<Circle> _buildAreaCircles(GameAreaEntity area) {
+    final circles = <Circle>{};
+    final playground = area.playground;
+    if (playground is CircleShape) {
+      circles.add(
+        Circle(
+          circleId: const CircleId('playground'),
+          center: LatLng(
+            playground.center.latitude,
+            playground.center.longitude,
+          ),
+          radius: playground.radiusInMeters,
+          fillColor: AppColors.transparent,
+          strokeColor: AppColors.blue800,
+          strokeWidth: 2,
+          consumeTapEvents: false,
         ),
-        radius: area.playgroundRadiusInMeters,
-        fillColor: Colors.transparent,
-        strokeColor: AppColors.blue800,
-        strokeWidth: 2,
-        consumeTapEvents: false,
-      ),
-      Circle(
-        circleId: const CircleId('jail'),
-        center: LatLng(area.jailCenter.latitude, area.jailCenter.longitude),
-        radius: area.jailRadiusInMeters,
-        fillColor: Colors.transparent,
-        strokeColor: AppColors.red500,
-        strokeWidth: 2,
-        consumeTapEvents: false,
-      ),
-    };
+      );
+    }
+    final jail = area.jail;
+    if (jail is CircleShape) {
+      circles.add(
+        Circle(
+          circleId: const CircleId('jail'),
+          center: LatLng(jail.center.latitude, jail.center.longitude),
+          radius: jail.radiusInMeters,
+          fillColor: AppColors.transparent,
+          strokeColor: AppColors.red500,
+          strokeWidth: 2,
+          consumeTapEvents: false,
+        ),
+      );
+    }
+    return circles;
+  }
+
+  /// 구역 경계 Polygon 오버레이 (다각형 구역만 해당)
+  Set<Polygon> _buildAreaBorderPolygons(GameAreaEntity area) {
+    final polygons = <Polygon>{};
+    final playground = area.playground;
+    if (playground is PolygonShape) {
+      polygons.add(
+        Polygon(
+          polygonId: const PolygonId('playground_border'),
+          points: [
+            for (final p in playground.points) LatLng(p.latitude, p.longitude),
+          ],
+          fillColor: AppColors.transparent,
+          strokeColor: AppColors.blue800,
+          strokeWidth: 2,
+          consumeTapEvents: false,
+        ),
+      );
+    }
+    final jail = area.jail;
+    if (jail is PolygonShape) {
+      polygons.add(
+        Polygon(
+          polygonId: const PolygonId('jail_border'),
+          points: [
+            for (final p in jail.points) LatLng(p.latitude, p.longitude),
+          ],
+          fillColor: AppColors.transparent,
+          strokeColor: AppColors.red500,
+          strokeWidth: 2,
+          consumeTapEvents: false,
+        ),
+      );
+    }
+    return polygons;
   }
 
   /// 위경도 원을 [points]개 꼭짓점 다각형으로 근사
@@ -1074,25 +1119,26 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 플레이그라운드 외부 영역 반투명 오버레이 폴리곤 생성
-  Set<Polygon> _buildOutsideOverlay(GameAreaModel area) {
-    final clat = area.playgroundCenter.latitude;
-    final clng = area.playgroundCenter.longitude;
+  Set<Polygon> _buildOutsideOverlay(GameAreaEntity area) {
+    final c = area.playground.centroid;
     const delta = 2.0;
     final outerBounds = [
-      LatLng(clat + delta, clng - delta),
-      LatLng(clat + delta, clng + delta),
-      LatLng(clat - delta, clng + delta),
-      LatLng(clat - delta, clng - delta),
+      LatLng(c.latitude + delta, c.longitude - delta),
+      LatLng(c.latitude + delta, c.longitude + delta),
+      LatLng(c.latitude - delta, c.longitude + delta),
+      LatLng(c.latitude - delta, c.longitude - delta),
     ];
 
-    final center = LatLng(
-      area.playgroundCenter.latitude,
-      area.playgroundCenter.longitude,
+    // hole은 outer와 반대 방향 감김이 필요 — 원 근사·폴리곤 모두 reversed 적용
+    final hole = area.playground.when(
+      circle: (center, radius) => _approximateCircle(
+        LatLng(center.latitude, center.longitude),
+        radius,
+      ).reversed.toList(),
+      polygon: (points) => [
+        for (final p in points) LatLng(p.latitude, p.longitude),
+      ].reversed.toList(),
     );
-    final hole = _approximateCircle(
-      center,
-      area.playgroundRadiusInMeters,
-    ).reversed.toList();
 
     return {
       Polygon(
@@ -1815,18 +1861,17 @@ class _GamePageState extends ConsumerState<GamePage>
       _updateRobberMarkers(next);
     });
 
-    // 게임 맵 영역 로드 완료 시 지도에 원 추가
+    // 게임 맵 영역 로드 완료 시 지도에 구역 경계·외부 딤 추가
     ref.listen(gameAreaProvider(_gameId), (prev, next) {
       next.whenData((area) {
         _googleMapKey.currentState?.updateMinZoom(
-          area.playgroundRadiusInMeters,
+          area.playground.boundingRadiusInMeters,
         );
-        _googleMapKey.currentState?.updateAreaCircles(
-          _buildGoogleCircles(area),
-        );
-        _googleMapKey.currentState?.updateAreaPolygons(
-          _buildOutsideOverlay(area),
-        );
+        _googleMapKey.currentState?.updateAreaCircles(_buildAreaCircles(area));
+        _googleMapKey.currentState?.updateAreaPolygons({
+          ..._buildAreaBorderPolygons(area),
+          ..._buildOutsideOverlay(area),
+        });
       });
     });
 

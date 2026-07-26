@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../game/domain/entities/area_shape.dart';
 import '../../domain/entities/session_settings.dart';
-import '../../domain/entities/zone_info.dart';
 import 'session_code_card.dart';
 import 'setting_list_card.dart';
 import 'zone_list_card.dart';
@@ -15,7 +15,7 @@ import 'zone_list_card.dart';
 /// ```dart
 /// SessionInfoView(
 ///   sessionCode: 'A1B2C3',
-///   zones: [ZoneInfo(...)],
+///   area: gameArea,
 ///   settings: SessionSettings(...),
 ///   onCodeCopy: () => showCopyMessage(),
 /// )
@@ -24,7 +24,7 @@ class SessionInfoView extends StatelessWidget {
   const SessionInfoView({
     super.key,
     required this.sessionCode,
-    required this.zones,
+    required this.area,
     required this.settings,
     this.onCodeCopy,
   });
@@ -32,8 +32,8 @@ class SessionInfoView extends StatelessWidget {
   /// 세션 코드
   final String sessionCode;
 
-  /// 구역 정보 리스트
-  final List<ZoneInfo> zones;
+  /// 게임 구역 (플레이그라운드 + 감옥)
+  final GameAreaEntity area;
 
   /// 게임 설정
   final SessionSettings settings;
@@ -50,7 +50,7 @@ class SessionInfoView extends StatelessWidget {
       children: [
         SessionCodeCard(code: sessionCode, onCopy: onCodeCopy),
         SizedBox(height: AppSpacing.vertical16),
-        ZoneListCard(zones: zones),
+        ZoneListCard(area: area),
         SizedBox(height: AppSpacing.vertical8),
         SettingListCard(settings: settings),
       ],

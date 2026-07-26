@@ -13,8 +13,9 @@ Future<void> _pump(WidgetTester tester, {required bool isDarkMode}) async {
     MaterialApp(
       home: ScreenUtilInit(
         designSize: const Size(375, 812),
-        builder: (context, _) =>
-            Scaffold(body: Center(child: LoadingVisual(isDarkMode: isDarkMode))),
+        builder: (context, _) => Scaffold(
+          body: Center(child: LoadingVisual(isDarkMode: isDarkMode)),
+        ),
       ),
     ),
   );
@@ -40,7 +41,9 @@ void main() {
       expect(_assetOf(tester), 'assets/loading/robber.svg');
     });
 
-    testWidgets('disposes_animation_without_error_when_removed', (tester) async {
+    testWidgets('disposes_animation_without_error_when_removed', (
+      tester,
+    ) async {
       await _pump(tester, isDarkMode: false);
 
       await tester.pumpWidget(const MaterialApp(home: SizedBox()));

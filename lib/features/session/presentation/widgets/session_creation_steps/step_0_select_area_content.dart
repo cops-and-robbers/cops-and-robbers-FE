@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/constants/spacing_and_radius.dart';
 import '../../../../../core/widgets/buttons/zone_setting_button.dart';
+import '../../../../../features/game/domain/entities/area_shape.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../router/route_paths.dart';
 
 /// 세션 생성 Step 0: 구역 선택 컨텐츠
 ///
@@ -16,12 +17,10 @@ import '../../../../../l10n/app_localizations.dart';
 class Step0SelectAreaContent extends StatelessWidget {
   const Step0SelectAreaContent({
     super.key,
-    required this.playgroundCenter,
-    required this.playgroundRadiusMeters,
-    required this.prisonCenter,
-    required this.prisonRadiusMeters,
-    required this.onPlaygroundSet,
-    required this.onPrisonSet,
+    required this.playgroundShape,
+    required this.prisonShape,
+    required this.onPlaygroundResult,
+    required this.onPrisonResult,
     this.playgroundKey,
     this.prisonKey,
   });
@@ -30,23 +29,17 @@ class Step0SelectAreaContent extends StatelessWidget {
   // Properties
   // ============================================
 
-  /// 플레이그라운드 중심 좌표
-  final LatLng? playgroundCenter;
+  /// 설정된 플레이그라운드 도형 (미설정이면 null)
+  final AreaShape? playgroundShape;
 
-  /// 플레이그라운드 반경 (미터)
-  final double? playgroundRadiusMeters;
+  /// 설정된 감옥 도형 (미설정이면 null)
+  final AreaShape? prisonShape;
 
-  /// 감옥 중심 좌표
-  final LatLng? prisonCenter;
+  /// 플레이그라운드 설정 결과 콜백
+  final ValueChanged<AreaShape> onPlaygroundResult;
 
-  /// 감옥 반경 (미터)
-  final double? prisonRadiusMeters;
-
-  /// 플레이그라운드 설정 완료 콜백
-  final Function(LatLng center, double radius) onPlaygroundSet;
-
-  /// 감옥 설정 완료 콜백
-  final Function(LatLng center, double radius) onPrisonSet;
+  /// 감옥 설정 결과 콜백
+  final ValueChanged<AreaShape> onPrisonResult;
 
   /// 튜토리얼 하이라이트용 — 플레이그라운드 버튼
   final GlobalKey? playgroundKey;
@@ -59,25 +52,28 @@ class Step0SelectAreaContent extends StatelessWidget {
   // ============================================
 
   /// 플레이그라운드 설정 버튼 클릭 시
+  ///
+  /// 최초 생성(감옥 미설정) 흐름에서는 플레이그라운드 완료 직후 감옥 설정으로
+  /// 자동 연결해 이탈을 줄인다. 감옥이 이미 설정된 뒤(재설정)에는 허브로 돌아온다.
   Future<void> _onPlaygroundPressed(BuildContext context) async {
-    final result = await context.pushNamed('setupPlaygroundFromFlow');
+    final wasPrisonSet = prisonShape != null;
+    final result = await context.pushNamed<AreaShape>(
+      RoutePaths.setupPlaygroundFromFlowName,
+    );
+    if (result == null) return;
+    onPlaygroundResult(result);
 
-    if (result is Map<String, dynamic>) {
-      final center = LatLng(result['lat'] as double, result['lng'] as double);
-      final radius = result['radius'] as double;
-      onPlaygroundSet(center, radius);
+    if (!wasPrisonSet && context.mounted) {
+      await _onPrisonPressed(context);
     }
   }
 
   /// 감옥 설정 버튼 클릭 시
   Future<void> _onPrisonPressed(BuildContext context) async {
-    final result = await context.pushNamed('setupPrisonFromFlow');
-
-    if (result is Map<String, dynamic>) {
-      final center = LatLng(result['lat'] as double, result['lng'] as double);
-      final radius = result['radius'] as double;
-      onPrisonSet(center, radius);
-    }
+    final result = await context.pushNamed<AreaShape>(
+      RoutePaths.setupPrisonFromFlowName,
+    );
+    if (result != null) onPrisonResult(result);
   }
 
   // ============================================
@@ -87,8 +83,6 @@ class Step0SelectAreaContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isPlaygroundSet =
-        playgroundCenter != null && playgroundRadiusMeters != null;
 
     return Column(
       children: [
@@ -97,18 +91,18 @@ class Step0SelectAreaContent extends StatelessWidget {
           key: playgroundKey,
           zoneType: ZoneType.playground,
           title: l10n.dialogstep0SelectAreaContentTitle,
-          radiusMeters: playgroundRadiusMeters,
+          shape: playgroundShape,
           onPressed: () => _onPlaygroundPressed(context),
         ),
 
         // 감옥 버튼 (플레이그라운드 설정 완료 후에만 노출)
-        if (isPlaygroundSet) ...[
+        if (playgroundShape != null) ...[
           SizedBox(height: AppSpacing.vertical8),
           ZoneSettingButton(
             key: prisonKey,
             zoneType: ZoneType.prison,
             title: l10n.dialogstep0SelectAreaContentTitle5bc0,
-            radiusMeters: prisonRadiusMeters,
+            shape: prisonShape,
             onPressed: () => _onPrisonPressed(context),
           ),
         ],

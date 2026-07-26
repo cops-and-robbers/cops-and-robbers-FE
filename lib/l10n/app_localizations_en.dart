@@ -138,17 +138,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonAppleSignIn => 'Continue with Apple';
 
   @override
-  String zoneRadiusKm(String km) {
-    return 'Radius ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return 'Radius ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => 'Radius';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return 'Radius $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return 'Area $value';
+  }
+
+  @override
+  String get areaTypeSetByDistance => 'Set by distance';
+
+  @override
+  String get areaTypeSetByPin => 'Set by pins';
+
+  @override
+  String get setupPlaygroundPinDescription =>
+      'Select the whole area where the game will take place';
+
+  @override
+  String get setupPrisonPinDescription =>
+      'Select the jail area to hold the thieves';
+
+  @override
+  String get zoneAreaLabel => 'Area';
+
+  @override
+  String get zoneClearAllPins => 'Clear all';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return 'You can place up to $count pins';
+  }
+
+  @override
+  String get pinTooCloseMessage => 'Pins are too close together';
 
   @override
   String get dialogAgreementRequiredTermsTitle => 'Required terms not agreed';
@@ -484,11 +512,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String gameSettingPoliceStartDelay(int minutes) {
     return '$minutes min after Robbers run away';
-  }
-
-  @override
-  String zoneRadiusMeters(String meters) {
-    return 'Radius ${meters}m';
   }
 
   @override

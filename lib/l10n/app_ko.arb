@@ -58,24 +58,36 @@
   "pageMaintenanceMessage": "더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!",
   "buttonGoogleSignIn": "Google로 계속하기",
   "buttonAppleSignIn": "Apple로 계속하기",
-  "zoneRadiusKm": "반경 {km}km",
-  "@zoneRadiusKm": {
-    "description": "구역 정보 — 반경 (km 단위)",
-    "placeholders": {
-      "km": {
-        "type": "String"
-      }
-    }
-  },
-  "zoneRadiusMeter": "반경 {radiusMeters}m",
-  "@zoneRadiusMeter": {
-    "placeholders": {
-      "radiusMeters": {
-        "type": "String"
-      }
-    }
-  },
   "zoneRadiusLabel": "반경",
+  "zoneRadiusValue": "반경 {value}",
+  "@zoneRadiusValue": {
+    "description": "구역 크기 — 원형 반경. 값+단위는 formatRadiusValue가 생성한다",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "zoneAreaValue": "면적 {value}",
+  "@zoneAreaValue": {
+    "description": "구역 크기 — 폴리곤 면적. 값+단위는 formatAreaValue가 생성한다",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "areaTypeSetByDistance": "거리로 설정",
+  "areaTypeSetByPin": "핀으로 설정",
+  "setupPlaygroundPinDescription": "게임이 진행될 전체 구역을 선택해요",
+  "setupPrisonPinDescription": "도둑을 잡아둘 감옥 구역을 선택해요",
+  "zoneAreaLabel": "면적",
+  "zoneClearAllPins": "전체 해제",
+  "pinMaxCountMessage": "핀은 최대 {count}개까지 찍을 수 있어요",
+  "@pinMaxCountMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "pinTooCloseMessage": "핀이 너무 가까워요",
   "dialogAgreementRequiredTermsTitle": "필수 약관 미동의",
   "errorAuthLoginCancelled": "로그인이 취소되었습니다",
   "settingsLanguageLabel": "언어",
@@ -242,15 +254,6 @@
     "placeholders": {
       "minutes": {
         "type": "int"
-      }
-    }
-  },
-  "zoneRadiusMeters": "반경 {meters}m",
-  "@zoneRadiusMeters": {
-    "description": "구역 정보 — 반경 (m 단위)",
-    "placeholders": {
-      "meters": {
-        "type": "String"
       }
     }
   },
