@@ -30,6 +30,7 @@ flutter test && flutter analyze                                  # 테스트 / �
 
 **코드 생성 실행 시점**: `@riverpod`·`@freezed`·`@RestApi`·`@JsonSerializable` 추가/수정 후, `.g.dart`·`.freezed.dart` 누락 시, "generated file not found" 에러 시
 **i18n 생성 실행 시점**: `lib/l10n/app_*.arb` 추가/수정 후 (hot reload로는 반영 안 됨)
+**문구 톤 검사**: ARB 문구 추가/수정 후 `python3 docs/i18n/_lint_tone.py` — 해요체·경어·마침표 위반 검출. 기준은 [docs/i18n/UX_WRITING.md](docs/i18n/UX_WRITING.md)
 
 ---
 
