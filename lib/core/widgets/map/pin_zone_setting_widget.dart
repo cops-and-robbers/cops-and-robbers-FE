@@ -309,18 +309,26 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     await _mapController?.animateCamera(CameraUpdate.newLatLng(loc));
   }
 
+  /// 지도 높이를 고정한 채 상단 정렬한다.
+  ///
+  /// 부모가 tight 높이 제약을 주면(setup 페이지의 `IndexedStack(StackFit.expand)`)
+  /// `SizedBox`는 들어온 제약이 우선이라 그대로 늘어난다. `Align`이 자식에게
+  /// loose 제약을 넘겨 원형 위젯과 지도 크기를 동일하게 유지한다.
+  Widget _fixedHeight(Widget child) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(height: widget.mapHeight ?? 360.h, child: child),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_isInitialized) {
-      return SizedBox(
-        height: widget.mapHeight ?? 360.h,
-        child: const Center(child: CircularProgressIndicator()),
-      );
+      return _fixedHeight(const Center(child: CircularProgressIndicator()));
     }
 
-    final map = SizedBox(
-      height: widget.mapHeight ?? 360.h,
-      child: Stack(
+    return _fixedHeight(
+      Stack(
         children: [
           GoogleMap(
             initialCameraPosition: CameraPosition(
@@ -355,6 +363,22 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
             zoomControlsEnabled: false,
             compassEnabled: false,
           ),
+
+          // 전체 해제 (우상단) — 핀이 있을 때만. 면적 칩과 동일하게 조건부로 두어
+          // 쓸 수 없는 상태에서 지도를 가리지 않게 한다.
+          // radius는 같은 오버레이의 내 위치 버튼·면적 칩(12.r)에 맞춘다.
+          // ActionChip은 전달값에 .r을 적용하지 않으므로 12.r을 직접 넘긴다.
+          if (_points.isNotEmpty)
+            Positioned(
+              top: AppSpacing.vertical16,
+              right: AppSpacing.horizontal20,
+              child: custom_chip.ActionChip(
+                text: AppLocalizations.of(context).zoneClearAllPins,
+                onTap: _clearAll,
+                backgroundColor: widget.pinColor,
+                borderRadius: 12.r,
+              ),
+            ),
 
           // 내 위치 버튼 (좌하단)
           Positioned(
@@ -392,24 +416,6 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
             ),
         ],
       ),
-    );
-
-    return Column(
-      children: [
-        map,
-        SizedBox(height: AppSpacing.vertical20),
-        Padding(
-          padding: AppPadding.horizontal20,
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: custom_chip.ActionChip(
-              text: AppLocalizations.of(context).zoneClearAllPins,
-              onTap: _points.isEmpty ? null : _clearAll,
-              backgroundColor: widget.pinColor,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
