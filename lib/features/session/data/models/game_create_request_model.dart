@@ -151,9 +151,11 @@ extension GameAreaEntityRequestMapper on GameAreaEntity {
         areaType: GameAreaType.circle,
         circle: CircleAreaRequestModel(
           playgroundCenter: _toCoordinates(playgroundShape.center),
-          playgroundRadiusInMeters: playgroundShape.radiusInMeters.toInt(),
+          // round() — 감옥 슬라이더는 스텝이 9.83m라 반경이 소수로 나온다.
+          // toInt()(내림)를 쓰면 UI 표시값(formatRadiusValue의 round)과 전송값이 어긋난다.
+          playgroundRadiusInMeters: playgroundShape.radiusInMeters.round(),
           jailCenter: _toCoordinates(jailShape.center),
-          jailRadiusInMeters: jailShape.radiusInMeters.toInt(),
+          jailRadiusInMeters: jailShape.radiusInMeters.round(),
         ),
       );
     }

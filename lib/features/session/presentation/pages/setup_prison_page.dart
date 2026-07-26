@@ -185,6 +185,9 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
       for (final p in _pinPoints)
         GeoPoint(latitude: p.latitude, longitude: p.longitude),
     ];
+    // 플레이그라운드와 동일한 유효성 기준 적용 — 자기교차·퇴화 다각형이
+    // 포함 판정만 통과해 서버로 전송되는 경로를 막는다.
+    if (!isValidPolygon(jail)) return false;
     final outer = [
       for (final p in playground)
         GeoPoint(latitude: p.latitude, longitude: p.longitude),

@@ -144,6 +144,14 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
     );
   }
 
+  /// 세그먼트 선택 — 터치와 스크린 리더 액션이 같은 경로를 타게 한다
+  void _selectAreaType(GameAreaType type) {
+    if (widget.selected == type) return;
+    // 실제 변경 시에만 앱 공통 탭 햅틱 — AppButton과 동일(일관성)
+    VibrationService.instance().buttonTap();
+    widget.onChanged(type);
+  }
+
   Widget _buildSegment(String label, GameAreaType type) {
     final isSelected = widget.selected == type;
     return Expanded(
@@ -151,15 +159,13 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
         button: true,
         selected: isSelected,
         label: label,
+        // 자식 Text가 라벨을 중복 announce하지 않도록 제외하되, 그 때문에
+        // GestureDetector의 탭 액션도 접근성 트리에서 빠지므로 여기서 직접 노출한다.
+        onTap: isSelected ? null : () => _selectAreaType(type),
         excludeSemantics: true,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {
-            if (isSelected) return;
-            // 실제 변경 시에만 앱 공통 탭 햅틱 — AppButton과 동일(일관성)
-            VibrationService.instance().buttonTap();
-            widget.onChanged(type);
-          },
+          onTap: isSelected ? null : () => _selectAreaType(type),
           child: Center(
             child: AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 250),

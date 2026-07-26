@@ -149,7 +149,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get areaTypeSetByPin => 'ピンで設定';
 
   @override
-  String get setupPlaygroundPinDescription => 'ゲームが進行されるエリア全体を選択します';
+  String get setupPlaygroundPinDescription => 'ゲームを行うエリア全体を選択します';
 
   @override
   String get setupPrisonPinDescription => '泥棒を拘束しておく牢屋エリアを選択します';
@@ -609,7 +609,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get setupPlaygroundRadiusInputHint => 'ここをタップすると半径を直接入力できます';
 
   @override
-  String get setupPlaygroundDescription => 'ゲームが進行されるエリア全体の大きさを設定します';
+  String get setupPlaygroundDescription => 'ゲームを行うエリア全体の大きさを設定します';
 
   @override
   String get buttonDone => '完了';
