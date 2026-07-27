@@ -46,8 +46,8 @@
 | ko         | en          | ja           | 비고                 |
 | ---------- | ----------- | ------------ | -------------------- |
 | 확인       | Confirm     | 確認         | 다이얼로그 긍정 버튼 |
-| 취소       | Cancel      | キャンセル   | 진행 중인 작업을 되돌릴 때만 사용 |
-| 닫기       | Close       | 閉じる       | 다이얼로그 부정 버튼 (buttonCancel) |
+| 취소       | Cancel      | キャンセル   | 현재 ARB에 이 값을 쓰는 키 없음 — buttonCancel/buttonClose 모두 '닫기'. 진행 중인 작업을 되돌리는 버튼이 생기면 그때 신규 키 추가 |
+| 닫기       | Close       | 閉じる       | 다이얼로그 부정 버튼 (buttonCancel). buttonCancel은 buttonClose의 레거시 별칭 |
 | 저장       | Save        | 保存         |                      |
 | 삭제       | Delete      | 削除         |                      |
 | 수정       | Edit        | 編集         |                      |

@@ -57,7 +57,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요';
 
   @override
-  String get chatSystemPoliceMoveWarning => '경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!';
+  String get chatSystemPoliceMoveWarning => '경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!';
 
   @override
   String chatSystemRemainingRobbers(int count) {
@@ -410,7 +410,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get asset_locationpermission_serviceDisabledHome =>
-      '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요';
+      '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n기기 설정에서 위치 서비스를 켜주세요';
 
   @override
   String get asset_locationpermission_serviceDisabledGame =>
@@ -421,11 +421,11 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요';
 
   @override
-  String get asset_locationpermission_permissionDeniedTitle => '위치 권한이 필요합니다';
+  String get asset_locationpermission_permissionDeniedTitle => '위치 권한이 필요해요';
 
   @override
   String get asset_locationpermission_permissionDeniedHome =>
-      '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다';
+      '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단돼요';
 
   @override
   String get asset_locationpermission_permissionDeniedGame =>
@@ -844,7 +844,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorAuthAccountDisabled => '비활성화된 계정이에요';
 
   @override
-  String get errorAuthTooManyRequests => '너무 많은 요청이 생겼어요. 잠시 후 다시 시도해주세요';
+  String get errorAuthTooManyRequests => '요청이 너무 많아요. 잠시 후 다시 시도해주세요';
 
   @override
   String get errorAuthSignInMethodUnavailable => '이 로그인 방법은 현재 사용할 수 없어요';
@@ -916,7 +916,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get linkLocationTerms => '위치정보 이용약관';
 
   @override
-  String get loginPageAgreementSuffix => '에 동의합니다';
+  String get loginPageAgreementSuffix => '에 동의해요';
 
   @override
   String get messageNicknameSaved => '닉네임이 저장되었어요';
@@ -959,7 +959,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get splashCreditTag => 'by 동심지키미';
 
   @override
-  String get splashOfflineTitle => '인터넷 연결이 필요합니다';
+  String get splashOfflineTitle => '인터넷 연결이 필요해요';
 
   @override
   String get splashOfflineMessage => '연결 상태를 확인한 후\n다시 시도해주세요';
@@ -1153,7 +1153,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dialogCameraPermissionMessage =>
-      'QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요';
+      'QR코드를 스캔하려면 카메라 권한이 필요해요\n설정에서 카메라 권한을 허용해주세요';
 
   @override
   String get errorCameraUnavailable => '카메라를 사용할 수 없어요';
@@ -1715,20 +1715,20 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get gameEventStartReady => '잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!';
+  String get gameEventStartReady => '잠시 후 게임이 시작돼요.  모든 플레이어는 준비하세요!';
 
   @override
   String get gameEventStartReportTip =>
       '게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요';
 
   @override
-  String get gameEventStartGo => '게임 시작!  행운을 빕니다!';
+  String get gameEventStartGo => '게임 시작!  행운을 빌어요!';
 
   @override
   String get gameEventPoliceMove => '경찰 출동!  도둑은 도망치세요!';
 
   @override
-  String get gameEventLocationReveal => '현재 도둑의 위치가 공개됩니다!';
+  String get gameEventLocationReveal => '현재 도둑의 위치가 공개돼요!';
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
@@ -1851,7 +1851,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeInvalidToken => '인증 정보가 올바르지 않아요. 다시 로그인해주세요';
 
   @override
-  String get errorCodeUnauthenticatedRequest => '로그인이 필요합니다';
+  String get errorCodeUnauthenticatedRequest => '로그인이 필요해요';
 
   @override
   String get errorCodeExpiredFirebaseToken => '인증이 만료됐어요. 다시 시도해주세요';
@@ -1863,7 +1863,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeUnsupportedSocialType => '지원하지 않는 소셜 로그인 방식이에요';
 
   @override
-  String get errorCodeForbiddenAdminOnly => '관리자 권한이 필요합니다';
+  String get errorCodeForbiddenAdminOnly => '관리자 권한이 필요해요';
 
   @override
   String get errorCodeNicknameGenerationFailed => '회원가입에 실패했어요. 잠시 후 다시 시도해주세요';
@@ -1881,13 +1881,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeCannotWithdraw => '진행 중인 게임 세션이 있어 탈퇴할 수 없어요';
 
   @override
-  String get errorCodeRequiredTermsNotAgreed => '필수 약관은 모두 동의해야 합니다';
+  String get errorCodeRequiredTermsNotAgreed => '필수 약관은 모두 동의해야 해요';
 
   @override
   String get errorCodeGameNotFound => '요청하신 게임 정보가 존재하지 않아요';
 
   @override
-  String get errorCodeGameNotInProgress => '게임이 진행 중인 상태가 아닙니다';
+  String get errorCodeGameNotInProgress => '게임이 진행 중인 상태가 아니에요';
 
   @override
   String get errorCodeGameNotActive => '대기 중이거나 진행 중인 게임에서만 조회할 수 있어요';
@@ -1896,10 +1896,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeGameNotWaiting => '대기 중인 게임에서만 설정을 변경할 수 있어요';
 
   @override
-  String get errorCodeInvalidLocationInterval => '위치 공개 주기는 라운드 시간보다 짧아야 합니다';
+  String get errorCodeInvalidLocationInterval => '위치 공개 주기는 라운드 시간보다 짧아야 해요';
 
   @override
-  String get errorCodeInvalidPoliceWaitTime => '경찰 대기 시간은 라운드 시간보다 짧아야 합니다';
+  String get errorCodeInvalidPoliceWaitTime => '경찰 대기 시간은 라운드 시간보다 짧아야 해요';
 
   @override
   String get errorCodeInviteCodeGenerationFailed =>
@@ -1910,7 +1910,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없어요';
 
   @override
-  String get errorCodeJailOutsidePlayground => '감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다';
+  String get errorCodeJailOutsidePlayground => '감옥은 플레이그라운드 내부에 완전히 포함되어야 해요';
 
   @override
   String get errorCodeGameAreaNotFound => '해당 게임 구역을 찾을 수 없어요';
@@ -1931,7 +1931,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeParticipantNotFound => '해당 게임에 참가하지 않은 사용자예요';
 
   @override
-  String get errorCodeNotAParticipant => '해당 게임의 참가자가 아닙니다';
+  String get errorCodeNotAParticipant => '해당 게임의 참가자가 아니에요';
 
   @override
   String get errorCodeCannotLeaveDuringGame => '게임이 시작된 이후에는 방을 나갈 수 없어요';
@@ -1944,7 +1944,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeInvalidTeamComposition =>
-      '게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다';
+      '게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요';
 
   @override
   String get errorCodeNotAllReady => '모든 참가자가 준비 상태여야 게임을 시작할 수 있어요';
@@ -1953,7 +1953,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeNotRobberTeam => '도둑 팀만 위치를 전송할 수 있어요';
 
   @override
-  String get errorCodeHostCannotUnready => '방장은 항상 준비 상태여야 합니다';
+  String get errorCodeHostCannotUnready => '방장은 항상 준비 상태여야 해요';
 
   @override
   String get errorCodeParticipantGameMismatch => '경찰과 도둑이 서로 다른 게임에 참여하고 있어요';
@@ -1986,7 +1986,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeGameResultNotFound => '해당 게임 결과를 찾을 수 없어요';
 
   @override
-  String get errorCodeEtcReasonRequired => '신고 유형이 기타일 때 사유를 입력해야 합니다';
+  String get errorCodeEtcReasonRequired => '신고 유형이 기타일 때 사유를 입력해야 해요';
 
   @override
   String get errorCodeSelfReport => '본인을 신고할 수 없어요';
@@ -2013,7 +2013,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameLeaveConfirmTitle => '게임에서 나갈까요?';
 
   @override
-  String get gameLeaveConfirmMessage => '진행 중인 게임에서 나갑니다';
+  String get gameLeaveConfirmMessage => '나가면 다시 게임에 참여할 수 없어요';
 
   @override
   String get gameLeaveFailedMessage => '퇴장하지 못했어요. 잠시 후 다시 시도해주세요';

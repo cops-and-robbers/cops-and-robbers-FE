@@ -193,7 +193,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatSystemPoliceMoveWarning.
   ///
   /// In ko, this message translates to:
-  /// **'경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!'**
+  /// **'경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!'**
   String get chatSystemPoliceMoveWarning;
 
   /// No description provided for @chatSystemRemainingRobbers.
@@ -871,7 +871,7 @@ abstract class AppLocalizations {
   /// No description provided for @asset_locationpermission_serviceDisabledHome.
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요'**
+  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n기기 설정에서 위치 서비스를 켜주세요'**
   String get asset_locationpermission_serviceDisabledHome;
 
   /// No description provided for @asset_locationpermission_serviceDisabledGame.
@@ -889,13 +889,13 @@ abstract class AppLocalizations {
   /// No description provided for @asset_locationpermission_permissionDeniedTitle.
   ///
   /// In ko, this message translates to:
-  /// **'위치 권한이 필요합니다'**
+  /// **'위치 권한이 필요해요'**
   String get asset_locationpermission_permissionDeniedTitle;
 
   /// No description provided for @asset_locationpermission_permissionDeniedHome.
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다'**
+  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단돼요'**
   String get asset_locationpermission_permissionDeniedHome;
 
   /// No description provided for @asset_locationpermission_permissionDeniedGame.
@@ -1687,7 +1687,7 @@ abstract class AppLocalizations {
   /// Firebase 인증 — 요청 과다 (rate limit)
   ///
   /// In ko, this message translates to:
-  /// **'너무 많은 요청이 생겼어요. 잠시 후 다시 시도해주세요'**
+  /// **'요청이 너무 많아요. 잠시 후 다시 시도해주세요'**
   String get errorAuthTooManyRequests;
 
   /// Firebase 인증 — 비활성화된 로그인 방법
@@ -1825,7 +1825,7 @@ abstract class AppLocalizations {
   /// 로그인 페이지 약관 안내 접미사
   ///
   /// In ko, this message translates to:
-  /// **'에 동의합니다'**
+  /// **'에 동의해요'**
   String get loginPageAgreementSuffix;
 
   /// 닉네임 저장 완료 토스트
@@ -1909,7 +1909,7 @@ abstract class AppLocalizations {
   /// 스플래시 — 오프라인 상태 타이틀
   ///
   /// In ko, this message translates to:
-  /// **'인터넷 연결이 필요합니다'**
+  /// **'인터넷 연결이 필요해요'**
   String get splashOfflineTitle;
 
   /// 스플래시 — 오프라인 상태 본문
@@ -2269,7 +2269,7 @@ abstract class AppLocalizations {
   /// 카메라 권한 요청 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요'**
+  /// **'QR코드를 스캔하려면 카메라 권한이 필요해요\n설정에서 카메라 권한을 허용해주세요'**
   String get dialogCameraPermissionMessage;
 
   /// QR 스캐너 — 카메라 초기화 실패 안내
@@ -3342,7 +3342,7 @@ abstract class AppLocalizations {
   /// START 2단계 — 게임 시작 예고
   ///
   /// In ko, this message translates to:
-  /// **'잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!'**
+  /// **'잠시 후 게임이 시작돼요.  모든 플레이어는 준비하세요!'**
   String get gameEventStartReady;
 
   /// START 3단계 — 신고/차단 안내
@@ -3354,7 +3354,7 @@ abstract class AppLocalizations {
   /// START 4단계 — 게임 시작 확정
   ///
   /// In ko, this message translates to:
-  /// **'게임 시작!  행운을 빕니다!'**
+  /// **'게임 시작!  행운을 빌어요!'**
   String get gameEventStartGo;
 
   /// 경찰 출동 확정
@@ -3366,7 +3366,7 @@ abstract class AppLocalizations {
   /// 도둑 위치 공개 안내
   ///
   /// In ko, this message translates to:
-  /// **'현재 도둑의 위치가 공개됩니다!'**
+  /// **'현재 도둑의 위치가 공개돼요!'**
   String get gameEventLocationReveal;
 
   /// 체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환
@@ -3594,7 +3594,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeUnauthenticatedRequest.
   ///
   /// In ko, this message translates to:
-  /// **'로그인이 필요합니다'**
+  /// **'로그인이 필요해요'**
   String get errorCodeUnauthenticatedRequest;
 
   /// No description provided for @errorCodeExpiredFirebaseToken.
@@ -3618,7 +3618,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeForbiddenAdminOnly.
   ///
   /// In ko, this message translates to:
-  /// **'관리자 권한이 필요합니다'**
+  /// **'관리자 권한이 필요해요'**
   String get errorCodeForbiddenAdminOnly;
 
   /// No description provided for @errorCodeNicknameGenerationFailed.
@@ -3654,7 +3654,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeRequiredTermsNotAgreed.
   ///
   /// In ko, this message translates to:
-  /// **'필수 약관은 모두 동의해야 합니다'**
+  /// **'필수 약관은 모두 동의해야 해요'**
   String get errorCodeRequiredTermsNotAgreed;
 
   /// No description provided for @errorCodeGameNotFound.
@@ -3666,7 +3666,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeGameNotInProgress.
   ///
   /// In ko, this message translates to:
-  /// **'게임이 진행 중인 상태가 아닙니다'**
+  /// **'게임이 진행 중인 상태가 아니에요'**
   String get errorCodeGameNotInProgress;
 
   /// No description provided for @errorCodeGameNotActive.
@@ -3684,13 +3684,13 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeInvalidLocationInterval.
   ///
   /// In ko, this message translates to:
-  /// **'위치 공개 주기는 라운드 시간보다 짧아야 합니다'**
+  /// **'위치 공개 주기는 라운드 시간보다 짧아야 해요'**
   String get errorCodeInvalidLocationInterval;
 
   /// No description provided for @errorCodeInvalidPoliceWaitTime.
   ///
   /// In ko, this message translates to:
-  /// **'경찰 대기 시간은 라운드 시간보다 짧아야 합니다'**
+  /// **'경찰 대기 시간은 라운드 시간보다 짧아야 해요'**
   String get errorCodeInvalidPoliceWaitTime;
 
   /// No description provided for @errorCodeInviteCodeGenerationFailed.
@@ -3708,7 +3708,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeJailOutsidePlayground.
   ///
   /// In ko, this message translates to:
-  /// **'감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다'**
+  /// **'감옥은 플레이그라운드 내부에 완전히 포함되어야 해요'**
   String get errorCodeJailOutsidePlayground;
 
   /// No description provided for @errorCodeGameAreaNotFound.
@@ -3750,7 +3750,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeNotAParticipant.
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임의 참가자가 아닙니다'**
+  /// **'해당 게임의 참가자가 아니에요'**
   String get errorCodeNotAParticipant;
 
   /// No description provided for @errorCodeCannotLeaveDuringGame.
@@ -3774,7 +3774,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeInvalidTeamComposition.
   ///
   /// In ko, this message translates to:
-  /// **'게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다'**
+  /// **'게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요'**
   String get errorCodeInvalidTeamComposition;
 
   /// No description provided for @errorCodeNotAllReady.
@@ -3792,7 +3792,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeHostCannotUnready.
   ///
   /// In ko, this message translates to:
-  /// **'방장은 항상 준비 상태여야 합니다'**
+  /// **'방장은 항상 준비 상태여야 해요'**
   String get errorCodeHostCannotUnready;
 
   /// No description provided for @errorCodeParticipantGameMismatch.
@@ -3858,7 +3858,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeEtcReasonRequired.
   ///
   /// In ko, this message translates to:
-  /// **'신고 유형이 기타일 때 사유를 입력해야 합니다'**
+  /// **'신고 유형이 기타일 때 사유를 입력해야 해요'**
   String get errorCodeEtcReasonRequired;
 
   /// No description provided for @errorCodeSelfReport.
@@ -3912,7 +3912,7 @@ abstract class AppLocalizations {
   /// 인게임 중도 퇴장 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'진행 중인 게임에서 나갑니다'**
+  /// **'나가면 다시 게임에 참여할 수 없어요'**
   String get gameLeaveConfirmMessage;
 
   /// 인게임 중도 퇴장 실패 시 스낵바 메시지

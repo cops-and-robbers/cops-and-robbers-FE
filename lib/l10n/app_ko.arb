@@ -28,7 +28,7 @@
     }
   },
   "chatSystemGameStartReportTip": "게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요",
-  "chatSystemPoliceMoveWarning": "경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!",
+  "chatSystemPoliceMoveWarning": "경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!",
   "chatSystemRemainingRobbers": "현재 {count}명 도주 중!",
   "@chatSystemRemainingRobbers": {
     "placeholders": {
@@ -206,11 +206,11 @@
     "description": "로딩 화면 이스터에그 힌트 — 버전 번호 비밀 (9개 카테고리 공용)"
   },
   "asset_locationpermission_serviceDisabledTitle": "위치 서비스가 꺼져 있어요",
-  "asset_locationpermission_serviceDisabledHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요",
+  "asset_locationpermission_serviceDisabledHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n기기 설정에서 위치 서비스를 켜주세요",
   "asset_locationpermission_serviceDisabledGame": "게임에 복귀하려면 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
   "asset_locationpermission_serviceDisabledWaitingRoom": "게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
-  "asset_locationpermission_permissionDeniedTitle": "위치 권한이 필요합니다",
-  "asset_locationpermission_permissionDeniedHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다",
+  "asset_locationpermission_permissionDeniedTitle": "위치 권한이 필요해요",
+  "asset_locationpermission_permissionDeniedHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단돼요",
   "asset_locationpermission_permissionDeniedGame": "게임에 복귀하려면 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
   "asset_locationpermission_permissionDeniedWaitingRoom": "게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
   "errorGameRoomCreateUnexpected": "게임 방 생성 중 예기치 않은 오류가 생겼어요",
@@ -751,7 +751,7 @@
   "@errorAuthAccountDisabled": {
     "description": "Firebase 인증 — 비활성화된 계정"
   },
-  "errorAuthTooManyRequests": "너무 많은 요청이 생겼어요. 잠시 후 다시 시도해주세요",
+  "errorAuthTooManyRequests": "요청이 너무 많아요. 잠시 후 다시 시도해주세요",
   "@errorAuthTooManyRequests": {
     "description": "Firebase 인증 — 요청 과다 (rate limit)"
   },
@@ -848,7 +848,7 @@
   "@linkLocationTerms": {
     "description": "공통 — 위치정보 이용약관 링크 텍스트"
   },
-  "loginPageAgreementSuffix": "에 동의합니다",
+  "loginPageAgreementSuffix": "에 동의해요",
   "@loginPageAgreementSuffix": {
     "description": "로그인 페이지 약관 안내 접미사"
   },
@@ -904,7 +904,7 @@
   "@splashCreditTag": {
     "description": "스플래시 — 제작 크레딧 태그라인"
   },
-  "splashOfflineTitle": "인터넷 연결이 필요합니다",
+  "splashOfflineTitle": "인터넷 연결이 필요해요",
   "@splashOfflineTitle": {
     "description": "스플래시 — 오프라인 상태 타이틀"
   },
@@ -1169,7 +1169,7 @@
   "@dialogCameraPermissionTitle": {
     "description": "카메라 권한 요청 다이얼로그 타이틀"
   },
-  "dialogCameraPermissionMessage": "QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요",
+  "dialogCameraPermissionMessage": "QR코드를 스캔하려면 카메라 권한이 필요해요\n설정에서 카메라 권한을 허용해주세요",
   "@dialogCameraPermissionMessage": {
     "description": "카메라 권한 요청 다이얼로그 본문"
   },
@@ -1930,7 +1930,7 @@
       }
     }
   },
-  "gameEventStartReady": "잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!",
+  "gameEventStartReady": "잠시 후 게임이 시작돼요.  모든 플레이어는 준비하세요!",
   "@gameEventStartReady": {
     "description": "START 2단계 — 게임 시작 예고"
   },
@@ -1938,7 +1938,7 @@
   "@gameEventStartReportTip": {
     "description": "START 3단계 — 신고/차단 안내"
   },
-  "gameEventStartGo": "게임 시작!  행운을 빕니다!",
+  "gameEventStartGo": "게임 시작!  행운을 빌어요!",
   "@gameEventStartGo": {
     "description": "START 4단계 — 게임 시작 확정"
   },
@@ -1946,7 +1946,7 @@
   "@gameEventPoliceMove": {
     "description": "경찰 출동 확정"
   },
-  "gameEventLocationReveal": "현재 도둑의 위치가 공개됩니다!",
+  "gameEventLocationReveal": "현재 도둑의 위치가 공개돼요!",
   "@gameEventLocationReveal": {
     "description": "도둑 위치 공개 안내"
   },
@@ -2060,40 +2060,40 @@
   "errorCodeAccessTokenExpired": "인증 정보가 만료됐어요",
   "errorCodeRefreshTokenExpired": "로그인이 만료됐어요. 다시 로그인해주세요",
   "errorCodeInvalidToken": "인증 정보가 올바르지 않아요. 다시 로그인해주세요",
-  "errorCodeUnauthenticatedRequest": "로그인이 필요합니다",
+  "errorCodeUnauthenticatedRequest": "로그인이 필요해요",
   "errorCodeExpiredFirebaseToken": "인증이 만료됐어요. 다시 시도해주세요",
   "errorCodeInvalidFirebaseToken": "인증에 실패했어요. 다시 시도해주세요",
   "errorCodeUnsupportedSocialType": "지원하지 않는 소셜 로그인 방식이에요",
-  "errorCodeForbiddenAdminOnly": "관리자 권한이 필요합니다",
+  "errorCodeForbiddenAdminOnly": "관리자 권한이 필요해요",
   "errorCodeNicknameGenerationFailed": "회원가입에 실패했어요. 잠시 후 다시 시도해주세요",
   "errorCodeFirebaseServerError": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "errorCodeUserNotFound": "해당 유저를 찾을 수 없어요",
   "errorCodeDuplicatedNickname": "이미 사용 중인 닉네임이에요. 다른 닉네임을 선택해주세요",
   "errorCodeCannotWithdraw": "진행 중인 게임 세션이 있어 탈퇴할 수 없어요",
-  "errorCodeRequiredTermsNotAgreed": "필수 약관은 모두 동의해야 합니다",
+  "errorCodeRequiredTermsNotAgreed": "필수 약관은 모두 동의해야 해요",
   "errorCodeGameNotFound": "요청하신 게임 정보가 존재하지 않아요",
-  "errorCodeGameNotInProgress": "게임이 진행 중인 상태가 아닙니다",
+  "errorCodeGameNotInProgress": "게임이 진행 중인 상태가 아니에요",
   "errorCodeGameNotActive": "대기 중이거나 진행 중인 게임에서만 조회할 수 있어요",
   "errorCodeGameNotWaiting": "대기 중인 게임에서만 설정을 변경할 수 있어요",
-  "errorCodeInvalidLocationInterval": "위치 공개 주기는 라운드 시간보다 짧아야 합니다",
-  "errorCodeInvalidPoliceWaitTime": "경찰 대기 시간은 라운드 시간보다 짧아야 합니다",
+  "errorCodeInvalidLocationInterval": "위치 공개 주기는 라운드 시간보다 짧아야 해요",
+  "errorCodeInvalidPoliceWaitTime": "경찰 대기 시간은 라운드 시간보다 짧아야 해요",
   "errorCodeInviteCodeGenerationFailed": "초대 코드 생성에 실패했어요. 잠시 후 다시 시도해주세요",
   "errorCodeInvalidJailRadius": "감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없어요",
-  "errorCodeJailOutsidePlayground": "감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다",
+  "errorCodeJailOutsidePlayground": "감옥은 플레이그라운드 내부에 완전히 포함되어야 해요",
   "errorCodeGameAreaNotFound": "해당 게임 구역을 찾을 수 없어요",
   "errorCodeAlreadyParticipating": "이미 해당 게임에 참가하고 있어요",
   "errorCodeGameAlreadyStarted": "이미 시작된 게임에는 참여할 수 없어요",
   "errorCodeGameFull": "게임에 참가할 수 있는 최대 인원을 초과했어요",
   "errorCodeInvalidInviteCode": "입력하신 초대 코드가 유효하지 않아요",
   "errorCodeParticipantNotFound": "해당 게임에 참가하지 않은 사용자예요",
-  "errorCodeNotAParticipant": "해당 게임의 참가자가 아닙니다",
+  "errorCodeNotAParticipant": "해당 게임의 참가자가 아니에요",
   "errorCodeCannotLeaveDuringGame": "게임이 시작된 이후에는 방을 나갈 수 없어요",
   "errorCodeLobbyActionNotAllowed": "게임이 시작된 이후에는 로비 상태를 변경할 수 없어요",
   "errorCodeNotHost": "방장만 할 수 있어요",
-  "errorCodeInvalidTeamComposition": "게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다",
+  "errorCodeInvalidTeamComposition": "게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요",
   "errorCodeNotAllReady": "모든 참가자가 준비 상태여야 게임을 시작할 수 있어요",
   "errorCodeNotRobberTeam": "도둑 팀만 위치를 전송할 수 있어요",
-  "errorCodeHostCannotUnready": "방장은 항상 준비 상태여야 합니다",
+  "errorCodeHostCannotUnready": "방장은 항상 준비 상태여야 해요",
   "errorCodeParticipantGameMismatch": "경찰과 도둑이 서로 다른 게임에 참여하고 있어요",
   "errorCodeOnlyPoliceCanArrest": "경찰 팀만 도둑을 체포할 수 있어요",
   "errorCodeOnlyRobberCanBeArrested": "도둑 팀만 체포될 수 있어요",
@@ -2104,7 +2104,7 @@
   "errorCodeCannotKickYourself": "방장은 자기 자신을 강퇴할 수 없어요",
   "errorCodeNoticeNotFound": "해당 공지사항을 찾을 수 없어요",
   "errorCodeGameResultNotFound": "해당 게임 결과를 찾을 수 없어요",
-  "errorCodeEtcReasonRequired": "신고 유형이 기타일 때 사유를 입력해야 합니다",
+  "errorCodeEtcReasonRequired": "신고 유형이 기타일 때 사유를 입력해야 해요",
   "errorCodeSelfReport": "본인을 신고할 수 없어요",
   "errorCodeDuplicateReport": "해당 게임에서 이미 신고한 사용자예요",
   "errorCodeReportNotFound": "해당 신고 내역이 존재하지 않아요",
@@ -2125,7 +2125,7 @@
   "@gameLeaveConfirmTitle": {
     "description": "인게임 중도 퇴장 확인 다이얼로그 타이틀"
   },
-  "gameLeaveConfirmMessage": "진행 중인 게임에서 나갑니다",
+  "gameLeaveConfirmMessage": "나가면 다시 게임에 참여할 수 없어요",
   "@gameLeaveConfirmMessage": {
     "description": "인게임 중도 퇴장 확인 다이얼로그 본문"
   },
