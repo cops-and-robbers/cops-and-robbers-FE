@@ -36,9 +36,7 @@ Future<BuildContext> _pump(WidgetTester tester, Locale locale) async {
 
 void main() {
   group('AppDialog 버튼 현지화 (Guideline 4 재리젝 회귀 방지)', () {
-    testWidgets('영어 로케일 + cancelText 생략 → "Close" 노출, "취소" 아님', (
-      tester,
-    ) async {
+    testWidgets('영어 로케일 + cancelText 생략 → "Close" 노출, "취소" 아님', (tester) async {
       final ctx = await _pump(tester, const Locale('en'));
 
       // 나가기 다이얼로그와 동일: title/confirmText만 넘기고 cancelText 생략

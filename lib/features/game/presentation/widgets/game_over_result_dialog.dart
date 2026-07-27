@@ -23,10 +23,7 @@ import 'record_format.dart';
 /// 본인 팀과 승리 팀을 비교하여 승/패에 맞는 캐릭터 **몸통** SVG 경로 반환.
 ///
 /// 몸통은 다이얼로그 **뒤**에 배치되어 상단 튀어나온 부분만 보임.
-String resolveBodyAsset({
-  required String myTeam,
-  required String winnerTeam,
-}) {
+String resolveBodyAsset({required String myTeam, required String winnerTeam}) {
   final teamSlug = myTeam.toLowerCase();
   final resultSlug = myTeam == winnerTeam ? 'win' : 'lose';
   return resultCharacterAssetPath(
