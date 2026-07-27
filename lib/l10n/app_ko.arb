@@ -38,14 +38,14 @@
     }
   },
   "chatSystemFiveMinutesLeft": "게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!",
-  "errorNetworkTimeout": "서버 연결 시간이 초과되었습니다",
+  "errorNetworkTimeout": "서버 연결이 너무 오래 걸려요",
   "errorNetworkOffline": "네트워크 연결을 확인하세요",
-  "errorServerInternal": "서버에 문제가 발생했습니다",
-  "errorBadRequest": "잘못된 요청입니다",
-  "errorUnauthorized": "인증에 실패했습니다",
-  "errorForbidden": "접근 권한이 없습니다",
-  "errorNotFound": "요청한 정보를 찾을 수 없습니다",
-  "errorConflict": "요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "errorServerInternal": "서버에 문제가 생겼어요",
+  "errorBadRequest": "잘못된 요청이에요",
+  "errorUnauthorized": "인증에 실패했어요",
+  "errorForbidden": "접근 권한이 없어요",
+  "errorNotFound": "요청한 정보를 찾을 수 없어요",
+  "errorConflict": "요청을 처리할 수 없어요. 잠시 후 다시 시도해주세요",
   "buttonConfirm": "확인",
   "buttonCancel": "취소",
   "dialogReconnectMessage": "연결이 끊어졌어요. 재연결이 필요해요",
@@ -89,7 +89,7 @@
   },
   "pinTooCloseMessage": "핀이 너무 가까워요",
   "dialogAgreementRequiredTermsTitle": "필수 약관 미동의",
-  "errorAuthLoginCancelled": "로그인이 취소되었습니다",
+  "errorAuthLoginCancelled": "로그인이 취소됐어요",
   "settingsLanguageLabel": "언어",
   "@settingsLanguageLabel": {
     "description": "설정 화면의 언어 설정 메뉴 라벨"
@@ -213,11 +213,11 @@
   "asset_locationpermission_permissionDeniedHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다",
   "asset_locationpermission_permissionDeniedGame": "게임에 복귀하려면 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
   "asset_locationpermission_permissionDeniedWaitingRoom": "게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요",
-  "errorGameRoomCreateUnexpected": "게임 방 생성 중 예기치 않은 오류가 발생했습니다",
+  "errorGameRoomCreateUnexpected": "게임 방 생성 중 예기치 않은 오류가 생겼어요",
   "@errorGameRoomCreateUnexpected": {
     "description": "게임 방 생성 중 예외가 발생했을 때 표시되는 메시지"
   },
-  "errorActiveGameFetchUnexpected": "참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다",
+  "errorActiveGameFetchUnexpected": "참여 중인 게임 조회 중 예기치 않은 오류가 생겼어요",
   "@errorActiveGameFetchUnexpected": {
     "description": "참여 중인 게임 조회 실패 시 표시되는 예외 메시지"
   },
@@ -257,7 +257,7 @@
       }
     }
   },
-  "errorSettingsSaveFailed": "설정 저장에 실패했습니다",
+  "errorSettingsSaveFailed": "설정 저장에 실패했어요",
   "@errorSettingsSaveFailed": {
     "description": "게임 설정 저장 실패 안내"
   },
@@ -273,7 +273,7 @@
   "@buttonSave": {
     "description": "공통 — 저장 버튼"
   },
-  "errorAreaSaveFailed": "영역 저장에 실패했습니다",
+  "errorAreaSaveFailed": "영역 저장에 실패했어요",
   "@errorAreaSaveFailed": {
     "description": "게임 구역 저장 실패 안내"
   },
@@ -281,11 +281,11 @@
   "@pageGameSettingsTitle": {
     "description": "게임 설정 페이지 타이틀"
   },
-  "errorZoneInfoLoadFailed": "구역 정보를 불러올 수 없습니다",
+  "errorZoneInfoLoadFailed": "구역 정보를 불러오지 못했어요",
   "@errorZoneInfoLoadFailed": {
     "description": "구역 정보 로드 실패 안내"
   },
-  "errorSettingsLoadFailed": "설정 정보를 불러올 수 없습니다",
+  "errorSettingsLoadFailed": "설정 정보를 불러오지 못했어요",
   "@errorSettingsLoadFailed": {
     "description": "게임 설정 로드 실패 안내"
   },
@@ -317,11 +317,11 @@
   "@homePageDontShowToday": {
     "description": "홈 페이지 — 안내 다이얼로그 오늘 숨김 옵션"
   },
-  "errorAlreadyInGame": "이미 참가 중인 게임이 있습니다",
+  "errorAlreadyInGame": "이미 참가 중인 게임이 있어요",
   "@errorAlreadyInGame": {
     "description": "이미 다른 게임에 참가 중일 때 안내"
   },
-  "errorUnknownGameState": "알 수 없는 게임 상태입니다",
+  "errorUnknownGameState": "알 수 없는 게임 상태예요",
   "@errorUnknownGameState": {
     "description": "게임 상태를 식별할 수 없을 때 표시"
   },
@@ -341,11 +341,11 @@
   "@homePageBatteryGuideStep2": {
     "description": "홈 페이지 — 배터리 최적화 해제 안내 2단계"
   },
-  "errorJoinFailedCheckCode": "참여에 실패했습니다. 초대 코드를 확인해주세요",
+  "errorJoinFailedCheckCode": "참여에 실패했어요. 초대 코드를 확인해주세요",
   "@errorJoinFailedCheckCode": {
     "description": "방 참여 실패 — 초대 코드 확인 안내"
   },
-  "errorJoinRetry": "참여에 실패했습니다. 다시 시도해주세요",
+  "errorJoinRetry": "참여에 실패했어요. 다시 시도해주세요",
   "@errorJoinRetry": {
     "description": "방 참여 실패 — 일반 재시도 안내"
   },
@@ -397,7 +397,7 @@
   "@sessionCreationStepRulesSubtitle": {
     "description": "방 생성 — 규칙 설정 단계 안내"
   },
-  "errorCreateRoomFailed": "게임 방 생성에 실패했습니다. 다시 시도해주세요",
+  "errorCreateRoomFailed": "게임 방 생성에 실패했어요. 다시 시도해주세요",
   "@errorCreateRoomFailed": {
     "description": "방 생성 실패 안내"
   },
@@ -473,7 +473,7 @@
   "@errorCannotJoinRoom": {
     "description": "방 참여 불가 다이얼로그 타이틀"
   },
-  "errorNotInGame": "해당 게임에 참가하지 않은 사용자입니다",
+  "errorNotInGame": "해당 게임에 참가하지 않은 사용자예요",
   "@errorNotInGame": {
     "description": "권한 없음 — 해당 게임 참가자가 아닐 때 안내"
   },
@@ -522,7 +522,7 @@
   "@buttonKick": {
     "description": "참가자 강퇴 확정 버튼"
   },
-  "errorKickFailed": "강퇴 처리 중 오류가 발생했어요",
+  "errorKickFailed": "강퇴 처리 중 오류가 생겼어요",
   "@errorKickFailed": {
     "description": "참가자 강퇴 실패 시 표시되는 에러 메시지"
   },
@@ -567,7 +567,7 @@
   "@buttonLeave": {
     "description": "대기실 퇴장 확정 버튼"
   },
-  "errorLeaveRoomFailed": "퇴장 처리 중 오류가 발생했습니다",
+  "errorLeaveRoomFailed": "퇴장 처리 중 오류가 생겼어요",
   "@errorLeaveRoomFailed": {
     "description": "대기실 — 퇴장 처리 실패 안내"
   },
@@ -727,47 +727,47 @@
   "@sectionTitleZone": {
     "description": "대기실 구역 카드 섹션 타이틀"
   },
-  "errorLogoutGeneric": "로그아웃 중 오류가 발생했습니다",
+  "errorLogoutGeneric": "로그아웃 중 오류가 생겼어요",
   "@errorLogoutGeneric": {
     "description": "로그아웃 처리 중 일반 오류 안내"
   },
-  "errorAuthUserNotFound": "로그인 정보를 가져올 수 없습니다. 다시 시도해주세요",
+  "errorAuthUserNotFound": "로그인 정보를 가져올 수 없어요. 다시 시도해주세요",
   "@errorAuthUserNotFound": {
     "description": "Firebase 인증 — 사용자 정보 조회 실패"
   },
-  "errorAuthTokenIssueFailed": "인증에 실패했습니다. 다시 시도해주세요",
+  "errorAuthTokenIssueFailed": "인증에 실패했어요. 다시 시도해주세요",
   "@errorAuthTokenIssueFailed": {
     "description": "Firebase 인증 — 토큰 발급 실패"
   },
-  "errorAuthTokenValidationFailed": "로그인 정보가 만료되었습니다. 다시 로그인해주세요",
+  "errorAuthTokenValidationFailed": "로그인 정보가 만료됐어요. 다시 로그인해주세요",
   "@errorAuthTokenValidationFailed": {
     "description": "Firebase 인증 — 토큰 검증 실패"
   },
-  "errorAuthInvalidCredential": "잘못된 인증 정보입니다",
+  "errorAuthInvalidCredential": "잘못된 인증 정보예요",
   "@errorAuthInvalidCredential": {
     "description": "Firebase 인증 — 잘못된 인증 정보"
   },
-  "errorAuthAccountDisabled": "비활성화된 계정입니다",
+  "errorAuthAccountDisabled": "비활성화된 계정이에요",
   "@errorAuthAccountDisabled": {
     "description": "Firebase 인증 — 비활성화된 계정"
   },
-  "errorAuthTooManyRequests": "너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요",
+  "errorAuthTooManyRequests": "너무 많은 요청이 생겼어요. 잠시 후 다시 시도해주세요",
   "@errorAuthTooManyRequests": {
     "description": "Firebase 인증 — 요청 과다 (rate limit)"
   },
-  "errorAuthSignInMethodUnavailable": "이 로그인 방법은 현재 사용할 수 없습니다",
+  "errorAuthSignInMethodUnavailable": "이 로그인 방법은 현재 사용할 수 없어요",
   "@errorAuthSignInMethodUnavailable": {
     "description": "Firebase 인증 — 비활성화된 로그인 방법"
   },
-  "errorAuthFirebaseConfig": "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
+  "errorAuthFirebaseConfig": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "@errorAuthFirebaseConfig": {
     "description": "Firebase 인증 — 설정 오류 (API 키 등)"
   },
-  "errorAuthFirebaseInternal": "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
+  "errorAuthFirebaseInternal": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "@errorAuthFirebaseInternal": {
     "description": "Firebase 인증 — 내부 오류"
   },
-  "errorAuthProviderLoginFailed": "{provider} 로그인에 실패했습니다. 다시 시도해주세요",
+  "errorAuthProviderLoginFailed": "{provider} 로그인에 실패했어요. 다시 시도해주세요",
   "@errorAuthProviderLoginFailed": {
     "description": "Firebase 인증 — 특정 provider 로그인 실패 (Google/Apple 등)",
     "placeholders": {
@@ -776,7 +776,7 @@
       }
     }
   },
-  "errorAuthLoginFailed": "로그인에 실패했습니다. 다시 시도해주세요",
+  "errorAuthLoginFailed": "로그인에 실패했어요. 다시 시도해주세요",
   "@errorAuthLoginFailed": {
     "description": "Firebase 인증 — 일반 로그인 실패 (provider 미지정)"
   },
@@ -816,15 +816,15 @@
   "@dialogAge14ConfirmMessage": {
     "description": "만 14세 이상 확인 다이얼로그 본문"
   },
-  "errorLoginGeneric": "로그인 중 오류가 발생했습니다",
+  "errorLoginGeneric": "로그인 중 오류가 생겼어요",
   "@errorLoginGeneric": {
     "description": "로그인 처리 중 발생한 일반 오류"
   },
-  "errorAppleLoginFailed": "Apple 로그인 중 오류가 발생했습니다",
+  "errorAppleLoginFailed": "Apple 로그인 중 오류가 생겼어요",
   "@errorAppleLoginFailed": {
     "description": "Apple 로그인 전용 오류 메시지"
   },
-  "errorAgeRestrictionUnder14": "만 14세 미만은 서비스를 이용할 수 없습니다",
+  "errorAgeRestrictionUnder14": "만 14세 미만은 서비스를 이용할 수 없어요",
   "@errorAgeRestrictionUnder14": {
     "description": "만 14세 미만 가입 차단 안내"
   },
@@ -912,11 +912,11 @@
   "@splashOfflineMessage": {
     "description": "스플래시 — 오프라인 상태 본문"
   },
-  "errorUnknown": "알 수 없는 오류가 발생했습니다",
+  "errorUnknown": "알 수 없는 오류가 생겼어요",
   "@errorUnknown": {
     "description": "원인을 특정할 수 없는 일반 오류 메시지 (auth fallback 등)"
   },
-  "errorLogoutFailed": "로그아웃에 실패했습니다",
+  "errorLogoutFailed": "로그아웃에 실패했어요",
   "@errorLogoutFailed": {
     "description": "로그아웃 실패 안내"
   },
@@ -988,7 +988,7 @@
   "@gameRoleRobberLabel": {
     "description": "도둑 역할 단일 라벨 (닉네임 누락 시 fallback 포함)"
   },
-  "errorCannotArrestDuringWait": "경찰 대기 시간 중에는 도둑을 체포할 수 없습니다",
+  "errorCannotArrestDuringWait": "경찰 대기 시간 중에는 도둑을 체포할 수 없어요",
   "@errorCannotArrestDuringWait": {
     "description": "체포 실패 — 경찰 대기 시간 중"
   },
@@ -996,11 +996,11 @@
   "@qrScannerWantedRobberTitle": {
     "description": "도둑 수배 QR 스캐너 페이지 타이틀"
   },
-  "errorExpiredQr": "만료된 QR입니다. QR 새로고침을 요청하세요",
+  "errorExpiredQr": "만료된 QR이에요. QR 새로고침을 요청하세요",
   "@errorExpiredQr": {
     "description": "QR 스캔 실패 — QR 만료"
   },
-  "errorAlreadyArrested": "이미 체포된 도둑입니다",
+  "errorAlreadyArrested": "이미 체포된 도둑이에요",
   "@errorAlreadyArrested": {
     "description": "체포 실패 — 이미 체포된 도둑"
   },
@@ -1173,7 +1173,7 @@
   "@dialogCameraPermissionMessage": {
     "description": "카메라 권한 요청 다이얼로그 본문"
   },
-  "errorCameraUnavailable": "카메라를 사용할 수 없습니다",
+  "errorCameraUnavailable": "카메라를 사용할 수 없어요",
   "@errorCameraUnavailable": {
     "description": "QR 스캐너 — 카메라 초기화 실패 안내"
   },
@@ -1362,7 +1362,7 @@
   "@messageChangesSaved": {
     "description": "설정 변경사항 저장 완료 안내 메시지"
   },
-  "errorTemporaryRetry": "일시적인 오류가 발생했습니다. 다시 시도해주세요",
+  "errorTemporaryRetry": "일시적인 오류가 생겼어요. 다시 시도해주세요",
   "@errorTemporaryRetry": {
     "description": "일시적 오류 발생 시 재시도 유도 공통 메시지"
   },
@@ -1370,7 +1370,7 @@
   "@pageAgreementSettingsTitle": {
     "description": "이용약관/정책 설정 페이지 타이틀"
   },
-  "errorAgreementLoadFailed": "약관 동의 현황을 불러올 수 없습니다",
+  "errorAgreementLoadFailed": "약관 동의 현황을 불러오지 못했어요",
   "@errorAgreementLoadFailed": {
     "description": "약관 동의 정보 조회 실패 안내"
   },
@@ -1382,7 +1382,7 @@
   "@buttonSaveChanges": {
     "description": "변경사항 저장 공통 버튼 라벨"
   },
-  "errorLegalDocumentLoadFailed": "문서를 불러올 수 없습니다",
+  "errorLegalDocumentLoadFailed": "문서를 불러오지 못했어요",
   "@errorLegalDocumentLoadFailed": {
     "description": "법적 문서(약관/정책) 로드 실패 안내"
   },
@@ -1796,7 +1796,7 @@
   "@pageCreditsTitle": {
     "description": "크레딧 페이지 상단 헤더 — 제작진 소개"
   },
-  "errorReportGeneric": "신고 처리 중 오류가 발생했습니다",
+  "errorReportGeneric": "신고 처리 중 오류가 생겼어요",
   "@errorReportGeneric": {
     "description": "신고 처리 중 예외가 발생했을 때 표시되는 메시지"
   },
@@ -1828,51 +1828,51 @@
   "@reportCategoryOther": {
     "description": "신고 카테고리 — 기타 (ReportCategory.other, 직접 입력)"
   },
-  "errorNicknameCheckUnexpected": "닉네임 확인 중 예기치 않은 오류가 발생했습니다",
+  "errorNicknameCheckUnexpected": "닉네임 확인 중 예기치 않은 오류가 생겼어요",
   "@errorNicknameCheckUnexpected": {
     "description": "닉네임 중복 확인 중 예외가 발생했을 때 표시되는 메시지"
   },
-  "errorNicknameUpdateUnexpected": "닉네임 변경 중 예기치 않은 오류가 발생했습니다",
+  "errorNicknameUpdateUnexpected": "닉네임 변경 중 예기치 않은 오류가 생겼어요",
   "@errorNicknameUpdateUnexpected": {
     "description": "닉네임 변경 실패 시 표시되는 예외 메시지"
   },
-  "errorUserInfoFetch": "사용자 정보 조회 중 오류가 발생했습니다",
+  "errorUserInfoFetch": "사용자 정보 조회 중 오류가 생겼어요",
   "@errorUserInfoFetch": {
     "description": "사용자 정보 조회 실패 안내"
   },
-  "errorDeleteAccountUnexpected": "회원 탈퇴 중 예기치 않은 오류가 발생했습니다",
+  "errorDeleteAccountUnexpected": "회원 탈퇴 중 예기치 않은 오류가 생겼어요",
   "@errorDeleteAccountUnexpected": {
     "description": "회원 탈퇴 처리 중 예기치 않은 오류 안내"
   },
-  "errorAgreementFetchUnexpected": "약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다",
+  "errorAgreementFetchUnexpected": "약관 동의 상태 조회 중 예기치 않은 오류가 생겼어요",
   "@errorAgreementFetchUnexpected": {
     "description": "약관 동의 상태 조회 중 예기치 않은 오류 안내"
   },
-  "errorAgreementSaveUnexpected": "약관 동의 저장 중 예기치 않은 오류가 발생했습니다",
+  "errorAgreementSaveUnexpected": "약관 동의 저장 중 예기치 않은 오류가 생겼어요",
   "@errorAgreementSaveUnexpected": {
     "description": "약관 동의 저장 중 예기치 않은 오류 안내"
   },
-  "errorGamePushFetchUnexpected": "게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다",
+  "errorGamePushFetchUnexpected": "게임 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요",
   "@errorGamePushFetchUnexpected": {
     "description": "게임 푸시 알림 동의 조회 중 예기치 않은 오류 안내"
   },
-  "errorGamePushUpdateUnexpected": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다",
+  "errorGamePushUpdateUnexpected": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 생겼어요",
   "@errorGamePushUpdateUnexpected": {
     "description": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내"
   },
-  "errorAuthTokenMissing": "로그인 정보를 확인할 수 없습니다. 다시 로그인해주세요",
+  "errorAuthTokenMissing": "로그인 정보를 확인할 수 없어요. 다시 로그인해주세요",
   "@errorAuthTokenMissing": {
     "description": "인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후"
   },
-  "errorServerUnreachable": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요",
+  "errorServerUnreachable": "서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요",
   "@errorServerUnreachable": {
     "description": "서버 연결 실패 — STOMP/REST 모두 실패 시 재시도 권장 안내"
   },
-  "errorAuthExpired": "인증이 만료되었습니다. 재로그인이 필요합니다",
+  "errorAuthExpired": "인증이 만료됐어요. 재로그인이 필요해요",
   "@errorAuthExpired": {
     "description": "인증 토큰 만료 — 재로그인 유도"
   },
-  "errorNoticesLoadGeneric": "공지사항을 불러오는 중 오류가 발생했습니다",
+  "errorNoticesLoadGeneric": "공지사항을 불러오는 중 오류가 생겼어요",
   "@errorNoticesLoadGeneric": {
     "description": "공지사항 로딩 중 예외가 발생했을 때 표시되는 메시지"
   },
@@ -1892,7 +1892,7 @@
   "@pageNoticesEmpty": {
     "description": "공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지"
   },
-  "errorAreaLoadFailed": "구역 정보를 불러올 수 없습니다",
+  "errorAreaLoadFailed": "구역 정보를 불러오지 못했어요",
   "@errorAreaLoadFailed": {
     "description": "게임 진입 시 area(구역) 정보 로드 실패 안내"
   },
@@ -1917,7 +1917,7 @@
   "@buttonLogout": {
     "description": "로그아웃 공통 버튼 라벨"
   },
-  "errorBugReportFailed": "버그 제보 처리 중 오류가 발생했습니다",
+  "errorBugReportFailed": "버그 제보 처리 중 오류가 생겼어요",
   "@errorBugReportFailed": {
     "description": "버그 제보 처리 중 예외가 발생했을 때 표시되는 메시지"
   },
@@ -1983,7 +1983,7 @@
       }
     }
   },
-  "errorGameJoinUnexpected": "게임 입장 중 예기치 않은 오류가 발생했습니다",
+  "errorGameJoinUnexpected": "게임 입장 중 예기치 않은 오류가 생겼어요",
   "@errorGameJoinUnexpected": {
     "description": "게임 입장 시 발생한 예기치 않은 오류"
   },

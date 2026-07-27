@@ -211,7 +211,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorNetworkTimeout.
   ///
   /// In ko, this message translates to:
-  /// **'서버 연결 시간이 초과되었습니다'**
+  /// **'서버 연결이 너무 오래 걸려요'**
   String get errorNetworkTimeout;
 
   /// No description provided for @errorNetworkOffline.
@@ -223,37 +223,37 @@ abstract class AppLocalizations {
   /// No description provided for @errorServerInternal.
   ///
   /// In ko, this message translates to:
-  /// **'서버에 문제가 발생했습니다'**
+  /// **'서버에 문제가 생겼어요'**
   String get errorServerInternal;
 
   /// No description provided for @errorBadRequest.
   ///
   /// In ko, this message translates to:
-  /// **'잘못된 요청입니다'**
+  /// **'잘못된 요청이에요'**
   String get errorBadRequest;
 
   /// No description provided for @errorUnauthorized.
   ///
   /// In ko, this message translates to:
-  /// **'인증에 실패했습니다'**
+  /// **'인증에 실패했어요'**
   String get errorUnauthorized;
 
   /// No description provided for @errorForbidden.
   ///
   /// In ko, this message translates to:
-  /// **'접근 권한이 없습니다'**
+  /// **'접근 권한이 없어요'**
   String get errorForbidden;
 
   /// No description provided for @errorNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'요청한 정보를 찾을 수 없습니다'**
+  /// **'요청한 정보를 찾을 수 없어요'**
   String get errorNotFound;
 
   /// No description provided for @errorConflict.
   ///
   /// In ko, this message translates to:
-  /// **'요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요'**
+  /// **'요청을 처리할 수 없어요. 잠시 후 다시 시도해주세요'**
   String get errorConflict;
 
   /// No description provided for @buttonConfirm.
@@ -403,7 +403,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorAuthLoginCancelled.
   ///
   /// In ko, this message translates to:
-  /// **'로그인이 취소되었습니다'**
+  /// **'로그인이 취소됐어요'**
   String get errorAuthLoginCancelled;
 
   /// 설정 화면의 언어 설정 메뉴 라벨
@@ -913,13 +913,13 @@ abstract class AppLocalizations {
   /// 게임 방 생성 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'게임 방 생성 중 예기치 않은 오류가 발생했습니다'**
+  /// **'게임 방 생성 중 예기치 않은 오류가 생겼어요'**
   String get errorGameRoomCreateUnexpected;
 
   /// 참여 중인 게임 조회 실패 시 표시되는 예외 메시지
   ///
   /// In ko, this message translates to:
-  /// **'참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다'**
+  /// **'참여 중인 게임 조회 중 예기치 않은 오류가 생겼어요'**
   String get errorActiveGameFetchUnexpected;
 
   /// 게임 설정 — 최대 참가 인원수 표기 (단위: 명)
@@ -949,7 +949,7 @@ abstract class AppLocalizations {
   /// 게임 설정 저장 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'설정 저장에 실패했습니다'**
+  /// **'설정 저장에 실패했어요'**
   String get errorSettingsSaveFailed;
 
   /// 게임 설정 수정 페이지 타이틀
@@ -973,7 +973,7 @@ abstract class AppLocalizations {
   /// 게임 구역 저장 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'영역 저장에 실패했습니다'**
+  /// **'영역 저장에 실패했어요'**
   String get errorAreaSaveFailed;
 
   /// 게임 설정 페이지 타이틀
@@ -985,13 +985,13 @@ abstract class AppLocalizations {
   /// 구역 정보 로드 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'구역 정보를 불러올 수 없습니다'**
+  /// **'구역 정보를 불러오지 못했어요'**
   String get errorZoneInfoLoadFailed;
 
   /// 게임 설정 로드 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'설정 정보를 불러올 수 없습니다'**
+  /// **'설정 정보를 불러오지 못했어요'**
   String get errorSettingsLoadFailed;
 
   /// 공통 — 플레이그라운드 라벨
@@ -1039,13 +1039,13 @@ abstract class AppLocalizations {
   /// 이미 다른 게임에 참가 중일 때 안내
   ///
   /// In ko, this message translates to:
-  /// **'이미 참가 중인 게임이 있습니다'**
+  /// **'이미 참가 중인 게임이 있어요'**
   String get errorAlreadyInGame;
 
   /// 게임 상태를 식별할 수 없을 때 표시
   ///
   /// In ko, this message translates to:
-  /// **'알 수 없는 게임 상태입니다'**
+  /// **'알 수 없는 게임 상태예요'**
   String get errorUnknownGameState;
 
   /// 기기 설정 화면으로 이동하는 버튼
@@ -1075,13 +1075,13 @@ abstract class AppLocalizations {
   /// 방 참여 실패 — 초대 코드 확인 안내
   ///
   /// In ko, this message translates to:
-  /// **'참여에 실패했습니다. 초대 코드를 확인해주세요'**
+  /// **'참여에 실패했어요. 초대 코드를 확인해주세요'**
   String get errorJoinFailedCheckCode;
 
   /// 방 참여 실패 — 일반 재시도 안내
   ///
   /// In ko, this message translates to:
-  /// **'참여에 실패했습니다. 다시 시도해주세요'**
+  /// **'참여에 실패했어요. 다시 시도해주세요'**
   String get errorJoinRetry;
 
   /// 방 참여 다이얼로그 제목
@@ -1159,7 +1159,7 @@ abstract class AppLocalizations {
   /// 방 생성 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'게임 방 생성에 실패했습니다. 다시 시도해주세요'**
+  /// **'게임 방 생성에 실패했어요. 다시 시도해주세요'**
   String get errorCreateRoomFailed;
 
   /// 방 생성 — 구역 미설정 시 안내
@@ -1273,7 +1273,7 @@ abstract class AppLocalizations {
   /// 권한 없음 — 해당 게임 참가자가 아닐 때 안내
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임에 참가하지 않은 사용자입니다'**
+  /// **'해당 게임에 참가하지 않은 사용자예요'**
   String get errorNotInGame;
 
   /// 대기실 튜토리얼 — 팀 변경 버튼 안내
@@ -1339,7 +1339,7 @@ abstract class AppLocalizations {
   /// 참가자 강퇴 실패 시 표시되는 에러 메시지
   ///
   /// In ko, this message translates to:
-  /// **'강퇴 처리 중 오류가 발생했어요'**
+  /// **'강퇴 처리 중 오류가 생겼어요'**
   String get errorKickFailed;
 
   /// 강퇴 알림 다이얼로그 제목
@@ -1399,7 +1399,7 @@ abstract class AppLocalizations {
   /// 대기실 — 퇴장 처리 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'퇴장 처리 중 오류가 발생했습니다'**
+  /// **'퇴장 처리 중 오류가 생겼어요'**
   String get errorLeaveRoomFailed;
 
   /// 초대코드 생성 완료 알림 다이얼로그 타이틀
@@ -1651,73 +1651,73 @@ abstract class AppLocalizations {
   /// 로그아웃 처리 중 일반 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'로그아웃 중 오류가 발생했습니다'**
+  /// **'로그아웃 중 오류가 생겼어요'**
   String get errorLogoutGeneric;
 
   /// Firebase 인증 — 사용자 정보 조회 실패
   ///
   /// In ko, this message translates to:
-  /// **'로그인 정보를 가져올 수 없습니다. 다시 시도해주세요'**
+  /// **'로그인 정보를 가져올 수 없어요. 다시 시도해주세요'**
   String get errorAuthUserNotFound;
 
   /// Firebase 인증 — 토큰 발급 실패
   ///
   /// In ko, this message translates to:
-  /// **'인증에 실패했습니다. 다시 시도해주세요'**
+  /// **'인증에 실패했어요. 다시 시도해주세요'**
   String get errorAuthTokenIssueFailed;
 
   /// Firebase 인증 — 토큰 검증 실패
   ///
   /// In ko, this message translates to:
-  /// **'로그인 정보가 만료되었습니다. 다시 로그인해주세요'**
+  /// **'로그인 정보가 만료됐어요. 다시 로그인해주세요'**
   String get errorAuthTokenValidationFailed;
 
   /// Firebase 인증 — 잘못된 인증 정보
   ///
   /// In ko, this message translates to:
-  /// **'잘못된 인증 정보입니다'**
+  /// **'잘못된 인증 정보예요'**
   String get errorAuthInvalidCredential;
 
   /// Firebase 인증 — 비활성화된 계정
   ///
   /// In ko, this message translates to:
-  /// **'비활성화된 계정입니다'**
+  /// **'비활성화된 계정이에요'**
   String get errorAuthAccountDisabled;
 
   /// Firebase 인증 — 요청 과다 (rate limit)
   ///
   /// In ko, this message translates to:
-  /// **'너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'너무 많은 요청이 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorAuthTooManyRequests;
 
   /// Firebase 인증 — 비활성화된 로그인 방법
   ///
   /// In ko, this message translates to:
-  /// **'이 로그인 방법은 현재 사용할 수 없습니다'**
+  /// **'이 로그인 방법은 현재 사용할 수 없어요'**
   String get errorAuthSignInMethodUnavailable;
 
   /// Firebase 인증 — 설정 오류 (API 키 등)
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorAuthFirebaseConfig;
 
   /// Firebase 인증 — 내부 오류
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorAuthFirebaseInternal;
 
   /// Firebase 인증 — 특정 provider 로그인 실패 (Google/Apple 등)
   ///
   /// In ko, this message translates to:
-  /// **'{provider} 로그인에 실패했습니다. 다시 시도해주세요'**
+  /// **'{provider} 로그인에 실패했어요. 다시 시도해주세요'**
   String errorAuthProviderLoginFailed(String provider);
 
   /// Firebase 인증 — 일반 로그인 실패 (provider 미지정)
   ///
   /// In ko, this message translates to:
-  /// **'로그인에 실패했습니다. 다시 시도해주세요'**
+  /// **'로그인에 실패했어요. 다시 시도해주세요'**
   String get errorAuthLoginFailed;
 
   /// 마케팅 정보 수신 동의 링크 라벨
@@ -1777,19 +1777,19 @@ abstract class AppLocalizations {
   /// 로그인 처리 중 발생한 일반 오류
   ///
   /// In ko, this message translates to:
-  /// **'로그인 중 오류가 발생했습니다'**
+  /// **'로그인 중 오류가 생겼어요'**
   String get errorLoginGeneric;
 
   /// Apple 로그인 전용 오류 메시지
   ///
   /// In ko, this message translates to:
-  /// **'Apple 로그인 중 오류가 발생했습니다'**
+  /// **'Apple 로그인 중 오류가 생겼어요'**
   String get errorAppleLoginFailed;
 
   /// 만 14세 미만 가입 차단 안내
   ///
   /// In ko, this message translates to:
-  /// **'만 14세 미만은 서비스를 이용할 수 없습니다'**
+  /// **'만 14세 미만은 서비스를 이용할 수 없어요'**
   String get errorAgeRestrictionUnder14;
 
   /// 로그인 페이지 로고 아래 표시되는 앱 한 줄 소개 카피
@@ -1921,13 +1921,13 @@ abstract class AppLocalizations {
   /// 원인을 특정할 수 없는 일반 오류 메시지 (auth fallback 등)
   ///
   /// In ko, this message translates to:
-  /// **'알 수 없는 오류가 발생했습니다'**
+  /// **'알 수 없는 오류가 생겼어요'**
   String get errorUnknown;
 
   /// 로그아웃 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'로그아웃에 실패했습니다'**
+  /// **'로그아웃에 실패했어요'**
   String get errorLogoutFailed;
 
   /// 약관 — 전체 동의 체크박스 라벨
@@ -2035,7 +2035,7 @@ abstract class AppLocalizations {
   /// 체포 실패 — 경찰 대기 시간 중
   ///
   /// In ko, this message translates to:
-  /// **'경찰 대기 시간 중에는 도둑을 체포할 수 없습니다'**
+  /// **'경찰 대기 시간 중에는 도둑을 체포할 수 없어요'**
   String get errorCannotArrestDuringWait;
 
   /// 도둑 수배 QR 스캐너 페이지 타이틀
@@ -2047,13 +2047,13 @@ abstract class AppLocalizations {
   /// QR 스캔 실패 — QR 만료
   ///
   /// In ko, this message translates to:
-  /// **'만료된 QR입니다. QR 새로고침을 요청하세요'**
+  /// **'만료된 QR이에요. QR 새로고침을 요청하세요'**
   String get errorExpiredQr;
 
   /// 체포 실패 — 이미 체포된 도둑
   ///
   /// In ko, this message translates to:
-  /// **'이미 체포된 도둑입니다'**
+  /// **'이미 체포된 도둑이에요'**
   String get errorAlreadyArrested;
 
   /// 체포된 도둑에게 표시되는 잠금 오버레이 타이틀
@@ -2275,7 +2275,7 @@ abstract class AppLocalizations {
   /// QR 스캐너 — 카메라 초기화 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'카메라를 사용할 수 없습니다'**
+  /// **'카메라를 사용할 수 없어요'**
   String get errorCameraUnavailable;
 
   /// 플레이 영역 이탈 시 표시되는 배너
@@ -2520,7 +2520,7 @@ abstract class AppLocalizations {
   /// 일시적 오류 발생 시 재시도 유도 공통 메시지
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 다시 시도해주세요'**
   String get errorTemporaryRetry;
 
   /// 이용약관/정책 설정 페이지 타이틀
@@ -2532,7 +2532,7 @@ abstract class AppLocalizations {
   /// 약관 동의 정보 조회 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'약관 동의 현황을 불러올 수 없습니다'**
+  /// **'약관 동의 현황을 불러오지 못했어요'**
   String get errorAgreementLoadFailed;
 
   /// 재시도 공통 버튼 라벨
@@ -2550,7 +2550,7 @@ abstract class AppLocalizations {
   /// 법적 문서(약관/정책) 로드 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'문서를 불러올 수 없습니다'**
+  /// **'문서를 불러오지 못했어요'**
   String get errorLegalDocumentLoadFailed;
 
   /// 설정 페이지 AppBar 타이틀
@@ -3156,7 +3156,7 @@ abstract class AppLocalizations {
   /// 신고 처리 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'신고 처리 중 오류가 발생했습니다'**
+  /// **'신고 처리 중 오류가 생겼어요'**
   String get errorReportGeneric;
 
   /// 신고 카테고리 — 낚시/놀람/도배 (ReportCategory.bait)
@@ -3204,73 +3204,73 @@ abstract class AppLocalizations {
   /// 닉네임 중복 확인 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'닉네임 확인 중 예기치 않은 오류가 발생했습니다'**
+  /// **'닉네임 확인 중 예기치 않은 오류가 생겼어요'**
   String get errorNicknameCheckUnexpected;
 
   /// 닉네임 변경 실패 시 표시되는 예외 메시지
   ///
   /// In ko, this message translates to:
-  /// **'닉네임 변경 중 예기치 않은 오류가 발생했습니다'**
+  /// **'닉네임 변경 중 예기치 않은 오류가 생겼어요'**
   String get errorNicknameUpdateUnexpected;
 
   /// 사용자 정보 조회 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'사용자 정보 조회 중 오류가 발생했습니다'**
+  /// **'사용자 정보 조회 중 오류가 생겼어요'**
   String get errorUserInfoFetch;
 
   /// 회원 탈퇴 처리 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'회원 탈퇴 중 예기치 않은 오류가 발생했습니다'**
+  /// **'회원 탈퇴 중 예기치 않은 오류가 생겼어요'**
   String get errorDeleteAccountUnexpected;
 
   /// 약관 동의 상태 조회 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다'**
+  /// **'약관 동의 상태 조회 중 예기치 않은 오류가 생겼어요'**
   String get errorAgreementFetchUnexpected;
 
   /// 약관 동의 저장 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'약관 동의 저장 중 예기치 않은 오류가 발생했습니다'**
+  /// **'약관 동의 저장 중 예기치 않은 오류가 생겼어요'**
   String get errorAgreementSaveUnexpected;
 
   /// 게임 푸시 알림 동의 조회 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다'**
+  /// **'게임 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요'**
   String get errorGamePushFetchUnexpected;
 
   /// 게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다'**
+  /// **'게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 생겼어요'**
   String get errorGamePushUpdateUnexpected;
 
   /// 인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후
   ///
   /// In ko, this message translates to:
-  /// **'로그인 정보를 확인할 수 없습니다. 다시 로그인해주세요'**
+  /// **'로그인 정보를 확인할 수 없어요. 다시 로그인해주세요'**
   String get errorAuthTokenMissing;
 
   /// 서버 연결 실패 — STOMP/REST 모두 실패 시 재시도 권장 안내
   ///
   /// In ko, this message translates to:
-  /// **'서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요'**
+  /// **'서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요'**
   String get errorServerUnreachable;
 
   /// 인증 토큰 만료 — 재로그인 유도
   ///
   /// In ko, this message translates to:
-  /// **'인증이 만료되었습니다. 재로그인이 필요합니다'**
+  /// **'인증이 만료됐어요. 재로그인이 필요해요'**
   String get errorAuthExpired;
 
   /// 공지사항 로딩 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'공지사항을 불러오는 중 오류가 발생했습니다'**
+  /// **'공지사항을 불러오는 중 오류가 생겼어요'**
   String get errorNoticesLoadGeneric;
 
   /// 공지사항 로딩 중 표시되는 안내
@@ -3300,7 +3300,7 @@ abstract class AppLocalizations {
   /// 게임 진입 시 area(구역) 정보 로드 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'구역 정보를 불러올 수 없습니다'**
+  /// **'구역 정보를 불러오지 못했어요'**
   String get errorAreaLoadFailed;
 
   /// 404 페이지 AppBar 제목
@@ -3330,7 +3330,7 @@ abstract class AppLocalizations {
   /// 버그 제보 처리 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'버그 제보 처리 중 오류가 발생했습니다'**
+  /// **'버그 제보 처리 중 오류가 생겼어요'**
   String get errorBugReportFailed;
 
   /// START 1단계 — 제한 시간 안내
@@ -3396,7 +3396,7 @@ abstract class AppLocalizations {
   /// 게임 입장 시 발생한 예기치 않은 오류
   ///
   /// In ko, this message translates to:
-  /// **'게임 입장 중 예기치 않은 오류가 발생했습니다'**
+  /// **'게임 입장 중 예기치 않은 오류가 생겼어요'**
   String get errorGameJoinUnexpected;
 
   /// 다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)
