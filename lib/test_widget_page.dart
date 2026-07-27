@@ -986,7 +986,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                         child: Container(
                           width: 92.w,
                           height: 108.w,
-                          color: const Color(0xFFB1BCC8),
+                          color: AppColors.black300,
                         ),
                       ),
                       nickname: '닉네임',
