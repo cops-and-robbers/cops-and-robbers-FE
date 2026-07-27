@@ -20,17 +20,25 @@ import '../../../game/data/models/game_area_model.dart';
 /// 반응성을 확보하되, squash-stretch가 읽힐 최소 시간은 확보한다. 선택 변경 시
 /// 가장 약한 selectionClick 햅틱으로 시각·촉각을 교차 강화한다.
 ///
-/// 디자인 스펙: w350×h40, radius 38(pill), 배경 black100, 선택 세그먼트는
-/// 내부 5 인셋의 white pill.
+/// 디자인 스펙: w350×h40, radius 38(pill), 트랙 배경 black100(다크 black800),
+/// 선택 세그먼트는 내부 5 인셋의 white pill.
+///
+/// 대기방에서 방 설정을 변경할 때는 도둑 팀이 다크 배경(black900) 위에서 이 토글을
+/// 보게 된다. 트랙을 라이트 그대로 두면 white pill과 대비가 1.09:1 밖에 안 나와
+/// 선택 위치가 읽히지 않으므로 [isDarkMode] 로 트랙과 비선택 라벨만 분기한다.
 class AreaTypeToggle extends StatefulWidget {
   const AreaTypeToggle({
     super.key,
     required this.selected,
     required this.onChanged,
+    this.isDarkMode = false,
   });
 
   final GameAreaType selected;
   final ValueChanged<GameAreaType> onChanged;
+
+  /// 다크(도둑) 테마 여부
+  final bool isDarkMode;
 
   @override
   State<AreaTypeToggle> createState() => _AreaTypeToggleState();
@@ -95,7 +103,8 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
       // 선택 pill 인셋 5 (디자인 스펙 — AppSpacing에 5 없음, ScreenUtil 직접 사용)
       padding: EdgeInsets.all(5.r),
       decoration: BoxDecoration(
-        color: AppColors.black100,
+        // 다크 트랙은 같은 화면의 반경 슬라이더(zone_setting_widget)와 같은 black800
+        color: widget.isDarkMode ? AppColors.black800 : AppColors.black100,
         borderRadius: AppRadius.pill,
       ),
       child: ClipRRect(
@@ -121,7 +130,12 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
                       scaleY: 1 - _squashY * stretch,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          color: AppColors.white,
+                          // 다크에서 white pill 은 트랙 대비 11:1 로 화면에서 가장
+                          // 밝은 덩어리가 된다. 선택 위치는 그대로 읽히면서 눈에
+                          // 덜 튀도록 한 단계 낮춘다.
+                          color: widget.isDarkMode
+                              ? AppColors.black200
+                              : AppColors.white,
                           borderRadius: AppRadius.pill,
                         ),
                       ),
@@ -171,7 +185,13 @@ class _AreaTypeToggleState extends State<AreaTypeToggle>
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeOut,
               style: AppTextStyles.paragraph_14.copyWith(
-                color: isSelected ? AppColors.black800 : AppColors.black400,
+                // 선택 라벨은 흰 pill 위라 분기 불필요. 비선택은 트랙 위에 얹히므로
+                // 다크(black800 트랙)에서 black400은 4.33:1로 대비가 모자라 한 단계 밝힌다.
+                color: isSelected
+                    ? AppColors.black800
+                    : (widget.isDarkMode
+                          ? AppColors.black300
+                          : AppColors.black400),
               ),
               child: Text(label),
             ),

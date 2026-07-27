@@ -80,8 +80,8 @@ Scaffold(background=white)
 │   ├─ 우측 정렬 아이콘 2개
 │   │   ├─ 공지 (icon_notice.svg)         → context.push('/home/notices')
 │   │   └─ Top hat (Top_hat.svg)          → "준비중입니다" 스낵바
-│   ├─ SpeechBubble("너무 기대 돼\n이번에는 어떤 역할을 할까?")
-│   └─ Image(app_icon.png) 240×240
+│   ├─ SpeechBubble("누가 내 치즈\n훔쳐갔어!!!!🧀")
+│   └─ HomeCharacterStack(경찰+도둑 SVG) 280×200
 ├─ 하단 버튼 2개
 │   ├─ [방 만들기]    → /home/create-session
 │   └─ [방 참여하기]  → 초대 코드 입력 다이얼로그 → API → /waiting-room/:id

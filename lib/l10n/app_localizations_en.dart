@@ -611,10 +611,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homePageWelcomeMessage => 'Who stole\nMy cheese!!!!🧀';
 
   @override
-  String get homePageWelcomeMessageClassic =>
-      'I am so excited\nWhat role will I play this time?';
-
-  @override
   String get buttonCreateRoom => 'Create room';
 
   @override

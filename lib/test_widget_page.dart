@@ -983,11 +983,10 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                       showAvatar: true,
                       avatarWidget: ClipRRect(
                         borderRadius: AppRadius.large,
-                        child: Image.asset(
-                          'assets/app_icon.png',
+                        child: Container(
                           width: 92.w,
                           height: 108.w,
-                          fit: BoxFit.cover,
+                          color: AppColors.black300,
                         ),
                       ),
                       nickname: '닉네임',
