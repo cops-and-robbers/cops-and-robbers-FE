@@ -8,7 +8,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../providers/game_event_provider.dart';
 import 'game_action_modal.dart';
@@ -36,7 +35,6 @@ class ArrestLockOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final skinId = ref.watch(characterSkinProvider);
     return Positioned.fill(
       child: Container(
         // 배경: black 40% 반투명 딤 처리
@@ -58,14 +56,13 @@ class ArrestLockOverlay extends ConsumerWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // 도둑 수감 캐릭터 — 글로벌 스킨(default/classic) 반영
+                    // 도둑 수감 캐릭터
                     SizedBox(
                       width: 92.w,
                       height: 108.h,
                       child: SvgPicture.asset(
                         characterAssetPath(
                           team: GameTeam.toLowerKey(GameTeam.robber),
-                          skinId: skinId,
                           state: 'jailed',
                         ),
                         fit: BoxFit.contain,

@@ -8,7 +8,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/constants/character_assets.dart';
-import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/utils/widget_capture_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -199,7 +198,6 @@ class MyRecordCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final record = ref.watch(playerGameRecordNotifierProvider);
-    final skinId = ref.watch(characterSkinProvider);
     final isRobber = GameTeam.isRobber(myTeam);
     final isWin = myTeam == winnerTeam;
 
@@ -306,7 +304,6 @@ class MyRecordCard extends ConsumerWidget {
                     child: SvgPicture.asset(
                       resultCharacterAssetPath(
                         team: myTeam.toLowerCase(),
-                        skinId: skinId,
                         result: isWin ? 'win' : 'lose',
                         part: 'body',
                       ),
