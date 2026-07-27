@@ -161,10 +161,9 @@ flutter_launcher_icons:
   # ⚠️ Android는 로케일별 activity-alias 아이콘(ic_launcher_{en,ko,ja})을 손으로 관리한다.
   # 이 생성기를 android:true로 재실행하면 ic_launcher* 및 로케일 변형을 덮어쓰므로 금지.
   # 아이콘 변경 시 res/ 리소스를 직접 수정할 것. (이슈 #383)
+  # android:false 이므로 adaptive_icon_* 은 두지 않는다.
   android: false
   ios: true
-  image_path: "assets/app_icon_1024.png" # Android 폴백(기존 유지)
+  image_path: "assets/app_icons/app_icon_en.png"
   image_path_ios: "assets/app_icons/app_icon_en.png" # iOS Primary = 영어
-  adaptive_icon_background: "#FFFFFF" # Android 전용 배경 (흰색)
-  adaptive_icon_foreground: "assets/app_icon_1024.png"
   remove_alpha_ios: true # iOS는 알파 제거 후 단색 배경
