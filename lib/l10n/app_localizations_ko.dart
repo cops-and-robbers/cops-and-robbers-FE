@@ -2013,7 +2013,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameLeaveConfirmTitle => '게임에서 나갈까요?';
 
   @override
-  String get gameLeaveConfirmMessage => '나가면 다시 게임에 참여할 수 없어요';
+  String get gameLeaveConfirmMessage => '진행 중인 게임에서 나가게 돼요';
 
   @override
   String get gameLeaveFailedMessage => '퇴장하지 못했어요. 잠시 후 다시 시도해주세요';

@@ -2125,7 +2125,7 @@
   "@gameLeaveConfirmTitle": {
     "description": "인게임 중도 퇴장 확인 다이얼로그 타이틀"
   },
-  "gameLeaveConfirmMessage": "나가면 다시 게임에 참여할 수 없어요",
+  "gameLeaveConfirmMessage": "진행 중인 게임에서 나가게 돼요",
   "@gameLeaveConfirmMessage": {
     "description": "인게임 중도 퇴장 확인 다이얼로그 본문"
   },

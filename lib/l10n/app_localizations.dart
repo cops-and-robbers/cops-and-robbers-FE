@@ -3912,7 +3912,7 @@ abstract class AppLocalizations {
   /// 인게임 중도 퇴장 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'나가면 다시 게임에 참여할 수 없어요'**
+  /// **'진행 중인 게임에서 나가게 돼요'**
   String get gameLeaveConfirmMessage;
 
   /// 인게임 중도 퇴장 실패 시 스낵바 메시지
