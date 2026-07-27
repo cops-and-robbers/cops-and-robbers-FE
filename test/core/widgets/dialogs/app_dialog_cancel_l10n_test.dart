@@ -36,7 +36,7 @@ Future<BuildContext> _pump(WidgetTester tester, Locale locale) async {
 
 void main() {
   group('AppDialog 버튼 현지화 (Guideline 4 재리젝 회귀 방지)', () {
-    testWidgets('영어 로케일 + cancelText 생략 → "Cancel" 노출, "취소" 아님', (
+    testWidgets('영어 로케일 + cancelText 생략 → "Close" 노출, "취소" 아님', (
       tester,
     ) async {
       final ctx = await _pump(tester, const Locale('en'));
@@ -45,18 +45,18 @@ void main() {
       AppDialog.confirm(context: ctx, title: 'Leave?', confirmText: 'Leave');
       await tester.pumpAndSettle();
 
-      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
       expect(find.text('취소'), findsNothing);
       expect(find.text('Leave'), findsOneWidget);
     });
 
-    testWidgets('한국어 로케일 + cancelText 생략 → "취소" 노출', (tester) async {
+    testWidgets('한국어 로케일 + cancelText 생략 → "닫기" 노출', (tester) async {
       final ctx = await _pump(tester, const Locale('ko'));
 
       AppDialog.confirm(context: ctx, title: '나갈까요?', confirmText: '나가기');
       await tester.pumpAndSettle();
 
-      expect(find.text('취소'), findsOneWidget);
+      expect(find.text('닫기'), findsOneWidget);
     });
 
     testWidgets('영어 로케일 + confirmText도 생략 → "Confirm" 노출, "확인" 아님', (
@@ -68,7 +68,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Confirm'), findsOneWidget);
-      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
       expect(find.text('확인'), findsNothing);
     });
   });

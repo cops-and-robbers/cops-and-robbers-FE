@@ -56,7 +56,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.wifi_off_rounded), findsOneWidget);
-      expect(find.text('인터넷 연결이 필요합니다'), findsOneWidget);
+      expect(find.text('인터넷 연결이 필요해요'), findsOneWidget);
       expect(find.text('다시 시도'), findsOneWidget);
 
       await fakeConnectivity.dispose();
@@ -81,7 +81,7 @@ class _OfflineViewHarness extends StatelessWidget {
             children: [
               const Icon(Icons.wifi_off_rounded, size: 72),
               const SizedBox(height: 24),
-              const Text('인터넷 연결이 필요합니다'),
+              const Text('인터넷 연결이 필요해요'),
               const SizedBox(height: 8),
               const Text('연결 상태를 확인한 후\n다시 시도해주세요'),
               const SizedBox(height: 32),

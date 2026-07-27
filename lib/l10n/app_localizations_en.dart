@@ -102,7 +102,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonConfirm => 'Confirm';
 
   @override
-  String get buttonCancel => 'Cancel';
+  String get buttonCancel => 'Close';
 
   @override
   String get dialogReconnectMessage =>
@@ -1098,7 +1098,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameOverReasonRobberForfeited => 'All Robbers have left the game!';
 
   @override
-  String get gameOverFallbackMessage => 'The game has ended.';
+  String get gameOverFallbackMessage => 'The game has ended';
 
   @override
   String get gameTeamCop => 'Cop team';
@@ -1846,7 +1846,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String gameEventStartTime(int minutes) {
-    return 'The time limit is $minutes minutes.';
+    return 'The time limit is $minutes minutes';
   }
 
   @override
@@ -1855,7 +1855,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameEventStartReportTip =>
-      'Long-press a chat message during the game to report or block players.';
+      'Long-press a chat message during the game to report or block players';
 
   @override
   String get gameEventStartGo => 'Game start!  Good luck!';
@@ -1945,7 +1945,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'The request parameter type is invalid';
 
   @override
-  String get errorCodeInvalidInputValue => 'The input failed validation';
+  String get errorCodeInvalidInputValue =>
+      'The value you entered doesn\'t meet the requirements';
 
   @override
   String get errorCodeInvalidDestination => 'Invalid connection path';

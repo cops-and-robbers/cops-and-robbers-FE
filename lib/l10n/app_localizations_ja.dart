@@ -96,7 +96,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonConfirm => '確認';
 
   @override
-  String get buttonCancel => 'キャンセル';
+  String get buttonCancel => '閉じる';
 
   @override
   String get dialogReconnectMessage => '接続が途切れました。再接続が必要です';
@@ -1000,7 +1000,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameOverReasonRobberForfeited => '泥棒が全員退場しました！';
 
   @override
-  String get gameOverFallbackMessage => 'ゲームが終了しました。';
+  String get gameOverFallbackMessage => 'ゲームが終了しました';
 
   @override
   String get gameTeamCop => '警察チーム';
@@ -1711,14 +1711,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String gameEventStartTime(int minutes) {
-    return '制限時間は$minutes分です。';
+    return '制限時間は$minutes分です';
   }
 
   @override
   String get gameEventStartReady => 'まもなくゲームが始まります。  全プレイヤーは準備してください!';
 
   @override
-  String get gameEventStartReportTip => 'ゲーム中、チャットを長押しすると不快なユーザーを通報・ブロックできます。';
+  String get gameEventStartReportTip => 'ゲーム中、チャットを長押しすると不快なユーザーを通報・ブロックできます';
 
   @override
   String get gameEventStartGo => 'ゲーム開始!  幸運を!';
@@ -1798,7 +1798,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeQueryParameterTypeMismatch => 'リクエストパラメータの型が正しくありません';
 
   @override
-  String get errorCodeInvalidInputValue => '入力値が検証を通過しませんでした';
+  String get errorCodeInvalidInputValue => '入力値が条件に合いません';
 
   @override
   String get errorCodeInvalidDestination => '接続先が正しくありません';
