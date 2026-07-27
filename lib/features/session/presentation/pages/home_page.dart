@@ -28,7 +28,6 @@ import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/theme/character_skin_provider.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
@@ -605,12 +604,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     SizedBox(height: 134.h),
 
                     // ── Speech Bubble ──
-                    // 클래식 스킨(이스터에그)일 때는 옛 환영 메시지, 기본은 치즈 메시지
-                    SpeechBubble(
-                      text: ref.watch(characterSkinProvider) == 'classic'
-                          ? l10n.homePageWelcomeMessageClassic
-                          : l10n.homePageWelcomeMessage,
-                    ),
+                    SpeechBubble(text: l10n.homePageWelcomeMessage),
 
                     SizedBox(height: AppSpacing.vertical40),
 
