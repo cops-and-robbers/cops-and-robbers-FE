@@ -12,14 +12,14 @@
   "permissionLocationFallbackTitle": "위치 권한 안내",
   "permissionLocationFallbackMessage": "위치 권한을 허용해주세요",
   "dialogUpdateOptionalTitle": "새 버전 안내",
-  "dialogUpdateOptionalMessage": "더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?",
+  "dialogUpdateOptionalMessage": "더 좋아진 새 버전이 있어요\n업데이트할까요?",
   "dialogUpdateOptionalConfirm": "업데이트",
   "dialogUpdateOptionalCancel": "나중에",
   "dialogUpdateMandatoryTitle": "업데이트 안내",
-  "dialogUpdateMandatoryMessage": "새로운 버전이 출시되었어요.\n업데이트하시겠어요?",
+  "dialogUpdateMandatoryMessage": "새로운 버전이 나왔어요\n업데이트할까요?",
   "dialogUpdateMandatoryConfirm": "업데이트",
   "dialogUpdateMandatoryCancel": "나중에",
-  "chatSystemGameStartTime": "제한 시간은 {minutes}분입니다",
+  "chatSystemGameStartTime": "제한 시간은 {minutes}분이에요",
   "@chatSystemGameStartTime": {
     "placeholders": {
       "minutes": {
@@ -27,7 +27,7 @@
       }
     }
   },
-  "chatSystemGameStartReportTip": "게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다",
+  "chatSystemGameStartReportTip": "게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요",
   "chatSystemPoliceMoveWarning": "경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!",
   "chatSystemRemainingRobbers": "현재 {count}명 도주 중!",
   "@chatSystemRemainingRobbers": {
@@ -37,7 +37,7 @@
       }
     }
   },
-  "chatSystemFiveMinutesLeft": "게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!",
+  "chatSystemFiveMinutesLeft": "게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!",
   "errorNetworkTimeout": "서버 연결이 너무 오래 걸려요",
   "errorNetworkOffline": "네트워크 연결을 확인하세요",
   "errorServerInternal": "서버에 문제가 생겼어요",
@@ -205,7 +205,7 @@
   "@asset_loading_easterEggVersionSecret": {
     "description": "로딩 화면 이스터에그 힌트 — 버전 번호 비밀 (9개 카테고리 공용)"
   },
-  "asset_locationpermission_serviceDisabledTitle": "위치 서비스가 꺼져 있습니다",
+  "asset_locationpermission_serviceDisabledTitle": "위치 서비스가 꺼져 있어요",
   "asset_locationpermission_serviceDisabledHome": "게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요",
   "asset_locationpermission_serviceDisabledGame": "게임에 복귀하려면 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
   "asset_locationpermission_serviceDisabledWaitingRoom": "게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요",
@@ -369,7 +369,7 @@
   "@appBrandName": {
     "description": "앱 브랜드명 — ko: 한글 '경찰과도둑', en: 영문 'Cops and Robbers', ja: 일본 현지명 'ケイドロ'"
   },
-  "messageComingSoon": "준비중입니다",
+  "messageComingSoon": "준비 중이에요",
   "@messageComingSoon": {
     "description": "미구현 기능 안내 메시지"
   },
@@ -555,7 +555,7 @@
   "@errorGameStartFailed": {
     "description": "대기실 — 게임 시작 실패 안내"
   },
-  "dialogLeaveRoomTitle": "방을 나가시겠어요?",
+  "dialogLeaveRoomTitle": "방을 나갈까요?",
   "@dialogLeaveRoomTitle": {
     "description": "대기실 퇴장 확인 다이얼로그 타이틀"
   },
@@ -579,7 +579,7 @@
   "@dialogInviteCodeShareMessage": {
     "description": "초대코드 공유 다이얼로그 본문"
   },
-  "messageCodeCopied": "코드가 복사되었습니다",
+  "messageCodeCopied": "코드를 복사했어요",
   "@messageCodeCopied": {
     "description": "초대코드 클립보드 복사 완료 안내"
   },
@@ -804,7 +804,7 @@
   "@errorRequiredAgreementsMissing": {
     "description": "필수 약관 미동의 안내"
   },
-  "messageAccountDeleted": "회원탈퇴가 완료되었습니다",
+  "messageAccountDeleted": "회원탈퇴를 완료했어요",
   "@messageAccountDeleted": {
     "description": "회원 탈퇴 완료 토스트"
   },
@@ -940,23 +940,23 @@
   "@gameOverBannerTitle": {
     "description": "게임 종료 시 화면 상단에 표시되는 배너 타이틀"
   },
-  "gameOverReasonAllArrested": "도둑이 모두 체포되었습니다!",
+  "gameOverReasonAllArrested": "도둑이 모두 체포됐어요!",
   "@gameOverReasonAllArrested": {
     "description": "게임 종료 사유 — 도둑 전원 체포로 종료"
   },
-  "gameOverReasonTimeUp": "제한 시간이 종료되었습니다!",
+  "gameOverReasonTimeUp": "제한 시간이 끝났어요!",
   "@gameOverReasonTimeUp": {
     "description": "게임 종료 사유 — 제한 시간 만료"
   },
-  "gameOverReasonPoliceForfeited": "경찰이 모두 퇴장했습니다!",
+  "gameOverReasonPoliceForfeited": "경찰이 모두 퇴장했어요!",
   "@gameOverReasonPoliceForfeited": {
     "description": "게임 종료 사유 — 경찰 전원 퇴장(몰수)으로 도둑 승리"
   },
-  "gameOverReasonRobberForfeited": "도둑이 모두 퇴장했습니다!",
+  "gameOverReasonRobberForfeited": "도둑이 모두 퇴장했어요!",
   "@gameOverReasonRobberForfeited": {
     "description": "게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리"
   },
-  "gameOverFallbackMessage": "게임이 종료되었습니다.",
+  "gameOverFallbackMessage": "게임이 끝났어요",
   "@gameOverFallbackMessage": {
     "description": "GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지"
   },
@@ -976,7 +976,7 @@
   "@gameResultLose": {
     "description": "게임 결과 — 패배"
   },
-  "messageGameOverWinner": "{winnerTeamLabel}의 승리입니다!",
+  "messageGameOverWinner": "{winnerTeamLabel}의 승리예요!",
   "@messageGameOverWinner": {
     "description": "게임 종료 다이얼로그 메시지 — 승리팀 안내"
   },
@@ -1123,7 +1123,7 @@
   "@buttonYes": {
     "description": "공통 — 긍정 응답 버튼"
   },
-  "dialogEscapeAttemptMessage": "탈옥을 시도하시겠습니까?",
+  "dialogEscapeAttemptMessage": "탈옥할까요?",
   "@dialogEscapeAttemptMessage": {
     "description": "탈옥 시도 확인 다이얼로그 본문"
   },
@@ -1185,7 +1185,7 @@
   "@chatTeamPrefix": {
     "description": "팀 채팅 메시지 prefix 라벨 (예: [팀])"
   },
-  "chatSystemGameTimeLimit30Min": "제한 시간은 30분입니다",
+  "chatSystemGameTimeLimit30Min": "제한 시간은 30분이에요",
   "@chatSystemGameTimeLimit30Min": {
     "description": "더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)"
   },
@@ -1510,15 +1510,15 @@
   "@dialogLogoutTitle": {
     "description": "로그아웃 확인 다이얼로그 제목"
   },
-  "dialogLogoutMessage": "정말 로그아웃 하시겠어요?",
+  "dialogLogoutMessage": "정말 로그아웃할까요?",
   "@dialogLogoutMessage": {
     "description": "로그아웃 확인 다이얼로그 본문"
   },
-  "snackbarLogoutFailed": "로그아웃에 실패했습니다",
+  "snackbarLogoutFailed": "로그아웃에 실패했어요",
   "@snackbarLogoutFailed": {
     "description": "로그아웃 실패 스낵바 메시지"
   },
-  "snackbarLogoutSuccess": "로그아웃되었습니다",
+  "snackbarLogoutSuccess": "로그아웃했어요",
   "@snackbarLogoutSuccess": {
     "description": "로그아웃 성공 스낵바 메시지"
   },
@@ -1526,7 +1526,7 @@
   "@dialogDeleteAccountTitle": {
     "description": "회원 탈퇴 확인 다이얼로그 제목"
   },
-  "dialogDeleteAccountMessage": "탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요",
+  "dialogDeleteAccountMessage": "탈퇴하면 모든 데이터가 사라지고\n되돌릴 수 없어요\n\n계속하려면 \"delete\"를 입력하세요",
   "@dialogDeleteAccountMessage": {
     "description": "회원 탈퇴 확인 다이얼로그 본문 — 비가역성 경고 + 확인 키워드 입력 요구"
   },
@@ -1888,7 +1888,7 @@
   "@pageNoticesTitle": {
     "description": "공지사항 페이지 AppBar 제목"
   },
-  "pageNoticesEmpty": "등록된 공지사항이 없습니다",
+  "pageNoticesEmpty": "등록된 공지사항이 없어요",
   "@pageNoticesEmpty": {
     "description": "공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지"
   },
@@ -1896,11 +1896,11 @@
   "@errorAreaLoadFailed": {
     "description": "게임 진입 시 area(구역) 정보 로드 실패 안내"
   },
-  "pageNotFoundTitle": "페이지를 찾을 수 없습니다",
+  "pageNotFoundTitle": "페이지를 찾을 수 없어요",
   "@pageNotFoundTitle": {
     "description": "404 페이지 AppBar 제목"
   },
-  "pageNotFoundMessage": "요청하신 페이지가 존재하지 않습니다",
+  "pageNotFoundMessage": "요청하신 페이지가 없어요",
   "@pageNotFoundMessage": {
     "description": "404 페이지 본문 — 잘못된 경로 진입 시 안내"
   },
@@ -1921,7 +1921,7 @@
   "@errorBugReportFailed": {
     "description": "버그 제보 처리 중 예외가 발생했을 때 표시되는 메시지"
   },
-  "gameEventStartTime": "제한 시간은 {minutes}분입니다.",
+  "gameEventStartTime": "제한 시간은 {minutes}분이에요",
   "@gameEventStartTime": {
     "description": "START 1단계 — 제한 시간 안내",
     "placeholders": {
@@ -1934,7 +1934,7 @@
   "@gameEventStartReady": {
     "description": "START 2단계 — 게임 시작 예고"
   },
-  "gameEventStartReportTip": "게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.",
+  "gameEventStartReportTip": "게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요",
   "@gameEventStartReportTip": {
     "description": "START 3단계 — 신고/차단 안내"
   },
@@ -1950,7 +1950,7 @@
   "@gameEventLocationReveal": {
     "description": "도둑 위치 공개 안내"
   },
-  "gameEventArrestNotice": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!",
+  "gameEventArrestNotice": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했어요!",
   "@gameEventArrestNotice": {
     "description": "체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환",
     "placeholders": {
@@ -1962,7 +1962,7 @@
       }
     }
   },
-  "gameEventEscapeNotice": "도둑이 탈옥했습니다! 지금 바로 체포하세요!",
+  "gameEventEscapeNotice": "도둑이 탈옥했어요! 지금 바로 체포하세요!",
   "@gameEventEscapeNotice": {
     "description": "탈옥 공지"
   },
@@ -2121,7 +2121,7 @@
   "@pingCooldownNotice": {
     "description": "핑 rate-limit 쿨다운 중 안내 (마침표 없음)"
   },
-  "gameLeaveConfirmTitle": "게임에서 나가시겠어요?",
+  "gameLeaveConfirmTitle": "게임에서 나갈까요?",
   "@gameLeaveConfirmTitle": {
     "description": "인게임 중도 퇴장 확인 다이얼로그 타이틀"
   },

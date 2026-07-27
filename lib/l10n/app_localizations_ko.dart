@@ -27,7 +27,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogUpdateOptionalTitle => '새 버전 안내';
 
   @override
-  String get dialogUpdateOptionalMessage => '더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?';
+  String get dialogUpdateOptionalMessage => '더 좋아진 새 버전이 있어요\n업데이트할까요?';
 
   @override
   String get dialogUpdateOptionalConfirm => '업데이트';
@@ -39,7 +39,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogUpdateMandatoryTitle => '업데이트 안내';
 
   @override
-  String get dialogUpdateMandatoryMessage => '새로운 버전이 출시되었어요.\n업데이트하시겠어요?';
+  String get dialogUpdateMandatoryMessage => '새로운 버전이 나왔어요\n업데이트할까요?';
 
   @override
   String get dialogUpdateMandatoryConfirm => '업데이트';
@@ -49,12 +49,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String chatSystemGameStartTime(int minutes) {
-    return '제한 시간은 $minutes분입니다';
+    return '제한 시간은 $minutes분이에요';
   }
 
   @override
   String get chatSystemGameStartReportTip =>
-      '게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다';
+      '게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요';
 
   @override
   String get chatSystemPoliceMoveWarning => '경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!';
@@ -65,7 +65,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get chatSystemFiveMinutesLeft => '게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!';
+  String get chatSystemFiveMinutesLeft => '게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!';
 
   @override
   String get errorNetworkTimeout => '서버 연결이 너무 오래 걸려요';
@@ -406,7 +406,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
 
   @override
-  String get asset_locationpermission_serviceDisabledTitle => '위치 서비스가 꺼져 있습니다';
+  String get asset_locationpermission_serviceDisabledTitle => '위치 서비스가 꺼져 있어요';
 
   @override
   String get asset_locationpermission_serviceDisabledHome =>
@@ -547,7 +547,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appBrandName => '경찰과도둑';
 
   @override
-  String get messageComingSoon => '준비중입니다';
+  String get messageComingSoon => '준비 중이에요';
 
   @override
   String get homePageWelcomeMessage => '누가 내 치즈\n훔쳐갔어!!!!🧀';
@@ -687,7 +687,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorGameStartFailed => '게임 시작에 실패했어요';
 
   @override
-  String get dialogLeaveRoomTitle => '방을 나가시겠어요?';
+  String get dialogLeaveRoomTitle => '방을 나갈까요?';
 
   @override
   String get dialogLeaveRoomMessage => '나가면 다시 초대코드를 입력해야 해요';
@@ -705,7 +705,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogInviteCodeShareMessage => '친구에게 코드를 공유하고 게임에 참여해 보세요!';
 
   @override
-  String get messageCodeCopied => '코드가 복사되었습니다';
+  String get messageCodeCopied => '코드를 복사했어요';
 
   @override
   String get buttonShare => '공유하기';
@@ -882,7 +882,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorRequiredAgreementsMissing => '필수 약관에 모두 동의해주세요';
 
   @override
-  String get messageAccountDeleted => '회원탈퇴가 완료되었습니다';
+  String get messageAccountDeleted => '회원탈퇴를 완료했어요';
 
   @override
   String get dialogAge14ConfirmTitle => '만 14세 이상이신가요?';
@@ -986,19 +986,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameOverBannerTitle => '게임 종료!';
 
   @override
-  String get gameOverReasonAllArrested => '도둑이 모두 체포되었습니다!';
+  String get gameOverReasonAllArrested => '도둑이 모두 체포됐어요!';
 
   @override
-  String get gameOverReasonTimeUp => '제한 시간이 종료되었습니다!';
+  String get gameOverReasonTimeUp => '제한 시간이 끝났어요!';
 
   @override
-  String get gameOverReasonPoliceForfeited => '경찰이 모두 퇴장했습니다!';
+  String get gameOverReasonPoliceForfeited => '경찰이 모두 퇴장했어요!';
 
   @override
-  String get gameOverReasonRobberForfeited => '도둑이 모두 퇴장했습니다!';
+  String get gameOverReasonRobberForfeited => '도둑이 모두 퇴장했어요!';
 
   @override
-  String get gameOverFallbackMessage => '게임이 종료되었습니다.';
+  String get gameOverFallbackMessage => '게임이 끝났어요';
 
   @override
   String get gameTeamCop => '경찰팀';
@@ -1014,7 +1014,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String messageGameOverWinner(Object winnerTeamLabel) {
-    return '$winnerTeamLabel의 승리입니다!';
+    return '$winnerTeamLabel의 승리예요!';
   }
 
   @override
@@ -1121,7 +1121,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonYes => '네';
 
   @override
-  String get dialogEscapeAttemptMessage => '탈옥을 시도하시겠습니까?';
+  String get dialogEscapeAttemptMessage => '탈옥할까요?';
 
   @override
   String get gameParticipantOverlayCurrent => '현재';
@@ -1165,7 +1165,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chatTeamPrefix => '[팀]';
 
   @override
-  String get chatSystemGameTimeLimit30Min => '제한 시간은 30분입니다';
+  String get chatSystemGameTimeLimit30Min => '제한 시간은 30분이에요';
 
   @override
   String get chatSystemGoodLuckRobber => '도둑 잘 도망쳐 봐요~';
@@ -1405,20 +1405,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogLogoutTitle => '로그아웃';
 
   @override
-  String get dialogLogoutMessage => '정말 로그아웃 하시겠어요?';
+  String get dialogLogoutMessage => '정말 로그아웃할까요?';
 
   @override
-  String get snackbarLogoutFailed => '로그아웃에 실패했습니다';
+  String get snackbarLogoutFailed => '로그아웃에 실패했어요';
 
   @override
-  String get snackbarLogoutSuccess => '로그아웃되었습니다';
+  String get snackbarLogoutSuccess => '로그아웃했어요';
 
   @override
   String get dialogDeleteAccountTitle => '회원 탈퇴';
 
   @override
   String get dialogDeleteAccountMessage =>
-      '탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요';
+      '탈퇴하면 모든 데이터가 사라지고\n되돌릴 수 없어요\n\n계속하려면 \"delete\"를 입력하세요';
 
   @override
   String get fieldDeleteAccountHint => 'delete';
@@ -1687,16 +1687,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageNoticesTitle => '공지사항';
 
   @override
-  String get pageNoticesEmpty => '등록된 공지사항이 없습니다';
+  String get pageNoticesEmpty => '등록된 공지사항이 없어요';
 
   @override
   String get errorAreaLoadFailed => '구역 정보를 불러오지 못했어요';
 
   @override
-  String get pageNotFoundTitle => '페이지를 찾을 수 없습니다';
+  String get pageNotFoundTitle => '페이지를 찾을 수 없어요';
 
   @override
-  String get pageNotFoundMessage => '요청하신 페이지가 존재하지 않습니다';
+  String get pageNotFoundMessage => '요청하신 페이지가 없어요';
 
   @override
   String pageNotFoundPath(String path) {
@@ -1711,7 +1711,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String gameEventStartTime(int minutes) {
-    return '제한 시간은 $minutes분입니다.';
+    return '제한 시간은 $minutes분이에요';
   }
 
   @override
@@ -1719,7 +1719,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gameEventStartReportTip =>
-      '게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.';
+      '게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요';
 
   @override
   String get gameEventStartGo => '게임 시작!  행운을 빕니다!';
@@ -1732,11 +1732,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
-    return '@icon_police [$policeNickname]님이 @icon_robber [$robberNickname]님을 체포했습니다!';
+    return '@icon_police [$policeNickname]님이 @icon_robber [$robberNickname]님을 체포했어요!';
   }
 
   @override
-  String get gameEventEscapeNotice => '도둑이 탈옥했습니다! 지금 바로 체포하세요!';
+  String get gameEventEscapeNotice => '도둑이 탈옥했어요! 지금 바로 체포하세요!';
 
   @override
   String gameEventPlayerLeftNotice(String nickname, String teamLabel) {
@@ -2010,7 +2010,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pingCooldownNotice => '잠시 후 다시 시도해주세요';
 
   @override
-  String get gameLeaveConfirmTitle => '게임에서 나가시겠어요?';
+  String get gameLeaveConfirmTitle => '게임에서 나갈까요?';
 
   @override
   String get gameLeaveConfirmMessage => '진행 중인 게임에서 나갑니다';

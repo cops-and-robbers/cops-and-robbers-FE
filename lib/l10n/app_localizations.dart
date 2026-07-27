@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// No description provided for @dialogUpdateOptionalMessage.
   ///
   /// In ko, this message translates to:
-  /// **'더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?'**
+  /// **'더 좋아진 새 버전이 있어요\n업데이트할까요?'**
   String get dialogUpdateOptionalMessage;
 
   /// No description provided for @dialogUpdateOptionalConfirm.
@@ -163,7 +163,7 @@ abstract class AppLocalizations {
   /// No description provided for @dialogUpdateMandatoryMessage.
   ///
   /// In ko, this message translates to:
-  /// **'새로운 버전이 출시되었어요.\n업데이트하시겠어요?'**
+  /// **'새로운 버전이 나왔어요\n업데이트할까요?'**
   String get dialogUpdateMandatoryMessage;
 
   /// No description provided for @dialogUpdateMandatoryConfirm.
@@ -181,13 +181,13 @@ abstract class AppLocalizations {
   /// No description provided for @chatSystemGameStartTime.
   ///
   /// In ko, this message translates to:
-  /// **'제한 시간은 {minutes}분입니다'**
+  /// **'제한 시간은 {minutes}분이에요'**
   String chatSystemGameStartTime(int minutes);
 
   /// No description provided for @chatSystemGameStartReportTip.
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다'**
+  /// **'게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요'**
   String get chatSystemGameStartReportTip;
 
   /// No description provided for @chatSystemPoliceMoveWarning.
@@ -205,7 +205,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatSystemFiveMinutesLeft.
   ///
   /// In ko, this message translates to:
-  /// **'게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!'**
+  /// **'게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!'**
   String get chatSystemFiveMinutesLeft;
 
   /// No description provided for @errorNetworkTimeout.
@@ -865,7 +865,7 @@ abstract class AppLocalizations {
   /// No description provided for @asset_locationpermission_serviceDisabledTitle.
   ///
   /// In ko, this message translates to:
-  /// **'위치 서비스가 꺼져 있습니다'**
+  /// **'위치 서비스가 꺼져 있어요'**
   String get asset_locationpermission_serviceDisabledTitle;
 
   /// No description provided for @asset_locationpermission_serviceDisabledHome.
@@ -1117,7 +1117,7 @@ abstract class AppLocalizations {
   /// 미구현 기능 안내 메시지
   ///
   /// In ko, this message translates to:
-  /// **'준비중입니다'**
+  /// **'준비 중이에요'**
   String get messageComingSoon;
 
   /// 홈 페이지 — 메인 환영 메시지 (default 스킨)
@@ -1381,7 +1381,7 @@ abstract class AppLocalizations {
   /// 대기실 퇴장 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
-  /// **'방을 나가시겠어요?'**
+  /// **'방을 나갈까요?'**
   String get dialogLeaveRoomTitle;
 
   /// 대기실 퇴장 확인 다이얼로그 본문
@@ -1417,7 +1417,7 @@ abstract class AppLocalizations {
   /// 초대코드 클립보드 복사 완료 안내
   ///
   /// In ko, this message translates to:
-  /// **'코드가 복사되었습니다'**
+  /// **'코드를 복사했어요'**
   String get messageCodeCopied;
 
   /// 공유 액션 버튼
@@ -1759,7 +1759,7 @@ abstract class AppLocalizations {
   /// 회원 탈퇴 완료 토스트
   ///
   /// In ko, this message translates to:
-  /// **'회원탈퇴가 완료되었습니다'**
+  /// **'회원탈퇴를 완료했어요'**
   String get messageAccountDeleted;
 
   /// 만 14세 이상 확인 다이얼로그 타이틀
@@ -1963,31 +1963,31 @@ abstract class AppLocalizations {
   /// 게임 종료 사유 — 도둑 전원 체포로 종료
   ///
   /// In ko, this message translates to:
-  /// **'도둑이 모두 체포되었습니다!'**
+  /// **'도둑이 모두 체포됐어요!'**
   String get gameOverReasonAllArrested;
 
   /// 게임 종료 사유 — 제한 시간 만료
   ///
   /// In ko, this message translates to:
-  /// **'제한 시간이 종료되었습니다!'**
+  /// **'제한 시간이 끝났어요!'**
   String get gameOverReasonTimeUp;
 
   /// 게임 종료 사유 — 경찰 전원 퇴장(몰수)으로 도둑 승리
   ///
   /// In ko, this message translates to:
-  /// **'경찰이 모두 퇴장했습니다!'**
+  /// **'경찰이 모두 퇴장했어요!'**
   String get gameOverReasonPoliceForfeited;
 
   /// 게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리
   ///
   /// In ko, this message translates to:
-  /// **'도둑이 모두 퇴장했습니다!'**
+  /// **'도둑이 모두 퇴장했어요!'**
   String get gameOverReasonRobberForfeited;
 
   /// GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지
   ///
   /// In ko, this message translates to:
-  /// **'게임이 종료되었습니다.'**
+  /// **'게임이 끝났어요'**
   String get gameOverFallbackMessage;
 
   /// 경찰 팀 라벨 (팀명)
@@ -2017,7 +2017,7 @@ abstract class AppLocalizations {
   /// 게임 종료 다이얼로그 메시지 — 승리팀 안내
   ///
   /// In ko, this message translates to:
-  /// **'{winnerTeamLabel}의 승리입니다!'**
+  /// **'{winnerTeamLabel}의 승리예요!'**
   String messageGameOverWinner(Object winnerTeamLabel);
 
   /// 경찰 역할 단일 라벨 (닉네임 누락 시 fallback 포함)
@@ -2215,7 +2215,7 @@ abstract class AppLocalizations {
   /// 탈옥 시도 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'탈옥을 시도하시겠습니까?'**
+  /// **'탈옥할까요?'**
   String get dialogEscapeAttemptMessage;
 
   /// 참가자 오버레이 — 현재 인원 라벨
@@ -2293,7 +2293,7 @@ abstract class AppLocalizations {
   /// 더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)
   ///
   /// In ko, this message translates to:
-  /// **'제한 시간은 30분입니다'**
+  /// **'제한 시간은 30분이에요'**
   String get chatSystemGameTimeLimit30Min;
 
   /// 더미 채팅 메시지 — 경찰의 도둑 응원 메시지
@@ -2742,19 +2742,19 @@ abstract class AppLocalizations {
   /// 로그아웃 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'정말 로그아웃 하시겠어요?'**
+  /// **'정말 로그아웃할까요?'**
   String get dialogLogoutMessage;
 
   /// 로그아웃 실패 스낵바 메시지
   ///
   /// In ko, this message translates to:
-  /// **'로그아웃에 실패했습니다'**
+  /// **'로그아웃에 실패했어요'**
   String get snackbarLogoutFailed;
 
   /// 로그아웃 성공 스낵바 메시지
   ///
   /// In ko, this message translates to:
-  /// **'로그아웃되었습니다'**
+  /// **'로그아웃했어요'**
   String get snackbarLogoutSuccess;
 
   /// 회원 탈퇴 확인 다이얼로그 제목
@@ -2766,7 +2766,7 @@ abstract class AppLocalizations {
   /// 회원 탈퇴 확인 다이얼로그 본문 — 비가역성 경고 + 확인 키워드 입력 요구
   ///
   /// In ko, this message translates to:
-  /// **'탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요'**
+  /// **'탈퇴하면 모든 데이터가 사라지고\n되돌릴 수 없어요\n\n계속하려면 \"delete\"를 입력하세요'**
   String get dialogDeleteAccountMessage;
 
   /// 회원 탈퇴 확인 입력 필드 placeholder (사용자가 직접 입력해야 하는 키워드)
@@ -3294,7 +3294,7 @@ abstract class AppLocalizations {
   /// 공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지
   ///
   /// In ko, this message translates to:
-  /// **'등록된 공지사항이 없습니다'**
+  /// **'등록된 공지사항이 없어요'**
   String get pageNoticesEmpty;
 
   /// 게임 진입 시 area(구역) 정보 로드 실패 안내
@@ -3306,13 +3306,13 @@ abstract class AppLocalizations {
   /// 404 페이지 AppBar 제목
   ///
   /// In ko, this message translates to:
-  /// **'페이지를 찾을 수 없습니다'**
+  /// **'페이지를 찾을 수 없어요'**
   String get pageNotFoundTitle;
 
   /// 404 페이지 본문 — 잘못된 경로 진입 시 안내
   ///
   /// In ko, this message translates to:
-  /// **'요청하신 페이지가 존재하지 않습니다'**
+  /// **'요청하신 페이지가 없어요'**
   String get pageNotFoundMessage;
 
   /// 404 페이지 — 시도한 경로 표시 (디버깅 도움)
@@ -3336,7 +3336,7 @@ abstract class AppLocalizations {
   /// START 1단계 — 제한 시간 안내
   ///
   /// In ko, this message translates to:
-  /// **'제한 시간은 {minutes}분입니다.'**
+  /// **'제한 시간은 {minutes}분이에요'**
   String gameEventStartTime(int minutes);
 
   /// START 2단계 — 게임 시작 예고
@@ -3348,7 +3348,7 @@ abstract class AppLocalizations {
   /// START 3단계 — 신고/차단 안내
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.'**
+  /// **'게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요'**
   String get gameEventStartReportTip;
 
   /// START 4단계 — 게임 시작 확정
@@ -3372,13 +3372,13 @@ abstract class AppLocalizations {
   /// 체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환
   ///
   /// In ko, this message translates to:
-  /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!'**
+  /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했어요!'**
   String gameEventArrestNotice(String policeNickname, String robberNickname);
 
   /// 탈옥 공지
   ///
   /// In ko, this message translates to:
-  /// **'도둑이 탈옥했습니다! 지금 바로 체포하세요!'**
+  /// **'도둑이 탈옥했어요! 지금 바로 체포하세요!'**
   String get gameEventEscapeNotice;
 
   /// 인게임 중도 퇴장 공지 배너 — 닉네임과 팀 라벨 표시
@@ -3906,7 +3906,7 @@ abstract class AppLocalizations {
   /// 인게임 중도 퇴장 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
-  /// **'게임에서 나가시겠어요?'**
+  /// **'게임에서 나갈까요?'**
   String get gameLeaveConfirmTitle;
 
   /// 인게임 중도 퇴장 확인 다이얼로그 본문
