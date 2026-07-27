@@ -123,12 +123,8 @@ flutter:
     - assets/loading/
     - assets/characters/police/default/
     - assets/characters/robber/default/
-    - assets/characters/police/classic/
-    - assets/characters/robber/classic/
     - assets/characters/police/result/default/
-    - assets/characters/police/result/classic/
     - assets/characters/robber/result/default/
-    - assets/characters/robber/result/classic/
     - .env
   fonts:
     - family: Pretendard-Thin
