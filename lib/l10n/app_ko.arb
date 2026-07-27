@@ -47,7 +47,7 @@
   "errorNotFound": "요청한 정보를 찾을 수 없어요",
   "errorConflict": "요청을 처리할 수 없어요. 잠시 후 다시 시도해주세요",
   "buttonConfirm": "확인",
-  "buttonCancel": "취소",
+  "buttonCancel": "닫기",
   "dialogReconnectMessage": "연결이 끊어졌어요. 재연결이 필요해요",
   "dialogReconnectButtonConnecting": "연결 중...",
   "dialogReconnectButtonRetry": "재연결",

@@ -265,7 +265,7 @@ abstract class AppLocalizations {
   /// No description provided for @buttonCancel.
   ///
   /// In ko, this message translates to:
-  /// **'취소'**
+  /// **'닫기'**
   String get buttonCancel;
 
   /// No description provided for @dialogReconnectMessage.

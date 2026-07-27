@@ -95,7 +95,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonConfirm => '확인';
 
   @override
-  String get buttonCancel => '취소';
+  String get buttonCancel => '닫기';
 
   @override
   String get dialogReconnectMessage => '연결이 끊어졌어요. 재연결이 필요해요';
