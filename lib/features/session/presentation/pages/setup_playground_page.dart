@@ -296,6 +296,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
             Center(
               child: AreaTypeToggle(
                 selected: _areaType,
+                isDarkMode: isDark,
                 onChanged: (type) {
                   // 각 모드의 입력값은 유지 — 완료 시 선택된 모드 것만 사용
                   setState(() => _areaType = type);
