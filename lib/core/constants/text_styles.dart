@@ -24,6 +24,15 @@ class AppTextStyles {
   // Heading Styles (SemiBold)
   // ============================================
 
+  /// SemiBold56 - 초대형 숫자 (56px SemiBold) — 게임 결과 이동 거리
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get semibold_56 => TextStyle(
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 56.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
   /// SemiBold44 - 대형 숫자 (44px SemiBold)
   /// Line Height: 100%, Letter Spacing: -0.32px
   static TextStyle get semibold_44 => TextStyle(
