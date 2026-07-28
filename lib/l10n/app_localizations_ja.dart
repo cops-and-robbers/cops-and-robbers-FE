@@ -1054,17 +1054,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelArrestCount => '逮捕回数';
 
   @override
-  String gameResultArrestCount(int count) {
-    return '$count回';
-  }
-
-  @override
   String get fieldRemainingRobbers => '残りの泥棒';
-
-  @override
-  String gameResultRemainingRobberCount(int count) {
-    return '$count人';
-  }
 
   @override
   String get fieldGamePlaytime => 'ゲーム進行時間';
@@ -1076,19 +1066,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonPlayAgain => 'もう一度';
 
   @override
-  String get buttonViewMyRecord => 'マイ記録を見る';
-
-  @override
   String get labelMyRecord => 'マイ記録';
-
-  @override
-  String get labelTravelDistance => '移動した距離';
-
-  @override
-  String get labelMyArrestCount => '捕まえた泥棒';
-
-  @override
-  String get labelMyEscapeCount => '脱獄回数';
 
   @override
   String get labelResult => '結果';
@@ -1101,12 +1079,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get labelNoRoute => '移動記録なし';
-
-  @override
-  String get legendArrestSpot => '捕獲地点';
-
-  @override
-  String get legendCaughtSpot => '逮捕地点';
 
   @override
   String gameLocationRevealCountdown(String formatted) {

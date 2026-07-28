@@ -1153,17 +1153,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelArrestCount => 'Arrest count';
 
   @override
-  String gameResultArrestCount(int count) {
-    return '$count times';
-  }
-
-  @override
   String get fieldRemainingRobbers => 'Remaining Robbers';
-
-  @override
-  String gameResultRemainingRobberCount(int count) {
-    return '$count people';
-  }
 
   @override
   String get fieldGamePlaytime => 'Game playtime';
@@ -1175,19 +1165,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonPlayAgain => 'One more time';
 
   @override
-  String get buttonViewMyRecord => 'View my record';
-
-  @override
   String get labelMyRecord => 'My record';
-
-  @override
-  String get labelTravelDistance => 'Distance I moved';
-
-  @override
-  String get labelMyArrestCount => 'Robbers I caught';
-
-  @override
-  String get labelMyEscapeCount => 'My jailbreaks';
 
   @override
   String get labelResult => 'Result';
@@ -1200,12 +1178,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelNoRoute => 'No movement recorded';
-
-  @override
-  String get legendArrestSpot => 'Catch spot';
-
-  @override
-  String get legendCaughtSpot => 'Caught spot';
 
   @override
   String gameLocationRevealCountdown(String formatted) {
