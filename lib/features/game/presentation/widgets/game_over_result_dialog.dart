@@ -355,11 +355,11 @@ class _RiseIn extends StatefulWidget {
 
 class _RiseInState extends State<_RiseIn> with SingleTickerProviderStateMixin {
   /// 되돌아오는 구간까지 포함한 전체 길이.
-  static const Duration _duration = Duration(milliseconds: 1000);
+  static const Duration _duration = Duration(milliseconds: 500);
 
   /// 전체 길이 중 올라가는 구간이 차지하는 비율(나머지는 내려앉는 구간).
-  static const double _riseWeight = 65;
-  static const double _settleWeight = 35;
+  static const double _riseWeight = 70;
+  static const double _settleWeight = 30;
 
   late final AnimationController _controller = AnimationController(
     vsync: this,
