@@ -56,8 +56,6 @@ app.*.map.json
 # TEMPLATE: Auto-added entries
 # ====================================================================
 /.claude/settings.local.json
-/.release-note
-/.issues
 /.pr
 
 .env
