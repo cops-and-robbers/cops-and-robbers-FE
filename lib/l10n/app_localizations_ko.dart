@@ -1052,17 +1052,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelArrestCount => '체포 횟수';
 
   @override
-  String gameResultArrestCount(int count) {
-    return '$count회';
-  }
-
-  @override
   String get fieldRemainingRobbers => '남은 도둑';
-
-  @override
-  String gameResultRemainingRobberCount(int count) {
-    return '$count명';
-  }
 
   @override
   String get fieldGamePlaytime => '게임 진행 시간';
@@ -1074,19 +1064,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonPlayAgain => '한 번 더';
 
   @override
-  String get buttonViewMyRecord => '내 기록 보기';
-
-  @override
   String get labelMyRecord => '내 기록';
-
-  @override
-  String get labelTravelDistance => '내가 이동한 거리';
-
-  @override
-  String get labelMyArrestCount => '내가 잡은 도둑';
-
-  @override
-  String get labelMyEscapeCount => '내 탈옥 횟수';
 
   @override
   String get labelResult => '결과';
@@ -1099,12 +1077,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get labelNoRoute => '이동 기록 없음';
-
-  @override
-  String get legendArrestSpot => '잡은 곳';
-
-  @override
-  String get legendCaughtSpot => '잡힌 곳';
 
   @override
   String gameLocationRevealCountdown(String formatted) {

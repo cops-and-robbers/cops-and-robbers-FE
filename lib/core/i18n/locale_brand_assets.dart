@@ -12,6 +12,16 @@ import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
 String localizedAppLogo(Locale locale) =>
     'assets/app_logos/app_logo_${_codeOrDefault(locale.languageCode)}.svg';
 
+/// 로고 락업 (사이렌 심볼 + 워드마크 가로 조합) — 공유 이미지 하단 워터마크용
+///
+/// 워드마크 단독([localizedAppLogo])과 달리 심볼이 함께 있어 앱 식별이 쉽다.
+/// 심볼 색이 팀 테마별로 달라(라이트=파랑 / 다크=초록) 단색 틴트로는 대체 못 하므로
+/// 로케일 × 테마 조합만큼 에셋을 둔다.
+String localizedAppLogoLockup(Locale locale, {required bool isDarkMode}) =>
+    'assets/app_logos/app_logo_lockup_'
+    '${_codeOrDefault(locale.languageCode)}_'
+    '${isDarkMode ? 'dark' : 'light'}.svg';
+
 /// 스플래시 일러스트 (splash, force_update, maintenance) — SvgPicture로 렌더링
 String localizedAppSplash(Locale locale) =>
     'assets/app_splashs/app_splash_${_codeOrDefault(locale.languageCode)}.svg';

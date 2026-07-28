@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cops_and_robbers/features/game/domain/entities/game_result_entity.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_result_provider.dart';
+import 'package:cops_and_robbers/features/game/presentation/providers/player_game_record_provider.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/game_over_result_dialog.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/record_format.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
@@ -142,9 +143,27 @@ void main() {
         resultFuture: () async => entity,
       );
 
-      expect(find.text('5회'), findsOneWidget);
-      expect(find.text('1명'), findsOneWidget);
+      // 단위 없이 숫자만 노출한다.
+      expect(find.text('5'), findsOneWidget);
+      expect(find.text('1'), findsOneWidget);
       expect(find.text('5:00'), findsOneWidget);
+    });
+
+    testWidgets('lists_playtime_then_arrests_then_remaining_robbers', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 11,
+        resultFuture: () async => entity,
+      );
+
+      final playtimeY = tester.getTopLeft(find.text('게임 진행 시간')).dy;
+      final arrestY = tester.getTopLeft(find.text('체포 횟수')).dy;
+      final remainingY = tester.getTopLeft(find.text('남은 도둑')).dy;
+
+      expect(playtimeY, lessThan(arrestY));
+      expect(arrestY, lessThan(remainingY));
     });
 
     testWidgets('shows_placeholder_dash_for_all_stats_when_api_fails', (
@@ -244,6 +263,86 @@ void main() {
 
       expect(called, isTrue);
     });
+
+    testWidgets('shows_distance_and_ended_date_when_record_has_movement', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 8,
+        resultFuture: () async => entity,
+        record: PlayerGameRecord(
+          distanceMeters: 2543,
+          endedAt: DateTime(2026, 7, 21, 15, 45),
+        ),
+      );
+
+      // Text.rich라 find.text는 스팬을 합친 평문으로 매칭한다.
+      expect(find.text('2.54 Km'), findsOneWidget);
+      expect(find.text('2026.07.21 15:45'), findsOneWidget);
+    });
+
+    testWidgets('shows_no_route_placeholder_when_route_is_empty', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 9,
+        resultFuture: () async => entity,
+      );
+
+      expect(find.text('이동 기록 없음'), findsOneWidget);
+    });
+
+    testWidgets('swaps_buttons_for_brand_lockup_while_capturing', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 10,
+        resultFuture: () async => entity,
+      );
+
+      // 라이브 화면에는 로고가 없다 — 공유 이미지 전용이다.
+      expect(
+        find.byKey(const ValueKey('game_over_brand_lockup')),
+        findsNothing,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pump(); // _capturing = true 반영
+
+      expect(
+        find.byKey(const ValueKey('game_over_brand_lockup')),
+        findsOneWidget,
+      );
+
+      // 버튼은 이미지에 남으면 안 되므로 트리에서 제거된다.
+      expect(
+        find.byKey(const ValueKey('game_over_go_home_button')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('game_over_rematch_button')),
+        findsNothing,
+      );
+      // 아이콘은 자리를 유지한 채 투명해진다(제거하면 타이틀이 흔들린다).
+      expect(
+        tester
+            .widget<Opacity>(
+              find
+                  .ancestor(
+                    of: find.byKey(const ValueKey('game_over_share_button')),
+                    matching: find.byType(Opacity),
+                  )
+                  .first,
+            )
+            .opacity,
+        0,
+      );
+
+      await tester.pumpAndSettle();
+    });
   });
 }
 
@@ -262,11 +361,21 @@ Future<void> pumpGameOverDialog(
   bool isDarkMode = false,
   VoidCallback? onGoHome,
   VoidCallback? onRematch,
+  PlayerGameRecord record = const PlayerGameRecord(),
 }) async {
+  // 테스트 기본 화면(800×600)은 ScreenUtil designSize(375×812)와 어긋나 폭 기준 sp는
+  // 2배로 커지고 높이 기준 h는 줄어든다. 실기기와 같은 비율이 되도록 맞춰준다.
+  tester.view.physicalSize = const Size(375 * 3, 812 * 3);
+  tester.view.devicePixelRatio = 3.0;
+  addTearDown(tester.view.reset);
+
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         gameResultProvider(gameResultId).overrideWith((_) => resultFuture()),
+        playerGameRecordNotifierProvider.overrideWith(
+          () => _FakeRecord(record),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
@@ -300,4 +409,12 @@ Future<void> pumpGameOverDialog(
   // pumpAndSettle은 loading 상태에서 hang 가능 → pump 여러 번으로 대체
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 100));
+}
+
+/// 경로·거리 누적값을 고정해 결과 카드 렌더를 검증하기 위한 fake.
+class _FakeRecord extends PlayerGameRecordNotifier {
+  _FakeRecord(this._initial);
+  final PlayerGameRecord _initial;
+  @override
+  PlayerGameRecord build() => _initial;
 }
