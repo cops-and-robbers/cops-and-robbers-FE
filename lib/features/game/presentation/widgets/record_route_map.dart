@@ -94,9 +94,16 @@ class _RecordRouteMapState extends State<RecordRouteMap> {
 
     await Future<void>.delayed(const Duration(milliseconds: 150));
     if (!mounted) return;
-    await controller.moveCamera(
-      CameraUpdate.newLatLngBounds(bounds, _boundsPadding),
-    );
+    try {
+      await controller.moveCamera(
+        CameraUpdate.newLatLngBounds(bounds, _boundsPadding),
+      );
+    } catch (e) {
+      // mounted 체크와 실제 호출 사이 위젯이 dispose되면 이미 정리된 컨트롤러를
+      // 건드리게 될 수 있다. 카메라 위치는 화면 표시용일 뿐이라 실패해도
+      // 초기 카메라(_initialTarget)로 남겨두고 무시한다.
+      debugPrint('[RecordRouteMap] 카메라 이동 실패: $e');
+    }
   }
 
   LatLng get _initialTarget {
