@@ -73,7 +73,7 @@ class GameActionModal {
               child: Container(
                 width: 92.w,
                 height: 108.w,
-                color: const Color(0xFFB1BCC8),
+                color: AppColors.black300,
               ),
             )
           : null,
