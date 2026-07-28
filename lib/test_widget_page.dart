@@ -39,7 +39,6 @@ import 'features/auth/presentation/pages/nickname_setup_page.dart';
 import 'features/game/domain/entities/game_result_entity.dart';
 import 'features/game/presentation/providers/game_result_provider.dart';
 import 'features/game/presentation/widgets/game_over_result_dialog.dart';
-import 'features/game/presentation/widgets/my_record_dialog.dart';
 import 'features/game/presentation/providers/player_game_record_provider.dart';
 import 'features/game/data/models/game_area_model.dart';
 import 'features/game/domain/entities/area_shape.dart';
@@ -1299,73 +1298,6 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 SizedBox(height: AppSpacing.vertical64),
 
                 // ============================================
-                // MyRecordDialog 테스트
-                // ============================================
-                _buildSectionTitle('MyRecordDialog 테스트'),
-                SizedBox(height: AppSpacing.vertical8),
-                Text(
-                  '예시 경로·거리·카운트 mock으로 내 기록 다이얼로그 표시',
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black400,
-                  ),
-                ),
-                SizedBox(height: AppSpacing.vertical16),
-
-                AppButton(
-                  text: '내 기록 — 경찰 승리 (light)',
-                  onPressed: () => _showMockMyRecordDialog(
-                    context: context,
-                    isDarkMode: false,
-                    myTeam: 'POLICE',
-                    winnerTeam: 'POLICE',
-                  ),
-                  backgroundColor: AppColors.blue,
-                  showBorder: false,
-                ),
-                SizedBox(height: AppSpacing.vertical12),
-
-                AppButton(
-                  text: '내 기록 — 경찰 패배 (light)',
-                  onPressed: () => _showMockMyRecordDialog(
-                    context: context,
-                    isDarkMode: false,
-                    myTeam: 'POLICE',
-                    winnerTeam: 'ROBBER',
-                  ),
-                  backgroundColor: AppColors.red,
-                  showBorder: false,
-                ),
-                SizedBox(height: AppSpacing.vertical12),
-
-                AppButton(
-                  text: '내 기록 — 도둑 승리 (dark)',
-                  onPressed: () => _showMockMyRecordDialog(
-                    context: context,
-                    isDarkMode: true,
-                    myTeam: 'ROBBER',
-                    winnerTeam: 'ROBBER',
-                  ),
-                  backgroundColor: AppColors.green,
-                  foregroundColor: AppColors.black,
-                  showBorder: false,
-                ),
-                SizedBox(height: AppSpacing.vertical12),
-
-                AppButton(
-                  text: '내 기록 — 도둑 패배 (dark)',
-                  onPressed: () => _showMockMyRecordDialog(
-                    context: context,
-                    isDarkMode: true,
-                    myTeam: 'ROBBER',
-                    winnerTeam: 'POLICE',
-                  ),
-                  backgroundColor: AppColors.black800,
-                  showBorder: false,
-                ),
-
-                SizedBox(height: AppSpacing.vertical64),
-
-                // ============================================
                 // ReconnectModal 테스트
                 // ============================================
                 _buildSectionTitle('ReconnectModal 테스트'),
@@ -1730,7 +1662,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
     );
   }
 
-  /// 다이얼로그 시각 테스트용 헬퍼 — gameResultProvider를 mock AsyncValue.data로 override
+  /// 다이얼로그 시각 테스트용 헬퍼 — gameResult + playerGameRecord를 mock override
   void _showMockGameOverDialog({
     required BuildContext context,
     required bool isDarkMode,
@@ -1740,42 +1672,6 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
     const mockGameResultId = 999;
     const mockEntity = GameResultEntity(
       winnerTeam: 'POLICE', // UI에서는 myTeam==winnerTeam 비교만 쓰므로 임의값 OK
-      durationSeconds: 1845, // 30:45
-      totalArrestCount: 12,
-      remainingRobberCount: 2,
-    );
-
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => ProviderScope(
-        overrides: [
-          gameResultProvider(
-            mockGameResultId,
-          ).overrideWith((_) async => mockEntity),
-        ],
-        child: GameOverResultDialog(
-          isDarkMode: isDarkMode,
-          myTeam: myTeam,
-          winnerTeam: winnerTeam,
-          gameResultId: mockGameResultId,
-          onGoHome: () => Navigator.of(context).pop(),
-          onRematch: () => Navigator.of(context).pop(),
-        ),
-      ),
-    );
-  }
-
-  /// 내 기록 다이얼로그 시각 테스트용 — gameResult + playerGameRecord를 mock override
-  void _showMockMyRecordDialog({
-    required BuildContext context,
-    required bool isDarkMode,
-    required String myTeam,
-    required String winnerTeam,
-  }) {
-    const mockGameResultId = 998;
-    const mockEntity = GameResultEntity(
-      winnerTeam: 'POLICE',
       durationSeconds: 1845, // 30:45
       totalArrestCount: 12,
       remainingRobberCount: 2,
@@ -1793,7 +1689,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
     showDialog<void>(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: false,
       builder: (_) => ProviderScope(
         overrides: [
           gameResultProvider(
@@ -1803,11 +1699,13 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
             () => _MockPlayerGameRecord(mockRecord),
           ),
         ],
-        child: MyRecordDialog(
+        child: GameOverResultDialog(
           isDarkMode: isDarkMode,
           myTeam: myTeam,
           winnerTeam: winnerTeam,
           gameResultId: mockGameResultId,
+          onGoHome: () => Navigator.of(context).pop(),
+          onRematch: () => Navigator.of(context).pop(),
         ),
       ),
     );
