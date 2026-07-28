@@ -10,6 +10,7 @@ import '../../constants/map_styles.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../buttons/my_location_button.dart';
 import '../../services/location/device_location_service.dart';
+import '../../utils/zone_metric_formatter.dart';
 import '../chips/info_radius_chip.dart';
 import '../inputs/app_slider.dart';
 import 'models/circle_zone_shape.dart';
@@ -307,6 +308,12 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
                 target: _currentCenter,
                 zoom: _calculateZoom(_currentRadius),
               ),
+              // 구역이 화면 밖으로 벗어날 만큼 축소되는 것을 막는다.
+              // 인게임(google_map_view) 기준보다 한 단계 완화해 설정 편의성을 높인다.
+              minMaxZoomPreference: MinMaxZoomPreference(
+                _minZoomForRadius(_currentRadius),
+                20,
+              ),
               style: widget.isDarkMode ? MapStyles.dark : null,
               onMapCreated: (controller) {
                 _mapController = controller;
@@ -356,6 +363,17 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     );
   }
 
+  /// 플레이그라운드 반경(미터)으로부터 최소 줌 레벨을 계산한다.
+  ///
+  /// 인게임(GoogleMapView)보다 한 단계씩 낮춰 더 넓게 축소할 수 있게 완화한다.
+  static double _minZoomForRadius(double radiusInMeters) =>
+      switch (radiusInMeters) {
+        <= 200 => 14.0,
+        <= 500 => 13.0,
+        <= 1000 => 12.0,
+        _ => 11.0,
+      };
+
   /// 반경 슬라이더 위젯
   /// Radius slider widget
   Widget _buildRadiusSlider() {
@@ -367,15 +385,11 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       value: _currentRadius,
       min: widget.minRadius,
       max: widget.maxRadius,
-      unit: _currentRadius >= 1000 ? 'km' : 'm',
+      // 단위는 formatRadiusValue가 값에 따라 결정한다(1km 이상 km). unit은
+      // valueFormatter가 없을 때의 기본값이라 여기서는 쓰이지 않는다.
+      unit: 'm',
       divisions: divisions,
-      valueFormatter: (value) {
-        if (value >= 1000) {
-          return (value / 1000).toStringAsFixed(2);
-        } else {
-          return value.toInt().toString();
-        }
-      },
+      valueFormatter: formatRadiusValue,
       showContainer: false,
       activeTrackColor: widget.borderColor ?? AppColors.blue800,
       thumbColor: widget.centerColor ?? AppColors.blue,
@@ -389,13 +403,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   /// 반경 표시 인디케이터
   /// Radius indicator widget
   Widget _buildRadiusIndicator() {
-    final String displayValue;
-    if (_currentRadius >= 1000) {
-      final radiusInKm = (_currentRadius / 1000).toStringAsFixed(2);
-      displayValue = '${radiusInKm}km';
-    } else {
-      displayValue = '${_currentRadius.toInt()}m';
-    }
+    final displayValue = formatRadiusValue(_currentRadius);
 
     return InfoRadiusChip(
       // 튜토리얼 타겟 키 (외부에서 주입된 경우)

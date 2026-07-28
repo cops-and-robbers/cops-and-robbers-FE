@@ -177,7 +177,7 @@ abstract class SessionRemoteDataSource {
   @PUT('/api/games/{gameId}/area')
   Future<GameAreaModel> updateGameArea(
     @Path('gameId') int gameId,
-    @Body() AreaRequestModel request,
+    @Body() GameAreaRequestModel request,
   );
 
   /// 멤버 강제 퇴장 (방장 전용)

@@ -52,6 +52,42 @@ class LoadingMessageService {
     return pool[_random.nextInt(pool.length)];
   }
 
+  /// 카테고리별 안심 서브카피 (고정 1개)
+  ///
+  /// 제목(랜덤 세계관 문구)과 달리, 서브카피는 "앱을 끄면 취소돼요" 류의
+  /// 안심 문구라 카테고리당 하나로 고정한다.
+  /// [LoadingCategory.reconnect]는 별도 UI(reconnect_modal)를 쓰므로 null.
+  static String? getSubtitle(BuildContext context, LoadingCategory category) =>
+      subtitleFor(AppLocalizations.of(context), category);
+
+  @visibleForTesting
+  static String? subtitleFor(AppLocalizations l10n, LoadingCategory category) {
+    switch (category) {
+      case LoadingCategory.joinRoom:
+        return l10n.asset_loading_sub_joinRoom;
+      case LoadingCategory.createRoom:
+        return l10n.asset_loading_sub_createRoom;
+      case LoadingCategory.changeTeam:
+        return l10n.asset_loading_sub_changeTeam;
+      case LoadingCategory.startGame:
+        return l10n.asset_loading_sub_startGame;
+      case LoadingCategory.updateArea:
+        return l10n.asset_loading_sub_updateArea;
+      case LoadingCategory.saveSettings:
+        return l10n.asset_loading_sub_saveSettings;
+      case LoadingCategory.loadProfile:
+        return l10n.asset_loading_sub_loadProfile;
+      case LoadingCategory.logout:
+        return l10n.asset_loading_sub_logout;
+      case LoadingCategory.deleteAccount:
+        return l10n.asset_loading_sub_deleteAccount;
+      case LoadingCategory.bugReport:
+        return l10n.asset_loading_sub_bugReport;
+      case LoadingCategory.reconnect:
+        return null;
+    }
+  }
+
   /// 카테고리별 ARB 키 풀
   ///
   /// 동일 카테고리 내 메시지는 모두 동일 빈도로 선택된다.

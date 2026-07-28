@@ -27,7 +27,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogUpdateOptionalTitle => '새 버전 안내';
 
   @override
-  String get dialogUpdateOptionalMessage => '더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?';
+  String get dialogUpdateOptionalMessage => '더 좋아진 새 버전이 있어요\n업데이트할까요?';
 
   @override
   String get dialogUpdateOptionalConfirm => '업데이트';
@@ -39,7 +39,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogUpdateMandatoryTitle => '업데이트 안내';
 
   @override
-  String get dialogUpdateMandatoryMessage => '새로운 버전이 출시되었어요.\n업데이트하시겠어요?';
+  String get dialogUpdateMandatoryMessage => '새로운 버전이 나왔어요\n업데이트할까요?';
 
   @override
   String get dialogUpdateMandatoryConfirm => '업데이트';
@@ -49,15 +49,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String chatSystemGameStartTime(int minutes) {
-    return '제한 시간은 $minutes분입니다';
+    return '제한 시간은 $minutes분이에요';
   }
 
   @override
   String get chatSystemGameStartReportTip =>
-      '게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다';
+      '게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요';
 
   @override
-  String get chatSystemPoliceMoveWarning => '경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!';
+  String get chatSystemPoliceMoveWarning => '경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!';
 
   @override
   String chatSystemRemainingRobbers(int count) {
@@ -65,37 +65,37 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get chatSystemFiveMinutesLeft => '게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!';
+  String get chatSystemFiveMinutesLeft => '게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!';
 
   @override
-  String get errorNetworkTimeout => '서버 연결 시간이 초과되었습니다';
+  String get errorNetworkTimeout => '서버 연결이 너무 오래 걸려요';
 
   @override
   String get errorNetworkOffline => '네트워크 연결을 확인하세요';
 
   @override
-  String get errorServerInternal => '서버에 문제가 발생했습니다';
+  String get errorServerInternal => '서버에 문제가 생겼어요';
 
   @override
-  String get errorBadRequest => '잘못된 요청입니다';
+  String get errorBadRequest => '잘못된 요청이에요';
 
   @override
-  String get errorUnauthorized => '인증에 실패했습니다';
+  String get errorUnauthorized => '인증에 실패했어요';
 
   @override
-  String get errorForbidden => '접근 권한이 없습니다';
+  String get errorForbidden => '접근 권한이 없어요';
 
   @override
-  String get errorNotFound => '요청한 리소스를 찾을 수 없습니다';
+  String get errorNotFound => '요청한 정보를 찾을 수 없어요';
 
   @override
-  String get errorConflict => '요청이 현재 상태와 충돌합니다';
+  String get errorConflict => '요청을 처리할 수 없어요. 잠시 후 다시 시도해주세요';
 
   @override
   String get buttonConfirm => '확인';
 
   @override
-  String get buttonCancel => '취소';
+  String get buttonCancel => '닫기';
 
   @override
   String get dialogReconnectMessage => '연결이 끊어졌어요. 재연결이 필요해요';
@@ -128,23 +128,49 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonAppleSignIn => 'Apple로 계속하기';
 
   @override
-  String zoneRadiusKm(String km) {
-    return '반경 ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return '반경 ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => '반경';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return '반경 $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return '면적 $value';
+  }
+
+  @override
+  String get areaTypeSetByDistance => '거리로 설정';
+
+  @override
+  String get areaTypeSetByPin => '핀으로 설정';
+
+  @override
+  String get setupPlaygroundPinDescription => '게임이 진행될 전체 구역을 선택해요';
+
+  @override
+  String get setupPrisonPinDescription => '도둑을 잡아둘 감옥 구역을 선택해요';
+
+  @override
+  String get zoneAreaLabel => '면적';
+
+  @override
+  String get zoneClearAllPins => '전체 해제';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return '핀은 최대 $count개까지 찍을 수 있어요';
+  }
+
+  @override
+  String get pinTooCloseMessage => '핀이 너무 가까워요';
 
   @override
   String get dialogAgreementRequiredTermsTitle => '필수 약관 미동의';
 
   @override
-  String get errorAuthLoginCancelled => '로그인이 취소되었습니다';
+  String get errorAuthLoginCancelled => '로그인이 취소됐어요';
 
   @override
   String get settingsLanguageLabel => '언어';
@@ -166,6 +192,36 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsLanguageOptionJapanese => '日本語';
+
+  @override
+  String get asset_loading_sub_joinRoom => '지금 앱을 끄면 합류가 취소돼요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_createRoom => '작전 본부를 세우는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_changeTeam => '새 신분증을 발급하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_startGame => '곧 작전이 시작돼요. 앱을 끄지 말아주세요';
+
+  @override
+  String get asset_loading_sub_updateArea => '작전 구역을 저장하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_saveSettings => '설정을 저장하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_loadProfile => '요원 정보를 불러오는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_logout => '안전하게 철수하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get asset_loading_sub_deleteAccount => '기록을 지우는 중이에요. 앱을 끄지 말아주세요';
+
+  @override
+  String get asset_loading_sub_bugReport => '제보를 접수하는 중이에요. 잠시만 기다려주세요';
 
   @override
   String get asset_loading_joinRoom => '잠입 준비 중...';
@@ -350,11 +406,11 @@ class AppLocalizationsKo extends AppLocalizations {
       '누군가 버전 번호에 비밀을 숨겨뒀다는 소문이...';
 
   @override
-  String get asset_locationpermission_serviceDisabledTitle => '위치 서비스가 꺼져 있습니다';
+  String get asset_locationpermission_serviceDisabledTitle => '위치 서비스가 꺼져 있어요';
 
   @override
   String get asset_locationpermission_serviceDisabledHome =>
-      '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요';
+      '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n기기 설정에서 위치 서비스를 켜주세요';
 
   @override
   String get asset_locationpermission_serviceDisabledGame =>
@@ -365,11 +421,11 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 참가를 위해 위치 서비스를 켜주세요\n설정에서 허용 후 앱을 재시작해주세요';
 
   @override
-  String get asset_locationpermission_permissionDeniedTitle => '위치 권한이 필요합니다';
+  String get asset_locationpermission_permissionDeniedTitle => '위치 권한이 필요해요';
 
   @override
   String get asset_locationpermission_permissionDeniedHome =>
-      '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다';
+      '게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단돼요';
 
   @override
   String get asset_locationpermission_permissionDeniedGame =>
@@ -380,11 +436,10 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 참가를 위해 위치 권한을 허용해주세요\n설정에서 허용 후 앱을 재시작해주세요';
 
   @override
-  String get errorGameRoomCreateUnexpected => '게임 방 생성 중 예기치 않은 오류가 발생했습니다';
+  String get errorGameRoomCreateUnexpected => '게임 방 생성 중 예기치 않은 오류가 생겼어요';
 
   @override
-  String get errorActiveGameFetchUnexpected =>
-      '참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다';
+  String get errorActiveGameFetchUnexpected => '참여 중인 게임 조회 중 예기치 않은 오류가 생겼어요';
 
   @override
   String gameSettingMaxPlayers(String count) {
@@ -407,12 +462,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String zoneRadiusMeters(String meters) {
-    return '반경 ${meters}m';
-  }
-
-  @override
-  String get errorSettingsSaveFailed => '설정 저장에 실패했습니다';
+  String get errorSettingsSaveFailed => '설정 저장에 실패했어요';
 
   @override
   String get pageGameSettingsEditTitle => '설정 수정';
@@ -424,16 +474,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonSave => '저장';
 
   @override
-  String get errorAreaSaveFailed => '영역 저장에 실패했습니다';
+  String get errorAreaSaveFailed => '영역 저장에 실패했어요';
 
   @override
   String get pageGameSettingsTitle => '게임 설정';
 
   @override
-  String get errorZoneInfoLoadFailed => '구역 정보를 불러올 수 없습니다';
+  String get errorZoneInfoLoadFailed => '구역 정보를 불러오지 못했어요';
 
   @override
-  String get errorSettingsLoadFailed => '설정 정보를 불러올 수 없습니다';
+  String get errorSettingsLoadFailed => '설정 정보를 불러오지 못했어요';
 
   @override
   String get zonePlayground => '플레이그라운드';
@@ -458,10 +508,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homePageDontShowToday => '오늘은 다시 보지 않기';
 
   @override
-  String get errorAlreadyInGame => '이미 참가 중인 게임이 있습니다';
+  String get errorAlreadyInGame => '이미 참가 중인 게임이 있어요';
 
   @override
-  String get errorUnknownGameState => '알 수 없는 게임 상태입니다';
+  String get errorUnknownGameState => '알 수 없는 게임 상태예요';
 
   @override
   String get buttonGoToSettings => '설정으로 이동';
@@ -476,10 +526,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homePageBatteryGuideStep2 => '그래야 화면이 꺼져도 게임이 끊기지 않아요';
 
   @override
-  String get errorJoinFailedCheckCode => '참여에 실패했습니다. 초대 코드를 확인해주세요';
+  String get errorJoinFailedCheckCode => '참여에 실패했어요. 초대 코드를 확인해주세요';
 
   @override
-  String get errorJoinRetry => '참여에 실패했습니다. 다시 시도해주세요';
+  String get errorJoinRetry => '참여에 실패했어요. 다시 시도해주세요';
 
   @override
   String get dialogJoinRoomTitle => '방 참여하기';
@@ -497,13 +547,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appBrandName => '경찰과도둑';
 
   @override
-  String get messageComingSoon => '준비중입니다';
+  String get messageComingSoon => '준비 중이에요';
 
   @override
   String get homePageWelcomeMessage => '누가 내 치즈\n훔쳐갔어!!!!🧀';
-
-  @override
-  String get homePageWelcomeMessageClassic => '너무 기대 돼\n이번에는 어떤 역할을 할까?';
 
   @override
   String get buttonCreateRoom => '방 만들기';
@@ -520,7 +567,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요';
 
   @override
-  String get errorCreateRoomFailed => '게임 방 생성에 실패했습니다. 다시 시도해주세요';
+  String get errorCreateRoomFailed => '게임 방 생성에 실패했어요. 다시 시도해주세요';
 
   @override
   String get sessionCreationZoneFirstQuestion => '구역 선택을 먼저 설정할까요?';
@@ -577,7 +624,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCannotJoinRoom => '방에 참여할 수 없어요';
 
   @override
-  String get errorNotInGame => '해당 게임에 참가하지 않은 사용자입니다';
+  String get errorNotInGame => '해당 게임에 참가하지 않은 사용자예요';
 
   @override
   String get waitingRoomTutorialTeamSwitch => '이 버튼을 눌러 다른 팀으로 이동할 수 있어요';
@@ -614,7 +661,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonKick => '내보내기';
 
   @override
-  String get errorKickFailed => '강퇴 처리 중 오류가 발생했어요';
+  String get errorKickFailed => '강퇴 처리 중 오류가 생겼어요';
 
   @override
   String get dialogKickedFromRoomTitle => '방에서 내보내졌어요';
@@ -637,7 +684,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorGameStartFailed => '게임 시작에 실패했어요';
 
   @override
-  String get dialogLeaveRoomTitle => '방을 나가시겠어요?';
+  String get dialogLeaveRoomTitle => '방을 나갈까요?';
 
   @override
   String get dialogLeaveRoomMessage => '나가면 다시 초대코드를 입력해야 해요';
@@ -646,7 +693,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonLeave => '나가기';
 
   @override
-  String get errorLeaveRoomFailed => '퇴장 처리 중 오류가 발생했습니다';
+  String get errorLeaveRoomFailed => '퇴장 처리 중 오류가 생겼어요';
 
   @override
   String get dialogInviteCodeCreatedTitle => '초대코드를 생성했어요';
@@ -655,7 +702,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogInviteCodeShareMessage => '친구에게 코드를 공유하고 게임에 참여해 보세요!';
 
   @override
-  String get messageCodeCopied => '코드가 복사되었습니다';
+  String get messageCodeCopied => '코드를 복사했어요';
 
   @override
   String get buttonShare => '공유하기';
@@ -776,44 +823,42 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sectionTitleZone => '구역';
 
   @override
-  String get errorLogoutGeneric => '로그아웃 중 오류가 발생했습니다';
+  String get errorLogoutGeneric => '로그아웃 중 오류가 생겼어요';
 
   @override
-  String get errorAuthUserNotFound => '로그인 정보를 가져올 수 없습니다. 다시 시도해주세요';
+  String get errorAuthUserNotFound => '로그인 정보를 가져올 수 없어요. 다시 시도해주세요';
 
   @override
-  String get errorAuthTokenIssueFailed => '인증 토큰 발급에 실패했습니다. 다시 시도해주세요';
+  String get errorAuthTokenIssueFailed => '인증에 실패했어요. 다시 시도해주세요';
 
   @override
-  String get errorAuthTokenValidationFailed =>
-      'Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요';
+  String get errorAuthTokenValidationFailed => '로그인 정보가 만료됐어요. 다시 로그인해주세요';
 
   @override
-  String get errorAuthInvalidCredential => '잘못된 인증 정보입니다';
+  String get errorAuthInvalidCredential => '잘못된 인증 정보예요';
 
   @override
-  String get errorAuthAccountDisabled => '비활성화된 계정입니다';
+  String get errorAuthAccountDisabled => '비활성화된 계정이에요';
 
   @override
-  String get errorAuthTooManyRequests => '너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorAuthTooManyRequests => '요청이 너무 많아요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorAuthSignInMethodUnavailable => '이 로그인 방법은 현재 사용할 수 없습니다';
+  String get errorAuthSignInMethodUnavailable => '이 로그인 방법은 현재 사용할 수 없어요';
 
   @override
-  String get errorAuthFirebaseConfig => 'Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요';
+  String get errorAuthFirebaseConfig => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorAuthFirebaseInternal =>
-      'Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorAuthFirebaseInternal => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
   String errorAuthProviderLoginFailed(String provider) {
-    return '$provider 로그인에 실패했습니다. 다시 시도해주세요';
+    return '$provider 로그인에 실패했어요. 다시 시도해주세요';
   }
 
   @override
-  String get errorAuthLoginFailed => '로그인에 실패했습니다. 다시 시도해주세요';
+  String get errorAuthLoginFailed => '로그인에 실패했어요. 다시 시도해주세요';
 
   @override
   String get linkMarketingConsent => '마케팅 정보 수신';
@@ -834,7 +879,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorRequiredAgreementsMissing => '필수 약관에 모두 동의해주세요';
 
   @override
-  String get messageAccountDeleted => '회원탈퇴가 완료되었습니다';
+  String get messageAccountDeleted => '회원탈퇴를 완료했어요';
 
   @override
   String get dialogAge14ConfirmTitle => '만 14세 이상이신가요?';
@@ -844,13 +889,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요';
 
   @override
-  String get errorLoginGeneric => '로그인 중 오류가 발생했습니다';
+  String get errorLoginGeneric => '로그인 중 오류가 생겼어요';
 
   @override
-  String get errorAppleLoginFailed => 'Apple 로그인 중 오류가 발생했습니다';
+  String get errorAppleLoginFailed => 'Apple 로그인 중 오류가 생겼어요';
 
   @override
-  String get errorAgeRestrictionUnder14 => '만 14세 미만은 서비스를 이용할 수 없습니다';
+  String get errorAgeRestrictionUnder14 => '만 14세 미만은 서비스를 이용할 수 없어요';
 
   @override
   String get loginPageTagline => '실시간 GPS 기반 오프라인 추격 레이스';
@@ -868,7 +913,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get linkLocationTerms => '위치정보 이용약관';
 
   @override
-  String get loginPageAgreementSuffix => '에 동의합니다';
+  String get loginPageAgreementSuffix => '에 동의해요';
 
   @override
   String get messageNicknameSaved => '닉네임이 저장되었어요';
@@ -911,16 +956,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get splashCreditTag => 'by 동심지키미';
 
   @override
-  String get splashOfflineTitle => '인터넷 연결이 필요합니다';
+  String get splashOfflineTitle => '인터넷 연결이 필요해요';
 
   @override
   String get splashOfflineMessage => '연결 상태를 확인한 후\n다시 시도해주세요';
 
   @override
-  String get errorUnknown => '알 수 없는 오류가 발생했습니다';
+  String get errorUnknown => '알 수 없는 오류가 생겼어요';
 
   @override
-  String get errorLogoutFailed => '로그아웃에 실패했습니다';
+  String get errorLogoutFailed => '로그아웃에 실패했어요';
 
   @override
   String get agreementAllCheckboxLabel => '전체 동의';
@@ -938,19 +983,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameOverBannerTitle => '게임 종료!';
 
   @override
-  String get gameOverReasonAllArrested => '도둑이 모두 체포되었습니다!';
+  String get gameOverReasonAllArrested => '도둑이 모두 체포됐어요!';
 
   @override
-  String get gameOverReasonTimeUp => '제한 시간이 종료되었습니다!';
+  String get gameOverReasonTimeUp => '제한 시간이 끝났어요!';
 
   @override
-  String get gameOverReasonPoliceForfeited => '경찰이 모두 퇴장했습니다!';
+  String get gameOverReasonPoliceForfeited => '경찰이 모두 퇴장했어요!';
 
   @override
-  String get gameOverReasonRobberForfeited => '도둑이 모두 퇴장했습니다!';
+  String get gameOverReasonRobberForfeited => '도둑이 모두 퇴장했어요!';
 
   @override
-  String get gameOverFallbackMessage => '게임이 종료되었습니다.';
+  String get gameOverFallbackMessage => '게임이 끝났어요';
 
   @override
   String get gameTeamCop => '경찰팀';
@@ -966,7 +1011,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String messageGameOverWinner(Object winnerTeamLabel) {
-    return '$winnerTeamLabel의 승리입니다!';
+    return '$winnerTeamLabel의 승리예요!';
   }
 
   @override
@@ -976,16 +1021,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameRoleRobberLabel => '도둑';
 
   @override
-  String get errorCannotArrestDuringWait => '경찰 대기 시간 중에는 도둑을 체포할 수 없습니다';
+  String get errorCannotArrestDuringWait => '경찰 대기 시간 중에는 도둑을 체포할 수 없어요';
 
   @override
   String get qrScannerWantedRobberTitle => '도둑의 수배 QR을 스캔하세요';
 
   @override
-  String get errorExpiredQr => '만료된 QR입니다. QR 새로고침을 요청하세요';
+  String get errorExpiredQr => '만료된 QR이에요. QR 새로고침을 요청하세요';
 
   @override
-  String get errorAlreadyArrested => '이미 체포된 도둑입니다';
+  String get errorAlreadyArrested => '이미 체포된 도둑이에요';
 
   @override
   String get gameArrestOverlayTitle => '체포되었어요!';
@@ -1007,17 +1052,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelArrestCount => '체포 횟수';
 
   @override
-  String gameResultArrestCount(int count) {
-    return '$count회';
-  }
-
-  @override
   String get fieldRemainingRobbers => '남은 도둑';
-
-  @override
-  String gameResultRemainingRobberCount(int count) {
-    return '$count명';
-  }
 
   @override
   String get fieldGamePlaytime => '게임 진행 시간';
@@ -1029,19 +1064,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonPlayAgain => '한 번 더';
 
   @override
-  String get buttonViewMyRecord => '내 기록 보기';
-
-  @override
   String get labelMyRecord => '내 기록';
-
-  @override
-  String get labelTravelDistance => '내가 이동한 거리';
-
-  @override
-  String get labelMyArrestCount => '내가 잡은 도둑';
-
-  @override
-  String get labelMyEscapeCount => '내 탈옥 횟수';
 
   @override
   String get labelResult => '결과';
@@ -1056,12 +1079,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelNoRoute => '이동 기록 없음';
 
   @override
-  String get legendArrestSpot => '잡은 곳';
-
-  @override
-  String get legendCaughtSpot => '잡힌 곳';
-
-  @override
   String gameLocationRevealCountdown(String formatted) {
     return '다음 도둑 위치 공개까지 $formatted';
   }
@@ -1073,7 +1090,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonYes => '네';
 
   @override
-  String get dialogEscapeAttemptMessage => '탈옥을 시도하시겠습니까?';
+  String get dialogEscapeAttemptMessage => '탈옥할까요?';
 
   @override
   String get gameParticipantOverlayCurrent => '현재';
@@ -1105,10 +1122,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dialogCameraPermissionMessage =>
-      'QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요';
+      'QR코드를 스캔하려면 카메라 권한이 필요해요\n설정에서 카메라 권한을 허용해주세요';
 
   @override
-  String get errorCameraUnavailable => '카메라를 사용할 수 없습니다';
+  String get errorCameraUnavailable => '카메라를 사용할 수 없어요';
 
   @override
   String get gameZoneExitBanner => '플레이그라운드를 벗어났어요';
@@ -1117,7 +1134,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chatTeamPrefix => '[팀]';
 
   @override
-  String get chatSystemGameTimeLimit30Min => '제한 시간은 30분입니다';
+  String get chatSystemGameTimeLimit30Min => '제한 시간은 30분이에요';
 
   @override
   String get chatSystemGoodLuckRobber => '도둑 잘 도망쳐 봐요~';
@@ -1242,13 +1259,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get messageChangesSaved => '변경사항이 저장되었어요';
 
   @override
-  String get errorTemporaryRetry => '일시적인 오류가 발생했습니다. 다시 시도해주세요';
+  String get errorTemporaryRetry => '일시적인 오류가 생겼어요. 다시 시도해주세요';
 
   @override
   String get pageAgreementSettingsTitle => '이용약관 및 정책';
 
   @override
-  String get errorAgreementLoadFailed => '약관 동의 현황을 불러올 수 없습니다';
+  String get errorAgreementLoadFailed => '약관 동의 현황을 불러오지 못했어요';
 
   @override
   String get buttonRetry => '다시 시도';
@@ -1257,7 +1274,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonSaveChanges => '변경사항 저장';
 
   @override
-  String get errorLegalDocumentLoadFailed => '문서를 불러올 수 없습니다';
+  String get errorLegalDocumentLoadFailed => '문서를 불러오지 못했어요';
 
   @override
   String get pageSettingsTitle => '설정';
@@ -1357,20 +1374,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogLogoutTitle => '로그아웃';
 
   @override
-  String get dialogLogoutMessage => '정말 로그아웃 하시겠어요?';
+  String get dialogLogoutMessage => '정말 로그아웃할까요?';
 
   @override
-  String get snackbarLogoutFailed => '로그아웃에 실패했습니다';
+  String get snackbarLogoutFailed => '로그아웃에 실패했어요';
 
   @override
-  String get snackbarLogoutSuccess => '로그아웃되었습니다';
+  String get snackbarLogoutSuccess => '로그아웃했어요';
 
   @override
   String get dialogDeleteAccountTitle => '회원 탈퇴';
 
   @override
   String get dialogDeleteAccountMessage =>
-      '탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요';
+      '탈퇴하면 모든 데이터가 사라지고\n되돌릴 수 없어요\n\n계속하려면 \"delete\"를 입력하세요';
 
   @override
   String get fieldDeleteAccountHint => 'delete';
@@ -1569,7 +1586,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageCreditsTitle => '경찰과 도둑을 만든 사람들';
 
   @override
-  String get errorReportGeneric => '신고 처리 중 오류가 발생했습니다';
+  String get errorReportGeneric => '신고 처리 중 오류가 생겼어요';
 
   @override
   String get reportCategoryBait => '낚시/놀람/도배';
@@ -1593,42 +1610,41 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportCategoryOther => '기타(직접 작성)';
 
   @override
-  String get errorNicknameCheckUnexpected => '닉네임 확인 중 예기치 않은 오류가 발생했습니다';
+  String get errorNicknameCheckUnexpected => '닉네임 확인 중 예기치 않은 오류가 생겼어요';
 
   @override
-  String get errorNicknameUpdateUnexpected => '닉네임 변경 중 예기치 않은 오류가 발생했습니다';
+  String get errorNicknameUpdateUnexpected => '닉네임 변경 중 예기치 않은 오류가 생겼어요';
 
   @override
-  String get errorUserInfoFetch => '사용자 정보 조회 중 오류가 발생했습니다';
+  String get errorUserInfoFetch => '사용자 정보 조회 중 오류가 생겼어요';
 
   @override
-  String get errorDeleteAccountUnexpected => '회원 탈퇴 중 예기치 않은 오류가 발생했습니다';
+  String get errorDeleteAccountUnexpected => '회원 탈퇴 중 예기치 않은 오류가 생겼어요';
 
   @override
-  String get errorAgreementFetchUnexpected => '약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다';
+  String get errorAgreementFetchUnexpected => '약관 동의 상태 조회 중 예기치 않은 오류가 생겼어요';
 
   @override
-  String get errorAgreementSaveUnexpected => '약관 동의 저장 중 예기치 않은 오류가 발생했습니다';
+  String get errorAgreementSaveUnexpected => '약관 동의 저장 중 예기치 않은 오류가 생겼어요';
 
   @override
-  String get errorGamePushFetchUnexpected =>
-      '게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다';
+  String get errorGamePushFetchUnexpected => '게임 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요';
 
   @override
   String get errorGamePushUpdateUnexpected =>
-      '게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다';
+      '게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 생겼어요';
 
   @override
-  String get errorAuthTokenMissing => '인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다';
+  String get errorAuthTokenMissing => '로그인 정보를 확인할 수 없어요. 다시 로그인해주세요';
 
   @override
-  String get errorServerUnreachable => '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요';
+  String get errorServerUnreachable => '서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorAuthExpired => '인증이 만료되었습니다. 재로그인이 필요합니다';
+  String get errorAuthExpired => '인증이 만료됐어요. 재로그인이 필요해요';
 
   @override
-  String get errorNoticesLoadGeneric => '공지사항을 불러오는 중 오류가 발생했습니다';
+  String get errorNoticesLoadGeneric => '공지사항을 불러오는 중 오류가 생겼어요';
 
   @override
   String get messageLoadingNotices => '공지사항을 불러오는 중...';
@@ -1640,16 +1656,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageNoticesTitle => '공지사항';
 
   @override
-  String get pageNoticesEmpty => '등록된 공지사항이 없습니다';
+  String get pageNoticesEmpty => '등록된 공지사항이 없어요';
 
   @override
-  String get errorAreaLoadFailed => '구역 정보를 불러올 수 없습니다';
+  String get errorAreaLoadFailed => '구역 정보를 불러오지 못했어요';
 
   @override
-  String get pageNotFoundTitle => '페이지를 찾을 수 없습니다';
+  String get pageNotFoundTitle => '페이지를 찾을 수 없어요';
 
   @override
-  String get pageNotFoundMessage => '요청하신 페이지가 존재하지 않습니다';
+  String get pageNotFoundMessage => '요청하신 페이지가 없어요';
 
   @override
   String pageNotFoundPath(String path) {
@@ -1660,36 +1676,36 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonLogout => '로그아웃';
 
   @override
-  String get errorBugReportFailed => '버그 제보 처리 중 오류가 발생했습니다';
+  String get errorBugReportFailed => '버그 제보 처리 중 오류가 생겼어요';
 
   @override
   String gameEventStartTime(int minutes) {
-    return '제한 시간은 $minutes분입니다.';
+    return '제한 시간은 $minutes분이에요';
   }
 
   @override
-  String get gameEventStartReady => '잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!';
+  String get gameEventStartReady => '잠시 후 게임이 시작돼요.  모든 플레이어는 준비하세요!';
 
   @override
   String get gameEventStartReportTip =>
-      '게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.';
+      '게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요';
 
   @override
-  String get gameEventStartGo => '게임 시작!  행운을 빕니다!';
+  String get gameEventStartGo => '게임 시작!  행운을 빌어요!';
 
   @override
   String get gameEventPoliceMove => '경찰 출동!  도둑은 도망치세요!';
 
   @override
-  String get gameEventLocationReveal => '현재 도둑의 위치가 공개됩니다!';
+  String get gameEventLocationReveal => '현재 도둑의 위치가 공개돼요!';
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
-    return '@icon_police [$policeNickname]님이 @icon_robber [$robberNickname]님을 체포했습니다!';
+    return '@icon_police [$policeNickname]님이 @icon_robber [$robberNickname]님을 체포했어요!';
   }
 
   @override
-  String get gameEventEscapeNotice => '도둑이 탈옥했습니다! 지금 바로 체포하세요!';
+  String get gameEventEscapeNotice => '도둑이 탈옥했어요! 지금 바로 체포하세요!';
 
   @override
   String gameEventPlayerLeftNotice(String nickname, String teamLabel) {
@@ -1702,7 +1718,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get errorGameJoinUnexpected => '게임 입장 중 예기치 않은 오류가 발생했습니다';
+  String get errorGameJoinUnexpected => '게임 입장 중 예기치 않은 오류가 생겼어요';
 
   @override
   String get errorAlreadyInAnotherRoom =>
@@ -1741,219 +1757,217 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get errorCodeMissingRequestPart => '요청에 필요한 파트가 누락되었습니다';
+  String get errorCodeMissingRequestPart => '요청에 필요한 파트가 누락됐어요';
 
   @override
-  String get errorCodeInvalidRequestBody => '요청 본문의 형식이 잘못되었습니다';
+  String get errorCodeInvalidRequestBody => '요청 본문의 형식이 잘못됐어요';
 
   @override
-  String get errorCodeInvalidQueryParameter => '쿼리 파라미터의 형식이 잘못되었습니다';
+  String get errorCodeInvalidQueryParameter => '쿼리 파라미터의 형식이 잘못됐어요';
 
   @override
-  String get errorCodeQueryParameterTypeMismatch => '요청 파라미터의 타입이 잘못되었습니다';
+  String get errorCodeQueryParameterTypeMismatch => '요청 파라미터의 타입이 잘못됐어요';
 
   @override
-  String get errorCodeInvalidInputValue => '입력값이 유효성 검사를 통과하지 못했습니다';
+  String get errorCodeInvalidInputValue => '입력값이 조건에 맞지 않아요';
 
   @override
-  String get errorCodeInvalidDestination => '잘못된 연결 경로입니다';
+  String get errorCodeInvalidDestination => '잘못된 연결 경로예요';
 
   @override
-  String get errorCodeUnsupportedMediaType => '지원하지 않는 형식입니다';
+  String get errorCodeUnsupportedMediaType => '지원하지 않는 형식이에요';
 
   @override
-  String get errorCodeMethodNotAllowed => '허용되지 않은 요청입니다';
+  String get errorCodeMethodNotAllowed => '허용되지 않은 요청이에요';
 
   @override
-  String get errorCodeEndpointNotFound => '요청 경로를 찾을 수 없습니다';
+  String get errorCodeEndpointNotFound => '요청 경로를 찾을 수 없어요';
 
   @override
-  String get errorCodeInvalidSocketSession => '세션 정보를 찾을 수 없습니다. 다시 연결해주세요';
+  String get errorCodeInvalidSocketSession => '세션 정보를 찾을 수 없어요. 다시 연결해주세요';
 
   @override
-  String get errorCodeUnauthorizedSubscription => '해당 팀 전용 채널을 구독할 권한이 없습니다';
+  String get errorCodeUnauthorizedSubscription => '해당 팀 전용 채널을 구독할 권한이 없어요';
 
   @override
-  String get errorCodeInternalServerError => '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorCodeInternalServerError => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorCodeFirebaseInitError => '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorCodeFirebaseInitError => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorCodeFirebaseConfigNotFound =>
-      '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorCodeFirebaseConfigNotFound => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorCodeEncryptionFailed => '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorCodeEncryptionFailed => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorCodeDecryptionFailed => '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorCodeDecryptionFailed => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorCodeInvalidEncryptionKey => '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorCodeInvalidEncryptionKey => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorCodeSocialLoginFailed => '소셜 로그인에 실패하였습니다';
+  String get errorCodeSocialLoginFailed => '소셜 로그인에 실패했어요';
 
   @override
-  String get errorCodeAccessTokenExpired => '인증 정보가 만료되었습니다';
+  String get errorCodeAccessTokenExpired => '인증 정보가 만료됐어요';
 
   @override
-  String get errorCodeRefreshTokenExpired => '로그인이 만료되었습니다. 다시 로그인해주세요';
+  String get errorCodeRefreshTokenExpired => '로그인이 만료됐어요. 다시 로그인해주세요';
 
   @override
-  String get errorCodeInvalidToken => '인증 정보가 올바르지 않습니다. 다시 로그인해주세요';
+  String get errorCodeInvalidToken => '인증 정보가 올바르지 않아요. 다시 로그인해주세요';
 
   @override
-  String get errorCodeUnauthenticatedRequest => '로그인이 필요합니다';
+  String get errorCodeUnauthenticatedRequest => '로그인이 필요해요';
 
   @override
-  String get errorCodeExpiredFirebaseToken => '인증이 만료되었습니다. 다시 시도해주세요';
+  String get errorCodeExpiredFirebaseToken => '인증이 만료됐어요. 다시 시도해주세요';
 
   @override
-  String get errorCodeInvalidFirebaseToken => '인증에 실패했습니다. 다시 시도해주세요';
+  String get errorCodeInvalidFirebaseToken => '인증에 실패했어요. 다시 시도해주세요';
 
   @override
-  String get errorCodeUnsupportedSocialType => '지원하지 않는 소셜 로그인 방식입니다';
+  String get errorCodeUnsupportedSocialType => '지원하지 않는 소셜 로그인 방식이에요';
 
   @override
-  String get errorCodeForbiddenAdminOnly => '관리자 권한이 필요합니다';
+  String get errorCodeForbiddenAdminOnly => '관리자 권한이 필요해요';
 
   @override
-  String get errorCodeNicknameGenerationFailed =>
-      '회원가입에 실패했습니다. 잠시 후 다시 시도해주세요';
+  String get errorCodeNicknameGenerationFailed => '회원가입에 실패했어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorCodeFirebaseServerError => '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+  String get errorCodeFirebaseServerError => '일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요';
 
   @override
-  String get errorCodeUserNotFound => '해당 유저를 찾을 수 없습니다';
+  String get errorCodeUserNotFound => '해당 유저를 찾을 수 없어요';
 
   @override
-  String get errorCodeDuplicatedNickname => '이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요';
+  String get errorCodeDuplicatedNickname => '이미 사용 중인 닉네임이에요. 다른 닉네임을 선택해주세요';
 
   @override
-  String get errorCodeCannotWithdraw => '진행 중인 게임 세션이 있어 탈퇴할 수 없습니다';
+  String get errorCodeCannotWithdraw => '진행 중인 게임 세션이 있어 탈퇴할 수 없어요';
 
   @override
-  String get errorCodeRequiredTermsNotAgreed => '필수 약관은 모두 동의해야 합니다';
+  String get errorCodeRequiredTermsNotAgreed => '필수 약관은 모두 동의해야 해요';
 
   @override
-  String get errorCodeGameNotFound => '요청하신 게임 정보가 존재하지 않습니다';
+  String get errorCodeGameNotFound => '요청하신 게임 정보가 존재하지 않아요';
 
   @override
-  String get errorCodeGameNotInProgress => '게임이 진행 중인 상태가 아닙니다';
+  String get errorCodeGameNotInProgress => '게임이 진행 중인 상태가 아니에요';
 
   @override
-  String get errorCodeGameNotActive => '대기 중이거나 진행 중인 게임에서만 조회할 수 있습니다';
+  String get errorCodeGameNotActive => '대기 중이거나 진행 중인 게임에서만 조회할 수 있어요';
 
   @override
-  String get errorCodeGameNotWaiting => '대기 중인 게임에서만 설정을 변경할 수 있습니다';
+  String get errorCodeGameNotWaiting => '대기 중인 게임에서만 설정을 변경할 수 있어요';
 
   @override
-  String get errorCodeInvalidLocationInterval => '위치 공개 주기는 라운드 시간보다 짧아야 합니다';
+  String get errorCodeInvalidLocationInterval => '위치 공개 주기는 라운드 시간보다 짧아야 해요';
 
   @override
-  String get errorCodeInvalidPoliceWaitTime => '경찰 대기 시간은 라운드 시간보다 짧아야 합니다';
+  String get errorCodeInvalidPoliceWaitTime => '경찰 대기 시간은 라운드 시간보다 짧아야 해요';
 
   @override
   String get errorCodeInviteCodeGenerationFailed =>
-      '초대 코드 생성에 실패했습니다. 잠시 후 다시 시도해주세요';
+      '초대 코드 생성에 실패했어요. 잠시 후 다시 시도해주세요';
 
   @override
   String get errorCodeInvalidJailRadius =>
-      '감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없습니다';
+      '감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없어요';
 
   @override
-  String get errorCodeJailOutsidePlayground => '감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다';
+  String get errorCodeJailOutsidePlayground => '감옥은 플레이그라운드 내부에 완전히 포함되어야 해요';
 
   @override
-  String get errorCodeGameAreaNotFound => '해당 게임 구역을 찾을 수 없습니다';
+  String get errorCodeGameAreaNotFound => '해당 게임 구역을 찾을 수 없어요';
 
   @override
-  String get errorCodeAlreadyParticipating => '이미 해당 게임에 참가하고 있습니다';
+  String get errorCodeAlreadyParticipating => '이미 해당 게임에 참가하고 있어요';
 
   @override
-  String get errorCodeGameAlreadyStarted => '이미 시작된 게임에는 참여할 수 없습니다';
+  String get errorCodeGameAlreadyStarted => '이미 시작된 게임에는 참여할 수 없어요';
 
   @override
-  String get errorCodeGameFull => '게임에 참가할 수 있는 최대 인원을 초과했습니다';
+  String get errorCodeGameFull => '게임에 참가할 수 있는 최대 인원을 초과했어요';
 
   @override
-  String get errorCodeInvalidInviteCode => '입력하신 초대 코드가 유효하지 않습니다';
+  String get errorCodeInvalidInviteCode => '입력하신 초대 코드가 유효하지 않아요';
 
   @override
-  String get errorCodeParticipantNotFound => '해당 게임에 참가하지 않은 사용자입니다';
+  String get errorCodeParticipantNotFound => '해당 게임에 참가하지 않은 사용자예요';
 
   @override
-  String get errorCodeNotAParticipant => '해당 게임의 참가자가 아닙니다';
+  String get errorCodeNotAParticipant => '해당 게임의 참가자가 아니에요';
 
   @override
-  String get errorCodeCannotLeaveDuringGame => '게임이 시작된 이후에는 방을 나갈 수 없습니다';
+  String get errorCodeCannotLeaveDuringGame => '게임이 시작된 이후에는 방을 나갈 수 없어요';
 
   @override
-  String get errorCodeLobbyActionNotAllowed => '게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다';
+  String get errorCodeLobbyActionNotAllowed => '게임이 시작된 이후에는 로비 상태를 변경할 수 없어요';
 
   @override
-  String get errorCodeNotHost => '방장만 할 수 있습니다';
+  String get errorCodeNotHost => '방장만 할 수 있어요';
 
   @override
   String get errorCodeInvalidTeamComposition =>
-      '게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다';
+      '게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요';
 
   @override
-  String get errorCodeNotAllReady => '모든 참가자가 준비 상태여야 게임을 시작할 수 있습니다';
+  String get errorCodeNotAllReady => '모든 참가자가 준비 상태여야 게임을 시작할 수 있어요';
 
   @override
-  String get errorCodeNotRobberTeam => '도둑 팀만 위치를 전송할 수 있습니다';
+  String get errorCodeNotRobberTeam => '도둑 팀만 위치를 전송할 수 있어요';
 
   @override
-  String get errorCodeHostCannotUnready => '방장은 항상 준비 상태여야 합니다';
+  String get errorCodeHostCannotUnready => '방장은 항상 준비 상태여야 해요';
 
   @override
-  String get errorCodeParticipantGameMismatch => '경찰과 도둑이 서로 다른 게임에 참여하고 있습니다';
+  String get errorCodeParticipantGameMismatch => '경찰과 도둑이 서로 다른 게임에 참여하고 있어요';
 
   @override
-  String get errorCodeOnlyPoliceCanArrest => '경찰 팀만 도둑을 체포할 수 있습니다';
+  String get errorCodeOnlyPoliceCanArrest => '경찰 팀만 도둑을 체포할 수 있어요';
 
   @override
-  String get errorCodeOnlyRobberCanBeArrested => '도둑 팀만 체포될 수 있습니다';
+  String get errorCodeOnlyRobberCanBeArrested => '도둑 팀만 체포될 수 있어요';
 
   @override
-  String get errorCodeOnlyRobberCanEscape => '도둑 팀만 탈옥할 수 있습니다';
+  String get errorCodeOnlyRobberCanEscape => '도둑 팀만 탈옥할 수 있어요';
 
   @override
-  String get errorCodeAlreadyArrested => '이미 수감된 도둑입니다';
+  String get errorCodeAlreadyArrested => '이미 수감된 도둑이에요';
 
   @override
-  String get errorCodeNotJailed => '수감된 상태에서만 탈옥할 수 있습니다';
+  String get errorCodeNotJailed => '수감된 상태에서만 탈옥할 수 있어요';
 
   @override
-  String get errorCodePoliceWaitingTime => '경찰은 대기 시간 동안 도둑을 체포할 수 없습니다';
+  String get errorCodePoliceWaitingTime => '경찰은 대기 시간 동안 도둑을 체포할 수 없어요';
 
   @override
-  String get errorCodeCannotKickYourself => '방장은 자기 자신을 강퇴할 수 없습니다';
+  String get errorCodeCannotKickYourself => '방장은 자기 자신을 강퇴할 수 없어요';
 
   @override
-  String get errorCodeNoticeNotFound => '해당 공지사항을 찾을 수 없습니다';
+  String get errorCodeNoticeNotFound => '해당 공지사항을 찾을 수 없어요';
 
   @override
-  String get errorCodeGameResultNotFound => '해당 게임 결과를 찾을 수 없습니다';
+  String get errorCodeGameResultNotFound => '해당 게임 결과를 찾을 수 없어요';
 
   @override
-  String get errorCodeEtcReasonRequired => '신고 유형이 기타일 때 사유를 입력해야 합니다';
+  String get errorCodeEtcReasonRequired => '신고 유형이 기타일 때 사유를 입력해야 해요';
 
   @override
-  String get errorCodeSelfReport => '본인을 신고할 수 없습니다';
+  String get errorCodeSelfReport => '본인을 신고할 수 없어요';
 
   @override
-  String get errorCodeDuplicateReport => '해당 게임에서 이미 신고한 사용자입니다';
+  String get errorCodeDuplicateReport => '해당 게임에서 이미 신고한 사용자예요';
 
   @override
-  String get errorCodeReportNotFound => '해당 신고 내역이 존재하지 않습니다';
+  String get errorCodeReportNotFound => '해당 신고 내역이 존재하지 않아요';
 
   @override
-  String get errorCodeReportTargetNotFound => '해당 게임에 존재하지 않는 참가자입니다';
+  String get errorCodeReportTargetNotFound => '해당 게임에 존재하지 않는 참가자예요';
 
   @override
   String get pingFound => '발견';
@@ -1965,10 +1979,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pingCooldownNotice => '잠시 후 다시 시도해주세요';
 
   @override
-  String get gameLeaveConfirmTitle => '게임에서 나가시겠어요?';
+  String get gameLeaveConfirmTitle => '게임에서 나갈까요?';
 
   @override
-  String get gameLeaveConfirmMessage => '진행 중인 게임에서 나갑니다';
+  String get gameLeaveConfirmMessage => '진행 중인 게임에서 나가게 돼요';
 
   @override
   String get gameLeaveFailedMessage => '퇴장하지 못했어요. 잠시 후 다시 시도해주세요';

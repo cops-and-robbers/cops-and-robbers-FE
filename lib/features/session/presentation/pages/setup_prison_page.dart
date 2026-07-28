@@ -11,9 +11,25 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/constants/game_config.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
+import '../../../../core/widgets/map/pin_zone_setting_widget.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
+import '../../../game/data/models/game_area_model.dart';
+import '../../../game/domain/entities/area_shape.dart';
+import '../../../game/domain/polygon_geometry.dart';
 import '../../../../l10n/app_localizations.dart';
+
+/// 감옥 편집 화면에 전달하는 타입 안전한 라우트 인자
+class PrisonEditArgs {
+  const PrisonEditArgs({required this.playground, this.initialJail});
+
+  /// 변경된 플레이그라운드 구역
+  final AreaShape playground;
+
+  /// 기존 감옥 구역. 타입 전환 시에는 null로 전달한다.
+  final AreaShape? initialJail;
+}
 
 /// 감옥 구역 설정 화면
 ///
@@ -21,29 +37,14 @@ import '../../../../l10n/app_localizations.dart';
 /// ZoneSettingWidget을 통해 중심점과 반경을 설정하고,
 /// 설정 완료 시 데이터를 로컬 저장소에 저장한 후 이전 페이지로 반환합니다.
 ///
-/// **편집 모드**: [editInitialCenter]와 [editInitialRadius]가 제공되면
+/// **편집 모드**: [editArgs]가 제공되면
 /// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
 /// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
 class SetupPrisonPage extends ConsumerStatefulWidget {
-  const SetupPrisonPage({
-    super.key,
-    this.editInitialCenter,
-    this.editInitialRadius,
-    this.editPlaygroundCenter,
-    this.editPlaygroundRadius,
-  });
+  const SetupPrisonPage({super.key, this.editArgs});
 
-  /// 편집 모드 초기 중심 좌표 (null이면 생성 모드)
-  final LatLng? editInitialCenter;
-
-  /// 편집 모드 초기 반경 (미터)
-  final double? editInitialRadius;
-
-  /// 편집 모드 플레이그라운드 중심 좌표 (검증용)
-  final LatLng? editPlaygroundCenter;
-
-  /// 편집 모드 플레이그라운드 반경 (검증용)
-  final double? editPlaygroundRadius;
+  /// 편집 모드 구역 정보 (null이면 생성 모드)
+  final PrisonEditArgs? editArgs;
 
   @override
   ConsumerState<SetupPrisonPage> createState() => _SetupPrisonPageState();
@@ -70,6 +71,15 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
   LatLng? _playgroundCenter;
   double? _playgroundRadius;
 
+  /// 현재 구역 설정 방식 (플레이그라운드가 정한 타입을 따름)
+  GameAreaType _areaType = GameAreaType.circle;
+
+  /// 감옥 핀 목록 (정렬된 경계 순서, PinZoneSettingWidget 콜백으로 갱신)
+  List<LatLng> _pinPoints = [];
+
+  /// 플레이그라운드 핀 목록 (참조·포함 검증용)
+  List<LatLng>? _playgroundPinPoints;
+
   /// 로컬 저장소 서비스
   final _storageService = SessionDraftStorageService();
 
@@ -86,10 +96,10 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
   /// 편집 모드 여부
   ///
   /// 감옥 초기값 또는 플레이그라운드 편집값이 전달되면 편집 모드로 동작합니다.
-  /// 플레이그라운드 변경 후 감옥 재설정 시에는 editInitialCenter가 null이지만
-  /// editPlaygroundCenter가 전달되므로 편집 모드로 판단해야 합니다.
-  bool get _isEditMode =>
-      widget.editInitialCenter != null || widget.editPlaygroundCenter != null;
+  bool get _isEditMode => widget.editArgs != null;
+
+  /// 핀(폴리곤) 모드 여부 — 플레이그라운드가 정한 타입을 따른다
+  bool get _isPinMode => _areaType == GameAreaType.polygon;
 
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
@@ -97,10 +107,35 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     if (_isEditMode) {
       if (mounted) {
         setState(() {
-          _currentCenter = widget.editInitialCenter;
-          _currentRadius = widget.editInitialRadius ?? 100.0;
-          _playgroundCenter = widget.editPlaygroundCenter;
-          _playgroundRadius = widget.editPlaygroundRadius;
+          final args = widget.editArgs!;
+          final playground = args.playground;
+          final initialJail = args.initialJail;
+          if (playground is PolygonShape) {
+            _areaType = GameAreaType.polygon;
+            _playgroundPinPoints = [
+              for (final point in playground.points)
+                LatLng(point.latitude, point.longitude),
+            ];
+            if (initialJail is PolygonShape) {
+              _pinPoints = [
+                for (final point in initialJail.points)
+                  LatLng(point.latitude, point.longitude),
+              ];
+            }
+          } else if (playground is CircleShape) {
+            _playgroundCenter = LatLng(
+              playground.center.latitude,
+              playground.center.longitude,
+            );
+            _playgroundRadius = playground.radiusInMeters;
+            if (initialJail is CircleShape) {
+              _currentCenter = LatLng(
+                initialJail.center.latitude,
+                initialJail.center.longitude,
+              );
+              _currentRadius = initialJail.radiusInMeters;
+            }
+          }
           _isLoading = false;
         });
       }
@@ -111,6 +146,11 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     final draft = await _storageService.loadDraft();
     if (mounted) {
       setState(() {
+        _areaType = draft?.areaType ?? GameAreaType.circle;
+        _playgroundPinPoints = draft?.playgroundPinPoints == null
+            ? null
+            : List.of(draft!.playgroundPinPoints!);
+        _pinPoints = List.of(draft?.jailPinPoints ?? const []);
         _currentCenter = draft?.jailCenter;
         _currentRadius = draft?.jailRadiusInMeters ?? 100.0;
         _playgroundCenter = draft?.playgroundCenter;
@@ -133,8 +173,78 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     });
   }
 
+  /// 핀 모드: 감옥 폴리곤이 플레이그라운드 폴리곤 안에 완전히 포함되는지
+  bool _isJailPolygonInsidePlayground() {
+    final playground = _playgroundPinPoints;
+    if (playground == null ||
+        playground.length < GameConfig.minPolygonVertexCount) {
+      return false;
+    }
+    if (_pinPoints.length < GameConfig.minPolygonVertexCount) return false;
+    final jail = [
+      for (final p in _pinPoints)
+        GeoPoint(latitude: p.latitude, longitude: p.longitude),
+    ];
+    // 플레이그라운드와 동일한 유효성 기준 적용 — 자기교차·퇴화 다각형이
+    // 포함 판정만 통과해 서버로 전송되는 경로를 막는다.
+    if (!isValidPolygon(jail)) return false;
+    final outer = [
+      for (final p in playground)
+        GeoPoint(latitude: p.latitude, longitude: p.longitude),
+    ];
+    return isPolygonInsidePolygon(jail, outer);
+  }
+
+  /// 완료 버튼 활성화 여부
+  bool get _canComplete => _isPinMode
+      ? _isJailPolygonInsidePlayground()
+      : (_isMapReady && _isJailInsidePlayground());
+
+  /// 검증 실패 안내 문구 — null이면 표시하지 않는다
+  ///
+  /// 완료 버튼이 비활성인 이유를 사용자에게 알려준다. 단 핀 모드에서 감옥 꼭짓점이
+  /// 아직 3개 미만인 상태는 그리는 중인 정상 상태이므로 이탈 경고를 띄우지 않는다.
+  String? _validationMessage(AppLocalizations l10n) {
+    if (_isPinMode) {
+      final playground = _playgroundPinPoints;
+      if (playground == null ||
+          playground.length < GameConfig.minPolygonVertexCount) {
+        return l10n.errorPlaygroundFirst;
+      }
+      if (_pinPoints.length < GameConfig.minPolygonVertexCount) return null;
+      return _isJailPolygonInsidePlayground()
+          ? null
+          : l10n.errorJailOutsidePlayground;
+    }
+
+    // 원형 모드: 지도 초기화 전에는 판정 자체가 불가
+    if (!_isMapReady || _isJailInsidePlayground()) return null;
+    return _playgroundCenter == null
+        ? l10n.errorPlaygroundFirst
+        : l10n.errorJailOutsidePlayground;
+  }
+
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
+    // 핀 모드: 정렬된 감옥 꼭짓점 목록 반환
+    if (_isPinMode) {
+      if (!_isEditMode) {
+        await _storageService.updatePrisonPinZone(_pinPoints);
+      }
+      if (mounted) {
+        context.pop<AreaShape>(
+          AreaShape.polygon(
+            points: [
+              for (final point in _pinPoints)
+                GeoPoint(latitude: point.latitude, longitude: point.longitude),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+
+    // 원형 모드
     final center = _currentCenter;
     if (center == null) return;
 
@@ -143,13 +253,16 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
       await _storageService.updatePrisonZone(center, _currentRadius);
     }
 
-    // 데이터 반환 (Map 형태)
     if (mounted) {
-      context.pop({
-        'lat': center.latitude,
-        'lng': center.longitude,
-        'radius': _currentRadius,
-      });
+      context.pop<AreaShape>(
+        AreaShape.circle(
+          center: GeoPoint(
+            latitude: center.latitude,
+            longitude: center.longitude,
+          ),
+          radiusInMeters: _currentRadius,
+        ),
+      );
     }
   }
 
@@ -165,9 +278,6 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
       circleId: 'reference_zone',
     );
   }
-
-  /// 부동소수점 오차 방지를 위한 허용 오차 (미터)
-  static const double _epsilonMeters = 1.0;
 
   /// 감옥이 플레이그라운드 안에 있는지 검증
   bool _isJailInsidePlayground() {
@@ -187,7 +297,8 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     );
 
     // 감옥 중심 ~ 플레이그라운드 중심 거리 + 감옥 반경 ≤ 플레이그라운드 반경
-    return (distance + _currentRadius) <= (playgroundRadius + _epsilonMeters);
+    return (distance + _currentRadius) <=
+        (playgroundRadius + GameConfig.zoneContainmentToleranceInMeters);
   }
 
   // ============================================
@@ -223,6 +334,8 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     }
 
     // 로딩 완료 후 정상 UI 렌더링
+    final validationMessage = _validationMessage(l10n);
+
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
@@ -247,7 +360,9 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  l10n.setupPrisonDescription,
+                  _isPinMode
+                      ? l10n.setupPrisonPinDescription
+                      : l10n.setupPrisonDescription,
                   style: AppTextStyles.label16Medium.copyWith(color: textColor),
                 ),
               ),
@@ -256,37 +371,48 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
             // 간격 20px
             SizedBox(height: AppSpacing.vertical20),
 
-            // ZoneSettingWidget (지도 + 슬라이더)
+            // 지도 영역 (모드에 따라 원형/핀 위젯 스위칭)
             Expanded(
-              child: ZoneSettingWidget(
-                initialCenter: _currentCenter,
-                initialRadius: _currentRadius,
-                minRadius: 5,
-                maxRadius: 300,
-                // 감옥 색상 (빨간색 계열)
-                centerColor: AppColors.red,
-                borderColor: AppColors.red800,
-                fillColor: AppColors.red500,
-                inactiveTrackColor: AppColors.red100,
-                radiusChipBackgroundColor: AppColors.red,
-                locationButtonColor: AppColors.red,
-                referenceZone: _buildPlaygroundReferenceZone(),
-                onZoneChanged: _onZoneChanged,
-                isDarkMode: isDark,
-                valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
-              ),
+              child: _isPinMode
+                  ? PinZoneSettingWidget(
+                      initialPoints: _pinPoints,
+                      pinColor: AppColors.red,
+                      fillColor: AppColors.red500Alpha20,
+                      strokeColor: AppColors.red800,
+                      locationButtonColor: AppColors.red,
+                      referencePolygon: _playgroundPinPoints,
+                      isDarkMode: isDark,
+                      onPointsChanged: (points) {
+                        setState(() => _pinPoints = points);
+                      },
+                    )
+                  : ZoneSettingWidget(
+                      initialCenter: _currentCenter,
+                      initialRadius: _currentRadius,
+                      minRadius: 5,
+                      maxRadius: 300,
+                      // 감옥 색상 (빨간색 계열)
+                      centerColor: AppColors.red,
+                      borderColor: AppColors.red800,
+                      fillColor: AppColors.red500,
+                      inactiveTrackColor: AppColors.red100,
+                      radiusChipBackgroundColor: AppColors.red,
+                      locationButtonColor: AppColors.red,
+                      referenceZone: _buildPlaygroundReferenceZone(),
+                      onZoneChanged: _onZoneChanged,
+                      isDarkMode: isDark,
+                      valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
+                    ),
             ),
 
-            // 검증 실패 안내 문구
-            if (_isMapReady && !_isJailInsidePlayground())
+            // 검증 실패 안내 문구 (원형·핀 공통)
+            if (validationMessage != null)
               Padding(
                 padding: AppPadding.horizontal24,
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
-                    _playgroundCenter == null
-                        ? l10n.errorPlaygroundFirst
-                        : l10n.errorJailOutsidePlayground,
+                    validationMessage,
                     style: AppTextStyles.label16Medium.copyWith(
                       color: AppColors.red,
                     ),
@@ -299,9 +425,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
               padding: AppPadding.all20,
               child: AppButton(
                 text: l10n.buttonDone,
-                onPressed: _isMapReady && _isJailInsidePlayground()
-                    ? _onComplete
-                    : null,
+                onPressed: _canComplete ? _onComplete : null,
                 backgroundColor: AppColors.red,
                 showBorder: false,
               ),

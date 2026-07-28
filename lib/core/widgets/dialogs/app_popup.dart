@@ -5,8 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
-import '../../constants/text_styles.dart';
-import '../../services/loading_message_service.dart';
 import 'dialog_animation.dart';
 
 /// 버튼 없이 콘텐츠만 표시하는 팝업
@@ -80,68 +78,6 @@ class AppPopup extends StatefulWidget {
       },
       transitionBuilder: DialogAnimation.buildTransition,
     );
-  }
-
-  /// 로딩 팝업 표시 (터치 차단)
-  ///
-  /// [CircularProgressIndicator] + 메시지 텍스트를 표시하는 간편 메서드입니다.
-  /// API 호출 등 비동기 작업 중 사용자에게 진행 상태를 알립니다.
-  /// 닫기: `Navigator.of(context).pop()`
-  ///
-  /// ```dart
-  /// AppPopup.showLoading(context: context, message: '로그아웃 중...');
-  /// await someAsyncWork();
-  /// if (navigator.canPop()) navigator.pop();
-  /// ```
-  static Future<T?> showLoading<T>({
-    required BuildContext context,
-    required String message,
-  }) {
-    return show<T>(
-      context: context,
-      barrierDismissible: false,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(color: AppColors.black),
-          SizedBox(height: AppSpacing.vertical16),
-          Text(
-            message,
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// 카테고리 기반 랜덤 로딩 팝업 표시
-  ///
-  /// `assets/messages/loading_messages.json`에서 카테고리에 해당하는
-  /// 메시지를 랜덤으로 선택하여 표시합니다.
-  ///
-  /// **주의**: 이 메서드의 Future는 메시지 로드 완료 시 resolve됩니다.
-  /// [showLoading]의 Future(팝업 닫힘 시 resolve)는 의도적으로
-  /// await하지 않습니다 (fire-and-forget). 팝업은 호출부에서
-  /// `Navigator.of(context).pop()`으로 직접 닫아야 합니다.
-  ///
-  /// ```dart
-  /// await AppPopup.showRandomLoading(
-  ///   context: context,
-  ///   category: LoadingCategory.joinRoom,
-  /// );
-  /// await someApiCall();
-  /// if (navigator.canPop()) navigator.pop(); // 로딩 팝업 닫기
-  /// ```
-  static Future<void> showRandomLoading({
-    required BuildContext context,
-    required LoadingCategory category,
-  }) async {
-    final message = LoadingMessageService.getMessage(context, category);
-    if (!context.mounted) return;
-    // showLoading의 Future는 팝업이 닫힐 때 complete되므로 await하지 않음
-    showLoading(context: context, message: message);
   }
 
   @override

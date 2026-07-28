@@ -50,14 +50,19 @@ i18n은 `lib/l10n/app_*.arb` 수정 후 `flutter gen-l10n`을 실행한다.
 
 작업 범위와 관련된 문서만 읽는다.
 
-- .claude/rules/00_QUICK_REFERENCE.md
-- .claude/rules/01_ARCHITECTURE.md
-- .claude/rules/02_FOLDER_STRUCTURE.md
-- .claude/rules/03_CODE_CONVENTIONS.md
-- .claude/rules/04_CODE_GENERATION_GUIDE.md
-- .claude/rules/10_I18N_GUIDE.md
-- .claude/rules/Agents.md
-- .claude/rules/UI_Design_System.md
+- .claude/rules/Agents.md — 테스트 작성 룰
+- .claude/skills/flutter-architecture/SKILL.md — 계층 구조·의존성 규칙
+- .claude/skills/folder-structure/SKILL.md — 파일 배치·네이밍
+- .claude/skills/code-conventions/SKILL.md — 주석·로깅·에러 처리
+- .claude/skills/code-generation/SKILL.md — build_runner
+- .claude/skills/ui-design-system/SKILL.md — AppColors·AppTextStyles·팀 테마
+- .claude/skills/api-integration/SKILL.md — 새 API 연동
+- .claude/skills/realtime-spec/SKILL.md — WebSocket STOMP 이벤트
+- .claude/skills/design-patterns/SKILL.md — 디자인 패턴 카탈로그
+- .claude/skills/timer-architecture/SKILL.md — 타이머 로직
+- .claude/skills/cicd-guide/SKILL.md — 배포 파이프라인
+- .claude/skills/google-maps-setup/SKILL.md — 지도 API Key
+- docs/i18n/glossary.md — 도메인 용어집
 - docs/api-docs.json
 - docs/경찰과도둑\_PRD_2.md
 

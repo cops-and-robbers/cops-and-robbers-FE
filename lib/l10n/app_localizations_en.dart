@@ -92,16 +92,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorForbidden => 'Access denied';
 
   @override
-  String get errorNotFound => 'The requested resource could not be found';
+  String get errorNotFound => 'The requested information could not be found';
 
   @override
-  String get errorConflict => 'The request conflicts with the current state';
+  String get errorConflict =>
+      'We couldn\'t process your request. Please try again in a moment';
 
   @override
   String get buttonConfirm => 'Confirm';
 
   @override
-  String get buttonCancel => 'Cancel';
+  String get buttonCancel => 'Close';
 
   @override
   String get dialogReconnectMessage =>
@@ -137,17 +138,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonAppleSignIn => 'Continue with Apple';
 
   @override
-  String zoneRadiusKm(String km) {
-    return 'Radius ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return 'Radius ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => 'Radius';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return 'Radius $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return 'Area $value';
+  }
+
+  @override
+  String get areaTypeSetByDistance => 'Set by distance';
+
+  @override
+  String get areaTypeSetByPin => 'Set by pins';
+
+  @override
+  String get setupPlaygroundPinDescription =>
+      'Select the whole area where the game will take place';
+
+  @override
+  String get setupPrisonPinDescription =>
+      'Select the jail area to hold the thieves';
+
+  @override
+  String get zoneAreaLabel => 'Area';
+
+  @override
+  String get zoneClearAllPins => 'Clear all';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return 'You can place up to $count pins';
+  }
+
+  @override
+  String get pinTooCloseMessage => 'Pins are too close together';
 
   @override
   String get dialogAgreementRequiredTermsTitle => 'Required terms not agreed';
@@ -175,6 +204,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsLanguageOptionJapanese => '日本語';
+
+  @override
+  String get asset_loading_sub_joinRoom =>
+      'If you close the app now, joining will be canceled. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_createRoom =>
+      'We\'re setting up the hideout. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_changeTeam =>
+      'We\'re issuing your new ID. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_startGame =>
+      'The operation is about to begin. Please don\'t close the app';
+
+  @override
+  String get asset_loading_sub_updateArea =>
+      'We\'re saving the operation zone. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_saveSettings =>
+      'We\'re saving your settings. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_loadProfile =>
+      'We\'re loading your agent profile. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_logout =>
+      'We\'re pulling you out safely. Please wait a moment';
+
+  @override
+  String get asset_loading_sub_deleteAccount =>
+      'We\'re erasing your records. Please don\'t close the app';
+
+  @override
+  String get asset_loading_sub_bugReport =>
+      'We\'re filing your report. Please wait a moment';
 
   @override
   String get asset_loading_joinRoom => 'Preparing to infiltrate';
@@ -446,11 +515,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String zoneRadiusMeters(String meters) {
-    return 'Radius ${meters}m';
-  }
-
-  @override
   String get errorSettingsSaveFailed => 'Failed to save settings';
 
   @override
@@ -545,10 +609,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homePageWelcomeMessage => 'Who stole\nMy cheese!!!!🧀';
-
-  @override
-  String get homePageWelcomeMessageClassic =>
-      'I am so excited\nWhat role will I play this time?';
 
   @override
   String get buttonCreateRoom => 'Create room';
@@ -855,11 +915,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAuthTokenIssueFailed =>
-      'Failed to issue the authentication token. Please try again';
+      'Authentication failed. Please try again';
 
   @override
   String get errorAuthTokenValidationFailed =>
-      'Failed to verify the Firebase authentication token. Please sign in again';
+      'Your login session has expired. Please sign in again';
 
   @override
   String get errorAuthInvalidCredential => 'Invalid credentials';
@@ -877,11 +937,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAuthFirebaseConfig =>
-      'There is an issue with the Firebase configuration. Please try again in a moment';
+      'A temporary error occurred. Please try again in a moment';
 
   @override
   String get errorAuthFirebaseInternal =>
-      'A Firebase internal error occurred. Please try again in a moment';
+      'A temporary error occurred. Please try again in a moment';
 
   @override
   String errorAuthProviderLoginFailed(String provider) {
@@ -1034,7 +1094,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameOverReasonRobberForfeited => 'All Robbers have left the game!';
 
   @override
-  String get gameOverFallbackMessage => 'The game has ended.';
+  String get gameOverFallbackMessage => 'The game has ended';
 
   @override
   String get gameTeamCop => 'Cop team';
@@ -1093,17 +1153,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelArrestCount => 'Arrest count';
 
   @override
-  String gameResultArrestCount(int count) {
-    return '$count times';
-  }
-
-  @override
   String get fieldRemainingRobbers => 'Remaining Robbers';
-
-  @override
-  String gameResultRemainingRobberCount(int count) {
-    return '$count people';
-  }
 
   @override
   String get fieldGamePlaytime => 'Game playtime';
@@ -1115,19 +1165,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonPlayAgain => 'One more time';
 
   @override
-  String get buttonViewMyRecord => 'View my record';
-
-  @override
   String get labelMyRecord => 'My record';
-
-  @override
-  String get labelTravelDistance => 'Distance I moved';
-
-  @override
-  String get labelMyArrestCount => 'Robbers I caught';
-
-  @override
-  String get labelMyEscapeCount => 'My jailbreaks';
 
   @override
   String get labelResult => 'Result';
@@ -1140,12 +1178,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelNoRoute => 'No movement recorded';
-
-  @override
-  String get legendArrestSpot => 'Catch spot';
-
-  @override
-  String get legendCaughtSpot => 'Caught spot';
 
   @override
   String gameLocationRevealCountdown(String formatted) {
@@ -1733,7 +1765,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAuthTokenMissing =>
-      'Unable to retrieve the authentication token. Re-login is required';
+      'We couldn\'t verify your login. Please sign in again';
 
   @override
   String get errorServerUnreachable =>
@@ -1782,7 +1814,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String gameEventStartTime(int minutes) {
-    return 'The time limit is $minutes minutes.';
+    return 'The time limit is $minutes minutes';
   }
 
   @override
@@ -1791,7 +1823,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameEventStartReportTip =>
-      'Long-press a chat message during the game to report or block players.';
+      'Long-press a chat message during the game to report or block players';
 
   @override
   String get gameEventStartGo => 'Game start!  Good luck!';
@@ -1881,7 +1913,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'The request parameter type is invalid';
 
   @override
-  String get errorCodeInvalidInputValue => 'The input failed validation';
+  String get errorCodeInvalidInputValue =>
+      'The value you entered doesn\'t meet the requirements';
 
   @override
   String get errorCodeInvalidDestination => 'Invalid connection path';

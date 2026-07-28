@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../features/game/domain/entities/area_shape.dart';
 import '../../constants/spacing_and_radius.dart';
 import 'zone_setting_button.dart';
 
@@ -50,7 +51,10 @@ class ZoneSettingButtonExample extends StatelessWidget {
             ZoneSettingButton(
               zoneType: ZoneType.playground,
               title: '플레이그라운드',
-              radiusMeters: 400,
+              shape: const AreaShape.circle(
+                center: GeoPoint(latitude: 37.5665, longitude: 126.9780),
+                radiusInMeters: 400,
+              ),
               onPressed: () {
                 debugPrint('플레이그라운드 설정 페이지로 이동 (반경: 400m)');
               },
@@ -87,7 +91,10 @@ class ZoneSettingButtonExample extends StatelessWidget {
             ZoneSettingButton(
               zoneType: ZoneType.prison,
               title: '감옥',
-              radiusMeters: 200,
+              shape: const AreaShape.circle(
+                center: GeoPoint(latitude: 37.5665, longitude: 126.9780),
+                radiusInMeters: 200,
+              ),
               onPressed: () {
                 debugPrint('감옥 설정 페이지로 이동 (반경: 200m)');
               },

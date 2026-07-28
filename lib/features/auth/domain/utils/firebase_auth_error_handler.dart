@@ -111,6 +111,13 @@ class FirebaseAuthErrorHandler {
   }) {
     String errorCode = e.code;
 
+    // 사용자에겐 순화된 messageKey 문구가 노출되므로, 실제 원인은 변환 지점에서 반드시 로그로 남긴다
+    if (kDebugMode) {
+      debugPrint(
+        '🔥 FirebaseAuth → AuthException 변환: code=${e.code}, message=${e.message}',
+      );
+    }
+
     // API 키 에러 감지
     if (e.code == 'internal-error' && _isApiKeyError(e)) {
       errorCode = 'firebase-api-key-invalid';

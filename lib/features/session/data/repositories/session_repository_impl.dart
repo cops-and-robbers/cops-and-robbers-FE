@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
+import '../../../game/domain/entities/area_shape.dart';
 import '../../domain/entities/create_session_result.dart';
 import '../../domain/entities/game_join_result.dart';
 import '../../domain/entities/user_game_status_entity.dart';
@@ -22,31 +23,17 @@ class SessionRepositoryImpl implements SessionRepository {
 
   @override
   Future<CreateSessionResult> createGame({
-    required double playgroundLatitude,
-    required double playgroundLongitude,
-    required int playgroundRadiusInMeters,
-    required double jailLatitude,
-    required double jailLongitude,
-    required int jailRadiusInMeters,
+    required GameAreaEntity area,
     required int roundDurationMinutes,
     required int locationRevealIntervalMinutes,
     required int policeWaitMinutes,
     required int maxParticipants,
   }) async {
+    final areaRequest = area.toRequestModel();
+
     try {
       final request = GameCreateRequestModel(
-        area: AreaRequestModel(
-          playgroundCenter: CoordinatesRequestModel(
-            latitude: playgroundLatitude,
-            longitude: playgroundLongitude,
-          ),
-          playgroundRadiusInMeters: playgroundRadiusInMeters,
-          jailCenter: CoordinatesRequestModel(
-            latitude: jailLatitude,
-            longitude: jailLongitude,
-          ),
-          jailRadiusInMeters: jailRadiusInMeters,
-        ),
+        area: areaRequest,
         settings: GameSettingsRequestModel(
           roundDurationMinutes: roundDurationMinutes,
           locationRevealIntervalMinutes: locationRevealIntervalMinutes,

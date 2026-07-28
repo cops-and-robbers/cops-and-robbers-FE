@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v2.12.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/games/{gameId} 응답에 isEventGame 필드 추가\n  - 이벤트 게임 여부를 클라이언트에서 구분할 수 있도록 지원\n\n## v2.11.0 업데이트 내역\n\n### ✨ 신규\n- POST /api/games/join 이벤트 게임 QR 입장 지원\n  - 진행 중인 이벤트 게임에 초대 코드로 입장 시 경찰로 즉시 합류\n  - 응답에 isEventGame 필드 추가 (클라이언트 인게임/로비 화면 분기용)\n\n## v2.10.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- DELETE /api/games/{gameId}/leave API 인게임 중도 퇴장 분기처리 추가\n  (제세한 변경 내용은 해당 항목 참고)\n",
-    "version": "2.12.0"
+    "description": "## v2.13.0 업데이트 내역\n\n### ✨ 신규\n- PUT /api/games/{gameId}/area 폴리곤 구역 타입 지원\n  - areaType 필드 추가 (CIRCLE | POLYGON)\n  - CIRCLE: 기존 원형 구역 (circle 객체 사용)\n  - POLYGON: 다각형 구역 (polygon 객체 사용)\n- GET /api/games/{gameId}/area 응답 구조 변경\n  - 기존 플랫 구조 → areaType + circle/polygon 중첩 구조\n\n## v2.12.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/games/{gameId} 응답에 isEventGame 필드 추가\n  - 이벤트 게임 여부를 클라이언트에서 구분할 수 있도록 지원\n\n## v2.11.0 업데이트 내역\n\n### ✨ 신규\n- POST /api/games/join 이벤트 게임 QR 입장 지원\n  - 진행 중인 이벤트 게임에 초대 코드로 입장 시 경찰로 즉시 합류\n  - 응답에 isEventGame 필드 추가 (클라이언트 인게임/로비 화면 분기용)\n\n## v2.10.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- DELETE /api/games/{gameId}/leave API 인게임 중도 퇴장 분기처리 추가\n  (제세한 변경 내용은 해당 항목 참고)\n",
+    "version": "2.13.0"
   },
   "servers": [
     {
-      "url": "백엔드 주소",
+      "url": "https://api.copsnro66ers.site",
       "description": "Generated server url"
     }
   ],
@@ -4760,34 +4760,7 @@
           }
         }
       },
-      "CoordinatesRequest": {
-        "required": ["latitude", "longitude"],
-        "type": "object",
-        "properties": {
-          "latitude": {
-            "maximum": 90,
-            "exclusiveMaximum": false,
-            "minimum": -90,
-            "exclusiveMinimum": false,
-            "type": "number",
-            "description": "위도",
-            "format": "double",
-            "example": 37.5665
-          },
-          "longitude": {
-            "maximum": 180,
-            "exclusiveMaximum": false,
-            "minimum": -180,
-            "exclusiveMinimum": false,
-            "type": "number",
-            "description": "경도",
-            "format": "double",
-            "example": 126.978
-          }
-        },
-        "description": "감옥 중심 좌표"
-      },
-      "GameAreaRequest": {
+      "CircleAreaRequest": {
         "required": [
           "jailCenter",
           "jailRadiusInMeters",
@@ -4816,27 +4789,97 @@
             "format": "int32",
             "example": 100
           }
-        }
+        },
+        "description": "원형 구역 데이터 (CIRCLE 전용)"
       },
-      "Coordinates": {
+      "CoordinatesRequest": {
+        "required": ["latitude", "longitude"],
         "type": "object",
         "properties": {
           "latitude": {
+            "maximum": 90,
+            "exclusiveMaximum": false,
+            "minimum": -90,
+            "exclusiveMinimum": false,
             "type": "number",
             "description": "위도",
             "format": "double",
             "example": 37.5665
           },
           "longitude": {
+            "maximum": 180,
+            "exclusiveMaximum": false,
+            "minimum": -180,
+            "exclusiveMinimum": false,
             "type": "number",
             "description": "경도",
             "format": "double",
             "example": 126.978
           }
-        },
-        "description": "감옥 중심 좌표"
+        }
       },
-      "GameAreaUpdateResponse": {
+      "GameAreaRequest": {
+        "type": "object",
+        "properties": {
+          "areaType": {
+            "type": "string",
+            "description": "구역 타입 (CIRCLE | POLYGON)",
+            "enum": ["CIRCLE", "POLYGON"]
+          },
+          "circle": {
+            "$ref": "#/components/schemas/CircleAreaRequest"
+          },
+          "polygon": {
+            "$ref": "#/components/schemas/PolygonAreaRequest"
+          },
+          "playgroundCenter": {
+            "$ref": "#/components/schemas/CoordinatesRequest"
+          },
+          "playgroundRadiusInMeters": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "jailCenter": {
+            "$ref": "#/components/schemas/CoordinatesRequest"
+          },
+          "jailRadiusInMeters": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "areaDataConsistent": {
+            "type": "boolean"
+          },
+          "legacyAreaDataValid": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PolygonAreaRequest": {
+        "required": ["jailPolygon", "playgroundPolygon"],
+        "type": "object",
+        "properties": {
+          "playgroundPolygon": {
+            "maxItems": 2147483647,
+            "minItems": 3,
+            "type": "array",
+            "description": "플레이그라운드 꼭짓점 좌표 목록 (최소 3개)",
+            "items": {
+              "$ref": "#/components/schemas/CoordinatesRequest"
+            }
+          },
+          "jailPolygon": {
+            "maxItems": 2147483647,
+            "minItems": 3,
+            "type": "array",
+            "description": "감옥 꼭짓점 좌표 목록 (최소 3개)",
+            "items": {
+              "$ref": "#/components/schemas/CoordinatesRequest"
+            }
+          }
+        },
+        "description": "다각형 구역 데이터 (POLYGON 전용)"
+      },
+      "CircleAreaResponse": {
         "type": "object",
         "properties": {
           "playgroundCenter": {
@@ -4857,7 +4900,75 @@
             "format": "int32",
             "example": 100
           }
+        },
+        "description": "원형 구역 데이터 (CIRCLE 전용)"
+      },
+      "Coordinates": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "description": "위도",
+            "format": "double",
+            "example": 37.5665
+          },
+          "longitude": {
+            "type": "number",
+            "description": "경도",
+            "format": "double",
+            "example": 126.978
+          }
         }
+      },
+      "GameAreaUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "areaType": {
+            "type": "string",
+            "description": "구역 타입 (CIRCLE | POLYGON)",
+            "enum": ["CIRCLE", "POLYGON"]
+          },
+          "circle": {
+            "$ref": "#/components/schemas/CircleAreaResponse"
+          },
+          "polygon": {
+            "$ref": "#/components/schemas/PolygonAreaResponse"
+          },
+          "playgroundCenter": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "playgroundRadiusInMeters": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "jailCenter": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "jailRadiusInMeters": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PolygonAreaResponse": {
+        "type": "object",
+        "properties": {
+          "playgroundPolygon": {
+            "type": "array",
+            "description": "플레이그라운드 꼭짓점 좌표 목록",
+            "items": {
+              "$ref": "#/components/schemas/Coordinates"
+            }
+          },
+          "jailPolygon": {
+            "type": "array",
+            "description": "감옥 꼭짓점 좌표 목록",
+            "items": {
+              "$ref": "#/components/schemas/Coordinates"
+            }
+          }
+        },
+        "description": "다각형 구역 데이터 (POLYGON 전용)"
       },
       "ReportRequest": {
         "required": [
@@ -5626,23 +5737,30 @@
       "GameAreaResponse": {
         "type": "object",
         "properties": {
+          "areaType": {
+            "type": "string",
+            "description": "구역 타입 (CIRCLE | POLYGON)",
+            "enum": ["CIRCLE", "POLYGON"]
+          },
+          "circle": {
+            "$ref": "#/components/schemas/CircleAreaResponse"
+          },
+          "polygon": {
+            "$ref": "#/components/schemas/PolygonAreaResponse"
+          },
           "playgroundCenter": {
             "$ref": "#/components/schemas/Coordinates"
           },
           "playgroundRadiusInMeters": {
             "type": "integer",
-            "description": "플레이그라운드 반경(m)",
-            "format": "int32",
-            "example": 1000
+            "format": "int32"
           },
           "jailCenter": {
             "$ref": "#/components/schemas/Coordinates"
           },
           "jailRadiusInMeters": {
             "type": "integer",
-            "description": "감옥 반경(m)",
-            "format": "int32",
-            "example": 100
+            "format": "int32"
           }
         }
       },

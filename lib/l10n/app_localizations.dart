@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// No description provided for @dialogUpdateOptionalMessage.
   ///
   /// In ko, this message translates to:
-  /// **'더 좋아진 새 버전이 있어요.\n업데이트하시겠어요?'**
+  /// **'더 좋아진 새 버전이 있어요\n업데이트할까요?'**
   String get dialogUpdateOptionalMessage;
 
   /// No description provided for @dialogUpdateOptionalConfirm.
@@ -163,7 +163,7 @@ abstract class AppLocalizations {
   /// No description provided for @dialogUpdateMandatoryMessage.
   ///
   /// In ko, this message translates to:
-  /// **'새로운 버전이 출시되었어요.\n업데이트하시겠어요?'**
+  /// **'새로운 버전이 나왔어요\n업데이트할까요?'**
   String get dialogUpdateMandatoryMessage;
 
   /// No description provided for @dialogUpdateMandatoryConfirm.
@@ -181,19 +181,19 @@ abstract class AppLocalizations {
   /// No description provided for @chatSystemGameStartTime.
   ///
   /// In ko, this message translates to:
-  /// **'제한 시간은 {minutes}분입니다'**
+  /// **'제한 시간은 {minutes}분이에요'**
   String chatSystemGameStartTime(int minutes);
 
   /// No description provided for @chatSystemGameStartReportTip.
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다'**
+  /// **'게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요'**
   String get chatSystemGameStartReportTip;
 
   /// No description provided for @chatSystemPoliceMoveWarning.
   ///
   /// In ko, this message translates to:
-  /// **'경찰이 곧 출동합니다.  도둑은 서둘러 이동하세요!'**
+  /// **'경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!'**
   String get chatSystemPoliceMoveWarning;
 
   /// No description provided for @chatSystemRemainingRobbers.
@@ -205,13 +205,13 @@ abstract class AppLocalizations {
   /// No description provided for @chatSystemFiveMinutesLeft.
   ///
   /// In ko, this message translates to:
-  /// **'게임 종료까지 5분 남았습니다. 마지막 기회를 놓치지 마세요!'**
+  /// **'게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!'**
   String get chatSystemFiveMinutesLeft;
 
   /// No description provided for @errorNetworkTimeout.
   ///
   /// In ko, this message translates to:
-  /// **'서버 연결 시간이 초과되었습니다'**
+  /// **'서버 연결이 너무 오래 걸려요'**
   String get errorNetworkTimeout;
 
   /// No description provided for @errorNetworkOffline.
@@ -223,37 +223,37 @@ abstract class AppLocalizations {
   /// No description provided for @errorServerInternal.
   ///
   /// In ko, this message translates to:
-  /// **'서버에 문제가 발생했습니다'**
+  /// **'서버에 문제가 생겼어요'**
   String get errorServerInternal;
 
   /// No description provided for @errorBadRequest.
   ///
   /// In ko, this message translates to:
-  /// **'잘못된 요청입니다'**
+  /// **'잘못된 요청이에요'**
   String get errorBadRequest;
 
   /// No description provided for @errorUnauthorized.
   ///
   /// In ko, this message translates to:
-  /// **'인증에 실패했습니다'**
+  /// **'인증에 실패했어요'**
   String get errorUnauthorized;
 
   /// No description provided for @errorForbidden.
   ///
   /// In ko, this message translates to:
-  /// **'접근 권한이 없습니다'**
+  /// **'접근 권한이 없어요'**
   String get errorForbidden;
 
   /// No description provided for @errorNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'요청한 리소스를 찾을 수 없습니다'**
+  /// **'요청한 정보를 찾을 수 없어요'**
   String get errorNotFound;
 
   /// No description provided for @errorConflict.
   ///
   /// In ko, this message translates to:
-  /// **'요청이 현재 상태와 충돌합니다'**
+  /// **'요청을 처리할 수 없어요. 잠시 후 다시 시도해주세요'**
   String get errorConflict;
 
   /// No description provided for @buttonConfirm.
@@ -265,7 +265,7 @@ abstract class AppLocalizations {
   /// No description provided for @buttonCancel.
   ///
   /// In ko, this message translates to:
-  /// **'취소'**
+  /// **'닫기'**
   String get buttonCancel;
 
   /// No description provided for @dialogReconnectMessage.
@@ -328,23 +328,71 @@ abstract class AppLocalizations {
   /// **'Apple로 계속하기'**
   String get buttonAppleSignIn;
 
-  /// 구역 정보 — 반경 (km 단위)
-  ///
-  /// In ko, this message translates to:
-  /// **'반경 {km}km'**
-  String zoneRadiusKm(String km);
-
-  /// No description provided for @zoneRadiusMeter.
-  ///
-  /// In ko, this message translates to:
-  /// **'반경 {radiusMeters}m'**
-  String zoneRadiusMeter(String radiusMeters);
-
   /// No description provided for @zoneRadiusLabel.
   ///
   /// In ko, this message translates to:
   /// **'반경'**
   String get zoneRadiusLabel;
+
+  /// 구역 크기 — 원형 반경. 값+단위는 formatRadiusValue가 생성한다
+  ///
+  /// In ko, this message translates to:
+  /// **'반경 {value}'**
+  String zoneRadiusValue(String value);
+
+  /// 구역 크기 — 폴리곤 면적. 값+단위는 formatAreaValue가 생성한다
+  ///
+  /// In ko, this message translates to:
+  /// **'면적 {value}'**
+  String zoneAreaValue(String value);
+
+  /// No description provided for @areaTypeSetByDistance.
+  ///
+  /// In ko, this message translates to:
+  /// **'거리로 설정'**
+  String get areaTypeSetByDistance;
+
+  /// No description provided for @areaTypeSetByPin.
+  ///
+  /// In ko, this message translates to:
+  /// **'핀으로 설정'**
+  String get areaTypeSetByPin;
+
+  /// No description provided for @setupPlaygroundPinDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 진행될 전체 구역을 선택해요'**
+  String get setupPlaygroundPinDescription;
+
+  /// No description provided for @setupPrisonPinDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑을 잡아둘 감옥 구역을 선택해요'**
+  String get setupPrisonPinDescription;
+
+  /// No description provided for @zoneAreaLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'면적'**
+  String get zoneAreaLabel;
+
+  /// No description provided for @zoneClearAllPins.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 해제'**
+  String get zoneClearAllPins;
+
+  /// No description provided for @pinMaxCountMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'핀은 최대 {count}개까지 찍을 수 있어요'**
+  String pinMaxCountMessage(int count);
+
+  /// No description provided for @pinTooCloseMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'핀이 너무 가까워요'**
+  String get pinTooCloseMessage;
 
   /// No description provided for @dialogAgreementRequiredTermsTitle.
   ///
@@ -355,7 +403,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorAuthLoginCancelled.
   ///
   /// In ko, this message translates to:
-  /// **'로그인이 취소되었습니다'**
+  /// **'로그인이 취소됐어요'**
   String get errorAuthLoginCancelled;
 
   /// 설정 화면의 언어 설정 메뉴 라벨
@@ -399,6 +447,66 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'日本語'**
   String get settingsLanguageOptionJapanese;
+
+  /// No description provided for @asset_loading_sub_joinRoom.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 앱을 끄면 합류가 취소돼요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_joinRoom;
+
+  /// No description provided for @asset_loading_sub_createRoom.
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 본부를 세우는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_createRoom;
+
+  /// No description provided for @asset_loading_sub_changeTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 신분증을 발급하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_changeTeam;
+
+  /// No description provided for @asset_loading_sub_startGame.
+  ///
+  /// In ko, this message translates to:
+  /// **'곧 작전이 시작돼요. 앱을 끄지 말아주세요'**
+  String get asset_loading_sub_startGame;
+
+  /// No description provided for @asset_loading_sub_updateArea.
+  ///
+  /// In ko, this message translates to:
+  /// **'작전 구역을 저장하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_updateArea;
+
+  /// No description provided for @asset_loading_sub_saveSettings.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정을 저장하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_saveSettings;
+
+  /// No description provided for @asset_loading_sub_loadProfile.
+  ///
+  /// In ko, this message translates to:
+  /// **'요원 정보를 불러오는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_loadProfile;
+
+  /// No description provided for @asset_loading_sub_logout.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전하게 철수하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_logout;
+
+  /// No description provided for @asset_loading_sub_deleteAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록을 지우는 중이에요. 앱을 끄지 말아주세요'**
+  String get asset_loading_sub_deleteAccount;
+
+  /// No description provided for @asset_loading_sub_bugReport.
+  ///
+  /// In ko, this message translates to:
+  /// **'제보를 접수하는 중이에요. 잠시만 기다려주세요'**
+  String get asset_loading_sub_bugReport;
 
   /// No description provided for @asset_loading_joinRoom.
   ///
@@ -757,13 +865,13 @@ abstract class AppLocalizations {
   /// No description provided for @asset_locationpermission_serviceDisabledTitle.
   ///
   /// In ko, this message translates to:
-  /// **'위치 서비스가 꺼져 있습니다'**
+  /// **'위치 서비스가 꺼져 있어요'**
   String get asset_locationpermission_serviceDisabledTitle;
 
   /// No description provided for @asset_locationpermission_serviceDisabledHome.
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n기기 설정에서 위치 서비스를 켜주세요'**
+  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n기기 설정에서 위치 서비스를 켜주세요'**
   String get asset_locationpermission_serviceDisabledHome;
 
   /// No description provided for @asset_locationpermission_serviceDisabledGame.
@@ -781,13 +889,13 @@ abstract class AppLocalizations {
   /// No description provided for @asset_locationpermission_permissionDeniedTitle.
   ///
   /// In ko, this message translates to:
-  /// **'위치 권한이 필요합니다'**
+  /// **'위치 권한이 필요해요'**
   String get asset_locationpermission_permissionDeniedTitle;
 
   /// No description provided for @asset_locationpermission_permissionDeniedHome.
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용합니다\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단됩니다'**
+  /// **'게임 중 도둑 위치를 경찰 팀에게 공유하고,\n구역 이탈을 감지하기 위해 위치 정보를 사용해요\n위치는 게임 참가자에게만 공유되며,\n게임 종료 시 즉시 중단돼요'**
   String get asset_locationpermission_permissionDeniedHome;
 
   /// No description provided for @asset_locationpermission_permissionDeniedGame.
@@ -805,13 +913,13 @@ abstract class AppLocalizations {
   /// 게임 방 생성 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'게임 방 생성 중 예기치 않은 오류가 발생했습니다'**
+  /// **'게임 방 생성 중 예기치 않은 오류가 생겼어요'**
   String get errorGameRoomCreateUnexpected;
 
   /// 참여 중인 게임 조회 실패 시 표시되는 예외 메시지
   ///
   /// In ko, this message translates to:
-  /// **'참여 중인 게임 조회 중 예기치 않은 오류가 발생했습니다'**
+  /// **'참여 중인 게임 조회 중 예기치 않은 오류가 생겼어요'**
   String get errorActiveGameFetchUnexpected;
 
   /// 게임 설정 — 최대 참가 인원수 표기 (단위: 명)
@@ -838,16 +946,10 @@ abstract class AppLocalizations {
   /// **'도둑 도망 후 {minutes}분 뒤'**
   String gameSettingPoliceStartDelay(int minutes);
 
-  /// 구역 정보 — 반경 (m 단위)
-  ///
-  /// In ko, this message translates to:
-  /// **'반경 {meters}m'**
-  String zoneRadiusMeters(String meters);
-
   /// 게임 설정 저장 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'설정 저장에 실패했습니다'**
+  /// **'설정 저장에 실패했어요'**
   String get errorSettingsSaveFailed;
 
   /// 게임 설정 수정 페이지 타이틀
@@ -871,7 +973,7 @@ abstract class AppLocalizations {
   /// 게임 구역 저장 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'영역 저장에 실패했습니다'**
+  /// **'영역 저장에 실패했어요'**
   String get errorAreaSaveFailed;
 
   /// 게임 설정 페이지 타이틀
@@ -883,13 +985,13 @@ abstract class AppLocalizations {
   /// 구역 정보 로드 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'구역 정보를 불러올 수 없습니다'**
+  /// **'구역 정보를 불러오지 못했어요'**
   String get errorZoneInfoLoadFailed;
 
   /// 게임 설정 로드 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'설정 정보를 불러올 수 없습니다'**
+  /// **'설정 정보를 불러오지 못했어요'**
   String get errorSettingsLoadFailed;
 
   /// 공통 — 플레이그라운드 라벨
@@ -937,13 +1039,13 @@ abstract class AppLocalizations {
   /// 이미 다른 게임에 참가 중일 때 안내
   ///
   /// In ko, this message translates to:
-  /// **'이미 참가 중인 게임이 있습니다'**
+  /// **'이미 참가 중인 게임이 있어요'**
   String get errorAlreadyInGame;
 
   /// 게임 상태를 식별할 수 없을 때 표시
   ///
   /// In ko, this message translates to:
-  /// **'알 수 없는 게임 상태입니다'**
+  /// **'알 수 없는 게임 상태예요'**
   String get errorUnknownGameState;
 
   /// 기기 설정 화면으로 이동하는 버튼
@@ -973,13 +1075,13 @@ abstract class AppLocalizations {
   /// 방 참여 실패 — 초대 코드 확인 안내
   ///
   /// In ko, this message translates to:
-  /// **'참여에 실패했습니다. 초대 코드를 확인해주세요'**
+  /// **'참여에 실패했어요. 초대 코드를 확인해주세요'**
   String get errorJoinFailedCheckCode;
 
   /// 방 참여 실패 — 일반 재시도 안내
   ///
   /// In ko, this message translates to:
-  /// **'참여에 실패했습니다. 다시 시도해주세요'**
+  /// **'참여에 실패했어요. 다시 시도해주세요'**
   String get errorJoinRetry;
 
   /// 방 참여 다이얼로그 제목
@@ -1015,20 +1117,14 @@ abstract class AppLocalizations {
   /// 미구현 기능 안내 메시지
   ///
   /// In ko, this message translates to:
-  /// **'준비중입니다'**
+  /// **'준비 중이에요'**
   String get messageComingSoon;
 
-  /// 홈 페이지 — 메인 환영 메시지 (default 스킨)
+  /// 홈 페이지 — 메인 환영 메시지
   ///
   /// In ko, this message translates to:
   /// **'누가 내 치즈\n훔쳐갔어!!!!🧀'**
   String get homePageWelcomeMessage;
-
-  /// 홈 페이지 — 메인 환영 메시지 (classic 스킨 이스터에그)
-  ///
-  /// In ko, this message translates to:
-  /// **'너무 기대 돼\n이번에는 어떤 역할을 할까?'**
-  String get homePageWelcomeMessageClassic;
 
   /// 공통 — 방 만들기 버튼
   ///
@@ -1057,7 +1153,7 @@ abstract class AppLocalizations {
   /// 방 생성 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'게임 방 생성에 실패했습니다. 다시 시도해주세요'**
+  /// **'게임 방 생성에 실패했어요. 다시 시도해주세요'**
   String get errorCreateRoomFailed;
 
   /// 방 생성 — 구역 미설정 시 안내
@@ -1171,7 +1267,7 @@ abstract class AppLocalizations {
   /// 권한 없음 — 해당 게임 참가자가 아닐 때 안내
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임에 참가하지 않은 사용자입니다'**
+  /// **'해당 게임에 참가하지 않은 사용자예요'**
   String get errorNotInGame;
 
   /// 대기실 튜토리얼 — 팀 변경 버튼 안내
@@ -1237,7 +1333,7 @@ abstract class AppLocalizations {
   /// 참가자 강퇴 실패 시 표시되는 에러 메시지
   ///
   /// In ko, this message translates to:
-  /// **'강퇴 처리 중 오류가 발생했어요'**
+  /// **'강퇴 처리 중 오류가 생겼어요'**
   String get errorKickFailed;
 
   /// 강퇴 알림 다이얼로그 제목
@@ -1279,7 +1375,7 @@ abstract class AppLocalizations {
   /// 대기실 퇴장 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
-  /// **'방을 나가시겠어요?'**
+  /// **'방을 나갈까요?'**
   String get dialogLeaveRoomTitle;
 
   /// 대기실 퇴장 확인 다이얼로그 본문
@@ -1297,7 +1393,7 @@ abstract class AppLocalizations {
   /// 대기실 — 퇴장 처리 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'퇴장 처리 중 오류가 발생했습니다'**
+  /// **'퇴장 처리 중 오류가 생겼어요'**
   String get errorLeaveRoomFailed;
 
   /// 초대코드 생성 완료 알림 다이얼로그 타이틀
@@ -1315,7 +1411,7 @@ abstract class AppLocalizations {
   /// 초대코드 클립보드 복사 완료 안내
   ///
   /// In ko, this message translates to:
-  /// **'코드가 복사되었습니다'**
+  /// **'코드를 복사했어요'**
   String get messageCodeCopied;
 
   /// 공유 액션 버튼
@@ -1549,73 +1645,73 @@ abstract class AppLocalizations {
   /// 로그아웃 처리 중 일반 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'로그아웃 중 오류가 발생했습니다'**
+  /// **'로그아웃 중 오류가 생겼어요'**
   String get errorLogoutGeneric;
 
   /// Firebase 인증 — 사용자 정보 조회 실패
   ///
   /// In ko, this message translates to:
-  /// **'로그인 정보를 가져올 수 없습니다. 다시 시도해주세요'**
+  /// **'로그인 정보를 가져올 수 없어요. 다시 시도해주세요'**
   String get errorAuthUserNotFound;
 
   /// Firebase 인증 — 토큰 발급 실패
   ///
   /// In ko, this message translates to:
-  /// **'인증 토큰 발급에 실패했습니다. 다시 시도해주세요'**
+  /// **'인증에 실패했어요. 다시 시도해주세요'**
   String get errorAuthTokenIssueFailed;
 
   /// Firebase 인증 — 토큰 검증 실패
   ///
   /// In ko, this message translates to:
-  /// **'Firebase 인증 토큰 검증에 실패했습니다. 다시 로그인해주세요'**
+  /// **'로그인 정보가 만료됐어요. 다시 로그인해주세요'**
   String get errorAuthTokenValidationFailed;
 
   /// Firebase 인증 — 잘못된 인증 정보
   ///
   /// In ko, this message translates to:
-  /// **'잘못된 인증 정보입니다'**
+  /// **'잘못된 인증 정보예요'**
   String get errorAuthInvalidCredential;
 
   /// Firebase 인증 — 비활성화된 계정
   ///
   /// In ko, this message translates to:
-  /// **'비활성화된 계정입니다'**
+  /// **'비활성화된 계정이에요'**
   String get errorAuthAccountDisabled;
 
   /// Firebase 인증 — 요청 과다 (rate limit)
   ///
   /// In ko, this message translates to:
-  /// **'너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'요청이 너무 많아요. 잠시 후 다시 시도해주세요'**
   String get errorAuthTooManyRequests;
 
   /// Firebase 인증 — 비활성화된 로그인 방법
   ///
   /// In ko, this message translates to:
-  /// **'이 로그인 방법은 현재 사용할 수 없습니다'**
+  /// **'이 로그인 방법은 현재 사용할 수 없어요'**
   String get errorAuthSignInMethodUnavailable;
 
   /// Firebase 인증 — 설정 오류 (API 키 등)
   ///
   /// In ko, this message translates to:
-  /// **'Firebase 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorAuthFirebaseConfig;
 
   /// Firebase 인증 — 내부 오류
   ///
   /// In ko, this message translates to:
-  /// **'Firebase 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorAuthFirebaseInternal;
 
   /// Firebase 인증 — 특정 provider 로그인 실패 (Google/Apple 등)
   ///
   /// In ko, this message translates to:
-  /// **'{provider} 로그인에 실패했습니다. 다시 시도해주세요'**
+  /// **'{provider} 로그인에 실패했어요. 다시 시도해주세요'**
   String errorAuthProviderLoginFailed(String provider);
 
   /// Firebase 인증 — 일반 로그인 실패 (provider 미지정)
   ///
   /// In ko, this message translates to:
-  /// **'로그인에 실패했습니다. 다시 시도해주세요'**
+  /// **'로그인에 실패했어요. 다시 시도해주세요'**
   String get errorAuthLoginFailed;
 
   /// 마케팅 정보 수신 동의 링크 라벨
@@ -1657,7 +1753,7 @@ abstract class AppLocalizations {
   /// 회원 탈퇴 완료 토스트
   ///
   /// In ko, this message translates to:
-  /// **'회원탈퇴가 완료되었습니다'**
+  /// **'회원탈퇴를 완료했어요'**
   String get messageAccountDeleted;
 
   /// 만 14세 이상 확인 다이얼로그 타이틀
@@ -1675,19 +1771,19 @@ abstract class AppLocalizations {
   /// 로그인 처리 중 발생한 일반 오류
   ///
   /// In ko, this message translates to:
-  /// **'로그인 중 오류가 발생했습니다'**
+  /// **'로그인 중 오류가 생겼어요'**
   String get errorLoginGeneric;
 
   /// Apple 로그인 전용 오류 메시지
   ///
   /// In ko, this message translates to:
-  /// **'Apple 로그인 중 오류가 발생했습니다'**
+  /// **'Apple 로그인 중 오류가 생겼어요'**
   String get errorAppleLoginFailed;
 
   /// 만 14세 미만 가입 차단 안내
   ///
   /// In ko, this message translates to:
-  /// **'만 14세 미만은 서비스를 이용할 수 없습니다'**
+  /// **'만 14세 미만은 서비스를 이용할 수 없어요'**
   String get errorAgeRestrictionUnder14;
 
   /// 로그인 페이지 로고 아래 표시되는 앱 한 줄 소개 카피
@@ -1723,7 +1819,7 @@ abstract class AppLocalizations {
   /// 로그인 페이지 약관 안내 접미사
   ///
   /// In ko, this message translates to:
-  /// **'에 동의합니다'**
+  /// **'에 동의해요'**
   String get loginPageAgreementSuffix;
 
   /// 닉네임 저장 완료 토스트
@@ -1807,7 +1903,7 @@ abstract class AppLocalizations {
   /// 스플래시 — 오프라인 상태 타이틀
   ///
   /// In ko, this message translates to:
-  /// **'인터넷 연결이 필요합니다'**
+  /// **'인터넷 연결이 필요해요'**
   String get splashOfflineTitle;
 
   /// 스플래시 — 오프라인 상태 본문
@@ -1819,13 +1915,13 @@ abstract class AppLocalizations {
   /// 원인을 특정할 수 없는 일반 오류 메시지 (auth fallback 등)
   ///
   /// In ko, this message translates to:
-  /// **'알 수 없는 오류가 발생했습니다'**
+  /// **'알 수 없는 오류가 생겼어요'**
   String get errorUnknown;
 
   /// 로그아웃 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'로그아웃에 실패했습니다'**
+  /// **'로그아웃에 실패했어요'**
   String get errorLogoutFailed;
 
   /// 약관 — 전체 동의 체크박스 라벨
@@ -1861,31 +1957,31 @@ abstract class AppLocalizations {
   /// 게임 종료 사유 — 도둑 전원 체포로 종료
   ///
   /// In ko, this message translates to:
-  /// **'도둑이 모두 체포되었습니다!'**
+  /// **'도둑이 모두 체포됐어요!'**
   String get gameOverReasonAllArrested;
 
   /// 게임 종료 사유 — 제한 시간 만료
   ///
   /// In ko, this message translates to:
-  /// **'제한 시간이 종료되었습니다!'**
+  /// **'제한 시간이 끝났어요!'**
   String get gameOverReasonTimeUp;
 
   /// 게임 종료 사유 — 경찰 전원 퇴장(몰수)으로 도둑 승리
   ///
   /// In ko, this message translates to:
-  /// **'경찰이 모두 퇴장했습니다!'**
+  /// **'경찰이 모두 퇴장했어요!'**
   String get gameOverReasonPoliceForfeited;
 
   /// 게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리
   ///
   /// In ko, this message translates to:
-  /// **'도둑이 모두 퇴장했습니다!'**
+  /// **'도둑이 모두 퇴장했어요!'**
   String get gameOverReasonRobberForfeited;
 
   /// GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지
   ///
   /// In ko, this message translates to:
-  /// **'게임이 종료되었습니다.'**
+  /// **'게임이 끝났어요'**
   String get gameOverFallbackMessage;
 
   /// 경찰 팀 라벨 (팀명)
@@ -1915,7 +2011,7 @@ abstract class AppLocalizations {
   /// 게임 종료 다이얼로그 메시지 — 승리팀 안내
   ///
   /// In ko, this message translates to:
-  /// **'{winnerTeamLabel}의 승리입니다!'**
+  /// **'{winnerTeamLabel}의 승리예요!'**
   String messageGameOverWinner(Object winnerTeamLabel);
 
   /// 경찰 역할 단일 라벨 (닉네임 누락 시 fallback 포함)
@@ -1933,7 +2029,7 @@ abstract class AppLocalizations {
   /// 체포 실패 — 경찰 대기 시간 중
   ///
   /// In ko, this message translates to:
-  /// **'경찰 대기 시간 중에는 도둑을 체포할 수 없습니다'**
+  /// **'경찰 대기 시간 중에는 도둑을 체포할 수 없어요'**
   String get errorCannotArrestDuringWait;
 
   /// 도둑 수배 QR 스캐너 페이지 타이틀
@@ -1945,13 +2041,13 @@ abstract class AppLocalizations {
   /// QR 스캔 실패 — QR 만료
   ///
   /// In ko, this message translates to:
-  /// **'만료된 QR입니다. QR 새로고침을 요청하세요'**
+  /// **'만료된 QR이에요. QR 새로고침을 요청하세요'**
   String get errorExpiredQr;
 
   /// 체포 실패 — 이미 체포된 도둑
   ///
   /// In ko, this message translates to:
-  /// **'이미 체포된 도둑입니다'**
+  /// **'이미 체포된 도둑이에요'**
   String get errorAlreadyArrested;
 
   /// 체포된 도둑에게 표시되는 잠금 오버레이 타이틀
@@ -1990,23 +2086,11 @@ abstract class AppLocalizations {
   /// **'체포 횟수'**
   String get labelArrestCount;
 
-  /// 게임 결과 — 총 체포 횟수 (단위: 회)
-  ///
-  /// In ko, this message translates to:
-  /// **'{count}회'**
-  String gameResultArrestCount(int count);
-
   /// 게임 종료 결과 — 남은 도둑 라벨
   ///
   /// In ko, this message translates to:
   /// **'남은 도둑'**
   String get fieldRemainingRobbers;
-
-  /// 게임 결과 — 남은 도둑 인원수 (단위: 명)
-  ///
-  /// In ko, this message translates to:
-  /// **'{count}명'**
-  String gameResultRemainingRobberCount(int count);
 
   /// 게임 종료 결과 — 게임 진행 시간 라벨
   ///
@@ -2026,35 +2110,11 @@ abstract class AppLocalizations {
   /// **'한 번 더'**
   String get buttonPlayAgain;
 
-  /// 게임 결과 — 내 기록 다이얼로그 진입 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'내 기록 보기'**
-  String get buttonViewMyRecord;
-
   /// 내 기록 다이얼로그 — 제목
   ///
   /// In ko, this message translates to:
   /// **'내 기록'**
   String get labelMyRecord;
-
-  /// 내 기록 — 이동 거리 라벨(대표 숫자 하단)
-  ///
-  /// In ko, this message translates to:
-  /// **'내가 이동한 거리'**
-  String get labelTravelDistance;
-
-  /// 내 기록 — 경찰: 내가 잡은 도둑 수 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'내가 잡은 도둑'**
-  String get labelMyArrestCount;
-
-  /// 내 기록 — 도둑: 내가 탈옥한 횟수 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'내 탈옥 횟수'**
-  String get labelMyEscapeCount;
 
   /// 내 기록 — 승패 결과 라벨
   ///
@@ -2080,18 +2140,6 @@ abstract class AppLocalizations {
   /// **'이동 기록 없음'**
   String get labelNoRoute;
 
-  /// 내 기록 — 경찰: 도둑을 잡은 위치 마커 범례
-  ///
-  /// In ko, this message translates to:
-  /// **'잡은 곳'**
-  String get legendArrestSpot;
-
-  /// 내 기록 — 도둑: 내가 잡힌 위치 마커 범례
-  ///
-  /// In ko, this message translates to:
-  /// **'잡힌 곳'**
-  String get legendCaughtSpot;
-
   /// 다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)
   ///
   /// In ko, this message translates to:
@@ -2113,7 +2161,7 @@ abstract class AppLocalizations {
   /// 탈옥 시도 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'탈옥을 시도하시겠습니까?'**
+  /// **'탈옥할까요?'**
   String get dialogEscapeAttemptMessage;
 
   /// 참가자 오버레이 — 현재 인원 라벨
@@ -2167,13 +2215,13 @@ abstract class AppLocalizations {
   /// 카메라 권한 요청 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'QR코드를 스캔하려면 카메라 권한이 필요합니다.\n설정에서 카메라 권한을 허용해주세요'**
+  /// **'QR코드를 스캔하려면 카메라 권한이 필요해요\n설정에서 카메라 권한을 허용해주세요'**
   String get dialogCameraPermissionMessage;
 
   /// QR 스캐너 — 카메라 초기화 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'카메라를 사용할 수 없습니다'**
+  /// **'카메라를 사용할 수 없어요'**
   String get errorCameraUnavailable;
 
   /// 플레이 영역 이탈 시 표시되는 배너
@@ -2191,7 +2239,7 @@ abstract class AppLocalizations {
   /// 더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)
   ///
   /// In ko, this message translates to:
-  /// **'제한 시간은 30분입니다'**
+  /// **'제한 시간은 30분이에요'**
   String get chatSystemGameTimeLimit30Min;
 
   /// 더미 채팅 메시지 — 경찰의 도둑 응원 메시지
@@ -2418,7 +2466,7 @@ abstract class AppLocalizations {
   /// 일시적 오류 발생 시 재시도 유도 공통 메시지
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 다시 시도해주세요'**
   String get errorTemporaryRetry;
 
   /// 이용약관/정책 설정 페이지 타이틀
@@ -2430,7 +2478,7 @@ abstract class AppLocalizations {
   /// 약관 동의 정보 조회 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'약관 동의 현황을 불러올 수 없습니다'**
+  /// **'약관 동의 현황을 불러오지 못했어요'**
   String get errorAgreementLoadFailed;
 
   /// 재시도 공통 버튼 라벨
@@ -2448,7 +2496,7 @@ abstract class AppLocalizations {
   /// 법적 문서(약관/정책) 로드 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'문서를 불러올 수 없습니다'**
+  /// **'문서를 불러오지 못했어요'**
   String get errorLegalDocumentLoadFailed;
 
   /// 설정 페이지 AppBar 타이틀
@@ -2640,19 +2688,19 @@ abstract class AppLocalizations {
   /// 로그아웃 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'정말 로그아웃 하시겠어요?'**
+  /// **'정말 로그아웃할까요?'**
   String get dialogLogoutMessage;
 
   /// 로그아웃 실패 스낵바 메시지
   ///
   /// In ko, this message translates to:
-  /// **'로그아웃에 실패했습니다'**
+  /// **'로그아웃에 실패했어요'**
   String get snackbarLogoutFailed;
 
   /// 로그아웃 성공 스낵바 메시지
   ///
   /// In ko, this message translates to:
-  /// **'로그아웃되었습니다'**
+  /// **'로그아웃했어요'**
   String get snackbarLogoutSuccess;
 
   /// 회원 탈퇴 확인 다이얼로그 제목
@@ -2664,7 +2712,7 @@ abstract class AppLocalizations {
   /// 회원 탈퇴 확인 다이얼로그 본문 — 비가역성 경고 + 확인 키워드 입력 요구
   ///
   /// In ko, this message translates to:
-  /// **'탈퇴하면 모든 데이터가 삭제되며\n되돌릴 수 없습니다\n\n계속하려면 \"delete\"를 입력하세요'**
+  /// **'탈퇴하면 모든 데이터가 사라지고\n되돌릴 수 없어요\n\n계속하려면 \"delete\"를 입력하세요'**
   String get dialogDeleteAccountMessage;
 
   /// 회원 탈퇴 확인 입력 필드 placeholder (사용자가 직접 입력해야 하는 키워드)
@@ -3054,7 +3102,7 @@ abstract class AppLocalizations {
   /// 신고 처리 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'신고 처리 중 오류가 발생했습니다'**
+  /// **'신고 처리 중 오류가 생겼어요'**
   String get errorReportGeneric;
 
   /// 신고 카테고리 — 낚시/놀람/도배 (ReportCategory.bait)
@@ -3102,73 +3150,73 @@ abstract class AppLocalizations {
   /// 닉네임 중복 확인 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'닉네임 확인 중 예기치 않은 오류가 발생했습니다'**
+  /// **'닉네임 확인 중 예기치 않은 오류가 생겼어요'**
   String get errorNicknameCheckUnexpected;
 
   /// 닉네임 변경 실패 시 표시되는 예외 메시지
   ///
   /// In ko, this message translates to:
-  /// **'닉네임 변경 중 예기치 않은 오류가 발생했습니다'**
+  /// **'닉네임 변경 중 예기치 않은 오류가 생겼어요'**
   String get errorNicknameUpdateUnexpected;
 
   /// 사용자 정보 조회 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'사용자 정보 조회 중 오류가 발생했습니다'**
+  /// **'사용자 정보 조회 중 오류가 생겼어요'**
   String get errorUserInfoFetch;
 
   /// 회원 탈퇴 처리 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'회원 탈퇴 중 예기치 않은 오류가 발생했습니다'**
+  /// **'회원 탈퇴 중 예기치 않은 오류가 생겼어요'**
   String get errorDeleteAccountUnexpected;
 
   /// 약관 동의 상태 조회 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'약관 동의 상태 조회 중 예기치 않은 오류가 발생했습니다'**
+  /// **'약관 동의 상태 조회 중 예기치 않은 오류가 생겼어요'**
   String get errorAgreementFetchUnexpected;
 
   /// 약관 동의 저장 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'약관 동의 저장 중 예기치 않은 오류가 발생했습니다'**
+  /// **'약관 동의 저장 중 예기치 않은 오류가 생겼어요'**
   String get errorAgreementSaveUnexpected;
 
   /// 게임 푸시 알림 동의 조회 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'게임 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다'**
+  /// **'게임 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요'**
   String get errorGamePushFetchUnexpected;
 
   /// 게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:
-  /// **'게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다'**
+  /// **'게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 생겼어요'**
   String get errorGamePushUpdateUnexpected;
 
   /// 인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후
   ///
   /// In ko, this message translates to:
-  /// **'인증 토큰을 가져올 수 없습니다. 재로그인이 필요합니다'**
+  /// **'로그인 정보를 확인할 수 없어요. 다시 로그인해주세요'**
   String get errorAuthTokenMissing;
 
   /// 서버 연결 실패 — STOMP/REST 모두 실패 시 재시도 권장 안내
   ///
   /// In ko, this message translates to:
-  /// **'서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요'**
+  /// **'서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요'**
   String get errorServerUnreachable;
 
   /// 인증 토큰 만료 — 재로그인 유도
   ///
   /// In ko, this message translates to:
-  /// **'인증이 만료되었습니다. 재로그인이 필요합니다'**
+  /// **'인증이 만료됐어요. 재로그인이 필요해요'**
   String get errorAuthExpired;
 
   /// 공지사항 로딩 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'공지사항을 불러오는 중 오류가 발생했습니다'**
+  /// **'공지사항을 불러오는 중 오류가 생겼어요'**
   String get errorNoticesLoadGeneric;
 
   /// 공지사항 로딩 중 표시되는 안내
@@ -3192,25 +3240,25 @@ abstract class AppLocalizations {
   /// 공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지
   ///
   /// In ko, this message translates to:
-  /// **'등록된 공지사항이 없습니다'**
+  /// **'등록된 공지사항이 없어요'**
   String get pageNoticesEmpty;
 
   /// 게임 진입 시 area(구역) 정보 로드 실패 안내
   ///
   /// In ko, this message translates to:
-  /// **'구역 정보를 불러올 수 없습니다'**
+  /// **'구역 정보를 불러오지 못했어요'**
   String get errorAreaLoadFailed;
 
   /// 404 페이지 AppBar 제목
   ///
   /// In ko, this message translates to:
-  /// **'페이지를 찾을 수 없습니다'**
+  /// **'페이지를 찾을 수 없어요'**
   String get pageNotFoundTitle;
 
   /// 404 페이지 본문 — 잘못된 경로 진입 시 안내
   ///
   /// In ko, this message translates to:
-  /// **'요청하신 페이지가 존재하지 않습니다'**
+  /// **'요청하신 페이지가 없어요'**
   String get pageNotFoundMessage;
 
   /// 404 페이지 — 시도한 경로 표시 (디버깅 도움)
@@ -3228,31 +3276,31 @@ abstract class AppLocalizations {
   /// 버그 제보 처리 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'버그 제보 처리 중 오류가 발생했습니다'**
+  /// **'버그 제보 처리 중 오류가 생겼어요'**
   String get errorBugReportFailed;
 
   /// START 1단계 — 제한 시간 안내
   ///
   /// In ko, this message translates to:
-  /// **'제한 시간은 {minutes}분입니다.'**
+  /// **'제한 시간은 {minutes}분이에요'**
   String gameEventStartTime(int minutes);
 
   /// START 2단계 — 게임 시작 예고
   ///
   /// In ko, this message translates to:
-  /// **'잠시 후 게임이 시작됩니다.  모든 플레이어는 준비하세요!'**
+  /// **'잠시 후 게임이 시작돼요.  모든 플레이어는 준비하세요!'**
   String get gameEventStartReady;
 
   /// START 3단계 — 신고/차단 안내
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 채팅을 길게 눌러 불편한 유저를 신고 및 차단할 수 있습니다.'**
+  /// **'게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요'**
   String get gameEventStartReportTip;
 
   /// START 4단계 — 게임 시작 확정
   ///
   /// In ko, this message translates to:
-  /// **'게임 시작!  행운을 빕니다!'**
+  /// **'게임 시작!  행운을 빌어요!'**
   String get gameEventStartGo;
 
   /// 경찰 출동 확정
@@ -3264,19 +3312,19 @@ abstract class AppLocalizations {
   /// 도둑 위치 공개 안내
   ///
   /// In ko, this message translates to:
-  /// **'현재 도둑의 위치가 공개됩니다!'**
+  /// **'현재 도둑의 위치가 공개돼요!'**
   String get gameEventLocationReveal;
 
   /// 체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환
   ///
   /// In ko, this message translates to:
-  /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했습니다!'**
+  /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했어요!'**
   String gameEventArrestNotice(String policeNickname, String robberNickname);
 
   /// 탈옥 공지
   ///
   /// In ko, this message translates to:
-  /// **'도둑이 탈옥했습니다! 지금 바로 체포하세요!'**
+  /// **'도둑이 탈옥했어요! 지금 바로 체포하세요!'**
   String get gameEventEscapeNotice;
 
   /// 인게임 중도 퇴장 공지 배너 — 닉네임과 팀 라벨 표시
@@ -3294,7 +3342,7 @@ abstract class AppLocalizations {
   /// 게임 입장 시 발생한 예기치 않은 오류
   ///
   /// In ko, this message translates to:
-  /// **'게임 입장 중 예기치 않은 오류가 발생했습니다'**
+  /// **'게임 입장 중 예기치 않은 오류가 생겼어요'**
   String get errorGameJoinUnexpected;
 
   /// 다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)
@@ -3366,421 +3414,421 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeMissingRequestPart.
   ///
   /// In ko, this message translates to:
-  /// **'요청에 필요한 파트가 누락되었습니다'**
+  /// **'요청에 필요한 파트가 누락됐어요'**
   String get errorCodeMissingRequestPart;
 
   /// No description provided for @errorCodeInvalidRequestBody.
   ///
   /// In ko, this message translates to:
-  /// **'요청 본문의 형식이 잘못되었습니다'**
+  /// **'요청 본문의 형식이 잘못됐어요'**
   String get errorCodeInvalidRequestBody;
 
   /// No description provided for @errorCodeInvalidQueryParameter.
   ///
   /// In ko, this message translates to:
-  /// **'쿼리 파라미터의 형식이 잘못되었습니다'**
+  /// **'쿼리 파라미터의 형식이 잘못됐어요'**
   String get errorCodeInvalidQueryParameter;
 
   /// No description provided for @errorCodeQueryParameterTypeMismatch.
   ///
   /// In ko, this message translates to:
-  /// **'요청 파라미터의 타입이 잘못되었습니다'**
+  /// **'요청 파라미터의 타입이 잘못됐어요'**
   String get errorCodeQueryParameterTypeMismatch;
 
   /// No description provided for @errorCodeInvalidInputValue.
   ///
   /// In ko, this message translates to:
-  /// **'입력값이 유효성 검사를 통과하지 못했습니다'**
+  /// **'입력값이 조건에 맞지 않아요'**
   String get errorCodeInvalidInputValue;
 
   /// No description provided for @errorCodeInvalidDestination.
   ///
   /// In ko, this message translates to:
-  /// **'잘못된 연결 경로입니다'**
+  /// **'잘못된 연결 경로예요'**
   String get errorCodeInvalidDestination;
 
   /// No description provided for @errorCodeUnsupportedMediaType.
   ///
   /// In ko, this message translates to:
-  /// **'지원하지 않는 형식입니다'**
+  /// **'지원하지 않는 형식이에요'**
   String get errorCodeUnsupportedMediaType;
 
   /// No description provided for @errorCodeMethodNotAllowed.
   ///
   /// In ko, this message translates to:
-  /// **'허용되지 않은 요청입니다'**
+  /// **'허용되지 않은 요청이에요'**
   String get errorCodeMethodNotAllowed;
 
   /// No description provided for @errorCodeEndpointNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'요청 경로를 찾을 수 없습니다'**
+  /// **'요청 경로를 찾을 수 없어요'**
   String get errorCodeEndpointNotFound;
 
   /// No description provided for @errorCodeInvalidSocketSession.
   ///
   /// In ko, this message translates to:
-  /// **'세션 정보를 찾을 수 없습니다. 다시 연결해주세요'**
+  /// **'세션 정보를 찾을 수 없어요. 다시 연결해주세요'**
   String get errorCodeInvalidSocketSession;
 
   /// No description provided for @errorCodeUnauthorizedSubscription.
   ///
   /// In ko, this message translates to:
-  /// **'해당 팀 전용 채널을 구독할 권한이 없습니다'**
+  /// **'해당 팀 전용 채널을 구독할 권한이 없어요'**
   String get errorCodeUnauthorizedSubscription;
 
   /// 의도적으로 docs/error-codes.md detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용.
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeInternalServerError;
 
   /// No description provided for @errorCodeFirebaseInitError.
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeFirebaseInitError;
 
   /// No description provided for @errorCodeFirebaseConfigNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeFirebaseConfigNotFound;
 
   /// No description provided for @errorCodeEncryptionFailed.
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeEncryptionFailed;
 
   /// No description provided for @errorCodeDecryptionFailed.
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeDecryptionFailed;
 
   /// No description provided for @errorCodeInvalidEncryptionKey.
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeInvalidEncryptionKey;
 
   /// No description provided for @errorCodeSocialLoginFailed.
   ///
   /// In ko, this message translates to:
-  /// **'소셜 로그인에 실패하였습니다'**
+  /// **'소셜 로그인에 실패했어요'**
   String get errorCodeSocialLoginFailed;
 
   /// No description provided for @errorCodeAccessTokenExpired.
   ///
   /// In ko, this message translates to:
-  /// **'인증 정보가 만료되었습니다'**
+  /// **'인증 정보가 만료됐어요'**
   String get errorCodeAccessTokenExpired;
 
   /// No description provided for @errorCodeRefreshTokenExpired.
   ///
   /// In ko, this message translates to:
-  /// **'로그인이 만료되었습니다. 다시 로그인해주세요'**
+  /// **'로그인이 만료됐어요. 다시 로그인해주세요'**
   String get errorCodeRefreshTokenExpired;
 
   /// No description provided for @errorCodeInvalidToken.
   ///
   /// In ko, this message translates to:
-  /// **'인증 정보가 올바르지 않습니다. 다시 로그인해주세요'**
+  /// **'인증 정보가 올바르지 않아요. 다시 로그인해주세요'**
   String get errorCodeInvalidToken;
 
   /// No description provided for @errorCodeUnauthenticatedRequest.
   ///
   /// In ko, this message translates to:
-  /// **'로그인이 필요합니다'**
+  /// **'로그인이 필요해요'**
   String get errorCodeUnauthenticatedRequest;
 
   /// No description provided for @errorCodeExpiredFirebaseToken.
   ///
   /// In ko, this message translates to:
-  /// **'인증이 만료되었습니다. 다시 시도해주세요'**
+  /// **'인증이 만료됐어요. 다시 시도해주세요'**
   String get errorCodeExpiredFirebaseToken;
 
   /// No description provided for @errorCodeInvalidFirebaseToken.
   ///
   /// In ko, this message translates to:
-  /// **'인증에 실패했습니다. 다시 시도해주세요'**
+  /// **'인증에 실패했어요. 다시 시도해주세요'**
   String get errorCodeInvalidFirebaseToken;
 
   /// No description provided for @errorCodeUnsupportedSocialType.
   ///
   /// In ko, this message translates to:
-  /// **'지원하지 않는 소셜 로그인 방식입니다'**
+  /// **'지원하지 않는 소셜 로그인 방식이에요'**
   String get errorCodeUnsupportedSocialType;
 
   /// No description provided for @errorCodeForbiddenAdminOnly.
   ///
   /// In ko, this message translates to:
-  /// **'관리자 권한이 필요합니다'**
+  /// **'관리자 권한이 필요해요'**
   String get errorCodeForbiddenAdminOnly;
 
   /// No description provided for @errorCodeNicknameGenerationFailed.
   ///
   /// In ko, this message translates to:
-  /// **'회원가입에 실패했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'회원가입에 실패했어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeNicknameGenerationFailed;
 
   /// No description provided for @errorCodeFirebaseServerError.
   ///
   /// In ko, this message translates to:
-  /// **'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeFirebaseServerError;
 
   /// No description provided for @errorCodeUserNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'해당 유저를 찾을 수 없습니다'**
+  /// **'해당 유저를 찾을 수 없어요'**
   String get errorCodeUserNotFound;
 
   /// No description provided for @errorCodeDuplicatedNickname.
   ///
   /// In ko, this message translates to:
-  /// **'이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요'**
+  /// **'이미 사용 중인 닉네임이에요. 다른 닉네임을 선택해주세요'**
   String get errorCodeDuplicatedNickname;
 
   /// No description provided for @errorCodeCannotWithdraw.
   ///
   /// In ko, this message translates to:
-  /// **'진행 중인 게임 세션이 있어 탈퇴할 수 없습니다'**
+  /// **'진행 중인 게임 세션이 있어 탈퇴할 수 없어요'**
   String get errorCodeCannotWithdraw;
 
   /// No description provided for @errorCodeRequiredTermsNotAgreed.
   ///
   /// In ko, this message translates to:
-  /// **'필수 약관은 모두 동의해야 합니다'**
+  /// **'필수 약관은 모두 동의해야 해요'**
   String get errorCodeRequiredTermsNotAgreed;
 
   /// No description provided for @errorCodeGameNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'요청하신 게임 정보가 존재하지 않습니다'**
+  /// **'요청하신 게임 정보가 존재하지 않아요'**
   String get errorCodeGameNotFound;
 
   /// No description provided for @errorCodeGameNotInProgress.
   ///
   /// In ko, this message translates to:
-  /// **'게임이 진행 중인 상태가 아닙니다'**
+  /// **'게임이 진행 중인 상태가 아니에요'**
   String get errorCodeGameNotInProgress;
 
   /// No description provided for @errorCodeGameNotActive.
   ///
   /// In ko, this message translates to:
-  /// **'대기 중이거나 진행 중인 게임에서만 조회할 수 있습니다'**
+  /// **'대기 중이거나 진행 중인 게임에서만 조회할 수 있어요'**
   String get errorCodeGameNotActive;
 
   /// No description provided for @errorCodeGameNotWaiting.
   ///
   /// In ko, this message translates to:
-  /// **'대기 중인 게임에서만 설정을 변경할 수 있습니다'**
+  /// **'대기 중인 게임에서만 설정을 변경할 수 있어요'**
   String get errorCodeGameNotWaiting;
 
   /// No description provided for @errorCodeInvalidLocationInterval.
   ///
   /// In ko, this message translates to:
-  /// **'위치 공개 주기는 라운드 시간보다 짧아야 합니다'**
+  /// **'위치 공개 주기는 라운드 시간보다 짧아야 해요'**
   String get errorCodeInvalidLocationInterval;
 
   /// No description provided for @errorCodeInvalidPoliceWaitTime.
   ///
   /// In ko, this message translates to:
-  /// **'경찰 대기 시간은 라운드 시간보다 짧아야 합니다'**
+  /// **'경찰 대기 시간은 라운드 시간보다 짧아야 해요'**
   String get errorCodeInvalidPoliceWaitTime;
 
   /// No description provided for @errorCodeInviteCodeGenerationFailed.
   ///
   /// In ko, this message translates to:
-  /// **'초대 코드 생성에 실패했습니다. 잠시 후 다시 시도해주세요'**
+  /// **'초대 코드 생성에 실패했어요. 잠시 후 다시 시도해주세요'**
   String get errorCodeInviteCodeGenerationFailed;
 
   /// No description provided for @errorCodeInvalidJailRadius.
   ///
   /// In ko, this message translates to:
-  /// **'감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없습니다'**
+  /// **'감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없어요'**
   String get errorCodeInvalidJailRadius;
 
   /// No description provided for @errorCodeJailOutsidePlayground.
   ///
   /// In ko, this message translates to:
-  /// **'감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다'**
+  /// **'감옥은 플레이그라운드 내부에 완전히 포함되어야 해요'**
   String get errorCodeJailOutsidePlayground;
 
   /// No description provided for @errorCodeGameAreaNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임 구역을 찾을 수 없습니다'**
+  /// **'해당 게임 구역을 찾을 수 없어요'**
   String get errorCodeGameAreaNotFound;
 
   /// No description provided for @errorCodeAlreadyParticipating.
   ///
   /// In ko, this message translates to:
-  /// **'이미 해당 게임에 참가하고 있습니다'**
+  /// **'이미 해당 게임에 참가하고 있어요'**
   String get errorCodeAlreadyParticipating;
 
   /// No description provided for @errorCodeGameAlreadyStarted.
   ///
   /// In ko, this message translates to:
-  /// **'이미 시작된 게임에는 참여할 수 없습니다'**
+  /// **'이미 시작된 게임에는 참여할 수 없어요'**
   String get errorCodeGameAlreadyStarted;
 
   /// No description provided for @errorCodeGameFull.
   ///
   /// In ko, this message translates to:
-  /// **'게임에 참가할 수 있는 최대 인원을 초과했습니다'**
+  /// **'게임에 참가할 수 있는 최대 인원을 초과했어요'**
   String get errorCodeGameFull;
 
   /// No description provided for @errorCodeInvalidInviteCode.
   ///
   /// In ko, this message translates to:
-  /// **'입력하신 초대 코드가 유효하지 않습니다'**
+  /// **'입력하신 초대 코드가 유효하지 않아요'**
   String get errorCodeInvalidInviteCode;
 
   /// No description provided for @errorCodeParticipantNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임에 참가하지 않은 사용자입니다'**
+  /// **'해당 게임에 참가하지 않은 사용자예요'**
   String get errorCodeParticipantNotFound;
 
   /// No description provided for @errorCodeNotAParticipant.
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임의 참가자가 아닙니다'**
+  /// **'해당 게임의 참가자가 아니에요'**
   String get errorCodeNotAParticipant;
 
   /// No description provided for @errorCodeCannotLeaveDuringGame.
   ///
   /// In ko, this message translates to:
-  /// **'게임이 시작된 이후에는 방을 나갈 수 없습니다'**
+  /// **'게임이 시작된 이후에는 방을 나갈 수 없어요'**
   String get errorCodeCannotLeaveDuringGame;
 
   /// No description provided for @errorCodeLobbyActionNotAllowed.
   ///
   /// In ko, this message translates to:
-  /// **'게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다'**
+  /// **'게임이 시작된 이후에는 로비 상태를 변경할 수 없어요'**
   String get errorCodeLobbyActionNotAllowed;
 
   /// No description provided for @errorCodeNotHost.
   ///
   /// In ko, this message translates to:
-  /// **'방장만 할 수 있습니다'**
+  /// **'방장만 할 수 있어요'**
   String get errorCodeNotHost;
 
   /// No description provided for @errorCodeInvalidTeamComposition.
   ///
   /// In ko, this message translates to:
-  /// **'게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요합니다'**
+  /// **'게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요'**
   String get errorCodeInvalidTeamComposition;
 
   /// No description provided for @errorCodeNotAllReady.
   ///
   /// In ko, this message translates to:
-  /// **'모든 참가자가 준비 상태여야 게임을 시작할 수 있습니다'**
+  /// **'모든 참가자가 준비 상태여야 게임을 시작할 수 있어요'**
   String get errorCodeNotAllReady;
 
   /// No description provided for @errorCodeNotRobberTeam.
   ///
   /// In ko, this message translates to:
-  /// **'도둑 팀만 위치를 전송할 수 있습니다'**
+  /// **'도둑 팀만 위치를 전송할 수 있어요'**
   String get errorCodeNotRobberTeam;
 
   /// No description provided for @errorCodeHostCannotUnready.
   ///
   /// In ko, this message translates to:
-  /// **'방장은 항상 준비 상태여야 합니다'**
+  /// **'방장은 항상 준비 상태여야 해요'**
   String get errorCodeHostCannotUnready;
 
   /// No description provided for @errorCodeParticipantGameMismatch.
   ///
   /// In ko, this message translates to:
-  /// **'경찰과 도둑이 서로 다른 게임에 참여하고 있습니다'**
+  /// **'경찰과 도둑이 서로 다른 게임에 참여하고 있어요'**
   String get errorCodeParticipantGameMismatch;
 
   /// No description provided for @errorCodeOnlyPoliceCanArrest.
   ///
   /// In ko, this message translates to:
-  /// **'경찰 팀만 도둑을 체포할 수 있습니다'**
+  /// **'경찰 팀만 도둑을 체포할 수 있어요'**
   String get errorCodeOnlyPoliceCanArrest;
 
   /// No description provided for @errorCodeOnlyRobberCanBeArrested.
   ///
   /// In ko, this message translates to:
-  /// **'도둑 팀만 체포될 수 있습니다'**
+  /// **'도둑 팀만 체포될 수 있어요'**
   String get errorCodeOnlyRobberCanBeArrested;
 
   /// No description provided for @errorCodeOnlyRobberCanEscape.
   ///
   /// In ko, this message translates to:
-  /// **'도둑 팀만 탈옥할 수 있습니다'**
+  /// **'도둑 팀만 탈옥할 수 있어요'**
   String get errorCodeOnlyRobberCanEscape;
 
   /// No description provided for @errorCodeAlreadyArrested.
   ///
   /// In ko, this message translates to:
-  /// **'이미 수감된 도둑입니다'**
+  /// **'이미 수감된 도둑이에요'**
   String get errorCodeAlreadyArrested;
 
   /// No description provided for @errorCodeNotJailed.
   ///
   /// In ko, this message translates to:
-  /// **'수감된 상태에서만 탈옥할 수 있습니다'**
+  /// **'수감된 상태에서만 탈옥할 수 있어요'**
   String get errorCodeNotJailed;
 
   /// No description provided for @errorCodePoliceWaitingTime.
   ///
   /// In ko, this message translates to:
-  /// **'경찰은 대기 시간 동안 도둑을 체포할 수 없습니다'**
+  /// **'경찰은 대기 시간 동안 도둑을 체포할 수 없어요'**
   String get errorCodePoliceWaitingTime;
 
   /// No description provided for @errorCodeCannotKickYourself.
   ///
   /// In ko, this message translates to:
-  /// **'방장은 자기 자신을 강퇴할 수 없습니다'**
+  /// **'방장은 자기 자신을 강퇴할 수 없어요'**
   String get errorCodeCannotKickYourself;
 
   /// No description provided for @errorCodeNoticeNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'해당 공지사항을 찾을 수 없습니다'**
+  /// **'해당 공지사항을 찾을 수 없어요'**
   String get errorCodeNoticeNotFound;
 
   /// No description provided for @errorCodeGameResultNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임 결과를 찾을 수 없습니다'**
+  /// **'해당 게임 결과를 찾을 수 없어요'**
   String get errorCodeGameResultNotFound;
 
   /// No description provided for @errorCodeEtcReasonRequired.
   ///
   /// In ko, this message translates to:
-  /// **'신고 유형이 기타일 때 사유를 입력해야 합니다'**
+  /// **'신고 유형이 기타일 때 사유를 입력해야 해요'**
   String get errorCodeEtcReasonRequired;
 
   /// No description provided for @errorCodeSelfReport.
   ///
   /// In ko, this message translates to:
-  /// **'본인을 신고할 수 없습니다'**
+  /// **'본인을 신고할 수 없어요'**
   String get errorCodeSelfReport;
 
   /// No description provided for @errorCodeDuplicateReport.
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임에서 이미 신고한 사용자입니다'**
+  /// **'해당 게임에서 이미 신고한 사용자예요'**
   String get errorCodeDuplicateReport;
 
   /// No description provided for @errorCodeReportNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'해당 신고 내역이 존재하지 않습니다'**
+  /// **'해당 신고 내역이 존재하지 않아요'**
   String get errorCodeReportNotFound;
 
   /// No description provided for @errorCodeReportTargetNotFound.
   ///
   /// In ko, this message translates to:
-  /// **'해당 게임에 존재하지 않는 참가자입니다'**
+  /// **'해당 게임에 존재하지 않는 참가자예요'**
   String get errorCodeReportTargetNotFound;
 
   /// 맵 핑 선택 카드 — 상대 발견 핑 라벨
@@ -3804,13 +3852,13 @@ abstract class AppLocalizations {
   /// 인게임 중도 퇴장 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
-  /// **'게임에서 나가시겠어요?'**
+  /// **'게임에서 나갈까요?'**
   String get gameLeaveConfirmTitle;
 
   /// 인게임 중도 퇴장 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'진행 중인 게임에서 나갑니다'**
+  /// **'진행 중인 게임에서 나가게 돼요'**
   String get gameLeaveConfirmMessage;
 
   /// 인게임 중도 퇴장 실패 시 스낵바 메시지

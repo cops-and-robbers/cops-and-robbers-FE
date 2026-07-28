@@ -23,8 +23,8 @@ GameCreateRequestModel _$GameCreateRequestModelFromJson(
 
 /// @nodoc
 mixin _$GameCreateRequestModel {
-  /// 영역 설정 (플레이그라운드, 감옥)
-  AreaRequestModel get area => throw _privateConstructorUsedError;
+  /// 영역 설정 (areaType + circle/polygon)
+  GameAreaRequestModel get area => throw _privateConstructorUsedError;
 
   /// 게임 규칙 설정
   GameSettingsRequestModel get settings => throw _privateConstructorUsedError;
@@ -46,9 +46,9 @@ abstract class $GameCreateRequestModelCopyWith<$Res> {
     $Res Function(GameCreateRequestModel) then,
   ) = _$GameCreateRequestModelCopyWithImpl<$Res, GameCreateRequestModel>;
   @useResult
-  $Res call({AreaRequestModel area, GameSettingsRequestModel settings});
+  $Res call({GameAreaRequestModel area, GameSettingsRequestModel settings});
 
-  $AreaRequestModelCopyWith<$Res> get area;
+  $GameAreaRequestModelCopyWith<$Res> get area;
   $GameSettingsRequestModelCopyWith<$Res> get settings;
 }
 
@@ -75,7 +75,7 @@ class _$GameCreateRequestModelCopyWithImpl<
             area: null == area
                 ? _value.area
                 : area // ignore: cast_nullable_to_non_nullable
-                      as AreaRequestModel,
+                      as GameAreaRequestModel,
             settings: null == settings
                 ? _value.settings
                 : settings // ignore: cast_nullable_to_non_nullable
@@ -89,8 +89,8 @@ class _$GameCreateRequestModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $AreaRequestModelCopyWith<$Res> get area {
-    return $AreaRequestModelCopyWith<$Res>(_value.area, (value) {
+  $GameAreaRequestModelCopyWith<$Res> get area {
+    return $GameAreaRequestModelCopyWith<$Res>(_value.area, (value) {
       return _then(_value.copyWith(area: value) as $Val);
     });
   }
@@ -115,10 +115,10 @@ abstract class _$$GameCreateRequestModelImplCopyWith<$Res>
   ) = __$$GameCreateRequestModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AreaRequestModel area, GameSettingsRequestModel settings});
+  $Res call({GameAreaRequestModel area, GameSettingsRequestModel settings});
 
   @override
-  $AreaRequestModelCopyWith<$Res> get area;
+  $GameAreaRequestModelCopyWith<$Res> get area;
   @override
   $GameSettingsRequestModelCopyWith<$Res> get settings;
 }
@@ -143,7 +143,7 @@ class __$$GameCreateRequestModelImplCopyWithImpl<$Res>
         area: null == area
             ? _value.area
             : area // ignore: cast_nullable_to_non_nullable
-                  as AreaRequestModel,
+                  as GameAreaRequestModel,
         settings: null == settings
             ? _value.settings
             : settings // ignore: cast_nullable_to_non_nullable
@@ -164,9 +164,9 @@ class _$GameCreateRequestModelImpl implements _GameCreateRequestModel {
   factory _$GameCreateRequestModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$GameCreateRequestModelImplFromJson(json);
 
-  /// 영역 설정 (플레이그라운드, 감옥)
+  /// 영역 설정 (areaType + circle/polygon)
   @override
-  final AreaRequestModel area;
+  final GameAreaRequestModel area;
 
   /// 게임 규칙 설정
   @override
@@ -211,16 +211,16 @@ class _$GameCreateRequestModelImpl implements _GameCreateRequestModel {
 
 abstract class _GameCreateRequestModel implements GameCreateRequestModel {
   const factory _GameCreateRequestModel({
-    required final AreaRequestModel area,
+    required final GameAreaRequestModel area,
     required final GameSettingsRequestModel settings,
   }) = _$GameCreateRequestModelImpl;
 
   factory _GameCreateRequestModel.fromJson(Map<String, dynamic> json) =
       _$GameCreateRequestModelImpl.fromJson;
 
-  /// 영역 설정 (플레이그라운드, 감옥)
+  /// 영역 설정 (areaType + circle/polygon)
   @override
-  AreaRequestModel get area;
+  GameAreaRequestModel get area;
 
   /// 게임 규칙 설정
   @override
@@ -234,12 +234,267 @@ abstract class _GameCreateRequestModel implements GameCreateRequestModel {
   get copyWith => throw _privateConstructorUsedError;
 }
 
-AreaRequestModel _$AreaRequestModelFromJson(Map<String, dynamic> json) {
-  return _AreaRequestModel.fromJson(json);
+GameAreaRequestModel _$GameAreaRequestModelFromJson(Map<String, dynamic> json) {
+  return _GameAreaRequestModel.fromJson(json);
 }
 
 /// @nodoc
-mixin _$AreaRequestModel {
+mixin _$GameAreaRequestModel {
+  GameAreaType get areaType => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
+  CircleAreaRequestModel? get circle => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
+  PolygonAreaRequestModel? get polygon => throw _privateConstructorUsedError;
+
+  /// Serializes this GameAreaRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GameAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GameAreaRequestModelCopyWith<GameAreaRequestModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GameAreaRequestModelCopyWith<$Res> {
+  factory $GameAreaRequestModelCopyWith(
+    GameAreaRequestModel value,
+    $Res Function(GameAreaRequestModel) then,
+  ) = _$GameAreaRequestModelCopyWithImpl<$Res, GameAreaRequestModel>;
+  @useResult
+  $Res call({
+    GameAreaType areaType,
+    @JsonKey(includeIfNull: false) CircleAreaRequestModel? circle,
+    @JsonKey(includeIfNull: false) PolygonAreaRequestModel? polygon,
+  });
+
+  $CircleAreaRequestModelCopyWith<$Res>? get circle;
+  $PolygonAreaRequestModelCopyWith<$Res>? get polygon;
+}
+
+/// @nodoc
+class _$GameAreaRequestModelCopyWithImpl<
+  $Res,
+  $Val extends GameAreaRequestModel
+>
+    implements $GameAreaRequestModelCopyWith<$Res> {
+  _$GameAreaRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GameAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? areaType = null,
+    Object? circle = freezed,
+    Object? polygon = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            areaType: null == areaType
+                ? _value.areaType
+                : areaType // ignore: cast_nullable_to_non_nullable
+                      as GameAreaType,
+            circle: freezed == circle
+                ? _value.circle
+                : circle // ignore: cast_nullable_to_non_nullable
+                      as CircleAreaRequestModel?,
+            polygon: freezed == polygon
+                ? _value.polygon
+                : polygon // ignore: cast_nullable_to_non_nullable
+                      as PolygonAreaRequestModel?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of GameAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $CircleAreaRequestModelCopyWith<$Res>? get circle {
+    if (_value.circle == null) {
+      return null;
+    }
+
+    return $CircleAreaRequestModelCopyWith<$Res>(_value.circle!, (value) {
+      return _then(_value.copyWith(circle: value) as $Val);
+    });
+  }
+
+  /// Create a copy of GameAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $PolygonAreaRequestModelCopyWith<$Res>? get polygon {
+    if (_value.polygon == null) {
+      return null;
+    }
+
+    return $PolygonAreaRequestModelCopyWith<$Res>(_value.polygon!, (value) {
+      return _then(_value.copyWith(polygon: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$GameAreaRequestModelImplCopyWith<$Res>
+    implements $GameAreaRequestModelCopyWith<$Res> {
+  factory _$$GameAreaRequestModelImplCopyWith(
+    _$GameAreaRequestModelImpl value,
+    $Res Function(_$GameAreaRequestModelImpl) then,
+  ) = __$$GameAreaRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    GameAreaType areaType,
+    @JsonKey(includeIfNull: false) CircleAreaRequestModel? circle,
+    @JsonKey(includeIfNull: false) PolygonAreaRequestModel? polygon,
+  });
+
+  @override
+  $CircleAreaRequestModelCopyWith<$Res>? get circle;
+  @override
+  $PolygonAreaRequestModelCopyWith<$Res>? get polygon;
+}
+
+/// @nodoc
+class __$$GameAreaRequestModelImplCopyWithImpl<$Res>
+    extends _$GameAreaRequestModelCopyWithImpl<$Res, _$GameAreaRequestModelImpl>
+    implements _$$GameAreaRequestModelImplCopyWith<$Res> {
+  __$$GameAreaRequestModelImplCopyWithImpl(
+    _$GameAreaRequestModelImpl _value,
+    $Res Function(_$GameAreaRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GameAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? areaType = null,
+    Object? circle = freezed,
+    Object? polygon = freezed,
+  }) {
+    return _then(
+      _$GameAreaRequestModelImpl(
+        areaType: null == areaType
+            ? _value.areaType
+            : areaType // ignore: cast_nullable_to_non_nullable
+                  as GameAreaType,
+        circle: freezed == circle
+            ? _value.circle
+            : circle // ignore: cast_nullable_to_non_nullable
+                  as CircleAreaRequestModel?,
+        polygon: freezed == polygon
+            ? _value.polygon
+            : polygon // ignore: cast_nullable_to_non_nullable
+                  as PolygonAreaRequestModel?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GameAreaRequestModelImpl implements _GameAreaRequestModel {
+  const _$GameAreaRequestModelImpl({
+    required this.areaType,
+    @JsonKey(includeIfNull: false) this.circle,
+    @JsonKey(includeIfNull: false) this.polygon,
+  });
+
+  factory _$GameAreaRequestModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GameAreaRequestModelImplFromJson(json);
+
+  @override
+  final GameAreaType areaType;
+  @override
+  @JsonKey(includeIfNull: false)
+  final CircleAreaRequestModel? circle;
+  @override
+  @JsonKey(includeIfNull: false)
+  final PolygonAreaRequestModel? polygon;
+
+  @override
+  String toString() {
+    return 'GameAreaRequestModel(areaType: $areaType, circle: $circle, polygon: $polygon)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GameAreaRequestModelImpl &&
+            (identical(other.areaType, areaType) ||
+                other.areaType == areaType) &&
+            (identical(other.circle, circle) || other.circle == circle) &&
+            (identical(other.polygon, polygon) || other.polygon == polygon));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, areaType, circle, polygon);
+
+  /// Create a copy of GameAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GameAreaRequestModelImplCopyWith<_$GameAreaRequestModelImpl>
+  get copyWith =>
+      __$$GameAreaRequestModelImplCopyWithImpl<_$GameAreaRequestModelImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GameAreaRequestModelImplToJson(this);
+  }
+}
+
+abstract class _GameAreaRequestModel implements GameAreaRequestModel {
+  const factory _GameAreaRequestModel({
+    required final GameAreaType areaType,
+    @JsonKey(includeIfNull: false) final CircleAreaRequestModel? circle,
+    @JsonKey(includeIfNull: false) final PolygonAreaRequestModel? polygon,
+  }) = _$GameAreaRequestModelImpl;
+
+  factory _GameAreaRequestModel.fromJson(Map<String, dynamic> json) =
+      _$GameAreaRequestModelImpl.fromJson;
+
+  @override
+  GameAreaType get areaType;
+  @override
+  @JsonKey(includeIfNull: false)
+  CircleAreaRequestModel? get circle;
+  @override
+  @JsonKey(includeIfNull: false)
+  PolygonAreaRequestModel? get polygon;
+
+  /// Create a copy of GameAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GameAreaRequestModelImplCopyWith<_$GameAreaRequestModelImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CircleAreaRequestModel _$CircleAreaRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CircleAreaRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CircleAreaRequestModel {
   /// 플레이그라운드 중심 좌표
   CoordinatesRequestModel get playgroundCenter =>
       throw _privateConstructorUsedError;
@@ -253,22 +508,22 @@ mixin _$AreaRequestModel {
   /// 감옥 반경 (미터, 최소 5m, 정수)
   int get jailRadiusInMeters => throw _privateConstructorUsedError;
 
-  /// Serializes this AreaRequestModel to a JSON map.
+  /// Serializes this CircleAreaRequestModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of AreaRequestModel
+  /// Create a copy of CircleAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $AreaRequestModelCopyWith<AreaRequestModel> get copyWith =>
+  $CircleAreaRequestModelCopyWith<CircleAreaRequestModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $AreaRequestModelCopyWith<$Res> {
-  factory $AreaRequestModelCopyWith(
-    AreaRequestModel value,
-    $Res Function(AreaRequestModel) then,
-  ) = _$AreaRequestModelCopyWithImpl<$Res, AreaRequestModel>;
+abstract class $CircleAreaRequestModelCopyWith<$Res> {
+  factory $CircleAreaRequestModelCopyWith(
+    CircleAreaRequestModel value,
+    $Res Function(CircleAreaRequestModel) then,
+  ) = _$CircleAreaRequestModelCopyWithImpl<$Res, CircleAreaRequestModel>;
   @useResult
   $Res call({
     CoordinatesRequestModel playgroundCenter,
@@ -282,16 +537,19 @@ abstract class $AreaRequestModelCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$AreaRequestModelCopyWithImpl<$Res, $Val extends AreaRequestModel>
-    implements $AreaRequestModelCopyWith<$Res> {
-  _$AreaRequestModelCopyWithImpl(this._value, this._then);
+class _$CircleAreaRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CircleAreaRequestModel
+>
+    implements $CircleAreaRequestModelCopyWith<$Res> {
+  _$CircleAreaRequestModelCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AreaRequestModel
+  /// Create a copy of CircleAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -324,7 +582,7 @@ class _$AreaRequestModelCopyWithImpl<$Res, $Val extends AreaRequestModel>
     );
   }
 
-  /// Create a copy of AreaRequestModel
+  /// Create a copy of CircleAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -336,7 +594,7 @@ class _$AreaRequestModelCopyWithImpl<$Res, $Val extends AreaRequestModel>
     });
   }
 
-  /// Create a copy of AreaRequestModel
+  /// Create a copy of CircleAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -348,12 +606,12 @@ class _$AreaRequestModelCopyWithImpl<$Res, $Val extends AreaRequestModel>
 }
 
 /// @nodoc
-abstract class _$$AreaRequestModelImplCopyWith<$Res>
-    implements $AreaRequestModelCopyWith<$Res> {
-  factory _$$AreaRequestModelImplCopyWith(
-    _$AreaRequestModelImpl value,
-    $Res Function(_$AreaRequestModelImpl) then,
-  ) = __$$AreaRequestModelImplCopyWithImpl<$Res>;
+abstract class _$$CircleAreaRequestModelImplCopyWith<$Res>
+    implements $CircleAreaRequestModelCopyWith<$Res> {
+  factory _$$CircleAreaRequestModelImplCopyWith(
+    _$CircleAreaRequestModelImpl value,
+    $Res Function(_$CircleAreaRequestModelImpl) then,
+  ) = __$$CircleAreaRequestModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({
@@ -370,15 +628,16 @@ abstract class _$$AreaRequestModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$AreaRequestModelImplCopyWithImpl<$Res>
-    extends _$AreaRequestModelCopyWithImpl<$Res, _$AreaRequestModelImpl>
-    implements _$$AreaRequestModelImplCopyWith<$Res> {
-  __$$AreaRequestModelImplCopyWithImpl(
-    _$AreaRequestModelImpl _value,
-    $Res Function(_$AreaRequestModelImpl) _then,
+class __$$CircleAreaRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CircleAreaRequestModelCopyWithImpl<$Res, _$CircleAreaRequestModelImpl>
+    implements _$$CircleAreaRequestModelImplCopyWith<$Res> {
+  __$$CircleAreaRequestModelImplCopyWithImpl(
+    _$CircleAreaRequestModelImpl _value,
+    $Res Function(_$CircleAreaRequestModelImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of AreaRequestModel
+  /// Create a copy of CircleAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -389,7 +648,7 @@ class __$$AreaRequestModelImplCopyWithImpl<$Res>
     Object? jailRadiusInMeters = null,
   }) {
     return _then(
-      _$AreaRequestModelImpl(
+      _$CircleAreaRequestModelImpl(
         playgroundCenter: null == playgroundCenter
             ? _value.playgroundCenter
             : playgroundCenter // ignore: cast_nullable_to_non_nullable
@@ -413,16 +672,16 @@ class __$$AreaRequestModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$AreaRequestModelImpl implements _AreaRequestModel {
-  const _$AreaRequestModelImpl({
+class _$CircleAreaRequestModelImpl implements _CircleAreaRequestModel {
+  const _$CircleAreaRequestModelImpl({
     required this.playgroundCenter,
     required this.playgroundRadiusInMeters,
     required this.jailCenter,
     required this.jailRadiusInMeters,
   });
 
-  factory _$AreaRequestModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AreaRequestModelImplFromJson(json);
+  factory _$CircleAreaRequestModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CircleAreaRequestModelImplFromJson(json);
 
   /// 플레이그라운드 중심 좌표
   @override
@@ -442,14 +701,14 @@ class _$AreaRequestModelImpl implements _AreaRequestModel {
 
   @override
   String toString() {
-    return 'AreaRequestModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters)';
+    return 'CircleAreaRequestModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AreaRequestModelImpl &&
+            other is _$CircleAreaRequestModelImpl &&
             (identical(other.playgroundCenter, playgroundCenter) ||
                 other.playgroundCenter == playgroundCenter) &&
             (identical(
@@ -473,33 +732,34 @@ class _$AreaRequestModelImpl implements _AreaRequestModel {
     jailRadiusInMeters,
   );
 
-  /// Create a copy of AreaRequestModel
+  /// Create a copy of CircleAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$AreaRequestModelImplCopyWith<_$AreaRequestModelImpl> get copyWith =>
-      __$$AreaRequestModelImplCopyWithImpl<_$AreaRequestModelImpl>(
+  _$$CircleAreaRequestModelImplCopyWith<_$CircleAreaRequestModelImpl>
+  get copyWith =>
+      __$$CircleAreaRequestModelImplCopyWithImpl<_$CircleAreaRequestModelImpl>(
         this,
         _$identity,
       );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AreaRequestModelImplToJson(this);
+    return _$$CircleAreaRequestModelImplToJson(this);
   }
 }
 
-abstract class _AreaRequestModel implements AreaRequestModel {
-  const factory _AreaRequestModel({
+abstract class _CircleAreaRequestModel implements CircleAreaRequestModel {
+  const factory _CircleAreaRequestModel({
     required final CoordinatesRequestModel playgroundCenter,
     required final int playgroundRadiusInMeters,
     required final CoordinatesRequestModel jailCenter,
     required final int jailRadiusInMeters,
-  }) = _$AreaRequestModelImpl;
+  }) = _$CircleAreaRequestModelImpl;
 
-  factory _AreaRequestModel.fromJson(Map<String, dynamic> json) =
-      _$AreaRequestModelImpl.fromJson;
+  factory _CircleAreaRequestModel.fromJson(Map<String, dynamic> json) =
+      _$CircleAreaRequestModelImpl.fromJson;
 
   /// 플레이그라운드 중심 좌표
   @override
@@ -517,12 +777,238 @@ abstract class _AreaRequestModel implements AreaRequestModel {
   @override
   int get jailRadiusInMeters;
 
-  /// Create a copy of AreaRequestModel
+  /// Create a copy of CircleAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$AreaRequestModelImplCopyWith<_$AreaRequestModelImpl> get copyWith =>
+  _$$CircleAreaRequestModelImplCopyWith<_$CircleAreaRequestModelImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+PolygonAreaRequestModel _$PolygonAreaRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _PolygonAreaRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$PolygonAreaRequestModel {
+  /// 플레이그라운드 꼭짓점 좌표 목록
+  List<CoordinatesRequestModel> get playgroundPolygon =>
       throw _privateConstructorUsedError;
+
+  /// 감옥 꼭짓점 좌표 목록
+  List<CoordinatesRequestModel> get jailPolygon =>
+      throw _privateConstructorUsedError;
+
+  /// Serializes this PolygonAreaRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of PolygonAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $PolygonAreaRequestModelCopyWith<PolygonAreaRequestModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PolygonAreaRequestModelCopyWith<$Res> {
+  factory $PolygonAreaRequestModelCopyWith(
+    PolygonAreaRequestModel value,
+    $Res Function(PolygonAreaRequestModel) then,
+  ) = _$PolygonAreaRequestModelCopyWithImpl<$Res, PolygonAreaRequestModel>;
+  @useResult
+  $Res call({
+    List<CoordinatesRequestModel> playgroundPolygon,
+    List<CoordinatesRequestModel> jailPolygon,
+  });
+}
+
+/// @nodoc
+class _$PolygonAreaRequestModelCopyWithImpl<
+  $Res,
+  $Val extends PolygonAreaRequestModel
+>
+    implements $PolygonAreaRequestModelCopyWith<$Res> {
+  _$PolygonAreaRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of PolygonAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = null}) {
+    return _then(
+      _value.copyWith(
+            playgroundPolygon: null == playgroundPolygon
+                ? _value.playgroundPolygon
+                : playgroundPolygon // ignore: cast_nullable_to_non_nullable
+                      as List<CoordinatesRequestModel>,
+            jailPolygon: null == jailPolygon
+                ? _value.jailPolygon
+                : jailPolygon // ignore: cast_nullable_to_non_nullable
+                      as List<CoordinatesRequestModel>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$PolygonAreaRequestModelImplCopyWith<$Res>
+    implements $PolygonAreaRequestModelCopyWith<$Res> {
+  factory _$$PolygonAreaRequestModelImplCopyWith(
+    _$PolygonAreaRequestModelImpl value,
+    $Res Function(_$PolygonAreaRequestModelImpl) then,
+  ) = __$$PolygonAreaRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    List<CoordinatesRequestModel> playgroundPolygon,
+    List<CoordinatesRequestModel> jailPolygon,
+  });
+}
+
+/// @nodoc
+class __$$PolygonAreaRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$PolygonAreaRequestModelCopyWithImpl<
+          $Res,
+          _$PolygonAreaRequestModelImpl
+        >
+    implements _$$PolygonAreaRequestModelImplCopyWith<$Res> {
+  __$$PolygonAreaRequestModelImplCopyWithImpl(
+    _$PolygonAreaRequestModelImpl _value,
+    $Res Function(_$PolygonAreaRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of PolygonAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = null}) {
+    return _then(
+      _$PolygonAreaRequestModelImpl(
+        playgroundPolygon: null == playgroundPolygon
+            ? _value._playgroundPolygon
+            : playgroundPolygon // ignore: cast_nullable_to_non_nullable
+                  as List<CoordinatesRequestModel>,
+        jailPolygon: null == jailPolygon
+            ? _value._jailPolygon
+            : jailPolygon // ignore: cast_nullable_to_non_nullable
+                  as List<CoordinatesRequestModel>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$PolygonAreaRequestModelImpl implements _PolygonAreaRequestModel {
+  const _$PolygonAreaRequestModelImpl({
+    required final List<CoordinatesRequestModel> playgroundPolygon,
+    required final List<CoordinatesRequestModel> jailPolygon,
+  }) : _playgroundPolygon = playgroundPolygon,
+       _jailPolygon = jailPolygon;
+
+  factory _$PolygonAreaRequestModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PolygonAreaRequestModelImplFromJson(json);
+
+  /// 플레이그라운드 꼭짓점 좌표 목록
+  final List<CoordinatesRequestModel> _playgroundPolygon;
+
+  /// 플레이그라운드 꼭짓점 좌표 목록
+  @override
+  List<CoordinatesRequestModel> get playgroundPolygon {
+    if (_playgroundPolygon is EqualUnmodifiableListView)
+      return _playgroundPolygon;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_playgroundPolygon);
+  }
+
+  /// 감옥 꼭짓점 좌표 목록
+  final List<CoordinatesRequestModel> _jailPolygon;
+
+  /// 감옥 꼭짓점 좌표 목록
+  @override
+  List<CoordinatesRequestModel> get jailPolygon {
+    if (_jailPolygon is EqualUnmodifiableListView) return _jailPolygon;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_jailPolygon);
+  }
+
+  @override
+  String toString() {
+    return 'PolygonAreaRequestModel(playgroundPolygon: $playgroundPolygon, jailPolygon: $jailPolygon)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PolygonAreaRequestModelImpl &&
+            const DeepCollectionEquality().equals(
+              other._playgroundPolygon,
+              _playgroundPolygon,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._jailPolygon,
+              _jailPolygon,
+            ));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_playgroundPolygon),
+    const DeepCollectionEquality().hash(_jailPolygon),
+  );
+
+  /// Create a copy of PolygonAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$PolygonAreaRequestModelImplCopyWith<_$PolygonAreaRequestModelImpl>
+  get copyWith =>
+      __$$PolygonAreaRequestModelImplCopyWithImpl<
+        _$PolygonAreaRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$PolygonAreaRequestModelImplToJson(this);
+  }
+}
+
+abstract class _PolygonAreaRequestModel implements PolygonAreaRequestModel {
+  const factory _PolygonAreaRequestModel({
+    required final List<CoordinatesRequestModel> playgroundPolygon,
+    required final List<CoordinatesRequestModel> jailPolygon,
+  }) = _$PolygonAreaRequestModelImpl;
+
+  factory _PolygonAreaRequestModel.fromJson(Map<String, dynamic> json) =
+      _$PolygonAreaRequestModelImpl.fromJson;
+
+  /// 플레이그라운드 꼭짓점 좌표 목록
+  @override
+  List<CoordinatesRequestModel> get playgroundPolygon;
+
+  /// 감옥 꼭짓점 좌표 목록
+  @override
+  List<CoordinatesRequestModel> get jailPolygon;
+
+  /// Create a copy of PolygonAreaRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$PolygonAreaRequestModelImplCopyWith<_$PolygonAreaRequestModelImpl>
+  get copyWith => throw _privateConstructorUsedError;
 }
 
 CoordinatesRequestModel _$CoordinatesRequestModelFromJson(

@@ -82,15 +82,15 @@ import '../../constants/text_styles.dart';
 ///   onChanged: (value) => setState(() => _policeWaitTime = value),
 /// )
 ///
-/// // 값 변환 (m → km)
+/// // 값 표시를 직접 포맷 (단위까지 포함해서 반환한다)
 /// AppSlider(
 ///   label: '반경',
 ///   value: _radius,
-///   min: 50,
-///   max: 500,
-///   unit: 'km',
-///   divisions: 45,
-///   valueFormatter: (value) => (value / 1000).toStringAsFixed(2),
+///   min: 100,
+///   max: 1000,
+///   unit: 'm',
+///   divisions: 90,
+///   valueFormatter: formatRadiusValue, // 1000 이상은 "1.00km", 미만은 "500m"
 ///   onChanged: (value) => setState(() => _radius = value),
 /// )
 /// ```
@@ -127,6 +127,11 @@ class AppSlider extends StatelessWidget {
          !(editable && displayValue != null),
          'AppSlider: editable과 displayValue는 함께 사용할 수 없다 '
          '(displayValue는 임의 문자열이라 숫자 입력 위치를 알 수 없음)',
+       ),
+       assert(
+         !(editable && valueFormatter != null),
+         'AppSlider: editable과 valueFormatter는 함께 사용할 수 없다 '
+         '(편집 모드는 TextField에 원시 숫자를 넣으므로 포맷이 무시됨)',
        );
 
   /// 라벨 텍스트 (예: '최대 인원', '반경')
@@ -160,8 +165,12 @@ class AppSlider extends StatelessWidget {
   /// label_16 스타일 + valueColor 사용
   final String? displaySuffix;
 
-  /// 값 변환 함수 (예: m → km 변환)
-  /// null이면 value를 그대로 사용
+  /// 값 표시 포맷 함수 — **단위까지 포함한 완성 문자열**을 반환한다
+  ///
+  /// 현재 값과 min/max 라벨 모두 이 함수를 거치므로, 값에 따라 단위가 바뀌는
+  /// 경우(500m ↔ 1.00km)에도 세 표시가 어긋나지 않는다.
+  /// null이면 기본 포맷 `'{value.toInt()}{unit}'`을 쓴다.
+  /// [editable]과 함께 쓸 수 없다 (편집 모드는 TextField에 원시 숫자를 넣는다).
   final String Function(double)? valueFormatter;
 
   /// 슬라이더 활성 트랙 색상 (기본: AppColors.black800)
@@ -370,6 +379,13 @@ class AppSlider extends StatelessWidget {
     );
   }
 
+  /// 값·min·max 공통 표시 문자열
+  ///
+  /// [valueFormatter]가 있으면 단위까지 그 함수가 책임진다. 값 텍스트와 min/max
+  /// 라벨이 같은 경로를 타므로 단위가 값에 따라 바뀌어도 서로 어긋나지 않는다.
+  String _formatValue(double v) =>
+      valueFormatter?.call(v) ?? '${v.toInt()}$unit';
+
   /// 값 표시 위젯 (스타일 분리 지원)
   Widget _buildValueDisplay() {
     // 모드 1: displayValue 사용 시 (레거시)
@@ -405,7 +421,7 @@ class AppSlider extends StatelessWidget {
               onChanged: onChanged,
               onEditingChanged: onEditingChanged,
             )
-          : Text('${value.toInt()}$unit', style: valueStyle);
+          : Text(_formatValue(value), style: valueStyle);
 
       return FittedBox(
         fit: BoxFit.scaleDown,
@@ -440,7 +456,7 @@ class AppSlider extends StatelessWidget {
       );
     }
 
-    return Text('${value.toInt()}$unit', style: valueStyle);
+    return Text(_formatValue(value), style: valueStyle);
   }
 
   /// 슬라이더 위젯
@@ -545,13 +561,13 @@ class AppSlider extends StatelessWidget {
       children: [
         // 최소값 (black600 기본)
         Text(
-          '${min.toInt()}$unit',
+          _formatValue(min),
           style: AppTextStyles.tag_12.copyWith(color: _effectiveMinMaxColor),
         ),
 
         // 최대값 (black600 기본)
         Text(
-          '${max.toInt()}$unit',
+          _formatValue(max),
           style: AppTextStyles.tag_12.copyWith(color: _effectiveMinMaxColor),
         ),
       ],

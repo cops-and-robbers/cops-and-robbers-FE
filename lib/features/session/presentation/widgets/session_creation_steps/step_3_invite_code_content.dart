@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/spacing_and_radius.dart';
+import '../../../../game/domain/entities/area_shape.dart';
 import '../../../domain/entities/session_settings.dart';
-import '../../../domain/entities/zone_info.dart';
 import '../setting_list_card.dart';
 import '../zone_list_card.dart';
 
@@ -13,7 +13,7 @@ import '../zone_list_card.dart';
 class Step3InviteCodeContent extends StatelessWidget {
   const Step3InviteCodeContent({
     super.key,
-    required this.zones,
+    required this.area,
     required this.settings,
     this.settingSummaryKey,
   });
@@ -22,8 +22,8 @@ class Step3InviteCodeContent extends StatelessWidget {
   // Properties
   // ============================================
 
-  /// 구역 정보 리스트
-  final List<ZoneInfo> zones;
+  /// 게임 구역 (플레이그라운드 + 감옥)
+  final GameAreaEntity area;
 
   /// 게임 설정 정보
   final SessionSettings settings;
@@ -40,7 +40,7 @@ class Step3InviteCodeContent extends StatelessWidget {
     return Column(
       key: settingSummaryKey,
       children: [
-        ZoneListCard(zones: zones),
+        ZoneListCard(area: area),
         SizedBox(height: AppSpacing.vertical8),
         SettingListCard(settings: settings),
       ],

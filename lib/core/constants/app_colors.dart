@@ -22,6 +22,10 @@ class AppColors {
   /// Black color
   static const Color black = Color(0xFF080A0C);
 
+  /// 완전 투명
+  /// Transparent color
+  static const Color transparent = Color(0x00000000);
+
   // ============================================
   // 흑백 계열 (Black Scale)
   // ============================================
@@ -111,6 +115,10 @@ class AppColors {
   /// Blue 500
   static const Color blue500 = Color(0xFF9FB1EC);
 
+  /// 파랑 500, 20% 투명도
+  /// Blue 500 with 20% opacity
+  static const Color blue500Alpha20 = Color(0x339FB1EC);
+
   /// 파랑 100
   /// Blue 100
   static const Color blue100 = Color(0xFFECF0FC);
@@ -134,6 +142,10 @@ class AppColors {
   /// 빨강 500
   /// Red 500
   static const Color red500 = Color(0xFFFA9C9E);
+
+  /// 빨강 500, 20% 투명도
+  /// Red 500 with 20% opacity
+  static const Color red500Alpha20 = Color(0x33FA9C9E);
 
   /// 빨강 100
   /// Red 100

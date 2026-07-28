@@ -87,16 +87,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorForbidden => 'アクセス権限がありません';
 
   @override
-  String get errorNotFound => '要求されたリソースが見つかりません';
+  String get errorNotFound => '要求された情報が見つかりません';
 
   @override
-  String get errorConflict => 'リクエストが現在の状態と衝突しています';
+  String get errorConflict => 'リクエストを処理できません。しばらくしてからもう一度お試しください';
 
   @override
   String get buttonConfirm => '確認';
 
   @override
-  String get buttonCancel => 'キャンセル';
+  String get buttonCancel => '閉じる';
 
   @override
   String get dialogReconnectMessage => '接続が途切れました。再接続が必要です';
@@ -130,17 +130,43 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonAppleSignIn => 'Appleで続ける';
 
   @override
-  String zoneRadiusKm(String km) {
-    return '半径 ${km}km';
-  }
-
-  @override
-  String zoneRadiusMeter(String radiusMeters) {
-    return '半径 ${radiusMeters}m';
-  }
-
-  @override
   String get zoneRadiusLabel => '半径';
+
+  @override
+  String zoneRadiusValue(String value) {
+    return '半径 $value';
+  }
+
+  @override
+  String zoneAreaValue(String value) {
+    return '面積 $value';
+  }
+
+  @override
+  String get areaTypeSetByDistance => '距離で設定';
+
+  @override
+  String get areaTypeSetByPin => 'ピンで設定';
+
+  @override
+  String get setupPlaygroundPinDescription => 'ゲームを行うエリア全体を選択します';
+
+  @override
+  String get setupPrisonPinDescription => '泥棒を拘束しておく牢屋エリアを選択します';
+
+  @override
+  String get zoneAreaLabel => '面積';
+
+  @override
+  String get zoneClearAllPins => 'すべて解除';
+
+  @override
+  String pinMaxCountMessage(int count) {
+    return 'ピンは最大$count個まで置けます';
+  }
+
+  @override
+  String get pinTooCloseMessage => 'ピン同士が近すぎます';
 
   @override
   String get dialogAgreementRequiredTermsTitle => '必須規約未同意';
@@ -168,6 +194,36 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsLanguageOptionJapanese => '日本語';
+
+  @override
+  String get asset_loading_sub_joinRoom => '今アプリを閉じると合流がキャンセルされます。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_createRoom => '作戦本部を設営しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_changeTeam => '新しい身分証を発行しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_startGame => 'まもなく作戦が始まります。アプリを閉じないでください';
+
+  @override
+  String get asset_loading_sub_updateArea => '作戦区域を保存しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_saveSettings => '設定を保存しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_loadProfile => 'エージェント情報を読み込んでいます。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_logout => '安全に撤収しています。少々お待ちください';
+
+  @override
+  String get asset_loading_sub_deleteAccount => '記録を削除しています。アプリを閉じないでください';
+
+  @override
+  String get asset_loading_sub_bugReport => '報告を受け付けています。少々お待ちください';
 
   @override
   String get asset_loading_joinRoom => '潜入の準備中です';
@@ -409,11 +465,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String zoneRadiusMeters(String meters) {
-    return '半径 ${meters}m';
-  }
-
-  @override
   String get errorSettingsSaveFailed => '設定の保存に失敗しました';
 
   @override
@@ -505,9 +556,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homePageWelcomeMessage => '誰がぼくのチーズを\n盗んだの!!!!🧀';
 
   @override
-  String get homePageWelcomeMessageClassic => 'とても楽しみです\n今回はどんな役割になるでしょうか';
-
-  @override
   String get buttonCreateRoom => '待機室を作る';
 
   @override
@@ -558,7 +606,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get setupPlaygroundRadiusInputHint => 'ここをタップすると半径を直接入力できます';
 
   @override
-  String get setupPlaygroundDescription => 'ゲームが進行されるエリア全体の大きさを設定します';
+  String get setupPlaygroundDescription => 'ゲームを行うエリア全体の大きさを設定します';
 
   @override
   String get buttonDone => '完了';
@@ -784,11 +832,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorAuthUserNotFound => 'ログイン情報を取得できません。もう一度お試しください';
 
   @override
-  String get errorAuthTokenIssueFailed => '認証トークンの発行に失敗しました。もう一度お試しください';
+  String get errorAuthTokenIssueFailed => '認証に失敗しました。もう一度お試しください';
 
   @override
-  String get errorAuthTokenValidationFailed =>
-      'Firebase認証トークンの検証に失敗しました。再度ログインしてください';
+  String get errorAuthTokenValidationFailed => 'ログイン情報の有効期限が切れました。再度ログインしてください';
 
   @override
   String get errorAuthInvalidCredential => '不正な認証情報です';
@@ -803,12 +850,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorAuthSignInMethodUnavailable => 'このログイン方法は現在ご利用いただけません';
 
   @override
-  String get errorAuthFirebaseConfig =>
-      'Firebase設定に問題があります。しばらくしてからもう一度お試しください';
+  String get errorAuthFirebaseConfig => '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
 
   @override
-  String get errorAuthFirebaseInternal =>
-      'Firebase内部エラーが発生しました。しばらくしてからもう一度お試しください';
+  String get errorAuthFirebaseInternal => '一時的なエラーが発生しました。しばらくしてからもう一度お試しください';
 
   @override
   String errorAuthProviderLoginFailed(String provider) {
@@ -952,7 +997,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameOverReasonRobberForfeited => '泥棒が全員退場しました！';
 
   @override
-  String get gameOverFallbackMessage => 'ゲームが終了しました。';
+  String get gameOverFallbackMessage => 'ゲームが終了しました';
 
   @override
   String get gameTeamCop => '警察チーム';
@@ -1009,17 +1054,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelArrestCount => '逮捕回数';
 
   @override
-  String gameResultArrestCount(int count) {
-    return '$count回';
-  }
-
-  @override
   String get fieldRemainingRobbers => '残りの泥棒';
-
-  @override
-  String gameResultRemainingRobberCount(int count) {
-    return '$count人';
-  }
 
   @override
   String get fieldGamePlaytime => 'ゲーム進行時間';
@@ -1031,19 +1066,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonPlayAgain => 'もう一度';
 
   @override
-  String get buttonViewMyRecord => 'マイ記録を見る';
-
-  @override
   String get labelMyRecord => 'マイ記録';
-
-  @override
-  String get labelTravelDistance => '移動した距離';
-
-  @override
-  String get labelMyArrestCount => '捕まえた泥棒';
-
-  @override
-  String get labelMyEscapeCount => '脱獄回数';
 
   @override
   String get labelResult => '結果';
@@ -1056,12 +1079,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get labelNoRoute => '移動記録なし';
-
-  @override
-  String get legendArrestSpot => '捕獲地点';
-
-  @override
-  String get legendCaughtSpot => '逮捕地点';
 
   @override
   String gameLocationRevealCountdown(String formatted) {
@@ -1618,7 +1635,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGamePushUpdateUnexpected => 'ゲームプッシュ通知の同意更新中に予期しないエラーが発生しました';
 
   @override
-  String get errorAuthTokenMissing => '認証トークンを取得できません。再ログインが必要です';
+  String get errorAuthTokenMissing => 'ログイン情報を確認できません。再度ログインしてください';
 
   @override
   String get errorServerUnreachable => 'サーバーに接続できません。しばらくしてからもう一度お試しください';
@@ -1663,14 +1680,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String gameEventStartTime(int minutes) {
-    return '制限時間は$minutes分です。';
+    return '制限時間は$minutes分です';
   }
 
   @override
   String get gameEventStartReady => 'まもなくゲームが始まります。  全プレイヤーは準備してください!';
 
   @override
-  String get gameEventStartReportTip => 'ゲーム中、チャットを長押しすると不快なユーザーを通報・ブロックできます。';
+  String get gameEventStartReportTip => 'ゲーム中、チャットを長押しすると不快なユーザーを通報・ブロックできます';
 
   @override
   String get gameEventStartGo => 'ゲーム開始!  幸運を!';
@@ -1750,7 +1767,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeQueryParameterTypeMismatch => 'リクエストパラメータの型が正しくありません';
 
   @override
-  String get errorCodeInvalidInputValue => '入力値が検証を通過しませんでした';
+  String get errorCodeInvalidInputValue => '入力値が条件に合いません';
 
   @override
   String get errorCodeInvalidDestination => '接続先が正しくありません';

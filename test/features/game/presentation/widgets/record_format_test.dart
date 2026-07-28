@@ -2,16 +2,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/record_format.dart';
 
 void main() {
-  group('formatDistance', () {
-    test('shows_meters_below_1km', () {
-      expect(formatDistance(0), '0 m');
-      expect(formatDistance(540), '540 m');
-      expect(formatDistance(999.4), '999 m');
+  group('formatDistanceParts', () {
+    test('returns_rounded_meters_with_m_unit_when_under_1km', () {
+      expect(formatDistanceParts(0), (value: '0', unit: 'm'));
+      expect(formatDistanceParts(540), (value: '540', unit: 'm'));
+      expect(formatDistanceParts(999.4), (value: '999', unit: 'm'));
     });
 
-    test('shows_km_with_two_decimals_at_or_above_1km', () {
-      expect(formatDistance(1000), '1.00 km');
-      expect(formatDistance(2543), '2.54 km');
+    test('returns_two_decimal_kilometers_when_1km_or_more', () {
+      expect(formatDistanceParts(1000), (value: '1.00', unit: 'Km'));
+      expect(formatDistanceParts(2543), (value: '2.54', unit: 'Km'));
     });
   });
 
