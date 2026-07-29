@@ -303,7 +303,7 @@ void main() {
         resultFuture: () async => entity,
       );
 
-      // 라이브 화면에는 로고가 없다 — 공유 이미지 전용이다.
+      // 라이브 화면에는 로고가 안 보인다(offstage) — 공유 이미지 전용이다.
       expect(
         find.byKey(const ValueKey('game_over_brand_lockup')),
         findsNothing,
@@ -317,7 +317,7 @@ void main() {
         findsOneWidget,
       );
 
-      // 버튼은 이미지에 남으면 안 되므로 트리에서 제거된다.
+      // 버튼은 이미지에 남으면 안 되므로 offstage로 빠져 그려지지 않는다.
       expect(
         find.byKey(const ValueKey('game_over_go_home_button')),
         findsNothing,
@@ -342,6 +342,27 @@ void main() {
       );
 
       await tester.pumpAndSettle();
+    });
+
+    testWidgets('premounts_brand_lockup_offstage_before_capture', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 11,
+        resultFuture: () async => entity,
+      );
+
+      // 로고는 공유 전부터 offstage로 마운트돼 디코딩을 끝내 둬야 한다.
+      // 캡처 프레임에 처음 마운트되면 실기기의 비동기 에셋 로딩 때문에
+      // 그 프레임에 그려지지 못해 공유 이미지에서 빠진다.
+      expect(
+        find.byKey(
+          const ValueKey('game_over_brand_lockup'),
+          skipOffstage: false,
+        ),
+        findsOneWidget,
+      );
     });
   });
 }

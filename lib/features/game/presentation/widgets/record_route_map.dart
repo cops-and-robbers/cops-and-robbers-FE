@@ -61,11 +61,20 @@ class RecordRouteMap extends StatefulWidget {
   final bool isDarkMode;
 
   @override
-  State<RecordRouteMap> createState() => _RecordRouteMapState();
+  State<RecordRouteMap> createState() => RecordRouteMapState();
 }
 
-class _RecordRouteMapState extends State<RecordRouteMap> {
+/// 공유 캡처를 위해 부모가 [prepareForCapture]/[endCapture]를 호출할 수 있도록
+/// 상태를 공개한다 ([GlobalKey]로 접근 — FormState 패턴).
+class RecordRouteMapState extends State<RecordRouteMap> {
   GoogleMapController? _controller;
+
+  /// 캡처 중 지도 위에 덮을 네이티브 스냅샷.
+  ///
+  /// GoogleMap은 OS가 합성하는 플랫폼 뷰라 RepaintBoundary.toImage에
+  /// 절대 찍히지 않는다. 캡처 직전 takeSnapshot으로 뜬 PNG를 Flutter
+  /// Image로 겹쳐 캡처에 포함시킨다.
+  ImageProvider? _snapshot;
 
   /// 경로가 비었을 때의 폴백 중심 (인게임 GoogleMapView와 동일 좌표)
   static const LatLng _fallbackCenter = LatLng(37.5480, 127.0810);
@@ -112,6 +121,30 @@ class _RecordRouteMapState extends State<RecordRouteMap> {
     return LatLng(p.latitude, p.longitude);
   }
 
+  /// 캡처 직전 호출 — 네이티브 스냅샷을 떠서 지도 위에 겹쳐 둔다.
+  ///
+  /// precacheImage까지 await해야 다음 프레임에 동기로 그려져 캡처에 포함된다.
+  /// 지도가 없거나(빈 경로) 스냅샷 실패 시 조용히 넘어간다 — 캡처 자체는
+  /// 진행되고 지도 자리만 배경색으로 남는다(현재와 동일한 폴백).
+  Future<void> prepareForCapture() async {
+    try {
+      final bytes = await _controller?.takeSnapshot();
+      if (bytes == null || !mounted) return;
+      final provider = MemoryImage(bytes);
+      await precacheImage(provider, context);
+      if (!mounted) return;
+      setState(() => _snapshot = provider);
+    } catch (e) {
+      debugPrint('[RecordRouteMap] 지도 스냅샷 실패: $e');
+    }
+  }
+
+  /// 캡처 종료 후 호출 — 스냅샷 오버레이를 걷어내 라이브 지도로 복귀.
+  void endCapture() {
+    if (!mounted || _snapshot == null) return;
+    setState(() => _snapshot = null);
+  }
+
   @override
   Widget build(BuildContext context) {
     final bg = widget.isDarkMode ? AppColors.black900 : AppColors.black100;
@@ -136,48 +169,56 @@ class _RecordRouteMapState extends State<RecordRouteMap> {
       borderRadius: AppRadius.large,
       child: SizedBox(
         height: _mapHeight.h,
-        child: ColoredBox(
-          color: bg,
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _initialTarget,
-              zoom: 16,
-            ),
-            style: widget.isDarkMode ? MapStyles.dark : null,
-            onMapCreated: _onMapCreated,
-            polylines: {
-              Polyline(
-                polylineId: const PolylineId('my_route'),
-                points: [
-                  for (final p in widget.route) LatLng(p.latitude, p.longitude),
-                ],
-                color: widget.lineColor,
-                width: 5,
-              ),
-            },
-            markers: {
-              for (var i = 0; i < widget.markerPoints.length; i++)
-                Marker(
-                  markerId: MarkerId('highlight_$i'),
-                  position: LatLng(
-                    widget.markerPoints[i].latitude,
-                    widget.markerPoints[i].longitude,
-                  ),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueRed,
-                  ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ColoredBox(
+              color: bg,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: _initialTarget,
+                  zoom: 16,
                 ),
-            },
-            // 정적 표시용 — 모든 조작과 오버레이를 끈다.
-            zoomControlsEnabled: false,
-            mapToolbarEnabled: false,
-            myLocationEnabled: false,
-            myLocationButtonEnabled: false,
-            scrollGesturesEnabled: false,
-            zoomGesturesEnabled: false,
-            rotateGesturesEnabled: false,
-            tiltGesturesEnabled: false,
-          ),
+                style: widget.isDarkMode ? MapStyles.dark : null,
+                onMapCreated: _onMapCreated,
+                polylines: {
+                  Polyline(
+                    polylineId: const PolylineId('my_route'),
+                    points: [
+                      for (final p in widget.route)
+                        LatLng(p.latitude, p.longitude),
+                    ],
+                    color: widget.lineColor,
+                    width: 5,
+                  ),
+                },
+                markers: {
+                  for (var i = 0; i < widget.markerPoints.length; i++)
+                    Marker(
+                      markerId: MarkerId('highlight_$i'),
+                      position: LatLng(
+                        widget.markerPoints[i].latitude,
+                        widget.markerPoints[i].longitude,
+                      ),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueRed,
+                      ),
+                    ),
+                },
+                // 정적 표시용 — 모든 조작과 오버레이를 끈다.
+                zoomControlsEnabled: false,
+                mapToolbarEnabled: false,
+                myLocationEnabled: false,
+                myLocationButtonEnabled: false,
+                scrollGesturesEnabled: false,
+                zoomGesturesEnabled: false,
+                rotateGesturesEnabled: false,
+                tiltGesturesEnabled: false,
+              ),
+            ),
+            // 캡처 중에만 존재 — 같은 화면의 스냅샷이라 사용자에겐 전환이 안 보인다.
+            if (_snapshot != null) Image(image: _snapshot!, fit: BoxFit.cover),
+          ],
         ),
       ),
     );
