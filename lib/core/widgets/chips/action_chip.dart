@@ -42,10 +42,14 @@ class ActionChip extends StatelessWidget {
     this.width,
     this.height,
     this.borderRadius,
+    this.icon,
   });
 
   /// 버튼 텍스트
   final String text;
+
+  /// 텍스트 왼쪽에 표시할 아이콘 (없으면 미표시)
+  final IconData? icon;
 
   /// 탭 콜백 (null이면 비활성화)
   final VoidCallback? onTap;
@@ -102,9 +106,21 @@ class ActionChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(_effectiveBorderRadius),
         ),
         alignment: Alignment.center,
-        child: Text(
-          text,
-          style: AppTextStyles.label_16.copyWith(color: _effectiveTextColor),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 16.sp, color: _effectiveTextColor),
+              SizedBox(width: 4.w),
+            ],
+            Text(
+              text,
+              style: AppTextStyles.label_16.copyWith(
+                color: _effectiveTextColor,
+              ),
+            ),
+          ],
         ),
       ),
     );

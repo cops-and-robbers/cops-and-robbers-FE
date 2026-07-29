@@ -203,6 +203,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
       );
       return;
     }
+    VibrationService.instance().buttonTap();
     setState(() => _points.add(pos));
     widget.onPointsChanged(sortedPoints);
   }
@@ -219,6 +220,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     // 마커 탭 시 지도가 그 마커로 카메라를 옮기는 기본 동작이 있어,
     // 삭제 직전 카메라 위치를 다음 프레임에 즉시(moveCamera) 복원해 화면 튐을 막는다.
     final restore = _lastCamera;
+    VibrationService.instance().buttonTap();
     setState(() => _points.removeAt(index));
     widget.onPointsChanged(sortedPoints);
     if (restore != null) {
@@ -374,6 +376,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
               right: AppSpacing.horizontal20,
               child: custom_chip.ActionChip(
                 text: AppLocalizations.of(context).zoneClearAllPins,
+                icon: Icons.close,
                 onTap: _clearAll,
                 backgroundColor: widget.pinColor,
                 borderRadius: 12.r,
