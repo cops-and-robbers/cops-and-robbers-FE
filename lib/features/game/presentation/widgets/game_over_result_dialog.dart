@@ -433,6 +433,11 @@ class _GameOverCard extends ConsumerStatefulWidget {
 class _GameOverCardState extends ConsumerState<_GameOverCard> {
   final GlobalKey _captureKey = GlobalKey();
 
+  /// 지도 스냅샷 준비/해제 호출용 — GoogleMap은 플랫폼 뷰라 toImage에 안 찍혀서
+  /// 캡처 전 네이티브 스냅샷으로 덮어야 한다.
+  final GlobalKey<RecordRouteMapState> _mapKey =
+      GlobalKey<RecordRouteMapState>();
+
   /// 캡처 중에는 버튼·공유 아이콘을 숨긴다(공유 이미지에 찍히면 안 됨).
   bool _capturing = false;
 
@@ -447,9 +452,14 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
 
     final l10n = AppLocalizations.of(context);
 
+    // 지도 네이티브 스냅샷을 먼저 준비해 캡처 프레임에 동기로 그려지게 한다.
+    await _mapKey.currentState?.prepareForCapture();
+    if (!mounted) return;
+
     setState(() => _capturing = true);
     await WidgetsBinding.instance.endOfFrame;
     final bytes = await captureBoundaryToPng(_captureKey);
+    _mapKey.currentState?.endCapture();
     if (mounted) setState(() => _capturing = false);
 
     if (bytes == null) {
@@ -522,14 +532,20 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      record.endedAt == null
-                          ? ''
-                          : formatRecordDate(record.endedAt!),
-                      style: AppTextStyles.label16Medium.copyWith(
-                        color: widget.isDarkMode
-                            ? AppColors.black200
-                            : AppColors.black600,
+                    // 날짜는 통계와 같은 들여쓰기(본문 8 + 8) — 거리·지도는 본문 폭 그대로.
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppSpacing.horizontal8,
+                      ),
+                      child: Text(
+                        record.endedAt == null
+                            ? ''
+                            : formatRecordDate(record.endedAt!),
+                        style: AppTextStyles.paragraph_14_100.copyWith(
+                          color: widget.isDarkMode
+                              ? AppColors.black200
+                              : AppColors.black600,
+                        ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.vertical4),
@@ -554,6 +570,7 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                     ),
                     SizedBox(height: AppSpacing.vertical4),
                     RecordRouteMap(
+                      key: _mapKey,
                       route: record.route,
                       // 경찰은 체포한 곳, 도둑은 잡힌 곳을 표시한다.
                       markerPoints: isRobber
@@ -562,7 +579,7 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                       lineColor: accent,
                       isDarkMode: widget.isDarkMode,
                     ),
-                    SizedBox(height: AppSpacing.vertical20),
+                    SizedBox(height: AppSpacing.vertical16),
                     // 통계 3행만 한 단계 더 들여쓴다(카드 16 + 본문 8 + 8).
                     Padding(
                       padding: EdgeInsets.symmetric(
@@ -576,16 +593,32 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                   ],
                 ),
               ),
-              SizedBox(height: AppSpacing.vertical24),
+              SizedBox(height: AppSpacing.vertical20),
               // 버튼은 공유 이미지에 들어가면 안 되고, 대신 그 자리에 브랜드 로고가 들어간다.
-              if (_capturing)
-                Center(child: _BrandLockup(isDarkMode: widget.isDarkMode))
-              else
-                _ActionButtons(
+              // if/else 교체가 아니라 Offstage 토글인 이유: 캡처 프레임에 처음
+              // 마운트된 SVG는 비동기 로딩 때문에 그 프레임에 그려지지 못한다.
+              // 로고를 미리 마운트해 디코딩을 끝내 두고 그리기만 켜고 끈다.
+              Offstage(
+                offstage: _capturing,
+                child: _ActionButtons(
                   isDarkMode: widget.isDarkMode,
                   onGoHome: widget.onGoHome,
                   onRematch: widget.onRematch,
                 ),
+              ),
+              Offstage(
+                offstage: !_capturing,
+                // 캡처 이미지 전용 하단 여백 — 카드 bottom 패딩 18과 합쳐
+                // 로고 아래 총 54를 만든다. 라이브 버튼 상태에는 영향 없다.
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: AppSpacing.vertical14),
+                    Center(child: _BrandLockup(isDarkMode: widget.isDarkMode)),
+                    SizedBox(height: AppSpacing.vertical18),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -604,7 +637,7 @@ class _BrandLockup extends StatelessWidget {
   final bool isDarkMode;
 
   /// 에셋 viewBox 높이가 로케일 공통 560이라 높이만 주면 폭은 비율대로 따라온다.
-  static const double _height = 20;
+  static const double _height = 18;
 
   @override
   Widget build(BuildContext context) {
