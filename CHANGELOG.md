@@ -1,7 +1,26 @@
 # Changelog
 
-**현재 버전:** 2.4.4  
-**마지막 업데이트:** 2026-07-29T10:10:15Z  
+**현재 버전:** 2.4.8  
+**마지막 업데이트:** 2026-07-30T17:17:44Z  
+
+---
+
+## [2.4.8] - 2026-07-30
+
+**PR:** #468  
+
+**기타**
+- fix : 핀 존 최소 줌 계산에서 3점 미만 참조 폴리곤 제외
+- fix : 게임 결과 이미지 저장·공유 중 재진입 방지
+- Merge pull request #467 from cops-and-robbers/20260730_#466_배터리_제한없음_없이_백그라운드_유지
+- docs : 리포트 문서 작성 #466
+- chore : Android release APK 실행용 VSCode 설정 추가 #466
+- feat : 핀 존 설정 지도 축소 하한을 핀 반경 기반으로 동적 제한 #466
+- feat : 게임 결과 이미지 갤러리 저장 기능 추가 #466
+- feat : FGS 웨이크락으로 배터리 제한없음 설정 없이 백그라운드 유지 #466
+- Merge branch 'main' of https://github.com/cops-and-robbers/cops-and-robbers-FE
+- refactor : 테스트 페이지 축소 및 미사용 위젯 제거
+- chore : 버전 관리
 
 ---
 
