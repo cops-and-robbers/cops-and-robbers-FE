@@ -1,0 +1,11 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "flutter: build apk (release)",
+      "type": "shell",
+      "command": "flutter build apk --release",
+      "problemMatcher": []
+    }
+  ]
+}

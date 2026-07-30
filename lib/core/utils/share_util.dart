@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -55,6 +56,20 @@ Future<bool> shareImageBytes(
     return result.status == ShareResultStatus.success;
   } catch (e) {
     debugPrint('이미지 공유 실패: $e');
+    return false;
+  }
+}
+
+/// PNG 바이트를 Android 갤러리 / iOS 사진 보관함에 저장.
+///
+/// 권한 거부 또는 플랫폼 저장 실패 시 false를 반환한다.
+Future<bool> saveImageBytes(Uint8List bytes) async {
+  try {
+    if (!await Gal.requestAccess()) return false;
+    await Gal.putImageBytes(bytes, name: 'cops_record');
+    return true;
+  } catch (e) {
+    debugPrint('이미지 저장 실패: $e');
     return false;
   }
 }
