@@ -166,7 +166,13 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
   /// 원형 편집이 기본 반경으로 진입 즉시 제한되는 것과 동일한 UX.
   /// 편집 핀과 참조 폴리곤이 벌어질수록 하한이 단계적으로 풀린다.
   double get _minZoom {
-    final visiblePoints = [..._points, ...?widget.referencePolygon];
+    final ref = widget.referencePolygon;
+    final visiblePoints = [
+      ..._points,
+      // 렌더링(_buildPolygons)과 같은 조건 — 3점 미만의 미완성 참조 폴리곤은
+      // 화면에 그리지 않으므로, 보이지 않는 핀이 줌 하한을 정하지 않게 제외한다.
+      if (ref != null && ref.length >= GameConfig.minPolygonVertexCount) ...ref,
+    ];
     return _minZoomForRadius(
       visiblePoints.length < 2 ? 0 : _boundingRadius(visiblePoints),
     );
