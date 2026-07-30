@@ -16,19 +16,4 @@ abstract class BackgroundService {
 
   /// 현재 실행 중인지
   bool get isRunning;
-
-  /// 앱 상세 설정 화면 열기 (사용자 명시적 [설정 열기] 탭에 의해서만 호출).
-  ///
-  /// Android: 설정 → 앱 → 경찰과 도둑 으로 이동.
-  /// 거기서 사용자가 "배터리" 메뉴 → "제한 없음" 직접 선택.
-  ///
-  /// iOS: 별도 배터리 설정이 없어 no-op.
-  Future<void> openAppSettings();
-
-  /// 배터리 최적화 무시 권한 보유 여부.
-  ///
-  /// Android: PowerManager.isIgnoringBatteryOptimizations(packageName) 결과.
-  /// Samsung "제한 없음" 설정이 이 API에 매핑됨.
-  /// iOS: 항상 true (해당 사항 없음).
-  Future<bool> isIgnoringBatteryOptimizations();
 }

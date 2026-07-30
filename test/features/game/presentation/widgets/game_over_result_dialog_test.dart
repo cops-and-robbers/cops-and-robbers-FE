@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -294,6 +295,81 @@ void main() {
       expect(find.text('이동 기록 없음'), findsOneWidget);
     });
 
+    testWidgets('offers_save_and_share_when_share_button_tapped', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 10,
+        resultFuture: () async => entity,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('이미지를 어떻게 할까요?'), findsOneWidget);
+      expect(find.text('저장하기'), findsOneWidget);
+      expect(find.text('공유하기'), findsOneWidget);
+    });
+
+    testWidgets('ignores_second_share_tap_while_save_in_progress', (
+      tester,
+    ) async {
+      // gal 권한 요청을 pending으로 붙잡아 "저장이 끝나지 않은" 상태를 만든다.
+      final galAccess = Completer<bool>();
+      var accessRequested = false;
+      const channel = MethodChannel('gal');
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        if (call.method == 'requestAccess') {
+          accessRequested = true;
+          return galAccess.future;
+        }
+        return null;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 12,
+        resultFuture: () async => entity,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('저장하기'));
+
+      // 캡처(toImage)는 FakeAsync 밖의 실제 비동기라 pump만으로는 끝나지 않는다.
+      // runAsync로 이벤트 루프를 실제로 돌리며 저장 단계 진입까지 bounded 대기.
+      for (var i = 0; i < 50 && !accessRequested; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 1)),
+        );
+        await tester.pump();
+      }
+      expect(accessRequested, isTrue); // 캡처가 끝나 아이콘이 복원된 상태
+
+      // 저장이 끝나기 전 두 번째 탭 — 선택 다이얼로그가 다시 열리면 안 된다.
+      await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pumpAndSettle();
+      expect(find.text('이미지를 어떻게 할까요?'), findsNothing);
+
+      // 저장 플로우가 끝난 뒤에는 다시 열 수 있다 (가드 해제 확인).
+      galAccess.complete(false);
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 1)),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pumpAndSettle();
+      expect(find.text('이미지를 어떻게 할까요?'), findsOneWidget);
+
+      // 실패 스낵바의 dismiss 타이머(3초)를 소진해 pending timer 없이 종료한다.
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('swaps_buttons_for_brand_lockup_while_capturing', (
       tester,
     ) async {
@@ -310,6 +386,8 @@ void main() {
       );
 
       await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('공유하기'));
       await tester.pump(); // _capturing = true 반영
 
       expect(

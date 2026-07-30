@@ -10,9 +10,11 @@ import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/utils/widget_capture_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../domain/entities/game_result_entity.dart';
@@ -441,6 +443,10 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
   /// 캡처 중에는 버튼·공유 아이콘을 숨긴다(공유 이미지에 찍히면 안 됨).
   bool _capturing = false;
 
+  /// 저장·공유 플로우 재진입 방지 — 캡처가 끝나면 아이콘이 다시 활성화되지만
+  /// 저장/공유 await가 남아 있어, 연타 시 권한 요청·갤러리 저장이 중복 호출된다.
+  bool _shareFlowBusy = false;
+
   /// 카드 폭 — 지도(콘텐츠 폭)가 좌우 패딩과 함께 이 값에 맞춰진다.
   static const double _cardWidth = 320;
 
@@ -448,9 +454,25 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
   ///
   /// 버튼·아이콘은 숨김이 실제로 그려진 다음 프레임에 캡처해야 이미지에서 빠진다.
   Future<void> _onShare() async {
-    if (_capturing) return; // 연타 방지
+    if (_shareFlowBusy) return; // 연타 방지 — 다이얼로그 표시~저장/공유 완료까지
+    _shareFlowBusy = true;
+    try {
+      await _runShareFlow();
+    } finally {
+      _shareFlowBusy = false;
+    }
+  }
 
+  Future<void> _runShareFlow() async {
     final l10n = AppLocalizations.of(context);
+    final shouldShare = await AppDialog.confirm(
+      context: context,
+      title: l10n.dialogImageActionTitle,
+      cancelText: l10n.buttonSaveImage,
+      confirmText: l10n.buttonShare,
+      isDarkMode: widget.isDarkMode,
+    );
+    if (!mounted || shouldShare == null) return;
 
     // 지도 네이티브 스냅샷을 먼저 준비해 캡처 프레임에 동기로 그려지게 한다.
     await _mapKey.currentState?.prepareForCapture();
@@ -468,6 +490,18 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
         context,
         message: l10n.messageSaveFailed,
         backgroundColor: AppColors.red,
+        isDarkMode: widget.isDarkMode,
+      );
+      return;
+    }
+
+    if (!shouldShare) {
+      final saved = await saveImageBytes(bytes);
+      if (!mounted) return;
+      AppSnackbar.show(
+        context,
+        message: saved ? l10n.messageImageSaved : l10n.messageSaveFailed,
+        backgroundColor: saved ? null : AppColors.red,
         isDarkMode: widget.isDarkMode,
       );
       return;
@@ -693,7 +727,10 @@ class _ResultTitleRow extends StatelessWidget {
                 ignoring: hideShareIcon,
                 child: GestureDetector(
                   key: const ValueKey('game_over_share_button'),
-                  onTap: onShare,
+                  onTap: () {
+                    VibrationService.instance().buttonTap();
+                    onShare();
+                  },
                   behavior: HitTestBehavior.opaque,
                   child: SvgPicture.asset(
                     'assets/icons/icon_upload.svg',

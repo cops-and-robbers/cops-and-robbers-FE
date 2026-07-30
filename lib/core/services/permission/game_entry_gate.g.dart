@@ -6,7 +6,7 @@ part of 'game_entry_gate.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameEntryGateHash() => r'bb7ae1a265a656192068f01af47f157d933e7f32';
+String _$gameEntryGateHash() => r'7efc64354de19d1781a28e9de17d93920c4ac271';
 
 /// 게임 진입 게이트 provider. 테스트에서 override 가능.
 ///

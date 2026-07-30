@@ -34,16 +34,4 @@ class BackgroundServiceIos implements BackgroundService {
     _isRunning = false;
     debugPrint('[BackgroundService.iOS] ✅ stop — no-op');
   }
-
-  @override
-  Future<void> openAppSettings() async {
-    // iOS는 별도 배터리 최적화 설정이 없어 no-op
-    debugPrint('[BackgroundService.iOS] ✅ openAppSettings — no-op');
-  }
-
-  @override
-  Future<bool> isIgnoringBatteryOptimizations() async {
-    // iOS는 배터리 최적화 설정 자체가 없음 → 항상 통과
-    return true;
-  }
 }

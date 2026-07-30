@@ -572,17 +572,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonGoToSettings => 'Go to settings';
 
   @override
-  String get dialogBatteryGuideTitle => 'For uninterrupted gameplay';
-
-  @override
-  String get homePageBatteryGuideStep1 =>
-      'Please change app settings → battery → unrestricted\n';
-
-  @override
-  String get homePageBatteryGuideStep2 =>
-      'This prevents the game from disconnecting even when the screen is turned off';
-
-  @override
   String get errorJoinFailedCheckCode =>
       'Failed to join. Please check the invite code';
 
@@ -1172,6 +1161,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messageSaveFailed => 'Failed to save';
+
+  @override
+  String get dialogImageActionTitle =>
+      'What would you like to do with the image?';
+
+  @override
+  String get buttonSaveImage => 'Save image';
+
+  @override
+  String get messageImageSaved => 'Image saved';
 
   @override
   String get messageShareComplete => 'Shared';

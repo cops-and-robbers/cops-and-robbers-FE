@@ -520,15 +520,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonGoToSettings => '設定へ移動';
 
   @override
-  String get dialogBatteryGuideTitle => '途切れのないゲームのために';
-
-  @override
-  String get homePageBatteryGuideStep1 => 'アプリ設定 → バッテリー → 制限なし に変更してください\n';
-
-  @override
-  String get homePageBatteryGuideStep2 => 'そうすれば画面が消えてもゲームが途切れません';
-
-  @override
   String get errorJoinFailedCheckCode => '参加に失敗しました。招待コードをご確認ください';
 
   @override
@@ -1073,6 +1064,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get messageSaveFailed => '保存に失敗しました';
+
+  @override
+  String get dialogImageActionTitle => '画像をどうしますか？';
+
+  @override
+  String get buttonSaveImage => '画像を保存';
+
+  @override
+  String get messageImageSaved => '画像を保存しました';
 
   @override
   String get messageShareComplete => '共有しました';
