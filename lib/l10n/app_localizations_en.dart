@@ -1163,6 +1163,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageSaveFailed => 'Failed to save';
 
   @override
+  String get dialogImageActionTitle =>
+      'What would you like to do with the image?';
+
+  @override
+  String get buttonSaveImage => 'Save image';
+
+  @override
+  String get messageImageSaved => 'Image saved';
+
+  @override
   String get messageShareComplete => 'Shared';
 
   @override

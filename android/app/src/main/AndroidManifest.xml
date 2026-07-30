@@ -24,6 +24,10 @@
     <!-- Camera permission for QR code scanning to arrest robbers -->
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- 결과 이미지 갤러리 저장 (Android 10 이하) -->
+    <!-- Gallery save permission for game result images (Android 10 and below) -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+
     <!-- 백그라운드 위치 추적용 Foreground Service 권한 -->
     <!-- Foreground Service permission for background location tracking -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

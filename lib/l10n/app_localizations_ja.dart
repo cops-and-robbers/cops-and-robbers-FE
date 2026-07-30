@@ -1066,6 +1066,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get messageSaveFailed => '保存に失敗しました';
 
   @override
+  String get dialogImageActionTitle => '画像をどうしますか？';
+
+  @override
+  String get buttonSaveImage => '画像を保存';
+
+  @override
+  String get messageImageSaved => '画像を保存しました';
+
+  @override
   String get messageShareComplete => '共有しました';
 
   @override

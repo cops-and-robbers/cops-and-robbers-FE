@@ -2110,6 +2110,24 @@ abstract class AppLocalizations {
   /// **'저장에 실패했어요'**
   String get messageSaveFailed;
 
+  /// 게임 종료 결과 이미지 저장/공유 선택 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'이미지를 어떻게 할까요?'**
+  String get dialogImageActionTitle;
+
+  /// 게임 종료 결과 이미지 저장 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하기'**
+  String get buttonSaveImage;
+
+  /// 게임 종료 결과 이미지 저장 완료 스낵바
+  ///
+  /// In ko, this message translates to:
+  /// **'이미지를 저장했어요'**
+  String get messageImageSaved;
+
   /// 내 기록 — 공유 완료 스낵바
   ///
   /// In ko, this message translates to:

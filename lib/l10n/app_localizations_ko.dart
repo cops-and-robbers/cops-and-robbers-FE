@@ -1064,6 +1064,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get messageSaveFailed => '저장에 실패했어요';
 
   @override
+  String get dialogImageActionTitle => '이미지를 어떻게 할까요?';
+
+  @override
+  String get buttonSaveImage => '저장하기';
+
+  @override
+  String get messageImageSaved => '이미지를 저장했어요';
+
+  @override
   String get messageShareComplete => '공유했어요';
 
   @override

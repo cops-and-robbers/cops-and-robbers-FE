@@ -10,9 +10,11 @@ import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/utils/widget_capture_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../domain/entities/game_result_entity.dart';
@@ -451,6 +453,14 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
     if (_capturing) return; // 연타 방지
 
     final l10n = AppLocalizations.of(context);
+    final shouldShare = await AppDialog.confirm(
+      context: context,
+      title: l10n.dialogImageActionTitle,
+      cancelText: l10n.buttonSaveImage,
+      confirmText: l10n.buttonShare,
+      isDarkMode: widget.isDarkMode,
+    );
+    if (!mounted || shouldShare == null) return;
 
     // 지도 네이티브 스냅샷을 먼저 준비해 캡처 프레임에 동기로 그려지게 한다.
     await _mapKey.currentState?.prepareForCapture();
@@ -468,6 +478,18 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
         context,
         message: l10n.messageSaveFailed,
         backgroundColor: AppColors.red,
+        isDarkMode: widget.isDarkMode,
+      );
+      return;
+    }
+
+    if (!shouldShare) {
+      final saved = await saveImageBytes(bytes);
+      if (!mounted) return;
+      AppSnackbar.show(
+        context,
+        message: saved ? l10n.messageImageSaved : l10n.messageSaveFailed,
+        backgroundColor: saved ? null : AppColors.red,
         isDarkMode: widget.isDarkMode,
       );
       return;
@@ -693,7 +715,10 @@ class _ResultTitleRow extends StatelessWidget {
                 ignoring: hideShareIcon,
                 child: GestureDetector(
                   key: const ValueKey('game_over_share_button'),
-                  onTap: onShare,
+                  onTap: () {
+                    VibrationService.instance().buttonTap();
+                    onShare();
+                  },
                   behavior: HitTestBehavior.opaque,
                   child: SvgPicture.asset(
                     'assets/icons/icon_upload.svg',

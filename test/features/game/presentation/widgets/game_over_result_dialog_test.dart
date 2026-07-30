@@ -294,6 +294,23 @@ void main() {
       expect(find.text('이동 기록 없음'), findsOneWidget);
     });
 
+    testWidgets('offers_save_and_share_when_share_button_tapped', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 10,
+        resultFuture: () async => entity,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('이미지를 어떻게 할까요?'), findsOneWidget);
+      expect(find.text('저장하기'), findsOneWidget);
+      expect(find.text('공유하기'), findsOneWidget);
+    });
+
     testWidgets('swaps_buttons_for_brand_lockup_while_capturing', (
       tester,
     ) async {
@@ -310,6 +327,8 @@ void main() {
       );
 
       await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('공유하기'));
       await tester.pump(); // _capturing = true 반영
 
       expect(

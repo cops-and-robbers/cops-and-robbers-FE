@@ -1040,6 +1040,18 @@
   "@messageSaveFailed": {
     "description": "내 기록 — 저장 실패 스낵바"
   },
+  "dialogImageActionTitle": "이미지를 어떻게 할까요?",
+  "@dialogImageActionTitle": {
+    "description": "게임 종료 결과 이미지 저장/공유 선택 다이얼로그 제목"
+  },
+  "buttonSaveImage": "저장하기",
+  "@buttonSaveImage": {
+    "description": "게임 종료 결과 이미지 저장 버튼"
+  },
+  "messageImageSaved": "이미지를 저장했어요",
+  "@messageImageSaved": {
+    "description": "게임 종료 결과 이미지 저장 완료 스낵바"
+  },
   "messageShareComplete": "공유했어요",
   "@messageShareComplete": {
     "description": "내 기록 — 공유 완료 스낵바"
