@@ -517,15 +517,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonGoToSettings => '설정으로 이동';
 
   @override
-  String get dialogBatteryGuideTitle => '끊김 없는 게임을 위해';
-
-  @override
-  String get homePageBatteryGuideStep1 => '앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n';
-
-  @override
-  String get homePageBatteryGuideStep2 => '그래야 화면이 꺼져도 게임이 끊기지 않아요';
-
-  @override
   String get errorJoinFailedCheckCode => '참여에 실패했어요. 초대 코드를 확인해주세요';
 
   @override

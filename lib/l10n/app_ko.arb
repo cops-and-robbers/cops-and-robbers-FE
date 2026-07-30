@@ -329,18 +329,6 @@
   "@buttonGoToSettings": {
     "description": "기기 설정 화면으로 이동하는 버튼"
   },
-  "dialogBatteryGuideTitle": "끊김 없는 게임을 위해",
-  "@dialogBatteryGuideTitle": {
-    "description": "홈 화면 배터리 최적화 안내 다이얼로그 타이틀"
-  },
-  "homePageBatteryGuideStep1": "앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n",
-  "@homePageBatteryGuideStep1": {
-    "description": "홈 페이지 — 배터리 최적화 해제 안내 1단계"
-  },
-  "homePageBatteryGuideStep2": "그래야 화면이 꺼져도 게임이 끊기지 않아요",
-  "@homePageBatteryGuideStep2": {
-    "description": "홈 페이지 — 배터리 최적화 해제 안내 2단계"
-  },
   "errorJoinFailedCheckCode": "참여에 실패했어요. 초대 코드를 확인해주세요",
   "@errorJoinFailedCheckCode": {
     "description": "방 참여 실패 — 초대 코드 확인 안내"

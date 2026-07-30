@@ -1054,24 +1054,6 @@ abstract class AppLocalizations {
   /// **'설정으로 이동'**
   String get buttonGoToSettings;
 
-  /// 홈 화면 배터리 최적화 안내 다이얼로그 타이틀
-  ///
-  /// In ko, this message translates to:
-  /// **'끊김 없는 게임을 위해'**
-  String get dialogBatteryGuideTitle;
-
-  /// 홈 페이지 — 배터리 최적화 해제 안내 1단계
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 설정 → 배터리 → 제한 없음으로 변경해주세요\n'**
-  String get homePageBatteryGuideStep1;
-
-  /// 홈 페이지 — 배터리 최적화 해제 안내 2단계
-  ///
-  /// In ko, this message translates to:
-  /// **'그래야 화면이 꺼져도 게임이 끊기지 않아요'**
-  String get homePageBatteryGuideStep2;
-
   /// 방 참여 실패 — 초대 코드 확인 안내
   ///
   /// In ko, this message translates to:
