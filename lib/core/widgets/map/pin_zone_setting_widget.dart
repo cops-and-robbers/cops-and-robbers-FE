@@ -144,6 +144,42 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     return LatLng(lat, lng);
   }
 
+  /// 지정된 핀 배치의 경계 반경 (중심 → 가장 먼 핀, 미터)
+  double _boundingRadius(List<LatLng> points) {
+    final center = _centroidOf(points);
+    var radius = 0.0;
+    for (final p in points) {
+      final d = Geolocator.distanceBetween(
+        center.latitude,
+        center.longitude,
+        p.latitude,
+        p.longitude,
+      );
+      if (d > radius) radius = d;
+    }
+    return radius;
+  }
+
+  /// 축소 하한 — 인게임(google_map_view)과 같은 반경 기반 동적 패턴.
+  /// 값은 원형 편집(zone_setting_widget)과 동일한 완화 테이블 — 설정 편의.
+  /// 표시할 핀 2개 미만이면 반경 0으로 취급해 최저 하한(14)부터 시작한다 —
+  /// 원형 편집이 기본 반경으로 진입 즉시 제한되는 것과 동일한 UX.
+  /// 편집 핀과 참조 폴리곤이 벌어질수록 하한이 단계적으로 풀린다.
+  double get _minZoom {
+    final visiblePoints = [..._points, ...?widget.referencePolygon];
+    return _minZoomForRadius(
+      visiblePoints.length < 2 ? 0 : _boundingRadius(visiblePoints),
+    );
+  }
+
+  static double _minZoomForRadius(double radiusInMeters) =>
+      switch (radiusInMeters) {
+        <= 200 => 14.0,
+        <= 500 => 13.0,
+        <= 1000 => 12.0,
+        _ => 11.0,
+      };
+
   bool _isCameraFocusedOnLocation(CameraPosition camera) {
     final location = _locationFocusTarget;
     if (location == null) return false;
@@ -338,8 +374,8 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
               zoom: _initialZoom,
             ),
             // 폴리곤이 화면 밖으로 벗어날 만큼 과도하게 축소되는 것을 막는다.
-            // 폴리곤은 반경이 없어 완화된 고정 하한을 사용한다.
-            minMaxZoomPreference: const MinMaxZoomPreference(11, 20),
+            // 핀 배치의 경계 반경으로 하한을 동적 계산 — 핀이 바뀌는 setState마다 갱신.
+            minMaxZoomPreference: MinMaxZoomPreference(_minZoom, 20),
             style: widget.isDarkMode ? MapStyles.dark : null,
             onMapCreated: (controller) => _mapController = controller,
             onTap: _onMapTap,
