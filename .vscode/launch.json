@@ -13,6 +13,19 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "release"
+    },
+    {
+      // Android 전용: 런처가 activity-alias(로케일 아이콘, #383)라서 flutter run의
+      // 소스 매니페스트 파싱이 실패함 → APK를 먼저 빌드하고 바이너리로 실행해 우회
+      "name": "Android Release (APK)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "toolArgs": [
+        "--use-application-binary=build/app/outputs/flutter-apk/app-release.apk"
+      ],
+      "preLaunchTask": "flutter: build apk (release)"
     }
   ]
 }
