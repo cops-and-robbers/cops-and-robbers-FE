@@ -443,6 +443,10 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
   /// 캡처 중에는 버튼·공유 아이콘을 숨긴다(공유 이미지에 찍히면 안 됨).
   bool _capturing = false;
 
+  /// 저장·공유 플로우 재진입 방지 — 캡처가 끝나면 아이콘이 다시 활성화되지만
+  /// 저장/공유 await가 남아 있어, 연타 시 권한 요청·갤러리 저장이 중복 호출된다.
+  bool _shareFlowBusy = false;
+
   /// 카드 폭 — 지도(콘텐츠 폭)가 좌우 패딩과 함께 이 값에 맞춰진다.
   static const double _cardWidth = 320;
 
@@ -450,8 +454,16 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
   ///
   /// 버튼·아이콘은 숨김이 실제로 그려진 다음 프레임에 캡처해야 이미지에서 빠진다.
   Future<void> _onShare() async {
-    if (_capturing) return; // 연타 방지
+    if (_shareFlowBusy) return; // 연타 방지 — 다이얼로그 표시~저장/공유 완료까지
+    _shareFlowBusy = true;
+    try {
+      await _runShareFlow();
+    } finally {
+      _shareFlowBusy = false;
+    }
+  }
 
+  Future<void> _runShareFlow() async {
     final l10n = AppLocalizations.of(context);
     final shouldShare = await AppDialog.confirm(
       context: context,
