@@ -34,11 +34,11 @@
 # - 버전은 항상 높은 버전으로 자동 동기화됩니다
 # ===================================================================
 
-version: "2.4.9" # 사용자에게 표시되는 앱 버전
-version_code: 306 # app build number
+version: "2.4.10" # 사용자에게 표시되는 앱 버전
+version_code: 307 # app build number
 project_type: "flutter" # spring, flutter, react, react-native, react-native-expo, node, python, basic
 metadata:
-  last_updated: "2026-07-31 08:23:48"
+  last_updated: "2026-08-02 11:04:45"
   last_updated_by: "EM-H20"
   default_branch: "main"
   integrated_from: "SUH-DEVOPS-TEMPLATE"
