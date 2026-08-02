@@ -96,6 +96,10 @@ class GoogleMapViewState extends State<GoogleMapView> {
   // 아이콘 사전 로드
   // ---------------------------------------------------------------------------
 
+  /// 발자국 마커 가로·세로 크기 (logical px) — 개별 조절 가능
+  static const _shoeprintWidth = 54.0;
+  static const _shoeprintHeight = 38.0;
+
   /// 발자국(shoeprint) SVG 기반 도둑 공개 위치 마커 BitmapDescriptor 생성
   ///
   /// SVG fill 색상을 교체한 뒤 flutter_svg로 렌더링하여 PNG 바이트로 변환.
@@ -104,8 +108,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
     final dpr =
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    const size = 28.0;
-    final physSize = (size * dpr).round();
+    final physWidth = (_shoeprintWidth * dpr).round();
+    final physHeight = (_shoeprintHeight * dpr).round();
 
     // SVG 로드 후 fill 색상 교체 (#080A0C → 타겟 색상)
     final svgString = await rootBundle.loadString('assets/icons/shoeprint.svg');
@@ -120,14 +124,14 @@ class GoogleMapViewState extends State<GoogleMapView> {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     canvas.scale(
-      physSize / pictureInfo.size.width,
-      physSize / pictureInfo.size.height,
+      physWidth / pictureInfo.size.width,
+      physHeight / pictureInfo.size.height,
     );
     canvas.drawPicture(pictureInfo.picture);
     pictureInfo.picture.dispose();
 
     final picture = recorder.endRecording();
-    final image = await picture.toImage(physSize, physSize);
+    final image = await picture.toImage(physWidth, physHeight);
     picture.dispose(); // ui.Picture는 toImage 후 불필요 — 즉시 해제
 
     try {
