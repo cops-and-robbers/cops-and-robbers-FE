@@ -2,6 +2,7 @@ import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/notice/data/datasources/notice_remote_datasource.dart';
 import 'package:cops_and_robbers/features/notice/data/models/notice_response_model.dart';
 import 'package:cops_and_robbers/features/notice/data/repositories/notice_repository_impl.dart';
+import 'package:cops_and_robbers/features/notice/domain/entities/notice_category.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,11 +10,18 @@ class _FakeNoticeRemoteDataSource implements NoticeRemoteDataSource {
   NoticeListResponseModel? responseToReturn;
   Object? errorToThrow;
 
+  /// 마지막 호출에 전달된 `category` 쿼리 값. 호출 전에는 [called]가 false다.
+  String? lastCategory;
+  bool called = false;
+
   @override
   Future<NoticeListResponseModel> getNotices({
     required int page,
     required int size,
+    String? category,
   }) async {
+    called = true;
+    lastCategory = category;
     if (errorToThrow != null) throw errorToThrow!;
     return responseToReturn!;
   }
@@ -140,6 +148,43 @@ void main() {
         () => repo.getNotices(page: 0, size: 10),
         throwsA(isA<ServerException>()),
       );
+    });
+
+    // Agents.md 명명 규칙(<subject>_<expected>_when_<condition>)을 따르는 신규 테스트.
+    test('filters_notices_by_selected_category_when_category_given', () async {
+      // 서버 계약 고정: enum 값 → 쿼리 문자열. all은 "파라미터 생략"이라 null.
+      const expectedQueryValues = <NoticeCategory, String?>{
+        NoticeCategory.all: null,
+        NoticeCategory.notice: 'NOTICE',
+        NoticeCategory.maintenance: 'MAINTENANCE',
+        NoticeCategory.event: 'EVENT',
+        NoticeCategory.update: 'UPDATE',
+      };
+
+      for (final entry in expectedQueryValues.entries) {
+        final raw = NoticeResponseModel.fromJson({
+          'id': 7,
+          'title': '카테고리 공지',
+          'content': '본문',
+          'pinned': false,
+          'createdAt': '2024-05-05T09:00:00+09:00',
+          'updatedAt': '2024-05-05T09:00:00+09:00',
+        });
+        final fake = _FakeNoticeRemoteDataSource()
+          ..responseToReturn = _listOf([raw]);
+        final repo = NoticeRepositoryImpl(fake);
+
+        final result = await repo.getNotices(
+          page: 0,
+          size: 10,
+          category: entry.key,
+        );
+
+        expect(fake.called, true, reason: '${entry.key}');
+        expect(fake.lastCategory, entry.value, reason: '${entry.key}');
+        // 필터를 걸어도 응답이 정상적으로 Entity로 변환되어야 한다.
+        expect(result.items.single.id, 7, reason: '${entry.key}');
+      }
     });
   });
 }

@@ -1674,6 +1674,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageNoticesEmpty => '등록된 공지사항이 없어요';
 
   @override
+  String get noticeCategoryAll => '전체';
+
+  @override
+  String get noticeCategoryNotice => '공지';
+
+  @override
+  String get noticeCategoryMaintenance => '점검';
+
+  @override
+  String get noticeCategoryEvent => '이벤트';
+
+  @override
+  String get noticeCategoryUpdate => '업데이트';
+
+  @override
   String get errorAreaLoadFailed => '구역 정보를 불러오지 못했어요';
 
   @override

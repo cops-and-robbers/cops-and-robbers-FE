@@ -386,10 +386,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.mypage,
                 name: RoutePaths.mypageName,
-                pageBuilder: (context, state) => buildSmoothFade(
-                  key: state.pageKey,
-                  child: const MyPage(),
-                ),
+                pageBuilder: (context, state) =>
+                    buildSmoothFade(key: state.pageKey, child: const MyPage()),
               ),
             ],
           ),

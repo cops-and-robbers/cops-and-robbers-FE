@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
+import '../../services/vibration_service.dart';
 
 /// 바텀 네비게이션 탭 1개를 표현하는 데이터
 ///
@@ -39,9 +40,14 @@ class AppBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // SafeArea 대신 직접 계산 — 홈 인디케이터 인셋에서 20 덜어낸 만큼만 하단 여백을 준다
+    // 안드로이드는 제스처 인셋이 없거나 작아 위 계산이 0으로 클램프되는 경우가 많아 20을 더해준다
+    final androidExtra = Theme.of(context).platform == TargetPlatform.android
+        ? 20.h
+        : 0.0;
     final bottomInset =
         (MediaQuery.viewPaddingOf(context).bottom - AppSpacing.vertical18)
-            .clamp(0.0, double.infinity);
+            .clamp(0.0, double.infinity) +
+        androidExtra;
 
     return ColoredBox(
       color: AppColors.white,
@@ -82,7 +88,12 @@ class _NavTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: () {
+        // 이미 선택된 탭이어도 진동은 준다 — 터치가 먹혔다는 확인이 목적이라
+        // 화면이 안 바뀌는 경우에 오히려 더 필요하다.
+        VibrationService.instance().buttonTap();
+        onTap();
+      },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

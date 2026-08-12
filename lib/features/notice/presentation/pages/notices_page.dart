@@ -3,7 +3,6 @@ import 'dart:async'; // unawaited
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -16,14 +15,18 @@ import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/pagination_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/notice_category.dart';
 import '../../domain/entities/notice_entity.dart';
 import '../providers/notice_provider.dart';
+import '../widgets/notice_card.dart';
+import '../widgets/notice_category_chips.dart';
 
 /// 공지사항 페이지
 ///
-/// 공지사항 목록을 아코디언(펼침/접기) 형태로 표시하며,
-/// 하단에 페이지네이션 바를 제공한다. 백엔드는 고정 공지(pinned=true)를
-/// 우선 정렬해 응답하며, UI에서는 제목 앞에 아이콘으로 시각적 구분한다.
+/// 상단 고정 카테고리 칩으로 필터링하고, 그 아래 카드 목록을 아코디언
+/// (펼침/접기) 형태로 표시하며 하단에 페이지네이션 바를 제공한다.
+/// 백엔드는 고정 공지(pinned=true)를 우선 정렬해 응답하며,
+/// UI에서는 제목 앞 핀 아이콘으로 시각적 구분한다.
 class NoticesPage extends ConsumerStatefulWidget {
   const NoticesPage({super.key});
 
@@ -123,6 +126,30 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     ref.read(noticesNotifierProvider.notifier).fetchPage(newPage);
   }
 
+  /// 카테고리 필터 전환.
+  ///
+  /// 페이지 이동과 달리 로딩 팝업을 띄우지 않는다 — 칩 색이 탭 즉시 바뀌는 것이
+  /// 이미 피드백이고, 응답이 올 때까지 이전 목록이 그대로 보여 화면을 가릴 이유가 없다.
+  void _onCategorySelected(NoticeCategory category) {
+    final state = ref.read(noticesNotifierProvider);
+    // 이전 fetch가 진행 중이면 무시 (중복 요청 방지).
+    if (state.isLoading) return;
+
+    if (ref.read(selectedNoticeCategoryProvider) == category) {
+      // 같은 칩 재탭은 직전 조회가 실패했을 때만 재시도로 받는다.
+      // 이때 select()를 쓰면 안 된다 — updateShouldNotify가 identical() 비교라
+      // 같은 enum 값은 알림이 나가지 않아 NoticesNotifier가 재빌드되지 않는다.
+      // provider를 직접 무효화해 재조회를 강제한다.
+      if (!state.hasError) return;
+      ref.invalidate(noticesNotifierProvider);
+      return;
+    }
+
+    // NoticesNotifier.build()가 이 provider를 watch 하므로
+    // 상태만 바꾸면 0페이지부터 자동 재조회된다.
+    ref.read(selectedNoticeCategoryProvider.notifier).select(category);
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<NoticePageEntity>>(
@@ -131,10 +158,14 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     );
 
     final asyncState = ref.watch(noticesNotifierProvider);
-    final pageData = asyncState.value;
+    // valueOrNull을 쓰는 이유: 첫 로드 실패처럼 이전 값이 없는 AsyncError에서
+    // .value는 예외를 rethrow해 화면이 ErrorWidget으로 깨진다.
+    // 여기서는 "데이터 없음"으로 받아 _buildBody의 null 분기가 처리하게 한다.
+    final pageData = asyncState.valueOrNull;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      // AppBar만 흰색이고 그 아래 본문은 홈과 같은 연하늘 배경.
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.white,
         surfaceTintColor: Colors.transparent,
@@ -146,12 +177,22 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
       ),
-      body: _buildBody(pageData),
+      body: Column(
+        children: [
+          // ── [고정] 카테고리 필터 ──
+          // 목록 스크롤 밖에 두어, 아래로 내려도 필터가 남아 있게 한다.
+          SizedBox(height: AppSpacing.vertical16),
+          NoticeCategoryChips(onSelected: _onCategorySelected),
+          SizedBox(height: AppSpacing.vertical24),
+
+          Expanded(child: _buildBody(pageData)),
+        ],
+      ),
     );
   }
 
   Widget _buildBody(NoticePageEntity? pageData) {
-    // 첫 진입 시: state.value가 null. 팝업이 화면을 가린 상태로 빈 Scaffold.
+    // 첫 진입 시: state.value가 null. 팝업이 화면을 가린 상태로 빈 영역.
     if (pageData == null) {
       return const SizedBox.shrink();
     }
@@ -176,19 +217,24 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
 
         return Stack(
           children: [
-            // ── 공지사항 목록 ──
+            // ── 공지사항 카드 목록 ──
             SingleChildScrollView(
               controller: _scrollController,
               child: Padding(
-                padding: AppPadding.horizontal20,
+                padding: AppPadding.horizontal16,
                 child: Column(
                   children: [
-                    for (int i = 0; i < notices.length; i++)
-                      _buildNoticeItem(
+                    for (int i = 0; i < notices.length; i++) ...[
+                      NoticeCard(
                         notice: notices[i],
-                        index: i,
-                        isLast: i == notices.length - 1,
+                        isExpanded: _expandedIndex == i,
+                        onTap: () => setState(() {
+                          _expandedIndex = _expandedIndex == i ? -1 : i;
+                        }),
                       ),
+                      if (i != notices.length - 1)
+                        SizedBox(height: AppSpacing.vertical18),
+                    ],
                     // 하단 페이지네이션 바와 겹치지 않도록 여백 추가
                     SizedBox(height: paginationBottomOffset + 60.h),
                   ],
@@ -214,96 +260,5 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
         );
       },
     );
-  }
-
-  /// 공지사항 아이템 (아코디언)
-  Widget _buildNoticeItem({
-    required NoticeEntity notice,
-    required int index,
-    bool isLast = false,
-  }) {
-    final isExpanded = _expandedIndex == index;
-
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _expandedIndex = isExpanded ? -1 : index;
-            });
-          },
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: AppSpacing.vertical16,
-              horizontal: AppSpacing.horizontal4,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── 제목 + (pinned 아이콘) + 드롭다운 아이콘 ──
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // 고정 공지면 제목 앞에 핀 아이콘 (임시 — 디자인 시안 확정 시 조정).
-                    if (notice.pinned) ...[
-                      SvgPicture.asset(
-                        'assets/icons/icon_pin.svg',
-                        width: 16.w,
-                        height: 16.w,
-                      ),
-                      SizedBox(width: AppSpacing.horizontal8),
-                    ],
-                    Expanded(
-                      child: Text(
-                        notice.title,
-                        style: AppTextStyles.label_16.copyWith(
-                          color: AppColors.black,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      isExpanded
-                          ? Icons.keyboard_arrow_up
-                          : Icons.keyboard_arrow_down,
-                      size: 20.w,
-                      color: AppColors.black300,
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: AppSpacing.vertical4),
-
-                // ── 날짜 ──
-                Text(
-                  _formatDate(notice.createdAt),
-                  style: AppTextStyles.tag_12.copyWith(
-                    color: AppColors.black600,
-                  ),
-                ),
-
-                // ── 내용 (펼침 시) ──
-                if (isExpanded) ...[
-                  SizedBox(height: AppSpacing.vertical16),
-                  Text(
-                    notice.content,
-                    style: AppTextStyles.paragraph_14.copyWith(
-                      color: AppColors.black,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-
-        if (!isLast) const Divider(color: AppColors.black100, height: 1),
-      ],
-    );
-  }
-
-  /// DateTime -> yyyy.MM.dd 형식 문자열 변환
-  String _formatDate(DateTime dt) {
-    return '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')}';
   }
 }

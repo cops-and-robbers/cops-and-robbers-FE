@@ -17,9 +17,11 @@ abstract class NoticeRemoteDataSource {
   ///
   /// 응답: `{ content: NoticeResponse[], page: PageInfo }`
   /// 정렬: 고정 공지(pinned=true) 우선, 이후 최신순 (백엔드 처리)
+  /// [category]가 null이면 생성된 `removeWhere`가 파라미터를 빼므로 전체 조회된다.
   @GET(ApiEndpoints.getNotices)
   Future<NoticeListResponseModel> getNotices({
     @Query('page') required int page,
     @Query('size') required int size,
+    @Query('category') String? category,
   });
 }

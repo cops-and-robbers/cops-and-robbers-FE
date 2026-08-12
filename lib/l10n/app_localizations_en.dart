@@ -1806,6 +1806,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pageNoticesEmpty => 'There are no notices registered';
 
   @override
+  String get noticeCategoryAll => 'All';
+
+  @override
+  String get noticeCategoryNotice => 'Notice';
+
+  @override
+  String get noticeCategoryMaintenance => 'Maintenance';
+
+  @override
+  String get noticeCategoryEvent => 'Event';
+
+  @override
+  String get noticeCategoryUpdate => 'Update';
+
+  @override
   String get errorAreaLoadFailed => 'Unable to load game area information';
 
   @override

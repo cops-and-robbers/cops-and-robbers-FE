@@ -2,9 +2,11 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
+import '../../domain/entities/notice_category.dart';
 import '../../domain/entities/notice_entity.dart';
 import '../../domain/repositories/notice_repository.dart';
 import '../datasources/notice_remote_datasource.dart';
+import '../models/notice_category_query.dart';
 
 /// `NoticeRepository` 구현체
 ///
@@ -19,9 +21,14 @@ class NoticeRepositoryImpl implements NoticeRepository {
   Future<NoticePageEntity> getNotices({
     required int page,
     required int size,
+    NoticeCategory category = NoticeCategory.all,
   }) async {
     try {
-      final res = await _dataSource.getNotices(page: page, size: size);
+      final res = await _dataSource.getNotices(
+        page: page,
+        size: size,
+        category: category.queryValue,
+      );
       return NoticePageEntity(
         items: res.content
             .map(
