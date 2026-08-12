@@ -10,7 +10,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
-import '../../../settings/presentation/pages/legal_document_page.dart';
+import '../../../../core/widgets/pages/legal_document_page.dart';
 import '../providers/agreement_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/agreement_all_checkbox.dart';

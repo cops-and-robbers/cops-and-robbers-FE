@@ -37,10 +37,8 @@ import '../features/session/presentation/pages/game_settings_edit_page.dart';
 import '../features/session/data/models/game_settings_response.dart';
 import '../features/game/presentation/pages/game_page.dart';
 import '../features/notice/presentation/pages/notices_page.dart';
-import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
 import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
-import '../features/credits/presentation/pages/credits_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/buttons/previous_button.dart';
 import '../core/widgets/pages/maintenance_page.dart';
@@ -307,37 +305,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                 ),
                 routes: [
-                  // ======================================================
-                  // Settings Page
-                  // ======================================================
-                  GoRoute(
-                    path: 'settings',
-                    name: RoutePaths.settingsName,
-                    // 서브 라우트가 바텀 네비 바 위(MainScaffold body)가 아니라
-                    // root navigator 위에서 풀스크린으로 뜨도록 강제
-                    parentNavigatorKey: rootNavigatorKey,
-                    pageBuilder: (context, state) => buildDirectionalSlide(
-                      key: state.pageKey,
-                      child: const SettingsPage(),
-                      isForward: true,
-                    ),
-                    routes: [
-                      // 히든 크레딧 페이지 (앱 버전 5탭으로 진입)
-                      GoRoute(
-                        path: 'credits',
-                        name: RoutePaths.creditsName,
-                        // go_router는 parentNavigatorKey를 자식에 상속하지 않으므로
-                        // 각 라우트에 명시적으로 지정해야 한다
-                        parentNavigatorKey: rootNavigatorKey,
-                        pageBuilder: (context, state) => buildDirectionalSlide(
-                          key: state.pageKey,
-                          child: const CreditsPage(),
-                          isForward: true,
-                        ),
-                      ),
-                    ],
-                  ),
-
                   // ======================================================
                   // Notices Page
                   // ======================================================

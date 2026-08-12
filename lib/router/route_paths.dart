@@ -60,14 +60,8 @@ class RoutePaths {
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 현재 준비중 placeholder)
   static const String mypage = '/mypage';
 
-  /// 설정 화면
-  static const String settings = '/home/settings';
-
   /// 공지사항 화면
   static const String notices = '/home/notices';
-
-  /// 크레딧 페이지 (히든)
-  static const String credits = '/home/settings/credits';
 
   // ============================================================================
   // Session Creation Flow Routes (PRD F1.1)
@@ -176,9 +170,7 @@ class RoutePaths {
   static const String mypageName = 'mypage';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
-  static const String settingsName = 'settings';
   static const String noticesName = 'notices';
-  static const String creditsName = 'credits';
   static const String setupPlaygroundFromFlowName = 'setupPlaygroundFromFlow';
   static const String setupPrisonFromFlowName = 'setupPrisonFromFlow';
   static const String gameSettingsName = 'gameSettings';

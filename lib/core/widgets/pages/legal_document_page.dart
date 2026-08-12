@@ -6,11 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
-import '../../../../core/utils/url_launcher_util.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../constants/app_colors.dart';
+import '../../constants/spacing_and_radius.dart';
+import '../../constants/text_styles.dart';
+import '../../utils/url_launcher_util.dart';
+import '../buttons/previous_button.dart';
 
 /// 이용약관/개인정보처리방침 등 법적 문서 열람 페이지
 ///

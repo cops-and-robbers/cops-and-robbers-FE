@@ -15,7 +15,7 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../auth/presentation/widgets/agreement_item.dart';
 import '../../../user/domain/entities/agreement_status_entity.dart';
 import '../../../user/presentation/providers/user_provider.dart';
-import 'legal_document_page.dart';
+import '../../../../core/widgets/pages/legal_document_page.dart';
 
 /// 약관 동의 관리 페이지 (설정 내부)
 ///
