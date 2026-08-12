@@ -3,6 +3,7 @@ import 'dart:async'; // unawaited
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -203,9 +204,20 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
 
     if (notices.isEmpty) {
       return Center(
-        child: Text(
-          AppLocalizations.of(context).pageNoticesEmpty,
-          style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black600),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset('assets/icons/icon_not_found.svg', width: 110.w),
+            SizedBox(height: AppSpacing.vertical16),
+            Text(
+              AppLocalizations.of(context).pageNoticesEmpty,
+              style: AppTextStyles.paragraph_14.copyWith(
+                color: AppColors.black600,
+              ),
+            ),
+            // 위쪽 카테고리 필터만큼 아래를 채워, 화면 기준으로 가운데에 오게 한다
+            SizedBox(height: AppSpacing.vertical64),
+          ],
         ),
       );
     }
