@@ -127,10 +127,20 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
   }
 
   void _onCategorySelected(NoticeCategory category) {
-    // 같은 칩 재탭이면 무시 (불필요한 재조회 방지).
-    if (ref.read(selectedNoticeCategoryProvider) == category) return;
+    final state = ref.read(noticesNotifierProvider);
     // 이전 fetch가 진행 중이면 무시 (중복 요청 + 팝업 노이즈 방지).
-    if (ref.read(noticesNotifierProvider).isLoading) return;
+    if (state.isLoading) return;
+
+    if (ref.read(selectedNoticeCategoryProvider) == category) {
+      // 같은 칩 재탭은 직전 조회가 실패했을 때만 재시도로 받는다.
+      // 이때 select()를 쓰면 안 된다 — updateShouldNotify가 identical() 비교라
+      // 같은 enum 값은 알림이 나가지 않고, 그러면 NoticesNotifier가 재빌드되지
+      // 않아 로딩 팝업이 닫히지 않는다. provider를 직접 무효화해 재조회를 강제한다.
+      if (!state.hasError) return;
+      _showLoadingPopup();
+      ref.invalidate(noticesNotifierProvider);
+      return;
+    }
 
     _showLoadingPopup();
     // NoticesNotifier.build()가 이 provider를 watch 하므로
@@ -146,7 +156,10 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     );
 
     final asyncState = ref.watch(noticesNotifierProvider);
-    final pageData = asyncState.value;
+    // valueOrNull을 쓰는 이유: 첫 로드 실패처럼 이전 값이 없는 AsyncError에서
+    // .value는 예외를 rethrow해 화면이 ErrorWidget으로 깨진다.
+    // 여기서는 "데이터 없음"으로 받아 _buildBody의 null 분기가 처리하게 한다.
+    final pageData = asyncState.valueOrNull;
 
     return Scaffold(
       // AppBar만 흰색이고 그 아래 본문은 홈과 같은 연하늘 배경.
