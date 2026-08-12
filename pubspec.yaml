@@ -124,6 +124,7 @@ flutter:
     - assets/loading/
     - assets/backgrounds/
     - assets/profiles/
+    - assets/characters/home/
     - assets/characters/police/default/
     - assets/characters/robber/default/
     - assets/characters/police/result/default/

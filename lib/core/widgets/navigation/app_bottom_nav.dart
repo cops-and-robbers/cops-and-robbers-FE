@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 
 /// 바텀 네비게이션 탭 1개를 표현하는 데이터
@@ -37,12 +38,17 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // SafeArea 대신 직접 계산 — 홈 인디케이터 인셋에서 20 덜어낸 만큼만 하단 여백을 준다
+    final bottomInset =
+        (MediaQuery.viewPaddingOf(context).bottom - AppSpacing.vertical18)
+            .clamp(0.0, double.infinity);
+
     return ColoredBox(
       color: AppColors.white,
-      child: SafeArea(
-        top: false,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
         child: SizedBox(
-          height: 92.h,
+          height: 84.h,
           child: Row(
             children: [
               for (var i = 0; i < items.length; i++)
@@ -84,7 +90,7 @@ class _NavTab extends StatelessWidget {
             isActive ? item.activeIconAsset : item.inactiveIconAsset,
             height: 30.h,
           ),
-          SizedBox(height: 4.h),
+          SizedBox(height: AppSpacing.vertical4),
           Text(
             item.labelBuilder(context),
             style: AppTextStyles.tag_12.copyWith(

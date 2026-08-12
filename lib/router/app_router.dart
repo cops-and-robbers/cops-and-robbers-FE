@@ -284,8 +284,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Home & Main Navigation
       // ====================================================================
       StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) =>
-            MainScaffold(navigationShell: navigationShell),
+        pageBuilder: (context, state, navigationShell) =>
+            buildInstantTransition(
+              key: state.pageKey,
+              child: MainScaffold(navigationShell: navigationShell),
+            ),
         branches: [
           // ==============================================================
           // Home Branch
@@ -295,14 +298,11 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.home,
                 name: RoutePaths.homeName,
-                pageBuilder: (context, state) => buildSmoothFade(
-                  key: state.pageKey,
+                builder: (context, state) => HomePage(
                   // fromGameExit: 게임 종료 후 "홈으로" 이탈 직후 진입 —
                   // 퇴장 API가 비행 중일 수 있어 활성 게임 안전망을 1회 건너뛴다
-                  child: HomePage(
-                    skipActiveGameCheck:
-                        state.uri.queryParameters['fromGameExit'] == 'true',
-                  ),
+                  skipActiveGameCheck:
+                      state.uri.queryParameters['fromGameExit'] == 'true',
                 ),
                 routes: [
                   // ======================================================

@@ -26,6 +26,10 @@ class AppColors {
   /// Transparent color
   static const Color transparent = Color(0x00000000);
 
+  /// 배경 (연한 하늘색)
+  /// Background color (pale sky blue)
+  static const Color background = Color(0xFFF4FAFF);
+
   // ============================================
   // 흑백 계열 (Black Scale)
   // ============================================

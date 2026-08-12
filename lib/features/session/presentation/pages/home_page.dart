@@ -19,18 +19,17 @@ import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/permission/game_entry_gate.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/dev_flags.dart';
 import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
@@ -46,7 +45,8 @@ import '../../../game/presentation/widgets/qr_scanner_page.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
-import '../widgets/home_character_stack.dart';
+import '../widgets/home_header.dart';
+import '../widgets/home_profile_card.dart';
 
 class _UpperCaseFormatter extends TextInputFormatter {
   @override
@@ -512,6 +512,70 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
   }
 
+  /// 캐릭터 일러스트 카드
+  ///
+  /// 배경이 카드 크기를 정하고, 그 위에 말풍선(상단)과 경찰·도둑 캐릭터 쌍(하단)을
+  /// Stack으로 얹는다. 배경과 캐릭터 쌍은 각각 독립적으로 교체 가능한 별도 에셋이다.
+  ///
+  /// Stack을 쓰는 이유: 캐릭터를 배경의 잔디선에 맞춰 독립적으로 배치할 수 있고,
+  /// 말풍선이 시스템 글자 크기로 커져도 Flex 오버플로가 발생하지 않는다.
+  Widget _buildIllustrationCard(AppLocalizations l10n) {
+    // 배경 이미지는 BoxDecoration의 borderRadius만으로는 라운드로 잘리지 않아
+    // (실기 확인 결과 모서리가 직각으로 렌더됨) ClipRRect로 명시적으로 감싼다.
+    return ClipRRect(
+      borderRadius: AppRadius.xxlarge,
+      child: Stack(
+        children: [
+          // 배경 — 카드의 크기를 결정한다
+          Image.asset(
+            'assets/backgrounds/default.png',
+            width: double.infinity,
+            height: 330.h,
+            fit: BoxFit.cover,
+          ),
+
+          // 말풍선 (상단 중앙)
+          Positioned(
+            top: AppSpacing.vertical50,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SpeechBubble(text: l10n.homePageWelcomeMessage),
+            ),
+          ),
+
+          // 경찰+도둑 캐릭터 쌍 (하단 중앙, 잔디선 위)
+          // 겹침·정렬이 에셋 한 장에 이미 확정돼 있다
+          Positioned(
+            bottom: AppSpacing.vertical28,
+            left: AppSpacing.horizontal10,
+            right: 0,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/characters/home/default.svg',
+                width: 249.w,
+                height: 154.h,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 버튼에 ver2 쉐도우를 입히는 래퍼
+  ///
+  /// AppButton은 자체 boxShadow를 갖지 않아 외곽 Container로 그림자를 준다.
+  Widget _withButtonShadow(Widget button) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.large,
+        boxShadow: AppShadows.ver2,
+      ),
+      child: button,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -522,18 +586,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: false,
-
-      // floatingActionButton: kDebugMode
-      // ? FloatingActionButton(
-      //     mini: true,
-      //     backgroundColor: AppColors.black.withValues(alpha: 0.7),
-      //     foregroundColor: AppColors.white,
-      //     onPressed: () => _showDevMenu(context),
-      //     child: const Icon(Icons.bug_report),
-      //   )
-      // : null,
 
       // 개발자 도구 버튼 (디버그 모드에서만 표시)
       floatingActionButton: kDebugMode
@@ -546,105 +600,77 @@ class _HomePageState extends ConsumerState<HomePage> {
             )
           : null,
 
-      body: SafeArea(
-        child: Padding(
-          padding: AppPadding.horizontal20,
-          child: Column(
-            children: [
-              SizedBox(height: AppSpacing.vertical8),
+      // 헤더가 상태바를 포함한 높이(124)라 SafeArea 밖에 두고,
+      // 그 아래 스크롤 영역만 좌우 패딩을 갖는다
+      body: Column(
+        children: [
+          // ── [고정] 헤더: LOGO + 공지 ──
+          HomeHeader(onNoticePressed: () => context.push(RoutePaths.notices)),
 
-              // ── Top Bar: LOGO + Settings (좌우 24px) ──
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.horizontal4,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // ── [스크롤] 프로필 카드 / 일러스트 / 버튼 ──
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: AppPadding.horizontal16,
+                child: Column(
                   children: [
-                    // 로케일별 워드마크 로고 — en은 세로 비중이 커 40, ko/ja는 20
-                    SvgPicture.asset(
-                      localizedAppLogo(Localizations.localeOf(context)),
-                      height:
-                          (Localizations.localeOf(context).languageCode == 'en'
-                                  ? 40
-                                  : 20)
-                              .h,
-                    ),
-                    // 우측 아이콘 그룹 (공지 + 설정)
+                    SizedBox(height: AppSpacing.vertical18),
+
+                    const HomeProfileCard(),
+
+                    SizedBox(height: AppSpacing.vertical10),
+
+                    _buildIllustrationCard(l10n),
+
+                    SizedBox(height: AppSpacing.vertical14),
+
+                    // 코치마크가 두 버튼을 한 영역으로 하이라이트하도록
+                    // Row에 단일 GlobalKey를 부여한다
                     Row(
-                      mainAxisSize: MainAxisSize.min,
+                      key: _tutorialKeyGameButtons,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FlatIconButton(
-                          assetPath: 'assets/icons/icon_alert.svg',
-                          iconColor: AppColors.black800,
-                          iconSize: 22,
-                          onPressed: () {
-                            context.push(RoutePaths.notices);
-                          },
-                          alignment: Alignment.centerRight,
+                        _withButtonShadow(
+                          AppButton(
+                            text: l10n.buttonCreateRoom,
+                            onPressed: _onCreateSession,
+                            width: 176.w,
+                            backgroundColor: AppColors.blue,
+                            foregroundColor: AppColors.white,
+                            borderRadius: AppRadius.large,
+                            showBorder: false,
+                            icon: SvgPicture.asset(
+                              'assets/icons/icon_default_light.svg',
+                              height: AppSpacing.vertical20,
+                            ),
+                          ),
                         ),
-                        FlatIconButton(
-                          assetPath: 'assets/icons/icon_setting_1.svg',
-                          iconColor: AppColors.black800,
-                          onPressed: () {
-                            context.push(RoutePaths.settings);
-                          },
-                          alignment: Alignment.centerRight,
+                        SizedBox(width: AppSpacing.horizontal8),
+                        _withButtonShadow(
+                          AppButton(
+                            text: l10n.buttonJoinRoom,
+                            onPressed: _showJoinRoomDialog,
+                            width: 176.w,
+                            backgroundColor: AppColors.white,
+                            foregroundColor: AppColors.black600,
+                            borderRadius: AppRadius.large,
+                            showBorder: false,
+                            icon: SvgPicture.asset(
+                              'assets/icons/icon_joining_game.svg',
+                              height: AppSpacing.vertical20,
+                            ),
+                          ),
                         ),
                       ],
                     ),
+
+                    SizedBox(height: AppSpacing.vertical20),
                   ],
                 ),
               ),
-
-              // ── Middle Content (Expandable) ──
-              Expanded(
-                child: Column(
-                  children: [
-                    SizedBox(height: 134.h),
-
-                    // ── Speech Bubble ──
-                    SpeechBubble(text: l10n.homePageWelcomeMessage),
-
-                    SizedBox(height: AppSpacing.vertical40),
-
-                    // ── 캐릭터 Stack (경찰 앞, 도둑 뒤) ──
-                    const HomeCharacterStack(),
-                  ],
-                ),
-              ),
-
-              // ── Bottom Buttons ──
-              // 코치마크가 두 버튼을 한 영역으로 하이라이트하도록 Column으로 묶어
-              // 단일 GlobalKey를 부여한다. 하단 여백 SizedBox는 영역 밖으로 둔다.
-              // (부모 Column이 비-flex 자식에 무한 높이 제약을 주므로 min 필수)
-              Column(
-                key: _tutorialKeyGameButtons,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AppButton(
-                    text: l10n.buttonCreateRoom,
-                    onPressed: _onCreateSession,
-                    showBorder: false,
-                  ),
-                  SizedBox(height: AppSpacing.vertical12),
-                  AppButton(
-                    text: l10n.buttonJoinRoom,
-                    onPressed: _showJoinRoomDialog,
-                    backgroundColor: AppColors.black100,
-                    foregroundColor: AppColors.black600,
-                    showBorder: false,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: defaultTargetPlatform == TargetPlatform.android
-                    ? AppSpacing.vertical40
-                    : AppSpacing.vertical20,
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

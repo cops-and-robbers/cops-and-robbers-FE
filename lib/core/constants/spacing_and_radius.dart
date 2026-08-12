@@ -29,11 +29,17 @@ class AppSpacing {
   /// 좌우 8px 간격
   static double get horizontal8 => 8.w;
 
+  /// 좌우 10px 간격
+  static double get horizontal10 => 10.w;
+
   /// 좌우 12px 간격
   static double get horizontal12 => 12.w;
 
   /// 좌우 16px 간격
   static double get horizontal16 => 16.w;
+
+  /// 좌우 18px 간격
+  static double get horizontal18 => 18.w;
 
   /// 좌우 20px 간격
   static double get horizontal20 => 20.w;
@@ -53,6 +59,9 @@ class AppSpacing {
 
   /// 상하 8px 간격
   static double get vertical8 => 8.h;
+
+  // 상하 10px 간격
+  static double get vertical10 => 10.h;
 
   /// 상하 12px 간격
   static double get vertical12 => 12.h;
@@ -83,6 +92,9 @@ class AppSpacing {
 
   /// 상하 48px 간격
   static double get vertical48 => 48.h;
+
+  /// 상하 50px 간격
+  static double get vertical50 => 50.h;
 
   /// 상하 58px 간격
   static double get vertical58 => 58.h;
