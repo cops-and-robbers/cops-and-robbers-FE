@@ -254,6 +254,7 @@ class AppButton extends StatelessWidget {
       // 기존: 단일 텍스트
       textWidget = Text(
         text,
+        overflow: TextOverflow.ellipsis,
         style: (textStyle ?? AppTextStyles.label_16).copyWith(
           color: _effectiveForegroundColor,
         ),
@@ -266,6 +267,7 @@ class AppButton extends StatelessWidget {
         children: [
           Text(
             text,
+            overflow: TextOverflow.ellipsis,
             style: (textStyle ?? AppTextStyles.label_16).copyWith(
               color: _effectiveForegroundColor,
             ),
@@ -273,6 +275,7 @@ class AppButton extends StatelessWidget {
           SizedBox(height: AppSpacing.vertical4), // 간격
           Text(
             subtitle!,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.tag_12.copyWith(
               color: _effectiveSubtitleColor,
             ),
@@ -282,6 +285,7 @@ class AppButton extends StatelessWidget {
     }
 
     if (icon == null) {
+      // Row가 없어 Flexible을 못 쓰지만, 부모 제약에 맞춰 Text가 알아서 줄어든다
       return textWidget;
     }
 
@@ -289,20 +293,23 @@ class AppButton extends StatelessWidget {
     final iconWidget = icon!;
     final isSpaceBetween =
         _effectiveContentAlignment == MainAxisAlignment.spaceBetween;
+    // 버튼 폭이 고정(fixedSize)이라 아이콘+간격+텍스트 합이 넘칠 수 있어
+    // Row 안에서만 Flexible로 감싸 텍스트가 줄어들도록 한다
+    final flexibleTextWidget = Flexible(child: textWidget);
 
     return Row(
       mainAxisAlignment: _effectiveContentAlignment,
       mainAxisSize: MainAxisSize.max, // 전체 너비 사용
       children: iconPosition == IconPosition.trailing
           ? [
-              textWidget,
+              flexibleTextWidget,
               if (!isSpaceBetween) SizedBox(width: AppSpacing.horizontal8),
               iconWidget,
             ]
           : [
               iconWidget,
               if (!isSpaceBetween) SizedBox(width: AppSpacing.horizontal8),
-              textWidget,
+              flexibleTextWidget,
             ],
     );
   }
