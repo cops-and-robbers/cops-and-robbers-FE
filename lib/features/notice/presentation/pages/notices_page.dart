@@ -126,23 +126,25 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     ref.read(noticesNotifierProvider.notifier).fetchPage(newPage);
   }
 
+  /// 카테고리 필터 전환.
+  ///
+  /// 페이지 이동과 달리 로딩 팝업을 띄우지 않는다 — 칩 색이 탭 즉시 바뀌는 것이
+  /// 이미 피드백이고, 응답이 올 때까지 이전 목록이 그대로 보여 화면을 가릴 이유가 없다.
   void _onCategorySelected(NoticeCategory category) {
     final state = ref.read(noticesNotifierProvider);
-    // 이전 fetch가 진행 중이면 무시 (중복 요청 + 팝업 노이즈 방지).
+    // 이전 fetch가 진행 중이면 무시 (중복 요청 방지).
     if (state.isLoading) return;
 
     if (ref.read(selectedNoticeCategoryProvider) == category) {
       // 같은 칩 재탭은 직전 조회가 실패했을 때만 재시도로 받는다.
       // 이때 select()를 쓰면 안 된다 — updateShouldNotify가 identical() 비교라
-      // 같은 enum 값은 알림이 나가지 않고, 그러면 NoticesNotifier가 재빌드되지
-      // 않아 로딩 팝업이 닫히지 않는다. provider를 직접 무효화해 재조회를 강제한다.
+      // 같은 enum 값은 알림이 나가지 않아 NoticesNotifier가 재빌드되지 않는다.
+      // provider를 직접 무효화해 재조회를 강제한다.
       if (!state.hasError) return;
-      _showLoadingPopup();
       ref.invalidate(noticesNotifierProvider);
       return;
     }
 
-    _showLoadingPopup();
     // NoticesNotifier.build()가 이 provider를 watch 하므로
     // 상태만 바꾸면 0페이지부터 자동 재조회된다.
     ref.read(selectedNoticeCategoryProvider.notifier).select(category);
@@ -181,7 +183,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
           // 목록 스크롤 밖에 두어, 아래로 내려도 필터가 남아 있게 한다.
           SizedBox(height: AppSpacing.vertical16),
           NoticeCategoryChips(onSelected: _onCategorySelected),
-          SizedBox(height: AppSpacing.vertical16),
+          SizedBox(height: AppSpacing.vertical24),
 
           Expanded(child: _buildBody(pageData)),
         ],

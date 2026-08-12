@@ -38,7 +38,7 @@ class NoticeCategoryChips extends ConsumerWidget {
               onTap: () => onSelected(categories[i]),
             ),
             if (i != categories.length - 1)
-              SizedBox(width: AppSpacing.horizontal8),
+              SizedBox(width: AppSpacing.horizontal12),
           ],
         ],
       ),
