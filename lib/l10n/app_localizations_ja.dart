@@ -1674,6 +1674,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pageNoticesEmpty => '登録されたお知らせはありません';
 
   @override
+  String get noticeCategoryAll => 'すべて';
+
+  @override
+  String get noticeCategoryNotice => 'お知らせ';
+
+  @override
+  String get noticeCategoryMaintenance => 'メンテナンス';
+
+  @override
+  String get noticeCategoryEvent => 'イベント';
+
+  @override
+  String get noticeCategoryUpdate => 'アップデート';
+
+  @override
   String get errorAreaLoadFailed => 'エリア情報を読み込めません';
 
   @override

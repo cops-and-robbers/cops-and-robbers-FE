@@ -3273,6 +3273,36 @@ abstract class AppLocalizations {
   /// **'등록된 공지사항이 없어요'**
   String get pageNoticesEmpty;
 
+  /// 공지사항 카테고리 필터 칩 — 전체(필터 없음)
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get noticeCategoryAll;
+
+  /// 공지사항 카테고리 필터 칩 — 일반 공지(백엔드 기본 카테고리)
+  ///
+  /// In ko, this message translates to:
+  /// **'공지'**
+  String get noticeCategoryNotice;
+
+  /// 공지사항 카테고리 필터 칩 — 서버 점검
+  ///
+  /// In ko, this message translates to:
+  /// **'점검'**
+  String get noticeCategoryMaintenance;
+
+  /// 공지사항 카테고리 필터 칩 — 이벤트
+  ///
+  /// In ko, this message translates to:
+  /// **'이벤트'**
+  String get noticeCategoryEvent;
+
+  /// 공지사항 카테고리 필터 칩 — 앱 업데이트
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트'**
+  String get noticeCategoryUpdate;
+
   /// 게임 진입 시 area(구역) 정보 로드 실패 안내
   ///
   /// In ko, this message translates to:

@@ -1866,6 +1866,26 @@
   "@pageNoticesEmpty": {
     "description": "공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지"
   },
+  "noticeCategoryAll": "전체",
+  "@noticeCategoryAll": {
+    "description": "공지사항 카테고리 필터 칩 — 전체(필터 없음)"
+  },
+  "noticeCategoryNotice": "공지",
+  "@noticeCategoryNotice": {
+    "description": "공지사항 카테고리 필터 칩 — 일반 공지(백엔드 기본 카테고리)"
+  },
+  "noticeCategoryMaintenance": "점검",
+  "@noticeCategoryMaintenance": {
+    "description": "공지사항 카테고리 필터 칩 — 서버 점검"
+  },
+  "noticeCategoryEvent": "이벤트",
+  "@noticeCategoryEvent": {
+    "description": "공지사항 카테고리 필터 칩 — 이벤트"
+  },
+  "noticeCategoryUpdate": "업데이트",
+  "@noticeCategoryUpdate": {
+    "description": "공지사항 카테고리 필터 칩 — 앱 업데이트"
+  },
   "errorAreaLoadFailed": "구역 정보를 불러오지 못했어요",
   "@errorAreaLoadFailed": {
     "description": "게임 진입 시 area(구역) 정보 로드 실패 안내"
