@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../domain/entities/notice_entity.dart';
@@ -41,10 +40,11 @@ class NoticeCard extends StatelessWidget {
           horizontal: AppSpacing.horizontal20,
           vertical: AppSpacing.vertical16,
         ),
+        // 쉐도우를 주지 않는다 — 연하늘 배경(#F4FAFF) 위의 흰 카드라
+        // 색 차이만으로 경계가 충분히 드러난다.
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: AppRadius.large,
-          boxShadow: AppShadows.ver2,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
