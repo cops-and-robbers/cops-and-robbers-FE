@@ -1006,6 +1006,30 @@ abstract class AppLocalizations {
   /// **'감옥'**
   String get zoneJail;
 
+  /// 바텀 네비게이션 — 홈 탭 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'홈'**
+  String get bottomNavHome;
+
+  /// 바텀 네비게이션 — 커뮤니티 탭 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'커뮤니티'**
+  String get bottomNavCommunity;
+
+  /// 바텀 네비게이션 — 마이페이지 탭 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'마이페이지'**
+  String get bottomNavMyPage;
+
+  /// 아직 구현되지 않은 탭(커뮤니티·마이페이지)의 안내 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'준비 중이에요'**
+  String get comingSoonMessage;
+
   /// 홈 페이지 — 방 만들기/참여하기 버튼 통합 안내
   ///
   /// In ko, this message translates to:

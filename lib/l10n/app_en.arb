@@ -154,6 +154,22 @@
   "errorSettingsLoadFailed": "Unable to load settings information",
   "zonePlayground": "Playground",
   "zoneJail": "Jail",
+  "bottomNavHome": "Home",
+  "@bottomNavHome": {
+    "description": "Bottom navigation — home tab label"
+  },
+  "bottomNavCommunity": "Community",
+  "@bottomNavCommunity": {
+    "description": "Bottom navigation — community tab label"
+  },
+  "bottomNavMyPage": "My Page",
+  "@bottomNavMyPage": {
+    "description": "Bottom navigation — my page tab label"
+  },
+  "comingSoonMessage": "Coming soon",
+  "@comingSoonMessage": {
+    "description": "Placeholder message for not-yet-implemented tabs (community, my page)"
+  },
   "homePageGameButtonsHint": "You can create a game or join with an invite code",
   "dialogSafetyWarningTitle": "Please watch your surroundings while using the app",
   "dialogSafetyWarningMessage": "Focusing only on the screen during the game can be dangerous\nPlease check the road and walking environment to stay safe",

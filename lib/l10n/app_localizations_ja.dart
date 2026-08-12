@@ -495,6 +495,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zoneJail => '牢屋';
 
   @override
+  String get bottomNavHome => 'ホーム';
+
+  @override
+  String get bottomNavCommunity => 'コミュニティ';
+
+  @override
+  String get bottomNavMyPage => 'マイページ';
+
+  @override
+  String get comingSoonMessage => '準備中です';
+
+  @override
   String get homePageGameButtonsHint => 'ゲームを作成したり、招待コードで参加したりできます';
 
   @override

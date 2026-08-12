@@ -492,6 +492,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get zoneJail => '감옥';
 
   @override
+  String get bottomNavHome => '홈';
+
+  @override
+  String get bottomNavCommunity => '커뮤니티';
+
+  @override
+  String get bottomNavMyPage => '마이페이지';
+
+  @override
+  String get comingSoonMessage => '준비 중이에요';
+
+  @override
   String get homePageGameButtonsHint => '게임을 만들거나 초대 코드로 참가할 수 있어요';
 
   @override

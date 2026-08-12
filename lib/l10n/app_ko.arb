@@ -297,6 +297,22 @@
   "@zoneJail": {
     "description": "공통 — 감옥 라벨"
   },
+  "bottomNavHome": "홈",
+  "@bottomNavHome": {
+    "description": "바텀 네비게이션 — 홈 탭 라벨"
+  },
+  "bottomNavCommunity": "커뮤니티",
+  "@bottomNavCommunity": {
+    "description": "바텀 네비게이션 — 커뮤니티 탭 라벨"
+  },
+  "bottomNavMyPage": "마이페이지",
+  "@bottomNavMyPage": {
+    "description": "바텀 네비게이션 — 마이페이지 탭 라벨"
+  },
+  "comingSoonMessage": "준비 중이에요",
+  "@comingSoonMessage": {
+    "description": "아직 구현되지 않은 탭(커뮤니티·마이페이지)의 안내 문구"
+  },
   "homePageGameButtonsHint": "게임을 만들거나 초대 코드로 참가할 수 있어요",
   "@homePageGameButtonsHint": {
     "description": "홈 페이지 — 방 만들기/참여하기 버튼 통합 안내"

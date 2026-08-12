@@ -545,6 +545,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneJail => 'Jail';
 
   @override
+  String get bottomNavHome => 'Home';
+
+  @override
+  String get bottomNavCommunity => 'Community';
+
+  @override
+  String get bottomNavMyPage => 'My Page';
+
+  @override
+  String get comingSoonMessage => 'Coming soon';
+
+  @override
   String get homePageGameButtonsHint =>
       'You can create a game or join with an invite code';
 
