@@ -37,20 +37,25 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 92.h,
+    return ColoredBox(
       color: AppColors.white,
-      child: Row(
-        children: [
-          for (var i = 0; i < items.length; i++)
-            Expanded(
-              child: _NavTab(
-                item: items[i],
-                isActive: i == currentIndex,
-                onTap: () => onTap(i),
-              ),
-            ),
-        ],
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 92.h,
+          child: Row(
+            children: [
+              for (var i = 0; i < items.length; i++)
+                Expanded(
+                  child: _NavTab(
+                    item: items[i],
+                    isActive: i == currentIndex,
+                    onTap: () => onTap(i),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
