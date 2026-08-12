@@ -313,6 +313,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'settings',
                     name: RoutePaths.settingsName,
+                    // 서브 라우트가 바텀 네비 바 위(MainScaffold body)가 아니라
+                    // root navigator 위에서 풀스크린으로 뜨도록 강제
+                    parentNavigatorKey: rootNavigatorKey,
                     pageBuilder: (context, state) => buildDirectionalSlide(
                       key: state.pageKey,
                       child: const SettingsPage(),
@@ -323,6 +326,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'credits',
                         name: RoutePaths.creditsName,
+                        // go_router는 parentNavigatorKey를 자식에 상속하지 않으므로
+                        // 각 라우트에 명시적으로 지정해야 한다
+                        parentNavigatorKey: rootNavigatorKey,
                         pageBuilder: (context, state) => buildDirectionalSlide(
                           key: state.pageKey,
                           child: const CreditsPage(),
@@ -338,6 +344,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'notices',
                     name: RoutePaths.noticesName,
+                    parentNavigatorKey: rootNavigatorKey,
                     pageBuilder: (context, state) => buildDirectionalSlide(
                       key: state.pageKey,
                       child: const NoticesPage(),
@@ -350,6 +357,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   // ======================================================
                   GoRoute(
                     path: 'create-session',
+                    parentNavigatorKey: rootNavigatorKey,
                     pageBuilder: (context, state) => buildDirectionalSlide(
                       key: state.pageKey,
                       child: const SessionCreationFlowPage(),
@@ -360,6 +368,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'playground',
                         name: RoutePaths.setupPlaygroundFromFlowName,
+                        // go_router는 parentNavigatorKey를 자식에 상속하지 않으므로
+                        // 각 라우트에 명시적으로 지정해야 한다
+                        parentNavigatorKey: rootNavigatorKey,
                         pageBuilder: (context, state) => buildDirectionalSlide(
                           key: state.pageKey,
                           child: const SetupPlaygroundPage(),
@@ -370,6 +381,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'prison',
                         name: RoutePaths.setupPrisonFromFlowName,
+                        parentNavigatorKey: rootNavigatorKey,
                         pageBuilder: (context, state) => buildDirectionalSlide(
                           key: state.pageKey,
                           child: const SetupPrisonPage(),
