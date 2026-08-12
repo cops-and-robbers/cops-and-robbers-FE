@@ -18,6 +18,8 @@
 | 대기실                  | Waiting room    | 待機室           | 게임 시작 전 로비                    |
 | 초대 코드               | Invite code     | 招待コード       | 6자리 영문/숫자                      |
 | 게임                    | Game            | ゲーム           |                                      |
+| 게임 생성               | Create game     | ゲーム作成       | 버튼 라벨                            |
+| 게임 참여               | Join game       | ゲーム参加       | 버튼 라벨                            |
 | 라운드                  | Round           | ラウンド         | 게임 1회 단위                        |
 | 게임 영역 / 구역        | Game area       | ゲームエリア     | playground + jail 묶음               |
 | 출동                    | Move out        | 出動             | 경찰이 도둑 추격 시작                |

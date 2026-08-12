@@ -562,10 +562,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homePageWelcomeMessage => '誰がぼくのチーズを\n盗んだの!!!!🧀';
 
   @override
-  String get buttonCreateRoom => '待機室を作る';
+  String get buttonCreateRoom => 'ゲーム作成';
 
   @override
-  String get buttonJoinRoom => '待機室に参加する';
+  String get buttonJoinRoom => 'ゲーム参加';
 
   @override
   String get sessionCreationStepZoneSubtitle =>

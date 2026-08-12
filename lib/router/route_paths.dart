@@ -57,7 +57,7 @@ class RoutePaths {
   /// 커뮤니티 화면 (바텀 네비게이션 탭 — 현재 준비중 placeholder)
   static const String community = '/community';
 
-  /// 마이페이지 화면 (바텀 네비게이션 탭 — 현재 준비중 placeholder)
+  /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
 
   /// 공지사항 화면

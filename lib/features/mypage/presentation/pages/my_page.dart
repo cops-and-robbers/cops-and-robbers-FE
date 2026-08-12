@@ -332,24 +332,29 @@ class _MyPageState extends ConsumerState<MyPage> {
   /// 선택 즉시 홈 프로필 카드에도 반영된다(같은 provider를 watch).
   Widget _buildProfileIconPicker(int selectedId) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal24),
+      padding: EdgeInsets.only(
+        left: AppSpacing.horizontal24,
+        right: AppSpacing.horizontal24,
+        top: AppSpacing.vertical8,
+      ),
       child: Row(
         children: [
           for (final id in kProfileIconIds)
             Padding(
-              padding: EdgeInsets.only(right: AppSpacing.horizontal12),
+              padding: EdgeInsets.only(
+                right: id == kProfileIconIds.last ? 0 : AppSpacing.horizontal12,
+              ),
               child: GestureDetector(
-                onTap: () =>
-                    ref.read(profileIconProvider.notifier).select(id),
+                onTap: () => ref.read(profileIconProvider.notifier).select(id),
                 child: Container(
-                  padding: EdgeInsets.all(4.w),
+                  padding: EdgeInsets.all(AppSpacing.horizontal4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: id == selectedId
                           ? AppColors.blueVer2Basic
                           : AppColors.transparent,
-                      width: 2,
+                      width: 2.w,
                     ),
                   ),
                   child: SvgPicture.asset(

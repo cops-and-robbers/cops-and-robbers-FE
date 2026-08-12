@@ -385,13 +385,13 @@
   "@homePageWelcomeMessage": {
     "description": "홈 페이지 — 메인 환영 메시지"
   },
-  "buttonCreateRoom": "방 만들기",
+  "buttonCreateRoom": "게임 생성하기",
   "@buttonCreateRoom": {
-    "description": "공통 — 방 만들기 버튼"
+    "description": "공통 — 게임 생성 버튼"
   },
-  "buttonJoinRoom": "방 참여하기",
+  "buttonJoinRoom": "게임 참여하기",
   "@buttonJoinRoom": {
-    "description": "공통 — 방 참여하기 버튼"
+    "description": "공통 — 게임 참여 버튼"
   },
   "sessionCreationStepZoneSubtitle": "게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요",
   "@sessionCreationStepZoneSubtitle": {

@@ -49,8 +49,8 @@ void main() {
       await tester.pumpWidget(_wrap(tester, _testRouter()));
       await tester.pumpAndSettle();
 
-      expect(find.text('방 만들기'), findsOneWidget);
-      expect(find.text('방 참여하기'), findsOneWidget);
+      expect(find.text('게임 생성하기'), findsOneWidget);
+      expect(find.text('게임 참여하기'), findsOneWidget);
       expect(find.text('대기방'), findsOneWidget);
       expect(find.text('인게임'), findsOneWidget);
       expect(find.text('QR 체포·탈옥'), findsNothing);
@@ -81,11 +81,11 @@ void main() {
       await tester.pumpWidget(_wrap(tester, _testRouter()));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('방 만들기'));
+      await tester.tap(find.text('게임 생성하기'));
       await tester.pumpAndSettle();
 
       expect(find.text('IN_GAME_LANDED'), findsNothing);
-      expect(find.text('방 만들기'), findsOneWidget);
+      expect(find.text('게임 생성하기'), findsOneWidget);
     });
   });
 }

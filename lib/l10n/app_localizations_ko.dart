@@ -559,10 +559,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homePageWelcomeMessage => '누가 내 치즈\n훔쳐갔어!!!!🧀';
 
   @override
-  String get buttonCreateRoom => '방 만들기';
+  String get buttonCreateRoom => '게임 생성하기';
 
   @override
-  String get buttonJoinRoom => '방 참여하기';
+  String get buttonJoinRoom => '게임 참여하기';
 
   @override
   String get sessionCreationStepZoneSubtitle =>

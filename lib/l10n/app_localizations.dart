@@ -1138,16 +1138,16 @@ abstract class AppLocalizations {
   /// **'누가 내 치즈\n훔쳐갔어!!!!🧀'**
   String get homePageWelcomeMessage;
 
-  /// 공통 — 방 만들기 버튼
+  /// 공통 — 게임 생성 버튼
   ///
   /// In ko, this message translates to:
-  /// **'방 만들기'**
+  /// **'게임 생성하기'**
   String get buttonCreateRoom;
 
-  /// 공통 — 방 참여하기 버튼
+  /// 공통 — 게임 참여 버튼
   ///
   /// In ko, this message translates to:
-  /// **'방 참여하기'**
+  /// **'게임 참여하기'**
   String get buttonJoinRoom;
 
   /// 방 생성 — 구역 설정 단계 안내

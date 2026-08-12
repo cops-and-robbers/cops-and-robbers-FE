@@ -615,10 +615,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homePageWelcomeMessage => 'Who stole\nMy cheese!!!!🧀';
 
   @override
-  String get buttonCreateRoom => 'Create room';
+  String get buttonCreateRoom => 'Create game';
 
   @override
-  String get buttonJoinRoom => 'Join room';
+  String get buttonJoinRoom => 'Join game';
 
   @override
   String get sessionCreationStepZoneSubtitle =>

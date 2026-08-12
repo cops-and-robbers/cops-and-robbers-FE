@@ -17,8 +17,8 @@ import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/pages/legal_document_page.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
