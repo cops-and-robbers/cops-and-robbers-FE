@@ -103,6 +103,34 @@ class AppColors {
   // 파랑 계열 (Blue Scale)
   // ============================================
 
+  /// 로고 색상
+  /// Logo color
+  static const Color logo = Color(0xFF4D63FF);
+
+  /// 파랑 ver2 - 진한
+  /// Blue ver2 - rich
+  static const Color blueVer2Rich = Color(0xFF69B6FF);
+
+  /// 파랑 ver2 - 기본
+  /// Blue ver2 - basic
+  static const Color blueVer2Basic = Color(0xFF339DFF);
+
+  /// 파랑 ver2 - 연한
+  /// Blue ver2 - vague
+  static const Color blueVer2Vague = Color(0xFFC4E3FF);
+
+  /// 파랑 ver2 - 강조
+  /// Blue ver2 - strong
+  static const Color blueVer2Strong = Color(0xFF2264FF);
+
+  /// 파랑 ver2 - 50
+  /// Blue ver2 - 50
+  static const Color blueVer2_50 = Color(0xFFE7F4FF);
+
+  /// 파랑 ver2 - 70
+  /// Blue ver2 - 70
+  static const Color blueVer2_70 = Color(0xFFD3EAFF);
+
   /// 파랑
   /// Blue color
   static const Color blue = Color(0xFF3F63D9);
