@@ -501,8 +501,8 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
               child: Center(
                 child: SvgPicture.asset(
                   isNotificationOn
-                      ? 'assets/icons/icon_bell_on.svg'
-                      : 'assets/icons/icon_bell_off.svg',
+                      ? 'assets/icons/icon_chat_bell_on.svg'
+                      : 'assets/icons/icon_chat_bell_off.svg',
                   width: 24.w,
                   height: 24.w,
                   colorFilter: ColorFilter.mode(
