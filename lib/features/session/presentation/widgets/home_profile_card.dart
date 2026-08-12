@@ -33,11 +33,7 @@ class HomeProfileCard extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          SvgPicture.asset(
-            profileIconAsset(iconId),
-            width: 34.w,
-            height: 34.w,
-          ),
+          SvgPicture.asset(profileIconAsset(iconId), width: 34.w, height: 34.w),
           SizedBox(width: AppSpacing.horizontal8),
           Expanded(
             child: Text(
