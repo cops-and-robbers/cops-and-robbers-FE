@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import '../../services/vibration_service.dart';
+import '../../constants/app_colors.dart';
 
 /// 뒤로가기 버튼 위젯
 ///
@@ -20,7 +20,7 @@ class PreviousButton extends StatelessWidget {
     super.key,
     required this.onPressed,
     this.size = 24,
-    this.color,
+    this.color = AppColors.black800,
   });
 
   /// 버튼 클릭 시 실행될 콜백
