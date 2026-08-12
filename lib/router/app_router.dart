@@ -23,6 +23,9 @@ import '../features/auth/presentation/pages/onboarding_page.dart';
 import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
+import '../features/community/presentation/pages/community_page.dart';
+import '../features/mypage/presentation/pages/my_page.dart';
+import 'main_scaffold.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
 import '../features/session/presentation/pages/setup_playground_page.dart';
 import '../features/session/presentation/pages/setup_prison_page.dart';
@@ -282,86 +285,131 @@ final routerProvider = Provider<GoRouter>((ref) {
       // ====================================================================
       // Home & Main Navigation
       // ====================================================================
-      GoRoute(
-        path: RoutePaths.home,
-        name: RoutePaths.homeName,
-        pageBuilder: (context, state) => buildSmoothFade(
-          key: state.pageKey,
-          // fromGameExit: 게임 종료 후 "홈으로" 이탈 직후 진입 —
-          // 퇴장 API가 비행 중일 수 있어 활성 게임 안전망을 1회 건너뛴다
-          child: HomePage(
-            skipActiveGameCheck:
-                state.uri.queryParameters['fromGameExit'] == 'true',
-          ),
-        ),
-        routes: [
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            MainScaffold(navigationShell: navigationShell),
+        branches: [
           // ==============================================================
-          // Settings Page
+          // Home Branch
           // ==============================================================
-          GoRoute(
-            path: 'settings',
-            name: RoutePaths.settingsName,
-            pageBuilder: (context, state) => buildDirectionalSlide(
-              key: state.pageKey,
-              child: const SettingsPage(),
-              isForward: true,
-            ),
+          StatefulShellBranch(
             routes: [
-              // 히든 크레딧 페이지 (앱 버전 5탭으로 진입)
               GoRoute(
-                path: 'credits',
-                name: RoutePaths.creditsName,
-                pageBuilder: (context, state) => buildDirectionalSlide(
+                path: RoutePaths.home,
+                name: RoutePaths.homeName,
+                pageBuilder: (context, state) => buildSmoothFade(
                   key: state.pageKey,
-                  child: const CreditsPage(),
-                  isForward: true,
+                  // fromGameExit: 게임 종료 후 "홈으로" 이탈 직후 진입 —
+                  // 퇴장 API가 비행 중일 수 있어 활성 게임 안전망을 1회 건너뛴다
+                  child: HomePage(
+                    skipActiveGameCheck:
+                        state.uri.queryParameters['fromGameExit'] == 'true',
+                  ),
+                ),
+                routes: [
+                  // ======================================================
+                  // Settings Page
+                  // ======================================================
+                  GoRoute(
+                    path: 'settings',
+                    name: RoutePaths.settingsName,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const SettingsPage(),
+                      isForward: true,
+                    ),
+                    routes: [
+                      // 히든 크레딧 페이지 (앱 버전 5탭으로 진입)
+                      GoRoute(
+                        path: 'credits',
+                        name: RoutePaths.creditsName,
+                        pageBuilder: (context, state) => buildDirectionalSlide(
+                          key: state.pageKey,
+                          child: const CreditsPage(),
+                          isForward: true,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // ======================================================
+                  // Notices Page
+                  // ======================================================
+                  GoRoute(
+                    path: 'notices',
+                    name: RoutePaths.noticesName,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const NoticesPage(),
+                      isForward: true,
+                    ),
+                  ),
+
+                  // ======================================================
+                  // Session Creation Flow (Single PageView Page) - NEW
+                  // ======================================================
+                  GoRoute(
+                    path: 'create-session',
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const SessionCreationFlowPage(),
+                      isForward: true,
+                    ),
+                    routes: [
+                      // 플레이그라운드 설정 (모달 페이지)
+                      GoRoute(
+                        path: 'playground',
+                        name: RoutePaths.setupPlaygroundFromFlowName,
+                        pageBuilder: (context, state) => buildDirectionalSlide(
+                          key: state.pageKey,
+                          child: const SetupPlaygroundPage(),
+                          isForward: true,
+                        ),
+                      ),
+                      // 감옥 설정 (모달 페이지)
+                      GoRoute(
+                        path: 'prison',
+                        name: RoutePaths.setupPrisonFromFlowName,
+                        pageBuilder: (context, state) => buildDirectionalSlide(
+                          key: state.pageKey,
+                          child: const SetupPrisonPage(),
+                          isForward: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+
+          // ==============================================================
+          // Community Branch (준비중 placeholder)
+          // ==============================================================
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.community,
+                name: RoutePaths.communityName,
+                pageBuilder: (context, state) => buildSmoothFade(
+                  key: state.pageKey,
+                  child: const CommunityPage(),
                 ),
               ),
             ],
           ),
 
           // ==============================================================
-          // Notices Page
+          // MyPage Branch (준비중 placeholder)
           // ==============================================================
-          GoRoute(
-            path: 'notices',
-            name: RoutePaths.noticesName,
-            pageBuilder: (context, state) => buildDirectionalSlide(
-              key: state.pageKey,
-              child: const NoticesPage(),
-              isForward: true,
-            ),
-          ),
-
-          // ==============================================================
-          // Session Creation Flow (Single PageView Page) - NEW
-          // ==============================================================
-          GoRoute(
-            path: 'create-session',
-            pageBuilder: (context, state) => buildDirectionalSlide(
-              key: state.pageKey,
-              child: const SessionCreationFlowPage(),
-              isForward: true,
-            ),
+          StatefulShellBranch(
             routes: [
-              // 플레이그라운드 설정 (모달 페이지)
               GoRoute(
-                path: 'playground',
-                name: RoutePaths.setupPlaygroundFromFlowName,
-                pageBuilder: (context, state) => buildDirectionalSlide(
+                path: RoutePaths.mypage,
+                name: RoutePaths.mypageName,
+                pageBuilder: (context, state) => buildSmoothFade(
                   key: state.pageKey,
-                  child: const SetupPlaygroundPage(),
-                  isForward: true,
-                ),
-              ),
-              // 감옥 설정 (모달 페이지)
-              GoRoute(
-                path: 'prison',
-                name: RoutePaths.setupPrisonFromFlowName,
-                pageBuilder: (context, state) => buildDirectionalSlide(
-                  key: state.pageKey,
-                  child: const SetupPrisonPage(),
-                  isForward: true,
+                  child: const MyPage(),
                 ),
               ),
             ],
