@@ -175,6 +175,7 @@
     "description": "Placeholder message for not-yet-implemented tabs (community, my page)"
   },
   "homePageGameButtonsHint": "You can create a game or join with an invite code",
+  "homeBannerSemanticsLabel": "Event banner",
   "dialogSafetyWarningTitle": "Please watch your surroundings while using the app",
   "dialogSafetyWarningMessage": "Focusing only on the screen during the game can be dangerous\nPlease check the road and walking environment to stay safe",
   "buttonAcknowledgedSurroundings": "I understand!",

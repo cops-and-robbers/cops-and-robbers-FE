@@ -16,8 +16,10 @@ import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
+import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/services/permission/game_entry_gate.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
+import '../../../../core/services/remote_config/remote_config_service.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/dev_flags.dart';
@@ -45,6 +47,7 @@ import '../../../game/presentation/widgets/qr_scanner_page.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
+import '../widgets/home_banner.dart';
 import '../widgets/home_header.dart';
 import '../widgets/home_profile_card.dart';
 
@@ -92,15 +95,31 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   // 튜토리얼 대상(방 만들기 + 참여하기 버튼)을 한 영역으로 특정하기 위한 GlobalKey
   final _tutorialKeyGameButtons = GlobalKey();
+  StreamSubscription<void>? _remoteConfigSubscription;
 
   @override
   void initState() {
     super.initState();
+    _remoteConfigSubscription = RemoteConfigService.instance.onConfigUpdated
+        .listen(
+          (_) {
+            if (mounted) setState(() {});
+          },
+          onError: (Object error) {
+            debugPrint('⚠️ Remote Config 실시간 연결 실패: $error');
+          },
+        );
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _showTutorialIfNeeded();
       if (mounted) _showSafetyNoticeIfNeeded();
       if (mounted) _checkActiveGameAndRedirect();
     });
+  }
+
+  @override
+  void dispose() {
+    _remoteConfigSubscription?.cancel();
+    super.dispose();
   }
 
   /// 홈 튜토리얼 표시 (최초 1회)
@@ -579,6 +598,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final remoteConfig = RemoteConfigService.instance;
     // 설정에서 튜토리얼 초기화 시 신호를 받아 재노출 (홈 인스턴스가 살아있어 initState 재실행 안 되는 문제 대응)
     ref.listen<int>(tutorialResetSignalProvider, (previous, next) {
       if (previous == null || previous == next) return;
@@ -663,6 +683,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                       ],
                     ),
+
+                    if (remoteConfig.bannerEnabled)
+                      HomeBanner(
+                        imageUrl: remoteConfig.bannerImageUrl,
+                        onTap: remoteConfig.bannerLinkUrl.isEmpty
+                            ? null
+                            : () =>
+                                  launchExternalUrl(remoteConfig.bannerLinkUrl),
+                      ),
 
                     SizedBox(height: AppSpacing.vertical20),
                   ],
