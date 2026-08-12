@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../report/presentation/providers/report_provider.dart';
 import '../../../report/domain/constants/report_categories.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/constants/chat_constants.dart';
@@ -328,13 +329,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                       topLeft: AppRadius.xl20.topLeft,
                       topRight: AppRadius.xl20.topRight,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: const Offset(0, -2),
-                        blurRadius: 10,
-                        color: AppColors.black.withValues(alpha: 0.1),
-                      ),
-                    ],
+                    boxShadow: AppShadows.topLift,
                   ),
                   child: Column(
                     children: [

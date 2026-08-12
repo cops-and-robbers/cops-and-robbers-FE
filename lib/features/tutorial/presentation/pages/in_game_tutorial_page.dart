@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
@@ -930,13 +931,7 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
           topLeft: AppRadius.xl20.topLeft,
           topRight: AppRadius.xl20.topRight,
         ),
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, -2),
-            blurRadius: 10,
-            color: _isDarkMode ? AppColors.black : AppColors.black200,
-          ),
-        ],
+        boxShadow: AppShadows.topLiftThemed(_isDarkMode),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

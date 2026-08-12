@@ -133,7 +133,7 @@ class AppColors {
 
   /// 파랑
   /// Blue color
-  static const Color blue = Color(0xFF3F63D9);
+  static const Color blue = Color(0xFF0088FF);
 
   /// 파랑 800
   /// Blue 800

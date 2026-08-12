@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
@@ -138,15 +139,7 @@ class _TutorialCatalogCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: item.isActive ? AppColors.white : AppColors.black100,
           borderRadius: AppRadius.xl20,
-          boxShadow: item.isActive
-              ? [
-                  BoxShadow(
-                    offset: const Offset(0, 1),
-                    blurRadius: 4,
-                    color: AppColors.black100,
-                  ),
-                ]
-              : null,
+          boxShadow: item.isActive ? AppShadows.card : null,
         ),
         child: Row(
           children: [
