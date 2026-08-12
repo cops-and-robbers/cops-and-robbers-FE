@@ -492,6 +492,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get zoneJail => '감옥';
 
   @override
+  String get mypageProfileIconLabel => '프로필 아이콘';
+
+  @override
   String get bottomNavHome => '홈';
 
   @override

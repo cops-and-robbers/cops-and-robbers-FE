@@ -545,6 +545,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneJail => 'Jail';
 
   @override
+  String get mypageProfileIconLabel => 'Profile icon';
+
+  @override
   String get bottomNavHome => 'Home';
 
   @override

@@ -154,6 +154,10 @@
   "errorSettingsLoadFailed": "Unable to load settings information",
   "zonePlayground": "Playground",
   "zoneJail": "Jail",
+  "mypageProfileIconLabel": "Profile icon",
+  "@mypageProfileIconLabel": {
+    "description": "My page — profile icon picker section header"
+  },
   "bottomNavHome": "Home",
   "@bottomNavHome": {
     "description": "Bottom navigation — home tab label"

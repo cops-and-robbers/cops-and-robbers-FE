@@ -154,6 +154,10 @@
   "errorSettingsLoadFailed": "設定情報を読み込めません",
   "zonePlayground": "プレイグラウンド",
   "zoneJail": "牢屋",
+  "mypageProfileIconLabel": "プロフィールアイコン",
+  "@mypageProfileIconLabel": {
+    "description": "マイページ — プロフィールアイコン選択セクションヘッダー"
+  },
   "bottomNavHome": "ホーム",
   "@bottomNavHome": {
     "description": "ボトムナビゲーション — ホームタブラベル"

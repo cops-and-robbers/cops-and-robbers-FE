@@ -495,6 +495,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zoneJail => '牢屋';
 
   @override
+  String get mypageProfileIconLabel => 'プロフィールアイコン';
+
+  @override
   String get bottomNavHome => 'ホーム';
 
   @override

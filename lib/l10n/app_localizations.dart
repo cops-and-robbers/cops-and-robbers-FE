@@ -1006,6 +1006,12 @@ abstract class AppLocalizations {
   /// **'감옥'**
   String get zoneJail;
 
+  /// 마이페이지 — 프로필 아이콘 선택 섹션 헤더
+  ///
+  /// In ko, this message translates to:
+  /// **'프로필 아이콘'**
+  String get mypageProfileIconLabel;
+
   /// 바텀 네비게이션 — 홈 탭 라벨
   ///
   /// In ko, this message translates to:

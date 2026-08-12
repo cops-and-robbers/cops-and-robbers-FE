@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,6 +28,7 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'language_settings_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bug/presentation/providers/bug_provider.dart';
+import '../../../user/presentation/providers/profile_icon_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../credits/presentation/pages/credits_page.dart';
@@ -97,6 +99,7 @@ class _MyPageState extends ConsumerState<MyPage> {
   @override
   Widget build(BuildContext context) {
     final gamePushState = ref.watch(gamePushNotifierProvider);
+    final selectedIconId = ref.watch(profileIconProvider);
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -114,6 +117,15 @@ class _MyPageState extends ConsumerState<MyPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ══════════════════════════════════════════
+            // 프로필 아이콘
+            // ══════════════════════════════════════════
+            _buildSectionHeader(l10n.mypageProfileIconLabel),
+            _buildProfileIconPicker(selectedIconId),
+            SizedBox(height: AppSpacing.vertical8),
+
+            _buildSectionDivider(),
+
             // ══════════════════════════════════════════
             // 계정
             // ══════════════════════════════════════════
@@ -311,6 +323,45 @@ class _MyPageState extends ConsumerState<MyPage> {
       width: double.infinity,
       height: AppSpacing.vertical4,
       color: AppColors.black100,
+    );
+  }
+
+  /// 프로필 아이콘 선택 섹션
+  ///
+  /// 선택지가 [kProfileIconIds] 2개뿐이라 다이얼로그 없이 인라인으로 노출한다.
+  /// 선택 즉시 홈 프로필 카드에도 반영된다(같은 provider를 watch).
+  Widget _buildProfileIconPicker(int selectedId) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal24),
+      child: Row(
+        children: [
+          for (final id in kProfileIconIds)
+            Padding(
+              padding: EdgeInsets.only(right: AppSpacing.horizontal12),
+              child: GestureDetector(
+                onTap: () =>
+                    ref.read(profileIconProvider.notifier).select(id),
+                child: Container(
+                  padding: EdgeInsets.all(4.w),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: id == selectedId
+                          ? AppColors.blueVer2Basic
+                          : AppColors.transparent,
+                      width: 2,
+                    ),
+                  ),
+                  child: SvgPicture.asset(
+                    profileIconAsset(id),
+                    width: 48.w,
+                    height: 48.w,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
