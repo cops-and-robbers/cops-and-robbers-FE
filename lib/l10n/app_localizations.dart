@@ -1042,6 +1042,12 @@ abstract class AppLocalizations {
   /// **'게임을 만들거나 초대 코드로 참가할 수 있어요'**
   String get homePageGameButtonsHint;
 
+  /// 홈 페이지 — 원격 이미지 배너 접근성 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'이벤트 배너'**
+  String get homeBannerSemanticsLabel;
+
   /// 홈 진입 시 표시되는 주변 안전 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:

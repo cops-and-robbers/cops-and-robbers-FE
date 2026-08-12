@@ -321,6 +321,10 @@
   "@homePageGameButtonsHint": {
     "description": "홈 페이지 — 방 만들기/참여하기 버튼 통합 안내"
   },
+  "homeBannerSemanticsLabel": "이벤트 배너",
+  "@homeBannerSemanticsLabel": {
+    "description": "홈 페이지 — 원격 이미지 배너 접근성 라벨"
+  },
   "dialogSafetyWarningTitle": "주변을 확인하며 이용해 주세요",
   "@dialogSafetyWarningTitle": {
     "description": "홈 진입 시 표시되는 주변 안전 확인 다이얼로그 타이틀"

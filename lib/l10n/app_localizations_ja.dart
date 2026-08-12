@@ -513,6 +513,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homePageGameButtonsHint => 'ゲームを作成したり、招待コードで参加したりできます';
 
   @override
+  String get homeBannerSemanticsLabel => 'イベントバナー';
+
+  @override
   String get dialogSafetyWarningTitle => '周囲を確認しながらご利用ください';
 
   @override

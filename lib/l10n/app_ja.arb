@@ -175,6 +175,7 @@
     "description": "未実装タブ(コミュニティ・マイページ)の案内文言"
   },
   "homePageGameButtonsHint": "ゲームを作成したり、招待コードで参加したりできます",
+  "homeBannerSemanticsLabel": "イベントバナー",
   "dialogSafetyWarningTitle": "周囲を確認しながらご利用ください",
   "dialogSafetyWarningMessage": "ゲーム中画面に集中しすぎると危険です\n道路や歩行環境を確認し、安全にご利用ください",
   "buttonAcknowledgedSurroundings": "確認しました！",

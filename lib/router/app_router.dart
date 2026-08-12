@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_colors.dart';
@@ -627,7 +629,7 @@ class _ErrorPage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: AppColors.red),
+              SvgPicture.asset('assets/icons/icon_not_found.svg', width: 110.w),
               SizedBox(height: AppSpacing.vertical16),
               Text(l10n.pageNotFoundMessage, style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical8),

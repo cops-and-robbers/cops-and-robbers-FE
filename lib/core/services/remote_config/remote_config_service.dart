@@ -16,6 +16,9 @@ import 'remote_config_keys.dart';
 /// - `maintenance` (bool): 서버 점검 모드
 /// - `maintenance_message` (String): 점검 안내 메시지 (시간 등)
 /// - `ads_enabled` (bool): 광고 전역 스위치 (kill switch)
+/// - `banner_enabled` (bool): 원격 배너 활성 여부
+/// - `banner_image_url` (String): 원격 배너 이미지 주소
+/// - `banner_link_url` (String): 원격 배너 이동 링크
 class RemoteConfigService {
   RemoteConfigService._();
 
@@ -72,8 +75,24 @@ class RemoteConfigService {
       debugPrint('   maintenance:     $maintenance');
       debugPrint('   maintenance_msg: $maintenanceMessage');
       debugPrint('   ads_enabled:     $adsEnabled');
+      debugPrint('   banner_enabled:  $bannerEnabled');
+      debugPrint('   banner_image_set: ${bannerImageUrl.isNotEmpty}');
+      debugPrint('   banner_link_set:  ${bannerLinkUrl.isNotEmpty}');
       debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     }
+  }
+
+  /// 게시된 Remote Config를 실시간으로 활성화한다.
+  Stream<void> get onConfigUpdated {
+    if (!_isInitialized) return const Stream<void>.empty();
+
+    return _remoteConfig.onConfigUpdated.asyncMap((_) async {
+      try {
+        await _remoteConfig.activate();
+      } catch (e) {
+        debugPrint('⚠️ Remote Config activate failed: $e');
+      }
+    });
   }
 
   /// 최소 허용 버전
@@ -100,4 +119,18 @@ class RemoteConfigService {
   /// 미초기화(Firebase 실패 등) 시에도 false (광고 끔 = fail-safe)
   bool get adsEnabled =>
       _isInitialized && _remoteConfig.getBool(RemoteConfigKeys.adsEnabled);
+
+  /// 원격 배너 활성 여부
+  bool get bannerEnabled =>
+      _isInitialized && _remoteConfig.getBool(RemoteConfigKeys.bannerEnabled);
+
+  /// 원격 배너 이미지 주소
+  String get bannerImageUrl => _isInitialized
+      ? _remoteConfig.getString(RemoteConfigKeys.bannerImageUrl)
+      : '';
+
+  /// 원격 배너 이동 링크
+  String get bannerLinkUrl => _isInitialized
+      ? _remoteConfig.getString(RemoteConfigKeys.bannerLinkUrl)
+      : '';
 }

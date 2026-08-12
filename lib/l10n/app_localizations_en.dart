@@ -564,6 +564,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can create a game or join with an invite code';
 
   @override
+  String get homeBannerSemanticsLabel => 'Event banner';
+
+  @override
   String get dialogSafetyWarningTitle =>
       'Please watch your surroundings while using the app';
 
