@@ -20,6 +20,9 @@ class AppSpacing {
   // Horizontal Spacing - 좌우 간격 (너비 기준)
   // ============================================
 
+  /// 좌우 2px 간격 (아이콘 ↔ 숫자)
+  static double get horizontal2 => 2.w;
+
   /// 좌우 4px 간격
   static double get horizontal4 => 4.w;
 
@@ -46,6 +49,9 @@ class AppSpacing {
 
   /// 좌우 24px 간격
   static double get horizontal24 => 24.w;
+
+  /// 좌우 22px 간격 (커뮤니티 카드 좌우 패딩)
+  static double get horizontal22 => 22.w;
 
   // ============================================
   // Vertical Spacing - 상하 간격 (높이 기준)
@@ -80,6 +86,9 @@ class AppSpacing {
 
   /// 상하 24px 간격
   static double get vertical24 => 24.h;
+
+  /// 상하 26px 간격 (커뮤니티 범위 토글 ↔ 정렬 라벨)
+  static double get vertical26 => 26.h;
 
   /// 상하 28px 간격
   static double get vertical28 => 28.h;

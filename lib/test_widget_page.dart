@@ -15,6 +15,9 @@ import 'core/widgets/dialogs/reconnect_modal.dart';
 import 'core/widgets/map/pin_zone_setting_widget.dart';
 import 'features/auth/presentation/pages/agreement_page.dart';
 import 'features/auth/presentation/pages/nickname_setup_page.dart';
+import 'features/community/domain/entities/community_post_entity.dart';
+import 'features/community/domain/entities/community_post_status.dart';
+import 'features/community/presentation/widgets/community_post_card.dart';
 import 'features/game/data/models/game_area_model.dart';
 import 'features/game/domain/entities/area_shape.dart';
 import 'features/game/domain/entities/game_result_entity.dart';
@@ -332,6 +335,54 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
               ),
 
               SizedBox(height: AppSpacing.vertical64),
+
+              // ============================================
+              // 커뮤니티 카드 (#475) 테스트
+              // ============================================
+              _buildSectionTitle('커뮤니티 카드 (#475) 테스트'),
+              SizedBox(height: AppSpacing.vertical8),
+              Text(
+                '백엔드 address·currentParticipants 도착 전에도 시안을 대조할 수 있는 프리뷰. '
+                '위: 값이 다 있는 상태, 아래: 지금 API가 주는 상태(주소 행 숨김, 정원만).',
+                style: AppTextStyles.paragraph_14.copyWith(
+                  color: AppColors.black400,
+                ),
+              ),
+              SizedBox(height: AppSpacing.vertical16),
+              CommunityPostCard(
+                post: CommunityPostEntity(
+                  id: 1,
+                  writerId: 7,
+                  title: '나랑 경도하자!!!!!',
+                  content: '본문',
+                  meetingAt: DateTime(2026, 9, 10, 18, 0),
+                  latitude: 37.5511,
+                  longitude: 127.0739,
+                  maxParticipants: 10,
+                  status: CommunityPostStatus.recruiting,
+                  createdAt: DateTime(2026, 9, 1),
+                  address: '서울시 광진구 세종대학교',
+                  currentParticipants: 2,
+                  likeCount: 6,
+                  bookmarkCount: 3,
+                ),
+              ),
+              SizedBox(height: AppSpacing.vertical12),
+              CommunityPostCard(
+                post: CommunityPostEntity(
+                  id: 2,
+                  writerId: 8,
+                  title: '번개로 경도하실 분',
+                  content: '본문',
+                  meetingAt: DateTime(2026, 9, 12, 20, 0),
+                  latitude: 37.5511,
+                  longitude: 127.0739,
+                  maxParticipants: 15,
+                  status: CommunityPostStatus.completed,
+                  createdAt: DateTime(2026, 9, 1),
+                ),
+              ),
+              SizedBox(height: AppSpacing.vertical32),
 
               // ============================================
               // 폴리곤 구역 (#456) 테스트
