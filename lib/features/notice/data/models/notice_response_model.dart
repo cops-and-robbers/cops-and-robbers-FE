@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/network/models/page_info_model.dart';
+
 part 'notice_response_model.freezed.dart';
 part 'notice_response_model.g.dart';
 
@@ -34,21 +36,4 @@ class NoticeListResponseModel with _$NoticeListResponseModel {
 
   factory NoticeListResponseModel.fromJson(Map<String, dynamic> json) =>
       _$NoticeListResponseModelFromJson(json);
-}
-
-/// 페이지 정보 DTO
-///
-/// 백엔드 스키마: api-docs.json#PageInfo
-/// `number`는 0-based 페이지 인덱스.
-@freezed
-class PageInfoModel with _$PageInfoModel {
-  const factory PageInfoModel({
-    required int size,
-    required int number,
-    required int totalElements,
-    required int totalPages,
-  }) = _PageInfoModel;
-
-  factory PageInfoModel.fromJson(Map<String, dynamic> json) =>
-      _$PageInfoModelFromJson(json);
 }
