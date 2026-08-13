@@ -38,7 +38,7 @@ class DashedDivider extends StatelessWidget {
         painter: _DashedLinePainter(
           color: color,
           thickness: stroke,
-          dashWidth: dashWidth ?? 6.w,
+          dashWidth: dashWidth ?? 2.w,
           dashGap: dashGap ?? 2.w,
         ),
       ),
