@@ -11,6 +11,7 @@ import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../auth/presentation/widgets/agreement_item.dart';
 import '../../../user/domain/entities/agreement_status_entity.dart';
@@ -218,7 +219,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
-                  Divider(color: AppColors.black100, height: 1),
+                  const SolidDivider(),
                   SizedBox(height: AppSpacing.vertical6),
                   AgreementItem(
                     checked: status.privacyPolicy,
@@ -233,7 +234,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
-                  Divider(color: AppColors.black100, height: 1),
+                  const SolidDivider(),
                   SizedBox(height: AppSpacing.vertical6),
                   AgreementItem(
                     checked: status.locationTerms,
@@ -248,7 +249,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
-                  Divider(color: AppColors.black100, height: 1),
+                  const SolidDivider(),
                   SizedBox(height: AppSpacing.vertical6),
                   AgreementItem(
                     checked: _newMarketing,

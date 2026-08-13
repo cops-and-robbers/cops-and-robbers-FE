@@ -16,6 +16,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
@@ -313,7 +314,7 @@ class _MyPageState extends ConsumerState<MyPage> {
   Widget _buildItemDivider() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal20),
-      child: const Divider(color: AppColors.black100, height: 1),
+      child: const SolidDivider(),
     );
   }
 

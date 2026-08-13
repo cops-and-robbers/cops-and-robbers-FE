@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/network/api_error_response.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -285,8 +286,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
               isDarkMode: widget.isDarkMode,
               gameStatusByParticipantId: gameStatusMap,
             ),
-            Divider(
-              height: 1,
+            SolidDivider(
               color: widget.isDarkMode
                   ? AppColors.black800
                   : AppColors.black200,

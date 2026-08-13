@@ -25,6 +25,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -1373,8 +1374,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                           // 구분선
                           Padding(
                             padding: AppPadding.horizontal20,
-                            child: Divider(
-                              height: 1,
+                            child: SolidDivider(
                               color: isDark
                                   ? AppColors.black800
                                   : AppColors.black100,

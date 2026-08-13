@@ -9,6 +9,7 @@ import '../../../../core/constants/app_urls.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/pages/legal_document_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../providers/agreement_provider.dart';
@@ -52,7 +53,7 @@ class AgreementPage extends ConsumerWidget {
                           onToggle: () => notifier.toggleAll(!state.allAgreed),
                         ),
                         SizedBox(height: AppSpacing.vertical6),
-                        const Divider(color: AppColors.black100, height: 1),
+                        const SolidDivider(),
                         SizedBox(height: AppSpacing.vertical6),
                         AgreementItem(
                           checked: state.termsOfService,
