@@ -53,6 +53,9 @@ class AppSpacing {
   /// 좌우 22px 간격 (커뮤니티 카드 좌우 패딩)
   static double get horizontal22 => 22.w;
 
+  /// 좌우 26px 간격 (바텀시트 구분선 인셋)
+  static double get horizontal26 => 26.w;
+
   // ============================================
   // Vertical Spacing - 상하 간격 (높이 기준)
   // ============================================
@@ -180,6 +183,9 @@ class AppRadius {
 
   /// 매우 큰 라운드 (16px)
   static BorderRadius get xlarge => BorderRadius.circular(16.r);
+
+  /// 18px 라운드 - 바텀시트 상단
+  static BorderRadius get xl18 => BorderRadius.circular(18.r);
 
   /// 20px 라운드
   static BorderRadius get xl20 => BorderRadius.circular(20.r);

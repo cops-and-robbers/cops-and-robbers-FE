@@ -76,8 +76,34 @@ final selectedCommunityScopeProvider =
     );
 
 typedef _$SelectedCommunityScope = AutoDisposeNotifier<CommunityScope>;
+String _$selectedCommunitySortHash() =>
+    r'1b300f2efa9b39b4783fb0c07c0d4e868cc2aa7f';
+
+/// 현재 선택된 정렬 기준.
+///
+/// 아직 `CommunityFeedNotifier`가 watch하지 않는다 — 백엔드에 `sort` 쿼리가 없어
+/// 보낼 곳이 없기 때문이다. 지금은 정렬 라벨 표시 전용이며, 쿼리가 생기면
+/// `SelectedCommunityScope`와 같은 방식으로 build()에서 watch해 연결한다.
+///
+/// Copied from [SelectedCommunitySort].
+@ProviderFor(SelectedCommunitySort)
+final selectedCommunitySortProvider =
+    AutoDisposeNotifierProvider<
+      SelectedCommunitySort,
+      CommunitySortOption
+    >.internal(
+      SelectedCommunitySort.new,
+      name: r'selectedCommunitySortProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$selectedCommunitySortHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$SelectedCommunitySort = AutoDisposeNotifier<CommunitySortOption>;
 String _$communityFeedNotifierHash() =>
-    r'87e929a147db1a7080a0a8950531806f043f13ee';
+    r'1c33af1d9be38a243f241b7afe9d72904250ade0';
 
 /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
 ///

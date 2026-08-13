@@ -7,6 +7,7 @@ import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/community_remote_datasource.dart';
 import '../../data/repositories/community_repository_impl.dart';
 import '../../domain/entities/community_scope.dart';
+import '../../domain/entities/community_sort_option.dart';
 import '../../domain/repositories/community_repository.dart';
 import 'community_feed_state.dart';
 
@@ -50,6 +51,19 @@ class SelectedCommunityScope extends _$SelectedCommunityScope {
   void select(CommunityScope scope) => state = scope;
 }
 
+/// 현재 선택된 정렬 기준.
+///
+/// 아직 `CommunityFeedNotifier`가 watch하지 않는다 — 백엔드에 `sort` 쿼리가 없어
+/// 보낼 곳이 없기 때문이다. 지금은 정렬 라벨 표시 전용이며, 쿼리가 생기면
+/// `SelectedCommunityScope`와 같은 방식으로 build()에서 watch해 연결한다.
+@riverpod
+class SelectedCommunitySort extends _$SelectedCommunitySort {
+  @override
+  CommunitySortOption build() => CommunitySortOption.latest;
+
+  void select(CommunitySortOption option) => state = option;
+}
+
 /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
 @riverpod
 class CommunityFeedNotifier extends _$CommunityFeedNotifier {
@@ -64,11 +78,7 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
     // 지원되기 전까지 호출 자체를 하지 않고 빈 목록을 돌려준다 — 화면은
     // 이 상태를 "준비 중" 안내로 그린다.
     if (scope != CommunityScope.all) {
-      return const CommunityFeedState(
-        items: [],
-        nextPage: 0,
-        hasMore: false,
-      );
+      return const CommunityFeedState(items: [], nextPage: 0, hasMore: false);
     }
 
     final page = await ref

@@ -6,18 +6,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/community_scope.dart';
+import '../../domain/entities/community_sort_option.dart';
 import '../providers/community_feed_state.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_post_card.dart';
 import '../widgets/community_scope_toggle.dart';
+import '../widgets/community_sort_sheet.dart';
 
 /// 커뮤니티 탭 — 모집글 목록
 ///
@@ -87,8 +91,14 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final scope = ref.watch(selectedCommunityScopeProvider);
 
+    // 작성 버튼은 어떤 provider에도 의존하지 않는다. 여기서 한 번만 만들어
+    // 아래 Consumer들이 다시 그려도 이 서브트리는 재생성되지 않게 한다.
+    final createButton = _buildCreateButton(l10n);
+
+    // build()는 provider를 watch하지 않는다 — 여기서 watch하면 스코프 전환이나
+    // 무한 스크롤의 isLoadingMore 토글마다 AppBar·정렬행·작성 버튼까지 전부
+    // 다시 그려진다. 실제로 바뀌는 곳만 Consumer로 감싼다.
     return Scaffold(
       // AppBar만 흰색이고 그 아래 본문은 홈과 같은 연하늘 배경.
       backgroundColor: AppColors.background,
@@ -104,7 +114,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         ),
         actions: [
           // 검색은 백엔드에 keyword 쿼리가 없고 알림은 기능 자체가 없다.
-          // 시안의 앱바 균형을 위해 자리만 두고 탭은 받지 않는다 (#475 범위 제외).
+          // 후속 기능 연결 전까지 탭 여부만 로그로 확인한다.
           _buildAppBarIcon('assets/icons/icon_search.svg'),
           _buildAppBarIcon('assets/icons/icon_bell_off.svg'),
           SizedBox(width: AppSpacing.horizontal16),
@@ -114,56 +124,115 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         children: [
           SizedBox(height: AppSpacing.vertical16),
           Padding(
-            padding: AppPadding.horizontal20,
-            child: CommunityScopeToggle(
-              selected: scope,
-              onChanged: (next) => ref
-                  .read(selectedCommunityScopeProvider.notifier)
-                  .select(next),
+            padding: AppPadding.horizontal16,
+            child: Consumer(
+              builder: (context, ref, _) => CommunityScopeToggle(
+                selected: ref.watch(selectedCommunityScopeProvider),
+                onChanged: (next) => ref
+                    .read(selectedCommunityScopeProvider.notifier)
+                    .select(next),
+              ),
             ),
           ),
           SizedBox(height: AppSpacing.vertical26),
           Padding(
-            padding: AppPadding.horizontal20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                // 정렬 옵션은 백엔드 sort 쿼리가 생기면 드롭다운으로 연다.
-                Text(
-                  l10n.communitySortLatest,
-                  style: AppTextStyles.tag_12.copyWith(
-                    color: AppColors.black600,
-                  ),
-                ),
-                SizedBox(width: AppSpacing.horizontal4),
-                SvgPicture.asset(
-                  'assets/icons/icon_down.svg',
-                  width: 12.w,
-                  height: 12.h,
-                ),
-              ],
+            padding: AppPadding.horizontal24,
+            child: Consumer(
+              builder: (context, ref, _) => _buildSortLabel(
+                l10n,
+                ref.watch(selectedCommunitySortProvider),
+              ),
             ),
           ),
           SizedBox(height: AppSpacing.vertical12),
-          Expanded(child: _buildBody(l10n, scope)),
+          Expanded(
+            child: Consumer(
+              builder: (context, ref, _) => _buildBody(
+                l10n,
+                ref,
+                ref.watch(selectedCommunityScopeProvider),
+                createButton,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildAppBarIcon(String assetPath) {
-    return Padding(
-      padding: EdgeInsets.only(left: AppSpacing.horizontal8),
-      child: SvgPicture.asset(assetPath, width: 24.w, height: 24.h),
+  /// 정렬 라벨 — 탭하면 정렬 선택 바텀시트를 연다.
+  Widget _buildSortLabel(AppLocalizations l10n, CommunitySortOption sort) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        // 시트가 올라오기 전에 터치가 먹혔음을 알린다 (AppButton과 동일한 탭 햅틱).
+        VibrationService.instance().buttonTap();
+        _openSortSheet(sort);
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            _sortLabel(l10n, sort),
+            style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
+          ),
+          SizedBox(width: AppSpacing.horizontal4),
+          SvgPicture.asset(
+            'assets/icons/icon_sort.svg',
+            width: 10.w,
+            height: 6.h,
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildBody(AppLocalizations l10n, CommunityScope scope) {
+  String _sortLabel(AppLocalizations l10n, CommunitySortOption sort) =>
+      switch (sort) {
+        CommunitySortOption.latest => l10n.communitySortLatest,
+        CommunitySortOption.popular => l10n.communitySortPopular,
+        CommunitySortOption.distance => l10n.communitySortDistance,
+        CommunitySortOption.deadline => l10n.communitySortDeadline,
+      };
+
+  Future<void> _openSortSheet(CommunitySortOption current) async {
+    final picked = await CommunitySortSheet.show(context, selected: current);
+    if (picked == null || picked == current || !mounted) return;
+
+    // 백엔드에 sort 쿼리가 없다. 선택을 반영하면 라벨만 "인기순"으로 바뀌고 목록은
+    // 최신순 그대로라, 에러 없이 틀린 화면이 된다 — scope의 NEARBY/MINE과 같은 함정이다.
+    // sort 쿼리가 생기면 이 분기를 지우고 select()만 남긴다.
+    if (picked != CommunitySortOption.latest) {
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).comingSoonMessage,
+      );
+      return;
+    }
+    ref.read(selectedCommunitySortProvider.notifier).select(picked);
+  }
+
+  Widget _buildAppBarIcon(String assetPath) {
+    return IconButton(
+      onPressed: () => debugPrint('🔍 앱바 아이콘 탭'),
+      padding: EdgeInsets.only(left: AppSpacing.horizontal20),
+      icon: SvgPicture.asset(assetPath, width: 22.w, height: 22.h),
+    );
+  }
+
+  /// [ref]는 호출한 `Consumer`의 것을 받는다 — State의 `ref`로 watch하면 구독이
+  /// 페이지 전체에 걸려 이 함수만 다시 그리려던 목적이 사라진다.
+  Widget _buildBody(
+    AppLocalizations l10n,
+    WidgetRef ref,
+    CommunityScope scope,
+    Widget createButton,
+  ) {
     // 우리 동네 / 내 모임은 백엔드 scope 쿼리가 없어 Notifier가 호출을 건너뛴다.
     // 작성 버튼은 새 글을 쓰는 진입점 자체라 어느 탭이든 동일하게 떠 있어야 한다.
     if (scope != CommunityScope.all) {
       return _wrapWithCreateButton(
-        l10n,
+        createButton,
         _buildPlaceholder(l10n.comingSoonMessage),
       );
     }
@@ -179,7 +248,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
           error: (e, _) => e is AuthException
               ? const SizedBox.shrink()
               : _wrapWithCreateButton(
-                  l10n,
+                  createButton,
                   _buildRefreshablePlaceholder(
                     e is AppException
                         ? l10n.errorByException(e)
@@ -188,10 +257,10 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
                 ),
           data: (feed) => feed.items.isEmpty
               ? _wrapWithCreateButton(
-                  l10n,
+                  createButton,
                   _buildRefreshablePlaceholder(l10n.pageCommunityEmpty),
                 )
-              : _wrapWithCreateButton(l10n, _buildList(feed)),
+              : _wrapWithCreateButton(createButton, _buildList(feed)),
         );
   }
 
@@ -242,10 +311,12 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.only(
-          left: AppSpacing.horizontal20,
-          right: AppSpacing.horizontal20,
-          // 하단 작성 버튼과 겹치지 않도록 여백 추가
-          bottom: _buttonBottomOffset + 72.h,
+          left: AppSpacing.horizontal16,
+          right: AppSpacing.horizontal16,
+          // 마지막 카드가 작성 버튼에 가리지 않도록 버튼이 차지하는 높이만큼 비운다.
+          // 버튼 높이에서 파생시켜야 버튼 크기를 바꿔도 같이 따라온다.
+          bottom:
+              _buttonBottomOffset + _createButtonHeight + AppSpacing.vertical16,
         ),
         // AppShadows.ver2가 blur 10이라 기본 클립에 그림자가 잘린다.
         clipBehavior: Clip.none,
@@ -266,14 +337,54 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   }
 
   double get _buttonBottomOffset =>
-      AppSpacing.vertical16 + MediaQuery.paddingOf(context).bottom;
+      AppSpacing.vertical20 + MediaQuery.paddingOf(context).bottom;
 
-  /// 목록 / 빈 상태 / 에러 상태 위에 공통으로 뜨는 플로팅 모집글 작성 버튼.
+  /// 플로팅 작성 버튼 높이 — 버튼 자신과 목록 하단 여백이 함께 참조한다.
+  double get _createButtonHeight => 42.h;
+
+  /// 플로팅 모집글 작성 버튼 — `build()`에서 한 번만 만든다.
+  ///
+  /// 스코프나 목록 상태와 무관한 위젯이라, 여기서 만든 인스턴스를 각 분기가
+  /// 그대로 재사용한다. 분기 안에서 새로 만들면 탭을 옮기거나 다음 페이지를
+  /// 불러올 때마다 이 서브트리(SvgPicture 포함)가 통째로 다시 생성된다.
+  Widget _buildCreateButton(AppLocalizations l10n) {
+    // AppButton은 elevation 0 / shadowColor transparent로 그림자를 끄므로
+    // 파라미터로 넘길 수 없다. 목록 위에 떠 있는 버튼이라 배경과 분리돼 보이도록
+    // 카드와 같은 ver2 쉐도우를 밖에서 씌운다 (home_page.dart:589와 같은 방식).
+    // 버튼과 같은 pill 반경을 줘야 그림자가 모양을 따라간다.
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.pill,
+        boxShadow: AppShadows.ver2,
+      ),
+      child: AppButton(
+        text: l10n.communityCreatePost,
+        textStyle: AppTextStyles.paragraph14Semibold,
+        // 작성 화면은 후속 작업이다. 죽은 버튼으로 두지 않고 안내만 띄운다.
+        onPressed: () =>
+            AppSnackbar.show(context, message: l10n.comingSoonMessage),
+        backgroundColor: AppColors.logo,
+        foregroundColor: AppColors.white,
+        showBorder: false,
+        borderRadius: AppRadius.pill,
+        width: 134.w,
+        height: _createButtonHeight,
+        // pill 가장자리와 아이콘·텍스트 사이 여백
+        icon: SvgPicture.asset(
+          'assets/icons/icon_write.svg',
+          width: 14.w,
+          height: 14.h,
+        ),
+      ),
+    );
+  }
+
+  /// 목록 / 빈 상태 / 에러 상태 위에 공통으로 뜨는 작성 버튼을 얹는다.
   ///
   /// 준비 중 상태(우리 동네·내 모임)에도 띄운다 — 글쓰기 화면은 아직 없어 눌러도
   /// "준비 중이에요" 안내로 끝나는 건 다른 탭과 동일하니, 탭을 옮길 때마다
   /// 버튼이 사라졌다 나타나는 것보다 항상 같은 자리에 있는 편이 낫다.
-  Widget _wrapWithCreateButton(AppLocalizations l10n, Widget content) {
+  Widget _wrapWithCreateButton(Widget createButton, Widget content) {
     return Stack(
       children: [
         content,
@@ -281,25 +392,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
           bottom: _buttonBottomOffset,
           left: 0,
           right: 0,
-          child: Center(
-            child: AppButton(
-              text: l10n.communityCreatePost,
-              // 작성 화면은 후속 작업이다. 죽은 버튼으로 두지 않고 안내만 띄운다.
-              onPressed: () =>
-                  AppSnackbar.show(context, message: l10n.comingSoonMessage),
-              backgroundColor: AppColors.logo,
-              foregroundColor: AppColors.white,
-              showBorder: false,
-              borderRadius: AppRadius.pill,
-              width: 196.w,
-              height: 56.h,
-              icon: SvgPicture.asset(
-                'assets/icons/icon_write.svg',
-                width: 20.w,
-                height: 20.h,
-              ),
-            ),
-          ),
+          child: Center(child: createButton),
         ),
       ],
     );

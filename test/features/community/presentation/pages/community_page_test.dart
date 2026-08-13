@@ -1,4 +1,5 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
+import 'package:cops_and_robbers/core/widgets/buttons/app_button.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
@@ -155,6 +156,26 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(CommunityPostCard), findsOneWidget);
+    });
+
+    testWidgets('reuses_create_button_instance_when_scope_changes', (
+      tester,
+    ) async {
+      final repo = _FakeCommunityRepository([_post(1)]);
+      await tester.pumpWidget(_wrap(repo));
+      await tester.pumpAndSettle();
+
+      final before = tester.widget<AppButton>(find.byType(AppButton));
+
+      await tester.tap(find.text('우리 동네'));
+      await tester.pumpAndSettle();
+
+      final after = tester.widget<AppButton>(find.byType(AppButton));
+
+      // 작성 버튼은 스코프·목록 상태와 무관하다. build()가 provider를 watch하거나
+      // 각 분기가 버튼을 새로 만들면 탭을 옮길 때마다 이 서브트리(SvgPicture 포함)가
+      // 통째로 재생성된다. 같은 인스턴스가 유지되는지로 그 회귀를 잡는다.
+      expect(identical(before, after), isTrue);
     });
 
     testWidgets('hides_error_message_when_first_load_throws_auth_exception', (
