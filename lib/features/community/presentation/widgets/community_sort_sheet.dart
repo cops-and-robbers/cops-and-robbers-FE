@@ -73,13 +73,15 @@ class CommunitySortSheet extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     // 안드로이드는 제스처 인셋이 없거나 작아 시트가 화면 바닥에 붙어 마지막 항목이
-    // 눌리기 어렵다. 바텀 네비와 같은 방식으로 20을 더해 그만큼 위로 올린다
-    // (app_bottom_nav.dart:44와 동일 패턴).
+    // 눌리기 어렵다. 바텀 네비와 같은 방식으로 30을 더해 그만큼 위로 올린다
+    // (app_bottom_nav.dart:44와 동일 패턴, 다만 이 시트는 항목이 커서 20으로는
+    // 부족해 30으로 키웠다).
     final androidExtra = Theme.of(context).platform == TargetPlatform.android
-        ? 20.h
+        ? 30.h
         : 0.0;
 
-    // 높이 고정. 남는 아래 여백이 홈 인디케이터 자리를 겸하므로 SafeArea를 두지 않는다.
+    // 높이 고정. iOS 기준 마지막 항목 터치 영역(패딩 포함) 바닥부터 시트
+    // 바닥까지 39가 남는다 — 홈 인디케이터 자리를 겸하므로 SafeArea를 두지 않는다.
     return SizedBox(
       height: 298.h + androidExtra,
       child: Column(
