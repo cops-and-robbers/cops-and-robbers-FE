@@ -323,6 +323,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorPendingInviteClear;
       case 'errorNoticesLoadGeneric':
         return errorNoticesLoadGeneric;
+      case 'errorCommunityPostsLoadGeneric':
+        return errorCommunityPostsLoadGeneric;
       case 'errorReportGeneric':
         return errorReportGeneric;
       case 'errorBugReportFailed':
