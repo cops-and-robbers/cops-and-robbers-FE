@@ -504,6 +504,86 @@ class AppLocalizationsJa extends AppLocalizations {
   String get bottomNavCommunity => 'コミュニティ';
 
   @override
+  String get communityStatusRecruiting => '募集中';
+
+  @override
+  String get communityStatusCompleted => '締切';
+
+  @override
+  String communityHeadcount(int current, int max) {
+    return '$current/$max人';
+  }
+
+  @override
+  String communityHeadcountMaxOnly(int max) {
+    return '定員$max人';
+  }
+
+  @override
+  String communityMeetingAt(
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$month/$day ($weekday) $time';
+  }
+
+  @override
+  String get pageCommunityTitle => 'コミュニティ';
+
+  @override
+  String get pageCommunityEmpty => '募集がまだありません';
+
+  @override
+  String get communityScopeAll => 'すべて';
+
+  @override
+  String get communityScopeNearby => '近所';
+
+  @override
+  String get communityScopeMine => 'マイ募集';
+
+  @override
+  String get communitySortLatest => '新着順';
+
+  @override
+  String get communitySortPopular => '人気順';
+
+  @override
+  String get communitySortDistance => '近い順';
+
+  @override
+  String get communitySortDeadline => '締切間近順';
+
+  @override
+  String get communitySortSheetTitle => '並び替え';
+
+  @override
+  String get communityCreatePost => '募集を作成';
+
+  @override
+  String get weekdayMon => '月';
+
+  @override
+  String get weekdayTue => '火';
+
+  @override
+  String get weekdayWed => '水';
+
+  @override
+  String get weekdayThu => '木';
+
+  @override
+  String get weekdayFri => '金';
+
+  @override
+  String get weekdaySat => '土';
+
+  @override
+  String get weekdaySun => '日';
+
+  @override
   String get bottomNavMyPage => 'マイページ';
 
   @override
@@ -1663,6 +1743,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorNoticesLoadGeneric => '知らせを読み込む中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostsLoadGeneric => '募集の読み込み中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostsLoadFailed => '募集を読み込めませんでした';
 
   @override
   String get messageLoadingNotices => '知らせを読み込んでいます...';

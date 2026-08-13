@@ -166,6 +166,43 @@
   "@bottomNavCommunity": {
     "description": "Bottom navigation — community tab label"
   },
+  "communityStatusRecruiting": "Open",
+  "communityStatusCompleted": "Closed",
+  "communityHeadcount": "{current}/{max}",
+  "@communityHeadcount": {
+    "placeholders": { "current": { "type": "int" }, "max": { "type": "int" } }
+  },
+  "communityHeadcountMaxOnly": "Max {max}",
+  "@communityHeadcountMaxOnly": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "communityMeetingAt": "{month}/{day} ({weekday}) {time}",
+  "@communityMeetingAt": {
+    "placeholders": {
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "pageCommunityTitle": "Community",
+  "pageCommunityEmpty": "No posts yet",
+  "communityScopeAll": "All",
+  "communityScopeNearby": "Nearby",
+  "communityScopeMine": "My meetups",
+  "communitySortLatest": "Latest",
+  "communitySortPopular": "Popular",
+  "communitySortDistance": "Nearest",
+  "communitySortDeadline": "Closing soon",
+  "communitySortSheetTitle": "Sort by",
+  "communityCreatePost": "New post",
+  "weekdayMon": "Mon",
+  "weekdayTue": "Tue",
+  "weekdayWed": "Wed",
+  "weekdayThu": "Thu",
+  "weekdayFri": "Fri",
+  "weekdaySat": "Sat",
+  "weekdaySun": "Sun",
   "bottomNavMyPage": "My Page",
   "@bottomNavMyPage": {
     "description": "Bottom navigation — my page tab label"
@@ -543,6 +580,8 @@
   "errorServerUnreachable": "Unable to connect to the server. Please try again in a moment",
   "errorAuthExpired": "Authentication has expired. Re-login is required",
   "errorNoticesLoadGeneric": "An error occurred while loading notices",
+  "errorCommunityPostsLoadGeneric": "Something went wrong while loading posts",
+  "errorCommunityPostsLoadFailed": "Couldn't load posts",
   "messageLoadingNotices": "Loading notices...",
   "errorNoticeLoadFailed": "Failed to load notices",
   "pageNoticesTitle": "Notices",

@@ -554,6 +554,86 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bottomNavCommunity => 'Community';
 
   @override
+  String get communityStatusRecruiting => 'Open';
+
+  @override
+  String get communityStatusCompleted => 'Closed';
+
+  @override
+  String communityHeadcount(int current, int max) {
+    return '$current/$max';
+  }
+
+  @override
+  String communityHeadcountMaxOnly(int max) {
+    return 'Max $max';
+  }
+
+  @override
+  String communityMeetingAt(
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$month/$day ($weekday) $time';
+  }
+
+  @override
+  String get pageCommunityTitle => 'Community';
+
+  @override
+  String get pageCommunityEmpty => 'No posts yet';
+
+  @override
+  String get communityScopeAll => 'All';
+
+  @override
+  String get communityScopeNearby => 'Nearby';
+
+  @override
+  String get communityScopeMine => 'My meetups';
+
+  @override
+  String get communitySortLatest => 'Latest';
+
+  @override
+  String get communitySortPopular => 'Popular';
+
+  @override
+  String get communitySortDistance => 'Nearest';
+
+  @override
+  String get communitySortDeadline => 'Closing soon';
+
+  @override
+  String get communitySortSheetTitle => 'Sort by';
+
+  @override
+  String get communityCreatePost => 'New post';
+
+  @override
+  String get weekdayMon => 'Mon';
+
+  @override
+  String get weekdayTue => 'Tue';
+
+  @override
+  String get weekdayWed => 'Wed';
+
+  @override
+  String get weekdayThu => 'Thu';
+
+  @override
+  String get weekdayFri => 'Fri';
+
+  @override
+  String get weekdaySat => 'Sat';
+
+  @override
+  String get weekdaySun => 'Sun';
+
+  @override
   String get bottomNavMyPage => 'My Page';
 
   @override
@@ -1795,6 +1875,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorNoticesLoadGeneric =>
       'An error occurred while loading notices';
+
+  @override
+  String get errorCommunityPostsLoadGeneric =>
+      'Something went wrong while loading posts';
+
+  @override
+  String get errorCommunityPostsLoadFailed => 'Couldn\'t load posts';
 
   @override
   String get messageLoadingNotices => 'Loading notices...';
