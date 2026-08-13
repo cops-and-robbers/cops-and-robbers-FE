@@ -13,6 +13,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/community_scope.dart';
@@ -269,14 +270,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset('assets/icons/icon_not_found.svg', width: 110.w),
-          SizedBox(height: AppSpacing.vertical16),
-          Text(
-            message,
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
-          ),
+          EmptyState(message: message),
           // 위쪽 토글·정렬 라벨만큼 아래를 채워 화면 기준 가운데로 보이게 한다.
           SizedBox(height: AppSpacing.vertical64),
         ],
