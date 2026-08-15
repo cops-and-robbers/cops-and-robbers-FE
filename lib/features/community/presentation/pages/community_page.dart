@@ -368,6 +368,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
           'assets/icons/icon_write.svg',
           width: 14.w,
           height: 14.h,
+          colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
         ),
       ),
     );
