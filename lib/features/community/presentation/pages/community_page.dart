@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
@@ -16,6 +17,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../router/route_paths.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
@@ -438,9 +440,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
       child: AppButton(
         text: l10n.communityCreatePost,
         textStyle: AppTextStyles.paragraph14bold,
-        // 작성 화면은 후속 작업이다. 죽은 버튼으로 두지 않고 안내만 띄운다.
-        onPressed: () =>
-            AppSnackbar.show(context, message: l10n.comingSoonMessage),
+        onPressed: () => context.pushNamed(RoutePaths.communityCreateName),
         backgroundColor: AppColors.blue,
         foregroundColor: AppColors.white,
         showBorder: false,

@@ -57,6 +57,9 @@ class RoutePaths {
   /// 커뮤니티 화면 (바텀 네비게이션 탭 — 현재 준비중 placeholder)
   static const String community = '/community';
 
+  /// 모집글 작성 화면 (커뮤니티 목록의 작성 버튼에서 진입)
+  static const String communityCreate = '/community/create';
+
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
 
@@ -167,6 +170,7 @@ class RoutePaths {
   static const String agreementName = 'agreement';
   static const String homeName = 'home';
   static const String communityName = 'community';
+  static const String communityCreateName = 'communityCreate';
   static const String mypageName = 'mypage';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
