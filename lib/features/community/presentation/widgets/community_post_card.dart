@@ -166,13 +166,15 @@ class CommunityPostCard extends StatelessWidget {
           ),
         ),
         // 표시 전용 — 백엔드가 카운트를 주기 전에는 0으로 보인다.
+        // on/off 아이콘이 생겼지만 "내가 눌렀는지"를 주는 필드가 API에 아직 없어
+        // off로 고정한다. 토글이 붙는 상세 화면에서 on을 쓰게 된다.
         _CountLabel(
-          assetPath: 'assets/icons/icon_like.svg',
+          assetPath: 'assets/icons/icon_like_off.svg',
           count: post.likeCount ?? 0,
         ),
         SizedBox(width: AppSpacing.horizontal10),
         _CountLabel(
-          assetPath: 'assets/icons/icon_save.svg',
+          assetPath: 'assets/icons/icon_save_off.svg',
           count: post.bookmarkCount ?? 0,
         ),
       ],
