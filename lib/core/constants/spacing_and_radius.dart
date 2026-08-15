@@ -47,6 +47,9 @@ class AppSpacing {
   /// 좌우 20px 간격
   static double get horizontal20 => 20.w;
 
+  /// 좌우 21px 간격 (모집글 작성 바텀시트 좌우 여백)
+  static double get horizontal21 => 21.w;
+
   /// 좌우 24px 간격
   static double get horizontal24 => 24.w;
 

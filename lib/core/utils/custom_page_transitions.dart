@@ -45,6 +45,38 @@ CustomTransitionPage<T> buildDirectionalSlide<T>({
   );
 }
 
+/// 아래에서 위로 올라오는 전환
+///
+/// 화면 하단의 버튼에서 여는 화면에 쓴다 — 누른 자리에서 그대로 솟아올라야
+/// 어디서 열렸는지가 보인다 (커뮤니티 하단 "모집글 작성" 버튼).
+///
+/// 사용 예시:
+/// ```dart
+/// pageBuilder: (context, state) => buildSlideUp(
+///   child: const CommunityCreatePage(),
+///   key: state.pageKey,
+/// )
+/// ```
+CustomTransitionPage<T> buildSlideUp<T>({
+  required Widget child,
+  required LocalKey key,
+}) {
+  return CustomTransitionPage<T>(
+    key: key,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final tween = Tween(
+        begin: const Offset(0.0, 1.0),
+        end: Offset.zero,
+      ).chain(CurveTween(curve: Curves.easeInOut));
+
+      return SlideTransition(position: animation.drive(tween), child: child);
+    },
+    transitionDuration: const Duration(milliseconds: 300),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+  );
+}
+
 /// 애니메이션 없는 즉각 전환
 ///
 /// Splash 화면 등에서 사용하여 페이지 전환 시 애니메이션을 완전히 제거합니다.
