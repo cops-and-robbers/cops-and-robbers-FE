@@ -563,6 +563,76 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCreatePost => '募集を作成';
 
   @override
+  String get communityCreateLabelTitle => 'タイトル';
+
+  @override
+  String get communityCreateHintTitle => '仕事帰りに一戦！初心者歓迎';
+
+  @override
+  String get communityCreateLabelContent => '説明';
+
+  @override
+  String get communityCreateHintContent => 'ルール、持ち物、打ち上げの有無などを書いてください';
+
+  @override
+  String get communityCreateLabelDate => '日時';
+
+  @override
+  String get communityCreateHintDate => '集合日時を選んでください';
+
+  @override
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$year.$month.$day ($weekday) $time';
+  }
+
+  @override
+  String get communityDateSheetTitle => '集合日時';
+
+  @override
+  String get communityDateSheetRowTime => '時間';
+
+  @override
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  ) {
+    return '$year.$month.$day $weekday';
+  }
+
+  @override
+  String get communityCreateLabelLocation => '場所';
+
+  @override
+  String get communityCreateHintLocation => '集合場所を入力してください';
+
+  @override
+  String get communityCreateLabelHeadcount => '募集人数';
+
+  @override
+  String communityHeadcountValue(int count) {
+    return '$count人';
+  }
+
+  @override
+  String communityHeadcountQuickAdd(int count) {
+    return '+ $count人';
+  }
+
+  @override
+  String get communityHeadcountDecrease => '人数を減らす';
+
+  @override
+  String get communityHeadcountIncrease => '人数を増やす';
+
+  @override
   String get weekdayMon => '月';
 
   @override

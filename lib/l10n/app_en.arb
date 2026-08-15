@@ -196,6 +196,46 @@
   "communitySortDeadline": "Closing soon",
   "communitySortSheetTitle": "Sort by",
   "communityCreatePost": "New post",
+  "communityCreateLabelTitle": "Title",
+  "communityCreateHintTitle": "After-work match! Beginners welcome",
+  "communityCreateLabelContent": "Details",
+  "communityCreateHintContent": "Add rules, what to bring, after-party plans",
+  "communityCreateLabelDate": "Date",
+  "communityCreateHintDate": "Pick a date for the meetup",
+  "communityCreateDateValue": "{year}.{month}.{day} ({weekday}) {time}",
+  "@communityCreateDateValue": {
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "communityDateSheetTitle": "Meetup date & time",
+  "communityDateSheetRowTime": "Time",
+  "communityDateSheetRowDateValue": "{year}.{month}.{day} {weekday}",
+  "@communityDateSheetRowDateValue": {
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "communityCreateLabelLocation": "Location",
+  "communityCreateHintLocation": "Enter where you'll meet",
+  "communityCreateLabelHeadcount": "Headcount",
+  "communityHeadcountValue": "{count}",
+  "@communityHeadcountValue": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityHeadcountQuickAdd": "+ {count}",
+  "@communityHeadcountQuickAdd": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityHeadcountDecrease": "Decrease headcount",
+  "communityHeadcountIncrease": "Increase headcount",
   "weekdayMon": "Mon",
   "weekdayTue": "Tue",
   "weekdayWed": "Wed",

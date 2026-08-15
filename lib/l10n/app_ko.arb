@@ -384,7 +384,94 @@
   },
   "communityCreatePost": "모집글 작성",
   "@communityCreatePost": {
-    "description": "커뮤니티 목록 하단 모집글 작성 버튼"
+    "description": "커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)"
+  },
+  "communityCreateLabelTitle": "제목",
+  "@communityCreateLabelTitle": {
+    "description": "모집글 작성 — 제목 섹션 라벨"
+  },
+  "communityCreateHintTitle": "퇴근하고 한 판! 초보 환영",
+  "@communityCreateHintTitle": {
+    "description": "모집글 작성 — 제목 입력 힌트"
+  },
+  "communityCreateLabelContent": "설명",
+  "@communityCreateLabelContent": {
+    "description": "모집글 작성 — 설명 섹션 라벨"
+  },
+  "communityCreateHintContent": "규칙, 준비물, 뒤풀이 여부 등을 적어주세요",
+  "@communityCreateHintContent": {
+    "description": "모집글 작성 — 설명 입력 힌트"
+  },
+  "communityCreateLabelDate": "날짜",
+  "@communityCreateLabelDate": {
+    "description": "모집글 작성 — 날짜 섹션 라벨 (날짜 선택 바텀시트 제목 겸용)"
+  },
+  "communityCreateHintDate": "모임 날짜를 골라주세요",
+  "@communityCreateHintDate": {
+    "description": "모집글 작성 — 날짜 미선택 상태 힌트"
+  },
+  "communityCreateDateValue": "{year}.{month}.{day} ({weekday}) {time}",
+  "@communityCreateDateValue": {
+    "description": "모집글 작성 — 선택된 모임 일시 표기 (26.08.29 (목) 14:30)",
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "communityDateSheetTitle": "모임 날짜 및 시간",
+  "@communityDateSheetTitle": {
+    "description": "날짜 선택 바텀시트 제목"
+  },
+  "communityDateSheetRowTime": "시간",
+  "@communityDateSheetRowTime": {
+    "description": "날짜 선택 바텀시트 — 시간 행 라벨"
+  },
+  "communityDateSheetRowDateValue": "{year}.{month}.{day} {weekday}",
+  "@communityDateSheetRowDateValue": {
+    "description": "날짜 선택 바텀시트 — 날짜 행의 값 (26.08.29 목)",
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "communityCreateLabelLocation": "장소",
+  "@communityCreateLabelLocation": {
+    "description": "모집글 작성 — 장소 섹션 라벨"
+  },
+  "communityCreateHintLocation": "모임 장소를 입력해주세요",
+  "@communityCreateHintLocation": {
+    "description": "모집글 작성 — 장소 입력 힌트"
+  },
+  "communityCreateLabelHeadcount": "모집 인원",
+  "@communityCreateLabelHeadcount": {
+    "description": "모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)"
+  },
+  "communityHeadcountValue": "{count}명",
+  "@communityHeadcountValue": {
+    "description": "모집글 작성 — 선택된 모집 인원",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "communityHeadcountQuickAdd": "+ {count}명",
+  "@communityHeadcountQuickAdd": {
+    "description": "인원 선택 바텀시트 — 인원을 한 번에 더하는 칩",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "communityHeadcountDecrease": "인원 줄이기",
+  "@communityHeadcountDecrease": {
+    "description": "모집글 작성 — 인원 감소 버튼 접근성 라벨"
+  },
+  "communityHeadcountIncrease": "인원 늘리기",
+  "@communityHeadcountIncrease": {
+    "description": "모집글 작성 — 인원 증가 버튼 접근성 라벨"
   },
   "weekdayMon": "월",
   "@weekdayMon": { "description": "요일 단축 라벨 — 월요일" },

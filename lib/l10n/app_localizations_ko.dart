@@ -560,6 +560,76 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCreatePost => '모집글 작성';
 
   @override
+  String get communityCreateLabelTitle => '제목';
+
+  @override
+  String get communityCreateHintTitle => '퇴근하고 한 판! 초보 환영';
+
+  @override
+  String get communityCreateLabelContent => '설명';
+
+  @override
+  String get communityCreateHintContent => '규칙, 준비물, 뒤풀이 여부 등을 적어주세요';
+
+  @override
+  String get communityCreateLabelDate => '날짜';
+
+  @override
+  String get communityCreateHintDate => '모임 날짜를 골라주세요';
+
+  @override
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$year.$month.$day ($weekday) $time';
+  }
+
+  @override
+  String get communityDateSheetTitle => '모임 날짜 및 시간';
+
+  @override
+  String get communityDateSheetRowTime => '시간';
+
+  @override
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  ) {
+    return '$year.$month.$day $weekday';
+  }
+
+  @override
+  String get communityCreateLabelLocation => '장소';
+
+  @override
+  String get communityCreateHintLocation => '모임 장소를 입력해주세요';
+
+  @override
+  String get communityCreateLabelHeadcount => '모집 인원';
+
+  @override
+  String communityHeadcountValue(int count) {
+    return '$count명';
+  }
+
+  @override
+  String communityHeadcountQuickAdd(int count) {
+    return '+ $count명';
+  }
+
+  @override
+  String get communityHeadcountDecrease => '인원 줄이기';
+
+  @override
+  String get communityHeadcountIncrease => '인원 늘리기';
+
+  @override
   String get weekdayMon => '월';
 
   @override

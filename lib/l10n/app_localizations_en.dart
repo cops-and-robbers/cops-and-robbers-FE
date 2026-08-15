@@ -613,6 +613,77 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityCreatePost => 'New post';
 
   @override
+  String get communityCreateLabelTitle => 'Title';
+
+  @override
+  String get communityCreateHintTitle => 'After-work match! Beginners welcome';
+
+  @override
+  String get communityCreateLabelContent => 'Details';
+
+  @override
+  String get communityCreateHintContent =>
+      'Add rules, what to bring, after-party plans';
+
+  @override
+  String get communityCreateLabelDate => 'Date';
+
+  @override
+  String get communityCreateHintDate => 'Pick a date for the meetup';
+
+  @override
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$year.$month.$day ($weekday) $time';
+  }
+
+  @override
+  String get communityDateSheetTitle => 'Meetup date & time';
+
+  @override
+  String get communityDateSheetRowTime => 'Time';
+
+  @override
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  ) {
+    return '$year.$month.$day $weekday';
+  }
+
+  @override
+  String get communityCreateLabelLocation => 'Location';
+
+  @override
+  String get communityCreateHintLocation => 'Enter where you\'ll meet';
+
+  @override
+  String get communityCreateLabelHeadcount => 'Headcount';
+
+  @override
+  String communityHeadcountValue(int count) {
+    return '$count';
+  }
+
+  @override
+  String communityHeadcountQuickAdd(int count) {
+    return '+ $count';
+  }
+
+  @override
+  String get communityHeadcountDecrease => 'Decrease headcount';
+
+  @override
+  String get communityHeadcountIncrease => 'Increase headcount';
+
+  @override
   String get weekdayMon => 'Mon';
 
   @override

@@ -196,6 +196,46 @@
   "communitySortDeadline": "締切間近順",
   "communitySortSheetTitle": "並び替え",
   "communityCreatePost": "募集を作成",
+  "communityCreateLabelTitle": "タイトル",
+  "communityCreateHintTitle": "仕事帰りに一戦！初心者歓迎",
+  "communityCreateHintContent": "ルール、持ち物、打ち上げの有無などを書いてください",
+  "communityCreateLabelContent": "説明",
+  "communityCreateLabelDate": "日時",
+  "communityCreateHintDate": "集合日時を選んでください",
+  "communityCreateDateValue": "{year}.{month}.{day} ({weekday}) {time}",
+  "@communityCreateDateValue": {
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "communityDateSheetTitle": "集合日時",
+  "communityDateSheetRowTime": "時間",
+  "communityDateSheetRowDateValue": "{year}.{month}.{day} {weekday}",
+  "@communityDateSheetRowDateValue": {
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "communityCreateLabelLocation": "場所",
+  "communityCreateHintLocation": "集合場所を入力してください",
+  "communityCreateLabelHeadcount": "募集人数",
+  "communityHeadcountValue": "{count}人",
+  "@communityHeadcountValue": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityHeadcountQuickAdd": "+ {count}人",
+  "@communityHeadcountQuickAdd": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityHeadcountDecrease": "人数を減らす",
+  "communityHeadcountIncrease": "人数を増やす",
   "weekdayMon": "月",
   "weekdayTue": "火",
   "weekdayWed": "水",

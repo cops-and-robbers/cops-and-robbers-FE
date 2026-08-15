@@ -1119,11 +1119,124 @@ abstract class AppLocalizations {
   /// **'정렬 기준'**
   String get communitySortSheetTitle;
 
-  /// 커뮤니티 목록 하단 모집글 작성 버튼
+  /// 커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)
   ///
   /// In ko, this message translates to:
   /// **'모집글 작성'**
   String get communityCreatePost;
+
+  /// 모집글 작성 — 제목 섹션 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'제목'**
+  String get communityCreateLabelTitle;
+
+  /// 모집글 작성 — 제목 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'퇴근하고 한 판! 초보 환영'**
+  String get communityCreateHintTitle;
+
+  /// 모집글 작성 — 설명 섹션 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'설명'**
+  String get communityCreateLabelContent;
+
+  /// 모집글 작성 — 설명 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'규칙, 준비물, 뒤풀이 여부 등을 적어주세요'**
+  String get communityCreateHintContent;
+
+  /// 모집글 작성 — 날짜 섹션 라벨 (날짜 선택 바텀시트 제목 겸용)
+  ///
+  /// In ko, this message translates to:
+  /// **'날짜'**
+  String get communityCreateLabelDate;
+
+  /// 모집글 작성 — 날짜 미선택 상태 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'모임 날짜를 골라주세요'**
+  String get communityCreateHintDate;
+
+  /// 모집글 작성 — 선택된 모임 일시 표기 (26.08.29 (목) 14:30)
+  ///
+  /// In ko, this message translates to:
+  /// **'{year}.{month}.{day} ({weekday}) {time}'**
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  );
+
+  /// 날짜 선택 바텀시트 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'모임 날짜 및 시간'**
+  String get communityDateSheetTitle;
+
+  /// 날짜 선택 바텀시트 — 시간 행 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'시간'**
+  String get communityDateSheetRowTime;
+
+  /// 날짜 선택 바텀시트 — 날짜 행의 값 (26.08.29 목)
+  ///
+  /// In ko, this message translates to:
+  /// **'{year}.{month}.{day} {weekday}'**
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  );
+
+  /// 모집글 작성 — 장소 섹션 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'장소'**
+  String get communityCreateLabelLocation;
+
+  /// 모집글 작성 — 장소 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'모임 장소를 입력해주세요'**
+  String get communityCreateHintLocation;
+
+  /// 모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집 인원'**
+  String get communityCreateLabelHeadcount;
+
+  /// 모집글 작성 — 선택된 모집 인원
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명'**
+  String communityHeadcountValue(int count);
+
+  /// 인원 선택 바텀시트 — 인원을 한 번에 더하는 칩
+  ///
+  /// In ko, this message translates to:
+  /// **'+ {count}명'**
+  String communityHeadcountQuickAdd(int count);
+
+  /// 모집글 작성 — 인원 감소 버튼 접근성 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'인원 줄이기'**
+  String get communityHeadcountDecrease;
+
+  /// 모집글 작성 — 인원 증가 버튼 접근성 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'인원 늘리기'**
+  String get communityHeadcountIncrease;
 
   /// 요일 단축 라벨 — 월요일
   ///
