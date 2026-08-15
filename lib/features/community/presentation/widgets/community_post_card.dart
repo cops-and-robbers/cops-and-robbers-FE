@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
@@ -75,21 +76,25 @@ class CommunityPostCard extends StatelessWidget {
   }
 
   Widget _buildTitleRow() {
-    return Row(
-      children: [
-        _StatusChip(status: post.status),
-        SizedBox(width: AppSpacing.horizontal8),
-        Expanded(
-          child: Text(
-            post.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+    // 시안에서 이 행만 좌 24 / 우 22 — 카드 패딩이 이미 좌우 22라 왼쪽 2만 더 준다.
+    return Padding(
+      padding: EdgeInsets.only(left: AppSpacing.horizontal2),
+      child: Row(
+        children: [
+          _StatusChip(status: post.status),
+          SizedBox(width: AppSpacing.horizontal8),
+          Expanded(
+            child: Text(
+              post.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+            ),
           ),
-        ),
-        // 메뉴 항목(수정·삭제·신고)은 상세 화면 작업에서 붙인다. 지금은 탭을 받지 않는다.
-        Icon(Icons.more_vert, size: 20.w, color: AppColors.black300),
-      ],
+          // 메뉴 항목(수정·삭제·신고)은 상세 화면 작업에서 붙인다. 지금은 탭을 받지 않는다.
+          Icon(Icons.more_vert, size: 20.w, color: AppColors.black300),
+        ],
+      ),
     );
   }
 
@@ -171,11 +176,13 @@ class CommunityPostCard extends StatelessWidget {
         _CountLabel(
           assetPath: 'assets/icons/icon_like_off.svg',
           count: post.likeCount ?? 0,
+          color: AppColors.red,
         ),
         SizedBox(width: AppSpacing.horizontal10),
         _CountLabel(
           assetPath: 'assets/icons/icon_save_off.svg',
           count: post.bookmarkCount ?? 0,
+          color: AppColors.yellow,
         ),
       ],
     );
@@ -249,24 +256,43 @@ class _StatusChip extends StatelessWidget {
 
 /// 아이콘 + 숫자 (좋아요 / 스크랩)
 ///
-/// 색은 SVG에 박혀 있으므로 `colorFilter`를 주지 않는다 (`NoticeCard`의
-/// `icon_pin`과 같은 처리).
+/// 아이콘과 숫자가 같은 팔레트 색을 쓴다 — `AppColors.red` / `AppColors.yellow`.
 class _CountLabel extends StatelessWidget {
-  const _CountLabel({required this.assetPath, required this.count});
+  const _CountLabel({
+    required this.assetPath,
+    required this.count,
+    required this.color,
+  });
+
+  /// 1.25k처럼 소수 둘째 자리까지 나오면 폭이 들쭉날쭉해 한 자리로 자른다.
+  static final NumberFormat _compact = NumberFormat.compact(locale: 'en_US')
+    ..maximumFractionDigits = 1;
 
   final String assetPath;
   final int count;
+
+  /// 숫자 색 — 옆 아이콘과 맞춘다 (좋아요 빨강 / 스크랩 노랑).
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(assetPath, width: 12.w, height: 12.h),
+        // SVG에 박힌 색(#FF383C·#FFCC00)이 팔레트와 미묘하게 달라 덧칠한다 —
+        // 안 하면 아이콘과 바로 옆 숫자가 서로 다른 빨강·노랑이 된다.
+        SvgPicture.asset(
+          assetPath,
+          width: 12.w,
+          height: 12.h,
+          colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+        ),
         SizedBox(width: AppSpacing.horizontal2),
         Text(
-          '$count',
-          style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
+          // 1000 이상은 1.2k로 줄인다 — 자릿수가 늘면 좌측 날짜·인원이 밀려 잘린다.
+          // 로케일 고정: ko는 "12만", ja는 "12万"이라 시안과 달라진다.
+          _compact.format(count).toLowerCase(),
+          style: AppTextStyles.tag_12.copyWith(color: color),
         ),
       ],
     );

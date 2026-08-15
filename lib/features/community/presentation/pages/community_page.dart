@@ -16,6 +16,8 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/community_post_entity.dart';
+import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../providers/community_feed_state.dart';
@@ -23,6 +25,78 @@ import '../providers/community_provider.dart';
 import '../widgets/community_post_card.dart';
 import '../widgets/community_scope_toggle.dart';
 import '../widgets/community_sort_sheet.dart';
+
+// ponytail: 카드 UI 수정용 임시 하드코딩. 작업 끝나면 이 플래그와 아래 목록,
+// _buildBody 맨 위 분기 3곳만 지우면 원래대로 돌아온다.
+const bool _useMockPosts = true;
+
+// 요일 라벨은 meetingAt에서 계산된다 — 2026년이라 9/8=화, 9/10=목, 9/12=토로 시안과 맞는다.
+final List<CommunityPostEntity> _mockPosts = [
+  CommunityPostEntity(
+    id: 1,
+    writerId: 1,
+    title: '나랑 경도하자!!!!dadsasdasdasdasdasdasd!',
+    content: '',
+    meetingAt: DateTime(2026, 9, 10, 18, 0),
+    latitude: 37.55,
+    longitude: 127.07,
+    maxParticipants: 10,
+    status: CommunityPostStatus.recruiting,
+    createdAt: DateTime(2026, 8, 16),
+    address: '서울시 광진구 세종대학교',
+    currentParticipants: 2,
+    likeCount: 6000,
+    bookmarkCount: 3,
+  ),
+  CommunityPostEntity(
+    id: 2,
+    writerId: 2,
+    title: '초보도 환영. 웰컴. 누구나',
+    content: '',
+    meetingAt: DateTime(2026, 9, 12, 19, 30),
+    latitude: 37.35,
+    longitude: 126.98,
+    maxParticipants: 10,
+    status: CommunityPostStatus.recruiting,
+    createdAt: DateTime(2026, 8, 16),
+    address: '경기도 의왕시 백운호수 무민공원',
+    currentParticipants: 6,
+    likeCount: 5,
+    bookmarkCount: 2,
+  ),
+  CommunityPostEntity(
+    id: 3,
+    writerId: 3,
+    title: '번개로 경도하실 분',
+    content: '',
+    meetingAt: DateTime(2026, 9, 12, 20, 0),
+    latitude: 37.55,
+    longitude: 127.08,
+    maxParticipants: 15,
+    status: CommunityPostStatus.completed,
+    createdAt: DateTime(2026, 8, 10),
+    address: '서울시 광진구 어린이대공원 정문',
+    currentParticipants: 15,
+    likeCount: 13,
+    bookmarkCount: 20,
+  ),
+  CommunityPostEntity(
+    id: 4,
+    writerId: 4,
+    title: '세종대생 모여라~',
+    content: '',
+    meetingAt: DateTime(2026, 9, 8, 12, 0),
+    latitude: 37.55,
+    longitude: 127.07,
+    maxParticipants: 15,
+    status: CommunityPostStatus.completed,
+    createdAt: DateTime(2026, 8, 5),
+    address: '서울시 광진구 세종대학교',
+    currentParticipants: 15,
+    likeCount: 13,
+    bookmarkCount: 20,
+  ),
+];
 
 /// 커뮤니티 탭 — 모집글 목록
 ///
@@ -229,6 +303,16 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     CommunityScope scope,
     Widget createButton,
   ) {
+    // ponytail: UI 확인용 하드코딩 — provider를 아예 타지 않는다.
+    if (_useMockPosts) {
+      return _wrapWithCreateButton(
+        createButton,
+        _buildList(
+          CommunityFeedState(items: _mockPosts, nextPage: 0, hasMore: false),
+        ),
+      );
+    }
+
     // 우리 동네 / 내 모임은 백엔드 scope 쿼리가 없어 Notifier가 호출을 건너뛴다.
     // 작성 버튼은 새 글을 쓰는 진입점 자체라 어느 탭이든 동일하게 떠 있어야 한다.
     if (scope != CommunityScope.all) {
@@ -353,11 +437,11 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
       ),
       child: AppButton(
         text: l10n.communityCreatePost,
-        textStyle: AppTextStyles.paragraph14Semibold,
+        textStyle: AppTextStyles.paragraph14bold,
         // 작성 화면은 후속 작업이다. 죽은 버튼으로 두지 않고 안내만 띄운다.
         onPressed: () =>
             AppSnackbar.show(context, message: l10n.comingSoonMessage),
-        backgroundColor: AppColors.logo,
+        backgroundColor: AppColors.blue,
         foregroundColor: AppColors.white,
         showBorder: false,
         borderRadius: AppRadius.pill,
