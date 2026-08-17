@@ -30,7 +30,7 @@ String buildInviteDeeplink(String code) =>
 
 /// 초대 코드를 딥링크 URL 과 함께 공유.
 ///
-/// `"{shareMessage}\nhttps://copsnro66ers.site/join/{code}"` 형태로 OS 공유 시트 호출.
+/// `"{shareMessage}\nhttps://copsandrobbers.app/join/{code}"` 형태로 OS 공유 시트 호출.
 /// 받은 사람이 링크 클릭 → OS 가로채기 → 앱 자동 실행 (백엔드 .well-known/* 호스팅 전제).
 ///
 /// 호출 측이 i18n 메시지를 전달해서 ARB 키를 한 곳에서 관리하지 않아도 되게 함.

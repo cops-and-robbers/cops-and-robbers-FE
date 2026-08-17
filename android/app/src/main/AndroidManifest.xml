@@ -73,7 +73,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
-                    android:host="copsnro66ers.site"
+                    android:host="copsandrobbers.app"
                     android:pathPrefix="/join/" />
             </intent-filter>
             <!-- Custom scheme intent-filter: copsandrobbers://join/{code} -->
