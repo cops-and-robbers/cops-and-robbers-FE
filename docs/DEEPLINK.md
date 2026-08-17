@@ -14,7 +14,7 @@
 
 | 시나리오         | URL 패턴                                      | 동작                              |
 | ---------------- | --------------------------------------------- | --------------------------------- |
-| 방 초대코드 공유 | `https://copsnro66ers.site/join/{inviteCode}` | 해당 방 입장 흐름으로 진입         |
+| 방 초대코드 공유 | `https://copsandrobbers.app/join/{inviteCode}` | 해당 방 입장 흐름으로 진입         |
 
 URL은 **path 방식**으로 통일한다 (`/join/ABC123`). 쿼리 스트링 방식(`?code=`)은 AASA `components` / Android `pathPrefix` 매칭이 까다로워 채택하지 않는다.
 
@@ -48,9 +48,10 @@ URL은 **path 방식**으로 통일한다 (`/join/ABC123`). 쿼리 스트링 방
 
 ### STEP 1. 도메인
 
-**확정값:** `copsnro66ers.site`
+**확정값:** `copsandrobbers.app`
 
 - HTTPS 인증서 적용 확인 필수
+- `.app` 은 HSTS 프리로드 목록에 포함된 TLD 라 **HTTP 접속 자체가 차단**된다. 인증서가 없으면 도메인이 열리지 않아 검증 파일 확인도 불가능하다
 - 운영 도메인은 Next.js + Vercel 사이트에서 관리한다
 - 이 도메인에서 `/.well-known/` 검증 파일과 `/join/{inviteCode}` 폴백 페이지를 서빙해야 한다
 
@@ -74,7 +75,7 @@ Vercel 프로젝트 루트에는 `vercel.json`으로 두 파일의 `Content-Type
 
 ### 2-1. Android용: `assetlinks.json`
 
-- **경로:** `https://copsnro66ers.site/.well-known/assetlinks.json`
+- **경로:** `https://copsandrobbers.app/.well-known/assetlinks.json`
 - **역할:** "이 도메인은 이 Android 앱과 연결되어 있다"는 것을 Google에 증명
 - **필요한 정보:**
   - 앱 패키지명: **`com.elipair.copsandrobbers`** (확정값)
@@ -119,7 +120,7 @@ Vercel 프로젝트 루트에는 `vercel.json`으로 두 파일의 `Content-Type
 
 ### 2-2. iOS용: `apple-app-site-association` (AASA)
 
-- **경로:** `https://copsnro66ers.site/.well-known/apple-app-site-association`
+- **경로:** `https://copsandrobbers.app/.well-known/apple-app-site-association`
 - **역할:** "이 도메인은 이 iOS 앱과 연결되어 있다"는 것을 Apple에 증명
 - **필요한 정보:**
   - Apple Team ID: **`5FZ789N4RT`** (확정값, `ios/Runner.xcodeproj`에서 확인)
@@ -154,9 +155,9 @@ iOS 14+ 부터 AASA 파일은 Apple 자체 CDN(`app-site-association.cdn-apple.c
 
 1. **첫 배포 전 반드시 검증 도구로 사전 확인**
    - https://branch.io/resources/aasa-validator/ 에서 도메인 입력 후 검증
-   - 또는 `curl -v https://copsnro66ers.site/.well-known/apple-app-site-association`로 직접 확인 (200 + `application/json`)
+   - 또는 `curl -v https://copsandrobbers.app/.well-known/apple-app-site-association`로 직접 확인 (200 + `application/json`)
 2. **개발 중에는 entitlements에 dev mode 옵션 활용 가능**
-   - Xcode → Signing & Capabilities → Associated Domains에 `applinks:copsnro66ers.site?mode=developer` 로 추가하면 Apple CDN을 우회하고 도메인에 직접 요청 (개발 빌드 한정, App Store 빌드에는 사용 금지)
+   - Xcode → Signing & Capabilities → Associated Domains에 `applinks:copsandrobbers.app?mode=developer` 로 추가하면 Apple CDN을 우회하고 도메인에 직접 요청 (개발 빌드 한정, App Store 빌드에는 사용 금지)
 
 ### 2-3. Vercel에서 서빙
 
@@ -181,8 +182,8 @@ iOS 14+ 부터 AASA 파일은 Apple 자체 CDN(`app-site-association.cdn-apple.c
 
 **필수 조건:**
 
-- `https://copsnro66ers.site/.well-known/assetlinks.json` → HTTP 200, redirect 없음, `Content-Type: application/json`
-- `https://copsnro66ers.site/.well-known/apple-app-site-association` → HTTP 200, redirect 없음, `Content-Type: application/json`
+- `https://copsandrobbers.app/.well-known/assetlinks.json` → HTTP 200, redirect 없음, `Content-Type: application/json`
+- `https://copsandrobbers.app/.well-known/apple-app-site-association` → HTTP 200, redirect 없음, `Content-Type: application/json`
 - `/join/{inviteCode}` → 앱 미설치 사용자를 위한 폴백 페이지
 
 **검증 방법:**
@@ -210,7 +211,7 @@ iOS 14+ 부터 AASA 파일은 Apple 자체 CDN(`app-site-association.cdn-apple.c
     <category android:name="android.intent.category.DEFAULT" />
     <category android:name="android.intent.category.BROWSABLE" />
     <data android:scheme="https"
-          android:host="copsnro66ers.site"
+          android:host="copsandrobbers.app"
           android:pathPrefix="/join/" />
 </intent-filter>
 ```
@@ -232,9 +233,9 @@ iOS 14+ 부터 AASA 파일은 Apple 자체 CDN(`app-site-association.cdn-apple.c
 **4-1. Xcode에서 Associated Domains 추가**
 
 - Xcode → Runner → Signing & Capabilities → Associated Domains 추가
-- `applinks:copsnro66ers.site` 형식으로 입력
+- `applinks:copsandrobbers.app` 형식으로 입력
 - `https://` 붙이지 않음
-- 개발 중에는 `applinks:copsnro66ers.site?mode=developer` 로 추가하면 Apple CDN 캐싱 우회 (개발 빌드 한정)
+- 개발 중에는 `applinks:copsandrobbers.app?mode=developer` 로 추가하면 Apple CDN 캐싱 우회 (개발 빌드 한정)
 
 **4-2. Apple Developer 계정에서 Associated Domains 활성화**
 
@@ -265,7 +266,7 @@ iOS 14+ 부터 AASA 파일은 Apple 자체 CDN(`app-site-association.cdn-apple.c
 **수신 후 처리 로직:**
 
 ```text
-URI 수신 (예: https://copsnro66ers.site/join/ABC123)
+URI 수신 (예: https://copsandrobbers.app/join/ABC123)
   ↓
 path segments에서 inviteCode 추출 ("ABC123")
   ↓
@@ -332,7 +333,7 @@ path segments에서 inviteCode 추출 ("ABC123")
 ```html
 <meta property="og:title" content="경찰과도둑 - 초대받았어요">
 <meta property="og:description" content="친구가 게임에 초대했어요!">
-<meta property="og:image" content="https://copsnro66ers.site/og-invite.png">
+<meta property="og:image" content="https://copsandrobbers.app/og-invite.png">
 ```
 
 ---
@@ -344,7 +345,7 @@ path segments에서 inviteCode 추출 ("ABC123")
 ```text
 방장이 "초대 링크 공유" 버튼 클릭
        ↓
-URL 생성: "https://copsnro66ers.site/join/{inviteCode}"
+URL 생성: "https://copsandrobbers.app/join/{inviteCode}"
        ↓
 Flutter의 Share API 호출 (share_plus 패키지)
        ↓
@@ -362,7 +363,7 @@ Flutter의 Share API 호출 (share_plus 패키지)
 ### Android 테스트
 
 1. **ADB 명령어로 테스트** (가장 빠름)
-   - `adb shell am start -a android.intent.action.VIEW -d "https://copsnro66ers.site/join/TEST123" com.elipair.copsandrobbers`
+   - `adb shell am start -a android.intent.action.VIEW -d "https://copsandrobbers.app/join/TEST123" com.elipair.copsandrobbers`
    - 앱이 열리면서 해당 URI가 전달되는지 확인
 2. **실제 링크 클릭 테스트**
    - Google Docs / 메모 앱에 링크를 적고 탭하여 테스트 (권장)
@@ -375,12 +376,12 @@ Flutter의 Share API 호출 (share_plus 패키지)
 ### iOS 테스트
 
 1. **시뮬레이터 명령어**
-   - `xcrun simctl openurl booted "https://copsnro66ers.site/join/TEST123"`
+   - `xcrun simctl openurl booted "https://copsandrobbers.app/join/TEST123"`
 2. **실제 기기**
    - 메모/Safari에서 링크 길게 눌러서 "앱에서 열기" 확인
 3. **Apple AASA 검증**
    - https://branch.io/resources/aasa-validator/ 에 도메인 입력
-   - 또는 `https://app-site-association.cdn-apple.com/a/v1/copsnro66ers.site` 접속해서 Apple CDN이 캐싱한 AASA 확인
+   - 또는 `https://app-site-association.cdn-apple.com/a/v1/copsandrobbers.app` 접속해서 Apple CDN이 캐싱한 AASA 확인
 
 > 📎 참조: [Flutter Deep Link 테스트 가이드](https://docs.flutter.dev/cookbook/navigation/set-up-app-links#testing)
 
@@ -390,7 +391,7 @@ Flutter의 Share API 호출 (share_plus 패키지)
 
 ### 도메인
 
-- [x] 사용할 도메인 결정 (`copsnro66ers.site`)
+- [x] 사용할 도메인 결정 (`copsandrobbers.app`)
 - [ ] HTTPS 적용 확인
 
 ### 웹 호스팅 (Next.js + Vercel)
@@ -410,7 +411,7 @@ Flutter의 Share API 호출 (share_plus 패키지)
 
 ### iOS
 
-- [ ] Xcode Associated Domains 설정 (`applinks:copsnro66ers.site`)
+- [ ] Xcode Associated Domains 설정 (`applinks:copsandrobbers.app`)
 - [ ] Apple Developer Portal에서 Associated Domains 활성화
 - [ ] AASA `components`(`/join/*`)와 실제 URL 경로 일치 확인
 - [ ] AASA validator 통과
