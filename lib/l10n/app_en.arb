@@ -166,6 +166,83 @@
   "@bottomNavCommunity": {
     "description": "Bottom navigation — community tab label"
   },
+  "communityStatusRecruiting": "Open",
+  "communityStatusCompleted": "Closed",
+  "communityHeadcount": "{current}/{max}",
+  "@communityHeadcount": {
+    "placeholders": { "current": { "type": "int" }, "max": { "type": "int" } }
+  },
+  "communityHeadcountMaxOnly": "Max {max}",
+  "@communityHeadcountMaxOnly": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "communityMeetingAt": "{month}/{day} ({weekday}) {time}",
+  "@communityMeetingAt": {
+    "placeholders": {
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "pageCommunityTitle": "Community",
+  "pageCommunityEmpty": "No posts yet",
+  "communityScopeAll": "All",
+  "communityScopeNearby": "Nearby",
+  "communityScopeMine": "My meetups",
+  "communitySortLatest": "Latest",
+  "communitySortPopular": "Popular",
+  "communitySortDistance": "Nearest",
+  "communitySortDeadline": "Closing soon",
+  "communitySortSheetTitle": "Sort by",
+  "communityCreatePost": "New post",
+  "communityCreateLabelTitle": "Title",
+  "communityCreateHintTitle": "After-work match! Beginners welcome",
+  "communityCreateLabelContent": "Details",
+  "communityCreateHintContent": "Add rules, what to bring, after-party plans",
+  "communityCreateLabelDate": "Date",
+  "communityCreateHintDate": "Pick a date for the meetup",
+  "communityCreateDateValue": "{year}.{month}.{day} ({weekday}) {time}",
+  "@communityCreateDateValue": {
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "communityDateSheetTitle": "Meetup date & time",
+  "communityDateSheetRowTime": "Time",
+  "communityDateSheetRowDateValue": "{year}.{month}.{day} {weekday}",
+  "@communityDateSheetRowDateValue": {
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "communityCreateLabelLocation": "Location",
+  "communityCreateHintLocation": "Enter where you'll meet",
+  "communityCreateLabelHeadcount": "Headcount",
+  "communityHeadcountValue": "{count}",
+  "@communityHeadcountValue": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityHeadcountQuickAdd": "+ {count}",
+  "@communityHeadcountQuickAdd": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityHeadcountDecrease": "Decrease headcount",
+  "communityHeadcountIncrease": "Increase headcount",
+  "weekdayMon": "Mon",
+  "weekdayTue": "Tue",
+  "weekdayWed": "Wed",
+  "weekdayThu": "Thu",
+  "weekdayFri": "Fri",
+  "weekdaySat": "Sat",
+  "weekdaySun": "Sun",
   "bottomNavMyPage": "My Page",
   "@bottomNavMyPage": {
     "description": "Bottom navigation — my page tab label"
@@ -543,6 +620,8 @@
   "errorServerUnreachable": "Unable to connect to the server. Please try again in a moment",
   "errorAuthExpired": "Authentication has expired. Re-login is required",
   "errorNoticesLoadGeneric": "An error occurred while loading notices",
+  "errorCommunityPostsLoadGeneric": "Something went wrong while loading posts",
+  "errorCommunityPostsLoadFailed": "Couldn't load posts",
   "messageLoadingNotices": "Loading notices...",
   "errorNoticeLoadFailed": "Failed to load notices",
   "pageNoticesTitle": "Notices",

@@ -25,6 +25,7 @@ import '../features/auth/presentation/pages/onboarding_page.dart';
 import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
+import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
 import '../features/mypage/presentation/pages/my_page.dart';
 import 'main_scaffold.dart';
@@ -376,6 +377,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                   key: state.pageKey,
                   child: const CommunityPage(),
                 ),
+                routes: [
+                  // ======================================================
+                  // 모집글 작성 (바텀 네비 위 전체 화면)
+                  // ======================================================
+                  GoRoute(
+                    path: 'create',
+                    name: RoutePaths.communityCreateName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    // 목록 하단 버튼에서 여는 화면이라 그 자리에서 솟아오른다.
+                    pageBuilder: (context, state) => buildSlideUp(
+                      key: state.pageKey,
+                      child: const CommunityCreatePage(),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

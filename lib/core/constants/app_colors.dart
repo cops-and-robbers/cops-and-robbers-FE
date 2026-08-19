@@ -161,7 +161,7 @@ class AppColors {
 
   /// 빨강
   /// Red color
-  static const Color red = Color(0xFFF5383B);
+  static const Color red = Color(0xFFFF383C);
 
   /// 빨강 900
   /// Red 900
@@ -189,7 +189,7 @@ class AppColors {
 
   /// 노랑
   /// Yellow color
-  static const Color yellow = Color(0xFFF5EF38);
+  static const Color yellow = Color(0xFFFFCC00);
 
   /// 노랑 900
   /// Yellow 900

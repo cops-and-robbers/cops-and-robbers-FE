@@ -1,4 +1,5 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
+import 'package:cops_and_robbers/core/network/models/page_info_model.dart';
 import 'package:cops_and_robbers/features/notice/data/datasources/notice_remote_datasource.dart';
 import 'package:cops_and_robbers/features/notice/data/models/notice_response_model.dart';
 import 'package:cops_and_robbers/features/notice/data/repositories/notice_repository_impl.dart';

@@ -3,7 +3,6 @@ import 'dart:async'; // unawaited
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -12,6 +11,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/pagination_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -207,14 +207,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset('assets/icons/icon_not_found.svg', width: 110.w),
-            SizedBox(height: AppSpacing.vertical16),
-            Text(
-              AppLocalizations.of(context).pageNoticesEmpty,
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: AppColors.black600,
-              ),
-            ),
+            EmptyState(message: AppLocalizations.of(context).pageNoticesEmpty),
             // 위쪽 카테고리 필터만큼 아래를 채워, 화면 기준으로 가운데에 오게 한다
             SizedBox(height: AppSpacing.vertical64),
           ],

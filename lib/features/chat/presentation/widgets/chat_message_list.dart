@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 import 'chat_message_bubble.dart';
@@ -299,11 +300,10 @@ class _ChatMessageListState extends State<ChatMessageList> {
       child: Row(
         children: [
           Expanded(
-            child: Divider(
+            child: SolidDivider(
               color: widget.isDarkMode
                   ? AppColors.black800
                   : AppColors.black200,
-              height: 1,
             ),
           ),
           Padding(
@@ -314,11 +314,10 @@ class _ChatMessageListState extends State<ChatMessageList> {
             ),
           ),
           Expanded(
-            child: Divider(
+            child: SolidDivider(
               color: widget.isDarkMode
                   ? AppColors.black800
                   : AppColors.black200,
-              height: 1,
             ),
           ),
         ],

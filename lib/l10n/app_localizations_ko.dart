@@ -501,6 +501,156 @@ class AppLocalizationsKo extends AppLocalizations {
   String get bottomNavCommunity => '커뮤니티';
 
   @override
+  String get communityStatusRecruiting => '모집중';
+
+  @override
+  String get communityStatusCompleted => '마감';
+
+  @override
+  String communityHeadcount(int current, int max) {
+    return '$current/$max명';
+  }
+
+  @override
+  String communityHeadcountMaxOnly(int max) {
+    return '정원 $max명';
+  }
+
+  @override
+  String communityMeetingAt(
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$month/$day ($weekday) $time';
+  }
+
+  @override
+  String get pageCommunityTitle => '커뮤니티';
+
+  @override
+  String get pageCommunityEmpty => '등록된 모집글이 없어요';
+
+  @override
+  String get communityScopeAll => '전체';
+
+  @override
+  String get communityScopeNearby => '우리 동네';
+
+  @override
+  String get communityScopeMine => '내 모임';
+
+  @override
+  String get communitySortLatest => '최신순';
+
+  @override
+  String get communitySortPopular => '인기순';
+
+  @override
+  String get communitySortDistance => '거리순';
+
+  @override
+  String get communitySortDeadline => '마감 임박순';
+
+  @override
+  String get communitySortSheetTitle => '정렬 기준';
+
+  @override
+  String get communityCreatePost => '모집글 작성';
+
+  @override
+  String get communityCreateLabelTitle => '제목';
+
+  @override
+  String get communityCreateHintTitle => '퇴근하고 한 판! 초보 환영';
+
+  @override
+  String get communityCreateLabelContent => '설명';
+
+  @override
+  String get communityCreateHintContent => '규칙, 준비물, 뒤풀이 여부 등을 적어주세요';
+
+  @override
+  String get communityCreateLabelDate => '날짜';
+
+  @override
+  String get communityCreateHintDate => '모임 날짜를 골라주세요';
+
+  @override
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$year.$month.$day ($weekday) $time';
+  }
+
+  @override
+  String get communityDateSheetTitle => '모임 날짜 및 시간';
+
+  @override
+  String get communityDateSheetRowTime => '시간';
+
+  @override
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  ) {
+    return '$year.$month.$day $weekday';
+  }
+
+  @override
+  String get communityCreateLabelLocation => '장소';
+
+  @override
+  String get communityCreateHintLocation => '모임 장소를 입력해주세요';
+
+  @override
+  String get communityCreateLabelHeadcount => '모집 인원';
+
+  @override
+  String communityHeadcountValue(int count) {
+    return '$count명';
+  }
+
+  @override
+  String communityHeadcountQuickAdd(int count) {
+    return '+ $count명';
+  }
+
+  @override
+  String get communityHeadcountDecrease => '인원 줄이기';
+
+  @override
+  String get communityHeadcountIncrease => '인원 늘리기';
+
+  @override
+  String get weekdayMon => '월';
+
+  @override
+  String get weekdayTue => '화';
+
+  @override
+  String get weekdayWed => '수';
+
+  @override
+  String get weekdayThu => '목';
+
+  @override
+  String get weekdayFri => '금';
+
+  @override
+  String get weekdaySat => '토';
+
+  @override
+  String get weekdaySun => '일';
+
+  @override
   String get bottomNavMyPage => '마이페이지';
 
   @override
@@ -1663,6 +1813,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorNoticesLoadGeneric => '공지사항을 불러오는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityPostsLoadGeneric => '모집글을 불러오는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityPostsLoadFailed => '모집글을 불러오지 못했어요';
 
   @override
   String get messageLoadingNotices => '공지사항을 불러오는 중...';

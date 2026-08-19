@@ -19,6 +19,7 @@ import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../chat/presentation/widgets/chat_overlay.dart'
     show kChatOverlayCollapsedFixedHeight;
@@ -845,8 +846,7 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
             isDarkMode: _isDarkMode,
             gameStatusByParticipantId: _demoGameStatus,
           ),
-          Divider(
-            height: 1,
+          SolidDivider(
             color: _isDarkMode ? AppColors.black800 : AppColors.black200,
           ),
           TeamSection(

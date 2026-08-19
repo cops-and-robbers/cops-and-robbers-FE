@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/services/lifecycle/lifecycle_log.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 
 /// 생명주기 상태 변화 이력을 표시하는 리스트
 ///
@@ -43,7 +44,7 @@ class LifecycleLogList extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: reversedLogs.length,
-      separatorBuilder: (context, index) => const Divider(height: 1),
+      separatorBuilder: (context, index) => const SolidDivider(),
       itemBuilder: (context, index) {
         final log = reversedLogs[index];
 

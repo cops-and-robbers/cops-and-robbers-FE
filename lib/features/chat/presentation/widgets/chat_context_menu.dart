@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -612,8 +613,7 @@ class _MenuDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Divider(
-      height: 1,
+    return SolidDivider(
       color: isDarkMode ? AppColors.black800 : AppColors.black100,
       indent: 20.w,
       endIndent: 20.w,

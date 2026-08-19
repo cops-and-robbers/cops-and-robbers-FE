@@ -309,6 +309,184 @@
   "@bottomNavCommunity": {
     "description": "바텀 네비게이션 — 커뮤니티 탭 라벨"
   },
+  "communityStatusRecruiting": "모집중",
+  "@communityStatusRecruiting": {
+    "description": "커뮤니티 카드 — 모집 중인 게시글 배지"
+  },
+  "communityStatusCompleted": "마감",
+  "@communityStatusCompleted": {
+    "description": "커뮤니티 카드 — 모집이 끝난 게시글 배지"
+  },
+  "communityHeadcount": "{current}/{max}명",
+  "@communityHeadcount": {
+    "description": "커뮤니티 카드 — 현재 참여 인원 / 정원",
+    "placeholders": {
+      "current": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "communityHeadcountMaxOnly": "정원 {max}명",
+  "@communityHeadcountMaxOnly": {
+    "description": "커뮤니티 카드 — 현재 인원을 백엔드가 아직 주지 않을 때 정원만 표시",
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "communityMeetingAt": "{month}/{day} ({weekday}) {time}",
+  "@communityMeetingAt": {
+    "description": "커뮤니티 카드 — 모임 일시 표기",
+    "placeholders": {
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "pageCommunityTitle": "커뮤니티",
+  "@pageCommunityTitle": {
+    "description": "커뮤니티 탭 화면 제목"
+  },
+  "pageCommunityEmpty": "등록된 모집글이 없어요",
+  "@pageCommunityEmpty": {
+    "description": "커뮤니티 목록이 비어 있을 때 표시되는 안내"
+  },
+  "communityScopeAll": "전체",
+  "@communityScopeAll": {
+    "description": "커뮤니티 범위 필터 — 전체 글"
+  },
+  "communityScopeNearby": "우리 동네",
+  "@communityScopeNearby": {
+    "description": "커뮤니티 범위 필터 — 내 주변 글"
+  },
+  "communityScopeMine": "내 모임",
+  "@communityScopeMine": {
+    "description": "커뮤니티 범위 필터 — 내가 참여하는 모임"
+  },
+  "communitySortLatest": "최신순",
+  "@communitySortLatest": {
+    "description": "커뮤니티 목록 정렬 — 최신순"
+  },
+  "communitySortPopular": "인기순",
+  "@communitySortPopular": {
+    "description": "커뮤니티 목록 정렬 — 인기순"
+  },
+  "communitySortDistance": "거리순",
+  "@communitySortDistance": {
+    "description": "커뮤니티 목록 정렬 — 거리순 (현재 위치 기준)"
+  },
+  "communitySortDeadline": "마감 임박순",
+  "@communitySortDeadline": {
+    "description": "커뮤니티 목록 정렬 — 마감 임박순"
+  },
+  "communitySortSheetTitle": "정렬 기준",
+  "@communitySortSheetTitle": {
+    "description": "정렬 선택 바텀시트 접근성 라벨"
+  },
+  "communityCreatePost": "모집글 작성",
+  "@communityCreatePost": {
+    "description": "커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)"
+  },
+  "communityCreateLabelTitle": "제목",
+  "@communityCreateLabelTitle": {
+    "description": "모집글 작성 — 제목 섹션 라벨"
+  },
+  "communityCreateHintTitle": "퇴근하고 한 판! 초보 환영",
+  "@communityCreateHintTitle": {
+    "description": "모집글 작성 — 제목 입력 힌트"
+  },
+  "communityCreateLabelContent": "설명",
+  "@communityCreateLabelContent": {
+    "description": "모집글 작성 — 설명 섹션 라벨"
+  },
+  "communityCreateHintContent": "규칙, 준비물, 뒤풀이 여부 등을 적어주세요",
+  "@communityCreateHintContent": {
+    "description": "모집글 작성 — 설명 입력 힌트"
+  },
+  "communityCreateLabelDate": "날짜",
+  "@communityCreateLabelDate": {
+    "description": "모집글 작성 — 날짜 섹션 라벨 (날짜 선택 바텀시트 제목 겸용)"
+  },
+  "communityCreateHintDate": "모임 날짜를 골라주세요",
+  "@communityCreateHintDate": {
+    "description": "모집글 작성 — 날짜 미선택 상태 힌트"
+  },
+  "communityCreateDateValue": "{year}.{month}.{day} ({weekday}) {time}",
+  "@communityCreateDateValue": {
+    "description": "모집글 작성 — 선택된 모임 일시 표기 (26.08.29 (목) 14:30)",
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "communityDateSheetTitle": "모임 날짜 및 시간",
+  "@communityDateSheetTitle": {
+    "description": "날짜 선택 바텀시트 제목"
+  },
+  "communityDateSheetRowTime": "시간",
+  "@communityDateSheetRowTime": {
+    "description": "날짜 선택 바텀시트 — 시간 행 라벨"
+  },
+  "communityDateSheetRowDateValue": "{year}.{month}.{day} {weekday}",
+  "@communityDateSheetRowDateValue": {
+    "description": "날짜 선택 바텀시트 — 날짜 행의 값 (26.08.29 목)",
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "communityCreateLabelLocation": "장소",
+  "@communityCreateLabelLocation": {
+    "description": "모집글 작성 — 장소 섹션 라벨"
+  },
+  "communityCreateHintLocation": "모임 장소를 입력해주세요",
+  "@communityCreateHintLocation": {
+    "description": "모집글 작성 — 장소 입력 힌트"
+  },
+  "communityCreateLabelHeadcount": "모집 인원",
+  "@communityCreateLabelHeadcount": {
+    "description": "모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)"
+  },
+  "communityHeadcountValue": "{count}명",
+  "@communityHeadcountValue": {
+    "description": "모집글 작성 — 선택된 모집 인원",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "communityHeadcountQuickAdd": "+ {count}명",
+  "@communityHeadcountQuickAdd": {
+    "description": "인원 선택 바텀시트 — 인원을 한 번에 더하는 칩",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "communityHeadcountDecrease": "인원 줄이기",
+  "@communityHeadcountDecrease": {
+    "description": "모집글 작성 — 인원 감소 버튼 접근성 라벨"
+  },
+  "communityHeadcountIncrease": "인원 늘리기",
+  "@communityHeadcountIncrease": {
+    "description": "모집글 작성 — 인원 증가 버튼 접근성 라벨"
+  },
+  "weekdayMon": "월",
+  "@weekdayMon": { "description": "요일 단축 라벨 — 월요일" },
+  "weekdayTue": "화",
+  "@weekdayTue": { "description": "요일 단축 라벨 — 화요일" },
+  "weekdayWed": "수",
+  "@weekdayWed": { "description": "요일 단축 라벨 — 수요일" },
+  "weekdayThu": "목",
+  "@weekdayThu": { "description": "요일 단축 라벨 — 목요일" },
+  "weekdayFri": "금",
+  "@weekdayFri": { "description": "요일 단축 라벨 — 금요일" },
+  "weekdaySat": "토",
+  "@weekdaySat": { "description": "요일 단축 라벨 — 토요일" },
+  "weekdaySun": "일",
+  "@weekdaySun": { "description": "요일 단축 라벨 — 일요일" },
   "bottomNavMyPage": "마이페이지",
   "@bottomNavMyPage": {
     "description": "바텀 네비게이션 — 마이페이지 탭 라벨"
@@ -1853,6 +2031,14 @@
   "errorNoticesLoadGeneric": "공지사항을 불러오는 중 오류가 생겼어요",
   "@errorNoticesLoadGeneric": {
     "description": "공지사항 로딩 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostsLoadGeneric": "모집글을 불러오는 중 오류가 생겼어요",
+  "@errorCommunityPostsLoadGeneric": {
+    "description": "커뮤니티 모집글 로딩 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostsLoadFailed": "모집글을 불러오지 못했어요",
+  "@errorCommunityPostsLoadFailed": {
+    "description": "커뮤니티 목록 조회 실패 시 화면에 표시되는 메시지"
   },
   "messageLoadingNotices": "공지사항을 불러오는 중...",
   "@messageLoadingNotices": {

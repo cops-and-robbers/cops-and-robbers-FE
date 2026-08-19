@@ -114,6 +114,13 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  static TextStyle get paragraph14bold => TextStyle(
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 14.sp,
+    height: 1.0, // 100% line height
+    letterSpacing: -0.32,
+  );
+
   static TextStyle get paragraph14Semibold => TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 14.sp,

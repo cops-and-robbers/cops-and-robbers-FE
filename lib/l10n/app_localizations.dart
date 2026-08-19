@@ -1024,6 +1024,262 @@ abstract class AppLocalizations {
   /// **'커뮤니티'**
   String get bottomNavCommunity;
 
+  /// 커뮤니티 카드 — 모집 중인 게시글 배지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집중'**
+  String get communityStatusRecruiting;
+
+  /// 커뮤니티 카드 — 모집이 끝난 게시글 배지
+  ///
+  /// In ko, this message translates to:
+  /// **'마감'**
+  String get communityStatusCompleted;
+
+  /// 커뮤니티 카드 — 현재 참여 인원 / 정원
+  ///
+  /// In ko, this message translates to:
+  /// **'{current}/{max}명'**
+  String communityHeadcount(int current, int max);
+
+  /// 커뮤니티 카드 — 현재 인원을 백엔드가 아직 주지 않을 때 정원만 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'정원 {max}명'**
+  String communityHeadcountMaxOnly(int max);
+
+  /// 커뮤니티 카드 — 모임 일시 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'{month}/{day} ({weekday}) {time}'**
+  String communityMeetingAt(
+    String month,
+    String day,
+    String weekday,
+    String time,
+  );
+
+  /// 커뮤니티 탭 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'커뮤니티'**
+  String get pageCommunityTitle;
+
+  /// 커뮤니티 목록이 비어 있을 때 표시되는 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 모집글이 없어요'**
+  String get pageCommunityEmpty;
+
+  /// 커뮤니티 범위 필터 — 전체 글
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get communityScopeAll;
+
+  /// 커뮤니티 범위 필터 — 내 주변 글
+  ///
+  /// In ko, this message translates to:
+  /// **'우리 동네'**
+  String get communityScopeNearby;
+
+  /// 커뮤니티 범위 필터 — 내가 참여하는 모임
+  ///
+  /// In ko, this message translates to:
+  /// **'내 모임'**
+  String get communityScopeMine;
+
+  /// 커뮤니티 목록 정렬 — 최신순
+  ///
+  /// In ko, this message translates to:
+  /// **'최신순'**
+  String get communitySortLatest;
+
+  /// 커뮤니티 목록 정렬 — 인기순
+  ///
+  /// In ko, this message translates to:
+  /// **'인기순'**
+  String get communitySortPopular;
+
+  /// 커뮤니티 목록 정렬 — 거리순 (현재 위치 기준)
+  ///
+  /// In ko, this message translates to:
+  /// **'거리순'**
+  String get communitySortDistance;
+
+  /// 커뮤니티 목록 정렬 — 마감 임박순
+  ///
+  /// In ko, this message translates to:
+  /// **'마감 임박순'**
+  String get communitySortDeadline;
+
+  /// 정렬 선택 바텀시트 접근성 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'정렬 기준'**
+  String get communitySortSheetTitle;
+
+  /// 커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글 작성'**
+  String get communityCreatePost;
+
+  /// 모집글 작성 — 제목 섹션 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'제목'**
+  String get communityCreateLabelTitle;
+
+  /// 모집글 작성 — 제목 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'퇴근하고 한 판! 초보 환영'**
+  String get communityCreateHintTitle;
+
+  /// 모집글 작성 — 설명 섹션 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'설명'**
+  String get communityCreateLabelContent;
+
+  /// 모집글 작성 — 설명 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'규칙, 준비물, 뒤풀이 여부 등을 적어주세요'**
+  String get communityCreateHintContent;
+
+  /// 모집글 작성 — 날짜 섹션 라벨 (날짜 선택 바텀시트 제목 겸용)
+  ///
+  /// In ko, this message translates to:
+  /// **'날짜'**
+  String get communityCreateLabelDate;
+
+  /// 모집글 작성 — 날짜 미선택 상태 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'모임 날짜를 골라주세요'**
+  String get communityCreateHintDate;
+
+  /// 모집글 작성 — 선택된 모임 일시 표기 (26.08.29 (목) 14:30)
+  ///
+  /// In ko, this message translates to:
+  /// **'{year}.{month}.{day} ({weekday}) {time}'**
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  );
+
+  /// 날짜 선택 바텀시트 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'모임 날짜 및 시간'**
+  String get communityDateSheetTitle;
+
+  /// 날짜 선택 바텀시트 — 시간 행 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'시간'**
+  String get communityDateSheetRowTime;
+
+  /// 날짜 선택 바텀시트 — 날짜 행의 값 (26.08.29 목)
+  ///
+  /// In ko, this message translates to:
+  /// **'{year}.{month}.{day} {weekday}'**
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  );
+
+  /// 모집글 작성 — 장소 섹션 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'장소'**
+  String get communityCreateLabelLocation;
+
+  /// 모집글 작성 — 장소 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'모임 장소를 입력해주세요'**
+  String get communityCreateHintLocation;
+
+  /// 모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집 인원'**
+  String get communityCreateLabelHeadcount;
+
+  /// 모집글 작성 — 선택된 모집 인원
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명'**
+  String communityHeadcountValue(int count);
+
+  /// 인원 선택 바텀시트 — 인원을 한 번에 더하는 칩
+  ///
+  /// In ko, this message translates to:
+  /// **'+ {count}명'**
+  String communityHeadcountQuickAdd(int count);
+
+  /// 모집글 작성 — 인원 감소 버튼 접근성 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'인원 줄이기'**
+  String get communityHeadcountDecrease;
+
+  /// 모집글 작성 — 인원 증가 버튼 접근성 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'인원 늘리기'**
+  String get communityHeadcountIncrease;
+
+  /// 요일 단축 라벨 — 월요일
+  ///
+  /// In ko, this message translates to:
+  /// **'월'**
+  String get weekdayMon;
+
+  /// 요일 단축 라벨 — 화요일
+  ///
+  /// In ko, this message translates to:
+  /// **'화'**
+  String get weekdayTue;
+
+  /// 요일 단축 라벨 — 수요일
+  ///
+  /// In ko, this message translates to:
+  /// **'수'**
+  String get weekdayWed;
+
+  /// 요일 단축 라벨 — 목요일
+  ///
+  /// In ko, this message translates to:
+  /// **'목'**
+  String get weekdayThu;
+
+  /// 요일 단축 라벨 — 금요일
+  ///
+  /// In ko, this message translates to:
+  /// **'금'**
+  String get weekdayFri;
+
+  /// 요일 단축 라벨 — 토요일
+  ///
+  /// In ko, this message translates to:
+  /// **'토'**
+  String get weekdaySat;
+
+  /// 요일 단축 라벨 — 일요일
+  ///
+  /// In ko, this message translates to:
+  /// **'일'**
+  String get weekdaySun;
+
   /// 바텀 네비게이션 — 마이페이지 탭 라벨
   ///
   /// In ko, this message translates to:
@@ -3254,6 +3510,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'공지사항을 불러오는 중 오류가 생겼어요'**
   String get errorNoticesLoadGeneric;
+
+  /// 커뮤니티 모집글 로딩 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 불러오는 중 오류가 생겼어요'**
+  String get errorCommunityPostsLoadGeneric;
+
+  /// 커뮤니티 목록 조회 실패 시 화면에 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 불러오지 못했어요'**
+  String get errorCommunityPostsLoadFailed;
 
   /// 공지사항 로딩 중 표시되는 안내
   ///

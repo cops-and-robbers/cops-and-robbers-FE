@@ -67,6 +67,7 @@ class AppTextField extends StatelessWidget {
     super.key,
     this.hintText,
     this.controller,
+    this.focusNode,
     this.onChanged,
     this.onSubmitted,
     this.backgroundColor,
@@ -90,8 +91,10 @@ class AppTextField extends StatelessWidget {
     this.textInputAction,
     this.maxLength,
     this.prefixIcon,
+    this.prefixIconConstraints,
     this.suffixIcon,
     this.inputFormatters,
+    this.textAlignVertical,
   });
 
   /// Hint 텍스트 (Placeholder)
@@ -99,6 +102,9 @@ class AppTextField extends StatelessWidget {
 
   /// TextField 제어를 위한 컨트롤러
   final TextEditingController? controller;
+
+  /// 포커스 노드 — 엔터로 다음 입력으로 넘길 때 호출부가 직접 들고 있어야 한다
+  final FocusNode? focusNode;
 
   /// 입력 값 변경 콜백
   final ValueChanged<String>? onChanged;
@@ -169,11 +175,19 @@ class AppTextField extends StatelessWidget {
   /// 앞쪽 아이콘 위젯
   final Widget? prefixIcon;
 
+  /// prefixIcon 크기 제약. Material 기본값(최소 48×48)이 작은 아이콘을
+  /// 과하게 밀어내므로, 아이콘 여백을 직접 잡을 때 `minWidth: 0`으로 푼다.
+  final BoxConstraints? prefixIconConstraints;
+
   /// 뒤쪽 아이콘 위젯
   final Widget? suffixIcon;
 
   /// 입력 포매터 목록 (대문자 변환 등)
   final List<TextInputFormatter>? inputFormatters;
+
+  /// 세로 정렬. 여러 줄 입력에서 `TextAlignVertical.top`을 주지 않으면
+  /// 짧은 글이 카드 한가운데 뜬다.
+  final TextAlignVertical? textAlignVertical;
 
   // ============================================
   // 기본값 Getter 메서드
@@ -232,6 +246,8 @@ class AppTextField extends StatelessWidget {
       height: maxLines > 1 ? null : _effectiveHeight, // 여러 줄일 때는 자동 높이
       child: TextField(
         controller: controller,
+        focusNode: focusNode,
+        textAlignVertical: textAlignVertical,
         onChanged: onChanged,
         onSubmitted: onSubmitted,
         enabled: enabled,
@@ -265,6 +281,7 @@ class AppTextField extends StatelessWidget {
           ),
           disabledBorder: _buildBorder(Colors.transparent),
           prefixIcon: prefixIcon,
+          prefixIconConstraints: prefixIconConstraints,
           suffixIcon: suffixIcon,
           // maxLength 표시 제거 (필요 시 하단에 커스텀 위젯으로 추가 가능)
           counterText: maxLength != null ? '' : null,

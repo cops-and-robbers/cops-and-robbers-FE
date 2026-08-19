@@ -11,6 +11,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/services/app_icon/startup_app_icon.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 언어 설정 페이지 (설정 내부)
@@ -84,7 +85,7 @@ class LanguageSettingsPage extends ConsumerWidget {
   Widget _buildItemDivider() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal20),
-      child: const Divider(color: AppColors.black100, height: 1),
+      child: const SolidDivider(),
     );
   }
 }

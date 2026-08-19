@@ -176,4 +176,11 @@ class ApiEndpoints {
 
   /// 공지사항 목록 조회
   static const String getNotices = '/api/notices';
+
+  // ============================================
+  // Community
+  // ============================================
+
+  /// 모집 게시글 목록 조회 / 생성
+  static const String communityPosts = '/api/community-posts';
 }

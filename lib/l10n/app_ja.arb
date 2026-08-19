@@ -166,6 +166,83 @@
   "@bottomNavCommunity": {
     "description": "ボトムナビゲーション — コミュニティタブラベル"
   },
+  "communityStatusRecruiting": "募集中",
+  "communityStatusCompleted": "締切",
+  "communityHeadcount": "{current}/{max}人",
+  "@communityHeadcount": {
+    "placeholders": { "current": { "type": "int" }, "max": { "type": "int" } }
+  },
+  "communityHeadcountMaxOnly": "定員{max}人",
+  "@communityHeadcountMaxOnly": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "communityMeetingAt": "{month}/{day} ({weekday}) {time}",
+  "@communityMeetingAt": {
+    "placeholders": {
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "pageCommunityTitle": "コミュニティ",
+  "pageCommunityEmpty": "募集がまだありません",
+  "communityScopeAll": "すべて",
+  "communityScopeNearby": "近所",
+  "communityScopeMine": "マイ募集",
+  "communitySortLatest": "新着順",
+  "communitySortPopular": "人気順",
+  "communitySortDistance": "近い順",
+  "communitySortDeadline": "締切間近順",
+  "communitySortSheetTitle": "並び替え",
+  "communityCreatePost": "募集を作成",
+  "communityCreateLabelTitle": "タイトル",
+  "communityCreateHintTitle": "仕事帰りに一戦！初心者歓迎",
+  "communityCreateHintContent": "ルール、持ち物、打ち上げの有無などを書いてください",
+  "communityCreateLabelContent": "説明",
+  "communityCreateLabelDate": "日時",
+  "communityCreateHintDate": "集合日時を選んでください",
+  "communityCreateDateValue": "{year}.{month}.{day} ({weekday}) {time}",
+  "@communityCreateDateValue": {
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "communityDateSheetTitle": "集合日時",
+  "communityDateSheetRowTime": "時間",
+  "communityDateSheetRowDateValue": "{year}.{month}.{day} {weekday}",
+  "@communityDateSheetRowDateValue": {
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "communityCreateLabelLocation": "場所",
+  "communityCreateHintLocation": "集合場所を入力してください",
+  "communityCreateLabelHeadcount": "募集人数",
+  "communityHeadcountValue": "{count}人",
+  "@communityHeadcountValue": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityHeadcountQuickAdd": "+ {count}人",
+  "@communityHeadcountQuickAdd": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityHeadcountDecrease": "人数を減らす",
+  "communityHeadcountIncrease": "人数を増やす",
+  "weekdayMon": "月",
+  "weekdayTue": "火",
+  "weekdayWed": "水",
+  "weekdayThu": "木",
+  "weekdayFri": "金",
+  "weekdaySat": "土",
+  "weekdaySun": "日",
   "bottomNavMyPage": "マイページ",
   "@bottomNavMyPage": {
     "description": "ボトムナビゲーション — マイページタブラベル"
@@ -543,6 +620,8 @@
   "errorServerUnreachable": "サーバーに接続できません。しばらくしてからもう一度お試しください",
   "errorAuthExpired": "認証の有効期限が切れました。再ログインが必要です",
   "errorNoticesLoadGeneric": "知らせを読み込む中にエラーが発生しました",
+  "errorCommunityPostsLoadGeneric": "募集の読み込み中にエラーが発生しました",
+  "errorCommunityPostsLoadFailed": "募集を読み込めませんでした",
   "messageLoadingNotices": "知らせを読み込んでいます...",
   "errorNoticeLoadFailed": "お知らせを読み込めませんでした",
   "pageNoticesTitle": "お知らせ",

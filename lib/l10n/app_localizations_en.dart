@@ -554,6 +554,157 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bottomNavCommunity => 'Community';
 
   @override
+  String get communityStatusRecruiting => 'Open';
+
+  @override
+  String get communityStatusCompleted => 'Closed';
+
+  @override
+  String communityHeadcount(int current, int max) {
+    return '$current/$max';
+  }
+
+  @override
+  String communityHeadcountMaxOnly(int max) {
+    return 'Max $max';
+  }
+
+  @override
+  String communityMeetingAt(
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$month/$day ($weekday) $time';
+  }
+
+  @override
+  String get pageCommunityTitle => 'Community';
+
+  @override
+  String get pageCommunityEmpty => 'No posts yet';
+
+  @override
+  String get communityScopeAll => 'All';
+
+  @override
+  String get communityScopeNearby => 'Nearby';
+
+  @override
+  String get communityScopeMine => 'My meetups';
+
+  @override
+  String get communitySortLatest => 'Latest';
+
+  @override
+  String get communitySortPopular => 'Popular';
+
+  @override
+  String get communitySortDistance => 'Nearest';
+
+  @override
+  String get communitySortDeadline => 'Closing soon';
+
+  @override
+  String get communitySortSheetTitle => 'Sort by';
+
+  @override
+  String get communityCreatePost => 'New post';
+
+  @override
+  String get communityCreateLabelTitle => 'Title';
+
+  @override
+  String get communityCreateHintTitle => 'After-work match! Beginners welcome';
+
+  @override
+  String get communityCreateLabelContent => 'Details';
+
+  @override
+  String get communityCreateHintContent =>
+      'Add rules, what to bring, after-party plans';
+
+  @override
+  String get communityCreateLabelDate => 'Date';
+
+  @override
+  String get communityCreateHintDate => 'Pick a date for the meetup';
+
+  @override
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$year.$month.$day ($weekday) $time';
+  }
+
+  @override
+  String get communityDateSheetTitle => 'Meetup date & time';
+
+  @override
+  String get communityDateSheetRowTime => 'Time';
+
+  @override
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  ) {
+    return '$year.$month.$day $weekday';
+  }
+
+  @override
+  String get communityCreateLabelLocation => 'Location';
+
+  @override
+  String get communityCreateHintLocation => 'Enter where you\'ll meet';
+
+  @override
+  String get communityCreateLabelHeadcount => 'Headcount';
+
+  @override
+  String communityHeadcountValue(int count) {
+    return '$count';
+  }
+
+  @override
+  String communityHeadcountQuickAdd(int count) {
+    return '+ $count';
+  }
+
+  @override
+  String get communityHeadcountDecrease => 'Decrease headcount';
+
+  @override
+  String get communityHeadcountIncrease => 'Increase headcount';
+
+  @override
+  String get weekdayMon => 'Mon';
+
+  @override
+  String get weekdayTue => 'Tue';
+
+  @override
+  String get weekdayWed => 'Wed';
+
+  @override
+  String get weekdayThu => 'Thu';
+
+  @override
+  String get weekdayFri => 'Fri';
+
+  @override
+  String get weekdaySat => 'Sat';
+
+  @override
+  String get weekdaySun => 'Sun';
+
+  @override
   String get bottomNavMyPage => 'My Page';
 
   @override
@@ -1795,6 +1946,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorNoticesLoadGeneric =>
       'An error occurred while loading notices';
+
+  @override
+  String get errorCommunityPostsLoadGeneric =>
+      'Something went wrong while loading posts';
+
+  @override
+  String get errorCommunityPostsLoadFailed => 'Couldn\'t load posts';
 
   @override
   String get messageLoadingNotices => 'Loading notices...';

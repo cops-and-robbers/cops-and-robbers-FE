@@ -74,6 +74,7 @@ class AppButton extends StatelessWidget {
     this.borderColor,
     this.width,
     this.height,
+    this.padding,
     this.borderRadius,
     this.icon,
     this.iconPosition = IconPosition.leading,
@@ -116,6 +117,12 @@ class AppButton extends StatelessWidget {
 
   /// 버튼 높이 (기본: 56.h)
   final double? height;
+
+  /// 내용물(아이콘·텍스트) 안쪽 여백 (기본: 없음)
+  ///
+  /// 기본이 0인 이유: 대부분의 호출부가 [width]를 고정하고 내용을 가운데 두므로
+  /// 여백이 필요 없다. 폭 대비 내용이 짧아 가장자리와의 간격을 직접 잡아야 할 때만 준다.
+  final EdgeInsetsGeometry? padding;
 
   /// 모서리 반경 (기본: 16.r)
   final BorderRadius? borderRadius;
@@ -221,7 +228,7 @@ class AppButton extends StatelessWidget {
               disabledBackgroundColor ?? AppColors.black100,
           disabledForegroundColor: disabledForegroundColor ?? AppColors.white,
           shape: RoundedRectangleBorder(borderRadius: _effectiveBorderRadius),
-          padding: EdgeInsets.zero,
+          padding: padding ?? EdgeInsets.zero,
           elevation: 0,
           shadowColor: Colors.transparent,
         ),
