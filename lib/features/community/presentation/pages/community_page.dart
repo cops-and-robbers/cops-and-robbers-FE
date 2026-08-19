@@ -28,12 +28,12 @@ import '../widgets/community_post_card.dart';
 import '../widgets/community_scope_toggle.dart';
 import '../widgets/community_sort_sheet.dart';
 
-// ponytail: 카드 UI 수정용 임시 하드코딩. 작업 끝나면 이 플래그와 아래 목록,
-// _buildBody 맨 위 분기 3곳만 지우면 원래대로 돌아온다.
+// ponytail: 카드 UI·무한 스크롤 확인용 임시 하드코딩. 작업 끝나면 이 플래그와 아래
+// 목록, _loadMore()/_refresh()/_buildBody 맨 위 분기, _mock* 필드만 지우면 된다.
 const bool _useMockPosts = true;
 
 // 요일 라벨은 meetingAt에서 계산된다 — 2026년이라 9/8=화, 9/10=목, 9/12=토로 시안과 맞는다.
-final List<CommunityPostEntity> _mockPosts = [
+final List<CommunityPostEntity> _mockTemplates = [
   CommunityPostEntity(
     id: 1,
     writerId: 1,
@@ -100,6 +100,12 @@ final List<CommunityPostEntity> _mockPosts = [
   ),
 ];
 
+/// 템플릿 4개를 돌려 만든 목데이터 40개. 제목 뒤 번호로 몇 번째 페이지인지 눈으로 센다.
+final List<CommunityPostEntity> _mockPosts = List.generate(40, (i) {
+  final template = _mockTemplates[i % _mockTemplates.length];
+  return template.copyWith(id: i + 1, title: '${template.title} (${i + 1})');
+});
+
 /// 커뮤니티 탭 — 모집글 목록
 ///
 /// `MainScaffold`가 body와 바텀네비만 소유하므로 AppBar는 이 페이지가 갖는다.
@@ -116,6 +122,11 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
 
   /// 바닥에서 이만큼 남았을 때 다음 페이지를 당긴다 — 스크롤이 멈추지 않을 최소 여유.
   static const double _loadMoreThreshold = 200;
+
+  // ponytail: 목데이터 모드의 가짜 페이지네이션 상태.
+  static const int _mockPageSize = 10;
+  int _mockLoaded = _mockPageSize;
+  bool _mockLoadingMore = false;
 
   @override
   void initState() {
@@ -139,6 +150,9 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   }
 
   Future<void> _loadMore() async {
+    // ponytail: 목데이터 모드는 provider 대신 로컬 카운트만 늘려 페이지 넘김을 흉내낸다.
+    if (_useMockPosts) return _loadMoreMock();
+
     try {
       await ref.read(communityFeedNotifierProvider.notifier).loadMore();
     } on AppException catch (e) {
@@ -153,11 +167,30 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     }
   }
 
+  /// ponytail: 하단 인디케이터가 보이도록 네트워크 지연까지 흉내낸다.
+  Future<void> _loadMoreMock() async {
+    if (_mockLoadingMore || _mockLoaded >= _mockPosts.length) return;
+    setState(() => _mockLoadingMore = true);
+    await Future.delayed(const Duration(milliseconds: 600));
+    if (!mounted) return;
+    // take()가 알아서 잘라내므로 상한 clamp는 필요 없다.
+    setState(() {
+      _mockLoaded += _mockPageSize;
+      _mockLoadingMore = false;
+    });
+  }
+
   /// pull-to-refresh — 0페이지부터 다시 조회한다.
   ///
   /// 실패해도 provider의 error 상태가 placeholder로 이미 반영되므로, 여기서는
   /// RefreshIndicator에 완료 신호만 주기 위해 예외를 흡수한다(별도 스낵바 불필요).
   Future<void> _refresh() async {
+    // ponytail: 목데이터 모드에서 실제 API를 때리지 않도록 첫 페이지로만 되돌린다.
+    if (_useMockPosts) {
+      setState(() => _mockLoaded = _mockPageSize);
+      return;
+    }
+
     try {
       await ref.read(communityFeedNotifierProvider.notifier).refresh();
     } on AppException catch (_) {
@@ -314,9 +347,10 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         createButton,
         _buildList(
           CommunityFeedState(
-            items: _mockPosts,
+            items: _mockPosts.take(_mockLoaded).toList(),
             nextCursor: null,
-            hasMore: false,
+            hasMore: _mockLoaded < _mockPosts.length,
+            isLoadingMore: _mockLoadingMore,
           ),
         ),
       );
