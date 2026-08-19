@@ -53,9 +53,10 @@ class SelectedCommunityScope extends _$SelectedCommunityScope {
 
 /// 현재 선택된 정렬 기준.
 ///
-/// 아직 `CommunityFeedNotifier`가 watch하지 않는다 — 백엔드에 `sort` 쿼리가 없어
-/// 보낼 곳이 없기 때문이다. 지금은 정렬 라벨 표시 전용이며, 쿼리가 생기면
-/// `SelectedCommunityScope`와 같은 방식으로 build()에서 watch해 연결한다.
+/// 아직 `CommunityFeedNotifier`가 watch하지 않는다 — 백엔드가 `sort` 파라미터를
+/// 받긴 하지만 기본값 `LATEST` 외에는 400이라 보낼 값이 없기 때문이다. 지금은
+/// 정렬 라벨 표시 전용이며, 다른 값이 열리면 `SelectedCommunityScope`와 같은
+/// 방식으로 build()에서 watch해 연결한다.
 @riverpod
 class SelectedCommunitySort extends _$SelectedCommunitySort {
   @override
@@ -73,22 +74,26 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   FutureOr<CommunityFeedState> build() async {
     final scope = ref.watch(selectedCommunityScopeProvider);
 
-    // 백엔드에 scope 쿼리가 없다. Spring은 모르는 파라미터를 무시하므로
-    // NEARBY/MINE으로 요청하면 전체 목록이 돌아와 그 탭에 전국 글이 뜬다.
-    // 지원되기 전까지 호출 자체를 하지 않고 빈 목록을 돌려준다 — 화면은
-    // 이 상태를 "준비 중" 안내로 그린다.
+    // 백엔드가 scope=NEARBY/MINE에 400을 준다. 확정 실패를 왕복시키지 않고
+    // 호출 자체를 건너뛰어 빈 목록을 돌려준다 — 화면은 이 상태를 "준비 중"
+    // 안내로 그린다.
     if (scope != CommunityScope.all) {
-      return const CommunityFeedState(items: [], nextPage: 0, hasMore: false);
+      return const CommunityFeedState(
+        items: [],
+        nextCursor: null,
+        hasMore: false,
+      );
     }
 
+    // 첫 요청은 커서 없이 보낸다.
     final page = await ref
         .watch(communityRepositoryProvider)
-        .getPosts(page: 0, size: _pageSize);
+        .getPosts(size: _pageSize);
 
     return CommunityFeedState(
       items: page.items,
-      nextPage: 1,
-      hasMore: page.currentPage + 1 < page.totalPages,
+      nextCursor: page.nextCursor,
+      hasMore: page.hasNext,
     );
   }
 
@@ -112,23 +117,19 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
     try {
       final page = await ref
           .read(communityRepositoryProvider)
-          .getPosts(page: current.nextPage, size: _pageSize);
+          .getPosts(cursor: current.nextCursor, size: _pageSize);
 
       // scope 전환이나 refresh()가 끼어들어 state가 이미 교체됐다면 이 응답은
       // 낡은 것이다 — 최신 상태를 덮지 않고 조용히 버린다.
       if (!identical(state.valueOrNull, pending)) return;
 
-      // 오프셋 페이지네이션은 스크롤 중 새 글이 등록되면 목록 전체가 밀려
-      // 이미 본 글이 다음 페이지에 다시 내려온다. id로 걸러낸다.
-      // (백엔드가 커서 기반으로 바뀌면 자연히 사라지는 문제다.)
-      final seen = current.items.map((e) => e.id).toSet();
-      final fresh = page.items.where((e) => !seen.contains(e.id)).toList();
-
+      // 커서는 "몇 번째"가 아니라 "어디까지 봤는지"를 들고 다니므로, 스크롤 중
+      // 새 글이 올라와도 경계가 밀리지 않는다 — id 중복 제거가 필요 없다.
       state = AsyncData(
         current.copyWith(
-          items: [...current.items, ...fresh],
-          nextPage: current.nextPage + 1,
-          hasMore: page.currentPage + 1 < page.totalPages,
+          items: [...current.items, ...page.items],
+          nextCursor: page.nextCursor,
+          hasMore: page.hasNext,
           isLoadingMore: false,
         ),
       );

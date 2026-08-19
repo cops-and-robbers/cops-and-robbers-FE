@@ -19,8 +19,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CommunityFeedState {
   List<CommunityPostEntity> get items => throw _privateConstructorUsedError;
 
-  /// 다음에 요청할 0-based 페이지 번호
-  int get nextPage => throw _privateConstructorUsedError;
+  /// 다음 요청에 그대로 실을 커서. 첫 페이지만 받은 직후에는 서버가 준
+  /// `nextCursor`가 들어 있고, 더 없으면 null이다.
+  String? get nextCursor => throw _privateConstructorUsedError;
   bool get hasMore => throw _privateConstructorUsedError;
   bool get isLoadingMore => throw _privateConstructorUsedError;
 
@@ -40,7 +41,7 @@ abstract class $CommunityFeedStateCopyWith<$Res> {
   @useResult
   $Res call({
     List<CommunityPostEntity> items,
-    int nextPage,
+    String? nextCursor,
     bool hasMore,
     bool isLoadingMore,
   });
@@ -62,7 +63,7 @@ class _$CommunityFeedStateCopyWithImpl<$Res, $Val extends CommunityFeedState>
   @override
   $Res call({
     Object? items = null,
-    Object? nextPage = null,
+    Object? nextCursor = freezed,
     Object? hasMore = null,
     Object? isLoadingMore = null,
   }) {
@@ -72,10 +73,10 @@ class _$CommunityFeedStateCopyWithImpl<$Res, $Val extends CommunityFeedState>
                 ? _value.items
                 : items // ignore: cast_nullable_to_non_nullable
                       as List<CommunityPostEntity>,
-            nextPage: null == nextPage
-                ? _value.nextPage
-                : nextPage // ignore: cast_nullable_to_non_nullable
-                      as int,
+            nextCursor: freezed == nextCursor
+                ? _value.nextCursor
+                : nextCursor // ignore: cast_nullable_to_non_nullable
+                      as String?,
             hasMore: null == hasMore
                 ? _value.hasMore
                 : hasMore // ignore: cast_nullable_to_non_nullable
@@ -101,7 +102,7 @@ abstract class _$$CommunityFeedStateImplCopyWith<$Res>
   @useResult
   $Res call({
     List<CommunityPostEntity> items,
-    int nextPage,
+    String? nextCursor,
     bool hasMore,
     bool isLoadingMore,
   });
@@ -122,7 +123,7 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? items = null,
-    Object? nextPage = null,
+    Object? nextCursor = freezed,
     Object? hasMore = null,
     Object? isLoadingMore = null,
   }) {
@@ -132,10 +133,10 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
             ? _value._items
             : items // ignore: cast_nullable_to_non_nullable
                   as List<CommunityPostEntity>,
-        nextPage: null == nextPage
-            ? _value.nextPage
-            : nextPage // ignore: cast_nullable_to_non_nullable
-                  as int,
+        nextCursor: freezed == nextCursor
+            ? _value.nextCursor
+            : nextCursor // ignore: cast_nullable_to_non_nullable
+                  as String?,
         hasMore: null == hasMore
             ? _value.hasMore
             : hasMore // ignore: cast_nullable_to_non_nullable
@@ -154,7 +155,7 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
 class _$CommunityFeedStateImpl implements _CommunityFeedState {
   const _$CommunityFeedStateImpl({
     required final List<CommunityPostEntity> items,
-    required this.nextPage,
+    required this.nextCursor,
     required this.hasMore,
     this.isLoadingMore = false,
   }) : _items = items;
@@ -167,9 +168,10 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
     return EqualUnmodifiableListView(_items);
   }
 
-  /// 다음에 요청할 0-based 페이지 번호
+  /// 다음 요청에 그대로 실을 커서. 첫 페이지만 받은 직후에는 서버가 준
+  /// `nextCursor`가 들어 있고, 더 없으면 null이다.
   @override
-  final int nextPage;
+  final String? nextCursor;
   @override
   final bool hasMore;
   @override
@@ -178,7 +180,7 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
 
   @override
   String toString() {
-    return 'CommunityFeedState(items: $items, nextPage: $nextPage, hasMore: $hasMore, isLoadingMore: $isLoadingMore)';
+    return 'CommunityFeedState(items: $items, nextCursor: $nextCursor, hasMore: $hasMore, isLoadingMore: $isLoadingMore)';
   }
 
   @override
@@ -187,8 +189,8 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
         (other.runtimeType == runtimeType &&
             other is _$CommunityFeedStateImpl &&
             const DeepCollectionEquality().equals(other._items, _items) &&
-            (identical(other.nextPage, nextPage) ||
-                other.nextPage == nextPage) &&
+            (identical(other.nextCursor, nextCursor) ||
+                other.nextCursor == nextCursor) &&
             (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
             (identical(other.isLoadingMore, isLoadingMore) ||
                 other.isLoadingMore == isLoadingMore));
@@ -198,7 +200,7 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
   int get hashCode => Object.hash(
     runtimeType,
     const DeepCollectionEquality().hash(_items),
-    nextPage,
+    nextCursor,
     hasMore,
     isLoadingMore,
   );
@@ -218,7 +220,7 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
 abstract class _CommunityFeedState implements CommunityFeedState {
   const factory _CommunityFeedState({
     required final List<CommunityPostEntity> items,
-    required final int nextPage,
+    required final String? nextCursor,
     required final bool hasMore,
     final bool isLoadingMore,
   }) = _$CommunityFeedStateImpl;
@@ -226,9 +228,10 @@ abstract class _CommunityFeedState implements CommunityFeedState {
   @override
   List<CommunityPostEntity> get items;
 
-  /// 다음에 요청할 0-based 페이지 번호
+  /// 다음 요청에 그대로 실을 커서. 첫 페이지만 받은 직후에는 서버가 준
+  /// `nextCursor`가 들어 있고, 더 없으면 null이다.
   @override
-  int get nextPage;
+  String? get nextCursor;
   @override
   bool get hasMore;
   @override

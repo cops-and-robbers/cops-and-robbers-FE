@@ -19,13 +19,13 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
 
   @override
   Future<CommunityPostListResponseModel> getPosts({
-    required int page,
+    String? cursor,
     required int size,
     String? scope,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'page': page,
+      r'cursor': cursor,
       r'size': size,
       r'scope': scope,
     };

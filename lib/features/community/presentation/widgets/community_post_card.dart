@@ -62,9 +62,9 @@ class CommunityPostCard extends StatelessWidget {
             children: [
               _buildTitleRow(),
               SizedBox(height: AppSpacing.vertical12),
-              // 주소는 백엔드 추가 예정. 좌표만 있는 상태에서는 행 자체를 숨긴다.
-              if (post.address != null) ...[
-                _buildLocationRow(post.address!),
+              // 역지오코딩 실패로 주소가 없으면 행 자체를 숨긴다 (좌표는 무의미).
+              if (post.locationLabel != null) ...[
+                _buildLocationRow(post.locationLabel!),
                 SizedBox(height: AppSpacing.vertical8),
               ],
               _buildMetaRow(l10n),
@@ -98,7 +98,7 @@ class CommunityPostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationRow(String address) {
+  Widget _buildLocationRow(String label) {
     return Row(
       key: locationRowKey,
       children: [
@@ -110,7 +110,7 @@ class CommunityPostCard extends StatelessWidget {
         SizedBox(width: AppSpacing.horizontal4),
         Expanded(
           child: Text(
-            address,
+            label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.tag_12.copyWith(color: AppColors.black700),

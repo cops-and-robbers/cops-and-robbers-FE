@@ -22,30 +22,34 @@ CommunityPostEntity _post(int id) => CommunityPostEntity(
 );
 
 /// 시스템 경계 대체 — Repository 인터페이스만 가짜고 Notifier 로직은 실물이다.
+///
+/// [pagesByCursor]의 키는 요청에 실리는 커서다. 첫 요청은 커서가 없으므로 `null`.
 class _FakeCommunityRepository implements CommunityRepository {
-  _FakeCommunityRepository(this.pagesByIndex, {this.totalPages = 2});
+  _FakeCommunityRepository(this.pagesByCursor);
 
-  final Map<int, List<CommunityPostEntity>> pagesByIndex;
-  final int totalPages;
+  final Map<String?, ({List<CommunityPostEntity> items, String? next})>
+  pagesByCursor;
 
-  final List<int> requestedPages = [];
+  final List<String?> requestedCursors = [];
 
   @override
   Future<CommunityPostPageEntity> getPosts({
-    required int page,
+    String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
   }) async {
-    requestedPages.add(page);
+    requestedCursors.add(cursor);
+    final page =
+        pagesByCursor[cursor] ?? (items: <CommunityPostEntity>[], next: null);
     return CommunityPostPageEntity(
-      items: pagesByIndex[page] ?? const [],
-      currentPage: page,
-      totalPages: totalPages,
+      items: page.items,
+      nextCursor: page.next,
+      hasNext: page.next != null,
     );
   }
 }
 
-/// 0페이지는 즉시 응답하고, 1페이지(loadMore)는 외부에서 [secondPage]를
+/// 첫 페이지는 즉시 응답하고, 두 번째 페이지(loadMore)는 외부에서 [secondPage]를
 /// complete할 때까지 대기한다 — scope 전환이 응답 도착보다 먼저 끼어드는
 /// 경쟁 조건을 재현하기 위한 시스템 경계 대체.
 class _DelayedSecondPageRepository implements CommunityRepository {
@@ -56,16 +60,16 @@ class _DelayedSecondPageRepository implements CommunityRepository {
 
   @override
   Future<CommunityPostPageEntity> getPosts({
-    required int page,
+    String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
   }) {
-    if (page == 0) {
+    if (cursor == null) {
       return Future.value(
         CommunityPostPageEntity(
           items: firstPageItems,
-          currentPage: 0,
-          totalPages: 2,
+          nextCursor: 'c1',
+          hasNext: true,
         ),
       );
     }
@@ -85,8 +89,8 @@ void main() {
   group('CommunityFeedNotifier', () {
     test('appends_second_page_onto_first_when_load_more_called', () async {
       final repo = _FakeCommunityRepository({
-        0: [_post(1), _post(2)],
-        1: [_post(3), _post(4)],
+        null: (items: [_post(1), _post(2)], next: 'c1'),
+        'c1': (items: [_post(3), _post(4)], next: null),
       });
       final container = _containerWith(repo);
 
@@ -95,30 +99,15 @@ void main() {
 
       final state = container.read(communityFeedNotifierProvider).requireValue;
       expect(state.items.map((e) => e.id), [1, 2, 3, 4]);
-      expect(repo.requestedPages, [0, 1]);
+      // 커서는 이전 응답의 nextCursor를 그대로 실어 보낸다.
+      expect(repo.requestedCursors, [null, 'c1']);
     });
 
-    test('drops_duplicate_ids_when_next_page_repeats_a_post', () async {
-      // 오프셋 페이지네이션 드리프트 — 스크롤 중 새 글이 올라오면 목록이 밀려
-      // 이미 본 글이 다음 페이지에 다시 내려온다.
+    test('reports_no_more_pages_when_server_says_has_next_is_false', () async {
       final repo = _FakeCommunityRepository({
-        0: [_post(1), _post(2)],
-        1: [_post(2), _post(3)],
+        null: (items: [_post(1)], next: 'c1'),
+        'c1': (items: [_post(2)], next: null),
       });
-      final container = _containerWith(repo);
-
-      await container.read(communityFeedNotifierProvider.future);
-      await container.read(communityFeedNotifierProvider.notifier).loadMore();
-
-      final state = container.read(communityFeedNotifierProvider).requireValue;
-      expect(state.items.map((e) => e.id), [1, 2, 3]);
-    });
-
-    test('reports_no_more_pages_when_last_page_reached', () async {
-      final repo = _FakeCommunityRepository({
-        0: [_post(1)],
-        1: [_post(2)],
-      }, totalPages: 2);
       final container = _containerWith(repo);
 
       final first = await container.read(communityFeedNotifierProvider.future);
@@ -132,22 +121,22 @@ void main() {
 
     test('ignores_load_more_when_no_pages_remain', () async {
       final repo = _FakeCommunityRepository({
-        0: [_post(1)],
-      }, totalPages: 1);
+        null: (items: [_post(1)], next: null),
+      });
       final container = _containerWith(repo);
 
       await container.read(communityFeedNotifierProvider.future);
       await container.read(communityFeedNotifierProvider.notifier).loadMore();
 
       // 첫 조회 1번만. hasMore=false면 추가 요청이 나가면 안 된다.
-      expect(repo.requestedPages, [0]);
+      expect(repo.requestedCursors, [null]);
     });
 
     test('does_not_call_api_when_scope_is_nearby', () async {
-      // 백엔드에 scope 쿼리가 없다. 보내면 서버가 무시하고 전체를 주므로
-      // "우리 동네" 탭에 전국 글이 뜬다 — 호출 자체를 막는다.
+      // 백엔드가 scope=NEARBY에 400을 준다. 확정 실패를 왕복시키지 않고
+      // 호출 자체를 막는다 — 화면은 이 빈 상태를 "준비 중"으로 그린다.
       final repo = _FakeCommunityRepository({
-        0: [_post(1)],
+        null: (items: [_post(1)], next: null),
       });
       final container = _containerWith(repo);
 
@@ -157,14 +146,14 @@ void main() {
 
       final state = await container.read(communityFeedNotifierProvider.future);
 
-      expect(repo.requestedPages, isEmpty);
+      expect(repo.requestedCursors, isEmpty);
       expect(state.items, isEmpty);
       expect(state.hasMore, false);
     });
 
     test('refetches_from_first_page_when_scope_returns_to_all', () async {
       final repo = _FakeCommunityRepository({
-        0: [_post(1)],
+        null: (items: [_post(1)], next: null),
       });
       final container = _containerWith(repo);
 
@@ -178,8 +167,8 @@ void main() {
           .select(CommunityScope.all);
       await container.read(communityFeedNotifierProvider.future);
 
-      // 전체 → 내 모임(호출 없음) → 전체. 0페이지를 두 번 조회한다.
-      expect(repo.requestedPages, [0, 0]);
+      // 전체 → 내 모임(호출 없음) → 전체. 커서 없이 두 번 조회한다.
+      expect(repo.requestedCursors, [null, null]);
     });
 
     test(
@@ -207,8 +196,8 @@ void main() {
         secondPage.complete(
           CommunityPostPageEntity(
             items: [_post(2)],
-            currentPage: 1,
-            totalPages: 2,
+            nextCursor: null,
+            hasNext: false,
           ),
         );
         await loadMoreDone;

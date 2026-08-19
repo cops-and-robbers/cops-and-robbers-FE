@@ -22,9 +22,12 @@ class CommunityPostEntity with _$CommunityPostEntity {
     required CommunityPostStatus status,
     required DateTime createdAt,
 
-    /// 모임 장소 주소. 백엔드 추가 예정이라 지금은 항상 null이며,
-    /// null이면 카드에서 위치 행 자체를 그리지 않는다 (좌표는 사용자에게 무의미).
-    String? address,
+    /// 화면에 그대로 찍는 위치 한 줄. 서버가 주는 주소 3종(건물명·도로명·지번)
+    /// 중 가장 구체적인 것을 Repository가 골라 넣는다.
+    /// 역지오코딩이 실패하면 null이며, 그때는 카드가 위치 행 자체를 그리지 않는다
+    /// (좌표는 사용자에게 무의미). 지번/도로명을 따로 써야 하는 화면이 생기면
+    /// 그때 필드를 나눈다.
+    String? locationLabel,
 
     /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
     /// "0/10명"은 아무도 안 모인 것으로 오독된다.
@@ -38,15 +41,17 @@ class CommunityPostEntity with _$CommunityPostEntity {
   }) = _CommunityPostEntity;
 }
 
-/// 페이지네이션이 적용된 게시글 페이지 엔티티
+/// 커서 페이지네이션이 적용된 게시글 페이지 엔티티
 ///
-/// [currentPage]는 0-based. 무한 스크롤 누적은 presentation의
-/// `CommunityFeedState`가 담당하고, 여기는 서버 응답 한 장을 그대로 표현한다.
+/// 무한 스크롤 누적은 presentation의 `CommunityFeedState`가 담당하고,
+/// 여기는 서버 응답 한 장을 그대로 표현한다.
+/// [nextCursor]는 서버 내부 형식이라 해석하지 않고 다음 요청에 그대로 싣는다.
+/// [hasNext]가 false면 [nextCursor]는 null이다.
 @freezed
 class CommunityPostPageEntity with _$CommunityPostPageEntity {
   const factory CommunityPostPageEntity({
     required List<CommunityPostEntity> items,
-    required int currentPage,
-    required int totalPages,
+    required String? nextCursor,
+    required bool hasNext,
   }) = _CommunityPostPageEntity;
 }

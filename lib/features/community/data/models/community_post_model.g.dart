@@ -12,6 +12,8 @@ _$CommunityLocationModelImpl _$$CommunityLocationModelImplFromJson(
   latitude: (json['latitude'] as num).toDouble(),
   longitude: (json['longitude'] as num).toDouble(),
   address: json['address'] as String?,
+  roadAddress: json['roadAddress'] as String?,
+  buildingName: json['buildingName'] as String?,
 );
 
 Map<String, dynamic> _$$CommunityLocationModelImplToJson(
@@ -20,6 +22,22 @@ Map<String, dynamic> _$$CommunityLocationModelImplToJson(
   'latitude': instance.latitude,
   'longitude': instance.longitude,
   'address': instance.address,
+  'roadAddress': instance.roadAddress,
+  'buildingName': instance.buildingName,
+};
+
+_$CursorInfoModelImpl _$$CursorInfoModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$CursorInfoModelImpl(
+  nextCursor: json['nextCursor'] as String?,
+  hasNext: json['hasNext'] as bool,
+);
+
+Map<String, dynamic> _$$CursorInfoModelImplToJson(
+  _$CursorInfoModelImpl instance,
+) => <String, dynamic>{
+  'nextCursor': instance.nextCursor,
+  'hasNext': instance.hasNext,
 };
 
 _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
@@ -36,6 +54,7 @@ _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
   maxParticipants: (json['maxParticipants'] as num).toInt(),
   status: json['status'] as String,
   createdAt: DateTime.parse(json['createdAt'] as String),
+  writerNickname: json['writerNickname'] as String?,
   currentParticipants: (json['currentParticipants'] as num?)?.toInt(),
   likeCount: (json['likeCount'] as num?)?.toInt(),
   bookmarkCount: (json['bookmarkCount'] as num?)?.toInt(),
@@ -53,6 +72,7 @@ Map<String, dynamic> _$$CommunityPostResponseModelImplToJson(
   'maxParticipants': instance.maxParticipants,
   'status': instance.status,
   'createdAt': instance.createdAt.toIso8601String(),
+  'writerNickname': instance.writerNickname,
   'currentParticipants': instance.currentParticipants,
   'likeCount': instance.likeCount,
   'bookmarkCount': instance.bookmarkCount,
@@ -67,12 +87,12 @@ _$$CommunityPostListResponseModelImplFromJson(Map<String, dynamic> json) =>
                 CommunityPostResponseModel.fromJson(e as Map<String, dynamic>),
           )
           .toList(),
-      page: PageInfoModel.fromJson(json['page'] as Map<String, dynamic>),
+      cursor: CursorInfoModel.fromJson(json['cursor'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$CommunityPostListResponseModelImplToJson(
   _$CommunityPostListResponseModelImpl instance,
 ) => <String, dynamic>{
   'content': instance.content.map((e) => e.toJson()).toList(),
-  'page': instance.page.toJson(),
+  'cursor': instance.cursor.toJson(),
 };

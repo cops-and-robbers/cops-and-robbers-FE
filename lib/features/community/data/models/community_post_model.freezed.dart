@@ -26,9 +26,14 @@ mixin _$CommunityLocationModel {
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
 
-  /// 사람이 읽는 주소. 백엔드 추가 예정이라 지금은 항상 null이다.
-  /// 클라이언트 역지오코딩을 하지 않는 이유는 설계 문서 1절 참고.
+  /// 지번 주소 — `서울 광진구 군자동 98`
   String? get address => throw _privateConstructorUsedError;
+
+  /// 도로명 주소 — `서울특별시 광진구 능동로 209`. 도로명이 없는 지역이면 null.
+  String? get roadAddress => throw _privateConstructorUsedError;
+
+  /// 건물명 — `세종대학교`. 공터·공원·길 위 좌표면 null.
+  String? get buildingName => throw _privateConstructorUsedError;
 
   /// Serializes this CommunityLocationModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,7 +52,13 @@ abstract class $CommunityLocationModelCopyWith<$Res> {
     $Res Function(CommunityLocationModel) then,
   ) = _$CommunityLocationModelCopyWithImpl<$Res, CommunityLocationModel>;
   @useResult
-  $Res call({double latitude, double longitude, String? address});
+  $Res call({
+    double latitude,
+    double longitude,
+    String? address,
+    String? roadAddress,
+    String? buildingName,
+  });
 }
 
 /// @nodoc
@@ -71,6 +82,8 @@ class _$CommunityLocationModelCopyWithImpl<
     Object? latitude = null,
     Object? longitude = null,
     Object? address = freezed,
+    Object? roadAddress = freezed,
+    Object? buildingName = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -85,6 +98,14 @@ class _$CommunityLocationModelCopyWithImpl<
             address: freezed == address
                 ? _value.address
                 : address // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            roadAddress: freezed == roadAddress
+                ? _value.roadAddress
+                : roadAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            buildingName: freezed == buildingName
+                ? _value.buildingName
+                : buildingName // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -101,7 +122,13 @@ abstract class _$$CommunityLocationModelImplCopyWith<$Res>
   ) = __$$CommunityLocationModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({double latitude, double longitude, String? address});
+  $Res call({
+    double latitude,
+    double longitude,
+    String? address,
+    String? roadAddress,
+    String? buildingName,
+  });
 }
 
 /// @nodoc
@@ -122,6 +149,8 @@ class __$$CommunityLocationModelImplCopyWithImpl<$Res>
     Object? latitude = null,
     Object? longitude = null,
     Object? address = freezed,
+    Object? roadAddress = freezed,
+    Object? buildingName = freezed,
   }) {
     return _then(
       _$CommunityLocationModelImpl(
@@ -137,6 +166,14 @@ class __$$CommunityLocationModelImplCopyWithImpl<$Res>
             ? _value.address
             : address // ignore: cast_nullable_to_non_nullable
                   as String?,
+        roadAddress: freezed == roadAddress
+            ? _value.roadAddress
+            : roadAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        buildingName: freezed == buildingName
+            ? _value.buildingName
+            : buildingName // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -149,6 +186,8 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
     required this.latitude,
     required this.longitude,
     this.address,
+    this.roadAddress,
+    this.buildingName,
   });
 
   factory _$CommunityLocationModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -159,14 +198,21 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
   @override
   final double longitude;
 
-  /// 사람이 읽는 주소. 백엔드 추가 예정이라 지금은 항상 null이다.
-  /// 클라이언트 역지오코딩을 하지 않는 이유는 설계 문서 1절 참고.
+  /// 지번 주소 — `서울 광진구 군자동 98`
   @override
   final String? address;
 
+  /// 도로명 주소 — `서울특별시 광진구 능동로 209`. 도로명이 없는 지역이면 null.
+  @override
+  final String? roadAddress;
+
+  /// 건물명 — `세종대학교`. 공터·공원·길 위 좌표면 null.
+  @override
+  final String? buildingName;
+
   @override
   String toString() {
-    return 'CommunityLocationModel(latitude: $latitude, longitude: $longitude, address: $address)';
+    return 'CommunityLocationModel(latitude: $latitude, longitude: $longitude, address: $address, roadAddress: $roadAddress, buildingName: $buildingName)';
   }
 
   @override
@@ -178,12 +224,23 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
-            (identical(other.address, address) || other.address == address));
+            (identical(other.address, address) || other.address == address) &&
+            (identical(other.roadAddress, roadAddress) ||
+                other.roadAddress == roadAddress) &&
+            (identical(other.buildingName, buildingName) ||
+                other.buildingName == buildingName));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, latitude, longitude, address);
+  int get hashCode => Object.hash(
+    runtimeType,
+    latitude,
+    longitude,
+    address,
+    roadAddress,
+    buildingName,
+  );
 
   /// Create a copy of CommunityLocationModel
   /// with the given fields replaced by the non-null parameter values.
@@ -208,6 +265,8 @@ abstract class _CommunityLocationModel implements CommunityLocationModel {
     required final double latitude,
     required final double longitude,
     final String? address,
+    final String? roadAddress,
+    final String? buildingName,
   }) = _$CommunityLocationModelImpl;
 
   factory _CommunityLocationModel.fromJson(Map<String, dynamic> json) =
@@ -218,10 +277,17 @@ abstract class _CommunityLocationModel implements CommunityLocationModel {
   @override
   double get longitude;
 
-  /// 사람이 읽는 주소. 백엔드 추가 예정이라 지금은 항상 null이다.
-  /// 클라이언트 역지오코딩을 하지 않는 이유는 설계 문서 1절 참고.
+  /// 지번 주소 — `서울 광진구 군자동 98`
   @override
   String? get address;
+
+  /// 도로명 주소 — `서울특별시 광진구 능동로 209`. 도로명이 없는 지역이면 null.
+  @override
+  String? get roadAddress;
+
+  /// 건물명 — `세종대학교`. 공터·공원·길 위 좌표면 null.
+  @override
+  String? get buildingName;
 
   /// Create a copy of CommunityLocationModel
   /// with the given fields replaced by the non-null parameter values.
@@ -229,6 +295,181 @@ abstract class _CommunityLocationModel implements CommunityLocationModel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityLocationModelImplCopyWith<_$CommunityLocationModelImpl>
   get copyWith => throw _privateConstructorUsedError;
+}
+
+CursorInfoModel _$CursorInfoModelFromJson(Map<String, dynamic> json) {
+  return _CursorInfoModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CursorInfoModel {
+  String? get nextCursor => throw _privateConstructorUsedError;
+  bool get hasNext => throw _privateConstructorUsedError;
+
+  /// Serializes this CursorInfoModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CursorInfoModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CursorInfoModelCopyWith<CursorInfoModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CursorInfoModelCopyWith<$Res> {
+  factory $CursorInfoModelCopyWith(
+    CursorInfoModel value,
+    $Res Function(CursorInfoModel) then,
+  ) = _$CursorInfoModelCopyWithImpl<$Res, CursorInfoModel>;
+  @useResult
+  $Res call({String? nextCursor, bool hasNext});
+}
+
+/// @nodoc
+class _$CursorInfoModelCopyWithImpl<$Res, $Val extends CursorInfoModel>
+    implements $CursorInfoModelCopyWith<$Res> {
+  _$CursorInfoModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CursorInfoModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? nextCursor = freezed, Object? hasNext = null}) {
+    return _then(
+      _value.copyWith(
+            nextCursor: freezed == nextCursor
+                ? _value.nextCursor
+                : nextCursor // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            hasNext: null == hasNext
+                ? _value.hasNext
+                : hasNext // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CursorInfoModelImplCopyWith<$Res>
+    implements $CursorInfoModelCopyWith<$Res> {
+  factory _$$CursorInfoModelImplCopyWith(
+    _$CursorInfoModelImpl value,
+    $Res Function(_$CursorInfoModelImpl) then,
+  ) = __$$CursorInfoModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? nextCursor, bool hasNext});
+}
+
+/// @nodoc
+class __$$CursorInfoModelImplCopyWithImpl<$Res>
+    extends _$CursorInfoModelCopyWithImpl<$Res, _$CursorInfoModelImpl>
+    implements _$$CursorInfoModelImplCopyWith<$Res> {
+  __$$CursorInfoModelImplCopyWithImpl(
+    _$CursorInfoModelImpl _value,
+    $Res Function(_$CursorInfoModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CursorInfoModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? nextCursor = freezed, Object? hasNext = null}) {
+    return _then(
+      _$CursorInfoModelImpl(
+        nextCursor: freezed == nextCursor
+            ? _value.nextCursor
+            : nextCursor // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        hasNext: null == hasNext
+            ? _value.hasNext
+            : hasNext // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CursorInfoModelImpl implements _CursorInfoModel {
+  const _$CursorInfoModelImpl({
+    required this.nextCursor,
+    required this.hasNext,
+  });
+
+  factory _$CursorInfoModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CursorInfoModelImplFromJson(json);
+
+  @override
+  final String? nextCursor;
+  @override
+  final bool hasNext;
+
+  @override
+  String toString() {
+    return 'CursorInfoModel(nextCursor: $nextCursor, hasNext: $hasNext)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CursorInfoModelImpl &&
+            (identical(other.nextCursor, nextCursor) ||
+                other.nextCursor == nextCursor) &&
+            (identical(other.hasNext, hasNext) || other.hasNext == hasNext));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, nextCursor, hasNext);
+
+  /// Create a copy of CursorInfoModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CursorInfoModelImplCopyWith<_$CursorInfoModelImpl> get copyWith =>
+      __$$CursorInfoModelImplCopyWithImpl<_$CursorInfoModelImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CursorInfoModelImplToJson(this);
+  }
+}
+
+abstract class _CursorInfoModel implements CursorInfoModel {
+  const factory _CursorInfoModel({
+    required final String? nextCursor,
+    required final bool hasNext,
+  }) = _$CursorInfoModelImpl;
+
+  factory _CursorInfoModel.fromJson(Map<String, dynamic> json) =
+      _$CursorInfoModelImpl.fromJson;
+
+  @override
+  String? get nextCursor;
+  @override
+  bool get hasNext;
+
+  /// Create a copy of CursorInfoModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CursorInfoModelImplCopyWith<_$CursorInfoModelImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 CommunityPostResponseModel _$CommunityPostResponseModelFromJson(
@@ -247,7 +488,10 @@ mixin _$CommunityPostResponseModel {
   CommunityLocationModel get location => throw _privateConstructorUsedError;
   int get maxParticipants => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
-  DateTime get createdAt =>
+  DateTime get createdAt => throw _privateConstructorUsedError;
+
+  /// 작성자 닉네임. 탈퇴한 작성자면 null.
+  String? get writerNickname =>
       throw _privateConstructorUsedError; // ── 백엔드 추가 예정 ──
   int? get currentParticipants => throw _privateConstructorUsedError;
   int? get likeCount => throw _privateConstructorUsedError;
@@ -284,6 +528,7 @@ abstract class $CommunityPostResponseModelCopyWith<$Res> {
     int maxParticipants,
     String status,
     DateTime createdAt,
+    String? writerNickname,
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
@@ -319,6 +564,7 @@ class _$CommunityPostResponseModelCopyWithImpl<
     Object? maxParticipants = null,
     Object? status = null,
     Object? createdAt = null,
+    Object? writerNickname = freezed,
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
@@ -361,6 +607,10 @@ class _$CommunityPostResponseModelCopyWithImpl<
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            writerNickname: freezed == writerNickname
+                ? _value.writerNickname
+                : writerNickname // ignore: cast_nullable_to_non_nullable
+                      as String?,
             currentParticipants: freezed == currentParticipants
                 ? _value.currentParticipants
                 : currentParticipants // ignore: cast_nullable_to_non_nullable
@@ -408,6 +658,7 @@ abstract class _$$CommunityPostResponseModelImplCopyWith<$Res>
     int maxParticipants,
     String status,
     DateTime createdAt,
+    String? writerNickname,
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
@@ -444,6 +695,7 @@ class __$$CommunityPostResponseModelImplCopyWithImpl<$Res>
     Object? maxParticipants = null,
     Object? status = null,
     Object? createdAt = null,
+    Object? writerNickname = freezed,
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
@@ -486,6 +738,10 @@ class __$$CommunityPostResponseModelImplCopyWithImpl<$Res>
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        writerNickname: freezed == writerNickname
+            ? _value.writerNickname
+            : writerNickname // ignore: cast_nullable_to_non_nullable
+                  as String?,
         currentParticipants: freezed == currentParticipants
             ? _value.currentParticipants
             : currentParticipants // ignore: cast_nullable_to_non_nullable
@@ -516,6 +772,7 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
     required this.maxParticipants,
     required this.status,
     required this.createdAt,
+    this.writerNickname,
     this.currentParticipants,
     this.likeCount,
     this.bookmarkCount,
@@ -543,6 +800,10 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
   final String status;
   @override
   final DateTime createdAt;
+
+  /// 작성자 닉네임. 탈퇴한 작성자면 null.
+  @override
+  final String? writerNickname;
   // ── 백엔드 추가 예정 ──
   @override
   final int? currentParticipants;
@@ -553,7 +814,7 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
 
   @override
   String toString() {
-    return 'CommunityPostResponseModel(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
+    return 'CommunityPostResponseModel(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, writerNickname: $writerNickname, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
   }
 
   @override
@@ -575,6 +836,8 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
+            (identical(other.writerNickname, writerNickname) ||
+                other.writerNickname == writerNickname) &&
             (identical(other.currentParticipants, currentParticipants) ||
                 other.currentParticipants == currentParticipants) &&
             (identical(other.likeCount, likeCount) ||
@@ -596,6 +859,7 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
     maxParticipants,
     status,
     createdAt,
+    writerNickname,
     currentParticipants,
     likeCount,
     bookmarkCount,
@@ -630,6 +894,7 @@ abstract class _CommunityPostResponseModel
     required final int maxParticipants,
     required final String status,
     required final DateTime createdAt,
+    final String? writerNickname,
     final int? currentParticipants,
     final int? likeCount,
     final int? bookmarkCount,
@@ -655,7 +920,11 @@ abstract class _CommunityPostResponseModel
   @override
   String get status;
   @override
-  DateTime get createdAt; // ── 백엔드 추가 예정 ──
+  DateTime get createdAt;
+
+  /// 작성자 닉네임. 탈퇴한 작성자면 null.
+  @override
+  String? get writerNickname; // ── 백엔드 추가 예정 ──
   @override
   int? get currentParticipants;
   @override
@@ -681,7 +950,7 @@ CommunityPostListResponseModel _$CommunityPostListResponseModelFromJson(
 mixin _$CommunityPostListResponseModel {
   List<CommunityPostResponseModel> get content =>
       throw _privateConstructorUsedError;
-  PageInfoModel get page => throw _privateConstructorUsedError;
+  CursorInfoModel get cursor => throw _privateConstructorUsedError;
 
   /// Serializes this CommunityPostListResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -704,9 +973,9 @@ abstract class $CommunityPostListResponseModelCopyWith<$Res> {
         CommunityPostListResponseModel
       >;
   @useResult
-  $Res call({List<CommunityPostResponseModel> content, PageInfoModel page});
+  $Res call({List<CommunityPostResponseModel> content, CursorInfoModel cursor});
 
-  $PageInfoModelCopyWith<$Res> get page;
+  $CursorInfoModelCopyWith<$Res> get cursor;
 }
 
 /// @nodoc
@@ -726,17 +995,17 @@ class _$CommunityPostListResponseModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? content = null, Object? page = null}) {
+  $Res call({Object? content = null, Object? cursor = null}) {
     return _then(
       _value.copyWith(
             content: null == content
                 ? _value.content
                 : content // ignore: cast_nullable_to_non_nullable
                       as List<CommunityPostResponseModel>,
-            page: null == page
-                ? _value.page
-                : page // ignore: cast_nullable_to_non_nullable
-                      as PageInfoModel,
+            cursor: null == cursor
+                ? _value.cursor
+                : cursor // ignore: cast_nullable_to_non_nullable
+                      as CursorInfoModel,
           )
           as $Val,
     );
@@ -746,9 +1015,9 @@ class _$CommunityPostListResponseModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $PageInfoModelCopyWith<$Res> get page {
-    return $PageInfoModelCopyWith<$Res>(_value.page, (value) {
-      return _then(_value.copyWith(page: value) as $Val);
+  $CursorInfoModelCopyWith<$Res> get cursor {
+    return $CursorInfoModelCopyWith<$Res>(_value.cursor, (value) {
+      return _then(_value.copyWith(cursor: value) as $Val);
     });
   }
 }
@@ -762,10 +1031,10 @@ abstract class _$$CommunityPostListResponseModelImplCopyWith<$Res>
   ) = __$$CommunityPostListResponseModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CommunityPostResponseModel> content, PageInfoModel page});
+  $Res call({List<CommunityPostResponseModel> content, CursorInfoModel cursor});
 
   @override
-  $PageInfoModelCopyWith<$Res> get page;
+  $CursorInfoModelCopyWith<$Res> get cursor;
 }
 
 /// @nodoc
@@ -785,17 +1054,17 @@ class __$$CommunityPostListResponseModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? content = null, Object? page = null}) {
+  $Res call({Object? content = null, Object? cursor = null}) {
     return _then(
       _$CommunityPostListResponseModelImpl(
         content: null == content
             ? _value._content
             : content // ignore: cast_nullable_to_non_nullable
                   as List<CommunityPostResponseModel>,
-        page: null == page
-            ? _value.page
-            : page // ignore: cast_nullable_to_non_nullable
-                  as PageInfoModel,
+        cursor: null == cursor
+            ? _value.cursor
+            : cursor // ignore: cast_nullable_to_non_nullable
+                  as CursorInfoModel,
       ),
     );
   }
@@ -807,7 +1076,7 @@ class _$CommunityPostListResponseModelImpl
     implements _CommunityPostListResponseModel {
   const _$CommunityPostListResponseModelImpl({
     required final List<CommunityPostResponseModel> content,
-    required this.page,
+    required this.cursor,
   }) : _content = content;
 
   factory _$CommunityPostListResponseModelImpl.fromJson(
@@ -823,11 +1092,11 @@ class _$CommunityPostListResponseModelImpl
   }
 
   @override
-  final PageInfoModel page;
+  final CursorInfoModel cursor;
 
   @override
   String toString() {
-    return 'CommunityPostListResponseModel(content: $content, page: $page)';
+    return 'CommunityPostListResponseModel(content: $content, cursor: $cursor)';
   }
 
   @override
@@ -836,7 +1105,7 @@ class _$CommunityPostListResponseModelImpl
         (other.runtimeType == runtimeType &&
             other is _$CommunityPostListResponseModelImpl &&
             const DeepCollectionEquality().equals(other._content, _content) &&
-            (identical(other.page, page) || other.page == page));
+            (identical(other.cursor, cursor) || other.cursor == cursor));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -844,7 +1113,7 @@ class _$CommunityPostListResponseModelImpl
   int get hashCode => Object.hash(
     runtimeType,
     const DeepCollectionEquality().hash(_content),
-    page,
+    cursor,
   );
 
   /// Create a copy of CommunityPostListResponseModel
@@ -870,7 +1139,7 @@ abstract class _CommunityPostListResponseModel
     implements CommunityPostListResponseModel {
   const factory _CommunityPostListResponseModel({
     required final List<CommunityPostResponseModel> content,
-    required final PageInfoModel page,
+    required final CursorInfoModel cursor,
   }) = _$CommunityPostListResponseModelImpl;
 
   factory _CommunityPostListResponseModel.fromJson(Map<String, dynamic> json) =
@@ -879,7 +1148,7 @@ abstract class _CommunityPostListResponseModel
   @override
   List<CommunityPostResponseModel> get content;
   @override
-  PageInfoModel get page;
+  CursorInfoModel get cursor;
 
   /// Create a copy of CommunityPostListResponseModel
   /// with the given fields replaced by the non-null parameter values.

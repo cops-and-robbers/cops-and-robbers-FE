@@ -361,7 +361,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   maxParticipants: 10,
                   status: CommunityPostStatus.recruiting,
                   createdAt: DateTime(2026, 9, 1),
-                  address: '서울시 광진구 세종대학교',
+                  locationLabel: '서울시 광진구 세종대학교',
                   currentParticipants: 2,
                   likeCount: 6,
                   bookmarkCount: 3,

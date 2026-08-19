@@ -13,8 +13,9 @@ class CommunityFeedState with _$CommunityFeedState {
   const factory CommunityFeedState({
     required List<CommunityPostEntity> items,
 
-    /// 다음에 요청할 0-based 페이지 번호
-    required int nextPage,
+    /// 다음 요청에 그대로 실을 커서. 첫 페이지만 받은 직후에는 서버가 준
+    /// `nextCursor`가 들어 있고, 더 없으면 null이다.
+    required String? nextCursor,
     required bool hasMore,
     @Default(false) bool isLoadingMore,
   }) = _CommunityFeedState;

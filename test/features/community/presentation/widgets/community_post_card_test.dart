@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 CommunityPostEntity _post({
   CommunityPostStatus status = CommunityPostStatus.recruiting,
-  String? address,
+  String? locationLabel,
   int? currentParticipants,
   int? likeCount,
   int? bookmarkCount,
@@ -24,7 +24,7 @@ CommunityPostEntity _post({
   maxParticipants: 10,
   status: status,
   createdAt: DateTime(2026, 9, 1),
-  address: address,
+  locationLabel: locationLabel,
   currentParticipants: currentParticipants,
   likeCount: likeCount,
   bookmarkCount: bookmarkCount,
@@ -47,23 +47,24 @@ Widget _wrap(Widget child) => ScreenUtilInit(
 
 void main() {
   group('CommunityPostCard', () {
-    testWidgets('hides_location_row_when_address_is_not_provided_yet', (
-      tester,
-    ) async {
-      // 백엔드 address 도착 전. 좌표 문자열은 사용자에게 무의미하므로 행을 숨긴다.
+    testWidgets('hides_location_row_when_geocoding_failed', (tester) async {
+      // 역지오코딩 실패로 주소 3종이 전부 null인 글. 좌표 문자열은 사용자에게
+      // 무의미하므로 행을 숨긴다.
       await tester.pumpWidget(_wrap(CommunityPostCard(post: _post())));
       await tester.pumpAndSettle();
 
       expect(find.byKey(CommunityPostCard.locationRowKey), findsNothing);
     });
 
-    testWidgets('shows_address_when_backend_provides_it', (tester) async {
+    testWidgets('shows_location_label_when_backend_provides_it', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        _wrap(CommunityPostCard(post: _post(address: '서울시 광진구 세종대학교'))),
+        _wrap(CommunityPostCard(post: _post(locationLabel: '세종대학교'))),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('서울시 광진구 세종대학교'), findsOneWidget);
+      expect(find.text('세종대학교'), findsOneWidget);
       expect(find.byKey(CommunityPostCard.locationRowKey), findsOneWidget);
     });
 

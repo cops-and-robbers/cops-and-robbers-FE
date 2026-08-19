@@ -28,9 +28,12 @@ mixin _$CommunityPostEntity {
   CommunityPostStatus get status => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
-  /// 모임 장소 주소. 백엔드 추가 예정이라 지금은 항상 null이며,
-  /// null이면 카드에서 위치 행 자체를 그리지 않는다 (좌표는 사용자에게 무의미).
-  String? get address => throw _privateConstructorUsedError;
+  /// 화면에 그대로 찍는 위치 한 줄. 서버가 주는 주소 3종(건물명·도로명·지번)
+  /// 중 가장 구체적인 것을 Repository가 골라 넣는다.
+  /// 역지오코딩이 실패하면 null이며, 그때는 카드가 위치 행 자체를 그리지 않는다
+  /// (좌표는 사용자에게 무의미). 지번/도로명을 따로 써야 하는 화면이 생기면
+  /// 그때 필드를 나눈다.
+  String? get locationLabel => throw _privateConstructorUsedError;
 
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
@@ -67,7 +70,7 @@ abstract class $CommunityPostEntityCopyWith<$Res> {
     int maxParticipants,
     CommunityPostStatus status,
     DateTime createdAt,
-    String? address,
+    String? locationLabel,
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
@@ -99,7 +102,7 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
     Object? maxParticipants = null,
     Object? status = null,
     Object? createdAt = null,
-    Object? address = freezed,
+    Object? locationLabel = freezed,
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
@@ -146,9 +149,9 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            address: freezed == address
-                ? _value.address
-                : address // ignore: cast_nullable_to_non_nullable
+            locationLabel: freezed == locationLabel
+                ? _value.locationLabel
+                : locationLabel // ignore: cast_nullable_to_non_nullable
                       as String?,
             currentParticipants: freezed == currentParticipants
                 ? _value.currentParticipants
@@ -188,7 +191,7 @@ abstract class _$$CommunityPostEntityImplCopyWith<$Res>
     int maxParticipants,
     CommunityPostStatus status,
     DateTime createdAt,
-    String? address,
+    String? locationLabel,
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
@@ -219,7 +222,7 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
     Object? maxParticipants = null,
     Object? status = null,
     Object? createdAt = null,
-    Object? address = freezed,
+    Object? locationLabel = freezed,
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
@@ -266,9 +269,9 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        address: freezed == address
-            ? _value.address
-            : address // ignore: cast_nullable_to_non_nullable
+        locationLabel: freezed == locationLabel
+            ? _value.locationLabel
+            : locationLabel // ignore: cast_nullable_to_non_nullable
                   as String?,
         currentParticipants: freezed == currentParticipants
             ? _value.currentParticipants
@@ -301,7 +304,7 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
     required this.maxParticipants,
     required this.status,
     required this.createdAt,
-    this.address,
+    this.locationLabel,
     this.currentParticipants,
     this.likeCount,
     this.bookmarkCount,
@@ -328,10 +331,13 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
   @override
   final DateTime createdAt;
 
-  /// 모임 장소 주소. 백엔드 추가 예정이라 지금은 항상 null이며,
-  /// null이면 카드에서 위치 행 자체를 그리지 않는다 (좌표는 사용자에게 무의미).
+  /// 화면에 그대로 찍는 위치 한 줄. 서버가 주는 주소 3종(건물명·도로명·지번)
+  /// 중 가장 구체적인 것을 Repository가 골라 넣는다.
+  /// 역지오코딩이 실패하면 null이며, 그때는 카드가 위치 행 자체를 그리지 않는다
+  /// (좌표는 사용자에게 무의미). 지번/도로명을 따로 써야 하는 화면이 생기면
+  /// 그때 필드를 나눈다.
   @override
-  final String? address;
+  final String? locationLabel;
 
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
@@ -348,7 +354,7 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
 
   @override
   String toString() {
-    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
+    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, locationLabel: $locationLabel, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
   }
 
   @override
@@ -372,7 +378,8 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            (identical(other.address, address) || other.address == address) &&
+            (identical(other.locationLabel, locationLabel) ||
+                other.locationLabel == locationLabel) &&
             (identical(other.currentParticipants, currentParticipants) ||
                 other.currentParticipants == currentParticipants) &&
             (identical(other.likeCount, likeCount) ||
@@ -394,7 +401,7 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
     maxParticipants,
     status,
     createdAt,
-    address,
+    locationLabel,
     currentParticipants,
     likeCount,
     bookmarkCount,
@@ -424,7 +431,7 @@ abstract class _CommunityPostEntity implements CommunityPostEntity {
     required final int maxParticipants,
     required final CommunityPostStatus status,
     required final DateTime createdAt,
-    final String? address,
+    final String? locationLabel,
     final int? currentParticipants,
     final int? likeCount,
     final int? bookmarkCount,
@@ -451,10 +458,13 @@ abstract class _CommunityPostEntity implements CommunityPostEntity {
   @override
   DateTime get createdAt;
 
-  /// 모임 장소 주소. 백엔드 추가 예정이라 지금은 항상 null이며,
-  /// null이면 카드에서 위치 행 자체를 그리지 않는다 (좌표는 사용자에게 무의미).
+  /// 화면에 그대로 찍는 위치 한 줄. 서버가 주는 주소 3종(건물명·도로명·지번)
+  /// 중 가장 구체적인 것을 Repository가 골라 넣는다.
+  /// 역지오코딩이 실패하면 null이며, 그때는 카드가 위치 행 자체를 그리지 않는다
+  /// (좌표는 사용자에게 무의미). 지번/도로명을 따로 써야 하는 화면이 생기면
+  /// 그때 필드를 나눈다.
   @override
-  String? get address;
+  String? get locationLabel;
 
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
@@ -480,8 +490,8 @@ abstract class _CommunityPostEntity implements CommunityPostEntity {
 /// @nodoc
 mixin _$CommunityPostPageEntity {
   List<CommunityPostEntity> get items => throw _privateConstructorUsedError;
-  int get currentPage => throw _privateConstructorUsedError;
-  int get totalPages => throw _privateConstructorUsedError;
+  String? get nextCursor => throw _privateConstructorUsedError;
+  bool get hasNext => throw _privateConstructorUsedError;
 
   /// Create a copy of CommunityPostPageEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -497,7 +507,11 @@ abstract class $CommunityPostPageEntityCopyWith<$Res> {
     $Res Function(CommunityPostPageEntity) then,
   ) = _$CommunityPostPageEntityCopyWithImpl<$Res, CommunityPostPageEntity>;
   @useResult
-  $Res call({List<CommunityPostEntity> items, int currentPage, int totalPages});
+  $Res call({
+    List<CommunityPostEntity> items,
+    String? nextCursor,
+    bool hasNext,
+  });
 }
 
 /// @nodoc
@@ -519,8 +533,8 @@ class _$CommunityPostPageEntityCopyWithImpl<
   @override
   $Res call({
     Object? items = null,
-    Object? currentPage = null,
-    Object? totalPages = null,
+    Object? nextCursor = freezed,
+    Object? hasNext = null,
   }) {
     return _then(
       _value.copyWith(
@@ -528,14 +542,14 @@ class _$CommunityPostPageEntityCopyWithImpl<
                 ? _value.items
                 : items // ignore: cast_nullable_to_non_nullable
                       as List<CommunityPostEntity>,
-            currentPage: null == currentPage
-                ? _value.currentPage
-                : currentPage // ignore: cast_nullable_to_non_nullable
-                      as int,
-            totalPages: null == totalPages
-                ? _value.totalPages
-                : totalPages // ignore: cast_nullable_to_non_nullable
-                      as int,
+            nextCursor: freezed == nextCursor
+                ? _value.nextCursor
+                : nextCursor // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            hasNext: null == hasNext
+                ? _value.hasNext
+                : hasNext // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -551,7 +565,11 @@ abstract class _$$CommunityPostPageEntityImplCopyWith<$Res>
   ) = __$$CommunityPostPageEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CommunityPostEntity> items, int currentPage, int totalPages});
+  $Res call({
+    List<CommunityPostEntity> items,
+    String? nextCursor,
+    bool hasNext,
+  });
 }
 
 /// @nodoc
@@ -573,8 +591,8 @@ class __$$CommunityPostPageEntityImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? items = null,
-    Object? currentPage = null,
-    Object? totalPages = null,
+    Object? nextCursor = freezed,
+    Object? hasNext = null,
   }) {
     return _then(
       _$CommunityPostPageEntityImpl(
@@ -582,14 +600,14 @@ class __$$CommunityPostPageEntityImplCopyWithImpl<$Res>
             ? _value._items
             : items // ignore: cast_nullable_to_non_nullable
                   as List<CommunityPostEntity>,
-        currentPage: null == currentPage
-            ? _value.currentPage
-            : currentPage // ignore: cast_nullable_to_non_nullable
-                  as int,
-        totalPages: null == totalPages
-            ? _value.totalPages
-            : totalPages // ignore: cast_nullable_to_non_nullable
-                  as int,
+        nextCursor: freezed == nextCursor
+            ? _value.nextCursor
+            : nextCursor // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        hasNext: null == hasNext
+            ? _value.hasNext
+            : hasNext // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -600,8 +618,8 @@ class __$$CommunityPostPageEntityImplCopyWithImpl<$Res>
 class _$CommunityPostPageEntityImpl implements _CommunityPostPageEntity {
   const _$CommunityPostPageEntityImpl({
     required final List<CommunityPostEntity> items,
-    required this.currentPage,
-    required this.totalPages,
+    required this.nextCursor,
+    required this.hasNext,
   }) : _items = items;
 
   final List<CommunityPostEntity> _items;
@@ -613,13 +631,13 @@ class _$CommunityPostPageEntityImpl implements _CommunityPostPageEntity {
   }
 
   @override
-  final int currentPage;
+  final String? nextCursor;
   @override
-  final int totalPages;
+  final bool hasNext;
 
   @override
   String toString() {
-    return 'CommunityPostPageEntity(items: $items, currentPage: $currentPage, totalPages: $totalPages)';
+    return 'CommunityPostPageEntity(items: $items, nextCursor: $nextCursor, hasNext: $hasNext)';
   }
 
   @override
@@ -628,18 +646,17 @@ class _$CommunityPostPageEntityImpl implements _CommunityPostPageEntity {
         (other.runtimeType == runtimeType &&
             other is _$CommunityPostPageEntityImpl &&
             const DeepCollectionEquality().equals(other._items, _items) &&
-            (identical(other.currentPage, currentPage) ||
-                other.currentPage == currentPage) &&
-            (identical(other.totalPages, totalPages) ||
-                other.totalPages == totalPages));
+            (identical(other.nextCursor, nextCursor) ||
+                other.nextCursor == nextCursor) &&
+            (identical(other.hasNext, hasNext) || other.hasNext == hasNext));
   }
 
   @override
   int get hashCode => Object.hash(
     runtimeType,
     const DeepCollectionEquality().hash(_items),
-    currentPage,
-    totalPages,
+    nextCursor,
+    hasNext,
   );
 
   /// Create a copy of CommunityPostPageEntity
@@ -657,16 +674,16 @@ class _$CommunityPostPageEntityImpl implements _CommunityPostPageEntity {
 abstract class _CommunityPostPageEntity implements CommunityPostPageEntity {
   const factory _CommunityPostPageEntity({
     required final List<CommunityPostEntity> items,
-    required final int currentPage,
-    required final int totalPages,
+    required final String? nextCursor,
+    required final bool hasNext,
   }) = _$CommunityPostPageEntityImpl;
 
   @override
   List<CommunityPostEntity> get items;
   @override
-  int get currentPage;
+  String? get nextCursor;
   @override
-  int get totalPages;
+  bool get hasNext;
 
   /// Create a copy of CommunityPostPageEntity
   /// with the given fields replaced by the non-null parameter values.

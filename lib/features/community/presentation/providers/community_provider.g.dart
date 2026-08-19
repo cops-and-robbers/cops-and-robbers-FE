@@ -81,9 +81,10 @@ String _$selectedCommunitySortHash() =>
 
 /// 현재 선택된 정렬 기준.
 ///
-/// 아직 `CommunityFeedNotifier`가 watch하지 않는다 — 백엔드에 `sort` 쿼리가 없어
-/// 보낼 곳이 없기 때문이다. 지금은 정렬 라벨 표시 전용이며, 쿼리가 생기면
-/// `SelectedCommunityScope`와 같은 방식으로 build()에서 watch해 연결한다.
+/// 아직 `CommunityFeedNotifier`가 watch하지 않는다 — 백엔드가 `sort` 파라미터를
+/// 받긴 하지만 기본값 `LATEST` 외에는 400이라 보낼 값이 없기 때문이다. 지금은
+/// 정렬 라벨 표시 전용이며, 다른 값이 열리면 `SelectedCommunityScope`와 같은
+/// 방식으로 build()에서 watch해 연결한다.
 ///
 /// Copied from [SelectedCommunitySort].
 @ProviderFor(SelectedCommunitySort)
@@ -103,7 +104,7 @@ final selectedCommunitySortProvider =
 
 typedef _$SelectedCommunitySort = AutoDisposeNotifier<CommunitySortOption>;
 String _$communityFeedNotifierHash() =>
-    r'1c33af1d9be38a243f241b7afe9d72904250ade0';
+    r'51395379b30b9ac706118781761ebe28cadc7922';
 
 /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
 ///

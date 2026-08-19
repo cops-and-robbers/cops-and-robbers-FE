@@ -35,12 +35,16 @@ class _FakeCommunityRepository implements CommunityRepository {
 
   @override
   Future<CommunityPostPageEntity> getPosts({
-    required int page,
+    String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
   }) async {
     callCount++;
-    return CommunityPostPageEntity(items: items, currentPage: 0, totalPages: 1);
+    return CommunityPostPageEntity(
+      items: items,
+      nextCursor: null,
+      hasNext: false,
+    );
   }
 }
 
@@ -53,7 +57,7 @@ class _ThrowingCommunityRepository implements CommunityRepository {
 
   @override
   Future<CommunityPostPageEntity> getPosts({
-    required int page,
+    String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
   }) async {
@@ -71,7 +75,7 @@ class _RecoveringCommunityRepository implements CommunityRepository {
 
   @override
   Future<CommunityPostPageEntity> getPosts({
-    required int page,
+    String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
   }) async {
@@ -79,7 +83,11 @@ class _RecoveringCommunityRepository implements CommunityRepository {
     if (callCount == 1) {
       throw const ServerException(message: '서버 오류');
     }
-    return CommunityPostPageEntity(items: items, currentPage: 0, totalPages: 1);
+    return CommunityPostPageEntity(
+      items: items,
+      nextCursor: null,
+      hasNext: false,
+    );
   }
 }
 

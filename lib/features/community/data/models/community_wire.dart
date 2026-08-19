@@ -30,8 +30,8 @@ extension CommunityScopeQuery on CommunityScope {
   /// `null`이면 Retrofit이 생성한 `removeWhere((k, v) => v == null)`가
   /// 파라미터 자체를 제외하므로 "전체 = 파라미터 생략"이 그대로 표현된다.
   ///
-  /// 주의: 백엔드가 `scope`를 아직 모른다. Spring은 모르는 쿼리 파라미터를
-  /// 무시하므로 `NEARBY`를 보내면 전체 목록이 돌아온다 — 지원 전까지 호출자가
+  /// 주의: 백엔드가 `scope` 파라미터는 받지만 `NEARBY`·`MINE`은 아직
+  /// 400(`UNSUPPORTED_LIST_SCOPE`)이다 — 지원 전까지 호출자가
   /// [CommunityScope.all]만 넘겨야 한다.
   String? get queryValue => switch (this) {
     CommunityScope.all => null,

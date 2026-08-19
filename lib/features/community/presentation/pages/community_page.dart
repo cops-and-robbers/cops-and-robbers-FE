@@ -45,7 +45,7 @@ final List<CommunityPostEntity> _mockPosts = [
     maxParticipants: 10,
     status: CommunityPostStatus.recruiting,
     createdAt: DateTime(2026, 8, 16),
-    address: '서울시 광진구 세종대학교',
+    locationLabel: '서울시 광진구 세종대학교',
     currentParticipants: 2,
     likeCount: 6000,
     bookmarkCount: 3,
@@ -61,7 +61,7 @@ final List<CommunityPostEntity> _mockPosts = [
     maxParticipants: 10,
     status: CommunityPostStatus.recruiting,
     createdAt: DateTime(2026, 8, 16),
-    address: '경기도 의왕시 백운호수 무민공원',
+    locationLabel: '경기도 의왕시 백운호수 무민공원',
     currentParticipants: 6,
     likeCount: 5,
     bookmarkCount: 2,
@@ -77,7 +77,7 @@ final List<CommunityPostEntity> _mockPosts = [
     maxParticipants: 15,
     status: CommunityPostStatus.completed,
     createdAt: DateTime(2026, 8, 10),
-    address: '서울시 광진구 어린이대공원 정문',
+    locationLabel: '서울시 광진구 어린이대공원 정문',
     currentParticipants: 15,
     likeCount: 13,
     bookmarkCount: 20,
@@ -93,7 +93,7 @@ final List<CommunityPostEntity> _mockPosts = [
     maxParticipants: 15,
     status: CommunityPostStatus.completed,
     createdAt: DateTime(2026, 8, 5),
-    address: '서울시 광진구 세종대학교',
+    locationLabel: '서울시 광진구 세종대학교',
     currentParticipants: 15,
     likeCount: 13,
     bookmarkCount: 20,
@@ -276,9 +276,9 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     final picked = await CommunitySortSheet.show(context, selected: current);
     if (picked == null || picked == current || !mounted) return;
 
-    // 백엔드에 sort 쿼리가 없다. 선택을 반영하면 라벨만 "인기순"으로 바뀌고 목록은
-    // 최신순 그대로라, 에러 없이 틀린 화면이 된다 — scope의 NEARBY/MINE과 같은 함정이다.
-    // sort 쿼리가 생기면 이 분기를 지우고 select()만 남긴다.
+    // 백엔드가 sort=LATEST 외에는 400을 준다. 선택을 반영하면 라벨만 "인기순"으로
+    // 바뀌고 목록은 최신순 그대로라, 에러 없이 틀린 화면이 된다 — scope의
+    // NEARBY/MINE과 같은 함정이다. 다른 값이 열리면 이 분기를 지우고 select()만 남긴다.
     if (picked != CommunitySortOption.latest) {
       AppSnackbar.show(
         context,
@@ -310,12 +310,16 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
       return _wrapWithCreateButton(
         createButton,
         _buildList(
-          CommunityFeedState(items: _mockPosts, nextPage: 0, hasMore: false),
+          CommunityFeedState(
+            items: _mockPosts,
+            nextCursor: null,
+            hasMore: false,
+          ),
         ),
       );
     }
 
-    // 우리 동네 / 내 모임은 백엔드 scope 쿼리가 없어 Notifier가 호출을 건너뛴다.
+    // 우리 동네 / 내 모임은 백엔드가 아직 400을 주므로 Notifier가 호출을 건너뛴다.
     // 작성 버튼은 새 글을 쓰는 진입점 자체라 어느 탭이든 동일하게 떠 있어야 한다.
     if (scope != CommunityScope.all) {
       return _wrapWithCreateButton(

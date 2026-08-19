@@ -20,20 +20,20 @@ class CommunityRepositoryImpl implements CommunityRepository {
 
   @override
   Future<CommunityPostPageEntity> getPosts({
-    required int page,
+    String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
   }) async {
     try {
       final res = await _dataSource.getPosts(
-        page: page,
+        cursor: cursor,
         size: size,
         scope: scope.queryValue,
       );
       return CommunityPostPageEntity(
         items: res.content.map(_toEntity).toList(),
-        currentPage: res.page.number,
-        totalPages: res.page.totalPages,
+        nextCursor: res.cursor.nextCursor,
+        hasNext: res.cursor.hasNext,
       );
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
@@ -61,7 +61,12 @@ class CommunityRepositoryImpl implements CommunityRepository {
         createdAt: m.createdAt.toLocal(),
         latitude: m.location.latitude,
         longitude: m.location.longitude,
-        address: m.location.address,
+        // 있는 것 중 가장 구체적인 표기를 고른다. 셋 다 null이면(역지오코딩 실패)
+        // 그대로 null이 되고 카드가 위치 행을 숨긴다.
+        locationLabel:
+            m.location.buildingName ??
+            m.location.roadAddress ??
+            m.location.address,
         maxParticipants: m.maxParticipants,
         currentParticipants: m.currentParticipants,
         likeCount: m.likeCount,

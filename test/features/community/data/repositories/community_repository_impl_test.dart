@@ -1,5 +1,4 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
-import 'package:cops_and_robbers/core/network/models/page_info_model.dart';
 import 'package:cops_and_robbers/features/community/data/datasources/community_remote_datasource.dart';
 import 'package:cops_and_robbers/features/community/data/models/community_post_model.dart';
 import 'package:cops_and_robbers/features/community/data/repositories/community_repository_impl.dart';
@@ -14,17 +13,17 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
   Object? errorToThrow;
 
   String? lastScope;
-  int? lastPage;
+  String? lastCursor;
   bool called = false;
 
   @override
   Future<CommunityPostListResponseModel> getPosts({
-    required int page,
+    String? cursor,
     required int size,
     String? scope,
   }) async {
     called = true;
-    lastPage = page;
+    lastCursor = cursor;
     lastScope = scope;
     if (errorToThrow != null) throw errorToThrow!;
     return responseToReturn!;
@@ -54,6 +53,7 @@ Map<String, dynamic> _postJson({
 }) => {
   'id': id,
   'writerId': 7,
+  'writerNickname': '무서운경찰관',
   'title': '같이 경찰과 도둑 하실 분!',
   'content': '강남역 근처에서 5명 모집합니다.',
   'meetingAt': '2026-08-10T14:00:00+09:00',
@@ -66,16 +66,11 @@ Map<String, dynamic> _postJson({
 
 CommunityPostListResponseModel _listOf(
   List<Map<String, dynamic>> jsons, {
-  int number = 0,
-  int totalPages = 1,
+  String? nextCursor,
+  bool hasNext = false,
 }) => CommunityPostListResponseModel(
   content: jsons.map(CommunityPostResponseModel.fromJson).toList(),
-  page: PageInfoModel(
-    size: jsons.length,
-    number: number,
-    totalElements: jsons.length,
-    totalPages: totalPages,
-  ),
+  cursor: CursorInfoModel(nextCursor: nextCursor, hasNext: hasNext),
 );
 
 void main() {
@@ -88,10 +83,82 @@ void main() {
         ]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final result = await repo.getPosts(page: 0, size: 20);
+      final result = await repo.getPosts(size: 20);
 
       expect(result.items[0].status, CommunityPostStatus.recruiting);
       expect(result.items[1].status, CommunityPostStatus.completed);
+    });
+
+    test('prefers_building_name_for_location_label', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([
+          _postJson(
+            location: {
+              'latitude': 37.4979,
+              'longitude': 127.0276,
+              'address': '서울 광진구 군자동 98',
+              'roadAddress': '서울특별시 광진구 능동로 209',
+              'buildingName': '세종대학교',
+            },
+          ),
+        ]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      final entity = (await repo.getPosts(size: 20)).items.single;
+
+      expect(entity.locationLabel, '세종대학교');
+    });
+
+    test('falls_back_to_road_address_when_building_name_is_missing', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([
+          _postJson(
+            location: {
+              'latitude': 37.4979,
+              'longitude': 127.0276,
+              'address': '서울 광진구 군자동 98',
+              'roadAddress': '서울특별시 광진구 능동로 209',
+            },
+          ),
+        ]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      final entity = (await repo.getPosts(size: 20)).items.single;
+
+      expect(entity.locationLabel, '서울특별시 광진구 능동로 209');
+    });
+
+    test('falls_back_to_lot_address_when_road_address_is_missing', () async {
+      // 도로명이 없는 지역 — 지번만 내려온다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([
+          _postJson(
+            location: {
+              'latitude': 37.4979,
+              'longitude': 127.0276,
+              'address': '서울 광진구 군자동 98',
+            },
+          ),
+        ]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      final entity = (await repo.getPosts(size: 20)).items.single;
+
+      expect(entity.locationLabel, '서울 광진구 군자동 98');
+    });
+
+    test('leaves_location_label_null_when_geocoding_failed', () async {
+      // 셋 다 null이면 카드가 위치 행을 숨긴다 — 좌표는 사용자에게 무의미하다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([_postJson()]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      final entity = (await repo.getPosts(size: 20)).items.single;
+
+      expect(entity.locationLabel, isNull);
+      // 좌표는 상세 지도용으로 그대로 살아 있어야 한다.
+      expect(entity.latitude, 37.4979);
+      expect(entity.longitude, 127.0276);
     });
 
     test('leaves_pending_backend_fields_null_when_absent', () async {
@@ -99,42 +166,12 @@ void main() {
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final entity = (await repo.getPosts(page: 0, size: 20)).items.single;
+      final entity = (await repo.getPosts(size: 20)).items.single;
 
-      expect(entity.address, isNull);
       expect(entity.currentParticipants, isNull);
       expect(entity.likeCount, isNull);
       expect(entity.bookmarkCount, isNull);
-      // 있는 값은 정상 매핑되어야 한다.
       expect(entity.maxParticipants, 10);
-      expect(entity.latitude, 37.4979);
-      expect(entity.longitude, 127.0276);
-    });
-
-    test('carries_pending_backend_fields_into_entity_when_present', () async {
-      final fake = _FakeCommunityRemoteDataSource()
-        ..responseToReturn = _listOf([
-          _postJson(
-            location: {
-              'latitude': 37.4979,
-              'longitude': 127.0276,
-              'address': '서울시 광진구 세종대학교',
-            },
-            extra: {
-              'currentParticipants': 2,
-              'likeCount': 6,
-              'bookmarkCount': 3,
-            },
-          ),
-        ]);
-      final repo = CommunityRepositoryImpl(fake);
-
-      final entity = (await repo.getPosts(page: 0, size: 20)).items.single;
-
-      expect(entity.address, '서울시 광진구 세종대학교');
-      expect(entity.currentParticipants, 2);
-      expect(entity.likeCount, 6);
-      expect(entity.bookmarkCount, 3);
     });
 
     test('normalizes_kst_timestamps_to_device_local_time', () async {
@@ -144,7 +181,7 @@ void main() {
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final entity = (await repo.getPosts(page: 0, size: 20)).items.single;
+      final entity = (await repo.getPosts(size: 20)).items.single;
 
       expect(entity.meetingAt.isUtc, false);
       expect(
@@ -153,26 +190,52 @@ void main() {
       );
     });
 
+    test('omits_cursor_query_on_first_request', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([_postJson()]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.getPosts(size: 20);
+
+      expect(fake.called, true);
+      expect(fake.lastCursor, isNull);
+    });
+
+    test('forwards_cursor_verbatim_when_loading_next_page', () async {
+      // 커서 문자열은 서버 내부 형식이다 — 열어보거나 가공하지 않는다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([_postJson()]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.getPosts(cursor: 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg', size: 20);
+
+      expect(fake.lastCursor, 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg');
+    });
+
     test('omits_scope_query_when_scope_is_all', () async {
       final fake = _FakeCommunityRemoteDataSource()
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      await repo.getPosts(page: 0, size: 20, scope: CommunityScope.all);
+      await repo.getPosts(size: 20, scope: CommunityScope.all);
 
       expect(fake.called, true);
       expect(fake.lastScope, isNull);
     });
 
-    test('maps_page_envelope_to_page_entity', () async {
+    test('maps_cursor_envelope_to_page_entity', () async {
       final fake = _FakeCommunityRemoteDataSource()
-        ..responseToReturn = _listOf([_postJson()], number: 2, totalPages: 5);
+        ..responseToReturn = _listOf(
+          [_postJson()],
+          nextCursor: 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg',
+          hasNext: true,
+        );
       final repo = CommunityRepositoryImpl(fake);
 
-      final result = await repo.getPosts(page: 2, size: 20);
+      final result = await repo.getPosts(size: 20);
 
-      expect(result.currentPage, 2);
-      expect(result.totalPages, 5);
+      expect(result.nextCursor, 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg');
+      expect(result.hasNext, true);
     });
 
     test('wraps_dio_error_into_app_exception', () async {
@@ -180,10 +243,7 @@ void main() {
         ..errorToThrow = _dioError(500);
       final repo = CommunityRepositoryImpl(fake);
 
-      expect(
-        () => repo.getPosts(page: 0, size: 20),
-        throwsA(isA<AppException>()),
-      );
+      expect(() => repo.getPosts(size: 20), throwsA(isA<AppException>()));
     });
 
     test('wraps_unknown_wire_status_into_server_exception', () async {
@@ -192,10 +252,7 @@ void main() {
         ..responseToReturn = _listOf([_postJson(status: 'CANCELLED')]);
       final repo = CommunityRepositoryImpl(fake);
 
-      expect(
-        () => repo.getPosts(page: 0, size: 20),
-        throwsA(isA<ServerException>()),
-      );
+      expect(() => repo.getPosts(size: 20), throwsA(isA<ServerException>()));
     });
   });
 }
