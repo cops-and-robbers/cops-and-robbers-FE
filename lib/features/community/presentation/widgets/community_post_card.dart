@@ -7,6 +7,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/vibration_service.dart';
+import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
@@ -60,7 +62,7 @@ class CommunityPostCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTitleRow(),
+              _buildTitleRow(context, l10n),
               SizedBox(height: AppSpacing.vertical12),
               // 역지오코딩 실패로 주소가 없으면 행 자체를 숨긴다 (좌표는 무의미).
               if (post.locationLabel != null) ...[
@@ -75,7 +77,7 @@ class CommunityPostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleRow() {
+  Widget _buildTitleRow(BuildContext context, AppLocalizations l10n) {
     // 시안에서 이 행만 좌 24 / 우 22 — 카드 패딩이 이미 좌우 22라 왼쪽 2만 더 준다.
     return Padding(
       padding: EdgeInsets.only(left: AppSpacing.horizontal2),
@@ -91,8 +93,78 @@ class CommunityPostCard extends StatelessWidget {
               style: AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
           ),
-          // 메뉴 항목(수정·삭제·신고)은 상세 화면 작업에서 붙인다. 지금은 탭을 받지 않는다.
-          Icon(Icons.more_vert, size: 20.w, color: AppColors.black300),
+          _buildMoreMenu(context, l10n),
+        ],
+      ),
+    );
+  }
+
+  /// 더보기(⋮) 메뉴 — 지금은 신고하기 한 항목뿐이다.
+  ///
+  /// 수정·삭제는 "내 글인지"를 판단할 로그인 사용자 id가 카드에 없어 아직 안 붙인다.
+  /// 바깥 카드의 [onTap]과 겹치지만, 자식이 히트 테스트에서 이기므로 카드 탭은 안 탄다.
+  Widget _buildMoreMenu(BuildContext context, AppLocalizations l10n) {
+    return PopupMenuButton<void>(
+      // 메뉴 표면은 아래 컨테이너가 직접 그린다 — Material elevation으로는
+      // AppShadows.ver2(blur 10, 7%)를 못 만들기 때문에 프레임워크 쪽은 투명하게 비운다.
+      color: Colors.transparent,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+      menuPadding: EdgeInsets.zero,
+      position: PopupMenuPosition.under,
+      // 메뉴가 뜨기 전에 터치가 먹혔음을 알린다 (정렬 라벨이 시트를 열 때와 같은 탭 햅틱).
+      onOpened: () => VibrationService.instance().buttonTap(),
+      // 기본 툴팁("Show menu")이 영어라 롱프레스 시 떠버린다.
+      tooltip: '',
+      // 메뉴 폭 204. `_PopupMenu`의 IntrinsicWidth(stepWidth: 56)가 폭을 56 배수로
+      // 올림하므로 tight 제약으로 못 박는다 — 안 하면 224가 되어 우측으로 20 밀린다.
+      constraints: BoxConstraints.tightFor(width: 204.w),
+      // icon: 대신 child: 를 쓴다. icon:은 IconButton으로 감싸져 최소 48×48이 붙고,
+      // 그만큼 제목 행 높이가 늘어난다.
+      // SVG에 박힌 #B1BCC8이 AppColors.black300과 같아 colorFilter는 두지 않는다.
+      child: SvgPicture.asset(
+        'assets/icons/icon_meatballs.svg',
+        width: 16.w,
+        height: 16.h,
+      ),
+      itemBuilder: (_) => [
+        PopupMenuItem<void>(
+          padding: EdgeInsets.zero,
+          // ponytail: 커뮤니티 글 신고 API가 아직 없다. 생기면 여기를 신고 화면으로 잇는다.
+          // 메뉴가 닫힌 뒤 실행되므로 팝업 route가 아닌 카드의 context를 쓴다.
+          onTap: () {
+            VibrationService.instance().buttonTap();
+            AppSnackbar.show(context, message: l10n.comingSoonMessage);
+          },
+          child: _buildReportItem(l10n),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReportItem(AppLocalizations l10n) {
+    return Container(
+      height: 52.h,
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal20),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: AppRadius.large,
+        border: Border.all(color: AppColors.black100),
+        boxShadow: AppShadows.ver2,
+      ),
+      child: Row(
+        children: [
+          // 아이콘 자체가 빨강·회색 다색이라 colorFilter로 덧칠하지 않는다.
+          SvgPicture.asset(
+            'assets/icons/icon_warning_light.svg',
+            width: 16.w,
+            height: 16.h,
+          ),
+          SizedBox(width: AppSpacing.horizontal14),
+          Text(
+            l10n.buttonReport,
+            style: AppTextStyles.label_16.copyWith(color: AppColors.red),
+          ),
         ],
       ),
     );

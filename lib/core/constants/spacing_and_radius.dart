@@ -38,6 +38,9 @@ class AppSpacing {
   /// 좌우 12px 간격
   static double get horizontal12 => 12.w;
 
+  /// 좌우 14px 간격
+  static double get horizontal14 => 14.w;
+
   /// 좌우 16px 간격
   static double get horizontal16 => 16.w;
 
