@@ -221,6 +221,9 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
               ),
             ),
           ),
+          // 정렬 라벨 아래 12px는 스크롤 영역 밖에 둔다 — 목록의 상단 padding으로
+          // 옮기면 스크롤된 카드가 이 띠까지 올라온다. 시안상 이 간격이 12여야 하므로
+          // 목록 쪽 상단 padding은 0이고, 첫 카드 위쪽 그림자는 잘리는 것을 받아들인다.
           SizedBox(height: AppSpacing.vertical12),
           Expanded(
             child: Consumer(
@@ -402,8 +405,6 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
           bottom:
               _buttonBottomOffset + _createButtonHeight + AppSpacing.vertical16,
         ),
-        // AppShadows.ver2가 blur 10이라 기본 클립에 그림자가 잘린다.
-        clipBehavior: Clip.none,
         itemCount: feed.items.length + (feed.isLoadingMore ? 1 : 0),
         separatorBuilder: (_, _) => SizedBox(height: AppSpacing.vertical12),
         itemBuilder: (context, index) {
