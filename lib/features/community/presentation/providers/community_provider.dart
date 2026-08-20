@@ -9,7 +9,6 @@ import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../data/datasources/community_remote_datasource.dart';
 import '../../data/repositories/community_repository_impl.dart';
-import '../../data/repositories/community_repository_mock.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../../domain/repositories/community_repository.dart';
@@ -31,17 +30,12 @@ CommunityRemoteDataSource communityRemoteDataSource(Ref ref) {
 // Domain Layer Providers
 // ============================================================================
 
-/// ponytail: 모집글을 목데이터로 볼지 여부. 실서버에 볼 만한 글이 쌓이기 전까지
-/// 화면을 확인하려는 스위치다.
-///
-/// false로 바꾸면 목록·상세·수정·삭제·상태 변경이 전부 실서버를 탄다. 화면 어디에도
-/// 목 분기가 없으므로 이 한 줄이 유일한 차이다.
-const bool kUseMockCommunityPosts = true;
-
 /// `CommunityRepository` Provider
+///
+/// 좋아요·스크랩·댓글은 백엔드에 API가 없어 아직 목이다
+/// (`communityInteractionRepositoryProvider`). 게시글 CRUD는 전부 실서버다.
 @riverpod
 CommunityRepository communityRepository(Ref ref) {
-  if (kUseMockCommunityPosts) return CommunityRepositoryMock();
   return CommunityRepositoryImpl(ref.watch(communityRemoteDataSourceProvider));
 }
 
