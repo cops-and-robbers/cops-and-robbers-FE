@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -286,11 +287,13 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
     );
   }
 
-  /// 좋아요 · 스크랩 · 공유 3분할
+  /// 좋아요 · 스크랩 · 공유 — 카드형 버튼 3개, 사이 간격 18
   Widget _buildActionRow(
     AppLocalizations l10n,
     CommunityInteractionEntity interaction,
   ) {
+    // 고정폭(110)이면 간격 18과 합쳐 가용폭을 넘쳐 오버플로우가 난다 —
+    // Expanded로 균등 분배해 화면 폭에 맞게 비율대로 줄어들게 한다.
     return Row(
       children: [
         Expanded(
@@ -299,8 +302,8 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                 ? 'assets/icons/icon_like_on.svg'
                 : 'assets/icons/icon_like_off.svg',
             color: AppColors.red,
-            isActive: interaction.isLiked,
             label: '${interaction.likeCount}',
+            textStyle: AppTextStyles.label16Medium,
             onTap: () => _requireLogin(
               () => _runInteraction(
                 () => ref
@@ -312,14 +315,15 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
             ),
           ),
         ),
+        SizedBox(width: AppSpacing.horizontal18),
         Expanded(
           child: _ActionButton(
             assetPath: interaction.isBookmarked
                 ? 'assets/icons/icon_save_on.svg'
                 : 'assets/icons/icon_save_off.svg',
             color: AppColors.yellow,
-            isActive: interaction.isBookmarked,
             label: '${interaction.bookmarkCount}',
+            textStyle: AppTextStyles.label16Medium,
             onTap: () => _requireLogin(
               () => _runInteraction(
                 () => ref
@@ -331,12 +335,13 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
             ),
           ),
         ),
+        SizedBox(width: AppSpacing.horizontal18),
         Expanded(
           child: _ActionButton(
-            assetPath: 'assets/icons/icon_link.svg',
-            color: AppColors.black600,
-            isActive: false,
+            assetPath: 'assets/icons/icon_upload.svg',
+            color: AppColors.black700,
             label: l10n.communityDetailShare,
+            textStyle: AppTextStyles.label16Medium,
             // ponytail: 공유 링크는 딥링크 경로가 정해진 뒤 붙인다.
             onTap: () =>
                 AppSnackbar.show(context, message: l10n.comingSoonMessage),
@@ -568,50 +573,56 @@ class _MetaRow extends StatelessWidget {
   }
 }
 
-/// 좋아요 · 스크랩 · 공유 버튼 하나
+/// 좋아요 · 스크랩 · 공유 버튼 하나 — h46 카드, 아이콘+텍스트 가로 배치. 폭은 부모
+/// `Expanded`가 정한다.
 class _ActionButton extends StatelessWidget {
   const _ActionButton({
     required this.assetPath,
     required this.color,
-    required this.isActive,
     required this.label,
+    required this.textStyle,
     required this.onTap,
   });
 
   final String assetPath;
+
+  /// 아이콘·텍스트 공통 색 — `CommunityPostCard`와 같은 팔레트 색을 고정으로 쓴다
+  /// (눌림 여부는 `assetPath`의 on/off 아이콘으로만 표현).
   final Color color;
 
-  /// 눌린 상태면 아이콘·글자를 팔레트 색으로, 아니면 회색으로 그린다.
-  final bool isActive;
-
   final String label;
+  final TextStyle textStyle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final tint = isActive ? color : AppColors.black500;
-
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical8),
-        child: Column(
+      child: Container(
+        height: 46.h,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: AppRadius.large,
+          boxShadow: AppShadows.vague,
+        ),
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             // SVG에 박힌 색이 팔레트와 미묘하게 달라 덧칠한다 (카드와 같은 이유).
             SvgPicture.asset(
               assetPath,
-              width: 20.w,
-              height: 20.h,
-              colorFilter: ColorFilter.mode(tint, BlendMode.srcIn),
+              width: 14.w,
+              height: 14.h,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
             ),
-            SizedBox(height: AppSpacing.vertical4),
+            SizedBox(width: AppSpacing.horizontal6),
             Text(
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.tag_12.copyWith(color: tint),
+              style: textStyle.copyWith(color: color),
             ),
           ],
         ),
