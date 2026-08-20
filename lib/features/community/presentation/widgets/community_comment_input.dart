@@ -98,38 +98,41 @@ class _CommunityCommentInputState extends State<CommunityCommentInput> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      // 긴 댓글도 쓰지만 입력창이 화면을 다 먹으면 안 된다.
-                      maxLines: 4,
-                      minLines: 1,
-                      textInputAction: TextInputAction.newline,
-                      style: AppTextStyles.paragraph_14.copyWith(
-                        color: AppColors.black,
-                      ),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        hintText: replyTo == null
-                            ? l10n.communityCommentHint
-                            : l10n.communityCommentReplyHint,
-                        hintStyle: AppTextStyles.paragraph_14.copyWith(
-                          color: AppColors.black400,
+                    child: SizedBox(
+                      height: 42.h,
+                      child: TextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                        // 긴 댓글도 쓰지만 입력창이 화면을 다 먹으면 안 된다.
+                        maxLines: 4,
+                        minLines: 1,
+                        textInputAction: TextInputAction.newline,
+                        style: AppTextStyles.paragraph_14.copyWith(
+                          color: AppColors.black,
                         ),
-                        filled: true,
-                        fillColor: AppColors.background,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: AppSpacing.horizontal16,
-                          vertical: AppSpacing.vertical12,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: AppRadius.xlarge,
-                          borderSide: BorderSide.none,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          hintText: replyTo == null
+                              ? l10n.communityCommentHint
+                              : l10n.communityCommentReplyHint,
+                          hintStyle: AppTextStyles.paragraph_14.copyWith(
+                            color: AppColors.black400,
+                          ),
+                          filled: true,
+                          fillColor: AppColors.black100,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: AppSpacing.horizontal16,
+                            vertical: AppSpacing.vertical12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: AppRadius.large,
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: AppSpacing.horizontal8),
+                  SizedBox(width: AppSpacing.horizontal14),
                   _buildSendButton(),
                 ],
               ),
@@ -187,9 +190,12 @@ class _CommunityCommentInputState extends State<CommunityCommentInput> {
               )
             : SvgPicture.asset(
                 'assets/icons/icon_sending.svg',
-                width: 20.w,
-                height: 20.h,
-                colorFilter: ColorFilter.mode(AppColors.logo, BlendMode.srcIn),
+                width: 24.w,
+                height: 24.h,
+                colorFilter: ColorFilter.mode(
+                  AppColors.blueVer2Basic,
+                  BlendMode.srcIn,
+                ),
               ),
       ),
     );
