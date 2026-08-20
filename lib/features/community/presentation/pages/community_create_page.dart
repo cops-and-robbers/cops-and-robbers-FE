@@ -310,6 +310,8 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
       AppTextField(
         controller: _locationController,
         hintText: l10n.communityCreateHintLocation,
+        // 백엔드 placeName 제약과 같은 값. 넘겨 보내면 400이라 입력에서 막는다.
+        maxLength: 50,
         width: double.infinity,
         height: _locationHeight,
         textInputAction: TextInputAction.done,
