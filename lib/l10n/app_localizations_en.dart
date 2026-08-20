@@ -2066,9 +2066,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong while loading the address';
 
   @override
-  String get messageLoadingNotices => 'Loading notices...';
-
-  @override
   String get errorNoticeLoadFailed => 'Failed to load notices';
 
   @override

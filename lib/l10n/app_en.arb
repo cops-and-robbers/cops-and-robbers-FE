@@ -654,7 +654,6 @@
   "errorCommunityPostStatusGeneric": "Something went wrong while changing the status",
   "errorCommunityPostCreateGeneric": "Something went wrong while posting",
   "errorCommunityAddressLoadGeneric": "Something went wrong while loading the address",
-  "messageLoadingNotices": "Loading notices...",
   "errorNoticeLoadFailed": "Failed to load notices",
   "pageNoticesTitle": "Notices",
   "pageNoticesEmpty": "There are no notices registered",

@@ -1925,9 +1925,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';
 
   @override
-  String get messageLoadingNotices => '공지사항을 불러오는 중...';
-
-  @override
   String get errorNoticeLoadFailed => '공지사항을 불러오지 못했어요';
 
   @override

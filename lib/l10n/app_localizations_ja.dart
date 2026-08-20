@@ -1925,9 +1925,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';
 
   @override
-  String get messageLoadingNotices => '知らせを読み込んでいます...';
-
-  @override
   String get errorNoticeLoadFailed => 'お知らせを読み込めませんでした';
 
   @override

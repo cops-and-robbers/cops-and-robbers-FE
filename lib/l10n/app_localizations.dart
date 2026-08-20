@@ -3715,12 +3715,6 @@ abstract class AppLocalizations {
   /// **'주소를 불러오는 중 오류가 생겼어요'**
   String get errorCommunityAddressLoadGeneric;
 
-  /// 공지사항 로딩 중 표시되는 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'공지사항을 불러오는 중...'**
-  String get messageLoadingNotices;
-
   /// 공지사항 로딩 실패 안내
   ///
   /// In ko, this message translates to:
