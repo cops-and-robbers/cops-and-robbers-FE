@@ -92,10 +92,6 @@ class _DelayedSecondPageRepository
 Future<CountryQuery> _deviceCountry() async =>
     (latitude: null, longitude: null, countryCode: 'KR');
 
-/// 위치 권한이 있는 기기 — 현재 좌표로 물어보는 경로.
-Future<CountryQuery> _gpsCoordinates() async =>
-    (latitude: 37.5502, longitude: 127.0736, countryCode: null);
-
 ProviderContainer _containerWith(
   CommunityRepository repo, {
   Future<CountryQuery> Function() resolver = _deviceCountry,
