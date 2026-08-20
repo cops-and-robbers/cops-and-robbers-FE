@@ -26,14 +26,18 @@ mixin _$CommunityLocationModel {
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
 
-  /// 지번 주소 — `서울 광진구 군자동 98`
-  String? get address => throw _privateConstructorUsedError;
+  /// 동 단위 지역 — `서울특별시 광진구 군자동`. 역지오코딩 실패 시 null.
+  String? get region => throw _privateConstructorUsedError;
 
-  /// 도로명 주소 — `서울특별시 광진구 능동로 209`. 도로명이 없는 지역이면 null.
-  String? get roadAddress => throw _privateConstructorUsedError;
+  /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
+  ///
+  /// 스키마상 non-null이지만 nullable로 받는다: v2.17.0 이전에 쓰인 글까지
+  /// 서버가 채웠다는 보장이 없고, 응답 한 건 때문에 목록 전체가 파싱 실패로
+  /// 날아가는 편이 장소 한 줄이 비는 것보다 나쁘다.
+  String? get placeName => throw _privateConstructorUsedError;
 
-  /// 건물명 — `세종대학교`. 공터·공원·길 위 좌표면 null.
-  String? get buildingName => throw _privateConstructorUsedError;
+  /// 국가 코드(ISO 3166-1 alpha-2). 역지오코딩 실패 시 null.
+  String? get countryCode => throw _privateConstructorUsedError;
 
   /// Serializes this CommunityLocationModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -55,9 +59,9 @@ abstract class $CommunityLocationModelCopyWith<$Res> {
   $Res call({
     double latitude,
     double longitude,
-    String? address,
-    String? roadAddress,
-    String? buildingName,
+    String? region,
+    String? placeName,
+    String? countryCode,
   });
 }
 
@@ -81,9 +85,9 @@ class _$CommunityLocationModelCopyWithImpl<
   $Res call({
     Object? latitude = null,
     Object? longitude = null,
-    Object? address = freezed,
-    Object? roadAddress = freezed,
-    Object? buildingName = freezed,
+    Object? region = freezed,
+    Object? placeName = freezed,
+    Object? countryCode = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -95,17 +99,17 @@ class _$CommunityLocationModelCopyWithImpl<
                 ? _value.longitude
                 : longitude // ignore: cast_nullable_to_non_nullable
                       as double,
-            address: freezed == address
-                ? _value.address
-                : address // ignore: cast_nullable_to_non_nullable
+            region: freezed == region
+                ? _value.region
+                : region // ignore: cast_nullable_to_non_nullable
                       as String?,
-            roadAddress: freezed == roadAddress
-                ? _value.roadAddress
-                : roadAddress // ignore: cast_nullable_to_non_nullable
+            placeName: freezed == placeName
+                ? _value.placeName
+                : placeName // ignore: cast_nullable_to_non_nullable
                       as String?,
-            buildingName: freezed == buildingName
-                ? _value.buildingName
-                : buildingName // ignore: cast_nullable_to_non_nullable
+            countryCode: freezed == countryCode
+                ? _value.countryCode
+                : countryCode // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -125,9 +129,9 @@ abstract class _$$CommunityLocationModelImplCopyWith<$Res>
   $Res call({
     double latitude,
     double longitude,
-    String? address,
-    String? roadAddress,
-    String? buildingName,
+    String? region,
+    String? placeName,
+    String? countryCode,
   });
 }
 
@@ -148,9 +152,9 @@ class __$$CommunityLocationModelImplCopyWithImpl<$Res>
   $Res call({
     Object? latitude = null,
     Object? longitude = null,
-    Object? address = freezed,
-    Object? roadAddress = freezed,
-    Object? buildingName = freezed,
+    Object? region = freezed,
+    Object? placeName = freezed,
+    Object? countryCode = freezed,
   }) {
     return _then(
       _$CommunityLocationModelImpl(
@@ -162,17 +166,17 @@ class __$$CommunityLocationModelImplCopyWithImpl<$Res>
             ? _value.longitude
             : longitude // ignore: cast_nullable_to_non_nullable
                   as double,
-        address: freezed == address
-            ? _value.address
-            : address // ignore: cast_nullable_to_non_nullable
+        region: freezed == region
+            ? _value.region
+            : region // ignore: cast_nullable_to_non_nullable
                   as String?,
-        roadAddress: freezed == roadAddress
-            ? _value.roadAddress
-            : roadAddress // ignore: cast_nullable_to_non_nullable
+        placeName: freezed == placeName
+            ? _value.placeName
+            : placeName // ignore: cast_nullable_to_non_nullable
                   as String?,
-        buildingName: freezed == buildingName
-            ? _value.buildingName
-            : buildingName // ignore: cast_nullable_to_non_nullable
+        countryCode: freezed == countryCode
+            ? _value.countryCode
+            : countryCode // ignore: cast_nullable_to_non_nullable
                   as String?,
       ),
     );
@@ -185,9 +189,9 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
   const _$CommunityLocationModelImpl({
     required this.latitude,
     required this.longitude,
-    this.address,
-    this.roadAddress,
-    this.buildingName,
+    this.region,
+    this.placeName,
+    this.countryCode,
   });
 
   factory _$CommunityLocationModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -198,21 +202,25 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
   @override
   final double longitude;
 
-  /// 지번 주소 — `서울 광진구 군자동 98`
+  /// 동 단위 지역 — `서울특별시 광진구 군자동`. 역지오코딩 실패 시 null.
   @override
-  final String? address;
+  final String? region;
 
-  /// 도로명 주소 — `서울특별시 광진구 능동로 209`. 도로명이 없는 지역이면 null.
+  /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
+  ///
+  /// 스키마상 non-null이지만 nullable로 받는다: v2.17.0 이전에 쓰인 글까지
+  /// 서버가 채웠다는 보장이 없고, 응답 한 건 때문에 목록 전체가 파싱 실패로
+  /// 날아가는 편이 장소 한 줄이 비는 것보다 나쁘다.
   @override
-  final String? roadAddress;
+  final String? placeName;
 
-  /// 건물명 — `세종대학교`. 공터·공원·길 위 좌표면 null.
+  /// 국가 코드(ISO 3166-1 alpha-2). 역지오코딩 실패 시 null.
   @override
-  final String? buildingName;
+  final String? countryCode;
 
   @override
   String toString() {
-    return 'CommunityLocationModel(latitude: $latitude, longitude: $longitude, address: $address, roadAddress: $roadAddress, buildingName: $buildingName)';
+    return 'CommunityLocationModel(latitude: $latitude, longitude: $longitude, region: $region, placeName: $placeName, countryCode: $countryCode)';
   }
 
   @override
@@ -224,11 +232,11 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
-            (identical(other.address, address) || other.address == address) &&
-            (identical(other.roadAddress, roadAddress) ||
-                other.roadAddress == roadAddress) &&
-            (identical(other.buildingName, buildingName) ||
-                other.buildingName == buildingName));
+            (identical(other.region, region) || other.region == region) &&
+            (identical(other.placeName, placeName) ||
+                other.placeName == placeName) &&
+            (identical(other.countryCode, countryCode) ||
+                other.countryCode == countryCode));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -237,9 +245,9 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
     runtimeType,
     latitude,
     longitude,
-    address,
-    roadAddress,
-    buildingName,
+    region,
+    placeName,
+    countryCode,
   );
 
   /// Create a copy of CommunityLocationModel
@@ -264,9 +272,9 @@ abstract class _CommunityLocationModel implements CommunityLocationModel {
   const factory _CommunityLocationModel({
     required final double latitude,
     required final double longitude,
-    final String? address,
-    final String? roadAddress,
-    final String? buildingName,
+    final String? region,
+    final String? placeName,
+    final String? countryCode,
   }) = _$CommunityLocationModelImpl;
 
   factory _CommunityLocationModel.fromJson(Map<String, dynamic> json) =
@@ -277,23 +285,246 @@ abstract class _CommunityLocationModel implements CommunityLocationModel {
   @override
   double get longitude;
 
-  /// 지번 주소 — `서울 광진구 군자동 98`
+  /// 동 단위 지역 — `서울특별시 광진구 군자동`. 역지오코딩 실패 시 null.
   @override
-  String? get address;
+  String? get region;
 
-  /// 도로명 주소 — `서울특별시 광진구 능동로 209`. 도로명이 없는 지역이면 null.
+  /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
+  ///
+  /// 스키마상 non-null이지만 nullable로 받는다: v2.17.0 이전에 쓰인 글까지
+  /// 서버가 채웠다는 보장이 없고, 응답 한 건 때문에 목록 전체가 파싱 실패로
+  /// 날아가는 편이 장소 한 줄이 비는 것보다 나쁘다.
   @override
-  String? get roadAddress;
+  String? get placeName;
 
-  /// 건물명 — `세종대학교`. 공터·공원·길 위 좌표면 null.
+  /// 국가 코드(ISO 3166-1 alpha-2). 역지오코딩 실패 시 null.
   @override
-  String? get buildingName;
+  String? get countryCode;
 
   /// Create a copy of CommunityLocationModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityLocationModelImplCopyWith<_$CommunityLocationModelImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityAddressResponseModel _$CommunityAddressResponseModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityAddressResponseModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityAddressResponseModel {
+  String? get region => throw _privateConstructorUsedError;
+  String? get address => throw _privateConstructorUsedError;
+  String? get countryCode => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityAddressResponseModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityAddressResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityAddressResponseModelCopyWith<CommunityAddressResponseModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityAddressResponseModelCopyWith<$Res> {
+  factory $CommunityAddressResponseModelCopyWith(
+    CommunityAddressResponseModel value,
+    $Res Function(CommunityAddressResponseModel) then,
+  ) =
+      _$CommunityAddressResponseModelCopyWithImpl<
+        $Res,
+        CommunityAddressResponseModel
+      >;
+  @useResult
+  $Res call({String? region, String? address, String? countryCode});
+}
+
+/// @nodoc
+class _$CommunityAddressResponseModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityAddressResponseModel
+>
+    implements $CommunityAddressResponseModelCopyWith<$Res> {
+  _$CommunityAddressResponseModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityAddressResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? region = freezed,
+    Object? address = freezed,
+    Object? countryCode = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            region: freezed == region
+                ? _value.region
+                : region // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            countryCode: freezed == countryCode
+                ? _value.countryCode
+                : countryCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityAddressResponseModelImplCopyWith<$Res>
+    implements $CommunityAddressResponseModelCopyWith<$Res> {
+  factory _$$CommunityAddressResponseModelImplCopyWith(
+    _$CommunityAddressResponseModelImpl value,
+    $Res Function(_$CommunityAddressResponseModelImpl) then,
+  ) = __$$CommunityAddressResponseModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? region, String? address, String? countryCode});
+}
+
+/// @nodoc
+class __$$CommunityAddressResponseModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityAddressResponseModelCopyWithImpl<
+          $Res,
+          _$CommunityAddressResponseModelImpl
+        >
+    implements _$$CommunityAddressResponseModelImplCopyWith<$Res> {
+  __$$CommunityAddressResponseModelImplCopyWithImpl(
+    _$CommunityAddressResponseModelImpl _value,
+    $Res Function(_$CommunityAddressResponseModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityAddressResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? region = freezed,
+    Object? address = freezed,
+    Object? countryCode = freezed,
+  }) {
+    return _then(
+      _$CommunityAddressResponseModelImpl(
+        region: freezed == region
+            ? _value.region
+            : region // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        countryCode: freezed == countryCode
+            ? _value.countryCode
+            : countryCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityAddressResponseModelImpl
+    implements _CommunityAddressResponseModel {
+  const _$CommunityAddressResponseModelImpl({
+    this.region,
+    this.address,
+    this.countryCode,
+  });
+
+  factory _$CommunityAddressResponseModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityAddressResponseModelImplFromJson(json);
+
+  @override
+  final String? region;
+  @override
+  final String? address;
+  @override
+  final String? countryCode;
+
+  @override
+  String toString() {
+    return 'CommunityAddressResponseModel(region: $region, address: $address, countryCode: $countryCode)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityAddressResponseModelImpl &&
+            (identical(other.region, region) || other.region == region) &&
+            (identical(other.address, address) || other.address == address) &&
+            (identical(other.countryCode, countryCode) ||
+                other.countryCode == countryCode));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, region, address, countryCode);
+
+  /// Create a copy of CommunityAddressResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityAddressResponseModelImplCopyWith<
+    _$CommunityAddressResponseModelImpl
+  >
+  get copyWith =>
+      __$$CommunityAddressResponseModelImplCopyWithImpl<
+        _$CommunityAddressResponseModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityAddressResponseModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityAddressResponseModel
+    implements CommunityAddressResponseModel {
+  const factory _CommunityAddressResponseModel({
+    final String? region,
+    final String? address,
+    final String? countryCode,
+  }) = _$CommunityAddressResponseModelImpl;
+
+  factory _CommunityAddressResponseModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityAddressResponseModelImpl.fromJson;
+
+  @override
+  String? get region;
+  @override
+  String? get address;
+  @override
+  String? get countryCode;
+
+  /// Create a copy of CommunityAddressResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityAddressResponseModelImplCopyWith<
+    _$CommunityAddressResponseModelImpl
+  >
   get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -952,6 +1183,10 @@ mixin _$CommunityPostListResponseModel {
       throw _privateConstructorUsedError;
   CursorInfoModel get cursor => throw _privateConstructorUsedError;
 
+  /// 이 목록의 국가 코드. 좌표로 첫 요청을 보내면 서버가 판별해 실어 준다 —
+  /// 다음 페이지부터는 좌표 대신 이 값을 보낸다(GPS 재조회 회피).
+  String? get countryCode => throw _privateConstructorUsedError;
+
   /// Serializes this CommunityPostListResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -973,7 +1208,11 @@ abstract class $CommunityPostListResponseModelCopyWith<$Res> {
         CommunityPostListResponseModel
       >;
   @useResult
-  $Res call({List<CommunityPostResponseModel> content, CursorInfoModel cursor});
+  $Res call({
+    List<CommunityPostResponseModel> content,
+    CursorInfoModel cursor,
+    String? countryCode,
+  });
 
   $CursorInfoModelCopyWith<$Res> get cursor;
 }
@@ -995,7 +1234,11 @@ class _$CommunityPostListResponseModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? content = null, Object? cursor = null}) {
+  $Res call({
+    Object? content = null,
+    Object? cursor = null,
+    Object? countryCode = freezed,
+  }) {
     return _then(
       _value.copyWith(
             content: null == content
@@ -1006,6 +1249,10 @@ class _$CommunityPostListResponseModelCopyWithImpl<
                 ? _value.cursor
                 : cursor // ignore: cast_nullable_to_non_nullable
                       as CursorInfoModel,
+            countryCode: freezed == countryCode
+                ? _value.countryCode
+                : countryCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -1031,7 +1278,11 @@ abstract class _$$CommunityPostListResponseModelImplCopyWith<$Res>
   ) = __$$CommunityPostListResponseModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CommunityPostResponseModel> content, CursorInfoModel cursor});
+  $Res call({
+    List<CommunityPostResponseModel> content,
+    CursorInfoModel cursor,
+    String? countryCode,
+  });
 
   @override
   $CursorInfoModelCopyWith<$Res> get cursor;
@@ -1054,7 +1305,11 @@ class __$$CommunityPostListResponseModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? content = null, Object? cursor = null}) {
+  $Res call({
+    Object? content = null,
+    Object? cursor = null,
+    Object? countryCode = freezed,
+  }) {
     return _then(
       _$CommunityPostListResponseModelImpl(
         content: null == content
@@ -1065,6 +1320,10 @@ class __$$CommunityPostListResponseModelImplCopyWithImpl<$Res>
             ? _value.cursor
             : cursor // ignore: cast_nullable_to_non_nullable
                   as CursorInfoModel,
+        countryCode: freezed == countryCode
+            ? _value.countryCode
+            : countryCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -1077,6 +1336,7 @@ class _$CommunityPostListResponseModelImpl
   const _$CommunityPostListResponseModelImpl({
     required final List<CommunityPostResponseModel> content,
     required this.cursor,
+    this.countryCode,
   }) : _content = content;
 
   factory _$CommunityPostListResponseModelImpl.fromJson(
@@ -1094,9 +1354,14 @@ class _$CommunityPostListResponseModelImpl
   @override
   final CursorInfoModel cursor;
 
+  /// 이 목록의 국가 코드. 좌표로 첫 요청을 보내면 서버가 판별해 실어 준다 —
+  /// 다음 페이지부터는 좌표 대신 이 값을 보낸다(GPS 재조회 회피).
+  @override
+  final String? countryCode;
+
   @override
   String toString() {
-    return 'CommunityPostListResponseModel(content: $content, cursor: $cursor)';
+    return 'CommunityPostListResponseModel(content: $content, cursor: $cursor, countryCode: $countryCode)';
   }
 
   @override
@@ -1105,7 +1370,9 @@ class _$CommunityPostListResponseModelImpl
         (other.runtimeType == runtimeType &&
             other is _$CommunityPostListResponseModelImpl &&
             const DeepCollectionEquality().equals(other._content, _content) &&
-            (identical(other.cursor, cursor) || other.cursor == cursor));
+            (identical(other.cursor, cursor) || other.cursor == cursor) &&
+            (identical(other.countryCode, countryCode) ||
+                other.countryCode == countryCode));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1114,6 +1381,7 @@ class _$CommunityPostListResponseModelImpl
     runtimeType,
     const DeepCollectionEquality().hash(_content),
     cursor,
+    countryCode,
   );
 
   /// Create a copy of CommunityPostListResponseModel
@@ -1140,6 +1408,7 @@ abstract class _CommunityPostListResponseModel
   const factory _CommunityPostListResponseModel({
     required final List<CommunityPostResponseModel> content,
     required final CursorInfoModel cursor,
+    final String? countryCode,
   }) = _$CommunityPostListResponseModelImpl;
 
   factory _CommunityPostListResponseModel.fromJson(Map<String, dynamic> json) =
@@ -1150,12 +1419,729 @@ abstract class _CommunityPostListResponseModel
   @override
   CursorInfoModel get cursor;
 
+  /// 이 목록의 국가 코드. 좌표로 첫 요청을 보내면 서버가 판별해 실어 준다 —
+  /// 다음 페이지부터는 좌표 대신 이 값을 보낸다(GPS 재조회 회피).
+  @override
+  String? get countryCode;
+
   /// Create a copy of CommunityPostListResponseModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityPostListResponseModelImplCopyWith<
     _$CommunityPostListResponseModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityLocationRequestModel _$CommunityLocationRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityLocationRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityLocationRequestModel {
+  double get latitude => throw _privateConstructorUsedError;
+  double get longitude => throw _privateConstructorUsedError;
+
+  /// 만나는 곳 — 최대 50자. 예: `어린이대공원 정문`
+  String get placeName => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityLocationRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityLocationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityLocationRequestModelCopyWith<CommunityLocationRequestModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityLocationRequestModelCopyWith<$Res> {
+  factory $CommunityLocationRequestModelCopyWith(
+    CommunityLocationRequestModel value,
+    $Res Function(CommunityLocationRequestModel) then,
+  ) =
+      _$CommunityLocationRequestModelCopyWithImpl<
+        $Res,
+        CommunityLocationRequestModel
+      >;
+  @useResult
+  $Res call({double latitude, double longitude, String placeName});
+}
+
+/// @nodoc
+class _$CommunityLocationRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityLocationRequestModel
+>
+    implements $CommunityLocationRequestModelCopyWith<$Res> {
+  _$CommunityLocationRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityLocationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? latitude = null,
+    Object? longitude = null,
+    Object? placeName = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            latitude: null == latitude
+                ? _value.latitude
+                : latitude // ignore: cast_nullable_to_non_nullable
+                      as double,
+            longitude: null == longitude
+                ? _value.longitude
+                : longitude // ignore: cast_nullable_to_non_nullable
+                      as double,
+            placeName: null == placeName
+                ? _value.placeName
+                : placeName // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityLocationRequestModelImplCopyWith<$Res>
+    implements $CommunityLocationRequestModelCopyWith<$Res> {
+  factory _$$CommunityLocationRequestModelImplCopyWith(
+    _$CommunityLocationRequestModelImpl value,
+    $Res Function(_$CommunityLocationRequestModelImpl) then,
+  ) = __$$CommunityLocationRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({double latitude, double longitude, String placeName});
+}
+
+/// @nodoc
+class __$$CommunityLocationRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityLocationRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityLocationRequestModelImpl
+        >
+    implements _$$CommunityLocationRequestModelImplCopyWith<$Res> {
+  __$$CommunityLocationRequestModelImplCopyWithImpl(
+    _$CommunityLocationRequestModelImpl _value,
+    $Res Function(_$CommunityLocationRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityLocationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? latitude = null,
+    Object? longitude = null,
+    Object? placeName = null,
+  }) {
+    return _then(
+      _$CommunityLocationRequestModelImpl(
+        latitude: null == latitude
+            ? _value.latitude
+            : latitude // ignore: cast_nullable_to_non_nullable
+                  as double,
+        longitude: null == longitude
+            ? _value.longitude
+            : longitude // ignore: cast_nullable_to_non_nullable
+                  as double,
+        placeName: null == placeName
+            ? _value.placeName
+            : placeName // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityLocationRequestModelImpl
+    implements _CommunityLocationRequestModel {
+  const _$CommunityLocationRequestModelImpl({
+    required this.latitude,
+    required this.longitude,
+    required this.placeName,
+  });
+
+  factory _$CommunityLocationRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityLocationRequestModelImplFromJson(json);
+
+  @override
+  final double latitude;
+  @override
+  final double longitude;
+
+  /// 만나는 곳 — 최대 50자. 예: `어린이대공원 정문`
+  @override
+  final String placeName;
+
+  @override
+  String toString() {
+    return 'CommunityLocationRequestModel(latitude: $latitude, longitude: $longitude, placeName: $placeName)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityLocationRequestModelImpl &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude) &&
+            (identical(other.placeName, placeName) ||
+                other.placeName == placeName));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, latitude, longitude, placeName);
+
+  /// Create a copy of CommunityLocationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityLocationRequestModelImplCopyWith<
+    _$CommunityLocationRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityLocationRequestModelImplCopyWithImpl<
+        _$CommunityLocationRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityLocationRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityLocationRequestModel
+    implements CommunityLocationRequestModel {
+  const factory _CommunityLocationRequestModel({
+    required final double latitude,
+    required final double longitude,
+    required final String placeName,
+  }) = _$CommunityLocationRequestModelImpl;
+
+  factory _CommunityLocationRequestModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityLocationRequestModelImpl.fromJson;
+
+  @override
+  double get latitude;
+  @override
+  double get longitude;
+
+  /// 만나는 곳 — 최대 50자. 예: `어린이대공원 정문`
+  @override
+  String get placeName;
+
+  /// Create a copy of CommunityLocationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityLocationRequestModelImplCopyWith<
+    _$CommunityLocationRequestModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityPostWriteRequestModel _$CommunityPostWriteRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityPostWriteRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityPostWriteRequestModel {
+  String get title => throw _privateConstructorUsedError;
+  String get content => throw _privateConstructorUsedError;
+
+  /// 서버는 timezone suffix가 붙은 ISO 8601을 기대한다. 로컬 DateTime을 그냥
+  /// 직렬화하면 suffix가 빠져 서버 로컬 시각으로 읽히므로 UTC로 정규화한다
+  /// (`create_session_response.dart`와 같은 판단).
+  @JsonKey(toJson: _dateTimeToIso)
+  DateTime get meetingAt => throw _privateConstructorUsedError;
+  CommunityLocationRequestModel get location =>
+      throw _privateConstructorUsedError;
+  int get maxParticipants => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityPostWriteRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityPostWriteRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityPostWriteRequestModelCopyWith<CommunityPostWriteRequestModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityPostWriteRequestModelCopyWith<$Res> {
+  factory $CommunityPostWriteRequestModelCopyWith(
+    CommunityPostWriteRequestModel value,
+    $Res Function(CommunityPostWriteRequestModel) then,
+  ) =
+      _$CommunityPostWriteRequestModelCopyWithImpl<
+        $Res,
+        CommunityPostWriteRequestModel
+      >;
+  @useResult
+  $Res call({
+    String title,
+    String content,
+    @JsonKey(toJson: _dateTimeToIso) DateTime meetingAt,
+    CommunityLocationRequestModel location,
+    int maxParticipants,
+  });
+
+  $CommunityLocationRequestModelCopyWith<$Res> get location;
+}
+
+/// @nodoc
+class _$CommunityPostWriteRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityPostWriteRequestModel
+>
+    implements $CommunityPostWriteRequestModelCopyWith<$Res> {
+  _$CommunityPostWriteRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityPostWriteRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? title = null,
+    Object? content = null,
+    Object? meetingAt = null,
+    Object? location = null,
+    Object? maxParticipants = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            title: null == title
+                ? _value.title
+                : title // ignore: cast_nullable_to_non_nullable
+                      as String,
+            content: null == content
+                ? _value.content
+                : content // ignore: cast_nullable_to_non_nullable
+                      as String,
+            meetingAt: null == meetingAt
+                ? _value.meetingAt
+                : meetingAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            location: null == location
+                ? _value.location
+                : location // ignore: cast_nullable_to_non_nullable
+                      as CommunityLocationRequestModel,
+            maxParticipants: null == maxParticipants
+                ? _value.maxParticipants
+                : maxParticipants // ignore: cast_nullable_to_non_nullable
+                      as int,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of CommunityPostWriteRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $CommunityLocationRequestModelCopyWith<$Res> get location {
+    return $CommunityLocationRequestModelCopyWith<$Res>(_value.location, (
+      value,
+    ) {
+      return _then(_value.copyWith(location: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityPostWriteRequestModelImplCopyWith<$Res>
+    implements $CommunityPostWriteRequestModelCopyWith<$Res> {
+  factory _$$CommunityPostWriteRequestModelImplCopyWith(
+    _$CommunityPostWriteRequestModelImpl value,
+    $Res Function(_$CommunityPostWriteRequestModelImpl) then,
+  ) = __$$CommunityPostWriteRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String title,
+    String content,
+    @JsonKey(toJson: _dateTimeToIso) DateTime meetingAt,
+    CommunityLocationRequestModel location,
+    int maxParticipants,
+  });
+
+  @override
+  $CommunityLocationRequestModelCopyWith<$Res> get location;
+}
+
+/// @nodoc
+class __$$CommunityPostWriteRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityPostWriteRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityPostWriteRequestModelImpl
+        >
+    implements _$$CommunityPostWriteRequestModelImplCopyWith<$Res> {
+  __$$CommunityPostWriteRequestModelImplCopyWithImpl(
+    _$CommunityPostWriteRequestModelImpl _value,
+    $Res Function(_$CommunityPostWriteRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityPostWriteRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? title = null,
+    Object? content = null,
+    Object? meetingAt = null,
+    Object? location = null,
+    Object? maxParticipants = null,
+  }) {
+    return _then(
+      _$CommunityPostWriteRequestModelImpl(
+        title: null == title
+            ? _value.title
+            : title // ignore: cast_nullable_to_non_nullable
+                  as String,
+        content: null == content
+            ? _value.content
+            : content // ignore: cast_nullable_to_non_nullable
+                  as String,
+        meetingAt: null == meetingAt
+            ? _value.meetingAt
+            : meetingAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        location: null == location
+            ? _value.location
+            : location // ignore: cast_nullable_to_non_nullable
+                  as CommunityLocationRequestModel,
+        maxParticipants: null == maxParticipants
+            ? _value.maxParticipants
+            : maxParticipants // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityPostWriteRequestModelImpl
+    implements _CommunityPostWriteRequestModel {
+  const _$CommunityPostWriteRequestModelImpl({
+    required this.title,
+    required this.content,
+    @JsonKey(toJson: _dateTimeToIso) required this.meetingAt,
+    required this.location,
+    required this.maxParticipants,
+  });
+
+  factory _$CommunityPostWriteRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityPostWriteRequestModelImplFromJson(json);
+
+  @override
+  final String title;
+  @override
+  final String content;
+
+  /// 서버는 timezone suffix가 붙은 ISO 8601을 기대한다. 로컬 DateTime을 그냥
+  /// 직렬화하면 suffix가 빠져 서버 로컬 시각으로 읽히므로 UTC로 정규화한다
+  /// (`create_session_response.dart`와 같은 판단).
+  @override
+  @JsonKey(toJson: _dateTimeToIso)
+  final DateTime meetingAt;
+  @override
+  final CommunityLocationRequestModel location;
+  @override
+  final int maxParticipants;
+
+  @override
+  String toString() {
+    return 'CommunityPostWriteRequestModel(title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityPostWriteRequestModelImpl &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.content, content) || other.content == content) &&
+            (identical(other.meetingAt, meetingAt) ||
+                other.meetingAt == meetingAt) &&
+            (identical(other.location, location) ||
+                other.location == location) &&
+            (identical(other.maxParticipants, maxParticipants) ||
+                other.maxParticipants == maxParticipants));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    title,
+    content,
+    meetingAt,
+    location,
+    maxParticipants,
+  );
+
+  /// Create a copy of CommunityPostWriteRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityPostWriteRequestModelImplCopyWith<
+    _$CommunityPostWriteRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityPostWriteRequestModelImplCopyWithImpl<
+        _$CommunityPostWriteRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityPostWriteRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityPostWriteRequestModel
+    implements CommunityPostWriteRequestModel {
+  const factory _CommunityPostWriteRequestModel({
+    required final String title,
+    required final String content,
+    @JsonKey(toJson: _dateTimeToIso) required final DateTime meetingAt,
+    required final CommunityLocationRequestModel location,
+    required final int maxParticipants,
+  }) = _$CommunityPostWriteRequestModelImpl;
+
+  factory _CommunityPostWriteRequestModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityPostWriteRequestModelImpl.fromJson;
+
+  @override
+  String get title;
+  @override
+  String get content;
+
+  /// 서버는 timezone suffix가 붙은 ISO 8601을 기대한다. 로컬 DateTime을 그냥
+  /// 직렬화하면 suffix가 빠져 서버 로컬 시각으로 읽히므로 UTC로 정규화한다
+  /// (`create_session_response.dart`와 같은 판단).
+  @override
+  @JsonKey(toJson: _dateTimeToIso)
+  DateTime get meetingAt;
+  @override
+  CommunityLocationRequestModel get location;
+  @override
+  int get maxParticipants;
+
+  /// Create a copy of CommunityPostWriteRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityPostWriteRequestModelImplCopyWith<
+    _$CommunityPostWriteRequestModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityPostStatusRequestModel _$CommunityPostStatusRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityPostStatusRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityPostStatusRequestModel {
+  String get status => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityPostStatusRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityPostStatusRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityPostStatusRequestModelCopyWith<CommunityPostStatusRequestModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityPostStatusRequestModelCopyWith<$Res> {
+  factory $CommunityPostStatusRequestModelCopyWith(
+    CommunityPostStatusRequestModel value,
+    $Res Function(CommunityPostStatusRequestModel) then,
+  ) =
+      _$CommunityPostStatusRequestModelCopyWithImpl<
+        $Res,
+        CommunityPostStatusRequestModel
+      >;
+  @useResult
+  $Res call({String status});
+}
+
+/// @nodoc
+class _$CommunityPostStatusRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityPostStatusRequestModel
+>
+    implements $CommunityPostStatusRequestModelCopyWith<$Res> {
+  _$CommunityPostStatusRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityPostStatusRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? status = null}) {
+    return _then(
+      _value.copyWith(
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityPostStatusRequestModelImplCopyWith<$Res>
+    implements $CommunityPostStatusRequestModelCopyWith<$Res> {
+  factory _$$CommunityPostStatusRequestModelImplCopyWith(
+    _$CommunityPostStatusRequestModelImpl value,
+    $Res Function(_$CommunityPostStatusRequestModelImpl) then,
+  ) = __$$CommunityPostStatusRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String status});
+}
+
+/// @nodoc
+class __$$CommunityPostStatusRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityPostStatusRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityPostStatusRequestModelImpl
+        >
+    implements _$$CommunityPostStatusRequestModelImplCopyWith<$Res> {
+  __$$CommunityPostStatusRequestModelImplCopyWithImpl(
+    _$CommunityPostStatusRequestModelImpl _value,
+    $Res Function(_$CommunityPostStatusRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityPostStatusRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? status = null}) {
+    return _then(
+      _$CommunityPostStatusRequestModelImpl(
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityPostStatusRequestModelImpl
+    implements _CommunityPostStatusRequestModel {
+  const _$CommunityPostStatusRequestModelImpl({required this.status});
+
+  factory _$CommunityPostStatusRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityPostStatusRequestModelImplFromJson(json);
+
+  @override
+  final String status;
+
+  @override
+  String toString() {
+    return 'CommunityPostStatusRequestModel(status: $status)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityPostStatusRequestModelImpl &&
+            (identical(other.status, status) || other.status == status));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, status);
+
+  /// Create a copy of CommunityPostStatusRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityPostStatusRequestModelImplCopyWith<
+    _$CommunityPostStatusRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityPostStatusRequestModelImplCopyWithImpl<
+        _$CommunityPostStatusRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityPostStatusRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityPostStatusRequestModel
+    implements CommunityPostStatusRequestModel {
+  const factory _CommunityPostStatusRequestModel({
+    required final String status,
+  }) = _$CommunityPostStatusRequestModelImpl;
+
+  factory _CommunityPostStatusRequestModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityPostStatusRequestModelImpl.fromJson;
+
+  @override
+  String get status;
+
+  /// Create a copy of CommunityPostStatusRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityPostStatusRequestModelImplCopyWith<
+    _$CommunityPostStatusRequestModelImpl
   >
   get copyWith => throw _privateConstructorUsedError;
 }

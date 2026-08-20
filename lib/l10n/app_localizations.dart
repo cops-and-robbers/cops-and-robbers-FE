@@ -1024,6 +1024,126 @@ abstract class AppLocalizations {
   /// **'커뮤니티'**
   String get bottomNavCommunity;
 
+  /// 모집글 상세 화면 앱바 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글'**
+  String get pageCommunityDetailTitle;
+
+  /// 모집글 상세 — 모임 채팅방에 들어가는 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅 참여하기'**
+  String get communityDetailJoinChat;
+
+  /// 모집글 상세 — 공유 액션 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'공유'**
+  String get communityDetailShare;
+
+  /// 모집글 상세 — 댓글 섹션 제목 (답글 포함 개수)
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글 {count}'**
+  String communityDetailCommentCount(int count);
+
+  /// 댓글 입력창 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글을 남겨보세요'**
+  String get communityCommentHint;
+
+  /// 답글 입력창 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'답글을 남겨보세요'**
+  String get communityCommentReplyHint;
+
+  /// 댓글 아래 답글 작성 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'답글 달기'**
+  String get communityCommentReply;
+
+  /// 답글 모드 안내 배너
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님에게 답글 남기는 중'**
+  String communityCommentReplyingTo(String nickname);
+
+  /// 댓글이 하나도 없을 때 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 댓글을 남겨보세요'**
+  String get communityCommentEmpty;
+
+  /// 댓글 작성 시각 — 1분 미만
+  ///
+  /// In ko, this message translates to:
+  /// **'방금'**
+  String get communityCommentJustNow;
+
+  /// 댓글 작성 시각 — 1시간 미만
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분 전'**
+  String communityCommentMinutesAgo(int minutes);
+
+  /// 댓글 작성 시각 — 하루 미만
+  ///
+  /// In ko, this message translates to:
+  /// **'{hours}시간 전'**
+  String communityCommentHoursAgo(int hours);
+
+  /// 모집글 삭제 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 삭제할까요'**
+  String get communityDeleteConfirmTitle;
+
+  /// 모집글 삭제 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제하면 되돌릴 수 없어요'**
+  String get communityDeleteConfirmMessage;
+
+  /// 비로그인 사용자가 쓰기 동작을 시도했을 때 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인이 필요한 기능이에요'**
+  String get communityLoginRequiredMessage;
+
+  /// 모집글 더보기 메뉴 — 내 글 수정
+  ///
+  /// In ko, this message translates to:
+  /// **'수정하기'**
+  String get communityMenuEdit;
+
+  /// 모집글 더보기 메뉴 — 내 글 삭제
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제하기'**
+  String get communityMenuDelete;
+
+  /// 모집글 더보기 메뉴 — 모집중인 글을 마감으로 바꾸기
+  ///
+  /// In ko, this message translates to:
+  /// **'모집 마감하기'**
+  String get communityMenuMarkCompleted;
+
+  /// 모집글 더보기 메뉴 — 마감된 글을 모집중으로 되돌리기
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 모집하기'**
+  String get communityMenuMarkRecruiting;
+
+  /// 모집글 더보기 메뉴 — 비로그인 사용자에게 보이는 로그인 유도
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인하고 이용하기'**
+  String get communityMenuLoginRequired;
+
   /// 커뮤니티 카드 — 모집 중인 게시글 배지
   ///
   /// In ko, this message translates to:
@@ -1202,11 +1322,53 @@ abstract class AppLocalizations {
   /// **'장소'**
   String get communityCreateLabelLocation;
 
-  /// 모집글 작성 — 장소 입력 힌트
+  /// 모집글 작성 — 만나는 곳(placeName) 입력 힌트
   ///
   /// In ko, this message translates to:
-  /// **'모임 장소를 입력해주세요'**
+  /// **'만나는 곳을 입력해주세요'**
   String get communityCreateHintLocation;
+
+  /// 모집글 작성 — 좌표를 아직 안 고른 상태의 지도 카드 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'지도에서 위치를 골라주세요'**
+  String get communityCreateHintPickLocation;
+
+  /// 모집글 상세 — 장소 텍스트를 탭해 클립보드에 담았을 때의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'장소를 복사했어요'**
+  String get communityLocationCopied;
+
+  /// 장소 선택 지도 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 선택'**
+  String get communityLocationPickerTitle;
+
+  /// 장소 선택 지도 화면 — 현재 핀 위치를 확정하는 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'이 위치로 선택'**
+  String get communityLocationPickerConfirm;
+
+  /// 장소 선택 지도 화면 — 좌표 주소를 조회하는 동안의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'주소를 확인하는 중이에요'**
+  String get communityLocationPickerLoading;
+
+  /// 장소 선택 지도 화면 — 표시할 주소가 없을 때의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'지도를 눌러 만날 곳을 정해요'**
+  String get communityLocationPickerHint;
+
+  /// 장소 선택 지도 화면 — 좌표 주소 조회가 실패했을 때의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요'**
+  String get communityLocationPickerNotFound;
 
   /// 모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)
   ///
@@ -3522,6 +3684,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'모집글을 불러오지 못했어요'**
   String get errorCommunityPostsLoadFailed;
+
+  /// 커뮤니티 모집글 수정 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 수정하는 중 오류가 생겼어요'**
+  String get errorCommunityPostUpdateGeneric;
+
+  /// 커뮤니티 모집글 삭제 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 삭제하는 중 오류가 생겼어요'**
+  String get errorCommunityPostDeleteGeneric;
+
+  /// 커뮤니티 모집 상태 변경 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집 상태를 바꾸는 중 오류가 생겼어요'**
+  String get errorCommunityPostStatusGeneric;
+
+  /// 커뮤니티 모집글 등록 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 등록하는 중 오류가 생겼어요'**
+  String get errorCommunityPostCreateGeneric;
+
+  /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'주소를 불러오는 중 오류가 생겼어요'**
+  String get errorCommunityAddressLoadGeneric;
 
   /// 공지사항 로딩 중 표시되는 안내
   ///

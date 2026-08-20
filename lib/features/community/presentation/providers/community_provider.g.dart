@@ -29,7 +29,7 @@ final communityRemoteDataSourceProvider =
 typedef CommunityRemoteDataSourceRef =
     AutoDisposeProviderRef<CommunityRemoteDataSource>;
 String _$communityRepositoryHash() =>
-    r'c1498ebe17f8cf37aef73a1f07d6c7b6a0bbffcb';
+    r'd9db3ea7b066ac096d012d94fec8fd197e2de5d7';
 
 /// `CommunityRepository` Provider
 ///
@@ -49,6 +49,32 @@ final communityRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CommunityRepositoryRef = AutoDisposeProviderRef<CommunityRepository>;
+String _$countryQueryResolverHash() =>
+    r'bd43c8ec9853e2e0f10f1d8ca86811385adc5b18';
+
+/// 국가 판별기 Provider
+///
+/// GPS·권한·기기 로케일은 전부 시스템 경계라 여기서 한 번 갈라 둔다. 테스트는
+/// 이 provider만 갈아끼우면 플랫폼 채널을 건드리지 않고 "권한 있음/없음"을
+/// 만들어 낼 수 있다.
+///
+/// Copied from [countryQueryResolver].
+@ProviderFor(countryQueryResolver)
+final countryQueryResolverProvider =
+    AutoDisposeProvider<Future<CountryQuery> Function()>.internal(
+      countryQueryResolver,
+      name: r'countryQueryResolverProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$countryQueryResolverHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CountryQueryResolverRef =
+    AutoDisposeProviderRef<Future<CountryQuery> Function()>;
 String _$selectedCommunityScopeHash() =>
     r'd77dd28c42cafb2dcff07c40d57eff6f26922b6e';
 
@@ -104,7 +130,7 @@ final selectedCommunitySortProvider =
 
 typedef _$SelectedCommunitySort = AutoDisposeNotifier<CommunitySortOption>;
 String _$communityFeedNotifierHash() =>
-    r'51395379b30b9ac706118781761ebe28cadc7922';
+    r'ea95680ed85e1a11fd8cb82033142c9c73dba09d';
 
 /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
 ///

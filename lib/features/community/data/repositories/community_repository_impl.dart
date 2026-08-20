@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
+import '../../domain/entities/community_address_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
+import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/repositories/community_repository.dart';
 import '../datasources/community_remote_datasource.dart';
@@ -23,26 +25,171 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
+    String? countryCode,
+    double? latitude,
+    double? longitude,
+  }) {
+    return _guard(
+      () async {
+        final res = await _dataSource.getPosts(
+          cursor: cursor,
+          size: size,
+          scope: scope.queryValue,
+          countryCode: countryCode,
+          latitude: latitude,
+          longitude: longitude,
+        );
+        return CommunityPostPageEntity(
+          items: res.content.map(_toEntity).toList(),
+          nextCursor: res.cursor.nextCursor,
+          hasNext: res.cursor.hasNext,
+          countryCode: res.countryCode,
+        );
+      },
+      message: '모집글을 불러오는 중 오류가 발생했습니다',
+      messageKey: 'errorCommunityPostsLoadGeneric',
+    );
+  }
+
+  @override
+  Future<CommunityAddressEntity> getAddress({
+    required double latitude,
+    required double longitude,
+  }) {
+    return _guard(
+      () async {
+        final res = await _dataSource.getAddress(
+          latitude: latitude,
+          longitude: longitude,
+        );
+        return CommunityAddressEntity(
+          region: res.region,
+          address: res.address,
+          countryCode: res.countryCode,
+        );
+      },
+      message: '주소를 불러오는 중 오류가 발생했습니다',
+      messageKey: 'errorCommunityAddressLoadGeneric',
+    );
+  }
+
+  @override
+  Future<CommunityPostEntity> createPost({
+    required String title,
+    required String content,
+    required DateTime meetingAt,
+    required double latitude,
+    required double longitude,
+    required String placeName,
+    required int maxParticipants,
+  }) {
+    return _guard(
+      () async => _toEntity(
+        await _dataSource.createPost(
+          CommunityPostWriteRequestModel(
+            title: title,
+            content: content,
+            meetingAt: meetingAt,
+            location: CommunityLocationRequestModel(
+              latitude: latitude,
+              longitude: longitude,
+              placeName: placeName,
+            ),
+            maxParticipants: maxParticipants,
+          ),
+        ),
+      ),
+      message: '모집글을 등록하는 중 오류가 발생했습니다',
+      messageKey: 'errorCommunityPostCreateGeneric',
+    );
+  }
+
+  @override
+  Future<CommunityPostEntity> getPost(int postId) {
+    return _guard(
+      () async => _toEntity(await _dataSource.getPost(postId)),
+      message: '모집글을 불러오는 중 오류가 발생했습니다',
+      messageKey: 'errorCommunityPostsLoadGeneric',
+    );
+  }
+
+  @override
+  Future<CommunityPostEntity> updatePost({
+    required int postId,
+    required String title,
+    required String content,
+    required DateTime meetingAt,
+    required double latitude,
+    required double longitude,
+    required String placeName,
+    required int maxParticipants,
+  }) {
+    return _guard(
+      () async => _toEntity(
+        await _dataSource.updatePost(
+          postId,
+          CommunityPostWriteRequestModel(
+            title: title,
+            content: content,
+            meetingAt: meetingAt,
+            location: CommunityLocationRequestModel(
+              latitude: latitude,
+              longitude: longitude,
+              placeName: placeName,
+            ),
+            maxParticipants: maxParticipants,
+          ),
+        ),
+      ),
+      message: '모집글을 수정하는 중 오류가 발생했습니다',
+      messageKey: 'errorCommunityPostUpdateGeneric',
+    );
+  }
+
+  @override
+  Future<void> deletePost(int postId) {
+    return _guard(
+      () => _dataSource.deletePost(postId),
+      message: '모집글을 삭제하는 중 오류가 발생했습니다',
+      messageKey: 'errorCommunityPostDeleteGeneric',
+    );
+  }
+
+  @override
+  Future<CommunityPostEntity> updateStatus({
+    required int postId,
+    required CommunityPostStatus status,
+  }) {
+    return _guard(
+      () async => _toEntity(
+        await _dataSource.updateStatus(
+          postId,
+          CommunityPostStatusRequestModel(status: status.wireValue),
+        ),
+      ),
+      message: '모집 상태를 바꾸는 중 오류가 발생했습니다',
+      messageKey: 'errorCommunityPostStatusGeneric',
+    );
+  }
+
+  /// DataSource 호출을 감싸 예외를 `AppException` 계열로 통일한다.
+  ///
+  /// `DioException`은 상태코드별 예외로, 그 외(JSON 파싱 실패, 알 수 없는 status
+  /// 문자열 등)는 [messageKey]를 단 `ServerException`으로 바꾼다. UI는
+  /// `error is AppException`을 가정하므로 raw 예외가 새어나가지 않게 차단한다.
+  Future<T> _guard<T>(
+    Future<T> Function() call, {
+    required String message,
+    required String messageKey,
   }) async {
     try {
-      final res = await _dataSource.getPosts(
-        cursor: cursor,
-        size: size,
-        scope: scope.queryValue,
-      );
-      return CommunityPostPageEntity(
-        items: res.content.map(_toEntity).toList(),
-        nextCursor: res.cursor.nextCursor,
-        hasNext: res.cursor.hasNext,
-      );
+      return await call();
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
     } catch (e) {
-      // Dio 외 예외(JSON 파싱 실패, 알 수 없는 status 문자열 등) → AppException으로 통일.
-      // UI는 `error is AppException`을 가정하므로 raw 예외가 새어나가지 않게 차단.
       throw ServerException(
-        message: '모집글을 불러오는 중 오류가 발생했습니다',
-        messageKey: 'errorCommunityPostsLoadGeneric',
+        message: message,
+        messageKey: messageKey,
         originalException: e,
       );
     }
@@ -61,12 +208,9 @@ class CommunityRepositoryImpl implements CommunityRepository {
         createdAt: m.createdAt.toLocal(),
         latitude: m.location.latitude,
         longitude: m.location.longitude,
-        // 있는 것 중 가장 구체적인 표기를 고른다. 셋 다 null이면(역지오코딩 실패)
-        // 그대로 null이 되고 카드가 위치 행을 숨긴다.
-        locationLabel:
-            m.location.buildingName ??
-            m.location.roadAddress ??
-            m.location.address,
+        // 접지 않고 둘 다 넘긴다 — 화면이 "장소명 + 지역"으로 병기한다(DEC-0015).
+        placeName: m.location.placeName,
+        region: m.location.region,
         maxParticipants: m.maxParticipants,
         currentParticipants: m.currentParticipants,
         likeCount: m.likeCount,

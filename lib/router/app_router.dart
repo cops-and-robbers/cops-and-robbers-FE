@@ -26,6 +26,7 @@ import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
+import '../features/community/presentation/pages/community_detail_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
 import '../features/mypage/presentation/pages/my_page.dart';
 import 'main_scaffold.dart';
@@ -390,6 +391,29 @@ final routerProvider = Provider<GoRouter>((ref) {
                       key: state.pageKey,
                       child: const CommunityCreatePage(),
                     ),
+                  ),
+                  // ======================================================
+                  // 모집글 상세 (바텀 네비 위 전체 화면)
+                  //
+                  // `create`보다 뒤에 둔다 — 앞에 두면 `/community/create`가
+                  // postId="create"로 잡힌다.
+                  // ======================================================
+                  GoRoute(
+                    path: ':postId',
+                    name: RoutePaths.communityDetailName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) {
+                      // 숫자가 아닌 경로가 들어오면 목록으로 돌려보내는 대신
+                      // 0으로 조회해 404 화면을 그린다 — 잘못된 링크임을
+                      // 사용자가 알 수 있어야 한다.
+                      final postId =
+                          int.tryParse(state.pathParameters['postId'] ?? '') ??
+                          0;
+                      return buildSmoothFade(
+                        key: state.pageKey,
+                        child: CommunityDetailPage(postId: postId),
+                      );
+                    },
                   ),
                 ],
               ),

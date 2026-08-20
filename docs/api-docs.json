@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v2.15.0 업데이트 내역\n\n### ✨ 신규\n- 커뮤니티 게시판(같이 하기) CRUD API 추가\n  - POST /api/community-posts 게시글 생성\n  - GET /api/community-posts 게시글 목록 조회 (페이지네이션)\n  - GET /api/community-posts/{postId} 게시글 단건 조회\n  - PUT /api/community-posts/{postId} 게시글 수정\n  - DELETE /api/community-posts/{postId} 게시글 삭제\n  - PATCH /api/community-posts/{postId}/status 모집 상태 변경\n\n## v2.14.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/notices category 필터 파라미터 추가\n  - NOTICE | MAINTENANCE | EVENT | UPDATE\n  - 생략 시 전체 조회 (기존 동작 유지)\n- POST /api/notices, PUT /api/notices/{id} category 필드 추가\n  - 생략 또는 null 시 NOTICE로 자동 설정 (하위 호환)\n\n## v2.13.0 업데이트 내역\n\n### ✨ 신규\n- PUT /api/games/{gameId}/area 폴리곤 구역 타입 지원\n  - areaType 필드 추가 (CIRCLE | POLYGON)\n  - CIRCLE: 기존 원형 구역 (circle 객체 사용)\n  - POLYGON: 다각형 구역 (polygon 객체 사용)\n- GET /api/games/{gameId}/area 응답 구조 변경\n  - 기존 플랫 구조 → areaType + circle/polygon 중첩 구조\n\n## v2.12.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/games/{gameId} 응답에 isEventGame 필드 추가\n  - 이벤트 게임 여부를 클라이언트에서 구분할 수 있도록 지원\n\n## v2.11.0 업데이트 내역\n\n### ✨ 신규\n- POST /api/games/join 이벤트 게임 QR 입장 지원\n  - 진행 중인 이벤트 게임에 초대 코드로 입장 시 경찰로 즉시 합류\n  - 응답에 isEventGame 필드 추가 (클라이언트 인게임/로비 화면 분기용)\n\n## v2.10.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- DELETE /api/games/{gameId}/leave API 인게임 중도 퇴장 분기처리 추가\n  (제세한 변경 내용은 해당 항목 참고)\n",
-    "version": "2.15.0"
+    "description": "## v2.17.0 업데이트 내역\n\n### ⚠️ 주의 (클라이언트 동시 배포 필요)\n- GET /api/community-posts 목록이 국가별로 분리됨\n  - countryCode 또는 현재 위치(latitude, longitude) 중 하나는 필수\n  - 둘 다 없으면 400(COUNTRY_NOT_SPECIFIED)\n  - 좌표로 보내면 서버가 국가를 판별해 응답의 countryCode에 실어줌\n  - 다음 페이지부터는 그 countryCode를 그대로 넣어 좌표 없이 요청\n  - 위치 권한을 거부한 사용자는 기기 국가 코드를 보내면 됨\n- GET /api/community-posts 페이지네이션을 커서 방식으로 전환\n  - page 파라미터 제거, cursor 파라미터 추가\n  - 응답의 page 객체가 cursor 객체(nextCursor, hasNext)로 변경\n  - 허용 파라미터는 cursor, size, scope, sort 뿐\n  - 지원하지 않는 쿼리 파라미터를 보내면 400(INVALID_QUERY_PARAMETER)\n\n### ✨ 신규\n- GET /api/community-posts/address 좌표 주소 조회 API 추가 (로그인 필요)\n  - 파라미터: latitude, longitude\n  - 응답: region(동 단위, 게시글에 저장될 값), address(번지 포함, 작성자 확인용),\n    countryCode(ISO 3166-1 alpha-2)\n  - 작성 화면에서 핀을 찍은 직후 호출해 위치를 확인시키는 용도이며 저장하지 않는다\n  - 주소 없는 좌표는 400(ADDRESS_NOT_FOUND), 조회 실패는 500(ADDRESS_LOOKUP_FAILED)\n- GET /api/community-posts scope, sort 파라미터 추가\n  - scope: ALL | NEARBY | MINE (기본 ALL)\n  - sort: LATEST | POPULAR | DISTANCE | DEADLINE (기본 LATEST)\n  - 현재 구현은 ALL + LATEST 뿐이며 그 외 값은 400\n    (UNSUPPORTED_LIST_SCOPE / UNSUPPORTED_LIST_SORT)\n  - NEARBY 반경 기준, MINE 정의, 인기·거리·마감임박 정렬은 정책 확정 후 지원 예정\n- 게시글 응답에 작성자 닉네임 writerNickname 추가 (탈퇴한 작성자면 null)\n- 게시글 응답에 location.region 추가 (동 단위 지역)\n  - 작성/수정 시 좌표를 서버에서 1회 역지오코딩하여 저장\n  - 예: 서울특별시 광진구 군자동 (번지 제외)\n  - 역지오코딩 실패 시 null\n- 게시글 요청/응답에 location.placeName 추가 (작성자가 입력하는 만나는 곳)\n  - 필수 입력, 최대 50자. 예: 어린이대공원 정문\n  - 좌표로는 건물명·장소명을 신뢰할 수준으로 얻을 수 없어 작성자에게 받는다\n\n- 게시글 응답에 location.countryCode 추가, 목록 응답에 countryCode 추가\n\n### 🛠 변경\n- 해외 주소를 그 나라 언어로 저장 (일본은 일본어, 그 외는 영어)\n- 역지오코딩 제공자를 카카오에서 VWorld(국내), Geoapify(해외)로 교체\n  - 카카오는 운영정책상 변환 결과를 DB에 저장할 수 없고 해외 좌표를 지원하지 않음\n  - 국내를 먼저 조회하고 주소를 얻지 못하면 해외로 넘어가므로 해외 게시글도 주소가 채워짐\n\n## v2.16.0 업데이트 내역\n\n### 🛠 변경\n- GET /api/community-posts, GET /api/community-posts/{postId} 비로그인 조회 허용\n  - 웹뷰 지원을 위해 @AuthUser 제거\n\n## v2.15.0 업데이트 내역\n\n### ✨ 신규\n- 커뮤니티 게시판(같이 하기) CRUD API 추가\n  - POST /api/community-posts 게시글 생성\n  - GET /api/community-posts 게시글 목록 조회 (페이지네이션)\n  - GET /api/community-posts/{postId} 게시글 단건 조회\n  - PUT /api/community-posts/{postId} 게시글 수정\n  - DELETE /api/community-posts/{postId} 게시글 삭제\n  - PATCH /api/community-posts/{postId}/status 모집 상태 변경\n\n## v2.14.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/notices category 필터 파라미터 추가\n  - NOTICE | MAINTENANCE | EVENT | UPDATE\n  - 생략 시 전체 조회 (기존 동작 유지)\n- POST /api/notices, PUT /api/notices/{id} category 필드 추가\n  - 생략 또는 null 시 NOTICE로 자동 설정 (하위 호환)\n\n## v2.13.0 업데이트 내역\n\n### ✨ 신규\n- PUT /api/games/{gameId}/area 폴리곤 구역 타입 지원\n  - areaType 필드 추가 (CIRCLE | POLYGON)\n  - CIRCLE: 기존 원형 구역 (circle 객체 사용)\n  - POLYGON: 다각형 구역 (polygon 객체 사용)\n- GET /api/games/{gameId}/area 응답 구조 변경\n  - 기존 플랫 구조 → areaType + circle/polygon 중첩 구조\n\n## v2.12.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/games/{gameId} 응답에 isEventGame 필드 추가\n  - 이벤트 게임 여부를 클라이언트에서 구분할 수 있도록 지원\n\n## v2.11.0 업데이트 내역\n\n### ✨ 신규\n- POST /api/games/join 이벤트 게임 QR 입장 지원\n  - 진행 중인 이벤트 게임에 초대 코드로 입장 시 경찰로 즉시 합류\n  - 응답에 isEventGame 필드 추가 (클라이언트 인게임/로비 화면 분기용)\n\n## v2.10.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- DELETE /api/games/{gameId}/leave API 인게임 중도 퇴장 분기처리 추가\n  (제세한 변경 내용은 해당 항목 참고)\n",
+    "version": "2.17.0"
   },
   "servers": [
     {
-      "url": "백엔드주소",
+      "url": "백엔드 주소",
       "description": "Generated server url"
     }
   ],
@@ -1184,28 +1184,6 @@
               }
             }
           },
-          "401": {
-            "description": "401 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증되지 않은 요청": {
-                    "summary": "인증되지 않은 요청",
-                    "value": {
-                      "errorCode": "UNAUTHENTICATED_REQUEST",
-                      "title": "인증되지 않은 요청",
-                      "status": 401,
-                      "detail": "로그인이 필요합니다.",
-                      "instance": "/api/community-posts/{postId}"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "500": {
             "description": "500 Error",
             "content": {
@@ -1233,7 +1211,7 @@
       "put": {
         "tags": ["CommunityPost"],
         "summary": "게시글 수정",
-        "description": "특정 모집 게시글을 수정합니다.",
+        "description": "특정 모집 게시글을 수정합니다. 좌표가 바뀌었거나 지역 정보가 비어 있으면 주소를 다시 변환합니다.",
         "operationId": "updatePost",
         "parameters": [
           {
@@ -1326,6 +1304,16 @@
                       "title": "잘못된 모임 날짜",
                       "status": 400,
                       "detail": "모임 날짜는 현재 시간 이후여야 합니다.",
+                      "instance": "/api/community-posts/{postId}"
+                    }
+                  },
+                  "주소를 찾을 수 없는 위치": {
+                    "summary": "주소를 찾을 수 없는 위치",
+                    "value": {
+                      "errorCode": "ADDRESS_NOT_FOUND",
+                      "title": "주소를 찾을 수 없는 위치",
+                      "status": 400,
+                      "detail": "선택한 위치의 주소를 찾을 수 없습니다. 다른 장소를 선택해주세요.",
                       "instance": "/api/community-posts/{postId}"
                     }
                   }
@@ -2676,25 +2664,22 @@
       "get": {
         "tags": ["CommunityPost"],
         "summary": "게시글 목록 조회",
-        "description": "모집 게시글 목록을 최신순으로 조회합니다.",
+        "description": "모집 게시글 목록을 국가별로 나눠 최신순 커서 방식으로 조회합니다. 국가를 아는 클라이언트는 countryCode를, 모르면 현재 좌표(latitude, longitude)를 보냅니다. 좌표로 보내면 서버가 역지오코딩해 국가를 판별하므로, 응답의 countryCode를 다음 페이지부터 그대로 사용하세요. 지원하지 않는 쿼리 파라미터가 포함되면 400을 반환합니다.",
         "operationId": "getPostList",
         "parameters": [
           {
-            "name": "page",
+            "name": "cursor",
             "in": "query",
-            "description": "페이지 번호 (0부터 시작)",
+            "description": "이전 응답의 nextCursor 값 (첫 페이지는 생략)",
             "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "example": 0
+              "type": "string"
+            }
           },
           {
             "name": "size",
             "in": "query",
-            "description": "페이지 크기 (1부터~)",
+            "description": "페이지 크기 (1~100)",
             "required": false,
             "schema": {
               "type": "integer",
@@ -2702,37 +2687,118 @@
               "default": 10
             },
             "example": 10
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "조회 범위. 현재는 ALL만 지원하며 NEARBY, MINE은 400",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["ALL", "NEARBY", "MINE"],
+              "default": "ALL"
+            },
+            "example": "ALL"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "정렬 기준. 현재는 LATEST만 지원하며 POPULAR, DISTANCE, DEADLINE은 400",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["LATEST", "POPULAR", "DISTANCE", "DEADLINE"],
+              "default": "LATEST"
+            },
+            "example": "LATEST"
+          },
+          {
+            "name": "countryCode",
+            "in": "query",
+            "description": "조회할 국가 코드(ISO 3166-1 alpha-2). 좌표를 보내지 않으면 필수",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "KR"
+          },
+          {
+            "name": "latitude",
+            "in": "query",
+            "description": "현재 위치 위도. countryCode를 보내지 않으면 필수",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "example": 37.5502
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "description": "현재 위치 경도. countryCode를 보내지 않으면 필수",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "example": 127.0736
           }
         ],
         "responses": {
+          "400": {
+            "description": "잘못된 커서 / 사이즈 범위 초과 / 미지원 파라미터",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityPostListResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "지원하지 않는 조회 범위": {
+                    "summary": "지원하지 않는 조회 범위",
+                    "value": {
+                      "errorCode": "UNSUPPORTED_LIST_SCOPE",
+                      "title": "지원하지 않는 조회 범위",
+                      "status": 400,
+                      "detail": "현재는 전체 조회(scope=ALL)만 지원합니다.",
+                      "instance": "/api/community-posts"
+                    }
+                  },
+                  "지원하지 않는 정렬 기준": {
+                    "summary": "지원하지 않는 정렬 기준",
+                    "value": {
+                      "errorCode": "UNSUPPORTED_LIST_SORT",
+                      "title": "지원하지 않는 정렬 기준",
+                      "status": 400,
+                      "detail": "현재는 최신순(sort=LATEST)만 지원합니다.",
+                      "instance": "/api/community-posts"
+                    }
+                  },
+                  "국가를 특정할 수 없음": {
+                    "summary": "국가를 특정할 수 없음",
+                    "value": {
+                      "errorCode": "COUNTRY_NOT_SPECIFIED",
+                      "title": "국가를 특정할 수 없음",
+                      "status": 400,
+                      "detail": "countryCode 또는 현재 위치(latitude, longitude) 중 하나는 필수입니다.",
+                      "instance": "/api/community-posts"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "200": {
             "description": "조회 성공",
             "content": {
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/CommunityPostListResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "401 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증되지 않은 요청": {
-                    "summary": "인증되지 않은 요청",
-                    "value": {
-                      "errorCode": "UNAUTHENTICATED_REQUEST",
-                      "title": "인증되지 않은 요청",
-                      "status": 401,
-                      "detail": "로그인이 필요합니다.",
-                      "instance": "/api/community-posts"
-                    }
-                  }
                 }
               }
             }
@@ -2745,13 +2811,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "알 수 없는 오류": {
-                    "summary": "알 수 없는 오류",
+                  "주소 조회 실패": {
+                    "summary": "주소 조회 실패",
                     "value": {
-                      "errorCode": "INTERNAL_SERVER_ERROR",
-                      "title": "알 수 없는 오류",
+                      "errorCode": "ADDRESS_LOOKUP_FAILED",
+                      "title": "주소 조회 실패",
                       "status": 500,
-                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "detail": "주소를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
                       "instance": "/api/community-posts"
                     }
                   }
@@ -2764,7 +2830,7 @@
       "post": {
         "tags": ["CommunityPost"],
         "summary": "게시글 생성",
-        "description": "새로운 모집 게시글을 생성합니다.",
+        "description": "새로운 모집 게시글을 생성합니다. 좌표는 서버에서 동 단위 지역으로 변환해 저장하며, 주소를 찾을 수 없는 위치는 400을 반환합니다. 만나는 곳(placeName)은 작성자가 직접 입력합니다.",
         "operationId": "createPost",
         "requestBody": {
           "content": {
@@ -2802,6 +2868,16 @@
                       "title": "잘못된 모임 날짜",
                       "status": 400,
                       "detail": "모임 날짜는 현재 시간 이후여야 합니다.",
+                      "instance": "/api/community-posts"
+                    }
+                  },
+                  "주소를 찾을 수 없는 위치": {
+                    "summary": "주소를 찾을 수 없는 위치",
+                    "value": {
+                      "errorCode": "ADDRESS_NOT_FOUND",
+                      "title": "주소를 찾을 수 없는 위치",
+                      "status": 400,
+                      "detail": "선택한 위치의 주소를 찾을 수 없습니다. 다른 장소를 선택해주세요.",
                       "instance": "/api/community-posts"
                     }
                   }
@@ -3113,31 +3189,6 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "신규 회원 가입 및 로그인 성공 (회원 리소스 생성)",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                },
-                "examples": {
-                  "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)": {
-                    "description": "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)",
-                    "value": {
-                      "userId": 2,
-                      "nickname": "집요한괴도4053",
-                      "tokens": {
-                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njg0OTg2MTB9...",
-                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
-                      },
-                      "isNewUser": true,
-                      "requiresAgreement": true
-                    }
-                  }
-                }
-              }
-            }
-          },
           "200": {
             "description": "기존 회원 로그인 성공",
             "content": {
@@ -3157,6 +3208,31 @@
                       },
                       "isNewUser": false,
                       "requiresAgreement": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "신규 회원 가입 및 로그인 성공 (회원 리소스 생성)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "examples": {
+                  "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)": {
+                    "description": "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)",
+                    "value": {
+                      "userId": 2,
+                      "nickname": "집요한괴도4053",
+                      "tokens": {
+                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njg0OTg2MTB9...",
+                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
+                      },
+                      "isNewUser": true,
+                      "requiresAgreement": true
                     }
                   }
                 }
@@ -5044,6 +5120,94 @@
         ]
       }
     },
+    "/api/community-posts/address": {
+      "get": {
+        "tags": ["CommunityPost"],
+        "summary": "좌표 주소 조회",
+        "description": "좌표에 해당하는 주소를 조회합니다. 저장하지 않으며, 작성 화면에서 위치를 확인시켜 주기 위한 용도입니다. 게시글에는 region이 저장되고 address는 작성자 확인용입니다.",
+        "operationId": "getAddress",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "description": "위도",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "example": 37.5502
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "description": "경도",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "example": 127.0736
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "주소를 찾을 수 없는 위치": {
+                    "summary": "주소를 찾을 수 없는 위치",
+                    "value": {
+                      "errorCode": "ADDRESS_NOT_FOUND",
+                      "title": "주소를 찾을 수 없는 위치",
+                      "status": 400,
+                      "detail": "선택한 위치의 주소를 찾을 수 없습니다. 다른 장소를 선택해주세요.",
+                      "instance": "/api/community-posts/address"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "주소 조회 실패": {
+                    "summary": "주소 조회 실패",
+                    "value": {
+                      "errorCode": "ADDRESS_LOOKUP_FAILED",
+                      "title": "주소 조회 실패",
+                      "status": 500,
+                      "detail": "주소를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
+                      "instance": "/api/community-posts/address"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/games/{gameId}/lobby/{participantId}": {
       "delete": {
         "tags": ["Lobby"],
@@ -5799,7 +5963,7 @@
         }
       },
       "Location": {
-        "required": ["latitude", "longitude"],
+        "required": ["latitude", "longitude", "placeName"],
         "type": "object",
         "properties": {
           "latitude": {
@@ -5813,6 +5977,13 @@
             "description": "경도",
             "format": "double",
             "example": 126.978
+          },
+          "placeName": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "description": "만나는 곳 (건물명이나 주변 장소)",
+            "example": "어린이대공원 정문"
           }
         },
         "description": "모임 장소 좌표"
@@ -5831,6 +6002,12 @@
             "description": "작성자 ID",
             "format": "int64",
             "example": 1
+          },
+          "writerNickname": {
+            "type": "string",
+            "description": "작성자 닉네임 (탈퇴한 유저면 null)",
+            "nullable": true,
+            "example": "무서운경찰관"
           },
           "title": {
             "type": "string",
@@ -5888,9 +6065,26 @@
             "description": "경도",
             "format": "double",
             "example": 127.0276
+          },
+          "region": {
+            "type": "string",
+            "description": "동 단위 지역 (역지오코딩 실패 시 null)",
+            "nullable": true,
+            "example": "서울특별시 광진구 군자동"
+          },
+          "placeName": {
+            "type": "string",
+            "description": "작성자가 입력한 만나는 곳",
+            "example": "어린이대공원 정문"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "국가 코드(ISO 3166-1 alpha-2). 역지오코딩 실패 시 null",
+            "nullable": true,
+            "example": "KR"
           }
         },
-        "description": "모임 장소 좌표"
+        "description": "모임 장소"
       },
       "ReportRequest": {
         "required": [
@@ -6825,8 +7019,50 @@
               "$ref": "#/components/schemas/CommunityPostResponse"
             }
           },
-          "page": {
-            "$ref": "#/components/schemas/PageInfo"
+          "cursor": {
+            "$ref": "#/components/schemas/CursorInfo"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "이 목록의 국가 코드. 다음 페이지 요청에 그대로 넣으면 좌표를 다시 보내지 않아도 된다.",
+            "example": "KR"
+          }
+        }
+      },
+      "CursorInfo": {
+        "type": "object",
+        "properties": {
+          "nextCursor": {
+            "type": "string",
+            "description": "다음 페이지 요청에 사용할 커서 (마지막 페이지면 null)",
+            "nullable": true,
+            "example": "MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg"
+          },
+          "hasNext": {
+            "type": "boolean",
+            "description": "다음 페이지 존재 여부",
+            "example": true
+          }
+        },
+        "description": "커서 정보"
+      },
+      "AddressResponse": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string",
+            "description": "게시글에 저장되고 목록에 표시될 동 단위 지역",
+            "example": "서울특별시 광진구 화양동"
+          },
+          "address": {
+            "type": "string",
+            "description": "번지까지 포함한 지번 주소. 작성자가 위치를 확인하는 용도",
+            "example": "서울특별시 광진구 화양동 1-20"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "좌표가 속한 국가 코드(ISO 3166-1 alpha-2). 목록 조회 필터에 그대로 사용한다.",
+            "example": "KR"
           }
         }
       },

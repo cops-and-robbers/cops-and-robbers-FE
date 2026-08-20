@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/services/location/device_location_service.dart';
+import '../../../../core/services/permission/location_permission_service.dart';
 import '../../data/datasources/community_remote_datasource.dart';
 import '../../data/repositories/community_repository_impl.dart';
 import '../../domain/entities/community_scope.dart';
@@ -28,6 +31,9 @@ CommunityRemoteDataSource communityRemoteDataSource(Ref ref) {
 // ============================================================================
 
 /// `CommunityRepository` Provider
+///
+/// 좋아요·스크랩·댓글은 백엔드에 API가 없어 아직 목이다
+/// (`communityInteractionRepositoryProvider`). 게시글 CRUD는 전부 실서버다.
 @riverpod
 CommunityRepository communityRepository(Ref ref) {
   return CommunityRepositoryImpl(ref.watch(communityRemoteDataSourceProvider));
@@ -65,6 +71,48 @@ class SelectedCommunitySort extends _$SelectedCommunitySort {
   void select(CommunitySortOption option) => state = option;
 }
 
+/// 목록 조회에 실을 국가 식별자 — 좌표 한 쌍 **또는** 국가 코드 하나.
+///
+/// 서버는 둘 중 하나를 요구하고 둘 다 없으면 400(`COUNTRY_NOT_SPECIFIED`)이다.
+typedef CountryQuery = ({
+  double? latitude,
+  double? longitude,
+  String? countryCode,
+});
+
+/// 목록을 어느 국가로 조회할지 정한다.
+///
+/// 위치 권한이 **이미 있을 때만** 좌표를 쓴다 — 목록 한 번 보자고 권한 팝업을
+/// 띄우지 않는다. 권한이 없거나 GPS가 응답하지 않으면 기기 로케일의 국가 코드로
+/// 물러선다. 그래서 권한을 거부해도 목록은 항상 뜬다.
+Future<CountryQuery> resolveCountryQuery() async {
+  if (await LocationPermissionService.canAccessLocation()) {
+    final position = await DeviceLocationService.getCurrentPosition();
+    if (position != null) {
+      return (
+        latitude: position.latitude,
+        longitude: position.longitude,
+        countryCode: null,
+      );
+    }
+  }
+  return (latitude: null, longitude: null, countryCode: _deviceCountryCode());
+}
+
+/// 기기 로케일의 국가 코드. 로케일에 국가가 없으면(`en` 같은 경우) 주 시장인
+/// 한국으로 둔다 — 국가를 못 정하면 목록 자체를 못 부른다.
+String _deviceCountryCode() =>
+    PlatformDispatcher.instance.locale.countryCode ?? 'KR';
+
+/// 국가 판별기 Provider
+///
+/// GPS·권한·기기 로케일은 전부 시스템 경계라 여기서 한 번 갈라 둔다. 테스트는
+/// 이 provider만 갈아끼우면 플랫폼 채널을 건드리지 않고 "권한 있음/없음"을
+/// 만들어 낼 수 있다.
+@riverpod
+Future<CountryQuery> Function() countryQueryResolver(Ref ref) =>
+    resolveCountryQuery;
+
 /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
 @riverpod
 class CommunityFeedNotifier extends _$CommunityFeedNotifier {
@@ -85,15 +133,24 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
       );
     }
 
-    // 첫 요청은 커서 없이 보낸다.
+    // 첫 요청은 커서 없이, 대신 국가 식별자를 실어 보낸다.
+    final query = await ref.read(countryQueryResolverProvider)();
     final page = await ref
         .watch(communityRepositoryProvider)
-        .getPosts(size: _pageSize);
+        .getPosts(
+          size: _pageSize,
+          countryCode: query.countryCode,
+          latitude: query.latitude,
+          longitude: query.longitude,
+        );
 
     return CommunityFeedState(
       items: page.items,
       nextCursor: page.nextCursor,
       hasMore: page.hasNext,
+      // 좌표로 물었으면 서버가 판별한 국가가 응답에 실려 온다. 안 실려 오면
+      // 우리가 보낸 값을 그대로 들고 있는다 — 어느 쪽이든 다음 페이지는 좌표 없이 간다.
+      countryCode: page.countryCode ?? query.countryCode,
     );
   }
 
@@ -115,9 +172,21 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
     state = AsyncData(pending);
 
     try {
+      // 첫 페이지에서 국가 코드를 받아 뒀으면 그걸 쓴다 — 스크롤할 때마다 GPS를
+      // 다시 켜지 않으려는 것이다. 못 받아 둔 경우에만 좌표를 다시 구한다.
+      final CountryQuery query = current.countryCode != null
+          ? (latitude: null, longitude: null, countryCode: current.countryCode)
+          : await ref.read(countryQueryResolverProvider)();
+
       final page = await ref
           .read(communityRepositoryProvider)
-          .getPosts(cursor: current.nextCursor, size: _pageSize);
+          .getPosts(
+            cursor: current.nextCursor,
+            size: _pageSize,
+            countryCode: query.countryCode,
+            latitude: query.latitude,
+            longitude: query.longitude,
+          );
 
       // scope 전환이나 refresh()가 끼어들어 state가 이미 교체됐다면 이 응답은
       // 낡은 것이다 — 최신 상태를 덮지 않고 조용히 버린다.
@@ -131,6 +200,9 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
           nextCursor: page.nextCursor,
           hasMore: page.hasNext,
           isLoadingMore: false,
+          // 이번에 좌표로 물어 국가를 알아냈다면 여기서 붙잡아 둔다 — 다음
+          // 페이지부터는 좌표가 필요 없어진다.
+          countryCode: page.countryCode ?? current.countryCode,
         ),
       );
     } catch (_) {

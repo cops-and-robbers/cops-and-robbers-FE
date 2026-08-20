@@ -78,6 +78,7 @@ class AppButton extends StatelessWidget {
     this.borderRadius,
     this.icon,
     this.iconPosition = IconPosition.leading,
+    this.iconGap,
     this.isLoading = false,
     this.subtitle,
     this.subtitleColor,
@@ -132,6 +133,11 @@ class AppButton extends StatelessWidget {
 
   /// 아이콘 위치 (기본: leading - 텍스트 왼쪽)
   final IconPosition iconPosition;
+
+  /// 아이콘과 텍스트 사이 간격 (기본: 8)
+  ///
+  /// `contentAlignment: spaceBetween`이면 좌우로 밀어붙이므로 이 값은 무시된다.
+  final double? iconGap;
 
   /// 로딩 상태 (true면 CircularProgressIndicator 표시)
   final bool isLoading;
@@ -303,21 +309,14 @@ class AppButton extends StatelessWidget {
     // 버튼 폭이 고정(fixedSize)이라 아이콘+간격+텍스트 합이 넘칠 수 있어
     // Row 안에서만 Flexible로 감싸 텍스트가 줄어들도록 한다
     final flexibleTextWidget = Flexible(child: textWidget);
+    final gap = SizedBox(width: iconGap ?? AppSpacing.horizontal8);
 
     return Row(
       mainAxisAlignment: _effectiveContentAlignment,
       mainAxisSize: MainAxisSize.max, // 전체 너비 사용
       children: iconPosition == IconPosition.trailing
-          ? [
-              flexibleTextWidget,
-              if (!isSpaceBetween) SizedBox(width: AppSpacing.horizontal8),
-              iconWidget,
-            ]
-          : [
-              iconWidget,
-              if (!isSpaceBetween) SizedBox(width: AppSpacing.horizontal8),
-              flexibleTextWidget,
-            ],
+          ? [flexibleTextWidget, if (!isSpaceBetween) gap, iconWidget]
+          : [iconWidget, if (!isSpaceBetween) gap, flexibleTextWidget],
     );
   }
 }

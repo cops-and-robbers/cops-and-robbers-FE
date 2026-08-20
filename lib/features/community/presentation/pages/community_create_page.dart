@@ -1,35 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../providers/community_provider.dart';
 import '../widgets/community_date_sheet.dart';
 import '../widgets/community_headcount_sheet.dart';
+import '../widgets/community_map_preview.dart';
+import 'community_location_picker_page.dart';
 
 /// 모집글 작성 화면
 ///
-/// 커뮤니티 목록의 플로팅 "모집글 작성" 버튼에서 진입한다. 네 항목(제목·설명·
-/// 날짜·장소)이 모두 차야 우측 상단 완료가 살아난다 — 백엔드
+/// 커뮤니티 목록의 플로팅 "모집글 작성" 버튼에서 진입한다. 다섯 항목(제목·설명·
+/// 날짜·만나는 곳·좌표)이 모두 차야 우측 상단 완료가 살아난다 — 백엔드
 /// `CommunityPostCreateRequest`가 전부 required라 하나라도 비면 서버가 거부한다.
 ///
-/// ponytail: 아직 화면만 있다. 장소는 지도 선택 방식이 정해지기 전이라 좌표 없이
-/// 텍스트로 받고, 완료는 등록 API 대신 안내만 띄운다. 둘 다 연결 지점은
-/// `_submit`과 `_buildLocationField` 한 곳씩이다.
-class CommunityCreatePage extends StatefulWidget {
+/// 장소가 둘로 나뉘는 이유(DEC-0015): 좌표로는 건물명을 신뢰할 수준으로 얻을 수
+/// 없어, 지도에서 **좌표**를 찍고 "만나는 곳"은 작성자가 **직접 입력**한다.
+/// 서버는 좌표를 역지오코딩해 동 단위 지역을 따로 저장한다.
+class CommunityCreatePage extends ConsumerStatefulWidget {
   const CommunityCreatePage({super.key});
 
+  /// 좌표 선택 카드 — 테스트에서 탭 대상을 찾는다.
+  static const Key mapCardKey = Key('community_create_map_card');
+
   @override
-  State<CommunityCreatePage> createState() => _CommunityCreatePageState();
+  ConsumerState<CommunityCreatePage> createState() =>
+      _CommunityCreatePageState();
 }
 
-class _CommunityCreatePageState extends State<CommunityCreatePage> {
+class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   final _locationController = TextEditingController();
@@ -44,6 +55,12 @@ class _CommunityCreatePageState extends State<CommunityCreatePage> {
 
   DateTime? _meetingAt;
   int _headcount = _defaultHeadcount;
+
+  /// 지도에서 고른 모임 좌표. 안 고르면 완료가 살아나지 않는다.
+  CommunityPickedLocation? _picked;
+
+  /// 등록 요청이 날아가 있는 동안. 완료를 두 번 눌러 글이 두 개 생기는 걸 막는다.
+  bool _submitting = false;
 
   /// 시안 기본값. 백엔드 허용 범위(2~50) 안에 있다.
   static const int _defaultHeadcount = 10;
@@ -97,7 +114,9 @@ class _CommunityCreatePageState extends State<CommunityCreatePage> {
       _titleController.text.trim().isNotEmpty &&
       _contentController.text.trim().isNotEmpty &&
       _locationController.text.trim().isNotEmpty &&
-      _meetingAt != null;
+      _meetingAt != null &&
+      _picked != null &&
+      !_submitting;
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +167,7 @@ class _CommunityCreatePageState extends State<CommunityCreatePage> {
               _buildLabel(l10n.communityCreateLabelLocation),
               _buildLocationField(l10n),
               SizedBox(height: AppSpacing.vertical12),
-              _buildMapPlaceholder(),
+              _buildMapCard(l10n),
               _buildSectionGap(),
               _buildLabel(l10n.communityCreateLabelHeadcount),
               _buildHeadcountRow(l10n),
@@ -315,17 +334,64 @@ class _CommunityCreatePageState extends State<CommunityCreatePage> {
     );
   }
 
-  /// 지도 미리보기 자리. 지도 선택 방식이 정해지면 여기만 갈아 끼운다.
-  Widget _buildMapPlaceholder() {
-    return Container(
-      width: double.infinity,
-      height: _mapHeight,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: AppRadius.large,
-        boxShadow: AppShadows.ver2,
+  /// 좌표 선택 카드 — 탭하면 지도 화면이 열리고, 고르면 미리보기로 바뀐다.
+  ///
+  /// 좌표를 고르기 전에는 지도를 안 띄운다. 아무 데나 가리키는 지도는 사용자가
+  /// "이미 골라졌나" 하고 오해하게 만든다.
+  Widget _buildMapCard(AppLocalizations l10n) {
+    final picked = _picked;
+
+    if (picked == null) {
+      return GestureDetector(
+        key: CommunityCreatePage.mapCardKey,
+        behavior: HitTestBehavior.opaque,
+        onTap: _openLocationPicker,
+        child: Container(
+          width: double.infinity,
+          height: _mapHeight,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: AppRadius.large,
+            boxShadow: AppShadows.ver2,
+          ),
+          child: Text(
+            l10n.communityCreateHintPickLocation,
+            style: AppTextStyles.label_16.copyWith(color: AppColors.black200),
+          ),
+        ),
+      );
+    }
+
+    // 미리보기가 자체 탭 제스처를 갖고 있어 밖에서 감싸면 먹히지 않는다 —
+    // 탭 동작 자체를 "전체 화면 지도" 대신 "장소 재선택"으로 갈아 끼운다.
+    return ClipRRect(
+      key: CommunityCreatePage.mapCardKey,
+      borderRadius: AppRadius.large,
+      child: CommunityMapPreview(
+        latitude: picked.latitude,
+        longitude: picked.longitude,
+        locationLabel: picked.region,
+        height: _mapHeight,
+        onTap: _openLocationPicker,
       ),
     );
+  }
+
+  /// 지도 화면을 열고 고른 좌표를 받아 온다. 취소하면 기존 선택을 유지한다.
+  Future<void> _openLocationPicker() async {
+    final picked = await Navigator.of(context).push<CommunityPickedLocation>(
+      MaterialPageRoute(
+        builder: (_) => CommunityLocationPickerPage(
+          initialTarget: _picked == null
+              ? null
+              : LatLng(_picked!.latitude, _picked!.longitude),
+        ),
+      ),
+    );
+    if (!mounted || picked == null) return;
+
+    setState(() => _picked = picked);
   }
 
   Widget _buildHeadcountRow(AppLocalizations l10n) {
@@ -463,11 +529,40 @@ class _CommunityCreatePageState extends State<CommunityCreatePage> {
   }
 
   /// 등록 API 연결 지점. 지금은 화면만 있어 안내로 끝낸다.
-  void _submit() {
+  Future<void> _submit() async {
+    final picked = _picked;
+    final meetingAt = _meetingAt;
+    if (picked == null || meetingAt == null || _submitting) return;
+
     VibrationService.instance().buttonTap();
-    AppSnackbar.show(
-      context,
-      message: AppLocalizations.of(context).comingSoonMessage,
-    );
+    setState(() => _submitting = true);
+
+    try {
+      final created = await ref
+          .read(communityRepositoryProvider)
+          .createPost(
+            title: _titleController.text.trim(),
+            content: _contentController.text.trim(),
+            meetingAt: meetingAt,
+            latitude: picked.latitude,
+            longitude: picked.longitude,
+            placeName: _locationController.text.trim(),
+            maxParticipants: _headcount,
+          );
+      if (!mounted) return;
+
+      // 목록을 무효화해 방금 쓴 글이 맨 위에 보이게 한다. 화면을 먼저 닫으면
+      // 뒤에 남은 목록이 낡은 채로 보인다.
+      ref.invalidate(communityFeedNotifierProvider);
+      Navigator.of(context).pop(created);
+    } on AppException catch (e) {
+      if (!mounted) return;
+      // 과거 모임 시각·주소 없는 좌표 등 서버가 거절한 이유를 그대로 보여 준다.
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).errorByException(e),
+      );
+      setState(() => _submitting = false);
+    }
   }
 }

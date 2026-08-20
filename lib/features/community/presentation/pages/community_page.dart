@@ -18,8 +18,6 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
-import '../../domain/entities/community_post_entity.dart';
-import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../providers/community_feed_state.dart';
@@ -27,84 +25,6 @@ import '../providers/community_provider.dart';
 import '../widgets/community_post_card.dart';
 import '../widgets/community_scope_toggle.dart';
 import '../widgets/community_sort_sheet.dart';
-
-// ponytail: 카드 UI·무한 스크롤 확인용 임시 하드코딩. 작업 끝나면 이 플래그와 아래
-// 목록, _loadMore()/_refresh()/_buildBody 맨 위 분기, _mock* 필드만 지우면 된다.
-const bool _useMockPosts = true;
-
-// 요일 라벨은 meetingAt에서 계산된다 — 2026년이라 9/8=화, 9/10=목, 9/12=토로 시안과 맞는다.
-final List<CommunityPostEntity> _mockTemplates = [
-  CommunityPostEntity(
-    id: 1,
-    writerId: 1,
-    title: '나랑 경도하자!!!!dadsasdasdasdasdasdasd!',
-    content: '',
-    meetingAt: DateTime(2026, 9, 10, 18, 0),
-    latitude: 37.55,
-    longitude: 127.07,
-    maxParticipants: 10,
-    status: CommunityPostStatus.recruiting,
-    createdAt: DateTime(2026, 8, 16),
-    locationLabel: '서울시 광진구 세종대학교',
-    currentParticipants: 2,
-    likeCount: 6000,
-    bookmarkCount: 3,
-  ),
-  CommunityPostEntity(
-    id: 2,
-    writerId: 2,
-    title: '초보도 환영. 웰컴. 누구나',
-    content: '',
-    meetingAt: DateTime(2026, 9, 12, 19, 30),
-    latitude: 37.35,
-    longitude: 126.98,
-    maxParticipants: 10,
-    status: CommunityPostStatus.recruiting,
-    createdAt: DateTime(2026, 8, 16),
-    locationLabel: '경기도 의왕시 백운호수 무민공원',
-    currentParticipants: 6,
-    likeCount: 5,
-    bookmarkCount: 2,
-  ),
-  CommunityPostEntity(
-    id: 3,
-    writerId: 3,
-    title: '번개로 경도하실 분',
-    content: '',
-    meetingAt: DateTime(2026, 9, 12, 20, 0),
-    latitude: 37.55,
-    longitude: 127.08,
-    maxParticipants: 15,
-    status: CommunityPostStatus.completed,
-    createdAt: DateTime(2026, 8, 10),
-    locationLabel: '서울시 광진구 어린이대공원 정문',
-    currentParticipants: 15,
-    likeCount: 13,
-    bookmarkCount: 20,
-  ),
-  CommunityPostEntity(
-    id: 4,
-    writerId: 4,
-    title: '세종대생 모여라~',
-    content: '',
-    meetingAt: DateTime(2026, 9, 8, 12, 0),
-    latitude: 37.55,
-    longitude: 127.07,
-    maxParticipants: 15,
-    status: CommunityPostStatus.completed,
-    createdAt: DateTime(2026, 8, 5),
-    locationLabel: '서울시 광진구 세종대학교',
-    currentParticipants: 15,
-    likeCount: 13,
-    bookmarkCount: 20,
-  ),
-];
-
-/// 템플릿 4개를 돌려 만든 목데이터 40개. 제목 뒤 번호로 몇 번째 페이지인지 눈으로 센다.
-final List<CommunityPostEntity> _mockPosts = List.generate(40, (i) {
-  final template = _mockTemplates[i % _mockTemplates.length];
-  return template.copyWith(id: i + 1, title: '${template.title} (${i + 1})');
-});
 
 /// 커뮤니티 탭 — 모집글 목록
 ///
@@ -124,10 +44,6 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   static const double _loadMoreThreshold = 200;
 
   // ponytail: 목데이터 모드의 가짜 페이지네이션 상태.
-  static const int _mockPageSize = 10;
-  int _mockLoaded = _mockPageSize;
-  bool _mockLoadingMore = false;
-
   @override
   void initState() {
     super.initState();
@@ -150,9 +66,6 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   }
 
   Future<void> _loadMore() async {
-    // ponytail: 목데이터 모드는 provider 대신 로컬 카운트만 늘려 페이지 넘김을 흉내낸다.
-    if (_useMockPosts) return _loadMoreMock();
-
     try {
       await ref.read(communityFeedNotifierProvider.notifier).loadMore();
     } on AppException catch (e) {
@@ -167,30 +80,11 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     }
   }
 
-  /// ponytail: 하단 인디케이터가 보이도록 네트워크 지연까지 흉내낸다.
-  Future<void> _loadMoreMock() async {
-    if (_mockLoadingMore || _mockLoaded >= _mockPosts.length) return;
-    setState(() => _mockLoadingMore = true);
-    await Future.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
-    // take()가 알아서 잘라내므로 상한 clamp는 필요 없다.
-    setState(() {
-      _mockLoaded += _mockPageSize;
-      _mockLoadingMore = false;
-    });
-  }
-
   /// pull-to-refresh — 0페이지부터 다시 조회한다.
   ///
   /// 실패해도 provider의 error 상태가 placeholder로 이미 반영되므로, 여기서는
   /// RefreshIndicator에 완료 신호만 주기 위해 예외를 흡수한다(별도 스낵바 불필요).
   Future<void> _refresh() async {
-    // ponytail: 목데이터 모드에서 실제 API를 때리지 않도록 첫 페이지로만 되돌린다.
-    if (_useMockPosts) {
-      setState(() => _mockLoaded = _mockPageSize);
-      return;
-    }
-
     try {
       await ref.read(communityFeedNotifierProvider.notifier).refresh();
     } on AppException catch (_) {
@@ -245,25 +139,13 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
             ),
           ),
           SizedBox(height: AppSpacing.vertical26),
-          Padding(
-            padding: AppPadding.horizontal24,
-            child: Consumer(
-              builder: (context, ref, _) => _buildSortLabel(
-                l10n,
-                ref.watch(selectedCommunitySortProvider),
-              ),
-            ),
-          ),
-          // 정렬 라벨 아래 12px는 스크롤 영역 밖에 둔다 — 목록의 상단 padding으로
-          // 옮기면 스크롤된 카드가 이 띠까지 올라온다. 시안상 이 간격이 12여야 하므로
-          // 목록 쪽 상단 padding은 0이고, 첫 카드 위쪽 그림자는 잘리는 것을 받아들인다.
-          SizedBox(height: AppSpacing.vertical12),
           Expanded(
             child: Consumer(
               builder: (context, ref, _) => _buildBody(
                 l10n,
                 ref,
                 ref.watch(selectedCommunityScopeProvider),
+                ref.watch(selectedCommunitySortProvider),
                 createButton,
               ),
             ),
@@ -339,23 +221,9 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     AppLocalizations l10n,
     WidgetRef ref,
     CommunityScope scope,
+    CommunitySortOption sort,
     Widget createButton,
   ) {
-    // ponytail: UI 확인용 하드코딩 — provider를 아예 타지 않는다.
-    if (_useMockPosts) {
-      return _wrapWithCreateButton(
-        createButton,
-        _buildList(
-          CommunityFeedState(
-            items: _mockPosts.take(_mockLoaded).toList(),
-            nextCursor: null,
-            hasMore: _mockLoaded < _mockPosts.length,
-            isLoadingMore: _mockLoadingMore,
-          ),
-        ),
-      );
-    }
-
     // 우리 동네 / 내 모임은 백엔드가 아직 400을 주므로 Notifier가 호출을 건너뛴다.
     // 작성 버튼은 새 글을 쓰는 진입점 자체라 어느 탭이든 동일하게 떠 있어야 한다.
     if (scope != CommunityScope.all) {
@@ -388,7 +256,10 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
                   createButton,
                   _buildRefreshablePlaceholder(l10n.pageCommunityEmpty),
                 )
-              : _wrapWithCreateButton(createButton, _buildList(feed)),
+              : _wrapWithCreateButton(
+                  createButton,
+                  _buildList(l10n, sort, feed),
+                ),
         );
   }
 
@@ -425,7 +296,13 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     );
   }
 
-  Widget _buildList(CommunityFeedState feed) {
+  /// 정렬 라벨을 목록 맨 위 아이템으로 넣어 카드와 함께 스크롤되게 한다
+  /// (예전엔 Column 밖에 고정돼 있어 스크롤해도 안 내려갔다).
+  Widget _buildList(
+    AppLocalizations l10n,
+    CommunitySortOption sort,
+    CommunityFeedState feed,
+  ) {
     return RefreshIndicator(
       onRefresh: _refresh,
       child: ListView.separated(
@@ -439,19 +316,41 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
           bottom:
               _buttonBottomOffset + _createButtonHeight + AppSpacing.vertical16,
         ),
-        itemCount: feed.items.length + (feed.isLoadingMore ? 1 : 0),
+        itemCount: 1 + feed.items.length + (feed.isLoadingMore ? 1 : 0),
         separatorBuilder: (_, _) => SizedBox(height: AppSpacing.vertical12),
         itemBuilder: (context, index) {
-          if (index >= feed.items.length) {
+          if (index == 0) {
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal8),
+              child: _buildSortLabel(l10n, sort),
+            );
+          }
+          final itemIndex = index - 1;
+          if (itemIndex >= feed.items.length) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical16),
               child: const Center(child: CircularProgressIndicator()),
             );
           }
-          // 카드 탭은 상세 화면이 생기면 연결한다 (#475 범위 제외).
-          return CommunityPostCard(post: feed.items[index]);
+          final post = feed.items[itemIndex];
+          return CommunityPostCard(
+            post: post,
+            onTap: () => _openDetail(post.id),
+            // 목록에서는 어느 항목이든 상세로 보낸다 — 수정·삭제·상태 변경은
+            // 대상 글을 보면서 하는 편이 안전하고, 처리 코드도 상세 한 곳에만 둔다.
+            onMenuAction: (_) => _openDetail(post.id),
+          );
         },
       ),
+    );
+  }
+
+  /// 모집글 상세로 이동.
+  void _openDetail(int postId) {
+    VibrationService.instance().buttonTap();
+    context.pushNamed(
+      RoutePaths.communityDetailName,
+      pathParameters: {'postId': '$postId'},
     );
   }
 

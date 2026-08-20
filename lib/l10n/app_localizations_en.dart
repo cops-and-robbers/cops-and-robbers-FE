@@ -554,6 +554,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bottomNavCommunity => 'Community';
 
   @override
+  String get pageCommunityDetailTitle => 'Post';
+
+  @override
+  String get communityDetailJoinChat => 'Join the chat';
+
+  @override
+  String get communityDetailShare => 'Share';
+
+  @override
+  String communityDetailCommentCount(int count) {
+    return 'Comments $count';
+  }
+
+  @override
+  String get communityCommentHint => 'Leave a comment';
+
+  @override
+  String get communityCommentReplyHint => 'Leave a reply';
+
+  @override
+  String get communityCommentReply => 'Reply';
+
+  @override
+  String communityCommentReplyingTo(String nickname) {
+    return 'Replying to $nickname';
+  }
+
+  @override
+  String get communityCommentEmpty => 'Be the first to comment';
+
+  @override
+  String get communityCommentJustNow => 'Just now';
+
+  @override
+  String communityCommentMinutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String communityCommentHoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String get communityDeleteConfirmTitle => 'Delete this post?';
+
+  @override
+  String get communityDeleteConfirmMessage => 'This can\'t be undone';
+
+  @override
+  String get communityLoginRequiredMessage => 'You need to log in for this';
+
+  @override
+  String get communityMenuEdit => 'Edit';
+
+  @override
+  String get communityMenuDelete => 'Delete';
+
+  @override
+  String get communityMenuMarkCompleted => 'Close recruiting';
+
+  @override
+  String get communityMenuMarkRecruiting => 'Reopen recruiting';
+
+  @override
+  String get communityMenuLoginRequired => 'Log in to continue';
+
+  @override
   String get communityStatusRecruiting => 'Open';
 
   @override
@@ -663,6 +731,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get communityCreateHintLocation => 'Enter where you\'ll meet';
+
+  @override
+  String get communityCreateHintPickLocation => 'Pick a spot on the map';
+
+  @override
+  String get communityLocationCopied => 'Location copied';
+
+  @override
+  String get communityLocationPickerTitle => 'Pick a location';
+
+  @override
+  String get communityLocationPickerConfirm => 'Use this location';
+
+  @override
+  String get communityLocationPickerLoading => 'Checking the address';
+
+  @override
+  String get communityLocationPickerHint =>
+      'Tap the map to set your meeting spot';
+
+  @override
+  String get communityLocationPickerNotFound =>
+      'No address here. Please pick another spot';
 
   @override
   String get communityCreateLabelHeadcount => 'Headcount';
@@ -1953,6 +2044,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCommunityPostsLoadFailed => 'Couldn\'t load posts';
+
+  @override
+  String get errorCommunityPostUpdateGeneric =>
+      'Something went wrong while updating the post';
+
+  @override
+  String get errorCommunityPostDeleteGeneric =>
+      'Something went wrong while deleting the post';
+
+  @override
+  String get errorCommunityPostStatusGeneric =>
+      'Something went wrong while changing the status';
+
+  @override
+  String get errorCommunityPostCreateGeneric =>
+      'Something went wrong while posting';
+
+  @override
+  String get errorCommunityAddressLoadGeneric =>
+      'Something went wrong while loading the address';
 
   @override
   String get messageLoadingNotices => 'Loading notices...';

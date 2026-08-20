@@ -1,5 +1,6 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/app_button.dart';
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../community_fakes.dart';
 
 CommunityPostEntity _post(int id) => CommunityPostEntity(
   id: id,
@@ -27,7 +29,9 @@ CommunityPostEntity _post(int id) => CommunityPostEntity(
   createdAt: DateTime(2026, 9, 1),
 );
 
-class _FakeCommunityRepository implements CommunityRepository {
+class _FakeCommunityRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
   _FakeCommunityRepository(this.items);
 
   final List<CommunityPostEntity> items;
@@ -38,6 +42,9 @@ class _FakeCommunityRepository implements CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
+    String? countryCode,
+    double? latitude,
+    double? longitude,
   }) async {
     callCount++;
     return CommunityPostPageEntity(
@@ -50,7 +57,9 @@ class _FakeCommunityRepository implements CommunityRepository {
 
 /// 첫 로드에서 항상 지정된 예외를 던지는 가짜 Repository.
 /// AuthException 무반응 분기와 일반 AppException 안내 분기를 각각 검증하는 데 쓴다.
-class _ThrowingCommunityRepository implements CommunityRepository {
+class _ThrowingCommunityRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
   _ThrowingCommunityRepository(this.exception);
 
   final AppException exception;
@@ -60,6 +69,9 @@ class _ThrowingCommunityRepository implements CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
+    String? countryCode,
+    double? latitude,
+    double? longitude,
   }) async {
     throw exception;
   }
@@ -67,7 +79,9 @@ class _ThrowingCommunityRepository implements CommunityRepository {
 
 /// 최초 호출은 실패하고 이후 호출은 성공하는 가짜 Repository.
 /// pull-to-refresh가 실제 재조회로 이어져 에러 상태에서 복구되는지 검증하는 데 쓴다.
-class _RecoveringCommunityRepository implements CommunityRepository {
+class _RecoveringCommunityRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
   _RecoveringCommunityRepository(this.items);
 
   final List<CommunityPostEntity> items;
@@ -78,6 +92,9 @@ class _RecoveringCommunityRepository implements CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
+    String? countryCode,
+    double? latitude,
+    double? longitude,
   }) async {
     callCount++;
     if (callCount == 1) {
@@ -91,8 +108,18 @@ class _RecoveringCommunityRepository implements CommunityRepository {
   }
 }
 
-Widget _wrap(CommunityRepository repo) => ProviderScope(
-  overrides: [communityRepositoryProvider.overrideWithValue(repo)],
+Widget _wrap(CommunityRepository repo, {int? currentUserId}) => ProviderScope(
+  overrides: [
+    communityRepositoryProvider.overrideWithValue(repo),
+    // 카드의 더보기 메뉴가 로그인 사용자 id를 watch 한다. 덮지 않으면 실제
+    // AuthNotifier가 Firebase까지 끌고 들어와, 목록과 무관한 이유로 깨진다.
+    currentUserIdProvider.overrideWithValue(currentUserId),
+    // 목록 조회 전에 국가를 정하느라 GPS·권한을 친다. 덮지 않으면 플랫폼 채널이
+    // 응답하지 않아 pumpAndSettle이 영원히 안 끝난다.
+    countryQueryResolverProvider.overrideWithValue(
+      () async => (latitude: null, longitude: null, countryCode: 'KR'),
+    ),
+  ],
   child: ScreenUtilInit(
     designSize: const Size(393, 852),
     builder: (_, _) => MaterialApp(
