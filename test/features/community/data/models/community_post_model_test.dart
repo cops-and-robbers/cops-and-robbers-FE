@@ -1,9 +1,10 @@
 import 'package:cops_and_robbers/features/community/data/models/community_post_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// 백엔드 v2.17.0이 보내는 형태 — 주소 3종·작성자 닉네임이 들어오고
-/// 목록 봉투는 `page`가 아니라 `cursor`다.
-/// 아직 미도착 필드(currentParticipants·likeCount·bookmarkCount)는 빠져 있다.
+/// 백엔드 v2.17.0이 보내는 형태 — 장소는 `region`(서버 역지오코딩) +
+/// `placeName`(작성자 입력) + `countryCode` 셋이고, 목록 봉투는 `page`가 아니라
+/// `cursor`다. 아직 미도착 필드(currentParticipants·likeCount·bookmarkCount)는
+/// 빠져 있다.
 Map<String, dynamic> _serverJson() => {
   'id': 1,
   'writerId': 7,
@@ -14,9 +15,9 @@ Map<String, dynamic> _serverJson() => {
   'location': {
     'latitude': 37.5502,
     'longitude': 127.0736,
-    'address': '서울 광진구 군자동 98',
-    'roadAddress': '서울특별시 광진구 능동로 209',
-    'buildingName': '세종대학교',
+    'region': '서울특별시 광진구 군자동',
+    'placeName': '어린이대공원 정문',
+    'countryCode': 'KR',
   },
   'maxParticipants': 6,
   'status': 'RECRUITING',
@@ -26,27 +27,44 @@ Map<String, dynamic> _serverJson() => {
 
 void main() {
   group('CommunityPostResponseModel', () {
-    test('parses_address_trio_when_backend_resolved_the_coordinates', () {
+    test('parses_region_and_place_name_when_backend_resolved_the_coordinates', () {
       final model = CommunityPostResponseModel.fromJson(_serverJson());
 
       expect(model.id, 1);
       expect(model.writerNickname, '무서운경찰관');
       expect(model.location.latitude, 37.5502);
-      expect(model.location.address, '서울 광진구 군자동 98');
-      expect(model.location.roadAddress, '서울특별시 광진구 능동로 209');
-      expect(model.location.buildingName, '세종대학교');
+      expect(model.location.region, '서울특별시 광진구 군자동');
+      expect(model.location.placeName, '어린이대공원 정문');
+      expect(model.location.countryCode, 'KR');
     });
 
-    test('leaves_address_trio_null_when_reverse_geocoding_failed', () {
-      // 역지오코딩 실패해도 글 작성은 성공시키므로 셋 다 null로 올 수 있다.
+    test('leaves_region_and_country_null_when_reverse_geocoding_failed', () {
+      // 역지오코딩이 실패해도 글 작성은 성공시키므로 region·countryCode가 null로
+      // 올 수 있다. placeName은 작성자 입력이라 이 경우에도 살아 있다.
+      final json = _serverJson()
+        ..['location'] = {
+          'latitude': 37.5502,
+          'longitude': 127.0736,
+          'placeName': '어린이대공원 정문',
+        };
+
+      final model = CommunityPostResponseModel.fromJson(json);
+
+      expect(model.location.region, isNull);
+      expect(model.location.countryCode, isNull);
+      expect(model.location.placeName, '어린이대공원 정문');
+    });
+
+    test('leaves_place_name_null_when_post_predates_the_field', () {
+      // 스키마상 placeName은 non-null이지만, v2.17.0 이전에 쓰인 글까지 서버가
+      // 채웠다는 보장이 없다. 외부 데이터는 신뢰하지 않는다 — 없으면 null로 받고
+      // 화면이 장소 행을 숨긴다.
       final json = _serverJson()
         ..['location'] = {'latitude': 37.5502, 'longitude': 127.0736};
 
       final model = CommunityPostResponseModel.fromJson(json);
 
-      expect(model.location.address, isNull);
-      expect(model.location.roadAddress, isNull);
-      expect(model.location.buildingName, isNull);
+      expect(model.location.placeName, isNull);
     });
 
     test('leaves_writer_nickname_null_when_writer_withdrew', () {
@@ -74,29 +92,74 @@ void main() {
   });
 
   group('CommunityPostListResponseModel', () {
-    test('parses_cursor_envelope_when_more_pages_remain', () {
+    test('parses_country_code_when_more_pages_remain', () {
       final model = CommunityPostListResponseModel.fromJson({
         'content': [_serverJson()],
         'cursor': {
           'nextCursor': 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg',
           'hasNext': true,
         },
+        'countryCode': 'KR',
       });
 
       expect(model.content.single.id, 1);
       expect(model.cursor.nextCursor, 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg');
       expect(model.cursor.hasNext, true);
+      // 다음 페이지부터는 좌표 없이 이 값만 실어 보낸다.
+      expect(model.countryCode, 'KR');
     });
 
     test('parses_null_next_cursor_when_last_page_reached', () {
       final model = CommunityPostListResponseModel.fromJson({
         'content': <Map<String, dynamic>>[],
         'cursor': {'nextCursor': null, 'hasNext': false},
+        'countryCode': 'KR',
       });
 
       expect(model.content, isEmpty);
       expect(model.cursor.nextCursor, isNull);
       expect(model.cursor.hasNext, false);
+    });
+  });
+
+  group('CommunityAddressResponseModel', () {
+    test('parses_region_address_and_country_when_pin_dropped', () {
+      final model = CommunityAddressResponseModel.fromJson({
+        'region': '서울특별시 광진구 화양동',
+        'address': '서울특별시 광진구 화양동 1-20',
+        'countryCode': 'KR',
+      });
+
+      // region은 글에 저장될 값, address는 작성자에게 위치를 확인시키는 값이다.
+      expect(model.region, '서울특별시 광진구 화양동');
+      expect(model.address, '서울특별시 광진구 화양동 1-20');
+      expect(model.countryCode, 'KR');
+    });
+  });
+
+  group('CommunityPostWriteRequestModel', () {
+    test('serializes_place_name_and_utc_meeting_at_when_submitted', () {
+      final json = CommunityPostWriteRequestModel(
+        title: '같이 하실 분',
+        content: '어린이대공원에서 봐요',
+        meetingAt: DateTime.utc(2026, 8, 10, 5),
+        location: const CommunityLocationRequestModel(
+          latitude: 37.5502,
+          longitude: 127.0736,
+          placeName: '어린이대공원 정문',
+        ),
+        maxParticipants: 6,
+      ).toJson();
+
+      expect(json['meetingAt'], '2026-08-10T05:00:00.000Z');
+      expect(
+        json['location'],
+        {
+          'latitude': 37.5502,
+          'longitude': 127.0736,
+          'placeName': '어린이대공원 정문',
+        },
+      );
     });
   });
 }

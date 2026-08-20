@@ -7,6 +7,7 @@ import 'package:cops_and_robbers/features/community/domain/repositories/communit
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../community_fakes.dart';
 
 CommunityPostEntity _post(int id) => CommunityPostEntity(
   id: id,
@@ -24,7 +25,9 @@ CommunityPostEntity _post(int id) => CommunityPostEntity(
 /// 시스템 경계 대체 — Repository 인터페이스만 가짜고 Notifier 로직은 실물이다.
 ///
 /// [pagesByCursor]의 키는 요청에 실리는 커서다. 첫 요청은 커서가 없으므로 `null`.
-class _FakeCommunityRepository implements CommunityRepository {
+class _FakeCommunityRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
   _FakeCommunityRepository(this.pagesByCursor);
 
   final Map<String?, ({List<CommunityPostEntity> items, String? next})>
@@ -37,6 +40,9 @@ class _FakeCommunityRepository implements CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
+    String? countryCode,
+    double? latitude,
+    double? longitude,
   }) async {
     requestedCursors.add(cursor);
     final page =
@@ -52,7 +58,9 @@ class _FakeCommunityRepository implements CommunityRepository {
 /// 첫 페이지는 즉시 응답하고, 두 번째 페이지(loadMore)는 외부에서 [secondPage]를
 /// complete할 때까지 대기한다 — scope 전환이 응답 도착보다 먼저 끼어드는
 /// 경쟁 조건을 재현하기 위한 시스템 경계 대체.
-class _DelayedSecondPageRepository implements CommunityRepository {
+class _DelayedSecondPageRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
   _DelayedSecondPageRepository(this.firstPageItems, this.secondPage);
 
   final List<CommunityPostEntity> firstPageItems;
@@ -63,6 +71,9 @@ class _DelayedSecondPageRepository implements CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
+    String? countryCode,
+    double? latitude,
+    double? longitude,
   }) {
     if (cursor == null) {
       return Future.value(
@@ -77,9 +88,24 @@ class _DelayedSecondPageRepository implements CommunityRepository {
   }
 }
 
-ProviderContainer _containerWith(CommunityRepository repo) {
+/// 위치 권한이 없는 기기 — 좌표 대신 기기 국가 코드로 물어보는 경로.
+Future<CountryQuery> _deviceCountry() async =>
+    (latitude: null, longitude: null, countryCode: 'KR');
+
+/// 위치 권한이 있는 기기 — 현재 좌표로 물어보는 경로.
+Future<CountryQuery> _gpsCoordinates() async =>
+    (latitude: 37.5502, longitude: 127.0736, countryCode: null);
+
+ProviderContainer _containerWith(
+  CommunityRepository repo, {
+  Future<CountryQuery> Function() resolver = _deviceCountry,
+}) {
   final container = ProviderContainer(
-    overrides: [communityRepositoryProvider.overrideWithValue(repo)],
+    overrides: [
+      communityRepositoryProvider.overrideWithValue(repo),
+      // GPS·권한은 시스템 경계다. 덮지 않으면 테스트가 실제 플랫폼 채널을 친다.
+      countryQueryResolverProvider.overrideWithValue(resolver),
+    ],
   );
   addTearDown(container.dispose);
   return container;

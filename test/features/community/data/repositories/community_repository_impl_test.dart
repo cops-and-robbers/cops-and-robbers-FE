@@ -14,6 +14,9 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
 
   String? lastScope;
   String? lastCursor;
+  String? lastCountryCode;
+  double? lastLatitude;
+  double? lastLongitude;
   bool called = false;
 
   @override
@@ -21,12 +24,85 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
     String? cursor,
     required int size,
     String? scope,
+    String? countryCode,
+    double? latitude,
+    double? longitude,
   }) async {
     called = true;
     lastCursor = cursor;
     lastScope = scope;
+    lastCountryCode = countryCode;
+    lastLatitude = latitude;
+    lastLongitude = longitude;
     if (errorToThrow != null) throw errorToThrow!;
     return responseToReturn!;
+  }
+
+  // ── 주소 조회 ──
+  CommunityAddressResponseModel? addressToReturn;
+
+  @override
+  Future<CommunityAddressResponseModel> getAddress({
+    required double latitude,
+    required double longitude,
+  }) async {
+    lastLatitude = latitude;
+    lastLongitude = longitude;
+    if (errorToThrow != null) throw errorToThrow!;
+    return addressToReturn!;
+  }
+
+  // ── 단건 계열 ──
+  // 목록 테스트와 같은 페이크를 공유한다. 응답·예외는 위 두 필드를 재사용하지
+  // 않고 각각 따로 둔다 — 목록 응답 타입과 다르기 때문이다.
+  CommunityPostResponseModel? postToReturn;
+  CommunityPostWriteRequestModel? lastUpdateBody;
+  CommunityPostWriteRequestModel? lastCreateBody;
+  CommunityPostStatusRequestModel? lastStatusBody;
+  int? lastPostId;
+
+  @override
+  Future<CommunityPostResponseModel> createPost(
+    CommunityPostWriteRequestModel body,
+  ) async {
+    lastCreateBody = body;
+    if (errorToThrow != null) throw errorToThrow!;
+    return postToReturn!;
+  }
+
+  @override
+  Future<CommunityPostResponseModel> getPost(int postId) async {
+    lastPostId = postId;
+    if (errorToThrow != null) throw errorToThrow!;
+    return postToReturn!;
+  }
+
+  @override
+  Future<CommunityPostResponseModel> updatePost(
+    int postId,
+    CommunityPostWriteRequestModel body,
+  ) async {
+    lastPostId = postId;
+    lastUpdateBody = body;
+    if (errorToThrow != null) throw errorToThrow!;
+    return postToReturn!;
+  }
+
+  @override
+  Future<void> deletePost(int postId) async {
+    lastPostId = postId;
+    if (errorToThrow != null) throw errorToThrow!;
+  }
+
+  @override
+  Future<CommunityPostResponseModel> updateStatus(
+    int postId,
+    CommunityPostStatusRequestModel body,
+  ) async {
+    lastPostId = postId;
+    lastStatusBody = body;
+    if (errorToThrow != null) throw errorToThrow!;
+    return postToReturn!;
   }
 }
 
@@ -68,9 +144,11 @@ CommunityPostListResponseModel _listOf(
   List<Map<String, dynamic>> jsons, {
   String? nextCursor,
   bool hasNext = false,
+  String? countryCode = 'KR',
 }) => CommunityPostListResponseModel(
   content: jsons.map(CommunityPostResponseModel.fromJson).toList(),
   cursor: CursorInfoModel(nextCursor: nextCursor, hasNext: hasNext),
+  countryCode: countryCode,
 );
 
 void main() {
@@ -89,16 +167,16 @@ void main() {
       expect(result.items[1].status, CommunityPostStatus.completed);
     });
 
-    test('prefers_building_name_for_location_label', () async {
+    test('joins_region_and_place_name_for_location_label', () async {
+      // 서버 지역과 작성자 장소명을 병기한다 (DEC-0015) — 접어서 하나만 쓰지 않는다.
       final fake = _FakeCommunityRemoteDataSource()
         ..responseToReturn = _listOf([
           _postJson(
             location: {
               'latitude': 37.4979,
               'longitude': 127.0276,
-              'address': '서울 광진구 군자동 98',
-              'roadAddress': '서울특별시 광진구 능동로 209',
-              'buildingName': '세종대학교',
+              'region': '서울특별시 광진구 군자동',
+              'placeName': '세종대학교 정문',
             },
           ),
         ]);
@@ -106,18 +184,18 @@ void main() {
 
       final entity = (await repo.getPosts(size: 20)).items.single;
 
-      expect(entity.locationLabel, '세종대학교');
+      expect(entity.locationLabel, '서울특별시 광진구 군자동 · 세종대학교 정문');
     });
 
-    test('falls_back_to_road_address_when_building_name_is_missing', () async {
+    test('keeps_place_name_alone_when_geocoding_failed', () async {
+      // 역지오코딩이 실패해도 작성자가 입력한 장소명은 살아 있다.
       final fake = _FakeCommunityRemoteDataSource()
         ..responseToReturn = _listOf([
           _postJson(
             location: {
               'latitude': 37.4979,
               'longitude': 127.0276,
-              'address': '서울 광진구 군자동 98',
-              'roadAddress': '서울특별시 광진구 능동로 209',
+              'placeName': '세종대학교 정문',
             },
           ),
         ]);
@@ -125,30 +203,11 @@ void main() {
 
       final entity = (await repo.getPosts(size: 20)).items.single;
 
-      expect(entity.locationLabel, '서울특별시 광진구 능동로 209');
+      expect(entity.locationLabel, '세종대학교 정문');
     });
 
-    test('falls_back_to_lot_address_when_road_address_is_missing', () async {
-      // 도로명이 없는 지역 — 지번만 내려온다.
-      final fake = _FakeCommunityRemoteDataSource()
-        ..responseToReturn = _listOf([
-          _postJson(
-            location: {
-              'latitude': 37.4979,
-              'longitude': 127.0276,
-              'address': '서울 광진구 군자동 98',
-            },
-          ),
-        ]);
-      final repo = CommunityRepositoryImpl(fake);
-
-      final entity = (await repo.getPosts(size: 20)).items.single;
-
-      expect(entity.locationLabel, '서울 광진구 군자동 98');
-    });
-
-    test('leaves_location_label_null_when_geocoding_failed', () async {
-      // 셋 다 null이면 카드가 위치 행을 숨긴다 — 좌표는 사용자에게 무의미하다.
+    test('leaves_location_label_null_when_both_parts_are_missing', () async {
+      // 둘 다 없으면 카드가 위치 행을 숨긴다 — 좌표는 사용자에게 무의미하다.
       final fake = _FakeCommunityRemoteDataSource()
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
@@ -159,6 +218,46 @@ void main() {
       // 좌표는 상세 지도용으로 그대로 살아 있어야 한다.
       expect(entity.latitude, 37.4979);
       expect(entity.longitude, 127.0276);
+    });
+
+    test('forwards_coordinates_when_country_code_is_unknown', () async {
+      // 서버는 countryCode 또는 좌표 중 하나를 요구한다 — 둘 다 없으면 400이다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([_postJson()]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.getPosts(size: 20, latitude: 37.5502, longitude: 127.0736);
+
+      expect(fake.lastLatitude, 37.5502);
+      expect(fake.lastLongitude, 127.0736);
+      expect(fake.lastCountryCode, isNull);
+    });
+
+    test('forwards_country_code_without_coordinates_on_later_pages', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([_postJson()]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.getPosts(size: 20, countryCode: 'KR');
+
+      expect(fake.lastCountryCode, 'KR');
+      expect(fake.lastLatitude, isNull);
+      expect(fake.lastLongitude, isNull);
+    });
+
+    test('exposes_resolved_country_code_from_the_envelope', () async {
+      // 좌표로 물으면 서버가 판별한 국가가 응답에 실려 온다 — 다음 페이지는 이걸 쓴다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([_postJson()], countryCode: 'JP');
+      final repo = CommunityRepositoryImpl(fake);
+
+      final page = await repo.getPosts(
+        size: 20,
+        latitude: 35.6895,
+        longitude: 139.6917,
+      );
+
+      expect(page.countryCode, 'JP');
     });
 
     test('leaves_pending_backend_fields_null_when_absent', () async {
@@ -253,6 +352,251 @@ void main() {
       final repo = CommunityRepositoryImpl(fake);
 
       expect(() => repo.getPosts(size: 20), throwsA(isA<ServerException>()));
+    });
+  });
+
+  group('CommunityRepositoryImpl.getPost', () {
+    test('maps_response_to_entity_when_post_exists', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..postToReturn = CommunityPostResponseModel.fromJson(
+          _postJson(
+            id: 42,
+            status: 'COMPLETED',
+            location: {
+              'latitude': 37.4979,
+              'longitude': 127.0276,
+              'region': '서울특별시 광진구 군자동',
+              'placeName': '세종대학교 정문',
+            },
+          ),
+        );
+      final repo = CommunityRepositoryImpl(fake);
+
+      final post = await repo.getPost(42);
+
+      expect(post.id, 42);
+      expect(post.status, CommunityPostStatus.completed);
+      expect(post.locationLabel, '서울특별시 광진구 군자동 · 세종대학교 정문');
+      expect(fake.lastPostId, 42);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(404);
+      final repo = CommunityRepositoryImpl(fake);
+
+      expect(() => repo.getPost(1), throwsA(isA<AppException>()));
+    });
+  });
+
+  group('CommunityRepositoryImpl.updatePost', () {
+    /// 로컬 DateTime을 그대로 직렬화하면 timezone suffix가 빠져 서버가 자기
+    /// 로컬 시각으로 읽는다 — 모임 시각이 통째로 밀리는 버그라 값으로 못 박는다.
+    test('sends_meeting_time_as_utc_iso_when_local_time_given', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..postToReturn = CommunityPostResponseModel.fromJson(_postJson());
+      final repo = CommunityRepositoryImpl(fake);
+
+      // KST 18:00 == UTC 09:00
+      await repo.updatePost(
+        postId: 7,
+        title: '수정 제목',
+        content: '수정 본문',
+        meetingAt: DateTime.utc(2026, 9, 10, 9).toLocal(),
+        latitude: 37.4979,
+        longitude: 127.0276,
+        placeName: '세종대학교 정문',
+        maxParticipants: 8,
+      );
+
+      expect(
+        fake.lastUpdateBody!.toJson()['meetingAt'],
+        '2026-09-10T09:00:00.000Z',
+      );
+    });
+
+    test('sends_place_name_with_coordinates_in_location', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..postToReturn = CommunityPostResponseModel.fromJson(_postJson());
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.updatePost(
+        postId: 7,
+        title: '수정 제목',
+        content: '수정 본문',
+        meetingAt: DateTime.utc(2026, 9, 10, 9),
+        latitude: 37.4979,
+        longitude: 127.0276,
+        placeName: '세종대학교 정문',
+        maxParticipants: 8,
+      );
+
+      // region·countryCode는 서버가 채우는 값이라 실리면 안 되고, placeName은
+      // 작성자 입력이라 반드시 실려야 한다 (빠지면 400).
+      expect(fake.lastUpdateBody!.toJson()['location'], {
+        'latitude': 37.4979,
+        'longitude': 127.0276,
+        'placeName': '세종대학교 정문',
+      });
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(403);
+      final repo = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repo.updatePost(
+          postId: 7,
+          title: 't',
+          content: 'c',
+          meetingAt: DateTime.utc(2026, 9, 10),
+          latitude: 0,
+          longitude: 0,
+          placeName: 'p',
+          maxParticipants: 2,
+        ),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.createPost', () {
+    test('sends_full_write_body_when_post_submitted', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..postToReturn = CommunityPostResponseModel.fromJson(_postJson(id: 99));
+      final repo = CommunityRepositoryImpl(fake);
+
+      final created = await repo.createPost(
+        title: '같이 하실 분',
+        content: '어린이대공원에서 봐요',
+        meetingAt: DateTime.utc(2026, 9, 10, 9),
+        latitude: 37.5502,
+        longitude: 127.0736,
+        placeName: '어린이대공원 정문',
+        maxParticipants: 6,
+      );
+
+      final body = fake.lastCreateBody!.toJson();
+      expect(body['title'], '같이 하실 분');
+      expect(body['maxParticipants'], 6);
+      expect(body['meetingAt'], '2026-09-10T09:00:00.000Z');
+      expect(body['location'], {
+        'latitude': 37.5502,
+        'longitude': 127.0736,
+        'placeName': '어린이대공원 정문',
+      });
+      // 생성된 글을 그대로 돌려주므로 호출자가 화면 전환에 바로 쓴다.
+      expect(created.id, 99);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      // 과거 모임 시각(INVALID_MEETING_DATE)·주소 없는 좌표(ADDRESS_NOT_FOUND)가
+      // 둘 다 400으로 온다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(400);
+      final repo = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repo.createPost(
+          title: 't',
+          content: 'c',
+          meetingAt: DateTime.utc(2020, 1, 1),
+          latitude: 0,
+          longitude: 0,
+          placeName: 'p',
+          maxParticipants: 2,
+        ),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.getAddress', () {
+    test('maps_address_response_to_entity_when_pin_dropped', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..addressToReturn = CommunityAddressResponseModel.fromJson({
+          'region': '서울특별시 광진구 화양동',
+          'address': '서울특별시 광진구 화양동 1-20',
+          'countryCode': 'KR',
+        });
+      final repo = CommunityRepositoryImpl(fake);
+
+      final address = await repo.getAddress(
+        latitude: 37.5502,
+        longitude: 127.0736,
+      );
+
+      expect(address.region, '서울특별시 광진구 화양동');
+      expect(address.address, '서울특별시 광진구 화양동 1-20');
+      expect(address.countryCode, 'KR');
+      expect(fake.lastLatitude, 37.5502);
+      expect(fake.lastLongitude, 127.0736);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      // 주소 없는 좌표는 400(ADDRESS_NOT_FOUND) — 화면이 "다른 곳을 골라주세요"로
+      // 안내할 수 있게 AppException으로 통일한다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(400);
+      final repo = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repo.getAddress(latitude: 0, longitude: 0),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.deletePost', () {
+    test('completes_when_server_returns_no_content', () async {
+      final fake = _FakeCommunityRemoteDataSource();
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.deletePost(7);
+
+      expect(fake.lastPostId, 7);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(403);
+      final repo = CommunityRepositoryImpl(fake);
+
+      expect(() => repo.deletePost(7), throwsA(isA<AppException>()));
+    });
+  });
+
+  group('CommunityRepositoryImpl.updateStatus', () {
+    test('sends_wire_string_when_domain_status_given', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..postToReturn = CommunityPostResponseModel.fromJson(
+          _postJson(status: 'COMPLETED'),
+        );
+      final repo = CommunityRepositoryImpl(fake);
+
+      final post = await repo.updateStatus(
+        postId: 7,
+        status: CommunityPostStatus.completed,
+      );
+
+      expect(fake.lastStatusBody!.status, 'COMPLETED');
+      // 변경된 글을 돌려주므로 호출자가 화면 갱신에 바로 쓴다.
+      expect(post.status, CommunityPostStatus.completed);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(403);
+      final repo = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repo.updateStatus(
+          postId: 7,
+          status: CommunityPostStatus.recruiting,
+        ),
+        throwsA(isA<AppException>()),
+      );
     });
   });
 }

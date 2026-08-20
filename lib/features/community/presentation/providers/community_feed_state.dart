@@ -18,5 +18,10 @@ class CommunityFeedState with _$CommunityFeedState {
     required String? nextCursor,
     required bool hasMore,
     @Default(false) bool isLoadingMore,
+
+    /// 이 목록이 속한 국가 코드. 첫 페이지를 좌표로 물었을 때 서버가 판별해 준
+    /// 값이며, 다음 페이지부터는 좌표 대신 이걸 보낸다 — 스크롤할 때마다 GPS를
+    /// 다시 켜지 않으려는 것이다.
+    String? countryCode,
   }) = _CommunityFeedState;
 }

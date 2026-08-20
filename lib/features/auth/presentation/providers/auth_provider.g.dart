@@ -154,6 +154,30 @@ final authStateProvider = AutoDisposeStreamProvider<User?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthStateRef = AutoDisposeStreamProviderRef<User?>;
+String _$currentUserIdHash() => r'bbd1c3d7fe0510440673c0c3ea3e6d4194c7558c';
+
+/// 현재 로그인한 사용자 id (미로그인이면 null)
+///
+/// "내가 쓴 글인가"를 판단해야 하는 화면이 `authNotifierProvider`의
+/// `AsyncValue` 껍데기를 매번 벗기지 않도록 한 겹 접어둔다. 로딩 중·에러도
+/// null이 된다 — 확정되기 전에는 남의 글로 취급하는 편이 안전하다
+/// (내 글이 아닌데 수정 버튼을 보여주면 403을 왕복한다).
+///
+/// Copied from [currentUserId].
+@ProviderFor(currentUserId)
+final currentUserIdProvider = AutoDisposeProvider<int?>.internal(
+  currentUserId,
+  name: r'currentUserIdProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$currentUserIdHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CurrentUserIdRef = AutoDisposeProviderRef<int?>;
 String _$authNotifierHash() => r'7ce2e68ba3187343b43b8d202cb1b5a5e7fb8b1b';
 
 /// 인증 상태를 관리하는 Notifier

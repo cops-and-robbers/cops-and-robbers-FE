@@ -309,6 +309,106 @@
   "@bottomNavCommunity": {
     "description": "바텀 네비게이션 — 커뮤니티 탭 라벨"
   },
+  "pageCommunityDetailTitle": "모집글",
+  "@pageCommunityDetailTitle": {
+    "description": "모집글 상세 화면 앱바 제목"
+  },
+  "communityDetailJoinChat": "채팅 참여하기",
+  "@communityDetailJoinChat": {
+    "description": "모집글 상세 — 모임 채팅방에 들어가는 버튼"
+  },
+  "communityDetailShare": "공유",
+  "@communityDetailShare": {
+    "description": "모집글 상세 — 공유 액션 라벨"
+  },
+  "communityDetailCommentCount": "댓글 {count}",
+  "@communityDetailCommentCount": {
+    "description": "모집글 상세 — 댓글 섹션 제목 (답글 포함 개수)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "communityCommentHint": "댓글을 남겨보세요",
+  "@communityCommentHint": {
+    "description": "댓글 입력창 placeholder"
+  },
+  "communityCommentReplyHint": "답글을 남겨보세요",
+  "@communityCommentReplyHint": {
+    "description": "답글 입력창 placeholder"
+  },
+  "communityCommentReply": "답글 달기",
+  "@communityCommentReply": {
+    "description": "댓글 아래 답글 작성 버튼"
+  },
+  "communityCommentReplyingTo": "{nickname}님에게 답글 남기는 중",
+  "@communityCommentReplyingTo": {
+    "description": "답글 모드 안내 배너",
+    "placeholders": {
+      "nickname": {
+        "type": "String"
+      }
+    }
+  },
+  "communityCommentEmpty": "첫 댓글을 남겨보세요",
+  "@communityCommentEmpty": {
+    "description": "댓글이 하나도 없을 때 표시"
+  },
+  "communityCommentJustNow": "방금",
+  "@communityCommentJustNow": {
+    "description": "댓글 작성 시각 — 1분 미만"
+  },
+  "communityCommentMinutesAgo": "{minutes}분 전",
+  "@communityCommentMinutesAgo": {
+    "description": "댓글 작성 시각 — 1시간 미만",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "communityCommentHoursAgo": "{hours}시간 전",
+  "@communityCommentHoursAgo": {
+    "description": "댓글 작성 시각 — 하루 미만",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "communityDeleteConfirmTitle": "모집글을 삭제할까요",
+  "@communityDeleteConfirmTitle": {
+    "description": "모집글 삭제 확인 다이얼로그 제목"
+  },
+  "communityDeleteConfirmMessage": "삭제하면 되돌릴 수 없어요",
+  "@communityDeleteConfirmMessage": {
+    "description": "모집글 삭제 확인 다이얼로그 본문"
+  },
+  "communityLoginRequiredMessage": "로그인이 필요한 기능이에요",
+  "@communityLoginRequiredMessage": {
+    "description": "비로그인 사용자가 쓰기 동작을 시도했을 때 안내"
+  },
+  "communityMenuEdit": "수정하기",
+  "@communityMenuEdit": {
+    "description": "모집글 더보기 메뉴 — 내 글 수정"
+  },
+  "communityMenuDelete": "삭제하기",
+  "@communityMenuDelete": {
+    "description": "모집글 더보기 메뉴 — 내 글 삭제"
+  },
+  "communityMenuMarkCompleted": "모집 마감하기",
+  "@communityMenuMarkCompleted": {
+    "description": "모집글 더보기 메뉴 — 모집중인 글을 마감으로 바꾸기"
+  },
+  "communityMenuMarkRecruiting": "다시 모집하기",
+  "@communityMenuMarkRecruiting": {
+    "description": "모집글 더보기 메뉴 — 마감된 글을 모집중으로 되돌리기"
+  },
+  "communityMenuLoginRequired": "로그인하고 이용하기",
+  "@communityMenuLoginRequired": {
+    "description": "모집글 더보기 메뉴 — 비로그인 사용자에게 보이는 로그인 유도"
+  },
   "communityStatusRecruiting": "모집중",
   "@communityStatusRecruiting": {
     "description": "커뮤니티 카드 — 모집 중인 게시글 배지"
@@ -443,9 +543,37 @@
   "@communityCreateLabelLocation": {
     "description": "모집글 작성 — 장소 섹션 라벨"
   },
-  "communityCreateHintLocation": "모임 장소를 입력해주세요",
+  "communityCreateHintLocation": "만나는 곳을 입력해주세요",
   "@communityCreateHintLocation": {
-    "description": "모집글 작성 — 장소 입력 힌트"
+    "description": "모집글 작성 — 만나는 곳(placeName) 입력 힌트"
+  },
+  "communityCreateHintPickLocation": "지도에서 위치를 골라주세요",
+  "@communityCreateHintPickLocation": {
+    "description": "모집글 작성 — 좌표를 아직 안 고른 상태의 지도 카드 안내"
+  },
+  "communityLocationCopied": "장소를 복사했어요",
+  "@communityLocationCopied": {
+    "description": "모집글 상세 — 장소 텍스트를 탭해 클립보드에 담았을 때의 안내"
+  },
+  "communityLocationPickerTitle": "장소 선택",
+  "@communityLocationPickerTitle": {
+    "description": "장소 선택 지도 화면 제목"
+  },
+  "communityLocationPickerConfirm": "이 위치로 선택",
+  "@communityLocationPickerConfirm": {
+    "description": "장소 선택 지도 화면 — 현재 핀 위치를 확정하는 버튼"
+  },
+  "communityLocationPickerLoading": "주소를 확인하는 중이에요",
+  "@communityLocationPickerLoading": {
+    "description": "장소 선택 지도 화면 — 좌표 주소를 조회하는 동안의 안내"
+  },
+  "communityLocationPickerHint": "지도를 눌러 만날 곳을 정해요",
+  "@communityLocationPickerHint": {
+    "description": "장소 선택 지도 화면 — 표시할 주소가 없을 때의 안내"
+  },
+  "communityLocationPickerNotFound": "주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요",
+  "@communityLocationPickerNotFound": {
+    "description": "장소 선택 지도 화면 — 좌표 주소 조회가 실패했을 때의 안내"
   },
   "communityCreateLabelHeadcount": "모집 인원",
   "@communityCreateLabelHeadcount": {
@@ -2039,6 +2167,26 @@
   "errorCommunityPostsLoadFailed": "모집글을 불러오지 못했어요",
   "@errorCommunityPostsLoadFailed": {
     "description": "커뮤니티 목록 조회 실패 시 화면에 표시되는 메시지"
+  },
+  "errorCommunityPostUpdateGeneric": "모집글을 수정하는 중 오류가 생겼어요",
+  "@errorCommunityPostUpdateGeneric": {
+    "description": "커뮤니티 모집글 수정 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostDeleteGeneric": "모집글을 삭제하는 중 오류가 생겼어요",
+  "@errorCommunityPostDeleteGeneric": {
+    "description": "커뮤니티 모집글 삭제 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostStatusGeneric": "모집 상태를 바꾸는 중 오류가 생겼어요",
+  "@errorCommunityPostStatusGeneric": {
+    "description": "커뮤니티 모집 상태 변경 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostCreateGeneric": "모집글을 등록하는 중 오류가 생겼어요",
+  "@errorCommunityPostCreateGeneric": {
+    "description": "커뮤니티 모집글 등록 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityAddressLoadGeneric": "주소를 불러오는 중 오류가 생겼어요",
+  "@errorCommunityAddressLoadGeneric": {
+    "description": "모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지"
   },
   "messageLoadingNotices": "공지사항을 불러오는 중...",
   "@messageLoadingNotices": {

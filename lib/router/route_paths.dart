@@ -60,6 +60,12 @@ class RoutePaths {
   /// 모집글 작성 화면 (커뮤니티 목록의 작성 버튼에서 진입)
   static const String communityCreate = '/community/create';
 
+  /// 모집글 상세 화면 (목록 카드 탭에서 진입)
+  ///
+  /// `create`보다 뒤에 등록해야 한다 — 먼저 두면 `/community/create`가
+  /// postId="create"로 잡힌다.
+  static const String communityDetail = '/community/:postId';
+
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
 
@@ -171,6 +177,7 @@ class RoutePaths {
   static const String homeName = 'home';
   static const String communityName = 'community';
   static const String communityCreateName = 'communityCreate';
+  static const String communityDetailName = 'communityDetail';
   static const String mypageName = 'mypage';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';

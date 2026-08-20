@@ -10,6 +10,8 @@ part 'community_post_entity.freezed.dart';
 /// 카드가 좌표와 주소를 따로 쓰기 때문이다. JSON 직렬화 미지원(외부 의존성 없음).
 @freezed
 class CommunityPostEntity with _$CommunityPostEntity {
+  const CommunityPostEntity._();
+
   const factory CommunityPostEntity({
     required int id,
     required int writerId,
@@ -22,12 +24,17 @@ class CommunityPostEntity with _$CommunityPostEntity {
     required CommunityPostStatus status,
     required DateTime createdAt,
 
-    /// 화면에 그대로 찍는 위치 한 줄. 서버가 주는 주소 3종(건물명·도로명·지번)
-    /// 중 가장 구체적인 것을 Repository가 골라 넣는다.
-    /// 역지오코딩이 실패하면 null이며, 그때는 카드가 위치 행 자체를 그리지 않는다
-    /// (좌표는 사용자에게 무의미). 지번/도로명을 따로 써야 하는 화면이 생기면
-    /// 그때 필드를 나눈다.
-    String? locationLabel,
+    /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
+    ///
+    /// [region]과 병기한다(DEC-0015): 좌표로는 건물명을 신뢰할 수준으로 얻을 수
+    /// 없어 장소명은 작성자에게 받고, 서버 주소는 그 옆에 보조로 붙인다.
+    /// 둘 다 null이면 화면이 장소 행 자체를 그리지 않는다 — 좌표는 사용자에게
+    /// 무의미하다.
+    String? placeName,
+
+    /// 서버가 좌표를 역지오코딩한 동 단위 지역 — `서울특별시 광진구 군자동`.
+    /// 역지오코딩이 실패하면 null이다.
+    String? region,
 
     /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
     /// "0/10명"은 아무도 안 모인 것으로 오독된다.
@@ -39,6 +46,15 @@ class CommunityPostEntity with _$CommunityPostEntity {
     /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
     int? bookmarkCount,
   }) = _CommunityPostEntity;
+
+  /// 화면에 찍는 위치 한 줄 — 서버 지역과 작성자 장소명을 병기한다 (DEC-0015).
+  ///
+  /// 한쪽만 있으면 있는 쪽만, 둘 다 없으면 null이다. null이면 화면이 위치 행 자체를
+  /// 그리지 않는다 — 좌표는 사용자에게 무의미하다.
+  String? get locationLabel {
+    final parts = [region, placeName].whereType<String>();
+    return parts.isEmpty ? null : parts.join(' · ');
+  }
 }
 
 /// 커서 페이지네이션이 적용된 게시글 페이지 엔티티
@@ -53,5 +69,10 @@ class CommunityPostPageEntity with _$CommunityPostPageEntity {
     required List<CommunityPostEntity> items,
     required String? nextCursor,
     required bool hasNext,
+
+    /// 서버가 판별한 이 목록의 국가 코드. 좌표로 첫 요청을 보냈을 때 받아 두었다가
+    /// 다음 페이지부터 좌표 대신 실어 보낸다 — GPS를 페이지마다 다시 켜지 않으려는
+    /// 목적이다.
+    String? countryCode,
   }) = _CommunityPostPageEntity;
 }
