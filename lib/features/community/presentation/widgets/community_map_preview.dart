@@ -43,6 +43,10 @@ class CommunityMapPreview extends StatelessWidget {
 
   static const _zoom = 15.0;
 
+  /// 전체 화면 지도의 줌 한계. 미리보기 카드는 제스처를 다 꺼둬 해당 없다.
+  /// 값은 장소 선택 화면과 같다 (`community_location_picker_page.dart`).
+  static const _zoomLimit = MinMaxZoomPreference(12, 20);
+
   /// 미리보기 지도 — 테스트에서 탭 대상을 찾는다.
   static const Key previewKey = Key('community_map_preview');
 
@@ -125,6 +129,7 @@ class _CommunityMapFullscreen extends StatelessWidget {
             target: target,
             zoom: CommunityMapPreview._zoom,
           ),
+          minMaxZoomPreference: CommunityMapPreview._zoomLimit,
           markers: {
             Marker(markerId: const MarkerId('meeting'), position: target),
           },

@@ -55,6 +55,12 @@ class _CommunityLocationPickerPageState
 
   static const double _zoom = 16;
 
+  /// 줌 한계 — 상한 20은 다른 지도들과 같은 값이고, 하한 12는 인게임 지도
+  /// (`google_map_view.dart:46`) 기본값을 그대로 쓴다. 구역이 없는 지도라
+  /// 반경으로 계산할 게 없고, 동네를 못 알아볼 만큼 축소되면 어디를 찍는지
+  /// 알 수 없어 핀을 정확히 놓을 수 없다.
+  static const _zoomLimit = MinMaxZoomPreference(12, 20);
+
   LatLng? _target;
 
   /// 현재 핀의 주소. null이면 아직 첫 조회 전이다.
@@ -163,6 +169,7 @@ class _CommunityLocationPickerPageState
                     target: target,
                     zoom: _zoom,
                   ),
+                  minMaxZoomPreference: _zoomLimit,
                   onMapCreated: (controller) => _mapController = controller,
                   onTap: _onMapTapped,
                   markers: {
