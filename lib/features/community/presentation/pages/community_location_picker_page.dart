@@ -166,7 +166,10 @@ class _CommunityLocationPickerPageState
                   onMapCreated: (controller) => _mapController = controller,
                   onTap: _onMapTapped,
                   markers: {
-                    Marker(markerId: const MarkerId('picked'), position: target),
+                    Marker(
+                      markerId: const MarkerId('picked'),
+                      position: target,
+                    ),
                   },
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false,

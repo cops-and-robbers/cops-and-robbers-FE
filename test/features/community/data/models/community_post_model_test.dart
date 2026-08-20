@@ -27,16 +27,19 @@ Map<String, dynamic> _serverJson() => {
 
 void main() {
   group('CommunityPostResponseModel', () {
-    test('parses_region_and_place_name_when_backend_resolved_the_coordinates', () {
-      final model = CommunityPostResponseModel.fromJson(_serverJson());
+    test(
+      'parses_region_and_place_name_when_backend_resolved_the_coordinates',
+      () {
+        final model = CommunityPostResponseModel.fromJson(_serverJson());
 
-      expect(model.id, 1);
-      expect(model.writerNickname, '무서운경찰관');
-      expect(model.location.latitude, 37.5502);
-      expect(model.location.region, '서울특별시 광진구 군자동');
-      expect(model.location.placeName, '어린이대공원 정문');
-      expect(model.location.countryCode, 'KR');
-    });
+        expect(model.id, 1);
+        expect(model.writerNickname, '무서운경찰관');
+        expect(model.location.latitude, 37.5502);
+        expect(model.location.region, '서울특별시 광진구 군자동');
+        expect(model.location.placeName, '어린이대공원 정문');
+        expect(model.location.countryCode, 'KR');
+      },
+    );
 
     test('leaves_region_and_country_null_when_reverse_geocoding_failed', () {
       // 역지오코딩이 실패해도 글 작성은 성공시키므로 region·countryCode가 null로
@@ -152,14 +155,11 @@ void main() {
       ).toJson();
 
       expect(json['meetingAt'], '2026-08-10T05:00:00.000Z');
-      expect(
-        json['location'],
-        {
-          'latitude': 37.5502,
-          'longitude': 127.0736,
-          'placeName': '어린이대공원 정문',
-        },
-      );
+      expect(json['location'], {
+        'latitude': 37.5502,
+        'longitude': 127.0736,
+        'placeName': '어린이대공원 정문',
+      });
     });
   });
 }
