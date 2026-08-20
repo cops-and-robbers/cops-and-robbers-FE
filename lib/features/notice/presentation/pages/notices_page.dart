@@ -1,5 +1,3 @@
-import 'dart:async'; // unawaited
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,7 +10,6 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/empty_state.dart';
-import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/pagination_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -42,48 +39,10 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
   /// 현재 펼쳐진 공지사항 인덱스 (-1이면 모두 접힌 상태)
   int _expandedIndex = -1;
 
-  /// 로딩 오버레이 핸들 (null이면 미표시)
-  LoadingHandle? _loadingHandle;
-
-  @override
-  void initState() {
-    super.initState();
-    // 첫 진입 시 자동 fetch 동안 로딩 팝업 표시.
-    // build() 시점에 띄우면 매 rebuild마다 호출되므로 post-frame에서 1회만.
-    // 또한 post-frame 도달 전 응답이 이미 도착했을 수 있으므로 state를 한 번 더 체크
-    // (race 방지 — 캐시/매우 빠른 응답 케이스).
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final asyncState = ref.read(noticesNotifierProvider);
-      if (!asyncState.isLoading) return;
-      _showLoadingPopup();
-    });
-  }
-
   @override
   void dispose() {
-    // 화면이 먼저 사라져도 로딩 라우트가 남지 않도록 정리
-    final handle = _loadingHandle;
-    _loadingHandle = null;
-    if (handle != null) unawaited(handle.close());
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _showLoadingPopup() {
-    if (_loadingHandle != null) return;
-    _loadingHandle = AppLoading.showMessage(
-      context,
-      message: AppLocalizations.of(context).messageLoadingNotices,
-    );
-  }
-
-  void _closeLoadingPopupIfShown() {
-    final handle = _loadingHandle;
-    if (handle == null) return;
-    _loadingHandle = null;
-    // 리스너 콜백이라 await할 수 없다. 최소 표시 시간은 핸들이 알아서 지킨다.
-    unawaited(handle.close());
   }
 
   void _handleStateChange(
@@ -94,7 +53,6 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     next.when(
       data: (page) {
         if (!mounted) return;
-        _closeLoadingPopupIfShown();
         if (_scrollController.hasClients) {
           _scrollController.jumpTo(0);
         }
@@ -104,11 +62,10 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
         }
       },
       loading: () {
-        // 로딩 팝업은 액션 시점(initState/페이지 클릭)에 띄우므로 여기서는 no-op.
+        // 로딩 표시는 두지 않는다 — 화면 전환 애니메이션 위에 팝업이 겹쳐 어색했다.
       },
       error: (e, _) {
         if (!mounted) return;
-        _closeLoadingPopupIfShown();
         // AuthInterceptor가 강제 로그아웃을 처리하므로 UI는 무반응.
         if (e is AuthException) return;
         final l10n = AppLocalizations.of(context);
@@ -121,16 +78,12 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
   }
 
   void _onPageChanged(int newPage) {
-    // 이전 fetch가 진행 중이면 무시 (중복 요청 + 팝업 노이즈 방지).
+    // 이전 fetch가 진행 중이면 무시 (중복 요청 방지).
     if (ref.read(noticesNotifierProvider).isLoading) return;
-    _showLoadingPopup();
     ref.read(noticesNotifierProvider.notifier).fetchPage(newPage);
   }
 
   /// 카테고리 필터 전환.
-  ///
-  /// 페이지 이동과 달리 로딩 팝업을 띄우지 않는다 — 칩 색이 탭 즉시 바뀌는 것이
-  /// 이미 피드백이고, 응답이 올 때까지 이전 목록이 그대로 보여 화면을 가릴 이유가 없다.
   void _onCategorySelected(NoticeCategory category) {
     final state = ref.read(noticesNotifierProvider);
     // 이전 fetch가 진행 중이면 무시 (중복 요청 방지).
@@ -193,7 +146,8 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
   }
 
   Widget _buildBody(NoticePageEntity? pageData) {
-    // 첫 진입 시: state.value가 null. 팝업이 화면을 가린 상태로 빈 영역.
+    // 첫 진입 시: state.value가 null. 로딩 표시 없이 빈 영역으로 두고, 응답이 오면
+    // 목록이 그대로 그려진다 — 화면 전환 애니메이션이 이 구간을 거의 다 덮는다.
     if (pageData == null) {
       return const SizedBox.shrink();
     }

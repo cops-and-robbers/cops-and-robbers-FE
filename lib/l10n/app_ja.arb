@@ -654,7 +654,6 @@
   "errorCommunityPostStatusGeneric": "募集状態の変更中にエラーが発生しました",
   "errorCommunityPostCreateGeneric": "募集の登録中にエラーが発生しました",
   "errorCommunityAddressLoadGeneric": "住所の読み込み中にエラーが発生しました",
-  "messageLoadingNotices": "知らせを読み込んでいます...",
   "errorNoticeLoadFailed": "お知らせを読み込めませんでした",
   "pageNoticesTitle": "お知らせ",
   "pageNoticesEmpty": "登録されたお知らせはありません",

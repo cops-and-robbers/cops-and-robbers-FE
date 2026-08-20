@@ -71,4 +71,13 @@ class AppShadows {
       color: AppColors.black100,
     ),
   ];
+
+  /// shadow_vague - 은은하게 퍼지는 쉐도우 (x0 y0 blur4, 10%)
+  static List<BoxShadow> get vague => [
+    BoxShadow(
+      offset: const Offset(0, 0),
+      blurRadius: 4,
+      color: AppColors.black.withValues(alpha: 0.1),
+    ),
+  ];
 }

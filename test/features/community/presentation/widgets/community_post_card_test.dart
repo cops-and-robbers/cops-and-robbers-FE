@@ -74,10 +74,7 @@ void main() {
         _wrap(
           CommunityPostCard(
             onMenuAction: (_) {},
-            post: _post(
-              region: '서울특별시 광진구 군자동',
-              placeName: '세종대학교 정문',
-            ),
+            post: _post(region: '서울특별시 광진구 군자동', placeName: '세종대학교 정문'),
           ),
         ),
       );
