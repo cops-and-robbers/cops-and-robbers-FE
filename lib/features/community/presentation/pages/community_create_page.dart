@@ -407,18 +407,30 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
         SizedBox(width: AppSpacing.horizontal12),
         // 숫자를 탭하면 휠 시트로 한 번에 고른다 — 10명을 40명으로 바꾸려고
         // +를 서른 번 누르게 두지 않는다.
+        // 숫자 폭이 바뀌어도 −/+ 가 밀리지 않도록 최대값(50) 글자폭만큼 자리를
+        // 미리 잡아 둔다. 접미사가 로케일마다 다르므로(명 / 人 / 없음) px 고정 대신
+        // 같은 스타일의 최대 라벨을 투명하게 깔아 폭을 재게 한다.
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: _openHeadcountSheet,
-          child: Text(
-            l10n.communityHeadcountValue(_headcount),
-            // 기본 숫자 글립은 폭이 제각각이라 2→3처럼 자리수가 그대로여도
-            // 양옆 −/+ 버튼이 미세하게 밀린다. 고정폭 숫자로 자리수가 바뀔
-            // 때만 움직이게 한다.
-            style: AppTextStyles.label16Medium.copyWith(
-              color: AppColors.black,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Visibility(
+                visible: false,
+                maintainSize: true,
+                maintainAnimation: true,
+                maintainState: true,
+                child: Text(
+                  l10n.communityHeadcountValue(CommunityHeadcountSheet.max),
+                  style: _headcountTextStyle,
+                ),
+              ),
+              Text(
+                l10n.communityHeadcountValue(_headcount),
+                style: _headcountTextStyle,
+              ),
+            ],
           ),
         ),
         SizedBox(width: AppSpacing.horizontal12),
@@ -432,6 +444,14 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
       ],
     );
   }
+
+  /// 인원 숫자 스타일. 폭 자리잡이 텍스트와 반드시 같아야 해서 한 곳에 둔다.
+  /// tabularFigures — 기본 숫자 글립은 폭이 제각각이라 자리수가 그대로여도
+  /// 숫자가 좌우로 흔들린다.
+  TextStyle get _headcountTextStyle => AppTextStyles.label16Medium.copyWith(
+    color: AppColors.black,
+    fontFeatures: const [FontFeature.tabularFigures()],
+  );
 
   /// [onTap]이 null이면 한계에 닿은 상태 — 글리프를 흐린 색으로 바꾼다.
   Widget _buildStepperButton({
