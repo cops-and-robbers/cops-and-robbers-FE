@@ -181,19 +181,21 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                           _totalComments(state.comments),
                         ),
                         style: AppTextStyles.label_16.copyWith(
-                          color: AppColors.black,
+                          color: AppColors.black600,
                         ),
                       ),
-                      CommunityCommentList(
-                        comments: state.comments,
-                        currentUserId: currentUserId,
-                        onReply: (comment) =>
-                            setState(() => _replyTarget = comment),
-                        onDelete: _handleDeleteComment,
-                      ),
-                      SizedBox(height: AppSpacing.vertical16),
                     ],
                   ),
+                ),
+                // 목록만 좌우 패딩 밖에 둔다 — 답글 대상 댓글의 배경색이 화면
+                // 끝까지 닿아야 하기 때문. 좌우 24는 타일이 직접 갖는다.
+                CommunityCommentList(
+                  comments: state.comments,
+                  currentUserId: currentUserId,
+                  onReply: (comment) => setState(() => _replyTarget = comment),
+                  onDelete: _handleDeleteComment,
+                  onReport: _handleReportComment,
+                  replyTargetId: _replyTarget?.id,
                 ),
               ],
             ),
@@ -454,6 +456,14 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         message: AppLocalizations.of(context).errorByException(e),
       );
     }
+  }
+
+  void _handleReportComment(CommunityCommentEntity comment) {
+    // ponytail: 댓글 신고 API가 아직 없다. 생기면 신고 화면으로 잇는다.
+    AppSnackbar.show(
+      context,
+      message: AppLocalizations.of(context).comingSoonMessage,
+    );
   }
 
   void _handleMenuAction(CommunityPostMenuAction action) {

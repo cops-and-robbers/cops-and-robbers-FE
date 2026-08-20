@@ -8,6 +8,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/providers/profile_icon_provider.dart';
 import '../../domain/entities/community_interaction_entity.dart';
+import 'community_menu_button.dart';
 
 /// 댓글 목록 (답글 한 겹 중첩)
 ///
@@ -20,6 +21,8 @@ class CommunityCommentList extends StatelessWidget {
     required this.currentUserId,
     required this.onReply,
     required this.onDelete,
+    required this.onReport,
+    this.replyTargetId,
   });
 
   final List<CommunityCommentEntity> comments;
@@ -31,6 +34,12 @@ class CommunityCommentList extends StatelessWidget {
   final ValueChanged<CommunityCommentEntity> onReply;
 
   final ValueChanged<CommunityCommentEntity> onDelete;
+
+  /// 남의 댓글 신고하기.
+  final ValueChanged<CommunityCommentEntity> onReport;
+
+  /// 현재 답글 작성 중인 댓글 id — 그 댓글만 배경을 강조한다.
+  final int? replyTargetId;
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +59,9 @@ class CommunityCommentList extends StatelessWidget {
       );
     }
 
+    // 답글 대상 하이라이트가 화면 폭을 꽉 채워야 하므로 타일이 폭을 늘려 잡는다.
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final comment in comments) ...[
           _CommentTile(
@@ -59,17 +69,19 @@ class CommunityCommentList extends StatelessWidget {
             currentUserId: currentUserId,
             onReply: () => onReply(comment),
             onDelete: () => onDelete(comment),
+            onReport: () => onReport(comment),
+            isReplyTarget: comment.id == replyTargetId,
           ),
-          // 답글은 왼쪽으로 들여쓰고 답글 아이콘을 앞에 둔다.
+          // 답글의 들여쓰기는 앞에 붙는 ↳ 아이콘이 만든다 — 바깥에 패딩을 또 주면
+          // 배경 하이라이트가 화면 끝까지 못 닿는다.
           for (final reply in comment.replies)
-            Padding(
-              padding: EdgeInsets.only(left: AppSpacing.horizontal24),
-              child: _CommentTile(
-                comment: reply,
-                currentUserId: currentUserId,
-                isReply: true,
-                onDelete: () => onDelete(reply),
-              ),
+            _CommentTile(
+              comment: reply,
+              currentUserId: currentUserId,
+              isReply: true,
+              onDelete: () => onDelete(reply),
+              onReport: () => onReport(reply),
+              isReplyTarget: reply.id == replyTargetId,
             ),
         ],
       ],
@@ -83,37 +95,58 @@ class _CommentTile extends StatelessWidget {
     required this.comment,
     required this.currentUserId,
     required this.onDelete,
+    required this.onReport,
     this.onReply,
     this.isReply = false,
+    this.isReplyTarget = false,
   });
 
   final CommunityCommentEntity comment;
   final int? currentUserId;
   final VoidCallback onDelete;
+  final VoidCallback onReport;
 
   /// 답글에는 null — 답글의 답글은 열지 않는다.
   final VoidCallback? onReply;
 
   final bool isReply;
 
+  /// 지금 이 댓글에 답글을 다는 중인지 — 맞으면 배경을 강조한다.
+  final bool isReplyTarget;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isMine = currentUserId != null && currentUserId == comment.writerId;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical12),
+    // 좌우 24는 페이지 패딩이 아니라 타일이 갖는다 — 답글 대상 배경색이 화면
+    // 끝까지 닿아야 하므로 목록이 페이지 좌우 패딩 밖에 놓이기 때문이다.
+    return Container(
+      color: isReplyTarget ? AppColors.blueVer2_50 : AppColors.white,
+      padding: EdgeInsets.only(
+        // 답글은 원댓글에 딸린 덩어리다 — 위를 띄우면 별개 댓글로 보인다.
+        top: isReply ? 0 : AppSpacing.vertical18,
+        bottom: AppSpacing.vertical18,
+        left: AppSpacing.horizontal24,
+        right: AppSpacing.horizontal24,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           if (isReply) ...[
-            SvgPicture.asset(
-              'assets/icons/icon_reply.svg',
-              width: 14.w,
-              height: 14.h,
-              colorFilter: ColorFilter.mode(
-                AppColors.black300,
-                BlendMode.srcIn,
+            // 14짜리 아이콘이 34짜리 프로필과 위끝을 맞추면 너무 높이 뜬다 —
+            // 위로 6 밀어 프로필 아이콘 쪽에 눈높이를 맞춘다.
+            Padding(
+              padding: EdgeInsets.only(top: AppSpacing.vertical6),
+              child: SvgPicture.asset(
+                'assets/icons/icon_reply.svg',
+                width: 14.w,
+                height: 14.h,
+                colorFilter: ColorFilter.mode(
+                  AppColors.black600,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             SizedBox(width: AppSpacing.horizontal8),
@@ -130,6 +163,7 @@ class _CommentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Flexible(
                       child: Text(
@@ -141,39 +175,61 @@ class _CommentTile extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: AppSpacing.horizontal8),
-                    Text(
-                      _relativeTime(comment.createdAt, l10n),
-                      style: AppTextStyles.tag_12.copyWith(
-                        color: AppColors.black500,
-                      ),
+                    Row(
+                      children: [
+                        if (onReply != null) ...[
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: onReply,
+                            child: SvgPicture.asset(
+                              'assets/icons/icon_speech_bubble.svg',
+                              width: 16.w,
+                              height: 16.h,
+                              colorFilter: ColorFilter.mode(
+                                AppColors.black200,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: AppSpacing.horizontal10),
+                        ],
+                        // 내 댓글은 삭제, 남의 댓글은 신고 하나만 보여준다.
+                        CommunityMenuButton(
+                          items: [
+                            if (isMine)
+                              CommunityMenuItem(
+                                iconPath: 'assets/icons/icon_trash.svg',
+                                label: l10n.communityMenuDelete,
+                                onTap: onDelete,
+                                isDestructive: true,
+                              )
+                            else
+                              CommunityMenuItem(
+                                iconPath: 'assets/icons/icon_warning_light.svg',
+                                label: l10n.buttonReport,
+                                onTap: onReport,
+                                isDestructive: true,
+                              ),
+                          ],
+                          iconColor: AppColors.black200,
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 SizedBox(height: AppSpacing.vertical4),
                 Text(
                   comment.content,
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black800,
+                  style: AppTextStyles.paragraph_14_regular.copyWith(
+                    color: AppColors.black700,
                   ),
                 ),
                 SizedBox(height: AppSpacing.vertical6),
-                Row(
-                  children: [
-                    if (onReply != null)
-                      _TextAction(
-                        label: l10n.communityCommentReply,
-                        onTap: onReply!,
-                      ),
-                    if (onReply != null && isMine)
-                      SizedBox(width: AppSpacing.horizontal12),
-                    if (isMine)
-                      _TextAction(
-                        label: l10n.communityMenuDelete,
-                        color: AppColors.red,
-                        onTap: onDelete,
-                      ),
-                  ],
+                Text(
+                  _formattedDate(comment.createdAt),
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black300,
+                  ),
                 ),
               ],
             ),
@@ -183,44 +239,12 @@ class _CommentTile extends StatelessWidget {
     );
   }
 
-  /// `방금`·`3분 전`·`2시간 전`·`8/18` — 하루가 넘으면 날짜로 바꾼다.
-  ///
-  /// `DateFormat`에 로케일을 넘기려면 `initializeDateFormatting`이 필요한데 이 앱은
-  /// 그걸 호출하지 않는다. 카드의 모임 일시와 같은 방식으로 ARB에서 조립한다.
-  String _relativeTime(DateTime at, AppLocalizations l10n) {
-    final diff = DateTime.now().difference(at);
-    if (diff.inMinutes < 1) return l10n.communityCommentJustNow;
-    if (diff.inHours < 1) {
-      return l10n.communityCommentMinutesAgo(diff.inMinutes);
-    }
-    if (diff.inDays < 1) return l10n.communityCommentHoursAgo(diff.inHours);
-    return '${at.month}/${at.day}';
-  }
-}
-
-/// 텍스트 버튼 (답글 달기 / 삭제)
-class _TextAction extends StatelessWidget {
-  const _TextAction({required this.label, required this.onTap, this.color});
-
-  final String label;
-  final VoidCallback onTap;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      // 글자만으로는 터치 영역이 너무 좁다 — 위아래로 4씩 늘린다.
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical4),
-        child: Text(
-          label,
-          style: AppTextStyles.tag_12.copyWith(
-            color: color ?? AppColors.black500,
-          ),
-        ),
-      ),
-    );
+  /// 1년 안이면 `mm/dd hh:mm`, 1년이 넘으면 `yy/mm/dd hh:mm` (24시 기준).
+  String _formattedDate(DateTime at) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    final hhmm = '${two(at.hour)}:${two(at.minute)}';
+    final mmdd = '${two(at.month)}/${two(at.day)} $hhmm';
+    if (DateTime.now().difference(at).inDays < 365) return mmdd;
+    return '${two(at.year % 100)}/$mmdd';
   }
 }
