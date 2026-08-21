@@ -40,6 +40,12 @@ mixin _$CommunityPostEntity {
   /// 역지오코딩이 실패하면 null이다.
   String? get region => throw _privateConstructorUsedError;
 
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
+  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  String? get address => throw _privateConstructorUsedError;
+
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
   int? get currentParticipants => throw _privateConstructorUsedError;
@@ -77,6 +83,7 @@ abstract class $CommunityPostEntityCopyWith<$Res> {
     DateTime createdAt,
     String? placeName,
     String? region,
+    String? address,
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
@@ -110,6 +117,7 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
     Object? createdAt = null,
     Object? placeName = freezed,
     Object? region = freezed,
+    Object? address = freezed,
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
@@ -164,6 +172,10 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
                 ? _value.region
                 : region // ignore: cast_nullable_to_non_nullable
                       as String?,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
+                      as String?,
             currentParticipants: freezed == currentParticipants
                 ? _value.currentParticipants
                 : currentParticipants // ignore: cast_nullable_to_non_nullable
@@ -204,6 +216,7 @@ abstract class _$$CommunityPostEntityImplCopyWith<$Res>
     DateTime createdAt,
     String? placeName,
     String? region,
+    String? address,
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
@@ -236,6 +249,7 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? placeName = freezed,
     Object? region = freezed,
+    Object? address = freezed,
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
@@ -290,6 +304,10 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
             ? _value.region
             : region // ignore: cast_nullable_to_non_nullable
                   as String?,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
+                  as String?,
         currentParticipants: freezed == currentParticipants
             ? _value.currentParticipants
             : currentParticipants // ignore: cast_nullable_to_non_nullable
@@ -323,6 +341,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     required this.createdAt,
     this.placeName,
     this.region,
+    this.address,
     this.currentParticipants,
     this.likeCount,
     this.bookmarkCount,
@@ -363,6 +382,13 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
   @override
   final String? region;
 
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
+  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  @override
+  final String? address;
+
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
   @override
@@ -378,7 +404,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
 
   @override
   String toString() {
-    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
+    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
   }
 
   @override
@@ -405,6 +431,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
             (identical(other.placeName, placeName) ||
                 other.placeName == placeName) &&
             (identical(other.region, region) || other.region == region) &&
+            (identical(other.address, address) || other.address == address) &&
             (identical(other.currentParticipants, currentParticipants) ||
                 other.currentParticipants == currentParticipants) &&
             (identical(other.likeCount, likeCount) ||
@@ -428,6 +455,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     createdAt,
     placeName,
     region,
+    address,
     currentParticipants,
     likeCount,
     bookmarkCount,
@@ -459,6 +487,7 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
     required final DateTime createdAt,
     final String? placeName,
     final String? region,
+    final String? address,
     final int? currentParticipants,
     final int? likeCount,
     final int? bookmarkCount,
@@ -499,6 +528,13 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
   /// 역지오코딩이 실패하면 null이다.
   @override
   String? get region;
+
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
+  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  @override
+  String? get address;
 
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.

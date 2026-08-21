@@ -29,6 +29,12 @@ mixin _$CommunityLocationModel {
   /// 동 단위 지역 — `서울특별시 광진구 군자동`. 역지오코딩 실패 시 null.
   String? get region => throw _privateConstructorUsedError;
 
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
+  /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
+  String? get address => throw _privateConstructorUsedError;
+
   /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
   ///
   /// 스키마상 non-null이지만 nullable로 받는다: v2.17.0 이전에 쓰인 글까지
@@ -60,6 +66,7 @@ abstract class $CommunityLocationModelCopyWith<$Res> {
     double latitude,
     double longitude,
     String? region,
+    String? address,
     String? placeName,
     String? countryCode,
   });
@@ -86,6 +93,7 @@ class _$CommunityLocationModelCopyWithImpl<
     Object? latitude = null,
     Object? longitude = null,
     Object? region = freezed,
+    Object? address = freezed,
     Object? placeName = freezed,
     Object? countryCode = freezed,
   }) {
@@ -102,6 +110,10 @@ class _$CommunityLocationModelCopyWithImpl<
             region: freezed == region
                 ? _value.region
                 : region // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
                       as String?,
             placeName: freezed == placeName
                 ? _value.placeName
@@ -130,6 +142,7 @@ abstract class _$$CommunityLocationModelImplCopyWith<$Res>
     double latitude,
     double longitude,
     String? region,
+    String? address,
     String? placeName,
     String? countryCode,
   });
@@ -153,6 +166,7 @@ class __$$CommunityLocationModelImplCopyWithImpl<$Res>
     Object? latitude = null,
     Object? longitude = null,
     Object? region = freezed,
+    Object? address = freezed,
     Object? placeName = freezed,
     Object? countryCode = freezed,
   }) {
@@ -169,6 +183,10 @@ class __$$CommunityLocationModelImplCopyWithImpl<$Res>
         region: freezed == region
             ? _value.region
             : region // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
                   as String?,
         placeName: freezed == placeName
             ? _value.placeName
@@ -190,6 +208,7 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
     required this.latitude,
     required this.longitude,
     this.region,
+    this.address,
     this.placeName,
     this.countryCode,
   });
@@ -206,6 +225,13 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
   @override
   final String? region;
 
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
+  /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
+  @override
+  final String? address;
+
   /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
   ///
   /// 스키마상 non-null이지만 nullable로 받는다: v2.17.0 이전에 쓰인 글까지
@@ -220,7 +246,7 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
 
   @override
   String toString() {
-    return 'CommunityLocationModel(latitude: $latitude, longitude: $longitude, region: $region, placeName: $placeName, countryCode: $countryCode)';
+    return 'CommunityLocationModel(latitude: $latitude, longitude: $longitude, region: $region, address: $address, placeName: $placeName, countryCode: $countryCode)';
   }
 
   @override
@@ -233,6 +259,7 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
             (identical(other.region, region) || other.region == region) &&
+            (identical(other.address, address) || other.address == address) &&
             (identical(other.placeName, placeName) ||
                 other.placeName == placeName) &&
             (identical(other.countryCode, countryCode) ||
@@ -246,6 +273,7 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
     latitude,
     longitude,
     region,
+    address,
     placeName,
     countryCode,
   );
@@ -273,6 +301,7 @@ abstract class _CommunityLocationModel implements CommunityLocationModel {
     required final double latitude,
     required final double longitude,
     final String? region,
+    final String? address,
     final String? placeName,
     final String? countryCode,
   }) = _$CommunityLocationModelImpl;
@@ -288,6 +317,13 @@ abstract class _CommunityLocationModel implements CommunityLocationModel {
   /// 동 단위 지역 — `서울특별시 광진구 군자동`. 역지오코딩 실패 시 null.
   @override
   String? get region;
+
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
+  /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
+  @override
+  String? get address;
 
   /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
   ///

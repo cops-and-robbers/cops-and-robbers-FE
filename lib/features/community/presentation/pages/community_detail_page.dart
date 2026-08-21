@@ -260,8 +260,25 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
   }
 
   /// 장소를 클립보드에 담는다 — 지도 앱에 붙여넣어 길찾기로 잇는 동선(DEC-0015).
-  Future<void> _copyLocation(AppLocalizations l10n, String label) async {
-    await Clipboard.setData(ClipboardData(text: label));
+  ///
+  /// 화면에 보이는 건 동 단위 라벨이지만 복사되는 건 번지까지 붙은 지번 주소다 —
+  /// 동까지로는 지도 앱이 핀을 못 찍고, 작성자가 입력한 장소명이 섞이면 검색이
+  /// 되레 어긋난다.
+  ///
+  /// 백엔드가 [CommunityPostEntity.address]를 실어 줄 때까지는 null이라 동 단위
+  /// [CommunityPostEntity.region]이 대신 담긴다. 좌표로 `/address`를 따로 부르지는
+  /// 않는다 — 곧 응답에 실려 올 값을 벤더 한도까지 써 가며 미리 받아 올 이유가 없다.
+  ///
+  /// 마지막 폴백이 라벨인 이유: 역지오코딩이 실패해 [CommunityPostEntity.region]도
+  /// 없으면 라벨에는 장소명만 남는다. 셋 다 없는 경우는 없다 — 라벨이 null이면
+  /// 호출자가 장소 행 자체를 그리지 않는다.
+  Future<void> _copyLocation(
+    AppLocalizations l10n,
+    CommunityPostEntity post,
+  ) async {
+    await Clipboard.setData(
+      ClipboardData(text: post.address ?? post.region ?? post.locationLabel!),
+    );
     if (!mounted) return;
     AppSnackbar.show(context, message: l10n.communityLocationCopied);
   }
@@ -276,10 +293,10 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
           _MetaRow(
             iconPath: 'assets/icons/icon_location.svg',
             label: state.post.locationLabel!,
-            // 탭하면 복사된다 (DEC-0015) — 지도 앱에 붙여넣어 길찾기로 잇는 동선.
-            onTap: () => _copyLocation(l10n, state.post.locationLabel!),
+            // 탭하면 복사된다 (DEC-0015) — 보이는 건 라벨, 담기는 건 지번 주소.
+            onTap: () => _copyLocation(l10n, state.post),
           ),
-          SizedBox(height: AppSpacing.vertical8),
+          SizedBox(height: AppSpacing.vertical6),
         ],
         _MetaRow(
           iconPath: 'assets/icons/icon_date.svg',
@@ -620,13 +637,7 @@ class _ActionButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // SVG에 박힌 색이 팔레트와 미묘하게 달라 덧칠한다 (카드와 같은 이유).
-            SvgPicture.asset(
-              assetPath,
-              width: 14.w,
-              height: 14.h,
-              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-            ),
+            SvgPicture.asset(assetPath, width: 14.w, height: 14.h),
             SizedBox(width: AppSpacing.horizontal6),
             Text(
               label,

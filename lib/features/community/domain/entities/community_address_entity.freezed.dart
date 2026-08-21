@@ -23,7 +23,12 @@ mixin _$CommunityAddressEntity {
   /// 번지까지 포함한 주소 — `서울특별시 광진구 화양동 1-20`. 확인용.
   String? get address => throw _privateConstructorUsedError;
 
-  /// 국가 코드(ISO 3166-1 alpha-2). 목록 조회 필터에 그대로 쓸 수 있다.
+  /// 국가 코드(ISO 3166-1 alpha-2) — **이 핀이 속한 나라**.
+  ///
+  /// 목록 필터에는 쓰지 않는다. 목록의 기준은 보는 사람의 현재 위치라
+  /// `communityCountryCodeProvider`(`/country`)가 따로 구한다. 지금은 읽는
+  /// 화면이 없고, 작성자가 목록과 다른 나라에 핀을 찍었는지 알아내려면
+  /// 이 값이 필요해 남겨 둔다.
   String? get countryCode => throw _privateConstructorUsedError;
 
   /// Create a copy of CommunityAddressEntity
@@ -152,7 +157,12 @@ class _$CommunityAddressEntityImpl implements _CommunityAddressEntity {
   @override
   final String? address;
 
-  /// 국가 코드(ISO 3166-1 alpha-2). 목록 조회 필터에 그대로 쓸 수 있다.
+  /// 국가 코드(ISO 3166-1 alpha-2) — **이 핀이 속한 나라**.
+  ///
+  /// 목록 필터에는 쓰지 않는다. 목록의 기준은 보는 사람의 현재 위치라
+  /// `communityCountryCodeProvider`(`/country`)가 따로 구한다. 지금은 읽는
+  /// 화면이 없고, 작성자가 목록과 다른 나라에 핀을 찍었는지 알아내려면
+  /// 이 값이 필요해 남겨 둔다.
   @override
   final String? countryCode;
 
@@ -203,7 +213,12 @@ abstract class _CommunityAddressEntity implements CommunityAddressEntity {
   @override
   String? get address;
 
-  /// 국가 코드(ISO 3166-1 alpha-2). 목록 조회 필터에 그대로 쓸 수 있다.
+  /// 국가 코드(ISO 3166-1 alpha-2) — **이 핀이 속한 나라**.
+  ///
+  /// 목록 필터에는 쓰지 않는다. 목록의 기준은 보는 사람의 현재 위치라
+  /// `communityCountryCodeProvider`(`/country`)가 따로 구한다. 지금은 읽는
+  /// 화면이 없고, 작성자가 목록과 다른 나라에 핀을 찍었는지 알아내려면
+  /// 이 값이 필요해 남겨 둔다.
   @override
   String? get countryCode;
 

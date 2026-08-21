@@ -19,6 +19,12 @@ class CommunityLocationModel with _$CommunityLocationModel {
     /// 동 단위 지역 — `서울특별시 광진구 군자동`. 역지오코딩 실패 시 null.
     String? region,
 
+    /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+    ///
+    /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
+    /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
+    String? address,
+
     /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
     ///
     /// 스키마상 non-null이지만 nullable로 받는다: v2.17.0 이전에 쓰인 글까지

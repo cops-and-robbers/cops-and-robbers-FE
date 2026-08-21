@@ -14,11 +14,16 @@ class CommunityMenuItem {
     required this.iconPath,
     required this.label,
     required this.onTap,
+    this.iconColor,
     this.isDestructive = false,
   });
 
   final String iconPath;
   final String label;
+
+  /// 아이콘 틴트. null이면 SVG에 박힌 색을 그대로 쓴다 —
+  /// 다색 아이콘(쓰기·경고)은 덧칠하면 뭉개져서 원본이 정답이다.
+  final Color? iconColor;
 
   /// 메뉴가 닫힌 뒤 호출된다 — 다이얼로그를 띄우는 항목이 있어 순서가 중요하다.
   final VoidCallback onTap;
@@ -108,23 +113,28 @@ class _MenuSurface extends StatelessWidget {
       // 표면이 radius를 갖는데 행이 사각이면 모서리에서 삐져나온다.
       child: ClipRRect(
         borderRadius: AppRadius.large,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var i = 0; i < items.length; i++) ...[
-              if (i > 0) Divider(height: 1.h, color: AppColors.black100),
-              _MenuRow(
-                item: items[i],
-                onTap: () {
-                  VibrationService.instance().buttonTap();
-                  // 메뉴를 먼저 닫는다 — 화면이 다이얼로그를 띄우는 항목이 있어
-                  // 팝업 route가 남아 있으면 그 위에 겹친다.
-                  Navigator.of(context).pop();
-                  items[i].onTap();
-                },
-              ),
+        child: Padding(
+          // 첫 행 위·마지막 행 아래 여백. 행마다 주면 구분선까지 밀리므로
+          // 기둥 전체에 한 번만 준다.
+          padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < items.length; i++) ...[
+                if (i > 0) Divider(height: 1.h, color: AppColors.black100),
+                _MenuRow(
+                  item: items[i],
+                  onTap: () {
+                    VibrationService.instance().buttonTap();
+                    // 메뉴를 먼저 닫는다 — 화면이 다이얼로그를 띄우는 항목이 있어
+                    // 팝업 route가 남아 있으면 그 위에 겹친다.
+                    Navigator.of(context).pop();
+                    items[i].onTap();
+                  },
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -145,19 +155,21 @@ class _MenuRow extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
-        height: 52.h,
-        padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal20),
+        // 고정 높이 대신 패딩 — 글자 크기 설정을 키운 기기에서 라벨이 잘리지 않는다.
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.horizontal18,
+          vertical: AppSpacing.vertical10,
+        ),
         child: Row(
           children: [
-            // 경고 아이콘은 빨강·회색 다색이라 덧칠하면 뭉개진다. 단색 아이콘만
-            // 파괴적 항목 색으로 맞춘다.
+            // 틴트는 항목마다 다르다 — 다색 아이콘은 원본을 살리고 단색만 칠한다.
             SvgPicture.asset(
               item.iconPath,
               width: 16.w,
               height: 16.h,
-              colorFilter: item.isDestructive
+              colorFilter: item.iconColor == null
                   ? null
-                  : ColorFilter.mode(AppColors.black700, BlendMode.srcIn),
+                  : ColorFilter.mode(item.iconColor!, BlendMode.srcIn),
             ),
             SizedBox(width: AppSpacing.horizontal14),
             Expanded(

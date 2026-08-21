@@ -12,6 +12,7 @@ _$CommunityLocationModelImpl _$$CommunityLocationModelImplFromJson(
   latitude: (json['latitude'] as num).toDouble(),
   longitude: (json['longitude'] as num).toDouble(),
   region: json['region'] as String?,
+  address: json['address'] as String?,
   placeName: json['placeName'] as String?,
   countryCode: json['countryCode'] as String?,
 );
@@ -22,6 +23,7 @@ Map<String, dynamic> _$$CommunityLocationModelImplToJson(
   'latitude': instance.latitude,
   'longitude': instance.longitude,
   'region': instance.region,
+  'address': instance.address,
   'placeName': instance.placeName,
   'countryCode': instance.countryCode,
 };

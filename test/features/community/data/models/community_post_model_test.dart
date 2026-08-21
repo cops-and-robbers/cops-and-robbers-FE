@@ -77,13 +77,29 @@ void main() {
     });
 
     test('leaves_pending_backend_fields_null_when_absent', () {
-      // 참여자 수·좋아요·스크랩은 2·3단계 예정이다. 미리 선언해 둔 자리가
+      // 참여자 수·좋아요·스크랩·지번 주소는 추가 예정이다. 미리 선언해 둔 자리가
       // 응답에 없어도 파싱이 깨지면 안 된다.
       final model = CommunityPostResponseModel.fromJson(_serverJson());
 
       expect(model.currentParticipants, isNull);
       expect(model.likeCount, isNull);
       expect(model.bookmarkCount, isNull);
+      expect(model.location.address, isNull);
+    });
+
+    test('parses_lot_address_when_backend_starts_sending_it', () {
+      // 상세 화면이 복사에 쓰는 값이다 — 실리기 시작하면 region 대신 이게 담긴다.
+      final json = _serverJson()
+        ..['location'] = {
+          ...(_serverJson()['location'] as Map<String, dynamic>),
+          'address': '서울특별시 광진구 화양동 164-2',
+        };
+
+      final model = CommunityPostResponseModel.fromJson(json);
+
+      expect(model.location.address, '서울특별시 광진구 화양동 164-2');
+      // 동 단위 region은 그대로 남는다 — 화면 라벨은 여전히 이쪽을 쓴다.
+      expect(model.location.region, '서울특별시 광진구 군자동');
     });
 
     test('ignores_unknown_fields_when_backend_adds_extras', () {

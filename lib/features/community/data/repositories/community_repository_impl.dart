@@ -224,6 +224,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
         // 접지 않고 둘 다 넘긴다 — 화면이 "장소명 + 지역"으로 병기한다(DEC-0015).
         placeName: m.location.placeName,
         region: m.location.region,
+        address: m.location.address,
         maxParticipants: m.maxParticipants,
         currentParticipants: m.currentParticipants,
         likeCount: m.likeCount,

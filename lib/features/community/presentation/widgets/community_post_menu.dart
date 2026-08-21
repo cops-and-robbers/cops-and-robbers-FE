@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/community_post_entity.dart';
@@ -74,6 +75,7 @@ class CommunityPostMenu extends ConsumerWidget {
       return [
         CommunityMenuItem(
           iconPath: 'assets/icons/icon_person.svg',
+          iconColor: AppColors.black700,
           label: l10n.communityMenuLoginRequired,
           onTap: () => onAction(CommunityPostMenuAction.login),
         ),
@@ -99,6 +101,9 @@ class CommunityPostMenu extends ConsumerWidget {
       ),
       CommunityMenuItem(
         iconPath: 'assets/icons/icon_check.svg',
+        // 체크는 단색(#333D48) 선 아이콘이다. 쓰기 아이콘의 파랑(#339DFF)에
+        // 맞춰 칠해 두 항목이 같은 계열로 읽히게 한다.
+        iconColor: AppColors.blueVer2Basic,
         // 라벨은 "지금 누르면 무엇이 되는지"를 쓴다 — 현재 상태를 쓰면
         // 모집중인 글에서 "모집중"이 보여 눌러도 될지 알 수 없다.
         label: post.status == CommunityPostStatus.recruiting
