@@ -628,6 +628,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCreatePost => '모집글 작성';
 
   @override
+  String get communityEditPost => '모집글 수정';
+
+  @override
   String get communityCreateLabelTitle => '제목';
 
   @override
@@ -707,6 +710,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get communityCreateLoadingSub => '모집글을 등록하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get communityEditLoading => '모집글 고치는 중...';
+
+  @override
+  String get communityEditLoadingSub => '모집글을 수정하는 중이에요. 잠시만 기다려주세요';
 
   @override
   String get communityCreateLabelHeadcount => '모집 인원';

@@ -681,6 +681,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityCreatePost => 'New post';
 
   @override
+  String get communityEditPost => 'Edit post';
+
+  @override
   String get communityCreateLabelTitle => 'Title';
 
   @override
@@ -766,6 +769,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get communityCreateLoadingSub =>
       'We\'re publishing your post. Please wait a moment';
+
+  @override
+  String get communityEditLoading => 'Updating your recruitment';
+
+  @override
+  String get communityEditLoadingSub =>
+      'We\'re saving your changes. Please wait a moment';
 
   @override
   String get communityCreateLabelHeadcount => 'Headcount';

@@ -631,6 +631,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCreatePost => '募集を作成';
 
   @override
+  String get communityEditPost => '募集を修正';
+
+  @override
   String get communityCreateLabelTitle => 'タイトル';
 
   @override
@@ -710,6 +713,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get communityCreateLoadingSub => '募集を登録しています。少々お待ちください';
+
+  @override
+  String get communityEditLoading => '募集を修正しています';
+
+  @override
+  String get communityEditLoadingSub => '募集を修正しています。少々お待ちください';
 
   @override
   String get communityCreateLabelHeadcount => '募集人数';

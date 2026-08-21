@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
@@ -85,6 +86,54 @@ class _DelayedSecondPageRepository
     return secondPage;
   }
 }
+
+/// 목록에서 바로 하는 마감·삭제를 위한 시스템 경계 대체.
+///
+/// [goneIds]에 든 글은 서버가 이미 지운 것으로 취급해 404 `POST_NOT_FOUND`를
+/// 돌려준다 — 다른 사용자가 먼저 지운 상황을 재현한다.
+class _MutatingRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
+  _MutatingRepository(this.items, {this.goneIds = const {}});
+
+  final List<CommunityPostEntity> items;
+  final Set<int> goneIds;
+
+  final List<int> deletedIds = [];
+  final List<({int postId, CommunityPostStatus status})> statusCalls = [];
+
+  @override
+  Future<CommunityPostPageEntity> getPosts({
+    String? cursor,
+    required int size,
+    CommunityScope scope = CommunityScope.all,
+    required String countryCode,
+  }) async =>
+      CommunityPostPageEntity(items: items, nextCursor: null, hasNext: false);
+
+  @override
+  Future<CommunityPostEntity> updateStatus({
+    required int postId,
+    required CommunityPostStatus status,
+  }) async {
+    statusCalls.add((postId: postId, status: status));
+    if (goneIds.contains(postId)) throw _gone();
+    return items.firstWhere((p) => p.id == postId).copyWith(status: status);
+  }
+
+  @override
+  Future<void> deletePost(int postId) async {
+    deletedIds.add(postId);
+    if (goneIds.contains(postId)) throw _gone();
+  }
+}
+
+/// 남이 이미 지운 글을 만졌을 때 서버가 주는 응답 (404 `POST_NOT_FOUND`).
+ServerException _gone() => const ServerException(
+  message: 'not found',
+  messageKey: 'errorTemporaryRetry',
+  code: 'POST_NOT_FOUND',
+);
 
 ProviderContainer _containerWith(
   CommunityRepository repo, {
@@ -267,5 +316,91 @@ void main() {
         expect(state.hasMore, false);
       },
     );
+  });
+
+  group('CommunityFeedNotifier 목록 액션', () {
+    test('replaces_only_the_target_post_when_status_toggled', () async {
+      final repo = _MutatingRepository([_post(1), _post(2)]);
+      final container = _containerWith(repo);
+      await container.read(communityFeedNotifierProvider.future);
+
+      await container
+          .read(communityFeedNotifierProvider.notifier)
+          .toggleStatus(_post(2));
+
+      final items = container
+          .read(communityFeedNotifierProvider)
+          .requireValue
+          .items;
+      // 목록을 다시 당기지 않고 그 카드만 바뀐다 — 무효화하면 커서가 0으로
+      // 돌아가 스크롤 위치가 날아간다.
+      expect(items.map((e) => e.id), [1, 2]);
+      expect(items[0].status, CommunityPostStatus.recruiting);
+      expect(items[1].status, CommunityPostStatus.completed);
+      expect(repo.statusCalls, [
+        (postId: 2, status: CommunityPostStatus.completed),
+      ]);
+    });
+
+    test('removes_the_post_from_the_list_when_deleted', () async {
+      final repo = _MutatingRepository([_post(1), _post(2), _post(3)]);
+      final container = _containerWith(repo);
+      await container.read(communityFeedNotifierProvider.future);
+
+      await container
+          .read(communityFeedNotifierProvider.notifier)
+          .deletePost(2);
+
+      expect(
+        container
+            .read(communityFeedNotifierProvider)
+            .requireValue
+            .items
+            .map((e) => e.id),
+        [1, 3],
+      );
+      expect(repo.deletedIds, [2]);
+    });
+
+    test('removes_the_post_when_server_says_it_is_already_gone', () async {
+      // 남이 먼저 지운 글을 마감하려 한 경우. 되돌릴 상태가 없으므로 예외는
+      // 그대로 올리되(화면이 알린다) 목록에서는 걷어낸다 — 안 그러면 사용자가
+      // 유령 카드를 계속 누르게 된다.
+      final repo = _MutatingRepository([_post(1), _post(2)], goneIds: {2});
+      final container = _containerWith(repo);
+      await container.read(communityFeedNotifierProvider.future);
+
+      await expectLater(
+        container
+            .read(communityFeedNotifierProvider.notifier)
+            .toggleStatus(_post(2)),
+        throwsA(isA<AppException>()),
+      );
+
+      expect(
+        container
+            .read(communityFeedNotifierProvider)
+            .requireValue
+            .items
+            .map((e) => e.id),
+        [1],
+      );
+    });
+
+    test('replaces_the_post_when_edit_returns_an_updated_one', () async {
+      final repo = _MutatingRepository([_post(1), _post(2)]);
+      final container = _containerWith(repo);
+      await container.read(communityFeedNotifierProvider.future);
+
+      container
+          .read(communityFeedNotifierProvider.notifier)
+          .replacePost(_post(2).copyWith(title: '제목을 고쳤어요'));
+
+      final items = container
+          .read(communityFeedNotifierProvider)
+          .requireValue
+          .items;
+      expect(items.map((e) => e.title), ['모집글 1', '제목을 고쳤어요']);
+    });
   });
 }

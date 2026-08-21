@@ -216,6 +216,7 @@
   "communitySortDeadline": "Closing soon",
   "communitySortSheetTitle": "Sort by",
   "communityCreatePost": "New post",
+  "communityEditPost": "Edit post",
   "communityCreateLabelTitle": "Title",
   "communityCreateHintTitle": "After-work match! Beginners welcome",
   "communityCreateLabelContent": "Details",
@@ -255,6 +256,8 @@
   "communityLocationPickerNotFound": "No address here. Please pick another spot",
   "communityCreateLoading": "Posting your recruitment",
   "communityCreateLoadingSub": "We're publishing your post. Please wait a moment",
+  "communityEditLoading": "Updating your recruitment",
+  "communityEditLoadingSub": "We're saving your changes. Please wait a moment",
   "communityCreateLabelHeadcount": "Headcount",
   "communityHeadcountValue": "{count}",
   "@communityHeadcountValue": {

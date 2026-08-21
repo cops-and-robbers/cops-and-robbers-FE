@@ -1245,6 +1245,12 @@ abstract class AppLocalizations {
   /// **'모집글 작성'**
   String get communityCreatePost;
 
+  /// 모집글 수정 화면 제목 (작성 화면을 수정 모드로 열었을 때)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글 수정'**
+  String get communityEditPost;
+
   /// 모집글 작성 — 제목 섹션 라벨
   ///
   /// In ko, this message translates to:
@@ -1387,6 +1393,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'모집글을 등록하는 중이에요. 잠시만 기다려주세요'**
   String get communityCreateLoadingSub;
+
+  /// 모집글 수정 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글 고치는 중...'**
+  String get communityEditLoading;
+
+  /// No description provided for @communityEditLoadingSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 수정하는 중이에요. 잠시만 기다려주세요'**
+  String get communityEditLoadingSub;
 
   /// 모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)
   ///

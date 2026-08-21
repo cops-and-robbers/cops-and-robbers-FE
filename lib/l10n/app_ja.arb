@@ -216,6 +216,7 @@
   "communitySortDeadline": "締切間近順",
   "communitySortSheetTitle": "並び替え",
   "communityCreatePost": "募集を作成",
+  "communityEditPost": "募集を修正",
   "communityCreateLabelTitle": "タイトル",
   "communityCreateHintTitle": "仕事帰りに一戦！初心者歓迎",
   "communityCreateHintContent": "ルール、持ち物、打ち上げの有無などを書いてください",
@@ -255,6 +256,8 @@
   "communityLocationPickerNotFound": "住所が見つかりません。別の場所を選んでください",
   "communityCreateLoading": "募集を投稿しています",
   "communityCreateLoadingSub": "募集を登録しています。少々お待ちください",
+  "communityEditLoading": "募集を修正しています",
+  "communityEditLoadingSub": "募集を修正しています。少々お待ちください",
   "communityCreateLabelHeadcount": "募集人数",
   "communityHeadcountValue": "{count}人",
   "@communityHeadcountValue": {

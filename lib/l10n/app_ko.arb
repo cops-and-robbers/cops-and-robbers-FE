@@ -486,6 +486,10 @@
   "@communityCreatePost": {
     "description": "커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)"
   },
+  "communityEditPost": "모집글 수정",
+  "@communityEditPost": {
+    "description": "모집글 수정 화면 제목 (작성 화면을 수정 모드로 열었을 때)"
+  },
   "communityCreateLabelTitle": "제목",
   "@communityCreateLabelTitle": {
     "description": "모집글 작성 — 제목 섹션 라벨"
@@ -584,6 +588,11 @@
     "description": "모집글 등록 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)"
   },
   "communityCreateLoadingSub": "모집글을 등록하는 중이에요. 잠시만 기다려주세요",
+  "communityEditLoading": "모집글 고치는 중...",
+  "@communityEditLoading": {
+    "description": "모집글 수정 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)"
+  },
+  "communityEditLoadingSub": "모집글을 수정하는 중이에요. 잠시만 기다려주세요",
   "communityCreateLabelHeadcount": "모집 인원",
   "@communityCreateLabelHeadcount": {
     "description": "모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)"

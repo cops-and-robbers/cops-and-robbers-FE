@@ -9,8 +9,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../data/datasources/community_remote_datasource.dart';
 import '../../data/repositories/community_repository_impl.dart';
+import '../../domain/community_post_errors.dart';
+import '../../domain/entities/community_post_entity.dart';
+import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../../domain/repositories/community_repository.dart';
@@ -240,5 +244,75 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   Future<void> refresh() async {
     ref.invalidateSelf();
     await future;
+  }
+
+  /// 모집 상태를 뒤집는다 (모집중 ↔ 마감). 서버가 돌려준 글로 그 카드만 간다.
+  ///
+  /// 목록을 통째로 무효화하지 않는 이유: 커서 페이지네이션이라 무효화는 0페이지
+  /// 부터 다시 당긴다 — 3페이지까지 내려온 사용자가 마감 한 번에 맨 위로 튕긴다.
+  ///
+  /// 실패는 그대로 올린다(화면이 스낵바로 알린다). 다만 그 사이 다른 사용자가
+  /// 지워 버린 글이면 되돌릴 상태 자체가 없으므로 목록에서도 걷어낸다.
+  Future<void> toggleStatus(CommunityPostEntity post) async {
+    final next = post.status == CommunityPostStatus.recruiting
+        ? CommunityPostStatus.completed
+        : CommunityPostStatus.recruiting;
+
+    try {
+      final updated = await ref
+          .read(communityRepositoryProvider)
+          .updateStatus(postId: post.id, status: next);
+      replacePost(updated);
+    } on AppException catch (e) {
+      if (isCommunityPostGone(e)) removePost(post.id);
+      rethrow;
+    }
+  }
+
+  /// 게시글을 삭제하고 목록에서 뺀다.
+  ///
+  /// 이미 사라진 글(404)이어도 결과는 같다 — 목록에 남을 이유가 없으므로 걷어낸
+  /// 뒤 예외를 올린다.
+  Future<void> deletePost(int postId) async {
+    try {
+      await ref.read(communityRepositoryProvider).deletePost(postId);
+    } on AppException catch (e) {
+      if (isCommunityPostGone(e)) removePost(postId);
+      rethrow;
+    }
+    removePost(postId);
+  }
+
+  /// 글 하나를 최신 값으로 갈아끼운다 (네트워크 없음).
+  ///
+  /// 수정 화면이 돌려준 글을 반영하는 통로다. 목록에 없는 글이면 아무 일도
+  /// 일어나지 않는다 — 상세만 열려 있는 동안 목록이 폐기됐을 수 있다.
+  void replacePost(CommunityPostEntity updated) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    state = AsyncData(
+      current.copyWith(
+        items: [
+          for (final post in current.items)
+            post.id == updated.id ? updated : post,
+        ],
+      ),
+    );
+  }
+
+  /// 글 하나를 목록에서 걷어낸다 (네트워크 없음).
+  void removePost(int postId) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    state = AsyncData(
+      current.copyWith(
+        items: [
+          for (final post in current.items)
+            if (post.id != postId) post,
+        ],
+      ),
+    );
   }
 }
