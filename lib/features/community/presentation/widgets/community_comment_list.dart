@@ -41,6 +41,10 @@ class CommunityCommentList extends StatelessWidget {
   /// 현재 답글 작성 중인 댓글 id — 그 댓글만 배경을 강조한다.
   final int? replyTargetId;
 
+  /// 답글 달기(말풍선) 버튼 — 테스트에서 탭 대상을 찾는다. 댓글마다 붙으므로
+  /// 여러 개가 잡힌다.
+  static const Key replyButtonKey = Key('community_comment_reply');
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -179,6 +183,7 @@ class _CommentTile extends StatelessWidget {
                       children: [
                         if (onReply != null) ...[
                           GestureDetector(
+                            key: CommunityCommentList.replyButtonKey,
                             behavior: HitTestBehavior.opaque,
                             onTap: onReply,
                             child: SvgPicture.asset(

@@ -10,15 +10,19 @@ import '../../../../l10n/app_localizations.dart';
 
 /// 댓글 입력창 (답글 모드 겸용)
 ///
-/// [replyToNickname]이 있으면 "○○님에게 답글 남기는 중" 안내 줄이 위에 붙고,
-/// 그 줄의 × 로 답글 모드를 끈다. 입력 필드는 하나뿐이다 — 답글용을 따로 두면
-/// 어느 쪽에 쓰는 중인지 화면에서 갈리지 않는다.
+/// 입력 필드는 하나뿐이다 — 답글용을 따로 두면 어느 쪽에 쓰는 중인지 화면에서
+/// 갈리지 않는다.
+///
+/// 답글 모드는 힌트 문구로만 알린다. 예전에는 위에 "○○님에게 답글 남기는 중"
+/// 안내 줄이 붙었는데, 늘 한 줄을 차지해 정작 읽어야 할 댓글을 밀어냈다. 대상
+/// 댓글은 목록 쪽에서 배경으로 강조되므로(`replyTargetId`) 어디에 다는 중인지는
+/// 그쪽이 더 정확히 보여 준다. 모드를 끄는 건 본문 아무 곳이나 탭하는 것이다
+/// (상세 화면이 처리).
 class CommunityCommentInput extends StatefulWidget {
   const CommunityCommentInput({
     super.key,
     required this.onSubmit,
     this.replyToNickname,
-    this.onCancelReply,
   });
 
   /// 전송. 부모가 성공 시 답글 모드를 끈다.
@@ -26,8 +30,6 @@ class CommunityCommentInput extends StatefulWidget {
 
   /// 답글 대상 닉네임. null이면 최상위 댓글 모드.
   final String? replyToNickname;
-
-  final VoidCallback? onCancelReply;
 
   @override
   State<CommunityCommentInput> createState() => _CommunityCommentInputState();
@@ -88,7 +90,6 @@ class _CommunityCommentInputState extends State<CommunityCommentInput> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (replyTo != null) _buildReplyBanner(l10n, replyTo),
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.horizontal16,
@@ -148,37 +149,6 @@ class _CommunityCommentInputState extends State<CommunityCommentInput> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildReplyBanner(AppLocalizations l10n, String nickname) {
-    return Container(
-      width: double.infinity,
-      color: AppColors.background,
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSpacing.horizontal16,
-        vertical: AppSpacing.vertical8,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              l10n.communityCommentReplyingTo(nickname),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
-            ),
-          ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: widget.onCancelReply,
-            child: Padding(
-              padding: EdgeInsets.all(AppSpacing.horizontal4),
-              child: Icon(Icons.close, size: 16.w, color: AppColors.black500),
-            ),
-          ),
-        ],
       ),
     );
   }
