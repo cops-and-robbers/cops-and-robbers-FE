@@ -116,33 +116,35 @@ void main() {
       expect(repo.lastLongitude, 127.0736);
     });
 
-    testWidgets('returns_picked_coordinates_and_region_when_confirmed', (
-      tester,
-    ) async {
-      final repo = _AddressRepository(
-        address: const CommunityAddressEntity(
-          region: '서울특별시 광진구 화양동',
-          address: '서울특별시 광진구 화양동 1-20',
-          countryCode: 'KR',
-        ),
-      );
-      CommunityPickedLocation? received;
+    testWidgets(
+      'returns_picked_coordinates_region_and_address_when_confirmed',
+      (tester) async {
+        final repo = _AddressRepository(
+          address: const CommunityAddressEntity(
+            region: '서울특별시 광진구 화양동',
+            address: '서울특별시 광진구 화양동 1-20',
+            countryCode: 'KR',
+          ),
+        );
+        CommunityPickedLocation? received;
 
-      await tester.pumpWidget(
-        _wrapPushedFrom(repo, onPicked: (value) => received = value),
-      );
-      await tester.tap(find.text('열기'));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          _wrapPushedFrom(repo, onPicked: (value) => received = value),
+        );
+        await tester.tap(find.text('열기'));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(CommunityLocationPickerPage.confirmKey));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byKey(CommunityLocationPickerPage.confirmKey));
+        await tester.pumpAndSettle();
 
-      // 작성 화면이 좌표와 지역을 그대로 받는다. address(번지)는 확인용이라
-      // 넘기지 않는다 — 글에 저장되는 건 region이다.
-      expect(received?.latitude, 37.5502);
-      expect(received?.longitude, 127.0736);
-      expect(received?.region, '서울특별시 광진구 화양동');
-    });
+        // 작성 화면이 셋을 다 받는다. region은 지도 미리보기 라벨,
+        // address(번지)는 상세주소 읽기 전용 칸에 그대로 꽂힌다.
+        expect(received?.latitude, 37.5502);
+        expect(received?.longitude, 127.0736);
+        expect(received?.region, '서울특별시 광진구 화양동');
+        expect(received?.address, '서울특별시 광진구 화양동 1-20');
+      },
+    );
 
     testWidgets('keeps_confirm_disabled_when_address_lookup_fails', (
       tester,

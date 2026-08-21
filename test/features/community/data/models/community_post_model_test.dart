@@ -1,7 +1,7 @@
 import 'package:cops_and_robbers/features/community/data/models/community_post_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// 백엔드 v2.17.0이 보내는 형태 — 장소는 `region`(서버 역지오코딩) +
+/// 백엔드 v2.18.0이 보내는 형태 — 장소는 `region`(서버 역지오코딩) +
 /// `placeName`(작성자 입력) + `countryCode` 셋이고, 목록 봉투는 `page`가 아니라
 /// `cursor`다. 아직 미도착 필드(currentParticipants·likeCount·bookmarkCount)는
 /// 빠져 있다.
@@ -95,33 +95,47 @@ void main() {
   });
 
   group('CommunityPostListResponseModel', () {
-    test('parses_country_code_when_more_pages_remain', () {
+    test('parses_cursor_envelope_when_more_pages_remain', () {
       final model = CommunityPostListResponseModel.fromJson({
         'content': [_serverJson()],
         'cursor': {
           'nextCursor': 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg',
           'hasNext': true,
         },
-        'countryCode': 'KR',
       });
 
       expect(model.content.single.id, 1);
       expect(model.cursor.nextCursor, 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg');
       expect(model.cursor.hasNext, true);
-      // 다음 페이지부터는 좌표 없이 이 값만 실어 보낸다.
-      expect(model.countryCode, 'KR');
     });
 
     test('parses_null_next_cursor_when_last_page_reached', () {
       final model = CommunityPostListResponseModel.fromJson({
         'content': <Map<String, dynamic>>[],
         'cursor': {'nextCursor': null, 'hasNext': false},
-        'countryCode': 'KR',
       });
 
       expect(model.content, isEmpty);
       expect(model.cursor.nextCursor, isNull);
       expect(model.cursor.hasNext, false);
+    });
+  });
+
+  group('CommunityCountryResponseModel', () {
+    test('parses_country_code_when_lookup_succeeds', () {
+      final model = CommunityCountryResponseModel.fromJson({
+        'countryCode': 'JP',
+      });
+
+      expect(model.countryCode, 'JP');
+    });
+
+    test('leaves_country_code_null_when_field_absent', () {
+      // 스키마에 required가 없다 — non-null로 못 박으면 서버가 값을 빠뜨리는
+      // 순간 파싱이 통째로 터진다 (LSN-0009).
+      final model = CommunityCountryResponseModel.fromJson(<String, dynamic>{});
+
+      expect(model.countryCode, isNull);
     });
   });
 

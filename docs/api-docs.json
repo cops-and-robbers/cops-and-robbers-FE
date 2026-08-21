@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v2.17.0 업데이트 내역\n\n### ⚠️ 주의 (클라이언트 동시 배포 필요)\n- GET /api/community-posts 목록이 국가별로 분리됨\n  - countryCode 또는 현재 위치(latitude, longitude) 중 하나는 필수\n  - 둘 다 없으면 400(COUNTRY_NOT_SPECIFIED)\n  - 좌표로 보내면 서버가 국가를 판별해 응답의 countryCode에 실어줌\n  - 다음 페이지부터는 그 countryCode를 그대로 넣어 좌표 없이 요청\n  - 위치 권한을 거부한 사용자는 기기 국가 코드를 보내면 됨\n- GET /api/community-posts 페이지네이션을 커서 방식으로 전환\n  - page 파라미터 제거, cursor 파라미터 추가\n  - 응답의 page 객체가 cursor 객체(nextCursor, hasNext)로 변경\n  - 허용 파라미터는 cursor, size, scope, sort 뿐\n  - 지원하지 않는 쿼리 파라미터를 보내면 400(INVALID_QUERY_PARAMETER)\n\n### ✨ 신규\n- GET /api/community-posts/address 좌표 주소 조회 API 추가 (로그인 필요)\n  - 파라미터: latitude, longitude\n  - 응답: region(동 단위, 게시글에 저장될 값), address(번지 포함, 작성자 확인용),\n    countryCode(ISO 3166-1 alpha-2)\n  - 작성 화면에서 핀을 찍은 직후 호출해 위치를 확인시키는 용도이며 저장하지 않는다\n  - 주소 없는 좌표는 400(ADDRESS_NOT_FOUND), 조회 실패는 500(ADDRESS_LOOKUP_FAILED)\n- GET /api/community-posts scope, sort 파라미터 추가\n  - scope: ALL | NEARBY | MINE (기본 ALL)\n  - sort: LATEST | POPULAR | DISTANCE | DEADLINE (기본 LATEST)\n  - 현재 구현은 ALL + LATEST 뿐이며 그 외 값은 400\n    (UNSUPPORTED_LIST_SCOPE / UNSUPPORTED_LIST_SORT)\n  - NEARBY 반경 기준, MINE 정의, 인기·거리·마감임박 정렬은 정책 확정 후 지원 예정\n- 게시글 응답에 작성자 닉네임 writerNickname 추가 (탈퇴한 작성자면 null)\n- 게시글 응답에 location.region 추가 (동 단위 지역)\n  - 작성/수정 시 좌표를 서버에서 1회 역지오코딩하여 저장\n  - 예: 서울특별시 광진구 군자동 (번지 제외)\n  - 역지오코딩 실패 시 null\n- 게시글 요청/응답에 location.placeName 추가 (작성자가 입력하는 만나는 곳)\n  - 필수 입력, 최대 50자. 예: 어린이대공원 정문\n  - 좌표로는 건물명·장소명을 신뢰할 수준으로 얻을 수 없어 작성자에게 받는다\n\n- 게시글 응답에 location.countryCode 추가, 목록 응답에 countryCode 추가\n\n### 🛠 변경\n- 해외 주소를 그 나라 언어로 저장 (일본은 일본어, 그 외는 영어)\n- 역지오코딩 제공자를 카카오에서 VWorld(국내), Geoapify(해외)로 교체\n  - 카카오는 운영정책상 변환 결과를 DB에 저장할 수 없고 해외 좌표를 지원하지 않음\n  - 국내를 먼저 조회하고 주소를 얻지 못하면 해외로 넘어가므로 해외 게시글도 주소가 채워짐\n\n## v2.16.0 업데이트 내역\n\n### 🛠 변경\n- GET /api/community-posts, GET /api/community-posts/{postId} 비로그인 조회 허용\n  - 웹뷰 지원을 위해 @AuthUser 제거\n\n## v2.15.0 업데이트 내역\n\n### ✨ 신규\n- 커뮤니티 게시판(같이 하기) CRUD API 추가\n  - POST /api/community-posts 게시글 생성\n  - GET /api/community-posts 게시글 목록 조회 (페이지네이션)\n  - GET /api/community-posts/{postId} 게시글 단건 조회\n  - PUT /api/community-posts/{postId} 게시글 수정\n  - DELETE /api/community-posts/{postId} 게시글 삭제\n  - PATCH /api/community-posts/{postId}/status 모집 상태 변경\n\n## v2.14.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/notices category 필터 파라미터 추가\n  - NOTICE | MAINTENANCE | EVENT | UPDATE\n  - 생략 시 전체 조회 (기존 동작 유지)\n- POST /api/notices, PUT /api/notices/{id} category 필드 추가\n  - 생략 또는 null 시 NOTICE로 자동 설정 (하위 호환)\n\n## v2.13.0 업데이트 내역\n\n### ✨ 신규\n- PUT /api/games/{gameId}/area 폴리곤 구역 타입 지원\n  - areaType 필드 추가 (CIRCLE | POLYGON)\n  - CIRCLE: 기존 원형 구역 (circle 객체 사용)\n  - POLYGON: 다각형 구역 (polygon 객체 사용)\n- GET /api/games/{gameId}/area 응답 구조 변경\n  - 기존 플랫 구조 → areaType + circle/polygon 중첩 구조\n\n## v2.12.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/games/{gameId} 응답에 isEventGame 필드 추가\n  - 이벤트 게임 여부를 클라이언트에서 구분할 수 있도록 지원\n\n## v2.11.0 업데이트 내역\n\n### ✨ 신규\n- POST /api/games/join 이벤트 게임 QR 입장 지원\n  - 진행 중인 이벤트 게임에 초대 코드로 입장 시 경찰로 즉시 합류\n  - 응답에 isEventGame 필드 추가 (클라이언트 인게임/로비 화면 분기용)\n\n## v2.10.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- DELETE /api/games/{gameId}/leave API 인게임 중도 퇴장 분기처리 추가\n  (제세한 변경 내용은 해당 항목 참고)\n",
-    "version": "2.17.0"
+    "description": "## v2.18.0 업데이트 내역\n\n### ⚠️ 주의 (클라이언트 동시 배포 필요)\n- GET /api/community-posts 에서 latitude, longitude 파라미터 제거\n  - countryCode만 받는다. 보내면 400(INVALID_QUERY_PARAMETER)\n  - 국가는 GET /api/community-posts/country 로 먼저 조회한다\n- 목록 응답 최상위의 countryCode 제거 (요청값을 되돌려주던 중복)\n\n### ✨ 신규\n- GET /api/community-posts/country 좌표 국가 조회 API (로그인 불필요)\n  - 파라미터: latitude, longitude / 응답: countryCode\n  - 화면 진입 때 한 번 호출해 국가를 얻고, 이후 페이지는 그 값을 재사용한다\n  - 주소를 만들지 않아 벤더 호출이 1회다\n\n### 🛠 변경\n- 역지오코딩이 완전히 실패하면 게시글을 만들지 않는다 (500 ADDRESS_LOOKUP_FAILED)\n  - 주소 없이 저장하면 국가 코드가 비어 어느 목록에도 걸리지 않기 때문\n- GET /api/community-posts, GET /api/community-posts/{postId} 는 로그인 불필요\n  (동작은 이전과 같고 문서 표기만 바로잡음)\n\n## v2.17.0 업데이트 내역\n\n### ⚠️ 주의 (클라이언트 동시 배포 필요)\n- GET /api/community-posts 목록이 국가별로 분리됨\n  - countryCode 필수. 없으면 400(COUNTRY_NOT_SPECIFIED)\n  - GET /api/community-posts/country 로 먼저 국가를 조회한 뒤 넣는다\n  - 위치 권한을 거부한 사용자는 기기 국가 코드를 보내면 됨\n- GET /api/community-posts 페이지네이션을 커서 방식으로 전환\n  - page 파라미터 제거, cursor 파라미터 추가\n  - 응답의 page 객체가 cursor 객체(nextCursor, hasNext)로 변경\n  - 허용 파라미터는 cursor, size, scope, sort 뿐\n  - 지원하지 않는 쿼리 파라미터를 보내면 400(INVALID_QUERY_PARAMETER)\n\n### ✨ 신규\n- GET /api/community-posts/country 좌표 국가 조회 API 추가 (로그인 불필요)\n  - 파라미터: latitude, longitude / 응답: countryCode\n  - 목록 조회 전에 한 번 호출해 국가를 얻는 용도. 주소는 만들지 않아 벤더 호출이 1회\n- GET /api/community-posts/address 좌표 주소 조회 API 추가 (로그인 필요)\n  - 파라미터: latitude, longitude\n  - 응답: region(동 단위, 게시글에 저장될 값), address(번지 포함, 작성자 확인용),\n    countryCode(ISO 3166-1 alpha-2)\n  - 작성 화면에서 핀을 찍은 직후 호출해 위치를 확인시키는 용도이며 저장하지 않는다\n  - 주소 없는 좌표는 400(ADDRESS_NOT_FOUND), 조회 실패는 500(ADDRESS_LOOKUP_FAILED)\n- GET /api/community-posts scope, sort 파라미터 추가\n  - scope: ALL | NEARBY | MINE (기본 ALL)\n  - sort: LATEST | POPULAR | DISTANCE | DEADLINE (기본 LATEST)\n  - 현재 구현은 ALL + LATEST 뿐이며 그 외 값은 400\n    (UNSUPPORTED_LIST_SCOPE / UNSUPPORTED_LIST_SORT)\n  - NEARBY 반경 기준, MINE 정의, 인기·거리·마감임박 정렬은 정책 확정 후 지원 예정\n- 게시글 응답에 작성자 닉네임 writerNickname 추가 (탈퇴한 작성자면 null)\n- 게시글 응답에 location.region 추가 (동 단위 지역)\n  - 작성/수정 시 좌표를 서버에서 1회 역지오코딩하여 저장\n  - 예: 서울특별시 광진구 군자동 (번지 제외)\n  - 역지오코딩이 실패하면 게시글이 생성되지 않음 (500 ADDRESS_LOOKUP_FAILED)\n    주소 없이 저장하면 countryCode가 비어 어느 국가 목록에도 걸리지 않기 때문\n- 게시글 요청/응답에 location.placeName 추가 (작성자가 입력하는 만나는 곳)\n  - 필수 입력, 최대 50자. 예: 어린이대공원 정문\n  - 좌표로는 건물명·장소명을 신뢰할 수준으로 얻을 수 없어 작성자에게 받는다\n\n- 게시글 응답에 location.countryCode 추가, 목록 응답에 countryCode 추가\n\n### 🛠 변경\n- 해외 주소를 그 나라 언어로 저장 (일본은 일본어, 그 외는 영어)\n- 역지오코딩 제공자를 카카오에서 VWorld(국내), Geoapify(해외)로 교체\n  - 카카오는 운영정책상 변환 결과를 DB에 저장할 수 없고 해외 좌표를 지원하지 않음\n  - 국내를 먼저 조회하고 주소를 얻지 못하면 해외로 넘어가므로 해외 게시글도 주소가 채워짐\n\n## v2.16.0 업데이트 내역\n\n### 🛠 변경\n- GET /api/community-posts, GET /api/community-posts/{postId} 비로그인 조회 허용\n  - 웹뷰 지원을 위해 @AuthUser 제거\n\n## v2.15.0 업데이트 내역\n\n### ✨ 신규\n- 커뮤니티 게시판(같이 하기) CRUD API 추가\n  - POST /api/community-posts 게시글 생성\n  - GET /api/community-posts 게시글 목록 조회 (페이지네이션)\n  - GET /api/community-posts/{postId} 게시글 단건 조회\n  - PUT /api/community-posts/{postId} 게시글 수정\n  - DELETE /api/community-posts/{postId} 게시글 삭제\n  - PATCH /api/community-posts/{postId}/status 모집 상태 변경\n\n## v2.14.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/notices category 필터 파라미터 추가\n  - NOTICE | MAINTENANCE | EVENT | UPDATE\n  - 생략 시 전체 조회 (기존 동작 유지)\n- POST /api/notices, PUT /api/notices/{id} category 필드 추가\n  - 생략 또는 null 시 NOTICE로 자동 설정 (하위 호환)\n\n## v2.13.0 업데이트 내역\n\n### ✨ 신규\n- PUT /api/games/{gameId}/area 폴리곤 구역 타입 지원\n  - areaType 필드 추가 (CIRCLE | POLYGON)\n  - CIRCLE: 기존 원형 구역 (circle 객체 사용)\n  - POLYGON: 다각형 구역 (polygon 객체 사용)\n- GET /api/games/{gameId}/area 응답 구조 변경\n  - 기존 플랫 구조 → areaType + circle/polygon 중첩 구조\n\n## v2.12.0 업데이트 내역\n\n### ✨ 신규\n- GET /api/games/{gameId} 응답에 isEventGame 필드 추가\n  - 이벤트 게임 여부를 클라이언트에서 구분할 수 있도록 지원\n\n## v2.11.0 업데이트 내역\n\n### ✨ 신규\n- POST /api/games/join 이벤트 게임 QR 입장 지원\n  - 진행 중인 이벤트 게임에 초대 코드로 입장 시 경찰로 즉시 합류\n  - 응답에 isEventGame 필드 추가 (클라이언트 인게임/로비 화면 분기용)\n\n## v2.10.0 업데이트 내역\n\n### 🛠 변경 및 수정\n- DELETE /api/games/{gameId}/leave API 인게임 중도 퇴장 분기처리 추가\n  (제세한 변경 내용은 해당 항목 참고)\n",
+    "version": "2.18.0"
   },
   "servers": [
     {
@@ -1137,7 +1137,7 @@
     "/api/community-posts/{postId}": {
       "get": {
         "tags": ["CommunityPost"],
-        "summary": "게시글 단건 조회",
+        "summary": "게시글 단건 조회 (로그인 불필요)",
         "description": "특정 모집 게시글을 조회합니다.",
         "operationId": "getPost",
         "parameters": [
@@ -1206,7 +1206,8 @@
               }
             }
           }
-        }
+        },
+        "security": []
       },
       "put": {
         "tags": ["CommunityPost"],
@@ -1321,6 +1322,28 @@
               }
             }
           },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "주소 조회 실패": {
+                    "summary": "주소 조회 실패",
+                    "value": {
+                      "errorCode": "ADDRESS_LOOKUP_FAILED",
+                      "title": "주소 조회 실패",
+                      "status": 500,
+                      "detail": "주소를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
+                      "instance": "/api/community-posts/{postId}"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
             "description": "401 Error",
             "content": {
@@ -1336,28 +1359,6 @@
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
-                      "instance": "/api/community-posts/{postId}"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "500 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "알 수 없는 오류": {
-                    "summary": "알 수 없는 오류",
-                    "value": {
-                      "errorCode": "INTERNAL_SERVER_ERROR",
-                      "title": "알 수 없는 오류",
-                      "status": 500,
-                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/community-posts/{postId}"
                     }
                   }
@@ -2663,8 +2664,8 @@
     "/api/community-posts": {
       "get": {
         "tags": ["CommunityPost"],
-        "summary": "게시글 목록 조회",
-        "description": "모집 게시글 목록을 국가별로 나눠 최신순 커서 방식으로 조회합니다. 국가를 아는 클라이언트는 countryCode를, 모르면 현재 좌표(latitude, longitude)를 보냅니다. 좌표로 보내면 서버가 역지오코딩해 국가를 판별하므로, 응답의 countryCode를 다음 페이지부터 그대로 사용하세요. 지원하지 않는 쿼리 파라미터가 포함되면 400을 반환합니다.",
+        "summary": "게시글 목록 조회 (로그인 불필요)",
+        "description": "모집 게시글 목록을 국가별로 나눠 최신순 커서 방식으로 조회합니다. 웹뷰 지원을 위해 인증 없이 호출할 수 있습니다. countryCode는 필수이며, GET /api/community-posts/country 로 먼저 조회하세요. 지원하지 않는 쿼리 파라미터가 포함되면 400을 반환합니다.",
         "operationId": "getPostList",
         "parameters": [
           {
@@ -2715,34 +2716,12 @@
           {
             "name": "countryCode",
             "in": "query",
-            "description": "조회할 국가 코드(ISO 3166-1 alpha-2). 좌표를 보내지 않으면 필수",
-            "required": false,
+            "description": "조회할 국가 코드(ISO 3166-1 alpha-2). 필수",
+            "required": true,
             "schema": {
               "type": "string"
             },
             "example": "KR"
-          },
-          {
-            "name": "latitude",
-            "in": "query",
-            "description": "현재 위치 위도. countryCode를 보내지 않으면 필수",
-            "required": false,
-            "schema": {
-              "type": "number",
-              "format": "double"
-            },
-            "example": 37.5502
-          },
-          {
-            "name": "longitude",
-            "in": "query",
-            "description": "현재 위치 경도. countryCode를 보내지 않으면 필수",
-            "required": false,
-            "schema": {
-              "type": "number",
-              "format": "double"
-            },
-            "example": 127.0736
           }
         ],
         "responses": {
@@ -2825,7 +2804,8 @@
               }
             }
           }
-        }
+        },
+        "security": []
       },
       "post": {
         "tags": ["CommunityPost"],
@@ -2885,6 +2865,28 @@
               }
             }
           },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "주소 조회 실패": {
+                    "summary": "주소 조회 실패",
+                    "value": {
+                      "errorCode": "ADDRESS_LOOKUP_FAILED",
+                      "title": "주소 조회 실패",
+                      "status": 500,
+                      "detail": "주소를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
+                      "instance": "/api/community-posts"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
             "description": "401 Error",
             "content": {
@@ -2900,28 +2902,6 @@
                       "title": "인증되지 않은 요청",
                       "status": 401,
                       "detail": "로그인이 필요합니다.",
-                      "instance": "/api/community-posts"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "500 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "알 수 없는 오류": {
-                    "summary": "알 수 없는 오류",
-                    "value": {
-                      "errorCode": "INTERNAL_SERVER_ERROR",
-                      "title": "알 수 없는 오류",
-                      "status": 500,
-                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/community-posts"
                     }
                   }
@@ -5120,6 +5100,95 @@
         ]
       }
     },
+    "/api/community-posts/country": {
+      "get": {
+        "tags": ["CommunityPost"],
+        "summary": "좌표 국가 조회 (로그인 불필요)",
+        "description": "좌표가 속한 국가 코드를 반환합니다. 목록 조회 전에 한 번 호출해 countryCode를 얻는 용도입니다. 주소는 만들지 않으므로 표기 언어를 맞추는 추가 호출을 하지 않습니다.",
+        "operationId": "getCountry",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "description": "위도",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "example": 37.5502
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "description": "경도",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "example": 127.0736
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "국가를 특정할 수 없음": {
+                    "summary": "국가를 특정할 수 없음",
+                    "value": {
+                      "errorCode": "COUNTRY_NOT_SPECIFIED",
+                      "title": "국가를 특정할 수 없음",
+                      "status": 400,
+                      "detail": "countryCode 또는 현재 위치(latitude, longitude) 중 하나는 필수입니다.",
+                      "instance": "/api/community-posts/country"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "주소 조회 실패": {
+                    "summary": "주소 조회 실패",
+                    "value": {
+                      "errorCode": "ADDRESS_LOOKUP_FAILED",
+                      "title": "주소 조회 실패",
+                      "status": 500,
+                      "detail": "주소를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
+                      "instance": "/api/community-posts/country"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
     "/api/community-posts/address": {
       "get": {
         "tags": ["CommunityPost"],
@@ -7021,11 +7090,6 @@
           },
           "cursor": {
             "$ref": "#/components/schemas/CursorInfo"
-          },
-          "countryCode": {
-            "type": "string",
-            "description": "이 목록의 국가 코드. 다음 페이지 요청에 그대로 넣으면 좌표를 다시 보내지 않아도 된다.",
-            "example": "KR"
           }
         }
       },
@@ -7045,6 +7109,16 @@
           }
         },
         "description": "커서 정보"
+      },
+      "CountryResponse": {
+        "type": "object",
+        "properties": {
+          "countryCode": {
+            "type": "string",
+            "description": "좌표가 속한 국가 코드(ISO 3166-1 alpha-2). 목록 조회에 그대로 넣으면 된다.",
+            "example": "KR"
+          }
+        }
       },
       "AddressResponse": {
         "type": "object",

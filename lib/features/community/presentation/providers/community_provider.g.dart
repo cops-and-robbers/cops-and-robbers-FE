@@ -29,9 +29,12 @@ final communityRemoteDataSourceProvider =
 typedef CommunityRemoteDataSourceRef =
     AutoDisposeProviderRef<CommunityRemoteDataSource>;
 String _$communityRepositoryHash() =>
-    r'd9db3ea7b066ac096d012d94fec8fd197e2de5d7';
+    r'c1498ebe17f8cf37aef73a1f07d6c7b6a0bbffcb';
 
 /// `CommunityRepository` Provider
+///
+/// 좋아요·스크랩·댓글은 백엔드에 API가 없어 아직 목이다
+/// (`communityInteractionRepositoryProvider`). 게시글 CRUD는 전부 실서버다.
 ///
 /// Copied from [communityRepository].
 @ProviderFor(communityRepository)
@@ -49,32 +52,85 @@ final communityRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CommunityRepositoryRef = AutoDisposeProviderRef<CommunityRepository>;
-String _$countryQueryResolverHash() =>
-    r'bd43c8ec9853e2e0f10f1d8ca86811385adc5b18';
+String _$currentPositionResolverHash() =>
+    r'c44ee30313052542cd510b7f078f5d9688a6901a';
 
-/// 국가 판별기 Provider
+/// 현재 위치 판별기 Provider
 ///
-/// GPS·권한·기기 로케일은 전부 시스템 경계라 여기서 한 번 갈라 둔다. 테스트는
-/// 이 provider만 갈아끼우면 플랫폼 채널을 건드리지 않고 "권한 있음/없음"을
-/// 만들어 낼 수 있다.
+/// GPS·권한은 시스템 경계라 여기서 한 번 갈라 둔다. 테스트는 이 provider만
+/// 갈아끼우면 플랫폼 채널을 건드리지 않고 "권한 있음/없음"을 만들어 낼 수 있다.
 ///
-/// Copied from [countryQueryResolver].
-@ProviderFor(countryQueryResolver)
-final countryQueryResolverProvider =
-    AutoDisposeProvider<Future<CountryQuery> Function()>.internal(
-      countryQueryResolver,
-      name: r'countryQueryResolverProvider',
+/// 값이 아니라 함수를 담는다 — 호출자가 부르는 시점의 위치를 원하기 때문이다.
+/// (한 번 정하면 되는 국가 코드는 아래 [communityCountryCodeProvider]가 캐시한다.)
+///
+/// Copied from [currentPositionResolver].
+@ProviderFor(currentPositionResolver)
+final currentPositionResolverProvider =
+    AutoDisposeProvider<Future<DeviceCoordinates?> Function()>.internal(
+      currentPositionResolver,
+      name: r'currentPositionResolverProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$countryQueryResolverHash,
+          : _$currentPositionResolverHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef CountryQueryResolverRef =
-    AutoDisposeProviderRef<Future<CountryQuery> Function()>;
+typedef CurrentPositionResolverRef =
+    AutoDisposeProviderRef<Future<DeviceCoordinates?> Function()>;
+String _$deviceCountryCodeHash() => r'd4b198fec31c6b21a5a2139af6a226ec346db3d3';
+
+/// 기기 로케일의 국가 코드. 로케일에 국가가 없으면(`en` 같은 경우) 주 시장인
+/// 한국으로 둔다 — 국가를 못 정하면 목록 자체를 못 부른다.
+///
+/// provider로 감싼 이유: `PlatformDispatcher`는 시스템 경계라 테스트에서 값을
+/// 바꿀 수 없다. 폴백 분기를 검증하려면 갈아끼울 자리가 필요하다.
+///
+/// Copied from [deviceCountryCode].
+@ProviderFor(deviceCountryCode)
+final deviceCountryCodeProvider = AutoDisposeProvider<String>.internal(
+  deviceCountryCode,
+  name: r'deviceCountryCodeProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$deviceCountryCodeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef DeviceCountryCodeRef = AutoDisposeProviderRef<String>;
+String _$communityCountryCodeHash() =>
+    r'781947da7aa0355f897726eb182cb778be444161';
+
+/// 목록을 어느 국가로 조회할지 정한다 — 화면 진입당 한 번.
+///
+/// 목록 API는 좌표를 받지 않고 `countryCode`만 받으므로, 그 값을 여기서 먼저
+/// 구한다(DEC-0021). 서버 조회는 벤더를 한 번 부르고 Geoapify 일 3,000건 한도를
+/// 공유하므로, provider가 결과를 들고 있어 페이지를 넘길 때마다 다시 부르지 않는다.
+///
+/// **절대 예외를 던지지 않는다.** 좌표가 없든, 벤더가 죽었든, 서버가 값을
+/// 빠뜨렸든 기기 로케일로 물러선다 — 국가 하나 못 알아냈다고 목록 전체가 에러
+/// 화면이 되는 것이 이 API를 목록에서 떼어낸 이유와 정면으로 어긋난다.
+///
+/// Copied from [communityCountryCode].
+@ProviderFor(communityCountryCode)
+final communityCountryCodeProvider = AutoDisposeFutureProvider<String>.internal(
+  communityCountryCode,
+  name: r'communityCountryCodeProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$communityCountryCodeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CommunityCountryCodeRef = AutoDisposeFutureProviderRef<String>;
 String _$selectedCommunityScopeHash() =>
     r'd77dd28c42cafb2dcff07c40d57eff6f26922b6e';
 
@@ -130,7 +186,7 @@ final selectedCommunitySortProvider =
 
 typedef _$SelectedCommunitySort = AutoDisposeNotifier<CommunitySortOption>;
 String _$communityFeedNotifierHash() =>
-    r'ea95680ed85e1a11fd8cb82033142c9c73dba09d';
+    r'644e2749c551a877a42ff0526f1d3fc24ba8e96f';
 
 /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
 ///

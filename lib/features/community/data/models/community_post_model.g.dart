@@ -104,7 +104,6 @@ _$$CommunityPostListResponseModelImplFromJson(Map<String, dynamic> json) =>
           )
           .toList(),
       cursor: CursorInfoModel.fromJson(json['cursor'] as Map<String, dynamic>),
-      countryCode: json['countryCode'] as String?,
     );
 
 Map<String, dynamic> _$$CommunityPostListResponseModelImplToJson(
@@ -112,8 +111,17 @@ Map<String, dynamic> _$$CommunityPostListResponseModelImplToJson(
 ) => <String, dynamic>{
   'content': instance.content.map((e) => e.toJson()).toList(),
   'cursor': instance.cursor.toJson(),
-  'countryCode': instance.countryCode,
 };
+
+_$CommunityCountryResponseModelImpl
+_$$CommunityCountryResponseModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityCountryResponseModelImpl(
+      countryCode: json['countryCode'] as String?,
+    );
+
+Map<String, dynamic> _$$CommunityCountryResponseModelImplToJson(
+  _$CommunityCountryResponseModelImpl instance,
+) => <String, dynamic>{'countryCode': instance.countryCode};
 
 _$CommunityLocationRequestModelImpl
 _$$CommunityLocationRequestModelImplFromJson(Map<String, dynamic> json) =>

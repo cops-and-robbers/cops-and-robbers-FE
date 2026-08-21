@@ -5,7 +5,7 @@ part 'community_post_model.g.dart';
 
 /// 모임 장소 DTO
 ///
-/// 백엔드 스키마: api-docs.json#LocationResponse (v2.17.0)
+/// 백엔드 스키마: api-docs.json#LocationResponse (v2.18.0)
 ///
 /// 표기는 두 값이 짝을 이룬다 — 서버가 좌표를 역지오코딩해 저장한 [region](동 단위)과
 /// 작성자가 직접 입력한 [placeName]. 좌표로는 건물명·장소명을 신뢰할 수준으로 얻을 수
@@ -36,11 +36,12 @@ class CommunityLocationModel with _$CommunityLocationModel {
 
 /// 좌표 주소 조회 응답 DTO
 ///
-/// 백엔드 스키마: api-docs.json#AddressResponse (v2.17.0)
+/// 백엔드 스키마: api-docs.json#AddressResponse (v2.18.0)
 ///
 /// 작성 화면에서 핀을 찍은 직후 위치를 확인시키는 용도다 — 서버가 저장하지 않는다.
 /// [region]은 글에 저장될 값이고, [address]는 번지까지 붙어 작성자가 "여기 맞나"를
-/// 판단하는 값이다. [countryCode]는 목록 조회 필터에 그대로 쓸 수 있다.
+/// 판단하는 값이다. [countryCode]는 그 핀이 속한 나라이며, 목록 필터에는 쓰지 않는다
+/// — 목록은 보는 사람의 현재 위치가 기준이라 `/country`가 따로 담당한다.
 @freezed
 class CommunityAddressResponseModel with _$CommunityAddressResponseModel {
   const factory CommunityAddressResponseModel({
@@ -55,7 +56,7 @@ class CommunityAddressResponseModel with _$CommunityAddressResponseModel {
 
 /// 커서 페이지네이션 응답 봉투의 커서 정보 DTO
 ///
-/// 백엔드 스키마: api-docs.json#CursorInfo (v2.17.0)
+/// 백엔드 스키마: api-docs.json#CursorInfo (v2.18.0)
 ///
 /// 목록 API 중 커서를 쓰는 건 아직 커뮤니티뿐이라 여기 둔다. 두 번째 API가
 /// 커서로 바뀌면 `PageInfoModel`처럼 core로 옮긴다.
@@ -74,7 +75,7 @@ class CursorInfoModel with _$CursorInfoModel {
 
 /// 모집 게시글 단건 응답 DTO
 ///
-/// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.17.0)
+/// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.18.0)
 ///
 /// [writerNickname]은 탈퇴한 작성자면 null이다.
 /// 나머지 nullable 3개는 백엔드가 아직 안 보내는 값이다(2·3단계 예정). 미리
@@ -109,21 +110,39 @@ class CommunityPostResponseModel with _$CommunityPostResponseModel {
 
 /// 모집 게시글 목록 응답 DTO
 ///
-/// 백엔드 스키마: api-docs.json#CommunityPostListResponse (v2.17.0)
+/// 백엔드 스키마: api-docs.json#CommunityPostListResponse (v2.18.0)
 /// 총 개수(`totalElements`)는 커서 방식이라 제공되지 않는다.
+///
+/// v2.18.0에서 최상위 `countryCode`가 빠졌다 — 목록이 좌표를 안 받게 되면서
+/// 요청값을 그대로 되돌려주는 중복이 됐다(DEC-0021).
 @freezed
 class CommunityPostListResponseModel with _$CommunityPostListResponseModel {
   const factory CommunityPostListResponseModel({
     required List<CommunityPostResponseModel> content,
     required CursorInfoModel cursor,
-
-    /// 이 목록의 국가 코드. 좌표로 첫 요청을 보내면 서버가 판별해 실어 준다 —
-    /// 다음 페이지부터는 좌표 대신 이 값을 보낸다(GPS 재조회 회피).
-    String? countryCode,
   }) = _CommunityPostListResponseModel;
 
   factory CommunityPostListResponseModel.fromJson(Map<String, dynamic> json) =>
       _$CommunityPostListResponseModelFromJson(json);
+}
+
+/// 좌표 국가 조회 응답 DTO
+///
+/// 백엔드 스키마: api-docs.json#CountryResponse (v2.18.0)
+///
+/// 목록을 부르기 전에 국가를 한 번 정하는 용도다. 주소를 만들지 않아 벤더 호출이
+/// 1회고 로그인도 필요 없다(DEC-0021).
+///
+/// [countryCode]를 nullable로 받는 이유: 스키마에 `required`가 없다. non-null로
+/// 못 박으면 서버가 값을 빠뜨리는 순간 파싱이 통째로 터지는데, 이 API는 실패해도
+/// 기기 로케일로 물러설 수 있는 자리라 그렇게까지 강하게 막을 이유가 없다.
+@freezed
+class CommunityCountryResponseModel with _$CommunityCountryResponseModel {
+  const factory CommunityCountryResponseModel({String? countryCode}) =
+      _CommunityCountryResponseModel;
+
+  factory CommunityCountryResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityCountryResponseModelFromJson(json);
 }
 
 /// 모임 장소 요청 DTO
