@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,14 +16,18 @@ import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../domain/community_post_errors.dart';
 import '../../domain/entities/community_interaction_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
+import '../community_editor_route.dart';
 import '../providers/community_detail_provider.dart';
+import '../providers/community_provider.dart';
 import '../widgets/community_comment_input.dart';
 import '../widgets/community_comment_list.dart';
 import '../widgets/community_map_preview.dart';
@@ -85,7 +91,13 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
     );
   }
 
+  /// 조회 실패 안내.
+  ///
+  /// 사라진 글(404)은 재시도가 영원히 실패한다 — "다시 시도"를 주면 사용자를
+  /// 화면에 가둔다. 나가는 길로 바꾼다.
   Widget _buildError(AppLocalizations l10n, Object error) {
+    final gone = isCommunityPostGone(error);
+
     return Center(
       child: Padding(
         padding: AppPadding.horizontal24,
@@ -104,15 +116,29 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
             SizedBox(height: AppSpacing.vertical16),
             AppButton(
               width: double.infinity,
-              text: l10n.buttonRetry,
-              onPressed: () => ref.invalidate(
-                communityDetailNotifierProvider(widget.postId),
-              ),
+              text: gone ? l10n.communityBackToList : l10n.buttonRetry,
+              onPressed: gone
+                  ? _backToList
+                  : () => ref.invalidate(
+                      communityDetailNotifierProvider(widget.postId),
+                    ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  /// 목록으로 나간다. 딥링크로 상세만 열려 돌아갈 곳이 없으면 목록 탭으로 보낸다.
+  void _backToList() {
+    ref.invalidate(communityFeedNotifierProvider);
+
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+    context.go(RoutePaths.community);
   }
 
   Widget _buildBody(AppLocalizations l10n, CommunityDetailState state) {
@@ -121,89 +147,96 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
     return Column(
       children: [
         Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 좌표는 항상 있다 — 주소만 역지오코딩 실패로 비어 있을 수 있다.
-                CommunityMapPreview(
-                  latitude: state.post.latitude,
-                  longitude: state.post.longitude,
-                  locationLabel: state.post.locationLabel,
-                ),
-                Padding(
-                  padding: AppPadding.horizontal16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: AppSpacing.vertical20),
-                      _buildHeader(l10n, state),
-                      SizedBox(height: AppSpacing.vertical16),
-                      _buildMeta(l10n, state),
-                      SizedBox(height: AppSpacing.vertical20),
-                      Text(
-                        state.post.content,
-                        style: AppTextStyles.paragraph_14.copyWith(
-                          color: AppColors.black800,
-                        ),
-                      ),
-                      SizedBox(height: AppSpacing.vertical24),
-                      _buildActionRow(l10n, state.interaction),
-                      SizedBox(height: AppSpacing.vertical16),
-                      AppButton(
-                        // 기본 폭 353은 좌우 20 패딩 기준이라 이 화면(좌우 24)에서는
-                        // 8이 모자라 제약에 깎인다. 남은 폭을 그대로 쓴다.
-                        width: double.infinity,
-                        backgroundColor: AppColors.blue,
-                        text: l10n.communityDetailJoinChat,
-                        onPressed: _handleJoinChat,
-                        // 에셋이 20×24라 24 정사각으로 늘리면 찌그러진다 —
-                        // 높이만 24에 맞추고 폭은 원본 비율을 지킨다.
-                        // 에셋 본체가 파랑(#339DFF)이라 파랑 버튼 위에서 묻힌다.
-                        // 흰색으로 덧칠하면 안쪽 흰 점도 같이 흰색이 되어 통짜
-                        // 실루엣으로 보인다 — 의도한 모양이다.
-                        icon: SvgPicture.asset(
-                          'assets/icons/icon_joining_game.svg',
-                          width: 20.w,
-                          height: 24.h,
-                          colorFilter: ColorFilter.mode(
-                            AppColors.white,
-                            BlendMode.srcIn,
+          // 본문 아무 곳이나 누르면 답글 모드가 풀린다 — 입력창 위 안내 배너를
+          // 없앤 뒤로 여기가 유일한 해제 경로다. 지도·좋아요·댓글 메뉴처럼 자기
+          // 탭을 가진 것들은 제스처 경쟁에서 안쪽이 이기므로 그대로 동작한다.
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: _clearReplyTarget,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 좌표는 항상 있다 — 주소만 역지오코딩 실패로 비어 있을 수 있다.
+                  CommunityMapPreview(
+                    latitude: state.post.latitude,
+                    longitude: state.post.longitude,
+                    locationLabel: state.post.locationLabel,
+                  ),
+                  Padding(
+                    padding: AppPadding.horizontal16,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: AppSpacing.vertical20),
+                        _buildHeader(l10n, state),
+                        SizedBox(height: AppSpacing.vertical16),
+                        _buildMeta(l10n, state),
+                        SizedBox(height: AppSpacing.vertical20),
+                        Text(
+                          state.post.content,
+                          style: AppTextStyles.paragraph_14.copyWith(
+                            color: AppColors.black800,
                           ),
                         ),
-                        iconGap: AppSpacing.horizontal14,
-                      ),
-                      SizedBox(height: AppSpacing.vertical24),
-                      Divider(height: 1.h, color: AppColors.black100),
-                      SizedBox(height: AppSpacing.vertical16),
-                      Text(
-                        l10n.communityDetailCommentCount(
-                          _totalComments(state.comments),
+                        SizedBox(height: AppSpacing.vertical24),
+                        _buildActionRow(l10n, state.interaction),
+                        SizedBox(height: AppSpacing.vertical16),
+                        AppButton(
+                          // 기본 폭 353은 좌우 20 패딩 기준이라 이 화면(좌우 24)에서는
+                          // 8이 모자라 제약에 깎인다. 남은 폭을 그대로 쓴다.
+                          width: double.infinity,
+                          backgroundColor: AppColors.blue,
+                          text: l10n.communityDetailJoinChat,
+                          onPressed: _handleJoinChat,
+                          // 에셋이 20×24라 24 정사각으로 늘리면 찌그러진다 —
+                          // 높이만 24에 맞추고 폭은 원본 비율을 지킨다.
+                          // 에셋 본체가 파랑(#339DFF)이라 파랑 버튼 위에서 묻힌다.
+                          // 흰색으로 덧칠하면 안쪽 흰 점도 같이 흰색이 되어 통짜
+                          // 실루엣으로 보인다 — 의도한 모양이다.
+                          icon: SvgPicture.asset(
+                            'assets/icons/icon_joining_game.svg',
+                            width: 20.w,
+                            height: 24.h,
+                            colorFilter: ColorFilter.mode(
+                              AppColors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                          iconGap: AppSpacing.horizontal14,
                         ),
-                        style: AppTextStyles.label_16.copyWith(
-                          color: AppColors.black600,
+                        SizedBox(height: AppSpacing.vertical24),
+                        Divider(height: 1.h, color: AppColors.black100),
+                        SizedBox(height: AppSpacing.vertical16),
+                        Text(
+                          l10n.communityDetailCommentCount(
+                            _totalComments(state.comments),
+                          ),
+                          style: AppTextStyles.label_16.copyWith(
+                            color: AppColors.black600,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                // 목록만 좌우 패딩 밖에 둔다 — 답글 대상 댓글의 배경색이 화면
-                // 끝까지 닿아야 하기 때문. 좌우 24는 타일이 직접 갖는다.
-                CommunityCommentList(
-                  comments: state.comments,
-                  currentUserId: currentUserId,
-                  onReply: (comment) => setState(() => _replyTarget = comment),
-                  onDelete: _handleDeleteComment,
-                  onReport: _handleReportComment,
-                  replyTargetId: _replyTarget?.id,
-                ),
-              ],
+                  // 목록만 좌우 패딩 밖에 둔다 — 답글 대상 댓글의 배경색이 화면
+                  // 끝까지 닿아야 하기 때문. 좌우 24는 타일이 직접 갖는다.
+                  CommunityCommentList(
+                    comments: state.comments,
+                    currentUserId: currentUserId,
+                    onReply: (comment) =>
+                        setState(() => _replyTarget = comment),
+                    onDelete: _handleDeleteComment,
+                    onReport: _handleReportComment,
+                    replyTargetId: _replyTarget?.id,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
         CommunityCommentInput(
           replyToNickname: _replyTarget?.writerNickname,
-          onCancelReply: () => setState(() => _replyTarget = null),
           onSubmit: _handleSubmitComment,
         ),
       ],
@@ -401,6 +434,12 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
   // 동작
   // ==========================================================================
 
+  /// 답글 모드를 끈다. 이미 꺼져 있으면 아무 일도 하지 않는다.
+  void _clearReplyTarget() {
+    if (_replyTarget == null) return;
+    setState(() => _replyTarget = null);
+  }
+
   /// 로그인이 필요한 동작을 감싼다. 비로그인이면 안내하고 로그인 화면으로 보낸다.
   void _requireLogin(VoidCallback action) {
     if (ref.read(currentUserIdProvider) == null) {
@@ -416,11 +455,12 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
     context.push(RoutePaths.login);
   }
 
-  /// 좋아요·스크랩처럼 실패해도 화면을 유지하는 동작.
+  /// 서버를 부르는 동작을 감싼다 — 실패는 스낵바로 알린다.
   ///
-  /// Notifier가 이미 이전 값으로 되돌린 뒤 예외를 던지므로 여기서는 알리기만 한다.
-  Future<void> _runInteraction(Future<void> Function() action) async {
-    VibrationService.instance().buttonTap();
+  /// Notifier가 이미 이전 값으로 되돌린 뒤 예외를 던지므로 여기서 할 일은
+  /// 알리는 것뿐이다. 다만 그 사이 다른 사용자가 글을 지웠으면(404) 이 화면에
+  /// 남을 이유가 없다 — 무엇을 눌러도 실패하는 유령 화면이 되므로 나간다.
+  Future<void> _runAction(Future<void> Function() action) async {
     try {
       await action();
     } on AppException catch (e) {
@@ -429,7 +469,32 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         context,
         message: AppLocalizations.of(context).errorByException(e),
       );
+      if (isCommunityPostGone(e)) _leaveGonePost();
     }
+  }
+
+  /// 좋아요·스크랩처럼 누르는 맛이 필요한 동작 — 햅틱을 얹은 [_runAction].
+  Future<void> _runInteraction(Future<void> Function() action) {
+    VibrationService.instance().buttonTap();
+    return _runAction(action);
+  }
+
+  /// 사라진 글에서 빠져나간다.
+  ///
+  /// 목록은 무효화만 한다 — notifier를 `read`하면 딥링크로 상세만 연 경우
+  /// 있지도 않은 목록을 새로 만들어 조회까지 시작한다. `invalidate`는 아직
+  /// 만들어지지 않은 provider에는 아무 일도 하지 않는다.
+  void _leaveGonePost() {
+    ref.invalidate(communityFeedNotifierProvider);
+
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+    // 딥링크로 상세만 열려 돌아갈 곳이 없는 경우. 다시 조회시켜 404 안내
+    // 화면(목록으로 돌아가기)으로 넘긴다.
+    ref.invalidate(communityDetailNotifierProvider(widget.postId));
   }
 
   void _handleJoinChat() {
@@ -446,33 +511,21 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
       return;
     }
 
-    try {
+    await _runAction(() async {
       await ref
           .read(communityDetailNotifierProvider(widget.postId).notifier)
           .addComment(content, parentId: parentId);
       if (!mounted) return;
       setState(() => _replyTarget = null);
-    } on AppException catch (e) {
-      if (!mounted) return;
-      AppSnackbar.show(
-        context,
-        message: AppLocalizations.of(context).errorByException(e),
-      );
-    }
+    });
   }
 
-  Future<void> _handleDeleteComment(CommunityCommentEntity comment) async {
-    try {
-      await ref
+  Future<void> _handleDeleteComment(CommunityCommentEntity comment) {
+    return _runAction(
+      () => ref
           .read(communityDetailNotifierProvider(widget.postId).notifier)
-          .deleteComment(comment.id);
-    } on AppException catch (e) {
-      if (!mounted) return;
-      AppSnackbar.show(
-        context,
-        message: AppLocalizations.of(context).errorByException(e),
-      );
-    }
+          .deleteComment(comment.id),
+    );
   }
 
   void _handleReportComment(CommunityCommentEntity comment) {
@@ -493,77 +546,52 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         // ponytail: 게시글 신고 API가 아직 없다. 생기면 신고 화면으로 잇는다.
         AppSnackbar.show(context, message: l10n.comingSoonMessage);
       case CommunityPostMenuAction.edit:
-        // ponytail: 수정 화면이 아직 없다 (작성 화면도 API 미연동).
-        AppSnackbar.show(context, message: l10n.comingSoonMessage);
+        unawaited(_openEdit());
       case CommunityPostMenuAction.toggleStatus:
-        _handleToggleStatus();
+        unawaited(_handleToggleStatus());
       case CommunityPostMenuAction.delete:
-        _confirmDelete(l10n);
+        unawaited(_confirmDelete(l10n));
     }
   }
 
-  Future<void> _handleToggleStatus() async {
-    try {
-      await ref
+  /// 수정 화면을 연다 — 이 상세 위로 솟아오르고, 닫으면 갱신된 이 화면이 남는다.
+  Future<void> _openEdit() async {
+    final post = ref
+        .read(communityDetailNotifierProvider(widget.postId))
+        .valueOrNull
+        ?.post;
+    if (post == null) return;
+
+    await openCommunityEditor(context, ref, post);
+  }
+
+  Future<void> _handleToggleStatus() {
+    return _runAction(
+      () => ref
           .read(communityDetailNotifierProvider(widget.postId).notifier)
-          .toggleStatus();
-    } on AppException catch (e) {
-      if (!mounted) return;
-      AppSnackbar.show(
-        context,
-        message: AppLocalizations.of(context).errorByException(e),
-      );
-    }
+          .toggleStatus(),
+    );
   }
 
   Future<void> _confirmDelete(AppLocalizations l10n) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await AppDialog.confirm(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.white,
-        title: Text(
-          l10n.communityDeleteConfirmTitle,
-          style: AppTextStyles.label_16.copyWith(color: AppColors.black),
-        ),
-        content: Text(
-          l10n.communityDeleteConfirmMessage,
-          style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black600),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(
-              l10n.buttonCancel,
-              style: AppTextStyles.label_16.copyWith(color: AppColors.black600),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(
-              l10n.communityMenuDelete,
-              style: AppTextStyles.label_16.copyWith(color: AppColors.red),
-            ),
-          ),
-        ],
-      ),
+      title: l10n.communityDeleteConfirmTitle,
+      message: l10n.communityDeleteConfirmMessage,
+      confirmText: l10n.communityMenuDelete,
+      isDestructive: true,
     );
 
     if (confirmed != true || !mounted) return;
 
-    try {
+    await _runAction(() async {
       await ref
           .read(communityDetailNotifierProvider(widget.postId).notifier)
           .deletePost();
       if (!mounted) return;
       // 삭제된 글의 상세에 머물 수 없다 — 목록으로 돌아간다.
-      context.pop();
-    } on AppException catch (e) {
-      if (!mounted) return;
-      AppSnackbar.show(
-        context,
-        message: AppLocalizations.of(context).errorByException(e),
-      );
-    }
+      Navigator.of(context).pop();
+    });
   }
 }
 

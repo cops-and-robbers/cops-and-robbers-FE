@@ -5,9 +5,15 @@ import 'package:cops_and_robbers/features/community/domain/entities/community_po
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
+import 'package:cops_and_robbers/features/community/presentation/pages/community_create_page.dart';
+import 'package:cops_and_robbers/features/community/presentation/pages/community_detail_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_card.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_menu.dart';
+import 'package:cops_and_robbers/router/route_paths.dart';
+import 'package:cops_and_robbers/core/utils/custom_page_transitions.dart';
+import 'package:go_router/go_router.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -100,6 +106,117 @@ class _RecoveringCommunityRepository
       hasNext: false,
     );
   }
+}
+
+/// 목록 카드에서 바로 하는 수정·마감·삭제에 응답하는 가짜 Repository.
+class _CardActionRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
+  _CardActionRepository(this.items);
+
+  final List<CommunityPostEntity> items;
+
+  final List<int> deletedIds = [];
+
+  @override
+  Future<CommunityPostPageEntity> getPosts({
+    String? cursor,
+    required int size,
+    CommunityScope scope = CommunityScope.all,
+    required String countryCode,
+  }) async =>
+      CommunityPostPageEntity(items: items, nextCursor: null, hasNext: false);
+
+  @override
+  Future<CommunityPostEntity> getPost(int postId) async =>
+      items.firstWhere((p) => p.id == postId);
+
+  @override
+  Future<CommunityPostEntity> updateStatus({
+    required int postId,
+    required CommunityPostStatus status,
+  }) async => items.firstWhere((p) => p.id == postId).copyWith(status: status);
+
+  @override
+  Future<void> deletePost(int postId) async => deletedIds.add(postId);
+}
+
+/// 목록 → 상세 → 수정 스택을 실제로 쌓아 보려면 진짜 GoRouter가 필요하다.
+/// 앱 라우터 전체는 인증 리다이렉트를 끌고 들어오므로, 검증 대상인 세 경로만
+/// 같은 전환 헬퍼로 똑같이 세워 둔다.
+///
+/// 진짜 `CommunityDetailPage`를 끼운다 — 이 흐름에서 상세가 수정 화면에 덮이며
+/// 지도 플랫폼 뷰가 터지던 실기기 크래시가 있었고(`hasSize` assert), 그 회귀를
+/// 여기서 함께 잡는다 (`community_map_preview_test` 참고).
+GoRouter _communityRouter() => GoRouter(
+  initialLocation: RoutePaths.community,
+  routes: [
+    GoRoute(
+      path: RoutePaths.community,
+      name: RoutePaths.communityName,
+      builder: (_, _) => const CommunityPage(),
+      routes: [
+        GoRoute(
+          path: ':postId',
+          name: RoutePaths.communityDetailName,
+          pageBuilder: (context, state) {
+            final page = CommunityDetailPage(
+              postId: int.parse(state.pathParameters['postId']!),
+            );
+            return state.extra == CommunityDetailEntry.silent
+                ? buildInstantTransition(key: state.pageKey, child: page)
+                : buildSmoothFade(key: state.pageKey, child: page);
+          },
+          routes: [
+            GoRoute(
+              path: 'edit',
+              name: RoutePaths.communityEditName,
+              pageBuilder: (context, state) => buildSlideUp(
+                key: state.pageKey,
+                child: CommunityCreatePage(
+                  post: state.extra as CommunityPostEntity,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
+
+/// 상세가 함께 깔리면 좋아요·댓글 목이 200ms 지연 타이머를 건다. 프레임을
+/// 만들지 않는 타이머라 `pumpAndSettle`이 그냥 지나쳐, 남은 채로 테스트가 끝나면
+/// "A Timer is still pending"으로 깨진다 — 시간을 명시적으로 흘려보낸다.
+Future<void> _settleDetailMocks(WidgetTester tester) async {
+  await tester.pump(const Duration(milliseconds: 300));
+  await tester.pumpAndSettle();
+}
+
+Widget _wrapRouted(CommunityRepository repo, {int? currentUserId}) {
+  final router = _communityRouter();
+  addTearDown(router.dispose);
+  return ProviderScope(
+    overrides: [
+      communityRepositoryProvider.overrideWithValue(repo),
+      currentUserIdProvider.overrideWithValue(currentUserId),
+      communityCountryCodeProvider.overrideWith((ref) async => 'KR'),
+    ],
+    child: ScreenUtilInit(
+      designSize: const Size(393, 852),
+      builder: (_, _) => MaterialApp.router(
+        routerConfig: router,
+        locale: const Locale('ko'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    ),
+  );
 }
 
 Widget _wrap(CommunityRepository repo, {int? currentUserId}) => ProviderScope(
@@ -256,6 +373,94 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(CommunityPostCard), findsOneWidget);
+    });
+  });
+
+  group('CommunityPage 카드 더보기 메뉴', () {
+    /// [index]번 카드의 더보기(⋮)를 열고 [label] 항목을 고른다.
+    Future<void> pickCardMenu(
+      WidgetTester tester,
+      int index,
+      String label,
+    ) async {
+      await tester.tap(
+        find.descendant(
+          of: find.byType(CommunityPostCard).at(index),
+          matching: find.byType(CommunityPostMenu),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(label));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('marks_only_the_picked_card_completed_when_close_is_picked', (
+      tester,
+    ) async {
+      final repo = _CardActionRepository([_post(1), _post(2)]);
+      await tester.pumpWidget(_wrap(repo, currentUserId: 7));
+      await tester.pumpAndSettle();
+
+      await pickCardMenu(tester, 0, '마감하기');
+
+      // 목록을 다시 당기지 않고 그 카드만 바뀐다.
+      expect(find.text('마감'), findsOneWidget);
+      expect(find.text('모집중'), findsOneWidget);
+      expect(find.byType(CommunityPostCard), findsNWidgets(2));
+    });
+
+    testWidgets('removes_the_card_from_the_list_when_delete_is_confirmed', (
+      tester,
+    ) async {
+      final repo = _CardActionRepository([_post(1), _post(2)]);
+      await tester.pumpWidget(_wrap(repo, currentUserId: 7));
+      await tester.pumpAndSettle();
+
+      await pickCardMenu(tester, 0, '삭제하기');
+      // 확인 다이얼로그의 삭제 버튼.
+      await tester.tap(find.text('삭제하기').last);
+      await tester.pumpAndSettle();
+
+      expect(repo.deletedIds, [1]);
+      expect(find.byType(CommunityPostCard), findsOneWidget);
+      expect(find.text('모집글 1'), findsNothing);
+      expect(find.text('모집글 2'), findsOneWidget);
+    });
+
+    testWidgets('opens_the_edit_form_over_the_detail_when_edit_is_picked', (
+      tester,
+    ) async {
+      final repo = _CardActionRepository([_post(1), _post(2)]);
+      await tester.pumpWidget(_wrapRouted(repo, currentUserId: 7));
+      await tester.pumpAndSettle();
+
+      await pickCardMenu(tester, 1, '수정하기');
+      await _settleDetailMocks(tester);
+
+      // 고른 카드의 글이 수정 모드로 열린다 — 첫 카드가 아니라 두 번째다.
+      expect(find.byType(CommunityCreatePage), findsOneWidget);
+      expect(find.text('모집글 수정'), findsOneWidget);
+      expect(find.text('모집글 2'), findsOneWidget);
+    });
+
+    testWidgets('lands_on_the_detail_not_the_list_when_edit_is_dismissed', (
+      tester,
+    ) async {
+      // 목록에서 바로 수정을 열어도 닫으면 방금 보던 글이 나와야 한다 —
+      // 목록으로 튕기면 뭘 고쳤는지 확인할 수가 없다.
+      final repo = _CardActionRepository([_post(1), _post(2)]);
+      await tester.pumpWidget(_wrapRouted(repo, currentUserId: 7));
+      await tester.pumpAndSettle();
+
+      await pickCardMenu(tester, 1, '수정하기');
+      await _settleDetailMocks(tester);
+      // 앱바 좌측 닫기(×).
+      await tester.tap(find.byTooltip('닫기'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CommunityCreatePage), findsNothing);
+      expect(find.byType(CommunityDetailPage), findsOneWidget);
+      expect(find.byType(CommunityPage), findsNothing);
     });
   });
 }

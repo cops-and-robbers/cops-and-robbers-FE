@@ -40,6 +40,29 @@ void main() {
     test('returns_common_retry_message_for_errorTemporaryRetry_key', () {
       expect(l10n.errorByKey('errorTemporaryRetry'), l10n.errorTemporaryRetry);
     });
+
+    test('resolves_every_message_key_the_community_repository_sets', () {
+      // `CommunityRepositoryImpl`이 세우는 messageKey들. switch에서 빠지면
+      // errorByException이 조용히 fallback(하드코딩 한국어 message)으로 떨어져,
+      // en/ja 사용자에게 한국어가 그대로 노출된다 — 이 파일 스스로 경고하는
+      // 실패 방식이라 폴백이 나오면 곧 결함이다.
+      const keys = [
+        'errorCommunityPostsLoadGeneric',
+        'errorCommunityAddressLoadGeneric',
+        'errorCommunityPostCreateGeneric',
+        'errorCommunityPostUpdateGeneric',
+        'errorCommunityPostDeleteGeneric',
+        'errorCommunityPostStatusGeneric',
+      ];
+
+      for (final key in keys) {
+        expect(
+          l10n.errorByKey(key, fallback: '<폴백>'),
+          isNot('<폴백>'),
+          reason: '$key가 error_message_mapper의 switch에 없다',
+        );
+      }
+    });
   });
 
   group('shouldUseBackendErrorCode', () {

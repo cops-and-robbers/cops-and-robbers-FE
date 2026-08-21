@@ -185,4 +185,16 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
     await ref.read(communityRepositoryProvider).deletePost(postId);
     ref.invalidate(communityFeedNotifierProvider);
   }
+
+  /// 수정 화면이 돌려준 글로 갈아끼운다 (네트워크 없음).
+  ///
+  /// 서버가 수정 결과를 그대로 돌려주므로 다시 조회할 이유가 없다 — 재조회하면
+  /// 값은 같은데 스피너만 한 번 깜빡인다 ([toggleStatus]와 같은 판단).
+  void applyUpdatedPost(CommunityPostEntity updated) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    state = AsyncData(current.copyWith(post: updated));
+    ref.invalidate(communityFeedNotifierProvider);
+  }
 }

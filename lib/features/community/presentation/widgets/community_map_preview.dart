@@ -55,6 +55,8 @@ class CommunityMapPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final target = LatLng(latitude, longitude);
+    // 이 화면을 덮는 다음 화면의 전환. null이면 라우트 밖이라 덮일 일이 없다.
+    final covering = ModalRoute.of(context)?.secondaryAnimation;
 
     return GestureDetector(
       key: previewKey,
@@ -69,26 +71,53 @@ class CommunityMapPreview extends StatelessWidget {
       child: SizedBox(
         height: height.h,
         width: double.infinity,
-        // 지도가 포인터를 못 받게 막는다 — 위의 GestureDetector는 그대로 탭을 받는다.
-        child: AbsorbPointer(
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(target: target, zoom: _zoom),
-            liteModeEnabled: _useLiteMode,
-            markers: {
-              Marker(markerId: const MarkerId('meeting'), position: target),
-            },
-            // 미리보기에 필요 없는 컨트롤은 전부 끈다.
-            myLocationEnabled: false,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-            mapToolbarEnabled: false,
-            compassEnabled: false,
-            zoomGesturesEnabled: false,
-            scrollGesturesEnabled: false,
-            rotateGesturesEnabled: false,
-            tiltGesturesEnabled: false,
-          ),
-        ),
+        child: covering == null
+            ? _buildMap(target)
+            : AnimatedBuilder(
+                animation: covering,
+                builder: (context, _) =>
+                    covering.status == AnimationStatus.dismissed
+                    ? _buildMap(target)
+                    : const ColoredBox(color: AppColors.black100),
+              ),
+      ),
+    );
+  }
+
+  /// 지도 본체.
+  ///
+  /// **다른 화면이 이 화면을 덮는 동안에는 트리에서 들어낸다.** 덮인 화면은
+  /// `Overlay`가 레이아웃에서 빼는데, 플랫폼 뷰는 전역 포인터 라우트를 걸어 두고
+  /// 터치가 올 때마다 자기 크기를 묻는다 — 레이아웃 없는 상태에서 화면 아무
+  /// 데나 누르면 그 자리에서 앱이 죽는다. iOS `RenderDarwinPlatformView`,
+  /// Android `RenderAndroidView`, 둘 다 같은 `hasSize` assert다.
+  ///
+  /// `isCurrent`가 아니라 `secondaryAnimation`을 보는 이유: 바텀시트·다이얼로그가
+  /// 떠도 `isCurrent`는 false가 되지만 그때는 아래 화면이 그대로 레이아웃되므로
+  /// 크래시 조건이 아니다. 거기서까지 들어내면 시트를 여닫을 때마다 지도가 새로
+  /// 뜬다 (작성 화면의 날짜·인원 시트).
+  ///
+  /// 되돌아올 때 깜빡이지 않는 이유: 덮는 화면이 닫히기 시작하는 순간
+  /// `dismissed`가 풀려, 전환이 끝나기 전에 지도가 다시 붙는다.
+  Widget _buildMap(LatLng target) {
+    // 지도가 포인터를 못 받게 막는다 — 위의 GestureDetector는 그대로 탭을 받는다.
+    return AbsorbPointer(
+      child: GoogleMap(
+        initialCameraPosition: CameraPosition(target: target, zoom: _zoom),
+        liteModeEnabled: _useLiteMode,
+        markers: {
+          Marker(markerId: const MarkerId('meeting'), position: target),
+        },
+        // 미리보기에 필요 없는 컨트롤은 전부 끈다.
+        myLocationEnabled: false,
+        myLocationButtonEnabled: false,
+        zoomControlsEnabled: false,
+        mapToolbarEnabled: false,
+        compassEnabled: false,
+        zoomGesturesEnabled: false,
+        scrollGesturesEnabled: false,
+        rotateGesturesEnabled: false,
+        tiltGesturesEnabled: false,
       ),
     );
   }

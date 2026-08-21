@@ -527,11 +527,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCommentReply => '返信する';
 
   @override
-  String communityCommentReplyingTo(String nickname) {
-    return '$nicknameさんに返信中';
-  }
-
-  @override
   String get communityCommentEmpty => '最初のコメントを残してみましょう';
 
   @override
@@ -632,6 +627,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get communityEditPost => '募集を修正';
+
+  @override
+  String get communityBackToList => '一覧に戻る';
 
   @override
   String get communityCreateLabelTitle => 'タイトル';

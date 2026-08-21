@@ -1,7 +1,10 @@
+import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_detail_page.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_comment_list.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_menu.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -41,18 +44,70 @@ CommunityPostEntity _post({String? address, String? region = _region}) =>
       address: address,
     );
 
-/// 본문 조회만 응답하는 Repository — 이 화면이 실서버에서 받는 건 그거 하나다.
+/// 본문 조회와 작성자 동작(마감·삭제)에 응답하는 Repository.
+///
+/// [getFailure]·[writeFailure]로 서버 거절을 주입한다 — 다른 사용자가 먼저 글을
+/// 지운 상황(404 `POST_NOT_FOUND`)을 재현하는 통로다.
 class _DetailRepository
     with CommunityRepositoryListStubs, CommunityRepositoryDetailStubs {
-  _DetailRepository(this.post);
+  _DetailRepository(this.post, {this.getFailure, this.writeFailure});
 
   final CommunityPostEntity post;
+  final AppException? getFailure;
+  final AppException? writeFailure;
 
   @override
-  Future<CommunityPostEntity> getPost(int postId) async => post;
+  Future<CommunityPostEntity> getPost(int postId) async {
+    if (getFailure != null) throw getFailure!;
+    return post;
+  }
+
+  @override
+  Future<CommunityPostEntity> updateStatus({
+    required int postId,
+    required CommunityPostStatus status,
+  }) async {
+    if (writeFailure != null) throw writeFailure!;
+    return post.copyWith(status: status);
+  }
+
+  @override
+  Future<void> deletePost(int postId) async {
+    if (writeFailure != null) throw writeFailure!;
+  }
 }
 
-Widget _wrap(_DetailRepository repo) => ProviderScope(
+/// 남이 이미 지운 글을 만졌을 때 서버가 주는 응답 (404 `POST_NOT_FOUND`).
+const _gone = ServerException(
+  message: 'not found',
+  messageKey: 'errorTemporaryRetry',
+  code: 'POST_NOT_FOUND',
+);
+
+Widget _wrap(_DetailRepository repo) =>
+    _app(repo, const CommunityDetailPage(postId: _postId));
+
+/// 상세를 push로 열어, 사라진 글을 만났을 때 실제로 닫히는지 볼 수 있게
+/// 아래에 목록 자리를 하나 깔아 둔다.
+Widget _wrapPushedDetail(_DetailRepository repo) => _app(
+  repo,
+  Builder(
+    builder: (context) => Scaffold(
+      body: Center(
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const CommunityDetailPage(postId: _postId),
+            ),
+          ),
+          child: const Text('상세 열기'),
+        ),
+      ),
+    ),
+  ),
+);
+
+Widget _app(_DetailRepository repo, Widget home) => ProviderScope(
   overrides: [
     communityRepositoryProvider.overrideWithValue(repo),
     // 더보기 메뉴가 로그인 사용자 id를 watch 한다. 덮지 않으면 실제 AuthNotifier가
@@ -70,7 +125,7 @@ Widget _wrap(_DetailRepository repo) => ProviderScope(
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const CommunityDetailPage(postId: _postId),
+      home: home,
     ),
   ),
 );
@@ -152,6 +207,97 @@ void main() {
       await _tapLocation(tester, repo, label: _placeName);
 
       expect(copied, [_placeName]);
+    });
+  });
+
+  group('CommunityDetailPage 사라진 글', () {
+    testWidgets('shows_deleted_notice_without_retry_when_the_post_is_gone', (
+      tester,
+    ) async {
+      // 남이 먼저 지운 글의 링크로 들어온 경우. "다시 시도"는 몇 번을 눌러도
+      // 404라 사용자를 화면에 가둔다 — 나가는 길을 줘야 한다.
+      await tester.pumpWidget(
+        _wrap(_DetailRepository(_post(), getFailure: _gone)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('이미 삭제된 모집글이에요'), findsOneWidget);
+      expect(find.text('다시 시도'), findsNothing);
+      expect(find.text('목록으로 돌아가기'), findsOneWidget);
+      // 사라진 글에는 손댈 메뉴가 없다.
+      expect(find.byType(CommunityPostMenu), findsNothing);
+    });
+
+    testWidgets('leaves_the_detail_when_marking_completed_finds_it_gone', (
+      tester,
+    ) async {
+      // 상세를 보고 있는 사이 작성자가 글을 지운 경우. 알리기만 하고 화면에
+      // 남겨 두면 무엇을 눌러도 실패하는 유령 화면이 된다.
+      await tester.pumpWidget(
+        _wrapPushedDetail(_DetailRepository(_post(), writeFailure: _gone)),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('상세 열기'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(CommunityPostMenu));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('마감하기'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CommunityDetailPage), findsNothing);
+      expect(find.text('이미 삭제된 모집글이에요'), findsOneWidget);
+
+      await _letSnackbarExpire(tester);
+    });
+  });
+
+  group('CommunityDetailPage 답글 모드', () {
+    /// 첫 댓글의 답글(말풍선) 버튼을 누른다.
+    ///
+    /// 댓글은 화면 한참 아래라 그냥 tap하면 좌표가 뷰포트 밖이라 빗나간다.
+    Future<void> tapReply(WidgetTester tester) async {
+      final button = find.byKey(CommunityCommentList.replyButtonKey).first;
+      await tester.ensureVisible(button);
+      await tester.pumpAndSettle();
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('marks_reply_mode_without_a_banner_when_reply_is_tapped', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(_DetailRepository(_post())));
+      await tester.pumpAndSettle();
+
+      await tapReply(tester);
+
+      // 안내 배너 없이 힌트 문구와 대상 댓글 하이라이트로만 알린다 — 배너는
+      // 입력창 위 한 줄을 늘 차지해 정작 댓글을 밀어냈다.
+      expect(find.text('답글을 남겨보세요'), findsOneWidget);
+      expect(find.textContaining('답글 남기는 중'), findsNothing);
+    });
+
+    testWidgets('clears_the_reply_target_when_the_body_is_tapped', (
+      tester,
+    ) async {
+      // 배너의 ×를 없앴으니 빠져나갈 길이 있어야 한다 — 본문 빈 곳을 누르면
+      // 풀린다.
+      await tester.pumpWidget(_wrap(_DetailRepository(_post())));
+      await tester.pumpAndSettle();
+
+      await tapReply(tester);
+      expect(find.text('답글을 남겨보세요'), findsOneWidget);
+
+      // 글 본문 — 아무 동작도 걸려 있지 않은 영역이다. 답글 버튼을 누르느라
+      // 아래로 스크롤한 상태라 다시 올려야 좌표가 뷰포트 안에 든다.
+      await tester.ensureVisible(find.text('본문'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('본문'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('댓글을 남겨보세요'), findsOneWidget);
+      expect(find.text('답글을 남겨보세요'), findsNothing);
     });
   });
 }

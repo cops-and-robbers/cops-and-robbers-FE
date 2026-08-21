@@ -1066,12 +1066,6 @@ abstract class AppLocalizations {
   /// **'답글 달기'**
   String get communityCommentReply;
 
-  /// 답글 모드 안내 배너
-  ///
-  /// In ko, this message translates to:
-  /// **'{nickname}님에게 답글 남기는 중'**
-  String communityCommentReplyingTo(String nickname);
-
   /// 댓글이 하나도 없을 때 표시
   ///
   /// In ko, this message translates to:
@@ -1250,6 +1244,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'모집글 수정'**
   String get communityEditPost;
+
+  /// 사라진 모집글 상세에서 목록으로 나가는 버튼 — 재시도가 무의미한 경우라 '다시 시도' 대신 쓴다
+  ///
+  /// In ko, this message translates to:
+  /// **'목록으로 돌아가기'**
+  String get communityBackToList;
 
   /// 모집글 작성 — 제목 섹션 라벨
   ///

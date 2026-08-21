@@ -14,15 +14,19 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
+import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
+import '../community_editor_route.dart';
 import '../providers/community_feed_state.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_post_card.dart';
+import '../widgets/community_post_menu.dart';
 import '../widgets/community_scope_toggle.dart';
 import '../widgets/community_sort_sheet.dart';
 
@@ -72,6 +76,79 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
       if (!mounted) return;
       // AuthInterceptor가 강제 로그아웃을 처리하므로 UI는 무반응.
       if (e is AuthException) return;
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).errorByException(e),
+        backgroundColor: AppColors.red,
+      );
+    }
+  }
+
+  // ==========================================================================
+  // 카드 더보기 메뉴
+  //
+  // 제자리 동작(마감·삭제)은 여기서 끝낸다 — 그 카드만 갈아끼우거나 빼면 되고,
+  // 목록을 무효화하면 커서가 0으로 돌아가 스크롤 위치가 통째로 날아간다.
+  // 화면을 떠나는 동작(수정)만 상세를 경유한다.
+  // ==========================================================================
+
+  void _handleCardMenu(
+    CommunityPostEntity post,
+    CommunityPostMenuAction action,
+  ) {
+    final l10n = AppLocalizations.of(context);
+
+    switch (action) {
+      case CommunityPostMenuAction.login:
+        AppSnackbar.show(context, message: l10n.communityLoginRequiredMessage);
+        context.push(RoutePaths.login);
+      case CommunityPostMenuAction.report:
+        // ponytail: 게시글 신고 API가 아직 없다 (상세와 같은 상태).
+        AppSnackbar.show(context, message: l10n.comingSoonMessage);
+      case CommunityPostMenuAction.edit:
+        VibrationService.instance().buttonTap();
+        // 상세를 먼저 깔고 그 위로 연다 — 완료든 취소든 닫았을 때 목록이 아니라
+        // 방금 보던 글이 나와야 한다.
+        unawaited(openCommunityEditor(context, ref, post, fromList: true));
+      case CommunityPostMenuAction.toggleStatus:
+        unawaited(
+          _runCardAction(
+            () => ref
+                .read(communityFeedNotifierProvider.notifier)
+                .toggleStatus(post),
+          ),
+        );
+      case CommunityPostMenuAction.delete:
+        unawaited(_confirmDelete(l10n, post.id));
+    }
+  }
+
+  Future<void> _confirmDelete(AppLocalizations l10n, int postId) async {
+    final confirmed = await AppDialog.confirm(
+      context: context,
+      title: l10n.communityDeleteConfirmTitle,
+      message: l10n.communityDeleteConfirmMessage,
+      confirmText: l10n.communityMenuDelete,
+      isDestructive: true,
+    );
+    if (confirmed != true || !mounted) return;
+
+    await _runCardAction(
+      () => ref.read(communityFeedNotifierProvider.notifier).deletePost(postId),
+    );
+  }
+
+  /// 카드 하나에 대한 서버 동작을 감싼다 — 실패는 스낵바로만 알린다.
+  ///
+  /// 이미 사라진 글이면 Notifier가 카드를 먼저 걷어낸 뒤 예외를 올린다. 화면은
+  /// 여기서 이동하지 않는다 — 사용자는 이미 목록에 있고, 유령 카드가 사라지는
+  /// 것으로 결과가 보인다.
+  Future<void> _runCardAction(Future<void> Function() action) async {
+    VibrationService.instance().buttonTap();
+    try {
+      await action();
+    } on AppException catch (e) {
+      if (!mounted) return;
       AppSnackbar.show(
         context,
         message: AppLocalizations.of(context).errorByException(e),
@@ -336,9 +413,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
           return CommunityPostCard(
             post: post,
             onTap: () => _openDetail(post.id),
-            // 목록에서는 어느 항목이든 상세로 보낸다 — 수정·삭제·상태 변경은
-            // 대상 글을 보면서 하는 편이 안전하고, 처리 코드도 상세 한 곳에만 둔다.
-            onMenuAction: (_) => _openDetail(post.id),
+            onMenuAction: (action) => _handleCardMenu(post, action),
           );
         },
       ),

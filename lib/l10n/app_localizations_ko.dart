@@ -524,11 +524,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCommentReply => '답글 달기';
 
   @override
-  String communityCommentReplyingTo(String nickname) {
-    return '$nickname님에게 답글 남기는 중';
-  }
-
-  @override
   String get communityCommentEmpty => '첫 댓글을 남겨보세요';
 
   @override
@@ -629,6 +624,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get communityEditPost => '모집글 수정';
+
+  @override
+  String get communityBackToList => '목록으로 돌아가기';
 
   @override
   String get communityCreateLabelTitle => '제목';

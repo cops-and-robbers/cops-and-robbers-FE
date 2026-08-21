@@ -342,15 +342,6 @@
   "@communityCommentReply": {
     "description": "댓글 아래 답글 작성 버튼"
   },
-  "communityCommentReplyingTo": "{nickname}님에게 답글 남기는 중",
-  "@communityCommentReplyingTo": {
-    "description": "답글 모드 안내 배너",
-    "placeholders": {
-      "nickname": {
-        "type": "String"
-      }
-    }
-  },
   "communityCommentEmpty": "첫 댓글을 남겨보세요",
   "@communityCommentEmpty": {
     "description": "댓글이 하나도 없을 때 표시"
@@ -489,6 +480,10 @@
   "communityEditPost": "모집글 수정",
   "@communityEditPost": {
     "description": "모집글 수정 화면 제목 (작성 화면을 수정 모드로 열었을 때)"
+  },
+  "communityBackToList": "목록으로 돌아가기",
+  "@communityBackToList": {
+    "description": "사라진 모집글 상세에서 목록으로 나가는 버튼 — 재시도가 무의미한 경우라 '다시 시도' 대신 쓴다"
   },
   "communityCreateLabelTitle": "제목",
   "@communityCreateLabelTitle": {

@@ -15,13 +15,14 @@ import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/community_post_entity.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_date_sheet.dart';
 import '../widgets/community_headcount_sheet.dart';
 import '../widgets/community_map_preview.dart';
 import 'community_location_picker_page.dart';
 
-/// 모집글 작성 화면
+/// 모집글 작성·수정 화면
 ///
 /// 커뮤니티 목록의 플로팅 "모집글 작성" 버튼에서 진입한다. 다섯 항목(제목·설명·
 /// 날짜·만나는 곳·좌표)이 모두 차야 우측 상단 완료가 살아난다 — 백엔드
@@ -30,8 +31,15 @@ import 'community_location_picker_page.dart';
 /// 장소가 둘로 나뉘는 이유(DEC-0015): 좌표로는 건물명을 신뢰할 수준으로 얻을 수
 /// 없어, 지도에서 **좌표**를 찍고 "만나는 곳"은 작성자가 **직접 입력**한다.
 /// 서버는 좌표를 역지오코딩해 동 단위 지역을 따로 저장한다.
+///
+/// [post]를 넘기면 같은 폼이 수정 모드로 열린다. 화면을 따로 두지 않는 이유는
+/// 서버의 수정이 `PUT` **전체 교체**라 작성과 보낼 값이 완전히 같기 때문이다 —
+/// 폼을 둘로 나누면 한쪽만 고쳐지며 갈라진다.
 class CommunityCreatePage extends ConsumerStatefulWidget {
-  const CommunityCreatePage({super.key});
+  const CommunityCreatePage({super.key, this.post});
+
+  /// 고칠 글. null이면 새로 쓰는 중이다.
+  final CommunityPostEntity? post;
 
   /// 좌표 선택 카드 — 테스트에서 탭 대상을 찾는다.
   static const Key mapCardKey = Key('community_create_map_card');
@@ -77,9 +85,13 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
   static double get _mapHeight => 120.h;
   static double get _stepperSize => 36.w;
 
+  /// 수정 모드인지 — 앱바 문구·로딩 문구·완료가 부를 API가 갈린다.
+  bool get _isEdit => widget.post != null;
+
   @override
   void initState() {
     super.initState();
+    _prefillFrom(widget.post);
     // 완료 버튼 활성 여부가 세 입력 모두에 걸려 있어 글자 수가 아니라
     // "비었나/찼나"가 바뀌는 순간만 다시 그린다.
     for (final controller in [
@@ -89,6 +101,31 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
     ]) {
       controller.addListener(_onTextChanged);
     }
+  }
+
+  /// 고칠 글의 현재 값으로 폼을 채운다.
+  ///
+  /// 기본 주소 칸은 여기서 안 채운다 — `_buildAddressField`가 매 빌드마다
+  /// `_picked`에서 다시 꺼내 쓰므로 좌표만 세워 두면 따라온다.
+  ///
+  /// `placeName`이 비어 있으면(엔티티상 nullable) 완료가 꺼진 채 열려 사용자가
+  /// 다시 채워야 한다 — `PUT`이 `placeName`을 필수로 받으므로 그게 맞다.
+  void _prefillFrom(CommunityPostEntity? post) {
+    if (post == null) return;
+
+    _titleController.text = post.title;
+    _contentController.text = post.content;
+    _locationController.text = post.placeName ?? '';
+    _meetingAt = post.meetingAt;
+    _headcount = post.maxParticipants;
+    _picked = (
+      latitude: post.latitude,
+      longitude: post.longitude,
+      region: post.region,
+      address: post.address,
+    );
+    // 리스너가 "바뀐 순간"만 걸러내므로 시작값을 지금 상태로 맞춰 둔다.
+    _lastCanSubmit = _canSubmit;
   }
 
   @override
@@ -145,7 +182,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
           ),
         ),
         title: Text(
-          l10n.communityCreatePost,
+          _isEdit ? l10n.communityEditPost : l10n.communityCreatePost,
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
         actions: [_buildDoneAction(l10n)],
@@ -608,31 +645,49 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
     final l10n = AppLocalizations.of(context);
     final loading = AppLoading.showMessage(
       context,
-      message: l10n.communityCreateLoading,
-      subtitle: l10n.communityCreateLoadingSub,
+      message: _isEdit
+          ? l10n.communityEditLoading
+          : l10n.communityCreateLoading,
+      subtitle: _isEdit
+          ? l10n.communityEditLoadingSub
+          : l10n.communityCreateLoadingSub,
     );
 
     try {
-      final created = await ref
-          .read(communityRepositoryProvider)
-          .createPost(
-            title: _titleController.text.trim(),
-            content: _contentController.text.trim(),
-            meetingAt: meetingAt,
-            latitude: picked.latitude,
-            longitude: picked.longitude,
-            placeName: _locationController.text.trim(),
-            maxParticipants: _headcount,
-          );
+      final repository = ref.read(communityRepositoryProvider);
+      final post = widget.post;
+
+      // 수정은 전체 교체(PUT)라 보낼 값이 작성과 완전히 같다 — 부르는 메서드와
+      // 글 id만 갈린다.
+      final saved = post == null
+          ? await repository.createPost(
+              title: _titleController.text.trim(),
+              content: _contentController.text.trim(),
+              meetingAt: meetingAt,
+              latitude: picked.latitude,
+              longitude: picked.longitude,
+              placeName: _locationController.text.trim(),
+              maxParticipants: _headcount,
+            )
+          : await repository.updatePost(
+              postId: post.id,
+              title: _titleController.text.trim(),
+              content: _contentController.text.trim(),
+              meetingAt: meetingAt,
+              latitude: picked.latitude,
+              longitude: picked.longitude,
+              placeName: _locationController.text.trim(),
+              maxParticipants: _headcount,
+            );
       // 로딩은 dialog route다. 먼저 닫지 않으면 아래 pop이 이 화면 대신
       // 로딩 라우트를 닫는다 (app_loading.dart 주석 참조).
       await loading.close();
       if (!mounted) return;
 
-      // 목록을 무효화해 방금 쓴 글이 맨 위에 보이게 한다. 화면을 먼저 닫으면
-      // 뒤에 남은 목록이 낡은 채로 보인다.
-      ref.invalidate(communityFeedNotifierProvider);
-      Navigator.of(context).pop(created);
+      // 작성만 목록을 무효화한다 — 방금 쓴 글이 맨 위에 보여야 하기 때문이다.
+      // 수정은 저장된 글을 pop으로 돌려주므로 호출자가 그 자리에서 반영한다.
+      if (post == null) ref.invalidate(communityFeedNotifierProvider);
+      Navigator.of(context).pop(saved);
     } on AppException catch (e) {
       // 불투명 배리어가 스낵바를 가리므로 로딩을 먼저 걷어낸다.
       await loading.close();

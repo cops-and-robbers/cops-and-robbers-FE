@@ -577,11 +577,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityCommentReply => 'Reply';
 
   @override
-  String communityCommentReplyingTo(String nickname) {
-    return 'Replying to $nickname';
-  }
-
-  @override
   String get communityCommentEmpty => 'Be the first to comment';
 
   @override
@@ -682,6 +677,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get communityEditPost => 'Edit post';
+
+  @override
+  String get communityBackToList => 'Back to list';
 
   @override
   String get communityCreateLabelTitle => 'Title';

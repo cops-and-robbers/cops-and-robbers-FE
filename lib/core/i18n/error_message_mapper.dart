@@ -351,6 +351,16 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorNoticesLoadGeneric;
       case 'errorCommunityPostsLoadGeneric':
         return errorCommunityPostsLoadGeneric;
+      case 'errorCommunityAddressLoadGeneric':
+        return errorCommunityAddressLoadGeneric;
+      case 'errorCommunityPostCreateGeneric':
+        return errorCommunityPostCreateGeneric;
+      case 'errorCommunityPostUpdateGeneric':
+        return errorCommunityPostUpdateGeneric;
+      case 'errorCommunityPostDeleteGeneric':
+        return errorCommunityPostDeleteGeneric;
+      case 'errorCommunityPostStatusGeneric':
+        return errorCommunityPostStatusGeneric;
       case 'errorReportGeneric':
         return errorReportGeneric;
       case 'errorBugReportFailed':

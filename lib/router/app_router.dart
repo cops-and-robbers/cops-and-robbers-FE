@@ -25,6 +25,7 @@ import '../features/auth/presentation/pages/onboarding_page.dart';
 import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
+import '../features/community/domain/entities/community_post_entity.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_detail_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
@@ -409,11 +410,43 @@ final routerProvider = Provider<GoRouter>((ref) {
                       final postId =
                           int.tryParse(state.pathParameters['postId'] ?? '') ??
                           0;
-                      return buildSmoothFade(
-                        key: state.pageKey,
-                        child: CommunityDetailPage(postId: postId),
-                      );
+                      final page = CommunityDetailPage(postId: postId);
+
+                      // 목록에서 "수정"을 고르면 이 상세 위로 곧장 수정 화면이
+                      // 솟아오른다 — 두 전환이 겹치지 않도록 그때만 생략한다.
+                      return state.extra == CommunityDetailEntry.silent
+                          ? buildInstantTransition(
+                              key: state.pageKey,
+                              child: page,
+                            )
+                          : buildSmoothFade(key: state.pageKey, child: page);
                     },
+                    routes: [
+                      // ==================================================
+                      // 모집글 수정 (상세 위로 솟아오름)
+                      //
+                      // 작성 화면을 수정 모드로 재사용한다 — 서버가 PUT 전체
+                      // 교체라 보낼 값이 작성과 같기 때문. 전환도 작성과 같은
+                      // slideUp이라 닫을 때 아래로 내려간다(가로 슬라이드 없음).
+                      // ==================================================
+                      GoRoute(
+                        path: 'edit',
+                        name: RoutePaths.communityEditName,
+                        parentNavigatorKey: rootNavigatorKey,
+                        // 고칠 글을 함께 받아야만 열 수 있다. 딥링크로 직접
+                        // 들어오면 넘겨줄 글이 없으므로 상세로 되돌린다.
+                        redirect: (context, state) =>
+                            state.extra is CommunityPostEntity
+                            ? null
+                            : '/community/${state.pathParameters['postId']}',
+                        pageBuilder: (context, state) => buildSlideUp(
+                          key: state.pageKey,
+                          child: CommunityCreatePage(
+                            post: state.extra as CommunityPostEntity,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
