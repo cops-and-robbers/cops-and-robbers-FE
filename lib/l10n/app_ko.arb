@@ -543,7 +543,11 @@
   "@communityCreateLabelLocation": {
     "description": "모집글 작성 — 장소 섹션 라벨"
   },
-  "communityCreateHintLocation": "만나는 곳을 입력해주세요",
+  "communityCreateHintLocation": "상세주소를 입력해주세요 ex) 어린이대공원 정문",
+  "communityCreateHintAddress": "지도에서 위치를 고르면 채워져요",
+  "@communityCreateHintAddress": {
+    "description": "모집글 작성 - 기본 주소 칸(읽기 전용)의 빈 상태 힌트. 값은 GET /api/community-posts/address가 채우며 지도로만 바뀐다"
+  },
   "@communityCreateHintLocation": {
     "description": "모집글 작성 — 만나는 곳(placeName) 입력 힌트"
   },
@@ -2369,6 +2373,10 @@
   "errorCodeInvalidQueryParameter": "쿼리 파라미터의 형식이 잘못됐어요",
   "errorCodeQueryParameterTypeMismatch": "요청 파라미터의 타입이 잘못됐어요",
   "errorCodeInvalidInputValue": "입력값이 조건에 맞지 않아요",
+  "errorCodeAddressNotFound": "주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요",
+  "@errorCodeAddressNotFound": {
+    "description": "ADDRESS_NOT_FOUND — 좌표에 주소·국가가 없어 게시글 생성·수정이 거절된 경우. 같은 핀으로는 재시도해도 실패하므로 공통 폴백(errorTemporaryRetry)을 쓰면 안 된다. 장소 선택 화면의 communityLocationPickerNotFound와 같은 문구."
+  },
   "errorCodeInvalidDestination": "잘못된 연결 경로예요",
   "errorCodeUnsupportedMediaType": "지원하지 않는 형식이에요",
   "errorCodeMethodNotAllowed": "허용되지 않은 요청이에요",

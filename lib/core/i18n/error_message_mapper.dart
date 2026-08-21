@@ -77,6 +77,12 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeQueryParameterTypeMismatch;
       case 'INVALID_INPUT_VALUE':
         return errorCodeInvalidInputValue;
+      // 좌표에 주소·국가가 없어 게시글 생성·수정이 거절된 경우(DEC-0022).
+      // 공통 폴백 "잠시 후 다시 시도"는 틀린 안내다 — 같은 핀으로는 계속 실패한다.
+      // (벤더 장애로 실패하는 ADDRESS_LOOKUP_FAILED는 실제로 일시적이라
+      //  공통 폴백이 맞는 안내이므로 매핑하지 않는다.)
+      case 'ADDRESS_NOT_FOUND':
+        return errorCodeAddressNotFound;
       case 'INVALID_DESTINATION':
         return errorCodeInvalidDestination;
       case 'UNSUPPORTED_MEDIA_TYPE':

@@ -244,7 +244,8 @@
     }
   },
   "communityCreateLabelLocation": "場所",
-  "communityCreateHintLocation": "集合場所を入力してください",
+  "communityCreateHintLocation": "詳細な集合場所を入力してください 例) 正門",
+  "communityCreateHintAddress": "地図で位置を選ぶと入力されます",
   "communityCreateHintPickLocation": "地図で位置を選んでください",
   "communityLocationCopied": "場所をコピーしました",
   "communityLocationPickerTitle": "場所の選択",
@@ -695,6 +696,7 @@
   "errorCodeInvalidQueryParameter": "クエリパラメータの形式が正しくありません",
   "errorCodeQueryParameterTypeMismatch": "リクエストパラメータの型が正しくありません",
   "errorCodeInvalidInputValue": "入力値が条件に合いません",
+  "errorCodeAddressNotFound": "住所が見つかりません。別の場所を選んでください",
   "errorCodeInvalidDestination": "接続先が正しくありません",
   "errorCodeUnsupportedMediaType": "サポートされていない形式です",
   "errorCodeMethodNotAllowed": "許可されていないリクエストです",
