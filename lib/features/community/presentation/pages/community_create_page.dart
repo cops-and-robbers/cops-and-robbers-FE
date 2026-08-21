@@ -49,6 +49,9 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
   /// 읽기 전용 `AppTextField`로 그린다. 그래서 컨트롤러가 필요하다.
   final _dateController = TextEditingController();
 
+  /// 지도가 채우는 기본 주소. 사용자는 못 고치고 지도로만 바뀐다.
+  final _addressController = TextEditingController();
+
   // 제목에서 엔터를 치면 설명으로 넘어간다. 설명은 여러 줄 입력이라 엔터를
   // 줄바꿈에 쓰므로 체인이 여기서 끊기고, 날짜는 시트로만 고른다.
   final _contentFocus = FocusNode();
@@ -98,6 +101,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
       controller.dispose();
     }
     _dateController.dispose();
+    _addressController.dispose();
     _contentFocus.dispose();
     super.dispose();
   }
@@ -165,6 +169,8 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
               _buildDateField(l10n),
               _buildSectionGap(),
               _buildLabel(l10n.communityCreateLabelLocation),
+              _buildAddressField(l10n),
+              SizedBox(height: AppSpacing.vertical8),
               _buildLocationField(l10n),
               SizedBox(height: AppSpacing.vertical12),
               _buildMapCard(l10n),
@@ -305,19 +311,56 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
     );
   }
 
+  /// 기본 주소 — 직접 입력하지 않고 지도로만 바꾼다.
+  ///
+  /// 날짜 칸과 같은 방식이다: `readOnly`만으로는 탭이 TextField에 먹혀 키보드가
+  /// 뜨므로 `AbsorbPointer`로 입력을 막고 탭은 바깥 `GestureDetector`가 받는다.
+  /// 다른 점은 탭이 여는 대상뿐 — 날짜는 시트, 여기는 지도다.
+  ///
+  /// 좌표를 골라도 서버가 200을 주면서 주소를 안 채우는 경우가 있어(피커의 같은
+  /// 주석 참고) 값이 비면 힌트가 남는다. 좌표 자체는 유효하므로 완료는 막지 않는다.
+  Widget _buildAddressField(AppLocalizations l10n) {
+    _addressController.text = _picked?.address ?? '';
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _openLocationPicker,
+      child: _wrapWithShadow(
+        AbsorbPointer(
+          child: AppTextField(
+            controller: _addressController,
+            hintText: l10n.communityCreateHintAddress,
+            readOnly: true,
+            width: double.infinity,
+            height: _fieldHeight,
+            borderRadius: AppRadius.large,
+            showBorder: false,
+            hintColor: AppColors.black200,
+            prefixIcon: _buildPrefixIcon('assets/icons/icon_location.svg'),
+            prefixIconConstraints: const BoxConstraints(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 상세주소 — 기본 주소만으로는 어디서 만나는지 알 수 없어 작성자가 채운다.
+  ///
+  /// 핀 아이콘은 위 기본 주소 칸이 갖는다. 두 칸이 한 덩어리로 읽히도록 여기는
+  /// 아이콘 없이 들여쓰기만 맞춘다.
   Widget _buildLocationField(AppLocalizations l10n) {
     return _wrapWithShadow(
       AppTextField(
         controller: _locationController,
         hintText: l10n.communityCreateHintLocation,
+        // 백엔드 placeName 제약과 같은 값. 넘겨 보내면 400이라 입력에서 막는다.
+        maxLength: 50,
         width: double.infinity,
         height: _locationHeight,
         textInputAction: TextInputAction.done,
         borderRadius: AppRadius.large,
         showBorder: false,
         hintColor: AppColors.black200,
-        prefixIcon: _buildPrefixIcon('assets/icons/icon_pin.svg'),
-        prefixIconConstraints: const BoxConstraints(),
       ),
     );
   }
@@ -328,7 +371,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
     return Padding(
       padding: EdgeInsets.only(
         left: AppSpacing.horizontal16,
-        right: AppSpacing.horizontal8,
+        right: AppSpacing.horizontal6,
       ),
       child: SvgPicture.asset(assetPath, width: 20.w, height: 20.h),
     );

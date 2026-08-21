@@ -20,9 +20,7 @@ mixin CommunityRepositoryListStubs implements CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) => throw UnimplementedError('이 테스트는 목록 조회를 쓰지 않는다');
 }
 
@@ -59,6 +57,12 @@ mixin CommunityRepositoryDetailStubs implements CommunityRepository {
     required double latitude,
     required double longitude,
   }) => throw UnimplementedError('이 테스트는 주소 조회를 쓰지 않는다');
+
+  @override
+  Future<String?> getCountryCode({
+    required double latitude,
+    required double longitude,
+  }) => throw UnimplementedError('이 테스트는 국가 조회를 쓰지 않는다');
 
   @override
   Future<void> deletePost(int postId) =>

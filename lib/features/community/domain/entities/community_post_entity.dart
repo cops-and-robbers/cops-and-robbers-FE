@@ -69,10 +69,5 @@ class CommunityPostPageEntity with _$CommunityPostPageEntity {
     required List<CommunityPostEntity> items,
     required String? nextCursor,
     required bool hasNext,
-
-    /// 서버가 판별한 이 목록의 국가 코드. 좌표로 첫 요청을 보냈을 때 받아 두었다가
-    /// 다음 페이지부터 좌표 대신 실어 보낸다 — GPS를 페이지마다 다시 켜지 않으려는
-    /// 목적이다.
-    String? countryCode,
   }) = _CommunityPostPageEntity;
 }

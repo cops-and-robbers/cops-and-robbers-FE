@@ -42,9 +42,7 @@ class _FakeCommunityRepository
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) async {
     callCount++;
     return CommunityPostPageEntity(
@@ -69,9 +67,7 @@ class _ThrowingCommunityRepository
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) async {
     throw exception;
   }
@@ -92,9 +88,7 @@ class _RecoveringCommunityRepository
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) async {
     callCount++;
     if (callCount == 1) {
@@ -114,11 +108,9 @@ Widget _wrap(CommunityRepository repo, {int? currentUserId}) => ProviderScope(
     // 카드의 더보기 메뉴가 로그인 사용자 id를 watch 한다. 덮지 않으면 실제
     // AuthNotifier가 Firebase까지 끌고 들어와, 목록과 무관한 이유로 깨진다.
     currentUserIdProvider.overrideWithValue(currentUserId),
-    // 목록 조회 전에 국가를 정하느라 GPS·권한을 친다. 덮지 않으면 플랫폼 채널이
-    // 응답하지 않아 pumpAndSettle이 영원히 안 끝난다.
-    countryQueryResolverProvider.overrideWithValue(
-      () async => (latitude: null, longitude: null, countryCode: 'KR'),
-    ),
+    // 목록 조회 전에 국가를 정하느라 GPS·권한·벤더를 친다. 덮지 않으면 플랫폼
+    // 채널이 응답하지 않아 pumpAndSettle이 영원히 안 끝난다.
+    communityCountryCodeProvider.overrideWith((ref) async => 'KR'),
   ],
   child: ScreenUtilInit(
     designSize: const Size(393, 852),

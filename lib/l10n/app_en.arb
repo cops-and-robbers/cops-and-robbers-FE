@@ -244,7 +244,8 @@
     }
   },
   "communityCreateLabelLocation": "Location",
-  "communityCreateHintLocation": "Enter where you'll meet",
+  "communityCreateHintLocation": "Enter the exact spot, e.g. main gate",
+  "communityCreateHintAddress": "Filled in when you pick a spot on the map",
   "communityCreateHintPickLocation": "Pick a spot on the map",
   "communityLocationCopied": "Location copied",
   "communityLocationPickerTitle": "Pick a location",
@@ -695,6 +696,7 @@
   "errorCodeInvalidQueryParameter": "The query parameter format is invalid",
   "errorCodeQueryParameterTypeMismatch": "The request parameter type is invalid",
   "errorCodeInvalidInputValue": "The value you entered doesn't meet the requirements",
+  "errorCodeAddressNotFound": "No address here. Please pick another spot",
   "errorCodeInvalidDestination": "Invalid connection path",
   "errorCodeUnsupportedMediaType": "Unsupported format",
   "errorCodeMethodNotAllowed": "This request is not allowed",

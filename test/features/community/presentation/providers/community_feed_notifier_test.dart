@@ -34,17 +34,17 @@ class _FakeCommunityRepository
   pagesByCursor;
 
   final List<String?> requestedCursors = [];
+  final List<String> requestedCountryCodes = [];
 
   @override
   Future<CommunityPostPageEntity> getPosts({
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) async {
     requestedCursors.add(cursor);
+    requestedCountryCodes.add(countryCode);
     final page =
         pagesByCursor[cursor] ?? (items: <CommunityPostEntity>[], next: null);
     return CommunityPostPageEntity(
@@ -71,9 +71,7 @@ class _DelayedSecondPageRepository
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) {
     if (cursor == null) {
       return Future.value(
@@ -88,19 +86,15 @@ class _DelayedSecondPageRepository
   }
 }
 
-/// 위치 권한이 없는 기기 — 좌표 대신 기기 국가 코드로 물어보는 경로.
-Future<CountryQuery> _deviceCountry() async =>
-    (latitude: null, longitude: null, countryCode: 'KR');
-
 ProviderContainer _containerWith(
   CommunityRepository repo, {
-  Future<CountryQuery> Function() resolver = _deviceCountry,
+  String countryCode = 'KR',
 }) {
   final container = ProviderContainer(
     overrides: [
       communityRepositoryProvider.overrideWithValue(repo),
-      // GPS·권한은 시스템 경계다. 덮지 않으면 테스트가 실제 플랫폼 채널을 친다.
-      countryQueryResolverProvider.overrideWithValue(resolver),
+      // 국가 판별은 GPS·권한·벤더를 거친다 — 전부 시스템 경계라 여기서 끊는다.
+      communityCountryCodeProvider.overrideWith((ref) async => countryCode),
     ],
   );
   addTearDown(container.dispose);
@@ -123,6 +117,48 @@ void main() {
       expect(state.items.map((e) => e.id), [1, 2, 3, 4]);
       // 커서는 이전 응답의 nextCursor를 그대로 실어 보낸다.
       expect(repo.requestedCursors, [null, 'c1']);
+    });
+
+    test('sends_resolved_country_code_on_every_page', () async {
+      // 목록은 국가별로 나뉜다. 판별 결과를 안 싣거나 첫 페이지에만 실으면
+      // 다른 나라 글이 섞이거나 400을 맞는다 (DEC-0021).
+      final repo = _FakeCommunityRepository({
+        null: (items: [_post(1)], next: 'c1'),
+        'c1': (items: [_post(2)], next: null),
+      });
+      final container = _containerWith(repo, countryCode: 'JP');
+
+      await container.read(communityFeedNotifierProvider.future);
+      await container.read(communityFeedNotifierProvider.notifier).loadMore();
+
+      expect(repo.requestedCountryCodes, ['JP', 'JP']);
+    });
+
+    test('reuses_resolved_country_when_refreshed', () async {
+      // 당겨서 새로고침은 목록만 다시 부른다. 국가까지 재해석하면 새로고침할
+      // 때마다 GPS를 켜고 벤더를 부르게 되는데, 그건 국가 조회를 목록에서
+      // 떼어낸 이유(진입당 1회, Geoapify 일 3,000건 한도)를 되돌리는 것이다.
+      var resolveCount = 0;
+      final repo = _FakeCommunityRepository({
+        null: (items: [_post(1)], next: null),
+      });
+      final container = ProviderContainer(
+        overrides: [
+          communityRepositoryProvider.overrideWithValue(repo),
+          communityCountryCodeProvider.overrideWith((ref) async {
+            resolveCount++;
+            return 'KR';
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(communityFeedNotifierProvider.future);
+      await container.read(communityFeedNotifierProvider.notifier).refresh();
+
+      // 목록은 0페이지부터 다시, 국가는 그대로.
+      expect(repo.requestedCursors, [null, null]);
+      expect(resolveCount, 1);
     });
 
     test('reports_no_more_pages_when_server_says_has_next_is_false', () async {

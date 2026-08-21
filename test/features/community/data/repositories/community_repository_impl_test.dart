@@ -24,18 +24,28 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
     String? cursor,
     required int size,
     String? scope,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) async {
     called = true;
     lastCursor = cursor;
     lastScope = scope;
     lastCountryCode = countryCode;
+    if (errorToThrow != null) throw errorToThrow!;
+    return responseToReturn!;
+  }
+
+  // ── 국가 조회 ──
+  CommunityCountryResponseModel? countryToReturn;
+
+  @override
+  Future<CommunityCountryResponseModel> getCountry({
+    required double latitude,
+    required double longitude,
+  }) async {
     lastLatitude = latitude;
     lastLongitude = longitude;
     if (errorToThrow != null) throw errorToThrow!;
-    return responseToReturn!;
+    return countryToReturn!;
   }
 
   // ── 주소 조회 ──
@@ -144,11 +154,9 @@ CommunityPostListResponseModel _listOf(
   List<Map<String, dynamic>> jsons, {
   String? nextCursor,
   bool hasNext = false,
-  String? countryCode = 'KR',
 }) => CommunityPostListResponseModel(
   content: jsons.map(CommunityPostResponseModel.fromJson).toList(),
   cursor: CursorInfoModel(nextCursor: nextCursor, hasNext: hasNext),
-  countryCode: countryCode,
 );
 
 void main() {
@@ -161,7 +169,7 @@ void main() {
         ]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final result = await repo.getPosts(size: 20);
+      final result = await repo.getPosts(size: 20, countryCode: 'KR');
 
       expect(result.items[0].status, CommunityPostStatus.recruiting);
       expect(result.items[1].status, CommunityPostStatus.completed);
@@ -182,7 +190,10 @@ void main() {
         ]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final entity = (await repo.getPosts(size: 20)).items.single;
+      final entity = (await repo.getPosts(
+        size: 20,
+        countryCode: 'KR',
+      )).items.single;
 
       expect(entity.locationLabel, '서울특별시 광진구 군자동 · 세종대학교 정문');
     });
@@ -201,7 +212,10 @@ void main() {
         ]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final entity = (await repo.getPosts(size: 20)).items.single;
+      final entity = (await repo.getPosts(
+        size: 20,
+        countryCode: 'KR',
+      )).items.single;
 
       expect(entity.locationLabel, '세종대학교 정문');
     });
@@ -212,7 +226,10 @@ void main() {
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final entity = (await repo.getPosts(size: 20)).items.single;
+      final entity = (await repo.getPosts(
+        size: 20,
+        countryCode: 'KR',
+      )).items.single;
 
       expect(entity.locationLabel, isNull);
       // 좌표는 상세 지도용으로 그대로 살아 있어야 한다.
@@ -220,44 +237,15 @@ void main() {
       expect(entity.longitude, 127.0276);
     });
 
-    test('forwards_coordinates_when_country_code_is_unknown', () async {
-      // 서버는 countryCode 또는 좌표 중 하나를 요구한다 — 둘 다 없으면 400이다.
+    test('forwards_country_code_when_listing', () async {
+      // 목록은 국가별로 나뉘고 countryCode만 받는다 — 좌표를 보내면 400이다 (DEC-0021).
       final fake = _FakeCommunityRemoteDataSource()
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      await repo.getPosts(size: 20, latitude: 37.5502, longitude: 127.0736);
+      await repo.getPosts(size: 20, countryCode: 'JP');
 
-      expect(fake.lastLatitude, 37.5502);
-      expect(fake.lastLongitude, 127.0736);
-      expect(fake.lastCountryCode, isNull);
-    });
-
-    test('forwards_country_code_without_coordinates_on_later_pages', () async {
-      final fake = _FakeCommunityRemoteDataSource()
-        ..responseToReturn = _listOf([_postJson()]);
-      final repo = CommunityRepositoryImpl(fake);
-
-      await repo.getPosts(size: 20, countryCode: 'KR');
-
-      expect(fake.lastCountryCode, 'KR');
-      expect(fake.lastLatitude, isNull);
-      expect(fake.lastLongitude, isNull);
-    });
-
-    test('exposes_resolved_country_code_from_the_envelope', () async {
-      // 좌표로 물으면 서버가 판별한 국가가 응답에 실려 온다 — 다음 페이지는 이걸 쓴다.
-      final fake = _FakeCommunityRemoteDataSource()
-        ..responseToReturn = _listOf([_postJson()], countryCode: 'JP');
-      final repo = CommunityRepositoryImpl(fake);
-
-      final page = await repo.getPosts(
-        size: 20,
-        latitude: 35.6895,
-        longitude: 139.6917,
-      );
-
-      expect(page.countryCode, 'JP');
+      expect(fake.lastCountryCode, 'JP');
     });
 
     test('leaves_pending_backend_fields_null_when_absent', () async {
@@ -265,7 +253,10 @@ void main() {
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final entity = (await repo.getPosts(size: 20)).items.single;
+      final entity = (await repo.getPosts(
+        size: 20,
+        countryCode: 'KR',
+      )).items.single;
 
       expect(entity.currentParticipants, isNull);
       expect(entity.likeCount, isNull);
@@ -280,7 +271,10 @@ void main() {
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      final entity = (await repo.getPosts(size: 20)).items.single;
+      final entity = (await repo.getPosts(
+        size: 20,
+        countryCode: 'KR',
+      )).items.single;
 
       expect(entity.meetingAt.isUtc, false);
       expect(
@@ -294,7 +288,7 @@ void main() {
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      await repo.getPosts(size: 20);
+      await repo.getPosts(size: 20, countryCode: 'KR');
 
       expect(fake.called, true);
       expect(fake.lastCursor, isNull);
@@ -306,7 +300,11 @@ void main() {
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      await repo.getPosts(cursor: 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg', size: 20);
+      await repo.getPosts(
+        cursor: 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg',
+        size: 20,
+        countryCode: 'KR',
+      );
 
       expect(fake.lastCursor, 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg');
     });
@@ -316,7 +314,11 @@ void main() {
         ..responseToReturn = _listOf([_postJson()]);
       final repo = CommunityRepositoryImpl(fake);
 
-      await repo.getPosts(size: 20, scope: CommunityScope.all);
+      await repo.getPosts(
+        size: 20,
+        scope: CommunityScope.all,
+        countryCode: 'KR',
+      );
 
       expect(fake.called, true);
       expect(fake.lastScope, isNull);
@@ -331,7 +333,7 @@ void main() {
         );
       final repo = CommunityRepositoryImpl(fake);
 
-      final result = await repo.getPosts(size: 20);
+      final result = await repo.getPosts(size: 20, countryCode: 'KR');
 
       expect(result.nextCursor, 'MjAyNi0wOC0xNVQxMjozMDo0NXw0Mg');
       expect(result.hasNext, true);
@@ -342,7 +344,10 @@ void main() {
         ..errorToThrow = _dioError(500);
       final repo = CommunityRepositoryImpl(fake);
 
-      expect(() => repo.getPosts(size: 20), throwsA(isA<AppException>()));
+      expect(
+        () => repo.getPosts(size: 20, countryCode: 'KR'),
+        throwsA(isA<AppException>()),
+      );
     });
 
     test('wraps_unknown_wire_status_into_server_exception', () async {
@@ -351,7 +356,10 @@ void main() {
         ..responseToReturn = _listOf([_postJson(status: 'CANCELLED')]);
       final repo = CommunityRepositoryImpl(fake);
 
-      expect(() => repo.getPosts(size: 20), throwsA(isA<ServerException>()));
+      expect(
+        () => repo.getPosts(size: 20, countryCode: 'KR'),
+        throwsA(isA<ServerException>()),
+      );
     });
   });
 
@@ -543,6 +551,49 @@ void main() {
 
       expect(
         () => repo.getAddress(latitude: 0, longitude: 0),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.getCountryCode', () {
+    test('returns_server_country_code_when_position_given', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..countryToReturn = const CommunityCountryResponseModel(
+          countryCode: 'JP',
+        );
+      final repo = CommunityRepositoryImpl(fake);
+
+      final code = await repo.getCountryCode(
+        latitude: 35.6895,
+        longitude: 139.6917,
+      );
+
+      expect(code, 'JP');
+      expect(fake.lastLatitude, 35.6895);
+      expect(fake.lastLongitude, 139.6917);
+    });
+
+    test('returns_null_when_server_omits_country_code', () async {
+      // 기기 로케일로 물러서는 판단은 호출자 몫이다 — 여기서 'KR' 같은 값으로
+      // 메우면 호출자가 "서버가 모른다"를 구분하지 못한다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..countryToReturn = const CommunityCountryResponseModel();
+      final repo = CommunityRepositoryImpl(fake);
+
+      expect(await repo.getCountryCode(latitude: 0, longitude: 0), isNull);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      // 국가를 못 정하는 좌표 400(COUNTRY_NOT_SPECIFIED)·벤더 장애 500
+      // (ADDRESS_LOOKUP_FAILED) 모두 AppException — 호출자는 종류를 가리지 않고
+      // 기기 로케일로 물러선다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(500);
+      final repo = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repo.getCountryCode(latitude: 0, longitude: 0),
         throwsA(isA<AppException>()),
       );
     });

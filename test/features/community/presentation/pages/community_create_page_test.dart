@@ -77,8 +77,8 @@ Widget _wrap(_CreateRepository repo) => ProviderScope(
     communityRepositoryProvider.overrideWithValue(repo),
     // 장소 선택 화면이 시작 좌표를 물을 때 GPS·권한을 친다. 덮지 않으면
     // 플랫폼 채널이 응답하지 않는다.
-    countryQueryResolverProvider.overrideWithValue(
-      () async => (latitude: 37.5502, longitude: 127.0736, countryCode: null),
+    currentPositionResolverProvider.overrideWithValue(
+      () async => (latitude: 37.5502, longitude: 127.0736),
     ),
   ],
   child: ScreenUtilInit(
@@ -134,8 +134,8 @@ Future<void> _tapSheetDone(WidgetTester tester) async {
 Future<void> _fillTextFields(WidgetTester tester) async {
   await tester.enterText(find.byType(TextField).at(0), '퇴근하고 한 판');
   await tester.enterText(find.byType(TextField).at(1), '규칙은 현장에서 정해요');
-  // 인덱스 2는 날짜(읽기 전용), 3이 장소.
-  await tester.enterText(find.byType(TextField).at(3), '어린이대공원 정문');
+  // 인덱스 2는 날짜, 3은 상세주소(둘 다 읽기 전용), 4가 상세주소 입력이다.
+  await tester.enterText(find.byType(TextField).at(4), '어린이대공원 정문');
   await tester.pump();
 }
 
@@ -149,8 +149,8 @@ void main() {
       for (final label in ['제목', '설명', '날짜', '장소', '모집 인원']) {
         expect(find.text(label), findsOneWidget);
       }
-      // 제목 / 설명 / 날짜 / 장소
-      expect(find.byType(TextField), findsNWidgets(4));
+      // 제목 / 설명 / 날짜 / 기본 주소 / 상세주소
+      expect(find.byType(TextField), findsNWidgets(5));
       expect(find.text('10명'), findsOneWidget);
     });
 
@@ -186,6 +186,34 @@ void main() {
       await _pickLocation(tester);
 
       expect(_doneColor(tester), const Color(0xFF4D63FF));
+    });
+
+    testWidgets('shows_lot_address_not_region_when_location_picked', (
+      tester,
+    ) async {
+      await _pumpPage(tester);
+      await _pickLocation(tester);
+
+      // 읽기 전용 칸에는 번지까지 붙은 address가 들어간다. region(동 단위)을
+      // 잘못 꽂아도 컴파일은 되므로 값이 다른 픽스처로 못 박는다.
+      expect(find.text('서울특별시 광진구 화양동 1-20'), findsOneWidget);
+    });
+
+    testWidgets('keeps_lot_address_out_of_the_typed_place_name', (
+      tester,
+    ) async {
+      final repo = _CreateRepository();
+      await _pumpPage(tester, repo);
+
+      await _fillTextFields(tester);
+      await _pickDate(tester);
+      await _pickLocation(tester);
+      await tester.tap(find.text('완료'));
+      await tester.pumpAndSettle();
+
+      // 서버는 placeName 하나만 받는다. 읽기 전용 주소가 거기 섞여 들어가면
+      // 작성자가 입력한 만나는 곳이 사라진다.
+      expect(repo.lastPlaceName, '어린이대공원 정문');
     });
 
     testWidgets('sends_typed_place_name_and_picked_coordinates_on_submit', (

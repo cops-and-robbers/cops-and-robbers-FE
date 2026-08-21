@@ -25,11 +25,6 @@ mixin _$CommunityFeedState {
   bool get hasMore => throw _privateConstructorUsedError;
   bool get isLoadingMore => throw _privateConstructorUsedError;
 
-  /// 이 목록이 속한 국가 코드. 첫 페이지를 좌표로 물었을 때 서버가 판별해 준
-  /// 값이며, 다음 페이지부터는 좌표 대신 이걸 보낸다 — 스크롤할 때마다 GPS를
-  /// 다시 켜지 않으려는 것이다.
-  String? get countryCode => throw _privateConstructorUsedError;
-
   /// Create a copy of CommunityFeedState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +44,6 @@ abstract class $CommunityFeedStateCopyWith<$Res> {
     String? nextCursor,
     bool hasMore,
     bool isLoadingMore,
-    String? countryCode,
   });
 }
 
@@ -72,7 +66,6 @@ class _$CommunityFeedStateCopyWithImpl<$Res, $Val extends CommunityFeedState>
     Object? nextCursor = freezed,
     Object? hasMore = null,
     Object? isLoadingMore = null,
-    Object? countryCode = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -92,10 +85,6 @@ class _$CommunityFeedStateCopyWithImpl<$Res, $Val extends CommunityFeedState>
                 ? _value.isLoadingMore
                 : isLoadingMore // ignore: cast_nullable_to_non_nullable
                       as bool,
-            countryCode: freezed == countryCode
-                ? _value.countryCode
-                : countryCode // ignore: cast_nullable_to_non_nullable
-                      as String?,
           )
           as $Val,
     );
@@ -116,7 +105,6 @@ abstract class _$$CommunityFeedStateImplCopyWith<$Res>
     String? nextCursor,
     bool hasMore,
     bool isLoadingMore,
-    String? countryCode,
   });
 }
 
@@ -138,7 +126,6 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
     Object? nextCursor = freezed,
     Object? hasMore = null,
     Object? isLoadingMore = null,
-    Object? countryCode = freezed,
   }) {
     return _then(
       _$CommunityFeedStateImpl(
@@ -158,10 +145,6 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
             ? _value.isLoadingMore
             : isLoadingMore // ignore: cast_nullable_to_non_nullable
                   as bool,
-        countryCode: freezed == countryCode
-            ? _value.countryCode
-            : countryCode // ignore: cast_nullable_to_non_nullable
-                  as String?,
       ),
     );
   }
@@ -175,7 +158,6 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
     required this.nextCursor,
     required this.hasMore,
     this.isLoadingMore = false,
-    this.countryCode,
   }) : _items = items;
 
   final List<CommunityPostEntity> _items;
@@ -196,15 +178,9 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
   @JsonKey()
   final bool isLoadingMore;
 
-  /// 이 목록이 속한 국가 코드. 첫 페이지를 좌표로 물었을 때 서버가 판별해 준
-  /// 값이며, 다음 페이지부터는 좌표 대신 이걸 보낸다 — 스크롤할 때마다 GPS를
-  /// 다시 켜지 않으려는 것이다.
-  @override
-  final String? countryCode;
-
   @override
   String toString() {
-    return 'CommunityFeedState(items: $items, nextCursor: $nextCursor, hasMore: $hasMore, isLoadingMore: $isLoadingMore, countryCode: $countryCode)';
+    return 'CommunityFeedState(items: $items, nextCursor: $nextCursor, hasMore: $hasMore, isLoadingMore: $isLoadingMore)';
   }
 
   @override
@@ -217,9 +193,7 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
                 other.nextCursor == nextCursor) &&
             (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
             (identical(other.isLoadingMore, isLoadingMore) ||
-                other.isLoadingMore == isLoadingMore) &&
-            (identical(other.countryCode, countryCode) ||
-                other.countryCode == countryCode));
+                other.isLoadingMore == isLoadingMore));
   }
 
   @override
@@ -229,7 +203,6 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
     nextCursor,
     hasMore,
     isLoadingMore,
-    countryCode,
   );
 
   /// Create a copy of CommunityFeedState
@@ -250,7 +223,6 @@ abstract class _CommunityFeedState implements CommunityFeedState {
     required final String? nextCursor,
     required final bool hasMore,
     final bool isLoadingMore,
-    final String? countryCode,
   }) = _$CommunityFeedStateImpl;
 
   @override
@@ -264,12 +236,6 @@ abstract class _CommunityFeedState implements CommunityFeedState {
   bool get hasMore;
   @override
   bool get isLoadingMore;
-
-  /// 이 목록이 속한 국가 코드. 첫 페이지를 좌표로 물었을 때 서버가 판별해 준
-  /// 값이며, 다음 페이지부터는 좌표 대신 이걸 보낸다 — 스크롤할 때마다 GPS를
-  /// 다시 켜지 않으려는 것이다.
-  @override
-  String? get countryCode;
 
   /// Create a copy of CommunityFeedState
   /// with the given fields replaced by the non-null parameter values.

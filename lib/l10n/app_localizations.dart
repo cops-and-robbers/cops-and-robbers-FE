@@ -1325,8 +1325,14 @@ abstract class AppLocalizations {
   /// 모집글 작성 — 만나는 곳(placeName) 입력 힌트
   ///
   /// In ko, this message translates to:
-  /// **'만나는 곳을 입력해주세요'**
+  /// **'상세주소를 입력해주세요 ex) 어린이대공원 정문'**
   String get communityCreateHintLocation;
+
+  /// 모집글 작성 - 기본 주소 칸(읽기 전용)의 빈 상태 힌트. 값은 GET /api/community-posts/address가 채우며 지도로만 바뀐다
+  ///
+  /// In ko, this message translates to:
+  /// **'지도에서 위치를 고르면 채워져요'**
+  String get communityCreateHintAddress;
 
   /// 모집글 작성 — 좌표를 아직 안 고른 상태의 지도 카드 안내
   ///
@@ -3960,6 +3966,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'입력값이 조건에 맞지 않아요'**
   String get errorCodeInvalidInputValue;
+
+  /// ADDRESS_NOT_FOUND — 좌표에 주소·국가가 없어 게시글 생성·수정이 거절된 경우. 같은 핀으로는 재시도해도 실패하므로 공통 폴백(errorTemporaryRetry)을 쓰면 안 된다. 장소 선택 화면의 communityLocationPickerNotFound와 같은 문구.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요'**
+  String get errorCodeAddressNotFound;
 
   /// No description provided for @errorCodeInvalidDestination.
   ///

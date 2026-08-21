@@ -16,6 +16,15 @@ void main() {
       );
     });
 
+    test('returns_pick_another_spot_when_code_is_address_not_found', () {
+      // 그 좌표에 주소·국가가 없어 서버가 글 생성을 거절한 경우다. 공통 폴백
+      // "잠시 후 다시 시도"는 틀린 안내다 — 같은 핀으로는 몇 번을 해도 실패한다.
+      expect(
+        l10n.errorByCode('ADDRESS_NOT_FOUND'),
+        l10n.errorCodeAddressNotFound,
+      );
+    });
+
     test('returns_common_retry_when_code_is_unmapped', () {
       expect(
         l10n.errorByCode('SOME_FUTURE_UNKNOWN_CODE'),

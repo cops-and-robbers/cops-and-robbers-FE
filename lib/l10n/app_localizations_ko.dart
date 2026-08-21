@@ -676,7 +676,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCreateLabelLocation => '장소';
 
   @override
-  String get communityCreateHintLocation => '만나는 곳을 입력해주세요';
+  String get communityCreateHintLocation => '상세주소를 입력해주세요 ex) 어린이대공원 정문';
+
+  @override
+  String get communityCreateHintAddress => '지도에서 위치를 고르면 채워져요';
 
   @override
   String get communityCreateHintPickLocation => '지도에서 위치를 골라주세요';
@@ -2060,6 +2063,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeInvalidInputValue => '입력값이 조건에 맞지 않아요';
+
+  @override
+  String get errorCodeAddressNotFound => '주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요';
 
   @override
   String get errorCodeInvalidDestination => '잘못된 연결 경로예요';

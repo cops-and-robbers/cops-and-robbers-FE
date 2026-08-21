@@ -22,9 +22,7 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
     String? cursor,
     required int size,
     String? scope,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -32,8 +30,6 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
       r'size': size,
       r'scope': scope,
       r'countryCode': countryCode,
-      r'latitude': latitude,
-      r'longitude': longitude,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -52,6 +48,39 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
     late CommunityPostListResponseModel _value;
     try {
       _value = CommunityPostListResponseModel.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<CommunityCountryResponseModel> getCountry({
+    required double latitude,
+    required double longitude,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'latitude': latitude,
+      r'longitude': longitude,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<CommunityCountryResponseModel>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/community-posts/country',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CommunityCountryResponseModel _value;
+    try {
+      _value = CommunityCountryResponseModel.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

@@ -13,9 +13,8 @@ abstract class CommunityRepository {
   /// [size]는 한 번에 가져올 개수(1~100).
   /// 실패 시 `AppException` 계열 예외를 던진다.
   ///
-  /// 목록이 국가별로 나뉘므로 [countryCode] 또는 [latitude]·[longitude] 중
-  /// 하나는 반드시 넘겨야 한다 — 둘 다 없으면 서버가 400을 준다. 좌표로 물으면
-  /// 응답 엔티티의 `countryCode`에 판별 결과가 담기니 다음 페이지부터 그걸 쓴다.
+  /// 목록이 국가별로 나뉘므로 [countryCode]는 필수다 — 목록 API는 좌표를 받지
+  /// 않는다(DEC-0021). 국가는 [getCountryCode]로 먼저 구한다.
   ///
   /// [scope]는 [CommunityScope.all] 외 값을 백엔드가 아직 400으로 막는다.
   /// 호출자는 현재 전체만 넘겨야 한다.
@@ -23,9 +22,19 @@ abstract class CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
+  });
+
+  /// 좌표가 속한 국가 코드를 조회한다 (저장하지 않음).
+  ///
+  /// 목록 조회 전에 한 번 불러 국가를 정하는 용도다. 로그인 불필요.
+  /// 서버가 값을 주지 않으면 `null` — 기기 로케일로 물러설지는 호출자가 정한다.
+  /// 국가를 특정할 수 없는 좌표·벤더 장애는 `AppException` 계열 예외를 던진다.
+  ///
+  /// 엔티티로 감싸지 않는다 — 필드 하나짜리 응답이라 옮겨 담을 구조가 없다.
+  Future<String?> getCountryCode({
+    required double latitude,
+    required double longitude,
   });
 
   /// 좌표에 해당하는 주소를 조회한다 (저장하지 않음).

@@ -25,9 +25,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
-    String? countryCode,
-    double? latitude,
-    double? longitude,
+    required String countryCode,
   }) {
     return _guard(
       () async {
@@ -36,17 +34,32 @@ class CommunityRepositoryImpl implements CommunityRepository {
           size: size,
           scope: scope.queryValue,
           countryCode: countryCode,
-          latitude: latitude,
-          longitude: longitude,
         );
         return CommunityPostPageEntity(
           items: res.content.map(_toEntity).toList(),
           nextCursor: res.cursor.nextCursor,
           hasNext: res.cursor.hasNext,
-          countryCode: res.countryCode,
         );
       },
       message: '모집글을 불러오는 중 오류가 발생했습니다',
+      messageKey: 'errorCommunityPostsLoadGeneric',
+    );
+  }
+
+  @override
+  Future<String?> getCountryCode({
+    required double latitude,
+    required double longitude,
+  }) {
+    return _guard(
+      () async {
+        final res = await _dataSource.getCountry(
+          latitude: latitude,
+          longitude: longitude,
+        );
+        return res.countryCode;
+      },
+      message: '국가를 확인하는 중 오류가 발생했습니다',
       messageKey: 'errorCommunityPostsLoadGeneric',
     );
   }

@@ -730,7 +730,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityCreateLabelLocation => 'Location';
 
   @override
-  String get communityCreateHintLocation => 'Enter where you\'ll meet';
+  String get communityCreateHintLocation =>
+      'Enter the exact spot, e.g. main gate';
+
+  @override
+  String get communityCreateHintAddress =>
+      'Filled in when you pick a spot on the map';
 
   @override
   String get communityCreateHintPickLocation => 'Pick a spot on the map';
@@ -2213,6 +2218,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeInvalidInputValue =>
       'The value you entered doesn\'t meet the requirements';
+
+  @override
+  String get errorCodeAddressNotFound =>
+      'No address here. Please pick another spot';
 
   @override
   String get errorCodeInvalidDestination => 'Invalid connection path';

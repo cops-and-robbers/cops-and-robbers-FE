@@ -679,7 +679,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCreateLabelLocation => '場所';
 
   @override
-  String get communityCreateHintLocation => '集合場所を入力してください';
+  String get communityCreateHintLocation => '詳細な集合場所を入力してください 例) 正門';
+
+  @override
+  String get communityCreateHintAddress => '地図で位置を選ぶと入力されます';
 
   @override
   String get communityCreateHintPickLocation => '地図で位置を選んでください';
@@ -2058,6 +2061,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeInvalidInputValue => '入力値が条件に合いません';
+
+  @override
+  String get errorCodeAddressNotFound => '住所が見つかりません。別の場所を選んでください';
 
   @override
   String get errorCodeInvalidDestination => '接続先が正しくありません';

@@ -527,11 +527,6 @@ mixin _$CommunityPostPageEntity {
   String? get nextCursor => throw _privateConstructorUsedError;
   bool get hasNext => throw _privateConstructorUsedError;
 
-  /// 서버가 판별한 이 목록의 국가 코드. 좌표로 첫 요청을 보냈을 때 받아 두었다가
-  /// 다음 페이지부터 좌표 대신 실어 보낸다 — GPS를 페이지마다 다시 켜지 않으려는
-  /// 목적이다.
-  String? get countryCode => throw _privateConstructorUsedError;
-
   /// Create a copy of CommunityPostPageEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -550,7 +545,6 @@ abstract class $CommunityPostPageEntityCopyWith<$Res> {
     List<CommunityPostEntity> items,
     String? nextCursor,
     bool hasNext,
-    String? countryCode,
   });
 }
 
@@ -575,7 +569,6 @@ class _$CommunityPostPageEntityCopyWithImpl<
     Object? items = null,
     Object? nextCursor = freezed,
     Object? hasNext = null,
-    Object? countryCode = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -591,10 +584,6 @@ class _$CommunityPostPageEntityCopyWithImpl<
                 ? _value.hasNext
                 : hasNext // ignore: cast_nullable_to_non_nullable
                       as bool,
-            countryCode: freezed == countryCode
-                ? _value.countryCode
-                : countryCode // ignore: cast_nullable_to_non_nullable
-                      as String?,
           )
           as $Val,
     );
@@ -614,7 +603,6 @@ abstract class _$$CommunityPostPageEntityImplCopyWith<$Res>
     List<CommunityPostEntity> items,
     String? nextCursor,
     bool hasNext,
-    String? countryCode,
   });
 }
 
@@ -639,7 +627,6 @@ class __$$CommunityPostPageEntityImplCopyWithImpl<$Res>
     Object? items = null,
     Object? nextCursor = freezed,
     Object? hasNext = null,
-    Object? countryCode = freezed,
   }) {
     return _then(
       _$CommunityPostPageEntityImpl(
@@ -655,10 +642,6 @@ class __$$CommunityPostPageEntityImplCopyWithImpl<$Res>
             ? _value.hasNext
             : hasNext // ignore: cast_nullable_to_non_nullable
                   as bool,
-        countryCode: freezed == countryCode
-            ? _value.countryCode
-            : countryCode // ignore: cast_nullable_to_non_nullable
-                  as String?,
       ),
     );
   }
@@ -671,7 +654,6 @@ class _$CommunityPostPageEntityImpl implements _CommunityPostPageEntity {
     required final List<CommunityPostEntity> items,
     required this.nextCursor,
     required this.hasNext,
-    this.countryCode,
   }) : _items = items;
 
   final List<CommunityPostEntity> _items;
@@ -687,15 +669,9 @@ class _$CommunityPostPageEntityImpl implements _CommunityPostPageEntity {
   @override
   final bool hasNext;
 
-  /// 서버가 판별한 이 목록의 국가 코드. 좌표로 첫 요청을 보냈을 때 받아 두었다가
-  /// 다음 페이지부터 좌표 대신 실어 보낸다 — GPS를 페이지마다 다시 켜지 않으려는
-  /// 목적이다.
-  @override
-  final String? countryCode;
-
   @override
   String toString() {
-    return 'CommunityPostPageEntity(items: $items, nextCursor: $nextCursor, hasNext: $hasNext, countryCode: $countryCode)';
+    return 'CommunityPostPageEntity(items: $items, nextCursor: $nextCursor, hasNext: $hasNext)';
   }
 
   @override
@@ -706,9 +682,7 @@ class _$CommunityPostPageEntityImpl implements _CommunityPostPageEntity {
             const DeepCollectionEquality().equals(other._items, _items) &&
             (identical(other.nextCursor, nextCursor) ||
                 other.nextCursor == nextCursor) &&
-            (identical(other.hasNext, hasNext) || other.hasNext == hasNext) &&
-            (identical(other.countryCode, countryCode) ||
-                other.countryCode == countryCode));
+            (identical(other.hasNext, hasNext) || other.hasNext == hasNext));
   }
 
   @override
@@ -717,7 +691,6 @@ class _$CommunityPostPageEntityImpl implements _CommunityPostPageEntity {
     const DeepCollectionEquality().hash(_items),
     nextCursor,
     hasNext,
-    countryCode,
   );
 
   /// Create a copy of CommunityPostPageEntity
@@ -737,7 +710,6 @@ abstract class _CommunityPostPageEntity implements CommunityPostPageEntity {
     required final List<CommunityPostEntity> items,
     required final String? nextCursor,
     required final bool hasNext,
-    final String? countryCode,
   }) = _$CommunityPostPageEntityImpl;
 
   @override
@@ -746,12 +718,6 @@ abstract class _CommunityPostPageEntity implements CommunityPostPageEntity {
   String? get nextCursor;
   @override
   bool get hasNext;
-
-  /// 서버가 판별한 이 목록의 국가 코드. 좌표로 첫 요청을 보냈을 때 받아 두었다가
-  /// 다음 페이지부터 좌표 대신 실어 보낸다 — GPS를 페이지마다 다시 켜지 않으려는
-  /// 목적이다.
-  @override
-  String? get countryCode;
 
   /// Create a copy of CommunityPostPageEntity
   /// with the given fields replaced by the non-null parameter values.

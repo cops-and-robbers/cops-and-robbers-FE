@@ -1183,10 +1183,6 @@ mixin _$CommunityPostListResponseModel {
       throw _privateConstructorUsedError;
   CursorInfoModel get cursor => throw _privateConstructorUsedError;
 
-  /// 이 목록의 국가 코드. 좌표로 첫 요청을 보내면 서버가 판별해 실어 준다 —
-  /// 다음 페이지부터는 좌표 대신 이 값을 보낸다(GPS 재조회 회피).
-  String? get countryCode => throw _privateConstructorUsedError;
-
   /// Serializes this CommunityPostListResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -1208,11 +1204,7 @@ abstract class $CommunityPostListResponseModelCopyWith<$Res> {
         CommunityPostListResponseModel
       >;
   @useResult
-  $Res call({
-    List<CommunityPostResponseModel> content,
-    CursorInfoModel cursor,
-    String? countryCode,
-  });
+  $Res call({List<CommunityPostResponseModel> content, CursorInfoModel cursor});
 
   $CursorInfoModelCopyWith<$Res> get cursor;
 }
@@ -1234,11 +1226,7 @@ class _$CommunityPostListResponseModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? content = null,
-    Object? cursor = null,
-    Object? countryCode = freezed,
-  }) {
+  $Res call({Object? content = null, Object? cursor = null}) {
     return _then(
       _value.copyWith(
             content: null == content
@@ -1249,10 +1237,6 @@ class _$CommunityPostListResponseModelCopyWithImpl<
                 ? _value.cursor
                 : cursor // ignore: cast_nullable_to_non_nullable
                       as CursorInfoModel,
-            countryCode: freezed == countryCode
-                ? _value.countryCode
-                : countryCode // ignore: cast_nullable_to_non_nullable
-                      as String?,
           )
           as $Val,
     );
@@ -1278,11 +1262,7 @@ abstract class _$$CommunityPostListResponseModelImplCopyWith<$Res>
   ) = __$$CommunityPostListResponseModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    List<CommunityPostResponseModel> content,
-    CursorInfoModel cursor,
-    String? countryCode,
-  });
+  $Res call({List<CommunityPostResponseModel> content, CursorInfoModel cursor});
 
   @override
   $CursorInfoModelCopyWith<$Res> get cursor;
@@ -1305,11 +1285,7 @@ class __$$CommunityPostListResponseModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? content = null,
-    Object? cursor = null,
-    Object? countryCode = freezed,
-  }) {
+  $Res call({Object? content = null, Object? cursor = null}) {
     return _then(
       _$CommunityPostListResponseModelImpl(
         content: null == content
@@ -1320,10 +1296,6 @@ class __$$CommunityPostListResponseModelImplCopyWithImpl<$Res>
             ? _value.cursor
             : cursor // ignore: cast_nullable_to_non_nullable
                   as CursorInfoModel,
-        countryCode: freezed == countryCode
-            ? _value.countryCode
-            : countryCode // ignore: cast_nullable_to_non_nullable
-                  as String?,
       ),
     );
   }
@@ -1336,7 +1308,6 @@ class _$CommunityPostListResponseModelImpl
   const _$CommunityPostListResponseModelImpl({
     required final List<CommunityPostResponseModel> content,
     required this.cursor,
-    this.countryCode,
   }) : _content = content;
 
   factory _$CommunityPostListResponseModelImpl.fromJson(
@@ -1354,14 +1325,9 @@ class _$CommunityPostListResponseModelImpl
   @override
   final CursorInfoModel cursor;
 
-  /// 이 목록의 국가 코드. 좌표로 첫 요청을 보내면 서버가 판별해 실어 준다 —
-  /// 다음 페이지부터는 좌표 대신 이 값을 보낸다(GPS 재조회 회피).
-  @override
-  final String? countryCode;
-
   @override
   String toString() {
-    return 'CommunityPostListResponseModel(content: $content, cursor: $cursor, countryCode: $countryCode)';
+    return 'CommunityPostListResponseModel(content: $content, cursor: $cursor)';
   }
 
   @override
@@ -1370,9 +1336,7 @@ class _$CommunityPostListResponseModelImpl
         (other.runtimeType == runtimeType &&
             other is _$CommunityPostListResponseModelImpl &&
             const DeepCollectionEquality().equals(other._content, _content) &&
-            (identical(other.cursor, cursor) || other.cursor == cursor) &&
-            (identical(other.countryCode, countryCode) ||
-                other.countryCode == countryCode));
+            (identical(other.cursor, cursor) || other.cursor == cursor));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1381,7 +1345,6 @@ class _$CommunityPostListResponseModelImpl
     runtimeType,
     const DeepCollectionEquality().hash(_content),
     cursor,
-    countryCode,
   );
 
   /// Create a copy of CommunityPostListResponseModel
@@ -1408,7 +1371,6 @@ abstract class _CommunityPostListResponseModel
   const factory _CommunityPostListResponseModel({
     required final List<CommunityPostResponseModel> content,
     required final CursorInfoModel cursor,
-    final String? countryCode,
   }) = _$CommunityPostListResponseModelImpl;
 
   factory _CommunityPostListResponseModel.fromJson(Map<String, dynamic> json) =
@@ -1419,17 +1381,188 @@ abstract class _CommunityPostListResponseModel
   @override
   CursorInfoModel get cursor;
 
-  /// 이 목록의 국가 코드. 좌표로 첫 요청을 보내면 서버가 판별해 실어 준다 —
-  /// 다음 페이지부터는 좌표 대신 이 값을 보낸다(GPS 재조회 회피).
-  @override
-  String? get countryCode;
-
   /// Create a copy of CommunityPostListResponseModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityPostListResponseModelImplCopyWith<
     _$CommunityPostListResponseModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityCountryResponseModel _$CommunityCountryResponseModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityCountryResponseModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityCountryResponseModel {
+  String? get countryCode => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityCountryResponseModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityCountryResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityCountryResponseModelCopyWith<CommunityCountryResponseModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityCountryResponseModelCopyWith<$Res> {
+  factory $CommunityCountryResponseModelCopyWith(
+    CommunityCountryResponseModel value,
+    $Res Function(CommunityCountryResponseModel) then,
+  ) =
+      _$CommunityCountryResponseModelCopyWithImpl<
+        $Res,
+        CommunityCountryResponseModel
+      >;
+  @useResult
+  $Res call({String? countryCode});
+}
+
+/// @nodoc
+class _$CommunityCountryResponseModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityCountryResponseModel
+>
+    implements $CommunityCountryResponseModelCopyWith<$Res> {
+  _$CommunityCountryResponseModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityCountryResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? countryCode = freezed}) {
+    return _then(
+      _value.copyWith(
+            countryCode: freezed == countryCode
+                ? _value.countryCode
+                : countryCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityCountryResponseModelImplCopyWith<$Res>
+    implements $CommunityCountryResponseModelCopyWith<$Res> {
+  factory _$$CommunityCountryResponseModelImplCopyWith(
+    _$CommunityCountryResponseModelImpl value,
+    $Res Function(_$CommunityCountryResponseModelImpl) then,
+  ) = __$$CommunityCountryResponseModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? countryCode});
+}
+
+/// @nodoc
+class __$$CommunityCountryResponseModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityCountryResponseModelCopyWithImpl<
+          $Res,
+          _$CommunityCountryResponseModelImpl
+        >
+    implements _$$CommunityCountryResponseModelImplCopyWith<$Res> {
+  __$$CommunityCountryResponseModelImplCopyWithImpl(
+    _$CommunityCountryResponseModelImpl _value,
+    $Res Function(_$CommunityCountryResponseModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityCountryResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? countryCode = freezed}) {
+    return _then(
+      _$CommunityCountryResponseModelImpl(
+        countryCode: freezed == countryCode
+            ? _value.countryCode
+            : countryCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityCountryResponseModelImpl
+    implements _CommunityCountryResponseModel {
+  const _$CommunityCountryResponseModelImpl({this.countryCode});
+
+  factory _$CommunityCountryResponseModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityCountryResponseModelImplFromJson(json);
+
+  @override
+  final String? countryCode;
+
+  @override
+  String toString() {
+    return 'CommunityCountryResponseModel(countryCode: $countryCode)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityCountryResponseModelImpl &&
+            (identical(other.countryCode, countryCode) ||
+                other.countryCode == countryCode));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, countryCode);
+
+  /// Create a copy of CommunityCountryResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityCountryResponseModelImplCopyWith<
+    _$CommunityCountryResponseModelImpl
+  >
+  get copyWith =>
+      __$$CommunityCountryResponseModelImplCopyWithImpl<
+        _$CommunityCountryResponseModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityCountryResponseModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityCountryResponseModel
+    implements CommunityCountryResponseModel {
+  const factory _CommunityCountryResponseModel({final String? countryCode}) =
+      _$CommunityCountryResponseModelImpl;
+
+  factory _CommunityCountryResponseModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityCountryResponseModelImpl.fromJson;
+
+  @override
+  String? get countryCode;
+
+  /// Create a copy of CommunityCountryResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityCountryResponseModelImplCopyWith<
+    _$CommunityCountryResponseModelImpl
   >
   get copyWith => throw _privateConstructorUsedError;
 }

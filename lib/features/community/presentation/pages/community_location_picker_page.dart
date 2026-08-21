@@ -15,12 +15,14 @@ import '../providers/community_provider.dart';
 
 /// 작성 화면이 돌려받는 모임 장소.
 ///
-/// [region]은 화면에 보여 줄 값일 뿐이다 — 서버는 글을 저장할 때 좌표로 다시
-/// 역지오코딩하므로 전송하지 않는다.
+/// [region]·[address]는 화면에 보여 줄 값일 뿐이다 — 서버는 글을 저장할 때 좌표로
+/// 다시 역지오코딩하므로 전송하지 않는다. [region](동 단위)은 지도 미리보기 라벨에,
+/// [address](번지 포함)는 상세주소 읽기 전용 칸에 쓴다.
 typedef CommunityPickedLocation = ({
   double latitude,
   double longitude,
   String? region,
+  String? address,
 });
 
 /// 모임 장소 선택 화면
@@ -54,6 +56,12 @@ class _CommunityLocationPickerPageState
   static const LatLng _fallbackTarget = LatLng(37.5480, 127.0810);
 
   static const double _zoom = 16;
+
+  /// 줌 한계 — 상한 20은 다른 지도들과 같은 값이고, 하한 12는 인게임 지도
+  /// (`google_map_view.dart:46`) 기본값을 그대로 쓴다. 구역이 없는 지도라
+  /// 반경으로 계산할 게 없고, 동네를 못 알아볼 만큼 축소되면 어디를 찍는지
+  /// 알 수 없어 핀을 정확히 놓을 수 없다.
+  static const _zoomLimit = MinMaxZoomPreference(12, 20);
 
   LatLng? _target;
 
@@ -89,14 +97,11 @@ class _CommunityLocationPickerPageState
   /// 권한이 **이미 있을 때만** 현재 위치를 쓴다 — 장소를 고르러 들어온 화면에서
   /// 권한 팝업부터 띄우지 않는다.
   ///
-  /// 목록이 쓰는 판별기를 그대로 재사용한다. 그쪽이 이미 "권한 있으면 좌표,
-  /// 없으면 국가 코드"라서, 좌표가 비면 여기서도 권한이 없는 것이다.
+  /// 목록이 쓰는 판별기를 그대로 재사용한다 — 좌표가 비면 권한이 없는 것이다.
   Future<LatLng> _currentOrFallback() async {
-    final query = await ref.read(countryQueryResolverProvider)();
-    final latitude = query.latitude;
-    final longitude = query.longitude;
-    if (latitude == null || longitude == null) return _fallbackTarget;
-    return LatLng(latitude, longitude);
+    final position = await ref.read(currentPositionResolverProvider)();
+    if (position == null) return _fallbackTarget;
+    return LatLng(position.latitude, position.longitude);
   }
 
   Future<void> _lookUp(LatLng target) async {
@@ -123,13 +128,14 @@ class _CommunityLocationPickerPageState
 
   void _confirm() {
     final target = _target;
-    final region = _address?.valueOrNull?.region;
+    final address = _address?.valueOrNull;
     if (target == null) return;
 
     Navigator.of(context).pop<CommunityPickedLocation>((
       latitude: target.latitude,
       longitude: target.longitude,
-      region: region,
+      region: address?.region,
+      address: address?.address,
     ));
   }
 
@@ -163,6 +169,7 @@ class _CommunityLocationPickerPageState
                     target: target,
                     zoom: _zoom,
                   ),
+                  minMaxZoomPreference: _zoomLimit,
                   onMapCreated: (controller) => _mapController = controller,
                   onTap: _onMapTapped,
                   markers: {
@@ -196,7 +203,7 @@ class _CommunityLocationPickerPageState
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: AppRadius.large,
-          boxShadow: AppShadows.ver2,
+          boxShadow: AppShadows.vague,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
