@@ -397,7 +397,7 @@
   "@communityMenuDelete": {
     "description": "모집글 더보기 메뉴 — 내 글 삭제"
   },
-  "communityMenuMarkCompleted": "모집 마감하기",
+  "communityMenuMarkCompleted": "마감하기",
   "@communityMenuMarkCompleted": {
     "description": "모집글 더보기 메뉴 — 모집중인 글을 마감으로 바꾸기"
   },
@@ -579,6 +579,11 @@
   "@communityLocationPickerNotFound": {
     "description": "장소 선택 지도 화면 — 좌표 주소 조회가 실패했을 때의 안내"
   },
+  "communityCreateLoading": "모집글 올리는 중...",
+  "@communityCreateLoading": {
+    "description": "모집글 등록 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)"
+  },
+  "communityCreateLoadingSub": "모집글을 등록하는 중이에요. 잠시만 기다려주세요",
   "communityCreateLabelHeadcount": "모집 인원",
   "@communityCreateLabelHeadcount": {
     "description": "모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)"
@@ -2385,7 +2390,7 @@
   "errorCodeUnauthorizedSubscription": "해당 팀 전용 채널을 구독할 권한이 없어요",
   "errorCodeInternalServerError": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "@errorCodeInternalServerError": {
-    "description": "의도적으로 docs/error-codes.md detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용."
+    "description": "의도적으로 백엔드 detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용."
   },
   "errorCodeFirebaseInitError": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "errorCodeFirebaseConfigNotFound": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
@@ -2445,6 +2450,10 @@
   "errorCodeDuplicateReport": "해당 게임에서 이미 신고한 사용자예요",
   "errorCodeReportNotFound": "해당 신고 내역이 존재하지 않아요",
   "errorCodeReportTargetNotFound": "해당 게임에 존재하지 않는 참가자예요",
+  "errorCodeInvalidMeetingDate": "모임 시간은 지금 이후로 골라주세요",
+  "errorCodePostNotFound": "이미 삭제된 모집글이에요",
+  "errorCodeForbiddenNotAuthor": "작성자만 수정하거나 삭제할 수 있어요",
+  "errorCodeCountryNotSpecified": "국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요",
   "pingFound": "발견",
   "@pingFound": {
     "description": "맵 핑 선택 카드 — 상대 발견 핑 라벨"

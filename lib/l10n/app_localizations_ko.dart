@@ -560,7 +560,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityMenuDelete => '삭제하기';
 
   @override
-  String get communityMenuMarkCompleted => '모집 마감하기';
+  String get communityMenuMarkCompleted => '마감하기';
 
   @override
   String get communityMenuMarkRecruiting => '다시 모집하기';
@@ -701,6 +701,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get communityLocationPickerNotFound => '주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요';
+
+  @override
+  String get communityCreateLoading => '모집글 올리는 중...';
+
+  @override
+  String get communityCreateLoadingSub => '모집글을 등록하는 중이에요. 잠시만 기다려주세요';
 
   @override
   String get communityCreateLabelHeadcount => '모집 인원';
@@ -2264,6 +2270,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeReportTargetNotFound => '해당 게임에 존재하지 않는 참가자예요';
+
+  @override
+  String get errorCodeInvalidMeetingDate => '모임 시간은 지금 이후로 골라주세요';
+
+  @override
+  String get errorCodePostNotFound => '이미 삭제된 모집글이에요';
+
+  @override
+  String get errorCodeForbiddenNotAuthor => '작성자만 수정하거나 삭제할 수 있어요';
+
+  @override
+  String get errorCodeCountryNotSpecified =>
+      '국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요';
 
   @override
   String get pingFound => '발견';

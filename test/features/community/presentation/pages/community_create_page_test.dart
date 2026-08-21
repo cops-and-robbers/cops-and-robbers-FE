@@ -234,6 +234,28 @@ void main() {
       expect(repo.lastCreated?.title, '퇴근하고 한 판');
     });
 
+    testWidgets('shows_loading_while_the_post_is_being_created', (
+      tester,
+    ) async {
+      // 등록에 1초 안팎 걸리는데 아무 변화가 없으면 "눌린 건가?" 싶어 두 번
+      // 누르게 된다. 응답이 올 때까지 로딩으로 덮는다.
+      final repo = _CreateRepository();
+      await _pumpPage(tester, repo);
+
+      await _fillTextFields(tester);
+      await _pickDate(tester);
+      await _pickLocation(tester);
+      await tester.tap(find.text('완료'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.text('모집글 올리는 중...'), findsOneWidget);
+
+      // 응답 뒤에는 걷힌다 — 남아 있으면 화면이 잠긴다.
+      await tester.pumpAndSettle();
+      expect(find.text('모집글 올리는 중...'), findsNothing);
+    });
+
     testWidgets('shows_date_and_time_rows_when_date_sheet_opens', (
       tester,
     ) async {

@@ -563,7 +563,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityMenuDelete => '削除する';
 
   @override
-  String get communityMenuMarkCompleted => '募集を締め切る';
+  String get communityMenuMarkCompleted => '締め切る';
 
   @override
   String get communityMenuMarkRecruiting => '再募集する';
@@ -704,6 +704,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get communityLocationPickerNotFound => '住所が見つかりません。別の場所を選んでください';
+
+  @override
+  String get communityCreateLoading => '募集を投稿しています';
+
+  @override
+  String get communityCreateLoadingSub => '募集を登録しています。少々お待ちください';
 
   @override
   String get communityCreateLabelHeadcount => '募集人数';
@@ -2267,6 +2273,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeReportTargetNotFound => 'このゲームに存在しない参加者です';
+
+  @override
+  String get errorCodeInvalidMeetingDate => '集まる時間は現在より後を選んでください';
+
+  @override
+  String get errorCodePostNotFound => 'この募集はすでに削除されました';
+
+  @override
+  String get errorCodeForbiddenNotAuthor => '作成者のみ編集・削除できます';
+
+  @override
+  String get errorCodeCountryNotSpecified => '国を確認できない場所です。別の場所で試してください';
 
   @override
   String get pingFound => '発見';

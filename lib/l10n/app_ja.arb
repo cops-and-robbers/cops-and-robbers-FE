@@ -183,7 +183,7 @@
   "communityLoginRequiredMessage": "ログインが必要な機能です",
   "communityMenuEdit": "修正する",
   "communityMenuDelete": "削除する",
-  "communityMenuMarkCompleted": "募集を締め切る",
+  "communityMenuMarkCompleted": "締め切る",
   "communityMenuMarkRecruiting": "再募集する",
   "communityMenuLoginRequired": "ログインして利用する",
   "communityStatusRecruiting": "募集中",
@@ -253,6 +253,8 @@
   "communityLocationPickerLoading": "住所を確認しています",
   "communityLocationPickerHint": "地図をタップして集合場所を決めます",
   "communityLocationPickerNotFound": "住所が見つかりません。別の場所を選んでください",
+  "communityCreateLoading": "募集を投稿しています",
+  "communityCreateLoadingSub": "募集を登録しています。少々お待ちください",
   "communityCreateLabelHeadcount": "募集人数",
   "communityHeadcountValue": "{count}人",
   "@communityHeadcountValue": {
@@ -762,6 +764,10 @@
   "errorCodeDuplicateReport": "このゲームですでにこのユーザーを通報しています",
   "errorCodeReportNotFound": "該当する通報履歴が存在しません",
   "errorCodeReportTargetNotFound": "このゲームに存在しない参加者です",
+  "errorCodeInvalidMeetingDate": "集まる時間は現在より後を選んでください",
+  "errorCodePostNotFound": "この募集はすでに削除されました",
+  "errorCodeForbiddenNotAuthor": "作成者のみ編集・削除できます",
+  "errorCodeCountryNotSpecified": "国を確認できない場所です。別の場所で試してください",
   "pingFound": "発見",
   "@pingFound": {
     "description": "マップピン選択カード — 相手を発見したピンのラベル"

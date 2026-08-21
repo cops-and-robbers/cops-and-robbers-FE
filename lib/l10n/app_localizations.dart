@@ -1129,7 +1129,7 @@ abstract class AppLocalizations {
   /// 모집글 더보기 메뉴 — 모집중인 글을 마감으로 바꾸기
   ///
   /// In ko, this message translates to:
-  /// **'모집 마감하기'**
+  /// **'마감하기'**
   String get communityMenuMarkCompleted;
 
   /// 모집글 더보기 메뉴 — 마감된 글을 모집중으로 되돌리기
@@ -1375,6 +1375,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요'**
   String get communityLocationPickerNotFound;
+
+  /// 모집글 등록 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글 올리는 중...'**
+  String get communityCreateLoading;
+
+  /// No description provided for @communityCreateLoadingSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 등록하는 중이에요. 잠시만 기다려주세요'**
+  String get communityCreateLoadingSub;
 
   /// 모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)
   ///
@@ -4009,7 +4021,7 @@ abstract class AppLocalizations {
   /// **'해당 팀 전용 채널을 구독할 권한이 없어요'**
   String get errorCodeUnauthorizedSubscription;
 
-  /// 의도적으로 docs/error-codes.md detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용.
+  /// 의도적으로 백엔드 detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용.
   ///
   /// In ko, this message translates to:
   /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
@@ -4362,6 +4374,30 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'해당 게임에 존재하지 않는 참가자예요'**
   String get errorCodeReportTargetNotFound;
+
+  /// No description provided for @errorCodeInvalidMeetingDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'모임 시간은 지금 이후로 골라주세요'**
+  String get errorCodeInvalidMeetingDate;
+
+  /// No description provided for @errorCodePostNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 삭제된 모집글이에요'**
+  String get errorCodePostNotFound;
+
+  /// No description provided for @errorCodeForbiddenNotAuthor.
+  ///
+  /// In ko, this message translates to:
+  /// **'작성자만 수정하거나 삭제할 수 있어요'**
+  String get errorCodeForbiddenNotAuthor;
+
+  /// No description provided for @errorCodeCountryNotSpecified.
+  ///
+  /// In ko, this message translates to:
+  /// **'국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요'**
+  String get errorCodeCountryNotSpecified;
 
   /// 맵 핑 선택 카드 — 상대 발견 핑 라벨
   ///

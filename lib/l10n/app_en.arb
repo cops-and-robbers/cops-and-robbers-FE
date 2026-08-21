@@ -253,6 +253,8 @@
   "communityLocationPickerLoading": "Checking the address",
   "communityLocationPickerHint": "Tap the map to set your meeting spot",
   "communityLocationPickerNotFound": "No address here. Please pick another spot",
+  "communityCreateLoading": "Posting your recruitment",
+  "communityCreateLoadingSub": "We're publishing your post. Please wait a moment",
   "communityCreateLabelHeadcount": "Headcount",
   "communityHeadcountValue": "{count}",
   "@communityHeadcountValue": {
@@ -762,6 +764,10 @@
   "errorCodeDuplicateReport": "You've already reported this user in this game",
   "errorCodeReportNotFound": "The report does not exist",
   "errorCodeReportTargetNotFound": "This participant does not exist in the game",
+  "errorCodeInvalidMeetingDate": "Pick a meeting time in the future",
+  "errorCodePostNotFound": "This post has been deleted",
+  "errorCodeForbiddenNotAuthor": "Only the author can edit or delete this post",
+  "errorCodeCountryNotSpecified": "We can't identify the country here. Please try from another spot",
   "pingFound": "Found",
   "@pingFound": {
     "description": "Map ping selection card — spotted-enemy ping label"

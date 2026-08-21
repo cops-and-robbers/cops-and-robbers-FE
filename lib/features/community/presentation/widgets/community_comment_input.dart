@@ -106,12 +106,21 @@ class _CommunityCommentInputState extends State<CommunityCommentInput> {
                         // 긴 댓글도 쓰지만 입력창이 화면을 다 먹으면 안 된다.
                         maxLines: 4,
                         minLines: 1,
+                        // 댓글 API가 아직 없어 맞출 서버 검증값이 없다. 상한 없이
+                        // 두면 댓글 하나가 목록을 통째로 밀어내므로 모집글 설명과
+                        // 같은 값으로 1차 방어만 걸어 둔다 — API가 생기면 서버 값을
+                        // 정본으로 삼아 맞춘다 (LSN-0008).
+                        maxLength: 1000,
                         textInputAction: TextInputAction.newline,
                         style: AppTextStyles.paragraph_14.copyWith(
                           color: AppColors.black,
                         ),
                         decoration: InputDecoration(
                           isDense: true,
+                          // maxLength 기본 카운터는 입력창 아래 한 줄을 더 먹어
+                          // 높이(42)를 넘긴다. 제한은 걸되 표시는 하지 않는다
+                          // (AppTextField도 같은 처리).
+                          counterText: '',
                           hintText: replyTo == null
                               ? l10n.communityCommentHint
                               : l10n.communityCommentReplyHint,

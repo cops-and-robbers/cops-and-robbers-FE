@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
@@ -114,6 +117,56 @@ void main() {
         messageKey: 'errorNetworkTimeout',
       );
       expect(l10n.errorByException(e), l10n.errorNetworkTimeout);
+    });
+  });
+
+  // docs/api-docs.json이 정본이다(CLAUDE.md). 백엔드가 새 errorCode를 내면
+  // 매핑 누락은 조용히 "일시적인 오류" 폴백으로 떨어져 사용자에게 틀린 안내를
+  // 준다 — INVALID_MEETING_DATE가 그랬다. 그 재발을 여기서 막는다.
+  group('api-docs errorCode coverage', () {
+    // 폴백이 맞는 안내라서 일부러 매핑하지 않는 코드들
+    const intentionallyUnmapped = {
+      'ADDRESS_LOOKUP_FAILED', // 벤더 장애 — 실제로 재시도하면 된다
+      'UNSUPPORTED_LIST_SCOPE', // 앱이 보내지 않는 값 — 오면 클라이언트 버그
+      'UNSUPPORTED_LIST_SORT',
+    };
+
+    test('every_documented_error_code_has_a_specific_message', () {
+      final spec =
+          jsonDecode(File('docs/api-docs.json').readAsStringSync())
+              as Map<String, dynamic>;
+
+      final codes = <String>{};
+      for (final path in (spec['paths'] as Map).values) {
+        for (final op in (path as Map).values) {
+          if (op is! Map) continue;
+          for (final res in ((op['responses'] as Map?) ?? {}).values) {
+            for (final content
+                in (((res as Map)['content'] as Map?) ?? {}).values) {
+              for (final ex
+                  in (((content as Map)['examples'] as Map?) ?? {}).values) {
+                final code = ((ex as Map)['value'] as Map?)?['errorCode'];
+                if (code is String) codes.add(code);
+              }
+            }
+          }
+        }
+      }
+
+      expect(codes, isNotEmpty, reason: 'api-docs.json 파싱 실패');
+
+      final unmapped =
+          codes
+              .where((c) => !intentionallyUnmapped.contains(c))
+              .where((c) => l10n.errorByCode(c) == l10n.errorTemporaryRetry)
+              .toList()
+            ..sort();
+
+      expect(
+        unmapped,
+        isEmpty,
+        reason: 'error_message_mapper에 매핑이 없어 공통 폴백으로 떨어지는 코드',
+      );
     });
   });
 }

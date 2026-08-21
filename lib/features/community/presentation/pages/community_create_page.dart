@@ -12,6 +12,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
+import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/community_provider.dart';
@@ -267,6 +268,10 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
           focusNode: _contentFocus,
           hintText: l10n.communityCreateHintContent,
           width: double.infinity,
+          // 서버는 아직 content 길이를 검증하지 않는다 — `@NotBlank`뿐이고 컬럼도
+          // TEXT라 몇 MB든 그대로 저장된다. 화면에서 먼저 막아 두는 1차 방어이며,
+          // 서버에 `@Size`가 생기면 그 값이 정본이고 여기를 맞춘다 (LSN-0008).
+          maxLength: 1000,
           // 여러 줄 입력에서 엔터는 줄바꿈이다 — 규칙·준비물을 줄로 나눠 적는
           // 칸이라 여기서 포커스를 넘기면 그걸 못 쓴다.
           maxLines: 100,
@@ -591,7 +596,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
     );
   }
 
-  /// 등록 API 연결 지점. 지금은 화면만 있어 안내로 끝낸다.
+  /// 등록 API 호출. 응답까지 1초 안팎 비는 구간을 로딩 화면으로 덮는다.
   Future<void> _submit() async {
     final picked = _picked;
     final meetingAt = _meetingAt;
@@ -599,6 +604,13 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
 
     VibrationService.instance().buttonTap();
     setState(() => _submitting = true);
+
+    final l10n = AppLocalizations.of(context);
+    final loading = AppLoading.showMessage(
+      context,
+      message: l10n.communityCreateLoading,
+      subtitle: l10n.communityCreateLoadingSub,
+    );
 
     try {
       final created = await ref
@@ -612,6 +624,9 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
             placeName: _locationController.text.trim(),
             maxParticipants: _headcount,
           );
+      // 로딩은 dialog route다. 먼저 닫지 않으면 아래 pop이 이 화면 대신
+      // 로딩 라우트를 닫는다 (app_loading.dart 주석 참조).
+      await loading.close();
       if (!mounted) return;
 
       // 목록을 무효화해 방금 쓴 글이 맨 위에 보이게 한다. 화면을 먼저 닫으면
@@ -619,6 +634,8 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
       ref.invalidate(communityFeedNotifierProvider);
       Navigator.of(context).pop(created);
     } on AppException catch (e) {
+      // 불투명 배리어가 스낵바를 가리므로 로딩을 먼저 걷어낸다.
+      await loading.close();
       if (!mounted) return;
       // 과거 모임 시각·주소 없는 좌표 등 서버가 거절한 이유를 그대로 보여 준다.
       AppSnackbar.show(
@@ -626,6 +643,9 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
         message: AppLocalizations.of(context).errorByException(e),
       );
       setState(() => _submitting = false);
+    } finally {
+      // 예기치 못한 예외로 로딩이 남아 화면이 잠기는 것 방지 (close는 idempotent)
+      await loading.close();
     }
   }
 }

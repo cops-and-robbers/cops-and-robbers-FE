@@ -761,6 +761,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'No address here. Please pick another spot';
 
   @override
+  String get communityCreateLoading => 'Posting your recruitment';
+
+  @override
+  String get communityCreateLoadingSub =>
+      'We\'re publishing your post. Please wait a moment';
+
+  @override
   String get communityCreateLabelHeadcount => 'Headcount';
 
   @override
@@ -2459,6 +2466,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeReportTargetNotFound =>
       'This participant does not exist in the game';
+
+  @override
+  String get errorCodeInvalidMeetingDate => 'Pick a meeting time in the future';
+
+  @override
+  String get errorCodePostNotFound => 'This post has been deleted';
+
+  @override
+  String get errorCodeForbiddenNotAuthor =>
+      'Only the author can edit or delete this post';
+
+  @override
+  String get errorCodeCountryNotSpecified =>
+      'We can\'t identify the country here. Please try from another spot';
 
   @override
   String get pingFound => 'Found';
