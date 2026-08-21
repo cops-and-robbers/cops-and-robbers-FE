@@ -267,6 +267,10 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
           focusNode: _contentFocus,
           hintText: l10n.communityCreateHintContent,
           width: double.infinity,
+          // 서버는 아직 content 길이를 검증하지 않는다 — `@NotBlank`뿐이고 컬럼도
+          // TEXT라 몇 MB든 그대로 저장된다. 화면에서 먼저 막아 두는 1차 방어이며,
+          // 서버에 `@Size`가 생기면 그 값이 정본이고 여기를 맞춘다 (LSN-0008).
+          maxLength: 1000,
           // 여러 줄 입력에서 엔터는 줄바꿈이다 — 규칙·준비물을 줄로 나눠 적는
           // 칸이라 여기서 포커스를 넘기면 그걸 못 쓴다.
           maxLines: 100,
