@@ -147,12 +147,13 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
     return Column(
       children: [
         Expanded(
-          // 본문 아무 곳이나 누르면 답글 모드가 풀린다 — 입력창 위 안내 배너를
-          // 없앤 뒤로 여기가 유일한 해제 경로다. 지도·좋아요·댓글 메뉴처럼 자기
-          // 탭을 가진 것들은 제스처 경쟁에서 안쪽이 이기므로 그대로 동작한다.
+          // 본문 아무 곳이나 누르면 키보드가 내려가고 답글 모드가 풀린다 —
+          // 입력창 위 안내 배너를 없앤 뒤로 여기가 유일한 해제 경로다. 지도·
+          // 좋아요·댓글 메뉴처럼 자기 탭을 가진 것들은 제스처 경쟁에서 안쪽이
+          // 이기므로 그대로 동작한다.
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: _clearReplyTarget,
+            onTap: _dismissCommentComposing,
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,8 +435,14 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
   // 동작
   // ==========================================================================
 
-  /// 답글 모드를 끈다. 이미 꺼져 있으면 아무 일도 하지 않는다.
-  void _clearReplyTarget() {
+  /// 댓글을 쓰다 말고 본문으로 돌아온 상태로 되돌린다 — 키보드를 내리고 답글
+  /// 모드를 끈다.
+  ///
+  /// 답글 모드가 아니어도 키보드는 내린다. 최상위 댓글을 쓰다 본문을 읽으러
+  /// 올라온 경우가 그쪽인데, 거기서 키보드가 남아 있으면 화면 절반이 가린다.
+  /// 쓰던 글자는 지우지 않는다 — 답글이 풀리면 그대로 최상위 댓글이 된다.
+  void _dismissCommentComposing() {
+    FocusScope.of(context).unfocus();
     if (_replyTarget == null) return;
     setState(() => _replyTarget = null);
   }

@@ -299,5 +299,26 @@ void main() {
       expect(find.text('댓글을 남겨보세요'), findsOneWidget);
       expect(find.text('답글을 남겨보세요'), findsNothing);
     });
+
+    testWidgets('drops_the_keyboard_when_the_body_is_tapped', (tester) async {
+      // 답글 달기는 입력창에 포커스를 준다. 본문을 눌러 빠져나올 때 키보드가
+      // 남아 있으면 화면 절반이 가려진 채로 글을 읽게 된다.
+      await tester.pumpWidget(_wrap(_DetailRepository(_post())));
+      await tester.pumpAndSettle();
+
+      await tapReply(tester);
+      expect(_commentFieldHasFocus(tester), isTrue);
+
+      await tester.ensureVisible(find.text('본문'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('본문'));
+      await tester.pumpAndSettle();
+
+      expect(_commentFieldHasFocus(tester), isFalse);
+    });
   });
 }
+
+/// 댓글 입력창이 포커스를 쥐고 있는지 — 키보드가 떠 있는지를 이걸로 읽는다.
+bool _commentFieldHasFocus(WidgetTester tester) =>
+    tester.widget<TextField>(find.byType(TextField)).focusNode!.hasFocus;
