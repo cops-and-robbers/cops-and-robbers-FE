@@ -225,7 +225,7 @@ class _CommentTile extends StatelessWidget {
                 SizedBox(height: AppSpacing.vertical4),
                 Text(
                   comment.content,
-                  style: AppTextStyles.paragraph_14_regular.copyWith(
+                  style: AppTextStyles.paragraph14Regular.copyWith(
                     color: AppColors.black700,
                   ),
                 ),
