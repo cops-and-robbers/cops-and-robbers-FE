@@ -82,6 +82,7 @@ dependencies:
   connectivity_plus: ^6.1.0
   # 광고
   google_mobile_ads: ^7.0.0 # AdMob 전면 광고 (게임 종료 시점)
+  custom_refresh_indicator: ^4.0.2
   # 로케일 기반 동적 앱 아이콘은 third-party 없이 자체 네이티브 채널(cops_and_robbers/app_icon)로 구현.
   #   iOS: AppDelegate에서 UIApplication.setAlternateIconName / Android: MainActivity activity-alias 토글
   #   (flutter_dynamic_icon=AGP8·v1 embedding 비호환, flutter_dynamic_icon_plus=iOS SwiftTryCatch 원본 삭제로 모두 제거)

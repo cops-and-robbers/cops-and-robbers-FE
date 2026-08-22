@@ -1,11 +1,20 @@
 import 'dart:async';
+import 'dart:ui' show PlatformDispatcher;
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart' show LocationAccuracy;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/services/location/device_location_service.dart';
+import '../../../../core/services/permission/location_permission_service.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../data/datasources/community_remote_datasource.dart';
 import '../../data/repositories/community_repository_impl.dart';
+import '../../domain/community_post_errors.dart';
+import '../../domain/entities/community_post_entity.dart';
+import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../../domain/repositories/community_repository.dart';
@@ -28,6 +37,9 @@ CommunityRemoteDataSource communityRemoteDataSource(Ref ref) {
 // ============================================================================
 
 /// `CommunityRepository` Provider
+///
+/// 좋아요·스크랩·댓글은 백엔드에 API가 없어 아직 목이다
+/// (`communityInteractionRepositoryProvider`). 게시글 CRUD는 전부 실서버다.
 @riverpod
 CommunityRepository communityRepository(Ref ref) {
   return CommunityRepositoryImpl(ref.watch(communityRemoteDataSourceProvider));
@@ -65,15 +77,106 @@ class SelectedCommunitySort extends _$SelectedCommunitySort {
   void select(CommunitySortOption option) => state = option;
 }
 
-/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
+/// 기기의 현재 좌표.
+typedef DeviceCoordinates = ({double latitude, double longitude});
+
+/// 현재 위치를 구한다 — 권한이 **이미 있을 때만**.
+///
+/// 목록 한 번 보자고, 장소 한 번 고르자고 권한 팝업을 띄우지 않는다. 권한이
+/// 없거나 GPS가 응답하지 않으면 `null`이고, 호출자가 각자의 방식으로 물러선다
+/// (목록은 기기 로케일, 장소 선택 화면은 기본 좌표).
+///
+/// 정확도를 [LocationAccuracy.medium](~100m)으로 낮추고 대기를 3초로 줄인 이유:
+/// 두 호출처 모두 미터 정밀도가 필요 없다 — 국가 판별과 지도 시작점이다. 반면
+/// 이 대기는 화면 진입을 그대로 막는다(국가 → 목록 순서라 직렬이다). 길게 잡아 봐야
+/// 폴백을 늦게 줄 뿐이라, 백엔드가 VWorld 타임아웃을 2초로 되돌린 판단과 같은 이유로
+/// 짧게 둔다.
+Future<DeviceCoordinates?> resolveCurrentPosition() async {
+  if (!await LocationPermissionService.canAccessLocation()) return null;
+
+  final position = await DeviceLocationService.getCurrentPosition(
+    accuracy: LocationAccuracy.medium,
+    timeLimit: const Duration(seconds: 3),
+  );
+  if (position == null) return null;
+
+  return (latitude: position.latitude, longitude: position.longitude);
+}
+
+/// 현재 위치 판별기 Provider
+///
+/// GPS·권한은 시스템 경계라 여기서 한 번 갈라 둔다. 테스트는 이 provider만
+/// 갈아끼우면 플랫폼 채널을 건드리지 않고 "권한 있음/없음"을 만들어 낼 수 있다.
+///
+/// 값이 아니라 함수를 담는다 — 호출자가 부르는 시점의 위치를 원하기 때문이다.
+/// (한 번 정하면 되는 국가 코드는 아래 [communityCountryCodeProvider]가 캐시한다.)
 @riverpod
+Future<DeviceCoordinates?> Function() currentPositionResolver(Ref ref) =>
+    resolveCurrentPosition;
+
+/// 기기 로케일의 국가 코드. 로케일에 국가가 없으면(`en` 같은 경우) 주 시장인
+/// 한국으로 둔다 — 국가를 못 정하면 목록 자체를 못 부른다.
+///
+/// provider로 감싼 이유: `PlatformDispatcher`는 시스템 경계라 테스트에서 값을
+/// 바꿀 수 없다. 폴백 분기를 검증하려면 갈아끼울 자리가 필요하다.
+@riverpod
+String deviceCountryCode(Ref ref) =>
+    PlatformDispatcher.instance.locale.countryCode ?? 'KR';
+
+/// 목록을 어느 국가로 조회할지 정한다 — 화면 진입당 한 번.
+///
+/// 목록 API는 좌표를 받지 않고 `countryCode`만 받으므로, 그 값을 여기서 먼저
+/// 구한다(DEC-0021). 서버 조회는 벤더를 한 번 부르고 Geoapify 일 3,000건 한도를
+/// 공유하므로, provider가 결과를 들고 있어 페이지를 넘길 때마다 다시 부르지 않는다.
+///
+/// **절대 예외를 던지지 않는다.** 좌표가 없든, 벤더가 죽었든, 서버가 값을
+/// 빠뜨렸든 기기 로케일로 물러선다 — 국가 하나 못 알아냈다고 목록 전체가 에러
+/// 화면이 되는 것이 이 API를 목록에서 떼어낸 이유와 정면으로 어긋난다.
+@riverpod
+Future<String> communityCountryCode(Ref ref) async {
+  final fallback = ref.watch(deviceCountryCodeProvider);
+
+  try {
+    final position = await ref.read(currentPositionResolverProvider)();
+    if (position == null) return fallback;
+
+    final code = await ref
+        .read(communityRepositoryProvider)
+        .getCountryCode(
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+    return code ?? fallback;
+  } catch (e) {
+    debugPrint('[커뮤니티] ⚠️ 국가 판별 실패 → 기기 로케일($fallback) 사용: $e');
+    return fallback;
+  }
+}
+
+/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+///
+/// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
+/// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
+/// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
+/// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
+/// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
+/// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+///
+/// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
+/// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+///
+/// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
+/// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
+/// 하나뿐이다.
+///
+/// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
+/// 무효화하는 처리가 함께 필요하다.
+@Riverpod(keepAlive: true)
 class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   static const _pageSize = 20;
 
   @override
-  FutureOr<CommunityFeedState> build() async {
-    final scope = ref.watch(selectedCommunityScopeProvider);
-
+  FutureOr<CommunityFeedState> build(CommunityScope scope) async {
     // 백엔드가 scope=NEARBY/MINE에 400을 준다. 확정 실패를 왕복시키지 않고
     // 호출 자체를 건너뛰어 빈 목록을 돌려준다 — 화면은 이 상태를 "준비 중"
     // 안내로 그린다.
@@ -85,10 +188,12 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
       );
     }
 
-    // 첫 요청은 커서 없이 보낸다.
+    // 첫 요청은 커서 없이, 대신 국가 코드를 실어 보낸다. 국가 판별은
+    // communityCountryCodeProvider가 진입당 한 번만 하고 결과를 들고 있는다.
+    final countryCode = await ref.watch(communityCountryCodeProvider.future);
     final page = await ref
         .watch(communityRepositoryProvider)
-        .getPosts(size: _pageSize);
+        .getPosts(size: _pageSize, countryCode: countryCode);
 
     return CommunityFeedState(
       items: page.items,
@@ -115,9 +220,17 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
     state = AsyncData(pending);
 
     try {
+      // 첫 페이지에서 이미 해석돼 provider가 들고 있는 값이라 즉시 돌아온다 —
+      // 스크롤할 때마다 GPS를 켜거나 벤더를 부르지 않는다.
+      final countryCode = await ref.read(communityCountryCodeProvider.future);
+
       final page = await ref
           .read(communityRepositoryProvider)
-          .getPosts(cursor: current.nextCursor, size: _pageSize);
+          .getPosts(
+            cursor: current.nextCursor,
+            size: _pageSize,
+            countryCode: countryCode,
+          );
 
       // scope 전환이나 refresh()가 끼어들어 state가 이미 교체됐다면 이 응답은
       // 낡은 것이다 — 최신 상태를 덮지 않고 조용히 버린다.
@@ -146,5 +259,75 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   Future<void> refresh() async {
     ref.invalidateSelf();
     await future;
+  }
+
+  /// 모집 상태를 뒤집는다 (모집중 ↔ 마감). 서버가 돌려준 글로 그 카드만 간다.
+  ///
+  /// 목록을 통째로 무효화하지 않는 이유: 커서 페이지네이션이라 무효화는 0페이지
+  /// 부터 다시 당긴다 — 3페이지까지 내려온 사용자가 마감 한 번에 맨 위로 튕긴다.
+  ///
+  /// 실패는 그대로 올린다(화면이 스낵바로 알린다). 다만 그 사이 다른 사용자가
+  /// 지워 버린 글이면 되돌릴 상태 자체가 없으므로 목록에서도 걷어낸다.
+  Future<void> toggleStatus(CommunityPostEntity post) async {
+    final next = post.status == CommunityPostStatus.recruiting
+        ? CommunityPostStatus.completed
+        : CommunityPostStatus.recruiting;
+
+    try {
+      final updated = await ref
+          .read(communityRepositoryProvider)
+          .updateStatus(postId: post.id, status: next);
+      replacePost(updated);
+    } on AppException catch (e) {
+      if (isCommunityPostGone(e)) removePost(post.id);
+      rethrow;
+    }
+  }
+
+  /// 게시글을 삭제하고 목록에서 뺀다.
+  ///
+  /// 이미 사라진 글(404)이어도 결과는 같다 — 목록에 남을 이유가 없으므로 걷어낸
+  /// 뒤 예외를 올린다.
+  Future<void> deletePost(int postId) async {
+    try {
+      await ref.read(communityRepositoryProvider).deletePost(postId);
+    } on AppException catch (e) {
+      if (isCommunityPostGone(e)) removePost(postId);
+      rethrow;
+    }
+    removePost(postId);
+  }
+
+  /// 글 하나를 최신 값으로 갈아끼운다 (네트워크 없음).
+  ///
+  /// 수정 화면이 돌려준 글을 반영하는 통로다. 목록에 없는 글이면 아무 일도
+  /// 일어나지 않는다 — 상세만 열려 있는 동안 목록이 폐기됐을 수 있다.
+  void replacePost(CommunityPostEntity updated) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    state = AsyncData(
+      current.copyWith(
+        items: [
+          for (final post in current.items)
+            post.id == updated.id ? updated : post,
+        ],
+      ),
+    );
+  }
+
+  /// 글 하나를 목록에서 걷어낸다 (네트워크 없음).
+  void removePost(int postId) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    state = AsyncData(
+      current.copyWith(
+        items: [
+          for (final post in current.items)
+            if (post.id != postId) post,
+        ],
+      ),
+    );
   }
 }

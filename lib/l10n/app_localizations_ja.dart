@@ -504,6 +504,69 @@ class AppLocalizationsJa extends AppLocalizations {
   String get bottomNavCommunity => 'コミュニティ';
 
   @override
+  String get pageCommunityDetailTitle => '募集';
+
+  @override
+  String get communityDetailJoinChat => 'チャットに参加する';
+
+  @override
+  String get communityDetailShare => '共有';
+
+  @override
+  String communityDetailCommentCount(int count) {
+    return 'コメント $count';
+  }
+
+  @override
+  String get communityCommentHint => 'コメントを残してみましょう';
+
+  @override
+  String get communityCommentReplyHint => '返信を残してみましょう';
+
+  @override
+  String get communityCommentReply => '返信する';
+
+  @override
+  String get communityCommentEmpty => '最初のコメントを残してみましょう';
+
+  @override
+  String get communityCommentJustNow => 'たった今';
+
+  @override
+  String communityCommentMinutesAgo(int minutes) {
+    return '$minutes分前';
+  }
+
+  @override
+  String communityCommentHoursAgo(int hours) {
+    return '$hours時間前';
+  }
+
+  @override
+  String get communityDeleteConfirmTitle => '募集を削除しますか';
+
+  @override
+  String get communityDeleteConfirmMessage => '削除すると元に戻せません';
+
+  @override
+  String get communityLoginRequiredMessage => 'ログインが必要な機能です';
+
+  @override
+  String get communityMenuEdit => '修正する';
+
+  @override
+  String get communityMenuDelete => '削除する';
+
+  @override
+  String get communityMenuMarkCompleted => '締め切る';
+
+  @override
+  String get communityMenuMarkRecruiting => '再募集する';
+
+  @override
+  String get communityMenuLoginRequired => 'ログインして利用する';
+
+  @override
   String get communityStatusRecruiting => '募集中';
 
   @override
@@ -563,6 +626,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCreatePost => '募集を作成';
 
   @override
+  String get communityEditPost => '募集を修正';
+
+  @override
+  String get communityBackToList => '一覧に戻る';
+
+  @override
   String get communityCreateLabelTitle => 'タイトル';
 
   @override
@@ -611,7 +680,43 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCreateLabelLocation => '場所';
 
   @override
-  String get communityCreateHintLocation => '集合場所を入力してください';
+  String get communityCreateHintLocation => '詳細な集合場所を入力してください 例) 正門';
+
+  @override
+  String get communityCreateHintAddress => '地図で位置を選ぶと入力されます';
+
+  @override
+  String get communityCreateHintPickLocation => '地図で位置を選んでください';
+
+  @override
+  String get communityLocationCopied => '場所をコピーしました';
+
+  @override
+  String get communityLocationPickerTitle => '場所の選択';
+
+  @override
+  String get communityLocationPickerConfirm => 'この位置にする';
+
+  @override
+  String get communityLocationPickerLoading => '住所を確認しています';
+
+  @override
+  String get communityLocationPickerHint => '地図をタップして集合場所を決めます';
+
+  @override
+  String get communityLocationPickerNotFound => '住所が見つかりません。別の場所を選んでください';
+
+  @override
+  String get communityCreateLoading => '募集を投稿しています';
+
+  @override
+  String get communityCreateLoadingSub => '募集を登録しています。少々お待ちください';
+
+  @override
+  String get communityEditLoading => '募集を修正しています';
+
+  @override
+  String get communityEditLoadingSub => '募集を修正しています。少々お待ちください';
 
   @override
   String get communityCreateLabelHeadcount => '募集人数';
@@ -1821,7 +1926,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCommunityPostsLoadFailed => '募集を読み込めませんでした';
 
   @override
-  String get messageLoadingNotices => '知らせを読み込んでいます...';
+  String get errorCommunityPostUpdateGeneric => '募集の修正中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostDeleteGeneric => '募集の削除中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostStatusGeneric => '募集状態の変更中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostCreateGeneric => '募集の登録中にエラーが発生しました';
+
+  @override
+  String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';
 
   @override
   String get errorNoticeLoadFailed => 'お知らせを読み込めませんでした';
@@ -1957,6 +2074,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeInvalidInputValue => '入力値が条件に合いません';
+
+  @override
+  String get errorCodeAddressNotFound => '住所が見つかりません。別の場所を選んでください';
 
   @override
   String get errorCodeInvalidDestination => '接続先が正しくありません';
@@ -2160,6 +2280,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeReportTargetNotFound => 'このゲームに存在しない参加者です';
+
+  @override
+  String get errorCodeInvalidMeetingDate => '集まる時間は現在より後を選んでください';
+
+  @override
+  String get errorCodePostNotFound => 'この募集はすでに削除されました';
+
+  @override
+  String get errorCodeForbiddenNotAuthor => '作成者のみ編集・削除できます';
+
+  @override
+  String get errorCodeCountryNotSpecified => '国を確認できない場所です。別の場所で試してください';
 
   @override
   String get pingFound => '発見';

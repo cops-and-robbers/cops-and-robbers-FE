@@ -5,34 +5,64 @@ part 'community_post_model.g.dart';
 
 /// 모임 장소 DTO
 ///
-/// 백엔드 스키마: api-docs.json#LocationResponse (v2.17.0)
+/// 백엔드 스키마: api-docs.json#LocationResponse (v2.18.0)
 ///
-/// 주소 3종은 서버가 좌표를 한 번 역지오코딩해 저장해 둔 값이다. 셋 다 null일 수
-/// 있다 — 역지오코딩이 실패해도 글 작성 자체는 성공시키기 때문이다.
-/// 어느 표기를 쓸지는 화면이 정한다 (Repository에서 `locationLabel`로 접는다).
+/// 표기는 두 값이 짝을 이룬다 — 서버가 좌표를 역지오코딩해 저장한 [region](동 단위)과
+/// 작성자가 직접 입력한 [placeName]. 좌표로는 건물명·장소명을 신뢰할 수준으로 얻을 수
+/// 없어 둘로 나눈 것이고, 화면은 둘을 병기한다 (DEC-0015).
 @freezed
 class CommunityLocationModel with _$CommunityLocationModel {
   const factory CommunityLocationModel({
     required double latitude,
     required double longitude,
 
-    /// 지번 주소 — `서울 광진구 군자동 98`
+    /// 동 단위 지역 — `서울특별시 광진구 군자동`. 역지오코딩 실패 시 null.
+    String? region,
+
+    /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+    ///
+    /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
+    /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
     String? address,
 
-    /// 도로명 주소 — `서울특별시 광진구 능동로 209`. 도로명이 없는 지역이면 null.
-    String? roadAddress,
+    /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
+    ///
+    /// 스키마상 non-null이지만 nullable로 받는다: v2.17.0 이전에 쓰인 글까지
+    /// 서버가 채웠다는 보장이 없고, 응답 한 건 때문에 목록 전체가 파싱 실패로
+    /// 날아가는 편이 장소 한 줄이 비는 것보다 나쁘다.
+    String? placeName,
 
-    /// 건물명 — `세종대학교`. 공터·공원·길 위 좌표면 null.
-    String? buildingName,
+    /// 국가 코드(ISO 3166-1 alpha-2). 역지오코딩 실패 시 null.
+    String? countryCode,
   }) = _CommunityLocationModel;
 
   factory CommunityLocationModel.fromJson(Map<String, dynamic> json) =>
       _$CommunityLocationModelFromJson(json);
 }
 
+/// 좌표 주소 조회 응답 DTO
+///
+/// 백엔드 스키마: api-docs.json#AddressResponse (v2.18.0)
+///
+/// 작성 화면에서 핀을 찍은 직후 위치를 확인시키는 용도다 — 서버가 저장하지 않는다.
+/// [region]은 글에 저장될 값이고, [address]는 번지까지 붙어 작성자가 "여기 맞나"를
+/// 판단하는 값이다. [countryCode]는 그 핀이 속한 나라이며, 목록 필터에는 쓰지 않는다
+/// — 목록은 보는 사람의 현재 위치가 기준이라 `/country`가 따로 담당한다.
+@freezed
+class CommunityAddressResponseModel with _$CommunityAddressResponseModel {
+  const factory CommunityAddressResponseModel({
+    String? region,
+    String? address,
+    String? countryCode,
+  }) = _CommunityAddressResponseModel;
+
+  factory CommunityAddressResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityAddressResponseModelFromJson(json);
+}
+
 /// 커서 페이지네이션 응답 봉투의 커서 정보 DTO
 ///
-/// 백엔드 스키마: api-docs.json#CursorInfo (v2.17.0)
+/// 백엔드 스키마: api-docs.json#CursorInfo (v2.18.0)
 ///
 /// 목록 API 중 커서를 쓰는 건 아직 커뮤니티뿐이라 여기 둔다. 두 번째 API가
 /// 커서로 바뀌면 `PageInfoModel`처럼 core로 옮긴다.
@@ -51,7 +81,7 @@ class CursorInfoModel with _$CursorInfoModel {
 
 /// 모집 게시글 단건 응답 DTO
 ///
-/// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.17.0)
+/// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.18.0)
 ///
 /// [writerNickname]은 탈퇴한 작성자면 null이다.
 /// 나머지 nullable 3개는 백엔드가 아직 안 보내는 값이다(2·3단계 예정). 미리
@@ -86,8 +116,11 @@ class CommunityPostResponseModel with _$CommunityPostResponseModel {
 
 /// 모집 게시글 목록 응답 DTO
 ///
-/// 백엔드 스키마: api-docs.json#CommunityPostListResponse (v2.17.0)
+/// 백엔드 스키마: api-docs.json#CommunityPostListResponse (v2.18.0)
 /// 총 개수(`totalElements`)는 커서 방식이라 제공되지 않는다.
+///
+/// v2.18.0에서 최상위 `countryCode`가 빠졌다 — 목록이 좌표를 안 받게 되면서
+/// 요청값을 그대로 되돌려주는 중복이 됐다(DEC-0021).
 @freezed
 class CommunityPostListResponseModel with _$CommunityPostListResponseModel {
   const factory CommunityPostListResponseModel({
@@ -98,3 +131,85 @@ class CommunityPostListResponseModel with _$CommunityPostListResponseModel {
   factory CommunityPostListResponseModel.fromJson(Map<String, dynamic> json) =>
       _$CommunityPostListResponseModelFromJson(json);
 }
+
+/// 좌표 국가 조회 응답 DTO
+///
+/// 백엔드 스키마: api-docs.json#CountryResponse (v2.18.0)
+///
+/// 목록을 부르기 전에 국가를 한 번 정하는 용도다. 주소를 만들지 않아 벤더 호출이
+/// 1회고 로그인도 필요 없다(DEC-0021).
+///
+/// [countryCode]를 nullable로 받는 이유: 스키마에 `required`가 없다. non-null로
+/// 못 박으면 서버가 값을 빠뜨리는 순간 파싱이 통째로 터지는데, 이 API는 실패해도
+/// 기기 로케일로 물러설 수 있는 자리라 그렇게까지 강하게 막을 이유가 없다.
+@freezed
+class CommunityCountryResponseModel with _$CommunityCountryResponseModel {
+  const factory CommunityCountryResponseModel({String? countryCode}) =
+      _CommunityCountryResponseModel;
+
+  factory CommunityCountryResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityCountryResponseModelFromJson(json);
+}
+
+/// 모임 장소 요청 DTO
+///
+/// 백엔드 스키마: api-docs.json#Location
+///
+/// 응답의 [CommunityLocationModel]과 달리 `region`·`countryCode`가 없다 — 서버가
+/// 좌표를 역지오코딩해 채우는 값이라 클라이언트가 보내지 않는다. 반면
+/// [placeName]은 작성자 입력이라 필수다(빠지면 400).
+@freezed
+class CommunityLocationRequestModel with _$CommunityLocationRequestModel {
+  const factory CommunityLocationRequestModel({
+    required double latitude,
+    required double longitude,
+
+    /// 만나는 곳 — 최대 50자. 예: `어린이대공원 정문`
+    required String placeName,
+  }) = _CommunityLocationRequestModel;
+
+  factory CommunityLocationRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityLocationRequestModelFromJson(json);
+}
+
+/// 게시글 작성·수정 요청 DTO
+///
+/// 백엔드 스키마: api-docs.json#CommunityPostCreateRequest ·
+/// #CommunityPostUpdateRequest — 두 스키마의 필드가 완전히 같아 하나로 쓴다.
+///
+/// 수정은 전체 교체(PUT)라 바꾸지 않는 필드도 현재 값을 그대로 다시 실어야 한다.
+@freezed
+class CommunityPostWriteRequestModel with _$CommunityPostWriteRequestModel {
+  const factory CommunityPostWriteRequestModel({
+    required String title,
+    required String content,
+
+    /// 서버는 timezone suffix가 붙은 ISO 8601을 기대한다. 로컬 DateTime을 그냥
+    /// 직렬화하면 suffix가 빠져 서버 로컬 시각으로 읽히므로 UTC로 정규화한다
+    /// (`create_session_response.dart`와 같은 판단).
+    @JsonKey(toJson: _dateTimeToIso) required DateTime meetingAt,
+    required CommunityLocationRequestModel location,
+    required int maxParticipants,
+  }) = _CommunityPostWriteRequestModel;
+
+  factory CommunityPostWriteRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityPostWriteRequestModelFromJson(json);
+}
+
+/// 모집 상태 변경 요청 DTO
+///
+/// 백엔드 스키마: api-docs.json#CommunityPostStatusRequest
+///
+/// [status]는 와이어 문자열(`RECRUITING`·`COMPLETED`)이다 — 도메인 enum →
+/// 문자열 변환은 `CommunityPostStatusWire.wireValue`가 담당한다.
+@freezed
+class CommunityPostStatusRequestModel with _$CommunityPostStatusRequestModel {
+  const factory CommunityPostStatusRequestModel({required String status}) =
+      _CommunityPostStatusRequestModel;
+
+  factory CommunityPostStatusRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityPostStatusRequestModelFromJson(json);
+}
+
+/// DateTime → ISO 8601 (UTC `Z` suffix 포함) 직렬화 헬퍼
+String _dateTimeToIso(DateTime dt) => dt.toUtc().toIso8601String();

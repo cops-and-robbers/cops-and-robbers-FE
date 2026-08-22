@@ -6,6 +6,14 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 /// 정적 클래스(DioExceptionHandler 등)는 BuildContext를 갖지 않기에 키만 결정한다.
 /// UI 레이어(catch 블록, ErrorWidget 등)에서 이 헬퍼로 사용자 노출 메시지를 얻는다.
 ///
+/// **정본 관계**: 백엔드 계약의 정본은 `docs/api-docs.json`(자동 생성)이고,
+/// FE가 아는 errorCode의 정본은 아래 [_errorByCodeOrNull] switch다. 수기 요약본을
+/// 따로 두면 갱신이 밀려 "문서에 없으니 없는 코드"로 오판하게 되므로 두지 않는다.
+/// (api-docs.json은 REST 응답 example에 실린 코드만 담아 STOMP·전역 예외 코드를
+///  구조적으로 못 담는다. 그 코드들은 이 switch에만 기록된다.)
+/// 문서에 있는 코드가 여기 빠지면 `test/core/i18n/error_message_mapper_test.dart`의
+/// 커버리지 테스트가 잡는다.
+///
 /// 우선순위:
 /// 1. 백엔드 errorCode ([shouldUseBackendErrorCode] 조건 충족 시) → [errorByCode]
 /// 2. messageKey (네트워크 레벨 / Firebase provider code 등) → [errorByKey]
@@ -25,7 +33,7 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 extension AppLocalizationsErrorMapping on AppLocalizations {
   /// 예외를 사용자 노출 문자열로 변환 (3단계 우선순위 적용)
   String errorByException(AppException e) {
-    // ① docs/error-codes.md 기반 백엔드 errorCode 우선
+    // ① docs/api-docs.json 기반 백엔드 errorCode 우선
     if (shouldUseBackendErrorCode(e)) {
       // errorByCode: 매핑 누락 시 내부에서 errorTemporaryRetry 반환
       return errorByCode(e.code!);
@@ -77,6 +85,12 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeQueryParameterTypeMismatch;
       case 'INVALID_INPUT_VALUE':
         return errorCodeInvalidInputValue;
+      // 좌표에 주소·국가가 없어 게시글 생성·수정이 거절된 경우(DEC-0022).
+      // 공통 폴백 "잠시 후 다시 시도"는 틀린 안내다 — 같은 핀으로는 계속 실패한다.
+      // (벤더 장애로 실패하는 ADDRESS_LOOKUP_FAILED는 실제로 일시적이라
+      //  공통 폴백이 맞는 안내이므로 매핑하지 않는다.)
+      case 'ADDRESS_NOT_FOUND':
+        return errorCodeAddressNotFound;
       case 'INVALID_DESTINATION':
         return errorCodeInvalidDestination;
       case 'UNSUPPORTED_MEDIA_TYPE':
@@ -217,6 +231,18 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeReportNotFound;
       case 'REPORT_TARGET_NOT_FOUND':
         return errorCodeReportTargetNotFound;
+      // ── 커뮤니티(모집글) 에러 ────────────────────────────────────────
+      case 'INVALID_MEETING_DATE':
+        return errorCodeInvalidMeetingDate;
+      case 'POST_NOT_FOUND':
+        return errorCodePostNotFound;
+      case 'FORBIDDEN_NOT_AUTHOR':
+        return errorCodeForbiddenNotAuthor;
+      case 'COUNTRY_NOT_SPECIFIED':
+        return errorCodeCountryNotSpecified;
+      // UNSUPPORTED_LIST_SCOPE / UNSUPPORTED_LIST_SORT는 매핑하지 않는다 —
+      // 앱은 scope=ALL·sort=LATEST 외의 값을 보내지 않으므로(datasource 참조)
+      // 이 코드가 오면 사용자가 아니라 클라이언트 버그다. 공통 폴백으로 충분하다.
       default:
         return null;
     }
@@ -325,6 +351,16 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorNoticesLoadGeneric;
       case 'errorCommunityPostsLoadGeneric':
         return errorCommunityPostsLoadGeneric;
+      case 'errorCommunityAddressLoadGeneric':
+        return errorCommunityAddressLoadGeneric;
+      case 'errorCommunityPostCreateGeneric':
+        return errorCommunityPostCreateGeneric;
+      case 'errorCommunityPostUpdateGeneric':
+        return errorCommunityPostUpdateGeneric;
+      case 'errorCommunityPostDeleteGeneric':
+        return errorCommunityPostDeleteGeneric;
+      case 'errorCommunityPostStatusGeneric':
+        return errorCommunityPostStatusGeneric;
       case 'errorReportGeneric':
         return errorReportGeneric;
       case 'errorBugReportFailed':

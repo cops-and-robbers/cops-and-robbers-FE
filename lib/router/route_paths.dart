@@ -60,6 +60,17 @@ class RoutePaths {
   /// 모집글 작성 화면 (커뮤니티 목록의 작성 버튼에서 진입)
   static const String communityCreate = '/community/create';
 
+  /// 모집글 상세 화면 (목록 카드 탭에서 진입)
+  ///
+  /// `create`보다 뒤에 등록해야 한다 — 먼저 두면 `/community/create`가
+  /// postId="create"로 잡힌다.
+  static const String communityDetail = '/community/:postId';
+
+  /// 모집글 수정 화면 (상세·목록 카드의 더보기 메뉴에서 진입)
+  ///
+  /// 고칠 글을 `extra`로 함께 넘겨야 한다 — 없으면 상세로 되돌린다(딥링크 방지).
+  static const String communityEdit = '/community/:postId/edit';
+
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
 
@@ -171,6 +182,8 @@ class RoutePaths {
   static const String homeName = 'home';
   static const String communityName = 'community';
   static const String communityCreateName = 'communityCreate';
+  static const String communityDetailName = 'communityDetail';
+  static const String communityEditName = 'communityEdit';
   static const String mypageName = 'mypage';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
@@ -193,4 +206,17 @@ class RoutePaths {
 
   /// 딥링크 초대 코드 진입 (예: /join/ABC123)
   static const String joinByInvite = '/join';
+}
+
+/// 모집글 상세를 여는 방식.
+///
+/// 목록 카드에서 "수정"을 고르면 상세를 깐 **직후** 그 위로 수정 화면이 솟아
+/// 오른다. 이때 상세까지 전환 애니메이션을 타면 화면이 두 번 움직여 어디로
+/// 가는지가 흐려진다 — 그 경우만 전환을 생략한다.
+enum CommunityDetailEntry {
+  /// 목록 카드를 탭해 상세 자체를 보러 온 경우 — 평소의 페이드 전환.
+  normal,
+
+  /// 수정 화면으로 가는 길목으로만 깔리는 경우 — 전환 없음.
+  silent,
 }

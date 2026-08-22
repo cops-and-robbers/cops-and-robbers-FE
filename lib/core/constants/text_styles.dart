@@ -107,6 +107,13 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  static TextStyle get paragraph14Regular => TextStyle(
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 14.sp,
+    height: 1.0, // 100% line height
+    letterSpacing: -0.32,
+  );
+
   static TextStyle get paragraph_14_100 => TextStyle(
     fontFamily: 'Pretendard-Medium',
     fontSize: 14.sp,

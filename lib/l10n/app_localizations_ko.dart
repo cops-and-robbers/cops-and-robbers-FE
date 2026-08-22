@@ -501,6 +501,69 @@ class AppLocalizationsKo extends AppLocalizations {
   String get bottomNavCommunity => '커뮤니티';
 
   @override
+  String get pageCommunityDetailTitle => '모집글';
+
+  @override
+  String get communityDetailJoinChat => '채팅 참여하기';
+
+  @override
+  String get communityDetailShare => '공유';
+
+  @override
+  String communityDetailCommentCount(int count) {
+    return '댓글 $count';
+  }
+
+  @override
+  String get communityCommentHint => '댓글을 남겨보세요';
+
+  @override
+  String get communityCommentReplyHint => '답글을 남겨보세요';
+
+  @override
+  String get communityCommentReply => '답글 달기';
+
+  @override
+  String get communityCommentEmpty => '첫 댓글을 남겨보세요';
+
+  @override
+  String get communityCommentJustNow => '방금';
+
+  @override
+  String communityCommentMinutesAgo(int minutes) {
+    return '$minutes분 전';
+  }
+
+  @override
+  String communityCommentHoursAgo(int hours) {
+    return '$hours시간 전';
+  }
+
+  @override
+  String get communityDeleteConfirmTitle => '모집글을 삭제할까요';
+
+  @override
+  String get communityDeleteConfirmMessage => '삭제하면 되돌릴 수 없어요';
+
+  @override
+  String get communityLoginRequiredMessage => '로그인이 필요한 기능이에요';
+
+  @override
+  String get communityMenuEdit => '수정하기';
+
+  @override
+  String get communityMenuDelete => '삭제하기';
+
+  @override
+  String get communityMenuMarkCompleted => '마감하기';
+
+  @override
+  String get communityMenuMarkRecruiting => '다시 모집하기';
+
+  @override
+  String get communityMenuLoginRequired => '로그인하고 이용하기';
+
+  @override
   String get communityStatusRecruiting => '모집중';
 
   @override
@@ -560,6 +623,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCreatePost => '모집글 작성';
 
   @override
+  String get communityEditPost => '모집글 수정';
+
+  @override
+  String get communityBackToList => '목록으로 돌아가기';
+
+  @override
   String get communityCreateLabelTitle => '제목';
 
   @override
@@ -608,7 +677,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCreateLabelLocation => '장소';
 
   @override
-  String get communityCreateHintLocation => '모임 장소를 입력해주세요';
+  String get communityCreateHintLocation => '상세주소를 입력해주세요 ex) 어린이대공원 정문';
+
+  @override
+  String get communityCreateHintAddress => '지도에서 위치를 고르면 채워져요';
+
+  @override
+  String get communityCreateHintPickLocation => '지도에서 위치를 골라주세요';
+
+  @override
+  String get communityLocationCopied => '장소를 복사했어요';
+
+  @override
+  String get communityLocationPickerTitle => '장소 선택';
+
+  @override
+  String get communityLocationPickerConfirm => '이 위치로 선택';
+
+  @override
+  String get communityLocationPickerLoading => '주소를 확인하는 중이에요';
+
+  @override
+  String get communityLocationPickerHint => '지도를 눌러 만날 곳을 정해요';
+
+  @override
+  String get communityLocationPickerNotFound => '주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요';
+
+  @override
+  String get communityCreateLoading => '모집글 올리는 중...';
+
+  @override
+  String get communityCreateLoadingSub => '모집글을 등록하는 중이에요. 잠시만 기다려주세요';
+
+  @override
+  String get communityEditLoading => '모집글 고치는 중...';
+
+  @override
+  String get communityEditLoadingSub => '모집글을 수정하는 중이에요. 잠시만 기다려주세요';
 
   @override
   String get communityCreateLabelHeadcount => '모집 인원';
@@ -1821,7 +1926,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCommunityPostsLoadFailed => '모집글을 불러오지 못했어요';
 
   @override
-  String get messageLoadingNotices => '공지사항을 불러오는 중...';
+  String get errorCommunityPostUpdateGeneric => '모집글을 수정하는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityPostDeleteGeneric => '모집글을 삭제하는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityPostStatusGeneric => '모집 상태를 바꾸는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityPostCreateGeneric => '모집글을 등록하는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';
 
   @override
   String get errorNoticeLoadFailed => '공지사항을 불러오지 못했어요';
@@ -1959,6 +2076,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeInvalidInputValue => '입력값이 조건에 맞지 않아요';
+
+  @override
+  String get errorCodeAddressNotFound => '주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요';
 
   @override
   String get errorCodeInvalidDestination => '잘못된 연결 경로예요';
@@ -2157,6 +2277,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeReportTargetNotFound => '해당 게임에 존재하지 않는 참가자예요';
+
+  @override
+  String get errorCodeInvalidMeetingDate => '모임 시간은 지금 이후로 골라주세요';
+
+  @override
+  String get errorCodePostNotFound => '이미 삭제된 모집글이에요';
+
+  @override
+  String get errorCodeForbiddenNotAuthor => '작성자만 수정하거나 삭제할 수 있어요';
+
+  @override
+  String get errorCodeCountryNotSpecified =>
+      '국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요';
 
   @override
   String get pingFound => '발견';

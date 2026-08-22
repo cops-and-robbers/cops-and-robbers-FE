@@ -11,9 +11,10 @@ _$CommunityLocationModelImpl _$$CommunityLocationModelImplFromJson(
 ) => _$CommunityLocationModelImpl(
   latitude: (json['latitude'] as num).toDouble(),
   longitude: (json['longitude'] as num).toDouble(),
+  region: json['region'] as String?,
   address: json['address'] as String?,
-  roadAddress: json['roadAddress'] as String?,
-  buildingName: json['buildingName'] as String?,
+  placeName: json['placeName'] as String?,
+  countryCode: json['countryCode'] as String?,
 );
 
 Map<String, dynamic> _$$CommunityLocationModelImplToJson(
@@ -21,9 +22,26 @@ Map<String, dynamic> _$$CommunityLocationModelImplToJson(
 ) => <String, dynamic>{
   'latitude': instance.latitude,
   'longitude': instance.longitude,
+  'region': instance.region,
   'address': instance.address,
-  'roadAddress': instance.roadAddress,
-  'buildingName': instance.buildingName,
+  'placeName': instance.placeName,
+  'countryCode': instance.countryCode,
+};
+
+_$CommunityAddressResponseModelImpl
+_$$CommunityAddressResponseModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityAddressResponseModelImpl(
+      region: json['region'] as String?,
+      address: json['address'] as String?,
+      countryCode: json['countryCode'] as String?,
+    );
+
+Map<String, dynamic> _$$CommunityAddressResponseModelImplToJson(
+  _$CommunityAddressResponseModelImpl instance,
+) => <String, dynamic>{
+  'region': instance.region,
+  'address': instance.address,
+  'countryCode': instance.countryCode,
 };
 
 _$CursorInfoModelImpl _$$CursorInfoModelImplFromJson(
@@ -96,3 +114,59 @@ Map<String, dynamic> _$$CommunityPostListResponseModelImplToJson(
   'content': instance.content.map((e) => e.toJson()).toList(),
   'cursor': instance.cursor.toJson(),
 };
+
+_$CommunityCountryResponseModelImpl
+_$$CommunityCountryResponseModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityCountryResponseModelImpl(
+      countryCode: json['countryCode'] as String?,
+    );
+
+Map<String, dynamic> _$$CommunityCountryResponseModelImplToJson(
+  _$CommunityCountryResponseModelImpl instance,
+) => <String, dynamic>{'countryCode': instance.countryCode};
+
+_$CommunityLocationRequestModelImpl
+_$$CommunityLocationRequestModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityLocationRequestModelImpl(
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      placeName: json['placeName'] as String,
+    );
+
+Map<String, dynamic> _$$CommunityLocationRequestModelImplToJson(
+  _$CommunityLocationRequestModelImpl instance,
+) => <String, dynamic>{
+  'latitude': instance.latitude,
+  'longitude': instance.longitude,
+  'placeName': instance.placeName,
+};
+
+_$CommunityPostWriteRequestModelImpl
+_$$CommunityPostWriteRequestModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityPostWriteRequestModelImpl(
+      title: json['title'] as String,
+      content: json['content'] as String,
+      meetingAt: DateTime.parse(json['meetingAt'] as String),
+      location: CommunityLocationRequestModel.fromJson(
+        json['location'] as Map<String, dynamic>,
+      ),
+      maxParticipants: (json['maxParticipants'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$CommunityPostWriteRequestModelImplToJson(
+  _$CommunityPostWriteRequestModelImpl instance,
+) => <String, dynamic>{
+  'title': instance.title,
+  'content': instance.content,
+  'meetingAt': _dateTimeToIso(instance.meetingAt),
+  'location': instance.location.toJson(),
+  'maxParticipants': instance.maxParticipants,
+};
+
+_$CommunityPostStatusRequestModelImpl
+_$$CommunityPostStatusRequestModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityPostStatusRequestModelImpl(status: json['status'] as String);
+
+Map<String, dynamic> _$$CommunityPostStatusRequestModelImplToJson(
+  _$CommunityPostStatusRequestModelImpl instance,
+) => <String, dynamic>{'status': instance.status};

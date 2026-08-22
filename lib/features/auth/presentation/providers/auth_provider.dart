@@ -104,6 +104,16 @@ Stream<User?> authState(Ref ref) {
   return dataSource.authStateChanges();
 }
 
+/// 현재 로그인한 사용자 id (미로그인이면 null)
+///
+/// "내가 쓴 글인가"를 판단해야 하는 화면이 `authNotifierProvider`의
+/// `AsyncValue` 껍데기를 매번 벗기지 않도록 한 겹 접어둔다. 로딩 중·에러도
+/// null이 된다 — 확정되기 전에는 남의 글로 취급하는 편이 안전하다
+/// (내 글이 아닌데 수정 버튼을 보여주면 403을 왕복한다).
+@riverpod
+int? currentUserId(Ref ref) =>
+    ref.watch(authNotifierProvider).valueOrNull?.userId;
+
 /// 인증 상태를 관리하는 Notifier
 ///
 /// UseCase를 통해 로그인/로그아웃을 수행하며

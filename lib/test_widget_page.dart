@@ -350,6 +350,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
               ),
               SizedBox(height: AppSpacing.vertical16),
               CommunityPostCard(
+                onMenuAction: (_) {},
                 post: CommunityPostEntity(
                   id: 1,
                   writerId: 7,
@@ -361,7 +362,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                   maxParticipants: 10,
                   status: CommunityPostStatus.recruiting,
                   createdAt: DateTime(2026, 9, 1),
-                  locationLabel: '서울시 광진구 세종대학교',
+                  placeName: '세종대학교 정문',
+                  region: '서울특별시 광진구 군자동',
                   currentParticipants: 2,
                   likeCount: 6,
                   bookmarkCount: 3,
@@ -369,6 +371,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
               ),
               SizedBox(height: AppSpacing.vertical12),
               CommunityPostCard(
+                onMenuAction: (_) {},
                 post: CommunityPostEntity(
                   id: 2,
                   writerId: 8,

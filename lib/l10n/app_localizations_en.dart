@@ -554,6 +554,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bottomNavCommunity => 'Community';
 
   @override
+  String get pageCommunityDetailTitle => 'Post';
+
+  @override
+  String get communityDetailJoinChat => 'Join the chat';
+
+  @override
+  String get communityDetailShare => 'Share';
+
+  @override
+  String communityDetailCommentCount(int count) {
+    return 'Comments $count';
+  }
+
+  @override
+  String get communityCommentHint => 'Leave a comment';
+
+  @override
+  String get communityCommentReplyHint => 'Leave a reply';
+
+  @override
+  String get communityCommentReply => 'Reply';
+
+  @override
+  String get communityCommentEmpty => 'Be the first to comment';
+
+  @override
+  String get communityCommentJustNow => 'Just now';
+
+  @override
+  String communityCommentMinutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String communityCommentHoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String get communityDeleteConfirmTitle => 'Delete this post?';
+
+  @override
+  String get communityDeleteConfirmMessage => 'This can\'t be undone';
+
+  @override
+  String get communityLoginRequiredMessage => 'You need to log in for this';
+
+  @override
+  String get communityMenuEdit => 'Edit';
+
+  @override
+  String get communityMenuDelete => 'Delete';
+
+  @override
+  String get communityMenuMarkCompleted => 'Close recruiting';
+
+  @override
+  String get communityMenuMarkRecruiting => 'Reopen recruiting';
+
+  @override
+  String get communityMenuLoginRequired => 'Log in to continue';
+
+  @override
   String get communityStatusRecruiting => 'Open';
 
   @override
@@ -613,6 +676,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityCreatePost => 'New post';
 
   @override
+  String get communityEditPost => 'Edit post';
+
+  @override
+  String get communityBackToList => 'Back to list';
+
+  @override
   String get communityCreateLabelTitle => 'Title';
 
   @override
@@ -662,7 +731,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityCreateLabelLocation => 'Location';
 
   @override
-  String get communityCreateHintLocation => 'Enter where you\'ll meet';
+  String get communityCreateHintLocation =>
+      'Enter the exact spot, e.g. main gate';
+
+  @override
+  String get communityCreateHintAddress =>
+      'Filled in when you pick a spot on the map';
+
+  @override
+  String get communityCreateHintPickLocation => 'Pick a spot on the map';
+
+  @override
+  String get communityLocationCopied => 'Location copied';
+
+  @override
+  String get communityLocationPickerTitle => 'Pick a location';
+
+  @override
+  String get communityLocationPickerConfirm => 'Use this location';
+
+  @override
+  String get communityLocationPickerLoading => 'Checking the address';
+
+  @override
+  String get communityLocationPickerHint =>
+      'Tap the map to set your meeting spot';
+
+  @override
+  String get communityLocationPickerNotFound =>
+      'No address here. Please pick another spot';
+
+  @override
+  String get communityCreateLoading => 'Posting your recruitment';
+
+  @override
+  String get communityCreateLoadingSub =>
+      'We\'re publishing your post. Please wait a moment';
+
+  @override
+  String get communityEditLoading => 'Updating your recruitment';
+
+  @override
+  String get communityEditLoadingSub =>
+      'We\'re saving your changes. Please wait a moment';
 
   @override
   String get communityCreateLabelHeadcount => 'Headcount';
@@ -1955,7 +2066,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCommunityPostsLoadFailed => 'Couldn\'t load posts';
 
   @override
-  String get messageLoadingNotices => 'Loading notices...';
+  String get errorCommunityPostUpdateGeneric =>
+      'Something went wrong while updating the post';
+
+  @override
+  String get errorCommunityPostDeleteGeneric =>
+      'Something went wrong while deleting the post';
+
+  @override
+  String get errorCommunityPostStatusGeneric =>
+      'Something went wrong while changing the status';
+
+  @override
+  String get errorCommunityPostCreateGeneric =>
+      'Something went wrong while posting';
+
+  @override
+  String get errorCommunityAddressLoadGeneric =>
+      'Something went wrong while loading the address';
 
   @override
   String get errorNoticeLoadFailed => 'Failed to load notices';
@@ -2105,6 +2233,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeInvalidInputValue =>
       'The value you entered doesn\'t meet the requirements';
+
+  @override
+  String get errorCodeAddressNotFound =>
+      'No address here. Please pick another spot';
 
   @override
   String get errorCodeInvalidDestination => 'Invalid connection path';
@@ -2342,6 +2474,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeReportTargetNotFound =>
       'This participant does not exist in the game';
+
+  @override
+  String get errorCodeInvalidMeetingDate => 'Pick a meeting time in the future';
+
+  @override
+  String get errorCodePostNotFound => 'This post has been deleted';
+
+  @override
+  String get errorCodeForbiddenNotAuthor =>
+      'Only the author can edit or delete this post';
+
+  @override
+  String get errorCodeCountryNotSpecified =>
+      'We can\'t identify the country here. Please try from another spot';
 
   @override
   String get pingFound => 'Found';

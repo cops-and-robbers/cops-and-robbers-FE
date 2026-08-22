@@ -309,6 +309,97 @@
   "@bottomNavCommunity": {
     "description": "바텀 네비게이션 — 커뮤니티 탭 라벨"
   },
+  "pageCommunityDetailTitle": "모집글",
+  "@pageCommunityDetailTitle": {
+    "description": "모집글 상세 화면 앱바 제목"
+  },
+  "communityDetailJoinChat": "채팅 참여하기",
+  "@communityDetailJoinChat": {
+    "description": "모집글 상세 — 모임 채팅방에 들어가는 버튼"
+  },
+  "communityDetailShare": "공유",
+  "@communityDetailShare": {
+    "description": "모집글 상세 — 공유 액션 라벨"
+  },
+  "communityDetailCommentCount": "댓글 {count}",
+  "@communityDetailCommentCount": {
+    "description": "모집글 상세 — 댓글 섹션 제목 (답글 포함 개수)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "communityCommentHint": "댓글을 남겨보세요",
+  "@communityCommentHint": {
+    "description": "댓글 입력창 placeholder"
+  },
+  "communityCommentReplyHint": "답글을 남겨보세요",
+  "@communityCommentReplyHint": {
+    "description": "답글 입력창 placeholder"
+  },
+  "communityCommentReply": "답글 달기",
+  "@communityCommentReply": {
+    "description": "댓글 아래 답글 작성 버튼"
+  },
+  "communityCommentEmpty": "첫 댓글을 남겨보세요",
+  "@communityCommentEmpty": {
+    "description": "댓글이 하나도 없을 때 표시"
+  },
+  "communityCommentJustNow": "방금",
+  "@communityCommentJustNow": {
+    "description": "댓글 작성 시각 — 1분 미만"
+  },
+  "communityCommentMinutesAgo": "{minutes}분 전",
+  "@communityCommentMinutesAgo": {
+    "description": "댓글 작성 시각 — 1시간 미만",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "communityCommentHoursAgo": "{hours}시간 전",
+  "@communityCommentHoursAgo": {
+    "description": "댓글 작성 시각 — 하루 미만",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "communityDeleteConfirmTitle": "모집글을 삭제할까요",
+  "@communityDeleteConfirmTitle": {
+    "description": "모집글 삭제 확인 다이얼로그 제목"
+  },
+  "communityDeleteConfirmMessage": "삭제하면 되돌릴 수 없어요",
+  "@communityDeleteConfirmMessage": {
+    "description": "모집글 삭제 확인 다이얼로그 본문"
+  },
+  "communityLoginRequiredMessage": "로그인이 필요한 기능이에요",
+  "@communityLoginRequiredMessage": {
+    "description": "비로그인 사용자가 쓰기 동작을 시도했을 때 안내"
+  },
+  "communityMenuEdit": "수정하기",
+  "@communityMenuEdit": {
+    "description": "모집글 더보기 메뉴 — 내 글 수정"
+  },
+  "communityMenuDelete": "삭제하기",
+  "@communityMenuDelete": {
+    "description": "모집글 더보기 메뉴 — 내 글 삭제"
+  },
+  "communityMenuMarkCompleted": "마감하기",
+  "@communityMenuMarkCompleted": {
+    "description": "모집글 더보기 메뉴 — 모집중인 글을 마감으로 바꾸기"
+  },
+  "communityMenuMarkRecruiting": "다시 모집하기",
+  "@communityMenuMarkRecruiting": {
+    "description": "모집글 더보기 메뉴 — 마감된 글을 모집중으로 되돌리기"
+  },
+  "communityMenuLoginRequired": "로그인하고 이용하기",
+  "@communityMenuLoginRequired": {
+    "description": "모집글 더보기 메뉴 — 비로그인 사용자에게 보이는 로그인 유도"
+  },
   "communityStatusRecruiting": "모집중",
   "@communityStatusRecruiting": {
     "description": "커뮤니티 카드 — 모집 중인 게시글 배지"
@@ -386,6 +477,14 @@
   "@communityCreatePost": {
     "description": "커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)"
   },
+  "communityEditPost": "모집글 수정",
+  "@communityEditPost": {
+    "description": "모집글 수정 화면 제목 (작성 화면을 수정 모드로 열었을 때)"
+  },
+  "communityBackToList": "목록으로 돌아가기",
+  "@communityBackToList": {
+    "description": "사라진 모집글 상세에서 목록으로 나가는 버튼 — 재시도가 무의미한 경우라 '다시 시도' 대신 쓴다"
+  },
   "communityCreateLabelTitle": "제목",
   "@communityCreateLabelTitle": {
     "description": "모집글 작성 — 제목 섹션 라벨"
@@ -443,10 +542,52 @@
   "@communityCreateLabelLocation": {
     "description": "모집글 작성 — 장소 섹션 라벨"
   },
-  "communityCreateHintLocation": "모임 장소를 입력해주세요",
-  "@communityCreateHintLocation": {
-    "description": "모집글 작성 — 장소 입력 힌트"
+  "communityCreateHintLocation": "상세주소를 입력해주세요 ex) 어린이대공원 정문",
+  "communityCreateHintAddress": "지도에서 위치를 고르면 채워져요",
+  "@communityCreateHintAddress": {
+    "description": "모집글 작성 - 기본 주소 칸(읽기 전용)의 빈 상태 힌트. 값은 GET /api/community-posts/address가 채우며 지도로만 바뀐다"
   },
+  "@communityCreateHintLocation": {
+    "description": "모집글 작성 — 만나는 곳(placeName) 입력 힌트"
+  },
+  "communityCreateHintPickLocation": "지도에서 위치를 골라주세요",
+  "@communityCreateHintPickLocation": {
+    "description": "모집글 작성 — 좌표를 아직 안 고른 상태의 지도 카드 안내"
+  },
+  "communityLocationCopied": "장소를 복사했어요",
+  "@communityLocationCopied": {
+    "description": "모집글 상세 — 장소 텍스트를 탭해 클립보드에 담았을 때의 안내"
+  },
+  "communityLocationPickerTitle": "장소 선택",
+  "@communityLocationPickerTitle": {
+    "description": "장소 선택 지도 화면 제목"
+  },
+  "communityLocationPickerConfirm": "이 위치로 선택",
+  "@communityLocationPickerConfirm": {
+    "description": "장소 선택 지도 화면 — 현재 핀 위치를 확정하는 버튼"
+  },
+  "communityLocationPickerLoading": "주소를 확인하는 중이에요",
+  "@communityLocationPickerLoading": {
+    "description": "장소 선택 지도 화면 — 좌표 주소를 조회하는 동안의 안내"
+  },
+  "communityLocationPickerHint": "지도를 눌러 만날 곳을 정해요",
+  "@communityLocationPickerHint": {
+    "description": "장소 선택 지도 화면 — 표시할 주소가 없을 때의 안내"
+  },
+  "communityLocationPickerNotFound": "주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요",
+  "@communityLocationPickerNotFound": {
+    "description": "장소 선택 지도 화면 — 좌표 주소 조회가 실패했을 때의 안내"
+  },
+  "communityCreateLoading": "모집글 올리는 중...",
+  "@communityCreateLoading": {
+    "description": "모집글 등록 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)"
+  },
+  "communityCreateLoadingSub": "모집글을 등록하는 중이에요. 잠시만 기다려주세요",
+  "communityEditLoading": "모집글 고치는 중...",
+  "@communityEditLoading": {
+    "description": "모집글 수정 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)"
+  },
+  "communityEditLoadingSub": "모집글을 수정하는 중이에요. 잠시만 기다려주세요",
   "communityCreateLabelHeadcount": "모집 인원",
   "@communityCreateLabelHeadcount": {
     "description": "모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)"
@@ -2040,9 +2181,25 @@
   "@errorCommunityPostsLoadFailed": {
     "description": "커뮤니티 목록 조회 실패 시 화면에 표시되는 메시지"
   },
-  "messageLoadingNotices": "공지사항을 불러오는 중...",
-  "@messageLoadingNotices": {
-    "description": "공지사항 로딩 중 표시되는 안내"
+  "errorCommunityPostUpdateGeneric": "모집글을 수정하는 중 오류가 생겼어요",
+  "@errorCommunityPostUpdateGeneric": {
+    "description": "커뮤니티 모집글 수정 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostDeleteGeneric": "모집글을 삭제하는 중 오류가 생겼어요",
+  "@errorCommunityPostDeleteGeneric": {
+    "description": "커뮤니티 모집글 삭제 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostStatusGeneric": "모집 상태를 바꾸는 중 오류가 생겼어요",
+  "@errorCommunityPostStatusGeneric": {
+    "description": "커뮤니티 모집 상태 변경 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostCreateGeneric": "모집글을 등록하는 중 오류가 생겼어요",
+  "@errorCommunityPostCreateGeneric": {
+    "description": "커뮤니티 모집글 등록 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityAddressLoadGeneric": "주소를 불러오는 중 오류가 생겼어요",
+  "@errorCommunityAddressLoadGeneric": {
+    "description": "모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지"
   },
   "errorNoticeLoadFailed": "공지사항을 불러오지 못했어요",
   "@errorNoticeLoadFailed": {
@@ -2225,6 +2382,10 @@
   "errorCodeInvalidQueryParameter": "쿼리 파라미터의 형식이 잘못됐어요",
   "errorCodeQueryParameterTypeMismatch": "요청 파라미터의 타입이 잘못됐어요",
   "errorCodeInvalidInputValue": "입력값이 조건에 맞지 않아요",
+  "errorCodeAddressNotFound": "주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요",
+  "@errorCodeAddressNotFound": {
+    "description": "ADDRESS_NOT_FOUND — 좌표에 주소·국가가 없어 게시글 생성·수정이 거절된 경우. 같은 핀으로는 재시도해도 실패하므로 공통 폴백(errorTemporaryRetry)을 쓰면 안 된다. 장소 선택 화면의 communityLocationPickerNotFound와 같은 문구."
+  },
   "errorCodeInvalidDestination": "잘못된 연결 경로예요",
   "errorCodeUnsupportedMediaType": "지원하지 않는 형식이에요",
   "errorCodeMethodNotAllowed": "허용되지 않은 요청이에요",
@@ -2233,7 +2394,7 @@
   "errorCodeUnauthorizedSubscription": "해당 팀 전용 채널을 구독할 권한이 없어요",
   "errorCodeInternalServerError": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "@errorCodeInternalServerError": {
-    "description": "의도적으로 docs/error-codes.md detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용."
+    "description": "의도적으로 백엔드 detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용."
   },
   "errorCodeFirebaseInitError": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "errorCodeFirebaseConfigNotFound": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
@@ -2293,6 +2454,10 @@
   "errorCodeDuplicateReport": "해당 게임에서 이미 신고한 사용자예요",
   "errorCodeReportNotFound": "해당 신고 내역이 존재하지 않아요",
   "errorCodeReportTargetNotFound": "해당 게임에 존재하지 않는 참가자예요",
+  "errorCodeInvalidMeetingDate": "모임 시간은 지금 이후로 골라주세요",
+  "errorCodePostNotFound": "이미 삭제된 모집글이에요",
+  "errorCodeForbiddenNotAuthor": "작성자만 수정하거나 삭제할 수 있어요",
+  "errorCodeCountryNotSpecified": "국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요",
   "pingFound": "발견",
   "@pingFound": {
     "description": "맵 핑 선택 카드 — 상대 발견 핑 라벨"

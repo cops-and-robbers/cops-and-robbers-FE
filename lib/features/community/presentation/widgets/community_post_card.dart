@@ -7,11 +7,10 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/services/vibration_service.dart';
-import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
+import 'community_post_menu.dart';
 
 /// 커뮤니티 모집글 카드
 ///
@@ -21,12 +20,21 @@ import '../../domain/entities/community_post_status.dart';
 ///
 /// 하트·북마크는 표시 전용이다. 토글은 상세 화면에서 한다.
 class CommunityPostCard extends StatelessWidget {
-  const CommunityPostCard({super.key, required this.post, this.onTap});
+  const CommunityPostCard({
+    super.key,
+    required this.post,
+    this.onTap,
+    required this.onMenuAction,
+  });
 
   final CommunityPostEntity post;
 
-  /// 상세 화면이 생기면 연결한다. 지금은 null.
+  /// 카드 탭 — 상세 화면으로 이동.
   final VoidCallback? onTap;
+
+  /// 더보기 메뉴에서 고른 항목. 처리는 화면이 한다 — 목록과 상세가 같은 항목에
+  /// 다르게 반응해야 하기 때문이다(`CommunityPostMenuAction` 주석 참고).
+  final ValueChanged<CommunityPostMenuAction> onMenuAction;
 
   /// 주소 미제공 시 숨겨지는 행 — 테스트에서 존재 여부를 확인한다.
   static const Key locationRowKey = Key('community_post_card_location_row');
@@ -93,78 +101,9 @@ class CommunityPostCard extends StatelessWidget {
               style: AppTextStyles.label_16.copyWith(color: AppColors.black),
             ),
           ),
-          _buildMoreMenu(context, l10n),
-        ],
-      ),
-    );
-  }
-
-  /// 더보기(⋮) 메뉴 — 지금은 신고하기 한 항목뿐이다.
-  ///
-  /// 수정·삭제는 "내 글인지"를 판단할 로그인 사용자 id가 카드에 없어 아직 안 붙인다.
-  /// 바깥 카드의 [onTap]과 겹치지만, 자식이 히트 테스트에서 이기므로 카드 탭은 안 탄다.
-  Widget _buildMoreMenu(BuildContext context, AppLocalizations l10n) {
-    return PopupMenuButton<void>(
-      // 메뉴 표면은 아래 컨테이너가 직접 그린다 — Material elevation으로는
-      // AppShadows.ver2(blur 10, 7%)를 못 만들기 때문에 프레임워크 쪽은 투명하게 비운다.
-      color: Colors.transparent,
-      elevation: 0,
-      shadowColor: Colors.transparent,
-      menuPadding: EdgeInsets.zero,
-      position: PopupMenuPosition.under,
-      // 메뉴가 뜨기 전에 터치가 먹혔음을 알린다 (정렬 라벨이 시트를 열 때와 같은 탭 햅틱).
-      onOpened: () => VibrationService.instance().buttonTap(),
-      // 기본 툴팁("Show menu")이 영어라 롱프레스 시 떠버린다.
-      tooltip: '',
-      // 메뉴 폭 204. `_PopupMenu`의 IntrinsicWidth(stepWidth: 56)가 폭을 56 배수로
-      // 올림하므로 tight 제약으로 못 박는다 — 안 하면 224가 되어 우측으로 20 밀린다.
-      constraints: BoxConstraints.tightFor(width: 204.w),
-      // icon: 대신 child: 를 쓴다. icon:은 IconButton으로 감싸져 최소 48×48이 붙고,
-      // 그만큼 제목 행 높이가 늘어난다.
-      // SVG에 박힌 #B1BCC8이 AppColors.black300과 같아 colorFilter는 두지 않는다.
-      child: SvgPicture.asset(
-        'assets/icons/icon_meatballs.svg',
-        width: 16.w,
-        height: 16.h,
-      ),
-      itemBuilder: (_) => [
-        PopupMenuItem<void>(
-          padding: EdgeInsets.zero,
-          // ponytail: 커뮤니티 글 신고 API가 아직 없다. 생기면 여기를 신고 화면으로 잇는다.
-          // 메뉴가 닫힌 뒤 실행되므로 팝업 route가 아닌 카드의 context를 쓴다.
-          onTap: () {
-            VibrationService.instance().buttonTap();
-            AppSnackbar.show(context, message: l10n.comingSoonMessage);
-          },
-          child: _buildReportItem(l10n),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildReportItem(AppLocalizations l10n) {
-    return Container(
-      height: 52.h,
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal20),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: AppRadius.large,
-        border: Border.all(color: AppColors.black100),
-        boxShadow: AppShadows.ver2,
-      ),
-      child: Row(
-        children: [
-          // 아이콘 자체가 빨강·회색 다색이라 colorFilter로 덧칠하지 않는다.
-          SvgPicture.asset(
-            'assets/icons/icon_warning_light.svg',
-            width: 16.w,
-            height: 16.h,
-          ),
-          SizedBox(width: AppSpacing.horizontal14),
-          Text(
-            l10n.buttonReport,
-            style: AppTextStyles.label_16.copyWith(color: AppColors.red),
-          ),
+          // 바깥 카드의 [onTap]과 겹치지만, 자식이 히트 테스트에서 이기므로
+          // 카드 탭은 안 탄다.
+          CommunityPostMenu(post: post, onAction: onMenuAction),
         ],
       ),
     );
@@ -328,7 +267,7 @@ class _StatusChip extends StatelessWidget {
 
 /// 아이콘 + 숫자 (좋아요 / 스크랩)
 ///
-/// 아이콘과 숫자가 같은 팔레트 색을 쓴다 — `AppColors.red` / `AppColors.yellow`.
+/// 아이콘은 SVG 원본 색, 숫자는 팔레트 색(`AppColors.red` / `AppColors.yellow`).
 class _CountLabel extends StatelessWidget {
   const _CountLabel({
     required this.assetPath,
@@ -351,14 +290,8 @@ class _CountLabel extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // SVG에 박힌 색(#FF383C·#FFCC00)이 팔레트와 미묘하게 달라 덧칠한다 —
-        // 안 하면 아이콘과 바로 옆 숫자가 서로 다른 빨강·노랑이 된다.
-        SvgPicture.asset(
-          assetPath,
-          width: 12.w,
-          height: 12.h,
-          colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-        ),
+        // SVG 원본 색을 그대로 쓴다 — 덧칠하면 아이콘이 시안과 달라진다.
+        SvgPicture.asset(assetPath, width: 12.w, height: 12.h),
         SizedBox(width: AppSpacing.horizontal2),
         Text(
           // 1000 이상은 1.2k로 줄인다 — 자릿수가 늘면 좌측 날짜·인원이 밀려 잘린다.

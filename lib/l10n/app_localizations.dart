@@ -1024,6 +1024,120 @@ abstract class AppLocalizations {
   /// **'커뮤니티'**
   String get bottomNavCommunity;
 
+  /// 모집글 상세 화면 앱바 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글'**
+  String get pageCommunityDetailTitle;
+
+  /// 모집글 상세 — 모임 채팅방에 들어가는 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅 참여하기'**
+  String get communityDetailJoinChat;
+
+  /// 모집글 상세 — 공유 액션 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'공유'**
+  String get communityDetailShare;
+
+  /// 모집글 상세 — 댓글 섹션 제목 (답글 포함 개수)
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글 {count}'**
+  String communityDetailCommentCount(int count);
+
+  /// 댓글 입력창 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글을 남겨보세요'**
+  String get communityCommentHint;
+
+  /// 답글 입력창 placeholder
+  ///
+  /// In ko, this message translates to:
+  /// **'답글을 남겨보세요'**
+  String get communityCommentReplyHint;
+
+  /// 댓글 아래 답글 작성 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'답글 달기'**
+  String get communityCommentReply;
+
+  /// 댓글이 하나도 없을 때 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 댓글을 남겨보세요'**
+  String get communityCommentEmpty;
+
+  /// 댓글 작성 시각 — 1분 미만
+  ///
+  /// In ko, this message translates to:
+  /// **'방금'**
+  String get communityCommentJustNow;
+
+  /// 댓글 작성 시각 — 1시간 미만
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분 전'**
+  String communityCommentMinutesAgo(int minutes);
+
+  /// 댓글 작성 시각 — 하루 미만
+  ///
+  /// In ko, this message translates to:
+  /// **'{hours}시간 전'**
+  String communityCommentHoursAgo(int hours);
+
+  /// 모집글 삭제 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 삭제할까요'**
+  String get communityDeleteConfirmTitle;
+
+  /// 모집글 삭제 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제하면 되돌릴 수 없어요'**
+  String get communityDeleteConfirmMessage;
+
+  /// 비로그인 사용자가 쓰기 동작을 시도했을 때 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인이 필요한 기능이에요'**
+  String get communityLoginRequiredMessage;
+
+  /// 모집글 더보기 메뉴 — 내 글 수정
+  ///
+  /// In ko, this message translates to:
+  /// **'수정하기'**
+  String get communityMenuEdit;
+
+  /// 모집글 더보기 메뉴 — 내 글 삭제
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제하기'**
+  String get communityMenuDelete;
+
+  /// 모집글 더보기 메뉴 — 모집중인 글을 마감으로 바꾸기
+  ///
+  /// In ko, this message translates to:
+  /// **'마감하기'**
+  String get communityMenuMarkCompleted;
+
+  /// 모집글 더보기 메뉴 — 마감된 글을 모집중으로 되돌리기
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 모집하기'**
+  String get communityMenuMarkRecruiting;
+
+  /// 모집글 더보기 메뉴 — 비로그인 사용자에게 보이는 로그인 유도
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인하고 이용하기'**
+  String get communityMenuLoginRequired;
+
   /// 커뮤니티 카드 — 모집 중인 게시글 배지
   ///
   /// In ko, this message translates to:
@@ -1125,6 +1239,18 @@ abstract class AppLocalizations {
   /// **'모집글 작성'**
   String get communityCreatePost;
 
+  /// 모집글 수정 화면 제목 (작성 화면을 수정 모드로 열었을 때)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글 수정'**
+  String get communityEditPost;
+
+  /// 사라진 모집글 상세에서 목록으로 나가는 버튼 — 재시도가 무의미한 경우라 '다시 시도' 대신 쓴다
+  ///
+  /// In ko, this message translates to:
+  /// **'목록으로 돌아가기'**
+  String get communityBackToList;
+
   /// 모집글 작성 — 제목 섹션 라벨
   ///
   /// In ko, this message translates to:
@@ -1202,11 +1328,83 @@ abstract class AppLocalizations {
   /// **'장소'**
   String get communityCreateLabelLocation;
 
-  /// 모집글 작성 — 장소 입력 힌트
+  /// 모집글 작성 — 만나는 곳(placeName) 입력 힌트
   ///
   /// In ko, this message translates to:
-  /// **'모임 장소를 입력해주세요'**
+  /// **'상세주소를 입력해주세요 ex) 어린이대공원 정문'**
   String get communityCreateHintLocation;
+
+  /// 모집글 작성 - 기본 주소 칸(읽기 전용)의 빈 상태 힌트. 값은 GET /api/community-posts/address가 채우며 지도로만 바뀐다
+  ///
+  /// In ko, this message translates to:
+  /// **'지도에서 위치를 고르면 채워져요'**
+  String get communityCreateHintAddress;
+
+  /// 모집글 작성 — 좌표를 아직 안 고른 상태의 지도 카드 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'지도에서 위치를 골라주세요'**
+  String get communityCreateHintPickLocation;
+
+  /// 모집글 상세 — 장소 텍스트를 탭해 클립보드에 담았을 때의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'장소를 복사했어요'**
+  String get communityLocationCopied;
+
+  /// 장소 선택 지도 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 선택'**
+  String get communityLocationPickerTitle;
+
+  /// 장소 선택 지도 화면 — 현재 핀 위치를 확정하는 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'이 위치로 선택'**
+  String get communityLocationPickerConfirm;
+
+  /// 장소 선택 지도 화면 — 좌표 주소를 조회하는 동안의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'주소를 확인하는 중이에요'**
+  String get communityLocationPickerLoading;
+
+  /// 장소 선택 지도 화면 — 표시할 주소가 없을 때의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'지도를 눌러 만날 곳을 정해요'**
+  String get communityLocationPickerHint;
+
+  /// 장소 선택 지도 화면 — 좌표 주소 조회가 실패했을 때의 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요'**
+  String get communityLocationPickerNotFound;
+
+  /// 모집글 등록 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글 올리는 중...'**
+  String get communityCreateLoading;
+
+  /// No description provided for @communityCreateLoadingSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 등록하는 중이에요. 잠시만 기다려주세요'**
+  String get communityCreateLoadingSub;
+
+  /// 모집글 수정 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글 고치는 중...'**
+  String get communityEditLoading;
+
+  /// No description provided for @communityEditLoadingSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 수정하는 중이에요. 잠시만 기다려주세요'**
+  String get communityEditLoadingSub;
 
   /// 모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)
   ///
@@ -3523,11 +3721,35 @@ abstract class AppLocalizations {
   /// **'모집글을 불러오지 못했어요'**
   String get errorCommunityPostsLoadFailed;
 
-  /// 공지사항 로딩 중 표시되는 안내
+  /// 커뮤니티 모집글 수정 중 예외가 발생했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
-  /// **'공지사항을 불러오는 중...'**
-  String get messageLoadingNotices;
+  /// **'모집글을 수정하는 중 오류가 생겼어요'**
+  String get errorCommunityPostUpdateGeneric;
+
+  /// 커뮤니티 모집글 삭제 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 삭제하는 중 오류가 생겼어요'**
+  String get errorCommunityPostDeleteGeneric;
+
+  /// 커뮤니티 모집 상태 변경 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집 상태를 바꾸는 중 오류가 생겼어요'**
+  String get errorCommunityPostStatusGeneric;
+
+  /// 커뮤니티 모집글 등록 중 예외가 발생했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글을 등록하는 중 오류가 생겼어요'**
+  String get errorCommunityPostCreateGeneric;
+
+  /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'주소를 불러오는 중 오류가 생겼어요'**
+  String get errorCommunityAddressLoadGeneric;
 
   /// 공지사항 로딩 실패 안내
   ///
@@ -3775,6 +3997,12 @@ abstract class AppLocalizations {
   /// **'입력값이 조건에 맞지 않아요'**
   String get errorCodeInvalidInputValue;
 
+  /// ADDRESS_NOT_FOUND — 좌표에 주소·국가가 없어 게시글 생성·수정이 거절된 경우. 같은 핀으로는 재시도해도 실패하므로 공통 폴백(errorTemporaryRetry)을 쓰면 안 된다. 장소 선택 화면의 communityLocationPickerNotFound와 같은 문구.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요'**
+  String get errorCodeAddressNotFound;
+
   /// No description provided for @errorCodeInvalidDestination.
   ///
   /// In ko, this message translates to:
@@ -3811,7 +4039,7 @@ abstract class AppLocalizations {
   /// **'해당 팀 전용 채널을 구독할 권한이 없어요'**
   String get errorCodeUnauthorizedSubscription;
 
-  /// 의도적으로 docs/error-codes.md detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용.
+  /// 의도적으로 백엔드 detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용.
   ///
   /// In ko, this message translates to:
   /// **'일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요'**
@@ -4164,6 +4392,30 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'해당 게임에 존재하지 않는 참가자예요'**
   String get errorCodeReportTargetNotFound;
+
+  /// No description provided for @errorCodeInvalidMeetingDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'모임 시간은 지금 이후로 골라주세요'**
+  String get errorCodeInvalidMeetingDate;
+
+  /// No description provided for @errorCodePostNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 삭제된 모집글이에요'**
+  String get errorCodePostNotFound;
+
+  /// No description provided for @errorCodeForbiddenNotAuthor.
+  ///
+  /// In ko, this message translates to:
+  /// **'작성자만 수정하거나 삭제할 수 있어요'**
+  String get errorCodeForbiddenNotAuthor;
+
+  /// No description provided for @errorCodeCountryNotSpecified.
+  ///
+  /// In ko, this message translates to:
+  /// **'국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요'**
+  String get errorCodeCountryNotSpecified;
 
   /// 맵 핑 선택 카드 — 상대 발견 핑 라벨
   ///

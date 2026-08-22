@@ -28,12 +28,23 @@ mixin _$CommunityPostEntity {
   CommunityPostStatus get status => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
-  /// 화면에 그대로 찍는 위치 한 줄. 서버가 주는 주소 3종(건물명·도로명·지번)
-  /// 중 가장 구체적인 것을 Repository가 골라 넣는다.
-  /// 역지오코딩이 실패하면 null이며, 그때는 카드가 위치 행 자체를 그리지 않는다
-  /// (좌표는 사용자에게 무의미). 지번/도로명을 따로 써야 하는 화면이 생기면
-  /// 그때 필드를 나눈다.
-  String? get locationLabel => throw _privateConstructorUsedError;
+  /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
+  ///
+  /// [region]과 병기한다(DEC-0015): 좌표로는 건물명을 신뢰할 수준으로 얻을 수
+  /// 없어 장소명은 작성자에게 받고, 서버 주소는 그 옆에 보조로 붙인다.
+  /// 둘 다 null이면 화면이 장소 행 자체를 그리지 않는다 — 좌표는 사용자에게
+  /// 무의미하다.
+  String? get placeName => throw _privateConstructorUsedError;
+
+  /// 서버가 좌표를 역지오코딩한 동 단위 지역 — `서울특별시 광진구 군자동`.
+  /// 역지오코딩이 실패하면 null이다.
+  String? get region => throw _privateConstructorUsedError;
+
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
+  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  String? get address => throw _privateConstructorUsedError;
 
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
@@ -70,7 +81,9 @@ abstract class $CommunityPostEntityCopyWith<$Res> {
     int maxParticipants,
     CommunityPostStatus status,
     DateTime createdAt,
-    String? locationLabel,
+    String? placeName,
+    String? region,
+    String? address,
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
@@ -102,7 +115,9 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
     Object? maxParticipants = null,
     Object? status = null,
     Object? createdAt = null,
-    Object? locationLabel = freezed,
+    Object? placeName = freezed,
+    Object? region = freezed,
+    Object? address = freezed,
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
@@ -149,9 +164,17 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            locationLabel: freezed == locationLabel
-                ? _value.locationLabel
-                : locationLabel // ignore: cast_nullable_to_non_nullable
+            placeName: freezed == placeName
+                ? _value.placeName
+                : placeName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            region: freezed == region
+                ? _value.region
+                : region // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
                       as String?,
             currentParticipants: freezed == currentParticipants
                 ? _value.currentParticipants
@@ -191,7 +214,9 @@ abstract class _$$CommunityPostEntityImplCopyWith<$Res>
     int maxParticipants,
     CommunityPostStatus status,
     DateTime createdAt,
-    String? locationLabel,
+    String? placeName,
+    String? region,
+    String? address,
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
@@ -222,7 +247,9 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
     Object? maxParticipants = null,
     Object? status = null,
     Object? createdAt = null,
-    Object? locationLabel = freezed,
+    Object? placeName = freezed,
+    Object? region = freezed,
+    Object? address = freezed,
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
@@ -269,9 +296,17 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        locationLabel: freezed == locationLabel
-            ? _value.locationLabel
-            : locationLabel // ignore: cast_nullable_to_non_nullable
+        placeName: freezed == placeName
+            ? _value.placeName
+            : placeName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        region: freezed == region
+            ? _value.region
+            : region // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
                   as String?,
         currentParticipants: freezed == currentParticipants
             ? _value.currentParticipants
@@ -292,7 +327,7 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$CommunityPostEntityImpl implements _CommunityPostEntity {
+class _$CommunityPostEntityImpl extends _CommunityPostEntity {
   const _$CommunityPostEntityImpl({
     required this.id,
     required this.writerId,
@@ -304,11 +339,13 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
     required this.maxParticipants,
     required this.status,
     required this.createdAt,
-    this.locationLabel,
+    this.placeName,
+    this.region,
+    this.address,
     this.currentParticipants,
     this.likeCount,
     this.bookmarkCount,
-  });
+  }) : super._();
 
   @override
   final int id;
@@ -331,13 +368,26 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
   @override
   final DateTime createdAt;
 
-  /// 화면에 그대로 찍는 위치 한 줄. 서버가 주는 주소 3종(건물명·도로명·지번)
-  /// 중 가장 구체적인 것을 Repository가 골라 넣는다.
-  /// 역지오코딩이 실패하면 null이며, 그때는 카드가 위치 행 자체를 그리지 않는다
-  /// (좌표는 사용자에게 무의미). 지번/도로명을 따로 써야 하는 화면이 생기면
-  /// 그때 필드를 나눈다.
+  /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
+  ///
+  /// [region]과 병기한다(DEC-0015): 좌표로는 건물명을 신뢰할 수준으로 얻을 수
+  /// 없어 장소명은 작성자에게 받고, 서버 주소는 그 옆에 보조로 붙인다.
+  /// 둘 다 null이면 화면이 장소 행 자체를 그리지 않는다 — 좌표는 사용자에게
+  /// 무의미하다.
   @override
-  final String? locationLabel;
+  final String? placeName;
+
+  /// 서버가 좌표를 역지오코딩한 동 단위 지역 — `서울특별시 광진구 군자동`.
+  /// 역지오코딩이 실패하면 null이다.
+  @override
+  final String? region;
+
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
+  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  @override
+  final String? address;
 
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
@@ -354,7 +404,7 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
 
   @override
   String toString() {
-    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, locationLabel: $locationLabel, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
+    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
   }
 
   @override
@@ -378,8 +428,10 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            (identical(other.locationLabel, locationLabel) ||
-                other.locationLabel == locationLabel) &&
+            (identical(other.placeName, placeName) ||
+                other.placeName == placeName) &&
+            (identical(other.region, region) || other.region == region) &&
+            (identical(other.address, address) || other.address == address) &&
             (identical(other.currentParticipants, currentParticipants) ||
                 other.currentParticipants == currentParticipants) &&
             (identical(other.likeCount, likeCount) ||
@@ -401,7 +453,9 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
     maxParticipants,
     status,
     createdAt,
-    locationLabel,
+    placeName,
+    region,
+    address,
     currentParticipants,
     likeCount,
     bookmarkCount,
@@ -419,7 +473,7 @@ class _$CommunityPostEntityImpl implements _CommunityPostEntity {
       );
 }
 
-abstract class _CommunityPostEntity implements CommunityPostEntity {
+abstract class _CommunityPostEntity extends CommunityPostEntity {
   const factory _CommunityPostEntity({
     required final int id,
     required final int writerId,
@@ -431,11 +485,14 @@ abstract class _CommunityPostEntity implements CommunityPostEntity {
     required final int maxParticipants,
     required final CommunityPostStatus status,
     required final DateTime createdAt,
-    final String? locationLabel,
+    final String? placeName,
+    final String? region,
+    final String? address,
     final int? currentParticipants,
     final int? likeCount,
     final int? bookmarkCount,
   }) = _$CommunityPostEntityImpl;
+  const _CommunityPostEntity._() : super._();
 
   @override
   int get id;
@@ -458,13 +515,26 @@ abstract class _CommunityPostEntity implements CommunityPostEntity {
   @override
   DateTime get createdAt;
 
-  /// 화면에 그대로 찍는 위치 한 줄. 서버가 주는 주소 3종(건물명·도로명·지번)
-  /// 중 가장 구체적인 것을 Repository가 골라 넣는다.
-  /// 역지오코딩이 실패하면 null이며, 그때는 카드가 위치 행 자체를 그리지 않는다
-  /// (좌표는 사용자에게 무의미). 지번/도로명을 따로 써야 하는 화면이 생기면
-  /// 그때 필드를 나눈다.
+  /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
+  ///
+  /// [region]과 병기한다(DEC-0015): 좌표로는 건물명을 신뢰할 수준으로 얻을 수
+  /// 없어 장소명은 작성자에게 받고, 서버 주소는 그 옆에 보조로 붙인다.
+  /// 둘 다 null이면 화면이 장소 행 자체를 그리지 않는다 — 좌표는 사용자에게
+  /// 무의미하다.
   @override
-  String? get locationLabel;
+  String? get placeName;
+
+  /// 서버가 좌표를 역지오코딩한 동 단위 지역 — `서울특별시 광진구 군자동`.
+  /// 역지오코딩이 실패하면 null이다.
+  @override
+  String? get region;
+
+  /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
+  ///
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
+  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  @override
+  String? get address;
 
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
