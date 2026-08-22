@@ -60,6 +60,12 @@ class RoutePaths {
   /// 모집글 작성 화면 (커뮤니티 목록의 작성 버튼에서 진입)
   static const String communityCreate = '/community/create';
 
+  /// 모집글 검색 화면 (커뮤니티 목록 상단 돋보기에서 진입)
+  ///
+  /// `:postId`보다 먼저 등록해야 한다 — 뒤에 두면 `/community/search`가
+  /// postId="search"로 잡힌다 (`create`와 같은 이유).
+  static const String communitySearch = '/community/search';
+
   /// 모집글 상세 화면 (목록 카드 탭에서 진입)
   ///
   /// `create`보다 뒤에 등록해야 한다 — 먼저 두면 `/community/create`가
@@ -182,6 +188,7 @@ class RoutePaths {
   static const String homeName = 'home';
   static const String communityName = 'community';
   static const String communityCreateName = 'communityCreate';
+  static const String communitySearchName = 'communitySearch';
   static const String communityDetailName = 'communityDetail';
   static const String communityEditName = 'communityEdit';
   static const String mypageName = 'mypage';

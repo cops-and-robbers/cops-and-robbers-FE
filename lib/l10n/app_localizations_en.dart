@@ -684,6 +684,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Turn on location access in Settings';
 
   @override
+  String get communitySearchHint => 'Search by title or place';
+
+  @override
+  String get communitySearchRecent => 'Recent searches';
+
+  @override
+  String get communitySearchClearAll => 'Clear all';
+
+  @override
+  String get communitySearchEmpty => 'No results found';
+
+  @override
+  String get communitySearchTooShort => 'Enter at least 2 characters';
+
+  @override
   String get communityCreatePost => 'New post';
 
   @override

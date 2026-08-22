@@ -632,6 +632,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communitySortLocationDenied => '設定で位置情報をオンにしてください';
 
   @override
+  String get communitySearchHint => 'タイトル・場所で検索';
+
+  @override
+  String get communitySearchRecent => '最近の検索';
+
+  @override
+  String get communitySearchClearAll => 'すべて削除';
+
+  @override
+  String get communitySearchEmpty => '検索結果がありません';
+
+  @override
+  String get communitySearchTooShort => '2文字以上入力してください';
+
+  @override
   String get communityCreatePost => '募集を作成';
 
   @override

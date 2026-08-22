@@ -305,9 +305,10 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
   /// 동까지로는 지도 앱이 핀을 못 찍고, 작성자가 입력한 장소명이 섞이면 검색이
   /// 되레 어긋난다.
   ///
-  /// 백엔드가 [CommunityPostEntity.address]를 실어 줄 때까지는 null이라 동 단위
+  /// 역지오코딩이 실패한 글은 [CommunityPostEntity.address]가 null이라 동 단위
   /// [CommunityPostEntity.region]이 대신 담긴다. 좌표로 `/address`를 따로 부르지는
-  /// 않는다 — 곧 응답에 실려 올 값을 벤더 한도까지 써 가며 미리 받아 올 이유가 없다.
+  /// 않는다 — 목록·상세 응답에 이미 실려 오는 값을 벤더 한도까지 써 가며 다시
+  /// 받아 올 이유가 없다.
   ///
   /// 마지막 폴백이 라벨인 이유: 역지오코딩이 실패해 [CommunityPostEntity.region]도
   /// 없으면 라벨에는 장소명만 남는다. 셋 다 없는 경우는 없다 — 라벨이 null이면

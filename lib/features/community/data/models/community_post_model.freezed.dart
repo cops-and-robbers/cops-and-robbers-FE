@@ -32,7 +32,7 @@ mixin _$CommunityLocationModel {
   /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
   ///
   /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
-  /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
+  /// [region]의 동까지로는 안 된다. 역지오코딩이 실패한 글은 null이다.
   String? get address => throw _privateConstructorUsedError;
 
   /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.
@@ -228,7 +228,7 @@ class _$CommunityLocationModelImpl implements _CommunityLocationModel {
   /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
   ///
   /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
-  /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
+  /// [region]의 동까지로는 안 된다. 역지오코딩이 실패한 글은 null이다.
   @override
   final String? address;
 
@@ -321,7 +321,7 @@ abstract class _CommunityLocationModel implements CommunityLocationModel {
   /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
   ///
   /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
-  /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
+  /// [region]의 동까지로는 안 된다. 역지오코딩이 실패한 글은 null이다.
   @override
   String? get address;
 

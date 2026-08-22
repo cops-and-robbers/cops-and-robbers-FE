@@ -9,6 +9,7 @@ import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -56,9 +57,14 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
           style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
         actions: [
-          // 검색은 백엔드에 keyword 쿼리가 없고 알림은 기능 자체가 없다.
-          // 후속 기능 연결 전까지 탭 여부만 로그로 확인한다.
-          _buildAppBarIcon('assets/icons/icon_search.svg'),
+          _buildAppBarIcon(
+            'assets/icons/icon_search.svg',
+            onTap: () {
+              VibrationService.instance().buttonTap();
+              context.pushNamed(RoutePaths.communitySearchName);
+            },
+          ),
+          // 알림은 기능 자체가 없다. 후속 연결 전까지 탭 여부만 로그로 확인한다.
           _buildAppBarIcon('assets/icons/icon_bell_off.svg'),
           SizedBox(width: AppSpacing.horizontal16),
         ],
@@ -94,9 +100,9 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     );
   }
 
-  Widget _buildAppBarIcon(String assetPath) {
+  Widget _buildAppBarIcon(String assetPath, {VoidCallback? onTap}) {
     return IconButton(
-      onPressed: () => debugPrint('🔍 앱바 아이콘 탭'),
+      onPressed: onTap ?? () => debugPrint('🔍 앱바 아이콘 탭'),
       padding: EdgeInsets.only(left: AppSpacing.horizontal20),
       icon: SvgPicture.asset(assetPath, width: 22.w, height: 22.h),
     );

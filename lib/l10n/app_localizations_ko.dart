@@ -629,6 +629,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communitySortLocationDenied => '설정에서 위치 권한을 켜주세요';
 
   @override
+  String get communitySearchHint => '제목, 장소를 검색해보세요';
+
+  @override
+  String get communitySearchRecent => '최근 검색어';
+
+  @override
+  String get communitySearchClearAll => '모두 삭제';
+
+  @override
+  String get communitySearchEmpty => '검색 결과가 없어요';
+
+  @override
+  String get communitySearchTooShort => '두 글자 이상 입력해주세요';
+
+  @override
   String get communityCreatePost => '모집글 작성';
 
   @override

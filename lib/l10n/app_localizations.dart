@@ -1251,6 +1251,36 @@ abstract class AppLocalizations {
   /// **'설정에서 위치 권한을 켜주세요'**
   String get communitySortLocationDenied;
 
+  /// 커뮤니티 검색 — 입력창 안내 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'제목, 장소를 검색해보세요'**
+  String get communitySearchHint;
+
+  /// 커뮤니티 검색 — 최근 검색어 목록 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 검색어'**
+  String get communitySearchRecent;
+
+  /// 커뮤니티 검색 — 최근 검색어 전체 삭제 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'모두 삭제'**
+  String get communitySearchClearAll;
+
+  /// 커뮤니티 검색 — 결과가 하나도 없을 때
+  ///
+  /// In ko, this message translates to:
+  /// **'검색 결과가 없어요'**
+  String get communitySearchEmpty;
+
+  /// 커뮤니티 검색 — 공백을 제외한 검색어가 2자 미만일 때
+  ///
+  /// In ko, this message translates to:
+  /// **'두 글자 이상 입력해주세요'**
+  String get communitySearchTooShort;
+
   /// 커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)
   ///
   /// In ko, this message translates to:

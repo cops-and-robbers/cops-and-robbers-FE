@@ -485,6 +485,26 @@
   "@communitySortLocationDenied": {
     "description": "커뮤니티 정렬 — 위치 권한이 영구 거부돼 다시 물을 수 없을 때"
   },
+  "communitySearchHint": "제목, 장소를 검색해보세요",
+  "@communitySearchHint": {
+    "description": "커뮤니티 검색 — 입력창 안내 문구"
+  },
+  "communitySearchRecent": "최근 검색어",
+  "@communitySearchRecent": {
+    "description": "커뮤니티 검색 — 최근 검색어 목록 제목"
+  },
+  "communitySearchClearAll": "모두 삭제",
+  "@communitySearchClearAll": {
+    "description": "커뮤니티 검색 — 최근 검색어 전체 삭제 버튼"
+  },
+  "communitySearchEmpty": "검색 결과가 없어요",
+  "@communitySearchEmpty": {
+    "description": "커뮤니티 검색 — 결과가 하나도 없을 때"
+  },
+  "communitySearchTooShort": "두 글자 이상 입력해주세요",
+  "@communitySearchTooShort": {
+    "description": "커뮤니티 검색 — 공백을 제외한 검색어가 2자 미만일 때"
+  },
   "communityCreatePost": "모집글 작성",
   "@communityCreatePost": {
     "description": "커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)"
