@@ -23,9 +23,12 @@ extension CommunityPostStatusWire on CommunityPostStatus {
 
 /// 와이어 문자열 → 도메인 enum.
 ///
-/// 모르는 값은 '마감'으로 본다. 모집중으로 보여 끝난 모임에 참여를 시도하게
-/// 두느니 보수적으로 막는 쪽이 안전하고, 예외를 던지면 그 글 하나 때문에 목록
-/// 한 장이 통째로 에러 화면이 된다 — `ENDED`가 추가됐을 때 실제로 그랬다.
+/// 모르는 값은 '종료'로 본다. '마감'(completed)으로 보면
+/// `community_post_menu.dart`의 `!= ended` 가드를 통과해 작성자에게 "다시
+/// 모집하기"가 뜨고 누르면 서버로 RECRUITING이 나간다 — 미지 상태에 표시와
+/// 변경 둘 다 열리는 셈이다. `ended`로 보면 참여 표시와 상태 변경이 모두
+/// 막혀 둘 다 보수적으로 잡힌다. 예외를 던지면 그 글 하나 때문에 목록 한 장이
+/// 통째로 에러 화면이 된다 — `ENDED`가 추가됐을 때 실제로 그랬다.
 CommunityPostStatus communityPostStatusFromWire(String wire) {
   switch (wire) {
     case 'RECRUITING':
@@ -36,8 +39,8 @@ CommunityPostStatus communityPostStatusFromWire(String wire) {
       return CommunityPostStatus.ended;
     default:
       // 조용히 묻히면 다음 미지 값이 언제 들어왔는지 알 길이 없다.
-      debugPrint('[커뮤니티] ⚠️ 알 수 없는 모집 상태: $wire → 마감으로 처리');
-      return CommunityPostStatus.completed;
+      debugPrint('[커뮤니티] ⚠️ 알 수 없는 모집 상태: $wire → 종료로 처리');
+      return CommunityPostStatus.ended;
   }
 }
 

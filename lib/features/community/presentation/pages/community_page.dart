@@ -130,6 +130,9 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
       emptyMessage: l10n.pageCommunityEmpty,
       // 마지막 카드가 떠 있는 작성 버튼에 가리지 않도록 비운다.
       bottomPadding: _buttonBottomOffset + _createButtonHeight,
+      // 이 화면은 위에 스코프 토글·정렬 라벨이 있어 빈 상태 문구가 그만큼
+      // 위로 치우친다 — 그 높이만큼 아래를 채워 화면 기준 가운데로 보정한다.
+      emptyStateCenterOffset: AppSpacing.vertical64,
     );
 
     // 로딩 중이거나 AuthInterceptor가 강제 로그아웃(→ 화면 전환)을 처리할

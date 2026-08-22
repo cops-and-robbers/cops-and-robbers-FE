@@ -364,15 +364,16 @@ void main() {
       );
     });
 
-    test('falls_back_to_completed_when_wire_status_is_unknown', () async {
-      // 알 수 없는 상태 하나가 목록 한 장을 통째로 날리지 않아야 한다.
+    test('falls_back_to_ended_when_wire_status_is_unknown', () async {
+      // 알 수 없는 상태 하나가 목록 한 장을 통째로 날리지 않아야 한다. '종료'로
+      // 보수적으로 잡아야 참여 표시와 상태 변경이 둘 다 막힌다.
       final fake = _FakeCommunityRemoteDataSource()
         ..responseToReturn = _listOf([_postJson(status: 'CANCELLED')]);
       final repo = CommunityRepositoryImpl(fake);
 
       final result = await repo.getPosts(size: 20, countryCode: 'KR');
 
-      expect(result.items.single.status, CommunityPostStatus.completed);
+      expect(result.items.single.status, CommunityPostStatus.ended);
     });
 
     test('maps_ended_status_when_server_marks_meeting_as_past', () async {
@@ -430,6 +431,9 @@ void main() {
       await repo.getPosts(size: 20, countryCode: 'KR', keyword: '서울');
 
       expect(fake.lastKeyword, '서울');
+      // 기본 정렬이 실제로 서버 계약값 LATEST로 나가는지 — sort를 생략하는
+      // 케이스라 여기서 함께 확인한다.
+      expect(fake.lastSort, 'LATEST');
     });
   });
 

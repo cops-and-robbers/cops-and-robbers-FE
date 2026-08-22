@@ -52,8 +52,8 @@ CommunityRepository communityRepository(Ref ref) {
 
 /// 현재 선택된 목록 범위 필터
 ///
-/// `CommunityFeedNotifier.build()`가 이 값을 watch 하므로, 값이 바뀌면 build가
-/// 재실행되며 자동으로 0페이지부터 다시 조회된다 — 리셋 로직이 따로 없다.
+/// `CommunityFeedNotifier`의 family 키에 그대로 들어가므로, 값이 바뀌면 그
+/// 스코프의 인스턴스가 커서 없이 첫 페이지를 부른다 — 리셋 로직이 따로 없다.
 /// 토글 UI는 이 provider를 직접 watch 해서 네트워크 응답을 기다리지 않고
 /// 탭 즉시 선택 표시를 바꾼다.
 @riverpod
@@ -294,10 +294,12 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
 
     // 이 대입은 첫 await 이전이라 동기적으로 끝난다. 스크롤 리스너가 프레임마다
     // 호출해도 두 번째 호출은 위 isLoadingMore 가드에 걸린다.
-    // pending을 별도로 들고 있는 이유: await 도중 scope가 바뀌면 build()가
-    // 재실행되어 state가 이 인스턴스에서 다른 인스턴스로 교체된다. 응답이
-    // 돌아왔을 때 state가 여전히 pending과 identical한지 확인해야 그 사이
-    // build()가 세팅한 새 스코프의 상태를 낡은 응답으로 덮어쓰지 않는다.
+    // pending을 별도로 들고 있는 이유: family 키가 스코프·정렬·검색어별로 갈려
+    // 있어 이 인스턴스의 state가 다른 인스턴스로 교체되는 일은 없다. 대신
+    // await 도중 refresh()가 끼어들면 invalidateSelf가 build()를 다시 돌려
+    // 같은 인스턴스의 state를 이 pending과 다른 값으로 바꿔치운다. 응답이
+    // 돌아왔을 때 state가 여전히 pending과 identical한지 확인해야 그 새 state를
+    // 낡은 응답으로 덮어쓰지 않는다.
     final pending = current.copyWith(isLoadingMore: true);
     state = AsyncData(pending);
 
@@ -325,8 +327,8 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
             longitude: current.longitude,
           );
 
-      // scope 전환이나 refresh()가 끼어들어 state가 이미 교체됐다면 이 응답은
-      // 낡은 것이다 — 최신 상태를 덮지 않고 조용히 버린다.
+      // refresh()가 끼어들어 state가 이미 교체됐다면 이 응답은 낡은 것이다 —
+      // 최신 상태를 덮지 않고 조용히 버린다.
       if (!identical(state.valueOrNull, pending)) return;
 
       // 커서는 "몇 번째"가 아니라 "어디까지 봤는지"를 들고 다니므로, 스크롤 중
@@ -340,7 +342,7 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
         ),
       );
     } catch (_) {
-      // 낡은 요청이면 최신 상태(다른 scope 등)를 건드리지 않는다.
+      // 그 사이 refresh()가 끼어들어 state가 이미 교체됐다면 건드리지 않는다.
       if (identical(state.valueOrNull, pending)) {
         state = AsyncData(current.copyWith(isLoadingMore: false));
       }

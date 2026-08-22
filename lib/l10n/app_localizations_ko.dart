@@ -2316,6 +2316,34 @@ class AppLocalizationsKo extends AppLocalizations {
       '국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요';
 
   @override
+  String get errorCodeAddressLookupFailed => '주소 조회에 실패했어요. 잠시 후 다시 시도해주세요';
+
+  @override
+  String get errorCodeRecruitmentClosed => '이미 마감된 모집글이에요';
+
+  @override
+  String get errorCodeUnsupportedListScope => '지원하지 않는 목록 범위예요';
+
+  @override
+  String get errorCodeUnsupportedListSort => '지원하지 않는 정렬 방식이에요';
+
+  @override
+  String get errorCodeAlreadyJoined => '이미 참여한 채팅방이에요';
+
+  @override
+  String get errorCodeAuthorCannotLeave => '작성자는 채팅방을 나갈 수 없어요';
+
+  @override
+  String get errorCodeChatRoomFull => '채팅방 정원이 가득 찼어요';
+
+  @override
+  String get errorCodeJoinedChatRoomLimitExceeded =>
+      '참여할 수 있는 채팅방 수를 초과했어요. 다른 채팅방을 나간 뒤 다시 시도해주세요';
+
+  @override
+  String get errorCodeNotAChatMember => '해당 채팅방의 참여자가 아니에요';
+
+  @override
   String get pingFound => '발견';
 
   @override

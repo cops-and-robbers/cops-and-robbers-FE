@@ -24,12 +24,14 @@ void main() {
       expect(communityPostStatusFromWire('ENDED'), CommunityPostStatus.ended);
     });
 
-    test('falls_back_to_completed_when_wire_status_is_unknown', () {
-      // 모르는 상태를 모집중으로 보여 끝난 모임에 참여를 시도하게 두지 않는다.
-      // 던지면 목록 한 장이 통째로 에러 화면이 된다 (ENDED 추가 때 실제로 그랬다).
+    test('falls_back_to_ended_when_wire_status_is_unknown', () {
+      // 미지 상태를 '마감'으로 보면 작성자에게 "다시 모집하기"가 뜨고 누르면
+      // RECRUITING이 나간다 — '종료'로 보면 참여 표시와 상태 변경이 둘 다
+      // 막힌다. 던지면 목록 한 장이 통째로 에러 화면이 된다(ENDED 추가 때
+      // 실제로 그랬다).
       expect(
         communityPostStatusFromWire('CANCELLED'),
-        CommunityPostStatus.completed,
+        CommunityPostStatus.ended,
       );
     });
   });

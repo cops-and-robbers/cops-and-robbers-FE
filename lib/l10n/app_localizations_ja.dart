@@ -2318,6 +2318,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeCountryNotSpecified => '国を確認できない場所です。別の場所で試してください';
 
   @override
+  String get errorCodeAddressLookupFailed => '住所の取得に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeRecruitmentClosed => 'この募集はすでに締め切られました';
+
+  @override
+  String get errorCodeUnsupportedListScope => 'サポートされていない一覧の範囲です';
+
+  @override
+  String get errorCodeUnsupportedListSort => 'サポートされていない並び替え方法です';
+
+  @override
+  String get errorCodeAlreadyJoined => '既にこのチャットに参加しています';
+
+  @override
+  String get errorCodeAuthorCannotLeave => '作成者はこのチャットから退出できません';
+
+  @override
+  String get errorCodeChatRoomFull => 'このチャットの定員に達しました';
+
+  @override
+  String get errorCodeJoinedChatRoomLimitExceeded =>
+      '参加できるチャット数の上限を超えました。他のチャットから退出してからもう一度お試しください';
+
+  @override
+  String get errorCodeNotAChatMember => 'このチャットの参加者ではありません';
+
+  @override
   String get pingFound => '発見';
 
   @override

@@ -6,6 +6,7 @@ import 'package:cops_and_robbers/features/community/domain/entities/community_so
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_search_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_feed_list.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -142,6 +143,24 @@ void main() {
 
       expect(repo.lastKeyword, '서울');
       expect(await CommunityRecentKeywordStorage().load(), ['서울']);
+    });
+
+    testWidgets('searches_again_with_that_word_when_recent_chip_is_tapped', (
+      tester,
+    ) async {
+      // 최근 검색어 칩은 저장된 데이터가 네트워크 요청으로 바뀌는 유일한
+      // 경로다 — TextField를 거치지 않고 _search를 재진입한다.
+      SharedPreferences.setMockInitialValues({
+        'community_recent_keywords': ['서울'],
+      });
+      final repo = _FakeCommunityRepository([]);
+      await _pumpSearchPage(tester, repo);
+
+      await tester.tap(find.text('서울'));
+      await tester.pumpAndSettle();
+
+      expect(repo.lastKeyword, '서울');
+      expect(find.byType(CommunityFeedList), findsOneWidget);
     });
   });
 }

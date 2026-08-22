@@ -46,6 +46,7 @@ class CommunityFeedList extends ConsumerStatefulWidget {
     required this.emptyMessage,
     this.keyword,
     this.bottomPadding = 0,
+    this.emptyStateCenterOffset = 0,
   });
 
   final CommunityScope scope;
@@ -60,6 +61,11 @@ class CommunityFeedList extends ConsumerStatefulWidget {
   /// 목록 하단에 비워 둘 높이. 목록 화면은 떠 있는 작성 버튼에 마지막 카드가
   /// 가리지 않도록 버튼 높이만큼 넘긴다. 검색 화면은 버튼이 없어 0이다.
   final double bottomPadding;
+
+  /// 빈 상태 문구 아래에 비워 둘 높이. 목록 화면은 위쪽 스코프 토글·정렬 라벨
+  /// 만큼을 보정해 화면 기준 가운데로 보이게 한다. 검색 화면은 토글이 없어
+  /// 보정이 필요 없으므로 기본값 0을 쓴다.
+  final double emptyStateCenterOffset;
 
   @override
   ConsumerState<CommunityFeedList> createState() => _CommunityFeedListState();
@@ -224,19 +230,23 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
   }
 
   /// 정렬 라벨 — 탭하면 정렬 선택 바텀시트를 연다.
-  Widget _buildSortLabel(AppLocalizations l10n, CommunitySortOption sort) {
+  ///
+  /// [displaySort]는 화면에 보이는 글자용이라 폴백된 값을 받을 수 있다(I-3).
+  /// 시트에 넘기는 현재 선택값은 전역 선택인 `widget.sort`로 고정한다 — 폴백값을
+  /// 넘기면 사용자가 "최신순"을 다시 골라도 `picked == current`로 걸러져 무반응이 된다.
+  Widget _buildSortLabel(AppLocalizations l10n, CommunitySortOption displaySort) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
         // 시트가 올라오기 전에 터치가 먹혔음을 알린다 (AppButton과 동일한 탭 햅틱).
         VibrationService.instance().buttonTap();
-        _openSortSheet(sort);
+        _openSortSheet(widget.sort);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            _sortLabel(l10n, sort),
+            _sortLabel(l10n, displaySort),
             style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
           ),
           SizedBox(width: AppSpacing.horizontal4),
@@ -282,14 +292,18 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
   /// 더 띄우지 않는다. 같은 문구를 반복해 봐야 아무 일도 일어나지 않으므로
   /// 설정으로 안내한다.
   Future<bool> _ensureLocationForDistance() async {
+    final before = await ref.read(checkLocationPermissionProvider)();
     final granted = await ref.read(ensureLocationPermissionProvider)();
     if (!mounted) return false;
 
     if (granted) {
-      // 권한이 없던 동안 국가는 기기 로케일 폴백이었다. 좌표가 생겼으니 다시
-      // 판정한다 — 아니면 해외에 있는 한국 로케일 사용자가 한국 목록을 현지
-      // 좌표로 거리순 정렬하게 된다(DEC-0021).
-      ref.invalidate(communityCountryCodeProvider);
+      final hadPermission =
+          before == LocationPermission.always ||
+          before == LocationPermission.whileInUse;
+      // 권한을 '새로' 얻었을 때만 국가를 다시 판정한다 — 이미 있던 권한으로
+      // 매번 다시 판정하면 GPS 재측정과 벤더 호출이 반복되고,
+      // keepAlive로 둔 근거가 사라진다.
+      if (!hadPermission) ref.invalidate(communityCountryCodeProvider);
       return true;
     }
 
@@ -314,8 +328,7 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
         mainAxisSize: MainAxisSize.min,
         children: [
           EmptyState(message: message),
-          // 위쪽 토글·정렬 라벨만큼 아래를 채워 화면 기준 가운데로 보이게 한다.
-          SizedBox(height: AppSpacing.vertical64),
+          SizedBox(height: widget.emptyStateCenterOffset),
         ],
       ),
     );
@@ -344,6 +357,13 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
   /// 정렬 라벨을 목록 맨 위 아이템으로 넣어 카드와 함께 스크롤되게 한다
   /// (예전엔 Column 밖에 고정돼 있어 스크롤해도 안 내려갔다).
   Widget _buildList(AppLocalizations l10n, CommunityFeedState feed) {
+    // 좌표를 못 구해 최신순으로 물러섰다면 라벨도 그렇게 읽혀야 한다 —
+    // "거리순"이라 써 놓고 최신순 목록을 보여주면 에러 없이 틀린 화면이 된다.
+    final shownSort =
+        widget.sort == CommunitySortOption.distance && feed.latitude == null
+        ? CommunitySortOption.latest
+        : widget.sort;
+
     return AppRefreshControl(
       onRefresh: _refresh,
       child: ListView.separated(
@@ -360,7 +380,7 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
           if (index == 0) {
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal8),
-              child: _buildSortLabel(l10n, widget.sort),
+              child: _buildSortLabel(l10n, shownSort),
             );
           }
           final itemIndex = index - 1;

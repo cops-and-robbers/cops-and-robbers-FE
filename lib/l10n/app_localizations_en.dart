@@ -2516,6 +2516,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'We can\'t identify the country here. Please try from another spot';
 
   @override
+  String get errorCodeAddressLookupFailed =>
+      'Couldn\'t look up the address. Please try again later';
+
+  @override
+  String get errorCodeRecruitmentClosed =>
+      'This recruitment post is already closed';
+
+  @override
+  String get errorCodeUnsupportedListScope =>
+      'This list scope isn\'t supported';
+
+  @override
+  String get errorCodeUnsupportedListSort =>
+      'This sort option isn\'t supported';
+
+  @override
+  String get errorCodeAlreadyJoined => 'You\'re already in this chat';
+
+  @override
+  String get errorCodeAuthorCannotLeave => 'The author can\'t leave this chat';
+
+  @override
+  String get errorCodeChatRoomFull => 'This chat is full';
+
+  @override
+  String get errorCodeJoinedChatRoomLimitExceeded =>
+      'You\'ve joined too many chats. Leave one and try again';
+
+  @override
+  String get errorCodeNotAChatMember => 'You\'re not a member of this chat';
+
+  @override
   String get pingFound => 'Found';
 
   @override

@@ -489,9 +489,15 @@ void main() {
             ensureLocationPermissionProvider.overrideWithValue(
               () async => true,
             ),
-            // GPS는 시스템 경계다 — 이 테스트는 권한 게이트만 본다.
+            // 권한 서비스는 시스템 경계다 — denied로 갈아끼워 "새로 허용"
+            // 경로(I-1)를 태운다.
+            checkLocationPermissionProvider.overrideWithValue(
+              () async => LocationPermission.denied,
+            ),
+            // 좌표가 실제로 잡혀야 라벨이 거리순으로 보인다 — 좌표 없이 물러선
+            // 상태의 라벨 표기는 아래 별도 테스트가 검증한다(I-3).
             currentPositionResolverProvider.overrideWithValue(
-              () async => null,
+              () async => (latitude: 37.4979, longitude: 127.0276),
             ),
           ],
         );
@@ -503,6 +509,35 @@ void main() {
 
         expect(find.text('거리순'), findsOneWidget);
         expect(find.text('최신순'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'shows_latest_label_when_distance_sort_falls_back_without_coordinates',
+      (tester) async {
+        // 좌표를 못 구하면 Notifier가 최신순으로 물러서면서 목록도 최신순으로
+        // 온다 — 라벨이 "거리순"이라 쓰고 최신순 목록을 보여주면 사용자에게
+        // 아무 신호 없이 정렬이 어긋난다(I-3).
+        await _pumpCommunityPage(
+          tester,
+          _FakeCommunityRepository([_post(1)]),
+          overrides: [
+            ensureLocationPermissionProvider.overrideWithValue(
+              () async => true,
+            ),
+            currentPositionResolverProvider.overrideWithValue(
+              () async => null,
+            ),
+          ],
+        );
+
+        await tester.tap(find.text('최신순'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('거리순'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('최신순'), findsOneWidget);
+        expect(find.text('거리순'), findsNothing);
       },
     );
 
@@ -538,6 +573,44 @@ void main() {
         // "Timer still pending"으로 깨진다 — 흘려보내고 끝낸다.
         await tester.pump(const Duration(seconds: 4));
         await tester.pumpAndSettle();
+      },
+    );
+
+    testWidgets(
+      'does_not_reinvalidate_country_code_when_permission_was_already_granted',
+      (tester) async {
+        // 권한을 이미 오래전에 허용한 사용자 — ensurePermission()은 팝업 없이
+        // 곧장 true를 반환한다. 이 경로에서는 국가를 다시 판정하면 안 된다
+        // (GPS 재측정 + 벤더 호출 반복, keepAlive 근거 붕괴).
+        var countryCodeCalls = 0;
+        await _pumpCommunityPage(
+          tester,
+          _FakeCommunityRepository([_post(1)]),
+          overrides: [
+            ensureLocationPermissionProvider.overrideWithValue(
+              () async => true,
+            ),
+            checkLocationPermissionProvider.overrideWithValue(
+              () async => LocationPermission.whileInUse,
+            ),
+            currentPositionResolverProvider.overrideWithValue(
+              () async => null,
+            ),
+            communityCountryCodeProvider.overrideWith((ref) async {
+              countryCodeCalls++;
+              return 'KR';
+            }),
+          ],
+        );
+
+        final callsAfterFirstLoad = countryCodeCalls;
+
+        await tester.tap(find.text('최신순'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('거리순'));
+        await tester.pumpAndSettle();
+
+        expect(countryCodeCalls, callsAfterFirstLoad);
       },
     );
 

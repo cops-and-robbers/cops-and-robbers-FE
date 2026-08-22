@@ -779,6 +779,18 @@
   "errorCodePostNotFound": "This post has been deleted",
   "errorCodeForbiddenNotAuthor": "Only the author can edit or delete this post",
   "errorCodeCountryNotSpecified": "We can't identify the country here. Please try from another spot",
+  "errorCodeAddressLookupFailed": "Couldn't look up the address. Please try again later",
+  "@errorCodeAddressLookupFailed": {
+    "description": "ADDRESS_LOOKUP_FAILED — both reverse-geocoding vendors failed. Unlike ADDRESS_NOT_FOUND (no address at that pin at all), this is a temporary outage — retrying the same pin may succeed."
+  },
+  "errorCodeRecruitmentClosed": "This recruitment post is already closed",
+  "errorCodeUnsupportedListScope": "This list scope isn't supported",
+  "errorCodeUnsupportedListSort": "This sort option isn't supported",
+  "errorCodeAlreadyJoined": "You're already in this chat",
+  "errorCodeAuthorCannotLeave": "The author can't leave this chat",
+  "errorCodeChatRoomFull": "This chat is full",
+  "errorCodeJoinedChatRoomLimitExceeded": "You've joined too many chats. Leave one and try again",
+  "errorCodeNotAChatMember": "You're not a member of this chat",
   "pingFound": "Found",
   "@pingFound": {
     "description": "Map ping selection card — spotted-enemy ping label"

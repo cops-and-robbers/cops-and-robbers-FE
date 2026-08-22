@@ -12,7 +12,7 @@ import '../../domain/entities/community_sort_option.dart';
 
 /// 정렬 기준 선택 바텀시트
 ///
-/// 목록 상단의 "최신순 ▾"을 누르면 아래에서 올라온다. 항목이 4개뿐이라
+/// 목록 상단의 "최신순 ▾"을 누르면 아래에서 올라온다. 항목이 3개뿐이라
 /// 드롭다운보다 바텀시트가 터치 영역이 넓고 한 손으로 닿는다.
 ///
 /// 선택 결과는 [Navigator.pop]으로 돌려준다 — 시트가 상태를 들고 있지 않으므로
@@ -83,10 +83,12 @@ class CommunitySortSheet extends StatelessWidget {
         ? 30.h
         : 0.0;
 
-    // 높이 고정. iOS 기준 마지막 항목 터치 영역(패딩 포함) 바닥부터 시트
-    // 바닥까지 39가 남는다 — 홈 인디케이터 자리를 겸하므로 SafeArea를 두지 않는다.
+    // 높이 고정. 패딩·텍스트 줄높이만으로 셈한 값(202 안팎)은 실제 렌더링에서
+    // 오버플로우가 났다 — 위젯 테스트로 실측해 항목 3개가 겹치지 않는 최소값(약
+    // 265) 위에 여유를 둔 270으로 뒀다. 홈 인디케이터 자리를 겸하므로 SafeArea를
+    // 두지 않는다.
     return SizedBox(
-      height: 298.h + androidExtra,
+      height: 270.h + androidExtra,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -155,7 +157,7 @@ class CommunitySortSheet extends StatelessWidget {
             children: [
               // 오른쪽 체크 자리와 같은 폭을 왼쪽에도 비워 둔다. 체크만 붙이면
               // Row 중앙 정렬이 텍스트를 왼쪽으로 밀어, 선택된 항목만 글자 위치가
-              // 어긋난다. 양쪽을 대칭으로 두면 네 항목의 글자가 같은 x에 선다.
+              // 어긋난다. 양쪽을 대칭으로 두면 세 항목의 글자가 같은 x에 선다.
               SizedBox(width: _checkGap + _checkSize),
               Text(
                 label,

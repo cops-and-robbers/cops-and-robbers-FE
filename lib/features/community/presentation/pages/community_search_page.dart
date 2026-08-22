@@ -72,6 +72,11 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
   /// 전체 공백 제거본은 보내지 않는다. 나머지 정규화와 검색어 해시 생성은
   /// 서버가 한다.
   Future<void> _search(String raw) async {
+    // TextField의 TextInputAction.search 제출은 Flutter가 포커스를 자동
+    // 해제하지만, 앱바 돋보기 버튼 경로는 해제하지 않는다 — 여기서 맞춰 두 진입점의
+    // 결과를 통일한다(안 그러면 키보드가 검색 결과를 가린다).
+    FocusManager.instance.primaryFocus?.unfocus();
+
     final keyword = raw.trim();
     if (!_isLongEnough(keyword)) {
       AppSnackbar.show(

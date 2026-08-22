@@ -39,6 +39,7 @@ class _FakeCommunityRepository
   final List<String> requestedCountryCodes = [];
   final List<CommunitySortOption> requestedSorts = [];
   final List<({double? lat, double? lng})> requestedCoordinates = [];
+  final List<String?> requestedKeywords = [];
 
   @override
   Future<CommunityPostPageEntity> getPosts({
@@ -55,6 +56,7 @@ class _FakeCommunityRepository
     requestedCountryCodes.add(countryCode);
     requestedSorts.add(sort);
     requestedCoordinates.add((lat: latitude, lng: longitude));
+    requestedKeywords.add(keyword);
     final page =
         pagesByCursor[cursor] ?? (items: <CommunityPostEntity>[], next: null);
     return CommunityPostPageEntity(
@@ -568,6 +570,30 @@ void main() {
         expect(state.items.map((e) => e.id), [1, 2]);
       },
     );
+
+    test('sends_the_same_keyword_on_both_pages_when_searching', () async {
+      // 커서에는 국가·정렬·검색어가 봉인돼 있다 — 2페이지 요청이 1페이지와
+      // 다른 검색어를 실으면 서버가 400을 준다. loadMore가 family의 keyword를
+      // 그대로 다시 보내야 한다.
+      final repo = _FakeCommunityRepository({
+        null: (items: [_post(1)], next: 'cursor-1'),
+        'cursor-1': (items: [_post(2)], next: null),
+      });
+      final container = _containerWith(repo);
+
+      final provider = communityFeedNotifierProvider(
+        CommunityScope.all,
+        CommunitySortOption.latest,
+        '서울',
+      );
+      await container.read(provider.future);
+      await container.read(provider.notifier).loadMore();
+
+      expect(repo.requestedKeywords, ['서울', '서울']);
+      // 검색어만 맞고 페이지가 실제로는 안 붙는 회귀를 잡는다.
+      final state = container.read(provider).requireValue;
+      expect(state.items.map((e) => e.id), [1, 2]);
+    });
 
     test(
       'keeps_resolved_country_when_feed_family_is_invalidated_without_listeners',

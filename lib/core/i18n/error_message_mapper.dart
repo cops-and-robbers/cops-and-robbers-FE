@@ -87,10 +87,12 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeInvalidInputValue;
       // 좌표에 주소·국가가 없어 게시글 생성·수정이 거절된 경우(DEC-0022).
       // 공통 폴백 "잠시 후 다시 시도"는 틀린 안내다 — 같은 핀으로는 계속 실패한다.
-      // (벤더 장애로 실패하는 ADDRESS_LOOKUP_FAILED는 실제로 일시적이라
-      //  공통 폴백이 맞는 안내이므로 매핑하지 않는다.)
       case 'ADDRESS_NOT_FOUND':
         return errorCodeAddressNotFound;
+      // 역지오코딩 벤더가 둘 다 실패한 경우 — ADDRESS_NOT_FOUND와 달리 같은
+      // 핀으로 재시도하면 성공할 수 있는 일시적 장애다.
+      case 'ADDRESS_LOOKUP_FAILED':
+        return errorCodeAddressLookupFailed;
       case 'INVALID_DESTINATION':
         return errorCodeInvalidDestination;
       case 'UNSUPPORTED_MEDIA_TYPE':
@@ -240,9 +242,31 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeForbiddenNotAuthor;
       case 'COUNTRY_NOT_SPECIFIED':
         return errorCodeCountryNotSpecified;
-      // UNSUPPORTED_LIST_SCOPE / UNSUPPORTED_LIST_SORT는 매핑하지 않는다 —
-      // 앱은 scope=ALL·sort=LATEST 외의 값을 보내지 않으므로(datasource 참조)
-      // 이 코드가 오면 사용자가 아니라 클라이언트 버그다. 공통 폴백으로 충분하다.
+      // 앱은 scope=ALL 외의 값을 보내지 않으므로(datasource 참조) SCOPE는
+      // 정상 경로로 오지 않는다. sort는 LATEST 외에 DISTANCE·DEADLINE도 보내지만
+      // 인기순(POPULAR)은 정렬 시트가 노출하지 않아 SORT도 마찬가지로 오지
+      // 않는다 — 둘 다 문서화된 코드라 커버리지 테스트가 요구하는 매핑은 채워 둔다.
+      case 'UNSUPPORTED_LIST_SCOPE':
+        return errorCodeUnsupportedListScope;
+      case 'UNSUPPORTED_LIST_SORT':
+        return errorCodeUnsupportedListSort;
+      // ── 채팅(모임 채팅방) 에러 ───────────────────────────────────────
+      // 앱이 아직 채팅 엔드포인트를 부르지 않아 실제 노출되지는 않지만,
+      // docs/api-docs.json에 실린 코드라 커버리지 테스트가 매핑을 요구한다.
+      // RECRUITMENT_CLOSED는 POST /chat/join 400에서만 나온다(모집글 CRUD가
+      // 아니라 채팅 참여 에러) — 여기 둔다.
+      case 'RECRUITMENT_CLOSED':
+        return errorCodeRecruitmentClosed;
+      case 'ALREADY_JOINED':
+        return errorCodeAlreadyJoined;
+      case 'AUTHOR_CANNOT_LEAVE':
+        return errorCodeAuthorCannotLeave;
+      case 'CHAT_ROOM_FULL':
+        return errorCodeChatRoomFull;
+      case 'JOINED_CHAT_ROOM_LIMIT_EXCEEDED':
+        return errorCodeJoinedChatRoomLimitExceeded;
+      case 'NOT_A_CHAT_MEMBER':
+        return errorCodeNotAChatMember;
       default:
         return null;
     }
