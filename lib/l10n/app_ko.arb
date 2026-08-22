@@ -477,6 +477,14 @@
   "@communitySortSheetTitle": {
     "description": "정렬 선택 바텀시트 접근성 라벨"
   },
+  "communitySortNeedsLocation": "위치 권한이 있어야 거리순으로 볼 수 있어요",
+  "@communitySortNeedsLocation": {
+    "description": "커뮤니티 정렬 — 거리순 선택 시 위치 권한을 거부했을 때"
+  },
+  "communitySortLocationDenied": "설정에서 위치 권한을 켜주세요",
+  "@communitySortLocationDenied": {
+    "description": "커뮤니티 정렬 — 위치 권한이 영구 거부돼 다시 물을 수 없을 때"
+  },
   "communityCreatePost": "모집글 작성",
   "@communityCreatePost": {
     "description": "커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)"

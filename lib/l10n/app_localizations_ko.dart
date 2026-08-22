@@ -623,6 +623,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communitySortSheetTitle => '정렬 기준';
 
   @override
+  String get communitySortNeedsLocation => '위치 권한이 있어야 거리순으로 볼 수 있어요';
+
+  @override
+  String get communitySortLocationDenied => '설정에서 위치 권한을 켜주세요';
+
+  @override
   String get communityCreatePost => '모집글 작성';
 
   @override

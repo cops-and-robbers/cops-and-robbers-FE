@@ -4,6 +4,7 @@ import 'package:cops_and_robbers/features/community/data/models/community_post_m
 import 'package:cops_and_robbers/features/community/data/repositories/community_repository_impl.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,17 +20,30 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
   double? lastLongitude;
   bool called = false;
 
+  String? lastSort;
+  String? lastKeyword;
+  double? lastListLatitude;
+  double? lastListLongitude;
+
   @override
   Future<CommunityPostListResponseModel> getPosts({
     String? cursor,
     required int size,
     String? scope,
     required String countryCode,
+    String? sort,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) async {
     called = true;
     lastCursor = cursor;
     lastScope = scope;
     lastCountryCode = countryCode;
+    lastSort = sort;
+    lastKeyword = keyword;
+    lastListLatitude = latitude;
+    lastListLongitude = longitude;
     if (errorToThrow != null) throw errorToThrow!;
     return responseToReturn!;
   }
@@ -369,6 +383,53 @@ void main() {
       final result = await repo.getPosts(size: 20, countryCode: 'KR');
 
       expect(result.items.single.status, CommunityPostStatus.ended);
+    });
+
+    test('sends_coordinates_only_when_sort_is_distance', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.getPosts(
+        size: 20,
+        countryCode: 'KR',
+        sort: CommunitySortOption.distance,
+        latitude: 37.4979,
+        longitude: 127.0276,
+      );
+
+      expect(fake.lastSort, 'DISTANCE');
+      expect(fake.lastListLatitude, 37.4979);
+      expect(fake.lastListLongitude, 127.0276);
+    });
+
+    test('omits_coordinates_when_sort_is_not_distance', () async {
+      // 거리순이 아닌데 좌표를 실으면 서버가 400을 준다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.getPosts(
+        size: 20,
+        countryCode: 'KR',
+        sort: CommunitySortOption.deadline,
+        latitude: 37.4979,
+        longitude: 127.0276,
+      );
+
+      expect(fake.lastSort, 'DEADLINE');
+      expect(fake.lastListLatitude, isNull);
+      expect(fake.lastListLongitude, isNull);
+    });
+
+    test('sends_keyword_when_search_term_is_given', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      await repo.getPosts(size: 20, countryCode: 'KR', keyword: '서울');
+
+      expect(fake.lastKeyword, '서울');
     });
   });
 

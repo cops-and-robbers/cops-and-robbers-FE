@@ -2,6 +2,7 @@ import 'package:cops_and_robbers/features/community/domain/entities/community_ad
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
 
 /// 목록만 검증하는 가짜 Repository가 상세·작성·수정·삭제·상태변경·주소조회까지
@@ -21,6 +22,10 @@ mixin CommunityRepositoryListStubs implements CommunityRepository {
     required int size,
     CommunityScope scope = CommunityScope.all,
     required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) => throw UnimplementedError('이 테스트는 목록 조회를 쓰지 않는다');
 }
 

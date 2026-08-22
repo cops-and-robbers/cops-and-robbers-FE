@@ -626,6 +626,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communitySortSheetTitle => '並び替え';
 
   @override
+  String get communitySortNeedsLocation => '距離順で見るには位置情報の許可が必要です';
+
+  @override
+  String get communitySortLocationDenied => '設定で位置情報をオンにしてください';
+
+  @override
   String get communityCreatePost => '募集を作成';
 
   @override

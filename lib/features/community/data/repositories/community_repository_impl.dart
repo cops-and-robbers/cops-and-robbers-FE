@@ -6,6 +6,7 @@ import '../../domain/entities/community_address_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
+import '../../domain/entities/community_sort_option.dart';
 import '../../domain/repositories/community_repository.dart';
 import '../datasources/community_remote_datasource.dart';
 import '../models/community_post_model.dart';
@@ -26,7 +27,15 @@ class CommunityRepositoryImpl implements CommunityRepository {
     required int size,
     CommunityScope scope = CommunityScope.all,
     required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) {
+    // 거리순이 아닌데 좌표를 실으면 400이다 — 호출자가 항상 넘기더라도
+    // 여기서 걸러 낸다 (DEC-0021 조항 주석: 좌표는 DISTANCE에 한해 허용).
+    final isDistance = sort == CommunitySortOption.distance;
+
     return _guard(
       () async {
         final res = await _dataSource.getPosts(
@@ -34,6 +43,10 @@ class CommunityRepositoryImpl implements CommunityRepository {
           size: size,
           scope: scope.queryValue,
           countryCode: countryCode,
+          sort: sort.wireValue,
+          keyword: keyword,
+          latitude: isDistance ? latitude : null,
+          longitude: isDistance ? longitude : null,
         );
         return CommunityPostPageEntity(
           items: res.content.map(_toEntity).toList(),

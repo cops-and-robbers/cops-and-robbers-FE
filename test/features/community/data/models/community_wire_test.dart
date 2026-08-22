@@ -1,6 +1,7 @@
 import 'package:cops_and_robbers/features/community/data/models/community_wire.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -42,6 +43,16 @@ void main() {
     test('maps_narrowing_scopes_to_server_enum_names', () {
       expect(CommunityScope.nearby.queryValue, 'NEARBY');
       expect(CommunityScope.mine.queryValue, 'MINE');
+    });
+  });
+
+  group('CommunitySortOption 와이어 매핑', () {
+    test('maps_server_enum_names_exactly', () {
+      expect(CommunitySortOption.latest.wireValue, 'LATEST');
+      expect(CommunitySortOption.deadline.wireValue, 'DEADLINE');
+      expect(CommunitySortOption.distance.wireValue, 'DISTANCE');
+      // 서버가 400을 주는 값이지만 switch를 total로 두기 위해 매핑은 해 둔다.
+      expect(CommunitySortOption.popular.wireValue, 'POPULAR');
     });
   });
 }

@@ -53,9 +53,12 @@ class CommunitySortSheet extends StatelessWidget {
   static double get _checkGap => AppSpacing.horizontal12;
 
   /// 표시 순서 — 인덱스 ↔ enum 변환의 단일 기준.
+  ///
+  /// 인기순은 뺀다. 서버가 `UNSUPPORTED_LIST_SORT`(400)를 주기 때문이다 —
+  /// 좋아요·스크랩 테이블이 없어 셀 대상이 없다. enum 값은 남겨 둬야
+  /// 서버가 열렸을 때 여기 한 줄만 되돌리면 된다(DEC-0020).
   static const List<CommunitySortOption> _order = [
     CommunitySortOption.latest,
-    CommunitySortOption.popular,
     CommunitySortOption.distance,
     CommunitySortOption.deadline,
   ];

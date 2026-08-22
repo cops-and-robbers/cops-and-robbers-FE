@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show debugPrint;
 
 import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
+import '../../domain/entities/community_sort_option.dart';
 
 /// 모집 상태의 서버 와이어 문자열.
 ///
@@ -52,5 +53,19 @@ extension CommunityScopeQuery on CommunityScope {
     CommunityScope.all => null,
     CommunityScope.nearby => 'NEARBY',
     CommunityScope.mine => 'MINE',
+  };
+}
+
+/// `GET /api/community-posts`의 `sort` 쿼리 값.
+///
+/// [CommunitySortOption.popular]까지 매핑해 switch를 total로 둔다 — 서버가
+/// `UNSUPPORTED_LIST_SORT`(400)를 주는 값이라 정렬 시트가 노출하지 않으므로
+/// 실제로 전송되지는 않는다.
+extension CommunitySortOptionWire on CommunitySortOption {
+  String get wireValue => switch (this) {
+    CommunitySortOption.latest => 'LATEST',
+    CommunitySortOption.popular => 'POPULAR',
+    CommunitySortOption.distance => 'DISTANCE',
+    CommunitySortOption.deadline => 'DEADLINE',
   };
 }

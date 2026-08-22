@@ -215,6 +215,8 @@
   "communitySortDistance": "Nearest",
   "communitySortDeadline": "Closing soon",
   "communitySortSheetTitle": "Sort by",
+  "communitySortNeedsLocation": "Location access is needed to sort by distance",
+  "communitySortLocationDenied": "Turn on location access in Settings",
   "communityCreatePost": "New post",
   "communityEditPost": "Edit post",
   "communityBackToList": "Back to list",

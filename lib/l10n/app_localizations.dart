@@ -1239,6 +1239,18 @@ abstract class AppLocalizations {
   /// **'정렬 기준'**
   String get communitySortSheetTitle;
 
+  /// 커뮤니티 정렬 — 거리순 선택 시 위치 권한을 거부했을 때
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한이 있어야 거리순으로 볼 수 있어요'**
+  String get communitySortNeedsLocation;
+
+  /// 커뮤니티 정렬 — 위치 권한이 영구 거부돼 다시 물을 수 없을 때
+  ///
+  /// In ko, this message translates to:
+  /// **'설정에서 위치 권한을 켜주세요'**
+  String get communitySortLocationDenied;
+
   /// 커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)
   ///
   /// In ko, this message translates to:

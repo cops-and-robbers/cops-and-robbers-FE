@@ -4,6 +4,7 @@ import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provi
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_create_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_detail_page.dart';
@@ -13,6 +14,7 @@ import 'package:cops_and_robbers/features/community/presentation/widgets/communi
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_menu.dart';
 import 'package:cops_and_robbers/router/route_paths.dart';
 import 'package:cops_and_robbers/core/utils/custom_page_transitions.dart';
+import 'package:geolocator/geolocator.dart' show LocationPermission;
 import 'package:go_router/go_router.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,10 @@ class _FakeCommunityRepository
     required int size,
     CommunityScope scope = CommunityScope.all,
     required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) async {
     callCount++;
     return CommunityPostPageEntity(
@@ -74,6 +80,10 @@ class _ThrowingCommunityRepository
     required int size,
     CommunityScope scope = CommunityScope.all,
     required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) async {
     throw exception;
   }
@@ -95,6 +105,10 @@ class _RecoveringCommunityRepository
     required int size,
     CommunityScope scope = CommunityScope.all,
     required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) async {
     callCount++;
     if (callCount == 1) {
@@ -124,6 +138,10 @@ class _CardActionRepository
     required int size,
     CommunityScope scope = CommunityScope.all,
     required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) async =>
       CommunityPostPageEntity(items: items, nextCursor: null, hasNext: false);
 
@@ -208,6 +226,10 @@ class _PagingCommunityRepository
     required int size,
     CommunityScope scope = CommunityScope.all,
     required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) async => cursor == null
       ? CommunityPostPageEntity(
           items: firstPage,
@@ -247,7 +269,11 @@ Widget _wrapRouted(CommunityRepository repo, {int? currentUserId}) {
   );
 }
 
-Widget _wrap(CommunityRepository repo, {int? currentUserId}) => ProviderScope(
+Widget _wrap(
+  CommunityRepository repo, {
+  int? currentUserId,
+  List<Override> overrides = const [],
+}) => ProviderScope(
   overrides: [
     communityRepositoryProvider.overrideWithValue(repo),
     // 카드의 더보기 메뉴가 로그인 사용자 id를 watch 한다. 덮지 않으면 실제
@@ -256,6 +282,7 @@ Widget _wrap(CommunityRepository repo, {int? currentUserId}) => ProviderScope(
     // 목록 조회 전에 국가를 정하느라 GPS·권한·벤더를 친다. 덮지 않으면 플랫폼
     // 채널이 응답하지 않아 pumpAndSettle이 영원히 안 끝난다.
     communityCountryCodeProvider.overrideWith((ref) async => 'KR'),
+    ...overrides,
   ],
   child: ScreenUtilInit(
     designSize: const Size(393, 852),
@@ -272,6 +299,20 @@ Widget _wrap(CommunityRepository repo, {int? currentUserId}) => ProviderScope(
     ),
   ),
 );
+
+/// 목록 화면을 세팅해 첫 로드까지 끝낸다. `_wrap`을 매번 조립하지 않도록
+/// 반복되던 구성 코드를 뽑아 뒀다.
+Future<void> _pumpCommunityPage(
+  WidgetTester tester,
+  CommunityRepository repo, {
+  int? currentUserId,
+  List<Override> overrides = const [],
+}) async {
+  await tester.pumpWidget(
+    _wrap(repo, currentUserId: currentUserId, overrides: overrides),
+  );
+  await tester.pumpAndSettle();
+}
 
 void main() {
   group('CommunityPage', () {
@@ -426,6 +467,109 @@ void main() {
 
       expect(find.text('모집글 12'), findsOneWidget);
     });
+
+    testWidgets('hides_popular_option_when_sort_sheet_opens', (tester) async {
+      // 서버가 400을 주는 값이라 고를 수 없어야 한다.
+      await _pumpCommunityPage(tester, _FakeCommunityRepository([_post(1)]));
+      await tester.tap(find.text('최신순'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('거리순'), findsOneWidget);
+      expect(find.text('마감 임박순'), findsOneWidget);
+      expect(find.text('인기순'), findsNothing);
+    });
+
+    testWidgets(
+      'switches_to_distance_sort_when_location_permission_is_granted',
+      (tester) async {
+        await _pumpCommunityPage(
+          tester,
+          _FakeCommunityRepository([_post(1)]),
+          overrides: [
+            ensureLocationPermissionProvider.overrideWithValue(
+              () async => true,
+            ),
+            // GPS는 시스템 경계다 — 이 테스트는 권한 게이트만 본다.
+            currentPositionResolverProvider.overrideWithValue(
+              () async => null,
+            ),
+          ],
+        );
+
+        await tester.tap(find.text('최신순'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('거리순'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('거리순'), findsOneWidget);
+        expect(find.text('최신순'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'keeps_previous_sort_when_location_permission_is_denied',
+      (tester) async {
+        await _pumpCommunityPage(
+          tester,
+          _FakeCommunityRepository([_post(1)]),
+          overrides: [
+            ensureLocationPermissionProvider.overrideWithValue(
+              () async => false,
+            ),
+            checkLocationPermissionProvider.overrideWithValue(
+              () async => LocationPermission.denied,
+            ),
+          ],
+        );
+
+        await tester.tap(find.text('최신순'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('거리순'));
+        await tester.pumpAndSettle();
+
+        // 정렬은 그대로고, 다시 물을 수 있다는 안내가 뜬다.
+        expect(find.text('최신순'), findsOneWidget);
+        expect(
+          find.text('위치 권한이 있어야 거리순으로 볼 수 있어요'),
+          findsOneWidget,
+        );
+
+        // 스낵바의 3초 자동 닫힘 타이머가 남아 있으면 테스트 종료 시
+        // "Timer still pending"으로 깨진다 — 흘려보내고 끝낸다.
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pumpAndSettle();
+      },
+    );
+
+    testWidgets(
+      'shows_settings_guidance_when_location_permission_is_denied_forever',
+      (tester) async {
+        await _pumpCommunityPage(
+          tester,
+          _FakeCommunityRepository([_post(1)]),
+          overrides: [
+            ensureLocationPermissionProvider.overrideWithValue(
+              () async => false,
+            ),
+            checkLocationPermissionProvider.overrideWithValue(
+              () async => LocationPermission.deniedForever,
+            ),
+          ],
+        );
+
+        await tester.tap(find.text('최신순'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('거리순'));
+        await tester.pumpAndSettle();
+
+        // 정렬은 그대로고, 다시 물을 수 없으니 설정으로 보낸다.
+        expect(find.text('최신순'), findsOneWidget);
+        expect(find.text('설정에서 위치 권한을 켜주세요'), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pumpAndSettle();
+      },
+    );
   });
 
   group('CommunityPage 카드 더보기 메뉴', () {

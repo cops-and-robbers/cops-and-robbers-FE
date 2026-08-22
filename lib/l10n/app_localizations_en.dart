@@ -676,6 +676,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communitySortSheetTitle => 'Sort by';
 
   @override
+  String get communitySortNeedsLocation =>
+      'Location access is needed to sort by distance';
+
+  @override
+  String get communitySortLocationDenied =>
+      'Turn on location access in Settings';
+
+  @override
   String get communityCreatePost => 'New post';
 
   @override
