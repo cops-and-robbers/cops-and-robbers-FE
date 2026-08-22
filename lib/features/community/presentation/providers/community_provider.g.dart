@@ -186,26 +186,277 @@ final selectedCommunitySortProvider =
 
 typedef _$SelectedCommunitySort = AutoDisposeNotifier<CommunitySortOption>;
 String _$communityFeedNotifierHash() =>
-    r'644e2749c551a877a42ff0526f1d3fc24ba8e96f';
+    r'7467da990c8582b7c0d4ec85c4140f066087c9be';
 
-/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
+
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
+
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
+
+abstract class _$CommunityFeedNotifier
+    extends BuildlessAsyncNotifier<CommunityFeedState> {
+  late final CommunityScope scope;
+
+  FutureOr<CommunityFeedState> build(CommunityScope scope);
+}
+
+/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+///
+/// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
+/// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
+/// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
+/// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
+/// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
+/// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+///
+/// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
+/// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+///
+/// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
+/// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
+/// 하나뿐이다.
+///
+/// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
+/// 무효화하는 처리가 함께 필요하다.
 ///
 /// Copied from [CommunityFeedNotifier].
 @ProviderFor(CommunityFeedNotifier)
-final communityFeedNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<
-      CommunityFeedNotifier,
-      CommunityFeedState
-    >.internal(
-      CommunityFeedNotifier.new,
-      name: r'communityFeedNotifierProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$communityFeedNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+const communityFeedNotifierProvider = CommunityFeedNotifierFamily();
 
-typedef _$CommunityFeedNotifier = AutoDisposeAsyncNotifier<CommunityFeedState>;
+/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+///
+/// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
+/// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
+/// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
+/// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
+/// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
+/// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+///
+/// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
+/// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+///
+/// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
+/// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
+/// 하나뿐이다.
+///
+/// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
+/// 무효화하는 처리가 함께 필요하다.
+///
+/// Copied from [CommunityFeedNotifier].
+class CommunityFeedNotifierFamily
+    extends Family<AsyncValue<CommunityFeedState>> {
+  /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+  ///
+  /// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
+  /// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
+  /// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
+  /// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
+  /// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
+  /// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+  ///
+  /// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
+  /// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+  ///
+  /// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
+  /// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
+  /// 하나뿐이다.
+  ///
+  /// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
+  /// 무효화하는 처리가 함께 필요하다.
+  ///
+  /// Copied from [CommunityFeedNotifier].
+  const CommunityFeedNotifierFamily();
+
+  /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+  ///
+  /// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
+  /// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
+  /// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
+  /// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
+  /// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
+  /// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+  ///
+  /// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
+  /// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+  ///
+  /// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
+  /// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
+  /// 하나뿐이다.
+  ///
+  /// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
+  /// 무효화하는 처리가 함께 필요하다.
+  ///
+  /// Copied from [CommunityFeedNotifier].
+  CommunityFeedNotifierProvider call(CommunityScope scope) {
+    return CommunityFeedNotifierProvider(scope);
+  }
+
+  @override
+  CommunityFeedNotifierProvider getProviderOverride(
+    covariant CommunityFeedNotifierProvider provider,
+  ) {
+    return call(provider.scope);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'communityFeedNotifierProvider';
+}
+
+/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+///
+/// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
+/// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
+/// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
+/// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
+/// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
+/// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+///
+/// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
+/// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+///
+/// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
+/// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
+/// 하나뿐이다.
+///
+/// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
+/// 무효화하는 처리가 함께 필요하다.
+///
+/// Copied from [CommunityFeedNotifier].
+class CommunityFeedNotifierProvider
+    extends
+        AsyncNotifierProviderImpl<CommunityFeedNotifier, CommunityFeedState> {
+  /// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+  ///
+  /// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
+  /// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
+  /// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
+  /// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
+  /// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
+  /// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+  ///
+  /// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
+  /// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+  ///
+  /// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
+  /// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
+  /// 하나뿐이다.
+  ///
+  /// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
+  /// 무효화하는 처리가 함께 필요하다.
+  ///
+  /// Copied from [CommunityFeedNotifier].
+  CommunityFeedNotifierProvider(CommunityScope scope)
+    : this._internal(
+        () => CommunityFeedNotifier()..scope = scope,
+        from: communityFeedNotifierProvider,
+        name: r'communityFeedNotifierProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$communityFeedNotifierHash,
+        dependencies: CommunityFeedNotifierFamily._dependencies,
+        allTransitiveDependencies:
+            CommunityFeedNotifierFamily._allTransitiveDependencies,
+        scope: scope,
+      );
+
+  CommunityFeedNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.scope,
+  }) : super.internal();
+
+  final CommunityScope scope;
+
+  @override
+  FutureOr<CommunityFeedState> runNotifierBuild(
+    covariant CommunityFeedNotifier notifier,
+  ) {
+    return notifier.build(scope);
+  }
+
+  @override
+  Override overrideWith(CommunityFeedNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: CommunityFeedNotifierProvider._internal(
+        () => create()..scope = scope,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        scope: scope,
+      ),
+    );
+  }
+
+  @override
+  AsyncNotifierProviderElement<CommunityFeedNotifier, CommunityFeedState>
+  createElement() {
+    return _CommunityFeedNotifierProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CommunityFeedNotifierProvider && other.scope == scope;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, scope.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CommunityFeedNotifierRef on AsyncNotifierProviderRef<CommunityFeedState> {
+  /// The parameter `scope` of this provider.
+  CommunityScope get scope;
+}
+
+class _CommunityFeedNotifierProviderElement
+    extends
+        AsyncNotifierProviderElement<CommunityFeedNotifier, CommunityFeedState>
+    with CommunityFeedNotifierRef {
+  _CommunityFeedNotifierProviderElement(super.provider);
+
+  @override
+  CommunityScope get scope => (origin as CommunityFeedNotifierProvider).scope;
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

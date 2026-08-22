@@ -193,6 +193,34 @@ Future<void> _settleDetailMocks(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// 커서 두 장을 돌려주는 가짜 Repository — 무한 스크롤 검증용.
+class _PagingCommunityRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
+  _PagingCommunityRepository(this.firstPage, this.secondPage);
+
+  final List<CommunityPostEntity> firstPage;
+  final List<CommunityPostEntity> secondPage;
+
+  @override
+  Future<CommunityPostPageEntity> getPosts({
+    String? cursor,
+    required int size,
+    CommunityScope scope = CommunityScope.all,
+    required String countryCode,
+  }) async => cursor == null
+      ? CommunityPostPageEntity(
+          items: firstPage,
+          nextCursor: 'c1',
+          hasNext: true,
+        )
+      : CommunityPostPageEntity(
+          items: secondPage,
+          nextCursor: null,
+          hasNext: false,
+        );
+}
+
 Widget _wrapRouted(CommunityRepository repo, {int? currentUserId}) {
   final router = _communityRouter();
   addTearDown(router.dispose);
@@ -366,13 +394,37 @@ void main() {
       expect(find.text('서버 오류'), findsOneWidget);
       expect(find.byType(CommunityPostCard), findsNothing);
 
-      // RefreshIndicatorState.show()가 반환하는 Future는 인디케이터 Ticker가
-      // 끝나야 완료되는데, Ticker는 pump가 있어야 진행된다. 바로 await하면 pump할
-      // 기회가 없어 영원히 멈춘다 — fire-and-forget 후 pumpAndSettle로 흘려보낸다.
-      tester.state<RefreshIndicatorState>(find.byType(RefreshIndicator)).show();
+      // 실제 당김 제스처로 새로고침을 건다. 에러 화면은 SliverFillRemaining이
+      // 뷰포트를 채워 둬서 당길 여지가 있다 (없으면 오버스크롤이 안 생겨
+      // 새로고침 자체가 불가능하다).
+      await tester.fling(find.text('서버 오류'), const Offset(0, 300), 1000);
       await tester.pumpAndSettle();
 
       expect(find.byType(CommunityPostCard), findsOneWidget);
+    });
+
+    testWidgets('appends_the_next_page_when_scrolled_to_the_bottom', (
+      tester,
+    ) async {
+      // 목록을 CustomScrollView로 바꾸면서 스크롤 컨트롤러·maxScrollExtent 기준이
+      // 그대로인지 확인한다 — 여기가 깨지면 다음 페이지가 영영 안 붙는다.
+      tester.view.physicalSize = const Size(393, 852);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final repo = _PagingCommunityRepository(
+        [for (var i = 1; i <= 8; i++) _post(i)],
+        [for (var i = 9; i <= 12; i++) _post(i)],
+      );
+      await tester.pumpWidget(_wrap(repo));
+      await tester.pumpAndSettle();
+      expect(find.byType(CommunityPostCard), findsWidgets);
+      expect(find.text('모집글 9'), findsNothing);
+
+      await tester.fling(find.text('모집글 1'), const Offset(0, -2000), 3000);
+      await tester.pumpAndSettle();
+
+      expect(find.text('모집글 12'), findsOneWidget);
     });
   });
 

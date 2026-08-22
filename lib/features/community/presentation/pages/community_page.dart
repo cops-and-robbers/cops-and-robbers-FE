@@ -16,6 +16,7 @@ import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/loading/app_refresh_control.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
@@ -61,6 +62,13 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     super.dispose();
   }
 
+  /// 지금 보고 있는 목록. 스코프마다 인스턴스가 따로라 동작마다 짚어 줘야 한다.
+  CommunityFeedNotifier get _feed => ref.read(
+    communityFeedNotifierProvider(
+      ref.read(selectedCommunityScopeProvider),
+    ).notifier,
+  );
+
   void _onScroll() {
     if (!_scrollController.hasClients) return;
     final position = _scrollController.position;
@@ -71,7 +79,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
 
   Future<void> _loadMore() async {
     try {
-      await ref.read(communityFeedNotifierProvider.notifier).loadMore();
+      await _feed.loadMore();
     } on AppException catch (e) {
       if (!mounted) return;
       // AuthInterceptor가 강제 로그아웃을 처리하므로 UI는 무반응.
@@ -111,13 +119,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         // 방금 보던 글이 나와야 한다.
         unawaited(openCommunityEditor(context, ref, post, fromList: true));
       case CommunityPostMenuAction.toggleStatus:
-        unawaited(
-          _runCardAction(
-            () => ref
-                .read(communityFeedNotifierProvider.notifier)
-                .toggleStatus(post),
-          ),
-        );
+        unawaited(_runCardAction(() => _feed.toggleStatus(post)));
       case CommunityPostMenuAction.delete:
         unawaited(_confirmDelete(l10n, post.id));
     }
@@ -133,9 +135,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     );
     if (confirmed != true || !mounted) return;
 
-    await _runCardAction(
-      () => ref.read(communityFeedNotifierProvider.notifier).deletePost(postId),
-    );
+    await _runCardAction(() => _feed.deletePost(postId));
   }
 
   /// 카드 하나에 대한 서버 동작을 감싼다 — 실패는 스낵바로만 알린다.
@@ -163,7 +163,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   /// RefreshIndicator에 완료 신호만 주기 위해 예외를 흡수한다(별도 스낵바 불필요).
   Future<void> _refresh() async {
     try {
-      await ref.read(communityFeedNotifierProvider.notifier).refresh();
+      await _feed.refresh();
     } on AppException catch (_) {
       return;
     }
@@ -311,7 +311,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     }
 
     return ref
-        .watch(communityFeedNotifierProvider)
+        .watch(communityFeedNotifierProvider(scope))
         .when(
           loading: () => const Center(child: CircularProgressIndicator()),
           // AuthInterceptor가 강제 로그아웃(→ 화면 전환)을 처리하므로 UI는 무반응.
@@ -355,11 +355,11 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
 
   /// 당겨서 새로고침이 가능한 플레이스홀더 (빈 목록 / 첫 로드 에러).
   ///
-  /// `RefreshIndicator`는 컨텐츠가 뷰포트를 다 채우지 않아도 당길 수 있어야
-  /// 하므로, `SliverFillRemaining`으로 남는 높이를 채우고
+  /// 컨텐츠가 뷰포트를 다 채우지 않아도 당길 수 있어야 하므로,
+  /// `SliverFillRemaining`으로 남는 높이를 채우고
   /// `AlwaysScrollableScrollPhysics`로 항상 스크롤 가능하게 한다.
   Widget _buildRefreshablePlaceholder(String message) {
-    return RefreshIndicator(
+    return AppRefreshControl(
       onRefresh: _refresh,
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -380,7 +380,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     CommunitySortOption sort,
     CommunityFeedState feed,
   ) {
-    return RefreshIndicator(
+    return AppRefreshControl(
       onRefresh: _refresh,
       child: ListView.separated(
         controller: _scrollController,

@@ -159,10 +159,16 @@ void main() {
       });
       final container = _containerWith(repo);
 
-      await container.read(communityFeedNotifierProvider.future);
-      await container.read(communityFeedNotifierProvider.notifier).loadMore();
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
+      await container
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
+          .loadMore();
 
-      final state = container.read(communityFeedNotifierProvider).requireValue;
+      final state = container
+          .read(communityFeedNotifierProvider(CommunityScope.all))
+          .requireValue;
       expect(state.items.map((e) => e.id), [1, 2, 3, 4]);
       // 커서는 이전 응답의 nextCursor를 그대로 실어 보낸다.
       expect(repo.requestedCursors, [null, 'c1']);
@@ -177,8 +183,12 @@ void main() {
       });
       final container = _containerWith(repo, countryCode: 'JP');
 
-      await container.read(communityFeedNotifierProvider.future);
-      await container.read(communityFeedNotifierProvider.notifier).loadMore();
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
+      await container
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
+          .loadMore();
 
       expect(repo.requestedCountryCodes, ['JP', 'JP']);
     });
@@ -202,8 +212,12 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(communityFeedNotifierProvider.future);
-      await container.read(communityFeedNotifierProvider.notifier).refresh();
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
+      await container
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
+          .refresh();
 
       // 목록은 0페이지부터 다시, 국가는 그대로.
       expect(repo.requestedCursors, [null, null]);
@@ -217,12 +231,18 @@ void main() {
       });
       final container = _containerWith(repo);
 
-      final first = await container.read(communityFeedNotifierProvider.future);
+      final first = await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
       expect(first.hasMore, true);
 
-      await container.read(communityFeedNotifierProvider.notifier).loadMore();
+      await container
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
+          .loadMore();
 
-      final state = container.read(communityFeedNotifierProvider).requireValue;
+      final state = container
+          .read(communityFeedNotifierProvider(CommunityScope.all))
+          .requireValue;
       expect(state.hasMore, false);
     });
 
@@ -232,8 +252,12 @@ void main() {
       });
       final container = _containerWith(repo);
 
-      await container.read(communityFeedNotifierProvider.future);
-      await container.read(communityFeedNotifierProvider.notifier).loadMore();
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
+      await container
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
+          .loadMore();
 
       // 첫 조회 1번만. hasMore=false면 추가 요청이 나가면 안 된다.
       expect(repo.requestedCursors, [null]);
@@ -247,89 +271,93 @@ void main() {
       });
       final container = _containerWith(repo);
 
-      container
-          .read(selectedCommunityScopeProvider.notifier)
-          .select(CommunityScope.nearby);
-
-      final state = await container.read(communityFeedNotifierProvider.future);
+      final state = await container.read(
+        communityFeedNotifierProvider(CommunityScope.nearby).future,
+      );
 
       expect(repo.requestedCursors, isEmpty);
       expect(state.items, isEmpty);
       expect(state.hasMore, false);
     });
 
-    test('refetches_from_first_page_when_scope_returns_to_all', () async {
+    test('keeps_the_cached_list_when_scope_returns_to_all', () async {
+      // 토글 왕복마다 다시 부르면 목록뿐 아니라 국가 판별(GPS + /country)까지
+      // 다시 탄다 — Geoapify 일 3,000건 한도를 토글로 갉아먹는 셈이다.
+      // 스코프마다 인스턴스가 따로 살아 있으므로 돌아와도 그대로다.
       final repo = _FakeCommunityRepository({
         null: (items: [_post(1)], next: null),
       });
       final container = _containerWith(repo);
 
-      await container.read(communityFeedNotifierProvider.future);
-      container
-          .read(selectedCommunityScopeProvider.notifier)
-          .select(CommunityScope.mine);
-      await container.read(communityFeedNotifierProvider.future);
-      container
-          .read(selectedCommunityScopeProvider.notifier)
-          .select(CommunityScope.all);
-      await container.read(communityFeedNotifierProvider.future);
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.mine).future,
+      );
+      final state = await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
 
-      // 전체 → 내 모임(호출 없음) → 전체. 커서 없이 두 번 조회한다.
-      expect(repo.requestedCursors, [null, null]);
+      // 전체는 처음 한 번만 조회했다.
+      expect(repo.requestedCursors, [null]);
+      expect(state.items.map((e) => e.id), [1]);
     });
 
-    test(
-      'keeps_scope_switched_empty_state_when_stale_load_more_resolves_late',
-      () async {
-        // loadMore()가 응답을 기다리는 사이 nearby로 전환하면 build()가
-        // 재실행되어 상태가 빈 값으로 바뀐다. 그 뒤에 지연됐던 응답이 도착해도
-        // all 스코프의 병합 결과로 nearby용 빈 상태를 덮으면 안 된다.
-        final secondPage = Completer<CommunityPostPageEntity>();
-        final repo = _DelayedSecondPageRepository([
-          _post(1),
-        ], secondPage.future);
-        final container = _containerWith(repo);
+    test('drops_a_stale_load_more_when_refresh_lands_first', () async {
+      // loadMore()가 응답을 기다리는 사이 당겨서 새로고침이 끼어들면 build()가
+      // 다시 돌아 상태가 새 목록으로 바뀐다. 그 뒤에 지연됐던 페이지가 도착해도
+      // 낡은 병합 결과로 새 목록을 덮으면 안 된다.
+      //
+      // (예전에는 스코프 전환이 같은 경쟁을 만들었지만, 이제 스코프마다 인스턴스가
+      //  따로라 서로 덮어쓸 수 없다 — 남은 경쟁은 새로고침뿐이다.)
+      final secondPage = Completer<CommunityPostPageEntity>();
+      final repo = _DelayedSecondPageRepository([_post(1)], secondPage.future);
+      final container = _containerWith(repo);
 
-        await container.read(communityFeedNotifierProvider.future);
-        final loadMoreDone = container
-            .read(communityFeedNotifierProvider.notifier)
-            .loadMore();
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
+      final loadMoreDone = container
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
+          .loadMore();
 
-        container
-            .read(selectedCommunityScopeProvider.notifier)
-            .select(CommunityScope.nearby);
-        await container.read(communityFeedNotifierProvider.future);
+      container.invalidate(communityFeedNotifierProvider(CommunityScope.all));
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
 
-        secondPage.complete(
-          CommunityPostPageEntity(
-            items: [_post(2)],
-            nextCursor: null,
-            hasNext: false,
-          ),
-        );
-        await loadMoreDone;
+      secondPage.complete(
+        CommunityPostPageEntity(
+          items: [_post(2)],
+          nextCursor: null,
+          hasNext: false,
+        ),
+      );
+      await loadMoreDone;
 
-        final state = container
-            .read(communityFeedNotifierProvider)
-            .requireValue;
-        expect(state.items, isEmpty);
-        expect(state.hasMore, false);
-      },
-    );
+      final state = container
+          .read(communityFeedNotifierProvider(CommunityScope.all))
+          .requireValue;
+      // 새로고침이 만든 첫 페이지만 남는다 — 낡은 2페이지가 붙지 않는다.
+      expect(state.items.map((e) => e.id), [1]);
+    });
   });
 
   group('CommunityFeedNotifier 목록 액션', () {
     test('replaces_only_the_target_post_when_status_toggled', () async {
       final repo = _MutatingRepository([_post(1), _post(2)]);
       final container = _containerWith(repo);
-      await container.read(communityFeedNotifierProvider.future);
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
 
       await container
-          .read(communityFeedNotifierProvider.notifier)
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
           .toggleStatus(_post(2));
 
       final items = container
-          .read(communityFeedNotifierProvider)
+          .read(communityFeedNotifierProvider(CommunityScope.all))
           .requireValue
           .items;
       // 목록을 다시 당기지 않고 그 카드만 바뀐다 — 무효화하면 커서가 0으로
@@ -345,15 +373,17 @@ void main() {
     test('removes_the_post_from_the_list_when_deleted', () async {
       final repo = _MutatingRepository([_post(1), _post(2), _post(3)]);
       final container = _containerWith(repo);
-      await container.read(communityFeedNotifierProvider.future);
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
 
       await container
-          .read(communityFeedNotifierProvider.notifier)
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
           .deletePost(2);
 
       expect(
         container
-            .read(communityFeedNotifierProvider)
+            .read(communityFeedNotifierProvider(CommunityScope.all))
             .requireValue
             .items
             .map((e) => e.id),
@@ -368,18 +398,20 @@ void main() {
       // 유령 카드를 계속 누르게 된다.
       final repo = _MutatingRepository([_post(1), _post(2)], goneIds: {2});
       final container = _containerWith(repo);
-      await container.read(communityFeedNotifierProvider.future);
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
 
       await expectLater(
         container
-            .read(communityFeedNotifierProvider.notifier)
+            .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
             .toggleStatus(_post(2)),
         throwsA(isA<AppException>()),
       );
 
       expect(
         container
-            .read(communityFeedNotifierProvider)
+            .read(communityFeedNotifierProvider(CommunityScope.all))
             .requireValue
             .items
             .map((e) => e.id),
@@ -390,14 +422,16 @@ void main() {
     test('replaces_the_post_when_edit_returns_an_updated_one', () async {
       final repo = _MutatingRepository([_post(1), _post(2)]);
       final container = _containerWith(repo);
-      await container.read(communityFeedNotifierProvider.future);
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
 
       container
-          .read(communityFeedNotifierProvider.notifier)
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
           .replacePost(_post(2).copyWith(title: '제목을 고쳤어요'));
 
       final items = container
-          .read(communityFeedNotifierProvider)
+          .read(communityFeedNotifierProvider(CommunityScope.all))
           .requireValue
           .items;
       expect(items.map((e) => e.title), ['모집글 1', '제목을 고쳤어요']);

@@ -37,7 +37,7 @@ final communityInteractionRepositoryProvider =
 typedef CommunityInteractionRepositoryRef =
     ProviderRef<CommunityInteractionRepository>;
 String _$communityDetailNotifierHash() =>
-    r'dec6d2e74e5a8d27089ac032c3ea9320d429bf20';
+    r'b650ad3ac0ad0935036baf79cc7beb7bc5f5fefa';
 
 /// Copied from Dart SDK
 class _SystemHash {

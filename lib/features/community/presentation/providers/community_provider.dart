@@ -153,15 +153,30 @@ Future<String> communityCountryCode(Ref ref) async {
   }
 }
 
-/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
-@riverpod
+/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+///
+/// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
+/// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
+/// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
+/// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
+/// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
+/// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+///
+/// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
+/// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+///
+/// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
+/// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
+/// 하나뿐이다.
+///
+/// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
+/// 무효화하는 처리가 함께 필요하다.
+@Riverpod(keepAlive: true)
 class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   static const _pageSize = 20;
 
   @override
-  FutureOr<CommunityFeedState> build() async {
-    final scope = ref.watch(selectedCommunityScopeProvider);
-
+  FutureOr<CommunityFeedState> build(CommunityScope scope) async {
     // 백엔드가 scope=NEARBY/MINE에 400을 준다. 확정 실패를 왕복시키지 않고
     // 호출 자체를 건너뛰어 빈 목록을 돌려준다 — 화면은 이 상태를 "준비 중"
     // 안내로 그린다.
