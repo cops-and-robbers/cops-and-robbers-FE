@@ -27,22 +27,25 @@ const _label = '$_region · $_placeName';
 /// 복사돼야 하는 값 — 번지까지 붙은 지번 주소.
 const _lotAddress = '서울특별시 광진구 화양동 164-2';
 
-CommunityPostEntity _post({String? address, String? region = _region}) =>
-    CommunityPostEntity(
-      id: _postId,
-      writerId: 1,
-      title: '같이 하실 분',
-      content: '본문',
-      meetingAt: DateTime(2026, 9, 10, 18),
-      latitude: 37.5502,
-      longitude: 127.0736,
-      maxParticipants: 10,
-      status: CommunityPostStatus.recruiting,
-      createdAt: DateTime(2026, 8, 20),
-      region: region,
-      placeName: _placeName,
-      address: address,
-    );
+CommunityPostEntity _post({
+  String? address,
+  String? region = _region,
+  CommunityPostStatus status = CommunityPostStatus.recruiting,
+}) => CommunityPostEntity(
+  id: _postId,
+  writerId: 1,
+  title: '같이 하실 분',
+  content: '본문',
+  meetingAt: DateTime(2026, 9, 10, 18),
+  latitude: 37.5502,
+  longitude: 127.0736,
+  maxParticipants: 10,
+  status: status,
+  createdAt: DateTime(2026, 8, 20),
+  region: region,
+  placeName: _placeName,
+  address: address,
+);
 
 /// 본문 조회와 작성자 동작(마감·삭제)에 응답하는 Repository.
 ///
@@ -249,6 +252,32 @@ void main() {
       expect(find.text('이미 삭제된 모집글이에요'), findsOneWidget);
 
       await _letSnackbarExpire(tester);
+    });
+  });
+
+  group('CommunityDetailPage 종료 상태', () {
+    testWidgets('hides_status_toggle_in_detail_menu_when_post_is_ended', (
+      tester,
+    ) async {
+      // 종료 글은 상태를 바꿔도 서버가 조회 시 다시 ENDED로 판정한다 — 메뉴
+      // 자체에서 상태 변경 항목을 감춰야 눌러도 아무 일 없는 버그처럼 보이지 않는다.
+      await tester.pumpWidget(
+        _wrapPushedDetail(
+          _DetailRepository(_post(status: CommunityPostStatus.ended)),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('상세 열기'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(CommunityPostMenu));
+      await tester.pumpAndSettle();
+
+      // 수정·삭제는 그대로, 상태 변경(마감하기/다시 모집하기)만 사라진다.
+      expect(find.text('수정하기'), findsOneWidget);
+      expect(find.text('삭제하기'), findsOneWidget);
+      expect(find.text('마감하기'), findsNothing);
+      expect(find.text('다시 모집하기'), findsNothing);
     });
   });
 

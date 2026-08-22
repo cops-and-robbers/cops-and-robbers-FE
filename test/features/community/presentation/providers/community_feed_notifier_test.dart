@@ -370,6 +370,28 @@ void main() {
       ]);
     });
 
+    test('keeps_post_unchanged_when_toggling_status_of_ended_post', () async {
+      // 메뉴가 이미 항목을 감추지만, 종료 글은 서버가 조회 시 다시 ENDED로
+      // 판정하므로 여기까지 호출이 와도 왕복 자체를 막아야 한다.
+      final endedPost = _post(2).copyWith(status: CommunityPostStatus.ended);
+      final repo = _MutatingRepository([_post(1), endedPost]);
+      final container = _containerWith(repo);
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all).future,
+      );
+
+      await container
+          .read(communityFeedNotifierProvider(CommunityScope.all).notifier)
+          .toggleStatus(endedPost);
+
+      final items = container
+          .read(communityFeedNotifierProvider(CommunityScope.all))
+          .requireValue
+          .items;
+      expect(items[1].status, CommunityPostStatus.ended);
+      expect(repo.statusCalls, isEmpty);
+    });
+
     test('removes_the_post_from_the_list_when_deleted', () async {
       final repo = _MutatingRepository([_post(1), _post(2), _post(3)]);
       final container = _containerWith(repo);

@@ -45,7 +45,8 @@ class CommunityPostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isCompleted = post.status == CommunityPostStatus.completed;
+    // 마감·종료 둘 다 흐린다 — 참여할 수 없다는 점에서 같다.
+    final isClosed = post.status != CommunityPostStatus.recruiting;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -65,7 +66,7 @@ class CommunityPostCard extends StatelessWidget {
         // 마감은 콘텐츠만 흐린다. 카드째 감싸면 그림자까지 흐려져 배경에 묻힌다.
         child: Opacity(
           key: contentOpacityKey,
-          opacity: isCompleted ? 0.6 : 1.0,
+          opacity: isClosed ? 0.6 : 1.0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -256,9 +257,13 @@ class _StatusChip extends StatelessWidget {
         borderRadius: AppRadius.xlarge,
       ),
       child: Text(
-        isRecruiting
-            ? l10n.communityStatusRecruiting
-            : l10n.communityStatusCompleted,
+        // 같은 매핑이 상세 화면(_buildHeader)에도 있다. 사용처가 둘뿐이라
+        // 공통 위젯으로 뽑지 않았다 — 세 번째가 생기면 그때 추출한다.
+        switch (status) {
+          CommunityPostStatus.recruiting => l10n.communityStatusRecruiting,
+          CommunityPostStatus.completed => l10n.communityStatusCompleted,
+          CommunityPostStatus.ended => l10n.communityStatusEnded,
+        },
         style: AppTextStyles.tag_10.copyWith(color: AppColors.white),
       ),
     );

@@ -264,9 +264,15 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                 borderRadius: AppRadius.xlarge,
               ),
               child: Text(
-                isRecruiting
-                    ? l10n.communityStatusRecruiting
-                    : l10n.communityStatusCompleted,
+                // 카드의 _StatusChip과 같은 매핑이다 (사용처 2곳 — 세 번째가
+                // 생기면 공통 위젯으로 뽑는다).
+                switch (state.post.status) {
+                  CommunityPostStatus.recruiting =>
+                    l10n.communityStatusRecruiting,
+                  CommunityPostStatus.completed =>
+                    l10n.communityStatusCompleted,
+                  CommunityPostStatus.ended => l10n.communityStatusEnded,
+                },
                 style: AppTextStyles.tag_10.copyWith(color: AppColors.white),
               ),
             ),

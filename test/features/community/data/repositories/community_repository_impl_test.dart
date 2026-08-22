@@ -350,16 +350,25 @@ void main() {
       );
     });
 
-    test('wraps_unknown_wire_status_into_server_exception', () async {
-      // communityPostStatusFromWire의 FormatException이 raw로 새면 안 된다.
+    test('falls_back_to_completed_when_wire_status_is_unknown', () async {
+      // 알 수 없는 상태 하나가 목록 한 장을 통째로 날리지 않아야 한다.
       final fake = _FakeCommunityRemoteDataSource()
         ..responseToReturn = _listOf([_postJson(status: 'CANCELLED')]);
       final repo = CommunityRepositoryImpl(fake);
 
-      expect(
-        () => repo.getPosts(size: 20, countryCode: 'KR'),
-        throwsA(isA<ServerException>()),
-      );
+      final result = await repo.getPosts(size: 20, countryCode: 'KR');
+
+      expect(result.items.single.status, CommunityPostStatus.completed);
+    });
+
+    test('maps_ended_status_when_server_marks_meeting_as_past', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..responseToReturn = _listOf([_postJson(status: 'ENDED')]);
+      final repo = CommunityRepositoryImpl(fake);
+
+      final result = await repo.getPosts(size: 20, countryCode: 'KR');
+
+      expect(result.items.single.status, CommunityPostStatus.ended);
     });
   });
 

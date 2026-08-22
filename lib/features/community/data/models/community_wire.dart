@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show debugPrint;
+
 import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
 
@@ -8,22 +10,35 @@ import '../../domain/entities/community_scope.dart';
 /// `_$...EnumMap`에 들어간다. DTO는 `status`를 `String`으로 받아 Repository
 /// 경계에서 도메인 enum으로 바꾸므로 그 맵에 닿지 못한다.
 extension CommunityPostStatusWire on CommunityPostStatus {
+  /// [CommunityPostStatus.ended]까지 매핑해 switch를 total로 둔다. 요청 스키마
+  /// (`CommunityPostStatusRequest`)에도 `ENDED`가 있어 유효한 값이지만, 상태 변경은
+  /// 모집중 ↔ 마감 이진 전환이라 이 값이 실려 나가지는 않는다.
   String get wireValue => switch (this) {
     CommunityPostStatus.recruiting => 'RECRUITING',
     CommunityPostStatus.completed => 'COMPLETED',
+    CommunityPostStatus.ended => 'ENDED',
   };
 }
 
 /// 와이어 문자열 → 도메인 enum.
 ///
-/// 알 수 없는 값에 폴백을 두지 않는다. 마감된 글이 모집중으로 보이면 사용자가
-/// 끝난 모임에 참여를 시도하므로, 조용히 넘기는 대신 파싱 단계에서 끊는다.
-/// (Repository가 이 예외를 `ServerException`으로 감싼다.)
-CommunityPostStatus communityPostStatusFromWire(String wire) => switch (wire) {
-  'RECRUITING' => CommunityPostStatus.recruiting,
-  'COMPLETED' => CommunityPostStatus.completed,
-  _ => throw FormatException('알 수 없는 모집 상태: $wire'),
-};
+/// 모르는 값은 '마감'으로 본다. 모집중으로 보여 끝난 모임에 참여를 시도하게
+/// 두느니 보수적으로 막는 쪽이 안전하고, 예외를 던지면 그 글 하나 때문에 목록
+/// 한 장이 통째로 에러 화면이 된다 — `ENDED`가 추가됐을 때 실제로 그랬다.
+CommunityPostStatus communityPostStatusFromWire(String wire) {
+  switch (wire) {
+    case 'RECRUITING':
+      return CommunityPostStatus.recruiting;
+    case 'COMPLETED':
+      return CommunityPostStatus.completed;
+    case 'ENDED':
+      return CommunityPostStatus.ended;
+    default:
+      // 조용히 묻히면 다음 미지 값이 언제 들어왔는지 알 길이 없다.
+      debugPrint('[커뮤니티] ⚠️ 알 수 없는 모집 상태: $wire → 마감으로 처리');
+      return CommunityPostStatus.completed;
+  }
+}
 
 /// `GET /api/community-posts`의 `scope` 쿼리 값.
 extension CommunityScopeQuery on CommunityScope {

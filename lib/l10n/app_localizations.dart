@@ -1150,6 +1150,12 @@ abstract class AppLocalizations {
   /// **'마감'**
   String get communityStatusCompleted;
 
+  /// 커뮤니티 카드 — 모임 날짜가 지나 끝난 게시글 배지
+  ///
+  /// In ko, this message translates to:
+  /// **'종료'**
+  String get communityStatusEnded;
+
   /// 커뮤니티 카드 — 현재 참여 인원 / 정원
   ///
   /// In ko, this message translates to:

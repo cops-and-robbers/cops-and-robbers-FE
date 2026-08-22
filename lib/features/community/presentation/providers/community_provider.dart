@@ -269,6 +269,10 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   /// 실패는 그대로 올린다(화면이 스낵바로 알린다). 다만 그 사이 다른 사용자가
   /// 지워 버린 글이면 되돌릴 상태 자체가 없으므로 목록에서도 걷어낸다.
   Future<void> toggleStatus(CommunityPostEntity post) async {
+    // 메뉴가 이미 감추지만, 종료 글은 서버가 조회 시 다시 ENDED로 판정하므로
+    // 여기까지 왔다면 왕복만 낭비하는 요청이다.
+    if (post.status == CommunityPostStatus.ended) return;
+
     final next = post.status == CommunityPostStatus.recruiting
         ? CommunityPostStatus.completed
         : CommunityPostStatus.recruiting;

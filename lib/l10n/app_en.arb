@@ -187,6 +187,7 @@
   "communityMenuLoginRequired": "Log in to continue",
   "communityStatusRecruiting": "Open",
   "communityStatusCompleted": "Closed",
+  "communityStatusEnded": "Ended",
   "communityHeadcount": "{current}/{max}",
   "@communityHeadcount": {
     "placeholders": { "current": { "type": "int" }, "max": { "type": "int" } }

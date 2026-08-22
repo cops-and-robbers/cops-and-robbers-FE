@@ -15,13 +15,20 @@ void main() {
       // 서버 계약 고정 — 값이 바뀌면 여기서 먼저 깨져야 한다.
       expect(CommunityPostStatus.recruiting.wireValue, 'RECRUITING');
       expect(CommunityPostStatus.completed.wireValue, 'COMPLETED');
+      expect(CommunityPostStatus.ended.wireValue, 'ENDED');
     });
 
-    test('throws_format_exception_when_wire_status_is_unknown', () {
-      // 폴백을 두면 마감된 글이 모집중으로 보인다 — 조용히 넘기지 않는다.
+    test('maps_ended_to_ended_status_when_meeting_date_has_passed', () {
+      // 서버가 저장하지 않고 조회 시점에 판정해 내려주는 값이다.
+      expect(communityPostStatusFromWire('ENDED'), CommunityPostStatus.ended);
+    });
+
+    test('falls_back_to_completed_when_wire_status_is_unknown', () {
+      // 모르는 상태를 모집중으로 보여 끝난 모임에 참여를 시도하게 두지 않는다.
+      // 던지면 목록 한 장이 통째로 에러 화면이 된다 (ENDED 추가 때 실제로 그랬다).
       expect(
-        () => communityPostStatusFromWire('CANCELLED'),
-        throwsA(isA<FormatException>()),
+        communityPostStatusFromWire('CANCELLED'),
+        CommunityPostStatus.completed,
       );
     });
   });

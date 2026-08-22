@@ -570,6 +570,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityStatusCompleted => '마감';
 
   @override
+  String get communityStatusEnded => '종료';
+
+  @override
   String communityHeadcount(int current, int max) {
     return '$current/$max명';
   }

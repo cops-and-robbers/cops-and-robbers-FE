@@ -408,6 +408,10 @@
   "@communityStatusCompleted": {
     "description": "커뮤니티 카드 — 모집이 끝난 게시글 배지"
   },
+  "communityStatusEnded": "종료",
+  "@communityStatusEnded": {
+    "description": "커뮤니티 카드 — 모임 날짜가 지나 끝난 게시글 배지"
+  },
   "communityHeadcount": "{current}/{max}명",
   "@communityHeadcount": {
     "description": "커뮤니티 카드 — 현재 참여 인원 / 정원",

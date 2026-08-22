@@ -573,6 +573,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityStatusCompleted => '締切';
 
   @override
+  String get communityStatusEnded => '終了';
+
+  @override
   String communityHeadcount(int current, int max) {
     return '$current/$max人';
   }
