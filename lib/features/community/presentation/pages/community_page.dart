@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,10 +11,12 @@ import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../router/current_branch_index_provider.dart';
 import '../../../../router/route_paths.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
@@ -33,7 +37,44 @@ class CommunityPage extends ConsumerStatefulWidget {
 
 class _CommunityPageState extends ConsumerState<CommunityPage> {
   @override
+  void initState() {
+    super.initState();
+    // 생명주기 감지는 이 서비스가 observer를 등록해야 시작된다. 등록 지점이
+    // activate() 하나뿐이라, 부르지 않으면 아래 lifecycleStateProvider 구독이
+    // 영원히 값을 받지 못한다. 멱등이고, provider가 폐기될 때 대칭적으로
+    // deactivate()된다.
+    ref.read(appLifecycleServiceProvider).activate();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // 다른 탭이나 게임에 갔다가 돌아왔을 때. 상세·검색은 셸 위에 떠서 이 값을
+    // 바꾸지 않으므로, 글을 오래 읽고 나와도 목록이 초기화되지 않는다.
+    ref.listen(currentBranchIndexProvider, (previous, next) {
+      if (previous == next) return;
+      if (next != RoutePaths.communityBranchIndex) return;
+      unawaited(_refreshIfStale());
+    });
+
+    // 앱이 백그라운드에서 돌아왔을 때.
+    ref.listen(lifecycleStateProvider, (previous, next) {
+      if (next.valueOrNull != AppLifecycleState.resumed) return;
+      // 커뮤니티 탭이 아니면 보이지 않는 화면이다. 안 보이는 것을 위해
+      // 네트워크를 쓰지 않는다.
+      if (ref.read(currentBranchIndexProvider) !=
+          RoutePaths.communityBranchIndex) {
+        return;
+      }
+      unawaited(_refreshIfStale());
+    });
+
+    // 이전에 봤던 정렬로 돌아가면 그 인스턴스는 keepAlive로 살아 있고 낡은
+    // 채다. 정렬 전환은 브랜치 인덱스를 바꾸지 않아 위 트리거가 울리지 않는다.
+    ref.listen(selectedCommunitySortProvider, (previous, next) {
+      if (previous == next) return;
+      unawaited(_refreshIfStale());
+    });
+
     final l10n = AppLocalizations.of(context);
 
     // 작성 버튼은 어떤 provider에도 의존하지 않는다. 여기서 한 번만 만들어
@@ -98,6 +139,28 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         ],
       ),
     );
+  }
+
+  /// 지금 보고 있는 목록이 낡았으면 조용히 다시 받는다.
+  ///
+  /// 검색어 자리에 항상 `null`을 넘기는 이유: 검색 결과는 화면을 나가면
+  /// 폐기되므로 유효 시간을 따질 대상이 아니다.
+  Future<void> _refreshIfStale() async {
+    try {
+      await ref
+          .read(
+            communityFeedNotifierProvider(
+              ref.read(selectedCommunityScopeProvider),
+              ref.read(selectedCommunitySortProvider),
+              null,
+            ).notifier,
+          )
+          .refreshIfStale();
+    } on AppException catch (_) {
+      // 사용자가 부른 동작이 아니다. 실패는 provider의 에러 상태로 이미 화면에
+      // 반영되므로 여기서 스낵바를 띄우지 않는다.
+      debugPrint('[커뮤니티] ⚠️ 배경 갱신 실패 — 목록이 낡을 수 있음');
+    }
   }
 
   Widget _buildAppBarIcon(String assetPath, {VoidCallback? onTap}) {
