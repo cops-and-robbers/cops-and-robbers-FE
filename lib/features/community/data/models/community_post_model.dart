@@ -5,7 +5,7 @@ part 'community_post_model.g.dart';
 
 /// 모임 장소 DTO
 ///
-/// 백엔드 스키마: api-docs.json#LocationResponse (v2.18.0)
+/// 백엔드 스키마: api-docs.json#LocationResponse (v2.21.0)
 ///
 /// 표기는 두 값이 짝을 이룬다 — 서버가 좌표를 역지오코딩해 저장한 [region](동 단위)과
 /// 작성자가 직접 입력한 [placeName]. 좌표로는 건물명·장소명을 신뢰할 수준으로 얻을 수
@@ -22,7 +22,7 @@ class CommunityLocationModel with _$CommunityLocationModel {
     /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
     ///
     /// 화면에는 안 쓰고 복사에만 쓴다 — 지도 앱에 붙여넣어야 핀이 찍히는데
-    /// [region]의 동까지로는 안 된다. 백엔드 추가 예정이라 아직 null로 온다.
+    /// [region]의 동까지로는 안 된다. 역지오코딩이 실패한 글은 null이다.
     String? address,
 
     /// 작성자가 입력한 만나는 곳 — `어린이대공원 정문`.

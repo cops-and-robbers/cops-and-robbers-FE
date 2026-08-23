@@ -18,5 +18,13 @@ class CommunityFeedState with _$CommunityFeedState {
     required String? nextCursor,
     required bool hasMore,
     @Default(false) bool isLoadingMore,
+
+    /// 거리순 조회에 쓴 기준 좌표. 첫 페이지에서 한 번 구해 `loadMore`가
+    /// 그대로 재사용한다 — 페이지를 넘길 때마다 GPS를 켜지 않기 위해서다.
+    /// 서버가 커서에 좌표를 담지 않으므로(사용자가 이동해도 커서가 막히지
+    /// 않게) 같은 값을 계속 써도 계약에 어긋나지 않는다.
+    /// 거리순이 아니면 null이다.
+    double? latitude,
+    double? longitude,
   }) = _CommunityFeedState;
 }

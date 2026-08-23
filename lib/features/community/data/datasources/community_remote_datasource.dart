@@ -17,15 +17,21 @@ abstract class CommunityRemoteDataSource {
   ///
   /// 응답: `{ content: CommunityPostResponse[], cursor: CursorInfo }`
   ///
-  /// 서버가 허용하는 파라미터는 다섯(`cursor·size·scope·sort·countryCode`)뿐이고
-  /// 그 외에는 400(`INVALID_QUERY_PARAMETER`)을 준다. Retrofit은 여기 선언된 것만
-  /// 보내며, null인 값은 생성된 `removeWhere`가 빼므로 "첫 요청 = 커서 없음",
-  /// "전체 = scope 생략"이 그대로 표현된다. `sort`는 기본값 `LATEST`만 동작해
-  /// 선언하지 않는다.
+  /// 서버가 허용하는 파라미터는 여덟(`cursor·size·scope·countryCode·sort·
+  /// keyword·latitude·longitude`)뿐이고 그 외에는 400(`INVALID_QUERY_PARAMETER`)을
+  /// 준다. Retrofit은 여기 선언된 것만 보내며, null인 값은 생성된 `removeWhere`가
+  /// 빼므로 "첫 요청 = 커서 없음", "전체 = scope 생략"이 그대로 표현된다.
   ///
-  /// [countryCode]는 필수다 — 목록은 DB만 보고 좌표를 받지 않는다(DEC-0021).
-  /// 국가는 [getCountry]로 먼저 구한다. 빈 문자열을 보내면 400
-  /// (`COUNTRY_NOT_SPECIFIED`)이므로 호출자가 항상 값을 채워야 한다.
+  /// [countryCode]는 필수다 — 목록은 DB만 보고 국가로 나뉜다(DEC-0021). 국가는
+  /// [getCountry]로 먼저 구한다. 빈 문자열을 보내면 400(`COUNTRY_NOT_SPECIFIED`).
+  ///
+  /// [sort]는 `LATEST`·`DEADLINE`·`DISTANCE`만 동작하고 `POPULAR`는 400이다.
+  /// [latitude]·[longitude]는 `sort=DISTANCE`일 때만 필수이며, 다른 정렬에서
+  /// 보내면 400이다 — Repository가 그 분기를 진다.
+  /// [keyword]는 공백을 제외하고 2자 이상이어야 하며 미만이면 400이다.
+  ///
+  /// 커서에는 국가·정렬·검색어가 봉인돼 있어, 셋 중 하나라도 직전 요청과 다르면
+  /// 커서를 재사용할 수 없다(400).
   ///
   /// 주의: `scope`는 `ALL` 외 값이 아직 400이다. 확정 실패를 왕복시키지 않도록
   /// Notifier가 전체 외 범위로는 호출하지 않는다.
@@ -35,6 +41,10 @@ abstract class CommunityRemoteDataSource {
     @Query('size') required int size,
     @Query('scope') String? scope,
     @Query('countryCode') required String countryCode,
+    @Query('sort') String? sort,
+    @Query('keyword') String? keyword,
+    @Query('latitude') double? latitude,
+    @Query('longitude') double? longitude,
   });
 
   /// 좌표 국가 조회 (저장하지 않음, 로그인 불필요)

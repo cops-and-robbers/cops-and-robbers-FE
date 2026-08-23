@@ -623,6 +623,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityStatusCompleted => 'Closed';
 
   @override
+  String get communityStatusEnded => 'Ended';
+
+  @override
   String communityHeadcount(int current, int max) {
     return '$current/$max';
   }
@@ -671,6 +674,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get communitySortSheetTitle => 'Sort by';
+
+  @override
+  String get communitySortNeedsLocation =>
+      'Location access is needed to sort by distance';
+
+  @override
+  String get communitySortLocationDenied =>
+      'Turn on location access in Settings';
+
+  @override
+  String get communitySearchHint => 'Search by title or place';
+
+  @override
+  String get communitySearchRecent => 'Recent searches';
+
+  @override
+  String get communitySearchClearAll => 'Clear all';
+
+  @override
+  String get communitySearchEmpty => 'No results found';
+
+  @override
+  String get communitySearchTooShort => 'Enter at least 2 characters';
 
   @override
   String get communityCreatePost => 'New post';
@@ -2488,6 +2514,38 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeCountryNotSpecified =>
       'We can\'t identify the country here. Please try from another spot';
+
+  @override
+  String get errorCodeAddressLookupFailed =>
+      'Couldn\'t look up the address. Please try again later';
+
+  @override
+  String get errorCodeRecruitmentClosed =>
+      'This recruitment post is already closed';
+
+  @override
+  String get errorCodeUnsupportedListScope =>
+      'This list scope isn\'t supported';
+
+  @override
+  String get errorCodeUnsupportedListSort =>
+      'This sort option isn\'t supported';
+
+  @override
+  String get errorCodeAlreadyJoined => 'You\'re already in this chat';
+
+  @override
+  String get errorCodeAuthorCannotLeave => 'The author can\'t leave this chat';
+
+  @override
+  String get errorCodeChatRoomFull => 'This chat is full';
+
+  @override
+  String get errorCodeJoinedChatRoomLimitExceeded =>
+      'You\'ve joined too many chats. Leave one and try again';
+
+  @override
+  String get errorCodeNotAChatMember => 'You\'re not a member of this chat';
 
   @override
   String get pingFound => 'Found';

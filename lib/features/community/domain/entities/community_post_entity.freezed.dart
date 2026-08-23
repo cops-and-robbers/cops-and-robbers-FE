@@ -42,8 +42,8 @@ mixin _$CommunityPostEntity {
 
   /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
   ///
-  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
-  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고).
+  /// 역지오코딩이 실패한 글은 null이다.
   String? get address => throw _privateConstructorUsedError;
 
   /// 현재 참여 인원. 백엔드 추가 예정. null이면 정원만 표시한다 —
@@ -384,8 +384,8 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
 
   /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
   ///
-  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
-  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고).
+  /// 역지오코딩이 실패한 글은 null이다.
   @override
   final String? address;
 
@@ -531,8 +531,8 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
 
   /// 번지까지 붙은 지번 주소 — `서울특별시 광진구 화양동 164-2`.
   ///
-  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고). 백엔드 추가
-  /// 예정이라 아직 null이며, 그동안은 화면에 보이던 라벨이 대신 복사된다.
+  /// 화면에 그리지 않고 복사에만 쓴다([locationLabel] 참고).
+  /// 역지오코딩이 실패한 글은 null이다.
   @override
   String? get address;
 

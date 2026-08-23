@@ -99,18 +99,21 @@ class CommunityPostMenu extends ConsumerWidget {
         label: l10n.communityMenuEdit,
         onTap: () => onAction(CommunityPostMenuAction.edit),
       ),
-      CommunityMenuItem(
-        iconPath: 'assets/icons/icon_check.svg',
-        // 체크는 단색(#333D48) 선 아이콘이다. 쓰기 아이콘의 파랑(#339DFF)에
-        // 맞춰 칠해 두 항목이 같은 계열로 읽히게 한다.
-        iconColor: AppColors.blueVer2Basic,
-        // 라벨은 "지금 누르면 무엇이 되는지"를 쓴다 — 현재 상태를 쓰면
-        // 모집중인 글에서 "모집중"이 보여 눌러도 될지 알 수 없다.
-        label: post.status == CommunityPostStatus.recruiting
-            ? l10n.communityMenuMarkCompleted
-            : l10n.communityMenuMarkRecruiting,
-        onTap: () => onAction(CommunityPostMenuAction.toggleStatus),
-      ),
+      // 종료된 글은 상태를 바꿔도 서버가 조회 시 다시 ENDED로 판정한다 —
+      // 눌러도 아무 변화가 없어 사용자 눈에는 버그로 보인다.
+      if (post.status != CommunityPostStatus.ended)
+        CommunityMenuItem(
+          iconPath: 'assets/icons/icon_check.svg',
+          // 체크는 단색(#333D48) 선 아이콘이다. 쓰기 아이콘의 파랑(#339DFF)에
+          // 맞춰 칠해 두 항목이 같은 계열로 읽히게 한다.
+          iconColor: AppColors.blueVer2Basic,
+          // 라벨은 "지금 누르면 무엇이 되는지"를 쓴다 — 현재 상태를 쓰면
+          // 모집중인 글에서 "모집중"이 보여 눌러도 될지 알 수 없다.
+          label: post.status == CommunityPostStatus.recruiting
+              ? l10n.communityMenuMarkCompleted
+              : l10n.communityMenuMarkRecruiting,
+          onTap: () => onAction(CommunityPostMenuAction.toggleStatus),
+        ),
       CommunityMenuItem(
         iconPath: 'assets/icons/icon_trash.svg',
         label: l10n.communityMenuDelete,

@@ -2,6 +2,7 @@ import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provi
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_card.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_menu.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -171,6 +172,65 @@ void main() {
 
       expect(find.text('마감'), findsOneWidget);
       expect(find.text('모집중'), findsNothing);
+    });
+
+    testWidgets('shows_ended_label_when_meeting_date_has_passed', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(status: CommunityPostStatus.ended),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('종료'), findsOneWidget);
+      expect(find.text('마감'), findsNothing);
+    });
+
+    testWidgets('dims_card_content_when_status_is_ended', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(status: CommunityPostStatus.ended),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final opacity = tester.widget<Opacity>(
+        find.byKey(CommunityPostCard.contentOpacityKey),
+      );
+      expect(opacity.opacity, 0.6);
+    });
+
+    testWidgets('hides_status_toggle_menu_item_when_post_is_ended', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(status: CommunityPostStatus.ended),
+          ),
+          // _post()의 writerId(7)와 같아야 내 글 메뉴(수정·상태변경·삭제)가 뜬다.
+          currentUserId: 7,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(CommunityPostMenu));
+      await tester.pumpAndSettle();
+
+      // 수정·삭제는 그대로, 상태 변경(마감하기/다시 모집하기)만 사라진다.
+      expect(find.text('수정하기'), findsOneWidget);
+      expect(find.text('삭제하기'), findsOneWidget);
+      expect(find.text('마감하기'), findsNothing);
+      expect(find.text('다시 모집하기'), findsNothing);
     });
   });
 }

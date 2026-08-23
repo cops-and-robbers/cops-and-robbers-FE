@@ -3,7 +3,8 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart' show LocationAccuracy;
+import 'package:geolocator/geolocator.dart'
+    show LocationAccuracy, LocationPermission;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/network/dio_client.dart';
@@ -51,8 +52,8 @@ CommunityRepository communityRepository(Ref ref) {
 
 /// 현재 선택된 목록 범위 필터
 ///
-/// `CommunityFeedNotifier.build()`가 이 값을 watch 하므로, 값이 바뀌면 build가
-/// 재실행되며 자동으로 0페이지부터 다시 조회된다 — 리셋 로직이 따로 없다.
+/// `CommunityFeedNotifier`의 family 키에 그대로 들어가므로, 값이 바뀌면 그
+/// 스코프의 인스턴스가 커서 없이 첫 페이지를 부른다 — 리셋 로직이 따로 없다.
 /// 토글 UI는 이 provider를 직접 watch 해서 네트워크 응답을 기다리지 않고
 /// 탭 즉시 선택 표시를 바꾼다.
 @riverpod
@@ -65,10 +66,14 @@ class SelectedCommunityScope extends _$SelectedCommunityScope {
 
 /// 현재 선택된 정렬 기준.
 ///
-/// 아직 `CommunityFeedNotifier`가 watch하지 않는다 — 백엔드가 `sort` 파라미터를
-/// 받긴 하지만 기본값 `LATEST` 외에는 400이라 보낼 값이 없기 때문이다. 지금은
-/// 정렬 라벨 표시 전용이며, 다른 값이 열리면 `SelectedCommunityScope`와 같은
-/// 방식으로 build()에서 watch해 연결한다.
+/// 목록 화면과 검색 화면이 이 하나를 공유한다 — "마감 임박순으로 보고 싶다"는
+/// 화면에 따라 달라지는 선호가 아니다.
+///
+/// `CommunityFeedNotifier`의 family 키에 그대로 들어가므로, 값이 바뀌면 그 정렬의
+/// 인스턴스가 커서 없이 첫 페이지를 부른다. 서버 커서에 정렬이 봉인돼 있어
+/// 재사용하면 400이라, 이 구조가 곧 계약이다.
+///
+/// 인기순은 서버가 아직 400을 주므로 정렬 시트가 노출하지 않는다.
 @riverpod
 class SelectedCommunitySort extends _$SelectedCommunitySort {
   @override
@@ -114,6 +119,26 @@ Future<DeviceCoordinates?> resolveCurrentPosition() async {
 Future<DeviceCoordinates?> Function() currentPositionResolver(Ref ref) =>
     resolveCurrentPosition;
 
+/// 위치 권한을 확보하는 함수 Provider.
+///
+/// 권한 서비스는 시스템 경계라 여기서 갈라 둔다 — 위 [currentPositionResolverProvider]와
+/// 같은 이유다. `LocationPermissionService.ensurePermission`이 static이라 테스트에서
+/// 직접 갈아끼울 수 없으므로, 이 provider가 갈아끼울 자리를 대신 제공한다.
+///
+/// 값이 아니라 함수를 담는다 — 호출자가 시트에서 거리순을 고른 시점의 권한
+/// 상태를 원하기 때문이다.
+@riverpod
+Future<bool> Function() ensureLocationPermission(Ref ref) =>
+    LocationPermissionService.ensurePermission;
+
+/// 위치 권한 상태를 확인하는 함수 Provider. 영구 거부 여부를 가릴 때 쓴다
+/// (안내 문구를 설정 화면 유도로 바꾸는 분기).
+///
+/// [ensureLocationPermissionProvider]와 같은 이유로 감쌌다.
+@riverpod
+Future<LocationPermission> Function() checkLocationPermission(Ref ref) =>
+    LocationPermissionService.checkPermission;
+
 /// 기기 로케일의 국가 코드. 로케일에 국가가 없으면(`en` 같은 경우) 주 시장인
 /// 한국으로 둔다 — 국가를 못 정하면 목록 자체를 못 부른다.
 ///
@@ -123,7 +148,7 @@ Future<DeviceCoordinates?> Function() currentPositionResolver(Ref ref) =>
 String deviceCountryCode(Ref ref) =>
     PlatformDispatcher.instance.locale.countryCode ?? 'KR';
 
-/// 목록을 어느 국가로 조회할지 정한다 — 화면 진입당 한 번.
+/// 목록을 어느 국가로 조회할지 정한다 — 앱 세션 내내 한 번.
 ///
 /// 목록 API는 좌표를 받지 않고 `countryCode`만 받으므로, 그 값을 여기서 먼저
 /// 구한다(DEC-0021). 서버 조회는 벤더를 한 번 부르고 Geoapify 일 3,000건 한도를
@@ -132,7 +157,17 @@ String deviceCountryCode(Ref ref) =>
 /// **절대 예외를 던지지 않는다.** 좌표가 없든, 벤더가 죽었든, 서버가 값을
 /// 빠뜨렸든 기기 로케일로 물러선다 — 국가 하나 못 알아냈다고 목록 전체가 에러
 /// 화면이 되는 것이 이 API를 목록에서 떼어낸 이유와 정면으로 어긋난다.
-@riverpod
+///
+/// 무효화 경로는 `CommunityFeedList._ensureLocationForDistance()`가 거리순 선택
+/// 시 위치 권한을 새로 얻었을 때 한 번 부르는 `ref.invalidate`가 유일하다 —
+/// 그 전까지는 세션 내내 처음 판정한 값을 그대로 쓴다.
+///
+/// `keepAlive`인 이유: `CommunityFeedNotifier`(목록)가 이 provider를 watch하지만
+/// 그 자신도 autoDispose라, 리스너 없이 무효화되면(글 작성·수정·삭제 등이 인자
+/// 없는 invalidate를 부른다) 함께 폐기될 수 있다 — 그러면 다음 진입에서 GPS와
+/// `/country`(Geoapify 일 3,000건 한도 공유)를 다시 태운다. 피드의 수명 관리와
+/// 분리해 국가 판별만 화면 세션 내내 고정한다.
+@Riverpod(keepAlive: true)
 Future<String> communityCountryCode(Ref ref) async {
   final fallback = ref.watch(deviceCountryCodeProvider);
 
@@ -153,30 +188,40 @@ Future<String> communityCountryCode(Ref ref) async {
   }
 }
 
-/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier (스코프별)
+/// 커뮤니티 목록 무한 스크롤 상태 관리 Notifier
 ///
-/// **스코프마다 인스턴스가 따로 살아 있고, 각각 최초 1회만 조회한다.**
-/// 예전에는 하나의 인스턴스가 선택된 스코프를 watch 해서, 전체 → 우리동네 →
-/// 전체로 토글할 때마다 목록을 다시 불렀다. 그런데 그때 딸려 나가는 건 목록
-/// 하나가 아니다 — 유일한 watcher가 사라지면서 `communityCountryCodeProvider`도
-/// 함께 폐기돼, 돌아올 때 GPS 측정과 `/country`(Geoapify 일 3,000건 한도 공유)
-/// 까지 다시 탄다. 토글 몇 번으로 벤더 한도를 갉아먹는 셈이었다.
+/// **조회 조건(스코프·정렬·검색어)마다 인스턴스가 따로 살아 있다.** 서버 커서에
+/// 국가·정렬·검색어가 봉인돼 있어 조건이 바뀌면 커서를 재사용할 수 없으므로
+/// (400), 조건을 family 키로 두면 새 인스턴스가 커서 없이 첫 페이지를 부른다 —
+/// 리셋 로직이 따로 필요 없고 커서 불일치가 구조적으로 발생하지 않는다.
 ///
-/// `keepAlive`인 이유: 다른 스코프를 보는 동안에는 이 인스턴스를 watch 하는
-/// 위젯이 없다. autoDispose면 그 순간 폐기돼 family로 나눈 의미가 사라진다.
+/// 목록(`keyword == null`)만 `keepAlive`한다. 예전에는 하나의 인스턴스가 선택된
+/// 스코프를 watch 해서, 전체 → 우리동네 → 전체로 토글할 때마다 목록을 다시
+/// 불렀다. 그때 딸려 나가는 건 목록 하나가 아니다 — 유일한 watcher가 사라지면서
+/// `communityCountryCodeProvider`도 함께 폐기돼, 돌아올 때 GPS 측정과
+/// `/country`(Geoapify 일 3,000건 한도 공유)까지 다시 탄다.
+///
+/// 반대로 검색은 자유 텍스트라 살려 두면 인스턴스가 무한히 늘어난다. 화면을
+/// 나가면 폐기되게 둔다.
 ///
 /// 목록이 낡는 문제는 이미 다른 길로 해결돼 있다 — 당겨서 새로고침, 글 작성 시
-/// 무효화, 수정·삭제 시 그 자리 갱신. 남는 건 "남이 올린 새 글은 당겨야 보인다"
-/// 하나뿐이다.
+/// 무효화, 수정·삭제 시 그 자리 갱신.
 ///
 /// 주의: `MINE`이 열리면 그건 사용자별 목록이므로, 로그인·로그아웃 때
 /// 무효화하는 처리가 함께 필요하다.
-@Riverpod(keepAlive: true)
+@riverpod
 class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   static const _pageSize = 20;
 
   @override
-  FutureOr<CommunityFeedState> build(CommunityScope scope) async {
+  FutureOr<CommunityFeedState> build(
+    CommunityScope scope,
+    CommunitySortOption sort,
+    String? keyword,
+  ) async {
+    // 목록은 살려 둔다(위 주석). 검색은 화면을 나가면 폐기되게 둔다.
+    if (keyword == null) ref.keepAlive();
+
     // 백엔드가 scope=NEARBY/MINE에 400을 준다. 확정 실패를 왕복시키지 않고
     // 호출 자체를 건너뛰어 빈 목록을 돌려준다 — 화면은 이 상태를 "준비 중"
     // 안내로 그린다.
@@ -188,18 +233,55 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
       );
     }
 
+    final coordinates = await _resolveSortCoordinates(sort);
+    // 거리순인데 좌표가 없으면 서버가 400을 준다. 화면이 권한을 확보한 뒤에만
+    // 거리순을 고르게 하므로 정상 경로에서는 오지 않는다 — 권한이 나중에
+    // 회수된 경우의 안전망이다.
+    final effectiveSort =
+        sort == CommunitySortOption.distance && coordinates == null
+        ? CommunitySortOption.latest
+        : sort;
+    if (effectiveSort != sort) {
+      debugPrint('[커뮤니티] ⚠️ 거리순 좌표 없음 → 최신순으로 조회');
+    }
+
     // 첫 요청은 커서 없이, 대신 국가 코드를 실어 보낸다. 국가 판별은
-    // communityCountryCodeProvider가 진입당 한 번만 하고 결과를 들고 있는다.
+    // communityCountryCodeProvider가 앱 세션 내내 한 번만 하고 결과를 들고 있는다.
     final countryCode = await ref.watch(communityCountryCodeProvider.future);
     final page = await ref
         .watch(communityRepositoryProvider)
-        .getPosts(size: _pageSize, countryCode: countryCode);
+        .getPosts(
+          size: _pageSize,
+          countryCode: countryCode,
+          sort: effectiveSort,
+          keyword: keyword,
+          latitude: coordinates?.latitude,
+          longitude: coordinates?.longitude,
+        );
 
     return CommunityFeedState(
       items: page.items,
       nextCursor: page.nextCursor,
       hasMore: page.hasNext,
+      latitude: coordinates?.latitude,
+      longitude: coordinates?.longitude,
     );
+  }
+
+  /// 거리순일 때만 좌표를 구한다. 권한이 없거나 조회가 실패하면 null —
+  /// build()의 [effectiveSort] 폴백이 그대로 받아 최신순으로 물러선다.
+  /// communityCountryCode와 같은 이유로 예외를 밖으로 던지지 않는다: 좌표
+  /// 하나 못 구했다고 목록 전체가 에러 화면이 되면 안 된다.
+  Future<DeviceCoordinates?> _resolveSortCoordinates(
+    CommunitySortOption sort,
+  ) async {
+    if (sort != CommunitySortOption.distance) return null;
+    try {
+      return await ref.read(currentPositionResolverProvider)();
+    } catch (e) {
+      debugPrint('[커뮤니티] ⚠️ 거리순 좌표 조회 실패 → null 처리: $e');
+      return null;
+    }
   }
 
   /// 다음 페이지를 이어붙인다.
@@ -212,10 +294,12 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
 
     // 이 대입은 첫 await 이전이라 동기적으로 끝난다. 스크롤 리스너가 프레임마다
     // 호출해도 두 번째 호출은 위 isLoadingMore 가드에 걸린다.
-    // pending을 별도로 들고 있는 이유: await 도중 scope가 바뀌면 build()가
-    // 재실행되어 state가 이 인스턴스에서 다른 인스턴스로 교체된다. 응답이
-    // 돌아왔을 때 state가 여전히 pending과 identical한지 확인해야 그 사이
-    // build()가 세팅한 새 스코프의 상태를 낡은 응답으로 덮어쓰지 않는다.
+    // pending을 별도로 들고 있는 이유: family 키가 스코프·정렬·검색어별로 갈려
+    // 있어 이 인스턴스의 state가 다른 인스턴스로 교체되는 일은 없다. 대신
+    // await 도중 refresh()가 끼어들면 invalidateSelf가 build()를 다시 돌려
+    // 같은 인스턴스의 state를 이 pending과 다른 값으로 바꿔치운다. 응답이
+    // 돌아왔을 때 state가 여전히 pending과 identical한지 확인해야 그 새 state를
+    // 낡은 응답으로 덮어쓰지 않는다.
     final pending = current.copyWith(isLoadingMore: true);
     state = AsyncData(pending);
 
@@ -230,10 +314,21 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
             cursor: current.nextCursor,
             size: _pageSize,
             countryCode: countryCode,
+            // 커서에 봉인된 조건과 같아야 한다 — 다르면 서버가 400을 준다.
+            // build가 좌표 없이 물러섰다면(첫 페이지에 latitude가 없다면) 커서도
+            // LATEST로 봉인돼 있으므로 여기도 같은 판정을 다시 밟는다.
+            sort:
+                sort == CommunitySortOption.distance && current.latitude == null
+                ? CommunitySortOption.latest
+                : sort,
+            keyword: keyword,
+            // 첫 페이지에서 구한 좌표를 그대로 쓴다 (GPS 재측정 없음).
+            latitude: current.latitude,
+            longitude: current.longitude,
           );
 
-      // scope 전환이나 refresh()가 끼어들어 state가 이미 교체됐다면 이 응답은
-      // 낡은 것이다 — 최신 상태를 덮지 않고 조용히 버린다.
+      // refresh()가 끼어들어 state가 이미 교체됐다면 이 응답은 낡은 것이다 —
+      // 최신 상태를 덮지 않고 조용히 버린다.
       if (!identical(state.valueOrNull, pending)) return;
 
       // 커서는 "몇 번째"가 아니라 "어디까지 봤는지"를 들고 다니므로, 스크롤 중
@@ -247,7 +342,7 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
         ),
       );
     } catch (_) {
-      // 낡은 요청이면 최신 상태(다른 scope 등)를 건드리지 않는다.
+      // 그 사이 refresh()가 끼어들어 state가 이미 교체됐다면 건드리지 않는다.
       if (identical(state.valueOrNull, pending)) {
         state = AsyncData(current.copyWith(isLoadingMore: false));
       }
@@ -269,6 +364,10 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   /// 실패는 그대로 올린다(화면이 스낵바로 알린다). 다만 그 사이 다른 사용자가
   /// 지워 버린 글이면 되돌릴 상태 자체가 없으므로 목록에서도 걷어낸다.
   Future<void> toggleStatus(CommunityPostEntity post) async {
+    // 메뉴가 이미 감추지만, 종료 글은 서버가 조회 시 다시 ENDED로 판정하므로
+    // 여기까지 왔다면 왕복만 낭비하는 요청이다.
+    if (post.status == CommunityPostStatus.ended) return;
+
     final next = post.status == CommunityPostStatus.recruiting
         ? CommunityPostStatus.completed
         : CommunityPostStatus.recruiting;

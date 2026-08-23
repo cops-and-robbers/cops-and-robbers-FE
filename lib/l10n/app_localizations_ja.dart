@@ -573,6 +573,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityStatusCompleted => '締切';
 
   @override
+  String get communityStatusEnded => '終了';
+
+  @override
   String communityHeadcount(int current, int max) {
     return '$current/$max人';
   }
@@ -621,6 +624,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get communitySortSheetTitle => '並び替え';
+
+  @override
+  String get communitySortNeedsLocation => '距離順で見るには位置情報の許可が必要です';
+
+  @override
+  String get communitySortLocationDenied => '設定で位置情報をオンにしてください';
+
+  @override
+  String get communitySearchHint => 'タイトル・場所で検索';
+
+  @override
+  String get communitySearchRecent => '最近の検索';
+
+  @override
+  String get communitySearchClearAll => 'すべて削除';
+
+  @override
+  String get communitySearchEmpty => '検索結果がありません';
+
+  @override
+  String get communitySearchTooShort => '2文字以上入力してください';
 
   @override
   String get communityCreatePost => '募集を作成';
@@ -2292,6 +2316,34 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeCountryNotSpecified => '国を確認できない場所です。別の場所で試してください';
+
+  @override
+  String get errorCodeAddressLookupFailed => '住所の取得に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeRecruitmentClosed => 'この募集はすでに締め切られました';
+
+  @override
+  String get errorCodeUnsupportedListScope => 'サポートされていない一覧の範囲です';
+
+  @override
+  String get errorCodeUnsupportedListSort => 'サポートされていない並び替え方法です';
+
+  @override
+  String get errorCodeAlreadyJoined => '既にこのチャットに参加しています';
+
+  @override
+  String get errorCodeAuthorCannotLeave => '作成者はこのチャットから退出できません';
+
+  @override
+  String get errorCodeChatRoomFull => 'このチャットの定員に達しました';
+
+  @override
+  String get errorCodeJoinedChatRoomLimitExceeded =>
+      '参加できるチャット数の上限を超えました。他のチャットから退出してからもう一度お試しください';
+
+  @override
+  String get errorCodeNotAChatMember => 'このチャットの参加者ではありません';
 
   @override
   String get pingFound => '発見';

@@ -1150,6 +1150,12 @@ abstract class AppLocalizations {
   /// **'마감'**
   String get communityStatusCompleted;
 
+  /// 커뮤니티 카드 — 모임 날짜가 지나 끝난 게시글 배지
+  ///
+  /// In ko, this message translates to:
+  /// **'종료'**
+  String get communityStatusEnded;
+
   /// 커뮤니티 카드 — 현재 참여 인원 / 정원
   ///
   /// In ko, this message translates to:
@@ -1232,6 +1238,48 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'정렬 기준'**
   String get communitySortSheetTitle;
+
+  /// 커뮤니티 정렬 — 거리순 선택 시 위치 권한을 거부했을 때
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한이 있어야 거리순으로 볼 수 있어요'**
+  String get communitySortNeedsLocation;
+
+  /// 커뮤니티 정렬 — 위치 권한이 영구 거부돼 다시 물을 수 없을 때
+  ///
+  /// In ko, this message translates to:
+  /// **'설정에서 위치 권한을 켜주세요'**
+  String get communitySortLocationDenied;
+
+  /// 커뮤니티 검색 — 입력창 안내 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'제목, 장소를 검색해보세요'**
+  String get communitySearchHint;
+
+  /// 커뮤니티 검색 — 최근 검색어 목록 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 검색어'**
+  String get communitySearchRecent;
+
+  /// 커뮤니티 검색 — 최근 검색어 전체 삭제 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'모두 삭제'**
+  String get communitySearchClearAll;
+
+  /// 커뮤니티 검색 — 결과가 하나도 없을 때
+  ///
+  /// In ko, this message translates to:
+  /// **'검색 결과가 없어요'**
+  String get communitySearchEmpty;
+
+  /// 커뮤니티 검색 — 공백을 제외한 검색어가 2자 미만일 때
+  ///
+  /// In ko, this message translates to:
+  /// **'두 글자 이상 입력해주세요'**
+  String get communitySearchTooShort;
 
   /// 커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)
   ///
@@ -4416,6 +4464,60 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요'**
   String get errorCodeCountryNotSpecified;
+
+  /// ADDRESS_LOOKUP_FAILED — 역지오코딩 벤더가 둘 다 실패한 경우. ADDRESS_NOT_FOUND(그 좌표에 주소 자체가 없음)와 달리 일시적 장애라 같은 핀으로 재시도하면 될 수 있다.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소 조회에 실패했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCodeAddressLookupFailed;
+
+  /// No description provided for @errorCodeRecruitmentClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 마감된 모집글이에요'**
+  String get errorCodeRecruitmentClosed;
+
+  /// No description provided for @errorCodeUnsupportedListScope.
+  ///
+  /// In ko, this message translates to:
+  /// **'지원하지 않는 목록 범위예요'**
+  String get errorCodeUnsupportedListScope;
+
+  /// No description provided for @errorCodeUnsupportedListSort.
+  ///
+  /// In ko, this message translates to:
+  /// **'지원하지 않는 정렬 방식이에요'**
+  String get errorCodeUnsupportedListSort;
+
+  /// No description provided for @errorCodeAlreadyJoined.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 참여한 채팅방이에요'**
+  String get errorCodeAlreadyJoined;
+
+  /// No description provided for @errorCodeAuthorCannotLeave.
+  ///
+  /// In ko, this message translates to:
+  /// **'작성자는 채팅방을 나갈 수 없어요'**
+  String get errorCodeAuthorCannotLeave;
+
+  /// No description provided for @errorCodeChatRoomFull.
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅방 정원이 가득 찼어요'**
+  String get errorCodeChatRoomFull;
+
+  /// No description provided for @errorCodeJoinedChatRoomLimitExceeded.
+  ///
+  /// In ko, this message translates to:
+  /// **'참여할 수 있는 채팅방 수를 초과했어요. 다른 채팅방을 나간 뒤 다시 시도해주세요'**
+  String get errorCodeJoinedChatRoomLimitExceeded;
+
+  /// No description provided for @errorCodeNotAChatMember.
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 채팅방의 참여자가 아니에요'**
+  String get errorCodeNotAChatMember;
 
   /// 맵 핑 선택 카드 — 상대 발견 핑 라벨
   ///

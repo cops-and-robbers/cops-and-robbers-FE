@@ -2,6 +2,7 @@ import '../entities/community_address_entity.dart';
 import '../entities/community_post_entity.dart';
 import '../entities/community_post_status.dart';
 import '../entities/community_scope.dart';
+import '../entities/community_sort_option.dart';
 
 /// 커뮤니티 도메인 Repository 인터페이스
 ///
@@ -13,16 +14,29 @@ abstract class CommunityRepository {
   /// [size]는 한 번에 가져올 개수(1~100).
   /// 실패 시 `AppException` 계열 예외를 던진다.
   ///
-  /// 목록이 국가별로 나뉘므로 [countryCode]는 필수다 — 목록 API는 좌표를 받지
-  /// 않는다(DEC-0021). 국가는 [getCountryCode]로 먼저 구한다.
+  /// 목록이 국가별로 나뉘므로 [countryCode]는 필수다(DEC-0021). 국가는
+  /// [getCountryCode]로 먼저 구한다.
+  ///
+  /// [sort]가 [CommunitySortOption.distance]면 [latitude]·[longitude]가
+  /// 필수다. 그 밖의 정렬에서는 좌표를 보내면 서버가 400을 주므로 구현체가
+  /// 걸러낸다 — 호출자는 좌표를 항상 넘겨도 된다.
+  ///
+  /// [keyword]는 공백을 제외하고 2자 이상이어야 한다. 그보다 짧으면 서버가
+  /// 400을 주므로 호출자가 미리 막는다.
+  ///
+  /// 커서에 국가·정렬·검색어가 봉인돼 있어, 셋 중 하나라도 직전 요청과 다르면
+  /// [cursor]를 재사용할 수 없다(400).
   ///
   /// [scope]는 [CommunityScope.all] 외 값을 백엔드가 아직 400으로 막는다.
-  /// 호출자는 현재 전체만 넘겨야 한다.
   Future<CommunityPostPageEntity> getPosts({
     String? cursor,
     required int size,
     CommunityScope scope = CommunityScope.all,
     required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   });
 
   /// 좌표가 속한 국가 코드를 조회한다 (저장하지 않음).

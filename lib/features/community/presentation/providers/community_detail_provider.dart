@@ -167,6 +167,8 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
   Future<void> toggleStatus() async {
     final current = state.valueOrNull;
     if (current == null) return;
+    // 종료 글은 서버가 조회 시 다시 ENDED로 판정한다 — 왕복만 낭비다.
+    if (current.post.status == CommunityPostStatus.ended) return;
 
     final next = current.post.status == CommunityPostStatus.recruiting
         ? CommunityPostStatus.completed

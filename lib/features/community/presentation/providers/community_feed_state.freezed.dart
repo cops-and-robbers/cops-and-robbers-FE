@@ -25,6 +25,14 @@ mixin _$CommunityFeedState {
   bool get hasMore => throw _privateConstructorUsedError;
   bool get isLoadingMore => throw _privateConstructorUsedError;
 
+  /// 거리순 조회에 쓴 기준 좌표. 첫 페이지에서 한 번 구해 `loadMore`가
+  /// 그대로 재사용한다 — 페이지를 넘길 때마다 GPS를 켜지 않기 위해서다.
+  /// 서버가 커서에 좌표를 담지 않으므로(사용자가 이동해도 커서가 막히지
+  /// 않게) 같은 값을 계속 써도 계약에 어긋나지 않는다.
+  /// 거리순이 아니면 null이다.
+  double? get latitude => throw _privateConstructorUsedError;
+  double? get longitude => throw _privateConstructorUsedError;
+
   /// Create a copy of CommunityFeedState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -44,6 +52,8 @@ abstract class $CommunityFeedStateCopyWith<$Res> {
     String? nextCursor,
     bool hasMore,
     bool isLoadingMore,
+    double? latitude,
+    double? longitude,
   });
 }
 
@@ -66,6 +76,8 @@ class _$CommunityFeedStateCopyWithImpl<$Res, $Val extends CommunityFeedState>
     Object? nextCursor = freezed,
     Object? hasMore = null,
     Object? isLoadingMore = null,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -85,6 +97,14 @@ class _$CommunityFeedStateCopyWithImpl<$Res, $Val extends CommunityFeedState>
                 ? _value.isLoadingMore
                 : isLoadingMore // ignore: cast_nullable_to_non_nullable
                       as bool,
+            latitude: freezed == latitude
+                ? _value.latitude
+                : latitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            longitude: freezed == longitude
+                ? _value.longitude
+                : longitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
           )
           as $Val,
     );
@@ -105,6 +125,8 @@ abstract class _$$CommunityFeedStateImplCopyWith<$Res>
     String? nextCursor,
     bool hasMore,
     bool isLoadingMore,
+    double? latitude,
+    double? longitude,
   });
 }
 
@@ -126,6 +148,8 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
     Object? nextCursor = freezed,
     Object? hasMore = null,
     Object? isLoadingMore = null,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
   }) {
     return _then(
       _$CommunityFeedStateImpl(
@@ -145,6 +169,14 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
             ? _value.isLoadingMore
             : isLoadingMore // ignore: cast_nullable_to_non_nullable
                   as bool,
+        latitude: freezed == latitude
+            ? _value.latitude
+            : latitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        longitude: freezed == longitude
+            ? _value.longitude
+            : longitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
       ),
     );
   }
@@ -158,6 +190,8 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
     required this.nextCursor,
     required this.hasMore,
     this.isLoadingMore = false,
+    this.latitude,
+    this.longitude,
   }) : _items = items;
 
   final List<CommunityPostEntity> _items;
@@ -178,9 +212,19 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
   @JsonKey()
   final bool isLoadingMore;
 
+  /// 거리순 조회에 쓴 기준 좌표. 첫 페이지에서 한 번 구해 `loadMore`가
+  /// 그대로 재사용한다 — 페이지를 넘길 때마다 GPS를 켜지 않기 위해서다.
+  /// 서버가 커서에 좌표를 담지 않으므로(사용자가 이동해도 커서가 막히지
+  /// 않게) 같은 값을 계속 써도 계약에 어긋나지 않는다.
+  /// 거리순이 아니면 null이다.
+  @override
+  final double? latitude;
+  @override
+  final double? longitude;
+
   @override
   String toString() {
-    return 'CommunityFeedState(items: $items, nextCursor: $nextCursor, hasMore: $hasMore, isLoadingMore: $isLoadingMore)';
+    return 'CommunityFeedState(items: $items, nextCursor: $nextCursor, hasMore: $hasMore, isLoadingMore: $isLoadingMore, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -193,7 +237,11 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
                 other.nextCursor == nextCursor) &&
             (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
             (identical(other.isLoadingMore, isLoadingMore) ||
-                other.isLoadingMore == isLoadingMore));
+                other.isLoadingMore == isLoadingMore) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude));
   }
 
   @override
@@ -203,6 +251,8 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
     nextCursor,
     hasMore,
     isLoadingMore,
+    latitude,
+    longitude,
   );
 
   /// Create a copy of CommunityFeedState
@@ -223,6 +273,8 @@ abstract class _CommunityFeedState implements CommunityFeedState {
     required final String? nextCursor,
     required final bool hasMore,
     final bool isLoadingMore,
+    final double? latitude,
+    final double? longitude,
   }) = _$CommunityFeedStateImpl;
 
   @override
@@ -236,6 +288,16 @@ abstract class _CommunityFeedState implements CommunityFeedState {
   bool get hasMore;
   @override
   bool get isLoadingMore;
+
+  /// 거리순 조회에 쓴 기준 좌표. 첫 페이지에서 한 번 구해 `loadMore`가
+  /// 그대로 재사용한다 — 페이지를 넘길 때마다 GPS를 켜지 않기 위해서다.
+  /// 서버가 커서에 좌표를 담지 않으므로(사용자가 이동해도 커서가 막히지
+  /// 않게) 같은 값을 계속 써도 계약에 어긋나지 않는다.
+  /// 거리순이 아니면 null이다.
+  @override
+  double? get latitude;
+  @override
+  double? get longitude;
 
   /// Create a copy of CommunityFeedState
   /// with the given fields replaced by the non-null parameter values.

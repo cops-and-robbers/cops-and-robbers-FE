@@ -29,6 +29,7 @@ import '../features/community/domain/entities/community_post_entity.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_detail_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
+import '../features/community/presentation/pages/community_search_page.dart';
 import '../features/mypage/presentation/pages/my_page.dart';
 import 'main_scaffold.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
@@ -391,6 +392,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) => buildSlideUp(
                       key: state.pageKey,
                       child: const CommunityCreatePage(),
+                    ),
+                  ),
+                  // ======================================================
+                  // 모집글 검색 (바텀 네비 위 전체 화면)
+                  //
+                  // `:postId`보다 앞에 둔다 — 뒤에 두면 `/community/search`가
+                  // postId="search"로 잡힌다.
+                  // ======================================================
+                  GoRoute(
+                    path: 'search',
+                    name: RoutePaths.communitySearchName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildSmoothFade(
+                      key: state.pageKey,
+                      child: const CommunitySearchPage(),
                     ),
                   ),
                   // ======================================================

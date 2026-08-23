@@ -23,6 +23,10 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
     required int size,
     String? scope,
     required String countryCode,
+    String? sort,
+    String? keyword,
+    double? latitude,
+    double? longitude,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -30,6 +34,10 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
       r'size': size,
       r'scope': scope,
       r'countryCode': countryCode,
+      r'sort': sort,
+      r'keyword': keyword,
+      r'latitude': latitude,
+      r'longitude': longitude,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
