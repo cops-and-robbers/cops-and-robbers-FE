@@ -134,6 +134,31 @@ final checkLocationPermissionProvider =
 // ignore: unused_element
 typedef CheckLocationPermissionRef =
     AutoDisposeProviderRef<Future<LocationPermission> Function()>;
+String _$clockHash() => r'3b571c5a0c08b7391c0eed04391003191bab6ccf';
+
+/// 현재 시각.
+///
+/// 시간은 시스템 경계라 갈아끼울 자리가 필요하다 — 유효 시간 판정을 테스트하려면
+/// 시계를 앞으로 돌릴 수 있어야 한다. 값이 아니라 함수를 담는 이유는 호출하는
+/// 시점의 시각을 원하기 때문이다.
+///
+/// 세 번째 사용처가 생기면 `core`로 옮긴다. 지금은 목록 유효 시간만 쓴다.
+///
+/// Copied from [clock].
+@ProviderFor(clock)
+final clockProvider = AutoDisposeProvider<DateTime Function()>.internal(
+  clock,
+  name: r'clockProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$clockHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ClockRef = AutoDisposeProviderRef<DateTime Function()>;
 String _$deviceCountryCodeHash() => r'd4b198fec31c6b21a5a2139af6a226ec346db3d3';
 
 /// 기기 로케일의 국가 코드. 로케일에 국가가 없으면(`en` 같은 경우) 주 시장인
@@ -200,8 +225,8 @@ String _$selectedCommunityScopeHash() =>
 
 /// 현재 선택된 목록 범위 필터
 ///
-/// `CommunityFeedNotifier.build()`가 이 값을 watch 하므로, 값이 바뀌면 build가
-/// 재실행되며 자동으로 0페이지부터 다시 조회된다 — 리셋 로직이 따로 없다.
+/// `CommunityFeedNotifier`의 family 키에 그대로 들어가므로, 값이 바뀌면 그
+/// 스코프의 인스턴스가 커서 없이 첫 페이지를 부른다 — 리셋 로직이 따로 없다.
 /// 토글 UI는 이 provider를 직접 watch 해서 네트워크 응답을 기다리지 않고
 /// 탭 즉시 선택 표시를 바꾼다.
 ///
@@ -254,7 +279,7 @@ final selectedCommunitySortProvider =
 
 typedef _$SelectedCommunitySort = AutoDisposeNotifier<CommunitySortOption>;
 String _$communityFeedNotifierHash() =>
-    r'4756ca7028b1e68e12f92a138d86bf87d466fd21';
+    r'705d355dfecfc2956c53af58e5c6d239e49980d3';
 
 /// Copied from Dart SDK
 class _SystemHash {

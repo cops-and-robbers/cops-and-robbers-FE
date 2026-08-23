@@ -154,9 +154,41 @@ ServerException _gone() => const ServerException(
   code: 'POST_NOT_FOUND',
 );
 
+/// 첫 조회는 성공하고 이후 호출은 던지는 가짜 Repository.
+/// 배경 갱신이 실패해도 이전 목록이 유지되는지(I-2) 검증하는 데 쓴다.
+class _FailingAfterFirstRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
+  _FailingAfterFirstRepository(this.items);
+
+  final List<CommunityPostEntity> items;
+  int callCount = 0;
+
+  @override
+  Future<CommunityPostPageEntity> getPosts({
+    String? cursor,
+    required int size,
+    CommunityScope scope = CommunityScope.all,
+    required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
+  }) async {
+    callCount++;
+    if (callCount > 1) throw const ServerException(message: '서버 오류');
+    return CommunityPostPageEntity(
+      items: items,
+      nextCursor: null,
+      hasNext: false,
+    );
+  }
+}
+
 ProviderContainer _containerWith(
   CommunityRepository repo, {
   String countryCode = 'KR',
+  DateTime Function()? now,
 }) {
   final container = ProviderContainer(
     overrides: [
@@ -167,6 +199,8 @@ ProviderContainer _containerWith(
       currentPositionResolverProvider.overrideWithValue(
         () async => (latitude: 37.4979, longitude: 127.0276),
       ),
+      // 시계도 시스템 경계다 — 유효 시간 판정을 검증하려면 앞으로 돌릴 수 있어야 한다.
+      if (now != null) clockProvider.overrideWithValue(now),
     ],
   );
   addTearDown(container.dispose);
@@ -830,5 +864,176 @@ void main() {
           .items;
       expect(items.map((e) => e.title), ['모집글 1', '제목을 고쳤어요']);
     });
+  });
+
+  group('CommunityFeedNotifier.refreshIfStale', () {
+    /// 시계를 원하는 시각으로 고정한다. `advance`를 바꿔 시간을 앞으로 돌린다.
+    ({DateTime Function() clock, void Function(Duration) advance}) fakeClock() {
+      var now = DateTime(2026, 8, 23, 12);
+      return (clock: () => now, advance: (d) => now = now.add(d));
+    }
+
+    test(
+      'keeps_the_cached_list_when_refetched_within_the_stale_window',
+      () async {
+        final repo = _FakeCommunityRepository({
+          null: (items: [_post(1)], next: null),
+        });
+        final fake = fakeClock();
+        final container = _containerWith(repo, now: fake.clock);
+        final provider = communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        );
+        await container.read(provider.future);
+
+        fake.advance(const Duration(minutes: 2, seconds: 59));
+        await container.read(provider.notifier).refreshIfStale();
+
+        // 3분이 안 지났으면 캐시를 그대로 쓴다 — 서버를 다시 부르지 않는다.
+        expect(repo.requestedCursors, hasLength(1));
+        expect(container.read(provider).value!.items.single.id, 1);
+      },
+    );
+
+    test(
+      'refetches_from_the_first_page_when_the_stale_window_has_passed',
+      () async {
+        final repo = _FakeCommunityRepository({
+          null: (items: [_post(1)], next: null),
+        });
+        final fake = fakeClock();
+        final container = _containerWith(repo, now: fake.clock);
+        final provider = communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        );
+        await container.read(provider.future);
+
+        fake.advance(const Duration(minutes: 3, seconds: 1));
+        await container.read(provider.notifier).refreshIfStale();
+
+        // 커서 없이 첫 페이지부터 다시 받는다.
+        expect(repo.requestedCursors, [null, null]);
+        expect(container.read(provider).value!.items.single.id, 1);
+      },
+    );
+
+    test('refetches_when_exactly_the_stale_window_has_passed', () async {
+      final repo = _FakeCommunityRepository({
+        null: (items: [_post(1)], next: null),
+      });
+      final fake = fakeClock();
+      final container = _containerWith(repo, now: fake.clock);
+      final provider = communityFeedNotifierProvider(
+        CommunityScope.all,
+        CommunitySortOption.latest,
+        null,
+      );
+      await container.read(provider.future);
+
+      fake.advance(const Duration(minutes: 3));
+      await container.read(provider.notifier).refreshIfStale();
+
+      // 정확히 3분은 "낡은 것"으로 분류돼 재시도한다.
+      expect(repo.requestedCursors, [null, null]);
+      expect(container.read(provider).value!.items.single.id, 1);
+    });
+
+    test('does_not_refetch_when_another_page_is_still_loading', () async {
+      final repo = _FakeCommunityRepository({
+        null: (items: [_post(1)], next: 'cursor-1'),
+        'cursor-1': (items: [_post(2)], next: null),
+      });
+      final fake = fakeClock();
+      final container = _containerWith(repo, now: fake.clock);
+      final provider = communityFeedNotifierProvider(
+        CommunityScope.all,
+        CommunitySortOption.latest,
+        null,
+      );
+      await container.read(provider.future);
+
+      fake.advance(const Duration(minutes: 5));
+      // 이어붙이기를 기다리지 않고 그 사이에 낡음 판정을 걸어 본다.
+      final pending = container.read(provider.notifier).loadMore();
+      await container.read(provider.notifier).refreshIfStale();
+      await pending;
+
+      // 진행 중인 요청을 버리지 않는다 — 두 페이지가 그대로 이어붙는다.
+      expect(container.read(provider).value!.items.map((e) => e.id), [1, 2]);
+      expect(repo.requestedCursors, [null, 'cursor-1']);
+    });
+
+    test('records_the_fetch_time_when_the_first_page_arrives', () async {
+      final repo = _FakeCommunityRepository({
+        null: (items: [_post(1)], next: null),
+      });
+      final fake = fakeClock();
+      final container = _containerWith(repo, now: fake.clock);
+
+      final state = await container.read(
+        communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        ).future,
+      );
+
+      expect(state.fetchedAt, DateTime(2026, 8, 23, 12));
+    });
+
+    test('keeps_the_cached_list_when_background_refresh_fails', () async {
+      final repo = _FailingAfterFirstRepository([_post(1)]);
+      final fake = fakeClock();
+      final container = _containerWith(repo, now: fake.clock);
+      final provider = communityFeedNotifierProvider(
+        CommunityScope.all,
+        CommunitySortOption.latest,
+        null,
+      );
+      await container.read(provider.future);
+
+      fake.advance(const Duration(minutes: 4));
+      await expectLater(
+        container.read(provider.notifier).refreshIfStale(),
+        throwsA(isA<ServerException>()),
+      );
+
+      // 실패했다고 보고 있던 목록을 에러 상태로 갈아치우지 않는다(I-2).
+      final state = container.read(provider);
+      expect(state.hasError, isFalse);
+      expect(state.value!.items.single.id, 1);
+    });
+
+    test(
+      'does_not_refetch_when_more_than_one_page_is_already_loaded',
+      () async {
+        final repo = _FakeCommunityRepository({
+          null: (items: [for (var i = 1; i <= 20; i++) _post(i)], next: 'c1'),
+          'c1': (items: [_post(21)], next: null),
+        });
+        final fake = fakeClock();
+        final container = _containerWith(repo, now: fake.clock);
+        final provider = communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        );
+        await container.read(provider.future);
+        await container.read(provider.notifier).loadMore();
+        expect(container.read(provider).value!.items, hasLength(21));
+
+        fake.advance(const Duration(minutes: 4));
+        await container.read(provider.notifier).refreshIfStale();
+
+        // 0페이지부터 다시 받으면 스크롤 위치를 잃는다 — 두 페이지 이상 불러온
+        // 목록은 배경 갱신에서 제외한다(I-3).
+        expect(repo.requestedCursors, [null, 'c1']);
+        expect(container.read(provider).value!.items, hasLength(21));
+      },
+    );
   });
 }

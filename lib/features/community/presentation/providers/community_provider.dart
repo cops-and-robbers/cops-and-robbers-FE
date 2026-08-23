@@ -139,6 +139,16 @@ Future<bool> Function() ensureLocationPermission(Ref ref) =>
 Future<LocationPermission> Function() checkLocationPermission(Ref ref) =>
     LocationPermissionService.checkPermission;
 
+/// 현재 시각.
+///
+/// 시간은 시스템 경계라 갈아끼울 자리가 필요하다 — 유효 시간 판정을 테스트하려면
+/// 시계를 앞으로 돌릴 수 있어야 한다. 값이 아니라 함수를 담는 이유는 호출하는
+/// 시점의 시각을 원하기 때문이다.
+///
+/// 세 번째 사용처가 생기면 `core`로 옮긴다. 지금은 목록 유효 시간만 쓴다.
+@riverpod
+DateTime Function() clock(Ref ref) => DateTime.now;
+
 /// 기기 로케일의 국가 코드. 로케일에 국가가 없으면(`en` 같은 경우) 주 시장인
 /// 한국으로 둔다 — 국가를 못 정하면 목록 자체를 못 부른다.
 ///
@@ -213,6 +223,12 @@ Future<String> communityCountryCode(Ref ref) async {
 class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   static const _pageSize = 20;
 
+  /// 마지막 조회로부터 이 시간이 지나면 낡은 것으로 본다.
+  ///
+  /// 모집글은 실시간 데이터가 아니라 잠깐 낡은 화면을 보는 것은 허용한다.
+  /// 다만 게임 한 판이 보통 이보다 길어, 끝내고 돌아오면 새로 받게 된다.
+  static const _staleAfter = Duration(minutes: 3);
+
   @override
   FutureOr<CommunityFeedState> build(
     CommunityScope scope,
@@ -226,10 +242,13 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
     // 호출 자체를 건너뛰어 빈 목록을 돌려준다 — 화면은 이 상태를 "준비 중"
     // 안내로 그린다.
     if (scope != CommunityScope.all) {
-      return const CommunityFeedState(
-        items: [],
+      return CommunityFeedState(
+        items: const [],
         nextCursor: null,
         hasMore: false,
+        // 서버를 부르지 않았지만 "이 시점의 판정 결과"라 시각을 남긴다.
+        // 낡음 판정은 걸리지만 결과가 항상 같은 빈 목록이라 무해하다.
+        fetchedAt: ref.read(clockProvider)(),
       );
     }
 
@@ -265,6 +284,7 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
       hasMore: page.hasNext,
       latitude: coordinates?.latitude,
       longitude: coordinates?.longitude,
+      fetchedAt: ref.read(clockProvider)(),
     );
   }
 
@@ -354,6 +374,48 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   Future<void> refresh() async {
     ref.invalidateSelf();
     await future;
+  }
+
+  /// 낡았으면 첫 페이지부터 다시 받는다. 화면이 다시 보이는 순간 호출한다.
+  ///
+  /// 사용자가 부른 동작이 아니므로 조용히 갱신하고, 아래 세 경우에는 손대지
+  /// 않는다 — 건드려 봐야 이득이 없거나 진행 중인 일을 망친다.
+  Future<void> refreshIfStale() async {
+    final current = state.valueOrNull;
+    // 한 번도 성공한 적 없는 상태다 — 첫 로드 중이거나 첫 로드가 실패했다.
+    // 전자는 곧 최신이 되고, 후자는 되살릴 목록 자체가 없다.
+    //
+    // 반대로 한 번 성공한 뒤 실패한 상태는 여기를 통과해 다시 받는다.
+    // Riverpod의 AsyncError가 이전 성공 값을 그대로 들고 있어서인데
+    // (`copyWithPrevious`), 그게 맞는 동작이다 — 화면에 다시 들어오는 순간은
+    // 일시 장애로 실패한 조회를 재시도하기 가장 좋은 때다.
+    if (current == null) return;
+    // 페이지를 이어붙이는 중이면 그 요청을 버리게 된다.
+    if (current.isLoadingMore) return;
+    // 이미 갱신이 진행 중이면(사용자의 당겨서 새로고침이든, 겹친 트리거든)
+    // state가 AsyncLoading이라 valueOrNull이 옛 fetchedAt을 그대로 돌려준다 —
+    // 이 가드가 없으면 두 트리거가 겹칠 때 요청이 한 번 더 나간다.
+    if (state.isLoading) return;
+    // 여러 페이지를 이미 불러온 목록은 건드리지 않는다. 0페이지부터 다시 받으면
+    // 읽던 자리를 잃고, 스크롤이 새 목록 끝으로 밀리면서 loadMore까지 딸려
+    // 나간다. 그 사용자는 당겨서 새로고침으로 직접 갱신할 수 있다.
+    if (current.items.length > _pageSize) return;
+    if (ref.read(clockProvider)().difference(current.fetchedAt) < _staleAfter) {
+      return;
+    }
+    // 배경 갱신은 사용자가 부른 것이 아니다. 실패했다고 보고 있던 목록을
+    // 에러 화면으로 갈아치우면, 아무것도 안 누른 사용자가 지하철에서
+    // 목록을 잃는다. 이전 상태를 그대로 되돌린다 — fetchedAt도 옛날 값이라
+    // 다음 복귀에 다시 시도한다.
+    // (당겨서 새로고침은 사용자가 요청한 것이므로 refresh()가 그대로 에러를
+    //  화면에 반영하는 것이 맞다.)
+    final previous = state;
+    try {
+      await refresh();
+    } catch (_) {
+      state = previous;
+      rethrow;
+    }
   }
 
   /// 모집 상태를 뒤집는다 (모집중 ↔ 마감). 서버가 돌려준 글로 그 카드만 간다.

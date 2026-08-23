@@ -57,6 +57,13 @@ class RoutePaths {
   /// 커뮤니티 화면 (바텀 네비게이션 탭 — 현재 준비중 placeholder)
   static const String community = '/community';
 
+  /// 바텀 네비에서 커뮤니티가 몇 번째 브랜치인가 (`app_router.dart`의
+  /// `StatefulShellBranch` 순서 — 홈 0 · 커뮤니티 1 · 마이페이지 2).
+  ///
+  /// 탭 화면이 "지금 내가 보이는가"를 판정할 때 쓴다. 브랜치 순서를 바꾸면
+  /// 여기도 함께 고쳐야 한다.
+  static const int communityBranchIndex = 1;
+
   /// 모집글 작성 화면 (커뮤니티 목록의 작성 버튼에서 진입)
   static const String communityCreate = '/community/create';
 

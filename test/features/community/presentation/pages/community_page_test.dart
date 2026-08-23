@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
+import 'package:cops_and_robbers/core/services/lifecycle/lifecycle_provider.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/app_button.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
@@ -12,6 +15,7 @@ import 'package:cops_and_robbers/features/community/presentation/pages/community
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_card.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_menu.dart';
+import 'package:cops_and_robbers/router/current_branch_index_provider.dart';
 import 'package:cops_and_robbers/router/route_paths.dart';
 import 'package:cops_and_robbers/core/utils/custom_page_transitions.dart';
 import 'package:geolocator/geolocator.dart' show LocationPermission;
@@ -525,9 +529,7 @@ void main() {
             ensureLocationPermissionProvider.overrideWithValue(
               () async => true,
             ),
-            currentPositionResolverProvider.overrideWithValue(
-              () async => null,
-            ),
+            currentPositionResolverProvider.overrideWithValue(() async => null),
           ],
         );
 
@@ -541,40 +543,34 @@ void main() {
       },
     );
 
-    testWidgets(
-      'keeps_previous_sort_when_location_permission_is_denied',
-      (tester) async {
-        await _pumpCommunityPage(
-          tester,
-          _FakeCommunityRepository([_post(1)]),
-          overrides: [
-            ensureLocationPermissionProvider.overrideWithValue(
-              () async => false,
-            ),
-            checkLocationPermissionProvider.overrideWithValue(
-              () async => LocationPermission.denied,
-            ),
-          ],
-        );
+    testWidgets('keeps_previous_sort_when_location_permission_is_denied', (
+      tester,
+    ) async {
+      await _pumpCommunityPage(
+        tester,
+        _FakeCommunityRepository([_post(1)]),
+        overrides: [
+          ensureLocationPermissionProvider.overrideWithValue(() async => false),
+          checkLocationPermissionProvider.overrideWithValue(
+            () async => LocationPermission.denied,
+          ),
+        ],
+      );
 
-        await tester.tap(find.text('최신순'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('거리순'));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text('최신순'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('거리순'));
+      await tester.pumpAndSettle();
 
-        // 정렬은 그대로고, 다시 물을 수 있다는 안내가 뜬다.
-        expect(find.text('최신순'), findsOneWidget);
-        expect(
-          find.text('위치 권한이 있어야 거리순으로 볼 수 있어요'),
-          findsOneWidget,
-        );
+      // 정렬은 그대로고, 다시 물을 수 있다는 안내가 뜬다.
+      expect(find.text('최신순'), findsOneWidget);
+      expect(find.text('위치 권한이 있어야 거리순으로 볼 수 있어요'), findsOneWidget);
 
-        // 스낵바의 3초 자동 닫힘 타이머가 남아 있으면 테스트 종료 시
-        // "Timer still pending"으로 깨진다 — 흘려보내고 끝낸다.
-        await tester.pump(const Duration(seconds: 4));
-        await tester.pumpAndSettle();
-      },
-    );
+      // 스낵바의 3초 자동 닫힘 타이머가 남아 있으면 테스트 종료 시
+      // "Timer still pending"으로 깨진다 — 흘려보내고 끝낸다.
+      await tester.pump(const Duration(seconds: 4));
+      await tester.pumpAndSettle();
+    });
 
     testWidgets(
       'does_not_reinvalidate_country_code_when_permission_was_already_granted',
@@ -593,9 +589,7 @@ void main() {
             checkLocationPermissionProvider.overrideWithValue(
               () async => LocationPermission.whileInUse,
             ),
-            currentPositionResolverProvider.overrideWithValue(
-              () async => null,
-            ),
+            currentPositionResolverProvider.overrideWithValue(() async => null),
             communityCountryCodeProvider.overrideWith((ref) async {
               countryCodeCalls++;
               return 'KR';
@@ -730,6 +724,156 @@ void main() {
       expect(find.byType(CommunityCreatePage), findsNothing);
       expect(find.byType(CommunityDetailPage), findsOneWidget);
       expect(find.byType(CommunityPage), findsNothing);
+    });
+  });
+
+  group('CommunityPage 낡은 목록 갱신', () {
+    testWidgets(
+      'refetches_when_returning_to_the_community_tab_after_the_stale_window',
+      (tester) async {
+        var now = DateTime(2026, 8, 23, 12);
+        final repo = _FakeCommunityRepository([_post(1)]);
+        await _pumpCommunityPage(
+          tester,
+          repo,
+          overrides: [clockProvider.overrideWithValue(() => now)],
+        );
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(CommunityPage)),
+        );
+        expect(repo.callCount, 1);
+
+        now = now.add(const Duration(minutes: 4));
+        // 다른 탭에 갔다가 커뮤니티로 돌아온 상황.
+        container.read(currentBranchIndexProvider.notifier).select(0);
+        container
+            .read(currentBranchIndexProvider.notifier)
+            .select(RoutePaths.communityBranchIndex);
+        await tester.pumpAndSettle();
+
+        expect(repo.callCount, 2);
+      },
+    );
+
+    testWidgets(
+      'keeps_the_cached_list_when_returning_within_the_stale_window',
+      (tester) async {
+        var now = DateTime(2026, 8, 23, 12);
+        final repo = _FakeCommunityRepository([_post(1)]);
+        await _pumpCommunityPage(
+          tester,
+          repo,
+          overrides: [clockProvider.overrideWithValue(() => now)],
+        );
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(CommunityPage)),
+        );
+
+        now = now.add(const Duration(minutes: 1));
+        container.read(currentBranchIndexProvider.notifier).select(0);
+        container
+            .read(currentBranchIndexProvider.notifier)
+            .select(RoutePaths.communityBranchIndex);
+        await tester.pumpAndSettle();
+
+        // 3분이 안 지났으면 그대로 쓴다.
+        expect(repo.callCount, 1);
+      },
+    );
+
+    testWidgets('does_not_refetch_when_switching_to_another_tab', (
+      tester,
+    ) async {
+      var now = DateTime(2026, 8, 23, 12);
+      final repo = _FakeCommunityRepository([_post(1)]);
+      await _pumpCommunityPage(
+        tester,
+        repo,
+        overrides: [clockProvider.overrideWithValue(() => now)],
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(CommunityPage)),
+      );
+
+      now = now.add(const Duration(minutes: 4));
+      // 마이페이지로 이동 — 커뮤니티는 보이지 않는다.
+      container.read(currentBranchIndexProvider.notifier).select(2);
+      await tester.pumpAndSettle();
+
+      // 안 보이는 화면을 위해 네트워크를 쓰지 않는다.
+      expect(repo.callCount, 1);
+    });
+  });
+
+  group('CommunityPage 앱 복귀 트리거 (I-1)', () {
+    testWidgets('activates_the_lifecycle_service_when_mounted', (tester) async {
+      final repo = _FakeCommunityRepository([_post(1)]);
+      await _pumpCommunityPage(tester, repo);
+
+      // activate()를 부르지 않으면 lifecycleStateProvider 구독이 영원히 값을
+      // 받지 못한다 — 실제로 살아났는지 서비스 상태로 증명한다.
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(CommunityPage)),
+      );
+      expect(container.read(appLifecycleServiceProvider).isActive, isTrue);
+    });
+
+    testWidgets('refetches_when_the_app_resumes_while_on_the_community_tab', (
+      tester,
+    ) async {
+      final lifecycle = StreamController<AppLifecycleState>.broadcast();
+      addTearDown(lifecycle.close);
+      var now = DateTime(2026, 8, 23, 12);
+      final repo = _FakeCommunityRepository([_post(1)]);
+      await _pumpCommunityPage(
+        tester,
+        repo,
+        overrides: [
+          clockProvider.overrideWithValue(() => now),
+          lifecycleStateProvider.overrideWith((ref) => lifecycle.stream),
+        ],
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(CommunityPage)),
+      );
+      container
+          .read(currentBranchIndexProvider.notifier)
+          .select(RoutePaths.communityBranchIndex);
+      expect(repo.callCount, 1);
+
+      now = now.add(const Duration(minutes: 4));
+      lifecycle.add(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+
+      expect(repo.callCount, 2);
+    });
+
+    testWidgets('does_not_refetch_when_the_app_resumes_while_on_another_tab', (
+      tester,
+    ) async {
+      final lifecycle = StreamController<AppLifecycleState>.broadcast();
+      addTearDown(lifecycle.close);
+      var now = DateTime(2026, 8, 23, 12);
+      final repo = _FakeCommunityRepository([_post(1)]);
+      await _pumpCommunityPage(
+        tester,
+        repo,
+        overrides: [
+          clockProvider.overrideWithValue(() => now),
+          lifecycleStateProvider.overrideWith((ref) => lifecycle.stream),
+        ],
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(CommunityPage)),
+      );
+
+      now = now.add(const Duration(minutes: 4));
+      // 마이페이지로 이동 — 커뮤니티는 보이지 않는다.
+      container.read(currentBranchIndexProvider.notifier).select(2);
+      lifecycle.add(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+
+      expect(repo.callCount, 1);
     });
   });
 }

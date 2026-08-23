@@ -26,5 +26,11 @@ class CommunityFeedState with _$CommunityFeedState {
     /// 거리순이 아니면 null이다.
     double? latitude,
     double? longitude,
+
+    /// 이 목록을 서버에서 받아온 시각.
+    ///
+    /// 유효 시간이 지났는지 판정하는 기준이다. `loadMore`로 페이지를 이어붙이는
+    /// 것은 "다시 받아온 것"이 아니므로 갱신하지 않는다.
+    required DateTime fetchedAt,
   }) = _CommunityFeedState;
 }

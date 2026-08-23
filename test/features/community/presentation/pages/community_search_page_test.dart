@@ -162,5 +162,70 @@ void main() {
       expect(repo.lastKeyword, '서울');
       expect(find.byType(CommunityFeedList), findsOneWidget);
     });
+
+    testWidgets('narrows_recent_keywords_to_the_typed_text', (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'community_recent_keywords': ['서울숲', '광진구', '서울역'],
+      });
+      await _pumpSearchPage(tester, _FakeCommunityRepository([]));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '서울');
+      await tester.pumpAndSettle();
+
+      expect(find.text('서울숲'), findsOneWidget);
+      expect(find.text('서울역'), findsOneWidget);
+      expect(find.text('광진구'), findsNothing);
+    });
+
+    testWidgets('shows_every_recent_keyword_when_the_input_is_empty', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({
+        'community_recent_keywords': ['서울숲', '광진구'],
+      });
+      await _pumpSearchPage(tester, _FakeCommunityRepository([]));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '서울');
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '');
+      await tester.pumpAndSettle();
+
+      expect(find.text('서울숲'), findsOneWidget);
+      expect(find.text('광진구'), findsOneWidget);
+    });
+
+    testWidgets('ignores_letter_case_when_narrowing_recent_keywords', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({
+        'community_recent_keywords': ['Seoul Forest', '광진구'],
+      });
+      await _pumpSearchPage(tester, _FakeCommunityRepository([]));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'seoul');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Seoul Forest'), findsOneWidget);
+      expect(find.text('광진구'), findsNothing);
+    });
+
+    testWidgets('leaves_the_stored_keywords_untouched_while_narrowing', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({
+        'community_recent_keywords': ['서울숲', '광진구'],
+      });
+      await _pumpSearchPage(tester, _FakeCommunityRepository([]));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '서울');
+      await tester.pumpAndSettle();
+
+      // 표시만 좁힐 뿐 저장소는 그대로다.
+      expect(await CommunityRecentKeywordStorage().load(), ['서울숲', '광진구']);
+    });
   });
 }
