@@ -44,14 +44,40 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
   static bool _isLongEnough(String keyword) =>
       keyword.replaceAll(RegExp(r'\s'), '').length >= 2;
 
+  /// 입력에 맞춰 좁힌 최근 검색어. 입력이 비면 전부 보여준다.
+  ///
+  /// 로컬에 이미 있는 목록을 거르는 것이라 서버 요청이 없다. 본 검색은 여전히
+  /// 실행 시점에 한 번만 부른다 — 타이핑마다 부르면 인덱스를 타지 못하는
+  /// 전체 스캔을 반복하게 된다(백엔드 지침).
+  List<String> get _visibleRecent {
+    final typed = _controller.text.trim();
+    if (typed.isEmpty) return _recent;
+    final lowered = typed.toLowerCase();
+    return [
+      for (final keyword in _recent)
+        if (keyword.toLowerCase().contains(lowered)) keyword,
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
+    // 타이핑에 맞춰 최근 검색어를 좁혀 보여준다. 서버는 부르지 않는다.
+    _controller.addListener(_onTypedChanged);
     unawaited(_loadRecent());
+  }
+
+  void _onTypedChanged() {
+    // 검색을 실행한 뒤에는 화면이 결과 목록이라 최근 검색어 좁히기가 보이지
+    // 않는다. 보이는 변화가 없는데 CommunityFeedList 서브트리만 매 타건마다
+    // 다시 그리는 낭비를 막는다.
+    if (_submitted != null) return;
+    setState(() {});
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_onTypedChanged);
     _controller.dispose();
     super.dispose();
   }
@@ -155,7 +181,8 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
   }
 
   Widget _buildRecent(AppLocalizations l10n) {
-    if (_recent.isEmpty) return const SizedBox.shrink();
+    final recent = _visibleRecent;
+    if (recent.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: AppPadding.horizontal16,
@@ -187,7 +214,7 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
             spacing: AppSpacing.horizontal8,
             runSpacing: AppSpacing.vertical8,
             children: [
-              for (final keyword in _recent)
+              for (final keyword in recent)
                 _RecentChip(
                   keyword: keyword,
                   onTap: () => unawaited(_search(keyword)),
