@@ -234,7 +234,10 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
   /// [displaySort]는 화면에 보이는 글자용이라 폴백된 값을 받을 수 있다(I-3).
   /// 시트에 넘기는 현재 선택값은 전역 선택인 `widget.sort`로 고정한다 — 폴백값을
   /// 넘기면 사용자가 "최신순"을 다시 골라도 `picked == current`로 걸러져 무반응이 된다.
-  Widget _buildSortLabel(AppLocalizations l10n, CommunitySortOption displaySort) {
+  Widget _buildSortLabel(
+    AppLocalizations l10n,
+    CommunitySortOption displaySort,
+  ) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
