@@ -33,6 +33,12 @@ mixin _$CommunityFeedState {
   double? get latitude => throw _privateConstructorUsedError;
   double? get longitude => throw _privateConstructorUsedError;
 
+  /// 이 목록을 서버에서 받아온 시각.
+  ///
+  /// 유효 시간이 지났는지 판정하는 기준이다. `loadMore`로 페이지를 이어붙이는
+  /// 것은 "다시 받아온 것"이 아니므로 갱신하지 않는다.
+  DateTime get fetchedAt => throw _privateConstructorUsedError;
+
   /// Create a copy of CommunityFeedState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -54,6 +60,7 @@ abstract class $CommunityFeedStateCopyWith<$Res> {
     bool isLoadingMore,
     double? latitude,
     double? longitude,
+    DateTime fetchedAt,
   });
 }
 
@@ -78,6 +85,7 @@ class _$CommunityFeedStateCopyWithImpl<$Res, $Val extends CommunityFeedState>
     Object? isLoadingMore = null,
     Object? latitude = freezed,
     Object? longitude = freezed,
+    Object? fetchedAt = null,
   }) {
     return _then(
       _value.copyWith(
@@ -105,6 +113,10 @@ class _$CommunityFeedStateCopyWithImpl<$Res, $Val extends CommunityFeedState>
                 ? _value.longitude
                 : longitude // ignore: cast_nullable_to_non_nullable
                       as double?,
+            fetchedAt: null == fetchedAt
+                ? _value.fetchedAt
+                : fetchedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -127,6 +139,7 @@ abstract class _$$CommunityFeedStateImplCopyWith<$Res>
     bool isLoadingMore,
     double? latitude,
     double? longitude,
+    DateTime fetchedAt,
   });
 }
 
@@ -150,6 +163,7 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
     Object? isLoadingMore = null,
     Object? latitude = freezed,
     Object? longitude = freezed,
+    Object? fetchedAt = null,
   }) {
     return _then(
       _$CommunityFeedStateImpl(
@@ -177,6 +191,10 @@ class __$$CommunityFeedStateImplCopyWithImpl<$Res>
             ? _value.longitude
             : longitude // ignore: cast_nullable_to_non_nullable
                   as double?,
+        fetchedAt: null == fetchedAt
+            ? _value.fetchedAt
+            : fetchedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -192,6 +210,7 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
     this.isLoadingMore = false,
     this.latitude,
     this.longitude,
+    required this.fetchedAt,
   }) : _items = items;
 
   final List<CommunityPostEntity> _items;
@@ -222,9 +241,16 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
   @override
   final double? longitude;
 
+  /// 이 목록을 서버에서 받아온 시각.
+  ///
+  /// 유효 시간이 지났는지 판정하는 기준이다. `loadMore`로 페이지를 이어붙이는
+  /// 것은 "다시 받아온 것"이 아니므로 갱신하지 않는다.
+  @override
+  final DateTime fetchedAt;
+
   @override
   String toString() {
-    return 'CommunityFeedState(items: $items, nextCursor: $nextCursor, hasMore: $hasMore, isLoadingMore: $isLoadingMore, latitude: $latitude, longitude: $longitude)';
+    return 'CommunityFeedState(items: $items, nextCursor: $nextCursor, hasMore: $hasMore, isLoadingMore: $isLoadingMore, latitude: $latitude, longitude: $longitude, fetchedAt: $fetchedAt)';
   }
 
   @override
@@ -241,7 +267,9 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.longitude == longitude) &&
+            (identical(other.fetchedAt, fetchedAt) ||
+                other.fetchedAt == fetchedAt));
   }
 
   @override
@@ -253,6 +281,7 @@ class _$CommunityFeedStateImpl implements _CommunityFeedState {
     isLoadingMore,
     latitude,
     longitude,
+    fetchedAt,
   );
 
   /// Create a copy of CommunityFeedState
@@ -275,6 +304,7 @@ abstract class _CommunityFeedState implements CommunityFeedState {
     final bool isLoadingMore,
     final double? latitude,
     final double? longitude,
+    required final DateTime fetchedAt,
   }) = _$CommunityFeedStateImpl;
 
   @override
@@ -298,6 +328,13 @@ abstract class _CommunityFeedState implements CommunityFeedState {
   double? get latitude;
   @override
   double? get longitude;
+
+  /// 이 목록을 서버에서 받아온 시각.
+  ///
+  /// 유효 시간이 지났는지 판정하는 기준이다. `loadMore`로 페이지를 이어붙이는
+  /// 것은 "다시 받아온 것"이 아니므로 갱신하지 않는다.
+  @override
+  DateTime get fetchedAt;
 
   /// Create a copy of CommunityFeedState
   /// with the given fields replaced by the non-null parameter values.
