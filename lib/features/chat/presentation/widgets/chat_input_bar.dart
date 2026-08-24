@@ -132,16 +132,22 @@ class _ChatInputBarState extends State<ChatInputBar> {
       ),
       color: widget.isDarkMode ? AppColors.black900 : AppColors.black100,
       child: Container(
-        height: 48.h,
+        // 개행 키를 주므로 여러 줄로 자라야 한다 — 고정 높이로 묶으면 둘째 줄이
+        // 안쪽으로 숨는다. 한 줄일 때 높이(48)는 최소값으로 그대로 유지된다.
+        constraints: BoxConstraints(minHeight: 48.h),
         padding: EdgeInsets.only(
           left: AppSpacing.horizontal20,
           right: AppSpacing.horizontal12,
+          top: AppSpacing.vertical6,
+          bottom: AppSpacing.vertical6,
         ),
         decoration: BoxDecoration(
           color: widget.isDarkMode ? AppColors.black : AppColors.white,
           borderRadius: AppRadius.large,
         ),
         child: Row(
+          // 여러 줄로 자라도 전송 버튼은 아래에 붙어 있어야 한다.
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
               child: Listener(
@@ -152,6 +158,10 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   enabled: widget.enabled,
                   maxLength: 300,
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  // 전송은 옆 버튼이 맡는다 — 키보드 키는 개행(커뮤니티 입력창과 동일).
+                  maxLines: 4,
+                  minLines: 1,
+                  textInputAction: TextInputAction.newline,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: widget.isDarkMode
                         ? AppColors.black200
@@ -172,7 +182,6 @@ class _ChatInputBarState extends State<ChatInputBar> {
                     contentPadding: EdgeInsets.symmetric(vertical: 8.h),
                   ),
                   onTap: _focusGuard.markUserTapped,
-                  onSubmitted: (_) => _handleSend(),
                 ),
               ),
             ),
