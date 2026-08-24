@@ -26,6 +26,9 @@ import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
 import '../features/community/domain/entities/community_post_entity.dart';
+import '../features/community/presentation/pages/community_chat_notice_page.dart';
+import '../features/community/presentation/pages/community_chat_room_menu_page.dart';
+import '../features/community/presentation/pages/community_chat_room_page.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_detail_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
@@ -461,6 +464,60 @@ final routerProvider = Provider<GoRouter>((ref) {
                             post: state.extra as CommunityPostEntity,
                           ),
                         ),
+                      ),
+                      // ==================================================
+                      // 모집글 채팅방 (상세 위로, 바텀 네비 없음)
+                      // ==================================================
+                      GoRoute(
+                        path: 'chat',
+                        name: RoutePaths.communityChatName,
+                        parentNavigatorKey: rootNavigatorKey,
+                        pageBuilder: (context, state) => buildSmoothFade(
+                          key: state.pageKey,
+                          child: CommunityChatRoomPage(
+                            postId:
+                                int.tryParse(
+                                  state.pathParameters['postId'] ?? '',
+                                ) ??
+                                0,
+                          ),
+                        ),
+                        routes: [
+                          GoRoute(
+                            path: 'menu',
+                            name: RoutePaths.communityChatMenuName,
+                            parentNavigatorKey: rootNavigatorKey,
+                            pageBuilder: (context, state) =>
+                                buildDirectionalSlide(
+                                  key: state.pageKey,
+                                  child: CommunityChatRoomMenuPage(
+                                    postId:
+                                        int.tryParse(
+                                          state.pathParameters['postId'] ?? '',
+                                        ) ??
+                                        0,
+                                  ),
+                                  isForward: true,
+                                ),
+                          ),
+                          GoRoute(
+                            path: 'notice',
+                            name: RoutePaths.communityChatNoticeName,
+                            parentNavigatorKey: rootNavigatorKey,
+                            pageBuilder: (context, state) =>
+                                buildDirectionalSlide(
+                                  key: state.pageKey,
+                                  child: CommunityChatNoticePage(
+                                    postId:
+                                        int.tryParse(
+                                          state.pathParameters['postId'] ?? '',
+                                        ) ??
+                                        0,
+                                  ),
+                                  isForward: true,
+                                ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

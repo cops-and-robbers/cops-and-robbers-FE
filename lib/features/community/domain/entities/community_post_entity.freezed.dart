@@ -56,6 +56,10 @@ mixin _$CommunityPostEntity {
   /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
   int? get bookmarkCount => throw _privateConstructorUsedError;
 
+  /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
+  /// false이고, 그때는 항상 join을 보내 409면 입장한다.
+  bool get chatJoined => throw _privateConstructorUsedError;
+
   /// Create a copy of CommunityPostEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -87,6 +91,7 @@ abstract class $CommunityPostEntityCopyWith<$Res> {
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
+    bool chatJoined,
   });
 }
 
@@ -121,6 +126,7 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
+    Object? chatJoined = null,
   }) {
     return _then(
       _value.copyWith(
@@ -188,6 +194,10 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
                 ? _value.bookmarkCount
                 : bookmarkCount // ignore: cast_nullable_to_non_nullable
                       as int?,
+            chatJoined: null == chatJoined
+                ? _value.chatJoined
+                : chatJoined // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -220,6 +230,7 @@ abstract class _$$CommunityPostEntityImplCopyWith<$Res>
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
+    bool chatJoined,
   });
 }
 
@@ -253,6 +264,7 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
+    Object? chatJoined = null,
   }) {
     return _then(
       _$CommunityPostEntityImpl(
@@ -320,6 +332,10 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
             ? _value.bookmarkCount
             : bookmarkCount // ignore: cast_nullable_to_non_nullable
                   as int?,
+        chatJoined: null == chatJoined
+            ? _value.chatJoined
+            : chatJoined // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -345,6 +361,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     this.currentParticipants,
     this.likeCount,
     this.bookmarkCount,
+    this.chatJoined = false,
   }) : super._();
 
   @override
@@ -402,9 +419,15 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
   @override
   final int? bookmarkCount;
 
+  /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
+  /// false이고, 그때는 항상 join을 보내 409면 입장한다.
+  @override
+  @JsonKey()
+  final bool chatJoined;
+
   @override
   String toString() {
-    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
+    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount, chatJoined: $chatJoined)';
   }
 
   @override
@@ -437,7 +460,9 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
             (identical(other.likeCount, likeCount) ||
                 other.likeCount == likeCount) &&
             (identical(other.bookmarkCount, bookmarkCount) ||
-                other.bookmarkCount == bookmarkCount));
+                other.bookmarkCount == bookmarkCount) &&
+            (identical(other.chatJoined, chatJoined) ||
+                other.chatJoined == chatJoined));
   }
 
   @override
@@ -459,6 +484,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     currentParticipants,
     likeCount,
     bookmarkCount,
+    chatJoined,
   );
 
   /// Create a copy of CommunityPostEntity
@@ -491,6 +517,7 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
     final int? currentParticipants,
     final int? likeCount,
     final int? bookmarkCount,
+    final bool chatJoined,
   }) = _$CommunityPostEntityImpl;
   const _CommunityPostEntity._() : super._();
 
@@ -548,6 +575,11 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
   /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
   @override
   int? get bookmarkCount;
+
+  /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
+  /// false이고, 그때는 항상 join을 보내 409면 입장한다.
+  @override
+  bool get chatJoined;
 
   /// Create a copy of CommunityPostEntity
   /// with the given fields replaced by the non-null parameter values.

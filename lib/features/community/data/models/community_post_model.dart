@@ -108,6 +108,7 @@ class CommunityPostResponseModel with _$CommunityPostResponseModel {
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
+    bool? chatJoined,
   }) = _CommunityPostResponseModel;
 
   factory CommunityPostResponseModel.fromJson(Map<String, dynamic> json) =>

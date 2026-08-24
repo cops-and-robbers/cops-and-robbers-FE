@@ -26,6 +26,7 @@ import '../../domain/entities/community_interaction_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
 import '../community_editor_route.dart';
+import '../providers/community_chat_rooms_provider.dart';
 import '../providers/community_detail_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_comment_input.dart';
@@ -76,7 +77,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
               padding: EdgeInsets.only(right: AppSpacing.horizontal16),
               child: CommunityPostMenu(
                 post: detail.value!.post,
-                iconSize: 20,
+                iconSize: 24,
                 iconColor: AppColors.black700,
                 onAction: _handleMenuAction,
               ),
@@ -188,7 +189,9 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                           // 8이 모자라 제약에 깎인다. 남은 폭을 그대로 쓴다.
                           width: double.infinity,
                           backgroundColor: AppColors.blue,
-                          text: l10n.communityDetailJoinChat,
+                          text: _isChatMember(state.post)
+                              ? l10n.communityChatEnterRoom
+                              : l10n.communityDetailJoinChat,
                           onPressed: _handleJoinChat,
                           // 에셋이 20×24라 24 정사각으로 늘리면 찌그러진다 —
                           // 높이만 24에 맞추고 폭은 원본 비율을 지킨다.
@@ -511,11 +514,29 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
     ref.invalidate(communityDetailNotifierProvider(widget.postId));
   }
 
-  void _handleJoinChat() {
-    final l10n = AppLocalizations.of(context);
-    // ponytail: 게시글 단위 채팅인지 별도 채널인지 아직 확정되지 않았다.
-    // 와이어프레임 확정 후 채팅방 진입으로 잇는다.
-    AppSnackbar.show(context, message: l10n.comingSoonMessage);
+  /// 작성자는 자동 멤버, `chatJoined`는 BE 이슈 가정 필드(없으면 false). 멤버면
+  /// 바로 입장, 아니면 join 뒤 입장 — 409(이미 멤버)는 저장소가 성공으로 삼킨다.
+  bool _isChatMember(CommunityPostEntity post) =>
+      post.chatJoined || post.writerId == ref.read(currentUserIdProvider);
+
+  Future<void> _handleJoinChat() async {
+    if (ref.read(currentUserIdProvider) == null) {
+      _goLogin();
+      return;
+    }
+    final post = ref
+        .read(communityDetailNotifierProvider(widget.postId))
+        .valueOrNull
+        ?.post;
+    if (post == null) return;
+
+    await _runAction(() async {
+      if (!_isChatMember(post)) {
+        await ref.read(communityChatRepositoryProvider).join(widget.postId);
+      }
+      if (!mounted) return;
+      context.push(RoutePaths.communityChatWithId(widget.postId));
+    });
   }
 
   Future<void> _handleSubmitComment(String content) async {

@@ -84,6 +84,22 @@ class RoutePaths {
   /// 고칠 글을 `extra`로 함께 넘겨야 한다 — 없으면 상세로 되돌린다(딥링크 방지).
   static const String communityEdit = '/community/:postId/edit';
 
+  /// 모집글 채팅방 (상세의 참여 버튼 또는 내 모임 목록에서 진입)
+  ///
+  /// `:postId` 하위에 등록한다 — 상세·채팅방·사이드바가 같은 글 id를 공유한다.
+  static const String communityChat = '/community/:postId/chat';
+  static String communityChatWithId(int postId) => '/community/$postId/chat';
+
+  /// 채팅방 사이드바 — 시안이 전체 화면이라 drawer 대신 push한다
+  static const String communityChatMenu = '/community/:postId/chat/menu';
+  static String communityChatMenuWithId(int postId) =>
+      '/community/$postId/chat/menu';
+
+  /// 채팅방 공지사항 — 상단 모임 카드를 누르면 전체 화면으로 연다
+  static const String communityChatNotice = '/community/:postId/chat/notice';
+  static String communityChatNoticeWithId(int postId) =>
+      '/community/$postId/chat/notice';
+
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
 
@@ -198,6 +214,9 @@ class RoutePaths {
   static const String communitySearchName = 'communitySearch';
   static const String communityDetailName = 'communityDetail';
   static const String communityEditName = 'communityEdit';
+  static const String communityChatName = 'communityChat';
+  static const String communityChatMenuName = 'communityChatMenu';
+  static const String communityChatNoticeName = 'communityChatNotice';
   static const String mypageName = 'mypage';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';

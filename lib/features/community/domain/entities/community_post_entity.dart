@@ -51,6 +51,10 @@ class CommunityPostEntity with _$CommunityPostEntity {
 
     /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
     int? bookmarkCount,
+
+    /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
+    /// false이고, 그때는 항상 join을 보내 409면 입장한다.
+    @Default(false) bool chatJoined,
   }) = _CommunityPostEntity;
 
   /// 화면에 찍는 위치 한 줄 — 서버 지역과 작성자 장소명을 병기한다 (DEC-0015).

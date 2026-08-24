@@ -76,6 +76,7 @@ _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
   currentParticipants: (json['currentParticipants'] as num?)?.toInt(),
   likeCount: (json['likeCount'] as num?)?.toInt(),
   bookmarkCount: (json['bookmarkCount'] as num?)?.toInt(),
+  chatJoined: json['chatJoined'] as bool?,
 );
 
 Map<String, dynamic> _$$CommunityPostResponseModelImplToJson(
@@ -94,6 +95,7 @@ Map<String, dynamic> _$$CommunityPostResponseModelImplToJson(
   'currentParticipants': instance.currentParticipants,
   'likeCount': instance.likeCount,
   'bookmarkCount': instance.bookmarkCount,
+  'chatJoined': instance.chatJoined,
 };
 
 _$CommunityPostListResponseModelImpl
