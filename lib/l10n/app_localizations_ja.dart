@@ -513,6 +513,148 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityDetailShare => '共有';
 
   @override
+  String get communityChatRoomsEmpty => '参加中のチャットルームはありません';
+
+  @override
+  String get communityChatRoomsLoginRequired => 'ログインすると参加中の集まりが見られます';
+
+  @override
+  String communityChatSystemJoined(String nickname) {
+    return '$nicknameさんが参加しました';
+  }
+
+  @override
+  String communityChatSystemLeft(String nickname) {
+    return '$nicknameさんが退出しました';
+  }
+
+  @override
+  String get communityChatPreviewJoined => '新しいメンバーが参加しました';
+
+  @override
+  String get communityChatPreviewLeft => 'メンバーが退出しました';
+
+  @override
+  String get communityChatPreviewInvite => 'ゲーム招待';
+
+  @override
+  String get communityChatPreviewUnsupported => '新しいメッセージ';
+
+  @override
+  String get communityChatInviteOpened => 'ゲームが始まりました!';
+
+  @override
+  String communityChatInviteTitle(String nickname, String roomTitle) {
+    return '$nicknameさんが[$roomTitle]部屋に招待しました';
+  }
+
+  @override
+  String communityChatInviteCode(String inviteCode) {
+    return '招待コード $inviteCode';
+  }
+
+  @override
+  String get communityChatInviteJoin => 'ゲームに参加';
+
+  @override
+  String get communityChatInputHint => 'メッセージを送る';
+
+  @override
+  String get communityChatEnterRoom => 'チャットに入る';
+
+  @override
+  String communityChatMeetingMembers(String current, int max) {
+    return '現在 $current/$max名';
+  }
+
+  @override
+  String get communityChatViewLocation => '場所を見る';
+
+  @override
+  String communityChatMemberCount(int count) {
+    return '参加者 $count名';
+  }
+
+  @override
+  String get communityChatAuthorBadge => 'ホスト';
+
+  @override
+  String get communityChatViewPost => '募集を見る';
+
+  @override
+  String get communityChatLeave => 'チャットを退出';
+
+  @override
+  String get communityChatLeaveConfirmTitle => 'チャットを退出しますか？';
+
+  @override
+  String get communityChatLeaveConfirmMessage => '退出すると会話を再び見ることはできません';
+
+  @override
+  String get communityChatNoticeTitle => 'お知らせ';
+
+  @override
+  String get communityChatNoticeEmpty => 'ホストがお知らせを書くとここに表示されます';
+
+  @override
+  String get communityChatNoticeEmptyAuthor => '持ち物や集合時間など、先に伝えたいことを書いてみましょう';
+
+  @override
+  String get communityChatNoticeHint => '持ち物や集合時間を書いてください';
+
+  @override
+  String get communityChatNoticeSave => '保存';
+
+  @override
+  String get communityChatConnectionLost => '接続が切れました';
+
+  @override
+  String get communityChatReconnect => '再接続';
+
+  @override
+  String get communityChatReconnecting => '接続中...';
+
+  @override
+  String get communityChatSendFailed => '送信失敗・タップで再送';
+
+  @override
+  String get communityChatEvicted => 'このチャットのメンバーではなくなりました';
+
+  @override
+  String get timePeriodAm => '午前';
+
+  @override
+  String get timePeriodPm => '午後';
+
+  @override
+  String communityChatTime(String period, String hour, String minute) {
+    return '$period $hour:$minute';
+  }
+
+  @override
+  String communityChatDateShort(String month, String day) {
+    return '$month/$day';
+  }
+
+  @override
+  String get buttonLogin => 'ログイン';
+
+  @override
+  String get errorCodeInvalidMessageType => '送信できないメッセージです';
+
+  @override
+  String get errorCodeEmptyMessage => 'メッセージを入力してください';
+
+  @override
+  String get errorCodeMessageTooLong => 'メッセージは500文字まで送れます';
+
+  @override
+  String get errorCodeInvalidGameInvite => '招待情報が正しくありません';
+
+  @override
+  String get errorCodeInvalidMessageKey => 'メッセージを送れませんでした。もう一度お試しください';
+
+  @override
   String communityDetailCommentCount(int count) {
     return 'コメント $count';
   }
