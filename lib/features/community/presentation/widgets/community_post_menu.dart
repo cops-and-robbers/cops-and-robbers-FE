@@ -44,7 +44,7 @@ class CommunityPostMenu extends ConsumerWidget {
     super.key,
     required this.post,
     required this.onAction,
-    this.iconSize = 16,
+    this.iconSize = 18,
     this.iconColor,
   });
 
