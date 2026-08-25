@@ -3,7 +3,7 @@ import 'package:cops_and_robbers/features/community/domain/entities/community_ch
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
-import 'package:cops_and_robbers/features/community/presentation/pages/community_chat_room_menu_page.dart';
+import 'package:cops_and_robbers/features/community/presentation/pages/community_chat_room_info_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
@@ -54,7 +54,7 @@ GoRouter _router() => GoRouter(
       routes: [
         GoRoute(
           path: ':postId/chat/menu',
-          builder: (_, state) => CommunityChatRoomMenuPage(
+          builder: (_, state) => CommunityChatRoomInfoPage(
             postId: int.parse(state.pathParameters['postId']!),
           ),
         ),
@@ -106,7 +106,7 @@ FakeCommunityChatRepository _repo() => FakeCommunityChatRepository()
   ];
 
 void main() {
-  group('CommunityChatRoomMenuPage', () {
+  group('CommunityChatRoomInfoPage', () {
     testWidgets('lists_members_with_author_badge_and_hides_leave_when_author', (
       tester,
     ) async {

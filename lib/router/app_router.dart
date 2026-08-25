@@ -27,7 +27,7 @@ import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
 import '../features/community/domain/entities/community_post_entity.dart';
 import '../features/community/presentation/pages/community_chat_notice_page.dart';
-import '../features/community/presentation/pages/community_chat_room_menu_page.dart';
+import '../features/community/presentation/pages/community_chat_room_info_page.dart';
 import '../features/community/presentation/pages/community_chat_room_page.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_detail_page.dart';
@@ -490,7 +490,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             pageBuilder: (context, state) =>
                                 buildDirectionalSlide(
                                   key: state.pageKey,
-                                  child: CommunityChatRoomMenuPage(
+                                  child: CommunityChatRoomInfoPage(
                                     postId:
                                         int.tryParse(
                                           state.pathParameters['postId'] ?? '',
