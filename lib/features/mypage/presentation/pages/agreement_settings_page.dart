@@ -121,7 +121,8 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
   }
 
   void _openDetail({required String title, required LegalDoc doc}) {
-    Navigator.of(context).push(
+    // 탭 안이 아니라 루트 네비게이터에 올린다. 이유는 my_page 의 약관 설정 진입부 참고.
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => LegalDocumentPage(title: title, doc: doc),
       ),
