@@ -12,9 +12,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appTitle => '경찰과도둑';
 
   @override
-  String get legalDocumentKoreanOnlyNotice => '';
-
-  @override
   String get loadingDefault => '처리 중...';
 
   @override

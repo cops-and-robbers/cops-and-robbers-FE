@@ -1,7 +1,6 @@
 {
   "@@locale": "en",
   "appTitle": "Cops and Robbers",
-  "legalDocumentKoreanOnlyNotice": "This document is provided in Korean only. The Korean version is the legally binding text",
   "loadingDefault": "Processing...",
   "permissionLocationFallbackTitle": "Location permission guide",
   "permissionLocationFallbackMessage": "Please allow location permission",

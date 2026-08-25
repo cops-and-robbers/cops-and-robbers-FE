@@ -53,6 +53,9 @@ dependencies:
   animations: ^2.1.1 # 페이지 전환 애니메이션
   # 외부 링크
   url_launcher: ^6.3.2 # 외부 URL 브라우저 열기
+  # 4.14.x 는 Flutter 3.38 이상을 요구해 팀의 SDK 하한을 끌어올린다. 우리가 쓰는
+  # API(JS 비활성화, NavigationDelegate, onHttpError)는 4.13 에 모두 있다.
+  webview_flutter: ^4.13.1 # 앱 안에서 웹 문서 표시 (법적 문서)
   share_plus: ^12.0.1 # 네이티브 공유 시트
   path_provider: ^2.1.5 # 공유용 임시 파일 경로 (현재 transitive → 명시화)
   gal: ^2.3.3 # 결과 이미지를 Android 갤러리 / iOS 사진 보관함에 저장
@@ -119,7 +122,6 @@ flutter:
     - assets/app_splashs/
     - assets/fonts/
     - assets/icons/
-    - assets/legals/
     - assets/credits/
     - assets/events/
     - assets/loading/

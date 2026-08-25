@@ -1,7 +1,6 @@
 {
   "@@locale": "ja",
   "appTitle": "Cops and Robbers",
-  "legalDocumentKoreanOnlyNotice": "本書面は韓国語のみで提供されます。法的効力を持つのは韓国語版です",
   "loadingDefault": "処理中...",
   "permissionLocationFallbackTitle": "位置情報権限の案内",
   "permissionLocationFallbackMessage": "位置情報の権限を許可してください",

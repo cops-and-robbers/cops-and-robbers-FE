@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_urls.dart';
+import '../../../../core/constants/legal_doc.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -12,11 +12,12 @@ import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
+import '../../../../core/widgets/load_failure_view.dart';
+import '../../../../core/widgets/pages/legal_document_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../auth/presentation/widgets/agreement_item.dart';
 import '../../../user/domain/entities/agreement_status_entity.dart';
 import '../../../user/presentation/providers/user_provider.dart';
-import '../../../../core/widgets/pages/legal_document_page.dart';
 
 /// 약관 동의 관리 페이지 (설정 내부)
 ///
@@ -119,18 +120,10 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
     }
   }
 
-  void _openDetail({
-    required String title,
-    required String assetPath,
-    String? externalUrl,
-  }) {
+  void _openDetail({required String title, required LegalDoc doc}) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => LegalDocumentPage(
-          title: title,
-          assetPath: assetPath,
-          externalUrl: externalUrl,
-        ),
+        builder: (_) => LegalDocumentPage(title: title, doc: doc),
       ),
     );
   }
@@ -159,31 +152,12 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
     final message = error is AppException
         ? l10n.errorByException(error)
         : l10n.errorAgreementLoadFailed;
-    return Padding(
-      padding: AppPadding.all20,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline, size: 40, color: AppColors.black400),
-          SizedBox(height: AppSpacing.vertical16),
-          Text(
-            message,
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppSpacing.vertical16),
-          AppButton(
-            text: l10n.buttonRetry,
-            onPressed: () {
-              setState(() => _status = const AsyncValue.loading());
-              _loadAgreements();
-            },
-            showBorder: false,
-          ),
-        ],
-      ),
+    return LoadFailureView(
+      message: message,
+      onRetry: () {
+        setState(() => _status = const AsyncValue.loading());
+        _loadAgreements();
+      },
     );
   }
 
@@ -207,8 +181,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
                       title: l10n.linkTermsOfService,
-                      assetPath: 'assets/legals/terms_of_service.json',
-                      externalUrl: AppUrls.termsOfService,
+                      doc: LegalDoc.terms,
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
@@ -222,8 +195,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
                       title: l10n.linkPrivacyPolicy,
-                      assetPath: 'assets/legals/privacy_policy.json',
-                      externalUrl: AppUrls.privacyPolicy,
+                      doc: LegalDoc.privacy,
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
@@ -237,8 +209,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     onToggle: () {},
                     onDetailTap: () => _openDetail(
                       title: l10n.linkLocationTerms,
-                      assetPath: 'assets/legals/location_terms.json',
-                      externalUrl: AppUrls.locationTerms,
+                      doc: LegalDoc.location,
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
@@ -252,8 +223,7 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                         setState(() => _newMarketing = !_newMarketing),
                     onDetailTap: () => _openDetail(
                       title: l10n.linkMarketingConsent,
-                      assetPath: 'assets/legals/marketing_consent.json',
-                      externalUrl: AppUrls.marketingConsent,
+                      doc: LegalDoc.marketing,
                     ),
                   ),
                 ],
