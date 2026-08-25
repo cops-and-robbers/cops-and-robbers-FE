@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/community_recent_keyword_storage.dart';
@@ -136,12 +136,12 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(onPressed: () => context.pop()),
-        title: TextField(
+      appBar: AppTopBar(
+        onBack: () => context.pop(),
+        // 원래 centerTitle 미지정이었고 실효값이 false다 (Android 기본,
+        // iOS도 actions 2개라 false). 기본값 true와 다르므로 명시한다.
+        centerTitle: false,
+        titleWidget: TextField(
           controller: _controller,
           autofocus: true,
           textInputAction: TextInputAction.search,

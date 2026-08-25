@@ -35,6 +35,7 @@ import '../../../../core/widgets/pages/text_submit_page.dart';
 import '../../../credits/presentation/pages/credits_page.dart';
 import 'agreement_settings_page.dart';
 import '../widgets/sns_channel_row.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 
 /// 마이페이지
 ///
@@ -104,16 +105,7 @@ class _MyPageState extends ConsumerState<MyPage> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          l10n.pageSettingsTitle,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
-      ),
+      appBar: AppTopBar(title: l10n.pageSettingsTitle),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

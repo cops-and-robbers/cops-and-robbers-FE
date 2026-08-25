@@ -11,7 +11,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
 import '../../../game/domain/entities/area_shape.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -156,18 +156,12 @@ class _ZonePreviewPageState extends ConsumerState<ZonePreviewPage> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        title: Text(
-          l10n.pageZonePreviewTitle,
-          style: AppTextStyles.heading_20.copyWith(color: textColor),
-        ),
-        backgroundColor: bgColor,
-        elevation: 0,
-        centerTitle: true,
-        leading: PreviousButton(
-          onPressed: () => Navigator.of(context).pop(),
-          color: isDark ? AppColors.black200 : AppColors.black800,
-        ),
+      appBar: AppTopBar(
+        title: l10n.pageZonePreviewTitle,
+        isDarkMode: isDark,
+        // 도둑 모드에서도 Pretendard를 유지하는 의도된 예외 (게임 설정과 한 쌍).
+        useRobberFont: false,
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(
         bottom: false,

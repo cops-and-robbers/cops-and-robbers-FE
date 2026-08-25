@@ -20,6 +20,7 @@ import '../providers/community_provider.dart';
 import '../widgets/community_date_sheet.dart';
 import '../widgets/community_headcount_sheet.dart';
 import '../widgets/community_map_preview.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import 'community_location_picker_page.dart';
 
 /// 모집글 작성·수정 화면
@@ -167,11 +168,8 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
     return Scaffold(
       // AppBar만 흰색이고 그 아래 본문은 목록과 같은 연하늘 배경.
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
+      appBar: AppTopBar(
+        title: _isEdit ? l10n.communityEditPost : l10n.communityCreatePost,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           tooltip: l10n.buttonCancel,
@@ -180,10 +178,6 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
             width: 24.w,
             height: 24.h,
           ),
-        ),
-        title: Text(
-          _isEdit ? l10n.communityEditPost : l10n.communityCreatePost,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
         actions: [_buildDoneAction(l10n)],
       ),

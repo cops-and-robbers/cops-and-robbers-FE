@@ -15,7 +15,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -60,16 +60,9 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(onPressed: () => context.pop()),
-        centerTitle: true,
-        title: Text(
-          l10n.pageCommunityDetailTitle,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: l10n.pageCommunityDetailTitle,
+        onBack: () => context.pop(),
         actions: [
           // 글을 못 불러왔으면 메뉴를 띄울 대상이 없다.
           if (detail.valueOrNull != null)

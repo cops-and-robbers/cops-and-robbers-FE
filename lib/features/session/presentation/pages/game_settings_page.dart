@@ -10,7 +10,7 @@ import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
@@ -133,26 +133,15 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     final areaAsync = ref.watch(fetchGameAreaProvider(gameId));
 
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
-    final textColor = isDark ? AppColors.white : AppColors.black;
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: bgColor,
-        surfaceTintColor: AppColors.transparent,
-        elevation: 0,
-        leading: PreviousButton(
-          onPressed: () => context.pop(),
-          color: isDark ? AppColors.black200 : AppColors.black800,
-        ),
-        centerTitle: true,
-        title: Text(
-          l10n.pageGameSettingsTitle,
-          style: AppTextStyles.heading_20.copyWith(color: textColor),
-        ),
-        iconTheme: IconThemeData(
-          color: isDark ? AppColors.white : AppColors.black800,
-        ),
+      appBar: AppTopBar(
+        title: l10n.pageGameSettingsTitle,
+        isDarkMode: isDark,
+        // 도둑 모드에서도 Pretendard를 유지하는 의도된 예외 (구역 미리보기와 한 쌍).
+        useRobberFont: false,
+        onBack: () => context.pop(),
       ),
       body: SingleChildScrollView(
         child: Padding(

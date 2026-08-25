@@ -10,7 +10,7 @@ import '../../constants/app_colors.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../../utils/url_launcher_util.dart';
-import '../buttons/previous_button.dart';
+import '../navigation/app_top_bar.dart';
 
 /// 이용약관/개인정보처리방침 등 법적 문서 열람 페이지
 ///
@@ -69,16 +69,9 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
-        centerTitle: true,
-        title: Text(
-          widget.title,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: widget.title,
+        onBack: () => Navigator.of(context).pop(),
         actions: [
           if (widget.externalUrl != null)
             Padding(

@@ -8,7 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 
 /// 모임 장소 지도 미리보기
 ///
@@ -134,13 +134,8 @@ class _CommunityMapFullscreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
-        centerTitle: true,
-        title: title == null
+      appBar: AppTopBar(
+        titleWidget: title == null
             ? null
             : Text(
                 title!,
@@ -150,6 +145,7 @@ class _CommunityMapFullscreen extends StatelessWidget {
                   color: AppColors.black,
                 ),
               ),
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: Padding(
         padding: EdgeInsets.only(bottom: AppSpacing.vertical16),
