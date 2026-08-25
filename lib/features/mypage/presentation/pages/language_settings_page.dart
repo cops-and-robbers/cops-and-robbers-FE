@@ -10,7 +10,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/services/app_icon/startup_app_icon.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -36,16 +36,9 @@ class LanguageSettingsPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
-        centerTitle: true,
-        title: Text(
-          l10n.settingsLanguagePageTitle,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: l10n.settingsLanguagePageTitle,
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(
         child: Column(

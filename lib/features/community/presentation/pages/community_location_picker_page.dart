@@ -8,7 +8,7 @@ import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/community_address_entity.dart';
 import '../providers/community_provider.dart';
@@ -146,16 +146,9 @@ class _CommunityLocationPickerPageState
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
-        title: Text(
-          l10n.communityLocationPickerTitle,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: l10n.communityLocationPickerTitle,
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: target == null
           // 현재 위치를 묻는 동안. 지도를 좌표 없이 띄우면 엉뚱한 곳에서

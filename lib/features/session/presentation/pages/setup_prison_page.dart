@@ -10,7 +10,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/constants/game_config.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
 import '../../../../core/widgets/map/pin_zone_setting_widget.dart';
@@ -310,24 +310,16 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     final isDark = _isEditMode && ref.watch(roleThemeProvider);
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
     final textColor = isDark ? AppColors.white : AppColors.black;
-    final titleStyle = isDark
-        ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
-        : AppTextStyles.heading_20.copyWith(color: AppColors.black);
     final l10n = AppLocalizations.of(context);
 
     // 로딩 중일 때는 로딩 인디케이터 표시
     if (_isLoading) {
       return Scaffold(
         backgroundColor: bgColor,
-        appBar: AppBar(
-          title: Text(l10n.zoneJail, style: titleStyle),
-          backgroundColor: bgColor,
-          elevation: 0,
-          centerTitle: true,
-          leading: PreviousButton(
-            onPressed: () => context.pop(),
-            color: isDark ? AppColors.black200 : AppColors.black800,
-          ),
+        appBar: AppTopBar(
+          title: l10n.zoneJail,
+          isDarkMode: isDark,
+          onBack: () => context.pop(),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -338,15 +330,10 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        title: Text(l10n.zoneJail, style: titleStyle),
-        backgroundColor: bgColor,
-        elevation: 0,
-        centerTitle: true,
-        leading: PreviousButton(
-          onPressed: () => context.pop(),
-          color: isDark ? AppColors.black200 : AppColors.black800,
-        ),
+      appBar: AppTopBar(
+        title: l10n.zoneJail,
+        isDarkMode: isDark,
+        onBack: () => context.pop(),
       ),
       body: SafeArea(
         child: Column(

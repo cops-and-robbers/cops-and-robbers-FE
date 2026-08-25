@@ -12,7 +12,7 @@ import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/constants/game_config.dart';
 import '../../../../core/widgets/map/pin_zone_setting_widget.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
@@ -247,24 +247,16 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     final isDark = _isEditMode && ref.watch(roleThemeProvider);
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
     final textColor = isDark ? AppColors.white : AppColors.black;
-    final titleStyle = isDark
-        ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
-        : AppTextStyles.heading_20.copyWith(color: AppColors.black);
     final l10n = AppLocalizations.of(context);
 
     // 로딩 중일 때는 로딩 인디케이터 표시
     if (_isLoading) {
       return Scaffold(
         backgroundColor: bgColor,
-        appBar: AppBar(
-          title: Text(l10n.zonePlayground, style: titleStyle),
-          backgroundColor: bgColor,
-          elevation: 0,
-          centerTitle: true,
-          leading: PreviousButton(
-            onPressed: () => context.pop(),
-            color: isDark ? AppColors.black200 : AppColors.black800,
-          ),
+        appBar: AppTopBar(
+          title: l10n.zonePlayground,
+          isDarkMode: isDark,
+          onBack: () => context.pop(),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -276,15 +268,10 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     // 로딩 완료 후 정상 UI 렌더링
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        title: Text(l10n.zonePlayground, style: titleStyle),
-        backgroundColor: bgColor,
-        elevation: 0,
-        centerTitle: true,
-        leading: PreviousButton(
-          onPressed: () => context.pop(),
-          color: isDark ? AppColors.black200 : AppColors.black800,
-        ),
+      appBar: AppTopBar(
+        title: l10n.zonePlayground,
+        isDarkMode: isDark,
+        onBack: () => context.pop(),
       ),
       body: SafeArea(
         child: Column(

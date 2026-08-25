@@ -10,7 +10,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../auth/presentation/widgets/agreement_item.dart';
@@ -140,16 +140,9 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(onPressed: () => Navigator.of(context).pop()),
-        centerTitle: true,
-        title: Text(
-          l10n.pageAgreementSettingsTitle,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: l10n.pageAgreementSettingsTitle,
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(
         child: _status.when(

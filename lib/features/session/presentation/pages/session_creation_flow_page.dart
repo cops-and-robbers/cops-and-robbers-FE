@@ -24,7 +24,7 @@ import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
@@ -705,15 +705,11 @@ class _SessionCreationFlowPageState
 
   /// AppBar (StepIndicator + PreviousButton)
   PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      iconTheme: const IconThemeData(color: AppColors.black800),
-      automaticallyImplyLeading: false,
-      leading: PreviousButton(onPressed: _goToPreviousStep),
-      title: StepIndicator(totalSteps: 4, currentStep: _currentStep),
+    return AppTopBar(
+      titleWidget: StepIndicator(totalSteps: 4, currentStep: _currentStep),
       centerTitle: false,
       titleSpacing: 0,
+      onBack: _goToPreviousStep,
       actions: [SizedBox(width: AppSpacing.horizontal20)],
     );
   }

@@ -12,7 +12,7 @@ import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/game_create_request_model.dart';
@@ -126,27 +126,18 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
   Widget build(BuildContext context) {
     final isDark = ref.watch(roleThemeProvider);
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
-    final titleStyle = isDark
-        ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
-        : AppTextStyles.heading_20.copyWith(color: AppColors.black);
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: bgColor,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(
-          onPressed: () {
-            // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
-            FocusScope.of(context).unfocus();
-            context.pop();
-          },
-          color: isDark ? AppColors.black200 : AppColors.black800,
-        ),
-        centerTitle: true,
-        title: Text(l10n.pageGameSettingsEditTitle, style: titleStyle),
+      appBar: AppTopBar(
+        title: l10n.pageGameSettingsEditTitle,
+        isDarkMode: isDark,
+        onBack: () {
+          // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
+          FocusScope.of(context).unfocus();
+          context.pop();
+        },
       ),
       body: SafeArea(
         child: Column(

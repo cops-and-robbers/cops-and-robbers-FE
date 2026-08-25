@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/credit_member.dart';
 import '../widgets/credit_card_widget.dart';
@@ -22,10 +23,8 @@ class CreditsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.black,
-      appBar: AppBar(
+      appBar: AppTopBar(
         backgroundColor: AppColors.black,
-        surfaceTintColor: AppColors.black,
-        elevation: 0,
         leading: PreviousButton(
           onPressed: () => Navigator.of(context).pop(),
           color: AppColors.white,

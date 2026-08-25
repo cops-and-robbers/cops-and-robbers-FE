@@ -6,6 +6,7 @@ import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../buttons/app_button.dart';
 import '../buttons/previous_button.dart';
+import '../navigation/app_top_bar.dart';
 
 /// 텍스트 입력 + 제출 버튼으로 구성된 범용 페이지
 ///
@@ -107,16 +108,9 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.black900 : AppColors.white,
-      appBar: AppBar(
-        backgroundColor: isDark ? AppColors.black900 : AppColors.white,
-        surfaceTintColor: isDark ? AppColors.black900 : AppColors.white,
-        centerTitle: true,
-        title: Text(
-          widget.title,
-          style:
-              (isDark ? AppTextStyles.robberHeading : AppTextStyles.heading_20)
-                  .copyWith(color: isDark ? AppColors.white : AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: widget.title,
+        isDarkMode: isDark,
         leading: Padding(
           padding: EdgeInsets.only(left: 4.w),
           child: PreviousButton(

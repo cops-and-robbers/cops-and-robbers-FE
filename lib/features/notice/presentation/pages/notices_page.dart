@@ -5,10 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/pagination_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -120,16 +119,9 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     return Scaffold(
       // AppBar만 흰색이고 그 아래 본문은 홈과 같은 연하늘 배경.
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(onPressed: () => context.pop()),
-        centerTitle: true,
-        title: Text(
-          AppLocalizations.of(context).pageNoticesTitle,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: AppLocalizations.of(context).pageNoticesTitle,
+        onBack: () => context.pop(),
       ),
       body: Column(
         children: [

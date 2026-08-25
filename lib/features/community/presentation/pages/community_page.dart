@@ -24,6 +24,7 @@ import '../providers/community_provider.dart';
 import '../widgets/community_chat_room_list.dart';
 import '../widgets/community_feed_list.dart';
 import '../widgets/community_scope_toggle.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 
 /// 커뮤니티 탭 — 모집글 목록
 ///
@@ -88,16 +89,8 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     return Scaffold(
       // AppBar만 흰색이고 그 아래 본문은 홈과 같은 연하늘 배경.
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text(
-          l10n.pageCommunityTitle,
-          style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: l10n.pageCommunityTitle,
         actions: [
           _buildAppBarIcon(
             'assets/icons/icon_search.svg',
