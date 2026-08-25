@@ -68,13 +68,19 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
         elevation: 0,
         leading: PreviousButton(onPressed: () => context.pop()),
         actions: [
-          IconButton(
-            onPressed: () =>
+          GestureDetector(
+            onTap: () =>
                 context.push(RoutePaths.communityChatNoticeWithId(postId)),
-            icon: SvgPicture.asset(
-              'assets/icons/icon_bell_off.svg',
-              width: 24.w,
-              height: 24.w,
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.horizontal16,
+              ),
+              child: SvgPicture.asset(
+                'assets/icons/icon_bell_off.svg',
+                width: 24.w,
+                height: 24.w,
+              ),
             ),
           ),
         ],
