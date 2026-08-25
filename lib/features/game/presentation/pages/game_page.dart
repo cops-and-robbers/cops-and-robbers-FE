@@ -69,6 +69,7 @@ import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
 import '../widgets/zone_exit_banner.dart';
 import '../widgets/zone_exit_vignette.dart';
+import 'package:cops_and_robbers/core/constants/game_config.dart';
 import 'package:cops_and_robbers/core/constants/game_status.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
 import 'package:cops_and_robbers/core/constants/game_result_reason.dart';
@@ -1866,6 +1867,16 @@ class _GamePageState extends ConsumerState<GamePage>
       next.whenData((area) {
         _googleMapKey.currentState?.updateMinZoom(
           area.playground.boundingRadiusInMeters,
+        );
+        // 카메라 이동을 플레이그라운드 주변(반경 비례 여유)으로 제한 (#486)
+        final box = area.playground.boundingBox(
+          marginRatio: GameConfig.cameraPanMarginRatio,
+        );
+        _googleMapKey.currentState?.updateCameraBounds(
+          LatLngBounds(
+            southwest: LatLng(box.southWest.latitude, box.southWest.longitude),
+            northeast: LatLng(box.northEast.latitude, box.northEast.longitude),
+          ),
         );
         _googleMapKey.currentState?.updateAreaCircles(_buildAreaCircles(area));
         _googleMapKey.currentState?.updateAreaPolygons({

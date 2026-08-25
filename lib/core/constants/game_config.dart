@@ -116,6 +116,11 @@ class GameConfig {
   // 폴리곤 구역 설정 (Polygon Area Settings)
   // ============================================
 
+  /// 인게임 지도 카메라가 플레이그라운드 경계 밖으로 나갈 수 있는 여유
+  /// (구역 boundingRadius 대비 비율, 0.3 = 반경의 30%)
+  /// In-game camera pan margin beyond the playground (ratio of bounding radius)
+  static const double cameraPanMarginRatio = 0.3;
+
   /// 폴리곤 최소 꼭짓점 수 (3개)
   /// Minimum polygon vertex count (3)
   static const int minPolygonVertexCount = 3;
