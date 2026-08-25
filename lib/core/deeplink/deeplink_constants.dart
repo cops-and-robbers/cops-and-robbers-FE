@@ -11,5 +11,5 @@ class DeeplinkConstants {
   DeeplinkConstants._();
 
   /// App Links(Android) / Universal Links(iOS) 공개 host.
-  static const String host = 'copsnro66ers.site';
+  static const String host = 'copsandrobbers.app';
 }
