@@ -158,10 +158,27 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  static TextStyle get tag_14 => TextStyle(
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 14.sp,
+    height: 1.0, // 100% line height
+    letterSpacing: -0.32,
+  );
+
   static TextStyle get tag_10 => TextStyle(
     fontFamily: 'Pretendard-Medium',
     fontSize: 10.sp,
     height: 1.0, // 100% line height
+    letterSpacing: -0.32,
+  );
+
+  /// Chatroom Text - 커뮤니티 채팅 말풍선 본문 (14px Medium)
+  /// Line Height: 140%, Letter Spacing: -0.32px
+  // ignore: non_constant_identifier_names
+  static TextStyle get chatroom_text_14 => TextStyle(
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 14.sp,
+    height: 1.4, // 140% line height
     letterSpacing: -0.32,
   );
 

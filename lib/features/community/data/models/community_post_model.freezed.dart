@@ -763,6 +763,7 @@ mixin _$CommunityPostResponseModel {
   int? get currentParticipants => throw _privateConstructorUsedError;
   int? get likeCount => throw _privateConstructorUsedError;
   int? get bookmarkCount => throw _privateConstructorUsedError;
+  bool? get chatJoined => throw _privateConstructorUsedError;
 
   /// Serializes this CommunityPostResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -799,6 +800,7 @@ abstract class $CommunityPostResponseModelCopyWith<$Res> {
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
+    bool? chatJoined,
   });
 
   $CommunityLocationModelCopyWith<$Res> get location;
@@ -835,6 +837,7 @@ class _$CommunityPostResponseModelCopyWithImpl<
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
+    Object? chatJoined = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -890,6 +893,10 @@ class _$CommunityPostResponseModelCopyWithImpl<
                 ? _value.bookmarkCount
                 : bookmarkCount // ignore: cast_nullable_to_non_nullable
                       as int?,
+            chatJoined: freezed == chatJoined
+                ? _value.chatJoined
+                : chatJoined // ignore: cast_nullable_to_non_nullable
+                      as bool?,
           )
           as $Val,
     );
@@ -929,6 +936,7 @@ abstract class _$$CommunityPostResponseModelImplCopyWith<$Res>
     int? currentParticipants,
     int? likeCount,
     int? bookmarkCount,
+    bool? chatJoined,
   });
 
   @override
@@ -966,6 +974,7 @@ class __$$CommunityPostResponseModelImplCopyWithImpl<$Res>
     Object? currentParticipants = freezed,
     Object? likeCount = freezed,
     Object? bookmarkCount = freezed,
+    Object? chatJoined = freezed,
   }) {
     return _then(
       _$CommunityPostResponseModelImpl(
@@ -1021,6 +1030,10 @@ class __$$CommunityPostResponseModelImplCopyWithImpl<$Res>
             ? _value.bookmarkCount
             : bookmarkCount // ignore: cast_nullable_to_non_nullable
                   as int?,
+        chatJoined: freezed == chatJoined
+            ? _value.chatJoined
+            : chatJoined // ignore: cast_nullable_to_non_nullable
+                  as bool?,
       ),
     );
   }
@@ -1043,6 +1056,7 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
     this.currentParticipants,
     this.likeCount,
     this.bookmarkCount,
+    this.chatJoined,
   });
 
   factory _$CommunityPostResponseModelImpl.fromJson(
@@ -1078,10 +1092,12 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
   final int? likeCount;
   @override
   final int? bookmarkCount;
+  @override
+  final bool? chatJoined;
 
   @override
   String toString() {
-    return 'CommunityPostResponseModel(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, writerNickname: $writerNickname, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount)';
+    return 'CommunityPostResponseModel(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, writerNickname: $writerNickname, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount, chatJoined: $chatJoined)';
   }
 
   @override
@@ -1110,7 +1126,9 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
             (identical(other.likeCount, likeCount) ||
                 other.likeCount == likeCount) &&
             (identical(other.bookmarkCount, bookmarkCount) ||
-                other.bookmarkCount == bookmarkCount));
+                other.bookmarkCount == bookmarkCount) &&
+            (identical(other.chatJoined, chatJoined) ||
+                other.chatJoined == chatJoined));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1130,6 +1148,7 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
     currentParticipants,
     likeCount,
     bookmarkCount,
+    chatJoined,
   );
 
   /// Create a copy of CommunityPostResponseModel
@@ -1165,6 +1184,7 @@ abstract class _CommunityPostResponseModel
     final int? currentParticipants,
     final int? likeCount,
     final int? bookmarkCount,
+    final bool? chatJoined,
   }) = _$CommunityPostResponseModelImpl;
 
   factory _CommunityPostResponseModel.fromJson(Map<String, dynamic> json) =
@@ -1198,6 +1218,8 @@ abstract class _CommunityPostResponseModel
   int? get likeCount;
   @override
   int? get bookmarkCount;
+  @override
+  bool? get chatJoined;
 
   /// Create a copy of CommunityPostResponseModel
   /// with the given fields replaced by the non-null parameter values.

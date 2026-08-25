@@ -267,6 +267,19 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeJoinedChatRoomLimitExceeded;
       case 'NOT_A_CHAT_MEMBER':
         return errorCodeNotAChatMember;
+      // ── 채팅 소켓 에러 (STOMP ERROR 프레임, REST 문서에는 없음) ───────────
+      // 앱이 빈 메시지·500자를 먼저 막고 messageKey는 UUID(36자)라 정상 경로에선
+      // 안 나온다. 연동 가이드(DOC-0037)에 실린 코드라 매핑은 채운다.
+      case 'INVALID_MESSAGE_TYPE':
+        return errorCodeInvalidMessageType;
+      case 'EMPTY_MESSAGE':
+        return errorCodeEmptyMessage;
+      case 'MESSAGE_TOO_LONG':
+        return errorCodeMessageTooLong;
+      case 'INVALID_GAME_INVITE':
+        return errorCodeInvalidGameInvite;
+      case 'INVALID_MESSAGE_KEY':
+        return errorCodeInvalidMessageKey;
       default:
         return null;
     }

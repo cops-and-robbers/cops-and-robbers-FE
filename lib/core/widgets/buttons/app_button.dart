@@ -84,6 +84,7 @@ class AppButton extends StatelessWidget {
     this.subtitleColor,
     this.contentAlignment,
     this.textStyle,
+    this.boxShadow,
   });
 
   /// 버튼 텍스트 (필수)
@@ -154,6 +155,10 @@ class AppButton extends StatelessWidget {
   /// 텍스트 스타일 오버라이드 (미지정 시 label_16)
   final TextStyle? textStyle;
 
+  /// 버튼 바깥 그림자 (기본: 없음) — ElevatedButton의 elevation은 항상 0으로
+  /// 고정하므로, 그림자가 필요하면 이 필드로 감싸는 Container에 직접 그린다.
+  final List<BoxShadow>? boxShadow;
+
   // ============================================
   // 기본값 Getter 메서드
   // ============================================
@@ -217,6 +222,7 @@ class AppButton extends StatelessWidget {
         border: showBorder
             ? Border.all(color: _effectiveBorderColor, width: borderWidth)
             : null,
+        boxShadow: boxShadow,
       ),
       child: ElevatedButton(
         onPressed: (isLoading || onPressed == null)

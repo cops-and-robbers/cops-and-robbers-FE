@@ -563,6 +563,152 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityDetailShare => 'Share';
 
   @override
+  String get communityChatRoomsEmpty => 'No chat rooms yet';
+
+  @override
+  String get communityChatRoomsLoginRequired => 'Log in to see your meetups';
+
+  @override
+  String communityChatSystemJoined(String nickname) {
+    return '$nickname joined';
+  }
+
+  @override
+  String communityChatSystemLeft(String nickname) {
+    return '$nickname left';
+  }
+
+  @override
+  String get communityChatPreviewJoined => 'A new member joined';
+
+  @override
+  String get communityChatPreviewLeft => 'A member left';
+
+  @override
+  String get communityChatPreviewInvite => 'Game invite';
+
+  @override
+  String get communityChatPreviewUnsupported => 'New message';
+
+  @override
+  String get communityChatInviteOpened => 'The game has started!';
+
+  @override
+  String communityChatInviteTitle(String nickname, String roomTitle) {
+    return '$nickname invited you to [$roomTitle]';
+  }
+
+  @override
+  String communityChatInviteCode(String inviteCode) {
+    return 'Invite code $inviteCode';
+  }
+
+  @override
+  String get communityChatInviteJoin => 'Join game';
+
+  @override
+  String get communityChatInputHint => 'Send a message';
+
+  @override
+  String get communityChatEnterRoom => 'Enter chat';
+
+  @override
+  String communityChatMeetingMembers(String current, int max) {
+    return '$current/$max members';
+  }
+
+  @override
+  String get communityChatViewLocation => 'View location';
+
+  @override
+  String communityChatMemberCount(int count) {
+    return '$count participants';
+  }
+
+  @override
+  String get communityChatAuthorBadge => 'Host';
+
+  @override
+  String get communityChatViewPost => 'View post';
+
+  @override
+  String get communityChatLeave => 'Leave chat';
+
+  @override
+  String get communityChatLeaveConfirmTitle => 'Leave this chat?';
+
+  @override
+  String get communityChatLeaveConfirmMessage =>
+      'You won\'t be able to see this conversation again';
+
+  @override
+  String get communityChatNoticeTitle => 'Notice';
+
+  @override
+  String get communityChatNoticeEmpty =>
+      'Once the host posts a notice, you\'ll see it here';
+
+  @override
+  String get communityChatNoticeEmptyAuthor =>
+      'Share what to bring or when to meet, so everyone knows ahead of time';
+
+  @override
+  String get communityChatNoticeHint => 'Write what to bring or when to meet';
+
+  @override
+  String get communityChatNoticeSave => 'Save';
+
+  @override
+  String get communityChatConnectionLost => 'Connection lost';
+
+  @override
+  String get communityChatReconnect => 'Reconnect';
+
+  @override
+  String get communityChatReconnecting => 'Connecting...';
+
+  @override
+  String get communityChatSendFailed => 'Failed · Tap to retry';
+
+  @override
+  String get communityChatEvicted => 'You\'re no longer a member of this chat';
+
+  @override
+  String get timePeriodAm => 'AM';
+
+  @override
+  String get timePeriodPm => 'PM';
+
+  @override
+  String communityChatTime(String period, String hour, String minute) {
+    return '$hour:$minute $period';
+  }
+
+  @override
+  String communityChatDateShort(String month, String day) {
+    return '$month/$day';
+  }
+
+  @override
+  String get buttonLogin => 'Log in';
+
+  @override
+  String get errorCodeInvalidMessageType => 'This message can\'t be sent';
+
+  @override
+  String get errorCodeEmptyMessage => 'Please enter a message';
+
+  @override
+  String get errorCodeMessageTooLong => 'Messages can be up to 500 characters';
+
+  @override
+  String get errorCodeInvalidGameInvite => 'The invite information is invalid';
+
+  @override
+  String get errorCodeInvalidMessageKey =>
+      'Couldn\'t send the message. Please try again';
+
+  @override
   String communityDetailCommentCount(int count) {
     return 'Comments $count';
   }

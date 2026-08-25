@@ -21,6 +21,7 @@ import '../../../../router/route_paths.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../providers/community_provider.dart';
+import '../widgets/community_chat_room_list.dart';
 import '../widgets/community_feed_list.dart';
 import '../widgets/community_scope_toggle.dart';
 
@@ -167,7 +168,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     return IconButton(
       onPressed: onTap ?? () => debugPrint('🔍 앱바 아이콘 탭'),
       padding: EdgeInsets.only(left: AppSpacing.horizontal20),
-      icon: SvgPicture.asset(assetPath, width: 22.w, height: 22.h),
+      icon: SvgPicture.asset(assetPath, width: 24.w, height: 24.h),
     );
   }
 
@@ -178,12 +179,21 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     CommunitySortOption sort,
     Widget createButton,
   ) {
-    // 우리 동네 / 내 모임은 백엔드가 아직 400을 주므로 provider를 부르지 않는다.
+    // 우리 동네는 백엔드가 아직 400을 주므로 provider를 부르지 않는다.
     // 작성 버튼은 새 글을 쓰는 진입점 자체라 어느 탭이든 동일하게 떠 있어야 한다.
-    if (scope != CommunityScope.all) {
+    if (scope == CommunityScope.nearby) {
       return _wrapWithCreateButton(
         createButton,
         _buildPlaceholder(l10n.comingSoonMessage),
+      );
+    }
+    // 내 모임 = 참여 중인 채팅방 목록 (시안 `커뮤니티_내 모임`)
+    if (scope == CommunityScope.mine) {
+      return _wrapWithCreateButton(
+        createButton,
+        CommunityChatRoomList(
+          bottomPadding: _buttonBottomOffset + _createButtonHeight,
+        ),
       );
     }
 

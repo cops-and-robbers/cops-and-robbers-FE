@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/providers/profile_icon_provider.dart';
 import '../../domain/entities/community_interaction_entity.dart';
@@ -67,29 +68,72 @@ class CommunityCommentList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final comment in comments) ...[
-          _CommentTile(
-            comment: comment,
-            currentUserId: currentUserId,
-            onReply: () => onReply(comment),
-            onDelete: () => onDelete(comment),
-            onReport: () => onReport(comment),
-            isReplyTarget: comment.id == replyTargetId,
+        for (int i = 0; i < comments.length; i++)
+          ..._buildGroup(
+            comments[i],
+            isFirstGroup: i == 0,
+            isLastGroup: i == comments.length - 1,
           ),
-          // 답글의 들여쓰기는 앞에 붙는 ↳ 아이콘이 만든다 — 바깥에 패딩을 또 주면
-          // 배경 하이라이트가 화면 끝까지 못 닿는다.
-          for (final reply in comment.replies)
-            _CommentTile(
-              comment: reply,
-              currentUserId: currentUserId,
-              isReply: true,
-              onDelete: () => onDelete(reply),
-              onReport: () => onReport(reply),
-              isReplyTarget: reply.id == replyTargetId,
-            ),
-        ],
       ],
     );
+  }
+
+  /// 원댓글 + 답글 한 그룹. 그룹 사이에만 14-구분선-14를 끼운다 — 답글은
+  /// 원댓글에 딸린 덩어리라 사이에 선을 그으면 별개 댓글로 보인다.
+  List<Widget> _buildGroup(
+    CommunityCommentEntity comment, {
+    required bool isFirstGroup,
+    required bool isLastGroup,
+  }) {
+    final hasReplies = comment.replies.isNotEmpty;
+    // 구분선과 맞닿는 쪽 여백(14)은 SizedBox가 아니라 타일 자신의 패딩으로
+    // 준다 — 답글달기로 하이라이트된 타일이면 그 여백까지 배경색이 덮여야
+    // 구분선까지 끊김 없이 이어진다. 그룹의 마지막 타일(답글이 없으면
+    // 원댓글 자신)의 아래 여백은 다음이 새 그룹이면 이 규칙(14), 목록 맨
+    // 끝이면 원래 여백(18)을 쓴다.
+    final lastTileBottom = isLastGroup
+        ? AppSpacing.vertical18
+        : AppSpacing.vertical14;
+
+    return [
+      _CommentTile(
+        comment: comment,
+        currentUserId: currentUserId,
+        onReply: () => onReply(comment),
+        onDelete: () => onDelete(comment),
+        onReport: () => onReport(comment),
+        isReplyTarget: comment.id == replyTargetId,
+        topPadding: isFirstGroup
+            ? AppSpacing.vertical18
+            : AppSpacing.vertical14,
+        bottomPadding: hasReplies ? AppSpacing.vertical18 : lastTileBottom,
+      ),
+      // 원댓글과 대댓글이 너무 붙어 보여 4를 더 띄운다 — 답글달기 하이라이트에는
+      // 안 걸리도록 타일 패딩이 아니라 별도 SizedBox로 둔다.
+      if (hasReplies) SizedBox(height: AppSpacing.vertical4),
+      // 답글의 들여쓰기는 앞에 붙는 ↳ 아이콘이 만든다 — 바깥에 패딩을 또 주면
+      // 배경 하이라이트가 화면 끝까지 못 닿는다.
+      for (int j = 0; j < comment.replies.length; j++)
+        _CommentTile(
+          comment: comment.replies[j],
+          currentUserId: currentUserId,
+          isReply: true,
+          onDelete: () => onDelete(comment.replies[j]),
+          onReport: () => onReport(comment.replies[j]),
+          isReplyTarget: comment.replies[j].id == replyTargetId,
+          topPadding: 0,
+          bottomPadding: j == comment.replies.length - 1
+              ? lastTileBottom
+              : AppSpacing.vertical18,
+        ),
+      // 타일의 좌우 패딩(24)에 맞춰 들여쓴다 — 안 그러면 목록이 화면 끝까지
+      // 확장된 폭이라 구분선만 화면 끝까지 붙는다.
+      if (!isLastGroup)
+        SolidDivider(
+          indent: AppSpacing.horizontal24,
+          endIndent: AppSpacing.horizontal24,
+        ),
+    ];
   }
 }
 
@@ -100,6 +144,8 @@ class _CommentTile extends StatelessWidget {
     required this.currentUserId,
     required this.onDelete,
     required this.onReport,
+    required this.topPadding,
+    required this.bottomPadding,
     this.onReply,
     this.isReply = false,
     this.isReplyTarget = false,
@@ -118,6 +164,10 @@ class _CommentTile extends StatelessWidget {
   /// 지금 이 댓글에 답글을 다는 중인지 — 맞으면 배경을 강조한다.
   final bool isReplyTarget;
 
+  /// 그룹 내 위치에 따라 [CommunityCommentList]가 계산해 넘기는 여백.
+  final double topPadding;
+  final double bottomPadding;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -128,9 +178,8 @@ class _CommentTile extends StatelessWidget {
     return Container(
       color: isReplyTarget ? AppColors.blueVer2_50 : AppColors.white,
       padding: EdgeInsets.only(
-        // 답글은 원댓글에 딸린 덩어리다 — 위를 띄우면 별개 댓글로 보인다.
-        top: isReply ? 0 : AppSpacing.vertical18,
-        bottom: AppSpacing.vertical18,
+        top: topPadding,
+        bottom: bottomPadding,
         left: AppSpacing.horizontal24,
         right: AppSpacing.horizontal24,
       ),

@@ -1,0 +1,114 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/constants/text_styles.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/community_post_entity.dart';
+import '../community_chat_time_format.dart';
+
+/// 채팅방 상단 모임 카드 — 모임 시각 · 장소 보기 · 현재 인원
+///
+/// 시안의 방장 "게임 시작" 버튼은 초대 보내기 범위(제외)와 함께 뺐다.
+/// 인원수는 목록 응답에서만 오므로 못 받았으면 `-/10명`으로 그린다.
+class CommunityChatMeetingCard extends StatelessWidget {
+  const CommunityChatMeetingCard({
+    required this.post,
+    required this.memberCount,
+    required this.onViewLocation,
+    required this.onOpenNotice,
+    super.key,
+  });
+
+  final CommunityPostEntity post;
+  final int? memberCount;
+  final VoidCallback onViewLocation;
+
+  /// 카드 전체를 누르면 방장이 쓴 채팅방 공지사항(전체 화면)으로 이동.
+  final VoidCallback onOpenNotice;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return GestureDetector(
+      onTap: onOpenNotice,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        margin: EdgeInsets.fromLTRB(
+          AppSpacing.horizontal16,
+          AppSpacing.vertical10,
+          AppSpacing.horizontal16,
+          0,
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.horizontal14,
+          vertical: AppSpacing.vertical16,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: AppRadius.large,
+          boxShadow: AppShadows.vague,
+        ),
+        child: Row(
+          children: [
+            SvgPicture.asset(
+              'assets/icons/icon_notice.svg',
+              width: 20.w,
+              height: 20.w,
+            ),
+            SizedBox(width: AppSpacing.horizontal12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        formatCommunityMeetingAt(l10n, post.meetingAt),
+                        style: AppTextStyles.tag_14.copyWith(
+                          color: AppColors.black,
+                        ),
+                      ),
+                      SizedBox(width: AppSpacing.horizontal6),
+                      GestureDetector(
+                        onTap: onViewLocation,
+                        behavior: HitTestBehavior.opaque,
+                        child: Container(
+                          padding: EdgeInsets.only(bottom: 2.h),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(color: AppColors.black500),
+                            ),
+                          ),
+                          child: Text(
+                            l10n.communityChatViewLocation,
+                            style: AppTextStyles.tag_12.copyWith(
+                              color: AppColors.black500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: AppSpacing.vertical4),
+                  Text(
+                    l10n.communityChatMeetingMembers(
+                      memberCount?.toString() ?? '-',
+                      post.maxParticipants,
+                    ),
+                    style: AppTextStyles.tag_12.copyWith(
+                      color: AppColors.black600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

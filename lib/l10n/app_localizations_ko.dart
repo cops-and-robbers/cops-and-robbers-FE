@@ -510,6 +510,149 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityDetailShare => '공유';
 
   @override
+  String get communityChatRoomsEmpty => '참여 중인 채팅방이 없어요';
+
+  @override
+  String get communityChatRoomsLoginRequired => '로그인하면 내 모임을 볼 수 있어요';
+
+  @override
+  String communityChatSystemJoined(String nickname) {
+    return '$nickname님이 참여했어요';
+  }
+
+  @override
+  String communityChatSystemLeft(String nickname) {
+    return '$nickname님이 나갔어요';
+  }
+
+  @override
+  String get communityChatPreviewJoined => '새로운 멤버가 참여했어요';
+
+  @override
+  String get communityChatPreviewLeft => '멤버가 나갔어요';
+
+  @override
+  String get communityChatPreviewInvite => '게임 초대';
+
+  @override
+  String get communityChatPreviewUnsupported => '새 메시지';
+
+  @override
+  String get communityChatInviteOpened => '게임이 열렸어요!';
+
+  @override
+  String communityChatInviteTitle(String nickname, String roomTitle) {
+    return '$nickname님이 [$roomTitle] 방에 초대했어요';
+  }
+
+  @override
+  String communityChatInviteCode(String inviteCode) {
+    return '초대코드 $inviteCode';
+  }
+
+  @override
+  String get communityChatInviteJoin => '게임 참여';
+
+  @override
+  String get communityChatInputHint => '메시지 보내기';
+
+  @override
+  String get communityChatEnterRoom => '채팅방 입장';
+
+  @override
+  String communityChatMeetingMembers(String current, int max) {
+    return '현재 인원 $current/$max명';
+  }
+
+  @override
+  String get communityChatViewLocation => '장소 보기';
+
+  @override
+  String communityChatMemberCount(int count) {
+    return '참가자 $count명';
+  }
+
+  @override
+  String get communityChatAuthorBadge => '방장';
+
+  @override
+  String get communityChatViewPost => '모집글 보기';
+
+  @override
+  String get communityChatLeave => '채팅방 나가기';
+
+  @override
+  String get communityChatLeaveConfirmTitle => '채팅방에서 나갈까요?';
+
+  @override
+  String get communityChatLeaveConfirmMessage => '나가면 대화 내용을 다시 볼 수 없어요';
+
+  @override
+  String get communityChatNoticeTitle => '공지';
+
+  @override
+  String get communityChatNoticeEmpty => '방장이 공지를 올리면 여기에서 볼 수 있어요';
+
+  @override
+  String get communityChatNoticeEmptyAuthor =>
+      '준비물이나 만나는 시간처럼 미리 알려줄 내용을 적어보세요';
+
+  @override
+  String get communityChatNoticeHint => '준비물이나 만나는 시간을 적어주세요';
+
+  @override
+  String get communityChatNoticeSave => '저장';
+
+  @override
+  String get communityChatConnectionLost => '연결이 끊겼어요';
+
+  @override
+  String get communityChatReconnect => '다시 연결';
+
+  @override
+  String get communityChatReconnecting => '연결 중...';
+
+  @override
+  String get communityChatSendFailed => '전송 실패 · 눌러서 다시 보내기';
+
+  @override
+  String get communityChatEvicted => '더 이상 이 채팅방의 멤버가 아니에요';
+
+  @override
+  String get timePeriodAm => '오전';
+
+  @override
+  String get timePeriodPm => '오후';
+
+  @override
+  String communityChatTime(String period, String hour, String minute) {
+    return '$period $hour:$minute';
+  }
+
+  @override
+  String communityChatDateShort(String month, String day) {
+    return '$month/$day';
+  }
+
+  @override
+  String get buttonLogin => '로그인';
+
+  @override
+  String get errorCodeInvalidMessageType => '보낼 수 없는 메시지예요';
+
+  @override
+  String get errorCodeEmptyMessage => '메시지를 입력해주세요';
+
+  @override
+  String get errorCodeMessageTooLong => '메시지는 500자까지 보낼 수 있어요';
+
+  @override
+  String get errorCodeInvalidGameInvite => '초대 정보가 올바르지 않아요';
+
+  @override
+  String get errorCodeInvalidMessageKey => '메시지를 보낼 수 없어요. 다시 시도해주세요';
+
+  @override
   String communityDetailCommentCount(int count) {
     return '댓글 $count';
   }

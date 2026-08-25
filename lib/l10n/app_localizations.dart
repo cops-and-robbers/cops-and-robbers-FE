@@ -1042,6 +1042,258 @@ abstract class AppLocalizations {
   /// **'공유'**
   String get communityDetailShare;
 
+  /// 내 모임 탭 — 참여한 채팅방이 없을 때
+  ///
+  /// In ko, this message translates to:
+  /// **'참여 중인 채팅방이 없어요'**
+  String get communityChatRoomsEmpty;
+
+  /// 내 모임 탭 — 비로그인 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인하면 내 모임을 볼 수 있어요'**
+  String get communityChatRoomsLoginRequired;
+
+  /// 채팅방 시스템 메시지 — 참여
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님이 참여했어요'**
+  String communityChatSystemJoined(String nickname);
+
+  /// 채팅방 시스템 메시지 — 나감
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님이 나갔어요'**
+  String communityChatSystemLeft(String nickname);
+
+  /// 목록 미리보기 — 닉네임 없는 참여 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'새로운 멤버가 참여했어요'**
+  String get communityChatPreviewJoined;
+
+  /// 목록 미리보기 — 닉네임 없는 나감 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'멤버가 나갔어요'**
+  String get communityChatPreviewLeft;
+
+  /// 목록 미리보기 — 게임 초대 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 초대'**
+  String get communityChatPreviewInvite;
+
+  /// 목록 미리보기 — 앱이 모르는 메시지 타입
+  ///
+  /// In ko, this message translates to:
+  /// **'새 메시지'**
+  String get communityChatPreviewUnsupported;
+
+  /// 채팅방 게임 초대 카드 상단 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 열렸어요!'**
+  String get communityChatInviteOpened;
+
+  /// 채팅방 게임 초대 카드 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님이 [{roomTitle}] 방에 초대했어요'**
+  String communityChatInviteTitle(String nickname, String roomTitle);
+
+  /// 채팅방 게임 초대 카드 — 초대코드 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'초대코드 {inviteCode}'**
+  String communityChatInviteCode(String inviteCode);
+
+  /// 채팅방 게임 초대 카드 — 참가 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 참여'**
+  String get communityChatInviteJoin;
+
+  /// 채팅방 입력창 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'메시지 보내기'**
+  String get communityChatInputHint;
+
+  /// 모집글 상세 — 이미 참여한 채팅방에 들어가는 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅방 입장'**
+  String get communityChatEnterRoom;
+
+  /// 채팅방 상단 모임 카드 — 인원
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 인원 {current}/{max}명'**
+  String communityChatMeetingMembers(String current, int max);
+
+  /// 채팅방 상단 모임 카드 — 모집글(지도)로 가는 링크
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 보기'**
+  String get communityChatViewLocation;
+
+  /// 채팅방 사이드바 — 참가자 수 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'참가자 {count}명'**
+  String communityChatMemberCount(int count);
+
+  /// 채팅방 사이드바 — 작성자 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'방장'**
+  String get communityChatAuthorBadge;
+
+  /// 채팅방 사이드바 — 모집글 상세로
+  ///
+  /// In ko, this message translates to:
+  /// **'모집글 보기'**
+  String get communityChatViewPost;
+
+  /// 채팅방 사이드바 — 나가기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅방 나가기'**
+  String get communityChatLeave;
+
+  /// 나가기 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅방에서 나갈까요?'**
+  String get communityChatLeaveConfirmTitle;
+
+  /// 나가기 확인 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'나가면 대화 내용을 다시 볼 수 없어요'**
+  String get communityChatLeaveConfirmMessage;
+
+  /// 채팅방 공지 화면 제목 — 앱 전체 공지사항(pageNoticesTitle)과 구분한다
+  ///
+  /// In ko, this message translates to:
+  /// **'공지'**
+  String get communityChatNoticeTitle;
+
+  /// 채팅방 공지 — 멤버가 보는 빈 상태
+  ///
+  /// In ko, this message translates to:
+  /// **'방장이 공지를 올리면 여기에서 볼 수 있어요'**
+  String get communityChatNoticeEmpty;
+
+  /// 채팅방 공지 — 방장이 보는 빈 상태
+  ///
+  /// In ko, this message translates to:
+  /// **'준비물이나 만나는 시간처럼 미리 알려줄 내용을 적어보세요'**
+  String get communityChatNoticeEmptyAuthor;
+
+  /// 채팅방 공지 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'준비물이나 만나는 시간을 적어주세요'**
+  String get communityChatNoticeHint;
+
+  /// 채팅방 공지사항 저장 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get communityChatNoticeSave;
+
+  /// 채팅방 상단 띠 — 재연결 포기 상태
+  ///
+  /// In ko, this message translates to:
+  /// **'연결이 끊겼어요'**
+  String get communityChatConnectionLost;
+
+  /// 채팅방 상단 띠 — 수동 재연결 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 연결'**
+  String get communityChatReconnect;
+
+  /// 채팅방 상단 띠 — 자동 재연결 중
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 중...'**
+  String get communityChatReconnecting;
+
+  /// 실패한 내 말풍선 아래 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'전송 실패 · 눌러서 다시 보내기'**
+  String get communityChatSendFailed;
+
+  /// 다른 기기에서 나간 방 — 목록으로 내보내며 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'더 이상 이 채팅방의 멤버가 아니에요'**
+  String get communityChatEvicted;
+
+  /// 시각 라벨 오전
+  ///
+  /// In ko, this message translates to:
+  /// **'오전'**
+  String get timePeriodAm;
+
+  /// 시각 라벨 오후
+  ///
+  /// In ko, this message translates to:
+  /// **'오후'**
+  String get timePeriodPm;
+
+  /// 채팅 시각 — 오후 5:34
+  ///
+  /// In ko, this message translates to:
+  /// **'{period} {hour}:{minute}'**
+  String communityChatTime(String period, String hour, String minute);
+
+  /// 목록 시각 — 오늘이 아닌 날
+  ///
+  /// In ko, this message translates to:
+  /// **'{month}/{day}'**
+  String communityChatDateShort(String month, String day);
+
+  /// 로그인 화면으로 가는 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인'**
+  String get buttonLogin;
+
+  /// No description provided for @errorCodeInvalidMessageType.
+  ///
+  /// In ko, this message translates to:
+  /// **'보낼 수 없는 메시지예요'**
+  String get errorCodeInvalidMessageType;
+
+  /// No description provided for @errorCodeEmptyMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'메시지를 입력해주세요'**
+  String get errorCodeEmptyMessage;
+
+  /// No description provided for @errorCodeMessageTooLong.
+  ///
+  /// In ko, this message translates to:
+  /// **'메시지는 500자까지 보낼 수 있어요'**
+  String get errorCodeMessageTooLong;
+
+  /// No description provided for @errorCodeInvalidGameInvite.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 정보가 올바르지 않아요'**
+  String get errorCodeInvalidGameInvite;
+
+  /// No description provided for @errorCodeInvalidMessageKey.
+  ///
+  /// In ko, this message translates to:
+  /// **'메시지를 보낼 수 없어요. 다시 시도해주세요'**
+  String get errorCodeInvalidMessageKey;
+
   /// 모집글 상세 — 댓글 섹션 제목 (답글 포함 개수)
   ///
   /// In ko, this message translates to:

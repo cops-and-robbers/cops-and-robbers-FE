@@ -159,8 +159,8 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
           IconButton(
             icon: SvgPicture.asset(
               'assets/icons/icon_search.svg',
-              width: 20.w,
-              height: 20.h,
+              width: 24.w,
+              height: 24.h,
             ),
             onPressed: () => unawaited(_search(_controller.text)),
           ),
@@ -195,14 +195,16 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
             children: [
               Text(
                 l10n.communitySearchRecent,
-                style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+                style: AppTextStyles.subHeading_18.copyWith(
+                  color: AppColors.black,
+                ),
               ),
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => unawaited(_clearRecent()),
                 child: Text(
                   l10n.communitySearchClearAll,
-                  style: AppTextStyles.tag_12.copyWith(
+                  style: AppTextStyles.tag_14.copyWith(
                     color: AppColors.black600,
                   ),
                 ),
@@ -259,7 +261,7 @@ class _RecentChip extends StatelessWidget {
           children: [
             Text(
               keyword,
-              style: AppTextStyles.tag_12.copyWith(color: AppColors.black700),
+              style: AppTextStyles.tag_14.copyWith(color: AppColors.black700),
             ),
             SizedBox(width: AppSpacing.horizontal4),
             GestureDetector(
