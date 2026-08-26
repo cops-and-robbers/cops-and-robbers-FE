@@ -612,6 +612,7 @@
   "settingsAppVersionLabel": "App version",
   "settingsSnsPrompt": "Curious about more updates? 👀",
   "errorGameNotificationToggleFailed": "Failed to change game notification settings",
+  "errorProfileIconUpdateFailed": "Couldn't change your profile icon",
   "titleBugReport": "Bug report",
   "fieldBugReportLabel": "Bug details",
   "fieldBugReportHint": "What kind of problem occurred?\nPlease write down the details of the situation (including time and device info)",

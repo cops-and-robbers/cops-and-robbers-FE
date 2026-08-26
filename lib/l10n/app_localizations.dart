@@ -3415,6 +3415,12 @@ abstract class AppLocalizations {
   /// **'게임 알림 설정을 변경하지 못했어요'**
   String get errorGameNotificationToggleFailed;
 
+  /// 프로필 아이콘 변경 실패 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'프로필 아이콘을 변경하지 못했어요'**
+  String get errorProfileIconUpdateFailed;
+
   /// 버그 제보 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:

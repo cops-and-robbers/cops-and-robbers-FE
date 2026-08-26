@@ -612,6 +612,7 @@
   "settingsAppVersionLabel": "アプリバージョン",
   "settingsSnsPrompt": "もっと最新情報が気になるなら 👀",
   "errorGameNotificationToggleFailed": "ゲーム通知の設定を変更できませんでした",
+  "errorProfileIconUpdateFailed": "プロフィールアイコンを変更できませんでした",
   "titleBugReport": "バグ報告",
   "fieldBugReportLabel": "バグ内容",
   "fieldBugReportHint": "どのような問題が発生しましたか\n発生状況を詳しく記入してください(時間、端末情報を含む)",

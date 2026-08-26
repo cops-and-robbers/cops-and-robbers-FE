@@ -1781,6 +1781,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGameNotificationToggleFailed => 'ゲーム通知の設定を変更できませんでした';
 
   @override
+  String get errorProfileIconUpdateFailed => 'プロフィールアイコンを変更できませんでした';
+
+  @override
   String get titleBugReport => 'バグ報告';
 
   @override

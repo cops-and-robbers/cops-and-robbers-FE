@@ -9,6 +9,7 @@ import '../models/game_push_agreement_model.dart';
 import '../models/my_page_response_model.dart';
 import '../models/nickname_check_response_model.dart';
 import '../models/nickname_update_request_model.dart';
+import '../models/profile_icon_update_request_model.dart';
 
 part 'user_remote_datasource.g.dart';
 
@@ -48,6 +49,13 @@ abstract class UserRemoteDataSource {
   /// - 409: 닉네임 중복
   @PATCH(ApiEndpoints.updateNickname)
   Future<void> updateNickname(@Body() NicknameUpdateRequestModel request);
+
+  /// 프로필 아이콘 변경
+  ///
+  /// - 204: 변경 성공 (응답 본문 없음)
+  /// - 400: 유효성 검사 실패
+  @PATCH(ApiEndpoints.updateProfileIcon)
+  Future<void> updateProfileIcon(@Body() ProfileIconUpdateRequestModel request);
 
   /// 내 정보 조회
   ///

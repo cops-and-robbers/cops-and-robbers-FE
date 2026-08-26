@@ -64,6 +64,25 @@ class _UserRemoteDataSource implements UserRemoteDataSource {
   }
 
   @override
+  Future<void> updateProfileIcon(ProfileIconUpdateRequestModel request) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = request;
+    final _options = _setStreamType<void>(
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/user/me/profile-icon',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
   Future<MyPageResponseModel> getMyPage() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

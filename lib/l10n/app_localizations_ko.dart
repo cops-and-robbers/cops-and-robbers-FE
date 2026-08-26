@@ -1783,6 +1783,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorGameNotificationToggleFailed => '게임 알림 설정을 변경하지 못했어요';
 
   @override
+  String get errorProfileIconUpdateFailed => '프로필 아이콘을 변경하지 못했어요';
+
+  @override
   String get titleBugReport => '버그 제보';
 
   @override

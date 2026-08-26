@@ -1898,6 +1898,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to change game notification settings';
 
   @override
+  String get errorProfileIconUpdateFailed =>
+      'Couldn\'t change your profile icon';
+
+  @override
   String get titleBugReport => 'Bug report';
 
   @override
