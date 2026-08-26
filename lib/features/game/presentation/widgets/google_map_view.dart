@@ -45,6 +45,9 @@ class GoogleMapViewState extends State<GoogleMapView> {
 
   double _minZoom = 12.0;
 
+  /// 카메라 이동 허용 범위 — 구역 로드 전에는 무제한
+  CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
+
   // 도둑 공개 위치 마커
   BitmapDescriptor? _redRobberMarker;
   BitmapDescriptor? _greenRobberMarker;
@@ -222,6 +225,12 @@ class GoogleMapViewState extends State<GoogleMapView> {
         <= 1000 => 13.0,
         _ => 12.0,
       };
+
+  /// 카메라 이동 허용 범위를 갱신합니다 (플레이그라운드 주변 제한).
+  void updateCameraBounds(LatLngBounds bounds) {
+    if (!mounted) return;
+    setState(() => _cameraTargetBounds = CameraTargetBounds(bounds));
+  }
 
   void updateAreaCircles(Set<Circle> circles) {
     if (!mounted) return;
@@ -407,6 +416,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
         myLocationButtonEnabled: false, // 커스텀 내 위치 버튼 사용
 
         minMaxZoomPreference: MinMaxZoomPreference(_minZoom, 20),
+        cameraTargetBounds: _cameraTargetBounds,
         zoomControlsEnabled: false,
         compassEnabled: false,
         circles: _areaCircles,
