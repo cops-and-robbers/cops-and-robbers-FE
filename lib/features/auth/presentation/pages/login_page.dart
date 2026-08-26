@@ -10,7 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_urls.dart';
+import '../../../../core/constants/legal_doc.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
@@ -66,8 +66,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         MaterialPageRoute(
           builder: (_) => LegalDocumentPage(
             title: AppLocalizations.of(context).linkPrivacyPolicy,
-            assetPath: 'assets/legals/privacy_policy.json',
-            externalUrl: AppUrls.privacyPolicy,
+            doc: LegalDoc.privacy,
           ),
         ),
       );
@@ -76,8 +75,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         MaterialPageRoute(
           builder: (_) => LegalDocumentPage(
             title: AppLocalizations.of(context).linkTermsOfService,
-            assetPath: 'assets/legals/terms_of_service.json',
-            externalUrl: AppUrls.termsOfService,
+            doc: LegalDoc.terms,
           ),
         ),
       );
@@ -86,8 +84,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         MaterialPageRoute(
           builder: (_) => LegalDocumentPage(
             title: AppLocalizations.of(context).linkLocationTerms,
-            assetPath: 'assets/legals/location_terms.json',
-            externalUrl: AppUrls.locationTerms,
+            doc: LegalDoc.location,
           ),
         ),
       );

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_urls.dart';
+import '../../../../core/constants/legal_doc.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -63,8 +63,7 @@ class AgreementPage extends ConsumerWidget {
                           onDetailTap: () => _openDetail(
                             context,
                             title: l10n.linkTermsOfService,
-                            assetPath: 'assets/legals/terms_of_service.json',
-                            externalUrl: AppUrls.termsOfService,
+                            doc: LegalDoc.terms,
                           ),
                         ),
                         AgreementItem(
@@ -75,8 +74,7 @@ class AgreementPage extends ConsumerWidget {
                           onDetailTap: () => _openDetail(
                             context,
                             title: l10n.linkPrivacyPolicy,
-                            assetPath: 'assets/legals/privacy_policy.json',
-                            externalUrl: AppUrls.privacyPolicy,
+                            doc: LegalDoc.privacy,
                           ),
                         ),
                         AgreementItem(
@@ -87,8 +85,7 @@ class AgreementPage extends ConsumerWidget {
                           onDetailTap: () => _openDetail(
                             context,
                             title: l10n.linkLocationTerms,
-                            assetPath: 'assets/legals/location_terms.json',
-                            externalUrl: AppUrls.locationTerms,
+                            doc: LegalDoc.location,
                           ),
                         ),
                         AgreementItem(
@@ -99,8 +96,7 @@ class AgreementPage extends ConsumerWidget {
                           onDetailTap: () => _openDetail(
                             context,
                             title: l10n.linkMarketingConsent,
-                            assetPath: 'assets/legals/marketing_consent.json',
-                            externalUrl: AppUrls.marketingConsent,
+                            doc: LegalDoc.marketing,
                           ),
                         ),
                       ],
@@ -153,16 +149,11 @@ class AgreementPage extends ConsumerWidget {
   void _openDetail(
     BuildContext context, {
     required String title,
-    required String assetPath,
-    String? externalUrl,
+    required LegalDoc doc,
   }) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => LegalDocumentPage(
-          title: title,
-          assetPath: assetPath,
-          externalUrl: externalUrl,
-        ),
+        builder: (_) => LegalDocumentPage(title: title, doc: doc),
       ),
     );
   }

@@ -12,10 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Cops and Robbers';
 
   @override
-  String get legalDocumentKoreanOnlyNotice =>
-      'This document is provided in Korean only. The Korean version is the legally binding text';
-
-  @override
   String get loadingDefault => 'Processing...';
 
   @override

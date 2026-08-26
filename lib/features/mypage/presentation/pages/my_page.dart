@@ -219,7 +219,10 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildItemDivider(),
             _buildMenuItem(
               text: l10n.settingsGuideAgreements,
-              onTap: () => Navigator.of(context).push(
+              // 루트 네비게이터에 올린다. 탭 안에 쌓으면 홈으로 갔다 마이페이지로
+              // 돌아왔을 때 이 화면이 그대로 떠 있다. 앱의 다른 상세 화면들도
+              // parentNavigatorKey: rootNavigatorKey 로 같은 규칙을 쓴다.
+              onTap: () => Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(
                   builder: (_) => const AgreementSettingsPage(),
                 ),

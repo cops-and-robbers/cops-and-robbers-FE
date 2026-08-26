@@ -4,10 +4,6 @@
   "@appTitle": {
     "description": "앱 이름 (MaterialApp.title) — i18n 스모크 테스트용 첫 키"
   },
-  "legalDocumentKoreanOnlyNotice": "",
-  "@legalDocumentKoreanOnlyNotice": {
-    "description": "법적 문서 페이지 상단 고지문 — 한국어 원본만 제공함을 비-ko 로케일에 안내 (ko는 빈 문자열 → 미표시)"
-  },
   "loadingDefault": "처리 중...",
   "permissionLocationFallbackTitle": "위치 권한 안내",
   "permissionLocationFallbackMessage": "위치 권한을 허용해주세요",
