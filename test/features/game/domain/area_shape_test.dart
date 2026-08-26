@@ -127,32 +127,34 @@ void main() {
       );
     }
 
-    test('box_edges_sit_at_130_percent_of_radius_when_margin_is_30_percent',
-        () {
-      const circle = AreaShape.circle(center: base, radiusInMeters: 200);
-      final box = circle.boundingBox(marginRatio: 0.3);
+    test(
+      'box_edges_sit_at_130_percent_of_radius_when_margin_is_30_percent',
+      () {
+        const circle = AreaShape.circle(center: base, radiusInMeters: 200);
+        final box = circle.boundingBox(marginRatio: 0.3);
 
-      // 상하좌우 네 변 중점까지의 거리 = 반경 × 1.3 = 260m
-      final north = GeoPoint(
-        latitude: box.northEast.latitude,
-        longitude: base.longitude,
-      );
-      final east = GeoPoint(
-        latitude: base.latitude,
-        longitude: box.northEast.longitude,
-      );
-      final south = GeoPoint(
-        latitude: box.southWest.latitude,
-        longitude: base.longitude,
-      );
-      final west = GeoPoint(
-        latitude: base.latitude,
-        longitude: box.southWest.longitude,
-      );
-      for (final edge in [north, east, south, west]) {
-        expect(distanceFromCentroid(circle, edge), closeTo(260, 5));
-      }
-    });
+        // 상하좌우 네 변 중점까지의 거리 = 반경 × 1.3 = 260m
+        final north = GeoPoint(
+          latitude: box.northEast.latitude,
+          longitude: base.longitude,
+        );
+        final east = GeoPoint(
+          latitude: base.latitude,
+          longitude: box.northEast.longitude,
+        );
+        final south = GeoPoint(
+          latitude: box.southWest.latitude,
+          longitude: base.longitude,
+        );
+        final west = GeoPoint(
+          latitude: base.latitude,
+          longitude: box.southWest.longitude,
+        );
+        for (final edge in [north, east, south, west]) {
+          expect(distanceFromCentroid(circle, edge), closeTo(260, 5));
+        }
+      },
+    );
 
     test('box_edges_sit_at_radius_when_margin_omitted', () {
       const circle = AreaShape.circle(center: base, radiusInMeters: 200);
