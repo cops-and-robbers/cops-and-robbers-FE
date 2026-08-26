@@ -17,8 +17,8 @@ import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/pages/legal_document_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../../router/route_paths.dart';
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
@@ -62,32 +62,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     _privacyRecognizer = TapGestureRecognizer()
-      ..onTap = () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).linkPrivacyPolicy,
-            doc: LegalDoc.privacy,
-          ),
-        ),
-      );
+      ..onTap = () =>
+          context.push(RoutePaths.legalDocumentOf(LegalDoc.privacy));
     _termsRecognizer = TapGestureRecognizer()
-      ..onTap = () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).linkTermsOfService,
-            doc: LegalDoc.terms,
-          ),
-        ),
-      );
+      ..onTap = () => context.push(RoutePaths.legalDocumentOf(LegalDoc.terms));
     _locationRecognizer = TapGestureRecognizer()
-      ..onTap = () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).linkLocationTerms,
-            doc: LegalDoc.location,
-          ),
-        ),
-      );
+      ..onTap = () =>
+          context.push(RoutePaths.legalDocumentOf(LegalDoc.location));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;

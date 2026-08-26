@@ -158,6 +158,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         ];
 
         // ====================================================================
+        // 0. 법적 문서 - 로그인·약관 동의 이전에도 열 수 있어야 한다
+        //    로그인 화면과 가입 동의 화면이 약관을 띄운다. 아래 가드에 걸리면
+        //    각각 /login 과 /agreement 로 되돌아가 문서가 열리지 않는다.
+        // ====================================================================
+        if (currentPath.startsWith('${RoutePaths.legalDocument}/')) {
+          return null;
+        }
+
+        // ====================================================================
         // 1. 인증 체크 - 로그인 필요한 페이지 보호
         // ====================================================================
         if (!isAuthenticated) {
@@ -283,6 +292,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildDirectionalSlide(
           key: state.pageKey,
           child: const TutorialCatalogPage(),
+          isForward: true,
+        ),
+      ),
+      // ====================================================================
+      // Legal Document Routes (약관·정책·라이선스)
+      // ====================================================================
+      GoRoute(
+        path: '${RoutePaths.legalDocument}/:doc',
+        name: RoutePaths.legalDocumentName,
+        redirect: (context, state) =>
+            legalDocFromSlug(state.pathParameters['doc']) == null
+            ? RoutePaths.home
+            : null,
+        // redirect 가 먼저 돌아 모르는 조각을 걸러내므로 여기서는 null 이 아니다.
+        pageBuilder: (context, state) => buildDirectionalSlide(
+          key: state.pageKey,
+          child: LegalDocumentPage(
+            doc: legalDocFromSlug(state.pathParameters['doc'])!,
+          ),
           isForward: true,
         ),
       ),
@@ -574,21 +602,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) => buildDirectionalSlide(
                       key: state.pageKey,
                       child: const BugReportPage(),
-                      isForward: true,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'licenses',
-                    name: RoutePaths.openSourceLicensesName,
-                    parentNavigatorKey: rootNavigatorKey,
-                    pageBuilder: (context, state) => buildDirectionalSlide(
-                      key: state.pageKey,
-                      child: LegalDocumentPage(
-                        title: AppLocalizations.of(
-                          context,
-                        ).settingsGuideOpenSourceLicenses,
-                        doc: LegalDoc.licenses,
-                      ),
                       isForward: true,
                     ),
                   ),

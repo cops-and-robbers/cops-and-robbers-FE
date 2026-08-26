@@ -1,6 +1,7 @@
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/legal_doc.dart';
@@ -12,8 +13,8 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/load_failure_view.dart';
-import '../../../../core/widgets/pages/legal_document_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/widgets/agreement_item.dart';
 import '../../../user/domain/entities/agreement_status_entity.dart';
 import '../../../user/presentation/providers/user_provider.dart';
@@ -119,19 +120,6 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
     }
   }
 
-  /// 약관 4종의 상세 화면을 연다.
-  ///
-  /// 목록 안의 항목이라 라우트로 올리지 않았다. 대신 루트 네비게이터를 명시해
-  /// 바텀 네비게이션을 덮은 상태를 유지한다. 이 화면 자체가 이미 루트에 올라와
-  /// 있어 지금은 같은 동작이지만, 다른 곳에서 열더라도 결과가 같도록 남겨 둔다.
-  void _openDetail({required String title, required LegalDoc doc}) {
-    Navigator.of(context, rootNavigator: true).push(
-      MaterialPageRoute(
-        builder: (_) => LegalDocumentPage(title: title, doc: doc),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -183,9 +171,8 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     readOnly: true,
                     title: l10n.linkTermsOfService,
                     onToggle: () {},
-                    onDetailTap: () => _openDetail(
-                      title: l10n.linkTermsOfService,
-                      doc: LegalDoc.terms,
+                    onDetailTap: () => context.push(
+                      RoutePaths.legalDocumentOf(LegalDoc.terms),
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
@@ -197,9 +184,8 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     readOnly: true,
                     title: l10n.linkPrivacyPolicy,
                     onToggle: () {},
-                    onDetailTap: () => _openDetail(
-                      title: l10n.linkPrivacyPolicy,
-                      doc: LegalDoc.privacy,
+                    onDetailTap: () => context.push(
+                      RoutePaths.legalDocumentOf(LegalDoc.privacy),
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
@@ -211,9 +197,8 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     readOnly: true,
                     title: l10n.linkLocationTerms,
                     onToggle: () {},
-                    onDetailTap: () => _openDetail(
-                      title: l10n.linkLocationTerms,
-                      doc: LegalDoc.location,
+                    onDetailTap: () => context.push(
+                      RoutePaths.legalDocumentOf(LegalDoc.location),
                     ),
                   ),
                   SizedBox(height: AppSpacing.vertical6),
@@ -225,9 +210,8 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
                     title: l10n.linkMarketingConsent,
                     onToggle: () =>
                         setState(() => _newMarketing = !_newMarketing),
-                    onDetailTap: () => _openDetail(
-                      title: l10n.linkMarketingConsent,
-                      doc: LegalDoc.marketing,
+                    onDetailTap: () => context.push(
+                      RoutePaths.legalDocumentOf(LegalDoc.marketing),
                     ),
                   ),
                 ],

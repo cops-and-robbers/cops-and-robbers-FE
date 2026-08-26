@@ -1,3 +1,5 @@
+import '../core/constants/legal_doc.dart';
+
 /// 앱 전체의 라우트 경로 상수를 정의하는 클래스
 ///
 /// 모든 라우트 경로는 이 클래스를 통해 접근하여
@@ -112,8 +114,14 @@ class RoutePaths {
   /// 버그 제보 화면
   static const String bugReport = '/mypage/bug-report';
 
-  /// 오픈소스 라이선스 화면
-  static const String openSourceLicenses = '/mypage/licenses';
+  /// 법적 문서 화면 (최상위)
+  ///
+  /// 로그인, 가입 동의, 약관 설정 세 곳에서 같은 화면을 열기 때문에 마이페이지
+  /// 하위가 아니라 최상위에 둡니다.
+  static const String legalDocument = '/legal';
+
+  /// 문서 종류에 해당하는 법적 문서 화면 경로
+  static String legalDocumentOf(LegalDoc doc) => '$legalDocument/${doc.slug}';
 
   /// 크레딧 화면 (버전 5회 탭 이스터에그)
   static const String credits = '/mypage/credits';
@@ -236,7 +244,7 @@ class RoutePaths {
   static const String languageSettingsName = 'languageSettings';
   static const String agreementSettingsName = 'agreementSettings';
   static const String bugReportName = 'bugReport';
-  static const String openSourceLicensesName = 'openSourceLicenses';
+  static const String legalDocumentName = 'legalDocument';
   static const String creditsName = 'credits';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';

@@ -3,6 +3,7 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/legal_doc.dart';
@@ -10,8 +11,8 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
-import '../../../../core/widgets/pages/legal_document_page.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../../router/route_paths.dart';
 import '../providers/agreement_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/agreement_all_checkbox.dart';
@@ -60,10 +61,8 @@ class AgreementPage extends ConsumerWidget {
                           required: true,
                           title: l10n.linkTermsOfService,
                           onToggle: notifier.toggleTerms,
-                          onDetailTap: () => _openDetail(
-                            context,
-                            title: l10n.linkTermsOfService,
-                            doc: LegalDoc.terms,
+                          onDetailTap: () => context.push(
+                            RoutePaths.legalDocumentOf(LegalDoc.terms),
                           ),
                         ),
                         AgreementItem(
@@ -71,10 +70,8 @@ class AgreementPage extends ConsumerWidget {
                           required: true,
                           title: l10n.linkPrivacyPolicy,
                           onToggle: notifier.togglePrivacy,
-                          onDetailTap: () => _openDetail(
-                            context,
-                            title: l10n.linkPrivacyPolicy,
-                            doc: LegalDoc.privacy,
+                          onDetailTap: () => context.push(
+                            RoutePaths.legalDocumentOf(LegalDoc.privacy),
                           ),
                         ),
                         AgreementItem(
@@ -82,10 +79,8 @@ class AgreementPage extends ConsumerWidget {
                           required: true,
                           title: l10n.linkLocationTerms,
                           onToggle: notifier.toggleLocation,
-                          onDetailTap: () => _openDetail(
-                            context,
-                            title: l10n.linkLocationTerms,
-                            doc: LegalDoc.location,
+                          onDetailTap: () => context.push(
+                            RoutePaths.legalDocumentOf(LegalDoc.location),
                           ),
                         ),
                         AgreementItem(
@@ -93,10 +88,8 @@ class AgreementPage extends ConsumerWidget {
                           required: false,
                           title: l10n.linkMarketingConsent,
                           onToggle: notifier.toggleMarketing,
-                          onDetailTap: () => _openDetail(
-                            context,
-                            title: l10n.linkMarketingConsent,
-                            doc: LegalDoc.marketing,
+                          onDetailTap: () => context.push(
+                            RoutePaths.legalDocumentOf(LegalDoc.marketing),
                           ),
                         ),
                       ],
@@ -143,18 +136,6 @@ class AgreementPage extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  void _openDetail(
-    BuildContext context, {
-    required String title,
-    required LegalDoc doc,
-  }) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => LegalDocumentPage(title: title, doc: doc),
-      ),
     );
   }
 
