@@ -39,6 +39,7 @@ void main() {
         'privacy',
         'location',
         'marketing',
+        'licenses',
       ]);
     });
   });

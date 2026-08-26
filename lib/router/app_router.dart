@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/constants/legal_doc.dart';
 import '../core/constants/game_team.dart';
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
@@ -33,6 +34,10 @@ import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_detail_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
 import '../features/community/presentation/pages/community_search_page.dart';
+import '../features/credits/presentation/pages/credits_page.dart';
+import '../features/mypage/presentation/pages/agreement_settings_page.dart';
+import '../features/mypage/presentation/pages/bug_report_page.dart';
+import '../features/mypage/presentation/pages/language_settings_page.dart';
 import '../features/mypage/presentation/pages/my_page.dart';
 import 'main_scaffold.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
@@ -50,6 +55,7 @@ import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
 import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/buttons/previous_button.dart';
+import '../core/widgets/pages/legal_document_page.dart';
 import '../core/widgets/pages/maintenance_page.dart';
 import '../core/widgets/pages/force_update_page.dart';
 import '../features/session/presentation/pages/deeplink_join_page.dart';
@@ -536,6 +542,68 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: RoutePaths.mypageName,
                 pageBuilder: (context, state) =>
                     buildSmoothFade(key: state.pageKey, child: const MyPage()),
+                // 하위 화면은 전부 루트 네비게이터에 올린다. 탭 안에 쌓으면 홈으로
+                // 갔다 마이페이지로 돌아왔을 때 그 화면이 그대로 떠 있고, 전환도
+                // 다른 화면과 달라진다. go_router 는 parentNavigatorKey 를 자식에
+                // 상속하지 않으므로 라우트마다 붙인다.
+                routes: [
+                  GoRoute(
+                    path: 'language',
+                    name: RoutePaths.languageSettingsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const LanguageSettingsPage(),
+                      isForward: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'agreements',
+                    name: RoutePaths.agreementSettingsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const AgreementSettingsPage(),
+                      isForward: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'bug-report',
+                    name: RoutePaths.bugReportName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const BugReportPage(),
+                      isForward: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'licenses',
+                    name: RoutePaths.openSourceLicensesName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: LegalDocumentPage(
+                        title: AppLocalizations.of(
+                          context,
+                        ).settingsGuideOpenSourceLicenses,
+                        doc: LegalDoc.licenses,
+                      ),
+                      isForward: true,
+                    ),
+                  ),
+                  // 버전 5회 탭으로만 닿는 이스터에그. 등장 연출이 다른 화면과
+                  // 달라야 숨겨진 화면이라는 느낌이 살아서 전용 전환을 쓴다.
+                  GoRoute(
+                    path: 'credits',
+                    name: RoutePaths.creditsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildBlurFade(
+                      key: state.pageKey,
+                      child: const CreditsPage(),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

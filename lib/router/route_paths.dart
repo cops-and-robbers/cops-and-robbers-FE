@@ -103,6 +103,21 @@ class RoutePaths {
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
 
+  /// 언어 설정 화면
+  static const String languageSettings = '/mypage/language';
+
+  /// 약관 설정 화면
+  static const String agreementSettings = '/mypage/agreements';
+
+  /// 버그 제보 화면
+  static const String bugReport = '/mypage/bug-report';
+
+  /// 오픈소스 라이선스 화면
+  static const String openSourceLicenses = '/mypage/licenses';
+
+  /// 크레딧 화면 (버전 5회 탭 이스터에그)
+  static const String credits = '/mypage/credits';
+
   /// 공지사항 화면
   static const String notices = '/home/notices';
 
@@ -218,6 +233,11 @@ class RoutePaths {
   static const String communityChatMenuName = 'communityChatMenu';
   static const String communityChatNoticeName = 'communityChatNotice';
   static const String mypageName = 'mypage';
+  static const String languageSettingsName = 'languageSettings';
+  static const String agreementSettingsName = 'agreementSettings';
+  static const String bugReportName = 'bugReport';
+  static const String openSourceLicensesName = 'openSourceLicenses';
+  static const String creditsName = 'credits';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
   static const String noticesName = 'notices';

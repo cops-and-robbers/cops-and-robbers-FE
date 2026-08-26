@@ -1854,6 +1854,10 @@
   "@settingsGuideAgreements": {
     "description": "설정 — 이용약관 및 정책 메뉴 (페이지 진입)"
   },
+  "settingsGuideOpenSourceLicenses": "오픈소스 라이선스",
+  "@settingsGuideOpenSourceLicenses": {
+    "description": "설정 — 오픈소스 라이선스 및 데이터 출처 메뉴 (웹뷰 진입)"
+  },
   "settingsSectionEtc": "기타",
   "@settingsSectionEtc": {
     "description": "설정 — 기타 섹션 헤더 (로그아웃/탈퇴 등)"

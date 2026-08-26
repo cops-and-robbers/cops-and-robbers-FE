@@ -1765,6 +1765,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsGuideAgreements => '이용약관 및 정책';
 
   @override
+  String get settingsGuideOpenSourceLicenses => '오픈소스 라이선스';
+
+  @override
   String get settingsSectionEtc => '기타';
 
   @override

@@ -1763,6 +1763,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsGuideAgreements => '利用規約とポリシー';
 
   @override
+  String get settingsGuideOpenSourceLicenses => 'オープンソースライセンス';
+
+  @override
   String get settingsSectionEtc => 'その他';
 
   @override
