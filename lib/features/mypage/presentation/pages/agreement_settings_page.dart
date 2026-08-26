@@ -119,8 +119,12 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
     }
   }
 
+  /// 약관 4종의 상세 화면을 연다.
+  ///
+  /// 목록 안의 항목이라 라우트로 올리지 않았다. 대신 루트 네비게이터를 명시해
+  /// 바텀 네비게이션을 덮은 상태를 유지한다. 이 화면 자체가 이미 루트에 올라와
+  /// 있어 지금은 같은 동작이지만, 다른 곳에서 열더라도 결과가 같도록 남겨 둔다.
   void _openDetail({required String title, required LegalDoc doc}) {
-    // 탭 안이 아니라 루트 네비게이터에 올린다. 이유는 my_page 의 약관 설정 진입부 참고.
     Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => LegalDocumentPage(title: title, doc: doc),

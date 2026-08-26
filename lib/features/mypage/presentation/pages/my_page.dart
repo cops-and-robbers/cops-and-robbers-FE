@@ -1,6 +1,3 @@
-import 'dart:math' as math;
-import 'dart:ui';
-
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,14 +23,9 @@ import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../router/route_paths.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
-import 'language_settings_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../bug/presentation/providers/bug_provider.dart';
 import '../../../user/presentation/providers/profile_icon_provider.dart';
 import '../../../user/presentation/providers/user_provider.dart';
-import '../../../../core/widgets/pages/text_submit_page.dart';
-import '../../../credits/presentation/pages/credits_page.dart';
-import 'agreement_settings_page.dart';
 import '../widgets/sns_channel_row.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 
@@ -73,28 +65,8 @@ class _MyPageState extends ConsumerState<MyPage> {
 
     if (_versionTapCount >= 5) {
       _versionTapCount = 0;
-      // 이스터에그 발견 — 페이드 + 블러 애니메이션으로 크레딧 페이지 진입
-      Navigator.of(context).push(
-        PageRouteBuilder<void>(
-          transitionDuration: const Duration(milliseconds: 500),
-          reverseTransitionDuration: const Duration(milliseconds: 300),
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const CreditsPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return AnimatedBuilder(
-              animation: animation,
-              builder: (context, _) {
-                // 블러: 10 → 0 (선명해짐)
-                final blur = (1 - animation.value) * 10;
-                return BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-                  child: Opacity(opacity: animation.value, child: child),
-                );
-              },
-            );
-          },
-        ),
-      );
+      // 이스터에그 발견. 전환 연출은 라우터의 buildBlurFade 가 맡는다.
+      context.push(RoutePaths.credits);
     }
   }
 
@@ -125,6 +97,7 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildSectionHeader(l10n.settingsSectionAccount),
             _buildMenuItem(
               text: l10n.settingsAccountChangeNickname,
+              leadingAsset: 'assets/icons/icon_nickname.svg',
               trailing: _buildForwardArrow(),
               onTap: _onNicknameChange,
             ),
@@ -139,12 +112,14 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildSwitchMenuItem(
               text: l10n.settingsAppGameNotification,
               subtitle: l10n.settingsAppGameNotificationDescription,
+              leadingAsset: 'assets/icons/icon_game_notification.svg',
               value: gamePushState.valueOrNull ?? false,
               onToggle: _onGamePushToggle,
             ),
             _buildItemDivider(),
             _buildMenuItem(
               text: l10n.settingsAppGeneralNotification,
+              leadingAsset: 'assets/icons/icon_notification.svg',
               // "게임 중 알림" 부분만 더 큰 스타일 + 진한 색상으로 강조
               subtitleWidget: Text.rich(
                 TextSpan(
@@ -170,27 +145,22 @@ class _MyPageState extends ConsumerState<MyPage> {
             ),
             _buildItemDivider(),
 
+            // 언어 설정. subtitle 은 _currentLanguageDisplay() 가 appLocaleProvider 를
+            // watch 하므로 값을 바꾸면 자동으로 갱신된다.
             _buildMenuItem(
-              text: l10n.settingsAppLocationPermission,
-              subtitle: l10n.settingsAppLocationPermissionDescription,
-              onTap: () =>
-                  AppSettings.openAppSettings(type: AppSettingsType.location),
+              text: l10n.settingsLanguageLabel,
+              subtitle: _currentLanguageDisplay(),
+              leadingAsset: 'assets/icons/icon_language.svg',
+              onTap: () => context.push(RoutePaths.languageSettings),
             ),
             _buildItemDivider(),
 
-            // 언어 설정 — 현재 선택값을 subtitle에 표시, 탭 시 BottomSheet
             _buildMenuItem(
-              text: AppLocalizations.of(context).settingsLanguageLabel,
-              subtitle: _currentLanguageDisplay(),
-              trailing: _buildForwardArrow(),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const LanguageSettingsPage(),
-                  ),
-                );
-                // subtitle은 _currentLanguageDisplay()가 appLocaleProvider를 watch하므로 자동 갱신
-              },
+              text: l10n.settingsAppLocationPermission,
+              subtitle: l10n.settingsAppLocationPermissionDescription,
+              leadingAsset: 'assets/icons/icon_location_pin.svg',
+              onTap: () =>
+                  AppSettings.openAppSettings(type: AppSettingsType.location),
             ),
             SizedBox(height: AppSpacing.vertical4),
 
@@ -203,11 +173,6 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildVersionItem(),
             _buildItemDivider(),
             _buildMenuItem(
-              text: l10n.settingsGuideBugReport,
-              onTap: _onBugReport,
-            ),
-            _buildItemDivider(),
-            _buildMenuItem(
               text: l10n.settingsGuideTutorialRewatch,
               onTap: () => context.push('/tutorial'),
             ),
@@ -218,15 +183,18 @@ class _MyPageState extends ConsumerState<MyPage> {
             ),
             _buildItemDivider(),
             _buildMenuItem(
+              text: l10n.settingsGuideBugReport,
+              onTap: () => context.push(RoutePaths.bugReport),
+            ),
+            _buildItemDivider(),
+            _buildMenuItem(
+              text: l10n.settingsGuideOpenSourceLicenses,
+              onTap: () => context.push(RoutePaths.openSourceLicenses),
+            ),
+            _buildItemDivider(),
+            _buildMenuItem(
               text: l10n.settingsGuideAgreements,
-              // 루트 네비게이터에 올린다. 탭 안에 쌓으면 홈으로 갔다 마이페이지로
-              // 돌아왔을 때 이 화면이 그대로 떠 있다. 앱의 다른 상세 화면들도
-              // parentNavigatorKey: rootNavigatorKey 로 같은 규칙을 쓴다.
-              onTap: () => Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (_) => const AgreementSettingsPage(),
-                ),
-              ),
+              onTap: () => context.push(RoutePaths.agreementSettings),
             ),
             SizedBox(height: AppSpacing.vertical4),
             _buildSectionDivider(),
@@ -368,17 +336,12 @@ class _MyPageState extends ConsumerState<MyPage> {
 
   /// 우측 화살표 아이콘 (icon_previous.svg 180도 회전, black300, 20px)
   Widget _buildForwardArrow() {
-    return Transform.rotate(
-      angle: math.pi,
-      child: SvgPicture.asset(
-        'assets/icons/icon_previous.svg',
-        width: 20,
-        height: 20,
-        colorFilter: const ColorFilter.mode(
-          AppColors.black300,
-          BlendMode.srcIn,
-        ),
-      ),
+    // 예전에는 icon_previous 를 180도 돌려 썼다. 전용 에셋이 생겨 그대로 쓴다.
+    return SvgPicture.asset(
+      'assets/icons/icon_next.svg',
+      width: 20,
+      height: 20,
+      colorFilter: const ColorFilter.mode(AppColors.black300, BlendMode.srcIn),
     );
   }
 
@@ -407,7 +370,7 @@ class _MyPageState extends ConsumerState<MyPage> {
                 return Text(
                   'v$version',
                   style: AppTextStyles.paragraph14Semibold.copyWith(
-                    color: AppColors.black300,
+                    color: AppColors.black600,
                   ),
                 );
               },
@@ -425,9 +388,20 @@ class _MyPageState extends ConsumerState<MyPage> {
   /// 설정 메뉴 아이템 빌더
   ///
   /// 일부 텍스트에 강조가 필요한 경우 [subtitleWidget]을 사용하면 [subtitle] 대신 표시된다.
+  /// 설정 메뉴 한 줄.
+  ///
+  /// 행 높이는 내용에서 나온다. 상하 여백 16이 모든 경우에 같고 안쪽 높이만 달라진다.
+  ///   텍스트만        16 + 16 + 16 = 48
+  ///   아이콘 + 주      16 + 24 + 16 = 56
+  ///   아이콘 + 주 + 보조  16 + (16+8+12) + 16 = 68
+  /// 아이콘(24)이 주+보조 묶음(36)보다 작아 마지막 경우의 높이는 텍스트가 정한다.
+  ///
+  /// [leadingAsset] 과 [subtitle] 은 서로 독립이다. 닉네임 변경은 아이콘만 있고
+  /// 보조 텍스트가 없어서, 둘을 묶어 위젯을 나누면 오히려 중복이 생긴다.
   Widget _buildMenuItem({
     required String text,
     required VoidCallback onTap,
+    String? leadingAsset,
     Color? textColor,
     String? subtitle,
     Widget? subtitleWidget,
@@ -443,6 +417,11 @@ class _MyPageState extends ConsumerState<MyPage> {
         ),
         child: Row(
           children: [
+            if (leadingAsset != null) ...[
+              // 받은 아이콘이 다색이라 colorFilter 를 걸지 않는다.
+              SvgPicture.asset(leadingAsset, width: 24.w, height: 24.w),
+              SizedBox(width: 18.w),
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -479,6 +458,7 @@ class _MyPageState extends ConsumerState<MyPage> {
   Widget _buildSwitchMenuItem({
     required String text,
     String? subtitle,
+    String? leadingAsset,
     required bool value,
     required VoidCallback onToggle,
   }) {
@@ -494,6 +474,10 @@ class _MyPageState extends ConsumerState<MyPage> {
         ),
         child: Row(
           children: [
+            if (leadingAsset != null) ...[
+              SvgPicture.asset(leadingAsset, width: 24.w, height: 24.w),
+              SizedBox(width: 18.w),
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -599,61 +583,6 @@ class _MyPageState extends ConsumerState<MyPage> {
   }
 
   /// 버그 제보 입력 화면 진입
-  void _onBugReport() {
-    final l10n = AppLocalizations.of(context);
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => TextSubmitPage(
-          title: l10n.titleBugReport,
-          label: l10n.fieldBugReportLabel,
-          hintText: l10n.fieldBugReportHint,
-          submitText: l10n.buttonSubmitReport,
-          maxLength: 1000,
-          onSubmit: _submitBugReport,
-        ),
-      ),
-    );
-  }
-
-  /// 버그 제보 API 호출 + 결과 처리
-  ///
-  /// 성공: loading + 입력 페이지 모두 닫고 설정 화면으로 복귀, 성공 스낵바 표시.
-  /// 실패: loading만 닫고 입력 페이지는 유지(재시도 가능), 에러 스낵바 표시.
-  /// AuthException은 AuthInterceptor가 강제 로그아웃을 자동 처리하므로 무시.
-  Future<void> _submitBugReport(String content) async {
-    final navigator = Navigator.of(context);
-
-    final loading = AppLoading.show(context, LoadingCategory.bugReport);
-
-    try {
-      await ref.read(bugRepositoryProvider).reportBug(content: content);
-      await loading.close();
-      if (!mounted) return;
-      if (navigator.canPop()) navigator.pop(); // TextSubmitPage 닫기
-      AppSnackbar.show(
-        context,
-        message: AppLocalizations.of(context).messageBugReportSubmitted,
-      );
-    } on AuthException {
-      // AuthInterceptor가 강제 로그아웃 + 로그인 화면 이동을 처리
-      await loading.close();
-      return;
-    } on AppException catch (e) {
-      // 로딩만 닫고 입력 페이지는 유지(재시도 가능)
-      await loading.close();
-      if (!mounted) return;
-      AppSnackbar.show(
-        context,
-        message: AppLocalizations.of(context).errorByException(e),
-        backgroundColor: AppColors.red,
-      );
-    } finally {
-      // 안전망: 위에서 처리하지 못한 예외 타입으로 인해 close()가 호출되지
-      // 않는 경로를 막는다. close()는 멱등이므로 정상 경로에는 영향 없음.
-      await loading.close();
-    }
-  }
-
   /// 튜토리얼 초기화 (코치마크 한정)
   ///
   /// SharedPreferences의 모든 코치마크 키를 삭제하고, 신호를 발행해
