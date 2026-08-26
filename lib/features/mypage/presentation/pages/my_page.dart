@@ -10,6 +10,7 @@ import '../../../../core/i18n/error_message_mapper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/legal_doc.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -189,7 +190,8 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildItemDivider(),
             _buildMenuItem(
               text: l10n.settingsGuideOpenSourceLicenses,
-              onTap: () => context.push(RoutePaths.openSourceLicenses),
+              onTap: () =>
+                  context.push(RoutePaths.legalDocumentOf(LegalDoc.licenses)),
             ),
             _buildItemDivider(),
             _buildMenuItem(

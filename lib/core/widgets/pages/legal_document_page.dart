@@ -21,15 +21,11 @@ import '../navigation/app_top_bar.dart';
 ///
 /// 앱바는 여전히 Flutter 가 그립니다. 웹은 본문만 냅니다.
 class LegalDocumentPage extends StatefulWidget {
-  const LegalDocumentPage({super.key, required this.title, required this.doc});
-
-  /// 앱바에 표시할 제목
-  final String title;
+  const LegalDocumentPage({super.key, required this.doc});
 
   /// 열어 볼 문서
   ///
-  /// 주소는 이 값과 현재 로케일에서 만듭니다. 예전에는 JSON 경로와 외부 링크 주소를
-  /// 따로 받아서, 짝이 어긋나도 아무도 못 잡았습니다.
+  /// 웹 주소와 앱바 제목이 모두 이 값에서 나옵니다.
   final LegalDoc doc;
 
   @override
@@ -131,7 +127,7 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppTopBar(
-        title: widget.title,
+        title: legalDocTitle(AppLocalizations.of(context), widget.doc),
         onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(child: _buildBody()),
