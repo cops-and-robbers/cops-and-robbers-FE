@@ -3379,6 +3379,12 @@ abstract class AppLocalizations {
   /// **'이용약관 및 정책'**
   String get settingsGuideAgreements;
 
+  /// 설정 — 오픈소스 라이선스 및 데이터 출처 메뉴 (웹뷰 진입)
+  ///
+  /// In ko, this message translates to:
+  /// **'오픈소스 라이선스'**
+  String get settingsGuideOpenSourceLicenses;
+
   /// 설정 — 기타 섹션 헤더 (로그아웃/탈퇴 등)
   ///
   /// In ko, this message translates to:

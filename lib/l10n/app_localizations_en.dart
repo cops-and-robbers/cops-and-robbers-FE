@@ -1879,6 +1879,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsGuideAgreements => 'Terms and policies';
 
   @override
+  String get settingsGuideOpenSourceLicenses => 'Open source licenses';
+
+  @override
   String get settingsSectionEtc => 'Others';
 
   @override

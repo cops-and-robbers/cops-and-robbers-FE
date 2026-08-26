@@ -14,7 +14,10 @@ enum LegalDoc {
   location('location'),
 
   /// 마케팅 정보 수신 동의
-  marketing('marketing');
+  marketing('marketing'),
+
+  /// 오픈소스 라이선스 및 데이터 출처
+  licenses('licenses');
 
   const LegalDoc(this.slug);
 
