@@ -73,13 +73,18 @@ class _RoomsOnlyRepository implements CommunityChatRepository {
 
 /// 탭을 오갈 때 컨테이너는 살아 있어야 한다 — `ProviderScope`를 새로 만들면
 /// keepAlive provider까지 새로 만들어져 "다시 받았다"가 거짓으로 참이 된다.
-({ProviderContainer container, Widget Function({required bool onTab}) tree})
+({
+  ProviderContainer container,
+  Widget Function({required bool onTab}) tree,
+  void Function(Duration) advance,
+})
 _tabHarness(CommunityChatRepository repo) {
+  var now = DateTime(2026, 8, 24, 20, 0);
   final container = ProviderContainer(
     overrides: [
       communityChatRepositoryProvider.overrideWithValue(repo),
       currentUserIdProvider.overrideWithValue(1),
-      clockProvider.overrideWithValue(() => DateTime(2026, 8, 24, 20, 0)),
+      clockProvider.overrideWithValue(() => now),
     ],
   );
   addTearDown(container.dispose);
@@ -106,7 +111,11 @@ _tabHarness(CommunityChatRepository repo) {
     ),
   );
 
-  return (container: container, tree: tree);
+  return (
+    container: container,
+    tree: tree,
+    advance: (Duration d) => now = now.add(d),
+  );
 }
 
 Widget _wrap(CommunityChatRepository repo, {int? currentUserId}) =>
@@ -221,11 +230,11 @@ void main() {
       expect(repo.getRoomsCalls, 0);
     });
 
-    testWidgets('refetches_the_list_when_the_tab_is_opened_again', (
+    testWidgets('refetches_when_the_tab_is_reopened_after_the_stale_window', (
       tester,
     ) async {
       // 목록은 keepAlive라 방에서 대화하고 나와도 미리보기가 그대로다. 서버가
-      // 새 메시지를 알려 줄 채널이 없으므로 탭에 들어올 때마다 다시 받는다.
+      // 새 메시지를 알려 줄 채널이 없어 돌아오는 순간이 유일한 기회다.
       final repo = _RoomsOnlyRepository([_room(1)]);
       final h = _tabHarness(repo);
 
@@ -236,10 +245,28 @@ void main() {
       // 다른 스코프를 고르면 이 위젯이 통째로 빠졌다가 돌아온다.
       await tester.pumpWidget(h.tree(onTab: false));
       await tester.pumpAndSettle();
+      h.advance(const Duration(minutes: 4));
       await tester.pumpWidget(h.tree(onTab: true));
       await tester.pumpAndSettle();
 
       expect(repo.getRoomsCalls, 2);
+    });
+
+    testWidgets('does_not_refetch_when_the_tab_is_reopened_right_away', (
+      tester,
+    ) async {
+      // 토글을 빠르게 오갈 때마다 다시 받으면 요청만 늘고 화면은 그대로다.
+      final repo = _RoomsOnlyRepository([_room(1)]);
+      final h = _tabHarness(repo);
+
+      await tester.pumpWidget(h.tree(onTab: true));
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(h.tree(onTab: false));
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(h.tree(onTab: true));
+      await tester.pumpAndSettle();
+
+      expect(repo.getRoomsCalls, 1);
     });
 
     testWidgets('keeps_showing_the_cached_list_while_refetching', (
@@ -263,6 +290,7 @@ void main() {
       await tester.pumpWidget(h.tree(onTab: false));
       await tester.pumpAndSettle();
 
+      h.advance(const Duration(minutes: 4));
       repo.delay = const Duration(milliseconds: 200);
       await tester.pumpWidget(h.tree(onTab: true));
       await tester.pump();

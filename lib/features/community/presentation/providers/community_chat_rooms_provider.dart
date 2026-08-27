@@ -34,14 +34,44 @@ CommunityChatRepository communityChatRepository(Ref ref) {
 /// 새로고침, 방에 들어갈 때 목록에 없는 방(방금 참여), 나간 뒤 무효화 셋이다.
 @Riverpod(keepAlive: true)
 class CommunityChatRooms extends _$CommunityChatRooms {
+  /// 마지막 조회로부터 이 시간이 지나면 낡은 것으로 본다.
+  ///
+  /// 모집글 목록과 같은 값이다(ISS-0145). 채팅은 실시간 데이터지만 목록을
+  /// 실시간으로 받을 길이 없다 — 서버에 유저당 알림 채널이 없어서(DOC-0037 §10)
+  /// 떠나 있다 돌아오는 순간이 새 메시지를 알 유일한 기회다.
+  static const _staleAfter = Duration(minutes: 3);
+
+  DateTime? _fetchedAt;
+
   @override
-  Future<List<CommunityChatRoomEntity>> build() =>
-      ref.watch(communityChatRepositoryProvider).getRooms();
+  Future<List<CommunityChatRoomEntity>> build() {
+    final repo = ref.watch(communityChatRepositoryProvider);
+    return _fetch(repo);
+  }
+
+  Future<List<CommunityChatRoomEntity>> _fetch(
+    CommunityChatRepository repo,
+  ) async {
+    final rooms = await repo.getRooms();
+    _fetchedAt = ref.read(clockProvider)();
+    return rooms;
+  }
 
   /// 실패하면 예외가 그대로 올라간다 — 보던 목록은 남고 화면이 스낵바로 알린다.
   Future<void> refresh() async {
-    final rooms = await ref.read(communityChatRepositoryProvider).getRooms();
+    final rooms = await _fetch(ref.read(communityChatRepositoryProvider));
     state = AsyncData(rooms);
+  }
+
+  /// 떠나 있다 돌아왔을 때(바텀 탭 복귀·앱 복귀·스코프 전환) 부른다.
+  ///
+  /// 아직 한 번도 못 받았으면 아무것도 안 한다 — 첫 로드가 알아서 채운다.
+  /// 이미 받는 중이어도 넘긴다: 트리거가 겹칠 때 요청이 한 번 더 나간다.
+  Future<void> refreshIfStale() async {
+    final at = _fetchedAt;
+    if (at == null || state.isLoading) return;
+    if (ref.read(clockProvider)().difference(at) < _staleAfter) return;
+    await refresh();
   }
 
   /// 채팅방에서 메시지를 주고받는 동안 그 방의 미리보기를 같이 고친다.

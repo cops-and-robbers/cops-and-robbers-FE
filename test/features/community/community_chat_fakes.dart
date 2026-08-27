@@ -73,7 +73,10 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
   List<CommunityChatMemberEntity> members = const [];
 
   @override
-  Future<List<CommunityChatRoomEntity>> getRooms() async => rooms;
+  Future<List<CommunityChatRoomEntity>> getRooms() async {
+    calls.add('getRooms');
+    return rooms;
+  }
 
   @override
   Future<List<CommunityChatMemberEntity>> getMembers(int postId) async =>
