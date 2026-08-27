@@ -53,6 +53,9 @@ void main() {
         'errorCommunityPostUpdateGeneric',
         'errorCommunityPostDeleteGeneric',
         'errorCommunityPostStatusGeneric',
+        'errorCommunityCommentsLoadGeneric',
+        'errorCommunityCommentCreateGeneric',
+        'errorCommunityCommentDeleteGeneric',
       ];
 
       for (final key in keys) {

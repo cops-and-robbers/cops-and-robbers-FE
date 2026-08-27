@@ -27,10 +27,11 @@ class CommunityCommentInput extends StatefulWidget {
   /// 답글 대상 닉네임. null이면 최상위 댓글 모드.
   final String? replyToNickname;
 
-  /// 댓글 API가 아직 없어 맞출 서버 검증값이 없다. 상한 없이 두면 댓글 하나가
-  /// 목록을 통째로 밀어내므로 모집글 설명과 같은 값으로 1차 방어만 걸어 둔다 —
-  /// API가 생기면 서버 값을 정본으로 삼아 맞춘다 (LSN-0008).
-  static const maxLength = 1000;
+  /// 서버 검증값과 같은 값이다(api-docs `CommunityCommentCreateRequest.content`).
+  ///
+  /// 목데이터 시절에는 맞출 값이 없어 모집글 설명과 같은 1000으로 뒀는데, 실서버는
+  /// 500에서 400을 준다 — 앱이 더 관대하면 다 쓰고 등록을 누른 뒤에야 막힌다.
+  static const maxLength = 500;
 
   @override
   State<CommunityCommentInput> createState() => _CommunityCommentInputState();

@@ -22,5 +22,8 @@ class UserProfileEntity with _$UserProfileEntity {
 
     /// 마케팅 푸시 알림 허용 여부
     required bool allowMarketingPush,
+
+    /// 프로필 아이콘 번호 (`assets/profiles/<번호>.svg` 와 1:1)
+    required int profileIcon,
   }) = _UserProfileEntity;
 }

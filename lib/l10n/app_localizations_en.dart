@@ -719,6 +719,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityCommentReply => 'Reply';
 
   @override
+  String get communityCommentDeleted => 'This comment was deleted';
+
+  @override
   String get communityCommentEmpty => 'Be the first to comment';
 
   @override
@@ -1730,6 +1733,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonBlock => 'Block';
 
   @override
+  String get reportCategoryLabel => 'Report type';
+
+  @override
   String get chatReportCategoryTitle => 'Select report type';
 
   @override
@@ -1896,6 +1902,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorGameNotificationToggleFailed =>
       'Failed to change game notification settings';
+
+  @override
+  String get errorProfileIconUpdateFailed =>
+      'Couldn\'t change your profile icon';
 
   @override
   String get titleBugReport => 'Bug report';
@@ -2251,6 +2261,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCommunityPostCreateGeneric =>
       'Something went wrong while posting';
+
+  @override
+  String get errorCommunityCommentsLoadGeneric =>
+      'Something went wrong while loading comments';
+
+  @override
+  String get errorCommunityCommentCreateGeneric =>
+      'Something went wrong while posting your comment';
+
+  @override
+  String get errorCommunityCommentDeleteGeneric =>
+      'Something went wrong while deleting the comment';
 
   @override
   String get errorCommunityAddressLoadGeneric =>
@@ -2650,11 +2672,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeInvalidMeetingDate => 'Pick a meeting time in the future';
 
   @override
+  String get errorCodeCommentNotFound => 'This comment was already deleted';
+
+  @override
+  String get errorCodeForbiddenNotCommentAuthor =>
+      'You can only delete your own comments';
+
+  @override
+  String get errorCodeReplyTargetGone =>
+      'The comment you\'re replying to is gone. Refresh and try again';
+
+  @override
+  String get errorCodeInvalidCommentDepth => 'You can\'t reply to a reply';
+
+  @override
   String get errorCodePostNotFound => 'This post has been deleted';
 
   @override
   String get errorCodeForbiddenNotAuthor =>
-      'Only the author can edit or delete this post';
+      'Only the host can edit or delete this post';
 
   @override
   String get errorCodeCountryNotSpecified =>
@@ -2680,7 +2716,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeAlreadyJoined => 'You\'re already in this chat';
 
   @override
-  String get errorCodeAuthorCannotLeave => 'The author can\'t leave this chat';
+  String get errorCodeAuthorCannotLeave => 'The host can\'t leave this chat';
 
   @override
   String get errorCodeChatRoomFull => 'This chat is full';

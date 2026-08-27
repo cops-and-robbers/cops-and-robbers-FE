@@ -6,13 +6,15 @@ part of 'profile_icon_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$profileIconHash() => r'd77b99411ba0917641e8999392e3331dcfedf364';
+String _$profileIconHash() => r'3f26b6dbf8f1065dc7f22a30bcdd4c9bb761efd1';
 
 /// 선택된 프로필 아이콘 상태
 ///
-/// 서버에 프로필 아이콘 API가 아직 없어 로컬(SharedPreferences)에만 저장한다.
-/// API가 생기면 이 notifier 내부의 저장·조회만 원격 호출로 바꾸면 되고,
-/// 소비 측(`ref.watch(profileIconProvider)`)은 수정할 필요가 없다.
+/// 정본은 서버(`GET /api/user/me`의 `profileIcon`)다. 로컬(SharedPreferences)은
+/// 첫 프레임을 그리기 위한 캐시일 뿐이라, 서버 값이 오면 덮어쓴다 — 캐시를 없애면
+/// 콜드 스타트마다 기본 아이콘이 한 번 번쩍인다.
+///
+/// 소비 측(`ref.watch(profileIconProvider)`)은 여전히 `int` 하나만 본다.
 ///
 /// 사용 예:
 /// ```dart

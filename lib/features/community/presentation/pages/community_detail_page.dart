@@ -31,12 +31,13 @@ import '../providers/community_detail_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_comment_input.dart';
 import '../widgets/community_comment_list.dart';
+import '../community_report_action.dart';
 import '../widgets/community_map_preview.dart';
 import '../widgets/community_post_menu.dart';
 
 /// 모집글 상세 화면
 ///
-/// 게시글 본문은 실서버, 좋아요·스크랩·댓글·참여 인원은 아직 목이다
+/// 게시글 본문과 댓글은 실서버, 좋아요·스크랩·참여 인원은 아직 목이다
 /// (`community_detail_provider.dart`의 교체 지점 주석 참고).
 /// 비로그인도 열람할 수 있고(DEC-0014), 쓰기 동작만 로그인을 요구한다.
 class CommunityDetailPage extends ConsumerStatefulWidget {
@@ -571,8 +572,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
       case CommunityPostMenuAction.login:
         _goLogin();
       case CommunityPostMenuAction.report:
-        // ponytail: 게시글 신고 API가 아직 없다. 생기면 신고 화면으로 잇는다.
-        AppSnackbar.show(context, message: l10n.comingSoonMessage);
+        unawaited(reportCommunityPost(context, widget.postId));
       case CommunityPostMenuAction.edit:
         unawaited(_openEdit());
       case CommunityPostMenuAction.toggleStatus:

@@ -1,6 +1,8 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_interaction_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_detail_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_comment_list.dart';
@@ -110,9 +112,63 @@ Widget _wrapPushedDetail(_DetailRepository repo) => _app(
   ),
 );
 
+/// 댓글은 실서버로 옮겨 갔다. 덮지 않으면 Retrofit이 실제 Dio를 타므로,
+/// 이 화면과 무관한 이유로 깨진다. 예전 메모리 목이 심던 것과 같은 모양
+/// (원댓글 + 답글 한 겹)을 돌려줘 답글 모드 테스트가 그대로 성립하게 한다.
+class _FakeCommentRepository implements CommunityCommentRepository {
+  List<CommunityCommentEntity> comments = [
+    CommunityCommentEntity(
+      id: 1,
+      writerId: 101,
+      writerNickname: '날쌘도둑',
+      writerProfileIconId: 2,
+      content: '저 참여하고 싶어요! 초보도 괜찮나요?',
+      createdAt: DateTime.now().subtract(const Duration(hours: 3)),
+      replies: [
+        CommunityCommentEntity(
+          id: 2,
+          parentId: 1,
+          writerId: 7,
+          writerNickname: '무서운경찰관',
+          writerProfileIconId: 1,
+          content: '그럼요, 규칙은 현장에서 알려드려요',
+          createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+        ),
+      ],
+    ),
+  ];
+
+  @override
+  Future<List<CommunityCommentEntity>> getComments(int postId) async =>
+      comments;
+
+  @override
+  Future<CommunityCommentEntity> addComment({
+    required int postId,
+    required String content,
+    int? parentId,
+  }) async => CommunityCommentEntity(
+    id: 999,
+    parentId: parentId,
+    writerId: 1,
+    writerNickname: '나',
+    writerProfileIconId: 1,
+    content: content,
+    createdAt: DateTime.now(),
+  );
+
+  @override
+  Future<void> deleteComment(int commentId) async {
+    comments = const [];
+  }
+}
+
 Widget _app(_DetailRepository repo, Widget home) => ProviderScope(
   overrides: [
     communityRepositoryProvider.overrideWithValue(repo),
+    communityCommentRepositoryProvider.overrideWithValue(
+      _FakeCommentRepository(),
+    ),
     // 더보기 메뉴가 로그인 사용자 id를 watch 한다. 덮지 않으면 실제 AuthNotifier가
     // Firebase까지 끌고 들어와, 이 화면과 무관한 이유로 깨진다.
     currentUserIdProvider.overrideWithValue(1),

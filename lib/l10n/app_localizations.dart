@@ -1312,6 +1312,12 @@ abstract class AppLocalizations {
   /// **'답글 달기'**
   String get communityCommentReply;
 
+  /// 커뮤니티 — 답글이 남아 자리만 지킨 삭제 댓글 자리 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제된 댓글이에요'**
+  String get communityCommentDeleted;
+
   /// 댓글이 하나도 없을 때 표시
   ///
   /// In ko, this message translates to:
@@ -3110,6 +3116,12 @@ abstract class AppLocalizations {
   /// **'차단하기'**
   String get buttonBlock;
 
+  /// 신고 유형 선택 화면 — 목록 위 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 유형'**
+  String get reportCategoryLabel;
+
   /// 신고 폼 — 카테고리 선택 섹션 제목
   ///
   /// In ko, this message translates to:
@@ -3414,6 +3426,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'게임 알림 설정을 변경하지 못했어요'**
   String get errorGameNotificationToggleFailed;
+
+  /// 프로필 아이콘 변경 실패 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'프로필 아이콘을 변경하지 못했어요'**
+  String get errorProfileIconUpdateFailed;
 
   /// 버그 제보 다이얼로그 타이틀
   ///
@@ -4044,6 +4062,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'모집글을 등록하는 중 오류가 생겼어요'**
   String get errorCommunityPostCreateGeneric;
+
+  /// 커뮤니티 — 댓글 목록 조회 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글을 불러오는 중 오류가 생겼어요'**
+  String get errorCommunityCommentsLoadGeneric;
+
+  /// 커뮤니티 — 댓글 작성 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글을 남기는 중 오류가 생겼어요'**
+  String get errorCommunityCommentCreateGeneric;
+
+  /// 커뮤니티 — 댓글 삭제 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글을 삭제하는 중 오류가 생겼어요'**
+  String get errorCommunityCommentDeleteGeneric;
 
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///
@@ -4699,6 +4735,30 @@ abstract class AppLocalizations {
   /// **'모임 시간은 지금 이후로 골라주세요'**
   String get errorCodeInvalidMeetingDate;
 
+  /// 커뮤니티 — 댓글이 서버에 없음
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 삭제된 댓글이에요'**
+  String get errorCodeCommentNotFound;
+
+  /// 커뮤니티 — 남의 댓글 삭제 시도
+  ///
+  /// In ko, this message translates to:
+  /// **'내가 쓴 댓글만 지울 수 있어요'**
+  String get errorCodeForbiddenNotCommentAuthor;
+
+  /// 커뮤니티 — 답글 대상이 사라졌거나 조건이 어긋남
+  ///
+  /// In ko, this message translates to:
+  /// **'답글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요'**
+  String get errorCodeReplyTargetGone;
+
+  /// 커뮤니티 — 2단을 넘는 답글 시도
+  ///
+  /// In ko, this message translates to:
+  /// **'답글에는 답글을 달 수 없어요'**
+  String get errorCodeInvalidCommentDepth;
+
   /// No description provided for @errorCodePostNotFound.
   ///
   /// In ko, this message translates to:
@@ -4708,7 +4768,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeForbiddenNotAuthor.
   ///
   /// In ko, this message translates to:
-  /// **'작성자만 수정하거나 삭제할 수 있어요'**
+  /// **'방장만 수정하거나 삭제할 수 있어요'**
   String get errorCodeForbiddenNotAuthor;
 
   /// No description provided for @errorCodeCountryNotSpecified.
@@ -4750,7 +4810,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeAuthorCannotLeave.
   ///
   /// In ko, this message translates to:
-  /// **'작성자는 채팅방을 나갈 수 없어요'**
+  /// **'방장은 채팅방을 나갈 수 없어요'**
   String get errorCodeAuthorCannotLeave;
 
   /// No description provided for @errorCodeChatRoomFull.

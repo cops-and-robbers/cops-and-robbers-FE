@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -311,7 +313,7 @@ class _MyPageState extends ConsumerState<MyPage> {
                 right: id == kProfileIconIds.last ? 0 : AppSpacing.horizontal12,
               ),
               child: GestureDetector(
-                onTap: () => ref.read(profileIconProvider.notifier).select(id),
+                onTap: () => unawaited(_onProfileIconSelect(id)),
                 child: Container(
                   padding: EdgeInsets.all(AppSpacing.horizontal4),
                   decoration: BoxDecoration(
@@ -551,6 +553,26 @@ class _MyPageState extends ConsumerState<MyPage> {
       );
     } finally {
       _gamePushToggling = false;
+    }
+  }
+
+  /// 프로필 아이콘 선택
+  ///
+  /// 화면은 즉시 바뀌고 저장은 뒤따른다. 저장이 실패하면 provider가 이전 값으로
+  /// 되돌리므로, 여기서는 왜 안 바뀌었는지만 알려주면 된다.
+  Future<void> _onProfileIconSelect(int id) async {
+    try {
+      await ref.read(profileIconProvider.notifier).select(id);
+    } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      AppSnackbar.show(
+        context,
+        message: e is AppException
+            ? l10n.errorByException(e)
+            : l10n.errorProfileIconUpdateFailed,
+        backgroundColor: AppColors.red,
+      );
     }
   }
 

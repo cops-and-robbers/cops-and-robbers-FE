@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -11,6 +10,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/input_focus_guard.dart';
+import '../../../../core/utils/utf16_length_limiting_formatter.dart';
 
 /// 채팅 입력 바 위젯
 ///
@@ -156,8 +156,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   controller: _controller,
                   focusNode: _focusNode,
                   enabled: widget.enabled,
-                  maxLength: 300,
-                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  // 서버와 같은 단위(UTF-16)로 막는다 — 기본 maxLength는 자소
+                  // 단위라 이모지가 섞이면 세는 값이 서버와 어긋난다.
+                  inputFormatters: const [Utf16LengthLimitingFormatter(300)],
                   // 전송은 옆 버튼이 맡는다 — 키보드 키는 개행(커뮤니티 입력창과 동일).
                   maxLines: 4,
                   minLines: 1,

@@ -7,6 +7,7 @@ import 'package:cops_and_robbers/features/user/data/models/game_push_agreement_m
 import 'package:cops_and_robbers/features/user/data/models/my_page_response_model.dart';
 import 'package:cops_and_robbers/features/user/data/models/nickname_check_response_model.dart';
 import 'package:cops_and_robbers/features/user/data/models/nickname_update_request_model.dart';
+import 'package:cops_and_robbers/features/user/data/models/profile_icon_update_request_model.dart';
 import 'package:cops_and_robbers/features/user/data/repositories/user_repository_impl.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,6 +39,10 @@ class _FakeUserRemoteDataSource implements UserRemoteDataSource {
 
   @override
   Future<MyPageResponseModel> getMyPage() => throw UnimplementedError();
+
+  @override
+  Future<void> updateProfileIcon(ProfileIconUpdateRequestModel request) =>
+      throw UnimplementedError();
 
   @override
   Future<DeleteAccountResponseModel> deleteAccount() =>

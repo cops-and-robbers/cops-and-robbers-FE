@@ -664,6 +664,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCommentReply => '답글 달기';
 
   @override
+  String get communityCommentDeleted => '삭제된 댓글이에요';
+
+  @override
   String get communityCommentEmpty => '첫 댓글을 남겨보세요';
 
   @override
@@ -1617,6 +1620,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonBlock => '차단하기';
 
   @override
+  String get reportCategoryLabel => '신고 유형';
+
+  @override
   String get chatReportCategoryTitle => '신고 유형 선택';
 
   @override
@@ -1781,6 +1787,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorGameNotificationToggleFailed => '게임 알림 설정을 변경하지 못했어요';
+
+  @override
+  String get errorProfileIconUpdateFailed => '프로필 아이콘을 변경하지 못했어요';
 
   @override
   String get titleBugReport => '버그 제보';
@@ -2103,6 +2112,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCommunityPostCreateGeneric => '모집글을 등록하는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityCommentsLoadGeneric => '댓글을 불러오는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityCommentCreateGeneric => '댓글을 남기는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityCommentDeleteGeneric => '댓글을 삭제하는 중 오류가 생겼어요';
 
   @override
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';
@@ -2449,10 +2467,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeInvalidMeetingDate => '모임 시간은 지금 이후로 골라주세요';
 
   @override
+  String get errorCodeCommentNotFound => '이미 삭제된 댓글이에요';
+
+  @override
+  String get errorCodeForbiddenNotCommentAuthor => '내가 쓴 댓글만 지울 수 있어요';
+
+  @override
+  String get errorCodeReplyTargetGone => '답글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요';
+
+  @override
+  String get errorCodeInvalidCommentDepth => '답글에는 답글을 달 수 없어요';
+
+  @override
   String get errorCodePostNotFound => '이미 삭제된 모집글이에요';
 
   @override
-  String get errorCodeForbiddenNotAuthor => '작성자만 수정하거나 삭제할 수 있어요';
+  String get errorCodeForbiddenNotAuthor => '방장만 수정하거나 삭제할 수 있어요';
 
   @override
   String get errorCodeCountryNotSpecified =>
@@ -2474,7 +2504,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeAlreadyJoined => '이미 참여한 채팅방이에요';
 
   @override
-  String get errorCodeAuthorCannotLeave => '작성자는 채팅방을 나갈 수 없어요';
+  String get errorCodeAuthorCannotLeave => '방장은 채팅방을 나갈 수 없어요';
 
   @override
   String get errorCodeChatRoomFull => '채팅방 정원이 가득 찼어요';

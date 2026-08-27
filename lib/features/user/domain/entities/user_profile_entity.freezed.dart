@@ -32,6 +32,9 @@ mixin _$UserProfileEntity {
   /// 마케팅 푸시 알림 허용 여부
   bool get allowMarketingPush => throw _privateConstructorUsedError;
 
+  /// 프로필 아이콘 번호 (`assets/profiles/<번호>.svg` 와 1:1)
+  int get profileIcon => throw _privateConstructorUsedError;
+
   /// Create a copy of UserProfileEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -52,6 +55,7 @@ abstract class $UserProfileEntityCopyWith<$Res> {
     String socialPlatform,
     bool allowGamePush,
     bool allowMarketingPush,
+    int profileIcon,
   });
 }
 
@@ -75,6 +79,7 @@ class _$UserProfileEntityCopyWithImpl<$Res, $Val extends UserProfileEntity>
     Object? socialPlatform = null,
     Object? allowGamePush = null,
     Object? allowMarketingPush = null,
+    Object? profileIcon = null,
   }) {
     return _then(
       _value.copyWith(
@@ -98,6 +103,10 @@ class _$UserProfileEntityCopyWithImpl<$Res, $Val extends UserProfileEntity>
                 ? _value.allowMarketingPush
                 : allowMarketingPush // ignore: cast_nullable_to_non_nullable
                       as bool,
+            profileIcon: null == profileIcon
+                ? _value.profileIcon
+                : profileIcon // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -119,6 +128,7 @@ abstract class _$$UserProfileEntityImplCopyWith<$Res>
     String socialPlatform,
     bool allowGamePush,
     bool allowMarketingPush,
+    int profileIcon,
   });
 }
 
@@ -141,6 +151,7 @@ class __$$UserProfileEntityImplCopyWithImpl<$Res>
     Object? socialPlatform = null,
     Object? allowGamePush = null,
     Object? allowMarketingPush = null,
+    Object? profileIcon = null,
   }) {
     return _then(
       _$UserProfileEntityImpl(
@@ -164,6 +175,10 @@ class __$$UserProfileEntityImplCopyWithImpl<$Res>
             ? _value.allowMarketingPush
             : allowMarketingPush // ignore: cast_nullable_to_non_nullable
                   as bool,
+        profileIcon: null == profileIcon
+            ? _value.profileIcon
+            : profileIcon // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -178,6 +193,7 @@ class _$UserProfileEntityImpl implements _UserProfileEntity {
     required this.socialPlatform,
     required this.allowGamePush,
     required this.allowMarketingPush,
+    required this.profileIcon,
   });
 
   /// 사용자 ID
@@ -200,9 +216,13 @@ class _$UserProfileEntityImpl implements _UserProfileEntity {
   @override
   final bool allowMarketingPush;
 
+  /// 프로필 아이콘 번호 (`assets/profiles/<번호>.svg` 와 1:1)
+  @override
+  final int profileIcon;
+
   @override
   String toString() {
-    return 'UserProfileEntity(userId: $userId, nickname: $nickname, socialPlatform: $socialPlatform, allowGamePush: $allowGamePush, allowMarketingPush: $allowMarketingPush)';
+    return 'UserProfileEntity(userId: $userId, nickname: $nickname, socialPlatform: $socialPlatform, allowGamePush: $allowGamePush, allowMarketingPush: $allowMarketingPush, profileIcon: $profileIcon)';
   }
 
   @override
@@ -218,7 +238,9 @@ class _$UserProfileEntityImpl implements _UserProfileEntity {
             (identical(other.allowGamePush, allowGamePush) ||
                 other.allowGamePush == allowGamePush) &&
             (identical(other.allowMarketingPush, allowMarketingPush) ||
-                other.allowMarketingPush == allowMarketingPush));
+                other.allowMarketingPush == allowMarketingPush) &&
+            (identical(other.profileIcon, profileIcon) ||
+                other.profileIcon == profileIcon));
   }
 
   @override
@@ -229,6 +251,7 @@ class _$UserProfileEntityImpl implements _UserProfileEntity {
     socialPlatform,
     allowGamePush,
     allowMarketingPush,
+    profileIcon,
   );
 
   /// Create a copy of UserProfileEntity
@@ -250,6 +273,7 @@ abstract class _UserProfileEntity implements UserProfileEntity {
     required final String socialPlatform,
     required final bool allowGamePush,
     required final bool allowMarketingPush,
+    required final int profileIcon,
   }) = _$UserProfileEntityImpl;
 
   /// 사용자 ID
@@ -271,6 +295,10 @@ abstract class _UserProfileEntity implements UserProfileEntity {
   /// 마케팅 푸시 알림 허용 여부
   @override
   bool get allowMarketingPush;
+
+  /// 프로필 아이콘 번호 (`assets/profiles/<번호>.svg` 와 1:1)
+  @override
+  int get profileIcon;
 
   /// Create a copy of UserProfileEntity
   /// with the given fields replaced by the non-null parameter values.

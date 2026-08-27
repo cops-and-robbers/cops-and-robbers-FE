@@ -1,5 +1,6 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/community/data/datasources/community_remote_datasource.dart';
+import 'package:cops_and_robbers/features/community/data/models/community_comment_model.dart';
 import 'package:cops_and_robbers/features/community/data/models/community_post_model.dart';
 import 'package:cops_and_robbers/features/community/data/repositories/community_repository_impl.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
@@ -128,6 +129,25 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
     if (errorToThrow != null) throw errorToThrow!;
     return postToReturn!;
   }
+
+  // 댓글은 CommunityCommentRepository가 다룬다 — 게시글 테스트가 이쪽을 건드리면
+  // 조용히 통과하는 대신 그 자리에서 드러나야 한다.
+  @override
+  Future<CommunityCommentListResponseModel> getComments(
+    int postId, {
+    int? cursor,
+    int? size,
+  }) => throw UnimplementedError('이 테스트는 댓글 조회를 쓰지 않는다');
+
+  @override
+  Future<CommunityCommentResponseModel> createComment(
+    int postId,
+    CommunityCommentCreateRequestModel body,
+  ) => throw UnimplementedError('이 테스트는 댓글 작성을 쓰지 않는다');
+
+  @override
+  Future<void> deleteComment(int commentId) =>
+      throw UnimplementedError('이 테스트는 댓글 삭제를 쓰지 않는다');
 }
 
 DioException _dioError(int statusCode) => DioException(

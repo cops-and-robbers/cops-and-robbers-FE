@@ -147,6 +147,9 @@ class ApiEndpoints {
   /// 닉네임 중복 확인
   static const String checkNickname = '/api/user/check-nickname';
 
+  /// 프로필 아이콘 변경
+  static const String updateProfileIcon = '/api/user/me/profile-icon';
+
   /// 약관 동의 상태 조회 / 저장
   static const String agreements = '/api/user/agreements';
 
@@ -162,6 +165,9 @@ class ApiEndpoints {
 
   /// 채팅 신고
   static const String reportChat = '/api/report/chat';
+
+  /// 커뮤니티 모집글 신고
+  static const String reportCommunityPost = '/api/report/community-post';
 
   // ============================================
   // Bug API - 버그 제보

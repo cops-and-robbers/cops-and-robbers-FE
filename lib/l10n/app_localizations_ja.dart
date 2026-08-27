@@ -665,6 +665,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCommentReply => '返信する';
 
   @override
+  String get communityCommentDeleted => '削除されたコメントです';
+
+  @override
   String get communityCommentEmpty => '最初のコメントを残してみましょう';
 
   @override
@@ -1616,6 +1619,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonBlock => 'ブロック';
 
   @override
+  String get reportCategoryLabel => '通報の種類';
+
+  @override
   String get chatReportCategoryTitle => '通報タイプの選択';
 
   @override
@@ -1779,6 +1785,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorGameNotificationToggleFailed => 'ゲーム通知の設定を変更できませんでした';
+
+  @override
+  String get errorProfileIconUpdateFailed => 'プロフィールアイコンを変更できませんでした';
 
   @override
   String get titleBugReport => 'バグ報告';
@@ -2101,6 +2110,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCommunityPostCreateGeneric => '募集の登録中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentsLoadGeneric => 'コメントの読み込み中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentCreateGeneric => 'コメントの投稿中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentDeleteGeneric => 'コメントの削除中にエラーが発生しました';
 
   @override
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';
@@ -2450,10 +2468,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeInvalidMeetingDate => '集まる時間は現在より後を選んでください';
 
   @override
+  String get errorCodeCommentNotFound => 'すでに削除されたコメントです';
+
+  @override
+  String get errorCodeForbiddenNotCommentAuthor => '自分が書いたコメントのみ削除できます';
+
+  @override
+  String get errorCodeReplyTargetGone =>
+      '返信しようとしたコメントがなくなりました。更新してからもう一度お試しください';
+
+  @override
+  String get errorCodeInvalidCommentDepth => '返信に返信はできません';
+
+  @override
   String get errorCodePostNotFound => 'この募集はすでに削除されました';
 
   @override
-  String get errorCodeForbiddenNotAuthor => '作成者のみ編集・削除できます';
+  String get errorCodeForbiddenNotAuthor => 'ホストのみ編集・削除できます';
 
   @override
   String get errorCodeCountryNotSpecified => '国を確認できない場所です。別の場所で試してください';
@@ -2474,7 +2505,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeAlreadyJoined => '既にこのチャットに参加しています';
 
   @override
-  String get errorCodeAuthorCannotLeave => '作成者はこのチャットから退出できません';
+  String get errorCodeAuthorCannotLeave => 'ホストはこのチャットから退出できません';
 
   @override
   String get errorCodeChatRoomFull => 'このチャットの定員に達しました';

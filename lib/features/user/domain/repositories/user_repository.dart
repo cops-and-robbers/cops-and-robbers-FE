@@ -16,6 +16,12 @@ abstract class UserRepository {
   /// 성공 시 아무것도 반환하지 않습니다 (204 No Content).
   Future<void> updateNickname(String nickname);
 
+  /// 프로필 아이콘 변경
+  ///
+  /// 서버는 번호만 보관한다 (앱 에셋 번호와 1:1).
+  /// 성공 시 아무것도 반환하지 않습니다 (204 No Content).
+  Future<void> updateProfileIcon(int profileIcon);
+
   /// 내 프로필 조회
   ///
   /// 현재 로그인한 사용자의 프로필 정보를 반환합니다.

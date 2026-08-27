@@ -36,6 +36,13 @@ mixin _$MyPageResponseModel {
   /// 마케팅 푸시 알림 허용 여부
   bool get allowMarketingPush => throw _privateConstructorUsedError;
 
+  /// 프로필 아이콘 번호 (앱 에셋 번호와 1:1)
+  ///
+  /// OpenAPI 계약상 필수가 아니다. `required`로 두면 서버가 이 필드를 빼는
+  /// 순간 응답 파싱이 통째로 실패해 닉네임 조회까지 같이 죽는다 — 서버 기본값과
+  /// 같은 1로 채우고 넘어간다.
+  int get profileIcon => throw _privateConstructorUsedError;
+
   /// Serializes this MyPageResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -59,6 +66,7 @@ abstract class $MyPageResponseModelCopyWith<$Res> {
     String socialPlatform,
     bool allowGamePush,
     bool allowMarketingPush,
+    int profileIcon,
   });
 }
 
@@ -82,6 +90,7 @@ class _$MyPageResponseModelCopyWithImpl<$Res, $Val extends MyPageResponseModel>
     Object? socialPlatform = null,
     Object? allowGamePush = null,
     Object? allowMarketingPush = null,
+    Object? profileIcon = null,
   }) {
     return _then(
       _value.copyWith(
@@ -105,6 +114,10 @@ class _$MyPageResponseModelCopyWithImpl<$Res, $Val extends MyPageResponseModel>
                 ? _value.allowMarketingPush
                 : allowMarketingPush // ignore: cast_nullable_to_non_nullable
                       as bool,
+            profileIcon: null == profileIcon
+                ? _value.profileIcon
+                : profileIcon // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -126,6 +139,7 @@ abstract class _$$MyPageResponseModelImplCopyWith<$Res>
     String socialPlatform,
     bool allowGamePush,
     bool allowMarketingPush,
+    int profileIcon,
   });
 }
 
@@ -148,6 +162,7 @@ class __$$MyPageResponseModelImplCopyWithImpl<$Res>
     Object? socialPlatform = null,
     Object? allowGamePush = null,
     Object? allowMarketingPush = null,
+    Object? profileIcon = null,
   }) {
     return _then(
       _$MyPageResponseModelImpl(
@@ -171,6 +186,10 @@ class __$$MyPageResponseModelImplCopyWithImpl<$Res>
             ? _value.allowMarketingPush
             : allowMarketingPush // ignore: cast_nullable_to_non_nullable
                   as bool,
+        profileIcon: null == profileIcon
+            ? _value.profileIcon
+            : profileIcon // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -185,6 +204,7 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
     required this.socialPlatform,
     required this.allowGamePush,
     required this.allowMarketingPush,
+    this.profileIcon = 1,
   });
 
   factory _$MyPageResponseModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -210,9 +230,18 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
   @override
   final bool allowMarketingPush;
 
+  /// 프로필 아이콘 번호 (앱 에셋 번호와 1:1)
+  ///
+  /// OpenAPI 계약상 필수가 아니다. `required`로 두면 서버가 이 필드를 빼는
+  /// 순간 응답 파싱이 통째로 실패해 닉네임 조회까지 같이 죽는다 — 서버 기본값과
+  /// 같은 1로 채우고 넘어간다.
+  @override
+  @JsonKey()
+  final int profileIcon;
+
   @override
   String toString() {
-    return 'MyPageResponseModel(userId: $userId, nickname: $nickname, socialPlatform: $socialPlatform, allowGamePush: $allowGamePush, allowMarketingPush: $allowMarketingPush)';
+    return 'MyPageResponseModel(userId: $userId, nickname: $nickname, socialPlatform: $socialPlatform, allowGamePush: $allowGamePush, allowMarketingPush: $allowMarketingPush, profileIcon: $profileIcon)';
   }
 
   @override
@@ -228,7 +257,9 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
             (identical(other.allowGamePush, allowGamePush) ||
                 other.allowGamePush == allowGamePush) &&
             (identical(other.allowMarketingPush, allowMarketingPush) ||
-                other.allowMarketingPush == allowMarketingPush));
+                other.allowMarketingPush == allowMarketingPush) &&
+            (identical(other.profileIcon, profileIcon) ||
+                other.profileIcon == profileIcon));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -240,6 +271,7 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
     socialPlatform,
     allowGamePush,
     allowMarketingPush,
+    profileIcon,
   );
 
   /// Create a copy of MyPageResponseModel
@@ -266,6 +298,7 @@ abstract class _MyPageResponseModel implements MyPageResponseModel {
     required final String socialPlatform,
     required final bool allowGamePush,
     required final bool allowMarketingPush,
+    final int profileIcon,
   }) = _$MyPageResponseModelImpl;
 
   factory _MyPageResponseModel.fromJson(Map<String, dynamic> json) =
@@ -290,6 +323,14 @@ abstract class _MyPageResponseModel implements MyPageResponseModel {
   /// 마케팅 푸시 알림 허용 여부
   @override
   bool get allowMarketingPush;
+
+  /// 프로필 아이콘 번호 (앱 에셋 번호와 1:1)
+  ///
+  /// OpenAPI 계약상 필수가 아니다. `required`로 두면 서버가 이 필드를 빼는
+  /// 순간 응답 파싱이 통째로 실패해 닉네임 조회까지 같이 죽는다 — 서버 기본값과
+  /// 같은 1로 채우고 넘어간다.
+  @override
+  int get profileIcon;
 
   /// Create a copy of MyPageResponseModel
   /// with the given fields replaced by the non-null parameter values.

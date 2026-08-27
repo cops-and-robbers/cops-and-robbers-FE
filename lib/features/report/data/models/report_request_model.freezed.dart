@@ -271,3 +271,223 @@ abstract class _ReportRequestModel implements ReportRequestModel {
   _$$ReportRequestModelImplCopyWith<_$ReportRequestModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+CommunityPostReportRequestModel _$CommunityPostReportRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityPostReportRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityPostReportRequestModel {
+  int get postId => throw _privateConstructorUsedError;
+  String get reportType => throw _privateConstructorUsedError;
+  String? get etcReason => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityPostReportRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityPostReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityPostReportRequestModelCopyWith<CommunityPostReportRequestModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityPostReportRequestModelCopyWith<$Res> {
+  factory $CommunityPostReportRequestModelCopyWith(
+    CommunityPostReportRequestModel value,
+    $Res Function(CommunityPostReportRequestModel) then,
+  ) =
+      _$CommunityPostReportRequestModelCopyWithImpl<
+        $Res,
+        CommunityPostReportRequestModel
+      >;
+  @useResult
+  $Res call({int postId, String reportType, String? etcReason});
+}
+
+/// @nodoc
+class _$CommunityPostReportRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityPostReportRequestModel
+>
+    implements $CommunityPostReportRequestModelCopyWith<$Res> {
+  _$CommunityPostReportRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityPostReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? postId = null,
+    Object? reportType = null,
+    Object? etcReason = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            postId: null == postId
+                ? _value.postId
+                : postId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            reportType: null == reportType
+                ? _value.reportType
+                : reportType // ignore: cast_nullable_to_non_nullable
+                      as String,
+            etcReason: freezed == etcReason
+                ? _value.etcReason
+                : etcReason // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityPostReportRequestModelImplCopyWith<$Res>
+    implements $CommunityPostReportRequestModelCopyWith<$Res> {
+  factory _$$CommunityPostReportRequestModelImplCopyWith(
+    _$CommunityPostReportRequestModelImpl value,
+    $Res Function(_$CommunityPostReportRequestModelImpl) then,
+  ) = __$$CommunityPostReportRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int postId, String reportType, String? etcReason});
+}
+
+/// @nodoc
+class __$$CommunityPostReportRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityPostReportRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityPostReportRequestModelImpl
+        >
+    implements _$$CommunityPostReportRequestModelImplCopyWith<$Res> {
+  __$$CommunityPostReportRequestModelImplCopyWithImpl(
+    _$CommunityPostReportRequestModelImpl _value,
+    $Res Function(_$CommunityPostReportRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityPostReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? postId = null,
+    Object? reportType = null,
+    Object? etcReason = freezed,
+  }) {
+    return _then(
+      _$CommunityPostReportRequestModelImpl(
+        postId: null == postId
+            ? _value.postId
+            : postId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        reportType: null == reportType
+            ? _value.reportType
+            : reportType // ignore: cast_nullable_to_non_nullable
+                  as String,
+        etcReason: freezed == etcReason
+            ? _value.etcReason
+            : etcReason // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityPostReportRequestModelImpl
+    implements _CommunityPostReportRequestModel {
+  const _$CommunityPostReportRequestModelImpl({
+    required this.postId,
+    required this.reportType,
+    this.etcReason,
+  });
+
+  factory _$CommunityPostReportRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityPostReportRequestModelImplFromJson(json);
+
+  @override
+  final int postId;
+  @override
+  final String reportType;
+  @override
+  final String? etcReason;
+
+  @override
+  String toString() {
+    return 'CommunityPostReportRequestModel(postId: $postId, reportType: $reportType, etcReason: $etcReason)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityPostReportRequestModelImpl &&
+            (identical(other.postId, postId) || other.postId == postId) &&
+            (identical(other.reportType, reportType) ||
+                other.reportType == reportType) &&
+            (identical(other.etcReason, etcReason) ||
+                other.etcReason == etcReason));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, postId, reportType, etcReason);
+
+  /// Create a copy of CommunityPostReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityPostReportRequestModelImplCopyWith<
+    _$CommunityPostReportRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityPostReportRequestModelImplCopyWithImpl<
+        _$CommunityPostReportRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityPostReportRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityPostReportRequestModel
+    implements CommunityPostReportRequestModel {
+  const factory _CommunityPostReportRequestModel({
+    required final int postId,
+    required final String reportType,
+    final String? etcReason,
+  }) = _$CommunityPostReportRequestModelImpl;
+
+  factory _CommunityPostReportRequestModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityPostReportRequestModelImpl.fromJson;
+
+  @override
+  int get postId;
+  @override
+  String get reportType;
+  @override
+  String? get etcReason;
+
+  /// Create a copy of CommunityPostReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityPostReportRequestModelImplCopyWith<
+    _$CommunityPostReportRequestModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}

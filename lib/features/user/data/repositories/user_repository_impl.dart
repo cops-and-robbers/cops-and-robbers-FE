@@ -10,6 +10,7 @@ import '../datasources/user_remote_datasource.dart';
 import '../models/agreement_request_model.dart';
 import '../models/game_push_agreement_model.dart';
 import '../models/nickname_update_request_model.dart';
+import '../models/profile_icon_update_request_model.dart';
 
 /// User Repository 구현체
 ///
@@ -62,6 +63,21 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<void> updateProfileIcon(int profileIcon) async {
+    try {
+      await _dataSource.updateProfileIcon(
+        ProfileIconUpdateRequestModel(profileIcon: profileIcon),
+      );
+
+      if (kDebugMode) {
+        debugPrint('✅ 프로필 아이콘 변경 성공: $profileIcon');
+      }
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    }
+  }
+
+  @override
   Future<UserProfileEntity> getMyProfile() async {
     try {
       final response = await _dataSource.getMyPage();
@@ -76,6 +92,7 @@ class UserRepositoryImpl implements UserRepository {
         socialPlatform: response.socialPlatform,
         allowGamePush: response.allowGamePush,
         allowMarketingPush: response.allowMarketingPush,
+        profileIcon: response.profileIcon,
       );
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);

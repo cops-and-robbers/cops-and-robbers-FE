@@ -11,7 +11,8 @@ String _$communityInteractionRepositoryHash() =>
 
 /// 상호작용 Repository Provider — 목데이터 교체 지점
 ///
-/// ponytail: 좋아요·스크랩·댓글 API가 없어 메모리 목을 돌려준다.
+/// ponytail: 좋아요·스크랩은 응답에 카운트·내 반응 필드가 없어 메모리 목을
+/// 돌려준다. 댓글은 실서버로 옮겨 갔다(`communityCommentRepositoryProvider`).
 /// API가 열리면 여기서 돌려주는 구현체만 실제 구현으로 바꾼다. 화면·Notifier는
 /// 인터페이스만 알고 있어 손댈 곳이 없다.
 ///
@@ -37,7 +38,7 @@ final communityInteractionRepositoryProvider =
 typedef CommunityInteractionRepositoryRef =
     ProviderRef<CommunityInteractionRepository>;
 String _$communityDetailNotifierHash() =>
-    r'235df58a73540728a0e8d3be0ad7abcedf64c7ab';
+    r'1f370315e187adc146060a2651e0461950e9ec6b';
 
 /// Copied from Dart SDK
 class _SystemHash {
