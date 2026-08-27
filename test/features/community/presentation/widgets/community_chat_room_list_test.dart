@@ -35,9 +35,13 @@ class _RoomsOnlyRepository implements CommunityChatRepository {
   final List<CommunityChatRoomEntity> rooms;
   int getRoomsCalls = 0;
 
+  /// 응답이 늦는 상황 — 다시 받는 동안 화면이 뭘 보여 주는지 보려고 둔다.
+  Duration? delay;
+
   @override
   Future<List<CommunityChatRoomEntity>> getRooms() async {
     getRoomsCalls++;
+    if (delay != null) await Future<void>.delayed(delay!);
     return rooms;
   }
 
@@ -64,6 +68,44 @@ class _RoomsOnlyRepository implements CommunityChatRepository {
     required String messageKey,
     required String text,
   }) => throw UnimplementedError();
+}
+
+/// 탭을 오갈 때 컨테이너는 살아 있어야 한다 — `ProviderScope`를 새로 만들면
+/// keepAlive provider까지 새로 만들어져 "다시 받았다"가 거짓으로 참이 된다.
+({ProviderContainer container, Widget Function({required bool onTab}) tree})
+_tabHarness(CommunityChatRepository repo) {
+  final container = ProviderContainer(
+    overrides: [
+      communityChatRepositoryProvider.overrideWithValue(repo),
+      currentUserIdProvider.overrideWithValue(1),
+      clockProvider.overrideWithValue(() => DateTime(2026, 8, 24, 20, 0)),
+    ],
+  );
+  addTearDown(container.dispose);
+
+  Widget tree({required bool onTab}) => UncontrolledProviderScope(
+    container: container,
+    child: ScreenUtilInit(
+      designSize: const Size(393, 852),
+      builder: (_, _) => MaterialApp(
+        locale: const Locale('ko'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: onTab
+              ? const CommunityChatRoomList(bottomPadding: 0)
+              : const SizedBox.shrink(),
+        ),
+      ),
+    ),
+  );
+
+  return (container: container, tree: tree);
 }
 
 Widget _wrap(CommunityChatRepository repo, {int? currentUserId}) =>
@@ -131,6 +173,61 @@ void main() {
 
       expect(find.text('로그인하면 내 모임을 볼 수 있어요'), findsOneWidget);
       expect(repo.getRoomsCalls, 0);
+    });
+
+    testWidgets('refetches_the_list_when_the_tab_is_opened_again', (
+      tester,
+    ) async {
+      // 목록은 keepAlive라 방에서 대화하고 나와도 미리보기가 그대로다. 서버가
+      // 새 메시지를 알려 줄 채널이 없으므로 탭에 들어올 때마다 다시 받는다.
+      final repo = _RoomsOnlyRepository([_room(1)]);
+      final h = _tabHarness(repo);
+
+      await tester.pumpWidget(h.tree(onTab: true));
+      await tester.pumpAndSettle();
+      expect(repo.getRoomsCalls, 1);
+
+      // 다른 스코프를 고르면 이 위젯이 통째로 빠졌다가 돌아온다.
+      await tester.pumpWidget(h.tree(onTab: false));
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(h.tree(onTab: true));
+      await tester.pumpAndSettle();
+
+      expect(repo.getRoomsCalls, 2);
+    });
+
+    testWidgets('keeps_showing_the_cached_list_while_refetching', (
+      tester,
+    ) async {
+      // 다시 받는 동안 스피너로 갈아치우면 탭을 옮길 때마다 화면이 깜빡인다.
+      final repo = _RoomsOnlyRepository([
+        _room(
+          1,
+          last: CommunityChatLastMessageEntity(
+            id: 1,
+            body: const CommunityChatMessageBody.text('도착한 분 계신가요?'),
+            createdAt: DateTime(2026, 8, 24, 20, 31),
+          ),
+        ),
+      ]);
+
+      final h = _tabHarness(repo);
+      await tester.pumpWidget(h.tree(onTab: true));
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(h.tree(onTab: false));
+      await tester.pumpAndSettle();
+
+      repo.delay = const Duration(milliseconds: 200);
+      await tester.pumpWidget(h.tree(onTab: true));
+      await tester.pump();
+
+      // 아직 응답 전인데도 캐시된 칸이 그대로 보인다.
+      expect(find.text('도착한 분 계신가요?'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+
+      // 지연 타이머를 흘려 보낸다 — 남겨 두면 트리 정리 때 터진다.
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
     });
   });
 }
