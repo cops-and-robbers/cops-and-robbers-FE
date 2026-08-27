@@ -13,8 +13,10 @@ import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../data/datasources/community_remote_datasource.dart';
 import '../../data/repositories/community_comment_repository_impl.dart';
+import '../../data/repositories/community_reaction_repository_impl.dart';
 import '../../data/repositories/community_repository_impl.dart';
 import '../../domain/repositories/community_comment_repository.dart';
+import '../../domain/repositories/community_reaction_repository.dart';
 import '../../domain/community_post_errors.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
@@ -52,6 +54,16 @@ CommunityRepository communityRepository(Ref ref) {
 @riverpod
 CommunityCommentRepository communityCommentRepository(Ref ref) {
   return CommunityCommentRepositoryImpl(
+    ref.watch(communityRemoteDataSourceProvider),
+  );
+}
+
+/// `CommunityReactionRepository` Provider
+///
+/// 상태를 안 들고 있으므로 keepAlive가 필요 없다 — 서버가 상태를 갖는다.
+@riverpod
+CommunityReactionRepository communityReactionRepository(Ref ref) {
+  return CommunityReactionRepositoryImpl(
     ref.watch(communityRemoteDataSourceProvider),
   );
 }

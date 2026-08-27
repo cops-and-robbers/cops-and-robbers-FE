@@ -2262,6 +2262,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong while deleting the comment';
 
   @override
+  String get errorCommunityReactionGeneric =>
+      'Couldn\'t complete that. Please try again shortly';
+
+  @override
   String get errorCommunityAddressLoadGeneric =>
       'Something went wrong while loading the address';
 

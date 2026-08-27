@@ -4057,6 +4057,12 @@ abstract class AppLocalizations {
   /// **'댓글을 삭제하는 중 오류가 생겼어요'**
   String get errorCommunityCommentDeleteGeneric;
 
+  /// 커뮤니티 — 좋아요·스크랩 토글 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityReactionGeneric;
+
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:

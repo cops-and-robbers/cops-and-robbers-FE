@@ -727,6 +727,7 @@
   "errorCommunityCommentsLoadGeneric": "コメントの読み込み中にエラーが発生しました",
   "errorCommunityCommentCreateGeneric": "コメントの投稿中にエラーが発生しました",
   "errorCommunityCommentDeleteGeneric": "コメントの削除中にエラーが発生しました",
+  "errorCommunityReactionGeneric": "処理できませんでした。しばらくしてからもう一度お試しください",
   "errorCommunityAddressLoadGeneric": "住所の読み込み中にエラーが発生しました",
   "errorNoticeLoadFailed": "お知らせを読み込めませんでした",
   "pageNoticesTitle": "お知らせ",

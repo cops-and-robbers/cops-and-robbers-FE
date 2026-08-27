@@ -151,6 +151,22 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
       throw UnimplementedError('이 테스트는 댓글 삭제를 쓰지 않는다');
 
   @override
+  Future<void> likePost(int postId) =>
+      throw UnimplementedError('이 테스트는 좋아요를 쓰지 않는다');
+
+  @override
+  Future<void> unlikePost(int postId) =>
+      throw UnimplementedError('이 테스트는 좋아요 취소를 쓰지 않는다');
+
+  @override
+  Future<void> scrapPost(int postId) =>
+      throw UnimplementedError('이 테스트는 스크랩을 쓰지 않는다');
+
+  @override
+  Future<void> unscrapPost(int postId) =>
+      throw UnimplementedError('이 테스트는 스크랩 취소를 쓰지 않는다');
+
+  @override
   Future<CommunityChatRoomListResponseModel> getChatRooms() =>
       throw UnimplementedError('이 테스트는 채팅방 목록을 쓰지 않는다');
 

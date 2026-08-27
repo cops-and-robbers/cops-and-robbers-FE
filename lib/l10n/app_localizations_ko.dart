@@ -2112,6 +2112,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCommunityCommentDeleteGeneric => '댓글을 삭제하는 중 오류가 생겼어요';
 
   @override
+  String get errorCommunityReactionGeneric => '요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';
 
   @override

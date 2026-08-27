@@ -2111,6 +2111,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCommunityCommentDeleteGeneric => 'コメントの削除中にエラーが発生しました';
 
   @override
+  String get errorCommunityReactionGeneric => '処理できませんでした。しばらくしてからもう一度お試しください';
+
+  @override
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';
 
   @override
