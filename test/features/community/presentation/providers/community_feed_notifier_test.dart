@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_comment_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
+import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
+import 'package:cops_and_robbers/features/community/domain/repositories/community_reaction_repository.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_detail_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -189,10 +193,71 @@ class _FailingAfterFirstRepository
   }
 }
 
+/// 목록과 상세를 함께 쓰는 가짜 — 상세에서 토글한 결과가 피드의 그 칸에
+/// 반영되는지 끝까지 태우려면(`_syncFeedCard`) 둘 다 진짜로 응답해야 한다.
+/// `CommunityRepositoryDetailStubs`가 채워 주는 나머지(수정·작성·주소·삭제·
+/// 상태변경)는 이 테스트가 건드리지 않는다.
+class _ListAndDetailRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
+  _ListAndDetailRepository(this.items);
+
+  final List<CommunityPostEntity> items;
+
+  @override
+  Future<CommunityPostPageEntity> getPosts({
+    String? cursor,
+    required int size,
+    CommunityScope scope = CommunityScope.all,
+    required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
+  }) async => CommunityPostPageEntity(items: items, nextCursor: null, hasNext: false);
+
+  @override
+  Future<CommunityPostEntity> getPost(int postId) async =>
+      items.firstWhere((p) => p.id == postId);
+}
+
+/// 댓글은 이 테스트의 관심사가 아니다 — 상세 build()가 요구하니 빈 목록만 준다.
+class _EmptyCommentRepository implements CommunityCommentRepository {
+  @override
+  Future<List<CommunityCommentEntity>> getComments(int postId) async => [];
+
+  @override
+  Future<CommunityCommentEntity> addComment({
+    required int postId,
+    required String content,
+    int? parentId,
+  }) => throw UnimplementedError('이 테스트는 댓글 작성을 쓰지 않는다');
+
+  @override
+  Future<void> deleteComment(int commentId) =>
+      throw UnimplementedError('이 테스트는 댓글 삭제를 쓰지 않는다');
+}
+
+/// 좋아요·스크랩 토글이 항상 성공하는 가짜.
+class _SucceedingReactionRepository implements CommunityReactionRepository {
+  @override
+  Future<void> like(int postId) async {}
+
+  @override
+  Future<void> unlike(int postId) async {}
+
+  @override
+  Future<void> scrap(int postId) async {}
+
+  @override
+  Future<void> unscrap(int postId) async {}
+}
+
 ProviderContainer _containerWith(
   CommunityRepository repo, {
   String countryCode = 'KR',
   DateTime Function()? now,
+  List<Override> extraOverrides = const [],
 }) {
   final container = ProviderContainer(
     overrides: [
@@ -205,6 +270,7 @@ ProviderContainer _containerWith(
       ),
       // 시계도 시스템 경계다 — 유효 시간 판정을 검증하려면 앞으로 돌릴 수 있어야 한다.
       if (now != null) clockProvider.overrideWithValue(now),
+      ...extraOverrides,
     ],
   );
   addTearDown(container.dispose);
@@ -895,6 +961,57 @@ void main() {
       expect(after.items.length, before.items.length);
       expect(after.items.skip(1).toList(), before.items.skip(1).toList());
     });
+
+    test(
+      'reflects_a_detail_like_toggle_onto_the_matching_feed_card',
+      () async {
+        // 위 테스트는 replacePost 단독 계약(그 칸만 갈아끼움)을 지킨다. 이
+        // 테스트는 CommunityDetailNotifier.toggleLike()가 실제로
+        // _syncFeedCard()를 거쳐 피드까지 닿는지 배선 자체를 끝까지 태운다.
+        final repo = _ListAndDetailRepository([_post(1), _post(2)]);
+        final container = _containerWith(
+          repo,
+          extraOverrides: [
+            communityCommentRepositoryProvider.overrideWithValue(
+              _EmptyCommentRepository(),
+            ),
+            communityReactionRepositoryProvider.overrideWithValue(
+              _SucceedingReactionRepository(),
+            ),
+          ],
+        );
+
+        // _syncFeedCard가 읽는 family 키(스코프 all·정렬 latest·keyword null)와
+        // 같은 인스턴스를 먼저 살려 둔다.
+        await container.read(
+          communityFeedNotifierProvider(
+            CommunityScope.all,
+            CommunitySortOption.latest,
+            null,
+          ).future,
+        );
+        await container.read(communityDetailNotifierProvider(2).future);
+
+        await container
+            .read(communityDetailNotifierProvider(2).notifier)
+            .toggleLike();
+
+        final items = container
+            .read(
+              communityFeedNotifierProvider(
+                CommunityScope.all,
+                CommunitySortOption.latest,
+                null,
+              ),
+            )
+            .requireValue
+            .items;
+        expect(items[1].isLiked, isTrue);
+        expect(items[1].likeCount, _post(2).likeCount + 1);
+        // 건드리지 않은 행은 그대로다.
+        expect(items[0], _post(1));
+      },
+    );
   });
 
   group('CommunityFeedNotifier.refreshIfStale', () {
