@@ -108,7 +108,10 @@ void main() {
         ..remove('liked')
         ..remove('scrapped');
 
-      expect(() => CommunityPostResponseModel.fromJson(json), throwsA(anything));
+      expect(
+        () => CommunityPostResponseModel.fromJson(json),
+        throwsA(isA<TypeError>()),
+      );
     });
 
     test('parses_lot_address_when_backend_starts_sending_it', () {

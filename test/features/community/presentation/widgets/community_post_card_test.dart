@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
@@ -72,6 +73,17 @@ String _assetPathOf(WidgetTester tester, String kind) {
       .widgetList<SvgPicture>(find.byType(SvgPicture))
       .map((svg) => (svg.bytesLoader as SvgAssetLoader).assetName)
       .singleWhere((path) => path.contains('icon_$kind'));
+}
+
+/// 카운트 숫자를 색으로 식별한다 — 좋아요는 빨강, 스크랩은 노랑(`_CountLabel`
+/// 호출부에 고정된 값이라 count 인자가 서로 바뀌어도 색은 그대로다).
+/// 단순 `find.text(n)`은 두 라벨의 숫자가 화면 어딘가에 존재하기만 하면
+/// 통과하므로 count 인자가 맞바뀌는 회귀를 못 잡는다 — 색으로 자리를 고정한다.
+String _countTextOf(WidgetTester tester, Color color) {
+  return tester
+      .widgetList<Text>(find.byType(Text))
+      .firstWhere((t) => t.style?.color == color)
+      .data!;
 }
 
 void main() {
@@ -150,9 +162,23 @@ void main() {
     testWidgets('fills_the_heart_when_i_liked_the_post', (tester) async {
       await _pumpCard(tester, _post(likeCount: 6, isLiked: true, scrapCount: 3, isScrapped: false));
 
-      expect(find.text('6'), findsOneWidget);
+      // 좋아요·스크랩 카운트를 색으로 각각 확인한다 — likeCount 자리에 '6'이
+      // 있는지만 보면 두 `_CountLabel`의 count 인자가 서로 바뀌어도(스크랩
+      // 라벨이 6을, 좋아요 라벨이 3을 그려도) '6'과 '3' 모두 화면에 그대로
+      // 존재해 잡히지 않는다.
+      expect(_countTextOf(tester, AppColors.red), '6');
+      expect(_countTextOf(tester, AppColors.yellow), '3');
       expect(_assetPathOf(tester, 'like'), 'assets/icons/icon_like_on.svg');
       expect(_assetPathOf(tester, 'save'), 'assets/icons/icon_save_off.svg');
+    });
+
+    testWidgets('fills_the_bookmark_when_i_scrapped_the_post', (tester) async {
+      await _pumpCard(tester, _post(likeCount: 2, isLiked: false, scrapCount: 9, isScrapped: true));
+
+      expect(_countTextOf(tester, AppColors.red), '2');
+      expect(_countTextOf(tester, AppColors.yellow), '9');
+      expect(_assetPathOf(tester, 'like'), 'assets/icons/icon_like_off.svg');
+      expect(_assetPathOf(tester, 'save'), 'assets/icons/icon_save_on.svg');
     });
 
     testWidgets('dims_content_when_post_is_completed', (tester) async {
