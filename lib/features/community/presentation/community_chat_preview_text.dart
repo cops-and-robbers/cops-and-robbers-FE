@@ -19,6 +19,10 @@ String chatPreviewText(
       nickname == null
           ? l10n.communityChatPreviewJoined
           : l10n.communityChatSystemJoined(nickname),
+    CommunityChatSystemBody(event: CommunityChatSystemEvent.kick) =>
+      nickname == null
+          ? l10n.communityChatPreviewKicked
+          : l10n.communityChatSystemKicked(nickname),
     CommunityChatSystemBody() =>
       nickname == null
           ? l10n.communityChatPreviewLeft

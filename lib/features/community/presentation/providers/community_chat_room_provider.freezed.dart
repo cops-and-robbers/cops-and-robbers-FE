@@ -23,9 +23,6 @@ mixin _$CommunityChatRoomState {
 
   /// 목록(`GET /chat/rooms`)에서 찾은 인원수. 못 찾으면 null — 헤더가 정원만 그린다.
   int? get memberCount => throw _privateConstructorUsedError;
-
-  /// 방장이 붙여 둔 공지사항. 없으면 null.
-  String? get notice => throw _privateConstructorUsedError;
   int? get nextCursor => throw _privateConstructorUsedError;
   bool get hasNext => throw _privateConstructorUsedError;
   bool get loadingOlder => throw _privateConstructorUsedError;
@@ -58,7 +55,6 @@ abstract class $CommunityChatRoomStateCopyWith<$Res> {
     CommunityChatTimeline timeline,
     CommunityChatConnectionState connection,
     int? memberCount,
-    String? notice,
     int? nextCursor,
     bool hasNext,
     bool loadingOlder,
@@ -90,7 +86,6 @@ class _$CommunityChatRoomStateCopyWithImpl<
     Object? timeline = null,
     Object? connection = null,
     Object? memberCount = freezed,
-    Object? notice = freezed,
     Object? nextCursor = freezed,
     Object? hasNext = null,
     Object? loadingOlder = null,
@@ -113,10 +108,6 @@ class _$CommunityChatRoomStateCopyWithImpl<
                 ? _value.memberCount
                 : memberCount // ignore: cast_nullable_to_non_nullable
                       as int?,
-            notice: freezed == notice
-                ? _value.notice
-                : notice // ignore: cast_nullable_to_non_nullable
-                      as String?,
             nextCursor: freezed == nextCursor
                 ? _value.nextCursor
                 : nextCursor // ignore: cast_nullable_to_non_nullable
@@ -164,7 +155,6 @@ abstract class _$$CommunityChatRoomStateImplCopyWith<$Res>
     CommunityChatTimeline timeline,
     CommunityChatConnectionState connection,
     int? memberCount,
-    String? notice,
     int? nextCursor,
     bool hasNext,
     bool loadingOlder,
@@ -193,7 +183,6 @@ class __$$CommunityChatRoomStateImplCopyWithImpl<$Res>
     Object? timeline = null,
     Object? connection = null,
     Object? memberCount = freezed,
-    Object? notice = freezed,
     Object? nextCursor = freezed,
     Object? hasNext = null,
     Object? loadingOlder = null,
@@ -216,10 +205,6 @@ class __$$CommunityChatRoomStateImplCopyWithImpl<$Res>
             ? _value.memberCount
             : memberCount // ignore: cast_nullable_to_non_nullable
                   as int?,
-        notice: freezed == notice
-            ? _value.notice
-            : notice // ignore: cast_nullable_to_non_nullable
-                  as String?,
         nextCursor: freezed == nextCursor
             ? _value.nextCursor
             : nextCursor // ignore: cast_nullable_to_non_nullable
@@ -262,7 +247,6 @@ class _$CommunityChatRoomStateImpl
     required this.timeline,
     this.connection = CommunityChatConnectionState.connecting,
     this.memberCount,
-    this.notice,
     this.nextCursor,
     this.hasNext = false,
     this.loadingOlder = false,
@@ -281,10 +265,6 @@ class _$CommunityChatRoomStateImpl
   /// 목록(`GET /chat/rooms`)에서 찾은 인원수. 못 찾으면 null — 헤더가 정원만 그린다.
   @override
   final int? memberCount;
-
-  /// 방장이 붙여 둔 공지사항. 없으면 null.
-  @override
-  final String? notice;
   @override
   final int? nextCursor;
   @override
@@ -313,7 +293,7 @@ class _$CommunityChatRoomStateImpl
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'CommunityChatRoomState(timeline: $timeline, connection: $connection, memberCount: $memberCount, notice: $notice, nextCursor: $nextCursor, hasNext: $hasNext, loadingOlder: $loadingOlder, reconnectExhausted: $reconnectExhausted, evicted: $evicted, lastErrorCode: $lastErrorCode, errorSeq: $errorSeq)';
+    return 'CommunityChatRoomState(timeline: $timeline, connection: $connection, memberCount: $memberCount, nextCursor: $nextCursor, hasNext: $hasNext, loadingOlder: $loadingOlder, reconnectExhausted: $reconnectExhausted, evicted: $evicted, lastErrorCode: $lastErrorCode, errorSeq: $errorSeq)';
   }
 
   @override
@@ -324,7 +304,6 @@ class _$CommunityChatRoomStateImpl
       ..add(DiagnosticsProperty('timeline', timeline))
       ..add(DiagnosticsProperty('connection', connection))
       ..add(DiagnosticsProperty('memberCount', memberCount))
-      ..add(DiagnosticsProperty('notice', notice))
       ..add(DiagnosticsProperty('nextCursor', nextCursor))
       ..add(DiagnosticsProperty('hasNext', hasNext))
       ..add(DiagnosticsProperty('loadingOlder', loadingOlder))
@@ -345,7 +324,6 @@ class _$CommunityChatRoomStateImpl
                 other.connection == connection) &&
             (identical(other.memberCount, memberCount) ||
                 other.memberCount == memberCount) &&
-            (identical(other.notice, notice) || other.notice == notice) &&
             (identical(other.nextCursor, nextCursor) ||
                 other.nextCursor == nextCursor) &&
             (identical(other.hasNext, hasNext) || other.hasNext == hasNext) &&
@@ -366,7 +344,6 @@ class _$CommunityChatRoomStateImpl
     timeline,
     connection,
     memberCount,
-    notice,
     nextCursor,
     hasNext,
     loadingOlder,
@@ -394,7 +371,6 @@ abstract class _CommunityChatRoomState implements CommunityChatRoomState {
     required final CommunityChatTimeline timeline,
     final CommunityChatConnectionState connection,
     final int? memberCount,
-    final String? notice,
     final int? nextCursor,
     final bool hasNext,
     final bool loadingOlder,
@@ -412,10 +388,6 @@ abstract class _CommunityChatRoomState implements CommunityChatRoomState {
   /// 목록(`GET /chat/rooms`)에서 찾은 인원수. 못 찾으면 null — 헤더가 정원만 그린다.
   @override
   int? get memberCount;
-
-  /// 방장이 붙여 둔 공지사항. 없으면 null.
-  @override
-  String? get notice;
   @override
   int? get nextCursor;
   @override

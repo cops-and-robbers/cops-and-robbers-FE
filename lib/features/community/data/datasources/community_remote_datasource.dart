@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../models/community_chat_model.dart';
 import '../models/community_comment_model.dart';
 import '../models/community_post_model.dart';
 
@@ -145,4 +146,62 @@ abstract class CommunityRemoteDataSource {
   /// 호출 뒤에는 목록을 다시 받는다.
   @DELETE('${ApiEndpoints.communityPosts}/comments/{commentId}')
   Future<void> deleteComment(@Path('commentId') int commentId);
+
+  /// 내 채팅방 목록 조회
+  ///
+  /// 참여 방 수에 상한(100)이 있어 페이징하지 않는다. 마지막 대화가 최근인
+  /// 순서이며 대화가 없는 방은 맨 뒤다 — 정렬은 서버가 한다.
+  ///
+  /// 경로에 `{postId}`가 없다. `/{postId}/chat/...`과 형태가 달라 보이지만
+  /// 유저 단위 리소스라 그렇다(`/scraps`와 같은 자리).
+  @GET('${ApiEndpoints.communityPosts}/chat/rooms')
+  Future<CommunityChatRoomListResponseModel> getChatRooms();
+
+  /// 채팅방 참여
+  ///
+  /// 201 Created, 본문 없음. 이미 멤버면 409(`ALREADY_JOINED`)인데 화면 입장에는
+  /// 영향이 없어 Repository가 성공으로 삼킨다 — 서버가 `chatJoined`를 주지 않아
+  /// (BE #173) 앱이 참여 여부를 미리 알 수 없기 때문이다.
+  ///
+  /// 그 밖: 모집 마감·종료 400(`RECRUITMENT_CLOSED`), 정원 초과
+  /// 400(`CHAT_ROOM_FULL`), 참여 방 100개 초과
+  /// 400(`JOINED_CHAT_ROOM_LIMIT_EXCEEDED`).
+  @POST('${ApiEndpoints.communityPosts}/{postId}/chat/join')
+  Future<void> joinChat(@Path('postId') int postId);
+
+  /// 채팅방 나가기
+  ///
+  /// 204 No Content. 작성자는 나갈 수 없다(400 `AUTHOR_CANNOT_LEAVE`) — 화면이
+  /// 버튼 자체를 숨기지만 서버가 최종 판정이다.
+  ///
+  /// 성공한 뒤에야 소켓 구독을 끊는다. 서버는 **구독 시점에만** 자격을 보므로
+  /// 끊지 않으면 나간 방 메시지가 계속 들어온다(DEC-0026 계약 03).
+  @DELETE('${ApiEndpoints.communityPosts}/{postId}/chat/leave')
+  Future<void> leaveChat(@Path('postId') int postId);
+
+  /// 대화 내역 조회 (커서 페이지네이션)
+  ///
+  /// 최신순이다. [cursor]는 이전 응답의 `nextCursor`(메시지 id)이며 생략하면
+  /// 가장 최근부터, [size]는 1~50이고 생략하면 20이다. `hasNext`가 true일 때만
+  /// `nextCursor`가 실려 온다.
+  ///
+  /// 방 멤버만 부를 수 있다(403 `NOT_A_CHAT_MEMBER`) — 다른 기기에서 나갔거나
+  /// 작성자가 게시글을 지운 뒤에는 이 코드가 온다.
+  @GET('${ApiEndpoints.communityPosts}/{postId}/chat/messages')
+  Future<CommunityChatHistoryResponseModel> getChatMessages(
+    @Path('postId') int postId, {
+    @Query('cursor') int? cursor,
+    @Query('size') int? size,
+  });
+
+  /// 채팅방 멤버 목록 조회
+  ///
+  /// 사이드바의 참가자 목록과 방장 판정에 쓴다. 방 멤버만 부를 수 있다
+  /// (403 `NOT_A_CHAT_MEMBER`). 페이징 없음 — 방 정원이 상한이다.
+  ///
+  /// 닉네임은 대화 내역과 같은 규칙이다(조회 시점 현재 값, 탈퇴자만 `"알수없음"`).
+  @GET('${ApiEndpoints.communityPosts}/{postId}/chat/members')
+  Future<CommunityChatMemberListResponseModel> getChatMembers(
+    @Path('postId') int postId,
+  );
 }

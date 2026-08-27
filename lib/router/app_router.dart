@@ -27,7 +27,7 @@ import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
 import '../features/community/domain/entities/community_post_entity.dart';
-import '../features/community/presentation/pages/community_chat_notice_page.dart';
+import '../features/community/presentation/pages/community_chat_meeting_info_page.dart';
 import '../features/community/presentation/pages/community_chat_room_info_page.dart';
 import '../features/community/presentation/pages/community_chat_room_page.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
@@ -589,13 +589,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 ),
                           ),
                           GoRoute(
-                            path: 'notice',
-                            name: RoutePaths.communityChatNoticeName,
+                            path: 'meeting-info',
+                            name: RoutePaths.communityChatMeetingInfoName,
                             parentNavigatorKey: rootNavigatorKey,
                             pageBuilder: (context, state) =>
                                 buildDirectionalSlide(
                                   key: state.pageKey,
-                                  child: CommunityChatNoticePage(
+                                  child: CommunityChatMeetingInfoPage(
                                     postId:
                                         int.tryParse(
                                           state.pathParameters['postId'] ?? '',

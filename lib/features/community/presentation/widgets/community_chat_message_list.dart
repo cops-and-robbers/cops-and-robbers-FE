@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -9,6 +11,7 @@ import '../../../../core/widgets/chat/chat_bubble.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/community_chat_message_grouping.dart';
 import '../../domain/entities/community_chat_message_entity.dart';
+import '../community_chat_report.dart';
 import '../community_chat_time_format.dart';
 import '../providers/community_chat_room_provider.dart';
 import 'community_chat_avatar.dart';
@@ -106,9 +109,19 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
           CommunityChatSystemBody(:final event) => Padding(
             padding: EdgeInsets.only(top: 12.h), // pill 자체 margin 6 + 12 = 18
             child: CommunityChatSystemPill(
-              text: event == CommunityChatSystemEvent.join
-                  ? l10n.communityChatSystemJoined(m.senderNickname)
-                  : l10n.communityChatSystemLeft(m.senderNickname),
+              // 이벤트를 전부 열거한다 — 삼항으로 두면 새 이벤트가 조용히
+              // "나갔어요"로 흘러간다(KICK이 추가됐을 때 실제로 그랬다).
+              text: switch (event) {
+                CommunityChatSystemEvent.join => l10n.communityChatSystemJoined(
+                  m.senderNickname,
+                ),
+                CommunityChatSystemEvent.leave => l10n.communityChatSystemLeft(
+                  m.senderNickname,
+                ),
+                CommunityChatSystemEvent.kick => l10n.communityChatSystemKicked(
+                  m.senderNickname,
+                ),
+              },
             ),
           ),
           CommunityChatGameInviteBody(:final inviteCode) => _buildInvite(
@@ -147,7 +160,17 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
       ),
       nicknameStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black700),
       timeStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black300),
-      avatar: isMe ? null : const CommunityChatAvatar(),
+      avatar: isMe ? null : CommunityChatAvatar(iconId: m.senderProfileIcon),
+      // 길게 눌러 복사·신고. 인게임과 같은 메뉴다 — 내 메시지·전송 중이면
+      // 신고 항목이 빠진다.
+      onLongPress: (bubbleContext) => unawaited(
+        showCommunityChatMessageMenu(
+          context: bubbleContext,
+          message: m,
+          myUserId: widget.myUserId,
+          isMe: isMe,
+        ),
+      ),
       // 상대 쪽 꼬리는 좌상단 0, 내 쪽은 우상단 0 — 나머지 모서리는 10.
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(isMe ? 10.r : 0),
@@ -206,7 +229,7 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
       bubbleColor: AppColors.white,
       nicknameStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black700),
       timeStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black300),
-      avatar: isMe ? null : const CommunityChatAvatar(),
+      avatar: isMe ? null : CommunityChatAvatar(iconId: m.senderProfileIcon),
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(isMe ? 10.r : 0),
         topRight: Radius.circular(isMe ? 0 : 10.r),

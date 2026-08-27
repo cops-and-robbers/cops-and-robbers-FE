@@ -581,6 +581,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityChatPreviewLeft => 'A member left';
 
   @override
+  String communityChatSystemKicked(String nickname) {
+    return '$nickname was removed';
+  }
+
+  @override
+  String get communityChatPreviewKicked => 'A member was removed';
+
+  @override
   String get communityChatPreviewInvite => 'Game invite';
 
   @override
@@ -638,21 +646,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You won\'t be able to see this conversation again';
 
   @override
-  String get communityChatNoticeTitle => 'Notice';
-
-  @override
-  String get communityChatNoticeEmpty =>
-      'Once the host posts a notice, you\'ll see it here';
-
-  @override
-  String get communityChatNoticeEmptyAuthor =>
-      'Share what to bring or when to meet, so everyone knows ahead of time';
-
-  @override
-  String get communityChatNoticeHint => 'Write what to bring or when to meet';
-
-  @override
-  String get communityChatNoticeSave => 'Save';
+  String get communityChatMeetingInfoTitle => 'Meeting info';
 
   @override
   String get communityChatConnectionLost => 'Connection lost';
@@ -2656,6 +2650,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeReportNotFound => 'The report does not exist';
+
+  @override
+  String get errorCodeChatMessageNotFound => 'This message could not be found';
 
   @override
   String get errorCodeReportTargetNotFound =>

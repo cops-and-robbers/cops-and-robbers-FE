@@ -125,6 +125,19 @@ void main() {
         -1,
       );
     });
+    test('returns_minus_one_when_system_kick', () {
+      // 강퇴도 사람이 줄어든다 — 0으로 두면 헤더 인원수가 실제와 어긋난다.
+      expect(
+        memberDelta(
+          _msg(
+            body: const CommunityChatMessageBody.system(
+              CommunityChatSystemEvent.kick,
+            ),
+          ),
+        ),
+        -1,
+      );
+    });
     test('returns_zero_when_text', () {
       expect(memberDelta(_msg()), 0);
     });

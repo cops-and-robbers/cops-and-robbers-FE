@@ -3,7 +3,7 @@
 /// 신고 화면은 라우트로 열리므로 콜백을 넘길 수 없다. 대신 대상만 `extra`로
 /// 넘기고, 화면이 대상에 맞는 접수 메서드를 고른다.
 ///
-/// 새 신고 대상이 생기면(예: 모집글 채팅 — FE #493) 여기에 한 종류를 더한다.
+/// 새 신고 대상이 생기면 여기에 한 종류를 더한다.
 sealed class ReportTarget {
   const ReportTarget();
 }
@@ -13,6 +13,17 @@ class CommunityPostReportTarget extends ReportTarget {
   const CommunityPostReportTarget(this.postId);
 
   final int postId;
+}
+
+/// 커뮤니티 모집글 채팅 메시지
+///
+/// [chatMessageId]는 **서버가 발급한 메시지 id**다 — 앱이 만든 `messageKey`를
+/// 보내면 서버가 못 찾는다(404). 아직 전송 중인 말풍선은 그 id가 없어서
+/// 화면이 신고 진입 자체를 막는다(`canReportChatMessage`).
+class CommunityChatReportTarget extends ReportTarget {
+  const CommunityChatReportTarget(this.chatMessageId);
+
+  final int chatMessageId;
 }
 
 /// 인게임 채팅 메시지

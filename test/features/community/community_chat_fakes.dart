@@ -45,6 +45,7 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
     int? cursor,
     int size = 30,
   }) async {
+    calls.add('getMessages');
     if (cursor == null) {
       return CommunityChatPageEntity(
         messages: firstPage,
@@ -70,23 +71,16 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
     ),
   ];
   List<CommunityChatMemberEntity> members = const [];
-  String? notice;
 
   @override
-  Future<List<CommunityChatRoomEntity>> getRooms() async => rooms;
+  Future<List<CommunityChatRoomEntity>> getRooms() async {
+    calls.add('getRooms');
+    return rooms;
+  }
 
   @override
   Future<List<CommunityChatMemberEntity>> getMembers(int postId) async =>
       members;
-
-  @override
-  Future<String?> getNotice(int postId) async => notice;
-
-  @override
-  Future<void> setNotice(int postId, String notice) async {
-    calls.add('setNotice:$notice');
-    this.notice = notice;
-  }
 
   @override
   Future<void> join(int postId) async => calls.add('join');
@@ -102,7 +96,7 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
   }) async => calls.add('send:$messageKey');
 
   @override
-  Future<void> disconnect() async {
+  Future<void> disconnect(int postId) async {
     calls.add('disconnect');
     await controller?.close();
   }

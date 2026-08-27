@@ -1,4 +1,5 @@
 import 'package:cops_and_robbers/features/community/data/models/community_wire.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_chat_message_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
@@ -55,6 +56,81 @@ void main() {
       expect(CommunitySortOption.distance.wireValue, 'DISTANCE');
       // 서버가 400을 주는 값이지만 switch를 total로 두기 위해 매핑은 해 둔다.
       expect(CommunitySortOption.popular.wireValue, 'POPULAR');
+    });
+  });
+
+  group('채팅 메시지 본문 와이어 매핑', () {
+    test('reads_text_body_from_message_when_type_is_text', () {
+      expect(
+        communityChatMessageBodyFromWire('TEXT', '안녕하세요!'),
+        const CommunityChatMessageBody.text('안녕하세요!'),
+      );
+    });
+
+    test('reads_join_event_from_json_when_type_is_system', () {
+      // 서버는 본문에 이름을 넣지 않는다 — 문구는 앱이 senderNickname으로
+      // 조립해야 닉네임 변경과 다국어가 따라온다(DOC-0037).
+      expect(
+        communityChatMessageBodyFromWire('SYSTEM', '{"event":"JOIN"}'),
+        const CommunityChatMessageBody.system(CommunityChatSystemEvent.join),
+      );
+    });
+
+    test('reads_leave_event_from_json_when_type_is_system', () {
+      expect(
+        communityChatMessageBodyFromWire('SYSTEM', '{"event":"LEAVE"}'),
+        const CommunityChatMessageBody.system(CommunityChatSystemEvent.leave),
+      );
+    });
+
+    test('reads_kick_event_from_json_when_type_is_system', () {
+      // 강퇴당한 본인은 이 메시지를 보고 스스로 구독을 끊어야 한다 — 서버가
+      // 세션을 끊지 않으므로(Swagger 명시) 접어 버리면 나간 방 메시지를 계속 받는다.
+      expect(
+        communityChatMessageBodyFromWire('SYSTEM', '{"event":"KICK"}'),
+        const CommunityChatMessageBody.system(CommunityChatSystemEvent.kick),
+      );
+    });
+
+    test('reads_invite_code_from_json_when_type_is_game_invite', () {
+      expect(
+        communityChatMessageBodyFromWire(
+          'GAME_INVITE',
+          '{"inviteCode":"ABC123"}',
+        ),
+        const CommunityChatMessageBody.gameInvite('ABC123'),
+      );
+    });
+
+    test('falls_back_to_unknown_when_message_type_is_unrecognized', () {
+      // 던지면 새 타입 하나가 채팅방 한 장을 통째로 에러로 만든다 —
+      // ENDED가 추가됐을 때 목록에서 실제로 그랬다.
+      expect(
+        communityChatMessageBodyFromWire('POLL', '{"question":"뭐 먹지"}'),
+        const CommunityChatMessageBody.unknown(),
+      );
+    });
+
+    test('falls_back_to_unknown_when_system_body_is_not_valid_json', () {
+      expect(
+        communityChatMessageBodyFromWire('SYSTEM', '홍길동님이 참여했습니다'),
+        const CommunityChatMessageBody.unknown(),
+      );
+    });
+
+    test('falls_back_to_unknown_when_system_event_is_unrecognized', () {
+      expect(
+        communityChatMessageBodyFromWire('SYSTEM', '{"event":"MUTED"}'),
+        const CommunityChatMessageBody.unknown(),
+      );
+    });
+
+    test('falls_back_to_unknown_when_game_invite_has_no_code', () {
+      // 코드 없는 초대 카드는 눌러도 들어갈 방이 없다 — 그리지 않는다.
+      expect(
+        communityChatMessageBodyFromWire('GAME_INVITE', '{}'),
+        const CommunityChatMessageBody.unknown(),
+      );
     });
   });
 }

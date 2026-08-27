@@ -24,6 +24,12 @@ import '../providers/community_chat_rooms_provider.dart';
 import '../providers/community_detail_provider.dart';
 import '../widgets/community_chat_avatar.dart';
 
+// ponytail: 채팅 알림 on/off API 미정 — 로컬 상태만 토글. API 나오면 이 provider를
+// 서버 값으로 교체하고 탭 핸들러에서 mutation 호출.
+final _chatNotificationEnabledProvider = StateProvider.family<bool, int>(
+  (ref, postId) => true,
+);
+
 /// 채팅방 사이드바 — 시안이 전체 화면이라 drawer 대신 push한다
 ///
 /// 작성자는 방을 나갈 수 없다(서버 `AUTHOR_CANNOT_LEAVE`) — 버튼 자체를 숨긴다.
@@ -60,6 +66,10 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
       myId: myId,
     );
 
+    final isNotificationOn = ref.watch(
+      _chatNotificationEnabledProvider(postId),
+    );
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppTopBar(
@@ -67,14 +77,19 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
         actions: [
           GestureDetector(
             onTap: () =>
-                context.push(RoutePaths.communityChatNoticeWithId(postId)),
+                ref
+                        .read(_chatNotificationEnabledProvider(postId).notifier)
+                        .state =
+                    !isNotificationOn,
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.horizontal16,
               ),
               child: SvgPicture.asset(
-                'assets/icons/icon_bell_off.svg',
+                isNotificationOn
+                    ? 'assets/icons/icon_bell_off.svg'
+                    : 'assets/icons/icon_bell_block.svg',
                 width: 24.w,
                 height: 24.w,
               ),

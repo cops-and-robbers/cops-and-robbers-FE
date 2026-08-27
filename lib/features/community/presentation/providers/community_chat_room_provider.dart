@@ -27,9 +27,6 @@ class CommunityChatRoomState with _$CommunityChatRoomState {
 
     /// 목록(`GET /chat/rooms`)에서 찾은 인원수. 못 찾으면 null — 헤더가 정원만 그린다.
     int? memberCount,
-
-    /// 방장이 붙여 둔 공지사항. 없으면 null.
-    String? notice,
     int? nextCursor,
     @Default(false) bool hasNext,
     @Default(false) bool loadingOlder,
@@ -90,18 +87,16 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
       _disposed = true;
       _reconnectTimer?.cancel();
       _sub?.cancel();
-      unawaited(repo.disconnect());
+      unawaited(repo.disconnect(postId));
     });
     _listen(repo.connect(postId));
 
     final page = await repo.getMessages(postId, size: pageSize);
     final memberCount = await _findMemberCount();
-    final notice = await repo.getNotice(postId);
 
     var next = CommunityChatRoomState(
       timeline: CommunityChatTimeline(page.messages),
       memberCount: memberCount,
-      notice: notice,
       nextCursor: page.nextCursor,
       hasNext: page.hasNext,
     );
@@ -174,13 +169,6 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
     }
   }
 
-  /// 공지사항 등록/수정. 방장만 부른다(화면이 막는다). 실패는 호출자가 알린다.
-  Future<void> updateNotice(String notice) async {
-    final trimmed = notice.trim();
-    await _repo.setNotice(postId, trimmed);
-    _update((s) => s.copyWith(notice: trimmed));
-  }
-
   /// 위로 끝까지 올렸을 때. 실패는 호출자가 알린다(스낵바).
   Future<void> loadOlder() async {
     final current = state.valueOrNull;
@@ -224,17 +212,13 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
     // 정리 완료 신호일 뿐이라 기다리지 않는다(awaiting은 스트림 컨트롤러 내부의
     // 실제 이벤트 루프 스케줄링에 걸려 fakeAsync의 마이크로태스크 플러시로 진행되지 않는다).
     _sub?.cancel();
-    await repo.disconnect();
+    await repo.disconnect(postId);
     ref.invalidate(communityChatRoomsProvider);
   }
 
-  /// 띠의 "다시 연결"과 앱 resume. 이미 붙어 있으면 아무것도 안 한다.
+  /// 띠의 "다시 연결"과 앱 resume. 이미 붙었거나 붙는 중이면 아무것도 안 한다.
   void reconnectNow() {
     if (_disposed || _leaving) return;
-    if (state.valueOrNull?.connection ==
-        CommunityChatConnectionState.connected) {
-      return;
-    }
     _reconnectTimer?.cancel();
     _reconnectCount = 0;
     _resumeAfterDrop = true;
@@ -290,6 +274,8 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
       memberCount: s.memberCount == null
           ? null
           : s.memberCount! + memberDelta(message),
+      // 내가 강퇴당한 것도 방에서 밀려나는 사건이다 — 화면이 목록으로 나간다.
+      evicted: s.evicted || _isKickOfMe(message),
     ),
     CommunityChatConnectionEvent(
       state: CommunityChatConnectionState.connected,
@@ -332,13 +318,54 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
       ):
         if (!_leaving) _scheduleReconnect();
       case CommunityChatErrorEvent(errorCode: 'NOT_A_CHAT_MEMBER'):
-        // 다른 기기에서 나간 방이다 — 다시 붙어봐야 또 거절된다.
-        _leaving = true;
-        _reconnectTimer?.cancel();
-        unawaited(_repo.disconnect());
+        // 다른 기기에서 나갔거나 방이 지워졌다 — 다시 붙어봐야 또 거절된다.
+        _evict();
+      case CommunityChatErrorEvent(:final errorCode)
+          when _authErrorCodes.contains(errorCode):
+        unawaited(_refreshTokenThenReconnect());
+      case CommunityChatMessageEvent(:final message):
+        // 내 모임 목록의 미리보기도 같이 고친다 — 채팅방은 루트 네비게이터에
+        // push돼서 뒤로 가도 탭 위젯이 살아 있고, 재진입 갱신이 안 걸린다.
+        ref
+            .read(communityChatRoomsProvider.notifier)
+            .applyLastMessage(postId, message);
+        if (_isKickOfMe(message)) {
+          // 서버가 강퇴당한 쪽 세션을 끊지 않는다 — 스스로 구독을 끊지 않으면
+          // 나간 방의 메시지가 계속 들어온다(전송만 막힌다).
+          _evict();
+        }
       default:
         break;
     }
+  }
+
+  static const _authErrorCodes = {
+    'ACCESS_TOKEN_EXPIRED',
+    'INVALID_TOKEN',
+    'UNAUTHENTICATED_REQUEST',
+  };
+
+  bool _isKickOfMe(CommunityChatMessageEntity m) =>
+      m.body ==
+          const CommunityChatMessageBody.system(
+            CommunityChatSystemEvent.kick,
+          ) &&
+      m.senderId == ref.read(currentUserIdProvider);
+
+  void _evict() {
+    _leaving = true;
+    _reconnectTimer?.cancel();
+    unawaited(_repo.disconnect(postId));
+  }
+
+  /// 만료된 토큰으로는 소켓만 다시 붙어봐야 계속 거절당한다. REST를 한 번 태우면
+  /// `AuthInterceptor`가 401을 받아 재발급하고, 그 다음 연결이 새 토큰으로 붙는다.
+  /// (`TokenProvider.refreshAccessTokenIfNeeded`는 저장소를 다시 읽을 뿐이라
+  /// 실제 재발급 경로는 REST뿐이다 — 실측.)
+  Future<void> _refreshTokenThenReconnect() async {
+    await _refetchLatest();
+    if (_disposed || _leaving) return;
+    _scheduleReconnect();
   }
 
   void _scheduleReconnect() {
@@ -352,8 +379,18 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
     _reconnectTimer = Timer(backoffDelay(_reconnectCount), _attemptReconnect);
   }
 
+  /// 붙었거나 붙는 중이면 아무것도 안 한다.
+  ///
+  /// 이 한 줄이 둘을 동시에 막는다 — 배너의 "다시 연결" 연타, 그리고 STOMP
+  /// ERROR 하나가 (에러 경로 + 뒤따르는 끊김 이벤트) 재연결을 두 번 거는 것.
+  /// 그래서 게임 채널의 `_isHandlingError` 같은 별도 플래그를 두지 않는다.
   void _attemptReconnect() {
     if (_disposed || _leaving) return;
+    final connection = state.valueOrNull?.connection;
+    if (connection == CommunityChatConnectionState.connected ||
+        connection == CommunityChatConnectionState.connecting) {
+      return;
+    }
     _update(
       (s) => s.copyWith(connection: CommunityChatConnectionState.connecting),
     );

@@ -5,26 +5,62 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
-import '../../../../core/widgets/dividers/solid_divider.dart';
-import '../../../../core/widgets/snackbars/app_snackbar.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../data/models/chat_message_dto.dart';
-import '../../../report/domain/report_target.dart';
-import '../../../report/presentation/report_flow.dart';
+import '../../../features/report/domain/report_target.dart';
+import '../../../features/report/presentation/report_flow.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../constants/app_colors.dart';
+import '../../constants/spacing_and_radius.dart';
+import '../../constants/text_styles.dart';
+import '../dividers/solid_divider.dart';
+import '../snackbars/app_snackbar.dart';
+
+/// 메뉴 뒤에 원래 자리로 다시 그리는 말풍선 — 닉네임·시각·아바타 없이 본문만
+///
+/// 실제 말풍선을 그대로 쓰지 않는 이유: 원래 위치에 겹쳐 그리는 용도라 주변
+/// 여백까지 따라오면 자리가 어긋난다. 색과 모서리는 화면마다 달라서 받는다.
+class ChatContextMenuBubble extends StatelessWidget {
+  const ChatContextMenuBubble({
+    required this.text,
+    required this.backgroundColor,
+    required this.textStyle,
+    required this.borderRadius,
+    super.key,
+  });
+
+  final String text;
+  final Color backgroundColor;
+  final TextStyle textStyle;
+  final BorderRadius borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(maxWidth: 240.w),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: borderRadius,
+      ),
+      child: Text(text, style: textStyle),
+    );
+  }
+}
 
 /// 채팅 메시지 롱프레스 시 표시되는 컨텍스트 메뉴 오버레이
 ///
-/// 복사하기·신고하기·차단하기 세 가지. 신고하기를 누르면 이 오버레이는 닫히고
-/// 유형 선택은 `ReportCategoryPage`에서 한다 — 커뮤니티 신고와 같은 화면이다.
+/// 인게임 채팅과 모집글 채팅이 함께 쓴다 — 신고 진입 UI를 두 벌 만들지 않는다.
+/// 말풍선 자체는 [bubble]로 호출자가 그려 넘긴다: 두 화면의 말풍선 모양과
+/// 데이터 타입이 달라서, 여기서 그리려면 DTO 하나에 묶여 버린다.
 ///
-/// [show] 정적 메서드로 오버레이를 표시합니다.
+/// 항목은 있는 것만 뜬다 — [reportTarget]이 null이면 신고가, [onBlock]이
+/// null이면 차단이 빠진다(모집글 채팅에는 차단이 없다).
+///
+/// 신고하기를 누르면 이 오버레이는 닫히고 유형 선택은 `ReportCategoryPage`가
+/// 받는다 — 모집글 신고와 같은 화면이다.
 class ChatContextMenu extends StatefulWidget {
   const ChatContextMenu._({
-    required this.message,
-    required this.isMe,
+    required this.bubble,
+    required this.copyText,
     required this.isDarkMode,
     required this.messageRect,
     required this.onBlock,
@@ -32,14 +68,21 @@ class ChatContextMenu extends StatefulWidget {
     required this.callerContext,
   });
 
-  final ChatMessageDto message;
-  final bool isMe;
+  /// 원래 자리에 다시 그릴 말풍선. 호출자가 자기 화면의 것을 그대로 넘긴다.
+  final Widget bubble;
+
+  /// 복사하기가 클립보드에 담을 문자열. 화면에 보이는 대로(필터 적용 후) 넘긴다.
+  final String copyText;
+
   final bool isDarkMode;
   final Rect messageRect;
-  final void Function(int participantId) onBlock;
+
+  /// null이면 차단 항목을 그리지 않는다.
+  final VoidCallback? onBlock;
 
   /// 무엇을 신고하는가 — 신고 화면이 이 대상으로 접수한다.
-  final ReportTarget reportTarget;
+  /// null이면 신고 항목을 그리지 않는다(내 메시지·아직 전송 중 등).
+  final ReportTarget? reportTarget;
 
   /// dismiss 후에도 유효한 호출자 context (Snackbar/Dialog 표시용)
   final BuildContext callerContext;
@@ -47,11 +90,11 @@ class ChatContextMenu extends StatefulWidget {
   /// 채팅 메시지 롱프레스 컨텍스트 메뉴를 표시합니다.
   static Future<void> show({
     required BuildContext context,
-    required ChatMessageDto message,
-    required bool isMe,
-    required bool isDarkMode,
-    required void Function(int participantId) onBlock,
-    required ReportTarget reportTarget,
+    required Widget bubble,
+    required String copyText,
+    bool isDarkMode = false,
+    ReportTarget? reportTarget,
+    VoidCallback? onBlock,
   }) {
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return Future.value();
@@ -65,8 +108,8 @@ class ChatContextMenu extends StatefulWidget {
       barrierColor: AppColors.white.withValues(alpha: 0),
       transitionDuration: Duration.zero,
       pageBuilder: (dialogContext, _, _) => ChatContextMenu._(
-        message: message,
-        isMe: isMe,
+        bubble: bubble,
+        copyText: copyText,
         isDarkMode: isDarkMode,
         messageRect: messageRect,
         onBlock: onBlock,
@@ -85,7 +128,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 
   void _onCopy() {
     final l10n = AppLocalizations.of(widget.callerContext);
-    Clipboard.setData(ClipboardData(text: widget.message.message));
+    Clipboard.setData(ClipboardData(text: widget.copyText));
     _dismiss();
     AppSnackbar.show(
       widget.callerContext,
@@ -106,14 +149,14 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 
   Future<void> _pickCategoryAndReport() => runReportFlow(
     context: widget.callerContext,
-    target: widget.reportTarget,
+    target: widget.reportTarget!,
     isDarkMode: widget.isDarkMode,
   );
 
   void _onBlockWithSnackbar() {
     final l10n = AppLocalizations.of(widget.callerContext);
     _dismiss();
-    widget.onBlock(widget.message.sender.participantId);
+    widget.onBlock!();
     AppSnackbar.show(
       widget.callerContext,
       message: l10n.messageUserBlocked,
@@ -143,39 +186,6 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     return Offset(left, top);
   }
 
-  /// 버블 Container를 직접 빌드 (ChatMessageBubble의 Padding 없이)
-  Widget _buildBubble() {
-    final filteredMessage = widget.message.filteredMessage;
-    final borderRadius = widget.isMe
-        ? BorderRadius.only(
-            topLeft: Radius.circular(12.r),
-            topRight: Radius.circular(12.r),
-            bottomLeft: Radius.circular(12.r),
-            bottomRight: Radius.circular(4.r),
-          )
-        : BorderRadius.only(
-            topLeft: Radius.circular(12.r),
-            topRight: Radius.circular(12.r),
-            bottomLeft: Radius.circular(4.r),
-            bottomRight: Radius.circular(12.r),
-          );
-
-    return Container(
-      constraints: BoxConstraints(maxWidth: 240.w),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: widget.isDarkMode ? AppColors.black : AppColors.white,
-        borderRadius: borderRadius,
-      ),
-      child: Text(
-        filteredMessage,
-        style: AppTextStyles.paragraph_14.copyWith(
-          color: widget.isDarkMode ? AppColors.white : AppColors.black900,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
@@ -195,7 +205,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
           Positioned(
             left: widget.messageRect.left,
             top: widget.messageRect.top,
-            child: _buildBubble(),
+            child: widget.bubble,
           ),
 
           // 메뉴 (크기 측정 후 위치 결정)
@@ -203,11 +213,10 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
             screenSize: screenSize,
             calculatePosition: _calculateMenuPosition,
             child: _ActionMenu(
-              isMe: widget.isMe,
               isDarkMode: widget.isDarkMode,
               onCopy: _onCopy,
-              onReport: _onReportTap,
-              onBlock: _onBlockWithSnackbar,
+              onReport: widget.reportTarget == null ? null : _onReportTap,
+              onBlock: widget.onBlock == null ? null : _onBlockWithSnackbar,
             ),
           ),
         ],
@@ -281,18 +290,18 @@ class _MenuPositionerState extends State<_MenuPositioner> {
 /// 액션 메뉴 (복사하기 / 신고하기 / 차단하기)
 class _ActionMenu extends StatelessWidget {
   const _ActionMenu({
-    required this.isMe,
     required this.isDarkMode,
     required this.onCopy,
     required this.onReport,
     required this.onBlock,
   });
 
-  final bool isMe;
   final bool isDarkMode;
   final VoidCallback onCopy;
-  final VoidCallback onReport;
-  final VoidCallback onBlock;
+
+  /// null이면 그 항목을 그리지 않는다.
+  final VoidCallback? onReport;
+  final VoidCallback? onBlock;
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +317,7 @@ class _ActionMenu extends StatelessWidget {
           isDarkMode: isDarkMode,
           onTap: onCopy,
         ),
-        if (!isMe) ...[
+        if (onReport != null) ...[
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
             iconPath: 'assets/icons/icon_siren.svg',
@@ -316,8 +325,10 @@ class _ActionMenu extends StatelessWidget {
             textColor: AppColors.red,
             iconColor: AppColors.red900,
             isDarkMode: isDarkMode,
-            onTap: onReport,
+            onTap: onReport!,
           ),
+        ],
+        if (onBlock != null) ...[
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
             iconPath: 'assets/icons/icon_block.svg',
@@ -325,7 +336,7 @@ class _ActionMenu extends StatelessWidget {
             textColor: isDarkMode ? AppColors.white : AppColors.black,
             iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,
             isDarkMode: isDarkMode,
-            onTap: onBlock,
+            onTap: onBlock!,
           ),
         ],
       ],

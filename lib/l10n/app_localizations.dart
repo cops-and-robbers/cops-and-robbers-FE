@@ -1072,6 +1072,18 @@ abstract class AppLocalizations {
   /// **'멤버가 나갔어요'**
   String get communityChatPreviewLeft;
 
+  /// 채팅방 시스템 메시지 — 방장이 내보냄
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님이 내보내졌어요'**
+  String communityChatSystemKicked(String nickname);
+
+  /// 목록 미리보기 — 닉네임 없는 강퇴 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'멤버가 내보내졌어요'**
+  String get communityChatPreviewKicked;
+
   /// 목록 미리보기 — 게임 초대 메시지
   ///
   /// In ko, this message translates to:
@@ -1138,7 +1150,7 @@ abstract class AppLocalizations {
   /// **'참가자 {count}명'**
   String communityChatMemberCount(int count);
 
-  /// 채팅방 사이드바 — 작성자 표시
+  /// 채팅방 사이드바 — 방장 표시
   ///
   /// In ko, this message translates to:
   /// **'방장'**
@@ -1168,35 +1180,11 @@ abstract class AppLocalizations {
   /// **'나가면 대화 내용을 다시 볼 수 없어요'**
   String get communityChatLeaveConfirmMessage;
 
-  /// 채팅방 공지 화면 제목 — 앱 전체 공지사항(pageNoticesTitle)과 구분한다
+  /// 채팅방 상단 모임 카드를 눌러 여는 모임 정보 화면 제목
   ///
   /// In ko, this message translates to:
-  /// **'공지'**
-  String get communityChatNoticeTitle;
-
-  /// 채팅방 공지 — 멤버가 보는 빈 상태
-  ///
-  /// In ko, this message translates to:
-  /// **'방장이 공지를 올리면 여기에서 볼 수 있어요'**
-  String get communityChatNoticeEmpty;
-
-  /// 채팅방 공지 — 방장이 보는 빈 상태
-  ///
-  /// In ko, this message translates to:
-  /// **'준비물이나 만나는 시간처럼 미리 알려줄 내용을 적어보세요'**
-  String get communityChatNoticeEmptyAuthor;
-
-  /// 채팅방 공지 입력 힌트
-  ///
-  /// In ko, this message translates to:
-  /// **'준비물이나 만나는 시간을 적어주세요'**
-  String get communityChatNoticeHint;
-
-  /// 채팅방 공지사항 저장 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'저장'**
-  String get communityChatNoticeSave;
+  /// **'모임 정보'**
+  String get communityChatMeetingInfoTitle;
 
   /// 채팅방 상단 띠 — 재연결 포기 상태
   ///
@@ -4710,6 +4698,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'해당 신고 내역이 존재하지 않아요'**
   String get errorCodeReportNotFound;
+
+  /// 커뮤니티 채팅 신고 — 대상 메시지가 서버에 없음
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 메시지를 찾을 수 없어요'**
+  String get errorCodeChatMessageNotFound;
 
   /// No description provided for @errorCodeReportTargetNotFound.
   ///

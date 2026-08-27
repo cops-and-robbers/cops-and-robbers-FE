@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,14 +23,48 @@ import 'community_chat_room_tile.dart';
 ///
 /// 로그인 없이는 목록이 없다(`GET /chat/rooms`는 401). 다른 탭은 비로그인도
 /// 볼 수 있지만(DEC-0014) 여기는 "내" 것이라 로그인 안내로 대신한다.
-class CommunityChatRoomList extends ConsumerWidget {
+///
+/// 탭에 다시 들어올 때마다 목록을 조용히 다시 받는다. 목록은 `keepAlive`라
+/// 방에서 대화하고 나와도 미리보기가 그대로고, 서버에는 새 메시지를 알려 줄
+/// 채널이 없다(유저당 알림 채널은 아직 없음 — DOC-0037 §10). 방 수에 상한이
+/// 있어 페이징 없는 가벼운 응답이라 진입마다 한 번은 감당할 만하다.
+class CommunityChatRoomList extends ConsumerStatefulWidget {
   const CommunityChatRoomList({required this.bottomPadding, super.key});
 
   /// 떠 있는 작성 버튼에 마지막 칸이 가리지 않도록 비우는 높이
   final double bottomPadding;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CommunityChatRoomList> createState() =>
+      _CommunityChatRoomListState();
+}
+
+class _CommunityChatRoomListState extends ConsumerState<CommunityChatRoomList> {
+  @override
+  void initState() {
+    super.initState();
+    if (ref.read(currentUserIdProvider) == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_refreshQuietly());
+    });
+  }
+
+  /// 보던 목록을 그대로 둔 채 뒤에서 새로 받는다.
+  ///
+  /// 첫 진입은 provider의 build가 이미 받아 오는 중이라 저장소가 알아서 넘긴다.
+  ///
+  /// 실패해도 알리지 않는다 — 사용자가 시킨 적 없는 갱신이라 스낵바를 띄우면
+  /// 탭을 옮길 때마다 잔소리가 된다. 당겨서 새로고침은 그대로 알린다.
+  Future<void> _refreshQuietly() async {
+    try {
+      await ref.read(communityChatRoomsProvider.notifier).refreshOnReturn();
+    } on AppException catch (e) {
+      debugPrint('[내 모임] ⚠️ 목록 갱신 실패 — 보던 목록 유지: ${e.message}');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
     if (ref.watch(currentUserIdProvider) == null) {
@@ -65,7 +101,7 @@ class CommunityChatRoomList extends ConsumerWidget {
                   left: AppSpacing.horizontal16,
                   right: AppSpacing.horizontal16,
                   top: AppSpacing.vertical16,
-                  bottom: bottomPadding + AppSpacing.vertical16,
+                  bottom: widget.bottomPadding + AppSpacing.vertical16,
                 ),
                 itemCount: list.length,
                 separatorBuilder: (_, _) =>

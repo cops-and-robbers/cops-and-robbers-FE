@@ -529,6 +529,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityChatPreviewLeft => '멤버가 나갔어요';
 
   @override
+  String communityChatSystemKicked(String nickname) {
+    return '$nickname님이 내보내졌어요';
+  }
+
+  @override
+  String get communityChatPreviewKicked => '멤버가 내보내졌어요';
+
+  @override
   String get communityChatPreviewInvite => '게임 초대';
 
   @override
@@ -585,20 +593,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityChatLeaveConfirmMessage => '나가면 대화 내용을 다시 볼 수 없어요';
 
   @override
-  String get communityChatNoticeTitle => '공지';
-
-  @override
-  String get communityChatNoticeEmpty => '방장이 공지를 올리면 여기에서 볼 수 있어요';
-
-  @override
-  String get communityChatNoticeEmptyAuthor =>
-      '준비물이나 만나는 시간처럼 미리 알려줄 내용을 적어보세요';
-
-  @override
-  String get communityChatNoticeHint => '준비물이나 만나는 시간을 적어주세요';
-
-  @override
-  String get communityChatNoticeSave => '저장';
+  String get communityChatMeetingInfoTitle => '모임 정보';
 
   @override
   String get communityChatConnectionLost => '연결이 끊겼어요';
@@ -2453,6 +2448,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeReportNotFound => '해당 신고 내역이 존재하지 않아요';
+
+  @override
+  String get errorCodeChatMessageNotFound => '해당 메시지를 찾을 수 없어요';
 
   @override
   String get errorCodeReportTargetNotFound => '해당 게임에 존재하지 않는 참가자예요';

@@ -491,3 +491,225 @@ abstract class _CommunityPostReportRequestModel
   >
   get copyWith => throw _privateConstructorUsedError;
 }
+
+CommunityChatReportRequestModel _$CommunityChatReportRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityChatReportRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityChatReportRequestModel {
+  int get chatMessageId => throw _privateConstructorUsedError;
+  String get reportType => throw _privateConstructorUsedError;
+  String? get etcReason => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityChatReportRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityChatReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityChatReportRequestModelCopyWith<CommunityChatReportRequestModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityChatReportRequestModelCopyWith<$Res> {
+  factory $CommunityChatReportRequestModelCopyWith(
+    CommunityChatReportRequestModel value,
+    $Res Function(CommunityChatReportRequestModel) then,
+  ) =
+      _$CommunityChatReportRequestModelCopyWithImpl<
+        $Res,
+        CommunityChatReportRequestModel
+      >;
+  @useResult
+  $Res call({int chatMessageId, String reportType, String? etcReason});
+}
+
+/// @nodoc
+class _$CommunityChatReportRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityChatReportRequestModel
+>
+    implements $CommunityChatReportRequestModelCopyWith<$Res> {
+  _$CommunityChatReportRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityChatReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? chatMessageId = null,
+    Object? reportType = null,
+    Object? etcReason = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            chatMessageId: null == chatMessageId
+                ? _value.chatMessageId
+                : chatMessageId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            reportType: null == reportType
+                ? _value.reportType
+                : reportType // ignore: cast_nullable_to_non_nullable
+                      as String,
+            etcReason: freezed == etcReason
+                ? _value.etcReason
+                : etcReason // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityChatReportRequestModelImplCopyWith<$Res>
+    implements $CommunityChatReportRequestModelCopyWith<$Res> {
+  factory _$$CommunityChatReportRequestModelImplCopyWith(
+    _$CommunityChatReportRequestModelImpl value,
+    $Res Function(_$CommunityChatReportRequestModelImpl) then,
+  ) = __$$CommunityChatReportRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int chatMessageId, String reportType, String? etcReason});
+}
+
+/// @nodoc
+class __$$CommunityChatReportRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityChatReportRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityChatReportRequestModelImpl
+        >
+    implements _$$CommunityChatReportRequestModelImplCopyWith<$Res> {
+  __$$CommunityChatReportRequestModelImplCopyWithImpl(
+    _$CommunityChatReportRequestModelImpl _value,
+    $Res Function(_$CommunityChatReportRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityChatReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? chatMessageId = null,
+    Object? reportType = null,
+    Object? etcReason = freezed,
+  }) {
+    return _then(
+      _$CommunityChatReportRequestModelImpl(
+        chatMessageId: null == chatMessageId
+            ? _value.chatMessageId
+            : chatMessageId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        reportType: null == reportType
+            ? _value.reportType
+            : reportType // ignore: cast_nullable_to_non_nullable
+                  as String,
+        etcReason: freezed == etcReason
+            ? _value.etcReason
+            : etcReason // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityChatReportRequestModelImpl
+    implements _CommunityChatReportRequestModel {
+  const _$CommunityChatReportRequestModelImpl({
+    required this.chatMessageId,
+    required this.reportType,
+    this.etcReason,
+  });
+
+  factory _$CommunityChatReportRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityChatReportRequestModelImplFromJson(json);
+
+  @override
+  final int chatMessageId;
+  @override
+  final String reportType;
+  @override
+  final String? etcReason;
+
+  @override
+  String toString() {
+    return 'CommunityChatReportRequestModel(chatMessageId: $chatMessageId, reportType: $reportType, etcReason: $etcReason)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityChatReportRequestModelImpl &&
+            (identical(other.chatMessageId, chatMessageId) ||
+                other.chatMessageId == chatMessageId) &&
+            (identical(other.reportType, reportType) ||
+                other.reportType == reportType) &&
+            (identical(other.etcReason, etcReason) ||
+                other.etcReason == etcReason));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, chatMessageId, reportType, etcReason);
+
+  /// Create a copy of CommunityChatReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityChatReportRequestModelImplCopyWith<
+    _$CommunityChatReportRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityChatReportRequestModelImplCopyWithImpl<
+        _$CommunityChatReportRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityChatReportRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityChatReportRequestModel
+    implements CommunityChatReportRequestModel {
+  const factory _CommunityChatReportRequestModel({
+    required final int chatMessageId,
+    required final String reportType,
+    final String? etcReason,
+  }) = _$CommunityChatReportRequestModelImpl;
+
+  factory _CommunityChatReportRequestModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityChatReportRequestModelImpl.fromJson;
+
+  @override
+  int get chatMessageId;
+  @override
+  String get reportType;
+  @override
+  String? get etcReason;
+
+  /// Create a copy of CommunityChatReportRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityChatReportRequestModelImplCopyWith<
+    _$CommunityChatReportRequestModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}

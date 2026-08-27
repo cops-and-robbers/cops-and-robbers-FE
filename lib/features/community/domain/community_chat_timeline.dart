@@ -66,9 +66,14 @@ class CommunityChatTimeline {
 }
 
 /// 시스템 메시지가 인원수에 주는 변화. 서버가 인원수를 실시간으로 주지 않아
-/// JOIN/LEAVE로 로컬 보정한다.
+/// JOIN/LEAVE/KICK으로 로컬 보정한다. 강퇴도 사람이 줄어드는 사건이다.
+/// 이벤트를 전부 열거한다 — 기본값으로 흘리면 새 이벤트가 0으로 조용히 묻혀
+/// 헤더 인원수만 어긋난다. 컴파일이 먼저 깨지는 편이 낫다.
 int memberDelta(CommunityChatMessageEntity m) => switch (m.body) {
-  CommunityChatSystemBody(event: CommunityChatSystemEvent.join) => 1,
-  CommunityChatSystemBody(event: CommunityChatSystemEvent.leave) => -1,
+  CommunityChatSystemBody(:final event) => switch (event) {
+    CommunityChatSystemEvent.join => 1,
+    CommunityChatSystemEvent.leave => -1,
+    CommunityChatSystemEvent.kick => -1,
+  },
   _ => 0,
 };

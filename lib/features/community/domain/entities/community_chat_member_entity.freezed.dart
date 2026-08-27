@@ -19,6 +19,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CommunityChatMemberEntity {
   int get userId => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
+
+  /// 프로필 아이콘 번호. 탈퇴한 멤버는 서버가 기본값을 채워 준다 (DEC-0041).
+  int? get profileIcon => throw _privateConstructorUsedError;
   bool get isAuthor => throw _privateConstructorUsedError;
 
   /// Create a copy of CommunityChatMemberEntity
@@ -35,7 +38,7 @@ abstract class $CommunityChatMemberEntityCopyWith<$Res> {
     $Res Function(CommunityChatMemberEntity) then,
   ) = _$CommunityChatMemberEntityCopyWithImpl<$Res, CommunityChatMemberEntity>;
   @useResult
-  $Res call({int userId, String nickname, bool isAuthor});
+  $Res call({int userId, String nickname, int? profileIcon, bool isAuthor});
 }
 
 /// @nodoc
@@ -58,6 +61,7 @@ class _$CommunityChatMemberEntityCopyWithImpl<
   $Res call({
     Object? userId = null,
     Object? nickname = null,
+    Object? profileIcon = freezed,
     Object? isAuthor = null,
   }) {
     return _then(
@@ -70,6 +74,10 @@ class _$CommunityChatMemberEntityCopyWithImpl<
                 ? _value.nickname
                 : nickname // ignore: cast_nullable_to_non_nullable
                       as String,
+            profileIcon: freezed == profileIcon
+                ? _value.profileIcon
+                : profileIcon // ignore: cast_nullable_to_non_nullable
+                      as int?,
             isAuthor: null == isAuthor
                 ? _value.isAuthor
                 : isAuthor // ignore: cast_nullable_to_non_nullable
@@ -89,7 +97,7 @@ abstract class _$$CommunityChatMemberEntityImplCopyWith<$Res>
   ) = __$$CommunityChatMemberEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int userId, String nickname, bool isAuthor});
+  $Res call({int userId, String nickname, int? profileIcon, bool isAuthor});
 }
 
 /// @nodoc
@@ -112,6 +120,7 @@ class __$$CommunityChatMemberEntityImplCopyWithImpl<$Res>
   $Res call({
     Object? userId = null,
     Object? nickname = null,
+    Object? profileIcon = freezed,
     Object? isAuthor = null,
   }) {
     return _then(
@@ -124,6 +133,10 @@ class __$$CommunityChatMemberEntityImplCopyWithImpl<$Res>
             ? _value.nickname
             : nickname // ignore: cast_nullable_to_non_nullable
                   as String,
+        profileIcon: freezed == profileIcon
+            ? _value.profileIcon
+            : profileIcon // ignore: cast_nullable_to_non_nullable
+                  as int?,
         isAuthor: null == isAuthor
             ? _value.isAuthor
             : isAuthor // ignore: cast_nullable_to_non_nullable
@@ -139,6 +152,7 @@ class _$CommunityChatMemberEntityImpl implements _CommunityChatMemberEntity {
   const _$CommunityChatMemberEntityImpl({
     required this.userId,
     required this.nickname,
+    this.profileIcon,
     required this.isAuthor,
   });
 
@@ -146,12 +160,16 @@ class _$CommunityChatMemberEntityImpl implements _CommunityChatMemberEntity {
   final int userId;
   @override
   final String nickname;
+
+  /// 프로필 아이콘 번호. 탈퇴한 멤버는 서버가 기본값을 채워 준다 (DEC-0041).
+  @override
+  final int? profileIcon;
   @override
   final bool isAuthor;
 
   @override
   String toString() {
-    return 'CommunityChatMemberEntity(userId: $userId, nickname: $nickname, isAuthor: $isAuthor)';
+    return 'CommunityChatMemberEntity(userId: $userId, nickname: $nickname, profileIcon: $profileIcon, isAuthor: $isAuthor)';
   }
 
   @override
@@ -162,12 +180,15 @@ class _$CommunityChatMemberEntityImpl implements _CommunityChatMemberEntity {
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
+            (identical(other.profileIcon, profileIcon) ||
+                other.profileIcon == profileIcon) &&
             (identical(other.isAuthor, isAuthor) ||
                 other.isAuthor == isAuthor));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, userId, nickname, isAuthor);
+  int get hashCode =>
+      Object.hash(runtimeType, userId, nickname, profileIcon, isAuthor);
 
   /// Create a copy of CommunityChatMemberEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -185,6 +206,7 @@ abstract class _CommunityChatMemberEntity implements CommunityChatMemberEntity {
   const factory _CommunityChatMemberEntity({
     required final int userId,
     required final String nickname,
+    final int? profileIcon,
     required final bool isAuthor,
   }) = _$CommunityChatMemberEntityImpl;
 
@@ -192,6 +214,10 @@ abstract class _CommunityChatMemberEntity implements CommunityChatMemberEntity {
   int get userId;
   @override
   String get nickname;
+
+  /// 프로필 아이콘 번호. 탈퇴한 멤버는 서버가 기본값을 채워 준다 (DEC-0041).
+  @override
+  int? get profileIcon;
   @override
   bool get isAuthor;
 

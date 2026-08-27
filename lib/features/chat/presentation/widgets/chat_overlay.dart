@@ -15,7 +15,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_notification_provider.dart';
 import '../providers/chat_provider.dart';
-import 'chat_context_menu.dart';
+import '../../../../core/widgets/chat/chat_context_menu.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
 import 'chat_preview_card.dart';
@@ -159,19 +159,37 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     BuildContext bubbleContext,
     bool isMe,
   ) {
+    VibrationService.instance().longPress();
     ChatContextMenu.show(
       context: bubbleContext,
-      message: message,
-      isMe: isMe,
-      isDarkMode: widget.isDarkMode,
-      onBlock: (participantId) {
-        ref.read(chatNotifierProvider.notifier).blockUser(participantId);
-      },
-      reportTarget: GameChatReportTarget(
-        gameId: widget.gameId,
-        reportedParticipantId: message.sender.participantId,
-        messageContent: message.message,
+      bubble: ChatContextMenuBubble(
+        text: message.filteredMessage,
+        backgroundColor: widget.isDarkMode ? AppColors.black : AppColors.white,
+        textStyle: AppTextStyles.paragraph_14.copyWith(
+          color: widget.isDarkMode ? AppColors.white : AppColors.black900,
+        ),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12.r),
+          topRight: Radius.circular(12.r),
+          bottomLeft: Radius.circular(isMe ? 12.r : 4.r),
+          bottomRight: Radius.circular(isMe ? 4.r : 12.r),
+        ),
       ),
+      copyText: message.message,
+      isDarkMode: widget.isDarkMode,
+      // 내 메시지는 신고·차단할 대상이 아니다.
+      reportTarget: isMe
+          ? null
+          : GameChatReportTarget(
+              gameId: widget.gameId,
+              reportedParticipantId: message.sender.participantId,
+              messageContent: message.message,
+            ),
+      onBlock: isMe
+          ? null
+          : () => ref
+                .read(chatNotifierProvider.notifier)
+                .blockUser(message.sender.participantId),
     );
   }
 

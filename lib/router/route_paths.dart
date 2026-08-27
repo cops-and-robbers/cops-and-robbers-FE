@@ -97,10 +97,11 @@ class RoutePaths {
   static String communityChatMenuWithId(int postId) =>
       '/community/$postId/chat/menu';
 
-  /// 채팅방 공지사항 — 상단 모임 카드를 누르면 전체 화면으로 연다
-  static const String communityChatNotice = '/community/:postId/chat/notice';
-  static String communityChatNoticeWithId(int postId) =>
-      '/community/$postId/chat/notice';
+  /// 모임 정보 — 상단 모임 카드를 누르면 전체 화면으로 연다
+  static const String communityChatMeetingInfo =
+      '/community/:postId/chat/meeting-info';
+  static String communityChatMeetingInfoWithId(int postId) =>
+      '/community/$postId/chat/meeting-info';
 
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
@@ -246,7 +247,7 @@ class RoutePaths {
   static const String communityEditName = 'communityEdit';
   static const String communityChatName = 'communityChat';
   static const String communityChatMenuName = 'communityChatMenu';
-  static const String communityChatNoticeName = 'communityChatNotice';
+  static const String communityChatMeetingInfoName = 'communityChatMeetingInfo';
   static const String mypageName = 'mypage';
   static const String languageSettingsName = 'languageSettings';
   static const String agreementSettingsName = 'agreementSettings';

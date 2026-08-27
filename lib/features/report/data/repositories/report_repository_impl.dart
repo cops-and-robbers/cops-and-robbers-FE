@@ -69,4 +69,30 @@ class ReportRepositoryImpl implements ReportRepository {
       );
     }
   }
+
+  @override
+  Future<void> reportCommunityChat({
+    required int chatMessageId,
+    required ReportCategory category,
+    String? etcReason,
+  }) async {
+    try {
+      await _dataSource.reportCommunityChat(
+        CommunityChatReportRequestModel(
+          chatMessageId: chatMessageId,
+          reportType: category.apiType,
+          // 모집글 신고와 같은 이유로 여기서 끊는다.
+          etcReason: category == ReportCategory.other ? etcReason : null,
+        ),
+      );
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '신고 처리 중 오류가 발생했습니다.',
+        messageKey: 'errorReportGeneric',
+        originalException: e,
+      );
+    }
+  }
 }
