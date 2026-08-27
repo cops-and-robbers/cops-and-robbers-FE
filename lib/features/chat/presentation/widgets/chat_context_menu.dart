@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,20 +9,16 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
-import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/pages/text_submit_page.dart';
-import '../../../../core/errors/app_exception.dart';
-import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../../../report/domain/constants/report_categories.dart';
+import '../../../report/presentation/report_flow.dart';
 
 /// 채팅 메시지 롱프레스 시 표시되는 컨텍스트 메뉴 오버레이
 ///
-/// 두 가지 모드:
-/// 1. **액션 메뉴** — 복사하기, 신고하기, 차단하기
-/// 2. **신고 카테고리 선택** — 신고하기 탭 시 전환
+/// 복사하기·신고하기·차단하기 세 가지. 신고하기를 누르면 이 오버레이는 닫히고
+/// 유형 선택은 `ReportCategoryPage`에서 한다 — 커뮤니티 신고와 같은 화면이다.
 ///
 /// [show] 정적 메서드로 오버레이를 표시합니다.
 class ChatContextMenu extends StatefulWidget {
@@ -94,11 +92,7 @@ class ChatContextMenu extends StatefulWidget {
   State<ChatContextMenu> createState() => _ChatContextMenuState();
 }
 
-enum _MenuMode { actions, reportCategories }
-
 class _ChatContextMenuState extends State<ChatContextMenu> {
-  _MenuMode _mode = _MenuMode.actions;
-
   void _dismiss() => Navigator.of(context).pop();
 
   void _onCopy() {
@@ -113,8 +107,26 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     );
   }
 
+  /// 신고하기 — 유형 선택은 커뮤니티와 같은 화면에서 한다.
+  ///
+  /// 예전에는 이 오버레이 안에서 유형까지 골랐다. 화면으로 옮기면서 "고른 즉시
+  /// 접수"가 아니라 아래 신고하기 버튼이 확인을 겸하게 됐다.
   void _onReportTap() {
-    setState(() => _mode = _MenuMode.reportCategories);
+    _dismiss();
+    unawaited(_pickCategoryAndReport());
+  }
+
+  Future<void> _pickCategoryAndReport() async {
+    await runReportFlow(
+      context: widget.callerContext,
+      isDarkMode: widget.isDarkMode,
+      submit: (selected, etcReason) => widget.onReport(
+        category: selected,
+        messageContent: widget.message.message,
+        reportedParticipantId: widget.message.sender.participantId,
+        etcReason: etcReason,
+      ),
+    );
   }
 
   void _onBlockWithSnackbar() {
@@ -126,120 +138,6 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
       message: l10n.messageUserBlocked,
       iconPath: 'assets/icons/icon_block.svg',
       isDarkMode: widget.isDarkMode,
-    );
-  }
-
-  void _onCategorySelected(ReportCategory category) {
-    final l10n = AppLocalizations.of(widget.callerContext);
-    _dismiss();
-
-    final isDark = widget.isDarkMode;
-
-    // 기타(직접 작성): 신고 작성 페이지로 이동
-    if (category == ReportCategory.other) {
-      Navigator.of(widget.callerContext).push(
-        MaterialPageRoute<void>(
-          builder: (_) => TextSubmitPage(
-            title: l10n.buttonReport,
-            label: l10n.fieldReportContentLabel,
-            hintText: l10n.fieldReportReasonHint,
-            submitText: l10n.buttonReport,
-            isDestructive: true,
-            isDarkMode: isDark,
-            onSubmit: (text) async {
-              try {
-                await widget.onReport(
-                  category: ReportCategory.other,
-                  messageContent: widget.message.message,
-                  reportedParticipantId: widget.message.sender.participantId,
-                  etcReason: text,
-                );
-                if (!widget.callerContext.mounted) return;
-                Navigator.of(widget.callerContext).pop();
-                AppSnackbar.show(
-                  widget.callerContext,
-                  message: l10n.messageReportSubmitted,
-                  isDarkMode: isDark,
-                );
-              } catch (e) {
-                if (!widget.callerContext.mounted) return;
-                Navigator.of(widget.callerContext).pop();
-                AppSnackbar.show(
-                  widget.callerContext,
-                  message: e is AppException
-                      ? l10n.errorByException(e)
-                      : l10n.errorReportFailed,
-                  backgroundColor: AppColors.red,
-                  isDarkMode: isDark,
-                );
-              }
-            },
-          ),
-        ),
-      );
-      return;
-    }
-
-    // 나머지 카테고리: 확인 다이얼로그
-    AppDialog.show(
-      context: widget.callerContext,
-      title: l10n.dialogReportConfirmTitle,
-      cancelText: l10n.buttonCancel,
-      confirmText: l10n.buttonReport,
-      isDestructive: true,
-      isDarkMode: isDark,
-      cancelTextColor: isDark ? AppColors.black400 : AppColors.black600,
-      confirmTextColor: isDark ? AppColors.white : null,
-      customContent: RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: '${l10n.chatReportSelectedCategoryLabel} ',
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: isDark ? AppColors.black400 : AppColors.black600,
-              ),
-            ),
-            TextSpan(
-              text: category.localizedLabel(l10n),
-              style: AppTextStyles.paragraph14Semibold.copyWith(
-                color: AppColors.red,
-              ),
-            ),
-            TextSpan(
-              text: l10n.chatReportSubmitNotice,
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: isDark ? AppColors.black400 : AppColors.black600,
-              ),
-            ),
-          ],
-        ),
-      ),
-      onConfirm: () async {
-        try {
-          await widget.onReport(
-            category: category,
-            messageContent: widget.message.message,
-            reportedParticipantId: widget.message.sender.participantId,
-          );
-          if (!widget.callerContext.mounted) return;
-          AppSnackbar.show(
-            widget.callerContext,
-            message: l10n.messageReportSubmitted,
-            isDarkMode: isDark,
-          );
-        } catch (e) {
-          if (!widget.callerContext.mounted) return;
-          AppSnackbar.show(
-            widget.callerContext,
-            message: e is AppException
-                ? l10n.errorByException(e)
-                : l10n.errorReportFailed,
-            backgroundColor: AppColors.red,
-            isDarkMode: isDark,
-          );
-        }
-      },
     );
   }
 
@@ -321,21 +219,15 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 
           // 메뉴 (크기 측정 후 위치 결정)
           _MenuPositioner(
-            key: ValueKey(_mode),
             screenSize: screenSize,
             calculatePosition: _calculateMenuPosition,
-            child: _mode == _MenuMode.actions
-                ? _ActionMenu(
-                    isMe: widget.isMe,
-                    isDarkMode: widget.isDarkMode,
-                    onCopy: _onCopy,
-                    onReport: _onReportTap,
-                    onBlock: _onBlockWithSnackbar,
-                  )
-                : _ReportCategoryMenu(
-                    isDarkMode: widget.isDarkMode,
-                    onCategorySelected: _onCategorySelected,
-                  ),
+            child: _ActionMenu(
+              isMe: widget.isMe,
+              isDarkMode: widget.isDarkMode,
+              onCopy: _onCopy,
+              onReport: _onReportTap,
+              onBlock: _onBlockWithSnackbar,
+            ),
           ),
         ],
       ),
@@ -346,7 +238,6 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
 /// 메뉴 위젯의 크기를 측정한 뒤 올바른 위치에 배치하는 헬퍼 위젯
 class _MenuPositioner extends StatefulWidget {
   const _MenuPositioner({
-    super.key,
     required this.screenSize,
     required this.calculatePosition,
     required this.child,
@@ -461,68 +352,6 @@ class _ActionMenu extends StatelessWidget {
   }
 }
 
-/// 신고 카테고리 선택 메뉴
-class _ReportCategoryMenu extends StatelessWidget {
-  const _ReportCategoryMenu({
-    required this.isDarkMode,
-    required this.onCategorySelected,
-  });
-
-  final bool isDarkMode;
-  final void Function(ReportCategory category) onCategorySelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final categories = ReportCategory.values;
-
-    return _MenuContainer(
-      isDarkMode: isDarkMode,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.horizontal20,
-            AppSpacing.vertical16,
-            AppSpacing.horizontal20,
-            AppSpacing.vertical4,
-          ),
-          child: Text(
-            l10n.chatReportCategoryTitle,
-            style:
-                (isDarkMode
-                        ? AppTextStyles.robberParagraph
-                        : AppTextStyles.paragraph14Semibold)
-                    .copyWith(
-                      color: isDarkMode ? AppColors.white : AppColors.black,
-                    ),
-          ),
-        ),
-        ...List.generate(categories.length * 2 - 1, (index) {
-          if (index.isOdd) return _MenuDivider(isDarkMode: isDarkMode);
-          final category = categories[index ~/ 2];
-          return GestureDetector(
-            onTap: () => onCategorySelected(category),
-            child: Container(
-              color: isDarkMode ? AppColors.black : AppColors.white,
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.horizontal20,
-                vertical: AppSpacing.vertical16,
-              ),
-              child: Text(
-                category.localizedLabel(l10n),
-                style: AppTextStyles.label16Medium.copyWith(
-                  color: isDarkMode ? AppColors.white : AppColors.black,
-                ),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
-  }
-}
-
-/// 메뉴 컨테이너 — 흰 배경, 라운드 코너
 class _MenuContainer extends StatelessWidget {
   const _MenuContainer({required this.children, this.isDarkMode = false});
 

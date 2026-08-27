@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/utils/utf16_length_limiting_formatter.dart';
 
 /// 화면 하단 입력 바 — 채팅방과 모집글 댓글이 함께 쓴다
 ///
@@ -131,15 +132,14 @@ class _CommunityMessageInputState extends State<CommunityMessageInput> {
       enabled: widget.enabled,
       maxLines: CommunityMessageInput.maxLines,
       minLines: 1,
-      maxLength: widget.maxLength,
+      // 서버와 같은 단위(UTF-16)로 막는다 — Flutter 기본 maxLength는 자소 단위라
+      // 이모지가 섞이면 앱은 통과시키고 서버가 400을 준다.
+      inputFormatters: [Utf16LengthLimitingFormatter(widget.maxLength)],
       // 전송은 옆 아이콘이 맡는다 — 키보드 키는 개행.
       textInputAction: TextInputAction.newline,
       style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black),
       decoration: InputDecoration(
         isDense: true,
-        // 기본 카운터는 입력창 아래 한 줄을 더 먹는다. 제한은 걸되 표시는 않는다
-        // (AppTextField도 같은 처리).
-        counterText: '',
         hintText: widget.hintText,
         hintStyle: AppTextStyles.paragraph_14.copyWith(
           color: AppColors.black400,

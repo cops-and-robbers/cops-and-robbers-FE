@@ -1620,6 +1620,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonBlock => '차단하기';
 
   @override
+  String get reportCategoryLabel => '신고 유형';
+
+  @override
   String get chatReportCategoryTitle => '신고 유형 선택';
 
   @override
@@ -2462,6 +2465,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeInvalidMeetingDate => '모임 시간은 지금 이후로 골라주세요';
+
+  @override
+  String get errorCodeCommentNotFound => '이미 삭제된 댓글이에요';
+
+  @override
+  String get errorCodeForbiddenNotCommentAuthor => '내가 쓴 댓글만 지울 수 있어요';
+
+  @override
+  String get errorCodeReplyTargetGone => '답글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요';
+
+  @override
+  String get errorCodeInvalidCommentDepth => '답글에는 답글을 달 수 없어요';
 
   @override
   String get errorCodePostNotFound => '이미 삭제된 모집글이에요';

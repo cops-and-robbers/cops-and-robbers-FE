@@ -1733,6 +1733,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonBlock => 'Block';
 
   @override
+  String get reportCategoryLabel => 'Report type';
+
+  @override
   String get chatReportCategoryTitle => 'Select report type';
 
   @override
@@ -2667,6 +2670,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeInvalidMeetingDate => 'Pick a meeting time in the future';
+
+  @override
+  String get errorCodeCommentNotFound => 'This comment was already deleted';
+
+  @override
+  String get errorCodeForbiddenNotCommentAuthor =>
+      'You can only delete your own comments';
+
+  @override
+  String get errorCodeReplyTargetGone =>
+      'The comment you\'re replying to is gone. Refresh and try again';
+
+  @override
+  String get errorCodeInvalidCommentDepth => 'You can\'t reply to a reply';
 
   @override
   String get errorCodePostNotFound => 'This post has been deleted';

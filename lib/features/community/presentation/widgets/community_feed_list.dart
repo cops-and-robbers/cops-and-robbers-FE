@@ -28,6 +28,7 @@ import '../providers/community_provider.dart';
 import 'community_post_card.dart';
 import 'community_post_menu.dart';
 import 'community_sort_sheet.dart';
+import '../community_report_action.dart';
 
 /// 커뮤니티 모집글 무한 스크롤 목록
 ///
@@ -142,8 +143,7 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
         AppSnackbar.show(context, message: l10n.communityLoginRequiredMessage);
         context.push(RoutePaths.login);
       case CommunityPostMenuAction.report:
-        // ponytail: 게시글 신고 API가 아직 없다 (상세와 같은 상태).
-        AppSnackbar.show(context, message: l10n.comingSoonMessage);
+        unawaited(reportCommunityPost(context, ref, post.id));
       case CommunityPostMenuAction.edit:
         VibrationService.instance().buttonTap();
         // 상세를 먼저 깔고 그 위로 연다 — 완료든 취소든 닫았을 때 목록이 아니라

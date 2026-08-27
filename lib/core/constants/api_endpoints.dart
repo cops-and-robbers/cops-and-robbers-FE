@@ -166,6 +166,9 @@ class ApiEndpoints {
   /// 채팅 신고
   static const String reportChat = '/api/report/chat';
 
+  /// 커뮤니티 모집글 신고
+  static const String reportCommunityPost = '/api/report/community-post';
+
   // ============================================
   // Bug API - 버그 제보
   // ============================================

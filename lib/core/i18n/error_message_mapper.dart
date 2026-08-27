@@ -240,6 +240,21 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodePostNotFound;
       case 'FORBIDDEN_NOT_AUTHOR':
         return errorCodeForbiddenNotAuthor;
+      // ── 커뮤니티(댓글) 에러 ──────────────────────────────────────────
+      case 'COMMENT_NOT_FOUND':
+        return errorCodeCommentNotFound;
+      case 'FORBIDDEN_NOT_COMMENT_AUTHOR':
+        return errorCodeForbiddenNotCommentAuthor;
+      // 아래 셋은 답글을 달다 부모가 그 사이 사라졌거나 조건이 어긋난 경우다.
+      // 서버 사정이 각각 다르지만 사용자가 할 일은 하나 — 목록을 새로 받는 것.
+      case 'PARENT_COMMENT_NOT_FOUND':
+      case 'PARENT_COMMENT_POST_MISMATCH':
+      case 'DELETED_COMMENT_CANNOT_REPLY':
+        return errorCodeReplyTargetGone;
+      // 답글에 답글은 서버가 막는다(DEC-0034). 화면이 2단만 그리므로 정상
+      // 경로로는 오지 않지만, 문서화된 코드라 매핑을 채워 둔다.
+      case 'INVALID_COMMENT_DEPTH':
+        return errorCodeInvalidCommentDepth;
       case 'COUNTRY_NOT_SPECIFIED':
         return errorCodeCountryNotSpecified;
       // 앱은 scope=ALL 외의 값을 보내지 않으므로(datasource 참조) SCOPE는

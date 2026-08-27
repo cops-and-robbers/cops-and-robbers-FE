@@ -1619,6 +1619,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonBlock => 'ブロック';
 
   @override
+  String get reportCategoryLabel => '通報の種類';
+
+  @override
   String get chatReportCategoryTitle => '通報タイプの選択';
 
   @override
@@ -2463,6 +2466,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeInvalidMeetingDate => '集まる時間は現在より後を選んでください';
+
+  @override
+  String get errorCodeCommentNotFound => 'すでに削除されたコメントです';
+
+  @override
+  String get errorCodeForbiddenNotCommentAuthor => '自分が書いたコメントのみ削除できます';
+
+  @override
+  String get errorCodeReplyTargetGone =>
+      '返信しようとしたコメントがなくなりました。更新してからもう一度お試しください';
+
+  @override
+  String get errorCodeInvalidCommentDepth => '返信に返信はできません';
 
   @override
   String get errorCodePostNotFound => 'この募集はすでに削除されました';

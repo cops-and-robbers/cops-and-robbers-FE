@@ -21,4 +21,18 @@ abstract class ReportRepository {
     required ReportCategory category,
     String? etcReason,
   });
+
+  /// 커뮤니티 모집글 신고
+  ///
+  /// [postId] 신고 대상 게시글 ID
+  /// [category] 신고 유형 (인게임과 같은 enum)
+  /// [etcReason] 기타 사유 (category가 other일 때 필수)
+  ///
+  /// Throws:
+  /// - [AppException]: API 에러 (중복 신고, 본인 글 신고 불가 등)
+  Future<void> reportCommunityPost({
+    required int postId,
+    required ReportCategory category,
+    String? etcReason,
+  });
 }

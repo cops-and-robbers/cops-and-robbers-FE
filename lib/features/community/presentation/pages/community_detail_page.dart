@@ -31,6 +31,7 @@ import '../providers/community_detail_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_comment_input.dart';
 import '../widgets/community_comment_list.dart';
+import '../community_report_action.dart';
 import '../widgets/community_map_preview.dart';
 import '../widgets/community_post_menu.dart';
 
@@ -571,8 +572,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
       case CommunityPostMenuAction.login:
         _goLogin();
       case CommunityPostMenuAction.report:
-        // ponytail: 게시글 신고 API가 아직 없다. 생기면 신고 화면으로 잇는다.
-        AppSnackbar.show(context, message: l10n.comingSoonMessage);
+        unawaited(reportCommunityPost(context, ref, widget.postId));
       case CommunityPostMenuAction.edit:
         unawaited(_openEdit());
       case CommunityPostMenuAction.toggleStatus:

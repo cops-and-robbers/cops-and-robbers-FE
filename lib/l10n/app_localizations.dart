@@ -3116,6 +3116,12 @@ abstract class AppLocalizations {
   /// **'차단하기'**
   String get buttonBlock;
 
+  /// 신고 유형 선택 화면 — 목록 위 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 유형'**
+  String get reportCategoryLabel;
+
   /// 신고 폼 — 카테고리 선택 섹션 제목
   ///
   /// In ko, this message translates to:
@@ -4728,6 +4734,30 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'모임 시간은 지금 이후로 골라주세요'**
   String get errorCodeInvalidMeetingDate;
+
+  /// 커뮤니티 — 댓글이 서버에 없음
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 삭제된 댓글이에요'**
+  String get errorCodeCommentNotFound;
+
+  /// 커뮤니티 — 남의 댓글 삭제 시도
+  ///
+  /// In ko, this message translates to:
+  /// **'내가 쓴 댓글만 지울 수 있어요'**
+  String get errorCodeForbiddenNotCommentAuthor;
+
+  /// 커뮤니티 — 답글 대상이 사라졌거나 조건이 어긋남
+  ///
+  /// In ko, this message translates to:
+  /// **'답글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요'**
+  String get errorCodeReplyTargetGone;
+
+  /// 커뮤니티 — 2단을 넘는 답글 시도
+  ///
+  /// In ko, this message translates to:
+  /// **'답글에는 답글을 달 수 없어요'**
+  String get errorCodeInvalidCommentDepth;
 
   /// No description provided for @errorCodePostNotFound.
   ///
