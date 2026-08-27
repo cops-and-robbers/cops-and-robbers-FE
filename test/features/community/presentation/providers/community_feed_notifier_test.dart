@@ -204,6 +204,9 @@ class _ListAndDetailRepository
 
   final List<CommunityPostEntity> items;
 
+  /// 피드가 안 살아있을 때 `_syncFeedCard`가 조회를 유발하지 않는지 세는 용도.
+  int getPostsCallCount = 0;
+
   @override
   Future<CommunityPostPageEntity> getPosts({
     String? cursor,
@@ -214,7 +217,10 @@ class _ListAndDetailRepository
     String? keyword,
     double? latitude,
     double? longitude,
-  }) async => CommunityPostPageEntity(items: items, nextCursor: null, hasNext: false);
+  }) async {
+    getPostsCallCount++;
+    return CommunityPostPageEntity(items: items, nextCursor: null, hasNext: false);
+  }
 
   @override
   Future<CommunityPostEntity> getPost(int postId) async =>
@@ -1010,6 +1016,40 @@ void main() {
         expect(items[1].likeCount, _post(2).likeCount + 1);
         // 건드리지 않은 행은 그대로다.
         expect(items[0], _post(1));
+      },
+    );
+
+    test(
+      'does_not_query_the_feed_when_toggling_like_while_the_feed_is_not_alive',
+      () async {
+        // 상세는 피드를 거치지 않고도 도달한다(채팅방에서 곧장 push). 그
+        // 경로에서 _syncFeedCard가 죽어 있는 피드 인스턴스를 가드 없이
+        // .notifier로 읽으면 그 자리에서 빌드가 걸려 getPosts()가 실제로
+        // 조회된다 — 화면에 보이지도 않는 조회가 조용히 나가는 회귀를 잡는다.
+        final repo = _ListAndDetailRepository([_post(1), _post(2)]);
+        final container = _containerWith(
+          repo,
+          extraOverrides: [
+            communityCommentRepositoryProvider.overrideWithValue(
+              _EmptyCommentRepository(),
+            ),
+            communityReactionRepositoryProvider.overrideWithValue(
+              _SucceedingReactionRepository(),
+            ),
+          ],
+        );
+
+        // 피드는 한 번도 read하지 않는다 — 채팅방에서 상세로 곧장 온 상황.
+        await container.read(communityDetailNotifierProvider(2).future);
+        await container
+            .read(communityDetailNotifierProvider(2).notifier)
+            .toggleLike();
+        // 가드 없이 .notifier를 읽었다면 build()가 마이크로태스크로 이어지며
+        // getPosts()를 나중에 부른다 — 그 잔여 마이크로태스크까지 흘려보낸
+        // 뒤에 세야 가드 부재를 놓치지 않는다.
+        await Future<void>.delayed(Duration.zero);
+
+        expect(repo.getPostsCallCount, 0);
       },
     );
   });

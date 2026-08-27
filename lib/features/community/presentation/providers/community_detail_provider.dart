@@ -89,11 +89,14 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
     state = AsyncData(current.copyWith(post: apply(before)));
     try {
       await call(ref.read(communityReactionRepositoryProvider), before);
-      _syncFeedCard();
     } catch (_) {
       state = AsyncData((state.valueOrNull ?? current).copyWith(post: before));
       rethrow;
     }
+    // try 밖: 서버는 이미 반응을 받았다. 여기서 던지면 catch가 그 성공을
+    // 롤백해 "서버는 됐는데 화면은 실패"로 어긋난다 — 이 태스크가 흡수하려는
+    // 것과 같은 종류의 불일치라 catch 안에 두지 않는다.
+    _syncFeedCard();
   }
 
   /// 바뀐 글을 목록의 그 카드에만 반영한다.
@@ -109,15 +112,17 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
     final post = state.valueOrNull?.post;
     if (post == null) return;
 
-    ref
-        .read(
-          communityFeedNotifierProvider(
-            ref.read(selectedCommunityScopeProvider),
-            ref.read(selectedCommunitySortProvider),
-            null,
-          ).notifier,
-        )
-        .replacePost(post);
+    final feedProvider = communityFeedNotifierProvider(
+      ref.read(selectedCommunityScopeProvider),
+      ref.read(selectedCommunitySortProvider),
+      null,
+    );
+    // 상세는 피드를 거치지 않고도 도달한다(채팅방에서 바로 push). 그 경로에서
+    // .notifier를 가드 없이 읽으면 죽어 있던 인스턴스를 그 자리에서 빌드해
+    // getPosts()를 실제로 조회한다 — invalidate의 커서 되감김을 피하려던 게
+    // 무색해진다. ref.exists로 이미 살아있을 때만 반영한다.
+    if (!ref.exists(feedProvider)) return;
+    ref.read(feedProvider.notifier).replacePost(post);
   }
 
   /// 댓글 또는 답글 작성.
