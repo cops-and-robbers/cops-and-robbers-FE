@@ -15,8 +15,8 @@ CommunityPostEntity _post({
   String? placeName,
   String? region,
   int? currentParticipants,
-  int? likeCount,
-  int? bookmarkCount,
+  int likeCount = 0,
+  int scrapCount = 0,
 }) => CommunityPostEntity(
   id: 1,
   writerId: 7,
@@ -32,7 +32,9 @@ CommunityPostEntity _post({
   region: region,
   currentParticipants: currentParticipants,
   likeCount: likeCount,
-  bookmarkCount: bookmarkCount,
+  isLiked: false,
+  scrapCount: scrapCount,
+  isScrapped: false,
 );
 
 /// 카드 안의 더보기 메뉴가 로그인 사용자 id를 watch 하므로 ProviderScope가 필요하다.

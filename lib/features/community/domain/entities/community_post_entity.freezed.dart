@@ -50,11 +50,13 @@ mixin _$CommunityPostEntity {
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
   int? get currentParticipants => throw _privateConstructorUsedError;
 
-  /// 좋아요 수. 백엔드 추가 예정. null이면 0으로 표시한다.
-  int? get likeCount => throw _privateConstructorUsedError;
+  /// 좋아요 수와 내가 눌렀는지. 비로그인이면 [isLiked]가 항상 false다.
+  int get likeCount => throw _privateConstructorUsedError;
+  bool get isLiked => throw _privateConstructorUsedError;
 
-  /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
-  int? get bookmarkCount => throw _privateConstructorUsedError;
+  /// 스크랩 수와 내가 스크랩했는지.
+  int get scrapCount => throw _privateConstructorUsedError;
+  bool get isScrapped => throw _privateConstructorUsedError;
 
   /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
   /// false이고, 그때는 항상 join을 보내 409면 입장한다.
@@ -89,8 +91,10 @@ abstract class $CommunityPostEntityCopyWith<$Res> {
     String? region,
     String? address,
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
+    int likeCount,
+    bool isLiked,
+    int scrapCount,
+    bool isScrapped,
     bool chatJoined,
   });
 }
@@ -124,8 +128,10 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
     Object? region = freezed,
     Object? address = freezed,
     Object? currentParticipants = freezed,
-    Object? likeCount = freezed,
-    Object? bookmarkCount = freezed,
+    Object? likeCount = null,
+    Object? isLiked = null,
+    Object? scrapCount = null,
+    Object? isScrapped = null,
     Object? chatJoined = null,
   }) {
     return _then(
@@ -186,14 +192,22 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
                 ? _value.currentParticipants
                 : currentParticipants // ignore: cast_nullable_to_non_nullable
                       as int?,
-            likeCount: freezed == likeCount
+            likeCount: null == likeCount
                 ? _value.likeCount
                 : likeCount // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            bookmarkCount: freezed == bookmarkCount
-                ? _value.bookmarkCount
-                : bookmarkCount // ignore: cast_nullable_to_non_nullable
-                      as int?,
+                      as int,
+            isLiked: null == isLiked
+                ? _value.isLiked
+                : isLiked // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            scrapCount: null == scrapCount
+                ? _value.scrapCount
+                : scrapCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            isScrapped: null == isScrapped
+                ? _value.isScrapped
+                : isScrapped // ignore: cast_nullable_to_non_nullable
+                      as bool,
             chatJoined: null == chatJoined
                 ? _value.chatJoined
                 : chatJoined // ignore: cast_nullable_to_non_nullable
@@ -228,8 +242,10 @@ abstract class _$$CommunityPostEntityImplCopyWith<$Res>
     String? region,
     String? address,
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
+    int likeCount,
+    bool isLiked,
+    int scrapCount,
+    bool isScrapped,
     bool chatJoined,
   });
 }
@@ -262,8 +278,10 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
     Object? region = freezed,
     Object? address = freezed,
     Object? currentParticipants = freezed,
-    Object? likeCount = freezed,
-    Object? bookmarkCount = freezed,
+    Object? likeCount = null,
+    Object? isLiked = null,
+    Object? scrapCount = null,
+    Object? isScrapped = null,
     Object? chatJoined = null,
   }) {
     return _then(
@@ -324,14 +342,22 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
             ? _value.currentParticipants
             : currentParticipants // ignore: cast_nullable_to_non_nullable
                   as int?,
-        likeCount: freezed == likeCount
+        likeCount: null == likeCount
             ? _value.likeCount
             : likeCount // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        bookmarkCount: freezed == bookmarkCount
-            ? _value.bookmarkCount
-            : bookmarkCount // ignore: cast_nullable_to_non_nullable
-                  as int?,
+                  as int,
+        isLiked: null == isLiked
+            ? _value.isLiked
+            : isLiked // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        scrapCount: null == scrapCount
+            ? _value.scrapCount
+            : scrapCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        isScrapped: null == isScrapped
+            ? _value.isScrapped
+            : isScrapped // ignore: cast_nullable_to_non_nullable
+                  as bool,
         chatJoined: null == chatJoined
             ? _value.chatJoined
             : chatJoined // ignore: cast_nullable_to_non_nullable
@@ -359,8 +385,10 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     this.region,
     this.address,
     this.currentParticipants,
-    this.likeCount,
-    this.bookmarkCount,
+    required this.likeCount,
+    required this.isLiked,
+    required this.scrapCount,
+    required this.isScrapped,
     this.chatJoined = false,
   }) : super._();
 
@@ -411,13 +439,17 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
   @override
   final int? currentParticipants;
 
-  /// 좋아요 수. 백엔드 추가 예정. null이면 0으로 표시한다.
+  /// 좋아요 수와 내가 눌렀는지. 비로그인이면 [isLiked]가 항상 false다.
   @override
-  final int? likeCount;
+  final int likeCount;
+  @override
+  final bool isLiked;
 
-  /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
+  /// 스크랩 수와 내가 스크랩했는지.
   @override
-  final int? bookmarkCount;
+  final int scrapCount;
+  @override
+  final bool isScrapped;
 
   /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
   /// false이고, 그때는 항상 join을 보내 409면 입장한다.
@@ -427,7 +459,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
 
   @override
   String toString() {
-    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount, chatJoined: $chatJoined)';
+    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, isLiked: $isLiked, scrapCount: $scrapCount, isScrapped: $isScrapped, chatJoined: $chatJoined)';
   }
 
   @override
@@ -459,14 +491,17 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
                 other.currentParticipants == currentParticipants) &&
             (identical(other.likeCount, likeCount) ||
                 other.likeCount == likeCount) &&
-            (identical(other.bookmarkCount, bookmarkCount) ||
-                other.bookmarkCount == bookmarkCount) &&
+            (identical(other.isLiked, isLiked) || other.isLiked == isLiked) &&
+            (identical(other.scrapCount, scrapCount) ||
+                other.scrapCount == scrapCount) &&
+            (identical(other.isScrapped, isScrapped) ||
+                other.isScrapped == isScrapped) &&
             (identical(other.chatJoined, chatJoined) ||
                 other.chatJoined == chatJoined));
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     writerId,
@@ -483,9 +518,11 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     address,
     currentParticipants,
     likeCount,
-    bookmarkCount,
+    isLiked,
+    scrapCount,
+    isScrapped,
     chatJoined,
-  );
+  ]);
 
   /// Create a copy of CommunityPostEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -515,8 +552,10 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
     final String? region,
     final String? address,
     final int? currentParticipants,
-    final int? likeCount,
-    final int? bookmarkCount,
+    required final int likeCount,
+    required final bool isLiked,
+    required final int scrapCount,
+    required final bool isScrapped,
     final bool chatJoined,
   }) = _$CommunityPostEntityImpl;
   const _CommunityPostEntity._() : super._();
@@ -568,13 +607,17 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
   @override
   int? get currentParticipants;
 
-  /// 좋아요 수. 백엔드 추가 예정. null이면 0으로 표시한다.
+  /// 좋아요 수와 내가 눌렀는지. 비로그인이면 [isLiked]가 항상 false다.
   @override
-  int? get likeCount;
+  int get likeCount;
+  @override
+  bool get isLiked;
 
-  /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
+  /// 스크랩 수와 내가 스크랩했는지.
   @override
-  int? get bookmarkCount;
+  int get scrapCount;
+  @override
+  bool get isScrapped;
 
   /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
   /// false이고, 그때는 항상 join을 보내 409면 입장한다.

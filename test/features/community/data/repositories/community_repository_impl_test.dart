@@ -205,6 +205,10 @@ Map<String, dynamic> _postJson({
   'maxParticipants': 10,
   'status': status,
   'createdAt': '2026-08-07T12:00:00+09:00',
+  'likeCount': 0,
+  'scrapCount': 0,
+  'liked': false,
+  'scrapped': false,
   ...extra,
 };
 
@@ -317,8 +321,6 @@ void main() {
       )).items.single;
 
       expect(entity.currentParticipants, isNull);
-      expect(entity.likeCount, isNull);
-      expect(entity.bookmarkCount, isNull);
       expect(entity.maxParticipants, 10);
     });
 

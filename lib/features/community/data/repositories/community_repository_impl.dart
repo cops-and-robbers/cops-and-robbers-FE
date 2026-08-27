@@ -241,7 +241,9 @@ class CommunityRepositoryImpl implements CommunityRepository {
         maxParticipants: m.maxParticipants,
         currentParticipants: m.currentParticipants,
         likeCount: m.likeCount,
-        bookmarkCount: m.bookmarkCount,
+        isLiked: m.liked,
+        scrapCount: m.scrapCount,
+        isScrapped: m.scrapped,
         chatJoined: m.chatJoined ?? false,
         status: communityPostStatusFromWire(m.status),
       );

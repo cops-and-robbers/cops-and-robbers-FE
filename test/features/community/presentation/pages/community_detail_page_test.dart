@@ -47,6 +47,10 @@ CommunityPostEntity _post({
   region: region,
   placeName: _placeName,
   address: address,
+  likeCount: 0,
+  isLiked: false,
+  scrapCount: 0,
+  isScrapped: false,
 );
 
 /// 본문 조회와 작성자 동작(마감·삭제)에 응답하는 Repository.

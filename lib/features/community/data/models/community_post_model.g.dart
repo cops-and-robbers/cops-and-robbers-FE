@@ -73,9 +73,11 @@ _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
   status: json['status'] as String,
   createdAt: DateTime.parse(json['createdAt'] as String),
   writerNickname: json['writerNickname'] as String?,
+  likeCount: (json['likeCount'] as num).toInt(),
+  scrapCount: (json['scrapCount'] as num).toInt(),
+  liked: json['liked'] as bool,
+  scrapped: json['scrapped'] as bool,
   currentParticipants: (json['currentParticipants'] as num?)?.toInt(),
-  likeCount: (json['likeCount'] as num?)?.toInt(),
-  bookmarkCount: (json['bookmarkCount'] as num?)?.toInt(),
   chatJoined: json['chatJoined'] as bool?,
 );
 
@@ -92,9 +94,11 @@ Map<String, dynamic> _$$CommunityPostResponseModelImplToJson(
   'status': instance.status,
   'createdAt': instance.createdAt.toIso8601String(),
   'writerNickname': instance.writerNickname,
-  'currentParticipants': instance.currentParticipants,
   'likeCount': instance.likeCount,
-  'bookmarkCount': instance.bookmarkCount,
+  'scrapCount': instance.scrapCount,
+  'liked': instance.liked,
+  'scrapped': instance.scrapped,
+  'currentParticipants': instance.currentParticipants,
   'chatJoined': instance.chatJoined,
 };
 

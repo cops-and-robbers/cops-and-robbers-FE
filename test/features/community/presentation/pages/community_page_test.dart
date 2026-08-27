@@ -39,6 +39,10 @@ CommunityPostEntity _post(int id) => CommunityPostEntity(
   maxParticipants: 10,
   status: CommunityPostStatus.recruiting,
   createdAt: DateTime(2026, 9, 1),
+  likeCount: 0,
+  isLiked: false,
+  scrapCount: 0,
+  isScrapped: false,
 );
 
 class _FakeCommunityRepository

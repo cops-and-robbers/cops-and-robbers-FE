@@ -46,11 +46,13 @@ class CommunityPostEntity with _$CommunityPostEntity {
     /// "0/10명"은 아무도 안 모인 것으로 오독된다.
     int? currentParticipants,
 
-    /// 좋아요 수. 백엔드 추가 예정. null이면 0으로 표시한다.
-    int? likeCount,
+    /// 좋아요 수와 내가 눌렀는지. 비로그인이면 [isLiked]가 항상 false다.
+    required int likeCount,
+    required bool isLiked,
 
-    /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
-    int? bookmarkCount,
+    /// 스크랩 수와 내가 스크랩했는지.
+    required int scrapCount,
+    required bool isScrapped,
 
     /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
     /// false이고, 그때는 항상 join을 보내 409면 입장한다.

@@ -22,6 +22,10 @@ CommunityPostEntity _post(int id) => CommunityPostEntity(
   maxParticipants: 10,
   status: CommunityPostStatus.recruiting,
   createdAt: DateTime(2026, 9, 1),
+  likeCount: 0,
+  isLiked: false,
+  scrapCount: 0,
+  isScrapped: false,
 );
 
 /// 시스템 경계 대체 — Repository 인터페이스만 가짜고 Notifier 로직은 실물이다.

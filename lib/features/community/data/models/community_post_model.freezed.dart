@@ -758,11 +758,18 @@ mixin _$CommunityPostResponseModel {
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// 작성자 닉네임. 탈퇴한 작성자면 null.
-  String? get writerNickname =>
-      throw _privateConstructorUsedError; // ── 백엔드 추가 예정 ──
+  String? get writerNickname => throw _privateConstructorUsedError;
+
+  /// 좋아요·스크랩 수와 내 반응. 목록·단건·내 스크랩 세 표면 모두에 실려 온다.
+  ///
+  /// non-null로 받는다 — 서버가 빠뜨리면 여기서 파싱이 멈춘다. nullable로 받아
+  /// 0·꺼짐으로 물러서면 "아무도 안 눌렀다"는 틀린 화면이 에러 없이 나온다.
+  /// 비로그인 조회는 카운트는 정상이고 [liked]·[scrapped]만 false다.
+  int get likeCount => throw _privateConstructorUsedError;
+  int get scrapCount => throw _privateConstructorUsedError;
+  bool get liked => throw _privateConstructorUsedError;
+  bool get scrapped => throw _privateConstructorUsedError; // ── 백엔드 추가 예정 ──
   int? get currentParticipants => throw _privateConstructorUsedError;
-  int? get likeCount => throw _privateConstructorUsedError;
-  int? get bookmarkCount => throw _privateConstructorUsedError;
   bool? get chatJoined => throw _privateConstructorUsedError;
 
   /// Serializes this CommunityPostResponseModel to a JSON map.
@@ -797,9 +804,11 @@ abstract class $CommunityPostResponseModelCopyWith<$Res> {
     String status,
     DateTime createdAt,
     String? writerNickname,
+    int likeCount,
+    int scrapCount,
+    bool liked,
+    bool scrapped,
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
     bool? chatJoined,
   });
 
@@ -834,9 +843,11 @@ class _$CommunityPostResponseModelCopyWithImpl<
     Object? status = null,
     Object? createdAt = null,
     Object? writerNickname = freezed,
+    Object? likeCount = null,
+    Object? scrapCount = null,
+    Object? liked = null,
+    Object? scrapped = null,
     Object? currentParticipants = freezed,
-    Object? likeCount = freezed,
-    Object? bookmarkCount = freezed,
     Object? chatJoined = freezed,
   }) {
     return _then(
@@ -881,17 +892,25 @@ class _$CommunityPostResponseModelCopyWithImpl<
                 ? _value.writerNickname
                 : writerNickname // ignore: cast_nullable_to_non_nullable
                       as String?,
+            likeCount: null == likeCount
+                ? _value.likeCount
+                : likeCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            scrapCount: null == scrapCount
+                ? _value.scrapCount
+                : scrapCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            liked: null == liked
+                ? _value.liked
+                : liked // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            scrapped: null == scrapped
+                ? _value.scrapped
+                : scrapped // ignore: cast_nullable_to_non_nullable
+                      as bool,
             currentParticipants: freezed == currentParticipants
                 ? _value.currentParticipants
                 : currentParticipants // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            likeCount: freezed == likeCount
-                ? _value.likeCount
-                : likeCount // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            bookmarkCount: freezed == bookmarkCount
-                ? _value.bookmarkCount
-                : bookmarkCount // ignore: cast_nullable_to_non_nullable
                       as int?,
             chatJoined: freezed == chatJoined
                 ? _value.chatJoined
@@ -933,9 +952,11 @@ abstract class _$$CommunityPostResponseModelImplCopyWith<$Res>
     String status,
     DateTime createdAt,
     String? writerNickname,
+    int likeCount,
+    int scrapCount,
+    bool liked,
+    bool scrapped,
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
     bool? chatJoined,
   });
 
@@ -971,9 +992,11 @@ class __$$CommunityPostResponseModelImplCopyWithImpl<$Res>
     Object? status = null,
     Object? createdAt = null,
     Object? writerNickname = freezed,
+    Object? likeCount = null,
+    Object? scrapCount = null,
+    Object? liked = null,
+    Object? scrapped = null,
     Object? currentParticipants = freezed,
-    Object? likeCount = freezed,
-    Object? bookmarkCount = freezed,
     Object? chatJoined = freezed,
   }) {
     return _then(
@@ -1018,17 +1041,25 @@ class __$$CommunityPostResponseModelImplCopyWithImpl<$Res>
             ? _value.writerNickname
             : writerNickname // ignore: cast_nullable_to_non_nullable
                   as String?,
+        likeCount: null == likeCount
+            ? _value.likeCount
+            : likeCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        scrapCount: null == scrapCount
+            ? _value.scrapCount
+            : scrapCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        liked: null == liked
+            ? _value.liked
+            : liked // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        scrapped: null == scrapped
+            ? _value.scrapped
+            : scrapped // ignore: cast_nullable_to_non_nullable
+                  as bool,
         currentParticipants: freezed == currentParticipants
             ? _value.currentParticipants
             : currentParticipants // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        likeCount: freezed == likeCount
-            ? _value.likeCount
-            : likeCount // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        bookmarkCount: freezed == bookmarkCount
-            ? _value.bookmarkCount
-            : bookmarkCount // ignore: cast_nullable_to_non_nullable
                   as int?,
         chatJoined: freezed == chatJoined
             ? _value.chatJoined
@@ -1053,9 +1084,11 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
     required this.status,
     required this.createdAt,
     this.writerNickname,
+    required this.likeCount,
+    required this.scrapCount,
+    required this.liked,
+    required this.scrapped,
     this.currentParticipants,
-    this.likeCount,
-    this.bookmarkCount,
     this.chatJoined,
   });
 
@@ -1085,19 +1118,29 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
   /// 작성자 닉네임. 탈퇴한 작성자면 null.
   @override
   final String? writerNickname;
+
+  /// 좋아요·스크랩 수와 내 반응. 목록·단건·내 스크랩 세 표면 모두에 실려 온다.
+  ///
+  /// non-null로 받는다 — 서버가 빠뜨리면 여기서 파싱이 멈춘다. nullable로 받아
+  /// 0·꺼짐으로 물러서면 "아무도 안 눌렀다"는 틀린 화면이 에러 없이 나온다.
+  /// 비로그인 조회는 카운트는 정상이고 [liked]·[scrapped]만 false다.
+  @override
+  final int likeCount;
+  @override
+  final int scrapCount;
+  @override
+  final bool liked;
+  @override
+  final bool scrapped;
   // ── 백엔드 추가 예정 ──
   @override
   final int? currentParticipants;
-  @override
-  final int? likeCount;
-  @override
-  final int? bookmarkCount;
   @override
   final bool? chatJoined;
 
   @override
   String toString() {
-    return 'CommunityPostResponseModel(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, writerNickname: $writerNickname, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount, chatJoined: $chatJoined)';
+    return 'CommunityPostResponseModel(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, writerNickname: $writerNickname, likeCount: $likeCount, scrapCount: $scrapCount, liked: $liked, scrapped: $scrapped, currentParticipants: $currentParticipants, chatJoined: $chatJoined)';
   }
 
   @override
@@ -1121,12 +1164,15 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
                 other.createdAt == createdAt) &&
             (identical(other.writerNickname, writerNickname) ||
                 other.writerNickname == writerNickname) &&
-            (identical(other.currentParticipants, currentParticipants) ||
-                other.currentParticipants == currentParticipants) &&
             (identical(other.likeCount, likeCount) ||
                 other.likeCount == likeCount) &&
-            (identical(other.bookmarkCount, bookmarkCount) ||
-                other.bookmarkCount == bookmarkCount) &&
+            (identical(other.scrapCount, scrapCount) ||
+                other.scrapCount == scrapCount) &&
+            (identical(other.liked, liked) || other.liked == liked) &&
+            (identical(other.scrapped, scrapped) ||
+                other.scrapped == scrapped) &&
+            (identical(other.currentParticipants, currentParticipants) ||
+                other.currentParticipants == currentParticipants) &&
             (identical(other.chatJoined, chatJoined) ||
                 other.chatJoined == chatJoined));
   }
@@ -1145,9 +1191,11 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
     status,
     createdAt,
     writerNickname,
-    currentParticipants,
     likeCount,
-    bookmarkCount,
+    scrapCount,
+    liked,
+    scrapped,
+    currentParticipants,
     chatJoined,
   );
 
@@ -1181,9 +1229,11 @@ abstract class _CommunityPostResponseModel
     required final String status,
     required final DateTime createdAt,
     final String? writerNickname,
+    required final int likeCount,
+    required final int scrapCount,
+    required final bool liked,
+    required final bool scrapped,
     final int? currentParticipants,
-    final int? likeCount,
-    final int? bookmarkCount,
     final bool? chatJoined,
   }) = _$CommunityPostResponseModelImpl;
 
@@ -1211,13 +1261,23 @@ abstract class _CommunityPostResponseModel
 
   /// 작성자 닉네임. 탈퇴한 작성자면 null.
   @override
-  String? get writerNickname; // ── 백엔드 추가 예정 ──
+  String? get writerNickname;
+
+  /// 좋아요·스크랩 수와 내 반응. 목록·단건·내 스크랩 세 표면 모두에 실려 온다.
+  ///
+  /// non-null로 받는다 — 서버가 빠뜨리면 여기서 파싱이 멈춘다. nullable로 받아
+  /// 0·꺼짐으로 물러서면 "아무도 안 눌렀다"는 틀린 화면이 에러 없이 나온다.
+  /// 비로그인 조회는 카운트는 정상이고 [liked]·[scrapped]만 false다.
+  @override
+  int get likeCount;
+  @override
+  int get scrapCount;
+  @override
+  bool get liked;
+  @override
+  bool get scrapped; // ── 백엔드 추가 예정 ──
   @override
   int? get currentParticipants;
-  @override
-  int? get likeCount;
-  @override
-  int? get bookmarkCount;
   @override
   bool? get chatJoined;
 

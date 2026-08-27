@@ -38,6 +38,10 @@ CommunityPostEntity _post() => CommunityPostEntity(
   maxParticipants: 10,
   status: CommunityPostStatus.recruiting,
   createdAt: DateTime(2026, 8, 1),
+  likeCount: 0,
+  isLiked: false,
+  scrapCount: 0,
+  isScrapped: false,
 );
 
 /// 상세 조회만 돌려주는 가짜 — 채팅방 상단 카드가 쓴다.

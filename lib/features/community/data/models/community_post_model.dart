@@ -84,8 +84,9 @@ class CursorInfoModel with _$CursorInfoModel {
 /// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.18.0)
 ///
 /// [writerNickname]은 탈퇴한 작성자면 null이다.
-/// 나머지 nullable 3개는 백엔드가 아직 안 보내는 값이다(2·3단계 예정). 미리
-/// 선언해 두면 백엔드가 필드를 추가하는 순간 코드 변경 없이 값이 흘러들어온다.
+/// [currentParticipants]는 백엔드가 아직 안 보내는 값이다 — "참여" 개념 자체가
+/// 서버에 정의되지 않았다. 미리 선언해 두면 필드가 추가되는 순간 코드 변경 없이
+/// 값이 흘러들어온다.
 /// `status`를 enum이 아니라 `String`으로 받는 이유: 도메인 변환을 Repository
 /// 경계에서 하고, 알 수 없는 값이면 거기서 예외를 던지기 위함이다.
 @freezed
@@ -104,10 +105,18 @@ class CommunityPostResponseModel with _$CommunityPostResponseModel {
     /// 작성자 닉네임. 탈퇴한 작성자면 null.
     String? writerNickname,
 
+    /// 좋아요·스크랩 수와 내 반응. 목록·단건·내 스크랩 세 표면 모두에 실려 온다.
+    ///
+    /// non-null로 받는다 — 서버가 빠뜨리면 여기서 파싱이 멈춘다. nullable로 받아
+    /// 0·꺼짐으로 물러서면 "아무도 안 눌렀다"는 틀린 화면이 에러 없이 나온다.
+    /// 비로그인 조회는 카운트는 정상이고 [liked]·[scrapped]만 false다.
+    required int likeCount,
+    required int scrapCount,
+    required bool liked,
+    required bool scrapped,
+
     // ── 백엔드 추가 예정 ──
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
     bool? chatJoined,
   }) = _CommunityPostResponseModel;
 

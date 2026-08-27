@@ -1,10 +1,10 @@
 import 'package:cops_and_robbers/features/community/data/models/community_post_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// 백엔드 v2.18.0이 보내는 형태 — 장소는 `region`(서버 역지오코딩) +
-/// `placeName`(작성자 입력) + `countryCode` 셋이고, 목록 봉투는 `page`가 아니라
-/// `cursor`다. 아직 미도착 필드(currentParticipants·likeCount·bookmarkCount)는
-/// 빠져 있다.
+/// 백엔드가 보내는 형태 — 장소는 `region`(서버 역지오코딩) + `placeName`(작성자
+/// 입력) + `countryCode` 셋이고, 목록 봉투는 `page`가 아니라 `cursor`다.
+/// 좋아요·스크랩 4필드는 세 표면(목록·단건·내 스크랩) 모두에 실려 온다.
+/// 아직 미도착인 것은 `currentParticipants`뿐이다.
 Map<String, dynamic> _serverJson() => {
   'id': 1,
   'writerId': 7,
@@ -23,6 +23,10 @@ Map<String, dynamic> _serverJson() => {
   'status': 'RECRUITING',
   'createdAt': '2026-08-07T12:00:00+09:00',
   'updatedAt': '2026-08-07T12:00:00+09:00',
+  'likeCount': 6,
+  'scrapCount': 3,
+  'liked': true,
+  'scrapped': false,
 };
 
 void main() {
@@ -77,14 +81,34 @@ void main() {
     });
 
     test('leaves_pending_backend_fields_null_when_absent', () {
-      // 참여자 수·좋아요·스크랩·지번 주소는 추가 예정이다. 미리 선언해 둔 자리가
-      // 응답에 없어도 파싱이 깨지면 안 된다.
+      // 참여자 수·지번 주소는 추가 예정이다. 미리 선언해 둔 자리가 응답에
+      // 없어도 파싱이 깨지면 안 된다.
       final model = CommunityPostResponseModel.fromJson(_serverJson());
 
       expect(model.currentParticipants, isNull);
-      expect(model.likeCount, isNull);
-      expect(model.bookmarkCount, isNull);
       expect(model.location.address, isNull);
+    });
+
+    test('parses_reaction_counts_and_my_reaction', () {
+      final model = CommunityPostResponseModel.fromJson(_serverJson());
+
+      expect(model.likeCount, 6);
+      expect(model.scrapCount, 3);
+      expect(model.liked, isTrue);
+      expect(model.scrapped, isFalse);
+    });
+
+    test('throws_when_reaction_fields_are_absent', () {
+      // 일부러 non-null로 받는다. 서버가 안 주면 조용히 0·꺼짐으로 그리는 대신
+      // 파싱에서 소리 내며 멈춘다 — "아무도 안 눌렀다"는 화면이 에러 화면보다
+      // 나쁘기 때문이다. 이 앱은 필드가 배포된 뒤에만 붙는다.
+      final json = _serverJson()
+        ..remove('likeCount')
+        ..remove('scrapCount')
+        ..remove('liked')
+        ..remove('scrapped');
+
+      expect(() => CommunityPostResponseModel.fromJson(json), throwsA(anything));
     });
 
     test('parses_lot_address_when_backend_starts_sending_it', () {

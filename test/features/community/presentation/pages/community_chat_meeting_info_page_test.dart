@@ -44,6 +44,10 @@ class _PostRepository
       maxParticipants: 10,
       status: CommunityPostStatus.recruiting,
       createdAt: DateTime(2026, 8, 1),
+      likeCount: 0,
+      isLiked: false,
+      scrapCount: 0,
+      isScrapped: false,
     );
   }
 }
