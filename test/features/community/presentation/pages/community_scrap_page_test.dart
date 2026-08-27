@@ -365,7 +365,10 @@ void main() {
       'appends_the_second_page_using_the_first_pages_cursor_when_load_more_succeeds',
       (tester) async {
         final repo = _FakeCommunityRepository(
-          posts: [_post(id: 1, title: '첫 글'), _post(id: 2, title: '둘째 글')],
+          posts: [
+            _post(id: 1, title: '첫 글'),
+            _post(id: 2, title: '둘째 글'),
+          ],
           secondPage: [_post(id: 3, title: '셋째 글')],
         );
         final notifier = await _pumpScrapPage(tester, repository: repo);
@@ -412,7 +415,10 @@ void main() {
         // 쏘는 동안 목록은 여전히 화면에 있고 스크롤 가능하다.
         final getPostCompleter = Completer<CommunityPostEntity>();
         final repo = _RacingCommunityRepository(
-          firstPage: [_post(id: 1, title: '첫 글'), _post(id: 2, title: '둘째 글')],
+          firstPage: [
+            _post(id: 1, title: '첫 글'),
+            _post(id: 2, title: '둘째 글'),
+          ],
           secondPage: [_post(id: 3, title: '셋째 글')],
           getPostCompleter: getPostCompleter,
         );
@@ -425,7 +431,9 @@ void main() {
         await loadMoreFuture;
         // 그 다음에야 상세 재조회(느린 왕복)가 끝난다. 이 시점에 첫 글은
         // 스크랩이 풀려 있다.
-        getPostCompleter.complete(_post(id: 1, title: '첫 글', isScrapped: false));
+        getPostCompleter.complete(
+          _post(id: 1, title: '첫 글', isScrapped: false),
+        );
         await syncFuture;
         await tester.pumpAndSettle();
 
@@ -441,7 +449,10 @@ void main() {
 
   group('CommunityScrapPage 소유자 메뉴 → 상세 이동', () {
     testWidgets('navigates_to_detail_when_edit_is_tapped', (tester) async {
-      await _pumpScrapPageWithRouter(tester, posts: [_post(id: 1, title: '내 글')]);
+      await _pumpScrapPageWithRouter(
+        tester,
+        posts: [_post(id: 1, title: '내 글')],
+      );
 
       await _tapOwnerMenuItem(tester, '수정하기');
 
@@ -451,7 +462,10 @@ void main() {
     testWidgets('navigates_to_detail_when_toggle_status_is_tapped', (
       tester,
     ) async {
-      await _pumpScrapPageWithRouter(tester, posts: [_post(id: 1, title: '내 글')]);
+      await _pumpScrapPageWithRouter(
+        tester,
+        posts: [_post(id: 1, title: '내 글')],
+      );
 
       await _tapOwnerMenuItem(tester, '마감하기');
 
@@ -459,7 +473,10 @@ void main() {
     });
 
     testWidgets('navigates_to_detail_when_delete_is_tapped', (tester) async {
-      await _pumpScrapPageWithRouter(tester, posts: [_post(id: 1, title: '내 글')]);
+      await _pumpScrapPageWithRouter(
+        tester,
+        posts: [_post(id: 1, title: '내 글')],
+      );
 
       await _tapOwnerMenuItem(tester, '삭제하기');
 

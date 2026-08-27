@@ -182,7 +182,11 @@ void main() {
     });
 
     test('parses_null_next_cursor_on_last_page', () {
-      final json = {'content': <dynamic>[], 'nextCursor': null, 'hasNext': false};
+      final json = {
+        'content': <dynamic>[],
+        'nextCursor': null,
+        'hasNext': false,
+      };
 
       final model = CommunityScrapListResponseModel.fromJson(json);
 

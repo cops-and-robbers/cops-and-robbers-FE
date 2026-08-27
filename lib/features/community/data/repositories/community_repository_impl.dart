@@ -199,19 +199,21 @@ class CommunityRepositoryImpl implements CommunityRepository {
   }
 
   @override
-  Future<CommunityScrapPageEntity> getScraps({int? cursor, required int size}) =>
-      _guard(
-        () async {
-          final page = await _dataSource.getScraps(cursor: cursor, size: size);
-          return CommunityScrapPageEntity(
-            items: page.content.map(_toEntity).toList(),
-            nextCursor: page.nextCursor,
-            hasNext: page.hasNext,
-          );
-        },
-        message: '스크랩 목록을 불러오는 중 오류가 발생했습니다',
-        messageKey: 'errorCommunityScrapsLoadGeneric',
+  Future<CommunityScrapPageEntity> getScraps({
+    int? cursor,
+    required int size,
+  }) => _guard(
+    () async {
+      final page = await _dataSource.getScraps(cursor: cursor, size: size);
+      return CommunityScrapPageEntity(
+        items: page.content.map(_toEntity).toList(),
+        nextCursor: page.nextCursor,
+        hasNext: page.hasNext,
       );
+    },
+    message: '스크랩 목록을 불러오는 중 오류가 발생했습니다',
+    messageKey: 'errorCommunityScrapsLoadGeneric',
+  );
 
   /// DataSource 호출을 감싸 예외를 `AppException` 계열로 통일한다.
   ///

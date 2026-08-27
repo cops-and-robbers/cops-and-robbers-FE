@@ -77,7 +77,10 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
 
   Future<void> _optimistic({
     required CommunityPostEntity Function(CommunityPostEntity) apply,
-    required Future<void> Function(CommunityReactionRepository, CommunityPostEntity)
+    required Future<void> Function(
+      CommunityReactionRepository,
+      CommunityPostEntity,
+    )
     call,
   }) async {
     final current = state.valueOrNull;

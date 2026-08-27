@@ -80,6 +80,8 @@ mixin CommunityRepositoryDetailStubs implements CommunityRepository {
   }) => throw UnimplementedError('이 테스트는 상태 변경을 쓰지 않는다');
 
   @override
-  Future<CommunityScrapPageEntity> getScraps({int? cursor, required int size}) =>
-      throw UnimplementedError('이 테스트는 스크랩 목록 조회를 쓰지 않는다');
+  Future<CommunityScrapPageEntity> getScraps({
+    int? cursor,
+    required int size,
+  }) => throw UnimplementedError('이 테스트는 스크랩 목록 조회를 쓰지 않는다');
 }

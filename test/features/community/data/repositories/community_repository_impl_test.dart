@@ -832,7 +832,9 @@ void main() {
       // 요청에서 다시 파싱해야 하고, 실패 지점이 하나 늘어난다.
       final fake = _FakeCommunityRemoteDataSource()
         ..scrapsToReturn = _scrapListOf(
-          [_postJson(extra: {'scrapped': true})],
+          [
+            _postJson(extra: {'scrapped': true}),
+          ],
           nextCursor: 12,
           hasNext: true,
         );
@@ -872,7 +874,8 @@ void main() {
 
     test('wraps_dio_error_into_app_exception', () async {
       // 비로그인 401을 포함해 데이터소스 예외는 전부 AppException으로 통일된다.
-      final fake = _FakeCommunityRemoteDataSource()..errorToThrow = _dioError(401);
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(401);
       final repository = CommunityRepositoryImpl(fake);
 
       expect(

@@ -219,7 +219,11 @@ class _ListAndDetailRepository
     double? longitude,
   }) async {
     getPostsCallCount++;
-    return CommunityPostPageEntity(items: items, nextCursor: null, hasNext: false);
+    return CommunityPostPageEntity(
+      items: items,
+      nextCursor: null,
+      hasNext: false,
+    );
   }
 
   @override
@@ -947,77 +951,96 @@ void main() {
       final repo = _MutatingRepository([_post(1), _post(2)]);
       final container = _containerWith(repo);
       final notifier = container.read(
-        communityFeedNotifierProvider(CommunityScope.all, CommunitySortOption.latest, null).notifier,
+        communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        ).notifier,
       );
       await container.read(
-        communityFeedNotifierProvider(CommunityScope.all, CommunitySortOption.latest, null).future,
+        communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        ).future,
       );
 
       final before = container
-          .read(communityFeedNotifierProvider(CommunityScope.all, CommunitySortOption.latest, null))
+          .read(
+            communityFeedNotifierProvider(
+              CommunityScope.all,
+              CommunitySortOption.latest,
+              null,
+            ),
+          )
           .value!;
       final target = before.items.first;
 
-      notifier.replacePost(target.copyWith(isLiked: true, likeCount: target.likeCount + 1));
+      notifier.replacePost(
+        target.copyWith(isLiked: true, likeCount: target.likeCount + 1),
+      );
 
       final after = container
-          .read(communityFeedNotifierProvider(CommunityScope.all, CommunitySortOption.latest, null))
+          .read(
+            communityFeedNotifierProvider(
+              CommunityScope.all,
+              CommunitySortOption.latest,
+              null,
+            ),
+          )
           .value!;
       expect(after.items.first.isLiked, isTrue);
       expect(after.items.length, before.items.length);
       expect(after.items.skip(1).toList(), before.items.skip(1).toList());
     });
 
-    test(
-      'reflects_a_detail_like_toggle_onto_the_matching_feed_card',
-      () async {
-        // 위 테스트는 replacePost 단독 계약(그 칸만 갈아끼움)을 지킨다. 이
-        // 테스트는 CommunityDetailNotifier.toggleLike()가 실제로
-        // _syncFeedCard()를 거쳐 피드까지 닿는지 배선 자체를 끝까지 태운다.
-        final repo = _ListAndDetailRepository([_post(1), _post(2)]);
-        final container = _containerWith(
-          repo,
-          extraOverrides: [
-            communityCommentRepositoryProvider.overrideWithValue(
-              _EmptyCommentRepository(),
+    test('reflects_a_detail_like_toggle_onto_the_matching_feed_card', () async {
+      // 위 테스트는 replacePost 단독 계약(그 칸만 갈아끼움)을 지킨다. 이
+      // 테스트는 CommunityDetailNotifier.toggleLike()가 실제로
+      // _syncFeedCard()를 거쳐 피드까지 닿는지 배선 자체를 끝까지 태운다.
+      final repo = _ListAndDetailRepository([_post(1), _post(2)]);
+      final container = _containerWith(
+        repo,
+        extraOverrides: [
+          communityCommentRepositoryProvider.overrideWithValue(
+            _EmptyCommentRepository(),
+          ),
+          communityReactionRepositoryProvider.overrideWithValue(
+            _SucceedingReactionRepository(),
+          ),
+        ],
+      );
+
+      // _syncFeedCard가 읽는 family 키(스코프 all·정렬 latest·keyword null)와
+      // 같은 인스턴스를 먼저 살려 둔다.
+      await container.read(
+        communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        ).future,
+      );
+      await container.read(communityDetailNotifierProvider(2).future);
+
+      await container
+          .read(communityDetailNotifierProvider(2).notifier)
+          .toggleLike();
+
+      final items = container
+          .read(
+            communityFeedNotifierProvider(
+              CommunityScope.all,
+              CommunitySortOption.latest,
+              null,
             ),
-            communityReactionRepositoryProvider.overrideWithValue(
-              _SucceedingReactionRepository(),
-            ),
-          ],
-        );
-
-        // _syncFeedCard가 읽는 family 키(스코프 all·정렬 latest·keyword null)와
-        // 같은 인스턴스를 먼저 살려 둔다.
-        await container.read(
-          communityFeedNotifierProvider(
-            CommunityScope.all,
-            CommunitySortOption.latest,
-            null,
-          ).future,
-        );
-        await container.read(communityDetailNotifierProvider(2).future);
-
-        await container
-            .read(communityDetailNotifierProvider(2).notifier)
-            .toggleLike();
-
-        final items = container
-            .read(
-              communityFeedNotifierProvider(
-                CommunityScope.all,
-                CommunitySortOption.latest,
-                null,
-              ),
-            )
-            .requireValue
-            .items;
-        expect(items[1].isLiked, isTrue);
-        expect(items[1].likeCount, _post(2).likeCount + 1);
-        // 건드리지 않은 행은 그대로다.
-        expect(items[0], _post(1));
-      },
-    );
+          )
+          .requireValue
+          .items;
+      expect(items[1].isLiked, isTrue);
+      expect(items[1].likeCount, _post(2).likeCount + 1);
+      // 건드리지 않은 행은 그대로다.
+      expect(items[0], _post(1));
+    });
 
     test(
       'does_not_query_the_feed_when_toggling_like_while_the_feed_is_not_alive',

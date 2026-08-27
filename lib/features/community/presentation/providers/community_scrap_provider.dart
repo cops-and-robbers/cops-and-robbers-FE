@@ -66,7 +66,9 @@ class CommunityScrapNotifier extends _$CommunityScrapNotifier {
         ),
       );
     } catch (_) {
-      state = AsyncData((state.valueOrNull ?? current).copyWith(isLoadingMore: false));
+      state = AsyncData(
+        (state.valueOrNull ?? current).copyWith(isLoadingMore: false),
+      );
       rethrow;
     }
   }
@@ -87,9 +89,11 @@ class CommunityScrapNotifier extends _$CommunityScrapNotifier {
       final latest = state.valueOrNull ?? current;
       state = AsyncData(
         post.isScrapped
-            ? latest.copyWith(items: [
-                for (final p in latest.items) p.id == postId ? post : p,
-              ])
+            ? latest.copyWith(
+                items: [
+                  for (final p in latest.items) p.id == postId ? post : p,
+                ],
+              )
             : latest.copyWith(
                 items: latest.items.where((p) => p.id != postId).toList(),
               ),

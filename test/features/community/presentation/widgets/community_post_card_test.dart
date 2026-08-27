@@ -62,7 +62,9 @@ Widget _wrap(Widget child, {int? currentUserId}) => ProviderScope(
 );
 
 Future<void> _pumpCard(WidgetTester tester, CommunityPostEntity post) async {
-  await tester.pumpWidget(_wrap(CommunityPostCard(onMenuAction: (_) {}, post: post)));
+  await tester.pumpWidget(
+    _wrap(CommunityPostCard(onMenuAction: (_) {}, post: post)),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -160,7 +162,10 @@ void main() {
     });
 
     testWidgets('fills_the_heart_when_i_liked_the_post', (tester) async {
-      await _pumpCard(tester, _post(likeCount: 6, isLiked: true, scrapCount: 3, isScrapped: false));
+      await _pumpCard(
+        tester,
+        _post(likeCount: 6, isLiked: true, scrapCount: 3, isScrapped: false),
+      );
 
       // 좋아요·스크랩 카운트를 색으로 각각 확인한다 — likeCount 자리에 '6'이
       // 있는지만 보면 두 `_CountLabel`의 count 인자가 서로 바뀌어도(스크랩
@@ -173,7 +178,10 @@ void main() {
     });
 
     testWidgets('fills_the_bookmark_when_i_scrapped_the_post', (tester) async {
-      await _pumpCard(tester, _post(likeCount: 2, isLiked: false, scrapCount: 9, isScrapped: true));
+      await _pumpCard(
+        tester,
+        _post(likeCount: 2, isLiked: false, scrapCount: 9, isScrapped: true),
+      );
 
       expect(_countTextOf(tester, AppColors.red), '2');
       expect(_countTextOf(tester, AppColors.yellow), '9');

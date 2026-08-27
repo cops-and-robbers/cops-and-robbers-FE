@@ -476,9 +476,7 @@ void main() {
       expect(find.text('7'), findsOneWidget);
     });
 
-    testWidgets('rolls_the_heart_back_when_the_server_rejects', (
-      tester,
-    ) async {
+    testWidgets('rolls_the_heart_back_when_the_server_rejects', (tester) async {
       await _pumpDetail(
         tester,
         post: _post(likeCount: 6, isLiked: false),
