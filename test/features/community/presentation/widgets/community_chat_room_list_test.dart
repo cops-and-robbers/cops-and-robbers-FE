@@ -49,11 +49,6 @@ class _RoomsOnlyRepository implements CommunityChatRepository {
   Future<List<CommunityChatMemberEntity>> getMembers(int postId) async =>
       const [];
   @override
-  Future<String?> getNotice(int postId) => throw UnimplementedError();
-  @override
-  Future<void> setNotice(int postId, String notice) =>
-      throw UnimplementedError();
-  @override
   Future<CommunityChatPageEntity> getMessages(
     int postId, {
     int? cursor,

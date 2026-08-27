@@ -5,7 +5,9 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/repositories/community_chat_repository_mock.dart';
 import '../../domain/entities/community_chat_member_entity.dart';
 import '../../domain/entities/community_chat_room_entity.dart';
+import '../../domain/entities/community_post_entity.dart';
 import '../../domain/repositories/community_chat_repository.dart';
+import 'community_provider.dart';
 
 part 'community_chat_rooms_provider.g.dart';
 
@@ -40,11 +42,17 @@ class CommunityChatRooms extends _$CommunityChatRooms {
 }
 
 /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-///
-/// BE 이슈 가정 API. 서버가 아직 없으면 impl이 빈 목록을 돌려주고 사이드바는
-/// 인원수만 보여준다.
 @riverpod
 Future<List<CommunityChatMemberEntity>> communityChatMembers(
   Ref ref,
   int postId,
 ) => ref.watch(communityChatRepositoryProvider).getMembers(postId);
+
+/// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다
+///
+/// 상세 화면의 provider를 같이 쓰지 않는 이유: 그쪽은 글·좋아요·댓글 셋을
+/// 한 번에 받아 하나라도 실패하면 전부 에러가 된다. 채팅방에 필요한 건 글
+/// 하나뿐인데 댓글 조회가 실패했다고 모임 카드가 사라지면 안 된다.
+@riverpod
+Future<CommunityPostEntity> communityChatPost(Ref ref, int postId) =>
+    ref.watch(communityRepositoryProvider).getPost(postId);

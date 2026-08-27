@@ -40,7 +40,6 @@ class CommunityChatRepositoryMock implements CommunityChatRepository {
   final Map<int, CommunityChatRoomEntity> _rooms = {};
   final Map<int, List<CommunityChatMessageEntity>> _messages = {}; // 최신순
   final Map<int, List<CommunityChatMemberEntity>> _members = {};
-  final Map<int, String> _notices = {};
   StreamController<CommunityChatEvent>? _controller;
   int? _connectedPostId;
   int _nextId = 10000;
@@ -180,9 +179,6 @@ class CommunityChatRepositoryMock implements CommunityChatRepository {
       ),
     ];
 
-    _notices[seededPostId] =
-        '준비물: 편한 신발, 물, 보조배터리\n시간: 20시 정문 집합\n늦으시는 분은 채팅으로 미리 알려주세요!';
-
     _rooms[seededPostId] = CommunityChatRoomEntity(
       postId: seededPostId,
       title: '나랑 경도하자!!!!!',
@@ -235,18 +231,6 @@ class CommunityChatRepositoryMock implements CommunityChatRepository {
   Future<List<CommunityChatMemberEntity>> getMembers(int postId) async {
     await Future<void>.delayed(latency);
     return List.unmodifiable(_members[postId] ?? const []);
-  }
-
-  @override
-  Future<String?> getNotice(int postId) async {
-    await Future<void>.delayed(latency);
-    return _notices[postId];
-  }
-
-  @override
-  Future<void> setNotice(int postId, String notice) async {
-    await Future<void>.delayed(latency);
-    _notices[postId] = notice;
   }
 
   @override

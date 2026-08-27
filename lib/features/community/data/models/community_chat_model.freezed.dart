@@ -873,9 +873,9 @@ mixin _$CommunityChatMessageResponseModel {
   int? get senderId => throw _privateConstructorUsedError;
   String? get senderNickname => throw _privateConstructorUsedError;
 
-  /// 프로필 아이콘 번호. **REST 내역에만 실린다** — 소켓 브로드캐스트
-  /// (`CommunityChatPayload`)에는 아직 없어서 실시간 메시지는 null이다.
-  /// 그때는 화면이 기본 아이콘으로 물러선다.
+  /// 프로필 아이콘 번호. REST 내역과 소켓 브로드캐스트가 같은 이름으로 실어
+  /// 보내므로(소켓은 BE #178에서 붙었다) 이 DTO 하나로 둘 다 읽는다.
+  /// 값이 없으면 화면이 기본 아이콘으로 물러선다.
   int? get senderProfileIcon => throw _privateConstructorUsedError;
 
   /// 본문. `SYSTEM`·`GAME_INVITE`는 JSON 문자열이다.
@@ -1100,9 +1100,9 @@ class _$CommunityChatMessageResponseModelImpl
   @override
   final String? senderNickname;
 
-  /// 프로필 아이콘 번호. **REST 내역에만 실린다** — 소켓 브로드캐스트
-  /// (`CommunityChatPayload`)에는 아직 없어서 실시간 메시지는 null이다.
-  /// 그때는 화면이 기본 아이콘으로 물러선다.
+  /// 프로필 아이콘 번호. REST 내역과 소켓 브로드캐스트가 같은 이름으로 실어
+  /// 보내므로(소켓은 BE #178에서 붙었다) 이 DTO 하나로 둘 다 읽는다.
+  /// 값이 없으면 화면이 기본 아이콘으로 물러선다.
   @override
   final int? senderProfileIcon;
 
@@ -1201,9 +1201,9 @@ abstract class _CommunityChatMessageResponseModel
   @override
   String? get senderNickname;
 
-  /// 프로필 아이콘 번호. **REST 내역에만 실린다** — 소켓 브로드캐스트
-  /// (`CommunityChatPayload`)에는 아직 없어서 실시간 메시지는 null이다.
-  /// 그때는 화면이 기본 아이콘으로 물러선다.
+  /// 프로필 아이콘 번호. REST 내역과 소켓 브로드캐스트가 같은 이름으로 실어
+  /// 보내므로(소켓은 BE #178에서 붙었다) 이 DTO 하나로 둘 다 읽는다.
+  /// 값이 없으면 화면이 기본 아이콘으로 물러선다.
   @override
   int? get senderProfileIcon;
 

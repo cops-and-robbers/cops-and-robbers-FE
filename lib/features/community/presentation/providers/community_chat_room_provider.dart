@@ -27,9 +27,6 @@ class CommunityChatRoomState with _$CommunityChatRoomState {
 
     /// 목록(`GET /chat/rooms`)에서 찾은 인원수. 못 찾으면 null — 헤더가 정원만 그린다.
     int? memberCount,
-
-    /// 방장이 붙여 둔 공지사항. 없으면 null.
-    String? notice,
     int? nextCursor,
     @Default(false) bool hasNext,
     @Default(false) bool loadingOlder,
@@ -96,12 +93,10 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
 
     final page = await repo.getMessages(postId, size: pageSize);
     final memberCount = await _findMemberCount();
-    final notice = await repo.getNotice(postId);
 
     var next = CommunityChatRoomState(
       timeline: CommunityChatTimeline(page.messages),
       memberCount: memberCount,
-      notice: notice,
       nextCursor: page.nextCursor,
       hasNext: page.hasNext,
     );
@@ -172,13 +167,6 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
         ),
       );
     }
-  }
-
-  /// 공지사항 등록/수정. 방장만 부른다(화면이 막는다). 실패는 호출자가 알린다.
-  Future<void> updateNotice(String notice) async {
-    final trimmed = notice.trim();
-    await _repo.setNotice(postId, trimmed);
-    _update((s) => s.copyWith(notice: trimmed));
   }
 
   /// 위로 끝까지 올렸을 때. 실패는 호출자가 알린다(스낵바).

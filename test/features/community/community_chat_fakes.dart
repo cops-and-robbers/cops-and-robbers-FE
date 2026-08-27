@@ -70,7 +70,6 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
     ),
   ];
   List<CommunityChatMemberEntity> members = const [];
-  String? notice;
 
   @override
   Future<List<CommunityChatRoomEntity>> getRooms() async => rooms;
@@ -78,15 +77,6 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
   @override
   Future<List<CommunityChatMemberEntity>> getMembers(int postId) async =>
       members;
-
-  @override
-  Future<String?> getNotice(int postId) async => notice;
-
-  @override
-  Future<void> setNotice(int postId, String notice) async {
-    calls.add('setNotice:$notice');
-    this.notice = notice;
-  }
 
   @override
   Future<void> join(int postId) async => calls.add('join');

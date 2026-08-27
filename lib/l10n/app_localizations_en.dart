@@ -646,21 +646,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You won\'t be able to see this conversation again';
 
   @override
-  String get communityChatNoticeTitle => 'Notice';
-
-  @override
-  String get communityChatNoticeEmpty =>
-      'Once the host posts a notice, you\'ll see it here';
-
-  @override
-  String get communityChatNoticeEmptyAuthor =>
-      'Share what to bring or when to meet, so everyone knows ahead of time';
-
-  @override
-  String get communityChatNoticeHint => 'Write what to bring or when to meet';
-
-  @override
-  String get communityChatNoticeSave => 'Save';
+  String get communityChatMeetingInfoTitle => 'Meeting info';
 
   @override
   String get communityChatConnectionLost => 'Connection lost';

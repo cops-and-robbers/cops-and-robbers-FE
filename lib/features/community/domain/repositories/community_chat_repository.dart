@@ -13,14 +13,8 @@ abstract class CommunityChatRepository {
   /// 내 채팅방 목록. 페이징 없음(참여 상한 100). 대화 없는 방은 맨 뒤.
   Future<List<CommunityChatRoomEntity>> getRooms();
 
-  /// 채팅방 멤버 목록 (BE 이슈 가정). 서버 미구현이면 구현체가 빈 목록을 돌려준다.
+  /// 채팅방 멤버 목록. 방 멤버만 부를 수 있다(403 `NOT_A_CHAT_MEMBER`).
   Future<List<CommunityChatMemberEntity>> getMembers(int postId);
-
-  /// 방장이 채팅방에 붙여 둔 공지사항. 없으면 null. (백엔드 추가 예정 — mock)
-  Future<String?> getNotice(int postId);
-
-  /// 공지사항 등록/수정. 방장만 부른다(화면이 막는다). (백엔드 추가 예정 — mock)
-  Future<void> setNotice(int postId, String notice);
 
   /// 참여. 이미 멤버(409 `ALREADY_JOINED`)면 성공으로 삼킨다 — 화면은 "입장"만 알면 된다.
   Future<void> join(int postId);

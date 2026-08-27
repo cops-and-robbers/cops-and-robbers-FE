@@ -58,33 +58,21 @@ class _SystemHash {
 
 /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
 ///
-/// BE 이슈 가정 API. 서버가 아직 없으면 impl이 빈 목록을 돌려주고 사이드바는
-/// 인원수만 보여준다.
-///
 /// Copied from [communityChatMembers].
 @ProviderFor(communityChatMembers)
 const communityChatMembersProvider = CommunityChatMembersFamily();
 
 /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
 ///
-/// BE 이슈 가정 API. 서버가 아직 없으면 impl이 빈 목록을 돌려주고 사이드바는
-/// 인원수만 보여준다.
-///
 /// Copied from [communityChatMembers].
 class CommunityChatMembersFamily
     extends Family<AsyncValue<List<CommunityChatMemberEntity>>> {
   /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
   ///
-  /// BE 이슈 가정 API. 서버가 아직 없으면 impl이 빈 목록을 돌려주고 사이드바는
-  /// 인원수만 보여준다.
-  ///
   /// Copied from [communityChatMembers].
   const CommunityChatMembersFamily();
 
   /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-  ///
-  /// BE 이슈 가정 API. 서버가 아직 없으면 impl이 빈 목록을 돌려주고 사이드바는
-  /// 인원수만 보여준다.
   ///
   /// Copied from [communityChatMembers].
   CommunityChatMembersProvider call(int postId) {
@@ -115,16 +103,10 @@ class CommunityChatMembersFamily
 
 /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
 ///
-/// BE 이슈 가정 API. 서버가 아직 없으면 impl이 빈 목록을 돌려주고 사이드바는
-/// 인원수만 보여준다.
-///
 /// Copied from [communityChatMembers].
 class CommunityChatMembersProvider
     extends AutoDisposeFutureProvider<List<CommunityChatMemberEntity>> {
   /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-  ///
-  /// BE 이슈 가정 API. 서버가 아직 없으면 impl이 빈 목록을 돌려주고 사이드바는
-  /// 인원수만 보여준다.
   ///
   /// Copied from [communityChatMembers].
   CommunityChatMembersProvider(int postId)
@@ -209,6 +191,165 @@ class _CommunityChatMembersProviderElement
 
   @override
   int get postId => (origin as CommunityChatMembersProvider).postId;
+}
+
+String _$communityChatPostHash() => r'e514fda22ff2e0b5cb253f572b06c2822082741b';
+
+/// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다
+///
+/// 상세 화면의 provider를 같이 쓰지 않는 이유: 그쪽은 글·좋아요·댓글 셋을
+/// 한 번에 받아 하나라도 실패하면 전부 에러가 된다. 채팅방에 필요한 건 글
+/// 하나뿐인데 댓글 조회가 실패했다고 모임 카드가 사라지면 안 된다.
+///
+/// Copied from [communityChatPost].
+@ProviderFor(communityChatPost)
+const communityChatPostProvider = CommunityChatPostFamily();
+
+/// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다
+///
+/// 상세 화면의 provider를 같이 쓰지 않는 이유: 그쪽은 글·좋아요·댓글 셋을
+/// 한 번에 받아 하나라도 실패하면 전부 에러가 된다. 채팅방에 필요한 건 글
+/// 하나뿐인데 댓글 조회가 실패했다고 모임 카드가 사라지면 안 된다.
+///
+/// Copied from [communityChatPost].
+class CommunityChatPostFamily extends Family<AsyncValue<CommunityPostEntity>> {
+  /// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다
+  ///
+  /// 상세 화면의 provider를 같이 쓰지 않는 이유: 그쪽은 글·좋아요·댓글 셋을
+  /// 한 번에 받아 하나라도 실패하면 전부 에러가 된다. 채팅방에 필요한 건 글
+  /// 하나뿐인데 댓글 조회가 실패했다고 모임 카드가 사라지면 안 된다.
+  ///
+  /// Copied from [communityChatPost].
+  const CommunityChatPostFamily();
+
+  /// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다
+  ///
+  /// 상세 화면의 provider를 같이 쓰지 않는 이유: 그쪽은 글·좋아요·댓글 셋을
+  /// 한 번에 받아 하나라도 실패하면 전부 에러가 된다. 채팅방에 필요한 건 글
+  /// 하나뿐인데 댓글 조회가 실패했다고 모임 카드가 사라지면 안 된다.
+  ///
+  /// Copied from [communityChatPost].
+  CommunityChatPostProvider call(int postId) {
+    return CommunityChatPostProvider(postId);
+  }
+
+  @override
+  CommunityChatPostProvider getProviderOverride(
+    covariant CommunityChatPostProvider provider,
+  ) {
+    return call(provider.postId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'communityChatPostProvider';
+}
+
+/// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다
+///
+/// 상세 화면의 provider를 같이 쓰지 않는 이유: 그쪽은 글·좋아요·댓글 셋을
+/// 한 번에 받아 하나라도 실패하면 전부 에러가 된다. 채팅방에 필요한 건 글
+/// 하나뿐인데 댓글 조회가 실패했다고 모임 카드가 사라지면 안 된다.
+///
+/// Copied from [communityChatPost].
+class CommunityChatPostProvider
+    extends AutoDisposeFutureProvider<CommunityPostEntity> {
+  /// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다
+  ///
+  /// 상세 화면의 provider를 같이 쓰지 않는 이유: 그쪽은 글·좋아요·댓글 셋을
+  /// 한 번에 받아 하나라도 실패하면 전부 에러가 된다. 채팅방에 필요한 건 글
+  /// 하나뿐인데 댓글 조회가 실패했다고 모임 카드가 사라지면 안 된다.
+  ///
+  /// Copied from [communityChatPost].
+  CommunityChatPostProvider(int postId)
+    : this._internal(
+        (ref) => communityChatPost(ref as CommunityChatPostRef, postId),
+        from: communityChatPostProvider,
+        name: r'communityChatPostProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$communityChatPostHash,
+        dependencies: CommunityChatPostFamily._dependencies,
+        allTransitiveDependencies:
+            CommunityChatPostFamily._allTransitiveDependencies,
+        postId: postId,
+      );
+
+  CommunityChatPostProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.postId,
+  }) : super.internal();
+
+  final int postId;
+
+  @override
+  Override overrideWith(
+    FutureOr<CommunityPostEntity> Function(CommunityChatPostRef provider)
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CommunityChatPostProvider._internal(
+        (ref) => create(ref as CommunityChatPostRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        postId: postId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<CommunityPostEntity> createElement() {
+    return _CommunityChatPostProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CommunityChatPostProvider && other.postId == postId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, postId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CommunityChatPostRef
+    on AutoDisposeFutureProviderRef<CommunityPostEntity> {
+  /// The parameter `postId` of this provider.
+  int get postId;
+}
+
+class _CommunityChatPostProviderElement
+    extends AutoDisposeFutureProviderElement<CommunityPostEntity>
+    with CommunityChatPostRef {
+  _CommunityChatPostProviderElement(super.provider);
+
+  @override
+  int get postId => (origin as CommunityChatPostProvider).postId;
 }
 
 String _$communityChatRoomsHash() =>

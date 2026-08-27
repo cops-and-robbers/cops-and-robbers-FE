@@ -18,7 +18,6 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/community_chat_event.dart';
 import '../providers/community_chat_room_provider.dart';
 import '../providers/community_chat_rooms_provider.dart';
-import '../providers/community_detail_provider.dart';
 import '../widgets/community_chat_connection_banner.dart';
 import '../widgets/community_chat_input_bar.dart';
 import '../widgets/community_chat_meeting_card.dart';
@@ -27,8 +26,7 @@ import '../widgets/community_chat_message_list.dart';
 /// 모집글 채팅방
 ///
 /// 소켓은 이 화면의 provider 수명과 같다 — 들어오면 붙고 나가면 끊는다(spec 2절).
-/// 상단 모임 카드는 상세 provider를 같이 본다: 제목·모임 시각·정원이 거기 있고,
-/// 상세에서 들어오면 이미 로드돼 있다.
+/// 상단 모임 카드가 쓰는 제목·모임 시각·정원은 모집글 단건 조회에서 온다.
 class CommunityChatRoomPage extends ConsumerStatefulWidget {
   const CommunityChatRoomPage({required this.postId, super.key});
 
@@ -68,10 +66,11 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage>
     final l10n = AppLocalizations.of(context);
     final provider = communityChatRoomNotifierProvider(widget.postId);
     final room = ref.watch(provider);
+    // 상세 provider가 아니라 글만 받는 쪽을 본다 — 그쪽은 댓글·좋아요를 함께
+    // 받아 하나만 실패해도 모임 카드가 통째로 사라진다.
     final post = ref
-        .watch(communityDetailNotifierProvider(widget.postId))
-        .valueOrNull
-        ?.post;
+        .watch(communityChatPostProvider(widget.postId))
+        .valueOrNull;
     // 내 모임 탭에서 들어오면 상세가 아직 없다 — 목록 응답의 제목으로 먼저 채운다.
     final rooms = ref.watch(communityChatRoomsProvider).valueOrNull;
     final roomMatches =
@@ -156,8 +155,10 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage>
                         post: post,
                         memberCount: state.memberCount,
                         onViewLocation: _openPost,
-                        onOpenNotice: () => context.push(
-                          RoutePaths.communityChatNoticeWithId(widget.postId),
+                        onOpenMeetingInfo: () => context.push(
+                          RoutePaths.communityChatMeetingInfoWithId(
+                            widget.postId,
+                          ),
                         ),
                       ),
                     ),

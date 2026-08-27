@@ -1180,35 +1180,11 @@ abstract class AppLocalizations {
   /// **'나가면 대화 내용을 다시 볼 수 없어요'**
   String get communityChatLeaveConfirmMessage;
 
-  /// 채팅방 공지 화면 제목 — 앱 전체 공지사항(pageNoticesTitle)과 구분한다
+  /// 채팅방 상단 모임 카드를 눌러 여는 모임 정보 화면 제목
   ///
   /// In ko, this message translates to:
-  /// **'공지'**
-  String get communityChatNoticeTitle;
-
-  /// 채팅방 공지 — 멤버가 보는 빈 상태
-  ///
-  /// In ko, this message translates to:
-  /// **'방장이 공지를 올리면 여기에서 볼 수 있어요'**
-  String get communityChatNoticeEmpty;
-
-  /// 채팅방 공지 — 방장이 보는 빈 상태
-  ///
-  /// In ko, this message translates to:
-  /// **'준비물이나 만나는 시간처럼 미리 알려줄 내용을 적어보세요'**
-  String get communityChatNoticeEmptyAuthor;
-
-  /// 채팅방 공지 입력 힌트
-  ///
-  /// In ko, this message translates to:
-  /// **'준비물이나 만나는 시간을 적어주세요'**
-  String get communityChatNoticeHint;
-
-  /// 채팅방 공지사항 저장 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'저장'**
-  String get communityChatNoticeSave;
+  /// **'모임 정보'**
+  String get communityChatMeetingInfoTitle;
 
   /// 채팅방 상단 띠 — 재연결 포기 상태
   ///

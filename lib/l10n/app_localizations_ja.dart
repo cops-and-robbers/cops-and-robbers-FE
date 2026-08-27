@@ -595,19 +595,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityChatLeaveConfirmMessage => '退出すると会話を再び見ることはできません';
 
   @override
-  String get communityChatNoticeTitle => 'お知らせ';
-
-  @override
-  String get communityChatNoticeEmpty => 'ホストがお知らせを書くとここに表示されます';
-
-  @override
-  String get communityChatNoticeEmptyAuthor => '持ち物や集合時間など、先に伝えたいことを書いてみましょう';
-
-  @override
-  String get communityChatNoticeHint => '持ち物や集合時間を書いてください';
-
-  @override
-  String get communityChatNoticeSave => '保存';
+  String get communityChatMeetingInfoTitle => '集まりの情報';
 
   @override
   String get communityChatConnectionLost => '接続が切れました';
