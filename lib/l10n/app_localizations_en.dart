@@ -2659,6 +2659,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeReportNotFound => 'The report does not exist';
 
   @override
+  String get errorCodeChatMessageNotFound => 'This message could not be found';
+
+  @override
   String get errorCodeReportTargetNotFound =>
       'This participant does not exist in the game';
 

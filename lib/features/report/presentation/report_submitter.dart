@@ -22,6 +22,12 @@ Future<void> submitReport(
       category: category,
       etcReason: etcReason,
     ),
+    CommunityChatReportTarget(:final chatMessageId) =>
+      repository.reportCommunityChat(
+        chatMessageId: chatMessageId,
+        category: category,
+        etcReason: etcReason,
+      ),
     GameChatReportTarget(
       :final gameId,
       :final reportedParticipantId,

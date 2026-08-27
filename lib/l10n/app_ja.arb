@@ -829,6 +829,7 @@
   "errorCodeSelfReport": "自分自身は通報できません",
   "errorCodeDuplicateReport": "このゲームですでにこのユーザーを通報しています",
   "errorCodeReportNotFound": "該当する通報履歴が存在しません",
+  "errorCodeChatMessageNotFound": "このメッセージが見つかりません",
   "errorCodeReportTargetNotFound": "このゲームに存在しない参加者です",
   "errorCodeInvalidMeetingDate": "集まる時間は現在より後を選んでください",
   "errorCodeCommentNotFound": "すでに削除されたコメントです",

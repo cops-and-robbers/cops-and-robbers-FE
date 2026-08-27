@@ -2456,6 +2456,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeReportNotFound => '해당 신고 내역이 존재하지 않아요';
 
   @override
+  String get errorCodeChatMessageNotFound => '해당 메시지를 찾을 수 없어요';
+
+  @override
   String get errorCodeReportTargetNotFound => '해당 게임에 존재하지 않는 참가자예요';
 
   @override

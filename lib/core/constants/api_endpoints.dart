@@ -169,6 +169,10 @@ class ApiEndpoints {
   /// 커뮤니티 모집글 신고
   static const String reportCommunityPost = '/api/report/community-post';
 
+  /// 커뮤니티 채팅 메시지 신고. 대상은 서버가 발급한 메시지 id다 —
+  /// 앱이 만든 `messageKey`를 보내면 404(`CHAT_MESSAGE_NOT_FOUND`)다.
+  static const String reportCommunityChat = '/api/report/community-chat';
+
   // ============================================
   // Bug API - 버그 제보
   // ============================================

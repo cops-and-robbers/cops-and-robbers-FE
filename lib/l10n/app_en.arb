@@ -829,6 +829,7 @@
   "errorCodeSelfReport": "You can't report yourself",
   "errorCodeDuplicateReport": "You've already reported this user in this game",
   "errorCodeReportNotFound": "The report does not exist",
+  "errorCodeChatMessageNotFound": "This message could not be found",
   "errorCodeReportTargetNotFound": "This participant does not exist in the game",
   "errorCodeInvalidMeetingDate": "Pick a meeting time in the future",
   "errorCodeCommentNotFound": "This comment was already deleted",

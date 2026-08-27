@@ -233,6 +233,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeReportNotFound;
       case 'REPORT_TARGET_NOT_FOUND':
         return errorCodeReportTargetNotFound;
+      case 'CHAT_MESSAGE_NOT_FOUND':
+        return errorCodeChatMessageNotFound;
       // ── 커뮤니티(모집글) 에러 ────────────────────────────────────────
       case 'INVALID_MEETING_DATE':
         return errorCodeInvalidMeetingDate;

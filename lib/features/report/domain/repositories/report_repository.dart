@@ -35,4 +35,19 @@ abstract class ReportRepository {
     required ReportCategory category,
     String? etcReason,
   });
+
+  /// 커뮤니티 채팅 메시지 신고
+  ///
+  /// [chatMessageId] 서버가 발급한 메시지 id — 앱이 만든 `messageKey`가 아니다.
+  ///   아직 전송 중이라 id가 없는 말풍선은 화면이 신고 진입 자체를 막는다.
+  /// [category] 신고 유형 (인게임·모집글과 같은 enum)
+  /// [etcReason] 기타 사유 (category가 other일 때 필수)
+  ///
+  /// Throws:
+  /// - [AppException]: API 에러 (중복 신고, 본인 신고 불가, 메시지 없음 등)
+  Future<void> reportCommunityChat({
+    required int chatMessageId,
+    required ReportCategory category,
+    String? etcReason,
+  });
 }

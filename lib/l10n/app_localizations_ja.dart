@@ -2458,6 +2458,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeReportNotFound => '該当する通報履歴が存在しません';
 
   @override
+  String get errorCodeChatMessageNotFound => 'このメッセージが見つかりません';
+
+  @override
   String get errorCodeReportTargetNotFound => 'このゲームに存在しない参加者です';
 
   @override

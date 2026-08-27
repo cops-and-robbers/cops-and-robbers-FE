@@ -2584,6 +2584,8 @@
   "errorCodeSelfReport": "본인을 신고할 수 없어요",
   "errorCodeDuplicateReport": "해당 게임에서 이미 신고한 사용자예요",
   "errorCodeReportNotFound": "해당 신고 내역이 존재하지 않아요",
+  "errorCodeChatMessageNotFound": "해당 메시지를 찾을 수 없어요",
+  "@errorCodeChatMessageNotFound": { "description": "커뮤니티 채팅 신고 — 대상 메시지가 서버에 없음" },
   "errorCodeReportTargetNotFound": "해당 게임에 존재하지 않는 참가자예요",
   "errorCodeInvalidMeetingDate": "모임 시간은 지금 이후로 골라주세요",
   "errorCodeCommentNotFound": "이미 삭제된 댓글이에요",

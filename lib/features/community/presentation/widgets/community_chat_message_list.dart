@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,6 +15,7 @@ import '../community_chat_time_format.dart';
 import '../providers/community_chat_room_provider.dart';
 import 'community_chat_avatar.dart';
 import 'community_chat_invite_card.dart';
+import 'community_chat_message_menu.dart';
 import 'community_chat_system_pill.dart';
 
 /// 채팅방 본문 — 최신순 타임라인을 reverse 목록으로 그린다
@@ -158,6 +161,15 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
       nicknameStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black700),
       timeStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black300),
       avatar: isMe ? null : CommunityChatAvatar(iconId: m.senderProfileIcon),
+      // 길게 눌러 복사·신고. 신고 가능 여부는 메뉴가 판정한다 — 내 메시지·
+      // 전송 중·시스템은 신고 항목이 아예 안 뜬다.
+      onLongPress: (bubbleContext) => unawaited(
+        CommunityChatMessageMenu.show(
+          context: bubbleContext,
+          message: m,
+          myUserId: widget.myUserId,
+        ),
+      ),
       // 상대 쪽 꼬리는 좌상단 0, 내 쪽은 우상단 0 — 나머지 모서리는 10.
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(isMe ? 10.r : 0),

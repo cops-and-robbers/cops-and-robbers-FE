@@ -4711,6 +4711,12 @@ abstract class AppLocalizations {
   /// **'해당 신고 내역이 존재하지 않아요'**
   String get errorCodeReportNotFound;
 
+  /// 커뮤니티 채팅 신고 — 대상 메시지가 서버에 없음
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 메시지를 찾을 수 없어요'**
+  String get errorCodeChatMessageNotFound;
+
   /// No description provided for @errorCodeReportTargetNotFound.
   ///
   /// In ko, this message translates to:
