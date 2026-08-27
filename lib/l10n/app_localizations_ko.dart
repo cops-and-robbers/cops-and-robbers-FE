@@ -664,6 +664,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCommentReply => '답글 달기';
 
   @override
+  String get communityCommentDeleted => '삭제된 댓글이에요';
+
+  @override
   String get communityCommentEmpty => '첫 댓글을 남겨보세요';
 
   @override
@@ -2106,6 +2109,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCommunityPostCreateGeneric => '모집글을 등록하는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityCommentsLoadGeneric => '댓글을 불러오는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityCommentCreateGeneric => '댓글을 남기는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityCommentDeleteGeneric => '댓글을 삭제하는 중 오류가 생겼어요';
 
   @override
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';

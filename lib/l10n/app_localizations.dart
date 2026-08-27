@@ -1312,6 +1312,12 @@ abstract class AppLocalizations {
   /// **'답글 달기'**
   String get communityCommentReply;
 
+  /// 커뮤니티 — 답글이 남아 자리만 지킨 삭제 댓글 자리 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제된 댓글이에요'**
+  String get communityCommentDeleted;
+
   /// 댓글이 하나도 없을 때 표시
   ///
   /// In ko, this message translates to:
@@ -4050,6 +4056,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'모집글을 등록하는 중 오류가 생겼어요'**
   String get errorCommunityPostCreateGeneric;
+
+  /// 커뮤니티 — 댓글 목록 조회 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글을 불러오는 중 오류가 생겼어요'**
+  String get errorCommunityCommentsLoadGeneric;
+
+  /// 커뮤니티 — 댓글 작성 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글을 남기는 중 오류가 생겼어요'**
+  String get errorCommunityCommentCreateGeneric;
+
+  /// 커뮤니티 — 댓글 삭제 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글을 삭제하는 중 오류가 생겼어요'**
+  String get errorCommunityCommentDeleteGeneric;
 
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///

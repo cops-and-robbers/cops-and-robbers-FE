@@ -417,6 +417,10 @@
   "@communityCommentReply": {
     "description": "댓글 아래 답글 작성 버튼"
   },
+  "communityCommentDeleted": "삭제된 댓글이에요",
+  "@communityCommentDeleted": {
+    "description": "커뮤니티 — 답글이 남아 자리만 지킨 삭제 댓글 자리 문구"
+  },
   "communityCommentEmpty": "첫 댓글을 남겨보세요",
   "@communityCommentEmpty": {
     "description": "댓글이 하나도 없을 때 표시"
@@ -2311,6 +2315,18 @@
   "errorCommunityPostCreateGeneric": "모집글을 등록하는 중 오류가 생겼어요",
   "@errorCommunityPostCreateGeneric": {
     "description": "커뮤니티 모집글 등록 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityCommentsLoadGeneric": "댓글을 불러오는 중 오류가 생겼어요",
+  "@errorCommunityCommentsLoadGeneric": {
+    "description": "커뮤니티 — 댓글 목록 조회 실패(일반)"
+  },
+  "errorCommunityCommentCreateGeneric": "댓글을 남기는 중 오류가 생겼어요",
+  "@errorCommunityCommentCreateGeneric": {
+    "description": "커뮤니티 — 댓글 작성 실패(일반)"
+  },
+  "errorCommunityCommentDeleteGeneric": "댓글을 삭제하는 중 오류가 생겼어요",
+  "@errorCommunityCommentDeleteGeneric": {
+    "description": "커뮤니티 — 댓글 삭제 실패(일반)"
   },
   "errorCommunityAddressLoadGeneric": "주소를 불러오는 중 오류가 생겼어요",
   "@errorCommunityAddressLoadGeneric": {

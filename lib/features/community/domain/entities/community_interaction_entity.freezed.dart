@@ -274,10 +274,16 @@ abstract class _CommunityInteractionEntity
 /// @nodoc
 mixin _$CommunityCommentEntity {
   int get id => throw _privateConstructorUsedError;
-  int get writerId => throw _privateConstructorUsedError;
-  String get writerNickname => throw _privateConstructorUsedError;
-  int get writerProfileIconId => throw _privateConstructorUsedError;
-  String get content => throw _privateConstructorUsedError;
+
+  /// 부모 댓글 id. 1depth 댓글이면 null.
+  int? get parentId => throw _privateConstructorUsedError;
+  int? get writerId => throw _privateConstructorUsedError;
+  String? get writerNickname => throw _privateConstructorUsedError;
+  int? get writerProfileIconId => throw _privateConstructorUsedError;
+  String? get content => throw _privateConstructorUsedError;
+
+  /// 삭제되어 자리만 남은 댓글인지.
+  bool get deleted => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   List<CommunityCommentEntity> get replies =>
       throw _privateConstructorUsedError;
@@ -298,10 +304,12 @@ abstract class $CommunityCommentEntityCopyWith<$Res> {
   @useResult
   $Res call({
     int id,
-    int writerId,
-    String writerNickname,
-    int writerProfileIconId,
-    String content,
+    int? parentId,
+    int? writerId,
+    String? writerNickname,
+    int? writerProfileIconId,
+    String? content,
+    bool deleted,
     DateTime createdAt,
     List<CommunityCommentEntity> replies,
   });
@@ -326,10 +334,12 @@ class _$CommunityCommentEntityCopyWithImpl<
   @override
   $Res call({
     Object? id = null,
-    Object? writerId = null,
-    Object? writerNickname = null,
-    Object? writerProfileIconId = null,
-    Object? content = null,
+    Object? parentId = freezed,
+    Object? writerId = freezed,
+    Object? writerNickname = freezed,
+    Object? writerProfileIconId = freezed,
+    Object? content = freezed,
+    Object? deleted = null,
     Object? createdAt = null,
     Object? replies = null,
   }) {
@@ -339,22 +349,30 @@ class _$CommunityCommentEntityCopyWithImpl<
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as int,
-            writerId: null == writerId
+            parentId: freezed == parentId
+                ? _value.parentId
+                : parentId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            writerId: freezed == writerId
                 ? _value.writerId
                 : writerId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            writerNickname: null == writerNickname
+                      as int?,
+            writerNickname: freezed == writerNickname
                 ? _value.writerNickname
                 : writerNickname // ignore: cast_nullable_to_non_nullable
-                      as String,
-            writerProfileIconId: null == writerProfileIconId
+                      as String?,
+            writerProfileIconId: freezed == writerProfileIconId
                 ? _value.writerProfileIconId
                 : writerProfileIconId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            content: null == content
+                      as int?,
+            content: freezed == content
                 ? _value.content
                 : content // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
+            deleted: null == deleted
+                ? _value.deleted
+                : deleted // ignore: cast_nullable_to_non_nullable
+                      as bool,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -380,10 +398,12 @@ abstract class _$$CommunityCommentEntityImplCopyWith<$Res>
   @useResult
   $Res call({
     int id,
-    int writerId,
-    String writerNickname,
-    int writerProfileIconId,
-    String content,
+    int? parentId,
+    int? writerId,
+    String? writerNickname,
+    int? writerProfileIconId,
+    String? content,
+    bool deleted,
     DateTime createdAt,
     List<CommunityCommentEntity> replies,
   });
@@ -405,10 +425,12 @@ class __$$CommunityCommentEntityImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? writerId = null,
-    Object? writerNickname = null,
-    Object? writerProfileIconId = null,
-    Object? content = null,
+    Object? parentId = freezed,
+    Object? writerId = freezed,
+    Object? writerNickname = freezed,
+    Object? writerProfileIconId = freezed,
+    Object? content = freezed,
+    Object? deleted = null,
     Object? createdAt = null,
     Object? replies = null,
   }) {
@@ -418,22 +440,30 @@ class __$$CommunityCommentEntityImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as int,
-        writerId: null == writerId
+        parentId: freezed == parentId
+            ? _value.parentId
+            : parentId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        writerId: freezed == writerId
             ? _value.writerId
             : writerId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        writerNickname: null == writerNickname
+                  as int?,
+        writerNickname: freezed == writerNickname
             ? _value.writerNickname
             : writerNickname // ignore: cast_nullable_to_non_nullable
-                  as String,
-        writerProfileIconId: null == writerProfileIconId
+                  as String?,
+        writerProfileIconId: freezed == writerProfileIconId
             ? _value.writerProfileIconId
             : writerProfileIconId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        content: null == content
+                  as int?,
+        content: freezed == content
             ? _value.content
             : content // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
+        deleted: null == deleted
+            ? _value.deleted
+            : deleted // ignore: cast_nullable_to_non_nullable
+                  as bool,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -452,24 +482,35 @@ class __$$CommunityCommentEntityImplCopyWithImpl<$Res>
 class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
   const _$CommunityCommentEntityImpl({
     required this.id,
-    required this.writerId,
-    required this.writerNickname,
-    required this.writerProfileIconId,
-    required this.content,
+    this.parentId,
+    this.writerId,
+    this.writerNickname,
+    this.writerProfileIconId,
+    this.content,
+    this.deleted = false,
     required this.createdAt,
     final List<CommunityCommentEntity> replies = const [],
   }) : _replies = replies;
 
   @override
   final int id;
+
+  /// 부모 댓글 id. 1depth 댓글이면 null.
   @override
-  final int writerId;
+  final int? parentId;
   @override
-  final String writerNickname;
+  final int? writerId;
   @override
-  final int writerProfileIconId;
+  final String? writerNickname;
   @override
-  final String content;
+  final int? writerProfileIconId;
+  @override
+  final String? content;
+
+  /// 삭제되어 자리만 남은 댓글인지.
+  @override
+  @JsonKey()
+  final bool deleted;
   @override
   final DateTime createdAt;
   final List<CommunityCommentEntity> _replies;
@@ -483,7 +524,7 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
 
   @override
   String toString() {
-    return 'CommunityCommentEntity(id: $id, writerId: $writerId, writerNickname: $writerNickname, writerProfileIconId: $writerProfileIconId, content: $content, createdAt: $createdAt, replies: $replies)';
+    return 'CommunityCommentEntity(id: $id, parentId: $parentId, writerId: $writerId, writerNickname: $writerNickname, writerProfileIconId: $writerProfileIconId, content: $content, deleted: $deleted, createdAt: $createdAt, replies: $replies)';
   }
 
   @override
@@ -492,6 +533,8 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
         (other.runtimeType == runtimeType &&
             other is _$CommunityCommentEntityImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
             (identical(other.writerId, writerId) ||
                 other.writerId == writerId) &&
             (identical(other.writerNickname, writerNickname) ||
@@ -499,6 +542,7 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
             (identical(other.writerProfileIconId, writerProfileIconId) ||
                 other.writerProfileIconId == writerProfileIconId) &&
             (identical(other.content, content) || other.content == content) &&
+            (identical(other.deleted, deleted) || other.deleted == deleted) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             const DeepCollectionEquality().equals(other._replies, _replies));
@@ -508,10 +552,12 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    parentId,
     writerId,
     writerNickname,
     writerProfileIconId,
     content,
+    deleted,
     createdAt,
     const DeepCollectionEquality().hash(_replies),
   );
@@ -532,24 +578,34 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
 abstract class _CommunityCommentEntity implements CommunityCommentEntity {
   const factory _CommunityCommentEntity({
     required final int id,
-    required final int writerId,
-    required final String writerNickname,
-    required final int writerProfileIconId,
-    required final String content,
+    final int? parentId,
+    final int? writerId,
+    final String? writerNickname,
+    final int? writerProfileIconId,
+    final String? content,
+    final bool deleted,
     required final DateTime createdAt,
     final List<CommunityCommentEntity> replies,
   }) = _$CommunityCommentEntityImpl;
 
   @override
   int get id;
+
+  /// 부모 댓글 id. 1depth 댓글이면 null.
   @override
-  int get writerId;
+  int? get parentId;
   @override
-  String get writerNickname;
+  int? get writerId;
   @override
-  int get writerProfileIconId;
+  String? get writerNickname;
   @override
-  String get content;
+  int? get writerProfileIconId;
+  @override
+  String? get content;
+
+  /// 삭제되어 자리만 남은 댓글인지.
+  @override
+  bool get deleted;
   @override
   DateTime get createdAt;
   @override

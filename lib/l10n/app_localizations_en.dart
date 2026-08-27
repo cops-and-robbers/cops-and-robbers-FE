@@ -719,6 +719,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityCommentReply => 'Reply';
 
   @override
+  String get communityCommentDeleted => 'This comment was deleted';
+
+  @override
   String get communityCommentEmpty => 'Be the first to comment';
 
   @override
@@ -2255,6 +2258,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCommunityPostCreateGeneric =>
       'Something went wrong while posting';
+
+  @override
+  String get errorCommunityCommentsLoadGeneric =>
+      'Something went wrong while loading comments';
+
+  @override
+  String get errorCommunityCommentCreateGeneric =>
+      'Something went wrong while posting your comment';
+
+  @override
+  String get errorCommunityCommentDeleteGeneric =>
+      'Something went wrong while deleting the comment';
 
   @override
   String get errorCommunityAddressLoadGeneric =>

@@ -8,6 +8,8 @@ import 'package:cops_and_robbers/features/community/domain/entities/community_po
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_chat_room_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_interaction_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_chat_invite_card.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_chat_system_pill.dart';
@@ -56,10 +58,25 @@ CommunityChatMessageEntity _text(int id, int sender, String text) =>
       createdAt: DateTime(2026, 8, 24, 17, 34),
     );
 
+/// 이 화면은 댓글을 그리지 않는다 — 상세 provider가 부르기만 하므로 빈 목록이면 된다.
+class _NoCommentsRepository implements CommunityCommentRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+
+  @override
+  Future<List<CommunityCommentEntity>> getComments(int postId) async =>
+      const [];
+}
+
 Widget _wrap(FakeCommunityChatRepository chatRepo) => ProviderScope(
   overrides: [
     communityChatRepositoryProvider.overrideWithValue(chatRepo),
     communityRepositoryProvider.overrideWithValue(_PostOnlyRepository()),
+    // 이 화면은 글 제목을 상세 provider에서 가져오는데, 그 provider가 댓글도
+    // 함께 부른다. 덮지 않으면 Retrofit이 실제 Dio를 타고 상세가 통째로 실패한다.
+    communityCommentRepositoryProvider.overrideWithValue(
+      _NoCommentsRepository(),
+    ),
     currentUserIdProvider.overrideWithValue(1),
     clockProvider.overrideWithValue(() => DateTime(2026, 8, 24, 17, 40)),
   ],

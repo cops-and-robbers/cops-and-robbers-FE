@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/repositories/community_interaction_repository_mock.dart';
 import '../../domain/entities/community_interaction_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
+import '../../domain/community_comment_tree.dart';
 import '../../domain/entities/community_post_status.dart';
 import '../../domain/repositories/community_interaction_repository.dart';
 import 'community_provider.dart';
@@ -14,7 +15,8 @@ part 'community_detail_provider.g.dart';
 
 /// 상호작용 Repository Provider — 목데이터 교체 지점
 ///
-/// ponytail: 좋아요·스크랩·댓글 API가 없어 메모리 목을 돌려준다.
+/// ponytail: 좋아요·스크랩은 응답에 카운트·내 반응 필드가 없어 메모리 목을
+/// 돌려준다. 댓글은 실서버로 옮겨 갔다(`communityCommentRepositoryProvider`).
 /// API가 열리면 여기서 돌려주는 구현체만 실제 구현으로 바꾼다. 화면·Notifier는
 /// 인터페이스만 알고 있어 손댈 곳이 없다.
 ///
@@ -63,12 +65,16 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
     final postFuture = ref.watch(communityRepositoryProvider).getPost(postId);
     final interactionRepo = ref.watch(communityInteractionRepositoryProvider);
 
-    // 셋은 서로를 기다릴 이유가 없다. 순차로 await 하면 목 지연 200ms×2가
-    // 본문 대기에 그대로 얹힌다.
+    // 셋은 서로를 기다릴 이유가 없다. 순차로 await 하면 왕복이 그대로 쌓인다.
+    //
+    // ponytail: 셋 중 하나만 실패해도 화면 전체가 에러(재시도 버튼)로 간다.
+    // 댓글만 실패했는데 글 본문까지 못 읽는 게 이 선택의 대가다. 대신 빈 목록으로
+    // 넘기면 "첫 댓글을 남겨보세요"가 떠서 댓글이 없는 글처럼 보인다 — 에러 없이
+    // 틀린 화면이 더 나쁘다. 부분 실패를 구분해 보여줄 자리가 생기면 그때 나눈다.
     final results = await Future.wait([
       postFuture,
       interactionRepo.getInteraction(postId),
-      interactionRepo.getComments(postId),
+      ref.watch(communityCommentRepositoryProvider).getComments(postId),
     ]);
 
     return CommunityDetailState(
@@ -133,27 +139,36 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
   }
 
   /// 댓글 또는 답글 작성.
+  ///
+  /// 서버는 만들어진 댓글 한 건만 주므로 목록에 합쳐 넣는다 — 다시 받아오면
+  /// 커서가 처음으로 되감긴다.
   Future<void> addComment(String content, {int? parentId}) async {
     final current = state.valueOrNull;
     if (current == null) return;
 
-    final comments = await ref
-        .read(communityInteractionRepositoryProvider)
+    final created = await ref
+        .read(communityCommentRepositoryProvider)
         .addComment(postId: postId, content: content, parentId: parentId);
 
+    final latest = state.valueOrNull ?? current;
     state = AsyncData(
-      (state.valueOrNull ?? current).copyWith(comments: comments),
+      latest.copyWith(comments: withNewComment(latest.comments, created)),
     );
   }
 
   /// 댓글 삭제.
+  ///
+  /// 삭제 결과를 앱이 계산하지 않고 다시 받는다. 답글이 남았으면 자리만 남기고
+  /// 마스킹하지만, 마지막 답글이 지워지면 껍데기 부모까지 함께 정리되기
+  /// 때문이다(DEC-0034) — 그 연쇄 규칙을 앱에 복제하면 서버가 바꿀 때 조용히
+  /// 어긋난다.
   Future<void> deleteComment(int commentId) async {
     final current = state.valueOrNull;
     if (current == null) return;
 
-    final comments = await ref
-        .read(communityInteractionRepositoryProvider)
-        .deleteComment(postId: postId, commentId: commentId);
+    final repo = ref.read(communityCommentRepositoryProvider);
+    await repo.deleteComment(commentId);
+    final comments = await repo.getComments(postId);
 
     state = AsyncData(
       (state.valueOrNull ?? current).copyWith(comments: comments),

@@ -665,6 +665,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCommentReply => '返信する';
 
   @override
+  String get communityCommentDeleted => '削除されたコメントです';
+
+  @override
   String get communityCommentEmpty => '最初のコメントを残してみましょう';
 
   @override
@@ -2104,6 +2107,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCommunityPostCreateGeneric => '募集の登録中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentsLoadGeneric => 'コメントの読み込み中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentCreateGeneric => 'コメントの投稿中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentDeleteGeneric => 'コメントの削除中にエラーが発生しました';
 
   @override
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';

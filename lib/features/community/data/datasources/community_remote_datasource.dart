@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../models/community_comment_model.dart';
 import '../models/community_post_model.dart';
 
 part 'community_remote_datasource.g.dart';
@@ -114,4 +115,34 @@ abstract class CommunityRemoteDataSource {
     @Path('postId') int postId,
     @Body() CommunityPostStatusRequestModel body,
   );
+
+  /// 댓글 목록 조회 (커서 페이지네이션, 비로그인 가능)
+  ///
+  /// 1depth 댓글만 페이징되고 답글은 각 댓글의 `replies`에 전부 담겨 온다.
+  /// [cursor]는 이전 응답의 `nextCursor`(댓글 id)이며 첫 페이지는 생략한다.
+  /// [size]는 1~50, 생략하면 20이다.
+  @GET('${ApiEndpoints.communityPosts}/{postId}/comments')
+  Future<CommunityCommentListResponseModel> getComments(
+    @Path('postId') int postId, {
+    @Query('cursor') int? cursor,
+    @Query('size') int? size,
+  });
+
+  /// 댓글·답글 작성
+  ///
+  /// 201로 생성된 댓글 한 건을 돌려준다 — 목록을 다시 부르지 않고 끼워 넣는다.
+  @POST('${ApiEndpoints.communityPosts}/{postId}/comments')
+  Future<CommunityCommentResponseModel> createComment(
+    @Path('postId') int postId,
+    @Body() CommunityCommentCreateRequestModel body,
+  );
+
+  /// 댓글 삭제
+  ///
+  /// 204 No Content라 본문이 없다. 작성자 본인만 가능하다(403).
+  /// 답글이 남아 있으면 서버가 자리만 남기고 마스킹하며, 마지막 답글이 지워지면
+  /// 껍데기 부모까지 함께 정리한다(DEC-0034) — 결과를 앱이 계산할 수 없어
+  /// 호출 뒤에는 목록을 다시 받는다.
+  @DELETE('${ApiEndpoints.communityPosts}/comments/{commentId}')
+  Future<void> deleteComment(@Path('commentId') int commentId);
 }

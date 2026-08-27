@@ -390,6 +390,12 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCommunityPostsLoadGeneric;
       case 'errorCommunityAddressLoadGeneric':
         return errorCommunityAddressLoadGeneric;
+      case 'errorCommunityCommentsLoadGeneric':
+        return errorCommunityCommentsLoadGeneric;
+      case 'errorCommunityCommentCreateGeneric':
+        return errorCommunityCommentCreateGeneric;
+      case 'errorCommunityCommentDeleteGeneric':
+        return errorCommunityCommentDeleteGeneric;
       case 'errorCommunityPostCreateGeneric':
         return errorCommunityPostCreateGeneric;
       case 'errorCommunityPostUpdateGeneric':

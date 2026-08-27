@@ -27,8 +27,9 @@ String _storageKey(int userId) => 'profile_icon_id_$userId';
 /// 그대로 흘러들면 에셋 로드에서 예외가 나므로 이 한 곳에서 막는다 —
 /// 게시글·댓글 작성자 아이콘도 전부 이 함수를 지난다. 탈퇴한 작성자의
 /// 기본 아이콘 처리(DEC-0041)도 여기서 함께 만족된다.
-String profileIconAsset(int id) {
-  final safeId = kProfileIconIds.contains(id) ? id : kDefaultProfileIconId;
+/// [id]가 null이면(삭제된 댓글처럼 서버가 비워 보내는 경우) 기본 아이콘을 쓴다.
+String profileIconAsset(int? id) {
+  final safeId = kProfileIconIds.contains(id) ? id! : kDefaultProfileIconId;
   return 'assets/profiles/$safeId.svg';
 }
 

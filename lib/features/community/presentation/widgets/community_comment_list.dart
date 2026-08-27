@@ -173,6 +173,26 @@ class _CommentTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final isMine = currentUserId != null && currentUserId == comment.writerId;
 
+    // 답글이 남아 자리만 지킨 댓글 — 서버가 작성자·본문·아이콘을 전부 비워
+    // 보낸다(DEC-0034). 그릴 것도 누를 것도 없으니 한 줄만 남긴다.
+    if (comment.deleted) {
+      return Container(
+        color: AppColors.white,
+        padding: EdgeInsets.only(
+          top: topPadding,
+          bottom: bottomPadding,
+          left: AppSpacing.horizontal24,
+          right: AppSpacing.horizontal24,
+        ),
+        child: Text(
+          l10n.communityCommentDeleted,
+          style: AppTextStyles.paragraph14Regular.copyWith(
+            color: AppColors.black300,
+          ),
+        ),
+      );
+    }
+
     // 좌우 24는 페이지 패딩이 아니라 타일이 갖는다 — 답글 대상 배경색이 화면
     // 끝까지 닿아야 하므로 목록이 페이지 좌우 패딩 밖에 놓이기 때문이다.
     return Container(
@@ -220,7 +240,7 @@ class _CommentTile extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        comment.writerNickname,
+                        comment.writerNickname ?? '',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.paragraph14Semibold.copyWith(
@@ -273,7 +293,7 @@ class _CommentTile extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.vertical4),
                 Text(
-                  comment.content,
+                  comment.content ?? '',
                   style: AppTextStyles.paragraph14Regular.copyWith(
                     color: AppColors.black700,
                   ),

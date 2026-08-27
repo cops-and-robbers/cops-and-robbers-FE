@@ -33,8 +33,8 @@ String _$communityRepositoryHash() =>
 
 /// `CommunityRepository` Provider
 ///
-/// 좋아요·스크랩·댓글은 백엔드에 API가 없어 아직 목이다
-/// (`communityInteractionRepositoryProvider`). 게시글 CRUD는 전부 실서버다.
+/// 좋아요·스크랩은 응답에 카운트·내 반응 필드가 없어 아직 목이다
+/// (`communityInteractionRepositoryProvider`). 게시글 CRUD와 댓글은 실서버다.
 ///
 /// Copied from [communityRepository].
 @ProviderFor(communityRepository)
@@ -52,6 +52,28 @@ final communityRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CommunityRepositoryRef = AutoDisposeProviderRef<CommunityRepository>;
+String _$communityCommentRepositoryHash() =>
+    r'b04599d9f6886eeaa973fcbffb5a88e84be63a56';
+
+/// `CommunityCommentRepository` Provider
+///
+/// Copied from [communityCommentRepository].
+@ProviderFor(communityCommentRepository)
+final communityCommentRepositoryProvider =
+    AutoDisposeProvider<CommunityCommentRepository>.internal(
+      communityCommentRepository,
+      name: r'communityCommentRepositoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$communityCommentRepositoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CommunityCommentRepositoryRef =
+    AutoDisposeProviderRef<CommunityCommentRepository>;
 String _$currentPositionResolverHash() =>
     r'c44ee30313052542cd510b7f078f5d9688a6901a';
 

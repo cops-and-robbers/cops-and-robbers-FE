@@ -12,7 +12,9 @@ import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../data/datasources/community_remote_datasource.dart';
+import '../../data/repositories/community_comment_repository_impl.dart';
 import '../../data/repositories/community_repository_impl.dart';
+import '../../domain/repositories/community_comment_repository.dart';
 import '../../domain/community_post_errors.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
@@ -39,11 +41,19 @@ CommunityRemoteDataSource communityRemoteDataSource(Ref ref) {
 
 /// `CommunityRepository` Provider
 ///
-/// 좋아요·스크랩·댓글은 백엔드에 API가 없어 아직 목이다
-/// (`communityInteractionRepositoryProvider`). 게시글 CRUD는 전부 실서버다.
+/// 좋아요·스크랩은 응답에 카운트·내 반응 필드가 없어 아직 목이다
+/// (`communityInteractionRepositoryProvider`). 게시글 CRUD와 댓글은 실서버다.
 @riverpod
 CommunityRepository communityRepository(Ref ref) {
   return CommunityRepositoryImpl(ref.watch(communityRemoteDataSourceProvider));
+}
+
+/// `CommunityCommentRepository` Provider
+@riverpod
+CommunityCommentRepository communityCommentRepository(Ref ref) {
+  return CommunityCommentRepositoryImpl(
+    ref.watch(communityRemoteDataSourceProvider),
+  );
 }
 
 // ============================================================================
