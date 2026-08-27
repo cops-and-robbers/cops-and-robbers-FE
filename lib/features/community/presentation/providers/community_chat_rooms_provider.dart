@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../data/repositories/community_chat_repository_mock.dart';
+import '../../../auth/presentation/providers/token_provider.dart';
+import '../../data/datasources/community_chat_stomp_datasource.dart';
+import '../../data/repositories/community_chat_repository_impl.dart';
 import '../../domain/entities/community_chat_member_entity.dart';
 import '../../domain/entities/community_chat_room_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
@@ -11,16 +12,18 @@ import 'community_provider.dart';
 
 part 'community_chat_rooms_provider.g.dart';
 
-/// 채팅 저장소 Provider — 목 교체 지점
+/// 채팅 저장소 Provider — REST(Retrofit) + STOMP를 합친 실서버 구현
 ///
-/// ponytail: 1단계는 인메모리 목이다. 2단계에서 Retrofit + STOMP를 합친 impl로
-/// 여기만 바꾼다. 화면·Notifier는 인터페이스만 알고 있어 손댈 곳이 없다.
-/// 로그인 사용자가 바뀌면 목도 새로 만든다 — 에코의 `senderId`가 "나"여야
-/// 내 말풍선으로 확정된다.
+/// 소켓은 이 provider의 수명을 따른다. 방을 오갈 때마다 새로 만들지 않는 이유는
+/// 계약 01 — 소켓은 앱당 하나다(DEC-0026).
 @Riverpod(keepAlive: true)
 CommunityChatRepository communityChatRepository(Ref ref) {
-  return CommunityChatRepositoryMock(
-    myUserId: ref.watch(currentUserIdProvider) ?? 0,
+  final stomp = CommunityChatStompDatasource();
+  ref.onDispose(stomp.dispose);
+  return CommunityChatRepositoryImpl(
+    ref.watch(communityRemoteDataSourceProvider),
+    stomp,
+    () => ref.read(tokenProviderProvider).getAccessToken(),
   );
 }
 

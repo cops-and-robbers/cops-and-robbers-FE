@@ -43,6 +43,9 @@ class CommunityChatMessageEntity with _$CommunityChatMessageEntity {
     required String messageKey,
     required int senderId,
     required String senderNickname,
+
+    /// 프로필 아이콘 번호. 서버가 안 줬으면 null — 화면이 기본 아이콘을 쓴다.
+    int? senderProfileIcon,
     required CommunityChatMessageBody body,
     required DateTime createdAt,
     @Default(CommunityChatMessageStatus.sent) CommunityChatMessageStatus status,

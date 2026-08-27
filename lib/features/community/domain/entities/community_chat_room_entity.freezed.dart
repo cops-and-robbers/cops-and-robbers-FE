@@ -21,6 +21,7 @@ mixin _$CommunityChatLastMessageEntity {
   CommunityChatMessageBody get body => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   String? get senderNickname => throw _privateConstructorUsedError;
+  int? get senderProfileIcon => throw _privateConstructorUsedError;
 
   /// Create a copy of CommunityChatLastMessageEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -45,6 +46,7 @@ abstract class $CommunityChatLastMessageEntityCopyWith<$Res> {
     CommunityChatMessageBody body,
     DateTime createdAt,
     String? senderNickname,
+    int? senderProfileIcon,
   });
 
   $CommunityChatMessageBodyCopyWith<$Res> get body;
@@ -72,6 +74,7 @@ class _$CommunityChatLastMessageEntityCopyWithImpl<
     Object? body = null,
     Object? createdAt = null,
     Object? senderNickname = freezed,
+    Object? senderProfileIcon = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -91,6 +94,10 @@ class _$CommunityChatLastMessageEntityCopyWithImpl<
                 ? _value.senderNickname
                 : senderNickname // ignore: cast_nullable_to_non_nullable
                       as String?,
+            senderProfileIcon: freezed == senderProfileIcon
+                ? _value.senderProfileIcon
+                : senderProfileIcon // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -121,6 +128,7 @@ abstract class _$$CommunityChatLastMessageEntityImplCopyWith<$Res>
     CommunityChatMessageBody body,
     DateTime createdAt,
     String? senderNickname,
+    int? senderProfileIcon,
   });
 
   @override
@@ -149,6 +157,7 @@ class __$$CommunityChatLastMessageEntityImplCopyWithImpl<$Res>
     Object? body = null,
     Object? createdAt = null,
     Object? senderNickname = freezed,
+    Object? senderProfileIcon = freezed,
   }) {
     return _then(
       _$CommunityChatLastMessageEntityImpl(
@@ -168,6 +177,10 @@ class __$$CommunityChatLastMessageEntityImplCopyWithImpl<$Res>
             ? _value.senderNickname
             : senderNickname // ignore: cast_nullable_to_non_nullable
                   as String?,
+        senderProfileIcon: freezed == senderProfileIcon
+            ? _value.senderProfileIcon
+            : senderProfileIcon // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -182,6 +195,7 @@ class _$CommunityChatLastMessageEntityImpl
     required this.body,
     required this.createdAt,
     this.senderNickname,
+    this.senderProfileIcon,
   });
 
   @override
@@ -192,10 +206,12 @@ class _$CommunityChatLastMessageEntityImpl
   final DateTime createdAt;
   @override
   final String? senderNickname;
+  @override
+  final int? senderProfileIcon;
 
   @override
   String toString() {
-    return 'CommunityChatLastMessageEntity(id: $id, body: $body, createdAt: $createdAt, senderNickname: $senderNickname)';
+    return 'CommunityChatLastMessageEntity(id: $id, body: $body, createdAt: $createdAt, senderNickname: $senderNickname, senderProfileIcon: $senderProfileIcon)';
   }
 
   @override
@@ -208,12 +224,20 @@ class _$CommunityChatLastMessageEntityImpl
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.senderNickname, senderNickname) ||
-                other.senderNickname == senderNickname));
+                other.senderNickname == senderNickname) &&
+            (identical(other.senderProfileIcon, senderProfileIcon) ||
+                other.senderProfileIcon == senderProfileIcon));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, body, createdAt, senderNickname);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    body,
+    createdAt,
+    senderNickname,
+    senderProfileIcon,
+  );
 
   /// Create a copy of CommunityChatLastMessageEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -236,6 +260,7 @@ abstract class _CommunityChatLastMessageEntity
     required final CommunityChatMessageBody body,
     required final DateTime createdAt,
     final String? senderNickname,
+    final int? senderProfileIcon,
   }) = _$CommunityChatLastMessageEntityImpl;
 
   @override
@@ -246,6 +271,8 @@ abstract class _CommunityChatLastMessageEntity
   DateTime get createdAt;
   @override
   String? get senderNickname;
+  @override
+  int? get senderProfileIcon;
 
   /// Create a copy of CommunityChatLastMessageEntity
   /// with the given fields replaced by the non-null parameter values.

@@ -40,5 +40,8 @@ abstract class CommunityChatRepository {
   });
 
   /// UNSUBSCRIBE → 연결 종료. 나가기 성공 뒤와 화면 이탈 때 부른다.
-  Future<void> disconnect();
+  ///
+  /// [postId]를 받는 이유: 방 A에서 B로 옮기면 A의 provider가 B보다 늦게 정리될
+  /// 수 있다. 방 번호를 확인하지 않으면 그때 막 연결된 B의 소켓이 끊긴다.
+  Future<void> disconnect(int postId);
 }

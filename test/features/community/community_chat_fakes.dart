@@ -45,6 +45,7 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
     int? cursor,
     int size = 30,
   }) async {
+    calls.add('getMessages');
     if (cursor == null) {
       return CommunityChatPageEntity(
         messages: firstPage,
@@ -92,7 +93,7 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
   }) async => calls.add('send:$messageKey');
 
   @override
-  Future<void> disconnect() async {
+  Future<void> disconnect(int postId) async {
     calls.add('disconnect');
     await controller?.close();
   }

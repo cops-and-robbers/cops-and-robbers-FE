@@ -7,14 +7,12 @@ part of 'community_chat_rooms_provider.dart';
 // **************************************************************************
 
 String _$communityChatRepositoryHash() =>
-    r'd4907a7525311f88dc664f4a9f480ac23532c5cd';
+    r'af9491ce99359b03fe704c5a5b545e1d9fc3e13a';
 
-/// 채팅 저장소 Provider — 목 교체 지점
+/// 채팅 저장소 Provider — REST(Retrofit) + STOMP를 합친 실서버 구현
 ///
-/// ponytail: 1단계는 인메모리 목이다. 2단계에서 Retrofit + STOMP를 합친 impl로
-/// 여기만 바꾼다. 화면·Notifier는 인터페이스만 알고 있어 손댈 곳이 없다.
-/// 로그인 사용자가 바뀌면 목도 새로 만든다 — 에코의 `senderId`가 "나"여야
-/// 내 말풍선으로 확정된다.
+/// 소켓은 이 provider의 수명을 따른다. 방을 오갈 때마다 새로 만들지 않는 이유는
+/// 계약 01 — 소켓은 앱당 하나다(DEC-0026).
 ///
 /// Copied from [communityChatRepository].
 @ProviderFor(communityChatRepository)

@@ -157,7 +157,7 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
       ),
       nicknameStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black700),
       timeStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black300),
-      avatar: isMe ? null : const CommunityChatAvatar(),
+      avatar: isMe ? null : CommunityChatAvatar(iconId: m.senderProfileIcon),
       // 상대 쪽 꼬리는 좌상단 0, 내 쪽은 우상단 0 — 나머지 모서리는 10.
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(isMe ? 10.r : 0),
@@ -216,7 +216,7 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
       bubbleColor: AppColors.white,
       nicknameStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black700),
       timeStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black300),
-      avatar: isMe ? null : const CommunityChatAvatar(),
+      avatar: isMe ? null : CommunityChatAvatar(iconId: m.senderProfileIcon),
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(isMe ? 10.r : 0),
         topRight: Radius.circular(isMe ? 0 : 10.r),

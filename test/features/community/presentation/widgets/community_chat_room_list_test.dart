@@ -44,7 +44,7 @@ class _RoomsOnlyRepository implements CommunityChatRepository {
   @override
   Stream<CommunityChatEvent> connect(int postId) => const Stream.empty();
   @override
-  Future<void> disconnect() async {}
+  Future<void> disconnect(int postId) async {}
   @override
   Future<List<CommunityChatMemberEntity>> getMembers(int postId) async =>
       const [];

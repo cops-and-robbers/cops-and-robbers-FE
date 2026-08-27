@@ -16,6 +16,7 @@ class CommunityChatLastMessageEntity with _$CommunityChatLastMessageEntity {
     required CommunityChatMessageBody body,
     required DateTime createdAt,
     String? senderNickname,
+    int? senderProfileIcon,
   }) = _CommunityChatLastMessageEntity;
 }
 

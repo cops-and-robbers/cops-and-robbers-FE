@@ -706,6 +706,9 @@ mixin _$CommunityChatMessageEntity {
   String get messageKey => throw _privateConstructorUsedError;
   int get senderId => throw _privateConstructorUsedError;
   String get senderNickname => throw _privateConstructorUsedError;
+
+  /// 프로필 아이콘 번호. 서버가 안 줬으면 null — 화면이 기본 아이콘을 쓴다.
+  int? get senderProfileIcon => throw _privateConstructorUsedError;
   CommunityChatMessageBody get body => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   CommunityChatMessageStatus get status => throw _privateConstructorUsedError;
@@ -733,6 +736,7 @@ abstract class $CommunityChatMessageEntityCopyWith<$Res> {
     String messageKey,
     int senderId,
     String senderNickname,
+    int? senderProfileIcon,
     CommunityChatMessageBody body,
     DateTime createdAt,
     CommunityChatMessageStatus status,
@@ -763,6 +767,7 @@ class _$CommunityChatMessageEntityCopyWithImpl<
     Object? messageKey = null,
     Object? senderId = null,
     Object? senderNickname = null,
+    Object? senderProfileIcon = freezed,
     Object? body = null,
     Object? createdAt = null,
     Object? status = null,
@@ -785,6 +790,10 @@ class _$CommunityChatMessageEntityCopyWithImpl<
                 ? _value.senderNickname
                 : senderNickname // ignore: cast_nullable_to_non_nullable
                       as String,
+            senderProfileIcon: freezed == senderProfileIcon
+                ? _value.senderProfileIcon
+                : senderProfileIcon // ignore: cast_nullable_to_non_nullable
+                      as int?,
             body: null == body
                 ? _value.body
                 : body // ignore: cast_nullable_to_non_nullable
@@ -827,6 +836,7 @@ abstract class _$$CommunityChatMessageEntityImplCopyWith<$Res>
     String messageKey,
     int senderId,
     String senderNickname,
+    int? senderProfileIcon,
     CommunityChatMessageBody body,
     DateTime createdAt,
     CommunityChatMessageStatus status,
@@ -858,6 +868,7 @@ class __$$CommunityChatMessageEntityImplCopyWithImpl<$Res>
     Object? messageKey = null,
     Object? senderId = null,
     Object? senderNickname = null,
+    Object? senderProfileIcon = freezed,
     Object? body = null,
     Object? createdAt = null,
     Object? status = null,
@@ -880,6 +891,10 @@ class __$$CommunityChatMessageEntityImplCopyWithImpl<$Res>
             ? _value.senderNickname
             : senderNickname // ignore: cast_nullable_to_non_nullable
                   as String,
+        senderProfileIcon: freezed == senderProfileIcon
+            ? _value.senderProfileIcon
+            : senderProfileIcon // ignore: cast_nullable_to_non_nullable
+                  as int?,
         body: null == body
             ? _value.body
             : body // ignore: cast_nullable_to_non_nullable
@@ -905,6 +920,7 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
     required this.messageKey,
     required this.senderId,
     required this.senderNickname,
+    this.senderProfileIcon,
     required this.body,
     required this.createdAt,
     this.status = CommunityChatMessageStatus.sent,
@@ -918,6 +934,10 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
   final int senderId;
   @override
   final String senderNickname;
+
+  /// 프로필 아이콘 번호. 서버가 안 줬으면 null — 화면이 기본 아이콘을 쓴다.
+  @override
+  final int? senderProfileIcon;
   @override
   final CommunityChatMessageBody body;
   @override
@@ -928,7 +948,7 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
 
   @override
   String toString() {
-    return 'CommunityChatMessageEntity(id: $id, messageKey: $messageKey, senderId: $senderId, senderNickname: $senderNickname, body: $body, createdAt: $createdAt, status: $status)';
+    return 'CommunityChatMessageEntity(id: $id, messageKey: $messageKey, senderId: $senderId, senderNickname: $senderNickname, senderProfileIcon: $senderProfileIcon, body: $body, createdAt: $createdAt, status: $status)';
   }
 
   @override
@@ -943,6 +963,8 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
                 other.senderId == senderId) &&
             (identical(other.senderNickname, senderNickname) ||
                 other.senderNickname == senderNickname) &&
+            (identical(other.senderProfileIcon, senderProfileIcon) ||
+                other.senderProfileIcon == senderProfileIcon) &&
             (identical(other.body, body) || other.body == body) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -956,6 +978,7 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
     messageKey,
     senderId,
     senderNickname,
+    senderProfileIcon,
     body,
     createdAt,
     status,
@@ -979,6 +1002,7 @@ abstract class _CommunityChatMessageEntity extends CommunityChatMessageEntity {
     required final String messageKey,
     required final int senderId,
     required final String senderNickname,
+    final int? senderProfileIcon,
     required final CommunityChatMessageBody body,
     required final DateTime createdAt,
     final CommunityChatMessageStatus status,
@@ -993,6 +1017,10 @@ abstract class _CommunityChatMessageEntity extends CommunityChatMessageEntity {
   int get senderId;
   @override
   String get senderNickname;
+
+  /// 프로필 아이콘 번호. 서버가 안 줬으면 null — 화면이 기본 아이콘을 쓴다.
+  @override
+  int? get senderProfileIcon;
   @override
   CommunityChatMessageBody get body;
   @override

@@ -286,6 +286,81 @@ void main() {
       });
     });
 
+    test('ignores_reconnect_requests_while_a_connection_is_in_flight', () {
+      // 띠의 "다시 연결"을 연타하면 붙는 중인 연결을 계속 죽이고 새로 만들어
+      // 영영 못 붙는다. 게임 채널도 같은 가드를 둔다.
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository()
+          ..connectEmitsDisconnected = true;
+        final c = _opened(async, repo);
+        async.elapse(const Duration(seconds: 30));
+        final before = repo.calls.where((x) => x == 'connect').length;
+
+        _notifier(c)
+          ..reconnectNow()
+          ..reconnectNow()
+          ..reconnectNow();
+        async.flushMicrotasks();
+
+        expect(repo.calls.where((x) => x == 'connect').length, before + 1);
+      });
+    });
+
+    test('refetches_over_rest_before_reconnecting_when_the_token_expired', () {
+      // 소켓만 다시 붙으면 만료된 토큰으로 계속 거절당한다. REST를 한 번 태워야
+      // AuthInterceptor가 재발급하고, 그 다음 연결이 새 토큰으로 붙는다.
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository();
+        final c = _opened(async, repo);
+        repo.calls.clear();
+
+        repo.emit(const CommunityChatEvent.error('ACCESS_TOKEN_EXPIRED'));
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 2));
+
+        expect(repo.calls, contains('getMessages'));
+        expect(_state(c).evicted, isFalse);
+      });
+    });
+
+    test('leaves_the_room_when_the_kick_system_message_names_me', () {
+      // 서버는 강퇴당한 쪽 세션을 끊지 않는다(Swagger 명시) — 앱이 스스로
+      // 구독을 끊지 않으면 나간 방 메시지를 계속 받는다.
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository();
+        final c = _opened(async, repo);
+        repo.calls.clear();
+
+        repo.emit(
+          CommunityChatEvent.message(
+            _system(99, CommunityChatSystemEvent.kick).copyWith(senderId: 1),
+          ),
+        );
+        async.flushMicrotasks();
+
+        expect(_state(c).evicted, isTrue);
+        expect(repo.calls, contains('disconnect'));
+      });
+    });
+
+    test('stays_in_the_room_when_someone_else_is_kicked', () {
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository();
+        final c = _opened(async, repo);
+        repo.calls.clear();
+
+        repo.emit(
+          CommunityChatEvent.message(
+            _system(99, CommunityChatSystemEvent.kick).copyWith(senderId: 7),
+          ),
+        );
+        async.flushMicrotasks();
+
+        expect(_state(c).evicted, isFalse);
+        expect(repo.calls, isNot(contains('disconnect')));
+      });
+    });
+
     test('disconnects_when_provider_is_disposed_without_leaving', () {
       fakeAsync((async) {
         final repo = FakeCommunityChatRepository();
