@@ -55,6 +55,9 @@ class ProfileIcon extends _$ProfileIcon {
   /// 안 그러면 한 번 고른 세션에서는 계정을 바꿔도 동기화가 조용히 죽는다.
   bool _selectedByUser = false;
 
+  /// 서버 저장이 도는 중인지. 겹친 PATCH의 도착 순서가 뒤집히는 것을 막는다.
+  bool _saving = false;
+
   /// 지금 이 상태가 누구 것인지. 늦게 끝난 조회가 다른 계정에 쓰지 않게 하는 기준.
   int? _userId;
 
@@ -131,6 +134,10 @@ class ProfileIcon extends _$ProfileIcon {
     if (!kProfileIconIds.contains(id)) return;
     final userId = _userId;
     if (userId == null) return;
+    // 연달아 누르면 PATCH가 겹친다. 먼저 보낸 요청이 늦게 끝나면 서버에는 이전
+    // 아이콘이 남고, 그 실패 롤백이 방금 고른 값을 덮는다.
+    if (_saving) return;
+    _saving = true;
 
     _selectedByUser = true;
     final previous = state;
@@ -143,6 +150,8 @@ class ProfileIcon extends _$ProfileIcon {
       state = previous;
       await _saveToStorage(userId, previous);
       rethrow;
+    } finally {
+      _saving = false;
     }
   }
 

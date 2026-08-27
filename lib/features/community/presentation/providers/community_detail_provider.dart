@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -168,7 +169,22 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
 
     final repo = ref.read(communityCommentRepositoryProvider);
     await repo.deleteComment(commentId);
-    final comments = await repo.getComments(postId);
+
+    // 여기부터는 삭제가 이미 끝났다. 재조회가 실패해도 실패로 되돌리면 안 된다 —
+    // 사용자는 삭제가 안 된 줄 알고 다시 누르고, 서버는 없는 댓글이라 거절한다.
+    // 그래서 재조회 실패는 삼키고, 지운 댓글만 목록에서 걷어낸 채로 둔다.
+    List<CommunityCommentEntity> comments;
+    try {
+      comments = await repo.getComments(postId);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('⚠️ 댓글 삭제 후 재조회 실패 — 지운 댓글만 걷어낸다: $e');
+      }
+      comments = withoutComment(
+        (state.valueOrNull ?? current).comments,
+        commentId,
+      );
+    }
 
     state = AsyncData(
       (state.valueOrNull ?? current).copyWith(comments: comments),

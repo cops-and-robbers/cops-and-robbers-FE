@@ -4768,7 +4768,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeForbiddenNotAuthor.
   ///
   /// In ko, this message translates to:
-  /// **'작성자만 수정하거나 삭제할 수 있어요'**
+  /// **'방장만 수정하거나 삭제할 수 있어요'**
   String get errorCodeForbiddenNotAuthor;
 
   /// No description provided for @errorCodeCountryNotSpecified.
@@ -4810,7 +4810,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorCodeAuthorCannotLeave.
   ///
   /// In ko, this message translates to:
-  /// **'작성자는 채팅방을 나갈 수 없어요'**
+  /// **'방장은 채팅방을 나갈 수 없어요'**
   String get errorCodeAuthorCannotLeave;
 
   /// No description provided for @errorCodeChatRoomFull.

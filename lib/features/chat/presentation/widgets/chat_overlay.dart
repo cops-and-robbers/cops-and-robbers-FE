@@ -4,8 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../report/presentation/providers/report_provider.dart';
-import '../../../report/domain/constants/report_categories.dart';
+import '../../../report/domain/report_target.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -168,23 +167,11 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       onBlock: (participantId) {
         ref.read(chatNotifierProvider.notifier).blockUser(participantId);
       },
-      onReport:
-          ({
-            required ReportCategory category,
-            required String messageContent,
-            required int reportedParticipantId,
-            String? etcReason,
-          }) async {
-            await ref
-                .read(reportRepositoryProvider)
-                .reportChat(
-                  gameId: widget.gameId,
-                  reportedParticipantId: reportedParticipantId,
-                  messageContent: messageContent,
-                  category: category,
-                  etcReason: etcReason,
-                );
-          },
+      reportTarget: GameChatReportTarget(
+        gameId: widget.gameId,
+        reportedParticipantId: message.sender.participantId,
+        messageContent: message.message,
+      ),
     );
   }
 

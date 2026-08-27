@@ -837,7 +837,7 @@
   "errorCodeReplyTargetGone": "返信しようとしたコメントがなくなりました。更新してからもう一度お試しください",
   "errorCodeInvalidCommentDepth": "返信に返信はできません",
   "errorCodePostNotFound": "この募集はすでに削除されました",
-  "errorCodeForbiddenNotAuthor": "作成者のみ編集・削除できます",
+  "errorCodeForbiddenNotAuthor": "ホストのみ編集・削除できます",
   "errorCodeCountryNotSpecified": "国を確認できない場所です。別の場所で試してください",
   "errorCodeAddressLookupFailed": "住所の取得に失敗しました。しばらくしてからもう一度お試しください",
   "@errorCodeAddressLookupFailed": {
@@ -847,7 +847,7 @@
   "errorCodeUnsupportedListScope": "サポートされていない一覧の範囲です",
   "errorCodeUnsupportedListSort": "サポートされていない並び替え方法です",
   "errorCodeAlreadyJoined": "既にこのチャットに参加しています",
-  "errorCodeAuthorCannotLeave": "作成者はこのチャットから退出できません",
+  "errorCodeAuthorCannotLeave": "ホストはこのチャットから退出できません",
   "errorCodeChatRoomFull": "このチャットの定員に達しました",
   "errorCodeJoinedChatRoomLimitExceeded": "参加できるチャット数の上限を超えました。他のチャットから退出してからもう一度お試しください",
   "errorCodeNotAChatMember": "このチャットの参加者ではありません",

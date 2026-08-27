@@ -2484,7 +2484,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodePostNotFound => 'この募集はすでに削除されました';
 
   @override
-  String get errorCodeForbiddenNotAuthor => '作成者のみ編集・削除できます';
+  String get errorCodeForbiddenNotAuthor => 'ホストのみ編集・削除できます';
 
   @override
   String get errorCodeCountryNotSpecified => '国を確認できない場所です。別の場所で試してください';
@@ -2505,7 +2505,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeAlreadyJoined => '既にこのチャットに参加しています';
 
   @override
-  String get errorCodeAuthorCannotLeave => '作成者はこのチャットから退出できません';
+  String get errorCodeAuthorCannotLeave => 'ホストはこのチャットから退出できません';
 
   @override
   String get errorCodeChatRoomFull => 'このチャットの定員に達しました';

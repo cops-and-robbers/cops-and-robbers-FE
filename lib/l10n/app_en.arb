@@ -837,7 +837,7 @@
   "errorCodeReplyTargetGone": "The comment you're replying to is gone. Refresh and try again",
   "errorCodeInvalidCommentDepth": "You can't reply to a reply",
   "errorCodePostNotFound": "This post has been deleted",
-  "errorCodeForbiddenNotAuthor": "Only the author can edit or delete this post",
+  "errorCodeForbiddenNotAuthor": "Only the host can edit or delete this post",
   "errorCodeCountryNotSpecified": "We can't identify the country here. Please try from another spot",
   "errorCodeAddressLookupFailed": "Couldn't look up the address. Please try again later",
   "@errorCodeAddressLookupFailed": {
@@ -847,7 +847,7 @@
   "errorCodeUnsupportedListScope": "This list scope isn't supported",
   "errorCodeUnsupportedListSort": "This sort option isn't supported",
   "errorCodeAlreadyJoined": "You're already in this chat",
-  "errorCodeAuthorCannotLeave": "The author can't leave this chat",
+  "errorCodeAuthorCannotLeave": "The host can't leave this chat",
   "errorCodeChatRoomFull": "This chat is full",
   "errorCodeJoinedChatRoomLimitExceeded": "You've joined too many chats. Leave one and try again",
   "errorCodeNotAChatMember": "You're not a member of this chat",

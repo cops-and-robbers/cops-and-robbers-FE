@@ -105,6 +105,34 @@ void main() {
     });
   });
 
+  // 게시글은 Entity 변환에서 toLocal()을 하는데 댓글만 빠져 있었다 — 서버가
+  // 오프셋을 붙여 보내면 Dart가 UTC로 정규화해, 한국에서 9시간 이르게 보인다.
+  group('CommunityCommentRepositoryImpl 시간대', () {
+    test('작성 시각을 기기 시간대로 맞춰 돌려준다', () async {
+      final utc = DateTime.utc(2026, 8, 27, 1);
+      final fake = _FakeCommunityRemoteDataSource(
+        pages: [
+          CommunityCommentListResponseModel(
+            content: [
+              CommunityCommentResponseModel(
+                id: 1,
+                content: '댓글',
+                createdAt: utc,
+              ),
+            ],
+            hasNext: false,
+          ),
+        ],
+      );
+      final repo = CommunityCommentRepositoryImpl(fake);
+
+      final comments = await repo.getComments(42);
+
+      expect(comments.single.createdAt.isUtc, isFalse);
+      expect(comments.single.createdAt, utc.toLocal());
+    });
+  });
+
   group('CommunityCommentRepositoryImpl.addComment', () {
     test('답글이면 parentId를 실어 보내고 생성된 댓글을 돌려준다', () async {
       final fake = _FakeCommunityRemoteDataSource(

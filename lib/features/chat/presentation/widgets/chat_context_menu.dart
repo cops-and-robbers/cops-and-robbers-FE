@@ -12,7 +12,7 @@ import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
-import '../../../report/domain/constants/report_categories.dart';
+import '../../../report/domain/report_target.dart';
 import '../../../report/presentation/report_flow.dart';
 
 /// 채팅 메시지 롱프레스 시 표시되는 컨텍스트 메뉴 오버레이
@@ -28,7 +28,7 @@ class ChatContextMenu extends StatefulWidget {
     required this.isDarkMode,
     required this.messageRect,
     required this.onBlock,
-    required this.onReport,
+    required this.reportTarget,
     required this.callerContext,
   });
 
@@ -38,14 +38,8 @@ class ChatContextMenu extends StatefulWidget {
   final Rect messageRect;
   final void Function(int participantId) onBlock;
 
-  /// 신고 콜백 (카테고리, 메시지 내용, 대상 participantId, 기타 사유)
-  final Future<void> Function({
-    required ReportCategory category,
-    required String messageContent,
-    required int reportedParticipantId,
-    String? etcReason,
-  })
-  onReport;
+  /// 무엇을 신고하는가 — 신고 화면이 이 대상으로 접수한다.
+  final ReportTarget reportTarget;
 
   /// dismiss 후에도 유효한 호출자 context (Snackbar/Dialog 표시용)
   final BuildContext callerContext;
@@ -57,13 +51,7 @@ class ChatContextMenu extends StatefulWidget {
     required bool isMe,
     required bool isDarkMode,
     required void Function(int participantId) onBlock,
-    required Future<void> Function({
-      required ReportCategory category,
-      required String messageContent,
-      required int reportedParticipantId,
-      String? etcReason,
-    })
-    onReport,
+    required ReportTarget reportTarget,
   }) {
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return Future.value();
@@ -82,7 +70,7 @@ class ChatContextMenu extends StatefulWidget {
         isDarkMode: isDarkMode,
         messageRect: messageRect,
         onBlock: onBlock,
-        onReport: onReport,
+        reportTarget: reportTarget,
         callerContext: context,
       ),
     );
@@ -116,18 +104,11 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     unawaited(_pickCategoryAndReport());
   }
 
-  Future<void> _pickCategoryAndReport() async {
-    await runReportFlow(
-      context: widget.callerContext,
-      isDarkMode: widget.isDarkMode,
-      submit: (selected, etcReason) => widget.onReport(
-        category: selected,
-        messageContent: widget.message.message,
-        reportedParticipantId: widget.message.sender.participantId,
-        etcReason: etcReason,
-      ),
-    );
-  }
+  Future<void> _pickCategoryAndReport() => runReportFlow(
+    context: widget.callerContext,
+    target: widget.reportTarget,
+    isDarkMode: widget.isDarkMode,
+  );
 
   void _onBlockWithSnackbar() {
     final l10n = AppLocalizations.of(widget.callerContext);

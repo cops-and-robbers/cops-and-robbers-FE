@@ -53,4 +53,36 @@ void main() {
       expect(result.map((c) => c.id), [1, 11]);
     });
   });
+
+  // 삭제 후 재조회가 실패했을 때만 쓰는 최소 반영이다. 지운 한 건만 빠져야 한다.
+  group('withoutComment', () {
+    test('removes_top_level_comment', () {
+      final result = withoutComment([_comment(1), _comment(2)], 1);
+
+      expect(result.map((c) => c.id), [2]);
+    });
+
+    test('removes_reply_and_keeps_its_parent', () {
+      final result = withoutComment([
+        _comment(
+          1,
+          replies: [_comment(10, parentId: 1), _comment(11, parentId: 1)],
+        ),
+      ], 10);
+
+      expect(result.single.id, 1);
+      expect(result.single.replies.map((c) => c.id), [11]);
+    });
+
+    test('leaves_list_untouched_when_id_is_absent', () {
+      final source = [
+        _comment(1, replies: [_comment(10, parentId: 1)]),
+      ];
+
+      final result = withoutComment(source, 99);
+
+      expect(result.map((c) => c.id), [1]);
+      expect(result.single.replies.map((c) => c.id), [10]);
+    });
+  });
 }

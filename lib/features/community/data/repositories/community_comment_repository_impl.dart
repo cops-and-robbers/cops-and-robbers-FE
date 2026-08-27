@@ -44,7 +44,9 @@ class CommunityCommentRepositoryImpl implements CommunityCommentRepository {
         writerProfileIconId: m.writerProfileIcon,
         content: m.content,
         deleted: m.deleted,
-        createdAt: m.createdAt,
+        // 게시글과 같이 기기 시간대로 맞춘다 — 안 하면 UTC로 파싱된 값이
+        // 그대로 떠서 한국 시간보다 9시간 이르게 보인다.
+        createdAt: m.createdAt.toLocal(),
         replies: m.replies.map(_toEntity).toList(),
       );
 

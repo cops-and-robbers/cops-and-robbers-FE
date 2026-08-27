@@ -352,7 +352,7 @@
   "communityChatMemberCount": "참가자 {count}명",
   "@communityChatMemberCount": { "description": "채팅방 사이드바 — 참가자 수 제목", "placeholders": { "count": { "type": "int" } } },
   "communityChatAuthorBadge": "방장",
-  "@communityChatAuthorBadge": { "description": "채팅방 사이드바 — 작성자 표시" },
+  "@communityChatAuthorBadge": { "description": "채팅방 사이드바 — 방장 표시" },
   "communityChatViewPost": "모집글 보기",
   "@communityChatViewPost": { "description": "채팅방 사이드바 — 모집글 상세로" },
   "communityChatLeave": "채팅방 나가기",
@@ -2607,7 +2607,7 @@
     "description": "커뮤니티 — 2단을 넘는 답글 시도"
   },
   "errorCodePostNotFound": "이미 삭제된 모집글이에요",
-  "errorCodeForbiddenNotAuthor": "작성자만 수정하거나 삭제할 수 있어요",
+  "errorCodeForbiddenNotAuthor": "방장만 수정하거나 삭제할 수 있어요",
   "errorCodeCountryNotSpecified": "국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요",
   "errorCodeAddressLookupFailed": "주소 조회에 실패했어요. 잠시 후 다시 시도해주세요",
   "@errorCodeAddressLookupFailed": {
@@ -2617,7 +2617,7 @@
   "errorCodeUnsupportedListScope": "지원하지 않는 목록 범위예요",
   "errorCodeUnsupportedListSort": "지원하지 않는 정렬 방식이에요",
   "errorCodeAlreadyJoined": "이미 참여한 채팅방이에요",
-  "errorCodeAuthorCannotLeave": "작성자는 채팅방을 나갈 수 없어요",
+  "errorCodeAuthorCannotLeave": "방장은 채팅방을 나갈 수 없어요",
   "errorCodeChatRoomFull": "채팅방 정원이 가득 찼어요",
   "errorCodeJoinedChatRoomLimitExceeded": "참여할 수 있는 채팅방 수를 초과했어요. 다른 채팅방을 나간 뒤 다시 시도해주세요",
   "errorCodeNotAChatMember": "해당 채팅방의 참여자가 아니에요",

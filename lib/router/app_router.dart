@@ -51,6 +51,9 @@ import '../features/session/presentation/pages/game_settings_edit_page.dart';
 import '../features/session/data/models/game_settings_response.dart';
 import '../features/game/presentation/pages/game_page.dart';
 import '../features/notice/presentation/pages/notices_page.dart';
+import '../features/report/domain/report_target.dart';
+import '../features/report/presentation/pages/report_category_page.dart';
+import '../features/report/presentation/pages/report_reason_page.dart';
 import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
 import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
@@ -313,6 +316,51 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           isForward: true,
         ),
+      ),
+      // ====================================================================
+      // Report Routes (신고)
+      //
+      // 어느 화면에서든 열리므로 최상위에 둔다. `extra`로 무엇을 신고하는지를
+      // 넘긴다 — 콜백 대신 대상만 넘겨야 라우트로 다룰 수 있다.
+      // ====================================================================
+      GoRoute(
+        path: RoutePaths.report,
+        name: RoutePaths.reportName,
+        // 대상 없이 주소만 찍고 들어오면 그릴 것이 없다.
+        redirect: (context, state) =>
+            state.extra is ReportArgs ? null : RoutePaths.home,
+        pageBuilder: (context, state) {
+          final args = state.extra! as ReportArgs;
+          return buildDirectionalSlide(
+            key: state.pageKey,
+            child: ReportCategoryPage(
+              target: args.target,
+              isDarkMode: args.isDarkMode,
+            ),
+            isForward: true,
+          );
+        },
+      ),
+      // 자식이 아니라 형제로 둔다. 자식으로 두면 이 화면으로 이동할 때 부모
+      // `/report`의 redirect와 pageBuilder가 같은 `extra`를 다시 보는데, 여기서
+      // 넘기는 값은 대상이 아니라 화면 테마라 부모가 홈으로 튕기고 캐스트가 터진다.
+      // push는 경로 계층과 무관하게 스택에 쌓이므로 뒤로 가면 유형 목록으로 돌아온다.
+      GoRoute(
+        path: RoutePaths.reportReason,
+        name: RoutePaths.reportReasonName,
+        redirect: (context, state) =>
+            state.extra is ReportReasonArgs ? null : RoutePaths.home,
+        pageBuilder: (context, state) {
+          final args = state.extra! as ReportReasonArgs;
+          return buildDirectionalSlide(
+            key: state.pageKey,
+            child: ReportReasonPage(
+              target: args.target,
+              isDarkMode: args.isDarkMode,
+            ),
+            isForward: true,
+          );
+        },
       ),
       GoRoute(
         path: '/tutorial/in-game',

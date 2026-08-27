@@ -44,10 +44,7 @@ void main() {
       final fake = _FakeReportRemoteDataSource();
       final repo = ReportRepositoryImpl(fake);
 
-      await repo.reportCommunityPost(
-        postId: 42,
-        category: ReportCategory.spam,
-      );
+      await repo.reportCommunityPost(postId: 42, category: ReportCategory.spam);
 
       expect(fake.lastRequest?.postId, 42);
       expect(fake.lastRequest?.reportType, 'SPAM');
@@ -87,10 +84,8 @@ void main() {
       final repo = ReportRepositoryImpl(fake);
 
       expect(
-        () => repo.reportCommunityPost(
-          postId: 42,
-          category: ReportCategory.spam,
-        ),
+        () =>
+            repo.reportCommunityPost(postId: 42, category: ReportCategory.spam),
         throwsA(isA<AppException>()),
       );
     });

@@ -118,6 +118,13 @@ class RoutePaths {
   ///
   /// 로그인, 가입 동의, 약관 설정 세 곳에서 같은 화면을 열기 때문에 마이페이지
   /// 하위가 아니라 최상위에 둡니다.
+  /// 신고 유형 선택 — 어느 화면에서든 열리므로 최상위에 둔다.
+  /// `extra`로 `ReportTarget`을 넘긴다.
+  static const String report = '/report';
+
+  /// 기타 신고 사유 작성 (신고 유형 선택의 자식 — 뒤로 가면 유형 목록으로)
+  static const String reportReason = '/report/reason';
+
   static const String legalDocument = '/legal';
 
   /// 문서 종류에 해당하는 법적 문서 화면 경로
@@ -244,6 +251,8 @@ class RoutePaths {
   static const String languageSettingsName = 'languageSettings';
   static const String agreementSettingsName = 'agreementSettings';
   static const String bugReportName = 'bugReport';
+  static const String reportName = 'report';
+  static const String reportReasonName = 'reportReason';
   static const String legalDocumentName = 'legalDocument';
   static const String creditsName = 'credits';
   static const String waitingRoomName = 'waitingRoom';

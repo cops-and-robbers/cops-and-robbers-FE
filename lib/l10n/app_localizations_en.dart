@@ -2690,7 +2690,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeForbiddenNotAuthor =>
-      'Only the author can edit or delete this post';
+      'Only the host can edit or delete this post';
 
   @override
   String get errorCodeCountryNotSpecified =>
@@ -2716,7 +2716,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeAlreadyJoined => 'You\'re already in this chat';
 
   @override
-  String get errorCodeAuthorCannotLeave => 'The author can\'t leave this chat';
+  String get errorCodeAuthorCannotLeave => 'The host can\'t leave this chat';
 
   @override
   String get errorCodeChatRoomFull => 'This chat is full';

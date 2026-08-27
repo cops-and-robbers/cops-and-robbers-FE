@@ -143,7 +143,7 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
         AppSnackbar.show(context, message: l10n.communityLoginRequiredMessage);
         context.push(RoutePaths.login);
       case CommunityPostMenuAction.report:
-        unawaited(reportCommunityPost(context, ref, post.id));
+        unawaited(reportCommunityPost(context, post.id));
       case CommunityPostMenuAction.edit:
         VibrationService.instance().buttonTap();
         // 상세를 먼저 깔고 그 위로 연다 — 완료든 취소든 닫았을 때 목록이 아니라

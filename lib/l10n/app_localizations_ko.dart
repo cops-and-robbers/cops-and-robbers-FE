@@ -2482,7 +2482,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodePostNotFound => '이미 삭제된 모집글이에요';
 
   @override
-  String get errorCodeForbiddenNotAuthor => '작성자만 수정하거나 삭제할 수 있어요';
+  String get errorCodeForbiddenNotAuthor => '방장만 수정하거나 삭제할 수 있어요';
 
   @override
   String get errorCodeCountryNotSpecified =>
@@ -2504,7 +2504,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeAlreadyJoined => '이미 참여한 채팅방이에요';
 
   @override
-  String get errorCodeAuthorCannotLeave => '작성자는 채팅방을 나갈 수 없어요';
+  String get errorCodeAuthorCannotLeave => '방장은 채팅방을 나갈 수 없어요';
 
   @override
   String get errorCodeChatRoomFull => '채팅방 정원이 가득 찼어요';

@@ -572,7 +572,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
       case CommunityPostMenuAction.login:
         _goLogin();
       case CommunityPostMenuAction.report:
-        unawaited(reportCommunityPost(context, ref, widget.postId));
+        unawaited(reportCommunityPost(context, widget.postId));
       case CommunityPostMenuAction.edit:
         unawaited(_openEdit());
       case CommunityPostMenuAction.toggleStatus:
