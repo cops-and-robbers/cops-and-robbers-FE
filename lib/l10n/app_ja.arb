@@ -256,6 +256,8 @@
   },
   "pageCommunityTitle": "コミュニティ",
   "pageCommunityEmpty": "募集がまだありません",
+  "pageCommunityScrapTitle": "スクラップ",
+  "communityScrapEmpty": "スクラップした投稿がありません",
   "communityScopeAll": "すべて",
   "communityScopeNearby": "近所",
   "communityScopeMine": "マイ募集",

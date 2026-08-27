@@ -737,6 +737,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageCommunityEmpty => '등록된 모집글이 없어요';
 
   @override
+  String get pageCommunityScrapTitle => '스크랩';
+
+  @override
+  String get communityScrapEmpty => '스크랩한 글이 없어요';
+
+  @override
   String get communityScopeAll => '전체';
 
   @override

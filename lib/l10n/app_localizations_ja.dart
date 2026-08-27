@@ -739,6 +739,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pageCommunityEmpty => '募集がまだありません';
 
   @override
+  String get pageCommunityScrapTitle => 'スクラップ';
+
+  @override
+  String get communityScrapEmpty => 'スクラップした投稿がありません';
+
+  @override
   String get communityScopeAll => 'すべて';
 
   @override

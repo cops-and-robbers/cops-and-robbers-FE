@@ -1431,6 +1431,18 @@ abstract class AppLocalizations {
   /// **'등록된 모집글이 없어요'**
   String get pageCommunityEmpty;
 
+  /// 내 스크랩 목록 화면 AppBar 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'스크랩'**
+  String get pageCommunityScrapTitle;
+
+  /// 내 스크랩 목록이 비어 있을 때 표시되는 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'스크랩한 글이 없어요'**
+  String get communityScrapEmpty;
+
   /// 커뮤니티 범위 필터 — 전체 글
   ///
   /// In ko, this message translates to:

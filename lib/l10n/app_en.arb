@@ -256,6 +256,8 @@
   },
   "pageCommunityTitle": "Community",
   "pageCommunityEmpty": "No posts yet",
+  "pageCommunityScrapTitle": "Scraps",
+  "communityScrapEmpty": "Nothing scrapped yet",
   "communityScopeAll": "All",
   "communityScopeNearby": "Nearby",
   "communityScopeMine": "My meetups",

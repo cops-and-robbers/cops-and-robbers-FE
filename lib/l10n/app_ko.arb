@@ -520,6 +520,14 @@
   "@pageCommunityEmpty": {
     "description": "커뮤니티 목록이 비어 있을 때 표시되는 안내"
   },
+  "pageCommunityScrapTitle": "스크랩",
+  "@pageCommunityScrapTitle": {
+    "description": "내 스크랩 목록 화면 AppBar 제목"
+  },
+  "communityScrapEmpty": "스크랩한 글이 없어요",
+  "@communityScrapEmpty": {
+    "description": "내 스크랩 목록이 비어 있을 때 표시되는 안내"
+  },
   "communityScopeAll": "전체",
   "@communityScopeAll": {
     "description": "커뮤니티 범위 필터 — 전체 글"

@@ -791,6 +791,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pageCommunityEmpty => 'No posts yet';
 
   @override
+  String get pageCommunityScrapTitle => 'Scraps';
+
+  @override
+  String get communityScrapEmpty => 'Nothing scrapped yet';
+
+  @override
   String get communityScopeAll => 'All';
 
   @override

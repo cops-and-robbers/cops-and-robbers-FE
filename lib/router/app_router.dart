@@ -33,6 +33,7 @@ import '../features/community/presentation/pages/community_chat_room_page.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_detail_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
+import '../features/community/presentation/pages/community_scrap_page.dart';
 import '../features/community/presentation/pages/community_search_page.dart';
 import '../features/credits/presentation/pages/credits_page.dart';
 import '../features/mypage/presentation/pages/agreement_settings_page.dart';
@@ -498,6 +499,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) => buildSmoothFade(
                       key: state.pageKey,
                       child: const CommunitySearchPage(),
+                    ),
+                  ),
+                  // ======================================================
+                  // 내 스크랩 목록 (바텀 네비 위 전체 화면)
+                  //
+                  // `:postId`보다 앞에 둔다 — 뒤에 두면 `/community/scraps`가
+                  // postId="scraps"로 잡힌다.
+                  // ======================================================
+                  GoRoute(
+                    path: 'scraps',
+                    name: RoutePaths.communityScrapsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildSmoothFade(
+                      key: state.pageKey,
+                      child: const CommunityScrapPage(),
                     ),
                   ),
                   // ======================================================

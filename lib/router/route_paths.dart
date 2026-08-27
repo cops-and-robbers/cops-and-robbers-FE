@@ -75,6 +75,10 @@ class RoutePaths {
   /// postId="search"로 잡힌다 (`create`와 같은 이유).
   static const String communitySearch = '/community/search';
 
+  /// 내 스크랩 목록. `:postId`보다 먼저 등록해야 한다 — 뒤에 두면
+  /// `/community/scraps`가 상세 라우트에 `postId = "scraps"`로 잡힌다.
+  static const String communityScraps = '/community/scraps';
+
   /// 모집글 상세 화면 (목록 카드 탭에서 진입)
   ///
   /// `create`보다 뒤에 등록해야 한다 — 먼저 두면 `/community/create`가
@@ -243,6 +247,7 @@ class RoutePaths {
   static const String communityName = 'community';
   static const String communityCreateName = 'communityCreate';
   static const String communitySearchName = 'communitySearch';
+  static const String communityScrapsName = 'communityScraps';
   static const String communityDetailName = 'communityDetail';
   static const String communityEditName = 'communityEdit';
   static const String communityChatName = 'communityChat';
