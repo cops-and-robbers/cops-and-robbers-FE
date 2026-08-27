@@ -145,7 +145,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     // (DOC-0037 §10) 이렇게 돌아오는 순간이 새 메시지를 알 유일한 기회다.
     if (ref.read(selectedCommunityScopeProvider) == CommunityScope.mine) {
       try {
-        await ref.read(communityChatRoomsProvider.notifier).refreshIfStale();
+        await ref.read(communityChatRoomsProvider.notifier).refreshOnReturn();
       } on AppException catch (_) {
         debugPrint('[내 모임] ⚠️ 배경 갱신 실패 — 보던 목록 유지');
       }

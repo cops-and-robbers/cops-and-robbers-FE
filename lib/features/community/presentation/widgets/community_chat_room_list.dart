@@ -49,16 +49,15 @@ class _CommunityChatRoomListState extends ConsumerState<CommunityChatRoomList> {
     });
   }
 
-  /// 보던 목록을 그대로 둔 채, 낡았을 때만 뒤에서 새로 받는다.
+  /// 보던 목록을 그대로 둔 채 뒤에서 새로 받는다.
   ///
-  /// 첫 진입은 provider의 build가 이미 받아 왔으니 유효 시간 안이라 넘어간다 —
-  /// 재진입 여부를 따로 판별할 필요가 없다.
+  /// 첫 진입은 provider의 build가 이미 받아 오는 중이라 저장소가 알아서 넘긴다.
   ///
   /// 실패해도 알리지 않는다 — 사용자가 시킨 적 없는 갱신이라 스낵바를 띄우면
   /// 탭을 옮길 때마다 잔소리가 된다. 당겨서 새로고침은 그대로 알린다.
   Future<void> _refreshQuietly() async {
     try {
-      await ref.read(communityChatRoomsProvider.notifier).refreshIfStale();
+      await ref.read(communityChatRoomsProvider.notifier).refreshOnReturn();
     } on AppException catch (e) {
       debugPrint('[내 모임] ⚠️ 목록 갱신 실패 — 보던 목록 유지: ${e.message}');
     }

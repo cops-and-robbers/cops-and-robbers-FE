@@ -34,43 +34,29 @@ CommunityChatRepository communityChatRepository(Ref ref) {
 /// 새로고침, 방에 들어갈 때 목록에 없는 방(방금 참여), 나간 뒤 무효화 셋이다.
 @Riverpod(keepAlive: true)
 class CommunityChatRooms extends _$CommunityChatRooms {
-  /// 마지막 조회로부터 이 시간이 지나면 낡은 것으로 본다.
-  ///
-  /// 모집글 목록과 같은 값이다(ISS-0145). 채팅은 실시간 데이터지만 목록을
-  /// 실시간으로 받을 길이 없다 — 서버에 유저당 알림 채널이 없어서(DOC-0037 §10)
-  /// 떠나 있다 돌아오는 순간이 새 메시지를 알 유일한 기회다.
-  static const _staleAfter = Duration(minutes: 3);
-
-  DateTime? _fetchedAt;
-
   @override
-  Future<List<CommunityChatRoomEntity>> build() {
-    final repo = ref.watch(communityChatRepositoryProvider);
-    return _fetch(repo);
-  }
-
-  Future<List<CommunityChatRoomEntity>> _fetch(
-    CommunityChatRepository repo,
-  ) async {
-    final rooms = await repo.getRooms();
-    _fetchedAt = ref.read(clockProvider)();
-    return rooms;
-  }
+  Future<List<CommunityChatRoomEntity>> build() =>
+      ref.watch(communityChatRepositoryProvider).getRooms();
 
   /// 실패하면 예외가 그대로 올라간다 — 보던 목록은 남고 화면이 스낵바로 알린다.
   Future<void> refresh() async {
-    final rooms = await _fetch(ref.read(communityChatRepositoryProvider));
+    final rooms = await ref.read(communityChatRepositoryProvider).getRooms();
     state = AsyncData(rooms);
   }
 
   /// 떠나 있다 돌아왔을 때(바텀 탭 복귀·앱 복귀·스코프 전환) 부른다.
   ///
-  /// 아직 한 번도 못 받았으면 아무것도 안 한다 — 첫 로드가 알아서 채운다.
-  /// 이미 받는 중이어도 넘긴다: 트리거가 겹칠 때 요청이 한 번 더 나간다.
-  Future<void> refreshIfStale() async {
-    final at = _fetchedAt;
-    if (at == null || state.isLoading) return;
-    if (ref.read(clockProvider)().difference(at) < _staleAfter) return;
+  /// ponytail: 유효 시간을 두지 않는다. 모집글 목록은 3분을 쓰지만(ISS-0145)
+  /// 그건 "실시간 데이터가 아니라 잠깐 낡아도 된다"는 근거 위에 선 값이고,
+  /// 채팅은 정반대다. 돌아왔는데 낡은 목록을 보는 쪽이 요청 한 건보다 나쁘다.
+  /// 게다가 유저당 알림 채널이 생기면(DOC-0037 §10) 이 갱신 자체가 거의
+  /// 필요 없어진다 — 곧 사라질 구조에 조절 손잡이를 달지 않는다.
+  /// 서버 지표에 이 호출량이 실제로 잡히면 그때 유효 시간을 넣는다.
+  ///
+  /// 두 가드는 남긴다: 첫 로드가 아직 안 끝났으면 그 로드가 채우고,
+  /// 이미 받는 중이면 트리거가 겹쳐도 요청이 한 번 더 나가지 않는다.
+  Future<void> refreshOnReturn() async {
+    if (!state.hasValue || state.isLoading) return;
     await refresh();
   }
 

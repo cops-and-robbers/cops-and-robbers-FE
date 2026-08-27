@@ -1,54 +1,39 @@
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
-import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../community_chat_fakes.dart';
 
-/// 떠나 있다 돌아오는 순간(바텀 탭 복귀·앱 복귀)에 부르는 갱신이다.
+int _fetches(FakeCommunityChatRepository repo) =>
+    repo.calls.where((x) => x == 'getRooms').length;
+
+/// 떠나 있다 돌아오는 순간(바텀 탭 복귀·앱 복귀·스코프 전환)에 부르는 갱신이다.
 /// 실시간 채널이 없어 이 시점들이 새 메시지를 알 유일한 기회다.
 void main() {
-  late DateTime now;
   ProviderContainer container(FakeCommunityChatRepository repo) {
     final c = ProviderContainer(
       overrides: [
         communityChatRepositoryProvider.overrideWithValue(repo),
         currentUserIdProvider.overrideWithValue(1),
-        clockProvider.overrideWithValue(() => now),
       ],
     );
     addTearDown(c.dispose);
     return c;
   }
 
-  setUp(() => now = DateTime(2026, 8, 28, 10));
-
-  test(
-    'refetches_when_the_cached_list_is_older_than_the_stale_window',
-    () async {
-      final repo = FakeCommunityChatRepository();
-      final c = container(repo);
-      await c.read(communityChatRoomsProvider.future);
-      expect(repo.calls.where((x) => x == 'getRooms').length, 1);
-
-      now = now.add(const Duration(minutes: 4));
-      await c.read(communityChatRoomsProvider.notifier).refreshIfStale();
-
-      expect(repo.calls.where((x) => x == 'getRooms').length, 2);
-    },
-  );
-
-  test('leaves_the_list_alone_when_it_is_still_fresh', () async {
-    // 탭을 빠르게 오갈 때마다 다시 받으면 요청만 늘고 화면은 그대로다.
+  test('refetches_every_time_the_user_comes_back', () async {
+    // 유효 시간을 두지 않는다 — 돌아왔는데 낡은 목록을 보는 쪽이 요청 한 건보다
+    // 나쁘다. 요청량이 실제로 문제가 되면 그때 가드를 넣는다.
     final repo = FakeCommunityChatRepository();
     final c = container(repo);
     await c.read(communityChatRoomsProvider.future);
+    expect(_fetches(repo), 1);
 
-    now = now.add(const Duration(seconds: 30));
-    await c.read(communityChatRoomsProvider.notifier).refreshIfStale();
+    await c.read(communityChatRoomsProvider.notifier).refreshOnReturn();
+    await c.read(communityChatRoomsProvider.notifier).refreshOnReturn();
 
-    expect(repo.calls.where((x) => x == 'getRooms').length, 1);
+    expect(_fetches(repo), 3);
   });
 
   test('does_not_stack_a_second_request_on_the_first_load', () async {
@@ -57,8 +42,8 @@ void main() {
     final repo = FakeCommunityChatRepository();
     final c = container(repo);
 
-    await c.read(communityChatRoomsProvider.notifier).refreshIfStale();
+    await c.read(communityChatRoomsProvider.notifier).refreshOnReturn();
 
-    expect(repo.calls.where((x) => x == 'getRooms').length, 1);
+    expect(_fetches(repo), 1);
   });
 }
