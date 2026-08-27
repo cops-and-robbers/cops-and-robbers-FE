@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 CommunityPostEntity _post({
@@ -16,7 +17,9 @@ CommunityPostEntity _post({
   String? region,
   int? currentParticipants,
   int likeCount = 0,
+  bool isLiked = false,
   int scrapCount = 0,
+  bool isScrapped = false,
 }) => CommunityPostEntity(
   id: 1,
   writerId: 7,
@@ -32,9 +35,9 @@ CommunityPostEntity _post({
   region: region,
   currentParticipants: currentParticipants,
   likeCount: likeCount,
-  isLiked: false,
+  isLiked: isLiked,
   scrapCount: scrapCount,
-  isScrapped: false,
+  isScrapped: isScrapped,
 );
 
 /// 카드 안의 더보기 메뉴가 로그인 사용자 id를 watch 하므로 ProviderScope가 필요하다.
@@ -56,6 +59,20 @@ Widget _wrap(Widget child, {int? currentUserId}) => ProviderScope(
     ),
   ),
 );
+
+Future<void> _pumpCard(WidgetTester tester, CommunityPostEntity post) async {
+  await tester.pumpWidget(_wrap(CommunityPostCard(onMenuAction: (_) {}, post: post)));
+  await tester.pumpAndSettle();
+}
+
+/// 좋아요·스크랩 아이콘의 자산 경로를 읽는다. 카드에 SvgPicture가 여럿이라
+/// (날짜·인원 아이콘 포함) 자산명에 `icon_$kind`가 들어간 것만 골라낸다.
+String _assetPathOf(WidgetTester tester, String kind) {
+  return tester
+      .widgetList<SvgPicture>(find.byType(SvgPicture))
+      .map((svg) => (svg.bytesLoader as SvgAssetLoader).assetName)
+      .singleWhere((path) => path.contains('icon_$kind'));
+}
 
 void main() {
   group('CommunityPostCard', () {
@@ -128,6 +145,14 @@ void main() {
 
       // 좋아요·스크랩 자리는 지금부터 표시한다 (탭은 받지 않는다).
       expect(find.text('0'), findsNWidgets(2));
+    });
+
+    testWidgets('fills_the_heart_when_i_liked_the_post', (tester) async {
+      await _pumpCard(tester, _post(likeCount: 6, isLiked: true, scrapCount: 3, isScrapped: false));
+
+      expect(find.text('6'), findsOneWidget);
+      expect(_assetPathOf(tester, 'like'), 'assets/icons/icon_like_on.svg');
+      expect(_assetPathOf(tester, 'save'), 'assets/icons/icon_save_off.svg');
     });
 
     testWidgets('dims_content_when_post_is_completed', (tester) async {

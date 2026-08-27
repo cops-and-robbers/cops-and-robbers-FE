@@ -868,6 +868,33 @@ void main() {
           .items;
       expect(items.map((e) => e.title), ['모집글 1', '제목을 고쳤어요']);
     });
+
+    test('replaces_only_the_touched_card_when_reaction_changes', () async {
+      // 무효화가 아니라 그 한 칸만 갈아끼운다 — 커서로 쌓아 둔 나머지가
+      // 그대로 남아야 한다.
+      final repo = _MutatingRepository([_post(1), _post(2)]);
+      final container = _containerWith(repo);
+      final notifier = container.read(
+        communityFeedNotifierProvider(CommunityScope.all, CommunitySortOption.latest, null).notifier,
+      );
+      await container.read(
+        communityFeedNotifierProvider(CommunityScope.all, CommunitySortOption.latest, null).future,
+      );
+
+      final before = container
+          .read(communityFeedNotifierProvider(CommunityScope.all, CommunitySortOption.latest, null))
+          .value!;
+      final target = before.items.first;
+
+      notifier.replacePost(target.copyWith(isLiked: true, likeCount: target.likeCount + 1));
+
+      final after = container
+          .read(communityFeedNotifierProvider(CommunityScope.all, CommunitySortOption.latest, null))
+          .value!;
+      expect(after.items.first.isLiked, isTrue);
+      expect(after.items.length, before.items.length);
+      expect(after.items.skip(1).toList(), before.items.skip(1).toList());
+    });
   });
 
   group('CommunityFeedNotifier.refreshIfStale', () {

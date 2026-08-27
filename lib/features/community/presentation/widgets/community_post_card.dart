@@ -182,17 +182,20 @@ class CommunityPostCard extends StatelessWidget {
             ],
           ),
         ),
-        // 표시 전용 — 카운트는 서버 값을 그대로 보여준다.
-        // on/off 아이콘이 생겼지만 isLiked·isScrapped로 토글하는 로직은 아직
-        // 안 붙었다. off로 고정한다. 토글이 붙는 상세 화면에서 on을 쓰게 된다.
+        // 표시 전용이다 — 누르는 자리는 상세 화면이다(시안 결정). 채움만
+        // 서버가 준 내 반응을 따른다.
         _CountLabel(
-          assetPath: 'assets/icons/icon_like_off.svg',
+          assetPath: post.isLiked
+              ? 'assets/icons/icon_like_on.svg'
+              : 'assets/icons/icon_like_off.svg',
           count: post.likeCount,
           color: AppColors.red,
         ),
         SizedBox(width: AppSpacing.horizontal10),
         _CountLabel(
-          assetPath: 'assets/icons/icon_save_off.svg',
+          assetPath: post.isScrapped
+              ? 'assets/icons/icon_save_on.svg'
+              : 'assets/icons/icon_save_off.svg',
           count: post.scrapCount,
           color: AppColors.yellow,
         ),

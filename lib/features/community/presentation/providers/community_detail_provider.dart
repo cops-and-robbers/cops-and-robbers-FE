@@ -89,10 +89,35 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
     state = AsyncData(current.copyWith(post: apply(before)));
     try {
       await call(ref.read(communityReactionRepositoryProvider), before);
+      _syncFeedCard();
     } catch (_) {
       state = AsyncData((state.valueOrNull ?? current).copyWith(post: before));
       rethrow;
     }
+  }
+
+  /// 바뀐 글을 목록의 그 카드에만 반영한다.
+  ///
+  /// `ref.invalidate`를 쓰지 않는 이유: 커서 페이지네이션이라 무효화는 0페이지
+  /// 부터 다시 당긴다 — 3페이지까지 내려온 사용자가 하트 한 번에 맨 위로 튕긴다
+  /// (`CommunityFeedNotifier.toggleStatus`가 같은 이유로 피한 함정이다).
+  ///
+  /// 검색으로 들어온 인스턴스(keyword != null)는 잡지 못하지만, 검색 결과는
+  /// 화면을 나가면 폐기되므로(keepAlive 없음) 무해하다. `replacePost`는 목록에
+  /// 없는 글이면 아무 일도 하지 않는다.
+  void _syncFeedCard() {
+    final post = state.valueOrNull?.post;
+    if (post == null) return;
+
+    ref
+        .read(
+          communityFeedNotifierProvider(
+            ref.read(selectedCommunityScopeProvider),
+            ref.read(selectedCommunitySortProvider),
+            null,
+          ).notifier,
+        )
+        .replacePost(post);
   }
 
   /// 댓글 또는 답글 작성.
