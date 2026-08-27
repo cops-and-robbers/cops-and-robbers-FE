@@ -190,7 +190,15 @@ class _FakeReactionRepository implements CommunityReactionRepository {
   Future<void> unscrap(int postId) => _respond();
 
   Future<void> _respond() async {
-    if (error != null) throw error!;
+    if (error == null) return;
+    // 실패만 한 틱 늦춘다. 지연 없이 즉시 던지면 낙관적 갱신과 롤백이 같은
+    // 마이크로태스크 틱에 몰려 처리돼, 첫 pump()에서 이미 롤백까지 끝난 상태가
+    // 그려진다 — "뒤집혔다 돌아옴"과 "애초에 안 뒤집힘"을 테스트가 구분할 수
+    // 없게 된다. 성공 경로까지 늦추면 되돌릴 상태가 없어 의미도 없을뿐더러,
+    // pump() 한 번으로 끝나고 settle하지 않는 성공 테스트에 이 타이머가 그대로
+    // 남아 "A Timer is still pending"으로 깨진다.
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    throw error!;
   }
 }
 
@@ -478,6 +486,12 @@ void main() {
       );
 
       await tester.tap(find.byKey(const Key('community_detail_like')));
+      await tester.pump();
+
+      // 뒤집혔다가 돌아오는지 확인하려면 뒤집힌 중간 상태부터 잡아야 한다 —
+      // 안 그러면 "애초에 안 뒤집힘"과 구분이 안 된다.
+      expect(find.text('7'), findsOneWidget);
+
       await tester.pumpAndSettle();
 
       expect(find.text('6'), findsOneWidget);
