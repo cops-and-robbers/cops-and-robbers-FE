@@ -2114,6 +2114,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCommunityReactionGeneric => '処理できませんでした。しばらくしてからもう一度お試しください';
 
   @override
+  String get errorCommunityScrapsLoadGeneric =>
+      'スクラップ一覧を読み込めませんでした。しばらくしてからもう一度お試しください';
+
+  @override
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';
 
   @override

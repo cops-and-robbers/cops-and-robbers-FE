@@ -426,6 +426,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCommunityCommentDeleteGeneric;
       case 'errorCommunityReactionGeneric':
         return errorCommunityReactionGeneric;
+      case 'errorCommunityScrapsLoadGeneric':
+        return errorCommunityScrapsLoadGeneric;
       case 'errorCommunityPostCreateGeneric':
         return errorCommunityPostCreateGeneric;
       case 'errorCommunityPostUpdateGeneric':

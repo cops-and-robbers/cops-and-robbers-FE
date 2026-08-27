@@ -161,6 +161,33 @@ void main() {
     });
   });
 
+  group('CommunityScrapListResponseModel', () {
+    test('parses_flat_cursor_envelope', () {
+      // 피드 목록과 봉투가 다르다 — 커서가 중첩 객체가 아니라 평평하고,
+      // 값도 opaque 문자열이 아니라 스크랩 id 정수다.
+      final json = {
+        'content': [_serverJson()],
+        'nextCursor': 12,
+        'hasNext': true,
+      };
+
+      final model = CommunityScrapListResponseModel.fromJson(json);
+
+      expect(model.content.single.id, 1);
+      expect(model.nextCursor, 12);
+      expect(model.hasNext, isTrue);
+    });
+
+    test('parses_null_next_cursor_on_last_page', () {
+      final json = {'content': <dynamic>[], 'nextCursor': null, 'hasNext': false};
+
+      final model = CommunityScrapListResponseModel.fromJson(json);
+
+      expect(model.nextCursor, isNull);
+      expect(model.hasNext, isFalse);
+    });
+  });
+
   group('CommunityCountryResponseModel', () {
     test('parses_country_code_when_lookup_succeeds', () {
       final model = CommunityCountryResponseModel.fromJson({

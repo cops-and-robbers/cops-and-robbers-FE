@@ -2266,6 +2266,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t complete that. Please try again shortly';
 
   @override
+  String get errorCommunityScrapsLoadGeneric =>
+      'Couldn\'t load your scraps. Please try again shortly';
+
+  @override
   String get errorCommunityAddressLoadGeneric =>
       'Something went wrong while loading the address';
 

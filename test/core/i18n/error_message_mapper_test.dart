@@ -57,6 +57,7 @@ void main() {
         'errorCommunityCommentCreateGeneric',
         'errorCommunityCommentDeleteGeneric',
         'errorCommunityReactionGeneric',
+        'errorCommunityScrapsLoadGeneric',
       ];
 
       for (final key in keys) {

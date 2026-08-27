@@ -213,6 +213,16 @@ abstract class CommunityRemoteDataSource {
     @Query('size') int? size,
   });
 
+  /// 내 스크랩 목록 조회 (커서 페이지네이션, 로그인 필수)
+  ///
+  /// 스크랩한 순서(최신순) 고정이라 정렬·검색 파라미터가 없다. 커서는 스크랩 id
+  /// 정수이고, 목록 커서(opaque 문자열)와 형식이 다르다. 비로그인은 401이다.
+  @GET('${ApiEndpoints.communityPosts}/scraps')
+  Future<CommunityScrapListResponseModel> getScraps({
+    @Query('cursor') int? cursor,
+    @Query('size') int? size,
+  });
+
   /// 채팅방 멤버 목록 조회
   ///
   /// 사이드바의 참가자 목록과 방장 판정에 쓴다. 방 멤버만 부를 수 있다

@@ -728,6 +728,7 @@
   "errorCommunityCommentCreateGeneric": "Something went wrong while posting your comment",
   "errorCommunityCommentDeleteGeneric": "Something went wrong while deleting the comment",
   "errorCommunityReactionGeneric": "Couldn't complete that. Please try again shortly",
+  "errorCommunityScrapsLoadGeneric": "Couldn't load your scraps. Please try again shortly",
   "errorCommunityAddressLoadGeneric": "Something went wrong while loading the address",
   "errorNoticeLoadFailed": "Failed to load notices",
   "pageNoticesTitle": "Notices",

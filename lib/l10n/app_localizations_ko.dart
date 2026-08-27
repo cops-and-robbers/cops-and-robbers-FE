@@ -2115,6 +2115,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCommunityReactionGeneric => '요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요';
 
   @override
+  String get errorCommunityScrapsLoadGeneric =>
+      '스크랩 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';
 
   @override

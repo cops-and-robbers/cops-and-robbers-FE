@@ -1509,6 +1509,245 @@ abstract class _CommunityPostListResponseModel
   get copyWith => throw _privateConstructorUsedError;
 }
 
+CommunityScrapListResponseModel _$CommunityScrapListResponseModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityScrapListResponseModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityScrapListResponseModel {
+  List<CommunityPostResponseModel> get content =>
+      throw _privateConstructorUsedError;
+  bool get hasNext => throw _privateConstructorUsedError;
+  int? get nextCursor => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityScrapListResponseModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityScrapListResponseModelCopyWith<CommunityScrapListResponseModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityScrapListResponseModelCopyWith<$Res> {
+  factory $CommunityScrapListResponseModelCopyWith(
+    CommunityScrapListResponseModel value,
+    $Res Function(CommunityScrapListResponseModel) then,
+  ) =
+      _$CommunityScrapListResponseModelCopyWithImpl<
+        $Res,
+        CommunityScrapListResponseModel
+      >;
+  @useResult
+  $Res call({
+    List<CommunityPostResponseModel> content,
+    bool hasNext,
+    int? nextCursor,
+  });
+}
+
+/// @nodoc
+class _$CommunityScrapListResponseModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityScrapListResponseModel
+>
+    implements $CommunityScrapListResponseModelCopyWith<$Res> {
+  _$CommunityScrapListResponseModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? content = null,
+    Object? hasNext = null,
+    Object? nextCursor = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            content: null == content
+                ? _value.content
+                : content // ignore: cast_nullable_to_non_nullable
+                      as List<CommunityPostResponseModel>,
+            hasNext: null == hasNext
+                ? _value.hasNext
+                : hasNext // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            nextCursor: freezed == nextCursor
+                ? _value.nextCursor
+                : nextCursor // ignore: cast_nullable_to_non_nullable
+                      as int?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityScrapListResponseModelImplCopyWith<$Res>
+    implements $CommunityScrapListResponseModelCopyWith<$Res> {
+  factory _$$CommunityScrapListResponseModelImplCopyWith(
+    _$CommunityScrapListResponseModelImpl value,
+    $Res Function(_$CommunityScrapListResponseModelImpl) then,
+  ) = __$$CommunityScrapListResponseModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    List<CommunityPostResponseModel> content,
+    bool hasNext,
+    int? nextCursor,
+  });
+}
+
+/// @nodoc
+class __$$CommunityScrapListResponseModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityScrapListResponseModelCopyWithImpl<
+          $Res,
+          _$CommunityScrapListResponseModelImpl
+        >
+    implements _$$CommunityScrapListResponseModelImplCopyWith<$Res> {
+  __$$CommunityScrapListResponseModelImplCopyWithImpl(
+    _$CommunityScrapListResponseModelImpl _value,
+    $Res Function(_$CommunityScrapListResponseModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? content = null,
+    Object? hasNext = null,
+    Object? nextCursor = freezed,
+  }) {
+    return _then(
+      _$CommunityScrapListResponseModelImpl(
+        content: null == content
+            ? _value._content
+            : content // ignore: cast_nullable_to_non_nullable
+                  as List<CommunityPostResponseModel>,
+        hasNext: null == hasNext
+            ? _value.hasNext
+            : hasNext // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        nextCursor: freezed == nextCursor
+            ? _value.nextCursor
+            : nextCursor // ignore: cast_nullable_to_non_nullable
+                  as int?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityScrapListResponseModelImpl
+    implements _CommunityScrapListResponseModel {
+  const _$CommunityScrapListResponseModelImpl({
+    required final List<CommunityPostResponseModel> content,
+    required this.hasNext,
+    this.nextCursor,
+  }) : _content = content;
+
+  factory _$CommunityScrapListResponseModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityScrapListResponseModelImplFromJson(json);
+
+  final List<CommunityPostResponseModel> _content;
+  @override
+  List<CommunityPostResponseModel> get content {
+    if (_content is EqualUnmodifiableListView) return _content;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_content);
+  }
+
+  @override
+  final bool hasNext;
+  @override
+  final int? nextCursor;
+
+  @override
+  String toString() {
+    return 'CommunityScrapListResponseModel(content: $content, hasNext: $hasNext, nextCursor: $nextCursor)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityScrapListResponseModelImpl &&
+            const DeepCollectionEquality().equals(other._content, _content) &&
+            (identical(other.hasNext, hasNext) || other.hasNext == hasNext) &&
+            (identical(other.nextCursor, nextCursor) ||
+                other.nextCursor == nextCursor));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_content),
+    hasNext,
+    nextCursor,
+  );
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityScrapListResponseModelImplCopyWith<
+    _$CommunityScrapListResponseModelImpl
+  >
+  get copyWith =>
+      __$$CommunityScrapListResponseModelImplCopyWithImpl<
+        _$CommunityScrapListResponseModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityScrapListResponseModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityScrapListResponseModel
+    implements CommunityScrapListResponseModel {
+  const factory _CommunityScrapListResponseModel({
+    required final List<CommunityPostResponseModel> content,
+    required final bool hasNext,
+    final int? nextCursor,
+  }) = _$CommunityScrapListResponseModelImpl;
+
+  factory _CommunityScrapListResponseModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityScrapListResponseModelImpl.fromJson;
+
+  @override
+  List<CommunityPostResponseModel> get content;
+  @override
+  bool get hasNext;
+  @override
+  int? get nextCursor;
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityScrapListResponseModelImplCopyWith<
+    _$CommunityScrapListResponseModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
 CommunityCountryResponseModel _$CommunityCountryResponseModelFromJson(
   Map<String, dynamic> json,
 ) {

@@ -83,3 +83,17 @@ class CommunityPostPageEntity with _$CommunityPostPageEntity {
     required bool hasNext,
   }) = _CommunityPostPageEntity;
 }
+
+/// 내 스크랩 목록 한 장
+///
+/// [CommunityPostPageEntity]와 나눠 두는 이유는 커서 타입이다 — 피드 커서는
+/// 서버 내부 형식의 문자열이고 스크랩 커서는 스크랩 id 정수다. 하나로 합치면
+/// 한쪽이 문자열로 변환됐다 다시 파싱되는 왕복이 생긴다.
+@freezed
+class CommunityScrapPageEntity with _$CommunityScrapPageEntity {
+  const factory CommunityScrapPageEntity({
+    required List<CommunityPostEntity> items,
+    required int? nextCursor,
+    required bool hasNext,
+  }) = _CommunityScrapPageEntity;
+}

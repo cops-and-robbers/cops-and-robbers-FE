@@ -142,6 +142,27 @@ class CommunityPostListResponseModel with _$CommunityPostListResponseModel {
       _$CommunityPostListResponseModelFromJson(json);
 }
 
+/// 내 스크랩 목록 응답 DTO
+///
+/// 백엔드 스키마: api-docs.json#CommunityPostScrapListResponse (v2.25.0)
+///
+/// 피드 목록(`CommunityPostListResponseModel`)과 봉투 모양이 다르다 — 커서가
+/// 중첩 `cursor` 객체가 아니라 평평하고, 값도 opaque 문자열이 아니라 스크랩 id
+/// 정수다. 재사용하면 파싱이 어긋난다.
+///
+/// 정렬은 스크랩한 순서(최신순) 고정이라 정렬·검색 파라미터가 없다.
+@freezed
+class CommunityScrapListResponseModel with _$CommunityScrapListResponseModel {
+  const factory CommunityScrapListResponseModel({
+    required List<CommunityPostResponseModel> content,
+    required bool hasNext,
+    int? nextCursor,
+  }) = _CommunityScrapListResponseModel;
+
+  factory CommunityScrapListResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityScrapListResponseModelFromJson(json);
+}
+
 /// 좌표 국가 조회 응답 DTO
 ///
 /// 백엔드 스키마: api-docs.json#CountryResponse (v2.18.0)

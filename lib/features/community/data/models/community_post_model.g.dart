@@ -121,6 +121,27 @@ Map<String, dynamic> _$$CommunityPostListResponseModelImplToJson(
   'cursor': instance.cursor.toJson(),
 };
 
+_$CommunityScrapListResponseModelImpl
+_$$CommunityScrapListResponseModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityScrapListResponseModelImpl(
+      content: (json['content'] as List<dynamic>)
+          .map(
+            (e) =>
+                CommunityPostResponseModel.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
+      hasNext: json['hasNext'] as bool,
+      nextCursor: (json['nextCursor'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$$CommunityScrapListResponseModelImplToJson(
+  _$CommunityScrapListResponseModelImpl instance,
+) => <String, dynamic>{
+  'content': instance.content.map((e) => e.toJson()).toList(),
+  'hasNext': instance.hasNext,
+  'nextCursor': instance.nextCursor,
+};
+
 _$CommunityCountryResponseModelImpl
 _$$CommunityCountryResponseModelImplFromJson(Map<String, dynamic> json) =>
     _$CommunityCountryResponseModelImpl(

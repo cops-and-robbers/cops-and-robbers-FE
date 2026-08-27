@@ -4063,6 +4063,12 @@ abstract class AppLocalizations {
   /// **'요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요'**
   String get errorCommunityReactionGeneric;
 
+  /// 커뮤니티 — 내 스크랩 목록 조회 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'스크랩 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityScrapsLoadGeneric;
+
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
