@@ -41,6 +41,37 @@ void main() {
       );
     });
 
+    test('says_kicked_not_left_when_system_kick', () {
+      // 스스로 나간 것과 방장이 내보낸 것은 다른 사건이다 — 서버가 이벤트를
+      // 따로 둔 이유이고, 같은 문구로 뭉개면 무슨 일이 있었는지 알 수 없다.
+      expect(
+        chatPreviewText(
+          l10n,
+          _last(
+            const CommunityChatMessageBody.system(
+              CommunityChatSystemEvent.kick,
+            ),
+            nickname: '도둑쥐',
+          ),
+        ),
+        '도둑쥐님이 내보내졌어요',
+      );
+    });
+
+    test('falls_back_to_generic_when_system_kick_has_no_nickname', () {
+      expect(
+        chatPreviewText(
+          l10n,
+          _last(
+            const CommunityChatMessageBody.system(
+              CommunityChatSystemEvent.kick,
+            ),
+          ),
+        ),
+        '멤버가 내보내졌어요',
+      );
+    });
+
     test('falls_back_to_generic_when_system_leave_has_no_nickname', () {
       expect(
         chatPreviewText(

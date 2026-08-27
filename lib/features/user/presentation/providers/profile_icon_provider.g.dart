@@ -6,7 +6,7 @@ part of 'profile_icon_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$profileIconHash() => r'3f26b6dbf8f1065dc7f22a30bcdd4c9bb761efd1';
+String _$profileIconHash() => r'5405673ae5231540c2df3e162f26f6080c2f4e79';
 
 /// 선택된 프로필 아이콘 상태
 ///

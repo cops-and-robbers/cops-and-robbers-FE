@@ -531,6 +531,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityChatPreviewLeft => 'メンバーが退出しました';
 
   @override
+  String communityChatSystemKicked(String nickname) {
+    return '$nicknameさんが退出させられました';
+  }
+
+  @override
+  String get communityChatPreviewKicked => 'メンバーが退出させられました';
+
+  @override
   String get communityChatPreviewInvite => 'ゲーム招待';
 
   @override

@@ -529,6 +529,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityChatPreviewLeft => '멤버가 나갔어요';
 
   @override
+  String communityChatSystemKicked(String nickname) {
+    return '$nickname님이 내보내졌어요';
+  }
+
+  @override
+  String get communityChatPreviewKicked => '멤버가 내보내졌어요';
+
+  @override
   String get communityChatPreviewInvite => '게임 초대';
 
   @override

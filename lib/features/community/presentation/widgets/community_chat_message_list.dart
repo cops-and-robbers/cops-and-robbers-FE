@@ -106,9 +106,19 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
           CommunityChatSystemBody(:final event) => Padding(
             padding: EdgeInsets.only(top: 12.h), // pill 자체 margin 6 + 12 = 18
             child: CommunityChatSystemPill(
-              text: event == CommunityChatSystemEvent.join
-                  ? l10n.communityChatSystemJoined(m.senderNickname)
-                  : l10n.communityChatSystemLeft(m.senderNickname),
+              // 이벤트를 전부 열거한다 — 삼항으로 두면 새 이벤트가 조용히
+              // "나갔어요"로 흘러간다(KICK이 추가됐을 때 실제로 그랬다).
+              text: switch (event) {
+                CommunityChatSystemEvent.join => l10n.communityChatSystemJoined(
+                  m.senderNickname,
+                ),
+                CommunityChatSystemEvent.leave => l10n.communityChatSystemLeft(
+                  m.senderNickname,
+                ),
+                CommunityChatSystemEvent.kick => l10n.communityChatSystemKicked(
+                  m.senderNickname,
+                ),
+              },
             ),
           ),
           CommunityChatGameInviteBody(:final inviteCode) => _buildInvite(

@@ -1072,6 +1072,18 @@ abstract class AppLocalizations {
   /// **'멤버가 나갔어요'**
   String get communityChatPreviewLeft;
 
+  /// 채팅방 시스템 메시지 — 방장이 내보냄
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님이 내보내졌어요'**
+  String communityChatSystemKicked(String nickname);
+
+  /// 목록 미리보기 — 닉네임 없는 강퇴 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'멤버가 내보내졌어요'**
+  String get communityChatPreviewKicked;
+
   /// 목록 미리보기 — 게임 초대 메시지
   ///
   /// In ko, this message translates to:
@@ -1138,7 +1150,7 @@ abstract class AppLocalizations {
   /// **'참가자 {count}명'**
   String communityChatMemberCount(int count);
 
-  /// 채팅방 사이드바 — 작성자 표시
+  /// 채팅방 사이드바 — 방장 표시
   ///
   /// In ko, this message translates to:
   /// **'방장'**

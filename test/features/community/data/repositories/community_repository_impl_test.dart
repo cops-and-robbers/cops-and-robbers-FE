@@ -1,5 +1,6 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/community/data/datasources/community_remote_datasource.dart';
+import 'package:cops_and_robbers/features/community/data/models/community_chat_model.dart';
 import 'package:cops_and_robbers/features/community/data/models/community_comment_model.dart';
 import 'package:cops_and_robbers/features/community/data/models/community_post_model.dart';
 import 'package:cops_and_robbers/features/community/data/repositories/community_repository_impl.dart';
@@ -148,6 +149,29 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
   @override
   Future<void> deleteComment(int commentId) =>
       throw UnimplementedError('이 테스트는 댓글 삭제를 쓰지 않는다');
+
+  @override
+  Future<CommunityChatRoomListResponseModel> getChatRooms() =>
+      throw UnimplementedError('이 테스트는 채팅방 목록을 쓰지 않는다');
+
+  @override
+  Future<void> joinChat(int postId) =>
+      throw UnimplementedError('이 테스트는 채팅방 참여를 쓰지 않는다');
+
+  @override
+  Future<void> leaveChat(int postId) =>
+      throw UnimplementedError('이 테스트는 채팅방 나가기를 쓰지 않는다');
+
+  @override
+  Future<CommunityChatHistoryResponseModel> getChatMessages(
+    int postId, {
+    int? cursor,
+    int? size,
+  }) => throw UnimplementedError('이 테스트는 대화 내역 조회를 쓰지 않는다');
+
+  @override
+  Future<CommunityChatMemberListResponseModel> getChatMembers(int postId) =>
+      throw UnimplementedError('이 테스트는 채팅방 멤버 조회를 쓰지 않는다');
 }
 
 DioException _dioError(int statusCode) => DioException(
