@@ -56,36 +56,43 @@ class CommunityScrapNotifier extends _$CommunityScrapNotifier {
       final page = await ref
           .read(communityRepositoryProvider)
           .getScraps(cursor: current.nextCursor, size: _pageSize);
+      final latest = state.valueOrNull ?? current;
       state = AsyncData(
-        current.copyWith(
-          items: [...current.items, ...page.items],
+        latest.copyWith(
+          items: [...latest.items, ...page.items],
           nextCursor: page.nextCursor,
           hasMore: page.hasNext,
           isLoadingMore: false,
         ),
       );
     } catch (_) {
-      state = AsyncData(current.copyWith(isLoadingMore: false));
+      state = AsyncData((state.valueOrNull ?? current).copyWith(isLoadingMore: false));
       rethrow;
     }
   }
 
-  /// 상세에서 돌아왔을 때 그 글 하나만 다시 조회해 해제됐으면 걷어낸다.
+  /// 상세에서 돌아왔을 때 그 글 하나만 다시 조회해 목록 행에 반영한다.
   ///
-  /// 목록 전체를 다시 받으면 커서와 스크롤 위치가 날아간다. 상세가 pop 결과를
-  /// 돌려주거나 이 notifier를 직접 찾아가는 배관도 만들지 않는다 — 왕복 1회가
-  /// 그 둘보다 싸다. 조회가 실패하면 아무것도 하지 않는다(행을 남긴다).
-  Future<void> dropIfUnscrapped(int postId) async {
+  /// 여전히 스크랩 중이면 방금 받아온 fresh 값(좋아요·카운트 포함)으로 그 행을
+  /// 갈아끼우고, 해제됐으면 걷어낸다. 목록 전체를 다시 받으면 커서와 스크롤
+  /// 위치가 날아간다. 상세가 pop 결과를 돌려주거나 이 notifier를 직접 찾아가는
+  /// 배관도 만들지 않는다 — 왕복 1회가 그 둘보다 싸다. 조회가 실패하면
+  /// 아무것도 하지 않는다(행을 남긴다).
+  Future<void> syncAfterDetail(int postId) async {
     final current = state.valueOrNull;
     if (current == null) return;
 
     try {
       final post = await ref.read(communityRepositoryProvider).getPost(postId);
-      if (post.isScrapped) return;
+      final latest = state.valueOrNull ?? current;
       state = AsyncData(
-        current.copyWith(
-          items: current.items.where((p) => p.id != postId).toList(),
-        ),
+        post.isScrapped
+            ? latest.copyWith(items: [
+                for (final p in latest.items) p.id == postId ? post : p,
+              ])
+            : latest.copyWith(
+                items: latest.items.where((p) => p.id != postId).toList(),
+              ),
       );
     } catch (_) {
       // 삭제된 글이면 404가 온다. 그때도 남겨 둔다 — 목록을 여는 다음 번에

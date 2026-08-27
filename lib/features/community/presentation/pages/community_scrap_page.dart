@@ -8,6 +8,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -75,12 +76,13 @@ class _CommunityScrapPageState extends ConsumerState<CommunityScrapPage> {
     }
   }
 
-  /// 상세로 이동한 뒤, 그 글이 스크랩 해제됐으면 목록에서 걷어낸다.
+  /// 상세로 이동한 뒤, 그 글의 반응을 목록 행에 반영한다(해제됐으면 걷어낸다).
   ///
   /// 카드 탭과 더보기의 소유자 액션(수정·마감·삭제)이 함께 쓴다 — 이 화면은
   /// 카드가 표시 전용이라 그 액션들을 여기서 직접 처리하지 않고, 실제로 처리할
   /// 수 있는 상세 화면으로 보낸다.
   Future<void> _openDetail(int postId) async {
+    VibrationService.instance().buttonTap();
     await context.pushNamed(
       RoutePaths.communityDetailName,
       pathParameters: {'postId': '$postId'},
@@ -88,7 +90,7 @@ class _CommunityScrapPageState extends ConsumerState<CommunityScrapPage> {
     if (!context.mounted) return;
     await ref
         .read(communityScrapNotifierProvider.notifier)
-        .dropIfUnscrapped(postId);
+        .syncAfterDetail(postId);
   }
 
   /// 더보기 메뉴.
