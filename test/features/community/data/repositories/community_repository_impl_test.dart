@@ -496,6 +496,14 @@ void main() {
               'region': '서울특별시 광진구 군자동',
               'placeName': '세종대학교 정문',
             },
+            // 넷 다 비대칭 값으로 둔다 — 0/0/false/false 조합이면 필드가
+            // 뒤바뀌어도(liked↔scrapped, likeCount↔scrapCount) 조용히 통과한다.
+            extra: {
+              'likeCount': 6,
+              'scrapCount': 3,
+              'liked': true,
+              'scrapped': false,
+            },
           ),
         );
       final repo = CommunityRepositoryImpl(fake);
@@ -505,6 +513,10 @@ void main() {
       expect(post.id, 42);
       expect(post.status, CommunityPostStatus.completed);
       expect(post.locationLabel, '서울특별시 광진구 군자동 · 세종대학교 정문');
+      expect(post.likeCount, 6);
+      expect(post.isLiked, isTrue);
+      expect(post.scrapCount, 3);
+      expect(post.isScrapped, isFalse);
       expect(fake.lastPostId, 42);
     });
 
