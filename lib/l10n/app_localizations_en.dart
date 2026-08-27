@@ -2719,6 +2719,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeNotAChatMember => 'You\'re not a member of this chat';
 
   @override
+  String get errorCodeReactionAlreadyApplied => 'This is already up to date';
+
+  @override
   String get pingFound => 'Found';
 
   @override

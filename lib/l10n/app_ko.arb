@@ -2634,6 +2634,10 @@
   "errorCodeChatRoomFull": "채팅방 정원이 가득 찼어요",
   "errorCodeJoinedChatRoomLimitExceeded": "참여할 수 있는 채팅방 수를 초과했어요. 다른 채팅방을 나간 뒤 다시 시도해주세요",
   "errorCodeNotAChatMember": "해당 채팅방의 참여자가 아니에요",
+  "errorCodeReactionAlreadyApplied": "이미 반영된 상태예요",
+  "@errorCodeReactionAlreadyApplied": {
+    "description": "좋아요·스크랩 상태가 서버와 어긋났을 때 (ALREADY_LIKED·LIKE_NOT_FOUND·ALREADY_SCRAPPED·SCRAP_NOT_FOUND 공용)"
+  },
   "pingFound": "발견",
   "@pingFound": {
     "description": "맵 핑 선택 카드 — 상대 발견 핑 라벨"

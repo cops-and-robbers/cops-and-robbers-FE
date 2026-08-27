@@ -257,6 +257,17 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       // 경로로는 오지 않지만, 문서화된 코드라 매핑을 채워 둔다.
       case 'INVALID_COMMENT_DEPTH':
         return errorCodeInvalidCommentDepth;
+      // ── 커뮤니티(좋아요·스크랩) 에러 ────────────────────────────────
+      // 넷 다 "내 화면의 반응 상태가 서버와 어긋났다"는 같은 말이고, 사용자가
+      // 할 일도 없다 — 리포지토리가 409/404를 의도한 최종 상태로 흡수해
+      // (누르기 409 = 이미 켜짐, 끄기 404 = 이미 꺼짐) 화면을 서버 쪽으로
+      // 맞춘다. 정상 경로로는 노출되지 않지만 문서화된 코드라 매핑은 채운다
+      // (PARENT_COMMENT_* 셋을 하나로 묶은 것과 같은 판단).
+      case 'ALREADY_LIKED':
+      case 'LIKE_NOT_FOUND':
+      case 'ALREADY_SCRAPPED':
+      case 'SCRAP_NOT_FOUND':
+        return errorCodeReactionAlreadyApplied;
       case 'COUNTRY_NOT_SPECIFIED':
         return errorCodeCountryNotSpecified;
       // 앱은 scope=ALL 외의 값을 보내지 않으므로(datasource 참조) SCOPE는

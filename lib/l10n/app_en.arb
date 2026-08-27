@@ -856,6 +856,7 @@
   "errorCodeChatRoomFull": "This chat is full",
   "errorCodeJoinedChatRoomLimitExceeded": "You've joined too many chats. Leave one and try again",
   "errorCodeNotAChatMember": "You're not a member of this chat",
+  "errorCodeReactionAlreadyApplied": "This is already up to date",
   "pingFound": "Found",
   "@pingFound": {
     "description": "Map ping selection card — spotted-enemy ping label"

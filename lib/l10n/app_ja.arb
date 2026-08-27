@@ -856,6 +856,7 @@
   "errorCodeChatRoomFull": "このチャットの定員に達しました",
   "errorCodeJoinedChatRoomLimitExceeded": "参加できるチャット数の上限を超えました。他のチャットから退出してからもう一度お試しください",
   "errorCodeNotAChatMember": "このチャットの参加者ではありません",
+  "errorCodeReactionAlreadyApplied": "すでに反映されています",
   "pingFound": "発見",
   "@pingFound": {
     "description": "マップピン選択カード — 相手を発見したピンのラベル"

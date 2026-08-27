@@ -4813,6 +4813,12 @@ abstract class AppLocalizations {
   /// **'해당 채팅방의 참여자가 아니에요'**
   String get errorCodeNotAChatMember;
 
+  /// 좋아요·스크랩 상태가 서버와 어긋났을 때 (ALREADY_LIKED·LIKE_NOT_FOUND·ALREADY_SCRAPPED·SCRAP_NOT_FOUND 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 반영된 상태예요'**
+  String get errorCodeReactionAlreadyApplied;
+
   /// 맵 핑 선택 카드 — 상대 발견 핑 라벨
   ///
   /// In ko, this message translates to:

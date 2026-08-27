@@ -2511,6 +2511,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeNotAChatMember => 'このチャットの参加者ではありません';
 
   @override
+  String get errorCodeReactionAlreadyApplied => 'すでに反映されています';
+
+  @override
   String get pingFound => '発見';
 
   @override

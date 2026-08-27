@@ -2509,6 +2509,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeNotAChatMember => '해당 채팅방의 참여자가 아니에요';
 
   @override
+  String get errorCodeReactionAlreadyApplied => '이미 반영된 상태예요';
+
+  @override
   String get pingFound => '발견';
 
   @override
