@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
@@ -39,14 +40,20 @@ CommunityPostEntity _post({
 ///
 /// [getPost]는 상세에서 돌아왔을 때의 단건 재조회를 흉내낸다 — [refetched]에
 /// 지정된 id만 다른 값을 돌려주고, 나머지는 원래 목록의 값을 그대로 돌려줘
-/// "해제되지 않았다"로 판정되게 한다.
+/// "해제되지 않았다"로 판정되게 한다. [failingGetPost]에 담긴 id는 대신 예외를
+/// 던진다 — 재조회 자체가 실패했을 때(일시 장애 등) 행을 그대로 남기는지 검증한다.
 class _FakeCommunityRepository
     with CommunityRepositoryListStubs, CommunityRepositoryDetailStubs
     implements CommunityRepository {
-  _FakeCommunityRepository({required this.posts, this.refetched = const {}});
+  _FakeCommunityRepository({
+    required this.posts,
+    this.refetched = const {},
+    this.failingGetPost = const {},
+  });
 
   final List<CommunityPostEntity> posts;
   final Map<int, CommunityPostEntity> refetched;
+  final Set<int> failingGetPost;
 
   @override
   Future<CommunityScrapPageEntity> getScraps({
@@ -56,8 +63,12 @@ class _FakeCommunityRepository
       CommunityScrapPageEntity(items: posts, nextCursor: null, hasNext: false);
 
   @override
-  Future<CommunityPostEntity> getPost(int postId) async =>
-      refetched[postId] ?? posts.firstWhere((p) => p.id == postId);
+  Future<CommunityPostEntity> getPost(int postId) async {
+    if (failingGetPost.contains(postId)) {
+      throw const ServerException(message: '서버 오류');
+    }
+    return refetched[postId] ?? posts.firstWhere((p) => p.id == postId);
+  }
 }
 
 /// 스크랩 목록 화면을 세팅해 첫 로드까지 끝낸다.
@@ -71,11 +82,16 @@ Future<void> _pumpScrapPage(
   WidgetTester tester, {
   required List<CommunityPostEntity> posts,
   Map<int, CommunityPostEntity> refetched = const {},
+  Set<int> failingGetPost = const {},
 }) async {
   final container = ProviderContainer(
     overrides: [
       communityRepositoryProvider.overrideWithValue(
-        _FakeCommunityRepository(posts: posts, refetched: refetched),
+        _FakeCommunityRepository(
+          posts: posts,
+          refetched: refetched,
+          failingGetPost: failingGetPost,
+        ),
       ),
       // 카드의 더보기 메뉴가 로그인 사용자 id를 watch 한다. 덮지 않으면 실제
       // AuthNotifier가 Firebase까지 끌고 들어와, 목록과 무관한 이유로 깨진다
@@ -142,6 +158,28 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('첫 글'), findsNothing);
+      expect(find.text('둘째 글'), findsOneWidget);
+    });
+
+    testWidgets('keeps_both_rows_when_the_refetch_after_returning_fails', (
+      tester,
+    ) async {
+      // 일시 장애 등으로 재조회 자체가 실패하면 판정할 근거가 없다 — 행을
+      // 그대로 남긴다(다음에 목록을 열 때 서버가 알아서 반영한다).
+      await _pumpScrapPage(
+        tester,
+        posts: [
+          _post(id: 1, title: '첫 글'),
+          _post(id: 2, title: '둘째 글'),
+        ],
+        failingGetPost: {1},
+      );
+      await tester.pumpAndSettle();
+
+      await notifier.dropIfUnscrapped(1);
+      await tester.pumpAndSettle();
+
+      expect(find.text('첫 글'), findsOneWidget);
       expect(find.text('둘째 글'), findsOneWidget);
     });
   });

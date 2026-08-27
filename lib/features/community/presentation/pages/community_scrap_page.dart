@@ -75,8 +75,28 @@ class _CommunityScrapPageState extends ConsumerState<CommunityScrapPage> {
     }
   }
 
-  /// 더보기 메뉴 — 카드가 표시 전용이라 소유자 액션(수정·마감·삭제)은 배선하지
-  /// 않는다. 내 글을 스크랩해 보는 드문 경우 그 항목을 눌러도 반응이 없을 뿐이다.
+  /// 상세로 이동한 뒤, 그 글이 스크랩 해제됐으면 목록에서 걷어낸다.
+  ///
+  /// 카드 탭과 더보기의 소유자 액션(수정·마감·삭제)이 함께 쓴다 — 이 화면은
+  /// 카드가 표시 전용이라 그 액션들을 여기서 직접 처리하지 않고, 실제로 처리할
+  /// 수 있는 상세 화면으로 보낸다.
+  Future<void> _openDetail(int postId) async {
+    await context.pushNamed(
+      RoutePaths.communityDetailName,
+      pathParameters: {'postId': '$postId'},
+    );
+    if (!context.mounted) return;
+    await ref
+        .read(communityScrapNotifierProvider.notifier)
+        .dropIfUnscrapped(postId);
+  }
+
+  /// 더보기 메뉴.
+  ///
+  /// 내 글도 스크랩할 수 있어(상세 화면이 작성자 여부를 가리지 않는다) 이
+  /// 목록에 내 글이 뜰 수 있고, 그러면 메뉴가 수정·마감·삭제를 정상 항목으로
+  /// 보여준다. 카드가 표시 전용이라 여기서 직접 처리하지 않고 상세로 보낸다 —
+  /// 조용히 무시하면 사용자가 삭제 등을 실행했다고 믿고 돌아가는 사고가 난다.
   void _handleCardMenu(CommunityPostMenuAction action, int postId) {
     final l10n = AppLocalizations.of(context);
     switch (action) {
@@ -88,7 +108,7 @@ class _CommunityScrapPageState extends ConsumerState<CommunityScrapPage> {
       case CommunityPostMenuAction.edit:
       case CommunityPostMenuAction.toggleStatus:
       case CommunityPostMenuAction.delete:
-      // ponytail: 표시 전용 카드라 소유자 액션은 만들지 않는다.
+        unawaited(_openDetail(postId));
     }
   }
 
@@ -142,16 +162,7 @@ class _CommunityScrapPageState extends ConsumerState<CommunityScrapPage> {
         final post = state.items[index];
         return CommunityPostCard(
           post: post,
-          onTap: () async {
-            await context.pushNamed(
-              RoutePaths.communityDetailName,
-              pathParameters: {'postId': '${post.id}'},
-            );
-            if (!context.mounted) return;
-            await ref
-                .read(communityScrapNotifierProvider.notifier)
-                .dropIfUnscrapped(post.id);
-          },
+          onTap: () => unawaited(_openDetail(post.id)),
           onMenuAction: (action) => _handleCardMenu(action, post.id),
         );
       },
