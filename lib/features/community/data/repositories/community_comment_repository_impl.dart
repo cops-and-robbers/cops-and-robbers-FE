@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
-import '../../domain/entities/community_interaction_entity.dart';
+import '../../domain/entities/community_comment_entity.dart';
 import '../../domain/repositories/community_comment_repository.dart';
 import '../datasources/community_remote_datasource.dart';
 import '../models/community_comment_model.dart';

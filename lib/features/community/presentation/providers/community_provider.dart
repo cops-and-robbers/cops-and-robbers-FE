@@ -42,9 +42,6 @@ CommunityRemoteDataSource communityRemoteDataSource(Ref ref) {
 // ============================================================================
 
 /// `CommunityRepository` Provider
-///
-/// 좋아요·스크랩은 응답에 카운트·내 반응 필드가 없어 아직 목이다
-/// (`communityInteractionRepositoryProvider`). 게시글 CRUD와 댓글은 실서버다.
 @riverpod
 CommunityRepository communityRepository(Ref ref) {
   return CommunityRepositoryImpl(ref.watch(communityRemoteDataSourceProvider));

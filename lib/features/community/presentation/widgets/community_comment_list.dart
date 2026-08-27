@@ -8,7 +8,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/providers/profile_icon_provider.dart';
-import '../../domain/entities/community_interaction_entity.dart';
+import '../../domain/entities/community_comment_entity.dart';
 import 'community_menu_button.dart';
 
 /// 댓글 목록 (답글 한 겹 중첩)

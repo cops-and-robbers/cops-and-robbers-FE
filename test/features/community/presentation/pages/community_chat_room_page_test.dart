@@ -8,7 +8,7 @@ import 'package:cops_and_robbers/features/community/domain/entities/community_po
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_chat_room_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
-import 'package:cops_and_robbers/features/community/domain/entities/community_interaction_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_comment_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_chat_invite_card.dart';

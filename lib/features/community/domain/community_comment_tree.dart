@@ -1,4 +1,4 @@
-import 'entities/community_interaction_entity.dart';
+import 'entities/community_comment_entity.dart';
 
 /// 새로 만들어진 댓글을 목록의 제자리에 끼워 넣은 새 목록을 돌려준다.
 ///

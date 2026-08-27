@@ -6,39 +6,8 @@ part of 'community_detail_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$communityInteractionRepositoryHash() =>
-    r'c194d99c3d1a43cacce149744c426e01e96d5ebf';
-
-/// 상호작용 Repository Provider — 목데이터 교체 지점
-///
-/// ponytail: 좋아요·스크랩은 응답에 카운트·내 반응 필드가 없어 메모리 목을
-/// 돌려준다. 댓글은 실서버로 옮겨 갔다(`communityCommentRepositoryProvider`).
-/// API가 열리면 여기서 돌려주는 구현체만 실제 구현으로 바꾼다. 화면·Notifier는
-/// 인터페이스만 알고 있어 손댈 곳이 없다.
-///
-/// `keepAlive`인 이유: 목이 상태를 메모리에 들고 있어서, 상세를 나갔다 들어올
-/// 때마다 새로 만들면 방금 누른 좋아요가 풀린다. 실제 구현으로 바꾸면
-/// 서버가 상태를 갖게 되므로 이 옵션은 떼도 된다.
-///
-/// Copied from [communityInteractionRepository].
-@ProviderFor(communityInteractionRepository)
-final communityInteractionRepositoryProvider =
-    Provider<CommunityInteractionRepository>.internal(
-      communityInteractionRepository,
-      name: r'communityInteractionRepositoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$communityInteractionRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CommunityInteractionRepositoryRef =
-    ProviderRef<CommunityInteractionRepository>;
 String _$communityDetailNotifierHash() =>
-    r'3d9fd97299d0d1c6249bc483af97cb7f69eab1f6';
+    r'35edfd681a8e8a7772c8b2a50543e809591d60b7';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -70,33 +39,21 @@ abstract class _$CommunityDetailNotifier
 
 /// 모집글 상세 상태 관리 Notifier
 ///
-/// 게시글 본문은 실서버, 상호작용·댓글은 목이다. 둘의 출처가 달라도 화면은
-/// 이 Notifier 하나만 본다 — 목이 실서버로 바뀌어도 화면은 그대로다.
-///
 /// Copied from [CommunityDetailNotifier].
 @ProviderFor(CommunityDetailNotifier)
 const communityDetailNotifierProvider = CommunityDetailNotifierFamily();
 
 /// 모집글 상세 상태 관리 Notifier
 ///
-/// 게시글 본문은 실서버, 상호작용·댓글은 목이다. 둘의 출처가 달라도 화면은
-/// 이 Notifier 하나만 본다 — 목이 실서버로 바뀌어도 화면은 그대로다.
-///
 /// Copied from [CommunityDetailNotifier].
 class CommunityDetailNotifierFamily
     extends Family<AsyncValue<CommunityDetailState>> {
   /// 모집글 상세 상태 관리 Notifier
   ///
-  /// 게시글 본문은 실서버, 상호작용·댓글은 목이다. 둘의 출처가 달라도 화면은
-  /// 이 Notifier 하나만 본다 — 목이 실서버로 바뀌어도 화면은 그대로다.
-  ///
   /// Copied from [CommunityDetailNotifier].
   const CommunityDetailNotifierFamily();
 
   /// 모집글 상세 상태 관리 Notifier
-  ///
-  /// 게시글 본문은 실서버, 상호작용·댓글은 목이다. 둘의 출처가 달라도 화면은
-  /// 이 Notifier 하나만 본다 — 목이 실서버로 바뀌어도 화면은 그대로다.
   ///
   /// Copied from [CommunityDetailNotifier].
   CommunityDetailNotifierProvider call(int postId) {
@@ -127,9 +84,6 @@ class CommunityDetailNotifierFamily
 
 /// 모집글 상세 상태 관리 Notifier
 ///
-/// 게시글 본문은 실서버, 상호작용·댓글은 목이다. 둘의 출처가 달라도 화면은
-/// 이 Notifier 하나만 본다 — 목이 실서버로 바뀌어도 화면은 그대로다.
-///
 /// Copied from [CommunityDetailNotifier].
 class CommunityDetailNotifierProvider
     extends
@@ -138,9 +92,6 @@ class CommunityDetailNotifierProvider
           CommunityDetailState
         > {
   /// 모집글 상세 상태 관리 Notifier
-  ///
-  /// 게시글 본문은 실서버, 상호작용·댓글은 목이다. 둘의 출처가 달라도 화면은
-  /// 이 Notifier 하나만 본다 — 목이 실서버로 바뀌어도 화면은 그대로다.
   ///
   /// Copied from [CommunityDetailNotifier].
   CommunityDetailNotifierProvider(int postId)

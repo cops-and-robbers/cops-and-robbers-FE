@@ -1,10 +1,9 @@
-import '../entities/community_interaction_entity.dart';
+import '../entities/community_comment_entity.dart';
 
 /// 모집글 댓글 Repository 인터페이스
 ///
-/// 좋아요·스크랩과 한 인터페이스에 묶여 있었으나, 댓글만 서버 API가 열려
-/// 분리했다 — 반응 쪽은 응답에 카운트·내 반응 필드가 없어 아직 메모리 대역이다
-/// (`CommunityInteractionRepository`).
+/// 좋아요·스크랩과 한 인터페이스에 묶여 있었으나, 서로 다른 API·응답 계약이라
+/// 분리했다 (`CommunityReactionRepository`).
 ///
 /// 메서드는 엔드포인트와 1:1이다. 삭제 뒤의 목록 재조회 같은 조합은 호출자가
 /// 맡는다 — Repository가 왕복을 숨기면 화면이 몇 번 도는지 알 수 없어진다.
