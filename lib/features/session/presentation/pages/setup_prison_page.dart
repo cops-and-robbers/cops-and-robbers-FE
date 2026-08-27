@@ -10,7 +10,9 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
+import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../core/constants/game_config.dart';
 import '../../../../core/widgets/map/models/circle_zone_shape.dart';
 import '../../../../core/widgets/map/pin_zone_setting_widget.dart';
@@ -41,7 +43,14 @@ class PrisonEditArgs {
 /// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
 /// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
 class SetupPrisonPage extends ConsumerStatefulWidget {
-  const SetupPrisonPage({super.key, this.editArgs});
+  const SetupPrisonPage({
+    super.key,
+    this.editArgs,
+    this.showStepIndicator = false,
+  });
+
+  /// 생성 흐름에서 열렸을 때 상단에 진행 표시(1/3)를 보여줄지
+  final bool showStepIndicator;
 
   /// 편집 모드 구역 정보 (null이면 생성 모드)
   final PrisonEditArgs? editArgs;
@@ -224,6 +233,50 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
         : l10n.errorJailOutsidePlayground;
   }
 
+  /// 상단 바 — 생성 흐름에서는 제목 대신 진행 표시(1/3)를 보여준다
+  PreferredSizeWidget _buildTopBar(String title, bool isDark) {
+    if (!widget.showStepIndicator) {
+      return AppTopBar(title: title, isDarkMode: isDark, onBack: _handleBack);
+    }
+    return AppTopBar(
+      titleWidget: const StepIndicator(
+        totalSteps: 3,
+        currentStep: 0,
+        activeColor: AppColors.blue,
+      ),
+      centerTitle: false,
+      titleSpacing: 0,
+      isDarkMode: isDark,
+      onBack: _handleBack,
+      actions: [SizedBox(width: AppSpacing.horizontal20)],
+    );
+  }
+
+  /// 뒤로 가기 처리
+  ///
+  /// 감옥 핀을 하나라도 찍은 상태에서 처음 그리던 중이면 이탈 확인을 띄운다.
+  /// 원형 모드는 그린 노력이 없어 바로 나간다. 고칠 초기 도형이 있으면 나가도
+  /// 원래 도형이 남으므로 묻지 않는다.
+  void _handleBack() {
+    final shouldConfirm =
+        _isPinMode &&
+        _pinPoints.isNotEmpty &&
+        widget.editArgs?.initialJail == null;
+    if (!shouldConfirm) {
+      context.pop();
+      return;
+    }
+    final l10n = AppLocalizations.of(context);
+    AppDialog.show(
+      context: context,
+      title: l10n.dialogQuitCreationTitle,
+      message: l10n.dialogQuitCreationMessage,
+      cancelText: l10n.buttonKeepCreating,
+      confirmText: l10n.buttonQuitCreation,
+      onConfirm: () => context.pop(),
+    );
+  }
+
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
     // 핀 모드: 정렬된 감옥 꼭짓점 목록 반환
@@ -316,11 +369,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     if (_isLoading) {
       return Scaffold(
         backgroundColor: bgColor,
-        appBar: AppTopBar(
-          title: l10n.zoneJail,
-          isDarkMode: isDark,
-          onBack: () => context.pop(),
-        ),
+        appBar: _buildTopBar(l10n.zoneJail, isDark),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -328,96 +377,102 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     // 로딩 완료 후 정상 UI 렌더링
     final validationMessage = _validationMessage(l10n);
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      appBar: AppTopBar(
-        title: l10n.zoneJail,
-        isDarkMode: isDark,
-        onBack: () => context.pop(),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 간격 20px
-            SizedBox(height: AppSpacing.vertical20),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _handleBack();
+      },
+      child: Scaffold(
+        backgroundColor: bgColor,
+        appBar: _buildTopBar(l10n.zoneJail, isDark),
+        body: SafeArea(
+          child: Column(
+            children: [
+              // 간격 20px
+              SizedBox(height: AppSpacing.vertical20),
 
-            // 설명 텍스트
-            Padding(
-              padding: AppPadding.horizontal24,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  _isPinMode
-                      ? l10n.setupPrisonPinDescription
-                      : l10n.setupPrisonDescription,
-                  style: AppTextStyles.label16Medium.copyWith(color: textColor),
-                ),
-              ),
-            ),
-
-            // 간격 20px
-            SizedBox(height: AppSpacing.vertical20),
-
-            // 지도 영역 (모드에 따라 원형/핀 위젯 스위칭)
-            Expanded(
-              child: _isPinMode
-                  ? PinZoneSettingWidget(
-                      initialPoints: _pinPoints,
-                      pinColor: AppColors.red,
-                      fillColor: AppColors.red500Alpha20,
-                      strokeColor: AppColors.red800,
-                      locationButtonColor: AppColors.red,
-                      referencePolygon: _playgroundPinPoints,
-                      isDarkMode: isDark,
-                      onPointsChanged: (points) {
-                        setState(() => _pinPoints = points);
-                      },
-                    )
-                  : ZoneSettingWidget(
-                      initialCenter: _currentCenter,
-                      initialRadius: _currentRadius,
-                      minRadius: 5,
-                      maxRadius: 300,
-                      // 감옥 색상 (빨간색 계열)
-                      centerColor: AppColors.red,
-                      borderColor: AppColors.red800,
-                      fillColor: AppColors.red500,
-                      inactiveTrackColor: AppColors.red100,
-                      radiusChipBackgroundColor: AppColors.red,
-                      locationButtonColor: AppColors.red,
-                      referenceZone: _buildPlaygroundReferenceZone(),
-                      onZoneChanged: _onZoneChanged,
-                      isDarkMode: isDark,
-                      valueTextStyle: isDark ? AppTextStyles.robberLabel : null,
-                    ),
-            ),
-
-            // 검증 실패 안내 문구 (원형·핀 공통)
-            if (validationMessage != null)
+              // 설명 텍스트
               Padding(
                 padding: AppPadding.horizontal24,
                 child: Align(
-                  alignment: Alignment.center,
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    validationMessage,
+                    _isPinMode
+                        ? l10n.setupPrisonPinDescription
+                        : l10n.setupPrisonDescription,
                     style: AppTextStyles.label16Medium.copyWith(
-                      color: AppColors.red,
+                      color: textColor,
                     ),
                   ),
                 ),
               ),
 
-            // 하단 버튼 영역
-            Padding(
-              padding: AppPadding.all20,
-              child: AppButton(
-                text: l10n.buttonDone,
-                onPressed: _canComplete ? _onComplete : null,
-                backgroundColor: AppColors.red,
-                showBorder: false,
+              // 간격 20px
+              SizedBox(height: AppSpacing.vertical20),
+
+              // 지도 영역 (모드에 따라 원형/핀 위젯 스위칭)
+              Expanded(
+                child: _isPinMode
+                    ? PinZoneSettingWidget(
+                        initialPoints: _pinPoints,
+                        pinColor: AppColors.red,
+                        fillColor: AppColors.red500Alpha20,
+                        strokeColor: AppColors.red800,
+                        locationButtonColor: AppColors.red,
+                        referencePolygon: _playgroundPinPoints,
+                        isDarkMode: isDark,
+                        onPointsChanged: (points) {
+                          setState(() => _pinPoints = points);
+                        },
+                      )
+                    : ZoneSettingWidget(
+                        initialCenter: _currentCenter,
+                        initialRadius: _currentRadius,
+                        minRadius: 5,
+                        maxRadius: 300,
+                        // 감옥 색상 (빨간색 계열)
+                        centerColor: AppColors.red,
+                        borderColor: AppColors.red800,
+                        fillColor: AppColors.red500,
+                        inactiveTrackColor: AppColors.red100,
+                        radiusChipBackgroundColor: AppColors.red,
+                        locationButtonColor: AppColors.red,
+                        referenceZone: _buildPlaygroundReferenceZone(),
+                        onZoneChanged: _onZoneChanged,
+                        isDarkMode: isDark,
+                        valueTextStyle: isDark
+                            ? AppTextStyles.robberLabel
+                            : null,
+                      ),
               ),
-            ),
-          ],
+
+              // 검증 실패 안내 문구 (원형·핀 공통)
+              if (validationMessage != null)
+                Padding(
+                  padding: AppPadding.horizontal24,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      validationMessage,
+                      style: AppTextStyles.label16Medium.copyWith(
+                        color: AppColors.red,
+                      ),
+                    ),
+                  ),
+                ),
+
+              // 하단 버튼 영역
+              Padding(
+                padding: AppPadding.all20,
+                child: AppButton(
+                  text: l10n.buttonDone,
+                  onPressed: _canComplete ? _onComplete : null,
+                  backgroundColor: AppColors.red,
+                  showBorder: false,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

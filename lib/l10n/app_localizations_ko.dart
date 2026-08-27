@@ -455,7 +455,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String gameSettingPoliceStartDelay(int minutes) {
-    return '도둑 도망 후 $minutes분 뒤';
+    return '도둑 시작 후 $minutes분 뒤';
   }
 
   @override
@@ -987,30 +987,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonJoinRoom => '게임 참여하기';
 
   @override
-  String get sessionCreationStepZoneSubtitle =>
-      '게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요';
-
-  @override
-  String get sessionCreationStepRulesSubtitle =>
-      '게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요';
-
-  @override
   String get errorCreateRoomFailed => '게임 방 생성에 실패했어요. 다시 시도해주세요';
-
-  @override
-  String get sessionCreationZoneFirstQuestion => '구역 선택을 먼저 설정할까요?';
-
-  @override
-  String get sessionCreationStepParticipantsTitle => '인원을 설정해요';
 
   @override
   String get sessionCreationStepBasicTitle => '기본 정보를 설정해요';
 
   @override
   String get sessionCreationStepReviewTitle => '최종 설정을 확인해요';
-
-  @override
-  String get sessionCreationStepZoneIntro => '게임에 필요한 구역을 설정해요';
 
   @override
   String get sessionCreationStepParticipantsHint => '최소 2명부터 게임 진행이 가능해요';
@@ -1195,37 +1178,48 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ 구역 밖으로 나가면 화면이 잠겨요';
 
   @override
-  String get dialogstep0SelectAreaContentTitle => '플레이그라운드';
-
-  @override
-  String get dialogstep0SelectAreaContentTitle5bc0 => '감옥';
-
-  @override
-  String get fieldstep1ParticipantSettingsContentLabel => '최대 참가자';
-
-  @override
   String get unitPerson => '명';
-
-  @override
-  String get fieldstep2GameSettingsContentLabel => '라운드 제한 시간';
 
   @override
   String get unitMinutes => '분';
 
   @override
-  String get fieldstep2GameSettingsContentLabel5ab2 => '도둑 위치 공유 간격';
-
-  @override
   String get gameSettingNoLocationShareWarning => '도둑의 위치가 공유되지 않아요!';
 
   @override
-  String get fieldstep2GameSettingsContentLabelCe3b => '경찰 출동 시간';
-
-  @override
-  String get gameSettingPoliceStartPrefix => '도둑 도망 후';
+  String get gameSettingPoliceStartPrefix => '도둑 시작 후';
 
   @override
   String get gameSettingPoliceStartSuffix => '뒤';
+
+  @override
+  String get buttonCompleteSetup => '완료하기';
+
+  @override
+  String warnMaxReached(String max) {
+    return '최대 $max까지 설정할 수 있어요';
+  }
+
+  @override
+  String get warnRoundDurationRange => '게임 시간은 10분부터 180분까지 설정할 수 있어요';
+
+  @override
+  String get warnShorterThanRoundDuration => '게임 시간보다 짧게 설정해 주세요';
+
+  @override
+  String get warnPoliceWaitMin => '경찰 시작 시간은 1분부터 설정할 수 있어요';
+
+  @override
+  String get dialogQuitCreationTitle => '방 만들기를 그만할까요?';
+
+  @override
+  String get dialogQuitCreationMessage => '그리던 구역은 사라져요';
+
+  @override
+  String get buttonKeepCreating => '계속 만들기';
+
+  @override
+  String get buttonQuitCreation => '그만하기';
 
   @override
   String get sectionTitleSettings => '설정';
@@ -1234,13 +1228,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelParticipantCount => '참여 인원';
 
   @override
-  String get fieldRoundTimeLimit => '라운드 제한 시간';
+  String get fieldRoundTimeLimit => '게임 시간';
 
   @override
-  String get fieldLocationShareInterval => '위치 공유 간격';
+  String get fieldLocationShareInterval => '도둑 위치 공유 간격';
 
   @override
-  String get fieldPoliceDispatchTime => '경찰 출동 시간';
+  String get fieldPoliceDispatchTime => '경찰 시작 시간';
 
   @override
   String teamSectionCurrentCount(int count) {
