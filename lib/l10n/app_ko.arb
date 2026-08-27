@@ -244,7 +244,7 @@
       }
     }
   },
-  "gameSettingPoliceStartDelay": "도둑 도망 후 {minutes}분 뒤",
+  "gameSettingPoliceStartDelay": "도둑 시작 후 {minutes}분 뒤",
   "@gameSettingPoliceStartDelay": {
     "description": "게임 설정 — 경찰 출동 시작 지연 시간 표기",
     "placeholders": {
@@ -827,25 +827,9 @@
   "@buttonJoinRoom": {
     "description": "공통 — 게임 참여 버튼"
   },
-  "sessionCreationStepZoneSubtitle": "게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요",
-  "@sessionCreationStepZoneSubtitle": {
-    "description": "방 생성 — 구역 설정 단계 안내"
-  },
-  "sessionCreationStepRulesSubtitle": "게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요",
-  "@sessionCreationStepRulesSubtitle": {
-    "description": "방 생성 — 규칙 설정 단계 안내"
-  },
   "errorCreateRoomFailed": "게임 방 생성에 실패했어요. 다시 시도해주세요",
   "@errorCreateRoomFailed": {
     "description": "방 생성 실패 안내"
-  },
-  "sessionCreationZoneFirstQuestion": "구역 선택을 먼저 설정할까요?",
-  "@sessionCreationZoneFirstQuestion": {
-    "description": "방 생성 — 구역 미설정 시 안내"
-  },
-  "sessionCreationStepParticipantsTitle": "인원을 설정해요",
-  "@sessionCreationStepParticipantsTitle": {
-    "description": "방 생성 — 인원 설정 단계 타이틀"
   },
   "sessionCreationStepBasicTitle": "기본 정보를 설정해요",
   "@sessionCreationStepBasicTitle": {
@@ -854,10 +838,6 @@
   "sessionCreationStepReviewTitle": "최종 설정을 확인해요",
   "@sessionCreationStepReviewTitle": {
     "description": "방 생성 — 최종 설정 확인 단계 타이틀"
-  },
-  "sessionCreationStepZoneIntro": "게임에 필요한 구역을 설정해요",
-  "@sessionCreationStepZoneIntro": {
-    "description": "방 생성 — 구역 설정 단계 보조 설명"
   },
   "sessionCreationStepParticipantsHint": "최소 2명부터 게임 진행이 가능해요",
   "@sessionCreationStepParticipantsHint": {
@@ -1106,31 +1086,66 @@
   "@gameRulesZoneRuleLine2": {
     "description": "게임 규칙 — 구역 이탈 금지 2줄 (개행 + 화살표 포함)"
   },
-  "dialogstep0SelectAreaContentTitle": "플레이그라운드",
-  "dialogstep0SelectAreaContentTitle5bc0": "감옥",
-  "fieldstep1ParticipantSettingsContentLabel": "최대 참가자",
   "unitPerson": "명",
   "@unitPerson": {
     "description": "공통 — 인원수 단위 (명)"
   },
-  "fieldstep2GameSettingsContentLabel": "라운드 제한 시간",
   "unitMinutes": "분",
   "@unitMinutes": {
     "description": "공통 — 시간 단위 (분)"
   },
-  "fieldstep2GameSettingsContentLabel5ab2": "도둑 위치 공유 간격",
   "gameSettingNoLocationShareWarning": "도둑의 위치가 공유되지 않아요!",
   "@gameSettingNoLocationShareWarning": {
     "description": "게임 설정 — 위치 공유 비활성 경고"
   },
-  "fieldstep2GameSettingsContentLabelCe3b": "경찰 출동 시간",
-  "gameSettingPoliceStartPrefix": "도둑 도망 후",
+  "gameSettingPoliceStartPrefix": "도둑 시작 후",
   "@gameSettingPoliceStartPrefix": {
     "description": "게임 설정 — 경찰 출동 시간 prefix"
   },
   "gameSettingPoliceStartSuffix": "뒤",
   "@gameSettingPoliceStartSuffix": {
     "description": "게임 설정 — 경찰 출동 시간 suffix"
+  },
+  "buttonCompleteSetup": "완료하기",
+  "@buttonCompleteSetup": {
+    "description": "방 생성 — 기본 정보 마지막 항목 완료 버튼"
+  },
+  "warnMaxReached": "최대 {max}까지 설정할 수 있어요",
+  "@warnMaxReached": {
+    "description": "방 생성 — 상한을 넘는 입력을 막았을 때 안내 (max 는 단위 포함, 예: 50명)",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "warnRoundDurationRange": "게임 시간은 10분부터 180분까지 설정할 수 있어요",
+  "@warnRoundDurationRange": {
+    "description": "방 생성 — 게임 시간 범위 경고"
+  },
+  "warnShorterThanRoundDuration": "게임 시간보다 짧게 설정해 주세요",
+  "@warnShorterThanRoundDuration": {
+    "description": "방 생성 — 위치 공유·경찰 시작이 게임 시간 이상일 때 경고"
+  },
+  "warnPoliceWaitMin": "경찰 시작 시간은 1분부터 설정할 수 있어요",
+  "@warnPoliceWaitMin": {
+    "description": "방 생성 — 경찰 시작 시간 하한 경고"
+  },
+  "dialogQuitCreationTitle": "방 만들기를 그만할까요?",
+  "@dialogQuitCreationTitle": {
+    "description": "방 생성 — 구역을 그리다 나갈 때 확인 타이틀"
+  },
+  "dialogQuitCreationMessage": "그리던 구역은 사라져요",
+  "@dialogQuitCreationMessage": {
+    "description": "방 생성 — 이탈 확인 본문"
+  },
+  "buttonKeepCreating": "계속 만들기",
+  "@buttonKeepCreating": {
+    "description": "방 생성 — 이탈 확인의 계속 버튼"
+  },
+  "buttonQuitCreation": "그만하기",
+  "@buttonQuitCreation": {
+    "description": "방 생성 — 이탈 확인의 그만 버튼"
   },
   "sectionTitleSettings": "설정",
   "@sectionTitleSettings": {
@@ -1140,15 +1155,15 @@
   "@labelParticipantCount": {
     "description": "대기실 설정 카드의 참여 인원 라벨"
   },
-  "fieldRoundTimeLimit": "라운드 제한 시간",
+  "fieldRoundTimeLimit": "게임 시간",
   "@fieldRoundTimeLimit": {
     "description": "게임 설정 — 라운드 제한 시간 라벨"
   },
-  "fieldLocationShareInterval": "위치 공유 간격",
+  "fieldLocationShareInterval": "도둑 위치 공유 간격",
   "@fieldLocationShareInterval": {
     "description": "게임 설정 — 위치 공유 간격 라벨"
   },
-  "fieldPoliceDispatchTime": "경찰 출동 시간",
+  "fieldPoliceDispatchTime": "경찰 시작 시간",
   "@fieldPoliceDispatchTime": {
     "description": "게임 설정 — 경찰 출동 시간 라벨"
   },

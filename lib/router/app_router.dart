@@ -431,7 +431,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                         parentNavigatorKey: rootNavigatorKey,
                         pageBuilder: (context, state) => buildDirectionalSlide(
                           key: state.pageKey,
-                          child: const SetupPlaygroundPage(),
+                          child: SetupPlaygroundPage(
+                            editInitialShape: state.extra as AreaShape?,
+                            showStepIndicator: true,
+                          ),
                           isForward: true,
                         ),
                       ),
@@ -442,7 +445,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                         parentNavigatorKey: rootNavigatorKey,
                         pageBuilder: (context, state) => buildDirectionalSlide(
                           key: state.pageKey,
-                          child: const SetupPrisonPage(),
+                          child: SetupPrisonPage(
+                            editArgs: state.extra as PrisonEditArgs?,
+                            showStepIndicator: true,
+                          ),
                           isForward: true,
                         ),
                       ),

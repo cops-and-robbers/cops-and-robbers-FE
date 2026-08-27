@@ -937,7 +937,7 @@ abstract class AppLocalizations {
   /// 게임 설정 — 경찰 출동 시작 지연 시간 표기
   ///
   /// In ko, this message translates to:
-  /// **'도둑 도망 후 {minutes}분 뒤'**
+  /// **'도둑 시작 후 {minutes}분 뒤'**
   String gameSettingPoliceStartDelay(int minutes);
 
   /// 게임 설정 저장 실패 안내
@@ -1910,35 +1910,11 @@ abstract class AppLocalizations {
   /// **'게임 참여하기'**
   String get buttonJoinRoom;
 
-  /// 방 생성 — 구역 설정 단계 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요'**
-  String get sessionCreationStepZoneSubtitle;
-
-  /// 방 생성 — 규칙 설정 단계 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요'**
-  String get sessionCreationStepRulesSubtitle;
-
   /// 방 생성 실패 안내
   ///
   /// In ko, this message translates to:
   /// **'게임 방 생성에 실패했어요. 다시 시도해주세요'**
   String get errorCreateRoomFailed;
-
-  /// 방 생성 — 구역 미설정 시 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'구역 선택을 먼저 설정할까요?'**
-  String get sessionCreationZoneFirstQuestion;
-
-  /// 방 생성 — 인원 설정 단계 타이틀
-  ///
-  /// In ko, this message translates to:
-  /// **'인원을 설정해요'**
-  String get sessionCreationStepParticipantsTitle;
 
   /// 방 생성 — 기본 정보 설정 단계 타이틀
   ///
@@ -1951,12 +1927,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'최종 설정을 확인해요'**
   String get sessionCreationStepReviewTitle;
-
-  /// 방 생성 — 구역 설정 단계 보조 설명
-  ///
-  /// In ko, this message translates to:
-  /// **'게임에 필요한 구역을 설정해요'**
-  String get sessionCreationStepZoneIntro;
 
   /// 방 생성 — 인원 설정 단계 보조 설명
   ///
@@ -2306,35 +2276,11 @@ abstract class AppLocalizations {
   /// **'\n→ 구역 밖으로 나가면 화면이 잠겨요'**
   String get gameRulesZoneRuleLine2;
 
-  /// No description provided for @dialogstep0SelectAreaContentTitle.
-  ///
-  /// In ko, this message translates to:
-  /// **'플레이그라운드'**
-  String get dialogstep0SelectAreaContentTitle;
-
-  /// No description provided for @dialogstep0SelectAreaContentTitle5bc0.
-  ///
-  /// In ko, this message translates to:
-  /// **'감옥'**
-  String get dialogstep0SelectAreaContentTitle5bc0;
-
-  /// No description provided for @fieldstep1ParticipantSettingsContentLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'최대 참가자'**
-  String get fieldstep1ParticipantSettingsContentLabel;
-
   /// 공통 — 인원수 단위 (명)
   ///
   /// In ko, this message translates to:
   /// **'명'**
   String get unitPerson;
-
-  /// No description provided for @fieldstep2GameSettingsContentLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'라운드 제한 시간'**
-  String get fieldstep2GameSettingsContentLabel;
 
   /// 공통 — 시간 단위 (분)
   ///
@@ -2342,28 +2288,16 @@ abstract class AppLocalizations {
   /// **'분'**
   String get unitMinutes;
 
-  /// No description provided for @fieldstep2GameSettingsContentLabel5ab2.
-  ///
-  /// In ko, this message translates to:
-  /// **'도둑 위치 공유 간격'**
-  String get fieldstep2GameSettingsContentLabel5ab2;
-
   /// 게임 설정 — 위치 공유 비활성 경고
   ///
   /// In ko, this message translates to:
   /// **'도둑의 위치가 공유되지 않아요!'**
   String get gameSettingNoLocationShareWarning;
 
-  /// No description provided for @fieldstep2GameSettingsContentLabelCe3b.
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰 출동 시간'**
-  String get fieldstep2GameSettingsContentLabelCe3b;
-
   /// 게임 설정 — 경찰 출동 시간 prefix
   ///
   /// In ko, this message translates to:
-  /// **'도둑 도망 후'**
+  /// **'도둑 시작 후'**
   String get gameSettingPoliceStartPrefix;
 
   /// 게임 설정 — 경찰 출동 시간 suffix
@@ -2371,6 +2305,60 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'뒤'**
   String get gameSettingPoliceStartSuffix;
+
+  /// 방 생성 — 기본 정보 마지막 항목 완료 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'완료하기'**
+  String get buttonCompleteSetup;
+
+  /// 방 생성 — 상한을 넘는 입력을 막았을 때 안내 (max 는 단위 포함, 예: 50명)
+  ///
+  /// In ko, this message translates to:
+  /// **'최대 {max}까지 설정할 수 있어요'**
+  String warnMaxReached(String max);
+
+  /// 방 생성 — 게임 시간 범위 경고
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시간은 10분부터 180분까지 설정할 수 있어요'**
+  String get warnRoundDurationRange;
+
+  /// 방 생성 — 위치 공유·경찰 시작이 게임 시간 이상일 때 경고
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시간보다 짧게 설정해 주세요'**
+  String get warnShorterThanRoundDuration;
+
+  /// 방 생성 — 경찰 시작 시간 하한 경고
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 시작 시간은 1분부터 설정할 수 있어요'**
+  String get warnPoliceWaitMin;
+
+  /// 방 생성 — 구역을 그리다 나갈 때 확인 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'방 만들기를 그만할까요?'**
+  String get dialogQuitCreationTitle;
+
+  /// 방 생성 — 이탈 확인 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'그리던 구역은 사라져요'**
+  String get dialogQuitCreationMessage;
+
+  /// 방 생성 — 이탈 확인의 계속 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'계속 만들기'**
+  String get buttonKeepCreating;
+
+  /// 방 생성 — 이탈 확인의 그만 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'그만하기'**
+  String get buttonQuitCreation;
 
   /// 대기실 설정 카드 섹션 타이틀
   ///
@@ -2387,19 +2375,19 @@ abstract class AppLocalizations {
   /// 게임 설정 — 라운드 제한 시간 라벨
   ///
   /// In ko, this message translates to:
-  /// **'라운드 제한 시간'**
+  /// **'게임 시간'**
   String get fieldRoundTimeLimit;
 
   /// 게임 설정 — 위치 공유 간격 라벨
   ///
   /// In ko, this message translates to:
-  /// **'위치 공유 간격'**
+  /// **'도둑 위치 공유 간격'**
   String get fieldLocationShareInterval;
 
   /// 게임 설정 — 경찰 출동 시간 라벨
   ///
   /// In ko, this message translates to:
-  /// **'경찰 출동 시간'**
+  /// **'경찰 시작 시간'**
   String get fieldPoliceDispatchTime;
 
   /// 팀 섹션 — 현재 인원수 표기

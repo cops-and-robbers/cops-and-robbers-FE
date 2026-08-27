@@ -507,7 +507,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String gameSettingPoliceStartDelay(int minutes) {
-    return '$minutes min after Robbers run away';
+    return '$minutes min after Robbers start';
   }
 
   @override
@@ -1057,34 +1057,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonJoinRoom => 'Join game';
 
   @override
-  String get sessionCreationStepZoneSubtitle =>
-      'Set up the game area\nPlease designate the playground first';
-
-  @override
-  String get sessionCreationStepRulesSubtitle =>
-      'Set up the game rules\nTap the number to enter it directly';
-
-  @override
   String get errorCreateRoomFailed =>
       'Failed to create game room. Please try again';
-
-  @override
-  String get sessionCreationZoneFirstQuestion =>
-      'Shall we set up the game area selection first?';
-
-  @override
-  String get sessionCreationStepParticipantsTitle =>
-      'Set up the number of players';
 
   @override
   String get sessionCreationStepBasicTitle => 'Set up basic information';
 
   @override
   String get sessionCreationStepReviewTitle => 'Verify final settings';
-
-  @override
-  String get sessionCreationStepZoneIntro =>
-      'Set up the required game area for the game';
 
   @override
   String get sessionCreationStepParticipantsHint =>
@@ -1289,39 +1269,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ Screen locks if you leave the zone';
 
   @override
-  String get dialogstep0SelectAreaContentTitle => 'Playground';
-
-  @override
-  String get dialogstep0SelectAreaContentTitle5bc0 => 'Jail';
-
-  @override
-  String get fieldstep1ParticipantSettingsContentLabel => 'Max players';
-
-  @override
   String get unitPerson => 'people';
 
   @override
-  String get fieldstep2GameSettingsContentLabel => 'Round time limit';
-
-  @override
   String get unitMinutes => 'min';
-
-  @override
-  String get fieldstep2GameSettingsContentLabel5ab2 =>
-      'Robber location reveal interval';
 
   @override
   String get gameSettingNoLocationShareWarning =>
       'The Robbers\' locations will not be shared!';
 
   @override
-  String get fieldstep2GameSettingsContentLabelCe3b => 'Cop dispatch delay';
-
-  @override
-  String get gameSettingPoliceStartPrefix => 'After Robbers run away,';
+  String get gameSettingPoliceStartPrefix => 'After Robbers start,';
 
   @override
   String get gameSettingPoliceStartSuffix => 'later';
+
+  @override
+  String get buttonCompleteSetup => 'Done';
+
+  @override
+  String warnMaxReached(String max) {
+    return 'You can set up to $max';
+  }
+
+  @override
+  String get warnRoundDurationRange =>
+      'Game time must be between 10 and 180 minutes';
+
+  @override
+  String get warnShorterThanRoundDuration =>
+      'Set this shorter than the game time';
+
+  @override
+  String get warnPoliceWaitMin => 'Cop start time must be at least 1 minute';
+
+  @override
+  String get dialogQuitCreationTitle => 'Stop creating the room?';
+
+  @override
+  String get dialogQuitCreationMessage =>
+      'The zone you\'re drawing will be lost';
+
+  @override
+  String get buttonKeepCreating => 'Keep creating';
+
+  @override
+  String get buttonQuitCreation => 'Stop';
 
   @override
   String get sectionTitleSettings => 'Settings';
@@ -1330,13 +1323,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelParticipantCount => 'Player count';
 
   @override
-  String get fieldRoundTimeLimit => 'Round time limit';
+  String get fieldRoundTimeLimit => 'Game time';
 
   @override
-  String get fieldLocationShareInterval => 'Location reveal interval';
+  String get fieldLocationShareInterval => 'Robber location share interval';
 
   @override
-  String get fieldPoliceDispatchTime => 'Cop dispatch delay';
+  String get fieldPoliceDispatchTime => 'Cop start time';
 
   @override
   String teamSectionCurrentCount(int count) {

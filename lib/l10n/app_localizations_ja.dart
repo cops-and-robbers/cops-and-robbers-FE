@@ -457,7 +457,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String gameSettingPoliceStartDelay(int minutes) {
-    return '泥棒が逃げたあと $minutes分後';
+    return '泥棒スタートから $minutes分後';
   }
 
   @override
@@ -991,30 +991,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonJoinRoom => 'ゲーム参加';
 
   @override
-  String get sessionCreationStepZoneSubtitle =>
-      'ゲームを行うゲームエリアを設定します\nまずプレイグラウンドを指定してください';
-
-  @override
-  String get sessionCreationStepRulesSubtitle =>
-      'ゲームルールを決めます\n数字をタップすると直接入力できます';
-
-  @override
   String get errorCreateRoomFailed => '待機室の作成に失敗しました。もう一度お試しください';
-
-  @override
-  String get sessionCreationZoneFirstQuestion => 'エリア選択を先に設定しましょうか';
-
-  @override
-  String get sessionCreationStepParticipantsTitle => '人数を設定します';
 
   @override
   String get sessionCreationStepBasicTitle => '基本情報を設定します';
 
   @override
   String get sessionCreationStepReviewTitle => '最終設定を確認します';
-
-  @override
-  String get sessionCreationStepZoneIntro => 'ゲームに必要なエリアを設定します';
 
   @override
   String get sessionCreationStepParticipantsHint => '最低2人からゲームの進行が可能です';
@@ -1199,37 +1182,48 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ エリア外に出ると画面がロックされます';
 
   @override
-  String get dialogstep0SelectAreaContentTitle => 'プレイグラウンド';
-
-  @override
-  String get dialogstep0SelectAreaContentTitle5bc0 => '牢屋';
-
-  @override
-  String get fieldstep1ParticipantSettingsContentLabel => '最大参加者';
-
-  @override
   String get unitPerson => '人';
-
-  @override
-  String get fieldstep2GameSettingsContentLabel => 'ラウンド制限時間';
 
   @override
   String get unitMinutes => '分';
 
   @override
-  String get fieldstep2GameSettingsContentLabel5ab2 => '泥棒の位置公開間隔';
-
-  @override
   String get gameSettingNoLocationShareWarning => '泥棒の位置が公開されません！';
 
   @override
-  String get fieldstep2GameSettingsContentLabelCe3b => '警察出動時間';
-
-  @override
-  String get gameSettingPoliceStartPrefix => '泥棒が逃げたあと';
+  String get gameSettingPoliceStartPrefix => '泥棒スタートから';
 
   @override
   String get gameSettingPoliceStartSuffix => '後';
+
+  @override
+  String get buttonCompleteSetup => '完了する';
+
+  @override
+  String warnMaxReached(String max) {
+    return '最大$maxまで設定できます';
+  }
+
+  @override
+  String get warnRoundDurationRange => 'ゲーム時間は10分から180分まで設定できます';
+
+  @override
+  String get warnShorterThanRoundDuration => 'ゲーム時間より短く設定してください';
+
+  @override
+  String get warnPoliceWaitMin => '警察スタート時間は1分から設定できます';
+
+  @override
+  String get dialogQuitCreationTitle => 'ルーム作成をやめますか？';
+
+  @override
+  String get dialogQuitCreationMessage => '描いていたエリアは消えます';
+
+  @override
+  String get buttonKeepCreating => '作成を続ける';
+
+  @override
+  String get buttonQuitCreation => 'やめる';
 
   @override
   String get sectionTitleSettings => '設定';
@@ -1238,13 +1232,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelParticipantCount => '参加人数';
 
   @override
-  String get fieldRoundTimeLimit => 'ラウンド制限時間';
+  String get fieldRoundTimeLimit => 'ゲーム時間';
 
   @override
-  String get fieldLocationShareInterval => '位置公開間隔';
+  String get fieldLocationShareInterval => '泥棒の位置公開間隔';
 
   @override
-  String get fieldPoliceDispatchTime => '警察出動時間';
+  String get fieldPoliceDispatchTime => '警察スタート時間';
 
   @override
   String teamSectionCurrentCount(int count) {

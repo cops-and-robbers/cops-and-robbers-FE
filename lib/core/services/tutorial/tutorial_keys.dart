@@ -3,9 +3,7 @@ class TutorialKeys {
   TutorialKeys._();
 
   static const home = 'tutorial_home';
-  static const createStep0 = 'tutorial_create_step0';
   static const setupPlayground = 'tutorial_setup_playground';
-  static const createStep2 = 'tutorial_create_step2';
 
   // 대기실 튜토리얼: 역할(경찰/도둑) 무관 사용자당 1회만 노출.
   // 모든 스텝(팀 변경·초대 코드·게임 설정·준비 버튼)이 양 팀에서 동일한
@@ -18,12 +16,5 @@ class TutorialKeys {
   static const inGamePrompt = 'tutorial_in_game_prompt';
 
   /// 전체 키 목록 (초기화 시 사용)
-  static const all = [
-    home,
-    createStep0,
-    setupPlayground,
-    createStep2,
-    waitingRoom,
-    inGamePrompt,
-  ];
+  static const all = [home, setupPlayground, waitingRoom, inGamePrompt];
 }

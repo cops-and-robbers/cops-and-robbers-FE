@@ -10,6 +10,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/cards/info_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/session_settings.dart';
+import 'game_setting_values_editor.dart';
 
 /// 게임 설정 목록 카드
 ///
@@ -32,6 +33,7 @@ class SettingListCard extends StatelessWidget {
     super.key,
     required this.settings,
     this.onTap,
+    this.onTapField,
     this.isDarkMode = false,
   });
 
@@ -40,6 +42,9 @@ class SettingListCard extends StatelessWidget {
 
   /// 설정 카드 탭 콜백 (호스트 전용 — 설정 수정 페이지 이동)
   final VoidCallback? onTap;
+
+  /// 행 탭 콜백 (최종 확인 화면 — 해당 항목을 고치러 이동)
+  final ValueChanged<GameSettingField>? onTapField;
 
   /// 다크 모드 여부 (도둑팀)
   final bool isDarkMode;
@@ -79,18 +84,27 @@ class SettingListCard extends StatelessWidget {
           children: [
             _SettingRow(
               label: l10n.labelParticipantCount,
+              onTap: onTapField == null
+                  ? null
+                  : () => onTapField!(GameSettingField.participants),
               value: l10n.gameSettingMaxPlayers(settings.maxPlayers.toString()),
               isDarkMode: isDarkMode,
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
               label: l10n.fieldRoundTimeLimit,
+              onTap: onTapField == null
+                  ? null
+                  : () => onTapField!(GameSettingField.roundDuration),
               value: l10n.gameSettingRoundMinutes(settings.roundTimeMinutes),
               isDarkMode: isDarkMode,
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
               label: l10n.fieldLocationShareInterval,
+              onTap: onTapField == null
+                  ? null
+                  : () => onTapField!(GameSettingField.locationShare),
               value: l10n.gameSettingLocationShareMinutes(
                 settings.locationShareMinutes,
               ),
@@ -99,6 +113,9 @@ class SettingListCard extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
               label: l10n.fieldPoliceDispatchTime,
+              onTap: onTapField == null
+                  ? null
+                  : () => onTapField!(GameSettingField.policeWait),
               value: l10n.gameSettingPoliceStartDelay(
                 settings.policeStartDelayMinutes,
               ),
@@ -117,30 +134,57 @@ class _SettingRow extends StatelessWidget {
     required this.label,
     required this.value,
     this.isDarkMode = false,
+    this.onTap,
   });
 
   final String label;
   final String value;
   final bool isDarkMode;
 
+  /// 행 탭 콜백. 주어지면 값 옆에 이동 표시가 붙는다.
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: AppTextStyles.paragraph_14_100.copyWith(
-            color: isDarkMode ? AppColors.black200 : AppColors.black800,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.paragraph_14_100.copyWith(
+              color: isDarkMode ? AppColors.black200 : AppColors.black800,
+            ),
           ),
-        ),
-        Text(
-          value,
-          style: AppTextStyles.paragraph14Semibold.copyWith(
-            color: isDarkMode ? AppColors.white : AppColors.black,
+          Row(
+            children: [
+              Text(
+                value,
+                style: AppTextStyles.paragraph14Semibold.copyWith(
+                  color: isDarkMode ? AppColors.white : AppColors.black,
+                ),
+              ),
+              if (onTap != null) ...[
+                SizedBox(width: AppSpacing.horizontal8),
+                Transform.rotate(
+                  angle: math.pi,
+                  child: SvgPicture.asset(
+                    'assets/icons/icon_previous.svg',
+                    width: 14.w,
+                    height: 14.w,
+                    colorFilter: ColorFilter.mode(
+                      isDarkMode ? AppColors.black400 : AppColors.black300,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
