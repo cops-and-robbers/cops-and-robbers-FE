@@ -1,5 +1,5 @@
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_message_entity.dart';
-import 'package:cops_and_robbers/features/community/presentation/widgets/community_chat_message_menu.dart';
+import 'package:cops_and_robbers/features/community/presentation/community_chat_report.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 CommunityChatMessageEntity _message({

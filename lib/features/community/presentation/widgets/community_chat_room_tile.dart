@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
@@ -91,9 +92,16 @@ class CommunityChatRoomTile extends StatelessWidget {
             ),
             if (last != null) ...[
               SizedBox(width: AppSpacing.horizontal8),
-              Text(
-                formatChatListTime(l10n, last.createdAt, now),
-                style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
+              // label_16 제목과 글자 크기가 달라 위쪽에 살짝 여백을 줘야
+              // 두 텍스트의 시각적 중심이 맞는다.
+              Padding(
+                padding: EdgeInsets.only(top: 2.h),
+                child: Text(
+                  formatChatListTime(l10n, last.createdAt, now),
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black600,
+                  ),
+                ),
               ),
             ],
           ],
