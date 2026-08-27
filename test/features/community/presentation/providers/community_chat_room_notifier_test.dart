@@ -361,6 +361,45 @@ void main() {
       });
     });
 
+    test('updates_the_room_list_preview_when_a_message_arrives', () {
+      // 채팅방은 루트 네비게이터에 push돼서 뒤로 가도 내 모임 탭 위젯이 살아
+      // 있다 — 재진입 갱신이 안 걸린다. 대화하는 동안 목록을 같이 고쳐 둔다.
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository();
+        final c = _opened(async, repo);
+        c.listen(communityChatRoomsProvider, (_, _) {});
+        async.flushMicrotasks();
+
+        repo.emit(CommunityChatEvent.message(_text(99, sender: 7)));
+        async.flushMicrotasks();
+
+        final room = c
+            .read(communityChatRoomsProvider)
+            .requireValue
+            .firstWhere((r) => r.postId == _postId);
+        expect(room.lastMessage?.id, 99);
+        expect(
+          room.lastMessage?.body,
+          const CommunityChatMessageBody.text('m99'),
+        );
+      });
+    });
+
+    test('leaves_the_room_list_alone_when_the_room_is_not_cached_yet', () {
+      // 방금 참여해 목록에 아직 없는 방 — 없는 칸을 만들어 내면 안 된다.
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository()..rooms = [];
+        final c = _opened(async, repo);
+        c.listen(communityChatRoomsProvider, (_, _) {});
+        async.flushMicrotasks();
+
+        repo.emit(CommunityChatEvent.message(_text(99, sender: 7)));
+        async.flushMicrotasks();
+
+        expect(c.read(communityChatRoomsProvider).requireValue, isEmpty);
+      });
+    });
+
     test('disconnects_when_provider_is_disposed_without_leaving', () {
       fakeAsync((async) {
         final repo = FakeCommunityChatRepository();

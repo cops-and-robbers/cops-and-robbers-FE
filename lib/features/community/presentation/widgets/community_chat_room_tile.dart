@@ -13,7 +13,7 @@ import 'community_chat_avatar.dart';
 /// 내 모임 탭의 채팅방 한 칸 — 아바타 · 제목+인원 · 마지막 메시지 · 시각
 ///
 /// 안 읽은 개수 배지는 그리지 않는다 — 서버가 만들지 않기로 확정했고(DEC-0030)
-/// 앱 로컬로는 개수를 못 센다.
+/// 앱 로컬로는 개수를 못 센다(보고 있는 방만 구독하므로).
 class CommunityChatRoomTile extends StatelessWidget {
   const CommunityChatRoomTile({
     required this.room,
@@ -47,7 +47,9 @@ class CommunityChatRoomTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CommunityChatAvatar(size: 40),
+            // 마지막으로 말한 사람의 얼굴. 대화가 없으면 기본 아이콘이다 —
+            // 방을 열었을 때 보이는 말풍선 얼굴과 어긋나지 않게 맞춘다.
+            CommunityChatAvatar(size: 40, iconId: last?.senderProfileIcon),
             SizedBox(width: AppSpacing.horizontal14),
             Expanded(
               child: Column(

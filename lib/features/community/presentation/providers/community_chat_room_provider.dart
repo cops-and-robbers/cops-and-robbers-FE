@@ -323,10 +323,17 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
       case CommunityChatErrorEvent(:final errorCode)
           when _authErrorCodes.contains(errorCode):
         unawaited(_refreshTokenThenReconnect());
-      case CommunityChatMessageEvent(:final message) when _isKickOfMe(message):
-        // 서버가 강퇴당한 쪽 세션을 끊지 않는다 — 스스로 구독을 끊지 않으면
-        // 나간 방의 메시지가 계속 들어온다(전송만 막힌다).
-        _evict();
+      case CommunityChatMessageEvent(:final message):
+        // 내 모임 목록의 미리보기도 같이 고친다 — 채팅방은 루트 네비게이터에
+        // push돼서 뒤로 가도 탭 위젯이 살아 있고, 재진입 갱신이 안 걸린다.
+        ref
+            .read(communityChatRoomsProvider.notifier)
+            .applyLastMessage(postId, message);
+        if (_isKickOfMe(message)) {
+          // 서버가 강퇴당한 쪽 세션을 끊지 않는다 — 스스로 구독을 끊지 않으면
+          // 나간 방의 메시지가 계속 들어온다(전송만 막힌다).
+          _evict();
+        }
       default:
         break;
     }

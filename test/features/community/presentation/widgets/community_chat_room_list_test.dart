@@ -11,6 +11,7 @@ import 'package:cops_and_robbers/features/community/domain/repositories/communit
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_chat_room_list.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_chat_avatar.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_chat_room_tile.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -153,6 +154,51 @@ void main() {
       expect(find.byType(CommunityChatRoomTile), findsNWidgets(2));
       expect(find.text('도착한 분 계신가요?'), findsOneWidget);
       expect(find.text('오후 8:31'), findsOneWidget);
+    });
+
+    testWidgets('shows_the_last_senders_profile_icon_on_the_tile', (
+      tester,
+    ) async {
+      // 칸의 얼굴은 마지막으로 말한 사람이다 — 기본 아이콘으로 고정해 두면
+      // 방을 열었을 때 보이는 말풍선 얼굴과 어긋난다.
+      final repo = _RoomsOnlyRepository([
+        _room(
+          1,
+          last: CommunityChatLastMessageEntity(
+            id: 1,
+            body: const CommunityChatMessageBody.text('도착한 분 계신가요?'),
+            createdAt: DateTime(2026, 8, 24, 20, 31),
+            senderProfileIcon: 7,
+          ),
+        ),
+      ]);
+      await tester.pumpWidget(_wrap(repo, currentUserId: 1));
+      await tester.pumpAndSettle();
+
+      final avatar = tester.widget<CommunityChatAvatar>(
+        find.descendant(
+          of: find.byType(CommunityChatRoomTile),
+          matching: find.byType(CommunityChatAvatar),
+        ),
+      );
+      expect(avatar.iconId, 7);
+    });
+
+    testWidgets('falls_back_to_the_default_icon_when_the_room_has_no_talk', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(_RoomsOnlyRepository([_room(1)]), currentUserId: 1),
+      );
+      await tester.pumpAndSettle();
+
+      final avatar = tester.widget<CommunityChatAvatar>(
+        find.descendant(
+          of: find.byType(CommunityChatRoomTile),
+          matching: find.byType(CommunityChatAvatar),
+        ),
+      );
+      expect(avatar.iconId, isNull);
     });
 
     testWidgets('shows_empty_message_when_no_rooms', (tester) async {
