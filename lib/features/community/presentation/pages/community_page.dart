@@ -18,7 +18,6 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/current_branch_index_provider.dart';
 import '../../../../router/route_paths.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../providers/community_chat_rooms_provider.dart';
@@ -100,19 +99,6 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
               VibrationService.instance().buttonTap();
               context.pushNamed(RoutePaths.communitySearchName);
             },
-          ),
-          // 비로그인은 스크랩 자체가 없으므로(401) 진입점을 감춘다.
-          Consumer(
-            builder: (context, ref, _) =>
-                ref.watch(currentUserIdProvider) == null
-                ? const SizedBox.shrink()
-                : _buildAppBarIcon(
-                    'assets/icons/icon_save_off.svg',
-                    onTap: () {
-                      VibrationService.instance().buttonTap();
-                      context.pushNamed(RoutePaths.communityScrapsName);
-                    },
-                  ),
           ),
           // 알림은 기능 자체가 없다. 후속 연결 전까지 탭 여부만 로그로 확인한다.
           _buildAppBarIcon('assets/icons/icon_bell_off.svg'),

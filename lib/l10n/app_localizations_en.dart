@@ -1836,6 +1836,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAccountChangeNickname => 'Change nickname';
 
   @override
+  String get settingsAccountMyScraps => 'My scraps';
+
+  @override
   String get settingsSectionAppPreferences => 'App settings';
 
   @override

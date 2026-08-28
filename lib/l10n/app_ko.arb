@@ -1829,6 +1829,10 @@
   "@settingsAccountChangeNickname": {
     "description": "설정 — 닉네임 변경 메뉴"
   },
+  "settingsAccountMyScraps": "내 스크랩",
+  "@settingsAccountMyScraps": {
+    "description": "설정 — 내 스크랩 목록 메뉴"
+  },
   "settingsSectionAppPreferences": "앱 설정",
   "@settingsSectionAppPreferences": {
     "description": "설정 — 앱 설정 섹션 헤더"

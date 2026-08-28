@@ -1724,6 +1724,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAccountChangeNickname => '닉네임 변경';
 
   @override
+  String get settingsAccountMyScraps => '내 스크랩';
+
+  @override
   String get settingsSectionAppPreferences => '앱 설정';
 
   @override

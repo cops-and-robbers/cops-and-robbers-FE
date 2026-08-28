@@ -601,6 +601,7 @@
   "pageSettingsTitle": "Settings",
   "settingsSectionAccount": "Account",
   "settingsAccountChangeNickname": "Change nickname",
+  "settingsAccountMyScraps": "My scraps",
   "settingsSectionAppPreferences": "App settings",
   "settingsAppGameNotification": "Game notifications",
   "settingsAppGameNotificationDescription": "Configure notifications for events occurring during the game",

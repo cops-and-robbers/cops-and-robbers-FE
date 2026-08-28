@@ -1724,6 +1724,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAccountChangeNickname => 'ニックネーム変更';
 
   @override
+  String get settingsAccountMyScraps => 'マイスクラップ';
+
+  @override
   String get settingsSectionAppPreferences => 'アプリ設定';
 
   @override

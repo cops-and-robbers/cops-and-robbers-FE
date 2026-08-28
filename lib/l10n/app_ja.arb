@@ -601,6 +601,7 @@
   "pageSettingsTitle": "設定",
   "settingsSectionAccount": "アカウント",
   "settingsAccountChangeNickname": "ニックネーム変更",
+  "settingsAccountMyScraps": "マイスクラップ",
   "settingsSectionAppPreferences": "アプリ設定",
   "settingsAppGameNotification": "ゲーム通知",
   "settingsAppGameNotificationDescription": "ゲーム進行中に発生するイベントの通知を設定します",

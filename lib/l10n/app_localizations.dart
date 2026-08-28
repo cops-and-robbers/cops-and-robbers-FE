@@ -3301,6 +3301,12 @@ abstract class AppLocalizations {
   /// **'닉네임 변경'**
   String get settingsAccountChangeNickname;
 
+  /// 설정 — 내 스크랩 목록 메뉴
+  ///
+  /// In ko, this message translates to:
+  /// **'내 스크랩'**
+  String get settingsAccountMyScraps;
+
   /// 설정 — 앱 설정 섹션 헤더
   ///
   /// In ko, this message translates to:

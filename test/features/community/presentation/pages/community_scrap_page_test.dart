@@ -203,8 +203,7 @@ Future<CommunityScrapNotifier> _pumpScrapPage(
 
 /// 소유자 메뉴(수정·마감·삭제)가 실제로 상세로 이동시키는지 검증하기 위한 라우터.
 ///
-/// 실제 앱 라우터와 같은 순서로 `scraps`를 `:postId`보다 앞에 둔다 — 뒤에 두면
-/// `/community/scraps`가 postId="scraps"로 잡힌다(app_router.dart와 동일한 이유).
+/// 실제 앱 라우터와 같이 스크랩 목록은 마이페이지 하위, 상세는 커뮤니티 하위다.
 /// 상세는 댓글·좋아요 등 무관한 의존성을 끌고 오는 실물 대신, 어떤 postId로
 /// 도착했는지만 보여주는 얕은 페이지로 대신한다.
 Future<void> _pumpScrapPageWithRouter(
@@ -212,17 +211,23 @@ Future<void> _pumpScrapPageWithRouter(
   required List<CommunityPostEntity> posts,
 }) async {
   final router = GoRouter(
-    initialLocation: RoutePaths.communityScraps,
+    initialLocation: RoutePaths.myScraps,
     routes: [
       GoRoute(
-        path: RoutePaths.community,
+        path: RoutePaths.mypage,
         builder: (_, _) => const SizedBox.shrink(),
         routes: [
           GoRoute(
             path: 'scraps',
-            name: RoutePaths.communityScrapsName,
+            name: RoutePaths.myScrapsName,
             builder: (_, _) => const CommunityScrapPage(),
           ),
+        ],
+      ),
+      GoRoute(
+        path: RoutePaths.community,
+        builder: (_, _) => const SizedBox.shrink(),
+        routes: [
           GoRoute(
             path: ':postId',
             name: RoutePaths.communityDetailName,
