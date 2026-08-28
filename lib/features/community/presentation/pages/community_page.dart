@@ -101,7 +101,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
             },
           ),
           // 알림은 기능 자체가 없다. 후속 연결 전까지 탭 여부만 로그로 확인한다.
-          _buildAppBarIcon('assets/icons/icon_bell_off.svg'),
+          _buildAppBarIcon('assets/icons/icon_noti_off.svg'),
           SizedBox(width: AppSpacing.horizontal16),
         ],
       ),
