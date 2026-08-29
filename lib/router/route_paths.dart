@@ -81,6 +81,10 @@ class RoutePaths {
   /// postId="create"로 잡힌다.
   static const String communityDetail = '/community/:postId';
 
+  /// 상세 절대 경로 — 푸시 알림 탭처럼 셸 밖에서 `go`로 진입할 때 쓴다.
+  /// `go`는 커뮤니티 탭 셸까지 함께 세우므로 뒤로가기가 커뮤니티 목록으로 간다.
+  static String communityDetailWithId(int postId) => '/community/$postId';
+
   /// 모집글 수정 화면 (상세·목록 카드의 더보기 메뉴에서 진입)
   ///
   /// 고칠 글을 `extra`로 함께 넘겨야 한다 — 없으면 상세로 되돌린다(딥링크 방지).
@@ -246,6 +250,7 @@ class RoutePaths {
   static const String communityName = 'community';
   static const String communityCreateName = 'communityCreate';
   static const String communitySearchName = 'communitySearch';
+  static const String communityNotificationName = 'communityNotification';
   static const String communityDetailName = 'communityDetail';
   static const String communityEditName = 'communityEdit';
   static const String communityChatName = 'communityChat';

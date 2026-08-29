@@ -428,6 +428,12 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCommunityReactionGeneric;
       case 'errorCommunityScrapsLoadGeneric':
         return errorCommunityScrapsLoadGeneric;
+      case 'errorCommunityNotificationsLoadGeneric':
+        return errorCommunityNotificationsLoadGeneric;
+      case 'errorCommunityNotificationUnreadCountLoadGeneric':
+        return errorCommunityNotificationUnreadCountLoadGeneric;
+      case 'errorCommunityNotificationReadGeneric':
+        return errorCommunityNotificationReadGeneric;
       case 'errorCommunityPostCreateGeneric':
         return errorCommunityPostCreateGeneric;
       case 'errorCommunityPostUpdateGeneric':

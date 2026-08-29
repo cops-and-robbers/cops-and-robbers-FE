@@ -745,6 +745,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityScrapEmpty => 'スクラップした投稿がありません';
 
   @override
+  String get pageCommunityNotificationTitle => '通知';
+
+  @override
+  String get communityNotificationEmpty => '届いた通知がありません';
+
+  @override
+  String communityNotificationNewComment(String content) {
+    return '新しいコメント: $content';
+  }
+
+  @override
+  String communityNotificationNewReply(String content) {
+    return '新しい返信: $content';
+  }
+
+  @override
   String get communityScopeAll => 'すべて';
 
   @override
@@ -2125,6 +2141,17 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get errorCommunityScrapsLoadGeneric =>
       'スクラップ一覧を読み込めませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCommunityNotificationsLoadGeneric =>
+      '通知一覧を読み込めませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCommunityNotificationUnreadCountLoadGeneric =>
+      '未読通知件数を読み込めませんでした';
+
+  @override
+  String get errorCommunityNotificationReadGeneric => '通知の既読処理に失敗しました';
 
   @override
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';

@@ -1,4 +1,5 @@
 import 'package:cops_and_robbers/features/community/domain/entities/community_address_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_notification_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
@@ -84,4 +85,18 @@ mixin CommunityRepositoryDetailStubs implements CommunityRepository {
     int? cursor,
     required int size,
   }) => throw UnimplementedError('이 테스트는 스크랩 목록 조회를 쓰지 않는다');
+
+  @override
+  Future<CommunityNotificationPageEntity> getNotifications({
+    int? cursor,
+    required int size,
+  }) => throw UnimplementedError('이 테스트는 알림함 조회를 쓰지 않는다');
+
+  @override
+  Future<int> getUnreadNotificationCount() =>
+      throw UnimplementedError('이 테스트는 안 읽은 알림 개수 조회를 쓰지 않는다');
+
+  @override
+  Future<void> readNotifications() =>
+      throw UnimplementedError('이 테스트는 알림 읽음 처리를 쓰지 않는다');
 }

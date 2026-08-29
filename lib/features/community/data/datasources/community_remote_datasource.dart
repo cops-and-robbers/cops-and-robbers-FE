@@ -4,6 +4,7 @@ import 'package:retrofit/retrofit.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../models/community_chat_model.dart';
 import '../models/community_comment_model.dart';
+import '../models/community_notification_model.dart';
 import '../models/community_post_model.dart';
 
 part 'community_remote_datasource.g.dart';
@@ -222,6 +223,31 @@ abstract class CommunityRemoteDataSource {
     @Query('cursor') int? cursor,
     @Query('size') int? size,
   });
+
+  /// 알림함 목록 조회 (커서 페이지네이션, 로그인 필수)
+  ///
+  /// 내 글에 달린 댓글·답글 알림을 최신순으로 준다. 최근 60일 이내 것만
+  /// 내려간다(DEC-0047). 커서는 스크랩 목록과 같은 정수 형태다. 조회만으로는
+  /// 읽음 처리되지 않는다(DEC-0038) — [readNotifications]를 따로 불러야 한다.
+  @GET('${ApiEndpoints.communityPosts}/notifications')
+  Future<CommunityNotificationListResponseModel> getNotifications({
+    @Query('cursor') int? cursor,
+    @Query('size') int? size,
+  });
+
+  /// 안 읽은 알림 개수 조회 (종 아이콘 배지용)
+  ///
+  /// 최근 60일 이내 알림 중 읽음 커서보다 나중에 생긴 것만 센다(DEC-0047).
+  @GET('${ApiEndpoints.communityPosts}/notifications/unread-count')
+  Future<CommunityNotificationUnreadCountResponseModel>
+  getUnreadNotificationCount();
+
+  /// 알림 읽음 처리 — 읽음 커서를 현재 시각으로 옮긴다
+  ///
+  /// 알림마다 저장된 값이 아니라 유저당 커서 하나라 개별 읽음 처리는
+  /// 불가능하다(DEC-0038). 응답 본문 없음(204).
+  @POST('${ApiEndpoints.communityPosts}/notifications/read')
+  Future<void> readNotifications();
 
   /// 채팅방 멤버 목록 조회
   ///

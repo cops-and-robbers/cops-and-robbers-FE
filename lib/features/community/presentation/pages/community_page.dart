@@ -21,6 +21,7 @@ import '../../../../router/route_paths.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../providers/community_chat_rooms_provider.dart';
+import '../providers/community_notification_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_chat_room_list.dart';
 import '../widgets/community_feed_list.dart';
@@ -57,6 +58,10 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
       if (previous == next) return;
       if (next != RoutePaths.communityBranchIndex) return;
       unawaited(_refreshIfStale());
+      // 알림함은 소켓이 없어 이 탭으로 돌아오는 시점이 배지를 다시 볼 유일한
+      // 기회다 — 알림함을 거치지 않고 나갔다 왔어도(다른 탭에서 댓글이
+      // 달렸을 수 있으니) 매번 다시 받는다.
+      ref.invalidate(communityNotificationUnreadCountProvider);
     });
 
     // 앱이 백그라운드에서 돌아왔을 때.
@@ -69,6 +74,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         return;
       }
       unawaited(_refreshIfStale());
+      ref.invalidate(communityNotificationUnreadCountProvider);
     });
 
     // 이전에 봤던 정렬로 돌아가면 그 인스턴스는 keepAlive로 살아 있고 낡은
@@ -100,8 +106,26 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
               context.pushNamed(RoutePaths.communitySearchName);
             },
           ),
-          // 알림은 기능 자체가 없다. 후속 연결 전까지 탭 여부만 로그로 확인한다.
-          _buildAppBarIcon('assets/icons/icon_noti_off.svg'),
+          Consumer(
+            builder: (context, ref, _) {
+              final unreadCount = ref
+                  .watch(communityNotificationUnreadCountProvider)
+                  .valueOrNull;
+              final hasUnread = unreadCount != null && unreadCount > 0;
+              // 종 모양이 그대로인 icon_noti.svg 하나만 쓰고 배지는 직접
+              // 그린다 — 예전엔 icon_noti_on.svg로 통째로 바꿨는데, 그 svg가
+              // 종 모양을 캔버스 안 다른 위치에 그려놔서(배지 자리만큼 내부
+              // 여백이 다름) 전환할 때 종 모양이 미세하게 움직여 보였다(실측).
+              return _buildAppBarIcon(
+                'assets/icons/icon_noti.svg',
+                showBadge: hasUnread,
+                onTap: () {
+                  VibrationService.instance().buttonTap();
+                  context.pushNamed(RoutePaths.communityNotificationName);
+                },
+              );
+            },
+          ),
           SizedBox(width: AppSpacing.horizontal16),
         ],
       ),
@@ -169,11 +193,37 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     }
   }
 
-  Widget _buildAppBarIcon(String assetPath, {VoidCallback? onTap}) {
+  Widget _buildAppBarIcon(
+    String assetPath, {
+    VoidCallback? onTap,
+    bool showBadge = false,
+  }) {
     return IconButton(
       onPressed: onTap ?? () => debugPrint('🔍 앱바 아이콘 탭'),
       padding: EdgeInsets.only(left: AppSpacing.horizontal20),
-      icon: SvgPicture.asset(assetPath, width: 24.w, height: 24.h),
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          SvgPicture.asset(assetPath, width: 24.w, height: 24.h),
+          // 아이콘 자체를 바꾸지 않고 배지만 얹는다 — icon_noti_on.svg로
+          // 통째로 바꾸면 두 svg의 내부 여백이 달라 전환할 때 종 모양이
+          // 미세하게 움직여 보였다(실측).
+          if (showBadge)
+            Positioned(
+              right: -3.w,
+              top: -3.h,
+              child: Container(
+                width: 6.w,
+                height: 6.h,
+                decoration: BoxDecoration(
+                  color: AppColors.red,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.white, width: 1.w),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

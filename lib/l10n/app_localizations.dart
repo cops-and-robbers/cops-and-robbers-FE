@@ -1443,6 +1443,30 @@ abstract class AppLocalizations {
   /// **'스크랩한 글이 없어요'**
   String get communityScrapEmpty;
 
+  /// 알림함 화면 AppBar 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'알림'**
+  String get pageCommunityNotificationTitle;
+
+  /// 알림함이 비어 있을 때 표시되는 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'받은 알림이 없어요'**
+  String get communityNotificationEmpty;
+
+  /// 알림함 카드 — 내 글에 달린 댓글 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'새 댓글: {content}'**
+  String communityNotificationNewComment(String content);
+
+  /// 알림함 카드 — 내 댓글에 달린 답글 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'새 답글: {content}'**
+  String communityNotificationNewReply(String content);
+
   /// 커뮤니티 범위 필터 — 전체 글
   ///
   /// In ko, this message translates to:
@@ -4086,6 +4110,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'스크랩 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요'**
   String get errorCommunityScrapsLoadGeneric;
+
+  /// 커뮤니티 — 알림함 목록 조회 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityNotificationsLoadGeneric;
+
+  /// 커뮤니티 — 안 읽은 알림 개수 조회 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'안 읽은 알림 개수를 불러오지 못했어요'**
+  String get errorCommunityNotificationUnreadCountLoadGeneric;
+
+  /// 커뮤니티 — 알림 읽음 처리 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 읽음 처리에 실패했어요'**
+  String get errorCommunityNotificationReadGeneric;
 
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///

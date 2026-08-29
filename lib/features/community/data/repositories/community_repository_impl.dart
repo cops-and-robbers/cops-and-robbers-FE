@@ -3,12 +3,14 @@ import 'package:dio/dio.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../domain/entities/community_address_entity.dart';
+import '../../domain/entities/community_notification_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
 import '../../domain/repositories/community_repository.dart';
 import '../datasources/community_remote_datasource.dart';
+import '../models/community_notification_model.dart';
 import '../models/community_post_model.dart';
 import '../models/community_wire.dart';
 
@@ -213,6 +215,52 @@ class CommunityRepositoryImpl implements CommunityRepository {
     },
     message: '스크랩 목록을 불러오는 중 오류가 발생했습니다',
     messageKey: 'errorCommunityScrapsLoadGeneric',
+  );
+
+  @override
+  Future<CommunityNotificationPageEntity> getNotifications({
+    int? cursor,
+    required int size,
+  }) => _guard(
+    () async {
+      final page = await _dataSource.getNotifications(
+        cursor: cursor,
+        size: size,
+      );
+      return CommunityNotificationPageEntity(
+        items: page.content.map(_toNotificationEntity).toList(),
+        nextCursor: page.nextCursor,
+        hasNext: page.hasNext,
+      );
+    },
+    message: '알림 목록을 불러오는 중 오류가 발생했습니다',
+    messageKey: 'errorCommunityNotificationsLoadGeneric',
+  );
+
+  @override
+  Future<int> getUnreadNotificationCount() => _guard(
+    () async => (await _dataSource.getUnreadNotificationCount()).unreadCount,
+    message: '안 읽은 알림 개수를 불러오는 중 오류가 발생했습니다',
+    messageKey: 'errorCommunityNotificationUnreadCountLoadGeneric',
+  );
+
+  @override
+  Future<void> readNotifications() => _guard(
+    () => _dataSource.readNotifications(),
+    message: '알림 읽음 처리 중 오류가 발생했습니다',
+    messageKey: 'errorCommunityNotificationReadGeneric',
+  );
+
+  CommunityNotificationEntity _toNotificationEntity(
+    CommunityNotificationResponseModel m,
+  ) => CommunityNotificationEntity(
+    id: m.id,
+    type: communityNotificationTypeFromWire(m.type),
+    communityPostId: m.communityPostId,
+    postTitle: m.postTitle,
+    content: m.content,
+    read: m.read,
+    createdAt: m.createdAt.toLocal(),
   );
 
   /// DataSource 호출을 감싸 예외를 `AppException` 계열로 통일한다.

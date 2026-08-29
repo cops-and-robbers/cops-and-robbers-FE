@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart' show debugPrint;
 
 import '../../domain/entities/community_chat_message_entity.dart';
+import '../../domain/entities/community_notification_entity.dart';
 import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
@@ -44,6 +45,22 @@ CommunityPostStatus communityPostStatusFromWire(String wire) {
       // 조용히 묻히면 다음 미지 값이 언제 들어왔는지 알 길이 없다.
       debugPrint('[커뮤니티] ⚠️ 알 수 없는 모집 상태: $wire → 종료로 처리');
       return CommunityPostStatus.ended;
+  }
+}
+
+/// 알림 종류 와이어 문자열 → 도메인 enum.
+///
+/// 모르는 값(서버가 "추천 게시글" 등 새 타입을 추가한 경우)은 [comment]로 접는다
+/// — 예외를 던지면 그 알림 하나 때문에 목록 한 장이 통째로 에러 화면이 된다.
+CommunityNotificationType communityNotificationTypeFromWire(String wire) {
+  switch (wire) {
+    case 'COMMENT':
+      return CommunityNotificationType.comment;
+    case 'REPLY':
+      return CommunityNotificationType.reply;
+    default:
+      debugPrint('[커뮤니티 알림] ⚠️ 알 수 없는 알림 종류: $wire → 댓글로 처리');
+      return CommunityNotificationType.comment;
   }
 }
 
