@@ -88,7 +88,7 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
               ),
               child: SvgPicture.asset(
                 isNotificationOn
-                    ? 'assets/icons/icon_bell_off.svg'
+                    ? 'assets/icons/icon_bell.svg'
                     : 'assets/icons/icon_bell_block.svg',
                 width: 24.w,
                 height: 24.w,

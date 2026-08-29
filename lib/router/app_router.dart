@@ -34,6 +34,7 @@ import '../features/community/presentation/pages/community_chat_room_page.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_detail_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
+import '../features/community/presentation/pages/community_notification_page.dart';
 import '../features/community/presentation/pages/community_scrap_page.dart';
 import '../features/community/presentation/pages/community_search_page.dart';
 import '../features/credits/presentation/pages/credits_page.dart';
@@ -500,6 +501,22 @@ final routerProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) => buildSmoothFade(
                       key: state.pageKey,
                       child: const CommunitySearchPage(),
+                    ),
+                  ),
+                  // ======================================================
+                  // 알림함 (바텀 네비 위 전체 화면)
+                  //
+                  // `:postId`보다 앞에 둔다 — 뒤에 두면 `/community/notifications`가
+                  // postId="notifications"로 잡힌다.
+                  // ======================================================
+                  GoRoute(
+                    path: 'notifications',
+                    name: RoutePaths.communityNotificationName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const CommunityNotificationPage(),
+                      isForward: true,
                     ),
                   ),
                   // ======================================================

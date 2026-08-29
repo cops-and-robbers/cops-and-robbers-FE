@@ -797,6 +797,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityScrapEmpty => 'Nothing scrapped yet';
 
   @override
+  String get pageCommunityNotificationTitle => 'Notifications';
+
+  @override
+  String get communityNotificationEmpty => 'No notifications yet';
+
+  @override
+  String communityNotificationNewComment(String content) {
+    return 'New comment: $content';
+  }
+
+  @override
+  String communityNotificationNewReply(String content) {
+    return 'New reply: $content';
+  }
+
+  @override
   String get communityScopeAll => 'All';
 
   @override
@@ -2277,6 +2293,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCommunityScrapsLoadGeneric =>
       'Couldn\'t load your scraps. Please try again shortly';
+
+  @override
+  String get errorCommunityNotificationsLoadGeneric =>
+      'Couldn\'t load notifications. Please try again shortly';
+
+  @override
+  String get errorCommunityNotificationUnreadCountLoadGeneric =>
+      'Couldn\'t load your unread notification count';
+
+  @override
+  String get errorCommunityNotificationReadGeneric =>
+      'Failed to mark notifications as read';
 
   @override
   String get errorCommunityAddressLoadGeneric =>

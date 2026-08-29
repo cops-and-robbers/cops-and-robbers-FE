@@ -2,8 +2,10 @@ import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/community/data/datasources/community_remote_datasource.dart';
 import 'package:cops_and_robbers/features/community/data/models/community_chat_model.dart';
 import 'package:cops_and_robbers/features/community/data/models/community_comment_model.dart';
+import 'package:cops_and_robbers/features/community/data/models/community_notification_model.dart';
 import 'package:cops_and_robbers/features/community/data/models/community_post_model.dart';
 import 'package:cops_and_robbers/features/community/data/repositories/community_repository_impl.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_notification_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
@@ -204,6 +206,37 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
     if (errorToThrow != null) throw errorToThrow!;
     return scrapsToReturn!;
   }
+
+  // ── 알림함 ──
+  CommunityNotificationListResponseModel? notificationsToReturn;
+  CommunityNotificationUnreadCountResponseModel? unreadCountToReturn;
+  int? lastNotificationsCursor;
+  int? lastNotificationsSize;
+  bool readNotificationsCalled = false;
+
+  @override
+  Future<CommunityNotificationListResponseModel> getNotifications({
+    int? cursor,
+    int? size,
+  }) async {
+    lastNotificationsCursor = cursor;
+    lastNotificationsSize = size;
+    if (errorToThrow != null) throw errorToThrow!;
+    return notificationsToReturn!;
+  }
+
+  @override
+  Future<CommunityNotificationUnreadCountResponseModel>
+  getUnreadNotificationCount() async {
+    if (errorToThrow != null) throw errorToThrow!;
+    return unreadCountToReturn!;
+  }
+
+  @override
+  Future<void> readNotifications() async {
+    if (errorToThrow != null) throw errorToThrow!;
+    readNotificationsCalled = true;
+  }
 }
 
 DioException _dioError(int statusCode) => DioException(
@@ -260,6 +293,34 @@ CommunityScrapListResponseModel _scrapListOf(
   bool hasNext = false,
 }) => CommunityScrapListResponseModel(
   content: jsons.map(CommunityPostResponseModel.fromJson).toList(),
+  hasNext: hasNext,
+  nextCursor: nextCursor,
+);
+
+Map<String, dynamic> _notificationJson({
+  int id = 1,
+  String type = 'COMMENT',
+  int communityPostId = 1,
+  String postTitle = '같이 경찰과 도둑 하실 분!',
+  String content = '몇 시에 만나나요?',
+  bool read = false,
+}) => {
+  'id': id,
+  'type': type,
+  'communityPostId': communityPostId,
+  'postTitle': postTitle,
+  'content': content,
+  'read': read,
+  'createdAt': '2026-08-27T12:00:00+09:00',
+};
+
+// 알림함 봉투도 스크랩과 같은 평평한 정수 커서다.
+CommunityNotificationListResponseModel _notificationListOf(
+  List<Map<String, dynamic>> jsons, {
+  int? nextCursor,
+  bool hasNext = false,
+}) => CommunityNotificationListResponseModel(
+  content: jsons.map(CommunityNotificationResponseModel.fromJson).toList(),
   hasNext: hasNext,
   nextCursor: nextCursor,
 );
@@ -880,6 +941,104 @@ void main() {
 
       expect(
         () => repository.getScraps(cursor: null, size: 20),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.getNotifications', () {
+    test('maps_wire_type_and_integer_cursor', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..notificationsToReturn = _notificationListOf(
+          [_notificationJson(type: 'REPLY')],
+          nextCursor: 12,
+          hasNext: true,
+        );
+      final repository = CommunityRepositoryImpl(fake);
+
+      final page = await repository.getNotifications(cursor: null, size: 20);
+
+      expect(page.items.single.type, CommunityNotificationType.reply);
+      expect(page.nextCursor, 12);
+      expect(page.hasNext, isTrue);
+    });
+
+    test('falls_back_to_comment_for_unknown_wire_type', () async {
+      // 서버가 새 타입을 추가해도 목록 한 장이 통째로 깨지면 안 된다
+      // (community_wire.dart의 다른 폴백들과 같은 이유).
+      final fake = _FakeCommunityRemoteDataSource()
+        ..notificationsToReturn = _notificationListOf([
+          _notificationJson(type: 'RECOMMENDED_POST'),
+        ]);
+      final repository = CommunityRepositoryImpl(fake);
+
+      final page = await repository.getNotifications(cursor: null, size: 20);
+
+      expect(page.items.single.type, CommunityNotificationType.comment);
+    });
+
+    test('forwards_cursor_and_size_to_datasource_verbatim', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..notificationsToReturn = _notificationListOf([]);
+      final repository = CommunityRepositoryImpl(fake);
+
+      await repository.getNotifications(cursor: 12, size: 7);
+
+      expect(fake.lastNotificationsCursor, 12);
+      expect(fake.lastNotificationsSize, 7);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(401);
+      final repository = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repository.getNotifications(cursor: null, size: 20),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.getUnreadNotificationCount', () {
+    test('returns_count_from_response', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..unreadCountToReturn =
+            const CommunityNotificationUnreadCountResponseModel(unreadCount: 3);
+      final repository = CommunityRepositoryImpl(fake);
+
+      expect(await repository.getUnreadNotificationCount(), 3);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(401);
+      final repository = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repository.getUnreadNotificationCount(),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.readNotifications', () {
+    test('calls_datasource', () async {
+      final fake = _FakeCommunityRemoteDataSource();
+      final repository = CommunityRepositoryImpl(fake);
+
+      await repository.readNotifications();
+
+      expect(fake.readNotificationsCalled, isTrue);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(401);
+      final repository = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repository.readNotifications(),
         throwsA(isA<AppException>()),
       );
     });

@@ -528,6 +528,32 @@
   "@communityScrapEmpty": {
     "description": "내 스크랩 목록이 비어 있을 때 표시되는 안내"
   },
+  "pageCommunityNotificationTitle": "알림",
+  "@pageCommunityNotificationTitle": {
+    "description": "알림함 화면 AppBar 제목"
+  },
+  "communityNotificationEmpty": "받은 알림이 없어요",
+  "@communityNotificationEmpty": {
+    "description": "알림함이 비어 있을 때 표시되는 안내"
+  },
+  "communityNotificationNewComment": "새 댓글: {content}",
+  "@communityNotificationNewComment": {
+    "description": "알림함 카드 — 내 글에 달린 댓글 알림",
+    "placeholders": {
+      "content": {
+        "type": "String"
+      }
+    }
+  },
+  "communityNotificationNewReply": "새 답글: {content}",
+  "@communityNotificationNewReply": {
+    "description": "알림함 카드 — 내 댓글에 달린 답글 알림",
+    "placeholders": {
+      "content": {
+        "type": "String"
+      }
+    }
+  },
   "communityScopeAll": "전체",
   "@communityScopeAll": {
     "description": "커뮤니티 범위 필터 — 전체 글"
@@ -2362,6 +2388,18 @@
   "errorCommunityScrapsLoadGeneric": "스크랩 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요",
   "@errorCommunityScrapsLoadGeneric": {
     "description": "커뮤니티 — 내 스크랩 목록 조회 실패(일반)"
+  },
+  "errorCommunityNotificationsLoadGeneric": "알림 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요",
+  "@errorCommunityNotificationsLoadGeneric": {
+    "description": "커뮤니티 — 알림함 목록 조회 실패(일반)"
+  },
+  "errorCommunityNotificationUnreadCountLoadGeneric": "안 읽은 알림 개수를 불러오지 못했어요",
+  "@errorCommunityNotificationUnreadCountLoadGeneric": {
+    "description": "커뮤니티 — 안 읽은 알림 개수 조회 실패(일반)"
+  },
+  "errorCommunityNotificationReadGeneric": "알림 읽음 처리에 실패했어요",
+  "@errorCommunityNotificationReadGeneric": {
+    "description": "커뮤니티 — 알림 읽음 처리 실패(일반)"
   },
   "errorCommunityAddressLoadGeneric": "주소를 불러오는 중 오류가 생겼어요",
   "@errorCommunityAddressLoadGeneric": {

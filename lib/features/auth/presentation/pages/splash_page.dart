@@ -16,6 +16,8 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/deeplink/deeplink_event.dart';
 import '../../../../core/deeplink/deeplink_service.dart';
+import '../../../../core/services/fcm/push_navigation_event.dart';
+import '../../../../core/services/fcm/push_navigation_service.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/network/network_failure_detector.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -240,7 +242,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         if (!mounted) return;
 
         if (!status.isParticipating || status.participationInfo == null) {
-          context.go(RoutePaths.home);
+          context.go(await _coldStartPushDestination() ?? RoutePaths.home);
           return;
         }
 
@@ -374,6 +376,30 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   }
 
   /// 시작 시각 기준 최소 딜레이가 남아있으면 대기
+  /// 콜드 스타트가 푸시 알림 탭이었으면 홈 대신 갈 곳. 아니면 null.
+  ///
+  /// 인증·활성 게임 확인을 모두 통과한 "홈으로 갈 자리"에서만 부른다 — 진행
+  /// 중인 게임 복구가 알림 탭보다 우선이고, 비로그인·약관 미동의는 라우터
+  /// redirect가 어차피 다른 곳으로 보낸다(그때 목적지는 버려진다).
+  /// 딥링크(초대)와 달리 스플래시가 직접 `go` 한다 — 중간 페이지가 없어
+  /// "양보"만 하면 상세 아래 스플래시가 남아 뒤로가기에 갇힌다.
+  Future<String?> _coldStartPushDestination() async {
+    try {
+      final event = await ref
+          .read(coldStartPushNavigationProvider.future)
+          .timeout(const Duration(seconds: 2));
+      return switch (event) {
+        CommunityPostPushEvent(:final postId) =>
+          RoutePaths.communityDetailWithId(postId),
+        null => null,
+      };
+    } catch (e) {
+      // 프로브 실패는 홈으로 가면 그만이다 — 알림 탭 한 번을 잃을 뿐이다.
+      debugPrint('⚠️ SplashPage: 콜드 스타트 푸시 확인 실패, 홈으로 진행 - $e');
+      return null;
+    }
+  }
+
   Future<void> _waitRemaining(DateTime startTime, Duration minDelay) async {
     final elapsed = DateTime.now().difference(startTime);
     final remaining = minDelay - elapsed;

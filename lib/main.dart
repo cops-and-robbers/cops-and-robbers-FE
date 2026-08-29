@@ -13,6 +13,8 @@ import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
 import 'package:cops_and_robbers/core/services/app_icon/locale_app_icon_observer.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
+import 'package:cops_and_robbers/core/services/fcm/push_navigation_event.dart';
+import 'package:cops_and_robbers/core/services/fcm/push_navigation_service.dart';
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
@@ -234,6 +236,25 @@ class _LocalizedApp extends ConsumerWidget {
           case UnknownEvent():
             // 의도된 무시 — 로깅은 DeepLinkService 내부에서 처리
             break;
+        }
+      });
+    });
+
+    // 푸시 알림 탭(앱이 살아 있을 때) → 목적지 화면으로 push.
+    // 콜드 스타트는 여기로 오지 않는다 — SplashPage가 인증·활성 게임 확인을 마친
+    // 뒤 coldStartPushNavigationProvider를 보고 직접 go 한다.
+    // 상세 라우트는 rootNavigatorKey 위에 뜨므로 어느 탭·화면에서든 그 위에 얹힌다.
+    ref.listen<AsyncValue<PushNavigationEvent>>(pushNavigationEventsProvider, (
+      prev,
+      next,
+    ) {
+      next.whenData((event) {
+        switch (event) {
+          case CommunityPostPushEvent(:final postId):
+            rootNavigatorKey.currentContext?.pushNamed(
+              RoutePaths.communityDetailName,
+              pathParameters: {'postId': '$postId'},
+            );
         }
       });
     });

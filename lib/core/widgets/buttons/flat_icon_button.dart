@@ -13,7 +13,7 @@ import '../../services/vibration_service.dart';
 /// ```dart
 /// // 다색 SVG라 iconColor는 지정하지 않고 원본 색상을 유지한다
 /// FlatIconButton(
-///   assetPath: 'assets/icons/icon_noti_off.svg',
+///   assetPath: 'assets/icons/icon_noti.svg',
 ///   onPressed: () => context.push(RoutePaths.notices),
 /// )
 /// ```

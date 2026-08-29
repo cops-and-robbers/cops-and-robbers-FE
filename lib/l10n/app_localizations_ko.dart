@@ -743,6 +743,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityScrapEmpty => '스크랩한 글이 없어요';
 
   @override
+  String get pageCommunityNotificationTitle => '알림';
+
+  @override
+  String get communityNotificationEmpty => '받은 알림이 없어요';
+
+  @override
+  String communityNotificationNewComment(String content) {
+    return '새 댓글: $content';
+  }
+
+  @override
+  String communityNotificationNewReply(String content) {
+    return '새 답글: $content';
+  }
+
+  @override
   String get communityScopeAll => '전체';
 
   @override
@@ -2126,6 +2142,17 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get errorCommunityScrapsLoadGeneric =>
       '스크랩 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
+  String get errorCommunityNotificationsLoadGeneric =>
+      '알림 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
+  String get errorCommunityNotificationUnreadCountLoadGeneric =>
+      '안 읽은 알림 개수를 불러오지 못했어요';
+
+  @override
+  String get errorCommunityNotificationReadGeneric => '알림 읽음 처리에 실패했어요';
 
   @override
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';

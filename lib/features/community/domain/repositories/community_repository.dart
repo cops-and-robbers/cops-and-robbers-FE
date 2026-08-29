@@ -1,4 +1,5 @@
 import '../entities/community_address_entity.dart';
+import '../entities/community_notification_entity.dart';
 import '../entities/community_post_entity.dart';
 import '../entities/community_post_status.dart';
 import '../entities/community_scope.dart';
@@ -115,4 +116,18 @@ abstract class CommunityRepository {
   /// `size`는 `required`다 — 추상 선언에 기본값 없는 non-nullable을 두면 Dart가
   /// 컴파일을 거부하고, 기존 `getPosts`도 같은 형태다.
   Future<CommunityScrapPageEntity> getScraps({int? cursor, required int size});
+
+  /// 내 알림함 한 페이지. [cursor]가 null이면 첫 장이다. 최근 60일 이내만
+  /// 내려간다(DEC-0047).
+  Future<CommunityNotificationPageEntity> getNotifications({
+    int? cursor,
+    required int size,
+  });
+
+  /// 안 읽은 알림 개수 (종 아이콘 배지용).
+  Future<int> getUnreadNotificationCount();
+
+  /// 읽음 커서를 현재 시각으로 옮겨 지금까지의 알림을 모두 읽음으로 만든다.
+  /// 개별 알림만 읽음 처리할 수는 없다(DEC-0038).
+  Future<void> readNotifications();
 }

@@ -44,7 +44,7 @@ class HomeHeader extends StatelessWidget {
             // 공지 아이콘 — 다색 SVG라 iconColor를 주지 않는다(원본 색 유지).
             // centerRight로 정렬해 42 탭 영역 안에서 아이콘이 우측 패딩에 붙는다.
             FlatIconButton(
-              assetPath: 'assets/icons/icon_noti_off.svg',
+              assetPath: 'assets/icons/icon_noti.svg',
               iconSize: 24,
               onPressed: onNoticePressed,
               alignment: Alignment.centerRight,
