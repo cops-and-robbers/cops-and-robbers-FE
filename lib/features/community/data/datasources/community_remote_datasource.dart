@@ -147,6 +147,25 @@ abstract class CommunityRemoteDataSource {
   @DELETE('${ApiEndpoints.communityPosts}/comments/{commentId}')
   Future<void> deleteComment(@Path('commentId') int commentId);
 
+  /// 게시글 좋아요 (응답 본문 없음)
+  ///
+  /// 이미 눌러 둔 글이면 409 `ALREADY_LIKED`. Repository가 그것을 성공으로
+  /// 삼킨다 — 사용자가 원한 최종 상태가 이미 그것이기 때문이다.
+  @POST('${ApiEndpoints.communityPosts}/{postId}/likes')
+  Future<void> likePost(@Path('postId') int postId);
+
+  /// 게시글 좋아요 취소. 누른 적이 없으면 404 `LIKE_NOT_FOUND`.
+  @DELETE('${ApiEndpoints.communityPosts}/{postId}/likes')
+  Future<void> unlikePost(@Path('postId') int postId);
+
+  /// 게시글 스크랩. 이미 스크랩한 글이면 409 `ALREADY_SCRAPPED`.
+  @POST('${ApiEndpoints.communityPosts}/{postId}/scraps')
+  Future<void> scrapPost(@Path('postId') int postId);
+
+  /// 게시글 스크랩 취소. 스크랩한 적이 없으면 404 `SCRAP_NOT_FOUND`.
+  @DELETE('${ApiEndpoints.communityPosts}/{postId}/scraps')
+  Future<void> unscrapPost(@Path('postId') int postId);
+
   /// 내 채팅방 목록 조회
   ///
   /// 참여 방 수에 상한(100)이 있어 페이징하지 않는다. 마지막 대화가 최근인
@@ -190,6 +209,16 @@ abstract class CommunityRemoteDataSource {
   @GET('${ApiEndpoints.communityPosts}/{postId}/chat/messages')
   Future<CommunityChatHistoryResponseModel> getChatMessages(
     @Path('postId') int postId, {
+    @Query('cursor') int? cursor,
+    @Query('size') int? size,
+  });
+
+  /// 내 스크랩 목록 조회 (커서 페이지네이션, 로그인 필수)
+  ///
+  /// 스크랩한 순서(최신순) 고정이라 정렬·검색 파라미터가 없다. 커서는 스크랩 id
+  /// 정수이고, 목록 커서(opaque 문자열)와 형식이 다르다. 비로그인은 401이다.
+  @GET('${ApiEndpoints.communityPosts}/scraps')
+  Future<CommunityScrapListResponseModel> getScraps({
     @Query('cursor') int? cursor,
     @Query('size') int? size,
   });

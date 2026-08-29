@@ -66,6 +66,10 @@ class _CreateRepository
       maxParticipants: maxParticipants,
       status: CommunityPostStatus.recruiting,
       createdAt: DateTime(2026, 8, 20),
+      likeCount: 0,
+      isLiked: false,
+      scrapCount: 0,
+      isScrapped: false,
     );
   }
 
@@ -111,6 +115,10 @@ CommunityPostEntity existingPost() => CommunityPostEntity(
   maxParticipants: 8,
   status: CommunityPostStatus.recruiting,
   createdAt: DateTime(2026, 8, 20),
+  likeCount: 0,
+  isLiked: false,
+  scrapCount: 0,
+  isScrapped: false,
 );
 
 /// 기본 테스트 뷰포트(800×600)는 디자인 기준(393×852)보다 넓고 낮아, 글자가 2배로

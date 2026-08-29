@@ -109,4 +109,10 @@ abstract class CommunityRepository {
     required int postId,
     required CommunityPostStatus status,
   });
+
+  /// 내가 스크랩한 글 한 페이지. [cursor]가 null이면 첫 장이다.
+  ///
+  /// `size`는 `required`다 — 추상 선언에 기본값 없는 non-nullable을 두면 Dart가
+  /// 컴파일을 거부하고, 기존 `getPosts`도 같은 형태다.
+  Future<CommunityScrapPageEntity> getScraps({int? cursor, required int size});
 }

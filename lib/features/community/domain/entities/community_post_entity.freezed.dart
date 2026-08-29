@@ -50,11 +50,13 @@ mixin _$CommunityPostEntity {
   /// "0/10명"은 아무도 안 모인 것으로 오독된다.
   int? get currentParticipants => throw _privateConstructorUsedError;
 
-  /// 좋아요 수. 백엔드 추가 예정. null이면 0으로 표시한다.
-  int? get likeCount => throw _privateConstructorUsedError;
+  /// 좋아요 수와 내가 눌렀는지. 비로그인이면 [isLiked]가 항상 false다.
+  int get likeCount => throw _privateConstructorUsedError;
+  bool get isLiked => throw _privateConstructorUsedError;
 
-  /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
-  int? get bookmarkCount => throw _privateConstructorUsedError;
+  /// 스크랩 수와 내가 스크랩했는지.
+  int get scrapCount => throw _privateConstructorUsedError;
+  bool get isScrapped => throw _privateConstructorUsedError;
 
   /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
   /// false이고, 그때는 항상 join을 보내 409면 입장한다.
@@ -89,8 +91,10 @@ abstract class $CommunityPostEntityCopyWith<$Res> {
     String? region,
     String? address,
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
+    int likeCount,
+    bool isLiked,
+    int scrapCount,
+    bool isScrapped,
     bool chatJoined,
   });
 }
@@ -124,8 +128,10 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
     Object? region = freezed,
     Object? address = freezed,
     Object? currentParticipants = freezed,
-    Object? likeCount = freezed,
-    Object? bookmarkCount = freezed,
+    Object? likeCount = null,
+    Object? isLiked = null,
+    Object? scrapCount = null,
+    Object? isScrapped = null,
     Object? chatJoined = null,
   }) {
     return _then(
@@ -186,14 +192,22 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
                 ? _value.currentParticipants
                 : currentParticipants // ignore: cast_nullable_to_non_nullable
                       as int?,
-            likeCount: freezed == likeCount
+            likeCount: null == likeCount
                 ? _value.likeCount
                 : likeCount // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            bookmarkCount: freezed == bookmarkCount
-                ? _value.bookmarkCount
-                : bookmarkCount // ignore: cast_nullable_to_non_nullable
-                      as int?,
+                      as int,
+            isLiked: null == isLiked
+                ? _value.isLiked
+                : isLiked // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            scrapCount: null == scrapCount
+                ? _value.scrapCount
+                : scrapCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            isScrapped: null == isScrapped
+                ? _value.isScrapped
+                : isScrapped // ignore: cast_nullable_to_non_nullable
+                      as bool,
             chatJoined: null == chatJoined
                 ? _value.chatJoined
                 : chatJoined // ignore: cast_nullable_to_non_nullable
@@ -228,8 +242,10 @@ abstract class _$$CommunityPostEntityImplCopyWith<$Res>
     String? region,
     String? address,
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
+    int likeCount,
+    bool isLiked,
+    int scrapCount,
+    bool isScrapped,
     bool chatJoined,
   });
 }
@@ -262,8 +278,10 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
     Object? region = freezed,
     Object? address = freezed,
     Object? currentParticipants = freezed,
-    Object? likeCount = freezed,
-    Object? bookmarkCount = freezed,
+    Object? likeCount = null,
+    Object? isLiked = null,
+    Object? scrapCount = null,
+    Object? isScrapped = null,
     Object? chatJoined = null,
   }) {
     return _then(
@@ -324,14 +342,22 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
             ? _value.currentParticipants
             : currentParticipants // ignore: cast_nullable_to_non_nullable
                   as int?,
-        likeCount: freezed == likeCount
+        likeCount: null == likeCount
             ? _value.likeCount
             : likeCount // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        bookmarkCount: freezed == bookmarkCount
-            ? _value.bookmarkCount
-            : bookmarkCount // ignore: cast_nullable_to_non_nullable
-                  as int?,
+                  as int,
+        isLiked: null == isLiked
+            ? _value.isLiked
+            : isLiked // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        scrapCount: null == scrapCount
+            ? _value.scrapCount
+            : scrapCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        isScrapped: null == isScrapped
+            ? _value.isScrapped
+            : isScrapped // ignore: cast_nullable_to_non_nullable
+                  as bool,
         chatJoined: null == chatJoined
             ? _value.chatJoined
             : chatJoined // ignore: cast_nullable_to_non_nullable
@@ -359,8 +385,10 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     this.region,
     this.address,
     this.currentParticipants,
-    this.likeCount,
-    this.bookmarkCount,
+    required this.likeCount,
+    required this.isLiked,
+    required this.scrapCount,
+    required this.isScrapped,
     this.chatJoined = false,
   }) : super._();
 
@@ -411,13 +439,17 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
   @override
   final int? currentParticipants;
 
-  /// 좋아요 수. 백엔드 추가 예정. null이면 0으로 표시한다.
+  /// 좋아요 수와 내가 눌렀는지. 비로그인이면 [isLiked]가 항상 false다.
   @override
-  final int? likeCount;
+  final int likeCount;
+  @override
+  final bool isLiked;
 
-  /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
+  /// 스크랩 수와 내가 스크랩했는지.
   @override
-  final int? bookmarkCount;
+  final int scrapCount;
+  @override
+  final bool isScrapped;
 
   /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
   /// false이고, 그때는 항상 join을 보내 409면 입장한다.
@@ -427,7 +459,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
 
   @override
   String toString() {
-    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount, chatJoined: $chatJoined)';
+    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, isLiked: $isLiked, scrapCount: $scrapCount, isScrapped: $isScrapped, chatJoined: $chatJoined)';
   }
 
   @override
@@ -459,14 +491,17 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
                 other.currentParticipants == currentParticipants) &&
             (identical(other.likeCount, likeCount) ||
                 other.likeCount == likeCount) &&
-            (identical(other.bookmarkCount, bookmarkCount) ||
-                other.bookmarkCount == bookmarkCount) &&
+            (identical(other.isLiked, isLiked) || other.isLiked == isLiked) &&
+            (identical(other.scrapCount, scrapCount) ||
+                other.scrapCount == scrapCount) &&
+            (identical(other.isScrapped, isScrapped) ||
+                other.isScrapped == isScrapped) &&
             (identical(other.chatJoined, chatJoined) ||
                 other.chatJoined == chatJoined));
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     writerId,
@@ -483,9 +518,11 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     address,
     currentParticipants,
     likeCount,
-    bookmarkCount,
+    isLiked,
+    scrapCount,
+    isScrapped,
     chatJoined,
-  );
+  ]);
 
   /// Create a copy of CommunityPostEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -515,8 +552,10 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
     final String? region,
     final String? address,
     final int? currentParticipants,
-    final int? likeCount,
-    final int? bookmarkCount,
+    required final int likeCount,
+    required final bool isLiked,
+    required final int scrapCount,
+    required final bool isScrapped,
     final bool chatJoined,
   }) = _$CommunityPostEntityImpl;
   const _CommunityPostEntity._() : super._();
@@ -568,13 +607,17 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
   @override
   int? get currentParticipants;
 
-  /// 좋아요 수. 백엔드 추가 예정. null이면 0으로 표시한다.
+  /// 좋아요 수와 내가 눌렀는지. 비로그인이면 [isLiked]가 항상 false다.
   @override
-  int? get likeCount;
+  int get likeCount;
+  @override
+  bool get isLiked;
 
-  /// 스크랩 수. 백엔드 추가 예정. null이면 0으로 표시한다.
+  /// 스크랩 수와 내가 스크랩했는지.
   @override
-  int? get bookmarkCount;
+  int get scrapCount;
+  @override
+  bool get isScrapped;
 
   /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
   /// false이고, 그때는 항상 join을 보내 409면 입장한다.
@@ -792,5 +835,203 @@ abstract class _CommunityPostPageEntity implements CommunityPostPageEntity {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityPostPageEntityImplCopyWith<_$CommunityPostPageEntityImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$CommunityScrapPageEntity {
+  List<CommunityPostEntity> get items => throw _privateConstructorUsedError;
+  int? get nextCursor => throw _privateConstructorUsedError;
+  bool get hasNext => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityScrapPageEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityScrapPageEntityCopyWith<CommunityScrapPageEntity> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityScrapPageEntityCopyWith<$Res> {
+  factory $CommunityScrapPageEntityCopyWith(
+    CommunityScrapPageEntity value,
+    $Res Function(CommunityScrapPageEntity) then,
+  ) = _$CommunityScrapPageEntityCopyWithImpl<$Res, CommunityScrapPageEntity>;
+  @useResult
+  $Res call({List<CommunityPostEntity> items, int? nextCursor, bool hasNext});
+}
+
+/// @nodoc
+class _$CommunityScrapPageEntityCopyWithImpl<
+  $Res,
+  $Val extends CommunityScrapPageEntity
+>
+    implements $CommunityScrapPageEntityCopyWith<$Res> {
+  _$CommunityScrapPageEntityCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityScrapPageEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? nextCursor = freezed,
+    Object? hasNext = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            items: null == items
+                ? _value.items
+                : items // ignore: cast_nullable_to_non_nullable
+                      as List<CommunityPostEntity>,
+            nextCursor: freezed == nextCursor
+                ? _value.nextCursor
+                : nextCursor // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            hasNext: null == hasNext
+                ? _value.hasNext
+                : hasNext // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityScrapPageEntityImplCopyWith<$Res>
+    implements $CommunityScrapPageEntityCopyWith<$Res> {
+  factory _$$CommunityScrapPageEntityImplCopyWith(
+    _$CommunityScrapPageEntityImpl value,
+    $Res Function(_$CommunityScrapPageEntityImpl) then,
+  ) = __$$CommunityScrapPageEntityImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<CommunityPostEntity> items, int? nextCursor, bool hasNext});
+}
+
+/// @nodoc
+class __$$CommunityScrapPageEntityImplCopyWithImpl<$Res>
+    extends
+        _$CommunityScrapPageEntityCopyWithImpl<
+          $Res,
+          _$CommunityScrapPageEntityImpl
+        >
+    implements _$$CommunityScrapPageEntityImplCopyWith<$Res> {
+  __$$CommunityScrapPageEntityImplCopyWithImpl(
+    _$CommunityScrapPageEntityImpl _value,
+    $Res Function(_$CommunityScrapPageEntityImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityScrapPageEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? nextCursor = freezed,
+    Object? hasNext = null,
+  }) {
+    return _then(
+      _$CommunityScrapPageEntityImpl(
+        items: null == items
+            ? _value._items
+            : items // ignore: cast_nullable_to_non_nullable
+                  as List<CommunityPostEntity>,
+        nextCursor: freezed == nextCursor
+            ? _value.nextCursor
+            : nextCursor // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        hasNext: null == hasNext
+            ? _value.hasNext
+            : hasNext // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CommunityScrapPageEntityImpl implements _CommunityScrapPageEntity {
+  const _$CommunityScrapPageEntityImpl({
+    required final List<CommunityPostEntity> items,
+    required this.nextCursor,
+    required this.hasNext,
+  }) : _items = items;
+
+  final List<CommunityPostEntity> _items;
+  @override
+  List<CommunityPostEntity> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
+
+  @override
+  final int? nextCursor;
+  @override
+  final bool hasNext;
+
+  @override
+  String toString() {
+    return 'CommunityScrapPageEntity(items: $items, nextCursor: $nextCursor, hasNext: $hasNext)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityScrapPageEntityImpl &&
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.nextCursor, nextCursor) ||
+                other.nextCursor == nextCursor) &&
+            (identical(other.hasNext, hasNext) || other.hasNext == hasNext));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_items),
+    nextCursor,
+    hasNext,
+  );
+
+  /// Create a copy of CommunityScrapPageEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityScrapPageEntityImplCopyWith<_$CommunityScrapPageEntityImpl>
+  get copyWith =>
+      __$$CommunityScrapPageEntityImplCopyWithImpl<
+        _$CommunityScrapPageEntityImpl
+      >(this, _$identity);
+}
+
+abstract class _CommunityScrapPageEntity implements CommunityScrapPageEntity {
+  const factory _CommunityScrapPageEntity({
+    required final List<CommunityPostEntity> items,
+    required final int? nextCursor,
+    required final bool hasNext,
+  }) = _$CommunityScrapPageEntityImpl;
+
+  @override
+  List<CommunityPostEntity> get items;
+  @override
+  int? get nextCursor;
+  @override
+  bool get hasNext;
+
+  /// Create a copy of CommunityScrapPageEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityScrapPageEntityImplCopyWith<_$CommunityScrapPageEntityImpl>
   get copyWith => throw _privateConstructorUsedError;
 }

@@ -22,7 +22,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/community_post_errors.dart';
-import '../../domain/entities/community_interaction_entity.dart';
+import '../../domain/entities/community_comment_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
 import '../community_editor_route.dart';
@@ -37,8 +37,8 @@ import '../widgets/community_post_menu.dart';
 
 /// 모집글 상세 화면
 ///
-/// 게시글 본문과 댓글은 실서버, 좋아요·스크랩·참여 인원은 아직 목이다
-/// (`community_detail_provider.dart`의 교체 지점 주석 참고).
+/// 게시글 본문·좋아요·스크랩·댓글은 실서버다. 참여 인원만 서버가 아직 안 줘서
+/// null이고, 화면은 카드와 같이 정원만 표시한다.
 /// 비로그인도 열람할 수 있고(DEC-0014), 쓰기 동작만 로그인을 요구한다.
 class CommunityDetailPage extends ConsumerStatefulWidget {
   const CommunityDetailPage({super.key, required this.postId});
@@ -176,7 +176,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                           ),
                         ),
                         SizedBox(height: AppSpacing.vertical24),
-                        _buildActionRow(l10n, state.interaction),
+                        _buildActionRow(l10n, state.post),
                         SizedBox(height: AppSpacing.vertical16),
                         AppButton(
                           // 기본 폭 353은 좌우 20 패딩 기준이라 이 화면(좌우 24)에서는
@@ -244,7 +244,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
   /// 상태 배지 + 참여 인원 + 제목
   Widget _buildHeader(AppLocalizations l10n, CommunityDetailState state) {
     final isRecruiting = state.post.status == CommunityPostStatus.recruiting;
-    final participants = state.interaction.currentParticipants;
+    final participants = state.post.currentParticipants;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,21 +345,19 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
   }
 
   /// 좋아요 · 스크랩 · 공유 — 카드형 버튼 3개, 사이 간격 18
-  Widget _buildActionRow(
-    AppLocalizations l10n,
-    CommunityInteractionEntity interaction,
-  ) {
+  Widget _buildActionRow(AppLocalizations l10n, CommunityPostEntity post) {
     // 고정폭(110)이면 간격 18과 합쳐 가용폭을 넘쳐 오버플로우가 난다 —
     // Expanded로 균등 분배해 화면 폭에 맞게 비율대로 줄어들게 한다.
     return Row(
       children: [
         Expanded(
           child: _ActionButton(
-            assetPath: interaction.isLiked
+            key: const Key('community_detail_like'),
+            assetPath: post.isLiked
                 ? 'assets/icons/icon_like_on.svg'
                 : 'assets/icons/icon_like_off.svg',
             color: AppColors.red,
-            label: '${interaction.likeCount}',
+            label: '${post.likeCount}',
             textStyle: AppTextStyles.label16Medium,
             onTap: () => _requireLogin(
               () => _runInteraction(
@@ -375,11 +373,12 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         SizedBox(width: AppSpacing.horizontal18),
         Expanded(
           child: _ActionButton(
-            assetPath: interaction.isBookmarked
+            key: const Key('community_detail_scrap'),
+            assetPath: post.isScrapped
                 ? 'assets/icons/icon_save_on.svg'
                 : 'assets/icons/icon_save_off.svg',
             color: AppColors.yellow,
-            label: '${interaction.bookmarkCount}',
+            label: '${post.scrapCount}',
             textStyle: AppTextStyles.label16Medium,
             onTap: () => _requireLogin(
               () => _runInteraction(
@@ -387,7 +386,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                     .read(
                       communityDetailNotifierProvider(widget.postId).notifier,
                     )
-                    .toggleBookmark(),
+                    .toggleScrap(),
               ),
             ),
           ),
@@ -660,6 +659,7 @@ class _MetaRow extends StatelessWidget {
 /// `Expanded`가 정한다.
 class _ActionButton extends StatelessWidget {
   const _ActionButton({
+    super.key,
     required this.assetPath,
     required this.color,
     required this.label,

@@ -33,9 +33,6 @@ String _$communityRepositoryHash() =>
 
 /// `CommunityRepository` Provider
 ///
-/// 좋아요·스크랩은 응답에 카운트·내 반응 필드가 없어 아직 목이다
-/// (`communityInteractionRepositoryProvider`). 게시글 CRUD와 댓글은 실서버다.
-///
 /// Copied from [communityRepository].
 @ProviderFor(communityRepository)
 final communityRepositoryProvider =
@@ -74,6 +71,30 @@ final communityCommentRepositoryProvider =
 // ignore: unused_element
 typedef CommunityCommentRepositoryRef =
     AutoDisposeProviderRef<CommunityCommentRepository>;
+String _$communityReactionRepositoryHash() =>
+    r'b211bf9d60fae1df02e98a6702c86bdf69618bdf';
+
+/// `CommunityReactionRepository` Provider
+///
+/// 상태를 안 들고 있으므로 keepAlive가 필요 없다 — 서버가 상태를 갖는다.
+///
+/// Copied from [communityReactionRepository].
+@ProviderFor(communityReactionRepository)
+final communityReactionRepositoryProvider =
+    AutoDisposeProvider<CommunityReactionRepository>.internal(
+      communityReactionRepository,
+      name: r'communityReactionRepositoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$communityReactionRepositoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CommunityReactionRepositoryRef =
+    AutoDisposeProviderRef<CommunityReactionRepository>;
 String _$currentPositionResolverHash() =>
     r'c44ee30313052542cd510b7f078f5d9688a6901a';
 

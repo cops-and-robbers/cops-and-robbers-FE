@@ -1,26 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'community_interaction_entity.freezed.dart';
-
-/// 모집글의 상호작용 상태 (좋아요·스크랩·참여 인원)
-///
-/// 게시글 본문(`CommunityPostEntity`)과 나눠 두는 이유: 이 값들만 백엔드가 아직
-/// 안 주고, 앱에서 목데이터로 채우고 있다. 한 덩어리로 합쳐 두면 API가 하나씩
-/// 열릴 때마다 게시글 엔티티까지 흔들린다.
-///
-/// [isLiked]·[isBookmarked]는 "내가 눌렀는지"다 — 비로그인이면 항상 false.
-@freezed
-class CommunityInteractionEntity with _$CommunityInteractionEntity {
-  const factory CommunityInteractionEntity({
-    required bool isLiked,
-    required int likeCount,
-    required bool isBookmarked,
-    required int bookmarkCount,
-
-    /// 현재 참여 인원. 모르면 null — 화면이 정원만 표시한다.
-    int? currentParticipants,
-  }) = _CommunityInteractionEntity;
-}
+part 'community_comment_entity.freezed.dart';
 
 /// 모집글 댓글
 ///

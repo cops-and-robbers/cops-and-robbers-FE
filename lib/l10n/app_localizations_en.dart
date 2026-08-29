@@ -791,6 +791,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pageCommunityEmpty => 'No posts yet';
 
   @override
+  String get pageCommunityScrapTitle => 'Scraps';
+
+  @override
+  String get communityScrapEmpty => 'Nothing scrapped yet';
+
+  @override
   String get communityScopeAll => 'All';
 
   @override
@@ -1830,6 +1836,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAccountChangeNickname => 'Change nickname';
 
   @override
+  String get settingsAccountMyScraps => 'My scraps';
+
+  @override
   String get settingsSectionAppPreferences => 'App settings';
 
   @override
@@ -2260,6 +2269,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCommunityCommentDeleteGeneric =>
       'Something went wrong while deleting the comment';
+
+  @override
+  String get errorCommunityReactionGeneric =>
+      'Couldn\'t complete that. Please try again shortly';
+
+  @override
+  String get errorCommunityScrapsLoadGeneric =>
+      'Couldn\'t load your scraps. Please try again shortly';
 
   @override
   String get errorCommunityAddressLoadGeneric =>
@@ -2717,6 +2734,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeNotAChatMember => 'You\'re not a member of this chat';
+
+  @override
+  String get errorCodeReactionAlreadyApplied => 'This is already up to date';
 
   @override
   String get pingFound => 'Found';

@@ -13,6 +13,7 @@ import '../core/constants/game_team.dart';
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
 import '../core/utils/custom_page_transitions.dart';
+import '../core/widgets/buttons/app_button.dart';
 import '../l10n/app_localizations.dart';
 import 'route_paths.dart';
 
@@ -33,6 +34,7 @@ import '../features/community/presentation/pages/community_chat_room_page.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
 import '../features/community/presentation/pages/community_detail_page.dart';
 import '../features/community/presentation/pages/community_page.dart';
+import '../features/community/presentation/pages/community_scrap_page.dart';
 import '../features/community/presentation/pages/community_search_page.dart';
 import '../features/credits/presentation/pages/credits_page.dart';
 import '../features/mypage/presentation/pages/agreement_settings_page.dart';
@@ -629,6 +631,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                 // 다른 화면과 달라진다. go_router 는 parentNavigatorKey 를 자식에
                 // 상속하지 않으므로 라우트마다 붙인다.
                 routes: [
+                  // 화면은 커뮤니티 글 목록이지만 진입점이 마이페이지라 여기에 둔다.
+                  GoRoute(
+                    path: 'scraps',
+                    name: RoutePaths.myScrapsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const CommunityScrapPage(),
+                      isForward: true,
+                    ),
+                  ),
                   GoRoute(
                     path: 'language',
                     name: RoutePaths.languageSettingsName,
@@ -919,17 +932,14 @@ class _ErrorPage extends ConsumerWidget {
                 style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
               ),
               SizedBox(height: AppSpacing.vertical24),
-              ElevatedButton(
+              AppButton(
+                text: l10n.buttonLogout,
                 onPressed: () async {
                   await ref.read(authNotifierProvider.notifier).signOut();
                   if (context.mounted) {
                     context.go(RoutePaths.login);
                   }
                 },
-                child: Text(
-                  l10n.buttonLogout,
-                  style: AppTextStyles.paragraph_14,
-                ),
               ),
             ],
           ),

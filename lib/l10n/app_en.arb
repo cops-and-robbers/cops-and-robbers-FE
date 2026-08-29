@@ -256,6 +256,8 @@
   },
   "pageCommunityTitle": "Community",
   "pageCommunityEmpty": "No posts yet",
+  "pageCommunityScrapTitle": "Scraps",
+  "communityScrapEmpty": "Nothing scrapped yet",
   "communityScopeAll": "All",
   "communityScopeNearby": "Nearby",
   "communityScopeMine": "My meetups",
@@ -599,6 +601,7 @@
   "pageSettingsTitle": "Settings",
   "settingsSectionAccount": "Account",
   "settingsAccountChangeNickname": "Change nickname",
+  "settingsAccountMyScraps": "My scraps",
   "settingsSectionAppPreferences": "App settings",
   "settingsAppGameNotification": "Game notifications",
   "settingsAppGameNotificationDescription": "Configure notifications for events occurring during the game",
@@ -727,6 +730,8 @@
   "errorCommunityCommentsLoadGeneric": "Something went wrong while loading comments",
   "errorCommunityCommentCreateGeneric": "Something went wrong while posting your comment",
   "errorCommunityCommentDeleteGeneric": "Something went wrong while deleting the comment",
+  "errorCommunityReactionGeneric": "Couldn't complete that. Please try again shortly",
+  "errorCommunityScrapsLoadGeneric": "Couldn't load your scraps. Please try again shortly",
   "errorCommunityAddressLoadGeneric": "Something went wrong while loading the address",
   "errorNoticeLoadFailed": "Failed to load notices",
   "pageNoticesTitle": "Notices",
@@ -856,6 +861,7 @@
   "errorCodeChatRoomFull": "This chat is full",
   "errorCodeJoinedChatRoomLimitExceeded": "You've joined too many chats. Leave one and try again",
   "errorCodeNotAChatMember": "You're not a member of this chat",
+  "errorCodeReactionAlreadyApplied": "This is already up to date",
   "pingFound": "Found",
   "@pingFound": {
     "description": "Map ping selection card — spotted-enemy ping label"

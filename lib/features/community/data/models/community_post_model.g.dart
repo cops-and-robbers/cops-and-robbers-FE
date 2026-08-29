@@ -58,6 +58,21 @@ Map<String, dynamic> _$$CursorInfoModelImplToJson(
   'hasNext': instance.hasNext,
 };
 
+_$CommunityPostNotificationSettingModelImpl
+_$$CommunityPostNotificationSettingModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$CommunityPostNotificationSettingModelImpl(
+  commentNotificationsEnabled: json['commentNotificationsEnabled'] as bool,
+  replyNotificationsEnabled: json['replyNotificationsEnabled'] as bool,
+);
+
+Map<String, dynamic> _$$CommunityPostNotificationSettingModelImplToJson(
+  _$CommunityPostNotificationSettingModelImpl instance,
+) => <String, dynamic>{
+  'commentNotificationsEnabled': instance.commentNotificationsEnabled,
+  'replyNotificationsEnabled': instance.replyNotificationsEnabled,
+};
+
 _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$CommunityPostResponseModelImpl(
@@ -73,9 +88,16 @@ _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
   status: json['status'] as String,
   createdAt: DateTime.parse(json['createdAt'] as String),
   writerNickname: json['writerNickname'] as String?,
+  likeCount: (json['likeCount'] as num).toInt(),
+  scrapCount: (json['scrapCount'] as num).toInt(),
+  liked: json['isLikedByRequester'] as bool,
+  scrapped: json['isScrappedByRequester'] as bool,
+  notificationSettings: json['notificationSettings'] == null
+      ? null
+      : CommunityPostNotificationSettingModel.fromJson(
+          json['notificationSettings'] as Map<String, dynamic>,
+        ),
   currentParticipants: (json['currentParticipants'] as num?)?.toInt(),
-  likeCount: (json['likeCount'] as num?)?.toInt(),
-  bookmarkCount: (json['bookmarkCount'] as num?)?.toInt(),
   chatJoined: json['chatJoined'] as bool?,
 );
 
@@ -92,9 +114,12 @@ Map<String, dynamic> _$$CommunityPostResponseModelImplToJson(
   'status': instance.status,
   'createdAt': instance.createdAt.toIso8601String(),
   'writerNickname': instance.writerNickname,
-  'currentParticipants': instance.currentParticipants,
   'likeCount': instance.likeCount,
-  'bookmarkCount': instance.bookmarkCount,
+  'scrapCount': instance.scrapCount,
+  'isLikedByRequester': instance.liked,
+  'isScrappedByRequester': instance.scrapped,
+  'notificationSettings': instance.notificationSettings?.toJson(),
+  'currentParticipants': instance.currentParticipants,
   'chatJoined': instance.chatJoined,
 };
 
@@ -115,6 +140,27 @@ Map<String, dynamic> _$$CommunityPostListResponseModelImplToJson(
 ) => <String, dynamic>{
   'content': instance.content.map((e) => e.toJson()).toList(),
   'cursor': instance.cursor.toJson(),
+};
+
+_$CommunityScrapListResponseModelImpl
+_$$CommunityScrapListResponseModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityScrapListResponseModelImpl(
+      content: (json['content'] as List<dynamic>)
+          .map(
+            (e) =>
+                CommunityPostResponseModel.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
+      hasNext: json['hasNext'] as bool,
+      nextCursor: (json['nextCursor'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$$CommunityScrapListResponseModelImplToJson(
+  _$CommunityScrapListResponseModelImpl instance,
+) => <String, dynamic>{
+  'content': instance.content.map((e) => e.toJson()).toList(),
+  'hasNext': instance.hasNext,
+  'nextCursor': instance.nextCursor,
 };
 
 _$CommunityCountryResponseModelImpl

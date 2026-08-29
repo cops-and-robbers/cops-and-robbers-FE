@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_comment_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
+import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
+import 'package:cops_and_robbers/features/community/domain/repositories/community_reaction_repository.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_detail_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +26,10 @@ CommunityPostEntity _post(int id) => CommunityPostEntity(
   maxParticipants: 10,
   status: CommunityPostStatus.recruiting,
   createdAt: DateTime(2026, 9, 1),
+  likeCount: 0,
+  isLiked: false,
+  scrapCount: 0,
+  isScrapped: false,
 );
 
 /// 시스템 경계 대체 — Repository 인터페이스만 가짜고 Notifier 로직은 실물이다.
@@ -185,10 +193,81 @@ class _FailingAfterFirstRepository
   }
 }
 
+/// 목록과 상세를 함께 쓰는 가짜 — 상세에서 토글한 결과가 피드의 그 칸에
+/// 반영되는지 끝까지 태우려면(`_syncFeedCard`) 둘 다 진짜로 응답해야 한다.
+/// `CommunityRepositoryDetailStubs`가 채워 주는 나머지(수정·작성·주소·삭제·
+/// 상태변경)는 이 테스트가 건드리지 않는다.
+class _ListAndDetailRepository
+    with CommunityRepositoryDetailStubs
+    implements CommunityRepository {
+  _ListAndDetailRepository(this.items);
+
+  final List<CommunityPostEntity> items;
+
+  /// 피드가 안 살아있을 때 `_syncFeedCard`가 조회를 유발하지 않는지 세는 용도.
+  int getPostsCallCount = 0;
+
+  @override
+  Future<CommunityPostPageEntity> getPosts({
+    String? cursor,
+    required int size,
+    CommunityScope scope = CommunityScope.all,
+    required String countryCode,
+    CommunitySortOption sort = CommunitySortOption.latest,
+    String? keyword,
+    double? latitude,
+    double? longitude,
+  }) async {
+    getPostsCallCount++;
+    return CommunityPostPageEntity(
+      items: items,
+      nextCursor: null,
+      hasNext: false,
+    );
+  }
+
+  @override
+  Future<CommunityPostEntity> getPost(int postId) async =>
+      items.firstWhere((p) => p.id == postId);
+}
+
+/// 댓글은 이 테스트의 관심사가 아니다 — 상세 build()가 요구하니 빈 목록만 준다.
+class _EmptyCommentRepository implements CommunityCommentRepository {
+  @override
+  Future<List<CommunityCommentEntity>> getComments(int postId) async => [];
+
+  @override
+  Future<CommunityCommentEntity> addComment({
+    required int postId,
+    required String content,
+    int? parentId,
+  }) => throw UnimplementedError('이 테스트는 댓글 작성을 쓰지 않는다');
+
+  @override
+  Future<void> deleteComment(int commentId) =>
+      throw UnimplementedError('이 테스트는 댓글 삭제를 쓰지 않는다');
+}
+
+/// 좋아요·스크랩 토글이 항상 성공하는 가짜.
+class _SucceedingReactionRepository implements CommunityReactionRepository {
+  @override
+  Future<void> like(int postId) async {}
+
+  @override
+  Future<void> unlike(int postId) async {}
+
+  @override
+  Future<void> scrap(int postId) async {}
+
+  @override
+  Future<void> unscrap(int postId) async {}
+}
+
 ProviderContainer _containerWith(
   CommunityRepository repo, {
   String countryCode = 'KR',
   DateTime Function()? now,
+  List<Override> extraOverrides = const [],
 }) {
   final container = ProviderContainer(
     overrides: [
@@ -201,6 +280,7 @@ ProviderContainer _containerWith(
       ),
       // 시계도 시스템 경계다 — 유효 시간 판정을 검증하려면 앞으로 돌릴 수 있어야 한다.
       if (now != null) clockProvider.overrideWithValue(now),
+      ...extraOverrides,
     ],
   );
   addTearDown(container.dispose);
@@ -864,6 +944,137 @@ void main() {
           .items;
       expect(items.map((e) => e.title), ['모집글 1', '제목을 고쳤어요']);
     });
+
+    test('replaces_only_the_touched_card_when_reaction_changes', () async {
+      // 무효화가 아니라 그 한 칸만 갈아끼운다 — 커서로 쌓아 둔 나머지가
+      // 그대로 남아야 한다.
+      final repo = _MutatingRepository([_post(1), _post(2)]);
+      final container = _containerWith(repo);
+      final notifier = container.read(
+        communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        ).notifier,
+      );
+      await container.read(
+        communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        ).future,
+      );
+
+      final before = container
+          .read(
+            communityFeedNotifierProvider(
+              CommunityScope.all,
+              CommunitySortOption.latest,
+              null,
+            ),
+          )
+          .value!;
+      final target = before.items.first;
+
+      notifier.replacePost(
+        target.copyWith(isLiked: true, likeCount: target.likeCount + 1),
+      );
+
+      final after = container
+          .read(
+            communityFeedNotifierProvider(
+              CommunityScope.all,
+              CommunitySortOption.latest,
+              null,
+            ),
+          )
+          .value!;
+      expect(after.items.first.isLiked, isTrue);
+      expect(after.items.length, before.items.length);
+      expect(after.items.skip(1).toList(), before.items.skip(1).toList());
+    });
+
+    test('reflects_a_detail_like_toggle_onto_the_matching_feed_card', () async {
+      // 위 테스트는 replacePost 단독 계약(그 칸만 갈아끼움)을 지킨다. 이
+      // 테스트는 CommunityDetailNotifier.toggleLike()가 실제로
+      // _syncFeedCard()를 거쳐 피드까지 닿는지 배선 자체를 끝까지 태운다.
+      final repo = _ListAndDetailRepository([_post(1), _post(2)]);
+      final container = _containerWith(
+        repo,
+        extraOverrides: [
+          communityCommentRepositoryProvider.overrideWithValue(
+            _EmptyCommentRepository(),
+          ),
+          communityReactionRepositoryProvider.overrideWithValue(
+            _SucceedingReactionRepository(),
+          ),
+        ],
+      );
+
+      // _syncFeedCard가 읽는 family 키(스코프 all·정렬 latest·keyword null)와
+      // 같은 인스턴스를 먼저 살려 둔다.
+      await container.read(
+        communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        ).future,
+      );
+      await container.read(communityDetailNotifierProvider(2).future);
+
+      await container
+          .read(communityDetailNotifierProvider(2).notifier)
+          .toggleLike();
+
+      final items = container
+          .read(
+            communityFeedNotifierProvider(
+              CommunityScope.all,
+              CommunitySortOption.latest,
+              null,
+            ),
+          )
+          .requireValue
+          .items;
+      expect(items[1].isLiked, isTrue);
+      expect(items[1].likeCount, _post(2).likeCount + 1);
+      // 건드리지 않은 행은 그대로다.
+      expect(items[0], _post(1));
+    });
+
+    test(
+      'does_not_query_the_feed_when_toggling_like_while_the_feed_is_not_alive',
+      () async {
+        // 상세는 피드를 거치지 않고도 도달한다(채팅방에서 곧장 push). 그
+        // 경로에서 _syncFeedCard가 죽어 있는 피드 인스턴스를 가드 없이
+        // .notifier로 읽으면 그 자리에서 빌드가 걸려 getPosts()가 실제로
+        // 조회된다 — 화면에 보이지도 않는 조회가 조용히 나가는 회귀를 잡는다.
+        final repo = _ListAndDetailRepository([_post(1), _post(2)]);
+        final container = _containerWith(
+          repo,
+          extraOverrides: [
+            communityCommentRepositoryProvider.overrideWithValue(
+              _EmptyCommentRepository(),
+            ),
+            communityReactionRepositoryProvider.overrideWithValue(
+              _SucceedingReactionRepository(),
+            ),
+          ],
+        );
+
+        // 피드는 한 번도 read하지 않는다 — 채팅방에서 상세로 곧장 온 상황.
+        await container.read(communityDetailNotifierProvider(2).future);
+        await container
+            .read(communityDetailNotifierProvider(2).notifier)
+            .toggleLike();
+        // 가드 없이 .notifier를 읽었다면 build()가 마이크로태스크로 이어지며
+        // getPosts()를 나중에 부른다 — 그 잔여 마이크로태스크까지 흘려보낸
+        // 뒤에 세야 가드 부재를 놓치지 않는다.
+        await Future<void>.delayed(Duration.zero);
+
+        expect(repo.getPostsCallCount, 0);
+      },
+    );
   });
 
   group('CommunityFeedNotifier.refreshIfStale', () {

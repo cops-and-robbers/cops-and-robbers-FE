@@ -104,6 +104,17 @@ class _MyPageState extends ConsumerState<MyPage> {
               trailing: _buildForwardArrow(),
               onTap: _onNicknameChange,
             ),
+            _buildItemDivider(),
+            _buildMenuItem(
+              text: l10n.settingsAccountMyScraps,
+              // 모집글 카드의 스크랩 아이콘과 같은 에셋·같은 원본 색(노랑).
+              // 세로 20 — 24 슬롯 안에서 다른 아이콘과 눈높이를 맞춘 값이다.
+              // 가로는 SvgPicture 기본 contain이 원본 비율(12:14)대로 잡는다.
+              leadingAsset: 'assets/icons/icon_save_on.svg',
+              leadingAssetSize: 20,
+              trailing: _buildForwardArrow(),
+              onTap: () => context.push(RoutePaths.myScraps),
+            ),
             SizedBox(height: AppSpacing.vertical8),
 
             _buildSectionDivider(),
@@ -406,6 +417,7 @@ class _MyPageState extends ConsumerState<MyPage> {
     required String text,
     required VoidCallback onTap,
     String? leadingAsset,
+    double? leadingAssetSize,
     Color? textColor,
     String? subtitle,
     Widget? subtitleWidget,
@@ -423,7 +435,20 @@ class _MyPageState extends ConsumerState<MyPage> {
           children: [
             if (leadingAsset != null) ...[
               // 받은 아이콘이 다색이라 colorFilter 를 걸지 않는다.
-              SvgPicture.asset(leadingAsset, width: 24.w, height: 24.w),
+              // 스크랩처럼 원본이 24보다 작은 아이콘은 [leadingAssetSize]로 원본
+              // 크기를 준다 — 24로 늘리면 옆 24 아이콘들보다 굵고 커 보인다.
+              // 자리는 24로 고정해 어느 행이든 글자 시작점이 같게 둔다.
+              SizedBox(
+                width: 24.w,
+                height: 24.w,
+                child: Center(
+                  child: SvgPicture.asset(
+                    leadingAsset,
+                    width: (leadingAssetSize ?? 24).w,
+                    height: (leadingAssetSize ?? 24).w,
+                  ),
+                ),
+              ),
               SizedBox(width: 18.w),
             ],
             Expanded(

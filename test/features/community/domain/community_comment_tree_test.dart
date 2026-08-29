@@ -1,5 +1,5 @@
 import 'package:cops_and_robbers/features/community/domain/community_comment_tree.dart';
-import 'package:cops_and_robbers/features/community/domain/entities/community_interaction_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_comment_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 CommunityCommentEntity _comment(

@@ -739,6 +739,221 @@ abstract class _CursorInfoModel implements CursorInfoModel {
       throw _privateConstructorUsedError;
 }
 
+CommunityPostNotificationSettingModel
+_$CommunityPostNotificationSettingModelFromJson(Map<String, dynamic> json) {
+  return _CommunityPostNotificationSettingModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityPostNotificationSettingModel {
+  bool get commentNotificationsEnabled => throw _privateConstructorUsedError;
+  bool get replyNotificationsEnabled => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityPostNotificationSettingModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityPostNotificationSettingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityPostNotificationSettingModelCopyWith<
+    CommunityPostNotificationSettingModel
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityPostNotificationSettingModelCopyWith<$Res> {
+  factory $CommunityPostNotificationSettingModelCopyWith(
+    CommunityPostNotificationSettingModel value,
+    $Res Function(CommunityPostNotificationSettingModel) then,
+  ) =
+      _$CommunityPostNotificationSettingModelCopyWithImpl<
+        $Res,
+        CommunityPostNotificationSettingModel
+      >;
+  @useResult
+  $Res call({bool commentNotificationsEnabled, bool replyNotificationsEnabled});
+}
+
+/// @nodoc
+class _$CommunityPostNotificationSettingModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityPostNotificationSettingModel
+>
+    implements $CommunityPostNotificationSettingModelCopyWith<$Res> {
+  _$CommunityPostNotificationSettingModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityPostNotificationSettingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? commentNotificationsEnabled = null,
+    Object? replyNotificationsEnabled = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            commentNotificationsEnabled: null == commentNotificationsEnabled
+                ? _value.commentNotificationsEnabled
+                : commentNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            replyNotificationsEnabled: null == replyNotificationsEnabled
+                ? _value.replyNotificationsEnabled
+                : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityPostNotificationSettingModelImplCopyWith<$Res>
+    implements $CommunityPostNotificationSettingModelCopyWith<$Res> {
+  factory _$$CommunityPostNotificationSettingModelImplCopyWith(
+    _$CommunityPostNotificationSettingModelImpl value,
+    $Res Function(_$CommunityPostNotificationSettingModelImpl) then,
+  ) = __$$CommunityPostNotificationSettingModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool commentNotificationsEnabled, bool replyNotificationsEnabled});
+}
+
+/// @nodoc
+class __$$CommunityPostNotificationSettingModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityPostNotificationSettingModelCopyWithImpl<
+          $Res,
+          _$CommunityPostNotificationSettingModelImpl
+        >
+    implements _$$CommunityPostNotificationSettingModelImplCopyWith<$Res> {
+  __$$CommunityPostNotificationSettingModelImplCopyWithImpl(
+    _$CommunityPostNotificationSettingModelImpl _value,
+    $Res Function(_$CommunityPostNotificationSettingModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityPostNotificationSettingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? commentNotificationsEnabled = null,
+    Object? replyNotificationsEnabled = null,
+  }) {
+    return _then(
+      _$CommunityPostNotificationSettingModelImpl(
+        commentNotificationsEnabled: null == commentNotificationsEnabled
+            ? _value.commentNotificationsEnabled
+            : commentNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        replyNotificationsEnabled: null == replyNotificationsEnabled
+            ? _value.replyNotificationsEnabled
+            : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityPostNotificationSettingModelImpl
+    implements _CommunityPostNotificationSettingModel {
+  const _$CommunityPostNotificationSettingModelImpl({
+    required this.commentNotificationsEnabled,
+    required this.replyNotificationsEnabled,
+  });
+
+  factory _$CommunityPostNotificationSettingModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityPostNotificationSettingModelImplFromJson(json);
+
+  @override
+  final bool commentNotificationsEnabled;
+  @override
+  final bool replyNotificationsEnabled;
+
+  @override
+  String toString() {
+    return 'CommunityPostNotificationSettingModel(commentNotificationsEnabled: $commentNotificationsEnabled, replyNotificationsEnabled: $replyNotificationsEnabled)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityPostNotificationSettingModelImpl &&
+            (identical(
+                  other.commentNotificationsEnabled,
+                  commentNotificationsEnabled,
+                ) ||
+                other.commentNotificationsEnabled ==
+                    commentNotificationsEnabled) &&
+            (identical(
+                  other.replyNotificationsEnabled,
+                  replyNotificationsEnabled,
+                ) ||
+                other.replyNotificationsEnabled == replyNotificationsEnabled));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    commentNotificationsEnabled,
+    replyNotificationsEnabled,
+  );
+
+  /// Create a copy of CommunityPostNotificationSettingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityPostNotificationSettingModelImplCopyWith<
+    _$CommunityPostNotificationSettingModelImpl
+  >
+  get copyWith =>
+      __$$CommunityPostNotificationSettingModelImplCopyWithImpl<
+        _$CommunityPostNotificationSettingModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityPostNotificationSettingModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityPostNotificationSettingModel
+    implements CommunityPostNotificationSettingModel {
+  const factory _CommunityPostNotificationSettingModel({
+    required final bool commentNotificationsEnabled,
+    required final bool replyNotificationsEnabled,
+  }) = _$CommunityPostNotificationSettingModelImpl;
+
+  factory _CommunityPostNotificationSettingModel.fromJson(
+    Map<String, dynamic> json,
+  ) = _$CommunityPostNotificationSettingModelImpl.fromJson;
+
+  @override
+  bool get commentNotificationsEnabled;
+  @override
+  bool get replyNotificationsEnabled;
+
+  /// Create a copy of CommunityPostNotificationSettingModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityPostNotificationSettingModelImplCopyWith<
+    _$CommunityPostNotificationSettingModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
 CommunityPostResponseModel _$CommunityPostResponseModelFromJson(
   Map<String, dynamic> json,
 ) {
@@ -758,11 +973,30 @@ mixin _$CommunityPostResponseModel {
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// 작성자 닉네임. 탈퇴한 작성자면 null.
-  String? get writerNickname =>
+  String? get writerNickname => throw _privateConstructorUsedError;
+
+  /// 좋아요·스크랩 수와 내 반응.
+  ///
+  /// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.27.0, BE #187)
+  ///
+  /// non-null로 받는다 — 목록·단건·내 스크랩 목록·생성·수정·상태변경 전부 이
+  /// 4필드를 항상 채운다(DEC-0048). 서버가 빠뜨리면 여기서 파싱이 멈춘다.
+  /// [liked]·[scrapped]는 와이어 키가 `isLikedByRequester`·`isScrappedByRequester`다.
+  int get likeCount => throw _privateConstructorUsedError;
+  int get scrapCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'isLikedByRequester')
+  bool get liked => throw _privateConstructorUsedError;
+  @JsonKey(name: 'isScrappedByRequester')
+  bool get scrapped => throw _privateConstructorUsedError;
+
+  /// 이 글의 댓글·답글 알림 수신 설정. **단건 조회에서만 실린다.**
+  ///
+  /// null인 경우가 둘이다 — 목록 응답은 이 키를 아예 싣지 않고(서버가 단건에서만
+  /// 채운다), 비로그인 단건 조회는 보여줄 설정이 없어 명시적 null이 온다.
+  /// 그래서 [likeCount]처럼 non-null로 받으면 목록 파싱이 통째로 멈춘다.
+  CommunityPostNotificationSettingModel? get notificationSettings =>
       throw _privateConstructorUsedError; // ── 백엔드 추가 예정 ──
   int? get currentParticipants => throw _privateConstructorUsedError;
-  int? get likeCount => throw _privateConstructorUsedError;
-  int? get bookmarkCount => throw _privateConstructorUsedError;
   bool? get chatJoined => throw _privateConstructorUsedError;
 
   /// Serializes this CommunityPostResponseModel to a JSON map.
@@ -797,13 +1031,18 @@ abstract class $CommunityPostResponseModelCopyWith<$Res> {
     String status,
     DateTime createdAt,
     String? writerNickname,
+    int likeCount,
+    int scrapCount,
+    @JsonKey(name: 'isLikedByRequester') bool liked,
+    @JsonKey(name: 'isScrappedByRequester') bool scrapped,
+    CommunityPostNotificationSettingModel? notificationSettings,
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
     bool? chatJoined,
   });
 
   $CommunityLocationModelCopyWith<$Res> get location;
+  $CommunityPostNotificationSettingModelCopyWith<$Res>?
+  get notificationSettings;
 }
 
 /// @nodoc
@@ -834,9 +1073,12 @@ class _$CommunityPostResponseModelCopyWithImpl<
     Object? status = null,
     Object? createdAt = null,
     Object? writerNickname = freezed,
+    Object? likeCount = null,
+    Object? scrapCount = null,
+    Object? liked = null,
+    Object? scrapped = null,
+    Object? notificationSettings = freezed,
     Object? currentParticipants = freezed,
-    Object? likeCount = freezed,
-    Object? bookmarkCount = freezed,
     Object? chatJoined = freezed,
   }) {
     return _then(
@@ -881,17 +1123,29 @@ class _$CommunityPostResponseModelCopyWithImpl<
                 ? _value.writerNickname
                 : writerNickname // ignore: cast_nullable_to_non_nullable
                       as String?,
+            likeCount: null == likeCount
+                ? _value.likeCount
+                : likeCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            scrapCount: null == scrapCount
+                ? _value.scrapCount
+                : scrapCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            liked: null == liked
+                ? _value.liked
+                : liked // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            scrapped: null == scrapped
+                ? _value.scrapped
+                : scrapped // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            notificationSettings: freezed == notificationSettings
+                ? _value.notificationSettings
+                : notificationSettings // ignore: cast_nullable_to_non_nullable
+                      as CommunityPostNotificationSettingModel?,
             currentParticipants: freezed == currentParticipants
                 ? _value.currentParticipants
                 : currentParticipants // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            likeCount: freezed == likeCount
-                ? _value.likeCount
-                : likeCount // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            bookmarkCount: freezed == bookmarkCount
-                ? _value.bookmarkCount
-                : bookmarkCount // ignore: cast_nullable_to_non_nullable
                       as int?,
             chatJoined: freezed == chatJoined
                 ? _value.chatJoined
@@ -910,6 +1164,24 @@ class _$CommunityPostResponseModelCopyWithImpl<
     return $CommunityLocationModelCopyWith<$Res>(_value.location, (value) {
       return _then(_value.copyWith(location: value) as $Val);
     });
+  }
+
+  /// Create a copy of CommunityPostResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $CommunityPostNotificationSettingModelCopyWith<$Res>?
+  get notificationSettings {
+    if (_value.notificationSettings == null) {
+      return null;
+    }
+
+    return $CommunityPostNotificationSettingModelCopyWith<$Res>(
+      _value.notificationSettings!,
+      (value) {
+        return _then(_value.copyWith(notificationSettings: value) as $Val);
+      },
+    );
   }
 }
 
@@ -933,14 +1205,20 @@ abstract class _$$CommunityPostResponseModelImplCopyWith<$Res>
     String status,
     DateTime createdAt,
     String? writerNickname,
+    int likeCount,
+    int scrapCount,
+    @JsonKey(name: 'isLikedByRequester') bool liked,
+    @JsonKey(name: 'isScrappedByRequester') bool scrapped,
+    CommunityPostNotificationSettingModel? notificationSettings,
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
     bool? chatJoined,
   });
 
   @override
   $CommunityLocationModelCopyWith<$Res> get location;
+  @override
+  $CommunityPostNotificationSettingModelCopyWith<$Res>?
+  get notificationSettings;
 }
 
 /// @nodoc
@@ -971,9 +1249,12 @@ class __$$CommunityPostResponseModelImplCopyWithImpl<$Res>
     Object? status = null,
     Object? createdAt = null,
     Object? writerNickname = freezed,
+    Object? likeCount = null,
+    Object? scrapCount = null,
+    Object? liked = null,
+    Object? scrapped = null,
+    Object? notificationSettings = freezed,
     Object? currentParticipants = freezed,
-    Object? likeCount = freezed,
-    Object? bookmarkCount = freezed,
     Object? chatJoined = freezed,
   }) {
     return _then(
@@ -1018,17 +1299,29 @@ class __$$CommunityPostResponseModelImplCopyWithImpl<$Res>
             ? _value.writerNickname
             : writerNickname // ignore: cast_nullable_to_non_nullable
                   as String?,
+        likeCount: null == likeCount
+            ? _value.likeCount
+            : likeCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        scrapCount: null == scrapCount
+            ? _value.scrapCount
+            : scrapCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        liked: null == liked
+            ? _value.liked
+            : liked // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        scrapped: null == scrapped
+            ? _value.scrapped
+            : scrapped // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        notificationSettings: freezed == notificationSettings
+            ? _value.notificationSettings
+            : notificationSettings // ignore: cast_nullable_to_non_nullable
+                  as CommunityPostNotificationSettingModel?,
         currentParticipants: freezed == currentParticipants
             ? _value.currentParticipants
             : currentParticipants // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        likeCount: freezed == likeCount
-            ? _value.likeCount
-            : likeCount // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        bookmarkCount: freezed == bookmarkCount
-            ? _value.bookmarkCount
-            : bookmarkCount // ignore: cast_nullable_to_non_nullable
                   as int?,
         chatJoined: freezed == chatJoined
             ? _value.chatJoined
@@ -1053,9 +1346,12 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
     required this.status,
     required this.createdAt,
     this.writerNickname,
+    required this.likeCount,
+    required this.scrapCount,
+    @JsonKey(name: 'isLikedByRequester') required this.liked,
+    @JsonKey(name: 'isScrappedByRequester') required this.scrapped,
+    this.notificationSettings,
     this.currentParticipants,
-    this.likeCount,
-    this.bookmarkCount,
     this.chatJoined,
   });
 
@@ -1085,19 +1381,41 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
   /// 작성자 닉네임. 탈퇴한 작성자면 null.
   @override
   final String? writerNickname;
+
+  /// 좋아요·스크랩 수와 내 반응.
+  ///
+  /// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.27.0, BE #187)
+  ///
+  /// non-null로 받는다 — 목록·단건·내 스크랩 목록·생성·수정·상태변경 전부 이
+  /// 4필드를 항상 채운다(DEC-0048). 서버가 빠뜨리면 여기서 파싱이 멈춘다.
+  /// [liked]·[scrapped]는 와이어 키가 `isLikedByRequester`·`isScrappedByRequester`다.
+  @override
+  final int likeCount;
+  @override
+  final int scrapCount;
+  @override
+  @JsonKey(name: 'isLikedByRequester')
+  final bool liked;
+  @override
+  @JsonKey(name: 'isScrappedByRequester')
+  final bool scrapped;
+
+  /// 이 글의 댓글·답글 알림 수신 설정. **단건 조회에서만 실린다.**
+  ///
+  /// null인 경우가 둘이다 — 목록 응답은 이 키를 아예 싣지 않고(서버가 단건에서만
+  /// 채운다), 비로그인 단건 조회는 보여줄 설정이 없어 명시적 null이 온다.
+  /// 그래서 [likeCount]처럼 non-null로 받으면 목록 파싱이 통째로 멈춘다.
+  @override
+  final CommunityPostNotificationSettingModel? notificationSettings;
   // ── 백엔드 추가 예정 ──
   @override
   final int? currentParticipants;
-  @override
-  final int? likeCount;
-  @override
-  final int? bookmarkCount;
   @override
   final bool? chatJoined;
 
   @override
   String toString() {
-    return 'CommunityPostResponseModel(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, writerNickname: $writerNickname, currentParticipants: $currentParticipants, likeCount: $likeCount, bookmarkCount: $bookmarkCount, chatJoined: $chatJoined)';
+    return 'CommunityPostResponseModel(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, location: $location, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, writerNickname: $writerNickname, likeCount: $likeCount, scrapCount: $scrapCount, liked: $liked, scrapped: $scrapped, notificationSettings: $notificationSettings, currentParticipants: $currentParticipants, chatJoined: $chatJoined)';
   }
 
   @override
@@ -1121,12 +1439,17 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
                 other.createdAt == createdAt) &&
             (identical(other.writerNickname, writerNickname) ||
                 other.writerNickname == writerNickname) &&
-            (identical(other.currentParticipants, currentParticipants) ||
-                other.currentParticipants == currentParticipants) &&
             (identical(other.likeCount, likeCount) ||
                 other.likeCount == likeCount) &&
-            (identical(other.bookmarkCount, bookmarkCount) ||
-                other.bookmarkCount == bookmarkCount) &&
+            (identical(other.scrapCount, scrapCount) ||
+                other.scrapCount == scrapCount) &&
+            (identical(other.liked, liked) || other.liked == liked) &&
+            (identical(other.scrapped, scrapped) ||
+                other.scrapped == scrapped) &&
+            (identical(other.notificationSettings, notificationSettings) ||
+                other.notificationSettings == notificationSettings) &&
+            (identical(other.currentParticipants, currentParticipants) ||
+                other.currentParticipants == currentParticipants) &&
             (identical(other.chatJoined, chatJoined) ||
                 other.chatJoined == chatJoined));
   }
@@ -1145,9 +1468,12 @@ class _$CommunityPostResponseModelImpl implements _CommunityPostResponseModel {
     status,
     createdAt,
     writerNickname,
-    currentParticipants,
     likeCount,
-    bookmarkCount,
+    scrapCount,
+    liked,
+    scrapped,
+    notificationSettings,
+    currentParticipants,
     chatJoined,
   );
 
@@ -1181,9 +1507,12 @@ abstract class _CommunityPostResponseModel
     required final String status,
     required final DateTime createdAt,
     final String? writerNickname,
+    required final int likeCount,
+    required final int scrapCount,
+    @JsonKey(name: 'isLikedByRequester') required final bool liked,
+    @JsonKey(name: 'isScrappedByRequester') required final bool scrapped,
+    final CommunityPostNotificationSettingModel? notificationSettings,
     final int? currentParticipants,
-    final int? likeCount,
-    final int? bookmarkCount,
     final bool? chatJoined,
   }) = _$CommunityPostResponseModelImpl;
 
@@ -1211,13 +1540,35 @@ abstract class _CommunityPostResponseModel
 
   /// 작성자 닉네임. 탈퇴한 작성자면 null.
   @override
-  String? get writerNickname; // ── 백엔드 추가 예정 ──
+  String? get writerNickname;
+
+  /// 좋아요·스크랩 수와 내 반응.
+  ///
+  /// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.27.0, BE #187)
+  ///
+  /// non-null로 받는다 — 목록·단건·내 스크랩 목록·생성·수정·상태변경 전부 이
+  /// 4필드를 항상 채운다(DEC-0048). 서버가 빠뜨리면 여기서 파싱이 멈춘다.
+  /// [liked]·[scrapped]는 와이어 키가 `isLikedByRequester`·`isScrappedByRequester`다.
+  @override
+  int get likeCount;
+  @override
+  int get scrapCount;
+  @override
+  @JsonKey(name: 'isLikedByRequester')
+  bool get liked;
+  @override
+  @JsonKey(name: 'isScrappedByRequester')
+  bool get scrapped;
+
+  /// 이 글의 댓글·답글 알림 수신 설정. **단건 조회에서만 실린다.**
+  ///
+  /// null인 경우가 둘이다 — 목록 응답은 이 키를 아예 싣지 않고(서버가 단건에서만
+  /// 채운다), 비로그인 단건 조회는 보여줄 설정이 없어 명시적 null이 온다.
+  /// 그래서 [likeCount]처럼 non-null로 받으면 목록 파싱이 통째로 멈춘다.
+  @override
+  CommunityPostNotificationSettingModel? get notificationSettings; // ── 백엔드 추가 예정 ──
   @override
   int? get currentParticipants;
-  @override
-  int? get likeCount;
-  @override
-  int? get bookmarkCount;
   @override
   bool? get chatJoined;
 
@@ -1445,6 +1796,245 @@ abstract class _CommunityPostListResponseModel
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityPostListResponseModelImplCopyWith<
     _$CommunityPostListResponseModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityScrapListResponseModel _$CommunityScrapListResponseModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityScrapListResponseModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityScrapListResponseModel {
+  List<CommunityPostResponseModel> get content =>
+      throw _privateConstructorUsedError;
+  bool get hasNext => throw _privateConstructorUsedError;
+  int? get nextCursor => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityScrapListResponseModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityScrapListResponseModelCopyWith<CommunityScrapListResponseModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityScrapListResponseModelCopyWith<$Res> {
+  factory $CommunityScrapListResponseModelCopyWith(
+    CommunityScrapListResponseModel value,
+    $Res Function(CommunityScrapListResponseModel) then,
+  ) =
+      _$CommunityScrapListResponseModelCopyWithImpl<
+        $Res,
+        CommunityScrapListResponseModel
+      >;
+  @useResult
+  $Res call({
+    List<CommunityPostResponseModel> content,
+    bool hasNext,
+    int? nextCursor,
+  });
+}
+
+/// @nodoc
+class _$CommunityScrapListResponseModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityScrapListResponseModel
+>
+    implements $CommunityScrapListResponseModelCopyWith<$Res> {
+  _$CommunityScrapListResponseModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? content = null,
+    Object? hasNext = null,
+    Object? nextCursor = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            content: null == content
+                ? _value.content
+                : content // ignore: cast_nullable_to_non_nullable
+                      as List<CommunityPostResponseModel>,
+            hasNext: null == hasNext
+                ? _value.hasNext
+                : hasNext // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            nextCursor: freezed == nextCursor
+                ? _value.nextCursor
+                : nextCursor // ignore: cast_nullable_to_non_nullable
+                      as int?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityScrapListResponseModelImplCopyWith<$Res>
+    implements $CommunityScrapListResponseModelCopyWith<$Res> {
+  factory _$$CommunityScrapListResponseModelImplCopyWith(
+    _$CommunityScrapListResponseModelImpl value,
+    $Res Function(_$CommunityScrapListResponseModelImpl) then,
+  ) = __$$CommunityScrapListResponseModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    List<CommunityPostResponseModel> content,
+    bool hasNext,
+    int? nextCursor,
+  });
+}
+
+/// @nodoc
+class __$$CommunityScrapListResponseModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityScrapListResponseModelCopyWithImpl<
+          $Res,
+          _$CommunityScrapListResponseModelImpl
+        >
+    implements _$$CommunityScrapListResponseModelImplCopyWith<$Res> {
+  __$$CommunityScrapListResponseModelImplCopyWithImpl(
+    _$CommunityScrapListResponseModelImpl _value,
+    $Res Function(_$CommunityScrapListResponseModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? content = null,
+    Object? hasNext = null,
+    Object? nextCursor = freezed,
+  }) {
+    return _then(
+      _$CommunityScrapListResponseModelImpl(
+        content: null == content
+            ? _value._content
+            : content // ignore: cast_nullable_to_non_nullable
+                  as List<CommunityPostResponseModel>,
+        hasNext: null == hasNext
+            ? _value.hasNext
+            : hasNext // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        nextCursor: freezed == nextCursor
+            ? _value.nextCursor
+            : nextCursor // ignore: cast_nullable_to_non_nullable
+                  as int?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityScrapListResponseModelImpl
+    implements _CommunityScrapListResponseModel {
+  const _$CommunityScrapListResponseModelImpl({
+    required final List<CommunityPostResponseModel> content,
+    required this.hasNext,
+    this.nextCursor,
+  }) : _content = content;
+
+  factory _$CommunityScrapListResponseModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityScrapListResponseModelImplFromJson(json);
+
+  final List<CommunityPostResponseModel> _content;
+  @override
+  List<CommunityPostResponseModel> get content {
+    if (_content is EqualUnmodifiableListView) return _content;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_content);
+  }
+
+  @override
+  final bool hasNext;
+  @override
+  final int? nextCursor;
+
+  @override
+  String toString() {
+    return 'CommunityScrapListResponseModel(content: $content, hasNext: $hasNext, nextCursor: $nextCursor)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityScrapListResponseModelImpl &&
+            const DeepCollectionEquality().equals(other._content, _content) &&
+            (identical(other.hasNext, hasNext) || other.hasNext == hasNext) &&
+            (identical(other.nextCursor, nextCursor) ||
+                other.nextCursor == nextCursor));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_content),
+    hasNext,
+    nextCursor,
+  );
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityScrapListResponseModelImplCopyWith<
+    _$CommunityScrapListResponseModelImpl
+  >
+  get copyWith =>
+      __$$CommunityScrapListResponseModelImplCopyWithImpl<
+        _$CommunityScrapListResponseModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityScrapListResponseModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityScrapListResponseModel
+    implements CommunityScrapListResponseModel {
+  const factory _CommunityScrapListResponseModel({
+    required final List<CommunityPostResponseModel> content,
+    required final bool hasNext,
+    final int? nextCursor,
+  }) = _$CommunityScrapListResponseModelImpl;
+
+  factory _CommunityScrapListResponseModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityScrapListResponseModelImpl.fromJson;
+
+  @override
+  List<CommunityPostResponseModel> get content;
+  @override
+  bool get hasNext;
+  @override
+  int? get nextCursor;
+
+  /// Create a copy of CommunityScrapListResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityScrapListResponseModelImplCopyWith<
+    _$CommunityScrapListResponseModelImpl
   >
   get copyWith => throw _privateConstructorUsedError;
 }

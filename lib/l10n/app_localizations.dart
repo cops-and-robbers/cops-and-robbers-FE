@@ -1431,6 +1431,18 @@ abstract class AppLocalizations {
   /// **'등록된 모집글이 없어요'**
   String get pageCommunityEmpty;
 
+  /// 내 스크랩 목록 화면 AppBar 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'스크랩'**
+  String get pageCommunityScrapTitle;
+
+  /// 내 스크랩 목록이 비어 있을 때 표시되는 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'스크랩한 글이 없어요'**
+  String get communityScrapEmpty;
+
   /// 커뮤니티 범위 필터 — 전체 글
   ///
   /// In ko, this message translates to:
@@ -3289,6 +3301,12 @@ abstract class AppLocalizations {
   /// **'닉네임 변경'**
   String get settingsAccountChangeNickname;
 
+  /// 설정 — 내 스크랩 목록 메뉴
+  ///
+  /// In ko, this message translates to:
+  /// **'내 스크랩'**
+  String get settingsAccountMyScraps;
+
   /// 설정 — 앱 설정 섹션 헤더
   ///
   /// In ko, this message translates to:
@@ -4057,6 +4075,18 @@ abstract class AppLocalizations {
   /// **'댓글을 삭제하는 중 오류가 생겼어요'**
   String get errorCommunityCommentDeleteGeneric;
 
+  /// 커뮤니티 — 좋아요·스크랩 토글 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityReactionGeneric;
+
+  /// 커뮤니티 — 내 스크랩 목록 조회 실패(일반)
+  ///
+  /// In ko, this message translates to:
+  /// **'스크랩 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityScrapsLoadGeneric;
+
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///
   /// In ko, this message translates to:
@@ -4812,6 +4842,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'해당 채팅방의 참여자가 아니에요'**
   String get errorCodeNotAChatMember;
+
+  /// 좋아요·스크랩 상태가 서버와 어긋났을 때 (ALREADY_LIKED·LIKE_NOT_FOUND·ALREADY_SCRAPPED·SCRAP_NOT_FOUND 공용)
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 반영된 상태예요'**
+  String get errorCodeReactionAlreadyApplied;
 
   /// 맵 핑 선택 카드 — 상대 발견 핑 라벨
   ///

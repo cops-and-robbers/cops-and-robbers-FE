@@ -8,7 +8,7 @@ import 'package:cops_and_robbers/features/community/domain/entities/community_po
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_chat_room_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
-import 'package:cops_and_robbers/features/community/domain/entities/community_interaction_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_comment_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_chat_invite_card.dart';
@@ -38,6 +38,10 @@ CommunityPostEntity _post() => CommunityPostEntity(
   maxParticipants: 10,
   status: CommunityPostStatus.recruiting,
   createdAt: DateTime(2026, 8, 1),
+  likeCount: 0,
+  isLiked: false,
+  scrapCount: 0,
+  isScrapped: false,
 );
 
 /// 상세 조회만 돌려주는 가짜 — 채팅방 상단 카드가 쓴다.

@@ -151,6 +151,22 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
       throw UnimplementedError('이 테스트는 댓글 삭제를 쓰지 않는다');
 
   @override
+  Future<void> likePost(int postId) =>
+      throw UnimplementedError('이 테스트는 좋아요를 쓰지 않는다');
+
+  @override
+  Future<void> unlikePost(int postId) =>
+      throw UnimplementedError('이 테스트는 좋아요 취소를 쓰지 않는다');
+
+  @override
+  Future<void> scrapPost(int postId) =>
+      throw UnimplementedError('이 테스트는 스크랩을 쓰지 않는다');
+
+  @override
+  Future<void> unscrapPost(int postId) =>
+      throw UnimplementedError('이 테스트는 스크랩 취소를 쓰지 않는다');
+
+  @override
   Future<CommunityChatRoomListResponseModel> getChatRooms() =>
       throw UnimplementedError('이 테스트는 채팅방 목록을 쓰지 않는다');
 
@@ -172,6 +188,22 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
   @override
   Future<CommunityChatMemberListResponseModel> getChatMembers(int postId) =>
       throw UnimplementedError('이 테스트는 채팅방 멤버 조회를 쓰지 않는다');
+
+  // ── 내 스크랩 목록 ──
+  CommunityScrapListResponseModel? scrapsToReturn;
+  int? lastScrapsCursor;
+  int? lastScrapsSize;
+
+  @override
+  Future<CommunityScrapListResponseModel> getScraps({
+    int? cursor,
+    int? size,
+  }) async {
+    lastScrapsCursor = cursor;
+    lastScrapsSize = size;
+    if (errorToThrow != null) throw errorToThrow!;
+    return scrapsToReturn!;
+  }
 }
 
 DioException _dioError(int statusCode) => DioException(
@@ -205,6 +237,10 @@ Map<String, dynamic> _postJson({
   'maxParticipants': 10,
   'status': status,
   'createdAt': '2026-08-07T12:00:00+09:00',
+  'likeCount': 0,
+  'scrapCount': 0,
+  'isLikedByRequester': false,
+  'isScrappedByRequester': false,
   ...extra,
 };
 
@@ -215,6 +251,17 @@ CommunityPostListResponseModel _listOf(
 }) => CommunityPostListResponseModel(
   content: jsons.map(CommunityPostResponseModel.fromJson).toList(),
   cursor: CursorInfoModel(nextCursor: nextCursor, hasNext: hasNext),
+);
+
+// 스크랩 목록 봉투는 피드와 달리 평평한 정수 커서다 — cursor 객체로 감싸지 않는다.
+CommunityScrapListResponseModel _scrapListOf(
+  List<Map<String, dynamic>> jsons, {
+  int? nextCursor,
+  bool hasNext = false,
+}) => CommunityScrapListResponseModel(
+  content: jsons.map(CommunityPostResponseModel.fromJson).toList(),
+  hasNext: hasNext,
+  nextCursor: nextCursor,
 );
 
 void main() {
@@ -317,8 +364,6 @@ void main() {
       )).items.single;
 
       expect(entity.currentParticipants, isNull);
-      expect(entity.likeCount, isNull);
-      expect(entity.bookmarkCount, isNull);
       expect(entity.maxParticipants, 10);
     });
 
@@ -494,6 +539,14 @@ void main() {
               'region': '서울특별시 광진구 군자동',
               'placeName': '세종대학교 정문',
             },
+            // 넷 다 비대칭 값으로 둔다 — 0/0/false/false 조합이면 필드가
+            // 뒤바뀌어도(liked↔scrapped, likeCount↔scrapCount) 조용히 통과한다.
+            extra: {
+              'likeCount': 6,
+              'scrapCount': 3,
+              'isLikedByRequester': true,
+              'isScrappedByRequester': false,
+            },
           ),
         );
       final repo = CommunityRepositoryImpl(fake);
@@ -503,6 +556,10 @@ void main() {
       expect(post.id, 42);
       expect(post.status, CommunityPostStatus.completed);
       expect(post.locationLabel, '서울특별시 광진구 군자동 · 세종대학교 정문');
+      expect(post.likeCount, 6);
+      expect(post.isLiked, isTrue);
+      expect(post.scrapCount, 3);
+      expect(post.isScrapped, isFalse);
       expect(fake.lastPostId, 42);
     });
 
@@ -764,6 +821,65 @@ void main() {
           postId: 7,
           status: CommunityPostStatus.recruiting,
         ),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.getScraps', () {
+    test('maps_scrap_page_with_integer_cursor', () async {
+      // 커서가 정수 그대로 넘어와야 한다 — 문자열로 바꿔 들고 있으면 다음
+      // 요청에서 다시 파싱해야 하고, 실패 지점이 하나 늘어난다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..scrapsToReturn = _scrapListOf(
+          [
+            _postJson(extra: {'isScrappedByRequester': true}),
+          ],
+          nextCursor: 12,
+          hasNext: true,
+        );
+      final repository = CommunityRepositoryImpl(fake);
+
+      final page = await repository.getScraps(cursor: null, size: 20);
+
+      expect(page.items.single.isScrapped, isTrue);
+      expect(page.nextCursor, 12);
+      expect(page.hasNext, isTrue);
+    });
+
+    test('maps_null_cursor_and_no_next_page_on_last_page', () async {
+      // 위 테스트와 반대 극단 — hasNext/nextCursor가 뒤집혀도 위 테스트만으론
+      // 못 잡는다. 둘을 같이 둬야 상수 반환 같은 얕은 구현이 드러난다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..scrapsToReturn = _scrapListOf([_postJson()], hasNext: false);
+      final repository = CommunityRepositoryImpl(fake);
+
+      final page = await repository.getScraps(cursor: 12, size: 20);
+
+      expect(page.items.single.isScrapped, isFalse);
+      expect(page.nextCursor, isNull);
+      expect(page.hasNext, isFalse);
+    });
+
+    test('forwards_cursor_and_size_to_datasource_verbatim', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..scrapsToReturn = _scrapListOf([]);
+      final repository = CommunityRepositoryImpl(fake);
+
+      await repository.getScraps(cursor: 12, size: 7);
+
+      expect(fake.lastScrapsCursor, 12);
+      expect(fake.lastScrapsSize, 7);
+    });
+
+    test('wraps_dio_error_into_app_exception', () async {
+      // 비로그인 401을 포함해 데이터소스 예외는 전부 AppException으로 통일된다.
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(401);
+      final repository = CommunityRepositoryImpl(fake);
+
+      expect(
+        () => repository.getScraps(cursor: null, size: 20),
         throwsA(isA<AppException>()),
       );
     });

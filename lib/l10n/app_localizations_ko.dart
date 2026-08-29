@@ -737,6 +737,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageCommunityEmpty => '등록된 모집글이 없어요';
 
   @override
+  String get pageCommunityScrapTitle => '스크랩';
+
+  @override
+  String get communityScrapEmpty => '스크랩한 글이 없어요';
+
+  @override
   String get communityScopeAll => '전체';
 
   @override
@@ -1718,6 +1724,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAccountChangeNickname => '닉네임 변경';
 
   @override
+  String get settingsAccountMyScraps => '내 스크랩';
+
+  @override
   String get settingsSectionAppPreferences => '앱 설정';
 
   @override
@@ -2110,6 +2119,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCommunityCommentDeleteGeneric => '댓글을 삭제하는 중 오류가 생겼어요';
+
+  @override
+  String get errorCommunityReactionGeneric => '요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
+  String get errorCommunityScrapsLoadGeneric =>
+      '스크랩 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요';
 
   @override
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';
@@ -2507,6 +2523,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeNotAChatMember => '해당 채팅방의 참여자가 아니에요';
+
+  @override
+  String get errorCodeReactionAlreadyApplied => '이미 반영된 상태예요';
 
   @override
   String get pingFound => '발견';

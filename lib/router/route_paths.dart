@@ -106,6 +106,9 @@ class RoutePaths {
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
 
+  /// 내 스크랩 목록 (마이페이지 계정 섹션에서 진입)
+  static const String myScraps = '/mypage/scraps';
+
   /// 언어 설정 화면
   static const String languageSettings = '/mypage/language';
 
@@ -249,6 +252,7 @@ class RoutePaths {
   static const String communityChatMenuName = 'communityChatMenu';
   static const String communityChatMeetingInfoName = 'communityChatMeetingInfo';
   static const String mypageName = 'mypage';
+  static const String myScrapsName = 'myScraps';
   static const String languageSettingsName = 'languageSettings';
   static const String agreementSettingsName = 'agreementSettings';
   static const String bugReportName = 'bugReport';

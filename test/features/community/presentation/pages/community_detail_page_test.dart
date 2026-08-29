@@ -1,8 +1,9 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
-import 'package:cops_and_robbers/features/community/domain/entities/community_interaction_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_comment_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
+import 'package:cops_and_robbers/features/community/domain/repositories/community_reaction_repository.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_detail_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_comment_list.dart';
@@ -33,6 +34,8 @@ CommunityPostEntity _post({
   String? address,
   String? region = _region,
   CommunityPostStatus status = CommunityPostStatus.recruiting,
+  int likeCount = 0,
+  bool isLiked = false,
 }) => CommunityPostEntity(
   id: _postId,
   writerId: 1,
@@ -47,6 +50,10 @@ CommunityPostEntity _post({
   region: region,
   placeName: _placeName,
   address: address,
+  likeCount: likeCount,
+  isLiked: isLiked,
+  scrapCount: 0,
+  isScrapped: false,
 );
 
 /// 본문 조회와 작성자 동작(마감·삭제)에 응답하는 Repository.
@@ -163,11 +170,50 @@ class _FakeCommentRepository implements CommunityCommentRepository {
   }
 }
 
-Widget _app(_DetailRepository repo, Widget home) => ProviderScope(
+/// 좋아요·스크랩 반응 Repository. [error]가 있으면 매번 그 예외를 던진다 —
+/// 롤백 테스트가 서버 거절을 재현하는 통로다.
+class _FakeReactionRepository implements CommunityReactionRepository {
+  _FakeReactionRepository({this.error});
+
+  final AppException? error;
+
+  @override
+  Future<void> like(int postId) => _respond();
+
+  @override
+  Future<void> unlike(int postId) => _respond();
+
+  @override
+  Future<void> scrap(int postId) => _respond();
+
+  @override
+  Future<void> unscrap(int postId) => _respond();
+
+  Future<void> _respond() async {
+    if (error == null) return;
+    // 실패만 한 틱 늦춘다. 지연 없이 즉시 던지면 낙관적 갱신과 롤백이 같은
+    // 마이크로태스크 틱에 몰려 처리돼, 첫 pump()에서 이미 롤백까지 끝난 상태가
+    // 그려진다 — "뒤집혔다 돌아옴"과 "애초에 안 뒤집힘"을 테스트가 구분할 수
+    // 없게 된다. 성공 경로까지 늦추면 되돌릴 상태가 없어 의미도 없을뿐더러,
+    // pump() 한 번으로 끝나고 settle하지 않는 성공 테스트에 이 타이머가 그대로
+    // 남아 "A Timer is still pending"으로 깨진다.
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    throw error!;
+  }
+}
+
+Widget _app(
+  _DetailRepository repo,
+  Widget home, {
+  AppException? reactionError,
+}) => ProviderScope(
   overrides: [
     communityRepositoryProvider.overrideWithValue(repo),
     communityCommentRepositoryProvider.overrideWithValue(
       _FakeCommentRepository(),
+    ),
+    communityReactionRepositoryProvider.overrideWithValue(
+      _FakeReactionRepository(error: reactionError),
     ),
     // 더보기 메뉴가 로그인 사용자 id를 watch 한다. 덮지 않으면 실제 AuthNotifier가
     // Firebase까지 끌고 들어와, 이 화면과 무관한 이유로 깨진다.
@@ -195,6 +241,22 @@ Widget _app(_DetailRepository repo, Widget home) => ProviderScope(
 /// 스낵바는 Overlay라 화면 dispose로는 정리되지 않는다.
 Future<void> _letSnackbarExpire(WidgetTester tester) async {
   await tester.pump(const Duration(seconds: 3));
+  await tester.pumpAndSettle();
+}
+
+/// 상세를 띄우고 초기 로딩이 끝날 때까지 기다린다.
+Future<void> _pumpDetail(
+  WidgetTester tester, {
+  required CommunityPostEntity post,
+  AppException? reactionError,
+}) async {
+  await tester.pumpWidget(
+    _app(
+      _DetailRepository(post),
+      const CommunityDetailPage(postId: _postId),
+      reactionError: reactionError,
+    ),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -400,6 +462,41 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(_commentFieldHasFocus(tester), isFalse);
+    });
+  });
+
+  group('CommunityDetailPage 좋아요', () {
+    testWidgets('flips_the_heart_before_the_server_answers', (tester) async {
+      // 낙관적 갱신 — 응답을 기다리지 않고 먼저 뒤집는다.
+      await _pumpDetail(tester, post: _post(likeCount: 6, isLiked: false));
+
+      await tester.tap(find.byKey(const Key('community_detail_like')));
+      await tester.pump();
+
+      expect(find.text('7'), findsOneWidget);
+    });
+
+    testWidgets('rolls_the_heart_back_when_the_server_rejects', (tester) async {
+      await _pumpDetail(
+        tester,
+        post: _post(likeCount: 6, isLiked: false),
+        reactionError: ServerException(message: 'x', messageKey: 'y'),
+      );
+
+      await tester.tap(find.byKey(const Key('community_detail_like')));
+      await tester.pump();
+
+      // 뒤집혔다가 돌아오는지 확인하려면 뒤집힌 중간 상태부터 잡아야 한다 —
+      // 안 그러면 "애초에 안 뒤집힘"과 구분이 안 된다.
+      expect(find.text('7'), findsOneWidget);
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('6'), findsOneWidget);
+
+      // 실패는 스낵바로도 알린다 — 3초 타이머가 남은 채 테스트가 끝나면
+      // "A Timer is still pending"으로 깨진다 (위 _letSnackbarExpire 참고).
+      await _letSnackbarExpire(tester);
     });
   });
 }

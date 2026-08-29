@@ -739,6 +739,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pageCommunityEmpty => '募集がまだありません';
 
   @override
+  String get pageCommunityScrapTitle => 'スクラップ';
+
+  @override
+  String get communityScrapEmpty => 'スクラップした投稿がありません';
+
+  @override
   String get communityScopeAll => 'すべて';
 
   @override
@@ -1718,6 +1724,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAccountChangeNickname => 'ニックネーム変更';
 
   @override
+  String get settingsAccountMyScraps => 'マイスクラップ';
+
+  @override
   String get settingsSectionAppPreferences => 'アプリ設定';
 
   @override
@@ -2109,6 +2118,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCommunityCommentDeleteGeneric => 'コメントの削除中にエラーが発生しました';
+
+  @override
+  String get errorCommunityReactionGeneric => '処理できませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCommunityScrapsLoadGeneric =>
+      'スクラップ一覧を読み込めませんでした。しばらくしてからもう一度お試しください';
 
   @override
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';
@@ -2509,6 +2525,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeNotAChatMember => 'このチャットの参加者ではありません';
+
+  @override
+  String get errorCodeReactionAlreadyApplied => 'すでに反映されています';
 
   @override
   String get pingFound => '発見';

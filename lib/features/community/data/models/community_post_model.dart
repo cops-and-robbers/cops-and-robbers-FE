@@ -84,10 +84,30 @@ class CursorInfoModel with _$CursorInfoModel {
 /// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.18.0)
 ///
 /// [writerNickname]은 탈퇴한 작성자면 null이다.
-/// 나머지 nullable 3개는 백엔드가 아직 안 보내는 값이다(2·3단계 예정). 미리
-/// 선언해 두면 백엔드가 필드를 추가하는 순간 코드 변경 없이 값이 흘러들어온다.
+/// [currentParticipants]는 백엔드가 아직 안 보내는 값이다 — "참여" 개념 자체가
+/// 서버에 정의되지 않았다. 미리 선언해 두면 필드가 추가되는 순간 코드 변경 없이
+/// 값이 흘러들어온다.
 /// `status`를 enum이 아니라 `String`으로 받는 이유: 도메인 변환을 Repository
 /// 경계에서 하고, 알 수 없는 값이면 거기서 예외를 던지기 위함이다.
+/// 게시글 알림 수신 설정 DTO
+///
+/// 백엔드 스키마: api-docs.json#CommunityPostNotificationSettingResponse (v2.26.0)
+///
+/// 두 값 모두 서버가 non-null로 채운다 — 설정 행이 없으면 글쓴이/그 외 역할에 따른
+/// 기본값으로 계산해 내려준다. 값을 바꾸는 것은 `PUT /{postId}/notification-settings`다.
+@freezed
+class CommunityPostNotificationSettingModel
+    with _$CommunityPostNotificationSettingModel {
+  const factory CommunityPostNotificationSettingModel({
+    required bool commentNotificationsEnabled,
+    required bool replyNotificationsEnabled,
+  }) = _CommunityPostNotificationSettingModel;
+
+  factory CommunityPostNotificationSettingModel.fromJson(
+    Map<String, dynamic> json,
+  ) => _$CommunityPostNotificationSettingModelFromJson(json);
+}
+
 @freezed
 class CommunityPostResponseModel with _$CommunityPostResponseModel {
   const factory CommunityPostResponseModel({
@@ -104,10 +124,27 @@ class CommunityPostResponseModel with _$CommunityPostResponseModel {
     /// 작성자 닉네임. 탈퇴한 작성자면 null.
     String? writerNickname,
 
+    /// 좋아요·스크랩 수와 내 반응.
+    ///
+    /// 백엔드 스키마: api-docs.json#CommunityPostResponse (v2.27.0, BE #187)
+    ///
+    /// non-null로 받는다 — 목록·단건·내 스크랩 목록·생성·수정·상태변경 전부 이
+    /// 4필드를 항상 채운다(DEC-0048). 서버가 빠뜨리면 여기서 파싱이 멈춘다.
+    /// [liked]·[scrapped]는 와이어 키가 `isLikedByRequester`·`isScrappedByRequester`다.
+    required int likeCount,
+    required int scrapCount,
+    @JsonKey(name: 'isLikedByRequester') required bool liked,
+    @JsonKey(name: 'isScrappedByRequester') required bool scrapped,
+
+    /// 이 글의 댓글·답글 알림 수신 설정. **단건 조회에서만 실린다.**
+    ///
+    /// null인 경우가 둘이다 — 목록 응답은 이 키를 아예 싣지 않고(서버가 단건에서만
+    /// 채운다), 비로그인 단건 조회는 보여줄 설정이 없어 명시적 null이 온다.
+    /// 그래서 [likeCount]처럼 non-null로 받으면 목록 파싱이 통째로 멈춘다.
+    CommunityPostNotificationSettingModel? notificationSettings,
+
     // ── 백엔드 추가 예정 ──
     int? currentParticipants,
-    int? likeCount,
-    int? bookmarkCount,
     bool? chatJoined,
   }) = _CommunityPostResponseModel;
 
@@ -131,6 +168,27 @@ class CommunityPostListResponseModel with _$CommunityPostListResponseModel {
 
   factory CommunityPostListResponseModel.fromJson(Map<String, dynamic> json) =>
       _$CommunityPostListResponseModelFromJson(json);
+}
+
+/// 내 스크랩 목록 응답 DTO
+///
+/// 백엔드 스키마: api-docs.json#CommunityPostScrapListResponse (v2.25.0)
+///
+/// 피드 목록(`CommunityPostListResponseModel`)과 봉투 모양이 다르다 — 커서가
+/// 중첩 `cursor` 객체가 아니라 평평하고, 값도 opaque 문자열이 아니라 스크랩 id
+/// 정수다. 재사용하면 파싱이 어긋난다.
+///
+/// 정렬은 스크랩한 순서(최신순) 고정이라 정렬·검색 파라미터가 없다.
+@freezed
+class CommunityScrapListResponseModel with _$CommunityScrapListResponseModel {
+  const factory CommunityScrapListResponseModel({
+    required List<CommunityPostResponseModel> content,
+    required bool hasNext,
+    int? nextCursor,
+  }) = _CommunityScrapListResponseModel;
+
+  factory CommunityScrapListResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityScrapListResponseModelFromJson(json);
 }
 
 /// 좌표 국가 조회 응답 DTO
