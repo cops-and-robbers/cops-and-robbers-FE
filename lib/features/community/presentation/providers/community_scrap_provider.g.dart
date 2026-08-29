@@ -7,7 +7,7 @@ part of 'community_scrap_provider.dart';
 // **************************************************************************
 
 String _$communityScrapNotifierHash() =>
-    r'46b957651a6a269bdc35977ecdb622a1d9e4a456';
+    r'10ca5be811a5f6b9d615ebb7113cc204f241c293';
 
 /// 내 스크랩 목록 상태
 ///

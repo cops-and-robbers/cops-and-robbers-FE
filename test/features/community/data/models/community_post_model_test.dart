@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// 백엔드가 보내는 형태 — 장소는 `region`(서버 역지오코딩) + `placeName`(작성자
 /// 입력) + `countryCode` 셋이고, 목록 봉투는 `page`가 아니라 `cursor`다.
-/// 좋아요·스크랩 4필드는 세 표면(목록·단건·내 스크랩) 모두에 실려 온다.
-/// 아직 미도착인 것은 `currentParticipants`뿐이다.
+/// 좋아요·스크랩 4필드는 모든 표면에서 항상 실린다(DEC-0048). 미도착인 것은
+/// `currentParticipants`뿐이다.
 Map<String, dynamic> _serverJson() => {
   'id': 1,
   'writerId': 7,
@@ -23,10 +23,10 @@ Map<String, dynamic> _serverJson() => {
   'status': 'RECRUITING',
   'createdAt': '2026-08-07T12:00:00+09:00',
   'updatedAt': '2026-08-07T12:00:00+09:00',
-  'likeCount': 6,
-  'scrapCount': 3,
-  'liked': true,
-  'scrapped': false,
+  'likeCount': 0,
+  'scrapCount': 0,
+  'isLikedByRequester': false,
+  'isScrappedByRequester': false,
 };
 
 void main() {
@@ -89,8 +89,14 @@ void main() {
       expect(model.location.address, isNull);
     });
 
-    test('parses_reaction_counts_and_my_reaction', () {
-      final model = CommunityPostResponseModel.fromJson(_serverJson());
+    test('parses_reaction_counts_and_my_reaction_when_backend_sends_them', () {
+      final json = _serverJson()
+        ..['likeCount'] = 6
+        ..['scrapCount'] = 3
+        ..['isLikedByRequester'] = true
+        ..['isScrappedByRequester'] = false;
+
+      final model = CommunityPostResponseModel.fromJson(json);
 
       expect(model.likeCount, 6);
       expect(model.scrapCount, 3);
@@ -98,15 +104,10 @@ void main() {
       expect(model.scrapped, isFalse);
     });
 
-    test('throws_when_reaction_fields_are_absent', () {
-      // 일부러 non-null로 받는다. 서버가 안 주면 조용히 0·꺼짐으로 그리는 대신
-      // 파싱에서 소리 내며 멈춘다 — "아무도 안 눌렀다"는 화면이 에러 화면보다
-      // 나쁘기 때문이다. 이 앱은 필드가 배포된 뒤에만 붙는다.
-      final json = _serverJson()
-        ..remove('likeCount')
-        ..remove('scrapCount')
-        ..remove('liked')
-        ..remove('scrapped');
+    test('throws_when_backend_omits_a_reaction_field', () {
+      // DEC-0048: 모든 표면이 이 4필드를 항상 채운다. 서버가 빠뜨리면 조용히
+      // 0·꺼짐으로 물러서지 말고 파싱을 멈춰 문제를 드러낸다.
+      final json = _serverJson()..remove('likeCount');
 
       expect(
         () => CommunityPostResponseModel.fromJson(json),
@@ -134,6 +135,37 @@ void main() {
       final json = _serverJson()..['someFutureField'] = 'whatever';
 
       expect(() => CommunityPostResponseModel.fromJson(json), returnsNormally);
+    });
+
+    test('reads_notification_settings_when_single_post_carries_them', () {
+      // 단건 조회에만 실린다. 로그인 유저가 이 글의 댓글·답글 알림을 켜뒀는지다.
+      final json = _serverJson()
+        ..['notificationSettings'] = {
+          'commentNotificationsEnabled': true,
+          'replyNotificationsEnabled': false,
+        };
+
+      final model = CommunityPostResponseModel.fromJson(json);
+
+      expect(model.notificationSettings?.commentNotificationsEnabled, isTrue);
+      expect(model.notificationSettings?.replyNotificationsEnabled, isFalse);
+    });
+
+    test('leaves_notification_settings_null_when_the_list_omits_them', () {
+      // 목록 응답은 이 키를 아예 싣지 않는다 — 서버가 단건에서만 채운다.
+      // required로 받으면 목록 파싱이 통째로 멈춘다.
+      final model = CommunityPostResponseModel.fromJson(_serverJson());
+
+      expect(model.notificationSettings, isNull);
+    });
+
+    test('leaves_notification_settings_null_when_the_viewer_is_anonymous', () {
+      // 비로그인 단건 조회는 보여줄 설정이 없어 서버가 명시적 null을 보낸다.
+      final json = _serverJson()..['notificationSettings'] = null;
+
+      final model = CommunityPostResponseModel.fromJson(json);
+
+      expect(model.notificationSettings, isNull);
     });
   });
 

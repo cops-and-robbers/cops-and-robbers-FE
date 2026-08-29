@@ -58,6 +58,21 @@ Map<String, dynamic> _$$CursorInfoModelImplToJson(
   'hasNext': instance.hasNext,
 };
 
+_$CommunityPostNotificationSettingModelImpl
+_$$CommunityPostNotificationSettingModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$CommunityPostNotificationSettingModelImpl(
+  commentNotificationsEnabled: json['commentNotificationsEnabled'] as bool,
+  replyNotificationsEnabled: json['replyNotificationsEnabled'] as bool,
+);
+
+Map<String, dynamic> _$$CommunityPostNotificationSettingModelImplToJson(
+  _$CommunityPostNotificationSettingModelImpl instance,
+) => <String, dynamic>{
+  'commentNotificationsEnabled': instance.commentNotificationsEnabled,
+  'replyNotificationsEnabled': instance.replyNotificationsEnabled,
+};
+
 _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$CommunityPostResponseModelImpl(
@@ -75,8 +90,13 @@ _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
   writerNickname: json['writerNickname'] as String?,
   likeCount: (json['likeCount'] as num).toInt(),
   scrapCount: (json['scrapCount'] as num).toInt(),
-  liked: json['liked'] as bool,
-  scrapped: json['scrapped'] as bool,
+  liked: json['isLikedByRequester'] as bool,
+  scrapped: json['isScrappedByRequester'] as bool,
+  notificationSettings: json['notificationSettings'] == null
+      ? null
+      : CommunityPostNotificationSettingModel.fromJson(
+          json['notificationSettings'] as Map<String, dynamic>,
+        ),
   currentParticipants: (json['currentParticipants'] as num?)?.toInt(),
   chatJoined: json['chatJoined'] as bool?,
 );
@@ -96,8 +116,9 @@ Map<String, dynamic> _$$CommunityPostResponseModelImplToJson(
   'writerNickname': instance.writerNickname,
   'likeCount': instance.likeCount,
   'scrapCount': instance.scrapCount,
-  'liked': instance.liked,
-  'scrapped': instance.scrapped,
+  'isLikedByRequester': instance.liked,
+  'isScrappedByRequester': instance.scrapped,
+  'notificationSettings': instance.notificationSettings?.toJson(),
   'currentParticipants': instance.currentParticipants,
   'chatJoined': instance.chatJoined,
 };

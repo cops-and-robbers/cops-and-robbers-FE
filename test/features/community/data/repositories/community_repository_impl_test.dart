@@ -239,8 +239,8 @@ Map<String, dynamic> _postJson({
   'createdAt': '2026-08-07T12:00:00+09:00',
   'likeCount': 0,
   'scrapCount': 0,
-  'liked': false,
-  'scrapped': false,
+  'isLikedByRequester': false,
+  'isScrappedByRequester': false,
   ...extra,
 };
 
@@ -544,8 +544,8 @@ void main() {
             extra: {
               'likeCount': 6,
               'scrapCount': 3,
-              'liked': true,
-              'scrapped': false,
+              'isLikedByRequester': true,
+              'isScrappedByRequester': false,
             },
           ),
         );
@@ -833,7 +833,7 @@ void main() {
       final fake = _FakeCommunityRemoteDataSource()
         ..scrapsToReturn = _scrapListOf(
           [
-            _postJson(extra: {'scrapped': true}),
+            _postJson(extra: {'isScrappedByRequester': true}),
           ],
           nextCursor: 12,
           hasNext: true,
