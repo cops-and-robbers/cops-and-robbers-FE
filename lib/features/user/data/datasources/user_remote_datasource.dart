@@ -4,6 +4,7 @@ import 'package:retrofit/retrofit.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../models/agreement_request_model.dart';
 import '../models/agreement_response_model.dart';
+import '../models/community_push_agreement_model.dart';
 import '../models/delete_account_response_model.dart';
 import '../models/game_push_agreement_model.dart';
 import '../models/my_page_response_model.dart';
@@ -24,6 +25,8 @@ part 'user_remote_datasource.g.dart';
 /// - `DELETE /api/user/me` - 회원 탈퇴 (JWT 필요)
 /// - `GET /api/user/agreements/game-push` - 게임 푸시 알림 동의 조회 (JWT 필요)
 /// - `PUT /api/user/agreements/game-push` - 게임 푸시 알림 동의 업데이트 (JWT 필요)
+/// - `GET /api/user/agreements/community-push` - 커뮤니티 푸시 알림 동의 조회 (JWT 필요)
+/// - `PUT /api/user/agreements/community-push` - 커뮤니티 푸시 알림 동의 업데이트 (JWT 필요)
 @RestApi()
 abstract class UserRemoteDataSource {
   factory UserRemoteDataSource(Dio dio) = _UserRemoteDataSource;
@@ -110,5 +113,23 @@ abstract class UserRemoteDataSource {
   @PUT(ApiEndpoints.agreementsGamePush)
   Future<void> updateGamePushAgreement(
     @Body() GamePushAgreementRequestModel request,
+  );
+
+  /// 커뮤니티 푸시 알림 수신 동의 여부 조회
+  ///
+  /// - 200: 동의 여부 (allowCommunityPush)
+  /// - 401: 인증 실패
+  @GET(ApiEndpoints.agreementsCommunityPush)
+  Future<CommunityPushAgreementResponseModel> getCommunityPushAgreement();
+
+  /// 커뮤니티 푸시 알림 수신 동의 여부 업데이트
+  ///
+  /// 끄면 푸시만 오지 않고 알림함에는 그대로 쌓인다.
+  /// - 204: 업데이트 성공 (응답 본문 없음)
+  /// - 400: 유효성 검사 실패
+  /// - 401: 인증 실패
+  @PUT(ApiEndpoints.agreementsCommunityPush)
+  Future<void> updateCommunityPushAgreement(
+    @Body() CommunityPushAgreementRequestModel request,
   );
 }

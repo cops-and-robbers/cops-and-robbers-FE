@@ -73,6 +73,21 @@ Map<String, dynamic> _$$CommunityPostNotificationSettingModelImplToJson(
   'replyNotificationsEnabled': instance.replyNotificationsEnabled,
 };
 
+_$CommunityPostNotificationSettingRequestModelImpl
+_$$CommunityPostNotificationSettingRequestModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$CommunityPostNotificationSettingRequestModelImpl(
+  commentNotificationsEnabled: json['commentNotificationsEnabled'] as bool,
+  replyNotificationsEnabled: json['replyNotificationsEnabled'] as bool,
+);
+
+Map<String, dynamic> _$$CommunityPostNotificationSettingRequestModelImplToJson(
+  _$CommunityPostNotificationSettingRequestModelImpl instance,
+) => <String, dynamic>{
+  'commentNotificationsEnabled': instance.commentNotificationsEnabled,
+  'replyNotificationsEnabled': instance.replyNotificationsEnabled,
+};
+
 _$CommunityPostResponseModelImpl _$$CommunityPostResponseModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$CommunityPostResponseModelImpl(

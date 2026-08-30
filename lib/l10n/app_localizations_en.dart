@@ -756,6 +756,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityMenuLoginRequired => 'Log in to continue';
 
   @override
+  String get communityMenuNotificationOn => 'Turn on notifications';
+
+  @override
+  String get communityMenuNotificationOff => 'Turn off notifications';
+
+  @override
+  String get communityMenuReplyNotificationOn => 'Turn on reply notifications';
+
+  @override
+  String get communityMenuReplyNotificationOff =>
+      'Turn off reply notifications';
+
+  @override
   String get communityStatusRecruiting => 'Open';
 
   @override
@@ -1865,6 +1878,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configure notifications for events occurring during the game';
 
   @override
+  String get settingsAppCommunityNotification => 'Community notifications';
+
+  @override
+  String get settingsAppCommunityNotificationDescription =>
+      'Get push alerts for comments, replies, and chats. Your inbox keeps them even when this is off';
+
+  @override
   String get settingsAppGeneralNotification => 'Notification';
 
   @override
@@ -2236,6 +2256,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while updating push notification consent';
 
   @override
+  String get errorCommunityPushFetchUnexpected =>
+      'An unexpected error occurred while loading community push notification consent';
+
+  @override
+  String get errorCommunityPushUpdateUnexpected =>
+      'Couldn\'t update community notification settings';
+
+  @override
   String get errorAuthTokenMissing =>
       'We couldn\'t verify your login. Please sign in again';
 
@@ -2305,6 +2333,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCommunityNotificationReadGeneric =>
       'Failed to mark notifications as read';
+
+  @override
+  String get errorCommunityPostNotificationUpdateGeneric =>
+      'Couldn\'t update notifications for this post';
+
+  @override
+  String get errorCommunityCommentNotificationUpdateGeneric =>
+      'Couldn\'t update reply notifications';
 
   @override
   String get errorCommunityAddressLoadGeneric =>

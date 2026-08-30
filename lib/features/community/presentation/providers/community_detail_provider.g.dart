@@ -7,7 +7,7 @@ part of 'community_detail_provider.dart';
 // **************************************************************************
 
 String _$communityDetailNotifierHash() =>
-    r'28ac16970617264c53193557f3a80fb1ecc96987';
+    r'a6a707589de1f7867284d353df7fbc1982e10b07';
 
 /// Copied from Dart SDK
 class _SystemHash {

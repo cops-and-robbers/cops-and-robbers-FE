@@ -148,6 +148,17 @@ abstract class CommunityRemoteDataSource {
   @DELETE('${ApiEndpoints.communityPosts}/comments/{commentId}')
   Future<void> deleteComment(@Path('commentId') int commentId);
 
+  /// 댓글 답글 알림 켜기/끄기 (응답 본문 없음, 204)
+  ///
+  /// 내가 쓴 댓글에 답글이 달릴 때 알림을 받을지 정한다. 게시글 알림 설정과
+  /// 독립이다 — 그 글의 알림을 꺼도 이 값만 따른다. 작성자가 아니면
+  /// 403 `FORBIDDEN_NOT_COMMENT_AUTHOR`, 없으면 404 `COMMENT_NOT_FOUND`.
+  @PUT('${ApiEndpoints.communityPosts}/comments/{commentId}/notification')
+  Future<void> updateCommentNotification(
+    @Path('commentId') int commentId,
+    @Body() CommunityCommentNotificationRequestModel body,
+  );
+
   /// 게시글 좋아요 (응답 본문 없음)
   ///
   /// 이미 눌러 둔 글이면 409 `ALREADY_LIKED`. Repository가 그것을 성공으로
@@ -248,6 +259,17 @@ abstract class CommunityRemoteDataSource {
   /// 불가능하다(DEC-0038). 응답 본문 없음(204).
   @POST('${ApiEndpoints.communityPosts}/notifications/read')
   Future<void> readNotifications();
+
+  /// 게시글 알림 켜기/끄기 (응답 본문 없음, 204)
+  ///
+  /// 이 글의 댓글·답글 알림을 받을지 저장한다. 남의 글도 켤 수 있다 — 명시적으로
+  /// 켠 제3자도 수신자다. 이미 쌓인 알림에는 영향이 없고, 켜기 전 댓글이
+  /// 소급되지도 않는다(DEC-0042). 404 `POST_NOT_FOUND`.
+  @PUT('${ApiEndpoints.communityPosts}/{postId}/notification-settings')
+  Future<void> updateNotificationSetting(
+    @Path('postId') int postId,
+    @Body() CommunityPostNotificationSettingRequestModel body,
+  );
 
   /// 채팅방 멤버 목록 조회
   ///

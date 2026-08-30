@@ -406,6 +406,10 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorGamePushFetchUnexpected;
       case 'errorGamePushUpdateUnexpected':
         return errorGamePushUpdateUnexpected;
+      case 'errorCommunityPushFetchUnexpected':
+        return errorCommunityPushFetchUnexpected;
+      case 'errorCommunityPushUpdateUnexpected':
+        return errorCommunityPushUpdateUnexpected;
       case 'errorPendingInviteSave':
         return errorPendingInviteSave;
       case 'errorPendingInviteLoad':
@@ -434,6 +438,10 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCommunityNotificationUnreadCountLoadGeneric;
       case 'errorCommunityNotificationReadGeneric':
         return errorCommunityNotificationReadGeneric;
+      case 'errorCommunityPostNotificationUpdateGeneric':
+        return errorCommunityPostNotificationUpdateGeneric;
+      case 'errorCommunityCommentNotificationUpdateGeneric':
+        return errorCommunityCommentNotificationUpdateGeneric;
       case 'errorCommunityPostCreateGeneric':
         return errorCommunityPostCreateGeneric;
       case 'errorCommunityPostUpdateGeneric':

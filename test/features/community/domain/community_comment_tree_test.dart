@@ -85,4 +85,37 @@ void main() {
       expect(result.single.replies.map((c) => c.id), [10]);
     });
   });
+
+  // 내 1depth 댓글의 답글 알림만 뒤집는다. 답글(2depth)은 답글의 답글이 없어
+  // 값이 화면에 쓰이지 않으므로 건드리지 않는다.
+  group('withReplyNotification', () {
+    test('flips_only_the_target_top_level_comment', () {
+      final result = withReplyNotification(
+        [_comment(1), _comment(2)],
+        1,
+        false,
+      );
+
+      expect(result.first.replyNotificationsEnabled, isFalse);
+      expect(result.last.replyNotificationsEnabled, isTrue);
+    });
+
+    test('leaves_replies_untouched_even_when_the_id_matches_a_reply', () {
+      final source = [
+        _comment(1, replies: [_comment(10, parentId: 1)]),
+      ];
+
+      final result = withReplyNotification(source, 10, false);
+
+      expect(result.single.replies.single.replyNotificationsEnabled, isTrue);
+    });
+
+    test('leaves_list_untouched_when_id_is_absent', () {
+      final source = [_comment(1)];
+
+      final result = withReplyNotification(source, 99, false);
+
+      expect(result.single.replyNotificationsEnabled, isTrue);
+    });
+  });
 }

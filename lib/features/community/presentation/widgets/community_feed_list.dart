@@ -153,6 +153,9 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
         unawaited(_runCardAction(() => _feed.toggleStatus(post)));
       case CommunityPostMenuAction.delete:
         unawaited(_confirmDelete(l10n, post.id));
+      case CommunityPostMenuAction.toggleNotification:
+        // 목록·스크랩 카드에는 알림 설정이 없어 이 항목이 그려지지 않는다.
+        break;
     }
   }
 

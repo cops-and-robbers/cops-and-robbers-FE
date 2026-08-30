@@ -346,6 +346,28 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
   }
 
   @override
+  Future<void> updateCommentNotification(
+    int commentId,
+    CommunityCommentNotificationRequestModel body,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = body;
+    final _options = _setStreamType<void>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/community-posts/comments/${commentId}/notification',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
   Future<void> likePost(int postId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -624,6 +646,28 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
           .compose(
             _dio.options,
             '/api/community-posts/notifications/read',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
+  Future<void> updateNotificationSetting(
+    int postId,
+    CommunityPostNotificationSettingRequestModel body,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = body;
+    final _options = _setStreamType<void>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/community-posts/${postId}/notification-settings',
             queryParameters: queryParameters,
             data: _data,
           )

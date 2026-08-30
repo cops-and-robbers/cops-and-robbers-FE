@@ -2,6 +2,7 @@ import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/user/data/datasources/user_remote_datasource.dart';
 import 'package:cops_and_robbers/features/user/data/models/agreement_request_model.dart';
 import 'package:cops_and_robbers/features/user/data/models/agreement_response_model.dart';
+import 'package:cops_and_robbers/features/user/data/models/community_push_agreement_model.dart';
 import 'package:cops_and_robbers/features/user/data/models/delete_account_response_model.dart';
 import 'package:cops_and_robbers/features/user/data/models/game_push_agreement_model.dart';
 import 'package:cops_and_robbers/features/user/data/models/my_page_response_model.dart';
@@ -55,6 +56,15 @@ class _FakeUserRemoteDataSource implements UserRemoteDataSource {
   @override
   Future<void> updateGamePushAgreement(GamePushAgreementRequestModel request) =>
       throw UnimplementedError();
+
+  @override
+  Future<CommunityPushAgreementResponseModel> getCommunityPushAgreement() =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> updateCommunityPushAgreement(
+    CommunityPushAgreementRequestModel request,
+  ) => throw UnimplementedError();
 }
 
 DioException _dioError(int statusCode) => DioException(

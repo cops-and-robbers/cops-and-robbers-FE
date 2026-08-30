@@ -157,7 +157,7 @@ void main() {
       expect(find.text('올림픽공원 대규모로 뛰어봅시다'), findsOneWidget);
       expect(find.text('퇴근하고 한 판'), findsOneWidget);
       expect(find.textContaining('새 댓글'), findsOneWidget);
-      expect(find.textContaining('새 답글'), findsOneWidget);
+      expect(find.textContaining('새 대댓글'), findsOneWidget);
       expect(repo.readCalls, 0, reason: '조회만으로는 읽음 처리되지 않는다');
     });
 

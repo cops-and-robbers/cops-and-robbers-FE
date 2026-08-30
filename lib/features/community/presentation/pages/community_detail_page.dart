@@ -226,6 +226,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                         setState(() => _replyTarget = comment),
                     onDelete: _handleDeleteComment,
                     onReport: _handleReportComment,
+                    onToggleReplyNotification: _handleToggleReplyNotification,
                     replyTargetId: _replyTarget?.id,
                   ),
                 ],
@@ -556,6 +557,15 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
     );
   }
 
+  /// 내 댓글 답글 알림 토글 — 낙관적 갱신이라 화면은 즉시 바뀌고, 실패만 스낵바로.
+  Future<void> _handleToggleReplyNotification(CommunityCommentEntity comment) {
+    return _runAction(
+      () => ref
+          .read(communityDetailNotifierProvider(widget.postId).notifier)
+          .toggleReplyNotification(comment.id),
+    );
+  }
+
   void _handleReportComment(CommunityCommentEntity comment) {
     // ponytail: 댓글 신고 API가 아직 없다. 생기면 신고 화면으로 잇는다.
     AppSnackbar.show(
@@ -578,6 +588,8 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         unawaited(_handleToggleStatus());
       case CommunityPostMenuAction.delete:
         unawaited(_confirmDelete(l10n));
+      case CommunityPostMenuAction.toggleNotification:
+        unawaited(_handleToggleNotification());
     }
   }
 
@@ -591,6 +603,13 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
 
     await openCommunityEditor(context, ref, post);
   }
+
+  /// 이 글 알림 토글 — 낙관적 갱신이라 화면은 즉시 바뀌고, 실패만 스낵바로 알린다.
+  Future<void> _handleToggleNotification() => _runAction(
+    () => ref
+        .read(communityDetailNotifierProvider(widget.postId).notifier)
+        .toggleNotification(),
+  );
 
   Future<void> _handleToggleStatus() {
     return _runAction(

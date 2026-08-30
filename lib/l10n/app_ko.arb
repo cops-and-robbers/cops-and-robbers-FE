@@ -394,7 +394,7 @@
   "errorCodeInvalidMessageKey": "메시지를 보낼 수 없어요. 다시 시도해주세요",
   "communityDetailCommentCount": "댓글 {count}",
   "@communityDetailCommentCount": {
-    "description": "모집글 상세 — 댓글 섹션 제목 (답글 포함 개수)",
+    "description": "모집글 상세 — 댓글 섹션 제목 (대댓글 포함 개수)",
     "placeholders": {
       "count": {
         "type": "int"
@@ -405,17 +405,17 @@
   "@communityCommentHint": {
     "description": "댓글 입력창 placeholder"
   },
-  "communityCommentReplyHint": "답글을 남겨보세요",
+  "communityCommentReplyHint": "대댓글을 남겨보세요",
   "@communityCommentReplyHint": {
-    "description": "답글 입력창 placeholder"
+    "description": "대댓글 입력창 placeholder"
   },
-  "communityCommentReply": "답글 달기",
+  "communityCommentReply": "대댓글 달기",
   "@communityCommentReply": {
-    "description": "댓글 아래 답글 작성 버튼"
+    "description": "댓글 아래 대댓글 작성 버튼"
   },
   "communityCommentDeleted": "삭제된 댓글이에요",
   "@communityCommentDeleted": {
-    "description": "커뮤니티 — 답글이 남아 자리만 지킨 삭제 댓글 자리 문구"
+    "description": "커뮤니티 — 대댓글이 남아 자리만 지킨 삭제 댓글 자리 문구"
   },
   "communityCommentEmpty": "첫 댓글을 남겨보세요",
   "@communityCommentEmpty": {
@@ -474,6 +474,22 @@
   "communityMenuLoginRequired": "로그인하고 이용하기",
   "@communityMenuLoginRequired": {
     "description": "모집글 더보기 메뉴 — 비로그인 사용자에게 보이는 로그인 유도"
+  },
+  "communityMenuNotificationOn": "알림 켜기",
+  "@communityMenuNotificationOn": {
+    "description": "모집글 더보기 메뉴 — 이 글 알림이 꺼져 있을 때 (누르면 켜짐)"
+  },
+  "communityMenuNotificationOff": "알림 끄기",
+  "@communityMenuNotificationOff": {
+    "description": "모집글 더보기 메뉴 — 이 글 알림이 켜져 있을 때 (누르면 꺼짐)"
+  },
+  "communityMenuReplyNotificationOn": "대댓글 알림 켜기",
+  "@communityMenuReplyNotificationOn": {
+    "description": "내 댓글 더보기 메뉴 — 대댓글 알림이 꺼져 있을 때 (누르면 켜짐)"
+  },
+  "communityMenuReplyNotificationOff": "대댓글 알림 끄기",
+  "@communityMenuReplyNotificationOff": {
+    "description": "내 댓글 더보기 메뉴 — 대댓글 알림이 켜져 있을 때 (누르면 꺼짐)"
   },
   "communityStatusRecruiting": "모집중",
   "@communityStatusRecruiting": {
@@ -545,9 +561,9 @@
       }
     }
   },
-  "communityNotificationNewReply": "새 답글: {content}",
+  "communityNotificationNewReply": "새 대댓글: {content}",
   "@communityNotificationNewReply": {
-    "description": "알림함 카드 — 내 댓글에 달린 답글 알림",
+    "description": "알림함 카드 — 내 댓글에 달린 대댓글 알림",
     "placeholders": {
       "content": {
         "type": "String"
@@ -1871,6 +1887,14 @@
   "@settingsAppGameNotificationDescription": {
     "description": "설정 — 게임 알림 토글 메뉴 부제"
   },
+  "settingsAppCommunityNotification": "커뮤니티 알림",
+  "@settingsAppCommunityNotification": {
+    "description": "마이페이지 앱 설정 — 커뮤니티 푸시 알림 수신 동의 스위치"
+  },
+  "settingsAppCommunityNotificationDescription": "댓글·대댓글·채팅 푸시를 받아요. 꺼도 알림함에는 쌓여요",
+  "@settingsAppCommunityNotificationDescription": {
+    "description": "커뮤니티 알림 스위치 설명 — 끄면 푸시만 막히고 알림함은 그대로라는 점을 알린다"
+  },
   "settingsAppGeneralNotification": "알림",
   "@settingsAppGeneralNotification": {
     "description": "설정 — 시스템 알림 설정 메뉴 라벨"
@@ -2329,6 +2353,14 @@
   "@errorGamePushUpdateUnexpected": {
     "description": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내"
   },
+  "errorCommunityPushFetchUnexpected": "커뮤니티 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요",
+  "@errorCommunityPushFetchUnexpected": {
+    "description": "커뮤니티 푸시 알림 동의 조회 실패"
+  },
+  "errorCommunityPushUpdateUnexpected": "커뮤니티 알림 설정을 변경하지 못했어요",
+  "@errorCommunityPushUpdateUnexpected": {
+    "description": "커뮤니티 푸시 알림 동의 업데이트 실패"
+  },
   "errorAuthTokenMissing": "로그인 정보를 확인할 수 없어요. 다시 로그인해주세요",
   "@errorAuthTokenMissing": {
     "description": "인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후"
@@ -2400,6 +2432,14 @@
   "errorCommunityNotificationReadGeneric": "알림 읽음 처리에 실패했어요",
   "@errorCommunityNotificationReadGeneric": {
     "description": "커뮤니티 — 알림 읽음 처리 실패(일반)"
+  },
+  "errorCommunityPostNotificationUpdateGeneric": "이 글의 알림 설정을 변경하지 못했어요",
+  "@errorCommunityPostNotificationUpdateGeneric": {
+    "description": "게시글별 알림 켜기/끄기 실패"
+  },
+  "errorCommunityCommentNotificationUpdateGeneric": "대댓글 알림 설정을 변경하지 못했어요",
+  "@errorCommunityCommentNotificationUpdateGeneric": {
+    "description": "댓글별 대댓글 알림 켜기/끄기 실패"
   },
   "errorCommunityAddressLoadGeneric": "주소를 불러오는 중 오류가 생겼어요",
   "@errorCommunityAddressLoadGeneric": {
@@ -2669,13 +2709,13 @@
   "@errorCodeForbiddenNotCommentAuthor": {
     "description": "커뮤니티 — 남의 댓글 삭제 시도"
   },
-  "errorCodeReplyTargetGone": "답글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요",
+  "errorCodeReplyTargetGone": "대댓글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요",
   "@errorCodeReplyTargetGone": {
-    "description": "커뮤니티 — 답글 대상이 사라졌거나 조건이 어긋남"
+    "description": "커뮤니티 — 대댓글 대상이 사라졌거나 조건이 어긋남"
   },
-  "errorCodeInvalidCommentDepth": "답글에는 답글을 달 수 없어요",
+  "errorCodeInvalidCommentDepth": "대댓글에는 대댓글을 달 수 없어요",
   "@errorCodeInvalidCommentDepth": {
-    "description": "커뮤니티 — 2단을 넘는 답글 시도"
+    "description": "커뮤니티 — 2단을 넘는 대댓글 시도"
   },
   "errorCodePostNotFound": "이미 삭제된 모집글이에요",
   "errorCodeForbiddenNotAuthor": "방장만 수정하거나 삭제할 수 있어요",

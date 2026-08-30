@@ -5,7 +5,7 @@ part 'community_comment_model.g.dart';
 
 /// 모집글 댓글 응답 DTO
 ///
-/// 백엔드 스키마: api-docs.json#CommunityCommentResponse (v2.24.0)
+/// 백엔드 스키마: api-docs.json#CommunityCommentResponse (v2.26.0)
 ///
 /// 작성자·본문이 nullable인 이유는 삭제된 댓글 때문이다 — 답글이 남은 댓글을
 /// 지우면 행을 지우지 않고 자리만 남기며, 서버가 `deleted: true` + 작성자·본문·
@@ -29,6 +29,10 @@ class CommunityCommentResponseModel with _$CommunityCommentResponseModel {
     @Default(false) bool deleted,
     required DateTime createdAt,
     DateTime? updatedAt,
+
+    /// 이 댓글에 달리는 답글 알림 수신 여부 (BE #182, v2.26.0). 내가 쓴 댓글에만
+    /// 의미가 있다. 계약에 required가 없어 서버 기본값과 같은 true로 채운다.
+    @Default(true) bool replyNotificationsEnabled,
 
     /// 답글 목록. 댓글은 2depth 고정이라 답글의 이 값은 항상 비어 있다.
     @Default(<CommunityCommentResponseModel>[])
@@ -76,4 +80,21 @@ class CommunityCommentCreateRequestModel
   factory CommunityCommentCreateRequestModel.fromJson(
     Map<String, dynamic> json,
   ) => _$CommunityCommentCreateRequestModelFromJson(json);
+}
+
+/// 댓글 답글 알림 설정 요청 DTO
+///
+/// `PUT /api/community-posts/comments/{commentId}/notification` 바디.
+/// 작성자만 바꿀 수 있다(403 `FORBIDDEN_NOT_COMMENT_AUTHOR`). 게시글 알림
+/// 설정과 독립이다.
+@freezed
+class CommunityCommentNotificationRequestModel
+    with _$CommunityCommentNotificationRequestModel {
+  const factory CommunityCommentNotificationRequestModel({
+    required bool replyNotificationsEnabled,
+  }) = _CommunityCommentNotificationRequestModel;
+
+  factory CommunityCommentNotificationRequestModel.fromJson(
+    Map<String, dynamic> json,
+  ) => _$CommunityCommentNotificationRequestModelFromJson(json);
 }

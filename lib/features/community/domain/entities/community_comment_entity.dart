@@ -29,6 +29,10 @@ class CommunityCommentEntity with _$CommunityCommentEntity {
 
     /// 삭제되어 자리만 남은 댓글인지.
     @Default(false) bool deleted,
+
+    /// 내 댓글에 답글이 달릴 때 알림을 받을지. 남의 댓글에서는 의미가 없다 —
+    /// 화면은 내 1depth 댓글의 메뉴에서만 이 값을 쓴다.
+    @Default(true) bool replyNotificationsEnabled,
     required DateTime createdAt,
     @Default([]) List<CommunityCommentEntity> replies,
   }) = _CommunityCommentEntity;

@@ -130,4 +130,13 @@ abstract class CommunityRepository {
   /// 읽음 커서를 현재 시각으로 옮겨 지금까지의 알림을 모두 읽음으로 만든다.
   /// 개별 알림만 읽음 처리할 수는 없다(DEC-0038).
   Future<void> readNotifications();
+
+  /// 이 글의 알림 설정을 바꾼다. 두 값을 항상 함께 보낸다 — 서버가 둘 다 요구한다.
+  ///
+  /// 응답이 없으므로 화면은 보낸 값을 그대로 믿는다(낙관적 갱신).
+  Future<void> updateNotificationSetting({
+    required int postId,
+    required bool commentNotificationsEnabled,
+    required bool replyNotificationsEnabled,
+  });
 }

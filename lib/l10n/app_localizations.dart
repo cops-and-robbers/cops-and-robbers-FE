@@ -1276,7 +1276,7 @@ abstract class AppLocalizations {
   /// **'메시지를 보낼 수 없어요. 다시 시도해주세요'**
   String get errorCodeInvalidMessageKey;
 
-  /// 모집글 상세 — 댓글 섹션 제목 (답글 포함 개수)
+  /// 모집글 상세 — 댓글 섹션 제목 (대댓글 포함 개수)
   ///
   /// In ko, this message translates to:
   /// **'댓글 {count}'**
@@ -1288,19 +1288,19 @@ abstract class AppLocalizations {
   /// **'댓글을 남겨보세요'**
   String get communityCommentHint;
 
-  /// 답글 입력창 placeholder
+  /// 대댓글 입력창 placeholder
   ///
   /// In ko, this message translates to:
-  /// **'답글을 남겨보세요'**
+  /// **'대댓글을 남겨보세요'**
   String get communityCommentReplyHint;
 
-  /// 댓글 아래 답글 작성 버튼
+  /// 댓글 아래 대댓글 작성 버튼
   ///
   /// In ko, this message translates to:
-  /// **'답글 달기'**
+  /// **'대댓글 달기'**
   String get communityCommentReply;
 
-  /// 커뮤니티 — 답글이 남아 자리만 지킨 삭제 댓글 자리 문구
+  /// 커뮤니티 — 대댓글이 남아 자리만 지킨 삭제 댓글 자리 문구
   ///
   /// In ko, this message translates to:
   /// **'삭제된 댓글이에요'**
@@ -1377,6 +1377,30 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'로그인하고 이용하기'**
   String get communityMenuLoginRequired;
+
+  /// 모집글 더보기 메뉴 — 이 글 알림이 꺼져 있을 때 (누르면 켜짐)
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 켜기'**
+  String get communityMenuNotificationOn;
+
+  /// 모집글 더보기 메뉴 — 이 글 알림이 켜져 있을 때 (누르면 꺼짐)
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 끄기'**
+  String get communityMenuNotificationOff;
+
+  /// 내 댓글 더보기 메뉴 — 대댓글 알림이 꺼져 있을 때 (누르면 켜짐)
+  ///
+  /// In ko, this message translates to:
+  /// **'대댓글 알림 켜기'**
+  String get communityMenuReplyNotificationOn;
+
+  /// 내 댓글 더보기 메뉴 — 대댓글 알림이 켜져 있을 때 (누르면 꺼짐)
+  ///
+  /// In ko, this message translates to:
+  /// **'대댓글 알림 끄기'**
+  String get communityMenuReplyNotificationOff;
 
   /// 커뮤니티 카드 — 모집 중인 게시글 배지
   ///
@@ -1461,10 +1485,10 @@ abstract class AppLocalizations {
   /// **'새 댓글: {content}'**
   String communityNotificationNewComment(String content);
 
-  /// 알림함 카드 — 내 댓글에 달린 답글 알림
+  /// 알림함 카드 — 내 댓글에 달린 대댓글 알림
   ///
   /// In ko, this message translates to:
-  /// **'새 답글: {content}'**
+  /// **'새 대댓글: {content}'**
   String communityNotificationNewReply(String content);
 
   /// 커뮤니티 범위 필터 — 전체 글
@@ -3349,6 +3373,18 @@ abstract class AppLocalizations {
   /// **'게임 진행 중 발생하는 이벤트 알림을 설정해요'**
   String get settingsAppGameNotificationDescription;
 
+  /// 마이페이지 앱 설정 — 커뮤니티 푸시 알림 수신 동의 스위치
+  ///
+  /// In ko, this message translates to:
+  /// **'커뮤니티 알림'**
+  String get settingsAppCommunityNotification;
+
+  /// 커뮤니티 알림 스위치 설명 — 끄면 푸시만 막히고 알림함은 그대로라는 점을 알린다
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글·대댓글·채팅 푸시를 받아요. 꺼도 알림함에는 쌓여요'**
+  String get settingsAppCommunityNotificationDescription;
+
   /// 설정 — 시스템 알림 설정 메뉴 라벨
   ///
   /// In ko, this message translates to:
@@ -4021,6 +4057,18 @@ abstract class AppLocalizations {
   /// **'게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 생겼어요'**
   String get errorGamePushUpdateUnexpected;
 
+  /// 커뮤니티 푸시 알림 동의 조회 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'커뮤니티 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요'**
+  String get errorCommunityPushFetchUnexpected;
+
+  /// 커뮤니티 푸시 알림 동의 업데이트 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'커뮤니티 알림 설정을 변경하지 못했어요'**
+  String get errorCommunityPushUpdateUnexpected;
+
   /// 인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후
   ///
   /// In ko, this message translates to:
@@ -4128,6 +4176,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'알림 읽음 처리에 실패했어요'**
   String get errorCommunityNotificationReadGeneric;
+
+  /// 게시글별 알림 켜기/끄기 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'이 글의 알림 설정을 변경하지 못했어요'**
+  String get errorCommunityPostNotificationUpdateGeneric;
+
+  /// 댓글별 대댓글 알림 켜기/끄기 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'대댓글 알림 설정을 변경하지 못했어요'**
+  String get errorCommunityCommentNotificationUpdateGeneric;
 
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///
@@ -4801,16 +4861,16 @@ abstract class AppLocalizations {
   /// **'내가 쓴 댓글만 지울 수 있어요'**
   String get errorCodeForbiddenNotCommentAuthor;
 
-  /// 커뮤니티 — 답글 대상이 사라졌거나 조건이 어긋남
+  /// 커뮤니티 — 대댓글 대상이 사라졌거나 조건이 어긋남
   ///
   /// In ko, this message translates to:
-  /// **'답글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요'**
+  /// **'대댓글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요'**
   String get errorCodeReplyTargetGone;
 
-  /// 커뮤니티 — 2단을 넘는 답글 시도
+  /// 커뮤니티 — 2단을 넘는 대댓글 시도
   ///
   /// In ko, this message translates to:
-  /// **'답글에는 답글을 달 수 없어요'**
+  /// **'대댓글에는 대댓글을 달 수 없어요'**
   String get errorCodeInvalidCommentDepth;
 
   /// No description provided for @errorCodePostNotFound.

@@ -99,4 +99,11 @@ mixin CommunityRepositoryDetailStubs implements CommunityRepository {
   @override
   Future<void> readNotifications() =>
       throw UnimplementedError('이 테스트는 알림 읽음 처리를 쓰지 않는다');
+
+  @override
+  Future<void> updateNotificationSetting({
+    required int postId,
+    required bool commentNotificationsEnabled,
+    required bool replyNotificationsEnabled,
+  }) => throw UnimplementedError('이 테스트는 게시글 알림 설정을 쓰지 않는다');
 }

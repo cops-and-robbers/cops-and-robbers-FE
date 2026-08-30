@@ -6,6 +6,7 @@ import 'package:cops_and_robbers/features/community/data/models/community_notifi
 import 'package:cops_and_robbers/features/community/data/models/community_post_model.dart';
 import 'package:cops_and_robbers/features/community/data/repositories/community_repository_impl.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_notification_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_sort_option.dart';
@@ -132,6 +133,25 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
     if (errorToThrow != null) throw errorToThrow!;
     return postToReturn!;
   }
+
+  // ── 알림 설정 ──
+  CommunityPostNotificationSettingRequestModel? lastNotificationBody;
+
+  @override
+  Future<void> updateNotificationSetting(
+    int postId,
+    CommunityPostNotificationSettingRequestModel body,
+  ) async {
+    lastPostId = postId;
+    lastNotificationBody = body;
+    if (errorToThrow != null) throw errorToThrow!;
+  }
+
+  @override
+  Future<void> updateCommentNotification(
+    int commentId,
+    CommunityCommentNotificationRequestModel body,
+  ) => throw UnimplementedError('이 테스트는 댓글 알림 설정을 쓰지 않는다');
 
   // 댓글은 CommunityCommentRepository가 다룬다 — 게시글 테스트가 이쪽을 건드리면
   // 조용히 통과하는 대신 그 자리에서 드러나야 한다.
@@ -1039,6 +1059,75 @@ void main() {
 
       expect(
         () => repository.readNotifications(),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  group('CommunityRepositoryImpl.getPost 알림 설정', () {
+    test('maps_notification_settings_into_the_entity', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..postToReturn = CommunityPostResponseModel.fromJson(
+          _postJson()
+            ..['notificationSettings'] = {
+              'commentNotificationsEnabled': true,
+              'replyNotificationsEnabled': false,
+            },
+        );
+
+      final post = await CommunityRepositoryImpl(fake).getPost(1);
+
+      expect(
+        post.notificationSetting,
+        const CommunityPostNotificationSetting(
+          commentNotificationsEnabled: true,
+          replyNotificationsEnabled: false,
+        ),
+      );
+      // 내 글의 서버 기본값(댓글 on·답글 off)이 "켜짐"으로 읽혀야 한다.
+      expect(post.notificationSetting!.enabled, isTrue);
+    });
+
+    test('leaves_notification_setting_null_when_the_server_omits_it', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..postToReturn = CommunityPostResponseModel.fromJson(_postJson());
+
+      final post = await CommunityRepositoryImpl(fake).getPost(1);
+
+      expect(post.notificationSetting, isNull);
+    });
+  });
+
+  group('CommunityRepositoryImpl.updateNotificationSetting', () {
+    test('sends_both_flags_for_the_post', () async {
+      final fake = _FakeCommunityRemoteDataSource();
+
+      await CommunityRepositoryImpl(fake).updateNotificationSetting(
+        postId: 42,
+        commentNotificationsEnabled: false,
+        replyNotificationsEnabled: false,
+      );
+
+      expect(fake.lastPostId, 42);
+      expect(
+        fake.lastNotificationBody,
+        const CommunityPostNotificationSettingRequestModel(
+          commentNotificationsEnabled: false,
+          replyNotificationsEnabled: false,
+        ),
+      );
+    });
+
+    test('rethrows_server_rejection_as_app_exception', () async {
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(404);
+
+      expect(
+        () => CommunityRepositoryImpl(fake).updateNotificationSetting(
+          postId: 42,
+          commentNotificationsEnabled: true,
+          replyNotificationsEnabled: true,
+        ),
         throwsA(isA<AppException>()),
       );
     });

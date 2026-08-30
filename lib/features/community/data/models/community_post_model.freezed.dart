@@ -954,6 +954,227 @@ abstract class _CommunityPostNotificationSettingModel
   get copyWith => throw _privateConstructorUsedError;
 }
 
+CommunityPostNotificationSettingRequestModel
+_$CommunityPostNotificationSettingRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityPostNotificationSettingRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityPostNotificationSettingRequestModel {
+  bool get commentNotificationsEnabled => throw _privateConstructorUsedError;
+  bool get replyNotificationsEnabled => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityPostNotificationSettingRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityPostNotificationSettingRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityPostNotificationSettingRequestModelCopyWith<
+    CommunityPostNotificationSettingRequestModel
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityPostNotificationSettingRequestModelCopyWith<$Res> {
+  factory $CommunityPostNotificationSettingRequestModelCopyWith(
+    CommunityPostNotificationSettingRequestModel value,
+    $Res Function(CommunityPostNotificationSettingRequestModel) then,
+  ) =
+      _$CommunityPostNotificationSettingRequestModelCopyWithImpl<
+        $Res,
+        CommunityPostNotificationSettingRequestModel
+      >;
+  @useResult
+  $Res call({bool commentNotificationsEnabled, bool replyNotificationsEnabled});
+}
+
+/// @nodoc
+class _$CommunityPostNotificationSettingRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityPostNotificationSettingRequestModel
+>
+    implements $CommunityPostNotificationSettingRequestModelCopyWith<$Res> {
+  _$CommunityPostNotificationSettingRequestModelCopyWithImpl(
+    this._value,
+    this._then,
+  );
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityPostNotificationSettingRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? commentNotificationsEnabled = null,
+    Object? replyNotificationsEnabled = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            commentNotificationsEnabled: null == commentNotificationsEnabled
+                ? _value.commentNotificationsEnabled
+                : commentNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            replyNotificationsEnabled: null == replyNotificationsEnabled
+                ? _value.replyNotificationsEnabled
+                : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityPostNotificationSettingRequestModelImplCopyWith<$Res>
+    implements $CommunityPostNotificationSettingRequestModelCopyWith<$Res> {
+  factory _$$CommunityPostNotificationSettingRequestModelImplCopyWith(
+    _$CommunityPostNotificationSettingRequestModelImpl value,
+    $Res Function(_$CommunityPostNotificationSettingRequestModelImpl) then,
+  ) = __$$CommunityPostNotificationSettingRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool commentNotificationsEnabled, bool replyNotificationsEnabled});
+}
+
+/// @nodoc
+class __$$CommunityPostNotificationSettingRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityPostNotificationSettingRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityPostNotificationSettingRequestModelImpl
+        >
+    implements
+        _$$CommunityPostNotificationSettingRequestModelImplCopyWith<$Res> {
+  __$$CommunityPostNotificationSettingRequestModelImplCopyWithImpl(
+    _$CommunityPostNotificationSettingRequestModelImpl _value,
+    $Res Function(_$CommunityPostNotificationSettingRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityPostNotificationSettingRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? commentNotificationsEnabled = null,
+    Object? replyNotificationsEnabled = null,
+  }) {
+    return _then(
+      _$CommunityPostNotificationSettingRequestModelImpl(
+        commentNotificationsEnabled: null == commentNotificationsEnabled
+            ? _value.commentNotificationsEnabled
+            : commentNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        replyNotificationsEnabled: null == replyNotificationsEnabled
+            ? _value.replyNotificationsEnabled
+            : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityPostNotificationSettingRequestModelImpl
+    implements _CommunityPostNotificationSettingRequestModel {
+  const _$CommunityPostNotificationSettingRequestModelImpl({
+    required this.commentNotificationsEnabled,
+    required this.replyNotificationsEnabled,
+  });
+
+  factory _$CommunityPostNotificationSettingRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityPostNotificationSettingRequestModelImplFromJson(json);
+
+  @override
+  final bool commentNotificationsEnabled;
+  @override
+  final bool replyNotificationsEnabled;
+
+  @override
+  String toString() {
+    return 'CommunityPostNotificationSettingRequestModel(commentNotificationsEnabled: $commentNotificationsEnabled, replyNotificationsEnabled: $replyNotificationsEnabled)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityPostNotificationSettingRequestModelImpl &&
+            (identical(
+                  other.commentNotificationsEnabled,
+                  commentNotificationsEnabled,
+                ) ||
+                other.commentNotificationsEnabled ==
+                    commentNotificationsEnabled) &&
+            (identical(
+                  other.replyNotificationsEnabled,
+                  replyNotificationsEnabled,
+                ) ||
+                other.replyNotificationsEnabled == replyNotificationsEnabled));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    commentNotificationsEnabled,
+    replyNotificationsEnabled,
+  );
+
+  /// Create a copy of CommunityPostNotificationSettingRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityPostNotificationSettingRequestModelImplCopyWith<
+    _$CommunityPostNotificationSettingRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityPostNotificationSettingRequestModelImplCopyWithImpl<
+        _$CommunityPostNotificationSettingRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityPostNotificationSettingRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityPostNotificationSettingRequestModel
+    implements CommunityPostNotificationSettingRequestModel {
+  const factory _CommunityPostNotificationSettingRequestModel({
+    required final bool commentNotificationsEnabled,
+    required final bool replyNotificationsEnabled,
+  }) = _$CommunityPostNotificationSettingRequestModelImpl;
+
+  factory _CommunityPostNotificationSettingRequestModel.fromJson(
+    Map<String, dynamic> json,
+  ) = _$CommunityPostNotificationSettingRequestModelImpl.fromJson;
+
+  @override
+  bool get commentNotificationsEnabled;
+  @override
+  bool get replyNotificationsEnabled;
+
+  /// Create a copy of CommunityPostNotificationSettingRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityPostNotificationSettingRequestModelImplCopyWith<
+    _$CommunityPostNotificationSettingRequestModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
 CommunityPostResponseModel _$CommunityPostResponseModelFromJson(
   Map<String, dynamic> json,
 ) {

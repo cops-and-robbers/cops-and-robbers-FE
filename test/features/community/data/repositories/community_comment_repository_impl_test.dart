@@ -47,6 +47,19 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
     deletedCommentId = commentId;
   }
 
+  int? notifiedCommentId;
+  CommunityCommentNotificationRequestModel? lastNotificationRequest;
+
+  @override
+  Future<void> updateCommentNotification(
+    int commentId,
+    CommunityCommentNotificationRequestModel body,
+  ) async {
+    if (errorToThrow != null) throw errorToThrow!;
+    notifiedCommentId = commentId;
+    lastNotificationRequest = body;
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -66,16 +79,20 @@ DioException _dioError(int statusCode) => DioException(
   type: DioExceptionType.badResponse,
 );
 
-CommunityCommentResponseModel _comment(int id, {int? parentId}) =>
-    CommunityCommentResponseModel(
-      id: id,
-      parentId: parentId,
-      writerId: 7,
-      writerNickname: '날쌘도둑',
-      writerProfileIcon: 2,
-      content: '댓글 $id',
-      createdAt: DateTime.utc(2026, 8, 27, 1, id),
-    );
+CommunityCommentResponseModel _comment(
+  int id, {
+  int? parentId,
+  bool replyNotificationsEnabled = true,
+}) => CommunityCommentResponseModel(
+  id: id,
+  parentId: parentId,
+  writerId: 7,
+  writerNickname: '날쌘도둑',
+  writerProfileIcon: 2,
+  content: '댓글 $id',
+  createdAt: DateTime.utc(2026, 8, 27, 1, id),
+  replyNotificationsEnabled: replyNotificationsEnabled,
+);
 
 void main() {
   group('CommunityCommentRepositoryImpl.getComments', () {
@@ -165,9 +182,44 @@ void main() {
     });
   });
 
+  group('CommunityCommentRepositoryImpl 답글 알림', () {
+    test('carries_reply_notification_flag_into_the_entity', () async {
+      final fake = _FakeCommunityRemoteDataSource(
+        pages: [
+          CommunityCommentListResponseModel(
+            content: [_comment(1, replyNotificationsEnabled: false)],
+            hasNext: false,
+          ),
+        ],
+      );
+
+      final comments = await CommunityCommentRepositoryImpl(
+        fake,
+      ).getComments(42);
+
+      expect(comments.single.replyNotificationsEnabled, isFalse);
+    });
+
+    test('sends_the_new_value_for_the_comment', () async {
+      final fake = _FakeCommunityRemoteDataSource();
+
+      await CommunityCommentRepositoryImpl(
+        fake,
+      ).updateReplyNotification(commentId: 10, enabled: false);
+
+      expect(fake.notifiedCommentId, 10);
+      expect(
+        fake.lastNotificationRequest,
+        const CommunityCommentNotificationRequestModel(
+          replyNotificationsEnabled: false,
+        ),
+      );
+    });
+  });
+
   // 화면은 `error is AppException`을 가정하고 문구를 고른다. raw DioException이
   // 새어 나가면 사용자는 서버가 준 사유 대신 일반 문구만 보게 된다.
-  test('세 경로 모두 DioException을 AppException으로 바꾼다', () async {
+  test('네 경로 모두 DioException을 AppException으로 바꾼다', () async {
     final repo = CommunityCommentRepositoryImpl(
       _FakeCommunityRemoteDataSource()..errorToThrow = _dioError(400),
     );
@@ -178,5 +230,9 @@ void main() {
       throwsA(isA<AppException>()),
     );
     expect(() => repo.deleteComment(10), throwsA(isA<AppException>()));
+    expect(
+      () => repo.updateReplyNotification(commentId: 10, enabled: true),
+      throwsA(isA<AppException>()),
+    );
   });
 }
