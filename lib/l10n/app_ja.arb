@@ -851,6 +851,7 @@
   "errorCodePoliceWaitingTime": "警察は待機時間中、泥棒を逮捕できません",
   "errorCodeCannotKickYourself": "ホストは自分自身を追放することはできません",
   "errorCodeNoticeNotFound": "お知らせが見つかりません",
+  "errorCodeNoticeTranslationInvalid": "お知らせの翻訳情報が正しくありません",
   "errorCodeGameResultNotFound": "ゲーム結果が見つかりません",
   "errorCodeEtcReasonRequired": "通報タイプがその他の場合は理由を入力してください",
   "errorCodeSelfReport": "自分自身は通報できません",
@@ -878,6 +879,9 @@
   "errorCodeChatRoomFull": "このチャットの定員に達しました",
   "errorCodeJoinedChatRoomLimitExceeded": "参加できるチャット数の上限を超えました。他のチャットから退出してからもう一度お試しください",
   "errorCodeNotAChatMember": "このチャットの参加者ではありません",
+  "errorCodeForbiddenNotChatHost": "ホストのみメンバーを追放できます",
+  "errorCodeChatMemberNotFound": "このメンバーはすでにチャットから退出しています",
+  "errorCodeConflictingCountryFilter": "国の条件が競合しています",
   "errorCodeReactionAlreadyApplied": "すでに反映されています",
   "pingFound": "発見",
   "@pingFound": {

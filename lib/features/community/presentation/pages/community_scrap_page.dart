@@ -10,6 +10,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/loading/app_refresh_control.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -21,12 +22,13 @@ import '../widgets/community_post_menu.dart';
 
 /// 내 스크랩 목록 화면
 ///
-/// `community_page.dart`의 목록 본문(무한 스크롤 리스너 + 카드 + 로딩·에러·빈
-/// 상태)을 따르되, 스코프 토글·정렬 행·작성 버튼은 없다 — 스크랩 목록은 서버
-/// 정렬이 고정이고 검색·필터가 없다.
+/// `community_feed_list.dart`의 목록 본문(무한 스크롤 리스너 + 당겨서 새로고침
+/// + 카드 + 로딩·에러·빈 상태)을 따르되, 스코프 토글·정렬 행·작성 버튼은 없다 —
+/// 스크랩 목록은 서버 정렬이 고정이고 검색·필터가 없다.
 ///
-/// 카드는 표시 전용이다(시안). 스크랩 해제는 상세에서만 일어나므로, 상세를
-/// 갔다 돌아오는 시점에 그 글만 다시 조회해 해제 여부를 판정한다.
+/// 카드는 표시 전용이다(시안). 반응이 바뀌는 곳은 상세뿐이므로, 상세를 갔다
+/// 돌아오는 시점에 그 글만 다시 조회해 그 행에 반영한다 — 여전히 스크랩
+/// 중이면 갱신하고, 해제됐으면 걷어낸다(`syncAfterDetail`).
 class CommunityScrapPage extends ConsumerStatefulWidget {
   const CommunityScrapPage({super.key});
 
@@ -64,6 +66,22 @@ class _CommunityScrapPageState extends ConsumerState<CommunityScrapPage> {
   Future<void> _loadMore() async {
     try {
       await ref.read(communityScrapNotifierProvider.notifier).loadMore();
+    } on AppException catch (e) {
+      if (!mounted) return;
+      // AuthInterceptor가 강제 로그아웃을 처리하므로 UI는 무반응.
+      if (e is AuthException) return;
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).errorByException(e),
+        backgroundColor: AppColors.red,
+      );
+    }
+  }
+
+  /// 당겨서 새로고침 — 실패는 스낵바로만 알린다(보던 목록은 그대로 둔다).
+  Future<void> _refresh() async {
+    try {
+      await ref.read(communityScrapNotifierProvider.notifier).refresh();
     } on AppException catch (e) {
       if (!mounted) return;
       // AuthInterceptor가 강제 로그아웃을 처리하므로 UI는 무반응.
@@ -134,43 +152,64 @@ class _CommunityScrapPageState extends ConsumerState<CommunityScrapPage> {
             // AuthInterceptor가 강제 로그아웃(→ 화면 전환)을 처리하므로 UI는 무반응.
             error: (e, _) => e is AuthException
                 ? const SizedBox.shrink()
-                : Center(
-                    child: EmptyState(
-                      message: e is AppException
-                          ? l10n.errorByException(e)
-                          : l10n.errorCommunityScrapsLoadGeneric,
-                    ),
+                : _buildRefreshablePlaceholder(
+                    e is AppException
+                        ? l10n.errorByException(e)
+                        : l10n.errorCommunityScrapsLoadGeneric,
                   ),
             data: (state) => state.items.isEmpty
-                ? Center(child: EmptyState(message: l10n.communityScrapEmpty))
+                ? _buildRefreshablePlaceholder(l10n.communityScrapEmpty)
                 : _buildList(state),
           ),
     );
   }
 
-  Widget _buildList(CommunityScrapState state) {
-    return ListView.separated(
-      controller: _scrollController,
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSpacing.horizontal16,
-        vertical: AppSpacing.vertical16,
+  /// 당겨서 새로고침이 가능한 플레이스홀더 (빈 목록 / 첫 로드 에러).
+  ///
+  /// 컨텐츠가 뷰포트를 다 채우지 않아도 당길 수 있어야 하므로
+  /// `SliverFillRemaining`으로 남는 높이를 채운다(`community_feed_list.dart`와 같다).
+  Widget _buildRefreshablePlaceholder(String message) {
+    return AppRefreshControl(
+      onRefresh: _refresh,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: EmptyState(message: message)),
+          ),
+        ],
       ),
-      itemCount: state.items.length + (state.isLoadingMore ? 1 : 0),
-      separatorBuilder: (_, _) => SizedBox(height: AppSpacing.vertical12),
-      itemBuilder: (context, index) {
-        if (index >= state.items.length) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical16),
-            child: const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildList(CommunityScrapState state) {
+    return AppRefreshControl(
+      onRefresh: _refresh,
+      child: ListView.separated(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.horizontal16,
+          vertical: AppSpacing.vertical16,
+        ),
+        itemCount: state.items.length + (state.isLoadingMore ? 1 : 0),
+        separatorBuilder: (_, _) => SizedBox(height: AppSpacing.vertical12),
+        itemBuilder: (context, index) {
+          if (index >= state.items.length) {
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical16),
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          }
+          final post = state.items[index];
+          return CommunityPostCard(
+            post: post,
+            onTap: () => unawaited(_openDetail(post.id)),
+            onMenuAction: (action) => _handleCardMenu(action, post.id),
           );
-        }
-        final post = state.items[index];
-        return CommunityPostCard(
-          post: post,
-          onTap: () => unawaited(_openDetail(post.id)),
-          onMenuAction: (action) => _handleCardMenu(action, post.id),
-        );
-      },
+        },
+      ),
     );
   }
 }

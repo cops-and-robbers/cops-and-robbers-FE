@@ -74,7 +74,7 @@ final selectedNoticeCategoryProvider =
     );
 
 typedef _$SelectedNoticeCategory = AutoDisposeNotifier<NoticeCategory>;
-String _$noticesNotifierHash() => r'1483c59aea68834561463d260fa5536df3af29f4';
+String _$noticesNotifierHash() => r'e42d1d2ab4705cc5c5a37ce106507b139a12c15a';
 
 /// 공지사항 목록 페이지 상태 관리 Notifier
 ///

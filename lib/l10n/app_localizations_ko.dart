@@ -2512,6 +2512,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeNoticeNotFound => '해당 공지사항을 찾을 수 없어요';
 
   @override
+  String get errorCodeNoticeTranslationInvalid => '공지 번역 정보가 올바르지 않아요';
+
+  @override
   String get errorCodeGameResultNotFound => '해당 게임 결과를 찾을 수 없어요';
 
   @override
@@ -2584,6 +2587,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeNotAChatMember => '해당 채팅방의 참여자가 아니에요';
+
+  @override
+  String get errorCodeForbiddenNotChatHost => '방장만 참여자를 강퇴할 수 있어요';
+
+  @override
+  String get errorCodeChatMemberNotFound => '이미 채팅방을 나간 참여자예요';
+
+  @override
+  String get errorCodeConflictingCountryFilter => '국가 조건이 서로 충돌해요';
 
   @override
   String get errorCodeReactionAlreadyApplied => '이미 반영된 상태예요';

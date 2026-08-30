@@ -46,16 +46,44 @@ class CommunityScrapNotifier extends _$CommunityScrapNotifier {
     );
   }
 
+  /// 목록을 통째로 갈아엎은 횟수. 날아가 있던 [loadMore] 응답이 자기 요청
+  /// 이후에 새로고침이 있었는지 판정하는 데 쓴다.
+  int _generation = 0;
+
+  /// 당겨서 새로고침 — 커서를 버리고 첫 장부터 다시 받는다.
+  ///
+  /// 첫 로드가 실패한 상태에서도 같은 경로로 재시도한다(에러 화면도 당길 수
+  /// 있다). 실패는 그대로 던져 화면이 스낵바로 알리게 하고, 상태는 건드리지
+  /// 않는다 — 보고 있던 목록을 새로고침 실패로 잃지 않는다.
+  Future<void> refresh() async {
+    final page = await ref
+        .read(communityRepositoryProvider)
+        .getScraps(size: _pageSize);
+    _generation++;
+    state = AsyncData(
+      CommunityScrapState(
+        items: page.items,
+        nextCursor: page.nextCursor,
+        hasMore: page.hasNext,
+      ),
+    );
+  }
+
   /// 다음 페이지를 이어붙인다. 실패해도 보이는 목록은 지우지 않고 다시 던진다.
   Future<void> loadMore() async {
     final current = state.valueOrNull;
     if (current == null || !current.hasMore || current.isLoadingMore) return;
 
     state = AsyncData(current.copyWith(isLoadingMore: true));
+    final generation = _generation;
     try {
       final page = await ref
           .read(communityRepositoryProvider)
           .getScraps(cursor: current.nextCursor, size: _pageSize);
+      // 그 사이 새로고침이 목록을 갈아엎었으면 이 페이지는 사라진 커서에 대한
+      // 답이다. 이어붙이면 방금 받은 첫 장 위에 옛 페이지가 겹치고, nextCursor도
+      // 새로고침 이전 값으로 되돌아간다. isLoadingMore는 새 상태가 이미 껐다.
+      if (generation != _generation) return;
       final latest = state.valueOrNull ?? current;
       state = AsyncData(
         latest.copyWith(
