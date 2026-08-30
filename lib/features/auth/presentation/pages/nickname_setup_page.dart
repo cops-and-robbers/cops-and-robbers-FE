@@ -314,7 +314,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
               ? widget.initialNickname
               : l10n.fieldNicknameHint,
           controller: _nicknameController,
-          maxLength: 10,
+          maxLength: 20,
           textColor: _isNicknameChanged ? null : AppColors.black600,
           // NOTE: inputFormatters 제거 — 천지인/나랏글 등 일부 한국어 IME가
           // 자모 조합 중 임시 문자를 사용해 필터링되면 입력 자체가 깨지는 문제 방지.
