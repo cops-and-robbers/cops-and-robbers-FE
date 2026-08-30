@@ -1753,6 +1753,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'ゲーム進行中に発生するイベントの通知を設定します';
 
   @override
+  String get settingsAppCommunityNotification => 'コミュニティ通知';
+
+  @override
+  String get settingsAppCommunityNotificationDescription =>
+      'コメント・返信・チャットのプッシュ通知を受け取ります。オフにしても通知ボックスには残ります';
+
+  @override
   String get settingsAppGeneralNotification => '通知';
 
   @override
@@ -2095,6 +2102,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorGamePushUpdateUnexpected => 'ゲームプッシュ通知の同意更新中に予期しないエラーが発生しました';
+
+  @override
+  String get errorCommunityPushFetchUnexpected =>
+      'コミュニティプッシュ通知の同意取得中に予期しないエラーが発生しました';
+
+  @override
+  String get errorCommunityPushUpdateUnexpected => 'コミュニティ通知の設定を変更できませんでした';
 
   @override
   String get errorAuthTokenMissing => 'ログイン情報を確認できません。再度ログインしてください';

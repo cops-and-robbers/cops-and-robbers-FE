@@ -1753,6 +1753,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임 진행 중 발생하는 이벤트 알림을 설정해요';
 
   @override
+  String get settingsAppCommunityNotification => '커뮤니티 알림';
+
+  @override
+  String get settingsAppCommunityNotificationDescription =>
+      '댓글·답글·채팅 푸시를 받아요. 꺼도 알림함에는 쌓여요';
+
+  @override
   String get settingsAppGeneralNotification => '알림';
 
   @override
@@ -2096,6 +2103,13 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get errorGamePushUpdateUnexpected =>
       '게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 생겼어요';
+
+  @override
+  String get errorCommunityPushFetchUnexpected =>
+      '커뮤니티 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요';
+
+  @override
+  String get errorCommunityPushUpdateUnexpected => '커뮤니티 알림 설정을 변경하지 못했어요';
 
   @override
   String get errorAuthTokenMissing => '로그인 정보를 확인할 수 없어요. 다시 로그인해주세요';

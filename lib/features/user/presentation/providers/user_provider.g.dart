@@ -88,5 +88,30 @@ final gamePushNotifierProvider =
     );
 
 typedef _$GamePushNotifier = AutoDisposeAsyncNotifier<bool>;
+String _$communityPushNotifierHash() =>
+    r'777c4bd3cfe7a1b000eb889af4d09759614f9b88';
+
+/// 커뮤니티 푸시 알림 동의 상태 Provider
+///
+/// build: GET /api/user/agreements/community-push
+/// toggle: PUT /api/user/agreements/community-push (낙관적 업데이트, 실패 시 원복)
+///
+/// 끄면 푸시만 막힌다 — 알림함·게시글별·댓글별 설정은 서버 의미가 독립이라
+/// 이 값으로 그쪽 UI를 비활성화하지 않는다.
+///
+/// Copied from [CommunityPushNotifier].
+@ProviderFor(CommunityPushNotifier)
+final communityPushNotifierProvider =
+    AutoDisposeAsyncNotifierProvider<CommunityPushNotifier, bool>.internal(
+      CommunityPushNotifier.new,
+      name: r'communityPushNotifierProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$communityPushNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$CommunityPushNotifier = AutoDisposeAsyncNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -36,6 +36,12 @@ mixin _$MyPageResponseModel {
   /// 마케팅 푸시 알림 허용 여부
   bool get allowMarketingPush => throw _privateConstructorUsedError;
 
+  /// 커뮤니티 푸시 알림 허용 여부 (BE #182, v2.26.0)
+  ///
+  /// [profileIcon]과 같은 이유로 `required`를 피한다 — 계약상 필수가 아니다.
+  /// 가입 기본값과 같은 true로 채운다.
+  bool get allowCommunityPush => throw _privateConstructorUsedError;
+
   /// 프로필 아이콘 번호 (앱 에셋 번호와 1:1)
   ///
   /// OpenAPI 계약상 필수가 아니다. `required`로 두면 서버가 이 필드를 빼는
@@ -66,6 +72,7 @@ abstract class $MyPageResponseModelCopyWith<$Res> {
     String socialPlatform,
     bool allowGamePush,
     bool allowMarketingPush,
+    bool allowCommunityPush,
     int profileIcon,
   });
 }
@@ -90,6 +97,7 @@ class _$MyPageResponseModelCopyWithImpl<$Res, $Val extends MyPageResponseModel>
     Object? socialPlatform = null,
     Object? allowGamePush = null,
     Object? allowMarketingPush = null,
+    Object? allowCommunityPush = null,
     Object? profileIcon = null,
   }) {
     return _then(
@@ -113,6 +121,10 @@ class _$MyPageResponseModelCopyWithImpl<$Res, $Val extends MyPageResponseModel>
             allowMarketingPush: null == allowMarketingPush
                 ? _value.allowMarketingPush
                 : allowMarketingPush // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            allowCommunityPush: null == allowCommunityPush
+                ? _value.allowCommunityPush
+                : allowCommunityPush // ignore: cast_nullable_to_non_nullable
                       as bool,
             profileIcon: null == profileIcon
                 ? _value.profileIcon
@@ -139,6 +151,7 @@ abstract class _$$MyPageResponseModelImplCopyWith<$Res>
     String socialPlatform,
     bool allowGamePush,
     bool allowMarketingPush,
+    bool allowCommunityPush,
     int profileIcon,
   });
 }
@@ -162,6 +175,7 @@ class __$$MyPageResponseModelImplCopyWithImpl<$Res>
     Object? socialPlatform = null,
     Object? allowGamePush = null,
     Object? allowMarketingPush = null,
+    Object? allowCommunityPush = null,
     Object? profileIcon = null,
   }) {
     return _then(
@@ -186,6 +200,10 @@ class __$$MyPageResponseModelImplCopyWithImpl<$Res>
             ? _value.allowMarketingPush
             : allowMarketingPush // ignore: cast_nullable_to_non_nullable
                   as bool,
+        allowCommunityPush: null == allowCommunityPush
+            ? _value.allowCommunityPush
+            : allowCommunityPush // ignore: cast_nullable_to_non_nullable
+                  as bool,
         profileIcon: null == profileIcon
             ? _value.profileIcon
             : profileIcon // ignore: cast_nullable_to_non_nullable
@@ -204,6 +222,7 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
     required this.socialPlatform,
     required this.allowGamePush,
     required this.allowMarketingPush,
+    this.allowCommunityPush = true,
     this.profileIcon = 1,
   });
 
@@ -230,6 +249,14 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
   @override
   final bool allowMarketingPush;
 
+  /// 커뮤니티 푸시 알림 허용 여부 (BE #182, v2.26.0)
+  ///
+  /// [profileIcon]과 같은 이유로 `required`를 피한다 — 계약상 필수가 아니다.
+  /// 가입 기본값과 같은 true로 채운다.
+  @override
+  @JsonKey()
+  final bool allowCommunityPush;
+
   /// 프로필 아이콘 번호 (앱 에셋 번호와 1:1)
   ///
   /// OpenAPI 계약상 필수가 아니다. `required`로 두면 서버가 이 필드를 빼는
@@ -241,7 +268,7 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
 
   @override
   String toString() {
-    return 'MyPageResponseModel(userId: $userId, nickname: $nickname, socialPlatform: $socialPlatform, allowGamePush: $allowGamePush, allowMarketingPush: $allowMarketingPush, profileIcon: $profileIcon)';
+    return 'MyPageResponseModel(userId: $userId, nickname: $nickname, socialPlatform: $socialPlatform, allowGamePush: $allowGamePush, allowMarketingPush: $allowMarketingPush, allowCommunityPush: $allowCommunityPush, profileIcon: $profileIcon)';
   }
 
   @override
@@ -258,6 +285,8 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
                 other.allowGamePush == allowGamePush) &&
             (identical(other.allowMarketingPush, allowMarketingPush) ||
                 other.allowMarketingPush == allowMarketingPush) &&
+            (identical(other.allowCommunityPush, allowCommunityPush) ||
+                other.allowCommunityPush == allowCommunityPush) &&
             (identical(other.profileIcon, profileIcon) ||
                 other.profileIcon == profileIcon));
   }
@@ -271,6 +300,7 @@ class _$MyPageResponseModelImpl implements _MyPageResponseModel {
     socialPlatform,
     allowGamePush,
     allowMarketingPush,
+    allowCommunityPush,
     profileIcon,
   );
 
@@ -298,6 +328,7 @@ abstract class _MyPageResponseModel implements MyPageResponseModel {
     required final String socialPlatform,
     required final bool allowGamePush,
     required final bool allowMarketingPush,
+    final bool allowCommunityPush,
     final int profileIcon,
   }) = _$MyPageResponseModelImpl;
 
@@ -323,6 +354,13 @@ abstract class _MyPageResponseModel implements MyPageResponseModel {
   /// 마케팅 푸시 알림 허용 여부
   @override
   bool get allowMarketingPush;
+
+  /// 커뮤니티 푸시 알림 허용 여부 (BE #182, v2.26.0)
+  ///
+  /// [profileIcon]과 같은 이유로 `required`를 피한다 — 계약상 필수가 아니다.
+  /// 가입 기본값과 같은 true로 채운다.
+  @override
+  bool get allowCommunityPush;
 
   /// 프로필 아이콘 번호 (앱 에셋 번호와 1:1)
   ///

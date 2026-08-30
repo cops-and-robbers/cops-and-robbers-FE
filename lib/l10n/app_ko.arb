@@ -1871,6 +1871,14 @@
   "@settingsAppGameNotificationDescription": {
     "description": "설정 — 게임 알림 토글 메뉴 부제"
   },
+  "settingsAppCommunityNotification": "커뮤니티 알림",
+  "@settingsAppCommunityNotification": {
+    "description": "마이페이지 앱 설정 — 커뮤니티 푸시 알림 수신 동의 스위치"
+  },
+  "settingsAppCommunityNotificationDescription": "댓글·답글·채팅 푸시를 받아요. 꺼도 알림함에는 쌓여요",
+  "@settingsAppCommunityNotificationDescription": {
+    "description": "커뮤니티 알림 스위치 설명 — 끄면 푸시만 막히고 알림함은 그대로라는 점을 알린다"
+  },
   "settingsAppGeneralNotification": "알림",
   "@settingsAppGeneralNotification": {
     "description": "설정 — 시스템 알림 설정 메뉴 라벨"
@@ -2328,6 +2336,14 @@
   "errorGamePushUpdateUnexpected": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 생겼어요",
   "@errorGamePushUpdateUnexpected": {
     "description": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내"
+  },
+  "errorCommunityPushFetchUnexpected": "커뮤니티 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요",
+  "@errorCommunityPushFetchUnexpected": {
+    "description": "커뮤니티 푸시 알림 동의 조회 실패"
+  },
+  "errorCommunityPushUpdateUnexpected": "커뮤니티 알림 설정을 변경하지 못했어요",
+  "@errorCommunityPushUpdateUnexpected": {
+    "description": "커뮤니티 푸시 알림 동의 업데이트 실패"
   },
   "errorAuthTokenMissing": "로그인 정보를 확인할 수 없어요. 다시 로그인해주세요",
   "@errorAuthTokenMissing": {

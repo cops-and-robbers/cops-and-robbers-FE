@@ -156,6 +156,10 @@ class ApiEndpoints {
   /// 게임 푸시 알림 수신 동의 조회 / 업데이트
   static const String agreementsGamePush = '/api/user/agreements/game-push';
 
+  /// 커뮤니티 푸시 알림 수신 동의 조회 / 업데이트 (BE #182)
+  static const String agreementsCommunityPush =
+      '/api/user/agreements/community-push';
+
   /// 참여 중인 게임 정보 조회
   static const String myActiveGame = '/api/user/me/game';
 

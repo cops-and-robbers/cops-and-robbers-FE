@@ -32,6 +32,10 @@ mixin _$UserProfileEntity {
   /// 마케팅 푸시 알림 허용 여부
   bool get allowMarketingPush => throw _privateConstructorUsedError;
 
+  /// 커뮤니티 푸시 알림 허용 여부. 마이페이지 스위치는 전용 GET을 보므로
+  /// 화면이 이 값을 직접 읽지는 않는다 — 서버가 주는 값을 버리지 않으려고 둔다.
+  bool get allowCommunityPush => throw _privateConstructorUsedError;
+
   /// 프로필 아이콘 번호 (`assets/profiles/<번호>.svg` 와 1:1)
   int get profileIcon => throw _privateConstructorUsedError;
 
@@ -55,6 +59,7 @@ abstract class $UserProfileEntityCopyWith<$Res> {
     String socialPlatform,
     bool allowGamePush,
     bool allowMarketingPush,
+    bool allowCommunityPush,
     int profileIcon,
   });
 }
@@ -79,6 +84,7 @@ class _$UserProfileEntityCopyWithImpl<$Res, $Val extends UserProfileEntity>
     Object? socialPlatform = null,
     Object? allowGamePush = null,
     Object? allowMarketingPush = null,
+    Object? allowCommunityPush = null,
     Object? profileIcon = null,
   }) {
     return _then(
@@ -102,6 +108,10 @@ class _$UserProfileEntityCopyWithImpl<$Res, $Val extends UserProfileEntity>
             allowMarketingPush: null == allowMarketingPush
                 ? _value.allowMarketingPush
                 : allowMarketingPush // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            allowCommunityPush: null == allowCommunityPush
+                ? _value.allowCommunityPush
+                : allowCommunityPush // ignore: cast_nullable_to_non_nullable
                       as bool,
             profileIcon: null == profileIcon
                 ? _value.profileIcon
@@ -128,6 +138,7 @@ abstract class _$$UserProfileEntityImplCopyWith<$Res>
     String socialPlatform,
     bool allowGamePush,
     bool allowMarketingPush,
+    bool allowCommunityPush,
     int profileIcon,
   });
 }
@@ -151,6 +162,7 @@ class __$$UserProfileEntityImplCopyWithImpl<$Res>
     Object? socialPlatform = null,
     Object? allowGamePush = null,
     Object? allowMarketingPush = null,
+    Object? allowCommunityPush = null,
     Object? profileIcon = null,
   }) {
     return _then(
@@ -175,6 +187,10 @@ class __$$UserProfileEntityImplCopyWithImpl<$Res>
             ? _value.allowMarketingPush
             : allowMarketingPush // ignore: cast_nullable_to_non_nullable
                   as bool,
+        allowCommunityPush: null == allowCommunityPush
+            ? _value.allowCommunityPush
+            : allowCommunityPush // ignore: cast_nullable_to_non_nullable
+                  as bool,
         profileIcon: null == profileIcon
             ? _value.profileIcon
             : profileIcon // ignore: cast_nullable_to_non_nullable
@@ -193,6 +209,7 @@ class _$UserProfileEntityImpl implements _UserProfileEntity {
     required this.socialPlatform,
     required this.allowGamePush,
     required this.allowMarketingPush,
+    this.allowCommunityPush = true,
     required this.profileIcon,
   });
 
@@ -216,13 +233,19 @@ class _$UserProfileEntityImpl implements _UserProfileEntity {
   @override
   final bool allowMarketingPush;
 
+  /// 커뮤니티 푸시 알림 허용 여부. 마이페이지 스위치는 전용 GET을 보므로
+  /// 화면이 이 값을 직접 읽지는 않는다 — 서버가 주는 값을 버리지 않으려고 둔다.
+  @override
+  @JsonKey()
+  final bool allowCommunityPush;
+
   /// 프로필 아이콘 번호 (`assets/profiles/<번호>.svg` 와 1:1)
   @override
   final int profileIcon;
 
   @override
   String toString() {
-    return 'UserProfileEntity(userId: $userId, nickname: $nickname, socialPlatform: $socialPlatform, allowGamePush: $allowGamePush, allowMarketingPush: $allowMarketingPush, profileIcon: $profileIcon)';
+    return 'UserProfileEntity(userId: $userId, nickname: $nickname, socialPlatform: $socialPlatform, allowGamePush: $allowGamePush, allowMarketingPush: $allowMarketingPush, allowCommunityPush: $allowCommunityPush, profileIcon: $profileIcon)';
   }
 
   @override
@@ -239,6 +262,8 @@ class _$UserProfileEntityImpl implements _UserProfileEntity {
                 other.allowGamePush == allowGamePush) &&
             (identical(other.allowMarketingPush, allowMarketingPush) ||
                 other.allowMarketingPush == allowMarketingPush) &&
+            (identical(other.allowCommunityPush, allowCommunityPush) ||
+                other.allowCommunityPush == allowCommunityPush) &&
             (identical(other.profileIcon, profileIcon) ||
                 other.profileIcon == profileIcon));
   }
@@ -251,6 +276,7 @@ class _$UserProfileEntityImpl implements _UserProfileEntity {
     socialPlatform,
     allowGamePush,
     allowMarketingPush,
+    allowCommunityPush,
     profileIcon,
   );
 
@@ -273,6 +299,7 @@ abstract class _UserProfileEntity implements UserProfileEntity {
     required final String socialPlatform,
     required final bool allowGamePush,
     required final bool allowMarketingPush,
+    final bool allowCommunityPush,
     required final int profileIcon,
   }) = _$UserProfileEntityImpl;
 
@@ -295,6 +322,11 @@ abstract class _UserProfileEntity implements UserProfileEntity {
   /// 마케팅 푸시 알림 허용 여부
   @override
   bool get allowMarketingPush;
+
+  /// 커뮤니티 푸시 알림 허용 여부. 마이페이지 스위치는 전용 GET을 보므로
+  /// 화면이 이 값을 직접 읽지는 않는다 — 서버가 주는 값을 버리지 않으려고 둔다.
+  @override
+  bool get allowCommunityPush;
 
   /// 프로필 아이콘 번호 (`assets/profiles/<번호>.svg` 와 1:1)
   @override

@@ -55,6 +55,9 @@ class _MyPageState extends ConsumerState<MyPage> {
   /// 게임 알림 토글 중복 실행 방지 플래그 (setState 없이 사용)
   bool _gamePushToggling = false;
 
+  /// 커뮤니티 알림 토글 중복 실행 방지 플래그 (게임 알림과 같은 이유)
+  bool _communityPushToggling = false;
+
   /// 앱 버전 5탭 → 크레딧 페이지 진입
   void _onVersionTap() {
     final now = DateTime.now();
@@ -76,6 +79,7 @@ class _MyPageState extends ConsumerState<MyPage> {
   @override
   Widget build(BuildContext context) {
     final gamePushState = ref.watch(gamePushNotifierProvider);
+    final communityPushState = ref.watch(communityPushNotifierProvider);
     final selectedIconId = ref.watch(profileIconProvider);
     final l10n = AppLocalizations.of(context);
     return Scaffold(
@@ -129,6 +133,16 @@ class _MyPageState extends ConsumerState<MyPage> {
               leadingAsset: 'assets/icons/icon_game_notification.svg',
               value: gamePushState.valueOrNull ?? false,
               onToggle: _onGamePushToggle,
+            ),
+            _buildItemDivider(),
+            _buildSwitchMenuItem(
+              text: l10n.settingsAppCommunityNotification,
+              subtitle: l10n.settingsAppCommunityNotificationDescription,
+              // 커뮤니티 알림함 진입 아이콘과 같은 종 — "커뮤니티 알림"이 한 정체로 읽힌다.
+              // ponytail: 시안이 다른 아이콘을 주면 이 한 줄만 바꾼다.
+              leadingAsset: 'assets/icons/icon_noti.svg',
+              value: communityPushState.valueOrNull ?? false,
+              onToggle: _onCommunityPushToggle,
             ),
             _buildItemDivider(),
             _buildMenuItem(
@@ -578,6 +592,30 @@ class _MyPageState extends ConsumerState<MyPage> {
       );
     } finally {
       _gamePushToggling = false;
+    }
+  }
+
+  /// 커뮤니티 알림 토글 — 게임 알림과 같은 꼴.
+  ///
+  /// 낙관적 갱신이라 스위치는 즉시 바뀌고, 실패하면 provider가 되돌린다.
+  /// 여기서는 왜 안 바뀌었는지만 알린다.
+  Future<void> _onCommunityPushToggle() async {
+    if (_communityPushToggling) return;
+    _communityPushToggling = true;
+    try {
+      await ref.read(communityPushNotifierProvider.notifier).toggle();
+    } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      AppSnackbar.show(
+        context,
+        message: e is AppException
+            ? l10n.errorByException(e)
+            : l10n.errorCommunityPushUpdateUnexpected,
+        backgroundColor: AppColors.red,
+      );
+    } finally {
+      _communityPushToggling = false;
     }
   }
 

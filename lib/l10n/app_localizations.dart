@@ -3349,6 +3349,18 @@ abstract class AppLocalizations {
   /// **'게임 진행 중 발생하는 이벤트 알림을 설정해요'**
   String get settingsAppGameNotificationDescription;
 
+  /// 마이페이지 앱 설정 — 커뮤니티 푸시 알림 수신 동의 스위치
+  ///
+  /// In ko, this message translates to:
+  /// **'커뮤니티 알림'**
+  String get settingsAppCommunityNotification;
+
+  /// 커뮤니티 알림 스위치 설명 — 끄면 푸시만 막히고 알림함은 그대로라는 점을 알린다
+  ///
+  /// In ko, this message translates to:
+  /// **'댓글·답글·채팅 푸시를 받아요. 꺼도 알림함에는 쌓여요'**
+  String get settingsAppCommunityNotificationDescription;
+
   /// 설정 — 시스템 알림 설정 메뉴 라벨
   ///
   /// In ko, this message translates to:
@@ -4020,6 +4032,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 생겼어요'**
   String get errorGamePushUpdateUnexpected;
+
+  /// 커뮤니티 푸시 알림 동의 조회 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'커뮤니티 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요'**
+  String get errorCommunityPushFetchUnexpected;
+
+  /// 커뮤니티 푸시 알림 동의 업데이트 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'커뮤니티 알림 설정을 변경하지 못했어요'**
+  String get errorCommunityPushUpdateUnexpected;
 
   /// 인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후
   ///

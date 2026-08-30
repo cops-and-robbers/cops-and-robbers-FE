@@ -1865,6 +1865,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configure notifications for events occurring during the game';
 
   @override
+  String get settingsAppCommunityNotification => 'Community notifications';
+
+  @override
+  String get settingsAppCommunityNotificationDescription =>
+      'Get push alerts for comments, replies, and chats. Your inbox keeps them even when this is off';
+
+  @override
   String get settingsAppGeneralNotification => 'Notification';
 
   @override
@@ -2234,6 +2241,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorGamePushUpdateUnexpected =>
       'An unexpected error occurred while updating push notification consent';
+
+  @override
+  String get errorCommunityPushFetchUnexpected =>
+      'An unexpected error occurred while loading community push notification consent';
+
+  @override
+  String get errorCommunityPushUpdateUnexpected =>
+      'Couldn\'t update community notification settings';
 
   @override
   String get errorAuthTokenMissing =>
