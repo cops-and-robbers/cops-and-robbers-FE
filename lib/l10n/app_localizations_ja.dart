@@ -2514,6 +2514,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeNoticeNotFound => 'お知らせが見つかりません';
 
   @override
+  String get errorCodeNoticeTranslationInvalid => 'お知らせの翻訳情報が正しくありません';
+
+  @override
   String get errorCodeGameResultNotFound => 'ゲーム結果が見つかりません';
 
   @override
@@ -2586,6 +2589,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeNotAChatMember => 'このチャットの参加者ではありません';
+
+  @override
+  String get errorCodeForbiddenNotChatHost => 'ホストのみメンバーを追放できます';
+
+  @override
+  String get errorCodeChatMemberNotFound => 'このメンバーはすでにチャットから退出しています';
+
+  @override
+  String get errorCodeConflictingCountryFilter => '国の条件が競合しています';
 
   @override
   String get errorCodeReactionAlreadyApplied => 'すでに反映されています';

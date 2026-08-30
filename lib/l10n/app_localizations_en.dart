@@ -2716,6 +2716,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeNoticeNotFound => 'Notice not found';
 
   @override
+  String get errorCodeNoticeTranslationInvalid =>
+      'The notice translations are invalid';
+
+  @override
   String get errorCodeGameResultNotFound => 'Game result not found';
 
   @override
@@ -2798,6 +2802,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeNotAChatMember => 'You\'re not a member of this chat';
+
+  @override
+  String get errorCodeForbiddenNotChatHost =>
+      'Only the host can remove members';
+
+  @override
+  String get errorCodeChatMemberNotFound => 'This member already left the chat';
+
+  @override
+  String get errorCodeConflictingCountryFilter =>
+      'These country filters can\'t be combined';
 
   @override
   String get errorCodeReactionAlreadyApplied => 'This is already up to date';

@@ -851,6 +851,7 @@
   "errorCodePoliceWaitingTime": "Police can't arrest robbers during the wait time",
   "errorCodeCannotKickYourself": "The host can't kick themselves",
   "errorCodeNoticeNotFound": "Notice not found",
+  "errorCodeNoticeTranslationInvalid": "The notice translations are invalid",
   "errorCodeGameResultNotFound": "Game result not found",
   "errorCodeEtcReasonRequired": "A reason is required when the report type is Other",
   "errorCodeSelfReport": "You can't report yourself",
@@ -878,6 +879,9 @@
   "errorCodeChatRoomFull": "This chat is full",
   "errorCodeJoinedChatRoomLimitExceeded": "You've joined too many chats. Leave one and try again",
   "errorCodeNotAChatMember": "You're not a member of this chat",
+  "errorCodeForbiddenNotChatHost": "Only the host can remove members",
+  "errorCodeChatMemberNotFound": "This member already left the chat",
+  "errorCodeConflictingCountryFilter": "These country filters can't be combined",
   "errorCodeReactionAlreadyApplied": "This is already up to date",
   "pingFound": "Found",
   "@pingFound": {

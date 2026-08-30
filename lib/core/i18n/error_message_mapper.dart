@@ -220,6 +220,11 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       // ── 공지/게임 결과 에러 ──────────────────────────────────────────
       case 'NOTICE_NOT_FOUND':
         return errorCodeNoticeNotFound;
+      // 공지 작성·수정은 어드민 콘솔(dongsim-web)만 부른다 — 앱 datasource는
+      // GET뿐이라 아래 둘은 노출되지 않는다. 사용자가 할 일도 같아 하나로 묶는다.
+      case 'DUPLICATE_TRANSLATION_LANGUAGE':
+      case 'MISSING_ORIGINAL_TRANSLATION':
+        return errorCodeNoticeTranslationInvalid;
       case 'GAME_RESULT_NOT_FOUND':
         return errorCodeGameResultNotFound;
       // ── 신고 에러 ────────────────────────────────────────────────────
@@ -270,6 +275,10 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeReactionAlreadyApplied;
       case 'COUNTRY_NOT_SPECIFIED':
         return errorCodeCountryNotSpecified;
+      // 앱은 `countryCode`만 보내고 `excludeCountryCodes`는 쓰지 않으므로
+      // (datasource 참조) 둘이 충돌할 일이 없다 — DEC-0021 조항 주석 2.
+      case 'CONFLICTING_COUNTRY_FILTER':
+        return errorCodeConflictingCountryFilter;
       // 앱은 scope=ALL 외의 값을 보내지 않으므로(datasource 참조) SCOPE는
       // 정상 경로로 오지 않는다. sort는 LATEST 외에 DISTANCE·DEADLINE도 보내지만
       // 인기순(POPULAR)은 정렬 시트가 노출하지 않아 SORT도 마찬가지로 오지
@@ -295,6 +304,16 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeJoinedChatRoomLimitExceeded;
       case 'NOT_A_CHAT_MEMBER':
         return errorCodeNotAChatMember;
+      // ── 채팅방 강퇴 에러 (방장 전용, DEC-0043) ──────────────────────
+      // 강퇴 UI는 아직 없어 노출되지 않지만 문서화된 코드라 매핑은 채운다.
+      case 'FORBIDDEN_NOT_CHAT_HOST':
+        return errorCodeForbiddenNotChatHost;
+      case 'CHAT_MEMBER_NOT_FOUND':
+        return errorCodeChatMemberNotFound;
+      // 게임 로비의 CANNOT_KICK_YOURSELF와 코드만 다르고 문장이 같다 —
+      // 채팅방 방장에게도 그대로 맞는 말이라 문구를 새로 만들지 않는다.
+      case 'CANNOT_KICK_SELF':
+        return errorCodeCannotKickYourself;
       // ── 채팅 소켓 에러 (STOMP ERROR 프레임, REST 문서에는 없음) ───────────
       // 앱이 빈 메시지·500자를 먼저 막고 messageKey는 UUID(36자)라 정상 경로에선
       // 안 나온다. 연동 가이드(DOC-0037)에 실린 코드라 매핑은 채운다.

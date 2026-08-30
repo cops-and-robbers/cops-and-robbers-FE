@@ -4801,6 +4801,12 @@ abstract class AppLocalizations {
   /// **'해당 공지사항을 찾을 수 없어요'**
   String get errorCodeNoticeNotFound;
 
+  /// DUPLICATE_TRANSLATION_LANGUAGE·MISSING_ORIGINAL_TRANSLATION 공용. 공지 작성·수정은 어드민 콘솔만 부르므로 앱에는 노출되지 않는다
+  ///
+  /// In ko, this message translates to:
+  /// **'공지 번역 정보가 올바르지 않아요'**
+  String get errorCodeNoticeTranslationInvalid;
+
   /// No description provided for @errorCodeGameResultNotFound.
   ///
   /// In ko, this message translates to:
@@ -4944,6 +4950,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'해당 채팅방의 참여자가 아니에요'**
   String get errorCodeNotAChatMember;
+
+  /// No description provided for @errorCodeForbiddenNotChatHost.
+  ///
+  /// In ko, this message translates to:
+  /// **'방장만 참여자를 강퇴할 수 있어요'**
+  String get errorCodeForbiddenNotChatHost;
+
+  /// CHAT_MEMBER_NOT_FOUND — 강퇴 대상이 이미 나간 경우. NOT_A_CHAT_MEMBER(내가 멤버가 아님)와 주체가 달라 문구를 나눈다
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 채팅방을 나간 참여자예요'**
+  String get errorCodeChatMemberNotFound;
+
+  /// No description provided for @errorCodeConflictingCountryFilter.
+  ///
+  /// In ko, this message translates to:
+  /// **'국가 조건이 서로 충돌해요'**
+  String get errorCodeConflictingCountryFilter;
 
   /// 좋아요·스크랩 상태가 서버와 어긋났을 때 (ALREADY_LIKED·LIKE_NOT_FOUND·ALREADY_SCRAPPED·SCRAP_NOT_FOUND 공용)
   ///
