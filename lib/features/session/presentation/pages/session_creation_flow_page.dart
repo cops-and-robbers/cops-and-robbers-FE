@@ -382,14 +382,10 @@ class _SessionCreationFlowPageState
         debugPrint('❌ [SessionCreationFlow] 세션 생성 실패: ${sessionState.error}');
       }
 
-      // 필수 약관 미동의 차단 → 스낵바 + /agreement 리디렉트
-      if (mounted &&
-          handleRequiredTermsErrorIfNeeded(
-            context: context,
-            ref: ref,
-            error: sessionState.error,
-          )) {
-        setState(() => _isLoading = false);
+      // 필수 약관 미동의는 전역 인터셉터가 안내 + /agreement 리디렉트까지 처리한다.
+      // 여기서는 일반 에러 스낵바가 겹치지 않도록 건너뛰기만 한다.
+      if (isRequiredTermsMissingError(sessionState.error)) {
+        if (mounted) setState(() => _isLoading = false);
         return;
       }
 
