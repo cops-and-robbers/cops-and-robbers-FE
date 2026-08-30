@@ -43,6 +43,7 @@ class NoticeRepositoryImpl implements NoticeRepository {
                 // json_serializable이 UTC DateTime으로 파싱한다. UI는 단말 local
                 // 기준 날짜 표기를 기대하므로 Entity 경계에서 local로 정규화한다.
                 createdAt: m.createdAt.toLocal(),
+                isTranslationFallback: m.isTranslationFallback,
               ),
             )
             .toList(),

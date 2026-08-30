@@ -15,10 +15,28 @@ class NoticeResponseModel with _$NoticeResponseModel {
     required int id,
     required String title,
     required String content,
+
+    /// 본문의 실제 언어 코드(소문자 `ko`·`ja`·`en`).
+    /// 요청한 언어의 번역이 없으면 서버가 대체한 언어가 내려온다.
+    String? language,
+
+    /// 요청한 언어 코드. [language]와 다르면 요청한 언어의 번역이 아직 없다는 뜻.
+    String? requestedLanguage,
     required bool pinned,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _NoticeResponseModel;
+
+  const NoticeResponseModel._();
+
+  /// 서버가 다른 언어로 대체해 내려줬는지 여부.
+  ///
+  /// api-docs가 두 필드를 required로 두지 않아 nullable로 받는다. 한쪽이라도
+  /// 없으면 대체 여부를 알 수 없으므로 안내를 띄우지 않는 쪽으로 떨어뜨린다.
+  bool get isTranslationFallback =>
+      language != null &&
+      requestedLanguage != null &&
+      language != requestedLanguage;
 
   factory NoticeResponseModel.fromJson(Map<String, dynamic> json) =>
       _$NoticeResponseModelFromJson(json);
