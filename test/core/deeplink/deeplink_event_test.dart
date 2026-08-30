@@ -1,12 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:cops_and_robbers/core/deeplink/deeplink_constants.dart';
 import 'package:cops_and_robbers/core/deeplink/deeplink_event.dart';
 
 void main() {
   group('DeeplinkEvent.fromUri', () {
+    // 도메인을 적어두면 host 가 바뀔 때마다 테스트가 같이 깨진다.
+    // 여기서 검증하는 것은 파싱 규칙이지 host 값이 아니므로 상수를 그대로 쓴다.
+    const host = DeeplinkConstants.host;
+
     final cases = <(String, String, DeeplinkEvent Function())>[
       (
         '정상 invite URL',
-        'https://copsnro66ers.site/join/ABC123',
+        'https://$host/join/ABC123',
         () => const DeeplinkEvent.inviteJoin(inviteCode: 'ABC123'),
       ),
       (
@@ -18,21 +23,18 @@ void main() {
       ),
       (
         '/join 만 있고 코드 없음',
-        'https://copsnro66ers.site/join/',
-        () => DeeplinkEvent.unknown(
-          uri: Uri.parse('https://copsnro66ers.site/join/'),
-        ),
+        'https://$host/join/',
+        () => DeeplinkEvent.unknown(uri: Uri.parse('https://$host/join/')),
       ),
       (
         '/join 외 다른 path',
-        'https://copsnro66ers.site/friend/USER1',
-        () => DeeplinkEvent.unknown(
-          uri: Uri.parse('https://copsnro66ers.site/friend/USER1'),
-        ),
+        'https://$host/friend/USER1',
+        () =>
+            DeeplinkEvent.unknown(uri: Uri.parse('https://$host/friend/USER1')),
       ),
       (
         '코드에 URL encoded 문자 포함',
-        'https://copsnro66ers.site/join/A%2DB%2DC',
+        'https://$host/join/A%2DB%2DC',
         () => const DeeplinkEvent.inviteJoin(inviteCode: 'A-B-C'),
       ),
       (
