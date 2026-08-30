@@ -26,6 +26,10 @@ mixin _$NoticeEntity {
   bool get pinned => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
+  /// 요청한 언어의 번역이 없어 서버가 다른 언어로 대체했는지 여부.
+  /// 언어 코드 두 개를 도메인까지 끌지 않고 판정 결과만 넘긴다.
+  bool get isTranslationFallback => throw _privateConstructorUsedError;
+
   /// Create a copy of NoticeEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -46,6 +50,7 @@ abstract class $NoticeEntityCopyWith<$Res> {
     String content,
     bool pinned,
     DateTime createdAt,
+    bool isTranslationFallback,
   });
 }
 
@@ -69,6 +74,7 @@ class _$NoticeEntityCopyWithImpl<$Res, $Val extends NoticeEntity>
     Object? content = null,
     Object? pinned = null,
     Object? createdAt = null,
+    Object? isTranslationFallback = null,
   }) {
     return _then(
       _value.copyWith(
@@ -92,6 +98,10 @@ class _$NoticeEntityCopyWithImpl<$Res, $Val extends NoticeEntity>
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            isTranslationFallback: null == isTranslationFallback
+                ? _value.isTranslationFallback
+                : isTranslationFallback // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -113,6 +123,7 @@ abstract class _$$NoticeEntityImplCopyWith<$Res>
     String content,
     bool pinned,
     DateTime createdAt,
+    bool isTranslationFallback,
   });
 }
 
@@ -135,6 +146,7 @@ class __$$NoticeEntityImplCopyWithImpl<$Res>
     Object? content = null,
     Object? pinned = null,
     Object? createdAt = null,
+    Object? isTranslationFallback = null,
   }) {
     return _then(
       _$NoticeEntityImpl(
@@ -158,6 +170,10 @@ class __$$NoticeEntityImplCopyWithImpl<$Res>
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        isTranslationFallback: null == isTranslationFallback
+            ? _value.isTranslationFallback
+            : isTranslationFallback // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -172,6 +188,7 @@ class _$NoticeEntityImpl implements _NoticeEntity {
     required this.content,
     required this.pinned,
     required this.createdAt,
+    this.isTranslationFallback = false,
   });
 
   @override
@@ -188,9 +205,15 @@ class _$NoticeEntityImpl implements _NoticeEntity {
   @override
   final DateTime createdAt;
 
+  /// 요청한 언어의 번역이 없어 서버가 다른 언어로 대체했는지 여부.
+  /// 언어 코드 두 개를 도메인까지 끌지 않고 판정 결과만 넘긴다.
+  @override
+  @JsonKey()
+  final bool isTranslationFallback;
+
   @override
   String toString() {
-    return 'NoticeEntity(id: $id, title: $title, content: $content, pinned: $pinned, createdAt: $createdAt)';
+    return 'NoticeEntity(id: $id, title: $title, content: $content, pinned: $pinned, createdAt: $createdAt, isTranslationFallback: $isTranslationFallback)';
   }
 
   @override
@@ -203,12 +226,21 @@ class _$NoticeEntityImpl implements _NoticeEntity {
             (identical(other.content, content) || other.content == content) &&
             (identical(other.pinned, pinned) || other.pinned == pinned) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.isTranslationFallback, isTranslationFallback) ||
+                other.isTranslationFallback == isTranslationFallback));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, title, content, pinned, createdAt);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    title,
+    content,
+    pinned,
+    createdAt,
+    isTranslationFallback,
+  );
 
   /// Create a copy of NoticeEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -226,6 +258,7 @@ abstract class _NoticeEntity implements NoticeEntity {
     required final String content,
     required final bool pinned,
     required final DateTime createdAt,
+    final bool isTranslationFallback,
   }) = _$NoticeEntityImpl;
 
   @override
@@ -241,6 +274,11 @@ abstract class _NoticeEntity implements NoticeEntity {
   bool get pinned;
   @override
   DateTime get createdAt;
+
+  /// 요청한 언어의 번역이 없어 서버가 다른 언어로 대체했는지 여부.
+  /// 언어 코드 두 개를 도메인까지 끌지 않고 판정 결과만 넘긴다.
+  @override
+  bool get isTranslationFallback;
 
   /// Create a copy of NoticeEntity
   /// with the given fields replaced by the non-null parameter values.

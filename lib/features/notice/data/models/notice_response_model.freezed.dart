@@ -24,6 +24,13 @@ mixin _$NoticeResponseModel {
   int get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
+
+  /// 본문의 실제 언어 코드(소문자 `ko`·`ja`·`en`).
+  /// 요청한 언어의 번역이 없으면 서버가 대체한 언어가 내려온다.
+  String? get language => throw _privateConstructorUsedError;
+
+  /// 요청한 언어 코드. [language]와 다르면 요청한 언어의 번역이 아직 없다는 뜻.
+  String? get requestedLanguage => throw _privateConstructorUsedError;
   bool get pinned => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -49,6 +56,8 @@ abstract class $NoticeResponseModelCopyWith<$Res> {
     int id,
     String title,
     String content,
+    String? language,
+    String? requestedLanguage,
     bool pinned,
     DateTime createdAt,
     DateTime updatedAt,
@@ -73,6 +82,8 @@ class _$NoticeResponseModelCopyWithImpl<$Res, $Val extends NoticeResponseModel>
     Object? id = null,
     Object? title = null,
     Object? content = null,
+    Object? language = freezed,
+    Object? requestedLanguage = freezed,
     Object? pinned = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -91,6 +102,14 @@ class _$NoticeResponseModelCopyWithImpl<$Res, $Val extends NoticeResponseModel>
                 ? _value.content
                 : content // ignore: cast_nullable_to_non_nullable
                       as String,
+            language: freezed == language
+                ? _value.language
+                : language // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            requestedLanguage: freezed == requestedLanguage
+                ? _value.requestedLanguage
+                : requestedLanguage // ignore: cast_nullable_to_non_nullable
+                      as String?,
             pinned: null == pinned
                 ? _value.pinned
                 : pinned // ignore: cast_nullable_to_non_nullable
@@ -122,6 +141,8 @@ abstract class _$$NoticeResponseModelImplCopyWith<$Res>
     int id,
     String title,
     String content,
+    String? language,
+    String? requestedLanguage,
     bool pinned,
     DateTime createdAt,
     DateTime updatedAt,
@@ -145,6 +166,8 @@ class __$$NoticeResponseModelImplCopyWithImpl<$Res>
     Object? id = null,
     Object? title = null,
     Object? content = null,
+    Object? language = freezed,
+    Object? requestedLanguage = freezed,
     Object? pinned = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -163,6 +186,14 @@ class __$$NoticeResponseModelImplCopyWithImpl<$Res>
             ? _value.content
             : content // ignore: cast_nullable_to_non_nullable
                   as String,
+        language: freezed == language
+            ? _value.language
+            : language // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        requestedLanguage: freezed == requestedLanguage
+            ? _value.requestedLanguage
+            : requestedLanguage // ignore: cast_nullable_to_non_nullable
+                  as String?,
         pinned: null == pinned
             ? _value.pinned
             : pinned // ignore: cast_nullable_to_non_nullable
@@ -182,15 +213,17 @@ class __$$NoticeResponseModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$NoticeResponseModelImpl implements _NoticeResponseModel {
+class _$NoticeResponseModelImpl extends _NoticeResponseModel {
   const _$NoticeResponseModelImpl({
     required this.id,
     required this.title,
     required this.content,
+    this.language,
+    this.requestedLanguage,
     required this.pinned,
     required this.createdAt,
     required this.updatedAt,
-  });
+  }) : super._();
 
   factory _$NoticeResponseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$NoticeResponseModelImplFromJson(json);
@@ -201,6 +234,15 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
   final String title;
   @override
   final String content;
+
+  /// 본문의 실제 언어 코드(소문자 `ko`·`ja`·`en`).
+  /// 요청한 언어의 번역이 없으면 서버가 대체한 언어가 내려온다.
+  @override
+  final String? language;
+
+  /// 요청한 언어 코드. [language]와 다르면 요청한 언어의 번역이 아직 없다는 뜻.
+  @override
+  final String? requestedLanguage;
   @override
   final bool pinned;
   @override
@@ -210,7 +252,7 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
 
   @override
   String toString() {
-    return 'NoticeResponseModel(id: $id, title: $title, content: $content, pinned: $pinned, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'NoticeResponseModel(id: $id, title: $title, content: $content, language: $language, requestedLanguage: $requestedLanguage, pinned: $pinned, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -221,6 +263,10 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.content, content) || other.content == content) &&
+            (identical(other.language, language) ||
+                other.language == language) &&
+            (identical(other.requestedLanguage, requestedLanguage) ||
+                other.requestedLanguage == requestedLanguage) &&
             (identical(other.pinned, pinned) || other.pinned == pinned) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -235,6 +281,8 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
     id,
     title,
     content,
+    language,
+    requestedLanguage,
     pinned,
     createdAt,
     updatedAt,
@@ -257,15 +305,18 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
   }
 }
 
-abstract class _NoticeResponseModel implements NoticeResponseModel {
+abstract class _NoticeResponseModel extends NoticeResponseModel {
   const factory _NoticeResponseModel({
     required final int id,
     required final String title,
     required final String content,
+    final String? language,
+    final String? requestedLanguage,
     required final bool pinned,
     required final DateTime createdAt,
     required final DateTime updatedAt,
   }) = _$NoticeResponseModelImpl;
+  const _NoticeResponseModel._() : super._();
 
   factory _NoticeResponseModel.fromJson(Map<String, dynamic> json) =
       _$NoticeResponseModelImpl.fromJson;
@@ -276,6 +327,15 @@ abstract class _NoticeResponseModel implements NoticeResponseModel {
   String get title;
   @override
   String get content;
+
+  /// 본문의 실제 언어 코드(소문자 `ko`·`ja`·`en`).
+  /// 요청한 언어의 번역이 없으면 서버가 대체한 언어가 내려온다.
+  @override
+  String? get language;
+
+  /// 요청한 언어 코드. [language]와 다르면 요청한 언어의 번역이 아직 없다는 뜻.
+  @override
+  String? get requestedLanguage;
   @override
   bool get pinned;
   @override
