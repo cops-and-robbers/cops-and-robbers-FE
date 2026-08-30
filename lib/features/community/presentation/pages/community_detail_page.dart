@@ -13,7 +13,9 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -399,9 +401,12 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
             color: AppColors.black700,
             label: l10n.communityDetailShare,
             textStyle: AppTextStyles.label16Medium,
-            // ponytail: 공유 링크는 딥링크 경로가 정해진 뒤 붙인다.
-            onTap: () =>
-                AppSnackbar.show(context, message: l10n.comingSoonMessage),
+            onTap: () {
+              unawaited(
+                ref.read(analyticsServiceProvider).logCommunityPostShare(),
+              );
+              unawaited(shareCommunityPost(widget.postId, post.title));
+            },
           ),
         ),
       ],

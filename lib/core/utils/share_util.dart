@@ -28,6 +28,20 @@ Future<void> shareText(String text, {String? subject}) async {
 String buildInviteDeeplink(String code) =>
     'https://${DeeplinkConstants.host}/join/$code';
 
+/// 모집글 id 를 상세 딥링크 URL 로 변환.
+///
+/// 언어별 경로(/ja/g 등) 판단은 웹이 정본 주소로 리다이렉트하며 담당하므로
+/// 앱은 /g/{id} 하나만 만든다. 규칙이 바뀌어도 앱 업데이트가 필요 없다.
+String buildPostDeeplink(int postId) =>
+    'https://${DeeplinkConstants.host}/g/$postId';
+
+/// 모집글 제목과 상세 링크를 OS 공유 시트로 공유.
+///
+/// 제목이 사용자가 쓴 글 그대로라 받는 쪽 언어와 자연히 일치한다.
+Future<void> shareCommunityPost(int postId, String title) async {
+  await shareText('$title\n${buildPostDeeplink(postId)}');
+}
+
 /// 초대 코드를 딥링크 URL 과 함께 공유.
 ///
 /// `"{shareMessage}\nhttps://copsandrobbers.app/join/{code}"` 형태로 OS 공유 시트 호출.
