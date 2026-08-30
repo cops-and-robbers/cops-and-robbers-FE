@@ -2216,6 +2216,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noticeCategoryUpdate => '업데이트';
 
   @override
+  String get noticeTranslationFallback => '아직 번역 준비 중이라 원문 그대로 보여드려요';
+
+  @override
   String get errorAreaLoadFailed => '구역 정보를 불러오지 못했어요';
 
   @override

@@ -2215,6 +2215,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noticeCategoryUpdate => 'アップデート';
 
   @override
+  String get noticeTranslationFallback => '翻訳を準備中のため、原文のまま表示しています';
+
+  @override
   String get errorAreaLoadFailed => 'エリア情報を読み込めません';
 
   @override

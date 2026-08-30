@@ -2371,6 +2371,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noticeCategoryUpdate => 'Update';
 
   @override
+  String get noticeTranslationFallback =>
+      'Translation is on the way — showing the original for now';
+
+  @override
   String get errorAreaLoadFailed => 'Unable to load game area information';
 
   @override

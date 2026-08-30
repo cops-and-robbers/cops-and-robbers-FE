@@ -4243,6 +4243,12 @@ abstract class AppLocalizations {
   /// **'업데이트'**
   String get noticeCategoryUpdate;
 
+  /// 공지 카드 펼침 본문 위 — 요청한 언어의 번역이 없어 서버가 대체한 공지(language != requestedLanguage)에만 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 번역 준비 중이라 원문 그대로 보여드려요'**
+  String get noticeTranslationFallback;
+
   /// 게임 진입 시 area(구역) 정보 로드 실패 안내
   ///
   /// In ko, this message translates to:

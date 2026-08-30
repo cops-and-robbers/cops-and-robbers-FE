@@ -758,6 +758,7 @@
   "noticeCategoryMaintenance": "Maintenance",
   "noticeCategoryEvent": "Event",
   "noticeCategoryUpdate": "Update",
+  "noticeTranslationFallback": "Translation is on the way — showing the original for now",
   "errorAreaLoadFailed": "Unable to load game area information",
   "pageNotFoundTitle": "Page not found",
   "pageNotFoundMessage": "The requested page does not exist",

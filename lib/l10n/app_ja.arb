@@ -758,6 +758,7 @@
   "noticeCategoryMaintenance": "メンテナンス",
   "noticeCategoryEvent": "イベント",
   "noticeCategoryUpdate": "アップデート",
+  "noticeTranslationFallback": "翻訳を準備中のため、原文のまま表示しています",
   "errorAreaLoadFailed": "エリア情報を読み込めません",
   "pageNotFoundTitle": "ページが見つかりません",
   "pageNotFoundMessage": "お探しのページは存在しません",

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notice_entity.dart';
 
 /// 공지사항 카드 (아코디언 항목)
@@ -92,6 +93,18 @@ class NoticeCard extends StatelessWidget {
             // ── 내용 (펼침 시) ──
             if (isExpanded) ...[
               SizedBox(height: AppSpacing.vertical16),
+              // 번역 대체 안내는 헤더가 아니라 본문 위에 둔다 — ja/en 번역이
+              // 채워지기 전에는 거의 모든 공지가 대체되므로, 헤더에 두면
+              // 목록 전체가 안내로 덮인다. 읽는 본문 바로 앞에서만 알린다.
+              if (notice.isTranslationFallback) ...[
+                Text(
+                  AppLocalizations.of(context).noticeTranslationFallback,
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: AppColors.black600,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.vertical8),
+              ],
               Text(
                 notice.content,
                 style: AppTextStyles.paragraph_14.copyWith(
