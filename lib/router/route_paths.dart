@@ -85,6 +85,18 @@ class RoutePaths {
   /// `go`는 커뮤니티 탭 셸까지 함께 세우므로 뒤로가기가 커뮤니티 목록으로 간다.
   static String communityDetailWithId(int postId) => '/community/$postId';
 
+  /// 모집글 딥링크 경로 별칭 (웹 주소와 동일 — ko·ja·en)
+  ///
+  /// 엔진이 warm 인텐트의 원시 URI 경로를 라우터로 전달하므로
+  /// (AndroidManifest 의 flutter_deeplinking_enabled=false 를 존중하지 않는
+  /// 것을 실기기에서 확인), 딥링크 경로는 라우터에 실제 라우트로 존재해야
+  /// 404 가 화면을 덮지 않는다. /join 과 같은 원리이며 전부 상세로 넘긴다.
+  static const List<String> communityPostDeeplinkAliases = [
+    '/g/:postId',
+    '/ja/g/:postId',
+    '/en/g/:postId',
+  ];
+
   /// 모집글 수정 화면 (상세·목록 카드의 더보기 메뉴에서 진입)
   ///
   /// 고칠 글을 `extra`로 함께 넘겨야 한다 — 없으면 상세로 되돌린다(딥링크 방지).

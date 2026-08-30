@@ -16,6 +16,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/deeplink/deeplink_event.dart';
 import '../../../../core/deeplink/deeplink_service.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/fcm/push_navigation_event.dart';
 import '../../../../core/services/fcm/push_navigation_service.dart';
 import '../../../../core/network/connectivity_service.dart';
@@ -26,6 +27,7 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../router/route_paths.dart';
+import '../../../community/presentation/providers/pending_community_post_provider.dart';
 import '../../../session/domain/entities/user_game_status_entity.dart';
 import '../../domain/entities/auth_result_entity.dart';
 import '../providers/auth_provider.dart';
@@ -171,11 +173,14 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // coldStartDeeplinkProvider 는 deeplinkEvents 의 emit 과 동일한 dedup 을
       // 공유하므로, 양보했는데 딥링크가 스킵돼 splash 에 갇히는 불일치는 없다.
       // ================================================================
+      // 모집글 딥링크는 양보하지 않는다 — 아래에서 홈 대신 상세를 목적지로 삼는다
+      // (푸시 알림의 콜드 스타트와 같은 방식).
+      DeeplinkEvent? coldDeeplink;
       try {
-        final coldEvent = await ref
+        coldDeeplink = await ref
             .read(coldStartDeeplinkProvider.future)
             .timeout(const Duration(seconds: 2));
-        if (coldEvent is InviteJoinEvent) {
+        if (coldDeeplink is InviteJoinEvent) {
           debugPrint('🔗 SplashPage: 콜드 스타트 딥링크 감지 → 네비게이션 양보');
           return;
         }
@@ -217,6 +222,10 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
       // 인증되지 않은 경우 → 남은 딜레이 후 로그인
       if (authUser == null) {
+        // 콜드 스타트 모집글 링크는 보존해 두고, 진입 절차가 끝나면 소비된다
+        if (coldDeeplink case CommunityPostEvent(:final postId)) {
+          await ref.read(pendingCommunityPostProvider.notifier).save(postId);
+        }
         await _waitRemaining(startTime, minDelay);
         if (!mounted) return;
         context.go(RoutePaths.login);
@@ -242,7 +251,11 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         if (!mounted) return;
 
         if (!status.isParticipating || status.participationInfo == null) {
-          context.go(await _coldStartPushDestination() ?? RoutePaths.home);
+          context.go(
+            await _coldStartPushDestination() ??
+                _coldStartDeeplinkDestination(coldDeeplink) ??
+                RoutePaths.home,
+          );
           return;
         }
 
@@ -398,6 +411,23 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       debugPrint('⚠️ SplashPage: 콜드 스타트 푸시 확인 실패, 홈으로 진행 - $e');
       return null;
     }
+  }
+
+  /// 콜드 스타트 모집글 딥링크의 이동 목적지 (없으면 null).
+  ///
+  /// 초대 딥링크는 전용 페이지가 단독 담당하므로(위의 네비게이션 양보) 여기 오지
+  /// 않는다. 상세 라우트는 커뮤니티 탭의 중첩 라우트라 go 만으로 뒤로 가기가
+  /// 목록으로 떨어진다.
+  String? _coldStartDeeplinkDestination(DeeplinkEvent? event) {
+    if (event case CommunityPostEvent(:final postId)) {
+      unawaited(
+        ref
+            .read(analyticsServiceProvider)
+            .logCommunityPostDeeplink(entry: 'cold'),
+      );
+      return RoutePaths.communityDetailWithId(postId);
+    }
+    return null;
   }
 
   Future<void> _waitRemaining(DateTime startTime, Duration minDelay) async {

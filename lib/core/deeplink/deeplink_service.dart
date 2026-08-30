@@ -33,15 +33,23 @@ const _lastHandledDeeplinkKey = 'last_handled_deeplink_uri';
 /// Android `singleTop` 액티비티는 앱을 실행시킨 VIEW intent(딥링크 URI)를 보관한다.
 /// recents 에서 재실행하면 OS 가 그 intent 를 다시 전달하고 `getInitialLink()` 가
 /// 매번 같은 URI 를 반환하므로, 직전 처리 URI 와 같으면 스킵한다.
+/// 콜드 스타트를 일으킨 initial link URI (없으면 null). 1회만 읽어 캐시한다.
+///
+/// [coldStartDeeplink] 의 재료이면서, [deeplinkEvents] 가 initial link 의 스트림
+/// 재전달(echo)을 걸러낼 때 비교 기준으로도 쓴다.
 @Riverpod(keepAlive: true)
-Future<DeeplinkEvent?> coldStartDeeplink(Ref ref) async {
-  final Uri? initial;
+Future<Uri?> coldStartDeeplinkUri(Ref ref) async {
   try {
-    initial = await AppLinks().getInitialLink();
+    return await AppLinks().getInitialLink();
   } catch (e, st) {
     debugPrint('[DeepLink] cold start 초기 링크 읽기 실패: $e\n$st');
     return null;
   }
+}
+
+@Riverpod(keepAlive: true)
+Future<DeeplinkEvent?> coldStartDeeplink(Ref ref) async {
+  final initial = await ref.read(coldStartDeeplinkUriProvider.future);
   if (initial == null) return null;
 
   try {
@@ -89,6 +97,9 @@ Stream<DeeplinkEvent> deeplinkEvents(Ref ref) {
     try {
       final event = await ref.read(coldStartDeeplinkProvider.future);
       if (event == null || controller.isClosed) return;
+      // 모집글 이벤트의 콜드 스타트는 SplashPage 가 단독 처리한다 (푸시 알림과
+      // 같은 구조). 여기서 emit 하면 splash 의 go 와 경합해 목적지가 유실된다.
+      if (event is CommunityPostEvent) return;
       controller.add(event);
     } catch (e, st) {
       debugPrint('[DeepLink] cold start emit error: $e\n$st');
@@ -98,12 +109,29 @@ Stream<DeeplinkEvent> deeplinkEvents(Ref ref) {
   unawaited(emitColdStart());
 
   // 2. warm URI 스트림 구독 — 명시적 클릭이므로 항상 처리한다.
+  //
+  // 단, app_links 는 콜드 스타트를 일으킨 initial link 를 스트림에도 한 번 더
+  // 흘린다(실측). 그 첫 재전달은 cold 경로([coldStartDeeplink]·SplashPage)가
+  // 담당하므로 걸러낸다 — 안 거르면 같은 링크가 cold 와 warm 양쪽에서 이중
+  // 처리된다 (모집글이면 상세가 두 번 쌓인다).
+  var initialEchoSkipped = false;
+
   final sub = appLinks.uriLinkStream.listen(
     (uri) {
-      unawaited(markHandled(uri));
-      final event = DeeplinkEvent.fromUri(uri);
-      debugPrint('[DeepLink] warm: $event');
-      if (!controller.isClosed) controller.add(event);
+      unawaited(() async {
+        if (!initialEchoSkipped) {
+          final initial = await ref.read(coldStartDeeplinkUriProvider.future);
+          if (initial != null && uri.toString() == initial.toString()) {
+            initialEchoSkipped = true;
+            debugPrint('[DeepLink] initial link 스트림 재전달 스킵: $uri');
+            return;
+          }
+        }
+        unawaited(markHandled(uri));
+        final event = DeeplinkEvent.fromUri(uri);
+        debugPrint('[DeepLink] warm: $event');
+        if (!controller.isClosed) controller.add(event);
+      }());
     },
     onError: (e, st) {
       debugPrint('[DeepLink] stream error: $e\n$st');

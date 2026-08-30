@@ -879,6 +879,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      // 모집글 딥링크 별칭 — 웹 주소(/g/{id} 등)를 라우터가 그대로 소화한다.
+      // 필요한 이유는 RoutePaths.communityPostDeeplinkAliases 주석 참조.
+      // 숫자가 아닌 id 는 상세 라우트의 기존 정책(0 으로 조회해 404 화면)이 받는다.
+      for (final alias in RoutePaths.communityPostDeeplinkAliases)
+        GoRoute(
+          path: alias,
+          redirect: (context, state) =>
+              '/community/${state.pathParameters['postId']}',
+        ),
+
       // ====================================================================
       // System Status Routes (인증 불필요)
       // ====================================================================
