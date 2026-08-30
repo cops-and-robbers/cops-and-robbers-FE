@@ -226,6 +226,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                         setState(() => _replyTarget = comment),
                     onDelete: _handleDeleteComment,
                     onReport: _handleReportComment,
+                    onToggleReplyNotification: _handleToggleReplyNotification,
                     replyTargetId: _replyTarget?.id,
                   ),
                 ],
@@ -553,6 +554,15 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
       () => ref
           .read(communityDetailNotifierProvider(widget.postId).notifier)
           .deleteComment(comment.id),
+    );
+  }
+
+  /// 내 댓글 답글 알림 토글 — 낙관적 갱신이라 화면은 즉시 바뀌고, 실패만 스낵바로.
+  Future<void> _handleToggleReplyNotification(CommunityCommentEntity comment) {
+    return _runAction(
+      () => ref
+          .read(communityDetailNotifierProvider(widget.postId).notifier)
+          .toggleReplyNotification(comment.id),
     );
   }
 

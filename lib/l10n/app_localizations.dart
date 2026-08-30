@@ -1390,6 +1390,18 @@ abstract class AppLocalizations {
   /// **'알림 끄기'**
   String get communityMenuNotificationOff;
 
+  /// 내 댓글 더보기 메뉴 — 답글 알림이 꺼져 있을 때 (누르면 켜짐)
+  ///
+  /// In ko, this message translates to:
+  /// **'답글 알림 켜기'**
+  String get communityMenuReplyNotificationOn;
+
+  /// 내 댓글 더보기 메뉴 — 답글 알림이 켜져 있을 때 (누르면 꺼짐)
+  ///
+  /// In ko, this message translates to:
+  /// **'답글 알림 끄기'**
+  String get communityMenuReplyNotificationOff;
+
   /// 커뮤니티 카드 — 모집 중인 게시글 배지
   ///
   /// In ko, this message translates to:
@@ -4170,6 +4182,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이 글의 알림 설정을 변경하지 못했어요'**
   String get errorCommunityPostNotificationUpdateGeneric;
+
+  /// 댓글별 답글 알림 켜기/끄기 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'답글 알림 설정을 변경하지 못했어요'**
+  String get errorCommunityCommentNotificationUpdateGeneric;
 
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///

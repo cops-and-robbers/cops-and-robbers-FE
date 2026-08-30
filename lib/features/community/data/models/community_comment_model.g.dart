@@ -20,6 +20,8 @@ _$$CommunityCommentResponseModelImplFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      replyNotificationsEnabled:
+          json['replyNotificationsEnabled'] as bool? ?? true,
       replies:
           (json['replies'] as List<dynamic>?)
               ?.map(
@@ -43,6 +45,7 @@ Map<String, dynamic> _$$CommunityCommentResponseModelImplToJson(
   'deleted': instance.deleted,
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt?.toIso8601String(),
+  'replyNotificationsEnabled': instance.replyNotificationsEnabled,
   'replies': instance.replies.map((e) => e.toJson()).toList(),
 };
 
@@ -82,4 +85,17 @@ Map<String, dynamic> _$$CommunityCommentCreateRequestModelImplToJson(
 ) => <String, dynamic>{
   'parentId': instance.parentId,
   'content': instance.content,
+};
+
+_$CommunityCommentNotificationRequestModelImpl
+_$$CommunityCommentNotificationRequestModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$CommunityCommentNotificationRequestModelImpl(
+  replyNotificationsEnabled: json['replyNotificationsEnabled'] as bool,
+);
+
+Map<String, dynamic> _$$CommunityCommentNotificationRequestModelImplToJson(
+  _$CommunityCommentNotificationRequestModelImpl instance,
+) => <String, dynamic>{
+  'replyNotificationsEnabled': instance.replyNotificationsEnabled,
 };

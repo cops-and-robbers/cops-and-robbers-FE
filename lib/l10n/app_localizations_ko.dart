@@ -708,6 +708,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityMenuNotificationOff => '알림 끄기';
 
   @override
+  String get communityMenuReplyNotificationOn => '답글 알림 켜기';
+
+  @override
+  String get communityMenuReplyNotificationOff => '답글 알림 끄기';
+
+  @override
   String get communityStatusRecruiting => '모집중';
 
   @override
@@ -2177,6 +2183,10 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get errorCommunityPostNotificationUpdateGeneric =>
       '이 글의 알림 설정을 변경하지 못했어요';
+
+  @override
+  String get errorCommunityCommentNotificationUpdateGeneric =>
+      '답글 알림 설정을 변경하지 못했어요';
 
   @override
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';

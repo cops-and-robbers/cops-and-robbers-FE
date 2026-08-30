@@ -147,6 +147,12 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
     if (errorToThrow != null) throw errorToThrow!;
   }
 
+  @override
+  Future<void> updateCommentNotification(
+    int commentId,
+    CommunityCommentNotificationRequestModel body,
+  ) => throw UnimplementedError('이 테스트는 댓글 알림 설정을 쓰지 않는다');
+
   // 댓글은 CommunityCommentRepository가 다룬다 — 게시글 테스트가 이쪽을 건드리면
   // 조용히 통과하는 대신 그 자리에서 드러나야 한다.
   @override

@@ -440,6 +440,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCommunityNotificationReadGeneric;
       case 'errorCommunityPostNotificationUpdateGeneric':
         return errorCommunityPostNotificationUpdateGeneric;
+      case 'errorCommunityCommentNotificationUpdateGeneric':
+        return errorCommunityCommentNotificationUpdateGeneric;
       case 'errorCommunityPostCreateGeneric':
         return errorCommunityPostCreateGeneric;
       case 'errorCommunityPostUpdateGeneric':

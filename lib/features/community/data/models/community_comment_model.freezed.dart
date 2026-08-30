@@ -37,6 +37,10 @@ mixin _$CommunityCommentResponseModel {
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
+  /// 이 댓글에 달리는 답글 알림 수신 여부 (BE #182, v2.26.0). 내가 쓴 댓글에만
+  /// 의미가 있다. 계약에 required가 없어 서버 기본값과 같은 true로 채운다.
+  bool get replyNotificationsEnabled => throw _privateConstructorUsedError;
+
   /// 답글 목록. 댓글은 2depth 고정이라 답글의 이 값은 항상 비어 있다.
   List<CommunityCommentResponseModel> get replies =>
       throw _privateConstructorUsedError;
@@ -72,6 +76,7 @@ abstract class $CommunityCommentResponseModelCopyWith<$Res> {
     bool deleted,
     DateTime createdAt,
     DateTime? updatedAt,
+    bool replyNotificationsEnabled,
     List<CommunityCommentResponseModel> replies,
   });
 }
@@ -103,6 +108,7 @@ class _$CommunityCommentResponseModelCopyWithImpl<
     Object? deleted = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
+    Object? replyNotificationsEnabled = null,
     Object? replies = null,
   }) {
     return _then(
@@ -143,6 +149,10 @@ class _$CommunityCommentResponseModelCopyWithImpl<
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
+            replyNotificationsEnabled: null == replyNotificationsEnabled
+                ? _value.replyNotificationsEnabled
+                : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
             replies: null == replies
                 ? _value.replies
                 : replies // ignore: cast_nullable_to_non_nullable
@@ -172,6 +182,7 @@ abstract class _$$CommunityCommentResponseModelImplCopyWith<$Res>
     bool deleted,
     DateTime createdAt,
     DateTime? updatedAt,
+    bool replyNotificationsEnabled,
     List<CommunityCommentResponseModel> replies,
   });
 }
@@ -203,6 +214,7 @@ class __$$CommunityCommentResponseModelImplCopyWithImpl<$Res>
     Object? deleted = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
+    Object? replyNotificationsEnabled = null,
     Object? replies = null,
   }) {
     return _then(
@@ -243,6 +255,10 @@ class __$$CommunityCommentResponseModelImplCopyWithImpl<$Res>
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
+        replyNotificationsEnabled: null == replyNotificationsEnabled
+            ? _value.replyNotificationsEnabled
+            : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
         replies: null == replies
             ? _value._replies
             : replies // ignore: cast_nullable_to_non_nullable
@@ -266,6 +282,7 @@ class _$CommunityCommentResponseModelImpl
     this.deleted = false,
     required this.createdAt,
     this.updatedAt,
+    this.replyNotificationsEnabled = true,
     final List<CommunityCommentResponseModel> replies =
         const <CommunityCommentResponseModel>[],
   }) : _replies = replies;
@@ -298,6 +315,12 @@ class _$CommunityCommentResponseModelImpl
   @override
   final DateTime? updatedAt;
 
+  /// 이 댓글에 달리는 답글 알림 수신 여부 (BE #182, v2.26.0). 내가 쓴 댓글에만
+  /// 의미가 있다. 계약에 required가 없어 서버 기본값과 같은 true로 채운다.
+  @override
+  @JsonKey()
+  final bool replyNotificationsEnabled;
+
   /// 답글 목록. 댓글은 2depth 고정이라 답글의 이 값은 항상 비어 있다.
   final List<CommunityCommentResponseModel> _replies;
 
@@ -312,7 +335,7 @@ class _$CommunityCommentResponseModelImpl
 
   @override
   String toString() {
-    return 'CommunityCommentResponseModel(id: $id, parentId: $parentId, writerId: $writerId, writerNickname: $writerNickname, writerProfileIcon: $writerProfileIcon, content: $content, deleted: $deleted, createdAt: $createdAt, updatedAt: $updatedAt, replies: $replies)';
+    return 'CommunityCommentResponseModel(id: $id, parentId: $parentId, writerId: $writerId, writerNickname: $writerNickname, writerProfileIcon: $writerProfileIcon, content: $content, deleted: $deleted, createdAt: $createdAt, updatedAt: $updatedAt, replyNotificationsEnabled: $replyNotificationsEnabled, replies: $replies)';
   }
 
   @override
@@ -335,6 +358,11 @@ class _$CommunityCommentResponseModelImpl
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
+            (identical(
+                  other.replyNotificationsEnabled,
+                  replyNotificationsEnabled,
+                ) ||
+                other.replyNotificationsEnabled == replyNotificationsEnabled) &&
             const DeepCollectionEquality().equals(other._replies, _replies));
   }
 
@@ -351,6 +379,7 @@ class _$CommunityCommentResponseModelImpl
     deleted,
     createdAt,
     updatedAt,
+    replyNotificationsEnabled,
     const DeepCollectionEquality().hash(_replies),
   );
 
@@ -385,6 +414,7 @@ abstract class _CommunityCommentResponseModel
     final bool deleted,
     required final DateTime createdAt,
     final DateTime? updatedAt,
+    final bool replyNotificationsEnabled,
     final List<CommunityCommentResponseModel> replies,
   }) = _$CommunityCommentResponseModelImpl;
 
@@ -413,6 +443,11 @@ abstract class _CommunityCommentResponseModel
   DateTime get createdAt;
   @override
   DateTime? get updatedAt;
+
+  /// 이 댓글에 달리는 답글 알림 수신 여부 (BE #182, v2.26.0). 내가 쓴 댓글에만
+  /// 의미가 있다. 계약에 required가 없어 서버 기본값과 같은 true로 채운다.
+  @override
+  bool get replyNotificationsEnabled;
 
   /// 답글 목록. 댓글은 2depth 고정이라 답글의 이 값은 항상 비어 있다.
   @override
@@ -875,6 +910,193 @@ abstract class _CommunityCommentCreateRequestModel
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityCommentCreateRequestModelImplCopyWith<
     _$CommunityCommentCreateRequestModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityCommentNotificationRequestModel
+_$CommunityCommentNotificationRequestModelFromJson(Map<String, dynamic> json) {
+  return _CommunityCommentNotificationRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityCommentNotificationRequestModel {
+  bool get replyNotificationsEnabled => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityCommentNotificationRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityCommentNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityCommentNotificationRequestModelCopyWith<
+    CommunityCommentNotificationRequestModel
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityCommentNotificationRequestModelCopyWith<$Res> {
+  factory $CommunityCommentNotificationRequestModelCopyWith(
+    CommunityCommentNotificationRequestModel value,
+    $Res Function(CommunityCommentNotificationRequestModel) then,
+  ) =
+      _$CommunityCommentNotificationRequestModelCopyWithImpl<
+        $Res,
+        CommunityCommentNotificationRequestModel
+      >;
+  @useResult
+  $Res call({bool replyNotificationsEnabled});
+}
+
+/// @nodoc
+class _$CommunityCommentNotificationRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityCommentNotificationRequestModel
+>
+    implements $CommunityCommentNotificationRequestModelCopyWith<$Res> {
+  _$CommunityCommentNotificationRequestModelCopyWithImpl(
+    this._value,
+    this._then,
+  );
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityCommentNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? replyNotificationsEnabled = null}) {
+    return _then(
+      _value.copyWith(
+            replyNotificationsEnabled: null == replyNotificationsEnabled
+                ? _value.replyNotificationsEnabled
+                : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityCommentNotificationRequestModelImplCopyWith<$Res>
+    implements $CommunityCommentNotificationRequestModelCopyWith<$Res> {
+  factory _$$CommunityCommentNotificationRequestModelImplCopyWith(
+    _$CommunityCommentNotificationRequestModelImpl value,
+    $Res Function(_$CommunityCommentNotificationRequestModelImpl) then,
+  ) = __$$CommunityCommentNotificationRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool replyNotificationsEnabled});
+}
+
+/// @nodoc
+class __$$CommunityCommentNotificationRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityCommentNotificationRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityCommentNotificationRequestModelImpl
+        >
+    implements _$$CommunityCommentNotificationRequestModelImplCopyWith<$Res> {
+  __$$CommunityCommentNotificationRequestModelImplCopyWithImpl(
+    _$CommunityCommentNotificationRequestModelImpl _value,
+    $Res Function(_$CommunityCommentNotificationRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityCommentNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? replyNotificationsEnabled = null}) {
+    return _then(
+      _$CommunityCommentNotificationRequestModelImpl(
+        replyNotificationsEnabled: null == replyNotificationsEnabled
+            ? _value.replyNotificationsEnabled
+            : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityCommentNotificationRequestModelImpl
+    implements _CommunityCommentNotificationRequestModel {
+  const _$CommunityCommentNotificationRequestModelImpl({
+    required this.replyNotificationsEnabled,
+  });
+
+  factory _$CommunityCommentNotificationRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityCommentNotificationRequestModelImplFromJson(json);
+
+  @override
+  final bool replyNotificationsEnabled;
+
+  @override
+  String toString() {
+    return 'CommunityCommentNotificationRequestModel(replyNotificationsEnabled: $replyNotificationsEnabled)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityCommentNotificationRequestModelImpl &&
+            (identical(
+                  other.replyNotificationsEnabled,
+                  replyNotificationsEnabled,
+                ) ||
+                other.replyNotificationsEnabled == replyNotificationsEnabled));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, replyNotificationsEnabled);
+
+  /// Create a copy of CommunityCommentNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityCommentNotificationRequestModelImplCopyWith<
+    _$CommunityCommentNotificationRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityCommentNotificationRequestModelImplCopyWithImpl<
+        _$CommunityCommentNotificationRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityCommentNotificationRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityCommentNotificationRequestModel
+    implements CommunityCommentNotificationRequestModel {
+  const factory _CommunityCommentNotificationRequestModel({
+    required final bool replyNotificationsEnabled,
+  }) = _$CommunityCommentNotificationRequestModelImpl;
+
+  factory _CommunityCommentNotificationRequestModel.fromJson(
+    Map<String, dynamic> json,
+  ) = _$CommunityCommentNotificationRequestModelImpl.fromJson;
+
+  @override
+  bool get replyNotificationsEnabled;
+
+  /// Create a copy of CommunityCommentNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityCommentNotificationRequestModelImplCopyWith<
+    _$CommunityCommentNotificationRequestModelImpl
   >
   get copyWith => throw _privateConstructorUsedError;
 }

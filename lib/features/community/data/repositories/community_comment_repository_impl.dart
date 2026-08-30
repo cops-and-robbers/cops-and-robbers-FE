@@ -44,6 +44,7 @@ class CommunityCommentRepositoryImpl implements CommunityCommentRepository {
         writerProfileIconId: m.writerProfileIcon,
         content: m.content,
         deleted: m.deleted,
+        replyNotificationsEnabled: m.replyNotificationsEnabled,
         // 게시글과 같이 기기 시간대로 맞춘다 — 안 하면 UTC로 파싱된 값이
         // 그대로 떠서 한국 시간보다 9시간 이르게 보인다.
         createdAt: m.createdAt.toLocal(),
@@ -75,6 +76,19 @@ class CommunityCommentRepositoryImpl implements CommunityCommentRepository {
     () => _dataSource.deleteComment(commentId),
     message: '댓글을 삭제하는 중 오류가 발생했습니다',
     messageKey: 'errorCommunityCommentDeleteGeneric',
+  );
+
+  @override
+  Future<void> updateReplyNotification({
+    required int commentId,
+    required bool enabled,
+  }) => _guard(
+    () => _dataSource.updateCommentNotification(
+      commentId,
+      CommunityCommentNotificationRequestModel(replyNotificationsEnabled: enabled),
+    ),
+    message: '댓글 알림 설정을 바꾸는 중 오류가 발생했습니다',
+    messageKey: 'errorCommunityCommentNotificationUpdateGeneric',
   );
 
   /// DataSource 호출을 감싸 예외를 `AppException` 계열로 통일한다.

@@ -148,6 +148,17 @@ abstract class CommunityRemoteDataSource {
   @DELETE('${ApiEndpoints.communityPosts}/comments/{commentId}')
   Future<void> deleteComment(@Path('commentId') int commentId);
 
+  /// 댓글 답글 알림 켜기/끄기 (응답 본문 없음, 204)
+  ///
+  /// 내가 쓴 댓글에 답글이 달릴 때 알림을 받을지 정한다. 게시글 알림 설정과
+  /// 독립이다 — 그 글의 알림을 꺼도 이 값만 따른다. 작성자가 아니면
+  /// 403 `FORBIDDEN_NOT_COMMENT_AUTHOR`, 없으면 404 `COMMENT_NOT_FOUND`.
+  @PUT('${ApiEndpoints.communityPosts}/comments/{commentId}/notification')
+  Future<void> updateCommentNotification(
+    @Path('commentId') int commentId,
+    @Body() CommunityCommentNotificationRequestModel body,
+  );
+
   /// 게시글 좋아요 (응답 본문 없음)
   ///
   /// 이미 눌러 둔 글이면 409 `ALREADY_LIKED`. Repository가 그것을 성공으로

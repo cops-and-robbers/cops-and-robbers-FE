@@ -28,6 +28,10 @@ mixin _$CommunityCommentEntity {
 
   /// 삭제되어 자리만 남은 댓글인지.
   bool get deleted => throw _privateConstructorUsedError;
+
+  /// 내 댓글에 답글이 달릴 때 알림을 받을지. 남의 댓글에서는 의미가 없다 —
+  /// 화면은 내 1depth 댓글의 메뉴에서만 이 값을 쓴다.
+  bool get replyNotificationsEnabled => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   List<CommunityCommentEntity> get replies =>
       throw _privateConstructorUsedError;
@@ -54,6 +58,7 @@ abstract class $CommunityCommentEntityCopyWith<$Res> {
     int? writerProfileIconId,
     String? content,
     bool deleted,
+    bool replyNotificationsEnabled,
     DateTime createdAt,
     List<CommunityCommentEntity> replies,
   });
@@ -84,6 +89,7 @@ class _$CommunityCommentEntityCopyWithImpl<
     Object? writerProfileIconId = freezed,
     Object? content = freezed,
     Object? deleted = null,
+    Object? replyNotificationsEnabled = null,
     Object? createdAt = null,
     Object? replies = null,
   }) {
@@ -117,6 +123,10 @@ class _$CommunityCommentEntityCopyWithImpl<
                 ? _value.deleted
                 : deleted // ignore: cast_nullable_to_non_nullable
                       as bool,
+            replyNotificationsEnabled: null == replyNotificationsEnabled
+                ? _value.replyNotificationsEnabled
+                : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -148,6 +158,7 @@ abstract class _$$CommunityCommentEntityImplCopyWith<$Res>
     int? writerProfileIconId,
     String? content,
     bool deleted,
+    bool replyNotificationsEnabled,
     DateTime createdAt,
     List<CommunityCommentEntity> replies,
   });
@@ -175,6 +186,7 @@ class __$$CommunityCommentEntityImplCopyWithImpl<$Res>
     Object? writerProfileIconId = freezed,
     Object? content = freezed,
     Object? deleted = null,
+    Object? replyNotificationsEnabled = null,
     Object? createdAt = null,
     Object? replies = null,
   }) {
@@ -208,6 +220,10 @@ class __$$CommunityCommentEntityImplCopyWithImpl<$Res>
             ? _value.deleted
             : deleted // ignore: cast_nullable_to_non_nullable
                   as bool,
+        replyNotificationsEnabled: null == replyNotificationsEnabled
+            ? _value.replyNotificationsEnabled
+            : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -232,6 +248,7 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
     this.writerProfileIconId,
     this.content,
     this.deleted = false,
+    this.replyNotificationsEnabled = true,
     required this.createdAt,
     final List<CommunityCommentEntity> replies = const [],
   }) : _replies = replies;
@@ -255,6 +272,12 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
   @override
   @JsonKey()
   final bool deleted;
+
+  /// 내 댓글에 답글이 달릴 때 알림을 받을지. 남의 댓글에서는 의미가 없다 —
+  /// 화면은 내 1depth 댓글의 메뉴에서만 이 값을 쓴다.
+  @override
+  @JsonKey()
+  final bool replyNotificationsEnabled;
   @override
   final DateTime createdAt;
   final List<CommunityCommentEntity> _replies;
@@ -268,7 +291,7 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
 
   @override
   String toString() {
-    return 'CommunityCommentEntity(id: $id, parentId: $parentId, writerId: $writerId, writerNickname: $writerNickname, writerProfileIconId: $writerProfileIconId, content: $content, deleted: $deleted, createdAt: $createdAt, replies: $replies)';
+    return 'CommunityCommentEntity(id: $id, parentId: $parentId, writerId: $writerId, writerNickname: $writerNickname, writerProfileIconId: $writerProfileIconId, content: $content, deleted: $deleted, replyNotificationsEnabled: $replyNotificationsEnabled, createdAt: $createdAt, replies: $replies)';
   }
 
   @override
@@ -287,6 +310,11 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
                 other.writerProfileIconId == writerProfileIconId) &&
             (identical(other.content, content) || other.content == content) &&
             (identical(other.deleted, deleted) || other.deleted == deleted) &&
+            (identical(
+                  other.replyNotificationsEnabled,
+                  replyNotificationsEnabled,
+                ) ||
+                other.replyNotificationsEnabled == replyNotificationsEnabled) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             const DeepCollectionEquality().equals(other._replies, _replies));
@@ -302,6 +330,7 @@ class _$CommunityCommentEntityImpl implements _CommunityCommentEntity {
     writerProfileIconId,
     content,
     deleted,
+    replyNotificationsEnabled,
     createdAt,
     const DeepCollectionEquality().hash(_replies),
   );
@@ -328,6 +357,7 @@ abstract class _CommunityCommentEntity implements CommunityCommentEntity {
     final int? writerProfileIconId,
     final String? content,
     final bool deleted,
+    final bool replyNotificationsEnabled,
     required final DateTime createdAt,
     final List<CommunityCommentEntity> replies,
   }) = _$CommunityCommentEntityImpl;
@@ -350,6 +380,11 @@ abstract class _CommunityCommentEntity implements CommunityCommentEntity {
   /// 삭제되어 자리만 남은 댓글인지.
   @override
   bool get deleted;
+
+  /// 내 댓글에 답글이 달릴 때 알림을 받을지. 남의 댓글에서는 의미가 없다 —
+  /// 화면은 내 1depth 댓글의 메뉴에서만 이 값을 쓴다.
+  @override
+  bool get replyNotificationsEnabled;
   @override
   DateTime get createdAt;
   @override

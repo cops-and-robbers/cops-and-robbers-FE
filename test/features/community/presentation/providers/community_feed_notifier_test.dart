@@ -246,6 +246,12 @@ class _EmptyCommentRepository implements CommunityCommentRepository {
   @override
   Future<void> deleteComment(int commentId) =>
       throw UnimplementedError('이 테스트는 댓글 삭제를 쓰지 않는다');
+
+  @override
+  Future<void> updateReplyNotification({
+    required int commentId,
+    required bool enabled,
+  }) => throw UnimplementedError('이 테스트는 댓글 알림 설정을 쓰지 않는다');
 }
 
 /// 좋아요·스크랩 토글이 항상 성공하는 가짜.

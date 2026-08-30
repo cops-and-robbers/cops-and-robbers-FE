@@ -7,6 +7,7 @@ import 'package:cops_and_robbers/features/community/domain/repositories/communit
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_detail_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_comment_list.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_menu_button.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_menu.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
@@ -148,10 +149,19 @@ Widget _wrapPushedDetail(_DetailRepository repo) => _app(
 );
 
 /// 댓글은 실서버로 옮겨 갔다. 덮지 않으면 Retrofit이 실제 Dio를 타므로,
-/// 이 화면과 무관한 이유로 깨진다. 예전 메모리 목이 심던 것과 같은 모양
-/// (원댓글 + 답글 한 겹)을 돌려줘 답글 모드 테스트가 그대로 성립하게 한다.
+/// 이 화면과 무관한 이유로 깨진다. 기본 목록은 예전 메모리 목이 심던 것과 같은
+/// 모양(원댓글 + 답글 한 겹)이라 답글 모드 테스트가 그대로 성립한다.
 class _FakeCommentRepository implements CommunityCommentRepository {
-  List<CommunityCommentEntity> comments = [
+  _FakeCommentRepository({List<CommunityCommentEntity>? comments, this.replyError})
+    : comments = comments ?? _defaultComments();
+
+  List<CommunityCommentEntity> comments;
+
+  /// 답글 알림 저장을 거절하고 싶을 때. 롤백 테스트의 통로.
+  final AppException? replyError;
+  ({int commentId, bool enabled})? lastReplySetting;
+
+  static List<CommunityCommentEntity> _defaultComments() => [
     CommunityCommentEntity(
       id: 1,
       writerId: 101,
@@ -196,6 +206,18 @@ class _FakeCommentRepository implements CommunityCommentRepository {
   Future<void> deleteComment(int commentId) async {
     comments = const [];
   }
+
+  @override
+  Future<void> updateReplyNotification({
+    required int commentId,
+    required bool enabled,
+  }) async {
+    lastReplySetting = (commentId: commentId, enabled: enabled);
+    if (replyError == null) return;
+    // 실패만 한 틱 늦춘다 — `_FakeReactionRepository._respond`와 같은 이유.
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    throw replyError!;
+  }
 }
 
 /// 좋아요·스크랩 반응 Repository. [error]가 있으면 매번 그 예외를 던진다 —
@@ -235,11 +257,12 @@ Widget _app(
   Widget home, {
   AppException? reactionError,
   int? currentUserId = 1,
+  _FakeCommentRepository? commentRepository,
 }) => ProviderScope(
   overrides: [
     communityRepositoryProvider.overrideWithValue(repo),
     communityCommentRepositoryProvider.overrideWithValue(
-      _FakeCommentRepository(),
+      commentRepository ?? _FakeCommentRepository(),
     ),
     communityReactionRepositoryProvider.overrideWithValue(
       _FakeReactionRepository(error: reactionError),
@@ -281,6 +304,7 @@ Future<_DetailRepository> _pumpDetail(
   AppException? reactionError,
   AppException? notificationError,
   int? currentUserId = 1,
+  _FakeCommentRepository? commentRepository,
 }) async {
   final repo = _DetailRepository(post, notificationError: notificationError);
   await tester.pumpWidget(
@@ -289,6 +313,7 @@ Future<_DetailRepository> _pumpDetail(
       const CommunityDetailPage(postId: _postId),
       reactionError: reactionError,
       currentUserId: currentUserId,
+      commentRepository: commentRepository,
     ),
   );
   await tester.pumpAndSettle();
@@ -300,6 +325,34 @@ Future<void> _openPostMenu(WidgetTester tester) async {
   await tester.tap(find.byType(CommunityPostMenu));
   await tester.pumpAndSettle();
 }
+
+/// 본문이 [content]인 댓글 타일의 더보기(⋯) 버튼. 타일은 본문 Text의 가장 가까운
+/// Container다 — 답글 타일의 ↳ 아이콘 Padding은 형제라 걸리지 않는다.
+Finder _commentMenu(String content) => find.descendant(
+  of: find.ancestor(
+    of: find.text(content),
+    matching: find.byType(Container),
+  ).first,
+  matching: find.byType(CommunityMenuButton),
+);
+
+CommunityCommentEntity _myComment({
+  int id = 5,
+  int? parentId,
+  String content = '내 댓글',
+  bool replyNotificationsEnabled = true,
+  List<CommunityCommentEntity> replies = const [],
+}) => CommunityCommentEntity(
+  id: id,
+  parentId: parentId,
+  writerId: 1,
+  writerNickname: '나',
+  writerProfileIconId: 1,
+  content: content,
+  createdAt: DateTime(2026, 8, 27),
+  replyNotificationsEnabled: replyNotificationsEnabled,
+  replies: replies,
+);
 
 /// 열린 더보기 메뉴를 배리어 탭으로 닫는다 — 항목을 눌러 닫으면 그 동작이 또 실행된다.
 Future<void> _closeMenu(WidgetTester tester) async {
@@ -639,6 +692,111 @@ void main() {
       // 메뉴 바깥(배리어)을 눌러 닫는다 — 항목을 다시 누르면 두 번째 실패와
       // 스낵바가 큐에 남아 타이머가 pending으로 잡힌다. 그 뒤 첫 스낵바의
       // 3초 타이머를 비운다.
+      await _closeMenu(tester);
+      await _letSnackbarExpire(tester);
+    });
+  });
+
+  group('CommunityDetailPage 답글 알림', () {
+    testWidgets('offers_the_toggle_on_my_top_level_comment', (tester) async {
+      await _pumpDetail(
+        tester,
+        post: _post(),
+        commentRepository: _FakeCommentRepository(comments: [_myComment()]),
+      );
+
+      await tester.ensureVisible(_commentMenu('내 댓글'));
+      await tester.pumpAndSettle();
+      await tester.tap(_commentMenu('내 댓글'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('답글 알림 끄기'), findsOneWidget);
+      expect(find.text('삭제하기'), findsOneWidget);
+    });
+
+    // 답글의 답글은 없다 — 내 답글에 토글을 그리면 눌러도 아무 일도 안 생긴다.
+    testWidgets('hides_the_toggle_on_my_reply', (tester) async {
+      await _pumpDetail(
+        tester,
+        post: _post(),
+        commentRepository: _FakeCommentRepository(
+          comments: [
+            CommunityCommentEntity(
+              id: 1,
+              writerId: 101,
+              writerNickname: '날쌘도둑',
+              writerProfileIconId: 2,
+              content: '남의 댓글',
+              createdAt: DateTime(2026, 8, 27),
+              replies: [_myComment(id: 6, parentId: 1, content: '내 답글')],
+            ),
+          ],
+        ),
+      );
+
+      await tester.ensureVisible(_commentMenu('내 답글'));
+      await tester.pumpAndSettle();
+      await tester.tap(_commentMenu('내 답글'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('답글 알림 끄기'), findsNothing);
+      expect(find.text('답글 알림 켜기'), findsNothing);
+      expect(find.text('삭제하기'), findsOneWidget);
+    });
+
+    testWidgets('hides_the_toggle_on_someone_elses_comment', (tester) async {
+      await _pumpDetail(tester, post: _post());
+
+      await tester.ensureVisible(_commentMenu('저 참여하고 싶어요! 초보도 괜찮나요?'));
+      await tester.pumpAndSettle();
+      await tester.tap(_commentMenu('저 참여하고 싶어요! 초보도 괜찮나요?'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('답글 알림 끄기'), findsNothing);
+      expect(find.text('신고하기'), findsOneWidget);
+    });
+
+    testWidgets('sends_the_new_value_and_relabels_after_a_tap', (tester) async {
+      final comments = _FakeCommentRepository(comments: [_myComment()]);
+      await _pumpDetail(tester, post: _post(), commentRepository: comments);
+
+      await tester.ensureVisible(_commentMenu('내 댓글'));
+      await tester.pumpAndSettle();
+      await tester.tap(_commentMenu('내 댓글'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('답글 알림 끄기'));
+      await tester.pumpAndSettle();
+
+      expect(comments.lastReplySetting, (commentId: 5, enabled: false));
+
+      await tester.tap(_commentMenu('내 댓글'));
+      await tester.pumpAndSettle();
+      expect(find.text('답글 알림 켜기'), findsOneWidget);
+    });
+
+    testWidgets('restores_the_label_when_the_server_rejects', (tester) async {
+      await _pumpDetail(
+        tester,
+        post: _post(),
+        commentRepository: _FakeCommentRepository(
+          comments: [_myComment()],
+          replyError: const ServerException(message: 'x', messageKey: 'y'),
+        ),
+      );
+
+      await tester.ensureVisible(_commentMenu('내 댓글'));
+      await tester.pumpAndSettle();
+      await tester.tap(_commentMenu('내 댓글'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('답글 알림 끄기'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(_commentMenu('내 댓글'));
+      await tester.pumpAndSettle();
+      expect(find.text('답글 알림 끄기'), findsOneWidget);
+
+      // 배리어 탭으로 닫고(항목을 다시 누르면 두 번째 실패 스낵바가 큐에 남는다)
+      // 첫 스낵바의 타이머를 비운다.
       await _closeMenu(tester);
       await _letSnackbarExpire(tester);
     });

@@ -483,6 +483,14 @@
   "@communityMenuNotificationOff": {
     "description": "모집글 더보기 메뉴 — 이 글 알림이 켜져 있을 때 (누르면 꺼짐)"
   },
+  "communityMenuReplyNotificationOn": "답글 알림 켜기",
+  "@communityMenuReplyNotificationOn": {
+    "description": "내 댓글 더보기 메뉴 — 답글 알림이 꺼져 있을 때 (누르면 켜짐)"
+  },
+  "communityMenuReplyNotificationOff": "답글 알림 끄기",
+  "@communityMenuReplyNotificationOff": {
+    "description": "내 댓글 더보기 메뉴 — 답글 알림이 켜져 있을 때 (누르면 꺼짐)"
+  },
   "communityStatusRecruiting": "모집중",
   "@communityStatusRecruiting": {
     "description": "커뮤니티 카드 — 모집 중인 게시글 배지"
@@ -2428,6 +2436,10 @@
   "errorCommunityPostNotificationUpdateGeneric": "이 글의 알림 설정을 변경하지 못했어요",
   "@errorCommunityPostNotificationUpdateGeneric": {
     "description": "게시글별 알림 켜기/끄기 실패"
+  },
+  "errorCommunityCommentNotificationUpdateGeneric": "답글 알림 설정을 변경하지 못했어요",
+  "@errorCommunityCommentNotificationUpdateGeneric": {
+    "description": "댓글별 답글 알림 켜기/끄기 실패"
   },
   "errorCommunityAddressLoadGeneric": "주소를 불러오는 중 오류가 생겼어요",
   "@errorCommunityAddressLoadGeneric": {

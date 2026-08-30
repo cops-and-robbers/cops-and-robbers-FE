@@ -710,6 +710,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityMenuNotificationOff => '通知をオフにする';
 
   @override
+  String get communityMenuReplyNotificationOn => '返信通知をオンにする';
+
+  @override
+  String get communityMenuReplyNotificationOff => '返信通知をオフにする';
+
+  @override
   String get communityStatusRecruiting => '募集中';
 
   @override
@@ -2176,6 +2182,10 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get errorCommunityPostNotificationUpdateGeneric =>
       'この投稿の通知設定を変更できませんでした';
+
+  @override
+  String get errorCommunityCommentNotificationUpdateGeneric =>
+      '返信通知の設定を変更できませんでした';
 
   @override
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';

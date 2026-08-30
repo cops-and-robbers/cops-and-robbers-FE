@@ -762,6 +762,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityMenuNotificationOff => 'Turn off notifications';
 
   @override
+  String get communityMenuReplyNotificationOn => 'Turn on reply notifications';
+
+  @override
+  String get communityMenuReplyNotificationOff =>
+      'Turn off reply notifications';
+
+  @override
   String get communityStatusRecruiting => 'Open';
 
   @override
@@ -2330,6 +2337,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCommunityPostNotificationUpdateGeneric =>
       'Couldn\'t update notifications for this post';
+
+  @override
+  String get errorCommunityCommentNotificationUpdateGeneric =>
+      'Couldn\'t update reply notifications';
 
   @override
   String get errorCommunityAddressLoadGeneric =>

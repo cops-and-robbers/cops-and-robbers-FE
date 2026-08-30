@@ -75,11 +75,24 @@ class _FakeRepository
 }
 
 class _FakeCommentRepository implements CommunityCommentRepository {
-  final comments = const <CommunityCommentEntity>[];
+  _FakeCommentRepository([this.comments = const []]);
+
+  final List<CommunityCommentEntity> comments;
+  final gate = Completer<void>();
+  ({int commentId, bool enabled})? lastReplySetting;
 
   @override
   Future<List<CommunityCommentEntity>> getComments(int postId) async =>
       comments;
+
+  @override
+  Future<void> updateReplyNotification({
+    required int commentId,
+    required bool enabled,
+  }) async {
+    lastReplySetting = (commentId: commentId, enabled: enabled);
+    await gate.future;
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -107,6 +120,33 @@ CommunityPostNotificationSetting? _settingOf(ProviderContainer container) =>
         .valueOrNull
         ?.post
         .notificationSetting;
+
+CommunityCommentEntity _comment(
+  int id, {
+  int? parentId,
+  bool replyNotificationsEnabled = true,
+  List<CommunityCommentEntity> replies = const [],
+}) => CommunityCommentEntity(
+  id: id,
+  parentId: parentId,
+  writerId: 1,
+  writerNickname: '나',
+  writerProfileIconId: 1,
+  content: '댓글 $id',
+  createdAt: DateTime(2026, 8, 27),
+  replyNotificationsEnabled: replyNotificationsEnabled,
+  replies: replies,
+);
+
+bool? _replyFlagOf(ProviderContainer container, int commentId) {
+  final matches = container
+      .read(communityDetailNotifierProvider(_postId))
+      .valueOrNull
+      ?.comments
+      .where((c) => c.id == commentId);
+  if (matches == null || matches.isEmpty) return null;
+  return matches.first.replyNotificationsEnabled;
+}
 
 void main() {
   group('CommunityDetailNotifier.toggleNotification', () {
@@ -162,6 +202,59 @@ void main() {
 
       await expectLater(pending, throwsA(isA<AppException>()));
       expect(_settingOf(container), _on);
+    });
+  });
+
+  group('CommunityDetailNotifier.toggleReplyNotification', () {
+    test('flips_the_comment_before_the_server_answers_and_sends_the_new_value', () async {
+      final comments = _FakeCommentRepository([_comment(5)]);
+      final container = _container(_FakeRepository(_post()), comments);
+      await container.read(communityDetailNotifierProvider(_postId).future);
+
+      final pending = container
+          .read(communityDetailNotifierProvider(_postId).notifier)
+          .toggleReplyNotification(5);
+
+      expect(_replyFlagOf(container, 5), isFalse);
+      expect(comments.lastReplySetting, (commentId: 5, enabled: false));
+
+      comments.gate.complete();
+      await pending;
+
+      expect(_replyFlagOf(container, 5), isFalse);
+    });
+
+    test('rolls_the_comment_back_and_rethrows_when_the_server_rejects', () async {
+      final comments = _FakeCommentRepository([_comment(5)]);
+      final container = _container(_FakeRepository(_post()), comments);
+      await container.read(communityDetailNotifierProvider(_postId).future);
+
+      final pending = container
+          .read(communityDetailNotifierProvider(_postId).notifier)
+          .toggleReplyNotification(5);
+      expect(_replyFlagOf(container, 5), isFalse);
+
+      comments.gate.completeError(
+        const ServerException(message: 'x', messageKey: 'y'),
+      );
+
+      await expectLater(pending, throwsA(isA<AppException>()));
+      expect(_replyFlagOf(container, 5), isTrue);
+    });
+
+    // 답글(2depth)엔 메뉴 항목이 없어 여기 올 일이 없지만, 와도 서버를 부르지 않는다.
+    test('ignores_ids_that_are_not_top_level_comments', () async {
+      final comments = _FakeCommentRepository([
+        _comment(5, replies: [_comment(6, parentId: 5)]),
+      ]);
+      final container = _container(_FakeRepository(_post()), comments);
+      await container.read(communityDetailNotifierProvider(_postId).future);
+
+      await container
+          .read(communityDetailNotifierProvider(_postId).notifier)
+          .toggleReplyNotification(6);
+
+      expect(comments.lastReplySetting, isNull);
     });
   });
 }

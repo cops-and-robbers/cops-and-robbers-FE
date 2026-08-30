@@ -215,6 +215,39 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
     );
   }
 
+  /// 내 댓글의 답글 알림 토글 — 낙관적 갱신, 실패 시 그 댓글만 되돌리고 다시 던진다.
+  ///
+  /// 목록 전체를 이전 스냅샷으로 되돌리지 않는 이유는, 그 사이 달린 댓글까지
+  /// 같이 지워지기 때문이다. 1depth에만 있는 id를 받는다 — 답글엔 메뉴 항목이
+  /// 없고, 낡은 목록이라 못 찾으면 서버를 부르지 않는다.
+  Future<void> toggleReplyNotification(int commentId) async {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    final targets = current.comments.where((c) => c.id == commentId);
+    if (targets.isEmpty) return;
+    final next = !targets.first.replyNotificationsEnabled;
+
+    state = AsyncData(
+      current.copyWith(
+        comments: withReplyNotification(current.comments, commentId, next),
+      ),
+    );
+    try {
+      await ref
+          .read(communityCommentRepositoryProvider)
+          .updateReplyNotification(commentId: commentId, enabled: next);
+    } catch (_) {
+      final latest = state.valueOrNull ?? current;
+      state = AsyncData(
+        latest.copyWith(
+          comments: withReplyNotification(latest.comments, commentId, !next),
+        ),
+      );
+      rethrow;
+    }
+  }
+
   /// 모집 상태 전환 (모집중 ↔ 마감).
   ///
   /// 서버가 변경된 글을 돌려주므로 그대로 갈아끼운다. 목록도 낡은 상태를 들고

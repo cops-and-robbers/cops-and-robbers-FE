@@ -47,3 +47,19 @@ List<CommunityCommentEntity> withoutComment(
         replies: comment.replies.where((r) => r.id != commentId).toList(),
       ),
 ];
+
+/// 1depth 댓글 하나의 답글 알림 값을 바꾼 새 목록을 돌려준다.
+///
+/// 답글(2depth)은 건드리지 않는다 — 답글의 답글이 없어 그 값은 화면에 쓰이지
+/// 않는다. id가 없으면 목록을 그대로 돌려준다.
+List<CommunityCommentEntity> withReplyNotification(
+  List<CommunityCommentEntity> comments,
+  int commentId,
+  bool enabled,
+) => [
+  for (final comment in comments)
+    if (comment.id == commentId)
+      comment.copyWith(replyNotificationsEnabled: enabled)
+    else
+      comment,
+];

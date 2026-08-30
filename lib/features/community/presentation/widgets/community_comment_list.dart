@@ -23,6 +23,7 @@ class CommunityCommentList extends StatelessWidget {
     required this.onReply,
     required this.onDelete,
     required this.onReport,
+    required this.onToggleReplyNotification,
     this.replyTargetId,
   });
 
@@ -38,6 +39,9 @@ class CommunityCommentList extends StatelessWidget {
 
   /// 남의 댓글 신고하기.
   final ValueChanged<CommunityCommentEntity> onReport;
+
+  /// 내 1depth 댓글의 답글 알림 켜기/끄기. 답글 타일에는 바인딩하지 않는다.
+  final ValueChanged<CommunityCommentEntity> onToggleReplyNotification;
 
   /// 현재 답글 작성 중인 댓글 id — 그 댓글만 배경을 강조한다.
   final int? replyTargetId;
@@ -102,6 +106,7 @@ class CommunityCommentList extends StatelessWidget {
         onReply: () => onReply(comment),
         onDelete: () => onDelete(comment),
         onReport: () => onReport(comment),
+        onToggleReplyNotification: () => onToggleReplyNotification(comment),
         isReplyTarget: comment.id == replyTargetId,
         topPadding: isFirstGroup
             ? AppSpacing.vertical18
@@ -147,6 +152,7 @@ class _CommentTile extends StatelessWidget {
     required this.topPadding,
     required this.bottomPadding,
     this.onReply,
+    this.onToggleReplyNotification,
     this.isReply = false,
     this.isReplyTarget = false,
   });
@@ -158,6 +164,9 @@ class _CommentTile extends StatelessWidget {
 
   /// 답글에는 null — 답글의 답글은 열지 않는다.
   final VoidCallback? onReply;
+
+  /// 답글에는 null — 답글의 답글이 없어 답글 알림 값이 무의미하다.
+  final VoidCallback? onToggleReplyNotification;
 
   final bool isReply;
 
@@ -267,17 +276,29 @@ class _CommentTile extends StatelessWidget {
                           ),
                           SizedBox(width: AppSpacing.horizontal10),
                         ],
-                        // 내 댓글은 삭제, 남의 댓글은 신고 하나만 보여준다.
+                        // 내 댓글은 답글 알림·삭제, 남의 댓글은 신고 하나만 보여준다.
                         CommunityMenuButton(
                           items: [
-                            if (isMine)
+                            if (isMine) ...[
+                              if (onToggleReplyNotification != null)
+                                CommunityMenuItem(
+                                  // 다색 SVG라 틴트하지 않는다. 아이콘은 현재 상태,
+                                  // 라벨은 누르면 되는 것.
+                                  iconPath: comment.replyNotificationsEnabled
+                                      ? 'assets/icons/icon_bell.svg'
+                                      : 'assets/icons/icon_bell_block.svg',
+                                  label: comment.replyNotificationsEnabled
+                                      ? l10n.communityMenuReplyNotificationOff
+                                      : l10n.communityMenuReplyNotificationOn,
+                                  onTap: onToggleReplyNotification!,
+                                ),
                               CommunityMenuItem(
                                 iconPath: 'assets/icons/icon_trash.svg',
                                 label: l10n.communityMenuDelete,
                                 onTap: onDelete,
                                 isDestructive: true,
-                              )
-                            else
+                              ),
+                            ] else
                               CommunityMenuItem(
                                 iconPath: 'assets/icons/icon_warning_light.svg',
                                 label: l10n.buttonReport,

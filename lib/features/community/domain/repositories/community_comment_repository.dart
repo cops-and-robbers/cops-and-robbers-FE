@@ -31,4 +31,13 @@ abstract class CommunityCommentRepository {
   /// 서버가 답글 유무에 따라 마스킹만 하거나 부모까지 정리하므로(DEC-0034)
   /// 결과 목록을 앱이 계산할 수 없다. 호출 뒤 [getComments]로 다시 받는다.
   Future<void> deleteComment(int commentId);
+
+  /// 내 댓글의 답글 알림을 켜거나 끈다. 게시글 알림 설정과 독립이다.
+  ///
+  /// 응답이 없으므로 화면은 보낸 값을 그대로 믿는다(낙관적 갱신). 남의 댓글이면
+  /// 서버가 403으로 거절한다 — 화면이 그 댓글에 토글을 그렸다면 버그라 삼키지 않는다.
+  Future<void> updateReplyNotification({
+    required int commentId,
+    required bool enabled,
+  });
 }
