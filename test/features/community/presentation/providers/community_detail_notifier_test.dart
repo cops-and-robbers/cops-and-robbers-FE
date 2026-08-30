@@ -150,23 +150,30 @@ bool? _replyFlagOf(ProviderContainer container, int commentId) {
 
 void main() {
   group('CommunityDetailNotifier.toggleNotification', () {
-    test('turns_both_flags_off_before_the_server_answers_and_sends_them', () async {
-      final repo = _FakeRepository(_post(setting: _on));
-      final container = _container(repo);
-      await container.read(communityDetailNotifierProvider(_postId).future);
+    test(
+      'turns_both_flags_off_before_the_server_answers_and_sends_them',
+      () async {
+        final repo = _FakeRepository(_post(setting: _on));
+        final container = _container(repo);
+        await container.read(communityDetailNotifierProvider(_postId).future);
 
-      final pending = container
-          .read(communityDetailNotifierProvider(_postId).notifier)
-          .toggleNotification();
+        final pending = container
+            .read(communityDetailNotifierProvider(_postId).notifier)
+            .toggleNotification();
 
-      expect(_settingOf(container), _off);
-      expect(repo.lastSetting, (postId: _postId, comment: false, reply: false));
+        expect(_settingOf(container), _off);
+        expect(repo.lastSetting, (
+          postId: _postId,
+          comment: false,
+          reply: false,
+        ));
 
-      repo.gate.complete();
-      await pending;
+        repo.gate.complete();
+        await pending;
 
-      expect(_settingOf(container), _off);
-    });
+        expect(_settingOf(container), _off);
+      },
+    );
 
     // 남의 글 기본값(둘 다 off)에서 켜면 댓글·답글을 같이 켠다 — 요청이 둘 다
     // required라 하나만 보낼 수 없다.
@@ -206,41 +213,47 @@ void main() {
   });
 
   group('CommunityDetailNotifier.toggleReplyNotification', () {
-    test('flips_the_comment_before_the_server_answers_and_sends_the_new_value', () async {
-      final comments = _FakeCommentRepository([_comment(5)]);
-      final container = _container(_FakeRepository(_post()), comments);
-      await container.read(communityDetailNotifierProvider(_postId).future);
+    test(
+      'flips_the_comment_before_the_server_answers_and_sends_the_new_value',
+      () async {
+        final comments = _FakeCommentRepository([_comment(5)]);
+        final container = _container(_FakeRepository(_post()), comments);
+        await container.read(communityDetailNotifierProvider(_postId).future);
 
-      final pending = container
-          .read(communityDetailNotifierProvider(_postId).notifier)
-          .toggleReplyNotification(5);
+        final pending = container
+            .read(communityDetailNotifierProvider(_postId).notifier)
+            .toggleReplyNotification(5);
 
-      expect(_replyFlagOf(container, 5), isFalse);
-      expect(comments.lastReplySetting, (commentId: 5, enabled: false));
+        expect(_replyFlagOf(container, 5), isFalse);
+        expect(comments.lastReplySetting, (commentId: 5, enabled: false));
 
-      comments.gate.complete();
-      await pending;
+        comments.gate.complete();
+        await pending;
 
-      expect(_replyFlagOf(container, 5), isFalse);
-    });
+        expect(_replyFlagOf(container, 5), isFalse);
+      },
+    );
 
-    test('rolls_the_comment_back_and_rethrows_when_the_server_rejects', () async {
-      final comments = _FakeCommentRepository([_comment(5)]);
-      final container = _container(_FakeRepository(_post()), comments);
-      await container.read(communityDetailNotifierProvider(_postId).future);
+    test(
+      'rolls_the_comment_back_and_rethrows_when_the_server_rejects',
+      () async {
+        final comments = _FakeCommentRepository([_comment(5)]);
+        final container = _container(_FakeRepository(_post()), comments);
+        await container.read(communityDetailNotifierProvider(_postId).future);
 
-      final pending = container
-          .read(communityDetailNotifierProvider(_postId).notifier)
-          .toggleReplyNotification(5);
-      expect(_replyFlagOf(container, 5), isFalse);
+        final pending = container
+            .read(communityDetailNotifierProvider(_postId).notifier)
+            .toggleReplyNotification(5);
+        expect(_replyFlagOf(container, 5), isFalse);
 
-      comments.gate.completeError(
-        const ServerException(message: 'x', messageKey: 'y'),
-      );
+        comments.gate.completeError(
+          const ServerException(message: 'x', messageKey: 'y'),
+        );
 
-      await expectLater(pending, throwsA(isA<AppException>()));
-      expect(_replyFlagOf(container, 5), isTrue);
-    });
+        await expectLater(pending, throwsA(isA<AppException>()));
+        expect(_replyFlagOf(container, 5), isTrue);
+      },
+    );
 
     // 답글(2depth)엔 메뉴 항목이 없어 여기 올 일이 없지만, 와도 서버를 부르지 않는다.
     test('ignores_ids_that_are_not_top_level_comments', () async {

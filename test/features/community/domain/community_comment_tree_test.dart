@@ -90,7 +90,11 @@ void main() {
   // 값이 화면에 쓰이지 않으므로 건드리지 않는다.
   group('withReplyNotification', () {
     test('flips_only_the_target_top_level_comment', () {
-      final result = withReplyNotification([_comment(1), _comment(2)], 1, false);
+      final result = withReplyNotification(
+        [_comment(1), _comment(2)],
+        1,
+        false,
+      );
 
       expect(result.first.replyNotificationsEnabled, isFalse);
       expect(result.last.replyNotificationsEnabled, isTrue);

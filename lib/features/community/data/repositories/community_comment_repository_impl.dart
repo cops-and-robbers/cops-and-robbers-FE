@@ -85,7 +85,9 @@ class CommunityCommentRepositoryImpl implements CommunityCommentRepository {
   }) => _guard(
     () => _dataSource.updateCommentNotification(
       commentId,
-      CommunityCommentNotificationRequestModel(replyNotificationsEnabled: enabled),
+      CommunityCommentNotificationRequestModel(
+        replyNotificationsEnabled: enabled,
+      ),
     ),
     message: '댓글 알림 설정을 바꾸는 중 오류가 발생했습니다',
     messageKey: 'errorCommunityCommentNotificationUpdateGeneric',

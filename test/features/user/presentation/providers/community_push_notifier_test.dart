@@ -20,7 +20,8 @@ class _FakeUserRemoteDataSource implements UserRemoteDataSource {
   CommunityPushAgreementRequestModel? lastRequest;
 
   @override
-  Future<CommunityPushAgreementResponseModel> getCommunityPushAgreement() async =>
+  Future<CommunityPushAgreementResponseModel>
+  getCommunityPushAgreement() async =>
       CommunityPushAgreementResponseModel(allowCommunityPush: serverValue);
 
   @override

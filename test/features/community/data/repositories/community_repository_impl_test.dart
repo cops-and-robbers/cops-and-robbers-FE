@@ -1119,7 +1119,8 @@ void main() {
     });
 
     test('rethrows_server_rejection_as_app_exception', () async {
-      final fake = _FakeCommunityRemoteDataSource()..errorToThrow = _dioError(404);
+      final fake = _FakeCommunityRemoteDataSource()
+        ..errorToThrow = _dioError(404);
 
       expect(
         () => CommunityRepositoryImpl(fake).updateNotificationSetting(

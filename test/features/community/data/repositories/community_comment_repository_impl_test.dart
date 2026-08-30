@@ -193,7 +193,9 @@ void main() {
         ],
       );
 
-      final comments = await CommunityCommentRepositoryImpl(fake).getComments(42);
+      final comments = await CommunityCommentRepositoryImpl(
+        fake,
+      ).getComments(42);
 
       expect(comments.single.replyNotificationsEnabled, isFalse);
     });
@@ -201,10 +203,9 @@ void main() {
     test('sends_the_new_value_for_the_comment', () async {
       final fake = _FakeCommunityRemoteDataSource();
 
-      await CommunityCommentRepositoryImpl(fake).updateReplyNotification(
-        commentId: 10,
-        enabled: false,
-      );
+      await CommunityCommentRepositoryImpl(
+        fake,
+      ).updateReplyNotification(commentId: 10, enabled: false);
 
       expect(fake.notifiedCommentId, 10);
       expect(

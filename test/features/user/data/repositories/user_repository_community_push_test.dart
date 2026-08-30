@@ -12,7 +12,8 @@ class _FakeUserRemoteDataSource implements UserRemoteDataSource {
   Object? errorToThrow;
 
   @override
-  Future<CommunityPushAgreementResponseModel> getCommunityPushAgreement() async {
+  Future<CommunityPushAgreementResponseModel>
+  getCommunityPushAgreement() async {
     if (errorToThrow != null) throw errorToThrow!;
     return responseToReturn!;
   }
@@ -32,9 +33,7 @@ class _FakeUserRemoteDataSource implements UserRemoteDataSource {
 DioException _dioError(int statusCode) => DioException(
   requestOptions: RequestOptions(path: '/api/user/agreements/community-push'),
   response: Response(
-    requestOptions: RequestOptions(
-      path: '/api/user/agreements/community-push',
-    ),
+    requestOptions: RequestOptions(path: '/api/user/agreements/community-push'),
     statusCode: statusCode,
     data: {
       'title': 'error',

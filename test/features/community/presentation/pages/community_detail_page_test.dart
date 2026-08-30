@@ -152,8 +152,10 @@ Widget _wrapPushedDetail(_DetailRepository repo) => _app(
 /// 이 화면과 무관한 이유로 깨진다. 기본 목록은 예전 메모리 목이 심던 것과 같은
 /// 모양(원댓글 + 답글 한 겹)이라 답글 모드 테스트가 그대로 성립한다.
 class _FakeCommentRepository implements CommunityCommentRepository {
-  _FakeCommentRepository({List<CommunityCommentEntity>? comments, this.replyError})
-    : comments = comments ?? _defaultComments();
+  _FakeCommentRepository({
+    List<CommunityCommentEntity>? comments,
+    this.replyError,
+  }) : comments = comments ?? _defaultComments();
 
   List<CommunityCommentEntity> comments;
 
@@ -329,10 +331,9 @@ Future<void> _openPostMenu(WidgetTester tester) async {
 /// 본문이 [content]인 댓글 타일의 더보기(⋯) 버튼. 타일은 본문 Text의 가장 가까운
 /// Container다 — 답글 타일의 ↳ 아이콘 Padding은 형제라 걸리지 않는다.
 Finder _commentMenu(String content) => find.descendant(
-  of: find.ancestor(
-    of: find.text(content),
-    matching: find.byType(Container),
-  ).first,
+  of: find
+      .ancestor(of: find.text(content), matching: find.byType(Container))
+      .first,
   matching: find.byType(CommunityMenuButton),
 );
 
