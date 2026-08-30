@@ -95,24 +95,38 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
   Widget _buildError(AppLocalizations l10n, Object error) {
     final gone = isCommunityPostGone(error);
 
-    return Center(
+    // 안내는 화면 중앙, 행동 버튼은 하단 고정 — 닉네임 설정 등 "다음 행동"을
+    // 주는 화면들의 공통 패턴을 따른다
+    return SafeArea(
       child: Padding(
         padding: AppPadding.horizontal24,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              error is AppException
-                  ? l10n.errorByException(error)
-                  : l10n.errorCommunityPostsLoadFailed,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: AppColors.black600,
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 돋보기 든 캐릭터 — 라우터 404 화면과 같은 에셋으로 톤을 맞춘다
+                  SvgPicture.asset(
+                    'assets/icons/icon_not_found.svg',
+                    width: 110.w,
+                  ),
+                  SizedBox(height: AppSpacing.vertical16),
+                  Text(
+                    error is AppException
+                        ? l10n.errorByException(error)
+                        : l10n.errorCommunityPostsLoadFailed,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.paragraph_14.copyWith(
+                      color: AppColors.black600,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: AppSpacing.vertical16),
             AppButton(
               width: double.infinity,
+              backgroundColor: AppColors.blue,
               text: gone ? l10n.communityBackToList : l10n.buttonRetry,
               onPressed: gone
                   ? _backToList
@@ -120,6 +134,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                       communityDetailNotifierProvider(widget.postId),
                     ),
             ),
+            SizedBox(height: AppSpacing.vertical16),
           ],
         ),
       ),
