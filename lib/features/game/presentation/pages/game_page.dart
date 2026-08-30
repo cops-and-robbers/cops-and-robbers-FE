@@ -1449,8 +1449,9 @@ class _GamePageState extends ConsumerState<GamePage>
         context: context,
         arrestCount: arrestCount,
         onGoHome: () {
-          if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted))
+          if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) {
             return;
+          }
           if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
               gameId != null) {
             _requestLeaveGameSilently(gameId);
