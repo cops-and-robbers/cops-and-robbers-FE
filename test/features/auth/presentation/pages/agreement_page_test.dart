@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cops_and_robbers/core/network/connectivity_service.dart';
+import 'package:cops_and_robbers/core/network/dio_client.dart';
 import 'package:cops_and_robbers/features/auth/presentation/pages/agreement_page.dart';
 import 'package:cops_and_robbers/features/user/domain/entities/agreement_status_entity.dart';
 import 'package:cops_and_robbers/features/user/domain/repositories/user_repository.dart';
@@ -35,7 +36,7 @@ class _FakeUserRepository implements UserRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-Widget _wrap(WidgetTester tester) {
+Widget _wrap(WidgetTester tester, {bool blockedByServer = false}) {
   // 테스트 화면 크기를 iPhone X 크기로 설정 (overflow 방지)
   tester.view.physicalSize = const Size(1125, 2436);
   tester.view.devicePixelRatio = 3.0;
@@ -46,6 +47,7 @@ Widget _wrap(WidgetTester tester) {
         (ref) => ConnectivityService(_FakeConnectivity()),
       ),
       userRepositoryProvider.overrideWith((ref) => _FakeUserRepository()),
+      requiredTermsBlockedProvider.overrideWith((ref) => blockedByServer),
     ],
     child: ScreenUtilInit(
       designSize: const Size(375, 812),
@@ -59,6 +61,19 @@ Widget _wrap(WidgetTester tester) {
       ),
     ),
   );
+}
+
+/// 스낵바는 3초 뒤 스스로 사라지는 Future.delayed 를 들고 있어
+/// pumpAndSettle 이 곧바로 끝나지 않는다. 진입 애니메이션까지만 돌려 검증한다.
+Future<void> _settleSnackbar(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
+}
+
+/// 검증 뒤 남은 dismiss 타이머와 퇴장 애니메이션을 흘려보낸다 (pending timer 방지).
+Future<void> _drainSnackbar(WidgetTester tester) async {
+  await tester.pump(const Duration(seconds: 3));
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -84,5 +99,33 @@ void main() {
 
     // 체크 아이콘(Icons.check)이 5개 이상 보여야 함 (전체 동의 + 4개 개별)
     expect(find.byIcon(Icons.check), findsAtLeast(5));
+  });
+
+  testWidgets('shows_the_reason_when_server_blocked_the_user', (tester) async {
+    await tester.pumpWidget(_wrap(tester, blockedByServer: true));
+    await _settleSnackbar(tester);
+
+    expect(find.text('필수 약관은 모두 동의해야 해요'), findsOneWidget);
+
+    await _drainSnackbar(tester);
+  });
+
+  testWidgets('shows_no_reason_when_entering_the_signup_flow', (tester) async {
+    await tester.pumpWidget(_wrap(tester));
+    await tester.pumpAndSettle();
+
+    expect(find.text('필수 약관은 모두 동의해야 해요'), findsNothing);
+  });
+
+  testWidgets('clears_the_flag_when_the_reason_was_shown', (tester) async {
+    await tester.pumpWidget(_wrap(tester, blockedByServer: true));
+    await _settleSnackbar(tester);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(AgreementPage)),
+    );
+    expect(container.read(requiredTermsBlockedProvider), isFalse);
+
+    await _drainSnackbar(tester);
   });
 }

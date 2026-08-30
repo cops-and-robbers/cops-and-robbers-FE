@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/config/env_config.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/dio_exception_handler.dart';
+import '../../../../core/network/required_terms_interceptor.dart';
 import '../../../../core/storage/secure_token_storage.dart';
 import '../../data/datasources/game_result_api_datasource.dart';
 import '../../domain/entities/game_result_entity.dart';
@@ -39,6 +41,16 @@ final gameResultDioProvider = Provider<Dio>((ref) {
         }
         handler.next(options);
       },
+    ),
+  );
+
+  // 전역 Dio를 안 쓰는 대가로 필수 약관 미동의 처리도 빠진다.
+  // `/api/game-results/**`는 BE 제외 목록에 없어 재동의 상태면 400이 오므로,
+  // 여기서도 약관 화면으로 갈 길을 만들어 준다. 위 주석의 "401을 전역
+  // 강제 로그아웃으로 번지게 하지 않는다"와는 다른 관심사다.
+  dio.interceptors.add(
+    RequiredTermsInterceptor(
+      onRequiredTermsNotAgreed: () => notifyRequiredTermsNotAgreed(ref),
     ),
   );
 

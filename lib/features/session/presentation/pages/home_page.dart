@@ -369,13 +369,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       await loading.close();
     } on DioException catch (e) {
       await loading.close();
-      // 필수 약관 미동의 차단 → 스낵바 + /agreement 리디렉트
-      if (mounted &&
-          handleRequiredTermsErrorIfNeeded(
-            context: context,
-            ref: ref,
-            error: e,
-          )) {
+      // 필수 약관 미동의는 전역 인터셉터가 안내 + /agreement 리디렉트까지 처리한다.
+      // 여기서는 일반 에러 스낵바가 겹치지 않도록 건너뛰기만 한다.
+      if (isRequiredTermsMissingError(e)) {
         return;
       }
       // 409: 이미 참가 중인 게임 → 해당 게임으로 자동 이동 시도
