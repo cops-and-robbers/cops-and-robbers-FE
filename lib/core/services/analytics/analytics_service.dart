@@ -83,6 +83,13 @@ class AnalyticsService {
   /// 닉네임 변경 성공
   Future<void> logNicknameChange() => _log('nickname_change');
 
+  /// 모집글 공유 버튼 탭
+  Future<void> logCommunityPostShare() => _log('community_post_share');
+
+  /// 딥링크로 모집글 상세 진입 — [entry]: 'cold' | 'warm' | 'pending'
+  Future<void> logCommunityPostDeeplink({required String entry}) =>
+      _log('community_post_deeplink', {'entry': entry});
+
   /// 인게임 튜토리얼 완료
   Future<void> logTutorialComplete() => _log('tutorial_complete');
 

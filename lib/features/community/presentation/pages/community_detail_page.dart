@@ -13,7 +13,9 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -93,24 +95,38 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
   Widget _buildError(AppLocalizations l10n, Object error) {
     final gone = isCommunityPostGone(error);
 
-    return Center(
+    // 안내는 화면 중앙, 행동 버튼은 하단 고정 — 닉네임 설정 등 "다음 행동"을
+    // 주는 화면들의 공통 패턴을 따른다
+    return SafeArea(
       child: Padding(
         padding: AppPadding.horizontal24,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              error is AppException
-                  ? l10n.errorByException(error)
-                  : l10n.errorCommunityPostsLoadFailed,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: AppColors.black600,
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 돋보기 든 캐릭터 — 라우터 404 화면과 같은 에셋으로 톤을 맞춘다
+                  SvgPicture.asset(
+                    'assets/icons/icon_not_found.svg',
+                    width: 110.w,
+                  ),
+                  SizedBox(height: AppSpacing.vertical16),
+                  Text(
+                    error is AppException
+                        ? l10n.errorByException(error)
+                        : l10n.errorCommunityPostsLoadFailed,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.paragraph_14.copyWith(
+                      color: AppColors.black600,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: AppSpacing.vertical16),
             AppButton(
               width: double.infinity,
+              backgroundColor: AppColors.blue,
               text: gone ? l10n.communityBackToList : l10n.buttonRetry,
               onPressed: gone
                   ? _backToList
@@ -118,6 +134,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                       communityDetailNotifierProvider(widget.postId),
                     ),
             ),
+            SizedBox(height: AppSpacing.vertical16),
           ],
         ),
       ),
@@ -399,9 +416,12 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
             color: AppColors.black700,
             label: l10n.communityDetailShare,
             textStyle: AppTextStyles.label16Medium,
-            // ponytail: 공유 링크는 딥링크 경로가 정해진 뒤 붙인다.
-            onTap: () =>
-                AppSnackbar.show(context, message: l10n.comingSoonMessage),
+            onTap: () {
+              unawaited(
+                ref.read(analyticsServiceProvider).logCommunityPostShare(),
+              );
+              unawaited(shareCommunityPost(widget.postId, post.title));
+            },
           ),
         ),
       ],

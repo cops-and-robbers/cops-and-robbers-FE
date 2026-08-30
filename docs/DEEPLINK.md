@@ -15,10 +15,39 @@
 | 시나리오         | URL 패턴                                      | 동작                              |
 | ---------------- | --------------------------------------------- | --------------------------------- |
 | 방 초대코드 공유 | `https://copsandrobbers.app/join/{inviteCode}` | 해당 방 입장 흐름으로 진입         |
+| 모집글 공유      | `https://copsandrobbers.app/g/{id}` (일본어 `/ja/g/{id}`·영어 `/en/g/{id}`) | 해당 모집글 상세로 이동 |
+| 모집글 폴백 스킴 | `copsandrobbers://open/community/{id}`        | 웹 상세의 "앱에서 열기"용          |
 
 URL은 **path 방식**으로 통일한다 (`/join/ABC123`). 쿼리 스트링 방식(`?code=`)은 AASA `components` / Android `pathPrefix` 매칭이 까다로워 채택하지 않는다.
 
 > 친구 추가, 결과 공유 등 다른 시나리오는 같은 구조로 확장 가능하지만 1차 범위에서 제외한다.
+
+### 언어 추가 시 체크리스트
+
+모집글 경로는 언어별 경로(`/ja/g` 등)를 명시적으로 나열한다. 지원 언어가 늘면 세 곳을 함께 넓혀야 한다:
+
+1. 웹 `apple-app-site-association` 의 `components` — iOS 가 앱으로 보낼 경로
+2. `AndroidManifest.xml` 의 `pathPrefix`
+3. `DeeplinkEvent.fromUri` 의 경로 파싱
+
+하나라도 빠지면 그 언어 경로만 앱으로 이어지지 않거나, iOS 가 링크를 앱으로 넘겼는데
+앱이 해석하지 못해 홈만 여는 상태가 된다. 특히 AASA 에 경로가 먼저 열려 있으면
+파싱 없는 앱 릴리스가 그 경로의 링크를 삼키므로, 경로 파싱과 도메인 선언은 같은
+릴리스로 나가야 한다.
+
+### 딥링크 경로는 라우터에 실제 라우트로 존재해야 한다
+
+엔진은 warm 인텐트(앱 실행 중 링크 클릭)의 원시 URI 경로를 GoRouter 로 전달한다.
+`AndroidManifest.xml` 의 `flutter_deeplinking_enabled=false` 는 이 전달을 막지
+못하는 것을 실기기에서 확인했다. 그래서:
+
+- 새 딥링크 경로를 추가하면 **GoRouter 에 같은 경로의 라우트(또는 별칭 redirect)를
+  반드시 함께 추가**한다. 없으면 404 화면이 목적지 위를 덮는다 (`/join`, `/g` 별칭 참조)
+- 커스텀 스킴은 `copsandrobbers://open/{라우터 경로}` 규약을 쓴다. host 뒤에 라우터
+  경로를 그대로 실어야 엔진이 전달한 경로가 실제 라우트에 안착한다. host 에 의미를
+  두면(예: `copsandrobbers://community/{id}`) 엔진 전달 경로가 `/{id}` 로 잘려 404 가 된다
+- 기존 `copsandrobbers://join/{code}` 는 이 규약 이전의 형태라 warm 에서 404 가 join
+  화면을 덮는 문제가 있다. 웹 브릿지가 이미 쓰고 있어 스킴 교체는 별도 작업이다
 
 ---
 
