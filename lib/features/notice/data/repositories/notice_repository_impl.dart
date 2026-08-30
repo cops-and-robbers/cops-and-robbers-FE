@@ -21,12 +21,14 @@ class NoticeRepositoryImpl implements NoticeRepository {
   Future<NoticePageEntity> getNotices({
     required int page,
     required int size,
+    required String language,
     NoticeCategory category = NoticeCategory.all,
   }) async {
     try {
       final res = await _dataSource.getNotices(
         page: page,
         size: size,
+        language: language,
         category: category.queryValue,
       );
       return NoticePageEntity(
