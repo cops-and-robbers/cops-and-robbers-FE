@@ -21,12 +21,14 @@ class _NoticeRemoteDataSource implements NoticeRemoteDataSource {
   Future<NoticeListResponseModel> getNotices({
     required int page,
     required int size,
+    required String language,
     String? category,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'page': page,
       r'size': size,
+      r'language': language,
       r'category': category,
     };
     queryParameters.removeWhere((k, v) => v == null);

@@ -13,16 +13,21 @@ class _FakeNoticeRemoteDataSource implements NoticeRemoteDataSource {
 
   /// 마지막 호출에 전달된 `category` 쿼리 값. 호출 전에는 [called]가 false다.
   String? lastCategory;
+
+  /// 마지막 호출에 전달된 `language` 쿼리 값.
+  String? lastLanguage;
   bool called = false;
 
   @override
   Future<NoticeListResponseModel> getNotices({
     required int page,
     required int size,
+    required String language,
     String? category,
   }) async {
     called = true;
     lastCategory = category;
+    lastLanguage = language;
     if (errorToThrow != null) throw errorToThrow!;
     return responseToReturn!;
   }
@@ -72,7 +77,7 @@ void main() {
         ..responseToReturn = _listOf([raw]);
       final repo = NoticeRepositoryImpl(fake);
 
-      final result = await repo.getNotices(page: 0, size: 10);
+      final result = await repo.getNotices(page: 0, size: 10, language: 'ko');
 
       final entity = result.items.single;
       // Entity의 createdAt은 local로 변환되어 있어야 한다.
@@ -98,7 +103,7 @@ void main() {
         ..responseToReturn = _listOf([raw]);
       final repo = NoticeRepositoryImpl(fake);
 
-      final result = await repo.getNotices(page: 0, size: 10);
+      final result = await repo.getNotices(page: 0, size: 10, language: 'ko');
 
       final entity = result.items.single;
       expect(entity.createdAt.isUtc, false);
@@ -121,7 +126,7 @@ void main() {
         ..responseToReturn = _listOf([raw]);
       final repo = NoticeRepositoryImpl(fake);
 
-      final result = await repo.getNotices(page: 0, size: 10);
+      final result = await repo.getNotices(page: 0, size: 10, language: 'ko');
 
       final entity = result.items.single;
       expect(entity.id, 42);
@@ -135,7 +140,7 @@ void main() {
       final repo = NoticeRepositoryImpl(fake);
 
       expect(
-        () => repo.getNotices(page: 0, size: 10),
+        () => repo.getNotices(page: 0, size: 10, language: 'ko'),
         throwsA(isA<AppException>()),
       );
     });
@@ -146,12 +151,30 @@ void main() {
       final repo = NoticeRepositoryImpl(fake);
 
       expect(
-        () => repo.getNotices(page: 0, size: 10),
+        () => repo.getNotices(page: 0, size: 10, language: 'ko'),
         throwsA(isA<ServerException>()),
       );
     });
 
     // Agents.md 명명 규칙(<subject>_<expected>_when_<condition>)을 따르는 신규 테스트.
+    test('forwards_language_query_when_language_given', () async {
+      final raw = NoticeResponseModel.fromJson({
+        'id': 3,
+        'title': 'お知らせ',
+        'content': '本文',
+        'pinned': false,
+        'createdAt': '2024-05-05T09:00:00+09:00',
+        'updatedAt': '2024-05-05T09:00:00+09:00',
+      });
+      final fake = _FakeNoticeRemoteDataSource()
+        ..responseToReturn = _listOf([raw]);
+      final repo = NoticeRepositoryImpl(fake);
+
+      await repo.getNotices(page: 0, size: 10, language: 'ja');
+
+      expect(fake.lastLanguage, 'ja');
+    });
+
     test('filters_notices_by_selected_category_when_category_given', () async {
       // 서버 계약 고정: enum 값 → 쿼리 문자열. all은 "파라미터 생략"이라 null.
       const expectedQueryValues = <NoticeCategory, String?>{
@@ -178,6 +201,7 @@ void main() {
         final result = await repo.getNotices(
           page: 0,
           size: 10,
+          language: 'ko',
           category: entry.key,
         );
 

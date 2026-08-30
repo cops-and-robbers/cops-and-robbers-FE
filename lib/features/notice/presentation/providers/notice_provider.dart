@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/notice_remote_datasource.dart';
 import '../../data/repositories/notice_repository_impl.dart';
@@ -60,12 +61,20 @@ class NoticesNotifier extends _$NoticesNotifier {
   @override
   FutureOr<NoticePageEntity> build() {
     // build() 안에서는 watch 사용 (선언적 의존성).
-    // 카테고리가 바뀌면 이 build가 재실행되어 0페이지부터 다시 조회된다.
+    // 카테고리나 앱 언어가 바뀌면 이 build가 재실행되어 0페이지부터 다시 조회된다.
     // fetchPage(액션 메서드)에서는 read 사용 — Riverpod 표준.
     final category = ref.watch(selectedNoticeCategoryProvider);
+    final language = ref.watch(
+      appLocaleProvider.select((s) => s.locale.languageCode),
+    );
     return ref
         .watch(noticeRepositoryProvider)
-        .getNotices(page: 0, size: _pageSize, category: category);
+        .getNotices(
+          page: 0,
+          size: _pageSize,
+          language: language,
+          category: category,
+        );
   }
 
   /// 지정 페이지로 이동.
@@ -80,6 +89,7 @@ class NoticesNotifier extends _$NoticesNotifier {
           .getNotices(
             page: page,
             size: _pageSize,
+            language: ref.read(appLocaleProvider).locale.languageCode,
             category: ref.read(selectedNoticeCategoryProvider),
           ),
     );
