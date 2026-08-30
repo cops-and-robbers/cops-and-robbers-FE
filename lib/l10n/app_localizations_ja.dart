@@ -704,6 +704,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityMenuLoginRequired => 'ログインして利用する';
 
   @override
+  String get communityMenuNotificationOn => '通知をオンにする';
+
+  @override
+  String get communityMenuNotificationOff => '通知をオフにする';
+
+  @override
   String get communityStatusRecruiting => '募集中';
 
   @override
@@ -2166,6 +2172,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCommunityNotificationReadGeneric => '通知の既読処理に失敗しました';
+
+  @override
+  String get errorCommunityPostNotificationUpdateGeneric =>
+      'この投稿の通知設定を変更できませんでした';
 
   @override
   String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';

@@ -633,6 +633,28 @@ class _CommunityRemoteDataSource implements CommunityRemoteDataSource {
   }
 
   @override
+  Future<void> updateNotificationSetting(
+    int postId,
+    CommunityPostNotificationSettingRequestModel body,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = body;
+    final _options = _setStreamType<void>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/community-posts/${postId}/notification-settings',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
   Future<CommunityChatMemberListResponseModel> getChatMembers(
     int postId,
   ) async {

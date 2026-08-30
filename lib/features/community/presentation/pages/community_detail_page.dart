@@ -578,6 +578,8 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         unawaited(_handleToggleStatus());
       case CommunityPostMenuAction.delete:
         unawaited(_confirmDelete(l10n));
+      case CommunityPostMenuAction.toggleNotification:
+        unawaited(_handleToggleNotification());
     }
   }
 
@@ -591,6 +593,13 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
 
     await openCommunityEditor(context, ref, post);
   }
+
+  /// 이 글 알림 토글 — 낙관적 갱신이라 화면은 즉시 바뀌고, 실패만 스낵바로 알린다.
+  Future<void> _handleToggleNotification() => _runAction(
+    () => ref
+        .read(communityDetailNotifierProvider(widget.postId).notifier)
+        .toggleNotification(),
+  );
 
   Future<void> _handleToggleStatus() {
     return _runAction(

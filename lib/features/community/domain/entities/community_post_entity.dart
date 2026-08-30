@@ -4,6 +4,24 @@ import 'community_post_status.dart';
 
 part 'community_post_entity.freezed.dart';
 
+/// 이 글에서 내가 받을 알림 — 댓글·답글 두 값 (BE #182)
+///
+/// 서버 요청이 두 값을 항상 함께 받으므로(둘 다 required) 앱도 둘을 한 덩어리로
+/// 다룬다. 메뉴의 토글 하나가 둘을 같이 뒤집고, 표시 상태는 [enabled]다.
+@freezed
+class CommunityPostNotificationSetting with _$CommunityPostNotificationSetting {
+  const CommunityPostNotificationSetting._();
+
+  const factory CommunityPostNotificationSetting({
+    required bool commentNotificationsEnabled,
+    required bool replyNotificationsEnabled,
+  }) = _CommunityPostNotificationSetting;
+
+  /// 둘 중 하나라도 켜져 있으면 "알림 받는 중"으로 본다 — 내 글의 서버 기본값이
+  /// (댓글 on, 답글 off)라 AND로 보면 기본 상태가 꺼짐으로 보인다.
+  bool get enabled => commentNotificationsEnabled || replyNotificationsEnabled;
+}
+
 /// 커뮤니티 모집 게시글 도메인 엔티티
 ///
 /// UI가 직접 보는 형태. DTO의 중첩 `location`은 여기서 평평하게 편다 —
@@ -57,6 +75,10 @@ class CommunityPostEntity with _$CommunityPostEntity {
     /// 내가 이 글의 채팅방 멤버인가. BE 이슈로 요청한 필드 — 서버가 아직 안 주면
     /// false이고, 그때는 항상 join을 보내 409면 입장한다.
     @Default(false) bool chatJoined,
+
+    /// 이 글에서 내가 받을 알림 설정. **단건 조회에서만** 채워진다 — 목록 경유
+    /// 카드·비로그인 단건은 null이고, 그때 메뉴는 토글 항목을 그리지 않는다.
+    CommunityPostNotificationSetting? notificationSetting,
   }) = _CommunityPostEntity;
 
   /// 화면에 찍는 위치 한 줄 — 서버 지역과 작성자 장소명을 병기한다 (DEC-0015).

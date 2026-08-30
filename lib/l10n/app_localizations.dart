@@ -1378,6 +1378,18 @@ abstract class AppLocalizations {
   /// **'로그인하고 이용하기'**
   String get communityMenuLoginRequired;
 
+  /// 모집글 더보기 메뉴 — 이 글 알림이 꺼져 있을 때 (누르면 켜짐)
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 켜기'**
+  String get communityMenuNotificationOn;
+
+  /// 모집글 더보기 메뉴 — 이 글 알림이 켜져 있을 때 (누르면 꺼짐)
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 끄기'**
+  String get communityMenuNotificationOff;
+
   /// 커뮤니티 카드 — 모집 중인 게시글 배지
   ///
   /// In ko, this message translates to:
@@ -4152,6 +4164,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'알림 읽음 처리에 실패했어요'**
   String get errorCommunityNotificationReadGeneric;
+
+  /// 게시글별 알림 켜기/끄기 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'이 글의 알림 설정을 변경하지 못했어요'**
+  String get errorCommunityPostNotificationUpdateGeneric;
 
   /// 모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지
   ///

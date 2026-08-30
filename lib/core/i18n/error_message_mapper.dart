@@ -438,6 +438,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCommunityNotificationUnreadCountLoadGeneric;
       case 'errorCommunityNotificationReadGeneric':
         return errorCommunityNotificationReadGeneric;
+      case 'errorCommunityPostNotificationUpdateGeneric':
+        return errorCommunityPostNotificationUpdateGeneric;
       case 'errorCommunityPostCreateGeneric':
         return errorCommunityPostCreateGeneric;
       case 'errorCommunityPostUpdateGeneric':

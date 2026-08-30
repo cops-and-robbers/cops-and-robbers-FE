@@ -1,0 +1,167 @@
+import 'dart:async';
+
+import 'package:cops_and_robbers/core/errors/app_exception.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_comment_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
+import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_detail_provider.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../../community_fakes.dart';
+
+const _postId = 7;
+
+CommunityPostEntity _post({CommunityPostNotificationSetting? setting}) =>
+    CommunityPostEntity(
+      id: _postId,
+      writerId: 1,
+      title: '같이 하실 분',
+      content: '본문',
+      meetingAt: DateTime(2026, 9, 10, 18),
+      latitude: 37.5502,
+      longitude: 127.0736,
+      maxParticipants: 10,
+      status: CommunityPostStatus.recruiting,
+      createdAt: DateTime(2026, 8, 20),
+      likeCount: 0,
+      isLiked: false,
+      scrapCount: 0,
+      isScrapped: false,
+      notificationSetting: setting,
+    );
+
+const _on = CommunityPostNotificationSetting(
+  commentNotificationsEnabled: true,
+  replyNotificationsEnabled: false,
+);
+const _off = CommunityPostNotificationSetting(
+  commentNotificationsEnabled: false,
+  replyNotificationsEnabled: false,
+);
+const _bothOn = CommunityPostNotificationSetting(
+  commentNotificationsEnabled: true,
+  replyNotificationsEnabled: true,
+);
+
+/// 서버 응답이 언제 도착할지 테스트가 정한다 — "응답 전에 뒤집혔는지"를 보려면
+/// 응답을 붙들고 있어야 한다. Repository 경계에서 자른다(페이지 테스트와 같은 선).
+class _FakeRepository
+    with CommunityRepositoryListStubs, CommunityRepositoryDetailStubs {
+  _FakeRepository(this.post);
+
+  final CommunityPostEntity post;
+  final gate = Completer<void>();
+  ({int postId, bool comment, bool reply})? lastSetting;
+
+  @override
+  Future<CommunityPostEntity> getPost(int postId) async => post;
+
+  @override
+  Future<void> updateNotificationSetting({
+    required int postId,
+    required bool commentNotificationsEnabled,
+    required bool replyNotificationsEnabled,
+  }) async {
+    lastSetting = (
+      postId: postId,
+      comment: commentNotificationsEnabled,
+      reply: replyNotificationsEnabled,
+    );
+    await gate.future;
+  }
+}
+
+class _FakeCommentRepository implements CommunityCommentRepository {
+  final comments = const <CommunityCommentEntity>[];
+
+  @override
+  Future<List<CommunityCommentEntity>> getComments(int postId) async =>
+      comments;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+ProviderContainer _container(
+  _FakeRepository repo, [
+  _FakeCommentRepository? comments,
+]) {
+  final container = ProviderContainer(
+    overrides: [
+      communityRepositoryProvider.overrideWithValue(repo),
+      communityCommentRepositoryProvider.overrideWithValue(
+        comments ?? _FakeCommentRepository(),
+      ),
+    ],
+  );
+  addTearDown(container.dispose);
+  return container;
+}
+
+CommunityPostNotificationSetting? _settingOf(ProviderContainer container) =>
+    container
+        .read(communityDetailNotifierProvider(_postId))
+        .valueOrNull
+        ?.post
+        .notificationSetting;
+
+void main() {
+  group('CommunityDetailNotifier.toggleNotification', () {
+    test('turns_both_flags_off_before_the_server_answers_and_sends_them', () async {
+      final repo = _FakeRepository(_post(setting: _on));
+      final container = _container(repo);
+      await container.read(communityDetailNotifierProvider(_postId).future);
+
+      final pending = container
+          .read(communityDetailNotifierProvider(_postId).notifier)
+          .toggleNotification();
+
+      expect(_settingOf(container), _off);
+      expect(repo.lastSetting, (postId: _postId, comment: false, reply: false));
+
+      repo.gate.complete();
+      await pending;
+
+      expect(_settingOf(container), _off);
+    });
+
+    // 남의 글 기본값(둘 다 off)에서 켜면 댓글·답글을 같이 켠다 — 요청이 둘 다
+    // required라 하나만 보낼 수 없다.
+    test('turns_both_flags_on_when_the_post_was_muted', () async {
+      final repo = _FakeRepository(_post(setting: _off));
+      final container = _container(repo);
+      await container.read(communityDetailNotifierProvider(_postId).future);
+
+      final pending = container
+          .read(communityDetailNotifierProvider(_postId).notifier)
+          .toggleNotification();
+
+      expect(_settingOf(container), _bothOn);
+      expect(repo.lastSetting, (postId: _postId, comment: true, reply: true));
+
+      repo.gate.complete();
+      await pending;
+    });
+
+    test('rolls_back_and_rethrows_when_the_server_rejects', () async {
+      final repo = _FakeRepository(_post(setting: _on));
+      final container = _container(repo);
+      await container.read(communityDetailNotifierProvider(_postId).future);
+
+      final pending = container
+          .read(communityDetailNotifierProvider(_postId).notifier)
+          .toggleNotification();
+      expect(_settingOf(container), _off);
+
+      repo.gate.completeError(
+        const ServerException(message: 'x', messageKey: 'y'),
+      );
+
+      await expectLater(pending, throwsA(isA<AppException>()));
+      expect(_settingOf(container), _on);
+    });
+  });
+}

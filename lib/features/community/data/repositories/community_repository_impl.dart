@@ -251,6 +251,23 @@ class CommunityRepositoryImpl implements CommunityRepository {
     messageKey: 'errorCommunityNotificationReadGeneric',
   );
 
+  @override
+  Future<void> updateNotificationSetting({
+    required int postId,
+    required bool commentNotificationsEnabled,
+    required bool replyNotificationsEnabled,
+  }) => _guard(
+    () => _dataSource.updateNotificationSetting(
+      postId,
+      CommunityPostNotificationSettingRequestModel(
+        commentNotificationsEnabled: commentNotificationsEnabled,
+        replyNotificationsEnabled: replyNotificationsEnabled,
+      ),
+    ),
+    message: '게시글 알림 설정을 바꾸는 중 오류가 발생했습니다',
+    messageKey: 'errorCommunityPostNotificationUpdateGeneric',
+  );
+
   CommunityNotificationEntity _toNotificationEntity(
     CommunityNotificationResponseModel m,
   ) => CommunityNotificationEntity(
@@ -310,6 +327,16 @@ class CommunityRepositoryImpl implements CommunityRepository {
         scrapCount: m.scrapCount,
         isScrapped: m.scrapped,
         chatJoined: m.chatJoined ?? false,
+        notificationSetting: _toNotificationSetting(m.notificationSettings),
         status: communityPostStatusFromWire(m.status),
       );
+
+  CommunityPostNotificationSetting? _toNotificationSetting(
+    CommunityPostNotificationSettingModel? m,
+  ) => m == null
+      ? null
+      : CommunityPostNotificationSetting(
+          commentNotificationsEnabled: m.commentNotificationsEnabled,
+          replyNotificationsEnabled: m.replyNotificationsEnabled,
+        );
 }

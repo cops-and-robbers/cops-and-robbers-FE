@@ -7,7 +7,6 @@ import '../../domain/entities/community_comment_entity.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/community_comment_tree.dart';
 import '../../domain/entities/community_post_status.dart';
-import '../../domain/repositories/community_reaction_repository.dart';
 import 'community_provider.dart';
 
 part 'community_detail_provider.g.dart';
@@ -63,7 +62,10 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
       isLiked: !p.isLiked,
       likeCount: p.likeCount + (p.isLiked ? -1 : 1),
     ),
-    call: (repo, p) => p.isLiked ? repo.unlike(p.id) : repo.like(p.id),
+    call: (p) {
+      final repo = ref.read(communityReactionRepositoryProvider);
+      return p.isLiked ? repo.unlike(p.id) : repo.like(p.id);
+    },
   );
 
   /// 스크랩 토글 — 좋아요와 같은 낙관적 갱신.
@@ -72,26 +74,59 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
       isScrapped: !p.isScrapped,
       scrapCount: p.scrapCount + (p.isScrapped ? -1 : 1),
     ),
-    call: (repo, p) => p.isScrapped ? repo.unscrap(p.id) : repo.scrap(p.id),
+    call: (p) {
+      final repo = ref.read(communityReactionRepositoryProvider);
+      return p.isScrapped ? repo.unscrap(p.id) : repo.scrap(p.id);
+    },
   );
 
+  /// 이 글 알림 토글 — 서버 값 둘(댓글·답글)을 한꺼번에 뒤집는다.
+  ///
+  /// 요청이 두 필드를 모두 요구해 하나만 보낼 수 없다. 표시 상태는 "둘 중 하나라도
+  /// 켜짐"([CommunityPostNotificationSetting.enabled])이고, 끄면 둘 다 false,
+  /// 켜면 둘 다 true다. 내 글 기본값(댓글 on·답글 off)은 껐다 켜면 (on·on)이
+  /// 된다 — 답글 알림까지 받게 되는, 손해 없는 방향이다.
+  ///
+  /// 설정이 null이면(비로그인·목록 경유) 메뉴가 항목을 안 그리므로 여기 오지
+  /// 않는다. 그래도 오면 켜는 쪽으로 보낸다.
+  Future<void> toggleNotification() => _optimistic(
+    apply: (p) => p.copyWith(notificationSetting: _flippedSetting(p)),
+    call: (p) {
+      final next = _flippedSetting(p);
+      return ref
+          .read(communityRepositoryProvider)
+          .updateNotificationSetting(
+            postId: p.id,
+            commentNotificationsEnabled: next.commentNotificationsEnabled,
+            replyNotificationsEnabled: next.replyNotificationsEnabled,
+          );
+    },
+  );
+
+  CommunityPostNotificationSetting _flippedSetting(CommunityPostEntity p) {
+    final next = !(p.notificationSetting?.enabled ?? false);
+    return CommunityPostNotificationSetting(
+      commentNotificationsEnabled: next,
+      replyNotificationsEnabled: next,
+    );
+  }
+
+  /// 글 한 건의 낙관적 갱신 골격 — [apply]로 먼저 뒤집고 [call]이 실패하면 되돌린다.
+  ///
+  /// [call]은 뒤집기 **전** 글을 받는다 — 서버에 보낼 판단(좋아요를 누를지 취소할지)은
+  /// 그 값으로 해야 방향이 맞다. 어느 Repository를 부를지는 클로저가 정한다 —
+  /// 반응(좋아요·스크랩)과 알림 설정이 다른 Repository에 있어서다.
   Future<void> _optimistic({
     required CommunityPostEntity Function(CommunityPostEntity) apply,
-    required Future<void> Function(
-      CommunityReactionRepository,
-      CommunityPostEntity,
-    )
-    call,
+    required Future<void> Function(CommunityPostEntity before) call,
   }) async {
     final current = state.valueOrNull;
     if (current == null) return;
 
-    // 서버에 보낼 판단은 뒤집기 전 값으로 한다 — 뒤집은 뒤에 읽으면 방향이
-    // 거꾸로 나간다.
     final before = current.post;
     state = AsyncData(current.copyWith(post: apply(before)));
     try {
-      await call(ref.read(communityReactionRepositoryProvider), before);
+      await call(before);
     } catch (_) {
       state = AsyncData((state.valueOrNull ?? current).copyWith(post: before));
       rethrow;

@@ -36,9 +36,11 @@ CommunityPostEntity _post({
   CommunityPostStatus status = CommunityPostStatus.recruiting,
   int likeCount = 0,
   bool isLiked = false,
+  int writerId = 1,
+  CommunityPostNotificationSetting? notificationSetting,
 }) => CommunityPostEntity(
   id: _postId,
-  writerId: 1,
+  writerId: writerId,
   title: '같이 하실 분',
   content: '본문',
   meetingAt: DateTime(2026, 9, 10, 18),
@@ -54,6 +56,7 @@ CommunityPostEntity _post({
   isLiked: isLiked,
   scrapCount: 0,
   isScrapped: false,
+  notificationSetting: notificationSetting,
 );
 
 /// 본문 조회와 작성자 동작(마감·삭제)에 응답하는 Repository.
@@ -62,11 +65,20 @@ CommunityPostEntity _post({
 /// 지운 상황(404 `POST_NOT_FOUND`)을 재현하는 통로다.
 class _DetailRepository
     with CommunityRepositoryListStubs, CommunityRepositoryDetailStubs {
-  _DetailRepository(this.post, {this.getFailure, this.writeFailure});
+  _DetailRepository(
+    this.post, {
+    this.getFailure,
+    this.writeFailure,
+    this.notificationError,
+  });
 
   final CommunityPostEntity post;
   final AppException? getFailure;
   final AppException? writeFailure;
+
+  /// 알림 설정 저장을 거절하고 싶을 때. 롤백 테스트의 통로.
+  final AppException? notificationError;
+  ({bool comment, bool reply})? lastNotificationSetting;
 
   @override
   Future<CommunityPostEntity> getPost(int postId) async {
@@ -86,6 +98,22 @@ class _DetailRepository
   @override
   Future<void> deletePost(int postId) async {
     if (writeFailure != null) throw writeFailure!;
+  }
+
+  @override
+  Future<void> updateNotificationSetting({
+    required int postId,
+    required bool commentNotificationsEnabled,
+    required bool replyNotificationsEnabled,
+  }) async {
+    lastNotificationSetting = (
+      comment: commentNotificationsEnabled,
+      reply: replyNotificationsEnabled,
+    );
+    if (notificationError == null) return;
+    // 실패만 한 틱 늦춘다 — `_FakeReactionRepository._respond`와 같은 이유.
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    throw notificationError!;
   }
 }
 
@@ -206,6 +234,7 @@ Widget _app(
   _DetailRepository repo,
   Widget home, {
   AppException? reactionError,
+  int? currentUserId = 1,
 }) => ProviderScope(
   overrides: [
     communityRepositoryProvider.overrideWithValue(repo),
@@ -217,7 +246,7 @@ Widget _app(
     ),
     // 더보기 메뉴가 로그인 사용자 id를 watch 한다. 덮지 않으면 실제 AuthNotifier가
     // Firebase까지 끌고 들어와, 이 화면과 무관한 이유로 깨진다.
-    currentUserIdProvider.overrideWithValue(1),
+    currentUserIdProvider.overrideWithValue(currentUserId),
   ],
   child: ScreenUtilInit(
     designSize: const Size(393, 852),
@@ -244,19 +273,37 @@ Future<void> _letSnackbarExpire(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-/// 상세를 띄우고 초기 로딩이 끝날 때까지 기다린다.
-Future<void> _pumpDetail(
+/// 상세를 띄우고 초기 로딩이 끝날 때까지 기다린다. 응답한 Repository를 돌려준다 —
+/// 서버로 무엇을 보냈는지 확인하는 테스트가 쓴다.
+Future<_DetailRepository> _pumpDetail(
   WidgetTester tester, {
   required CommunityPostEntity post,
   AppException? reactionError,
+  AppException? notificationError,
+  int? currentUserId = 1,
 }) async {
+  final repo = _DetailRepository(post, notificationError: notificationError);
   await tester.pumpWidget(
     _app(
-      _DetailRepository(post),
+      repo,
       const CommunityDetailPage(postId: _postId),
       reactionError: reactionError,
+      currentUserId: currentUserId,
     ),
   );
+  await tester.pumpAndSettle();
+  return repo;
+}
+
+/// 앱바의 더보기(⋯) 메뉴를 연다.
+Future<void> _openPostMenu(WidgetTester tester) async {
+  await tester.tap(find.byType(CommunityPostMenu));
+  await tester.pumpAndSettle();
+}
+
+/// 열린 더보기 메뉴를 배리어 탭으로 닫는다 — 항목을 눌러 닫으면 그 동작이 또 실행된다.
+Future<void> _closeMenu(WidgetTester tester) async {
+  await tester.tapAt(const Offset(20, 700));
   await tester.pumpAndSettle();
 }
 
@@ -496,6 +543,103 @@ void main() {
 
       // 실패는 스낵바로도 알린다 — 3초 타이머가 남은 채 테스트가 끝나면
       // "A Timer is still pending"으로 깨진다 (위 _letSnackbarExpire 참고).
+      await _letSnackbarExpire(tester);
+    });
+  });
+
+  group('CommunityDetailPage 이 글 알림', () {
+    const on = CommunityPostNotificationSetting(
+      commentNotificationsEnabled: true,
+      replyNotificationsEnabled: false,
+    );
+    const off = CommunityPostNotificationSetting(
+      commentNotificationsEnabled: false,
+      replyNotificationsEnabled: false,
+    );
+
+    testWidgets('offers_turn_off_when_notifications_are_on', (tester) async {
+      await _pumpDetail(tester, post: _post(notificationSetting: on));
+
+      await _openPostMenu(tester);
+
+      expect(find.text('알림 끄기'), findsOneWidget);
+      expect(find.text('알림 켜기'), findsNothing);
+    });
+
+    // 남의 글도 켤 수 있다 — 명시적으로 켠 제3자도 수신자다. 신고와 나란히 보인다.
+    testWidgets('offers_the_toggle_on_someone_elses_post_too', (tester) async {
+      await _pumpDetail(
+        tester,
+        post: _post(writerId: 2, notificationSetting: off),
+      );
+
+      await _openPostMenu(tester);
+
+      expect(find.text('알림 켜기'), findsOneWidget);
+      expect(find.text('신고하기'), findsOneWidget);
+    });
+
+    // 목록 경유 카드·비로그인 단건은 서버가 설정을 안 준다 — 그릴 상태가 없다.
+    testWidgets('hides_the_toggle_when_the_server_gave_no_setting', (
+      tester,
+    ) async {
+      await _pumpDetail(tester, post: _post(notificationSetting: null));
+
+      await _openPostMenu(tester);
+
+      expect(find.text('알림 켜기'), findsNothing);
+      expect(find.text('알림 끄기'), findsNothing);
+    });
+
+    testWidgets('hides_the_toggle_for_anonymous_viewers', (tester) async {
+      await _pumpDetail(
+        tester,
+        post: _post(notificationSetting: null),
+        currentUserId: null,
+      );
+
+      await _openPostMenu(tester);
+
+      expect(find.text('로그인하고 이용하기'), findsOneWidget);
+      expect(find.text('알림 켜기'), findsNothing);
+    });
+
+    testWidgets('sends_both_flags_off_and_relabels_after_a_tap', (
+      tester,
+    ) async {
+      final repo = await _pumpDetail(
+        tester,
+        post: _post(notificationSetting: on),
+      );
+
+      await _openPostMenu(tester);
+      await tester.tap(find.text('알림 끄기'));
+      await tester.pumpAndSettle();
+
+      expect(repo.lastNotificationSetting, (comment: false, reply: false));
+
+      await _openPostMenu(tester);
+      expect(find.text('알림 켜기'), findsOneWidget);
+    });
+
+    testWidgets('restores_the_label_when_the_server_rejects', (tester) async {
+      await _pumpDetail(
+        tester,
+        post: _post(notificationSetting: on),
+        notificationError: const ServerException(message: 'x', messageKey: 'y'),
+      );
+
+      await _openPostMenu(tester);
+      await tester.tap(find.text('알림 끄기'));
+      await tester.pumpAndSettle();
+
+      await _openPostMenu(tester);
+      expect(find.text('알림 끄기'), findsOneWidget);
+
+      // 메뉴 바깥(배리어)을 눌러 닫는다 — 항목을 다시 누르면 두 번째 실패와
+      // 스낵바가 큐에 남아 타이머가 pending으로 잡힌다. 그 뒤 첫 스낵바의
+      // 3초 타이머를 비운다.
+      await _closeMenu(tester);
       await _letSnackbarExpire(tester);
     });
   });

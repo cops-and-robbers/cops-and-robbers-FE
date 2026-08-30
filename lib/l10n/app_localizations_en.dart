@@ -756,6 +756,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityMenuLoginRequired => 'Log in to continue';
 
   @override
+  String get communityMenuNotificationOn => 'Turn on notifications';
+
+  @override
+  String get communityMenuNotificationOff => 'Turn off notifications';
+
+  @override
   String get communityStatusRecruiting => 'Open';
 
   @override
@@ -2320,6 +2326,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCommunityNotificationReadGeneric =>
       'Failed to mark notifications as read';
+
+  @override
+  String get errorCommunityPostNotificationUpdateGeneric =>
+      'Couldn\'t update notifications for this post';
 
   @override
   String get errorCommunityAddressLoadGeneric =>

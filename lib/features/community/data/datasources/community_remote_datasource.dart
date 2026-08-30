@@ -249,6 +249,17 @@ abstract class CommunityRemoteDataSource {
   @POST('${ApiEndpoints.communityPosts}/notifications/read')
   Future<void> readNotifications();
 
+  /// 게시글 알림 켜기/끄기 (응답 본문 없음, 204)
+  ///
+  /// 이 글의 댓글·답글 알림을 받을지 저장한다. 남의 글도 켤 수 있다 — 명시적으로
+  /// 켠 제3자도 수신자다. 이미 쌓인 알림에는 영향이 없고, 켜기 전 댓글이
+  /// 소급되지도 않는다(DEC-0042). 404 `POST_NOT_FOUND`.
+  @PUT('${ApiEndpoints.communityPosts}/{postId}/notification-settings')
+  Future<void> updateNotificationSetting(
+    @Path('postId') int postId,
+    @Body() CommunityPostNotificationSettingRequestModel body,
+  );
+
   /// 채팅방 멤버 목록 조회
   ///
   /// 사이드바의 참가자 목록과 방장 판정에 쓴다. 방 멤버만 부를 수 있다

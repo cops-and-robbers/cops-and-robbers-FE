@@ -111,6 +111,9 @@ class _CommunityScrapPageState extends ConsumerState<CommunityScrapPage> {
       case CommunityPostMenuAction.toggleStatus:
       case CommunityPostMenuAction.delete:
         unawaited(_openDetail(postId));
+      case CommunityPostMenuAction.toggleNotification:
+        // 목록·스크랩 카드에는 알림 설정이 없어 이 항목이 그려지지 않는다.
+        break;
     }
   }
 

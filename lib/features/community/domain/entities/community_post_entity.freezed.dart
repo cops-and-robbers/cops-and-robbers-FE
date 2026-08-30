@@ -16,6 +16,198 @@ final _privateConstructorUsedError = UnsupportedError(
 );
 
 /// @nodoc
+mixin _$CommunityPostNotificationSetting {
+  bool get commentNotificationsEnabled => throw _privateConstructorUsedError;
+  bool get replyNotificationsEnabled => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityPostNotificationSetting
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityPostNotificationSettingCopyWith<CommunityPostNotificationSetting>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityPostNotificationSettingCopyWith<$Res> {
+  factory $CommunityPostNotificationSettingCopyWith(
+    CommunityPostNotificationSetting value,
+    $Res Function(CommunityPostNotificationSetting) then,
+  ) =
+      _$CommunityPostNotificationSettingCopyWithImpl<
+        $Res,
+        CommunityPostNotificationSetting
+      >;
+  @useResult
+  $Res call({bool commentNotificationsEnabled, bool replyNotificationsEnabled});
+}
+
+/// @nodoc
+class _$CommunityPostNotificationSettingCopyWithImpl<
+  $Res,
+  $Val extends CommunityPostNotificationSetting
+>
+    implements $CommunityPostNotificationSettingCopyWith<$Res> {
+  _$CommunityPostNotificationSettingCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityPostNotificationSetting
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? commentNotificationsEnabled = null,
+    Object? replyNotificationsEnabled = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            commentNotificationsEnabled: null == commentNotificationsEnabled
+                ? _value.commentNotificationsEnabled
+                : commentNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            replyNotificationsEnabled: null == replyNotificationsEnabled
+                ? _value.replyNotificationsEnabled
+                : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityPostNotificationSettingImplCopyWith<$Res>
+    implements $CommunityPostNotificationSettingCopyWith<$Res> {
+  factory _$$CommunityPostNotificationSettingImplCopyWith(
+    _$CommunityPostNotificationSettingImpl value,
+    $Res Function(_$CommunityPostNotificationSettingImpl) then,
+  ) = __$$CommunityPostNotificationSettingImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool commentNotificationsEnabled, bool replyNotificationsEnabled});
+}
+
+/// @nodoc
+class __$$CommunityPostNotificationSettingImplCopyWithImpl<$Res>
+    extends
+        _$CommunityPostNotificationSettingCopyWithImpl<
+          $Res,
+          _$CommunityPostNotificationSettingImpl
+        >
+    implements _$$CommunityPostNotificationSettingImplCopyWith<$Res> {
+  __$$CommunityPostNotificationSettingImplCopyWithImpl(
+    _$CommunityPostNotificationSettingImpl _value,
+    $Res Function(_$CommunityPostNotificationSettingImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityPostNotificationSetting
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? commentNotificationsEnabled = null,
+    Object? replyNotificationsEnabled = null,
+  }) {
+    return _then(
+      _$CommunityPostNotificationSettingImpl(
+        commentNotificationsEnabled: null == commentNotificationsEnabled
+            ? _value.commentNotificationsEnabled
+            : commentNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        replyNotificationsEnabled: null == replyNotificationsEnabled
+            ? _value.replyNotificationsEnabled
+            : replyNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CommunityPostNotificationSettingImpl
+    extends _CommunityPostNotificationSetting {
+  const _$CommunityPostNotificationSettingImpl({
+    required this.commentNotificationsEnabled,
+    required this.replyNotificationsEnabled,
+  }) : super._();
+
+  @override
+  final bool commentNotificationsEnabled;
+  @override
+  final bool replyNotificationsEnabled;
+
+  @override
+  String toString() {
+    return 'CommunityPostNotificationSetting(commentNotificationsEnabled: $commentNotificationsEnabled, replyNotificationsEnabled: $replyNotificationsEnabled)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityPostNotificationSettingImpl &&
+            (identical(
+                  other.commentNotificationsEnabled,
+                  commentNotificationsEnabled,
+                ) ||
+                other.commentNotificationsEnabled ==
+                    commentNotificationsEnabled) &&
+            (identical(
+                  other.replyNotificationsEnabled,
+                  replyNotificationsEnabled,
+                ) ||
+                other.replyNotificationsEnabled == replyNotificationsEnabled));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    commentNotificationsEnabled,
+    replyNotificationsEnabled,
+  );
+
+  /// Create a copy of CommunityPostNotificationSetting
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityPostNotificationSettingImplCopyWith<
+    _$CommunityPostNotificationSettingImpl
+  >
+  get copyWith =>
+      __$$CommunityPostNotificationSettingImplCopyWithImpl<
+        _$CommunityPostNotificationSettingImpl
+      >(this, _$identity);
+}
+
+abstract class _CommunityPostNotificationSetting
+    extends CommunityPostNotificationSetting {
+  const factory _CommunityPostNotificationSetting({
+    required final bool commentNotificationsEnabled,
+    required final bool replyNotificationsEnabled,
+  }) = _$CommunityPostNotificationSettingImpl;
+  const _CommunityPostNotificationSetting._() : super._();
+
+  @override
+  bool get commentNotificationsEnabled;
+  @override
+  bool get replyNotificationsEnabled;
+
+  /// Create a copy of CommunityPostNotificationSetting
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityPostNotificationSettingImplCopyWith<
+    _$CommunityPostNotificationSettingImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$CommunityPostEntity {
   int get id => throw _privateConstructorUsedError;
   int get writerId => throw _privateConstructorUsedError;
@@ -62,6 +254,11 @@ mixin _$CommunityPostEntity {
   /// false이고, 그때는 항상 join을 보내 409면 입장한다.
   bool get chatJoined => throw _privateConstructorUsedError;
 
+  /// 이 글에서 내가 받을 알림 설정. **단건 조회에서만** 채워진다 — 목록 경유
+  /// 카드·비로그인 단건은 null이고, 그때 메뉴는 토글 항목을 그리지 않는다.
+  CommunityPostNotificationSetting? get notificationSetting =>
+      throw _privateConstructorUsedError;
+
   /// Create a copy of CommunityPostEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -96,7 +293,10 @@ abstract class $CommunityPostEntityCopyWith<$Res> {
     int scrapCount,
     bool isScrapped,
     bool chatJoined,
+    CommunityPostNotificationSetting? notificationSetting,
   });
+
+  $CommunityPostNotificationSettingCopyWith<$Res>? get notificationSetting;
 }
 
 /// @nodoc
@@ -133,6 +333,7 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
     Object? scrapCount = null,
     Object? isScrapped = null,
     Object? chatJoined = null,
+    Object? notificationSetting = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -212,8 +413,29 @@ class _$CommunityPostEntityCopyWithImpl<$Res, $Val extends CommunityPostEntity>
                 ? _value.chatJoined
                 : chatJoined // ignore: cast_nullable_to_non_nullable
                       as bool,
+            notificationSetting: freezed == notificationSetting
+                ? _value.notificationSetting
+                : notificationSetting // ignore: cast_nullable_to_non_nullable
+                      as CommunityPostNotificationSetting?,
           )
           as $Val,
+    );
+  }
+
+  /// Create a copy of CommunityPostEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $CommunityPostNotificationSettingCopyWith<$Res>? get notificationSetting {
+    if (_value.notificationSetting == null) {
+      return null;
+    }
+
+    return $CommunityPostNotificationSettingCopyWith<$Res>(
+      _value.notificationSetting!,
+      (value) {
+        return _then(_value.copyWith(notificationSetting: value) as $Val);
+      },
     );
   }
 }
@@ -247,7 +469,11 @@ abstract class _$$CommunityPostEntityImplCopyWith<$Res>
     int scrapCount,
     bool isScrapped,
     bool chatJoined,
+    CommunityPostNotificationSetting? notificationSetting,
   });
+
+  @override
+  $CommunityPostNotificationSettingCopyWith<$Res>? get notificationSetting;
 }
 
 /// @nodoc
@@ -283,6 +509,7 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
     Object? scrapCount = null,
     Object? isScrapped = null,
     Object? chatJoined = null,
+    Object? notificationSetting = freezed,
   }) {
     return _then(
       _$CommunityPostEntityImpl(
@@ -362,6 +589,10 @@ class __$$CommunityPostEntityImplCopyWithImpl<$Res>
             ? _value.chatJoined
             : chatJoined // ignore: cast_nullable_to_non_nullable
                   as bool,
+        notificationSetting: freezed == notificationSetting
+            ? _value.notificationSetting
+            : notificationSetting // ignore: cast_nullable_to_non_nullable
+                  as CommunityPostNotificationSetting?,
       ),
     );
   }
@@ -390,6 +621,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     required this.scrapCount,
     required this.isScrapped,
     this.chatJoined = false,
+    this.notificationSetting,
   }) : super._();
 
   @override
@@ -457,9 +689,14 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
   @JsonKey()
   final bool chatJoined;
 
+  /// 이 글에서 내가 받을 알림 설정. **단건 조회에서만** 채워진다 — 목록 경유
+  /// 카드·비로그인 단건은 null이고, 그때 메뉴는 토글 항목을 그리지 않는다.
+  @override
+  final CommunityPostNotificationSetting? notificationSetting;
+
   @override
   String toString() {
-    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, isLiked: $isLiked, scrapCount: $scrapCount, isScrapped: $isScrapped, chatJoined: $chatJoined)';
+    return 'CommunityPostEntity(id: $id, writerId: $writerId, title: $title, content: $content, meetingAt: $meetingAt, latitude: $latitude, longitude: $longitude, maxParticipants: $maxParticipants, status: $status, createdAt: $createdAt, placeName: $placeName, region: $region, address: $address, currentParticipants: $currentParticipants, likeCount: $likeCount, isLiked: $isLiked, scrapCount: $scrapCount, isScrapped: $isScrapped, chatJoined: $chatJoined, notificationSetting: $notificationSetting)';
   }
 
   @override
@@ -497,7 +734,9 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
             (identical(other.isScrapped, isScrapped) ||
                 other.isScrapped == isScrapped) &&
             (identical(other.chatJoined, chatJoined) ||
-                other.chatJoined == chatJoined));
+                other.chatJoined == chatJoined) &&
+            (identical(other.notificationSetting, notificationSetting) ||
+                other.notificationSetting == notificationSetting));
   }
 
   @override
@@ -522,6 +761,7 @@ class _$CommunityPostEntityImpl extends _CommunityPostEntity {
     scrapCount,
     isScrapped,
     chatJoined,
+    notificationSetting,
   ]);
 
   /// Create a copy of CommunityPostEntity
@@ -557,6 +797,7 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
     required final int scrapCount,
     required final bool isScrapped,
     final bool chatJoined,
+    final CommunityPostNotificationSetting? notificationSetting,
   }) = _$CommunityPostEntityImpl;
   const _CommunityPostEntity._() : super._();
 
@@ -623,6 +864,11 @@ abstract class _CommunityPostEntity extends CommunityPostEntity {
   /// false이고, 그때는 항상 join을 보내 409면 입장한다.
   @override
   bool get chatJoined;
+
+  /// 이 글에서 내가 받을 알림 설정. **단건 조회에서만** 채워진다 — 목록 경유
+  /// 카드·비로그인 단건은 null이고, 그때 메뉴는 토글 항목을 그리지 않는다.
+  @override
+  CommunityPostNotificationSetting? get notificationSetting;
 
   /// Create a copy of CommunityPostEntity
   /// with the given fields replaced by the non-null parameter values.

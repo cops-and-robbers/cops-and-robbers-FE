@@ -108,6 +108,23 @@ class CommunityPostNotificationSettingModel
   ) => _$CommunityPostNotificationSettingModelFromJson(json);
 }
 
+/// 게시글 알림 설정 요청 DTO
+///
+/// `PUT /api/community-posts/{postId}/notification-settings` 바디. 두 필드가
+/// 모두 required라 하나만 바꿀 수 없다 — 토글 하나가 둘을 같은 값으로 보낸다.
+@freezed
+class CommunityPostNotificationSettingRequestModel
+    with _$CommunityPostNotificationSettingRequestModel {
+  const factory CommunityPostNotificationSettingRequestModel({
+    required bool commentNotificationsEnabled,
+    required bool replyNotificationsEnabled,
+  }) = _CommunityPostNotificationSettingRequestModel;
+
+  factory CommunityPostNotificationSettingRequestModel.fromJson(
+    Map<String, dynamic> json,
+  ) => _$CommunityPostNotificationSettingRequestModelFromJson(json);
+}
+
 @freezed
 class CommunityPostResponseModel with _$CommunityPostResponseModel {
   const factory CommunityPostResponseModel({

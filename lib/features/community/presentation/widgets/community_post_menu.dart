@@ -14,6 +14,9 @@ import 'community_menu_button.dart';
 /// 같은 항목에 다르게 반응해야 하기 때문이다(예: 삭제 후 목록은 제자리 갱신,
 /// 상세는 뒤로 나가기).
 enum CommunityPostMenuAction {
+  /// 로그인 공통 — 이 글 알림 켜기/끄기 (남의 글도 켤 수 있다)
+  toggleNotification,
+
   /// 내 글 — 수정 화면으로
   edit,
 
@@ -34,6 +37,9 @@ enum CommunityPostMenuAction {
 ///
 /// 목록 카드와 상세 화면이 함께 쓴다. 보이는 항목은 세 갈래로 갈린다:
 /// 내 글(수정·삭제·상태 변경) / 남의 글(신고) / 비로그인(로그인 유도).
+///
+/// 로그인 두 갈래에는 이 글 알림 토글이 맨 위에 붙는다 — 서버가 설정을 준 경우에만
+/// (목록 경유 카드·비로그인 단건은 null).
 ///
 /// 판정 기준은 [CommunityPostEntity.writerId]와 로그인 사용자 id 비교 하나뿐이다.
 /// 로그인 상태가 확정되기 전(로딩)에는 `currentUserId`가 null이라 비로그인으로
@@ -82,8 +88,25 @@ class CommunityPostMenu extends ConsumerWidget {
       ];
     }
 
+    // 서버가 설정을 준 경우에만 그린다. 남의 글도 켤 수 있다 — 명시적으로 켠
+    // 제3자도 수신자다(DEC-0042 구현). 아이콘은 현재 상태, 라벨은 누르면 되는 것
+    // (모집중↔마감 항목과 같은 이유). 두 종은 다색 SVG라 틴트하지 않는다.
+    final setting = post.notificationSetting;
+    final notification = setting == null
+        ? null
+        : CommunityMenuItem(
+            iconPath: setting.enabled
+                ? 'assets/icons/icon_bell.svg'
+                : 'assets/icons/icon_bell_block.svg',
+            label: setting.enabled
+                ? l10n.communityMenuNotificationOff
+                : l10n.communityMenuNotificationOn,
+            onTap: () => onAction(CommunityPostMenuAction.toggleNotification),
+          );
+
     if (currentUserId != post.writerId) {
       return [
+        if (notification != null) notification,
         CommunityMenuItem(
           iconPath: 'assets/icons/icon_warning_light.svg',
           label: l10n.buttonReport,
@@ -94,6 +117,7 @@ class CommunityPostMenu extends ConsumerWidget {
     }
 
     return [
+      if (notification != null) notification,
       CommunityMenuItem(
         iconPath: 'assets/icons/icon_write.svg',
         label: l10n.communityMenuEdit,
