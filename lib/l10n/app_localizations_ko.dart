@@ -653,10 +653,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCommentHint => '댓글을 남겨보세요';
 
   @override
-  String get communityCommentReplyHint => '답글을 남겨보세요';
+  String get communityCommentReplyHint => '대댓글을 남겨보세요';
 
   @override
-  String get communityCommentReply => '답글 달기';
+  String get communityCommentReply => '대댓글 달기';
 
   @override
   String get communityCommentDeleted => '삭제된 댓글이에요';
@@ -708,10 +708,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityMenuNotificationOff => '알림 끄기';
 
   @override
-  String get communityMenuReplyNotificationOn => '답글 알림 켜기';
+  String get communityMenuReplyNotificationOn => '대댓글 알림 켜기';
 
   @override
-  String get communityMenuReplyNotificationOff => '답글 알림 끄기';
+  String get communityMenuReplyNotificationOff => '대댓글 알림 끄기';
 
   @override
   String get communityStatusRecruiting => '모집중';
@@ -767,7 +767,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String communityNotificationNewReply(String content) {
-    return '새 답글: $content';
+    return '새 대댓글: $content';
   }
 
   @override
@@ -1769,7 +1769,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsAppCommunityNotificationDescription =>
-      '댓글·답글·채팅 푸시를 받아요. 꺼도 알림함에는 쌓여요';
+      '댓글·대댓글·채팅 푸시를 받아요. 꺼도 알림함에는 쌓여요';
 
   @override
   String get settingsAppGeneralNotification => '알림';
@@ -2186,7 +2186,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCommunityCommentNotificationUpdateGeneric =>
-      '답글 알림 설정을 변경하지 못했어요';
+      '대댓글 알림 설정을 변경하지 못했어요';
 
   @override
   String get errorCommunityAddressLoadGeneric => '주소를 불러오는 중 오류가 생겼어요';
@@ -2542,10 +2542,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeForbiddenNotCommentAuthor => '내가 쓴 댓글만 지울 수 있어요';
 
   @override
-  String get errorCodeReplyTargetGone => '답글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요';
+  String get errorCodeReplyTargetGone => '대댓글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요';
 
   @override
-  String get errorCodeInvalidCommentDepth => '답글에는 답글을 달 수 없어요';
+  String get errorCodeInvalidCommentDepth => '대댓글에는 대댓글을 달 수 없어요';
 
   @override
   String get errorCodePostNotFound => '이미 삭제된 모집글이에요';

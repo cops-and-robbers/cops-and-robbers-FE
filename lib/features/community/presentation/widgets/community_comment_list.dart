@@ -282,11 +282,12 @@ class _CommentTile extends StatelessWidget {
                             if (isMine) ...[
                               if (onToggleReplyNotification != null)
                                 CommunityMenuItem(
-                                  // 다색 SVG라 틴트하지 않는다. 아이콘은 현재 상태,
-                                  // 라벨은 누르면 되는 것.
+                                  // 다색 SVG라 틴트하지 않는다. 아이콘도 라벨과
+                                  // 같이 누르면 되는 것을 가리킨다(모집글 메뉴와
+                                  // 같은 규칙).
                                   iconPath: comment.replyNotificationsEnabled
-                                      ? 'assets/icons/icon_bell.svg'
-                                      : 'assets/icons/icon_bell_block.svg',
+                                      ? 'assets/icons/icon_bell_block.svg'
+                                      : 'assets/icons/icon_bell.svg',
                                   label: comment.replyNotificationsEnabled
                                       ? l10n.communityMenuReplyNotificationOff
                                       : l10n.communityMenuReplyNotificationOn,

@@ -89,15 +89,17 @@ class CommunityPostMenu extends ConsumerWidget {
     }
 
     // 서버가 설정을 준 경우에만 그린다. 남의 글도 켤 수 있다 — 명시적으로 켠
-    // 제3자도 수신자다(DEC-0042 구현). 아이콘은 현재 상태, 라벨은 누르면 되는 것
-    // (모집중↔마감 항목과 같은 이유). 두 종은 다색 SVG라 틴트하지 않는다.
+    // 제3자도 수신자다(DEC-0042 구현). 아이콘도 라벨과 같이 "누르면 되는 것"을
+    // 가리킨다(모집중↔마감 항목과 같은 이유) — 한 줄 안에서 아이콘만 현재 상태를
+    // 쓰면 둘이 반대를 가리켜 헷갈린다. 라벨 없이 아이콘만 있는 표면(채팅방 정보
+    // 앱바)은 반대로 현재 상태를 쓴다. 두 종은 다색 SVG라 틴트하지 않는다.
     final setting = post.notificationSetting;
     final notification = setting == null
         ? null
         : CommunityMenuItem(
             iconPath: setting.enabled
-                ? 'assets/icons/icon_bell.svg'
-                : 'assets/icons/icon_bell_block.svg',
+                ? 'assets/icons/icon_bell_block.svg'
+                : 'assets/icons/icon_bell.svg',
             label: setting.enabled
                 ? l10n.communityMenuNotificationOff
                 : l10n.communityMenuNotificationOn,

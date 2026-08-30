@@ -101,7 +101,7 @@ void main() {
       ),
     );
 
-    expect(find.textContaining('새 답글'), findsOneWidget);
+    expect(find.textContaining('새 대댓글'), findsOneWidget);
     expect(find.textContaining('새 댓글'), findsNothing);
   });
 

@@ -159,7 +159,7 @@ class _FakeCommentRepository implements CommunityCommentRepository {
 
   List<CommunityCommentEntity> comments;
 
-  /// 답글 알림 저장을 거절하고 싶을 때. 롤백 테스트의 통로.
+  /// 대댓글 알림 저장을 거절하고 싶을 때. 롤백 테스트의 통로.
   final AppException? replyError;
   ({int commentId, bool enabled})? lastReplySetting;
 
@@ -522,7 +522,7 @@ void main() {
 
       // 안내 배너 없이 힌트 문구와 대상 댓글 하이라이트로만 알린다 — 배너는
       // 입력창 위 한 줄을 늘 차지해 정작 댓글을 밀어냈다.
-      expect(find.text('답글을 남겨보세요'), findsOneWidget);
+      expect(find.text('대댓글을 남겨보세요'), findsOneWidget);
       expect(find.textContaining('답글 남기는 중'), findsNothing);
     });
 
@@ -535,7 +535,7 @@ void main() {
       await tester.pumpAndSettle();
 
       await tapReply(tester);
-      expect(find.text('답글을 남겨보세요'), findsOneWidget);
+      expect(find.text('대댓글을 남겨보세요'), findsOneWidget);
 
       // 글 본문 — 아무 동작도 걸려 있지 않은 영역이다. 답글 버튼을 누르느라
       // 아래로 스크롤한 상태라 다시 올려야 좌표가 뷰포트 안에 든다.
@@ -545,11 +545,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('댓글을 남겨보세요'), findsOneWidget);
-      expect(find.text('답글을 남겨보세요'), findsNothing);
+      expect(find.text('대댓글을 남겨보세요'), findsNothing);
     });
 
     testWidgets('drops_the_keyboard_when_the_body_is_tapped', (tester) async {
-      // 답글 달기는 입력창에 포커스를 준다. 본문을 눌러 빠져나올 때 키보드가
+      // 대댓글 달기는 입력창에 포커스를 준다. 본문을 눌러 빠져나올 때 키보드가
       // 남아 있으면 화면 절반이 가려진 채로 글을 읽게 된다.
       await tester.pumpWidget(_wrap(_DetailRepository(_post())));
       await tester.pumpAndSettle();
@@ -698,7 +698,7 @@ void main() {
     });
   });
 
-  group('CommunityDetailPage 답글 알림', () {
+  group('CommunityDetailPage 대댓글 알림', () {
     testWidgets('offers_the_toggle_on_my_top_level_comment', (tester) async {
       await _pumpDetail(
         tester,
@@ -711,7 +711,7 @@ void main() {
       await tester.tap(_commentMenu('내 댓글'));
       await tester.pumpAndSettle();
 
-      expect(find.text('답글 알림 끄기'), findsOneWidget);
+      expect(find.text('대댓글 알림 끄기'), findsOneWidget);
       expect(find.text('삭제하기'), findsOneWidget);
     });
 
@@ -740,8 +740,8 @@ void main() {
       await tester.tap(_commentMenu('내 답글'));
       await tester.pumpAndSettle();
 
-      expect(find.text('답글 알림 끄기'), findsNothing);
-      expect(find.text('답글 알림 켜기'), findsNothing);
+      expect(find.text('대댓글 알림 끄기'), findsNothing);
+      expect(find.text('대댓글 알림 켜기'), findsNothing);
       expect(find.text('삭제하기'), findsOneWidget);
     });
 
@@ -753,7 +753,7 @@ void main() {
       await tester.tap(_commentMenu('저 참여하고 싶어요! 초보도 괜찮나요?'));
       await tester.pumpAndSettle();
 
-      expect(find.text('답글 알림 끄기'), findsNothing);
+      expect(find.text('대댓글 알림 끄기'), findsNothing);
       expect(find.text('신고하기'), findsOneWidget);
     });
 
@@ -765,14 +765,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(_commentMenu('내 댓글'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('답글 알림 끄기'));
+      await tester.tap(find.text('대댓글 알림 끄기'));
       await tester.pumpAndSettle();
 
       expect(comments.lastReplySetting, (commentId: 5, enabled: false));
 
       await tester.tap(_commentMenu('내 댓글'));
       await tester.pumpAndSettle();
-      expect(find.text('답글 알림 켜기'), findsOneWidget);
+      expect(find.text('대댓글 알림 켜기'), findsOneWidget);
     });
 
     testWidgets('restores_the_label_when_the_server_rejects', (tester) async {
@@ -789,12 +789,12 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(_commentMenu('내 댓글'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('답글 알림 끄기'));
+      await tester.tap(find.text('대댓글 알림 끄기'));
       await tester.pumpAndSettle();
 
       await tester.tap(_commentMenu('내 댓글'));
       await tester.pumpAndSettle();
-      expect(find.text('답글 알림 끄기'), findsOneWidget);
+      expect(find.text('대댓글 알림 끄기'), findsOneWidget);
 
       // 배리어 탭으로 닫고(항목을 다시 누르면 두 번째 실패 스낵바가 큐에 남는다)
       // 첫 스낵바의 타이머를 비운다.
