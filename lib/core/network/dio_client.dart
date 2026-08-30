@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../config/env_config.dart';
+import '../i18n/locale_provider.dart';
 import '../storage/secure_token_storage.dart';
 import 'auth_interceptor.dart';
 
@@ -50,6 +51,8 @@ Dio dio(Ref ref) {
 
   return DioClient.create(
     tokenStorage: tokenStorage,
+    // 언어는 설정에서 언제든 바뀔 수 있으므로 요청 시점마다 현재 로캘을 읽는다
+    currentLanguageCode: () => ref.read(appLocaleProvider).locale.languageCode,
     onForceLogout: ({String? messageKey}) async {
       final callback = ref.read(forceLogoutCallbackNotifierProvider);
       if (callback != null) {
@@ -73,9 +76,11 @@ class DioClient {
   /// Dio 인스턴스 생성
   ///
   /// [tokenStorage]: JWT 토큰 저장소
+  /// [currentLanguageCode]: 매 요청에 실을 현재 앱 언어 코드 (Accept-Language)
   /// [onForceLogout]: 토큰 재발급 실패 시 호출되는 강제 로그아웃 콜백 (messageKey로 사유 전달)
   static Dio create({
     required SecureTokenStorage tokenStorage,
+    required String Function() currentLanguageCode,
     required Future<void> Function({String? messageKey}) onForceLogout,
   }) {
     final baseOptions = BaseOptions(
@@ -97,14 +102,25 @@ class DioClient {
 
     // 인터셉터 추가
     dio.interceptors.addAll([
-      // 1. 인증 인터셉터 (토큰 주입 + 자동 재발급)
+      // 1. 언어 인터셉터 (Accept-Language 주입)
+      //
+      // 서버가 언어에 따라 달라지는 응답(닉네임 생성 등)을 현재 앱 언어로
+      // 내려줄 수 있도록 모든 요청에 싣는다.
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          options.headers['Accept-Language'] = currentLanguageCode();
+          handler.next(options);
+        },
+      ),
+
+      // 2. 인증 인터셉터 (토큰 주입 + 자동 재발급)
       AuthInterceptor(
         tokenStorage: tokenStorage,
         plainDio: plainDio,
         onForceLogout: onForceLogout,
       ),
 
-      // 2. 로깅 인터셉터 (디버그 모드에서만)
+      // 3. 로깅 인터셉터 (디버그 모드에서만)
       if (kDebugMode)
         LogInterceptor(
           requestHeader: true,
