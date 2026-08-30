@@ -61,6 +61,10 @@ class _FakeCommunityRepository
     this.failingGetPost = const {},
     this.secondPage,
     this.failSecondPage = false,
+    this.refreshedPosts,
+    this.failFirstLoad = false,
+    this.failRefresh = false,
+    this.secondPageGate,
   });
 
   final List<CommunityPostEntity> posts;
@@ -68,6 +72,19 @@ class _FakeCommunityRepository
   final Set<int> failingGetPost;
   final List<CommunityPostEntity>? secondPage;
   final bool failSecondPage;
+
+  /// 당겨서 새로고침이 받아올 첫 페이지. null이면 [posts]를 그대로 다시 준다.
+  final List<CommunityPostEntity>? refreshedPosts;
+
+  /// 첫 로드만 실패시킨다 — 에러 화면에서 당겨 재시도하면 성공하는 흐름을 만든다.
+  final bool failFirstLoad;
+
+  /// 첫 로드는 성공시키고 새로고침만 실패시킨다.
+  final bool failRefresh;
+
+  /// 주어지면 두 번째 페이지 응답이 이 Completer가 끝날 때까지 미뤄진다 —
+  /// `loadMore`가 날아가 있는 동안 새로고침이 끼어드는 순서를 만든다.
+  final Completer<void>? secondPageGate;
 
   /// 두 번째 페이지 요청에 실려야 하는 커서 — 첫 응답의 `nextCursor`.
   static const secondPageCursor = 100;
@@ -83,8 +100,12 @@ class _FakeCommunityRepository
   }) async {
     requestedCursors.add(cursor);
     if (cursor == null) {
+      final isFirstLoad = requestedCursors.length == 1;
+      if (isFirstLoad ? failFirstLoad : failRefresh) {
+        throw const ServerException(message: '서버 오류');
+      }
       return CommunityScrapPageEntity(
-        items: posts,
+        items: isFirstLoad ? posts : (refreshedPosts ?? posts),
         nextCursor: secondPage == null ? null : secondPageCursor,
         hasNext: secondPage != null,
       );
@@ -92,6 +113,7 @@ class _FakeCommunityRepository
     if (failSecondPage) {
       throw const ServerException(message: '서버 오류');
     }
+    await secondPageGate?.future;
     return CommunityScrapPageEntity(
       items: secondPage!,
       nextCursor: null,
@@ -109,8 +131,9 @@ class _FakeCommunityRepository
 }
 
 /// `loadMore`와 `syncAfterDetail`이 동시에 도달하는 경쟁을 재현하는 가짜
-/// Repository. `getPost`를 [getPostCompleter]로 붙잡아 두어, 상세 재조회(느림)가
-/// 스크롤에 의한 `loadMore`(빠름)보다 나중에 끝나는 순서를 테스트가 직접 통제한다.
+/// Repository. 두 요청을 각각 Completer로 붙잡아 두어 끝나는 순서를 테스트가
+/// 직접 통제한다 — [getPostCompleter]는 상세 재조회를, [secondPageGate]는
+/// 두 번째 페이지를 붙잡는다. 후자를 주면 `loadMore`가 나중에 끝나는 역순이 된다.
 class _RacingCommunityRepository
     with CommunityRepositoryListStubs, CommunityRepositoryDetailStubs
     implements CommunityRepository {
@@ -118,11 +141,13 @@ class _RacingCommunityRepository
     required this.firstPage,
     required this.secondPage,
     required this.getPostCompleter,
+    this.secondPageGate,
   });
 
   final List<CommunityPostEntity> firstPage;
   final List<CommunityPostEntity> secondPage;
   final Completer<CommunityPostEntity> getPostCompleter;
+  final Completer<void>? secondPageGate;
 
   @override
   Future<CommunityScrapPageEntity> getScraps({
@@ -136,6 +161,7 @@ class _RacingCommunityRepository
         hasNext: true,
       );
     }
+    await secondPageGate?.future;
     return CommunityScrapPageEntity(
       items: secondPage,
       nextCursor: null,
@@ -450,6 +476,137 @@ void main() {
         expect(find.text('둘째 글'), findsOneWidget);
       },
     );
+
+    testWidgets('keeps_the_unscrapped_row_out_when_load_more_finishes_last', (
+      tester,
+    ) async {
+      // 위 테스트의 역순이다 — 두 번째 페이지(느림)가 상세 왕복(빠름)보다
+      // 나중에 끝난다. 어느 쪽이 먼저 끝나든 결과가 같아야 하므로 양방향을
+      // 모두 고정한다. 이 방향은 loadMore가 await 이후 state를 다시 읽는지가
+      // 관건이다(시작 시점 스냅샷으로 덮으면 걷어낸 글이 되살아난다).
+      final getPostCompleter = Completer<CommunityPostEntity>();
+      final secondPageGate = Completer<void>();
+      final repo = _RacingCommunityRepository(
+        firstPage: [
+          _post(id: 1, title: '첫 글'),
+          _post(id: 2, title: '둘째 글'),
+        ],
+        secondPage: [_post(id: 3, title: '셋째 글')],
+        getPostCompleter: getPostCompleter,
+        secondPageGate: secondPageGate,
+      );
+      final notifier = await _pumpScrapPage(tester, repository: repo);
+      await tester.pumpAndSettle();
+
+      final loadMoreFuture = notifier.loadMore();
+      final syncFuture = notifier.syncAfterDetail(1);
+      // 상세 재조회가 먼저 끝난다 — 첫 글은 그 사이 스크랩이 풀렸다.
+      getPostCompleter.complete(_post(id: 1, title: '첫 글', isScrapped: false));
+      await syncFuture;
+      // 그 뒤에야 두 번째 페이지가 도착한다.
+      secondPageGate.complete();
+      await loadMoreFuture;
+      await tester.pumpAndSettle();
+
+      // 걷어낸 첫 글이 되살아나면 안 된다.
+      expect(find.text('첫 글'), findsNothing);
+      expect(find.text('둘째 글'), findsOneWidget);
+      expect(find.text('셋째 글'), findsOneWidget);
+    });
+  });
+
+  group('CommunityScrapPage 당겨서 새로고침', () {
+    testWidgets('refetches_from_the_first_page_when_pulled', (tester) async {
+      final repo = _FakeCommunityRepository(
+        posts: [_post(id: 1, title: '첫 글')],
+        refreshedPosts: [
+          _post(id: 2, title: '새로 스크랩한 글'),
+          _post(id: 1, title: '첫 글'),
+        ],
+      );
+      await _pumpScrapPage(tester, repository: repo);
+      await tester.pumpAndSettle();
+      expect(find.text('새로 스크랩한 글'), findsNothing);
+
+      await tester.fling(find.text('첫 글'), const Offset(0, 300), 1000);
+      await tester.pumpAndSettle();
+
+      expect(find.text('새로 스크랩한 글'), findsOneWidget);
+      // 이어붙이기가 아니라 통째로 갈아끼운다 — 이어붙였다면 첫 글이 둘이 된다.
+      expect(find.text('첫 글'), findsOneWidget);
+      // 첫 장부터 다시 받는다 — 커서를 싣지 않는다.
+      expect(repo.requestedCursors, [null, null]);
+    });
+
+    testWidgets('keeps_the_visible_list_when_the_refresh_fails', (
+      tester,
+    ) async {
+      // 새로고침 실패는 스낵바로만 알린다 — 사용자가 보고 있던 목록을 지우면
+      // 지하철에서 당긴 사람이 목록을 통째로 잃는다.
+      final repo = _FakeCommunityRepository(
+        posts: [_post(id: 1, title: '첫 글')],
+        failRefresh: true,
+      );
+      await _pumpScrapPage(tester, repository: repo);
+      await tester.pumpAndSettle();
+
+      await tester.fling(find.text('첫 글'), const Offset(0, 300), 1000);
+      await tester.pumpAndSettle();
+
+      expect(find.text('첫 글'), findsOneWidget);
+
+      // 실패를 알리는 스낵바가 스스로 닫히는 타이머(3초)를 흘려보낸다 —
+      // 남겨 두면 테스트가 pending timer로 깨진다.
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets(
+      'drops_the_stale_page_when_load_more_finishes_after_a_refresh',
+      (tester) async {
+        // 바닥에서 당긴 다음 페이지가 날아가 있는 동안 위로 올라가 새로고침을
+        // 하면, 뒤늦게 도착한 그 페이지는 이미 갈아엎힌 목록에 대한 답이다.
+        // 이어붙이면 방금 받은 첫 장 위에 옛 페이지가 겹치고 커서도 되돌아간다.
+        final gate = Completer<void>();
+        final repo = _FakeCommunityRepository(
+          posts: [_post(id: 1, title: '첫 글')],
+          secondPage: [_post(id: 2, title: '둘째 글')],
+          refreshedPosts: [_post(id: 3, title: '새로 스크랩한 글')],
+          secondPageGate: gate,
+        );
+        final notifier = await _pumpScrapPage(tester, repository: repo);
+        await tester.pumpAndSettle();
+
+        final loadMoreFuture = notifier.loadMore();
+        await notifier.refresh();
+        gate.complete();
+        await loadMoreFuture;
+        await tester.pumpAndSettle();
+
+        expect(find.text('새로 스크랩한 글'), findsOneWidget);
+        expect(find.text('둘째 글'), findsNothing);
+        expect(find.text('첫 글'), findsNothing);
+      },
+    );
+
+    testWidgets('recovers_the_list_when_the_failed_first_load_is_pulled', (
+      tester,
+    ) async {
+      // 첫 로드가 실패하면 목록이 아예 없어, 당길 곳이 없으면 화면을 나갔다
+      // 들어오는 수밖에 없다. 에러 화면 자체가 재시도 손잡이여야 한다.
+      final repo = _FakeCommunityRepository(
+        posts: [_post(id: 1, title: '첫 글')],
+        failFirstLoad: true,
+      );
+      await _pumpScrapPage(tester, repository: repo);
+      await tester.pumpAndSettle();
+      expect(find.text('첫 글'), findsNothing);
+
+      await tester.fling(find.text('서버 오류'), const Offset(0, 300), 1000);
+      await tester.pumpAndSettle();
+
+      expect(find.text('첫 글'), findsOneWidget);
+    });
   });
 
   group('CommunityScrapPage 소유자 메뉴 → 상세 이동', () {
