@@ -160,7 +160,11 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
     // getPosts()를 실제로 조회한다 — invalidate의 커서 되감김을 피하려던 게
     // 무색해진다. ref.exists로 이미 살아있을 때만 반영한다.
     if (!ref.exists(feedProvider)) return;
-    ref.read(feedProvider.notifier).replacePost(post);
+    // 목록 카드에는 알림 설정을 싣지 않는다 — 카드 메뉴는 설정이 있으면 항목을
+    // 그리는데, 목록 쪽 액션 처리는 그 항목을 no-op으로 두고 있다.
+    ref
+        .read(feedProvider.notifier)
+        .replacePost(post.copyWith(notificationSetting: null));
   }
 
   /// 댓글 또는 답글 작성.
@@ -266,7 +270,11 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
         .read(communityRepositoryProvider)
         .updateStatus(postId: postId, status: next);
 
-    state = AsyncData((state.valueOrNull ?? current).copyWith(post: updated));
+    state = AsyncData(
+      (state.valueOrNull ?? current).copyWith(
+        post: _keepNotificationSetting(updated, current.post),
+      ),
+    );
     ref.invalidate(communityFeedNotifierProvider);
   }
 
@@ -284,7 +292,21 @@ class CommunityDetailNotifier extends _$CommunityDetailNotifier {
     final current = state.valueOrNull;
     if (current == null) return;
 
-    state = AsyncData(current.copyWith(post: updated));
+    state = AsyncData(
+      current.copyWith(post: _keepNotificationSetting(updated, current.post)),
+    );
     ref.invalidate(communityFeedNotifierProvider);
   }
+
+  /// 서버가 돌려준 글에 알림 설정이 없으면 지금 들고 있던 값을 유지한다.
+  ///
+  /// `notificationSettings`는 단건 조회에서만 실린다 — 수정·상태 변경 응답은 null로
+  /// 온다. 통째로 갈아끼우면 마감 한 번에 ⋯ 메뉴의 알림 항목이 사라진다.
+  CommunityPostEntity _keepNotificationSetting(
+    CommunityPostEntity updated,
+    CommunityPostEntity before,
+  ) => updated.copyWith(
+    notificationSetting:
+        updated.notificationSetting ?? before.notificationSetting,
+  );
 }

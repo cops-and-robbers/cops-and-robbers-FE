@@ -1049,6 +1049,65 @@ void main() {
     });
 
     test(
+      'strips_notification_setting_when_syncing_the_card_into_the_feed',
+      () async {
+        // 상세 글은 단건 조회라 알림 설정이 실려 있다. 그 값 그대로 목록에
+        // 넘기면 카드 메뉴가 알림 항목을 그리는데, 목록 쪽 액션 처리는 그
+        // 항목을 no-op으로 둔다 — 눌러도 아무 일도 안 일어나는 항목이 생긴다.
+        const setting = CommunityPostNotificationSetting(
+          commentNotificationsEnabled: true,
+          replyNotificationsEnabled: false,
+        );
+        final withSetting = _post(2).copyWith(notificationSetting: setting);
+        final repo = _ListAndDetailRepository([_post(1), withSetting]);
+        final container = _containerWith(
+          repo,
+          extraOverrides: [
+            communityCommentRepositoryProvider.overrideWithValue(
+              _EmptyCommentRepository(),
+            ),
+            communityReactionRepositoryProvider.overrideWithValue(
+              _SucceedingReactionRepository(),
+            ),
+          ],
+        );
+
+        await container.read(
+          communityFeedNotifierProvider(
+            CommunityScope.all,
+            CommunitySortOption.latest,
+            null,
+          ).future,
+        );
+        await container.read(communityDetailNotifierProvider(2).future);
+
+        await container
+            .read(communityDetailNotifierProvider(2).notifier)
+            .toggleLike();
+
+        final detailSetting = container
+            .read(communityDetailNotifierProvider(2))
+            .requireValue
+            .post
+            .notificationSetting;
+        final feedSetting = container
+            .read(
+              communityFeedNotifierProvider(
+                CommunityScope.all,
+                CommunitySortOption.latest,
+                null,
+              ),
+            )
+            .requireValue
+            .items[1]
+            .notificationSetting;
+
+        expect(detailSetting, isNotNull);
+        expect(feedSetting, isNull);
+      },
+    );
+
+    test(
       'does_not_query_the_feed_when_toggling_like_while_the_feed_is_not_alive',
       () async {
         // 상세는 피드를 거치지 않고도 도달한다(채팅방에서 곧장 push). 그

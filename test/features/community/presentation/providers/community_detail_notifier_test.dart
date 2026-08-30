@@ -60,6 +60,12 @@ class _FakeRepository
   Future<CommunityPostEntity> getPost(int postId) async => post;
 
   @override
+  Future<CommunityPostEntity> updateStatus({
+    required int postId,
+    required CommunityPostStatus status,
+  }) async => post.copyWith(status: status, notificationSetting: null);
+
+  @override
   Future<void> updateNotificationSetting({
     required int postId,
     required bool commentNotificationsEnabled,
@@ -208,6 +214,35 @@ void main() {
       );
 
       await expectLater(pending, throwsA(isA<AppException>()));
+      expect(_settingOf(container), _on);
+    });
+  });
+
+  group('CommunityDetailNotifier.toggleStatus', () {
+    test(
+      'keeps_notification_setting_when_the_status_response_omits_it',
+      () async {
+        final repo = _FakeRepository(_post(setting: _on));
+        final container = _container(repo);
+        await container.read(communityDetailNotifierProvider(_postId).future);
+
+        await container
+            .read(communityDetailNotifierProvider(_postId).notifier)
+            .toggleStatus();
+
+        expect(_settingOf(container), _on);
+      },
+    );
+
+    test('keeps_notification_setting_when_an_edited_post_omits_it', () async {
+      final repo = _FakeRepository(_post(setting: _on));
+      final container = _container(repo);
+      await container.read(communityDetailNotifierProvider(_postId).future);
+
+      container
+          .read(communityDetailNotifierProvider(_postId).notifier)
+          .applyUpdatedPost(_post(setting: null).copyWith(title: '고친 제목'));
+
       expect(_settingOf(container), _on);
     });
   });
