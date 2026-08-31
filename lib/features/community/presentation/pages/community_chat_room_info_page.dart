@@ -24,12 +24,6 @@ import '../providers/community_chat_rooms_provider.dart';
 import '../providers/community_detail_provider.dart';
 import '../widgets/community_chat_avatar.dart';
 
-// ponytail: 채팅 알림 on/off API 미정 — 로컬 상태만 토글. API 나오면 이 provider를
-// 서버 값으로 교체하고 탭 핸들러에서 mutation 호출.
-final _chatNotificationEnabledProvider = StateProvider.family<bool, int>(
-  (ref, postId) => true,
-);
-
 /// 채팅방 사이드바 — 시안이 전체 화면이라 drawer 대신 push한다
 ///
 /// 작성자는 방을 나갈 수 없다(서버 `AUTHOR_CANNOT_LEAVE`) — 버튼 자체를 숨긴다.
@@ -46,8 +40,8 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
         .watch(communityDetailNotifierProvider(postId))
         .valueOrNull
         ?.post;
-    final members = ref.watch(communityChatMembersProvider(postId));
-    final freshMembers = members.valueOrNull;
+    final members = ref.watch(communityChatMembersNotifierProvider(postId));
+    final freshMembers = members.valueOrNull?.members;
     // 방 notifier는 매 빌드 무조건 watch한다 — 조건부로 watch하면 멤버 목록이
     // 채워지는 순간 이 provider를 놓아버려 소켓이 조기 disconnect된다.
     final roomMemberCount = ref
@@ -66,9 +60,8 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
       myId: myId,
     );
 
-    final isNotificationOn = ref.watch(
-      _chatNotificationEnabledProvider(postId),
-    );
+    // 서버 값이 오기 전에는 기본값(받음)으로 그린다 — 스웨거 기본값과 같다.
+    final isNotificationOn = members.valueOrNull?.notificationEnabled ?? true;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -76,11 +69,7 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
         onBack: () => context.pop(),
         actions: [
           GestureDetector(
-            onTap: () =>
-                ref
-                        .read(_chatNotificationEnabledProvider(postId).notifier)
-                        .state =
-                    !isNotificationOn,
+            onTap: () => _toggleNotification(context, ref, l10n),
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -127,7 +116,7 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
               ),
               data: (list) => Column(
                 children: [
-                  for (final (i, m) in list.indexed) ...[
+                  for (final (i, m) in list.members.indexed) ...[
                     if (i > 0) SizedBox(height: AppSpacing.vertical12),
                     _MemberRow(member: m),
                   ],
@@ -159,6 +148,22 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// 낙관적 토글 — 실패하면 Notifier가 되돌리고 여기서 알린다.
+  Future<void> _toggleNotification(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
+    try {
+      await ref
+          .read(communityChatMembersNotifierProvider(postId).notifier)
+          .toggleNotification();
+    } on AppException catch (e) {
+      if (!context.mounted) return;
+      AppSnackbar.show(context, message: l10n.errorByException(e));
+    }
   }
 
   Future<void> _confirmLeave(
