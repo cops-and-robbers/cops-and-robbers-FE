@@ -575,6 +575,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityChatViewLocation => '場所を見る';
 
   @override
+  String get communityChatStartGame => 'ゲーム開始';
+
+  @override
+  String get communityChatInviteSendFailed => 'チャットに招待を送れませんでした';
+
+  @override
   String communityChatMemberCount(int count) {
     return '参加者 $count名';
   }

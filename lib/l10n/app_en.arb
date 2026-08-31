@@ -192,6 +192,8 @@
   "communityChatMeetingMembers": "{current}/{max} members",
   "@communityChatMeetingMembers": { "placeholders": { "current": { "type": "String" }, "max": { "type": "int" } } },
   "communityChatViewLocation": "View location",
+  "communityChatStartGame": "Start game",
+  "communityChatInviteSendFailed": "Couldn't send the invite to the chat",
   "communityChatMemberCount": "{count} participants",
   "@communityChatMemberCount": { "placeholders": { "count": { "type": "int" } } },
   "communityChatAuthorBadge": "Host",

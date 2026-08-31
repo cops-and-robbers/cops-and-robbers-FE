@@ -1144,6 +1144,18 @@ abstract class AppLocalizations {
   /// **'장소 보기'**
   String get communityChatViewLocation;
 
+  /// 채팅방 상단 모임 카드 — 방장 전용 게임 시작 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 시작'**
+  String get communityChatStartGame;
+
+  /// 게임 생성 후 채팅방 GAME_INVITE 전송 실패 스낵바
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅방에 초대를 보내지 못했어요'**
+  String get communityChatInviteSendFailed;
+
   /// 채팅방 사이드바 — 참가자 수 제목
   ///
   /// In ko, this message translates to:

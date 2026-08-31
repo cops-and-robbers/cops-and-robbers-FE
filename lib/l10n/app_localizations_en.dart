@@ -625,6 +625,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityChatViewLocation => 'View location';
 
   @override
+  String get communityChatStartGame => 'Start game';
+
+  @override
+  String get communityChatInviteSendFailed =>
+      'Couldn\'t send the invite to the chat';
+
+  @override
   String communityChatMemberCount(int count) {
     return '$count participants';
   }

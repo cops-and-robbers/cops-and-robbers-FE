@@ -158,6 +158,10 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage> {
                               widget.postId,
                             ),
                           ),
+                          onStartGame:
+                              post.writerId == ref.watch(currentUserIdProvider)
+                              ? _startGame
+                              : null,
                         ),
                       ),
                   ],
@@ -221,6 +225,12 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage> {
 
   /// 장소 보기 → 모집글 상세(지도). 상세에서 들어왔으면 한 장 더 쌓인다 —
   /// 뒤로 두 번이면 돌아오므로 감수한다.
+  /// 방장 전용 — 기존 세션 생성 플로우로 진입해 방을 만든다. postId를 넘기면
+  /// 플로우가 생성 성공 직후 이 방에 GAME_INVITE를 쏜다(#516).
+  void _startGame() {
+    context.push(RoutePaths.sessionCreationFlow, extra: widget.postId);
+  }
+
   void _openPost() {
     context.pushNamed(
       RoutePaths.communityDetailName,

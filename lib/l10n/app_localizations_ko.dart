@@ -573,6 +573,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityChatViewLocation => '장소 보기';
 
   @override
+  String get communityChatStartGame => '게임 시작';
+
+  @override
+  String get communityChatInviteSendFailed => '채팅방에 초대를 보내지 못했어요';
+
+  @override
   String communityChatMemberCount(int count) {
     return '참가자 $count명';
   }
