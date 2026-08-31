@@ -7,6 +7,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 게임 초대 카드 — "게임이 열렸어요!" + 초대 문구 + 초대코드 + 참가 버튼
@@ -80,23 +81,37 @@ class CommunityChatInviteCard extends StatelessWidget {
     AppDialog.show<void>(
       context: context,
       title: l10n.communityChatInviteDialogTitle,
-      message: l10n.communityChatInviteDialogBody(nickname),
-      // 방 코드는 라벨과 값의 간격을 잡아야 해 message로 못 합친다.
-      customContent: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      // 초대장 캡션 — 이 다이얼로그만 작은 캡션으로 낸다(다른 곳은 heading_20 기본).
+      titleStyle: AppTextStyles.tag_12.copyWith(color: AppColors.black300),
+      // 본문 색이 message 슬롯 기본(black600)과 달라 customContent로 낸다.
+      spacing: DialogSpacing(toContent: AppSpacing.vertical12),
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            l10n.communityChatInviteDialogCodeLabel,
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
+            l10n.communityChatInviteDialogBody(nickname),
+            textAlign: TextAlign.center,
+            style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black),
           ),
-          SizedBox(width: AppSpacing.horizontal8),
-          Text(
-            inviteCode,
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
+          SizedBox(height: AppSpacing.vertical12),
+          // 방 코드는 라벨과 값의 간격을 잡아야 해 한 문장으로 못 합친다.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                l10n.communityChatInviteDialogCodeLabel,
+                style: AppTextStyles.paragraph_14.copyWith(
+                  color: AppColors.black600,
+                ),
+              ),
+              SizedBox(width: AppSpacing.horizontal8),
+              Text(
+                inviteCode,
+                style: AppTextStyles.paragraph_14.copyWith(
+                  color: AppColors.black600,
+                ),
+              ),
+            ],
           ),
         ],
       ),
