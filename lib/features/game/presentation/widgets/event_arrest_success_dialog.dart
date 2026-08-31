@@ -98,10 +98,6 @@ class EventArrestSuccessDialog extends StatelessWidget {
             AppButton(
               text: l10n.gameEventArrestSuccessConfirm,
               onPressed: () => Navigator.of(context).pop(),
-              backgroundColor: AppColors.blue,
-              foregroundColor: AppColors.white,
-              borderRadius: AppRadius.medium,
-              showBorder: false,
               height: 48.h,
             ),
           ],

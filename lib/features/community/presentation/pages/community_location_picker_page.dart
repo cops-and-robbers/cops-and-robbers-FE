@@ -218,7 +218,6 @@ class _CommunityLocationPickerPageState
               onPressed: address?.hasValue ?? false ? _confirm : null,
               width: double.infinity,
               backgroundColor: AppColors.logo,
-              showBorder: false,
             ),
           ],
         ),

@@ -651,10 +651,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                             text: l10n.buttonCreateRoom,
                             onPressed: _onCreateSession,
                             width: 176.w,
-                            backgroundColor: AppColors.blue,
-                            foregroundColor: AppColors.white,
-                            borderRadius: AppRadius.large,
-                            showBorder: false,
                             icon: SvgPicture.asset(
                               'assets/icons/icon_default_light.svg',
                               height: AppSpacing.vertical20,
@@ -669,8 +665,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                             width: 176.w,
                             backgroundColor: AppColors.white,
                             foregroundColor: AppColors.black600,
-                            borderRadius: AppRadius.large,
-                            showBorder: false,
                             icon: SvgPicture.asset(
                               'assets/icons/icon_joining_game.svg',
                               height: AppSpacing.vertical20,

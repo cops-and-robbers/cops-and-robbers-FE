@@ -560,11 +560,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                   ),
                 ),
               ),
-              AppButton(
-                text: l10n.buttonRetry,
-                onPressed: _onManualRetry,
-                showBorder: false,
-              ),
+              AppButton(text: l10n.buttonRetry, onPressed: _onManualRetry),
             ],
           ),
         ),

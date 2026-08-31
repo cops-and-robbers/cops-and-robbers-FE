@@ -126,7 +126,6 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
             ),
             AppButton(
               width: double.infinity,
-              backgroundColor: AppColors.blue,
               text: gone ? l10n.communityBackToList : l10n.buttonRetry,
               onPressed: gone
                   ? _backToList
@@ -199,7 +198,6 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                           // 기본 폭 353은 좌우 20 패딩 기준이라 이 화면(좌우 24)에서는
                           // 8이 모자라 제약에 깎인다. 남은 폭을 그대로 쓴다.
                           width: double.infinity,
-                          backgroundColor: AppColors.blue,
                           text: _isChatMember(state.post)
                               ? l10n.communityChatEnterRoom
                               : l10n.communityDetailJoinChat,

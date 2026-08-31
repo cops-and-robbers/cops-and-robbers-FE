@@ -100,8 +100,6 @@ class QrDisplayDialog extends StatelessWidget {
                 onPressed: () => Navigator.of(context).pop(),
                 backgroundColor: AppColors.green,
                 foregroundColor: AppColors.black,
-                showBorder: false,
-                borderRadius: AppRadius.medium,
                 textStyle: AppTextStyles.robberLabel,
               ),
             ),

@@ -468,7 +468,6 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                   text: l10n.buttonDone,
                   onPressed: _canComplete ? _onComplete : null,
                   backgroundColor: AppColors.red,
-                  showBorder: false,
                 ),
               ),
             ],

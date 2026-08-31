@@ -293,7 +293,6 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                               _validationState == NicknameValidationState.valid)
                       ? _onConfirm
                       : null,
-                  showBorder: false,
                 ),
               ],
             ),

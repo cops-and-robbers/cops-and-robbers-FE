@@ -819,9 +819,6 @@ class _SessionCreationFlowPageState
                 ? _createSessionAndNavigate
                 : null,
             isLoading: _isLoading,
-            backgroundColor: AppColors.blue,
-            foregroundColor: AppColors.white,
-            showBorder: false,
           ),
         ),
       ],

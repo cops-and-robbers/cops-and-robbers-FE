@@ -66,11 +66,8 @@ class CommunityChatInviteCard extends StatelessWidget {
           width: double.infinity,
           height: 36.h,
           text: l10n.communityChatInviteJoin,
-          backgroundColor: AppColors.blue,
-          foregroundColor: AppColors.white,
           textStyle: AppTextStyles.tag_14,
           borderRadius: BorderRadius.circular(6.r),
-          showBorder: false,
           onPressed: () => _confirmJoin(context, l10n),
         ),
       ],
@@ -82,43 +79,29 @@ class CommunityChatInviteCard extends StatelessWidget {
   void _confirmJoin(BuildContext context, AppLocalizations l10n) {
     AppDialog.show<void>(
       context: context,
-      customContent: Column(
-        mainAxisSize: MainAxisSize.min,
+      title: l10n.communityChatInviteDialogTitle,
+      message: l10n.communityChatInviteDialogBody(nickname),
+      // 방 코드는 라벨과 값의 간격을 잡아야 해 message로 못 합친다.
+      customContent: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            l10n.communityChatInviteDialogTitle,
-            style: AppTextStyles.tag_12.copyWith(color: AppColors.black300),
+            l10n.communityChatInviteDialogCodeLabel,
+            style: AppTextStyles.paragraph_14.copyWith(
+              color: AppColors.black600,
+            ),
           ),
-          SizedBox(height: AppSpacing.vertical14),
+          SizedBox(width: AppSpacing.horizontal8),
           Text(
-            l10n.communityChatInviteDialogBody(nickname),
-            textAlign: TextAlign.center,
-            style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
-          ),
-          SizedBox(height: AppSpacing.vertical14),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n.communityChatInviteDialogCodeLabel,
-                style: AppTextStyles.paragraph_14.copyWith(
-                  color: AppColors.black600,
-                ),
-              ),
-              SizedBox(width: AppSpacing.horizontal8),
-              Text(
-                inviteCode,
-                style: AppTextStyles.paragraph_14.copyWith(
-                  color: AppColors.black600,
-                ),
-              ),
-            ],
+            inviteCode,
+            style: AppTextStyles.paragraph_14.copyWith(
+              color: AppColors.black600,
+            ),
           ),
         ],
       ),
       cancelText: l10n.communityChatInviteDialogDecline,
       confirmText: l10n.communityChatInviteDialogEnter,
-      confirmColor: AppColors.blue,
       onConfirm: onJoin,
     );
   }

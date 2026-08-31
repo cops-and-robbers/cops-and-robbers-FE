@@ -1278,8 +1278,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         ),
         cancelText: l10n.buttonClose,
         confirmText: l10n.buttonShare,
-        confirmColor: isDark ? null : AppColors.blue,
-        confirmTextColor: isDark ? null : AppColors.white,
         onConfirm: () {
           shareInviteCode(code, l10n.shareInviteMessage(code));
         },
@@ -1525,7 +1523,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             : AppColors.black200,
         disabledForegroundColor: isDark ? AppColors.green : AppColors.black400,
         textStyle: isDark ? AppTextStyles.robberLabel : null,
-        showBorder: false,
       );
     }
 
@@ -1536,7 +1533,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
         foregroundColor: isDark ? AppColors.green : AppColors.blue,
         textStyle: isDark ? AppTextStyles.robberLabel : null,
-        showBorder: false,
         isLoading: _isUpdatingReady,
       );
     }
@@ -1547,7 +1543,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       backgroundColor: isDark ? AppColors.green : AppColors.blue,
       foregroundColor: isDark ? AppColors.black : AppColors.white,
       textStyle: isDark ? AppTextStyles.robberLabel : null,
-      showBorder: false,
       isLoading: _isUpdatingReady,
     );
   }

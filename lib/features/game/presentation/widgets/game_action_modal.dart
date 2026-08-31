@@ -63,8 +63,6 @@ class GameActionModal {
       message: useAvatar ? null : message,
       confirmText: confirmLabel,
       cancelText: useAvatar ? l10n.buttonNo : l10n.buttonCancel,
-      confirmColor: isDarkMode ? null : AppColors.blue,
-      confirmTextColor: isDarkMode ? null : AppColors.white,
       onConfirm: onConfirm,
       showAvatar: useAvatar,
       avatarWidget: useAvatar

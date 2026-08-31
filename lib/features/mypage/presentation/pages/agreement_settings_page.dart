@@ -222,7 +222,6 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
             text: l10n.buttonSaveChanges,
             onPressed: _hasChanges && !_isSaving ? _save : null,
             isLoading: _isSaving,
-            showBorder: false,
           ),
         ],
       ),

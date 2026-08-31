@@ -418,8 +418,6 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                 child: AppButton(
                   text: l10n.buttonDone,
                   onPressed: _canComplete ? _onComplete : null,
-                  backgroundColor: AppColors.blue,
-                  showBorder: false,
                 ),
               ),
             ],
