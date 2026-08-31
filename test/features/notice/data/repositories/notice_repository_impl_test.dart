@@ -157,38 +157,41 @@ void main() {
     });
 
     // Agents.md 명명 규칙(<subject>_<expected>_when_<condition>)을 따르는 신규 테스트.
-    test('carries_translation_fallback_flag_when_served_language_differs', () async {
-      // 서버가 ja 번역이 없어 ko로 대체한 응답. 판정은 DTO에서 끝나고
-      // Entity는 결과만 받는다 — UI가 언어 코드를 비교하지 않게.
-      final substituted = NoticeResponseModel.fromJson({
-        'id': 8,
-        'title': '공지',
-        'content': '본문',
-        'language': 'ko',
-        'requestedLanguage': 'ja',
-        'pinned': false,
-        'createdAt': '2026-08-30T09:00:00+09:00',
-        'updatedAt': '2026-08-30T09:00:00+09:00',
-      });
-      final served = NoticeResponseModel.fromJson({
-        'id': 9,
-        'title': 'お知らせ',
-        'content': '本文',
-        'language': 'ja',
-        'requestedLanguage': 'ja',
-        'pinned': false,
-        'createdAt': '2026-08-30T09:00:00+09:00',
-        'updatedAt': '2026-08-30T09:00:00+09:00',
-      });
-      final fake = _FakeNoticeRemoteDataSource()
-        ..responseToReturn = _listOf([substituted, served]);
-      final repo = NoticeRepositoryImpl(fake);
+    test(
+      'carries_translation_fallback_flag_when_served_language_differs',
+      () async {
+        // 서버가 ja 번역이 없어 ko로 대체한 응답. 판정은 DTO에서 끝나고
+        // Entity는 결과만 받는다 — UI가 언어 코드를 비교하지 않게.
+        final substituted = NoticeResponseModel.fromJson({
+          'id': 8,
+          'title': '공지',
+          'content': '본문',
+          'language': 'ko',
+          'requestedLanguage': 'ja',
+          'pinned': false,
+          'createdAt': '2026-08-30T09:00:00+09:00',
+          'updatedAt': '2026-08-30T09:00:00+09:00',
+        });
+        final served = NoticeResponseModel.fromJson({
+          'id': 9,
+          'title': 'お知らせ',
+          'content': '本文',
+          'language': 'ja',
+          'requestedLanguage': 'ja',
+          'pinned': false,
+          'createdAt': '2026-08-30T09:00:00+09:00',
+          'updatedAt': '2026-08-30T09:00:00+09:00',
+        });
+        final fake = _FakeNoticeRemoteDataSource()
+          ..responseToReturn = _listOf([substituted, served]);
+        final repo = NoticeRepositoryImpl(fake);
 
-      final result = await repo.getNotices(page: 0, size: 10, language: 'ja');
+        final result = await repo.getNotices(page: 0, size: 10, language: 'ja');
 
-      expect(result.items[0].isTranslationFallback, true);
-      expect(result.items[1].isTranslationFallback, false);
-    });
+        expect(result.items[0].isTranslationFallback, true);
+        expect(result.items[1].isTranslationFallback, false);
+      },
+    );
 
     test('forwards_language_query_when_language_given', () async {
       final raw = NoticeResponseModel.fromJson({
