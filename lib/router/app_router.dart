@@ -784,6 +784,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                     key: state.pageKey,
                     child: SetupPlaygroundPage(
                       editInitialShape: state.extra as AreaShape?,
+                      // 대기방에서 진행 중인 게임의 구역을 고치는 경로 — 역할 테마 적용
+                      isInGameEdit: true,
                     ),
                     isForward: true,
                   );
@@ -798,6 +800,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                     key: state.pageKey,
                     child: SetupPrisonPage(
                       editArgs: state.extra as PrisonEditArgs?,
+                      // 대기방에서 진행 중인 게임의 구역을 고치는 경로 — 역할 테마 적용
+                      isInGameEdit: true,
                     ),
                     isForward: true,
                   );

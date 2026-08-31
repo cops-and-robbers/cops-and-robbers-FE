@@ -39,7 +39,7 @@ class PrisonEditArgs {
 /// ZoneSettingWidget을 통해 중심점과 반경을 설정하고,
 /// 설정 완료 시 데이터를 로컬 저장소에 저장한 후 이전 페이지로 반환합니다.
 ///
-/// **편집 모드**: [editArgs]가 제공되면
+/// **초기 도형**: [editArgs]가 제공되면
 /// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
 /// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
 class SetupPrisonPage extends ConsumerStatefulWidget {
@@ -47,7 +47,16 @@ class SetupPrisonPage extends ConsumerStatefulWidget {
     super.key,
     this.editArgs,
     this.showStepIndicator = false,
+    this.isInGameEdit = false,
   });
+
+  /// 진행 중인 게임의 구역을 대기방에서 수정하러 들어왔는지
+  ///
+  /// 역할 테마(도둑=다크)는 **대기방·인게임에서만** 분기한다. 생성 흐름은 아직
+  /// 게임이 없으므로 항상 라이트다. 진입 라우트가 아는 사실이므로 라우터가 내려준다
+  /// — 초기 도형을 받았는지([editArgs])로는 판정할 수 없다. 생성 흐름도 되돌아올 때
+  /// 초기 도형을 넘기기 때문이다(#520).
+  final bool isInGameEdit;
 
   /// 생성 흐름에서 열렸을 때 상단에 진행 표시(1/3)를 보여줄지
   final bool showStepIndicator;
@@ -360,7 +369,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = _isEditMode && ref.watch(roleThemeProvider);
+    final isDark = widget.isInGameEdit && ref.watch(roleThemeProvider);
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
     final textColor = isDark ? AppColors.white : AppColors.black;
     final l10n = AppLocalizations.of(context);
