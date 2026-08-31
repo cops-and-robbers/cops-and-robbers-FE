@@ -30,8 +30,7 @@ final communityChatRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CommunityChatRepositoryRef = ProviderRef<CommunityChatRepository>;
-String _$communityChatMembersHash() =>
-    r'bb5d13cdcc86d72d88b9882478bfe2c84bc14927';
+String _$communityChatPostHash() => r'e514fda22ff2e0b5cb253f572b06c2822082741b';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -53,145 +52,6 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
-
-/// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-///
-/// Copied from [communityChatMembers].
-@ProviderFor(communityChatMembers)
-const communityChatMembersProvider = CommunityChatMembersFamily();
-
-/// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-///
-/// Copied from [communityChatMembers].
-class CommunityChatMembersFamily
-    extends Family<AsyncValue<List<CommunityChatMemberEntity>>> {
-  /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-  ///
-  /// Copied from [communityChatMembers].
-  const CommunityChatMembersFamily();
-
-  /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-  ///
-  /// Copied from [communityChatMembers].
-  CommunityChatMembersProvider call(int postId) {
-    return CommunityChatMembersProvider(postId);
-  }
-
-  @override
-  CommunityChatMembersProvider getProviderOverride(
-    covariant CommunityChatMembersProvider provider,
-  ) {
-    return call(provider.postId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'communityChatMembersProvider';
-}
-
-/// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-///
-/// Copied from [communityChatMembers].
-class CommunityChatMembersProvider
-    extends AutoDisposeFutureProvider<List<CommunityChatMemberEntity>> {
-  /// 채팅방 멤버 목록 — 사이드바를 열 때마다 새로 받는다(autoDispose)
-  ///
-  /// Copied from [communityChatMembers].
-  CommunityChatMembersProvider(int postId)
-    : this._internal(
-        (ref) => communityChatMembers(ref as CommunityChatMembersRef, postId),
-        from: communityChatMembersProvider,
-        name: r'communityChatMembersProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$communityChatMembersHash,
-        dependencies: CommunityChatMembersFamily._dependencies,
-        allTransitiveDependencies:
-            CommunityChatMembersFamily._allTransitiveDependencies,
-        postId: postId,
-      );
-
-  CommunityChatMembersProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.postId,
-  }) : super.internal();
-
-  final int postId;
-
-  @override
-  Override overrideWith(
-    FutureOr<List<CommunityChatMemberEntity>> Function(
-      CommunityChatMembersRef provider,
-    )
-    create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: CommunityChatMembersProvider._internal(
-        (ref) => create(ref as CommunityChatMembersRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        postId: postId,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<List<CommunityChatMemberEntity>>
-  createElement() {
-    return _CommunityChatMembersProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is CommunityChatMembersProvider && other.postId == postId;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, postId.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin CommunityChatMembersRef
-    on AutoDisposeFutureProviderRef<List<CommunityChatMemberEntity>> {
-  /// The parameter `postId` of this provider.
-  int get postId;
-}
-
-class _CommunityChatMembersProviderElement
-    extends AutoDisposeFutureProviderElement<List<CommunityChatMemberEntity>>
-    with CommunityChatMembersRef {
-  _CommunityChatMembersProviderElement(super.provider);
-
-  @override
-  int get postId => (origin as CommunityChatMembersProvider).postId;
-}
-
-String _$communityChatPostHash() => r'e514fda22ff2e0b5cb253f572b06c2822082741b';
 
 /// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다
 ///
@@ -351,12 +211,14 @@ class _CommunityChatPostProviderElement
 }
 
 String _$communityChatRoomsHash() =>
-    r'ee2a20843cd2c85b6639e2f77d903f6cd741adbe';
+    r'262d787b9d0eca069fd268f97d76bd604c40bc9a';
 
 /// 내가 참여 중인 채팅방 목록 (`GET /chat/rooms`)
 ///
-/// `keepAlive`: 내 모임 탭을 오갈 때마다 다시 받지 않는다. 갱신 경로는 당겨서
-/// 새로고침, 방에 들어갈 때 목록에 없는 방(방금 참여), 나간 뒤 무효화 셋이다.
+/// `keepAlive`: 내 모임 탭을 오갈 때마다 다시 받지 않는다. 갱신은 소켓이 한다 —
+/// 유저당 알림 채널(DEC-0045)로 모든 방의 새 메시지가 이리로 오고, 연결이 (다시)
+/// 성립될 때마다 서버 기준선(`unreadCount`)을 한 번 다시 받는다. 사용자 동작은
+/// 당겨서 새로고침과 에러 재시도뿐이다.
 ///
 /// Copied from [CommunityChatRooms].
 @ProviderFor(CommunityChatRooms)
@@ -375,5 +237,185 @@ final communityChatRoomsProvider =
     );
 
 typedef _$CommunityChatRooms = AsyncNotifier<List<CommunityChatRoomEntity>>;
+String _$communityChatMembersNotifierHash() =>
+    r'3fdc80aaf42afc7c6734d2722bd2ec6801f2ae23';
+
+abstract class _$CommunityChatMembersNotifier
+    extends BuildlessAutoDisposeAsyncNotifier<CommunityChatMembersEntity> {
+  late final int postId;
+
+  FutureOr<CommunityChatMembersEntity> build(int postId);
+}
+
+/// 채팅방 멤버 목록 + 내 알림 수신 여부 — 사이드바를 열 때마다 새로 받는다(autoDispose)
+///
+/// 종 아이콘 토글은 낙관적이다: 먼저 뒤집고 서버에 저장하며, 실패하면 되돌리고
+/// 화면이 알린다. 서버 값은 멤버 목록 응답 최상위 `notificationEnabled`로 온다.
+///
+/// Copied from [CommunityChatMembersNotifier].
+@ProviderFor(CommunityChatMembersNotifier)
+const communityChatMembersNotifierProvider =
+    CommunityChatMembersNotifierFamily();
+
+/// 채팅방 멤버 목록 + 내 알림 수신 여부 — 사이드바를 열 때마다 새로 받는다(autoDispose)
+///
+/// 종 아이콘 토글은 낙관적이다: 먼저 뒤집고 서버에 저장하며, 실패하면 되돌리고
+/// 화면이 알린다. 서버 값은 멤버 목록 응답 최상위 `notificationEnabled`로 온다.
+///
+/// Copied from [CommunityChatMembersNotifier].
+class CommunityChatMembersNotifierFamily
+    extends Family<AsyncValue<CommunityChatMembersEntity>> {
+  /// 채팅방 멤버 목록 + 내 알림 수신 여부 — 사이드바를 열 때마다 새로 받는다(autoDispose)
+  ///
+  /// 종 아이콘 토글은 낙관적이다: 먼저 뒤집고 서버에 저장하며, 실패하면 되돌리고
+  /// 화면이 알린다. 서버 값은 멤버 목록 응답 최상위 `notificationEnabled`로 온다.
+  ///
+  /// Copied from [CommunityChatMembersNotifier].
+  const CommunityChatMembersNotifierFamily();
+
+  /// 채팅방 멤버 목록 + 내 알림 수신 여부 — 사이드바를 열 때마다 새로 받는다(autoDispose)
+  ///
+  /// 종 아이콘 토글은 낙관적이다: 먼저 뒤집고 서버에 저장하며, 실패하면 되돌리고
+  /// 화면이 알린다. 서버 값은 멤버 목록 응답 최상위 `notificationEnabled`로 온다.
+  ///
+  /// Copied from [CommunityChatMembersNotifier].
+  CommunityChatMembersNotifierProvider call(int postId) {
+    return CommunityChatMembersNotifierProvider(postId);
+  }
+
+  @override
+  CommunityChatMembersNotifierProvider getProviderOverride(
+    covariant CommunityChatMembersNotifierProvider provider,
+  ) {
+    return call(provider.postId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'communityChatMembersNotifierProvider';
+}
+
+/// 채팅방 멤버 목록 + 내 알림 수신 여부 — 사이드바를 열 때마다 새로 받는다(autoDispose)
+///
+/// 종 아이콘 토글은 낙관적이다: 먼저 뒤집고 서버에 저장하며, 실패하면 되돌리고
+/// 화면이 알린다. 서버 값은 멤버 목록 응답 최상위 `notificationEnabled`로 온다.
+///
+/// Copied from [CommunityChatMembersNotifier].
+class CommunityChatMembersNotifierProvider
+    extends
+        AutoDisposeAsyncNotifierProviderImpl<
+          CommunityChatMembersNotifier,
+          CommunityChatMembersEntity
+        > {
+  /// 채팅방 멤버 목록 + 내 알림 수신 여부 — 사이드바를 열 때마다 새로 받는다(autoDispose)
+  ///
+  /// 종 아이콘 토글은 낙관적이다: 먼저 뒤집고 서버에 저장하며, 실패하면 되돌리고
+  /// 화면이 알린다. 서버 값은 멤버 목록 응답 최상위 `notificationEnabled`로 온다.
+  ///
+  /// Copied from [CommunityChatMembersNotifier].
+  CommunityChatMembersNotifierProvider(int postId)
+    : this._internal(
+        () => CommunityChatMembersNotifier()..postId = postId,
+        from: communityChatMembersNotifierProvider,
+        name: r'communityChatMembersNotifierProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$communityChatMembersNotifierHash,
+        dependencies: CommunityChatMembersNotifierFamily._dependencies,
+        allTransitiveDependencies:
+            CommunityChatMembersNotifierFamily._allTransitiveDependencies,
+        postId: postId,
+      );
+
+  CommunityChatMembersNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.postId,
+  }) : super.internal();
+
+  final int postId;
+
+  @override
+  FutureOr<CommunityChatMembersEntity> runNotifierBuild(
+    covariant CommunityChatMembersNotifier notifier,
+  ) {
+    return notifier.build(postId);
+  }
+
+  @override
+  Override overrideWith(CommunityChatMembersNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: CommunityChatMembersNotifierProvider._internal(
+        () => create()..postId = postId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        postId: postId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeAsyncNotifierProviderElement<
+    CommunityChatMembersNotifier,
+    CommunityChatMembersEntity
+  >
+  createElement() {
+    return _CommunityChatMembersNotifierProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CommunityChatMembersNotifierProvider &&
+        other.postId == postId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, postId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CommunityChatMembersNotifierRef
+    on AutoDisposeAsyncNotifierProviderRef<CommunityChatMembersEntity> {
+  /// The parameter `postId` of this provider.
+  int get postId;
+}
+
+class _CommunityChatMembersNotifierProviderElement
+    extends
+        AutoDisposeAsyncNotifierProviderElement<
+          CommunityChatMembersNotifier,
+          CommunityChatMembersEntity
+        >
+    with CommunityChatMembersNotifierRef {
+  _CommunityChatMembersNotifierProviderElement(super.provider);
+
+  @override
+  int get postId => (origin as CommunityChatMembersNotifierProvider).postId;
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
