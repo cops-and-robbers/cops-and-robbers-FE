@@ -157,6 +157,8 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
         ),
         actions: [
           IconButton(
+            // 커뮤니티 목록과 같은 계산 — 24 + 아이콘 24 = 최소 폭 48.
+            padding: EdgeInsets.only(left: AppSpacing.horizontal24),
             icon: SvgPicture.asset(
               'assets/icons/icon_search.svg',
               width: 24.w,
@@ -164,7 +166,7 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
             ),
             onPressed: () => unawaited(_search(_controller.text)),
           ),
-          SizedBox(width: AppSpacing.horizontal8),
+          SizedBox(width: AppSpacing.horizontal16),
         ],
       ),
       body: _submitted == null

@@ -197,7 +197,10 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   }) {
     return IconButton(
       onPressed: onTap ?? () => debugPrint('🔍 앱바 아이콘 탭'),
-      padding: EdgeInsets.only(left: AppSpacing.horizontal20),
+      // 왼쪽 여백 24 + 아이콘 24 = IconButton 최소 폭 48에 딱 맞는다. 합이
+      // 48보다 작으면 최소 폭을 채우려 좌우에 여백이 붙어, 뒤의 SizedBox(16)
+      // 만으로는 우측 여백이 16이 되지 않는다(20일 때 18이었다).
+      padding: EdgeInsets.only(left: AppSpacing.horizontal24),
       icon: Stack(
         clipBehavior: Clip.none,
         children: [
