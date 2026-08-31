@@ -294,6 +294,9 @@ mixin _$CommunityChatRoomEntity {
   CommunityChatLastMessageEntity? get lastMessage =>
       throw _privateConstructorUsedError;
 
+  /// 안 읽은 개수. 서버 기준선에 소켓 이벤트로 +1 한다(DEC-0044).
+  int get unreadCount => throw _privateConstructorUsedError;
+
   /// Create a copy of CommunityChatRoomEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -315,6 +318,7 @@ abstract class $CommunityChatRoomEntityCopyWith<$Res> {
     DateTime meetingAt,
     int memberCount,
     CommunityChatLastMessageEntity? lastMessage,
+    int unreadCount,
   });
 
   $CommunityChatLastMessageEntityCopyWith<$Res>? get lastMessage;
@@ -344,6 +348,7 @@ class _$CommunityChatRoomEntityCopyWithImpl<
     Object? meetingAt = null,
     Object? memberCount = null,
     Object? lastMessage = freezed,
+    Object? unreadCount = null,
   }) {
     return _then(
       _value.copyWith(
@@ -371,6 +376,10 @@ class _$CommunityChatRoomEntityCopyWithImpl<
                 ? _value.lastMessage
                 : lastMessage // ignore: cast_nullable_to_non_nullable
                       as CommunityChatLastMessageEntity?,
+            unreadCount: null == unreadCount
+                ? _value.unreadCount
+                : unreadCount // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -409,6 +418,7 @@ abstract class _$$CommunityChatRoomEntityImplCopyWith<$Res>
     DateTime meetingAt,
     int memberCount,
     CommunityChatLastMessageEntity? lastMessage,
+    int unreadCount,
   });
 
   @override
@@ -439,6 +449,7 @@ class __$$CommunityChatRoomEntityImplCopyWithImpl<$Res>
     Object? meetingAt = null,
     Object? memberCount = null,
     Object? lastMessage = freezed,
+    Object? unreadCount = null,
   }) {
     return _then(
       _$CommunityChatRoomEntityImpl(
@@ -466,6 +477,10 @@ class __$$CommunityChatRoomEntityImplCopyWithImpl<$Res>
             ? _value.lastMessage
             : lastMessage // ignore: cast_nullable_to_non_nullable
                   as CommunityChatLastMessageEntity?,
+        unreadCount: null == unreadCount
+            ? _value.unreadCount
+            : unreadCount // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -481,6 +496,7 @@ class _$CommunityChatRoomEntityImpl implements _CommunityChatRoomEntity {
     required this.meetingAt,
     required this.memberCount,
     this.lastMessage,
+    this.unreadCount = 0,
   });
 
   @override
@@ -496,9 +512,14 @@ class _$CommunityChatRoomEntityImpl implements _CommunityChatRoomEntity {
   @override
   final CommunityChatLastMessageEntity? lastMessage;
 
+  /// 안 읽은 개수. 서버 기준선에 소켓 이벤트로 +1 한다(DEC-0044).
+  @override
+  @JsonKey()
+  final int unreadCount;
+
   @override
   String toString() {
-    return 'CommunityChatRoomEntity(postId: $postId, title: $title, status: $status, meetingAt: $meetingAt, memberCount: $memberCount, lastMessage: $lastMessage)';
+    return 'CommunityChatRoomEntity(postId: $postId, title: $title, status: $status, meetingAt: $meetingAt, memberCount: $memberCount, lastMessage: $lastMessage, unreadCount: $unreadCount)';
   }
 
   @override
@@ -514,7 +535,9 @@ class _$CommunityChatRoomEntityImpl implements _CommunityChatRoomEntity {
             (identical(other.memberCount, memberCount) ||
                 other.memberCount == memberCount) &&
             (identical(other.lastMessage, lastMessage) ||
-                other.lastMessage == lastMessage));
+                other.lastMessage == lastMessage) &&
+            (identical(other.unreadCount, unreadCount) ||
+                other.unreadCount == unreadCount));
   }
 
   @override
@@ -526,6 +549,7 @@ class _$CommunityChatRoomEntityImpl implements _CommunityChatRoomEntity {
     meetingAt,
     memberCount,
     lastMessage,
+    unreadCount,
   );
 
   /// Create a copy of CommunityChatRoomEntity
@@ -548,6 +572,7 @@ abstract class _CommunityChatRoomEntity implements CommunityChatRoomEntity {
     required final DateTime meetingAt,
     required final int memberCount,
     final CommunityChatLastMessageEntity? lastMessage,
+    final int unreadCount,
   }) = _$CommunityChatRoomEntityImpl;
 
   @override
@@ -562,6 +587,10 @@ abstract class _CommunityChatRoomEntity implements CommunityChatRoomEntity {
   int get memberCount;
   @override
   CommunityChatLastMessageEntity? get lastMessage;
+
+  /// 안 읽은 개수. 서버 기준선에 소켓 이벤트로 +1 한다(DEC-0044).
+  @override
+  int get unreadCount;
 
   /// Create a copy of CommunityChatRoomEntity
   /// with the given fields replaced by the non-null parameter values.

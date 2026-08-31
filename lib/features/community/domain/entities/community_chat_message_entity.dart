@@ -49,10 +49,20 @@ class CommunityChatMessageEntity with _$CommunityChatMessageEntity {
     required CommunityChatMessageBody body,
     required DateTime createdAt,
     @Default(CommunityChatMessageStatus.sent) CommunityChatMessageStatus status,
+
+    /// 와이어 `messageType == 'SYSTEM'`. 본문 타입으로 판정하지 않는 이유: 파서는
+    /// 모르는 시스템 이벤트를 `unknown` 본문으로 접는데, 서버의 안 읽은 개수 집계는
+    /// `messageType`으로만 제외한다 — 본문으로 세면 그 경우 숫자가 어긋난다.
+    @Default(false) bool isSystem,
   }) = _CommunityChatMessageEntity;
 
   /// 말풍선으로 그리는 메시지인가 (TEXT만). 시스템 pill·초대 카드·unknown은 아니다.
   bool get isBubble => body is CommunityChatTextBody;
 
   bool get isPending => status == CommunityChatMessageStatus.pending;
+
+  /// 안 읽은 개수에 세는 메시지인가 — 서버 집계 규칙의 절반, 와이어 타입
+  /// (`messageType != SYSTEM`) 하나만 본다. 나머지 절반(`senderId != 나`)은
+  /// 내 id를 아는 목록 Notifier가 판정한다(최종 리뷰 M-3).
+  bool get countsAsUnread => !isSystem;
 }

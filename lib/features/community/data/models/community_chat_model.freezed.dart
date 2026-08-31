@@ -351,6 +351,10 @@ mixin _$CommunityChatRoomResponseModel {
   CommunityChatLastMessageResponseModel? get lastMessage =>
       throw _privateConstructorUsedError;
 
+  /// 안 읽은 메시지 수 (v2.26.0, DEC-0044). 서버가 방별 읽음 커서로 센다 —
+  /// 내가 보낸 것과 입장·퇴장 안내는 제외. 앱은 이 값을 기준선으로 +1 한다.
+  int get unreadCount => throw _privateConstructorUsedError;
+
   /// Serializes this CommunityChatRoomResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -379,6 +383,7 @@ abstract class $CommunityChatRoomResponseModelCopyWith<$Res> {
     DateTime? meetingAt,
     int? memberCount,
     CommunityChatLastMessageResponseModel? lastMessage,
+    int unreadCount,
   });
 
   $CommunityChatLastMessageResponseModelCopyWith<$Res>? get lastMessage;
@@ -408,6 +413,7 @@ class _$CommunityChatRoomResponseModelCopyWithImpl<
     Object? meetingAt = freezed,
     Object? memberCount = freezed,
     Object? lastMessage = freezed,
+    Object? unreadCount = null,
   }) {
     return _then(
       _value.copyWith(
@@ -435,6 +441,10 @@ class _$CommunityChatRoomResponseModelCopyWithImpl<
                 ? _value.lastMessage
                 : lastMessage // ignore: cast_nullable_to_non_nullable
                       as CommunityChatLastMessageResponseModel?,
+            unreadCount: null == unreadCount
+                ? _value.unreadCount
+                : unreadCount // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -474,6 +484,7 @@ abstract class _$$CommunityChatRoomResponseModelImplCopyWith<$Res>
     DateTime? meetingAt,
     int? memberCount,
     CommunityChatLastMessageResponseModel? lastMessage,
+    int unreadCount,
   });
 
   @override
@@ -504,6 +515,7 @@ class __$$CommunityChatRoomResponseModelImplCopyWithImpl<$Res>
     Object? meetingAt = freezed,
     Object? memberCount = freezed,
     Object? lastMessage = freezed,
+    Object? unreadCount = null,
   }) {
     return _then(
       _$CommunityChatRoomResponseModelImpl(
@@ -531,6 +543,10 @@ class __$$CommunityChatRoomResponseModelImplCopyWithImpl<$Res>
             ? _value.lastMessage
             : lastMessage // ignore: cast_nullable_to_non_nullable
                   as CommunityChatLastMessageResponseModel?,
+        unreadCount: null == unreadCount
+            ? _value.unreadCount
+            : unreadCount // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -547,6 +563,7 @@ class _$CommunityChatRoomResponseModelImpl
     this.meetingAt,
     this.memberCount,
     this.lastMessage,
+    this.unreadCount = 0,
   });
 
   factory _$CommunityChatRoomResponseModelImpl.fromJson(
@@ -571,9 +588,15 @@ class _$CommunityChatRoomResponseModelImpl
   @override
   final CommunityChatLastMessageResponseModel? lastMessage;
 
+  /// 안 읽은 메시지 수 (v2.26.0, DEC-0044). 서버가 방별 읽음 커서로 센다 —
+  /// 내가 보낸 것과 입장·퇴장 안내는 제외. 앱은 이 값을 기준선으로 +1 한다.
+  @override
+  @JsonKey()
+  final int unreadCount;
+
   @override
   String toString() {
-    return 'CommunityChatRoomResponseModel(postId: $postId, title: $title, status: $status, meetingAt: $meetingAt, memberCount: $memberCount, lastMessage: $lastMessage)';
+    return 'CommunityChatRoomResponseModel(postId: $postId, title: $title, status: $status, meetingAt: $meetingAt, memberCount: $memberCount, lastMessage: $lastMessage, unreadCount: $unreadCount)';
   }
 
   @override
@@ -589,7 +612,9 @@ class _$CommunityChatRoomResponseModelImpl
             (identical(other.memberCount, memberCount) ||
                 other.memberCount == memberCount) &&
             (identical(other.lastMessage, lastMessage) ||
-                other.lastMessage == lastMessage));
+                other.lastMessage == lastMessage) &&
+            (identical(other.unreadCount, unreadCount) ||
+                other.unreadCount == unreadCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -602,6 +627,7 @@ class _$CommunityChatRoomResponseModelImpl
     meetingAt,
     memberCount,
     lastMessage,
+    unreadCount,
   );
 
   /// Create a copy of CommunityChatRoomResponseModel
@@ -632,6 +658,7 @@ abstract class _CommunityChatRoomResponseModel
     final DateTime? meetingAt,
     final int? memberCount,
     final CommunityChatLastMessageResponseModel? lastMessage,
+    final int unreadCount,
   }) = _$CommunityChatRoomResponseModelImpl;
 
   factory _CommunityChatRoomResponseModel.fromJson(Map<String, dynamic> json) =
@@ -654,6 +681,11 @@ abstract class _CommunityChatRoomResponseModel
   /// 아직 대화가 없는 방은 null이다. 목록에서 맨 뒤로 밀린다.
   @override
   CommunityChatLastMessageResponseModel? get lastMessage;
+
+  /// 안 읽은 메시지 수 (v2.26.0, DEC-0044). 서버가 방별 읽음 커서로 센다 —
+  /// 내가 보낸 것과 입장·퇴장 안내는 제외. 앱은 이 값을 기준선으로 +1 한다.
+  @override
+  int get unreadCount;
 
   /// Create a copy of CommunityChatRoomResponseModel
   /// with the given fields replaced by the non-null parameter values.
@@ -878,6 +910,11 @@ mixin _$CommunityChatMessageResponseModel {
   /// 값이 없으면 화면이 기본 아이콘으로 물러선다.
   int? get senderProfileIcon => throw _privateConstructorUsedError;
 
+  /// 이 메시지가 속한 방. 소켓 payload에만 실린다(REST 내역에는 없다 — 경로가
+  /// 이미 방을 가리키므로). 유저당 알림 채널은 모든 방의 메시지를 한 구독으로
+  /// 받기 때문에 이 값이 없으면 어느 방 이벤트인지 알 수 없다 (DEC-0045).
+  int? get communityPostId => throw _privateConstructorUsedError;
+
   /// 본문. `SYSTEM`·`GAME_INVITE`는 JSON 문자열이다.
   String? get message => throw _privateConstructorUsedError;
   String? get messageType => throw _privateConstructorUsedError;
@@ -910,6 +947,7 @@ abstract class $CommunityChatMessageResponseModelCopyWith<$Res> {
     int? senderId,
     String? senderNickname,
     int? senderProfileIcon,
+    int? communityPostId,
     String? message,
     String? messageType,
     DateTime? createdAt,
@@ -939,6 +977,7 @@ class _$CommunityChatMessageResponseModelCopyWithImpl<
     Object? senderId = freezed,
     Object? senderNickname = freezed,
     Object? senderProfileIcon = freezed,
+    Object? communityPostId = freezed,
     Object? message = freezed,
     Object? messageType = freezed,
     Object? createdAt = freezed,
@@ -964,6 +1003,10 @@ class _$CommunityChatMessageResponseModelCopyWithImpl<
             senderProfileIcon: freezed == senderProfileIcon
                 ? _value.senderProfileIcon
                 : senderProfileIcon // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            communityPostId: freezed == communityPostId
+                ? _value.communityPostId
+                : communityPostId // ignore: cast_nullable_to_non_nullable
                       as int?,
             message: freezed == message
                 ? _value.message
@@ -998,6 +1041,7 @@ abstract class _$$CommunityChatMessageResponseModelImplCopyWith<$Res>
     int? senderId,
     String? senderNickname,
     int? senderProfileIcon,
+    int? communityPostId,
     String? message,
     String? messageType,
     DateTime? createdAt,
@@ -1027,6 +1071,7 @@ class __$$CommunityChatMessageResponseModelImplCopyWithImpl<$Res>
     Object? senderId = freezed,
     Object? senderNickname = freezed,
     Object? senderProfileIcon = freezed,
+    Object? communityPostId = freezed,
     Object? message = freezed,
     Object? messageType = freezed,
     Object? createdAt = freezed,
@@ -1052,6 +1097,10 @@ class __$$CommunityChatMessageResponseModelImplCopyWithImpl<$Res>
         senderProfileIcon: freezed == senderProfileIcon
             ? _value.senderProfileIcon
             : senderProfileIcon // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        communityPostId: freezed == communityPostId
+            ? _value.communityPostId
+            : communityPostId // ignore: cast_nullable_to_non_nullable
                   as int?,
         message: freezed == message
             ? _value.message
@@ -1080,6 +1129,7 @@ class _$CommunityChatMessageResponseModelImpl
     this.senderId,
     this.senderNickname,
     this.senderProfileIcon,
+    this.communityPostId,
     this.message,
     this.messageType,
     this.createdAt,
@@ -1106,6 +1156,12 @@ class _$CommunityChatMessageResponseModelImpl
   @override
   final int? senderProfileIcon;
 
+  /// 이 메시지가 속한 방. 소켓 payload에만 실린다(REST 내역에는 없다 — 경로가
+  /// 이미 방을 가리키므로). 유저당 알림 채널은 모든 방의 메시지를 한 구독으로
+  /// 받기 때문에 이 값이 없으면 어느 방 이벤트인지 알 수 없다 (DEC-0045).
+  @override
+  final int? communityPostId;
+
   /// 본문. `SYSTEM`·`GAME_INVITE`는 JSON 문자열이다.
   @override
   final String? message;
@@ -1116,7 +1172,7 @@ class _$CommunityChatMessageResponseModelImpl
 
   @override
   String toString() {
-    return 'CommunityChatMessageResponseModel(id: $id, messageKey: $messageKey, senderId: $senderId, senderNickname: $senderNickname, senderProfileIcon: $senderProfileIcon, message: $message, messageType: $messageType, createdAt: $createdAt)';
+    return 'CommunityChatMessageResponseModel(id: $id, messageKey: $messageKey, senderId: $senderId, senderNickname: $senderNickname, senderProfileIcon: $senderProfileIcon, communityPostId: $communityPostId, message: $message, messageType: $messageType, createdAt: $createdAt)';
   }
 
   @override
@@ -1133,6 +1189,8 @@ class _$CommunityChatMessageResponseModelImpl
                 other.senderNickname == senderNickname) &&
             (identical(other.senderProfileIcon, senderProfileIcon) ||
                 other.senderProfileIcon == senderProfileIcon) &&
+            (identical(other.communityPostId, communityPostId) ||
+                other.communityPostId == communityPostId) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.messageType, messageType) ||
                 other.messageType == messageType) &&
@@ -1149,6 +1207,7 @@ class _$CommunityChatMessageResponseModelImpl
     senderId,
     senderNickname,
     senderProfileIcon,
+    communityPostId,
     message,
     messageType,
     createdAt,
@@ -1181,6 +1240,7 @@ abstract class _CommunityChatMessageResponseModel
     final int? senderId,
     final String? senderNickname,
     final int? senderProfileIcon,
+    final int? communityPostId,
     final String? message,
     final String? messageType,
     final DateTime? createdAt,
@@ -1206,6 +1266,12 @@ abstract class _CommunityChatMessageResponseModel
   /// 값이 없으면 화면이 기본 아이콘으로 물러선다.
   @override
   int? get senderProfileIcon;
+
+  /// 이 메시지가 속한 방. 소켓 payload에만 실린다(REST 내역에는 없다 — 경로가
+  /// 이미 방을 가리키므로). 유저당 알림 채널은 모든 방의 메시지를 한 구독으로
+  /// 받기 때문에 이 값이 없으면 어느 방 이벤트인지 알 수 없다 (DEC-0045).
+  @override
+  int? get communityPostId;
 
   /// 본문. `SYSTEM`·`GAME_INVITE`는 JSON 문자열이다.
   @override
@@ -1723,6 +1789,9 @@ _$CommunityChatMemberListResponseModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CommunityChatMemberListResponseModel {
+  /// 요청한 사용자 본인의 이 방 푸시 수신 여부 (v2.26.0). 멤버별 값이 아니라
+  /// 응답 최상위에 하나다 — 사이드바 종 아이콘의 초기 상태.
+  bool get notificationEnabled => throw _privateConstructorUsedError;
   List<CommunityChatMemberResponseModel> get members =>
       throw _privateConstructorUsedError;
 
@@ -1749,7 +1818,10 @@ abstract class $CommunityChatMemberListResponseModelCopyWith<$Res> {
         CommunityChatMemberListResponseModel
       >;
   @useResult
-  $Res call({List<CommunityChatMemberResponseModel> members});
+  $Res call({
+    bool notificationEnabled,
+    List<CommunityChatMemberResponseModel> members,
+  });
 }
 
 /// @nodoc
@@ -1769,9 +1841,13 @@ class _$CommunityChatMemberListResponseModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? members = null}) {
+  $Res call({Object? notificationEnabled = null, Object? members = null}) {
     return _then(
       _value.copyWith(
+            notificationEnabled: null == notificationEnabled
+                ? _value.notificationEnabled
+                : notificationEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
             members: null == members
                 ? _value.members
                 : members // ignore: cast_nullable_to_non_nullable
@@ -1791,7 +1867,10 @@ abstract class _$$CommunityChatMemberListResponseModelImplCopyWith<$Res>
   ) = __$$CommunityChatMemberListResponseModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CommunityChatMemberResponseModel> members});
+  $Res call({
+    bool notificationEnabled,
+    List<CommunityChatMemberResponseModel> members,
+  });
 }
 
 /// @nodoc
@@ -1811,9 +1890,13 @@ class __$$CommunityChatMemberListResponseModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? members = null}) {
+  $Res call({Object? notificationEnabled = null, Object? members = null}) {
     return _then(
       _$CommunityChatMemberListResponseModelImpl(
+        notificationEnabled: null == notificationEnabled
+            ? _value.notificationEnabled
+            : notificationEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
         members: null == members
             ? _value._members
             : members // ignore: cast_nullable_to_non_nullable
@@ -1828,6 +1911,7 @@ class __$$CommunityChatMemberListResponseModelImplCopyWithImpl<$Res>
 class _$CommunityChatMemberListResponseModelImpl
     implements _CommunityChatMemberListResponseModel {
   const _$CommunityChatMemberListResponseModelImpl({
+    this.notificationEnabled = true,
     final List<CommunityChatMemberResponseModel> members =
         const <CommunityChatMemberResponseModel>[],
   }) : _members = members;
@@ -1836,6 +1920,11 @@ class _$CommunityChatMemberListResponseModelImpl
     Map<String, dynamic> json,
   ) => _$$CommunityChatMemberListResponseModelImplFromJson(json);
 
+  /// 요청한 사용자 본인의 이 방 푸시 수신 여부 (v2.26.0). 멤버별 값이 아니라
+  /// 응답 최상위에 하나다 — 사이드바 종 아이콘의 초기 상태.
+  @override
+  @JsonKey()
+  final bool notificationEnabled;
   final List<CommunityChatMemberResponseModel> _members;
   @override
   @JsonKey()
@@ -1847,7 +1936,7 @@ class _$CommunityChatMemberListResponseModelImpl
 
   @override
   String toString() {
-    return 'CommunityChatMemberListResponseModel(members: $members)';
+    return 'CommunityChatMemberListResponseModel(notificationEnabled: $notificationEnabled, members: $members)';
   }
 
   @override
@@ -1855,13 +1944,18 @@ class _$CommunityChatMemberListResponseModelImpl
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CommunityChatMemberListResponseModelImpl &&
+            (identical(other.notificationEnabled, notificationEnabled) ||
+                other.notificationEnabled == notificationEnabled) &&
             const DeepCollectionEquality().equals(other._members, _members));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_members));
+  int get hashCode => Object.hash(
+    runtimeType,
+    notificationEnabled,
+    const DeepCollectionEquality().hash(_members),
+  );
 
   /// Create a copy of CommunityChatMemberListResponseModel
   /// with the given fields replaced by the non-null parameter values.
@@ -1885,6 +1979,7 @@ class _$CommunityChatMemberListResponseModelImpl
 abstract class _CommunityChatMemberListResponseModel
     implements CommunityChatMemberListResponseModel {
   const factory _CommunityChatMemberListResponseModel({
+    final bool notificationEnabled,
     final List<CommunityChatMemberResponseModel> members,
   }) = _$CommunityChatMemberListResponseModelImpl;
 
@@ -1892,6 +1987,10 @@ abstract class _CommunityChatMemberListResponseModel
     Map<String, dynamic> json,
   ) = _$CommunityChatMemberListResponseModelImpl.fromJson;
 
+  /// 요청한 사용자 본인의 이 방 푸시 수신 여부 (v2.26.0). 멤버별 값이 아니라
+  /// 응답 최상위에 하나다 — 사이드바 종 아이콘의 초기 상태.
+  @override
+  bool get notificationEnabled;
   @override
   List<CommunityChatMemberResponseModel> get members;
 
@@ -1901,6 +2000,364 @@ abstract class _CommunityChatMemberListResponseModel
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityChatMemberListResponseModelImplCopyWith<
     _$CommunityChatMemberListResponseModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityChatReadRequestModel _$CommunityChatReadRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityChatReadRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityChatReadRequestModel {
+  int get lastReadMessageId => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityChatReadRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityChatReadRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityChatReadRequestModelCopyWith<CommunityChatReadRequestModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityChatReadRequestModelCopyWith<$Res> {
+  factory $CommunityChatReadRequestModelCopyWith(
+    CommunityChatReadRequestModel value,
+    $Res Function(CommunityChatReadRequestModel) then,
+  ) =
+      _$CommunityChatReadRequestModelCopyWithImpl<
+        $Res,
+        CommunityChatReadRequestModel
+      >;
+  @useResult
+  $Res call({int lastReadMessageId});
+}
+
+/// @nodoc
+class _$CommunityChatReadRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityChatReadRequestModel
+>
+    implements $CommunityChatReadRequestModelCopyWith<$Res> {
+  _$CommunityChatReadRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityChatReadRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? lastReadMessageId = null}) {
+    return _then(
+      _value.copyWith(
+            lastReadMessageId: null == lastReadMessageId
+                ? _value.lastReadMessageId
+                : lastReadMessageId // ignore: cast_nullable_to_non_nullable
+                      as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityChatReadRequestModelImplCopyWith<$Res>
+    implements $CommunityChatReadRequestModelCopyWith<$Res> {
+  factory _$$CommunityChatReadRequestModelImplCopyWith(
+    _$CommunityChatReadRequestModelImpl value,
+    $Res Function(_$CommunityChatReadRequestModelImpl) then,
+  ) = __$$CommunityChatReadRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int lastReadMessageId});
+}
+
+/// @nodoc
+class __$$CommunityChatReadRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityChatReadRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityChatReadRequestModelImpl
+        >
+    implements _$$CommunityChatReadRequestModelImplCopyWith<$Res> {
+  __$$CommunityChatReadRequestModelImplCopyWithImpl(
+    _$CommunityChatReadRequestModelImpl _value,
+    $Res Function(_$CommunityChatReadRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityChatReadRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? lastReadMessageId = null}) {
+    return _then(
+      _$CommunityChatReadRequestModelImpl(
+        lastReadMessageId: null == lastReadMessageId
+            ? _value.lastReadMessageId
+            : lastReadMessageId // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityChatReadRequestModelImpl
+    implements _CommunityChatReadRequestModel {
+  const _$CommunityChatReadRequestModelImpl({required this.lastReadMessageId});
+
+  factory _$CommunityChatReadRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityChatReadRequestModelImplFromJson(json);
+
+  @override
+  final int lastReadMessageId;
+
+  @override
+  String toString() {
+    return 'CommunityChatReadRequestModel(lastReadMessageId: $lastReadMessageId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityChatReadRequestModelImpl &&
+            (identical(other.lastReadMessageId, lastReadMessageId) ||
+                other.lastReadMessageId == lastReadMessageId));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, lastReadMessageId);
+
+  /// Create a copy of CommunityChatReadRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityChatReadRequestModelImplCopyWith<
+    _$CommunityChatReadRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityChatReadRequestModelImplCopyWithImpl<
+        _$CommunityChatReadRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityChatReadRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityChatReadRequestModel
+    implements CommunityChatReadRequestModel {
+  const factory _CommunityChatReadRequestModel({
+    required final int lastReadMessageId,
+  }) = _$CommunityChatReadRequestModelImpl;
+
+  factory _CommunityChatReadRequestModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityChatReadRequestModelImpl.fromJson;
+
+  @override
+  int get lastReadMessageId;
+
+  /// Create a copy of CommunityChatReadRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityChatReadRequestModelImplCopyWith<
+    _$CommunityChatReadRequestModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityChatNotificationRequestModel
+_$CommunityChatNotificationRequestModelFromJson(Map<String, dynamic> json) {
+  return _CommunityChatNotificationRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityChatNotificationRequestModel {
+  bool get allowNotification => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityChatNotificationRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityChatNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityChatNotificationRequestModelCopyWith<
+    CommunityChatNotificationRequestModel
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityChatNotificationRequestModelCopyWith<$Res> {
+  factory $CommunityChatNotificationRequestModelCopyWith(
+    CommunityChatNotificationRequestModel value,
+    $Res Function(CommunityChatNotificationRequestModel) then,
+  ) =
+      _$CommunityChatNotificationRequestModelCopyWithImpl<
+        $Res,
+        CommunityChatNotificationRequestModel
+      >;
+  @useResult
+  $Res call({bool allowNotification});
+}
+
+/// @nodoc
+class _$CommunityChatNotificationRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityChatNotificationRequestModel
+>
+    implements $CommunityChatNotificationRequestModelCopyWith<$Res> {
+  _$CommunityChatNotificationRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityChatNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? allowNotification = null}) {
+    return _then(
+      _value.copyWith(
+            allowNotification: null == allowNotification
+                ? _value.allowNotification
+                : allowNotification // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityChatNotificationRequestModelImplCopyWith<$Res>
+    implements $CommunityChatNotificationRequestModelCopyWith<$Res> {
+  factory _$$CommunityChatNotificationRequestModelImplCopyWith(
+    _$CommunityChatNotificationRequestModelImpl value,
+    $Res Function(_$CommunityChatNotificationRequestModelImpl) then,
+  ) = __$$CommunityChatNotificationRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool allowNotification});
+}
+
+/// @nodoc
+class __$$CommunityChatNotificationRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityChatNotificationRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityChatNotificationRequestModelImpl
+        >
+    implements _$$CommunityChatNotificationRequestModelImplCopyWith<$Res> {
+  __$$CommunityChatNotificationRequestModelImplCopyWithImpl(
+    _$CommunityChatNotificationRequestModelImpl _value,
+    $Res Function(_$CommunityChatNotificationRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityChatNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? allowNotification = null}) {
+    return _then(
+      _$CommunityChatNotificationRequestModelImpl(
+        allowNotification: null == allowNotification
+            ? _value.allowNotification
+            : allowNotification // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityChatNotificationRequestModelImpl
+    implements _CommunityChatNotificationRequestModel {
+  const _$CommunityChatNotificationRequestModelImpl({
+    required this.allowNotification,
+  });
+
+  factory _$CommunityChatNotificationRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityChatNotificationRequestModelImplFromJson(json);
+
+  @override
+  final bool allowNotification;
+
+  @override
+  String toString() {
+    return 'CommunityChatNotificationRequestModel(allowNotification: $allowNotification)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityChatNotificationRequestModelImpl &&
+            (identical(other.allowNotification, allowNotification) ||
+                other.allowNotification == allowNotification));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, allowNotification);
+
+  /// Create a copy of CommunityChatNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityChatNotificationRequestModelImplCopyWith<
+    _$CommunityChatNotificationRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityChatNotificationRequestModelImplCopyWithImpl<
+        _$CommunityChatNotificationRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityChatNotificationRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityChatNotificationRequestModel
+    implements CommunityChatNotificationRequestModel {
+  const factory _CommunityChatNotificationRequestModel({
+    required final bool allowNotification,
+  }) = _$CommunityChatNotificationRequestModelImpl;
+
+  factory _CommunityChatNotificationRequestModel.fromJson(
+    Map<String, dynamic> json,
+  ) = _$CommunityChatNotificationRequestModelImpl.fromJson;
+
+  @override
+  bool get allowNotification;
+
+  /// Create a copy of CommunityChatNotificationRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityChatNotificationRequestModelImplCopyWith<
+    _$CommunityChatNotificationRequestModelImpl
   >
   get copyWith => throw _privateConstructorUsedError;
 }

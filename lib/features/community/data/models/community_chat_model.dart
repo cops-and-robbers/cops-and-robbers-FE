@@ -52,6 +52,10 @@ class CommunityChatRoomResponseModel with _$CommunityChatRoomResponseModel {
 
     /// 아직 대화가 없는 방은 null이다. 목록에서 맨 뒤로 밀린다.
     CommunityChatLastMessageResponseModel? lastMessage,
+
+    /// 안 읽은 메시지 수 (v2.26.0, DEC-0044). 서버가 방별 읽음 커서로 센다 —
+    /// 내가 보낸 것과 입장·퇴장 안내는 제외. 앱은 이 값을 기준선으로 +1 한다.
+    @Default(0) int unreadCount,
   }) = _CommunityChatRoomResponseModel;
 
   factory CommunityChatRoomResponseModel.fromJson(Map<String, dynamic> json) =>
@@ -97,6 +101,11 @@ class CommunityChatMessageResponseModel
     /// 보내므로(소켓은 BE #178에서 붙었다) 이 DTO 하나로 둘 다 읽는다.
     /// 값이 없으면 화면이 기본 아이콘으로 물러선다.
     int? senderProfileIcon,
+
+    /// 이 메시지가 속한 방. 소켓 payload에만 실린다(REST 내역에는 없다 — 경로가
+    /// 이미 방을 가리키므로). 유저당 알림 채널은 모든 방의 메시지를 한 구독으로
+    /// 받기 때문에 이 값이 없으면 어느 방 이벤트인지 알 수 없다 (DEC-0045).
+    int? communityPostId,
 
     /// 본문. `SYSTEM`·`GAME_INVITE`는 JSON 문자열이다.
     String? message,
@@ -159,6 +168,9 @@ class CommunityChatMemberResponseModel with _$CommunityChatMemberResponseModel {
 class CommunityChatMemberListResponseModel
     with _$CommunityChatMemberListResponseModel {
   const factory CommunityChatMemberListResponseModel({
+    /// 요청한 사용자 본인의 이 방 푸시 수신 여부 (v2.26.0). 멤버별 값이 아니라
+    /// 응답 최상위에 하나다 — 사이드바 종 아이콘의 초기 상태.
+    @Default(true) bool notificationEnabled,
     @Default(<CommunityChatMemberResponseModel>[])
     List<CommunityChatMemberResponseModel> members,
   }) = _CommunityChatMemberListResponseModel;
@@ -166,4 +178,34 @@ class CommunityChatMemberListResponseModel
   factory CommunityChatMemberListResponseModel.fromJson(
     Map<String, dynamic> json,
   ) => _$CommunityChatMemberListResponseModelFromJson(json);
+}
+
+/// 채팅방 읽음 처리 요청 DTO — `POST /{postId}/chat/read`
+///
+/// 백엔드 스키마: api-docs.json#CommunityChatReadRequest (v2.26.0)
+/// 읽은 위치는 앞으로만 간다 — 과거 id를 보내도 뒤로 밀리지 않는다.
+@freezed
+class CommunityChatReadRequestModel with _$CommunityChatReadRequestModel {
+  const factory CommunityChatReadRequestModel({
+    required int lastReadMessageId,
+  }) = _CommunityChatReadRequestModel;
+
+  factory CommunityChatReadRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityChatReadRequestModelFromJson(json);
+}
+
+/// 채팅방 알림 켜기/끄기 요청 DTO — `PUT /{postId}/chat/notification`
+///
+/// 백엔드 스키마: api-docs.json#CommunityChatNotificationRequest (v2.26.0)
+/// 끄면 푸시만 안 오고 안 읽은 개수는 그대로 오른다.
+@freezed
+class CommunityChatNotificationRequestModel
+    with _$CommunityChatNotificationRequestModel {
+  const factory CommunityChatNotificationRequestModel({
+    required bool allowNotification,
+  }) = _CommunityChatNotificationRequestModel;
+
+  factory CommunityChatNotificationRequestModel.fromJson(
+    Map<String, dynamic> json,
+  ) => _$CommunityChatNotificationRequestModelFromJson(json);
 }

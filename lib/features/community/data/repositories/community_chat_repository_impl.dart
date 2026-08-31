@@ -20,7 +20,7 @@ import '../models/community_wire.dart';
 /// 토큰을 얻는 함수. 소켓은 연결할 때마다 최신 토큰이 필요하다.
 typedef AccessTokenReader = Future<String?> Function();
 
-/// `CommunityChatRepository` 구현체 — REST 5종 + 소켓 하나를 인터페이스 뒤로 묶는다
+/// `CommunityChatRepository` 구현체 — REST 7종 + 소켓 하나를 인터페이스 뒤로 묶는다
 ///
 /// 화면과 Notifier는 이 인터페이스만 알기 때문에, 서버가 REST로 주는지 소켓으로
 /// 주는지가 위로 새지 않는다.
@@ -34,9 +34,6 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
   StreamController<CommunityChatEvent>? _events;
   final _subs = <StreamSubscription<Object?>>[];
 
-  /// 지금 소켓이 붙어 있는 방. [disconnect]가 남의 연결을 끊지 않게 하는 열쇠다.
-  int? _connectedPostId;
-
   // ── REST ──────────────────────────────────────────────────────
 
   @override
@@ -46,19 +43,22 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
   );
 
   @override
-  Future<List<CommunityChatMemberEntity>> getMembers(int postId) => _guard(
-    () async => (await _api.getChatMembers(postId)).members
-        .map(
-          (m) => CommunityChatMemberEntity(
-            userId: m.userId,
-            nickname: m.nickname ?? '',
-            profileIcon: m.profileIcon,
-            isAuthor: m.isAuthor,
-          ),
-        )
-        .toList(),
-    messageKey: 'errorCommunityChatMembersLoadGeneric',
-  );
+  Future<CommunityChatMembersEntity> getMembers(int postId) => _guard(() async {
+    final res = await _api.getChatMembers(postId);
+    return CommunityChatMembersEntity(
+      notificationEnabled: res.notificationEnabled,
+      members: res.members
+          .map(
+            (m) => CommunityChatMemberEntity(
+              userId: m.userId,
+              nickname: m.nickname ?? '',
+              profileIcon: m.profileIcon,
+              isAuthor: m.isAuthor,
+            ),
+          )
+          .toList(),
+    );
+  }, messageKey: 'errorCommunityChatMembersLoadGeneric');
 
   /// 이미 멤버(409)면 성공으로 삼킨다 — 서버가 `chatJoined`를 주지 않아 앱은
   /// 참여 여부를 미리 알 수 없다. 무조건 보내고 409면 이미 들어가 있다는 뜻이다.
@@ -92,23 +92,36 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
     );
   }, messageKey: 'errorCommunityChatMessagesLoadGeneric');
 
+  @override
+  Future<void> markRead(int postId, int lastReadMessageId) => _guard(
+    () => _api.readChat(
+      postId,
+      CommunityChatReadRequestModel(lastReadMessageId: lastReadMessageId),
+    ),
+    messageKey: 'errorCommunityChatReadGeneric',
+  );
+
+  @override
+  Future<void> setNotification(int postId, {required bool enabled}) => _guard(
+    () => _api.updateChatNotification(
+      postId,
+      CommunityChatNotificationRequestModel(allowNotification: enabled),
+    ),
+    messageKey: 'errorCommunityChatNotificationGeneric',
+  );
+
   // ── 소켓 ──────────────────────────────────────────────────────
 
   @override
-  Stream<CommunityChatEvent> connect(int postId) {
+  Stream<CommunityChatEvent> connect(int userId) {
     _teardown();
-    _connectedPostId = postId;
 
     final events = StreamController<CommunityChatEvent>.broadcast();
     _events = events;
 
     // 셋을 한 스트림에 실어 보낸다 — Notifier가 구독 하나만 들고 있으면 된다.
     _subs
-      ..add(
-        _stomp.onChatMessage.listen(
-          (m) => events.add(CommunityChatEvent.message(_toMessage(m))),
-        ),
-      )
+      ..add(_stomp.onChatMessage.listen((m) => _forwardMessage(m, events)))
       ..add(
         _stomp.onConnectionState.listen(
           (s) => events.add(CommunityChatEvent.connection(_toConnection(s))),
@@ -122,25 +135,56 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
         ),
       );
 
-    // 구독을 먼저 예약해 둔다 — 연결 성공 콜백에서 자동으로 걸린다.
-    _stomp.subscribeRoom(postId);
-    unawaited(_openSocket(postId, events));
+    unawaited(_openSocket(userId, events));
     return events.stream;
   }
 
+  void _forwardMessage(
+    CommunityChatMessageResponseModel m,
+    StreamController<CommunityChatEvent> events,
+  ) {
+    final postId = m.communityPostId;
+    if (postId == null) {
+      // 개인 채널 메시지는 방 번호가 payload에만 있다 — 없으면 어느 방인지 몰라
+      // 목록도 방도 반영할 수 없다. 버리고 로그만 남긴다.
+      debugPrint('[CommunityChat] ⚠️ communityPostId 없는 메시지 무시: id=${m.id}');
+      return;
+    }
+    events.add(CommunityChatEvent.message(postId, _toMessage(m)));
+  }
+
   Future<void> _openSocket(
-    int postId,
+    int userId,
     StreamController<CommunityChatEvent> events,
   ) async {
     final token = await _readAccessToken();
-    // 토큰을 얻는 사이에 다른 방으로 옮겼으면 이 연결은 버린다.
-    if (_connectedPostId != postId || events.isClosed) return;
+    // 토큰을 얻는 사이에 로그아웃했으면 이 연결은 버린다.
+    if (events.isClosed) return;
     if (token == null) {
       events.add(const CommunityChatEvent.error('ACCESS_TOKEN_EXPIRED'));
+      // connect()의 모든 종료 경로는 연결 이벤트를 낸다 — 안 내면 소켓 Notifier가
+      // connecting에 갇혀 재연결 가드가 영원히 막는다(최종 리뷰 I-1).
+      events.add(
+        const CommunityChatEvent.connection(
+          CommunityChatConnectionState.disconnected,
+        ),
+      );
       return;
     }
-    _stomp.connect(ApiEndpoints.gameConnectionUrl, token);
+    _stomp.connectAs(ApiEndpoints.gameConnectionUrl, token, userId: userId);
   }
+
+  @override
+  Future<void> disconnect() async {
+    _teardown();
+    _stomp.disconnect();
+  }
+
+  @override
+  void subscribeRoom(int postId) => _stomp.subscribeRoom(postId);
+
+  @override
+  void unsubscribeRoom(int postId) => _stomp.unsubscribeRoom(postId);
 
   @override
   Future<void> send(
@@ -148,15 +192,6 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
     required String messageKey,
     required String text,
   }) async => _stomp.publishMessage(postId, messageKey: messageKey, text: text);
-
-  @override
-  Future<void> disconnect(int postId) async {
-    // 방 A가 B보다 늦게 정리되는 경우 — 지금 붙어 있는 방이 아니면 손대지 않는다.
-    if (_connectedPostId != postId) return;
-    _teardown();
-    _connectedPostId = null;
-    _stomp.disconnect();
-  }
 
   void _teardown() {
     for (final s in _subs) {
@@ -177,6 +212,7 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
         meetingAt: (m.meetingAt ?? DateTime.now()).toLocal(),
         memberCount: m.memberCount ?? 0,
         lastMessage: _toLastMessage(m.lastMessage),
+        unreadCount: m.unreadCount,
       );
 
   CommunityChatLastMessageEntity? _toLastMessage(
@@ -209,6 +245,8 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
           m.message ?? '',
         ),
         createdAt: (m.createdAt ?? DateTime.now()).toLocal(),
+        // 안 읽은 개수 규칙은 와이어 타입 기준이다 — 본문이 unknown으로 접혀도 센다/안 센다가 서버와 같아야 한다.
+        isSystem: m.messageType == 'SYSTEM',
       );
 
   CommunityChatConnectionState _toConnection(

@@ -46,6 +46,7 @@ _$$CommunityChatRoomResponseModelImplFromJson(Map<String, dynamic> json) =>
           : CommunityChatLastMessageResponseModel.fromJson(
               json['lastMessage'] as Map<String, dynamic>,
             ),
+      unreadCount: (json['unreadCount'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$CommunityChatRoomResponseModelImplToJson(
@@ -57,6 +58,7 @@ Map<String, dynamic> _$$CommunityChatRoomResponseModelImplToJson(
   'meetingAt': instance.meetingAt?.toIso8601String(),
   'memberCount': instance.memberCount,
   'lastMessage': instance.lastMessage?.toJson(),
+  'unreadCount': instance.unreadCount,
 };
 
 _$CommunityChatRoomListResponseModelImpl
@@ -87,6 +89,7 @@ _$$CommunityChatMessageResponseModelImplFromJson(Map<String, dynamic> json) =>
       senderId: (json['senderId'] as num?)?.toInt(),
       senderNickname: json['senderNickname'] as String?,
       senderProfileIcon: (json['senderProfileIcon'] as num?)?.toInt(),
+      communityPostId: (json['communityPostId'] as num?)?.toInt(),
       message: json['message'] as String?,
       messageType: json['messageType'] as String?,
       createdAt: json['createdAt'] == null
@@ -102,6 +105,7 @@ Map<String, dynamic> _$$CommunityChatMessageResponseModelImplToJson(
   'senderId': instance.senderId,
   'senderNickname': instance.senderNickname,
   'senderProfileIcon': instance.senderProfileIcon,
+  'communityPostId': instance.communityPostId,
   'message': instance.message,
   'messageType': instance.messageType,
   'createdAt': instance.createdAt?.toIso8601String(),
@@ -153,6 +157,7 @@ _$CommunityChatMemberListResponseModelImpl
 _$$CommunityChatMemberListResponseModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$CommunityChatMemberListResponseModelImpl(
+  notificationEnabled: json['notificationEnabled'] as bool? ?? true,
   members:
       (json['members'] as List<dynamic>?)
           ?.map(
@@ -167,5 +172,27 @@ _$$CommunityChatMemberListResponseModelImplFromJson(
 Map<String, dynamic> _$$CommunityChatMemberListResponseModelImplToJson(
   _$CommunityChatMemberListResponseModelImpl instance,
 ) => <String, dynamic>{
+  'notificationEnabled': instance.notificationEnabled,
   'members': instance.members.map((e) => e.toJson()).toList(),
 };
+
+_$CommunityChatReadRequestModelImpl
+_$$CommunityChatReadRequestModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityChatReadRequestModelImpl(
+      lastReadMessageId: (json['lastReadMessageId'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$CommunityChatReadRequestModelImplToJson(
+  _$CommunityChatReadRequestModelImpl instance,
+) => <String, dynamic>{'lastReadMessageId': instance.lastReadMessageId};
+
+_$CommunityChatNotificationRequestModelImpl
+_$$CommunityChatNotificationRequestModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$CommunityChatNotificationRequestModelImpl(
+  allowNotification: json['allowNotification'] as bool,
+);
+
+Map<String, dynamic> _$$CommunityChatNotificationRequestModelImplToJson(
+  _$CommunityChatNotificationRequestModelImpl instance,
+) => <String, dynamic>{'allowNotification': instance.allowNotification};

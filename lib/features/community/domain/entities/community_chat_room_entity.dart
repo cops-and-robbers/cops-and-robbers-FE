@@ -30,5 +30,8 @@ class CommunityChatRoomEntity with _$CommunityChatRoomEntity {
     required DateTime meetingAt,
     required int memberCount,
     CommunityChatLastMessageEntity? lastMessage,
+
+    /// 안 읽은 개수. 서버 기준선에 소켓 이벤트로 +1 한다(DEC-0044).
+    @Default(0) int unreadCount,
   }) = _CommunityChatRoomEntity;
 }
