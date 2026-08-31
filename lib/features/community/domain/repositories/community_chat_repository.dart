@@ -61,4 +61,12 @@ abstract class CommunityChatRepository {
     required String messageKey,
     required String text,
   });
+
+  /// 게임 초대 전송(GAME_INVITE, #516). 낙관적 갱신이 없는 단발 발신이라
+  /// 연결이 없으면 false를 돌려 호출부가 사용자에게 알린다.
+  bool sendGameInvite(
+    int postId, {
+    required String messageKey,
+    required String inviteCode,
+  });
 }

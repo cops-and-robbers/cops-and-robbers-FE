@@ -625,6 +625,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityChatViewLocation => 'View location';
 
   @override
+  String get communityChatStartGame => 'Start game';
+
+  @override
+  String get communityChatInviteSendFailed =>
+      'Couldn\'t send the invite to the chat';
+
+  @override
+  String get communityChatInviteDialogTitle => 'Game invitation';
+
+  @override
+  String communityChatInviteDialogBody(String nickname) {
+    return '$nickname invited you\nto a game';
+  }
+
+  @override
+  String get communityChatInviteDialogCodeLabel => 'Room code';
+
+  @override
+  String get communityChatInviteDialogDecline => 'Decline';
+
+  @override
+  String get communityChatInviteDialogEnter => 'Enter';
+
+  @override
   String communityChatMemberCount(int count) {
     return '$count participants';
   }

@@ -12,7 +12,7 @@ import 'dialog_spacing.dart';
 /// 앱 전역에서 사용하는 공용 다이얼로그 컴포넌트
 ///
 /// **기본 스펙**:
-/// - 배경: white, 모서리: 24px 라운드
+/// - 배경: white, 모서리: 16px 라운드 (버튼 12px), 내부 패딩: 14px
 /// - 양옆 마진: 36px (화면 너비에 맞게 확장)
 /// - 애니메이션: 스케일 + 페이드 (250ms, easeOutBack)
 ///
@@ -401,17 +401,15 @@ class _AppDialogState extends State<AppDialog>
             child: Container(
               width: double.infinity,
               margin: AppPadding.horizontal36,
-              padding: EdgeInsets.only(
-                top: AppSpacing.vertical24,
-                left: AppSpacing.horizontal12,
-                right: AppSpacing.horizontal12,
-                bottom: AppSpacing.vertical16,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.horizontal14,
+                vertical: AppSpacing.vertical14,
               ),
               decoration: BoxDecoration(
                 color:
                     widget.backgroundColor ??
                     (widget.isDarkMode ? AppColors.black : AppColors.white),
-                borderRadius: AppRadius.xxlarge,
+                borderRadius: AppRadius.xlarge,
               ),
               child: Material(
                 color: Colors.transparent,
@@ -548,7 +546,7 @@ class _AppDialogState extends State<AppDialog>
               onPressed: widget.onCancel,
               backgroundColor: _resolvedCancelColor,
               foregroundColor: _resolvedCancelTextColor,
-              borderRadius: AppRadius.medium,
+              borderRadius: AppRadius.large,
               showBorder: false,
               height: 48.h,
               textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
@@ -563,7 +561,7 @@ class _AppDialogState extends State<AppDialog>
               },
               backgroundColor: _resolvedConfirmColor,
               foregroundColor: _resolvedConfirmTextColor,
-              borderRadius: AppRadius.medium,
+              borderRadius: AppRadius.large,
               showBorder: false,
               height: 48.h,
               textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
@@ -581,7 +579,7 @@ class _AppDialogState extends State<AppDialog>
       },
       backgroundColor: _resolvedConfirmColor,
       foregroundColor: _resolvedConfirmTextColor,
-      borderRadius: AppRadius.medium,
+      borderRadius: AppRadius.large,
       showBorder: false,
       width: double.infinity,
       height: 48.h,

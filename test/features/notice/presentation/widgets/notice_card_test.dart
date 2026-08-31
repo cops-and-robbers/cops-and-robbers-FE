@@ -38,11 +38,7 @@ void main() {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: NoticeCard(
-            notice: item,
-            isExpanded: isExpanded,
-            onTap: () {},
-          ),
+          body: NoticeCard(notice: item, isExpanded: isExpanded, onTap: () {}),
         ),
       ),
     );

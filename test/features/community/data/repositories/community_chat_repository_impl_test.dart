@@ -133,6 +133,18 @@ class _FakeStomp implements CommunityChatStompDatasource {
     required String text,
   }) => calls.add('publish:$messageKey');
 
+  bool inviteConnected = true;
+
+  @override
+  bool publishGameInvite(
+    int postId, {
+    required String messageKey,
+    required String inviteCode,
+  }) {
+    calls.add('invite:$postId:$inviteCode');
+    return inviteConnected;
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -409,6 +421,25 @@ void main() {
           CommunityChatConnectionState.disconnected,
         ),
       ]);
+    });
+  });
+
+  group('sendGameInvite', () {
+    test('passes_through_and_reports_the_connection_result', () {
+      final stomp = _FakeStomp();
+      final repo = _repo(_FakeApi(), stomp);
+
+      expect(
+        repo.sendGameInvite(_postId, messageKey: 'k1', inviteCode: 'ABC123'),
+        isTrue,
+      );
+      expect(stomp.calls, contains('invite:$_postId:ABC123'));
+
+      stomp.inviteConnected = false;
+      expect(
+        repo.sendGameInvite(_postId, messageKey: 'k2', inviteCode: 'ABC123'),
+        isFalse,
+      );
     });
   });
 

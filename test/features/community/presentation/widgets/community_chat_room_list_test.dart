@@ -106,6 +106,13 @@ class _RoomsOnlyRepository implements CommunityChatRepository {
     required String messageKey,
     required String text,
   }) => throw UnimplementedError();
+
+  @override
+  bool sendGameInvite(
+    int postId, {
+    required String messageKey,
+    required String inviteCode,
+  }) => throw UnimplementedError();
 }
 
 /// 탭을 오갈 때 컨테이너는 살아 있어야 한다 — `ProviderScope`를 새로 만들면

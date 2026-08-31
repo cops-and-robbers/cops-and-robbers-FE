@@ -6,13 +6,13 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../community_chat_time_format.dart';
 
-/// 채팅방 상단 모임 카드 — 모임 시각 · 장소 보기 · 현재 인원
+/// 채팅방 상단 모임 카드 — 모임 시각 · 장소 보기 · 현재 인원 · 방장 "게임 시작"
 ///
-/// 시안의 방장 "게임 시작" 버튼은 초대 보내기 범위(제외)와 함께 뺐다.
 /// 인원수는 목록 응답에서만 오므로 못 받았으면 `-/10명`으로 그린다.
 class CommunityChatMeetingCard extends StatelessWidget {
   const CommunityChatMeetingCard({
@@ -20,6 +20,7 @@ class CommunityChatMeetingCard extends StatelessWidget {
     required this.memberCount,
     required this.onViewLocation,
     required this.onOpenMeetingInfo,
+    this.onStartGame,
     super.key,
   });
 
@@ -29,6 +30,9 @@ class CommunityChatMeetingCard extends StatelessWidget {
 
   /// 카드 전체를 누르면 모임 정보(전체 화면)로 이동.
   final VoidCallback onOpenMeetingInfo;
+
+  /// 방장 전용 "게임 시작" — null이면 버튼을 그리지 않는다(비방장).
+  final VoidCallback? onStartGame;
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +70,14 @@ class CommunityChatMeetingCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        formatCommunityMeetingAt(l10n, post.meetingAt),
-                        style: AppTextStyles.tag_14.copyWith(
-                          color: AppColors.black,
+                      // 방장 버튼이 폭을 가져가면 시각이 먼저 줄어든다 — 링크는 남긴다
+                      Flexible(
+                        child: Text(
+                          formatCommunityMeetingAt(l10n, post.meetingAt),
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.tag_14.copyWith(
+                            color: AppColors.black,
+                          ),
                         ),
                       ),
                       SizedBox(width: AppSpacing.horizontal6),
@@ -106,6 +114,20 @@ class CommunityChatMeetingCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (onStartGame != null) ...[
+              SizedBox(width: AppSpacing.horizontal8),
+              AppButton(
+                width: 88.w,
+                height: 36.h,
+                text: l10n.communityChatStartGame,
+                backgroundColor: AppColors.logo,
+                foregroundColor: AppColors.white,
+                textStyle: AppTextStyles.paragraph14Semibold,
+                borderRadius: AppRadius.large,
+                showBorder: false,
+                onPressed: onStartGame,
+              ),
+            ],
           ],
         ),
       ),

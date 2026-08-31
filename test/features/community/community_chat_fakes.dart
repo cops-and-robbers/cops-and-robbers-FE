@@ -139,4 +139,14 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
     required String messageKey,
     required String text,
   }) async => calls.add('send:$messageKey');
+
+  @override
+  bool sendGameInvite(
+    int postId, {
+    required String messageKey,
+    required String inviteCode,
+  }) {
+    calls.add('sendGameInvite:$postId:$inviteCode');
+    return true;
+  }
 }

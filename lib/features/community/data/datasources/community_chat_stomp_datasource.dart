@@ -119,6 +119,28 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
     );
   }
 
+  /// 게임 초대 전송(#516). TEXT와 달리 낙관적 말풍선이 없어 호출부가 실패를
+  /// 알 길이 반환값뿐이다 — 연결이 없으면 보내지 않고 false.
+  bool publishGameInvite(
+    int postId, {
+    required String messageKey,
+    required String inviteCode,
+  }) {
+    if (stompClient == null || currentState != StompConnectionState.connected) {
+      debugPrint('[$logTag] ⚠️ 초대 전송 실패 — 연결되지 않음');
+      return false;
+    }
+    stompClient!.send(
+      destination: '/publish/community/$postId/chat',
+      body: jsonEncode({
+        'messageKey': messageKey,
+        'gameInvite': {'inviteCode': inviteCode},
+        'messageType': 'GAME_INVITE',
+      }),
+    );
+    return true;
+  }
+
   @override
   void disconnect() {
     // 클라이언트가 내려가면 구독 핸들도 같이 죽는다 — 다음 연결에서 다시 건다.

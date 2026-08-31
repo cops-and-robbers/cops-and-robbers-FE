@@ -214,55 +214,58 @@ void main() {
   // 실패는 handler.next 로 이 체인에 되돌린다. 순서가 뒤집히거나 그 전달이
   // handler.reject 로 바뀌면 재발급 경로의 약관 400 이 조용히 사라진다.
   group('AuthInterceptor 와의 순서', () {
-    test('notifies_when_terms_error_arrives_on_the_retry_after_reissue', () async {
-      final storage = SecureTokenStorage(storage: _FakeSecureStorage());
-      await storage.saveTokens(
-        accessToken: 'expired-access-token',
-        refreshToken: 'valid-refresh-token',
-      );
+    test(
+      'notifies_when_terms_error_arrives_on_the_retry_after_reissue',
+      () async {
+        final storage = SecureTokenStorage(storage: _FakeSecureStorage());
+        await storage.saveTokens(
+          accessToken: 'expired-access-token',
+          refreshToken: 'valid-refresh-token',
+        );
 
-      var protectedCalls = 0;
-      Future<ResponseBody> fetch(RequestOptions options) async {
-        if (options.path.contains(ApiEndpoints.reissue)) {
-          return ResponseBody.fromString(
-            '{"tokens":{"accessToken":"new-access","refreshToken":"new-refresh"}}',
-            200,
-            headers: {
-              Headers.contentTypeHeader: [Headers.jsonContentType],
-            },
-          );
+        var protectedCalls = 0;
+        Future<ResponseBody> fetch(RequestOptions options) async {
+          if (options.path.contains(ApiEndpoints.reissue)) {
+            return ResponseBody.fromString(
+              '{"tokens":{"accessToken":"new-access","refreshToken":"new-refresh"}}',
+              200,
+              headers: {
+                Headers.contentTypeHeader: [Headers.jsonContentType],
+              },
+            );
+          }
+          protectedCalls++;
+          // 첫 호출은 401 로 재발급을 유도하고, 재시도에서 약관 400 을 준다
+          return protectedCalls == 1
+              ? ResponseBody.fromString('', 401)
+              : _rfc7807('REQUIRED_TERMS_NOT_AGREED');
         }
-        protectedCalls++;
-        // 첫 호출은 401 로 재발급을 유도하고, 재시도에서 약관 400 을 준다
-        return protectedCalls == 1
-            ? ResponseBody.fromString('', 401)
-            : _rfc7807('REQUIRED_TERMS_NOT_AGREED');
-      }
 
-      final plainDio = Dio(BaseOptions(baseUrl: 'https://test.api'))
-        ..httpClientAdapter = _StubHttpClientAdapter(fetch);
+        final plainDio = Dio(BaseOptions(baseUrl: 'https://test.api'))
+          ..httpClientAdapter = _StubHttpClientAdapter(fetch);
 
-      final protectedDio = Dio(BaseOptions(baseUrl: 'https://test.api'))
-        ..httpClientAdapter = _StubHttpClientAdapter(fetch)
-        ..interceptors.addAll([
-          AuthInterceptor(
-            tokenStorage: storage,
-            plainDio: plainDio,
-            onForceLogout: ({String? messageKey}) async {},
-          ),
-          RequiredTermsInterceptor(
-            onRequiredTermsNotAgreed: () => callbackCount++,
-          ),
-        ]);
+        final protectedDio = Dio(BaseOptions(baseUrl: 'https://test.api'))
+          ..httpClientAdapter = _StubHttpClientAdapter(fetch)
+          ..interceptors.addAll([
+            AuthInterceptor(
+              tokenStorage: storage,
+              plainDio: plainDio,
+              onForceLogout: ({String? messageKey}) async {},
+            ),
+            RequiredTermsInterceptor(
+              onRequiredTermsNotAgreed: () => callbackCount++,
+            ),
+          ]);
 
-      await expectLater(
-        protectedDio.get<void>('/api/community-posts'),
-        throwsA(isA<DioException>()),
-      );
+        await expectLater(
+          protectedDio.get<void>('/api/community-posts'),
+          throwsA(isA<DioException>()),
+        );
 
-      expect(protectedCalls, 2, reason: '재발급 후 재시도가 실제로 일어나야 한다');
-      expect(callbackCount, 1);
-    });
+        expect(protectedCalls, 2, reason: '재발급 후 재시도가 실제로 일어나야 한다');
+        expect(callbackCount, 1);
+      },
+    );
 
     test('registers_the_terms_interceptor_after_auth_when_dio_is_built', () {
       // DioClient.create 가 EnvConfig.apiBaseUrl(.env)을 읽으므로 dotenv 초기화
@@ -298,7 +301,8 @@ void main() {
     /// 막는다. 실제 호출도 Dio 에러 콜백(항상 await 뒤)이라 build 밖이므로,
     /// 클로저로 감싸 같은 시점을 재현한다.
     final probe = Provider<void Function()>(
-      (ref) => () => notifyRequiredTermsNotAgreed(ref),
+      (ref) =>
+          () => notifyRequiredTermsNotAgreed(ref),
     );
 
     test('keeps_the_blocked_flag_off_when_no_callback_is_registered', () {

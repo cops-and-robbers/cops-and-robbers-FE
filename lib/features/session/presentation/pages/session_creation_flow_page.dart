@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_status.dart';
@@ -34,6 +35,7 @@ import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../community/presentation/providers/community_chat_rooms_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../widgets/basic_settings_form.dart';
@@ -63,7 +65,11 @@ enum _CreationPhase {
 /// 임시 저장(SessionDraftStorageService)은 숫자 값을 조용히 복원하고, 구역은
 /// 지도를 열 때 이전 도형이 그려진 채로 연다.
 class SessionCreationFlowPage extends ConsumerStatefulWidget {
-  const SessionCreationFlowPage({super.key});
+  const SessionCreationFlowPage({this.communityPostId, super.key});
+
+  /// 커뮤니티 채팅방에서 진입한 생성이면 그 방의 postId — 생성 성공 직후
+  /// 발급된 초대 코드를 GAME_INVITE로 그 방에 쏜다(#516). 홈 진입은 null.
+  final int? communityPostId;
 
   @override
   ConsumerState<SessionCreationFlowPage> createState() =>
@@ -372,6 +378,25 @@ class _SessionCreationFlowPageState
             locationRevealIntervalMinutes: result.locationRevealIntervalMinutes,
             isHost: true,
           );
+
+      // 채팅방에서 온 생성이면 초대 코드를 그 방에 쏜다(#516).
+      // 소켓은 로그인 수명이라 보통 붙어 있다 — 끊겼으면 초대만 조용히
+      // 사라지는 게 최악이라 스낵바로 알린다. 화면 이탈 전 동기 호출(LSN-0021).
+      if (widget.communityPostId != null) {
+        final sent = ref
+            .read(communityChatRepositoryProvider)
+            .sendGameInvite(
+              widget.communityPostId!,
+              messageKey: const Uuid().v4(),
+              inviteCode: result.inviteCode,
+            );
+        if (!sent) {
+          AppSnackbar.show(
+            context,
+            message: AppLocalizations.of(context).communityChatInviteSendFailed,
+          );
+        }
+      }
 
       context.go(
         '${RoutePaths.waitingRoomWithId('${result.gameId}')}?inviteCode=${result.inviteCode}&showInvite=true',

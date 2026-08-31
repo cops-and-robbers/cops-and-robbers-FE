@@ -421,7 +421,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: rootNavigatorKey,
                     pageBuilder: (context, state) => buildDirectionalSlide(
                       key: state.pageKey,
-                      child: const SessionCreationFlowPage(),
+                      child: SessionCreationFlowPage(
+                        communityPostId: state.extra as int?,
+                      ),
                       isForward: true,
                     ),
                     routes: [
