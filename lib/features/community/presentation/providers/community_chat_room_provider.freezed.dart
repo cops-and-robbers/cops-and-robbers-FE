@@ -27,9 +27,6 @@ mixin _$CommunityChatRoomState {
   bool get hasNext => throw _privateConstructorUsedError;
   bool get loadingOlder => throw _privateConstructorUsedError;
 
-  /// 자동 재연결 5회 실패 — 띠에 "다시 연결" 버튼을 준다.
-  bool get reconnectExhausted => throw _privateConstructorUsedError;
-
   /// 방 멤버가 아니라는 소켓 에러(다른 기기에서 나감). 화면이 목록으로 나간다.
   bool get evicted => throw _privateConstructorUsedError;
 
@@ -58,7 +55,6 @@ abstract class $CommunityChatRoomStateCopyWith<$Res> {
     int? nextCursor,
     bool hasNext,
     bool loadingOlder,
-    bool reconnectExhausted,
     bool evicted,
     String? lastErrorCode,
     int errorSeq,
@@ -89,7 +85,6 @@ class _$CommunityChatRoomStateCopyWithImpl<
     Object? nextCursor = freezed,
     Object? hasNext = null,
     Object? loadingOlder = null,
-    Object? reconnectExhausted = null,
     Object? evicted = null,
     Object? lastErrorCode = freezed,
     Object? errorSeq = null,
@@ -119,10 +114,6 @@ class _$CommunityChatRoomStateCopyWithImpl<
             loadingOlder: null == loadingOlder
                 ? _value.loadingOlder
                 : loadingOlder // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            reconnectExhausted: null == reconnectExhausted
-                ? _value.reconnectExhausted
-                : reconnectExhausted // ignore: cast_nullable_to_non_nullable
                       as bool,
             evicted: null == evicted
                 ? _value.evicted
@@ -158,7 +149,6 @@ abstract class _$$CommunityChatRoomStateImplCopyWith<$Res>
     int? nextCursor,
     bool hasNext,
     bool loadingOlder,
-    bool reconnectExhausted,
     bool evicted,
     String? lastErrorCode,
     int errorSeq,
@@ -186,7 +176,6 @@ class __$$CommunityChatRoomStateImplCopyWithImpl<$Res>
     Object? nextCursor = freezed,
     Object? hasNext = null,
     Object? loadingOlder = null,
-    Object? reconnectExhausted = null,
     Object? evicted = null,
     Object? lastErrorCode = freezed,
     Object? errorSeq = null,
@@ -217,10 +206,6 @@ class __$$CommunityChatRoomStateImplCopyWithImpl<$Res>
             ? _value.loadingOlder
             : loadingOlder // ignore: cast_nullable_to_non_nullable
                   as bool,
-        reconnectExhausted: null == reconnectExhausted
-            ? _value.reconnectExhausted
-            : reconnectExhausted // ignore: cast_nullable_to_non_nullable
-                  as bool,
         evicted: null == evicted
             ? _value.evicted
             : evicted // ignore: cast_nullable_to_non_nullable
@@ -250,7 +235,6 @@ class _$CommunityChatRoomStateImpl
     this.nextCursor,
     this.hasNext = false,
     this.loadingOlder = false,
-    this.reconnectExhausted = false,
     this.evicted = false,
     this.lastErrorCode,
     this.errorSeq = 0,
@@ -274,11 +258,6 @@ class _$CommunityChatRoomStateImpl
   @JsonKey()
   final bool loadingOlder;
 
-  /// 자동 재연결 5회 실패 — 띠에 "다시 연결" 버튼을 준다.
-  @override
-  @JsonKey()
-  final bool reconnectExhausted;
-
   /// 방 멤버가 아니라는 소켓 에러(다른 기기에서 나감). 화면이 목록으로 나간다.
   @override
   @JsonKey()
@@ -293,7 +272,7 @@ class _$CommunityChatRoomStateImpl
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'CommunityChatRoomState(timeline: $timeline, connection: $connection, memberCount: $memberCount, nextCursor: $nextCursor, hasNext: $hasNext, loadingOlder: $loadingOlder, reconnectExhausted: $reconnectExhausted, evicted: $evicted, lastErrorCode: $lastErrorCode, errorSeq: $errorSeq)';
+    return 'CommunityChatRoomState(timeline: $timeline, connection: $connection, memberCount: $memberCount, nextCursor: $nextCursor, hasNext: $hasNext, loadingOlder: $loadingOlder, evicted: $evicted, lastErrorCode: $lastErrorCode, errorSeq: $errorSeq)';
   }
 
   @override
@@ -307,7 +286,6 @@ class _$CommunityChatRoomStateImpl
       ..add(DiagnosticsProperty('nextCursor', nextCursor))
       ..add(DiagnosticsProperty('hasNext', hasNext))
       ..add(DiagnosticsProperty('loadingOlder', loadingOlder))
-      ..add(DiagnosticsProperty('reconnectExhausted', reconnectExhausted))
       ..add(DiagnosticsProperty('evicted', evicted))
       ..add(DiagnosticsProperty('lastErrorCode', lastErrorCode))
       ..add(DiagnosticsProperty('errorSeq', errorSeq));
@@ -329,8 +307,6 @@ class _$CommunityChatRoomStateImpl
             (identical(other.hasNext, hasNext) || other.hasNext == hasNext) &&
             (identical(other.loadingOlder, loadingOlder) ||
                 other.loadingOlder == loadingOlder) &&
-            (identical(other.reconnectExhausted, reconnectExhausted) ||
-                other.reconnectExhausted == reconnectExhausted) &&
             (identical(other.evicted, evicted) || other.evicted == evicted) &&
             (identical(other.lastErrorCode, lastErrorCode) ||
                 other.lastErrorCode == lastErrorCode) &&
@@ -347,7 +323,6 @@ class _$CommunityChatRoomStateImpl
     nextCursor,
     hasNext,
     loadingOlder,
-    reconnectExhausted,
     evicted,
     lastErrorCode,
     errorSeq,
@@ -374,7 +349,6 @@ abstract class _CommunityChatRoomState implements CommunityChatRoomState {
     final int? nextCursor,
     final bool hasNext,
     final bool loadingOlder,
-    final bool reconnectExhausted,
     final bool evicted,
     final String? lastErrorCode,
     final int errorSeq,
@@ -394,10 +368,6 @@ abstract class _CommunityChatRoomState implements CommunityChatRoomState {
   bool get hasNext;
   @override
   bool get loadingOlder;
-
-  /// 자동 재연결 5회 실패 — 띠에 "다시 연결" 버튼을 준다.
-  @override
-  bool get reconnectExhausted;
 
   /// 방 멤버가 아니라는 소켓 에러(다른 기기에서 나감). 화면이 목록으로 나간다.
   @override

@@ -7,7 +7,7 @@ part of 'community_chat_room_provider.dart';
 // **************************************************************************
 
 String _$communityChatRoomNotifierHash() =>
-    r'c8be269537dc1043b9d7420625285a064ca050f8';
+    r'19903072aea02972cfbbadb718475c21f2450eb3';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -37,43 +37,47 @@ abstract class _$CommunityChatRoomNotifier
   FutureOr<CommunityChatRoomState> build(int postId);
 }
 
-/// 채팅방 하나의 상태 — 소켓 수명·타임라인·인원수·재연결·나가기
+/// 채팅방 하나의 상태 — 방 구독·타임라인·인원수·읽음·나가기
 ///
-/// 화면 수명 소켓(spec 2절): provider가 살아 있는 동안만 연결한다. dispose면
-/// 방을 나가지 않아도 끊는다 — "보고 있는 방만 구독". 재연결 정책은 게임
-/// `ChatNotifier`를 그대로 옮겼다(1·2·4·8·10초, 5회). 토큰은 저장소 impl이
-/// 연결 때마다 직접 얻으므로 여기서는 다시 `connect`만 부른다.
+/// 소켓은 여기서 열지 않는다. 로그인 수명의 `CommunityChatSocket`이 열어 두고,
+/// 이 Notifier는 제 방을 **구독**만 한다 — dispose면 구독만 풀린다("보고 있는
+/// 방만 구독", DEC-0026 계약 02·03). 재연결·재연결 소진·인증 에러는 소켓
+/// Notifier의 일이고, 여기서는 그 결과(연결 상태 전이)만 받아 띠·전송 가드·
+/// 끊긴 동안의 공백 메우기를 한다.
 ///
 /// Copied from [CommunityChatRoomNotifier].
 @ProviderFor(CommunityChatRoomNotifier)
 const communityChatRoomNotifierProvider = CommunityChatRoomNotifierFamily();
 
-/// 채팅방 하나의 상태 — 소켓 수명·타임라인·인원수·재연결·나가기
+/// 채팅방 하나의 상태 — 방 구독·타임라인·인원수·읽음·나가기
 ///
-/// 화면 수명 소켓(spec 2절): provider가 살아 있는 동안만 연결한다. dispose면
-/// 방을 나가지 않아도 끊는다 — "보고 있는 방만 구독". 재연결 정책은 게임
-/// `ChatNotifier`를 그대로 옮겼다(1·2·4·8·10초, 5회). 토큰은 저장소 impl이
-/// 연결 때마다 직접 얻으므로 여기서는 다시 `connect`만 부른다.
+/// 소켓은 여기서 열지 않는다. 로그인 수명의 `CommunityChatSocket`이 열어 두고,
+/// 이 Notifier는 제 방을 **구독**만 한다 — dispose면 구독만 풀린다("보고 있는
+/// 방만 구독", DEC-0026 계약 02·03). 재연결·재연결 소진·인증 에러는 소켓
+/// Notifier의 일이고, 여기서는 그 결과(연결 상태 전이)만 받아 띠·전송 가드·
+/// 끊긴 동안의 공백 메우기를 한다.
 ///
 /// Copied from [CommunityChatRoomNotifier].
 class CommunityChatRoomNotifierFamily
     extends Family<AsyncValue<CommunityChatRoomState>> {
-  /// 채팅방 하나의 상태 — 소켓 수명·타임라인·인원수·재연결·나가기
+  /// 채팅방 하나의 상태 — 방 구독·타임라인·인원수·읽음·나가기
   ///
-  /// 화면 수명 소켓(spec 2절): provider가 살아 있는 동안만 연결한다. dispose면
-  /// 방을 나가지 않아도 끊는다 — "보고 있는 방만 구독". 재연결 정책은 게임
-  /// `ChatNotifier`를 그대로 옮겼다(1·2·4·8·10초, 5회). 토큰은 저장소 impl이
-  /// 연결 때마다 직접 얻으므로 여기서는 다시 `connect`만 부른다.
+  /// 소켓은 여기서 열지 않는다. 로그인 수명의 `CommunityChatSocket`이 열어 두고,
+  /// 이 Notifier는 제 방을 **구독**만 한다 — dispose면 구독만 풀린다("보고 있는
+  /// 방만 구독", DEC-0026 계약 02·03). 재연결·재연결 소진·인증 에러는 소켓
+  /// Notifier의 일이고, 여기서는 그 결과(연결 상태 전이)만 받아 띠·전송 가드·
+  /// 끊긴 동안의 공백 메우기를 한다.
   ///
   /// Copied from [CommunityChatRoomNotifier].
   const CommunityChatRoomNotifierFamily();
 
-  /// 채팅방 하나의 상태 — 소켓 수명·타임라인·인원수·재연결·나가기
+  /// 채팅방 하나의 상태 — 방 구독·타임라인·인원수·읽음·나가기
   ///
-  /// 화면 수명 소켓(spec 2절): provider가 살아 있는 동안만 연결한다. dispose면
-  /// 방을 나가지 않아도 끊는다 — "보고 있는 방만 구독". 재연결 정책은 게임
-  /// `ChatNotifier`를 그대로 옮겼다(1·2·4·8·10초, 5회). 토큰은 저장소 impl이
-  /// 연결 때마다 직접 얻으므로 여기서는 다시 `connect`만 부른다.
+  /// 소켓은 여기서 열지 않는다. 로그인 수명의 `CommunityChatSocket`이 열어 두고,
+  /// 이 Notifier는 제 방을 **구독**만 한다 — dispose면 구독만 풀린다("보고 있는
+  /// 방만 구독", DEC-0026 계약 02·03). 재연결·재연결 소진·인증 에러는 소켓
+  /// Notifier의 일이고, 여기서는 그 결과(연결 상태 전이)만 받아 띠·전송 가드·
+  /// 끊긴 동안의 공백 메우기를 한다.
   ///
   /// Copied from [CommunityChatRoomNotifier].
   CommunityChatRoomNotifierProvider call(int postId) {
@@ -102,12 +106,13 @@ class CommunityChatRoomNotifierFamily
   String? get name => r'communityChatRoomNotifierProvider';
 }
 
-/// 채팅방 하나의 상태 — 소켓 수명·타임라인·인원수·재연결·나가기
+/// 채팅방 하나의 상태 — 방 구독·타임라인·인원수·읽음·나가기
 ///
-/// 화면 수명 소켓(spec 2절): provider가 살아 있는 동안만 연결한다. dispose면
-/// 방을 나가지 않아도 끊는다 — "보고 있는 방만 구독". 재연결 정책은 게임
-/// `ChatNotifier`를 그대로 옮겼다(1·2·4·8·10초, 5회). 토큰은 저장소 impl이
-/// 연결 때마다 직접 얻으므로 여기서는 다시 `connect`만 부른다.
+/// 소켓은 여기서 열지 않는다. 로그인 수명의 `CommunityChatSocket`이 열어 두고,
+/// 이 Notifier는 제 방을 **구독**만 한다 — dispose면 구독만 풀린다("보고 있는
+/// 방만 구독", DEC-0026 계약 02·03). 재연결·재연결 소진·인증 에러는 소켓
+/// Notifier의 일이고, 여기서는 그 결과(연결 상태 전이)만 받아 띠·전송 가드·
+/// 끊긴 동안의 공백 메우기를 한다.
 ///
 /// Copied from [CommunityChatRoomNotifier].
 class CommunityChatRoomNotifierProvider
@@ -116,12 +121,13 @@ class CommunityChatRoomNotifierProvider
           CommunityChatRoomNotifier,
           CommunityChatRoomState
         > {
-  /// 채팅방 하나의 상태 — 소켓 수명·타임라인·인원수·재연결·나가기
+  /// 채팅방 하나의 상태 — 방 구독·타임라인·인원수·읽음·나가기
   ///
-  /// 화면 수명 소켓(spec 2절): provider가 살아 있는 동안만 연결한다. dispose면
-  /// 방을 나가지 않아도 끊는다 — "보고 있는 방만 구독". 재연결 정책은 게임
-  /// `ChatNotifier`를 그대로 옮겼다(1·2·4·8·10초, 5회). 토큰은 저장소 impl이
-  /// 연결 때마다 직접 얻으므로 여기서는 다시 `connect`만 부른다.
+  /// 소켓은 여기서 열지 않는다. 로그인 수명의 `CommunityChatSocket`이 열어 두고,
+  /// 이 Notifier는 제 방을 **구독**만 한다 — dispose면 구독만 풀린다("보고 있는
+  /// 방만 구독", DEC-0026 계약 02·03). 재연결·재연결 소진·인증 에러는 소켓
+  /// Notifier의 일이고, 여기서는 그 결과(연결 상태 전이)만 받아 띠·전송 가드·
+  /// 끊긴 동안의 공백 메우기를 한다.
   ///
   /// Copied from [CommunityChatRoomNotifier].
   CommunityChatRoomNotifierProvider(int postId)
