@@ -193,6 +193,17 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
     required String text,
   }) async => _stomp.publishMessage(postId, messageKey: messageKey, text: text);
 
+  @override
+  bool sendGameInvite(
+    int postId, {
+    required String messageKey,
+    required String inviteCode,
+  }) => _stomp.publishGameInvite(
+    postId,
+    messageKey: messageKey,
+    inviteCode: inviteCode,
+  );
+
   void _teardown() {
     for (final s in _subs) {
       unawaited(s.cancel());
