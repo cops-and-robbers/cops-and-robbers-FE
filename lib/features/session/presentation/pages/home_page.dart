@@ -31,7 +31,10 @@ import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
+import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/buttons/flat_icon_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
@@ -48,7 +51,6 @@ import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
 import '../widgets/home_banner.dart';
-import '../widgets/home_header.dart';
 import '../widgets/home_profile_card.dart';
 
 class _UpperCaseFormatter extends TextInputFormatter {
@@ -594,6 +596,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context);
     final remoteConfig = RemoteConfigService.instance;
     // 설정에서 튜토리얼 초기화 시 신호를 받아 재노출 (홈 인스턴스가 살아있어 initState 재실행 안 되는 문제 대응)
     ref.listen<int>(tutorialResetSignalProvider, (previous, next) {
@@ -604,6 +607,27 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: false,
+
+      // 로고 + 공지도 다른 탭과 같은 공용 앱바를 쓴다 — 탭을 오갈 때 우측
+      // 아이콘이 제자리에 있으려면 높이와 정렬이 같아야 한다.
+      appBar: AppTopBar(
+        centerTitle: false,
+        // 로케일별 워드마크 로고 — en은 세로 비중이 커 36, ko/ja는 18
+        titleWidget: SvgPicture.asset(
+          localizedAppLogo(locale),
+          height: locale.languageCode == 'en' ? 36.h : AppSpacing.vertical18,
+        ),
+        actions: [
+          // 다색 SVG라 iconColor를 주지 않는다(원본 색 유지).
+          FlatIconButton(
+            assetPath: 'assets/icons/icon_noti.svg',
+            onPressed: () => context.push(RoutePaths.notices),
+            alignment: Alignment.centerRight,
+          ),
+          // 상단바 액션의 우측 여백은 본문 거터와 같은 16으로 통일돼 있다.
+          SizedBox(width: AppSpacing.horizontal16),
+        ],
+      ),
 
       // 개발자 도구 버튼 (디버그 모드에서만 표시)
       floatingActionButton: kDebugMode
@@ -616,80 +640,68 @@ class _HomePageState extends ConsumerState<HomePage> {
             )
           : null,
 
-      // 헤더가 상태바를 포함한 높이(124)라 SafeArea 밖에 두고,
-      // 그 아래 스크롤 영역만 좌우 패딩을 갖는다
-      body: Column(
-        children: [
-          // ── [고정] 헤더: LOGO + 공지 ──
-          HomeHeader(onNoticePressed: () => context.push(RoutePaths.notices)),
+      // 좌우 패딩은 스크롤 영역만 갖는다 — 앱바는 자체 여백을 쓴다.
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: AppPadding.horizontal16,
+          child: Column(
+            children: [
+              SizedBox(height: AppSpacing.vertical18),
 
-          // ── [스크롤] 프로필 카드 / 일러스트 / 버튼 ──
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: AppPadding.horizontal16,
-                child: Column(
-                  children: [
-                    SizedBox(height: AppSpacing.vertical18),
+              const HomeProfileCard(),
 
-                    const HomeProfileCard(),
+              SizedBox(height: AppSpacing.vertical10),
 
-                    SizedBox(height: AppSpacing.vertical10),
+              _buildIllustrationCard(l10n),
 
-                    _buildIllustrationCard(l10n),
+              SizedBox(height: AppSpacing.vertical14),
 
-                    SizedBox(height: AppSpacing.vertical14),
-
-                    // 코치마크가 두 버튼을 한 영역으로 하이라이트하도록
-                    // Row에 단일 GlobalKey를 부여한다
-                    Row(
-                      key: _tutorialKeyGameButtons,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _withButtonShadow(
-                          AppButton(
-                            text: l10n.buttonCreateRoom,
-                            onPressed: _onCreateSession,
-                            width: 176.w,
-                            icon: SvgPicture.asset(
-                              'assets/icons/icon_default_light.svg',
-                              height: AppSpacing.vertical20,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: AppSpacing.horizontal8),
-                        _withButtonShadow(
-                          AppButton(
-                            text: l10n.buttonJoinRoom,
-                            onPressed: _showJoinRoomDialog,
-                            width: 176.w,
-                            backgroundColor: AppColors.white,
-                            foregroundColor: AppColors.black600,
-                            icon: SvgPicture.asset(
-                              'assets/icons/icon_joining_game.svg',
-                              height: AppSpacing.vertical20,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    if (remoteConfig.bannerEnabled)
-                      HomeBanner(
-                        imageUrl: remoteConfig.bannerImageUrl,
-                        onTap: remoteConfig.bannerLinkUrl.isEmpty
-                            ? null
-                            : () =>
-                                  launchExternalUrl(remoteConfig.bannerLinkUrl),
+              // 코치마크가 두 버튼을 한 영역으로 하이라이트하도록
+              // Row에 단일 GlobalKey를 부여한다
+              Row(
+                key: _tutorialKeyGameButtons,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _withButtonShadow(
+                    AppButton(
+                      text: l10n.buttonCreateRoom,
+                      onPressed: _onCreateSession,
+                      width: 176.w,
+                      icon: SvgPicture.asset(
+                        'assets/icons/icon_default_light.svg',
+                        height: AppSpacing.vertical20,
                       ),
-
-                    SizedBox(height: AppSpacing.vertical20),
-                  ],
-                ),
+                    ),
+                  ),
+                  SizedBox(width: AppSpacing.horizontal8),
+                  _withButtonShadow(
+                    AppButton(
+                      text: l10n.buttonJoinRoom,
+                      onPressed: _showJoinRoomDialog,
+                      width: 176.w,
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.black600,
+                      icon: SvgPicture.asset(
+                        'assets/icons/icon_joining_game.svg',
+                        height: AppSpacing.vertical20,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
+
+              if (remoteConfig.bannerEnabled)
+                HomeBanner(
+                  imageUrl: remoteConfig.bannerImageUrl,
+                  onTap: remoteConfig.bannerLinkUrl.isEmpty
+                      ? null
+                      : () => launchExternalUrl(remoteConfig.bannerLinkUrl),
+                ),
+
+              SizedBox(height: AppSpacing.vertical20),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
