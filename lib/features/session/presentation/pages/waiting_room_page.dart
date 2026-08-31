@@ -246,10 +246,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       setState(() => _isLocationPermissionDenied = false);
     }
 
-    // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
-    final team = ref.read(gameParticipantNotifierProvider)?.team;
-    ref.read(roleThemeProvider.notifier).setDarkMode(GameTeam.isRobber(team));
-
     // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
     _pendingInviteDialog = widget.showInviteDialog && _inviteCode != null;
 
@@ -491,11 +487,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
       ref.read(gameParticipantNotifierProvider.notifier).setIsHost(isHost);
-
-      // 역할 기반 다크/라이트 모드 동기화
-      ref
-          .read(roleThemeProvider.notifier)
-          .setDarkMode(GameTeam.isRobber(myTeam));
 
       // 방 생성 직후 초대코드 다이얼로그 표시 (팀 확정 후)
       // 다이얼로그 닫힌 후 튜토리얼 트리거 (겹침 방지)
@@ -902,9 +893,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               ref
                   .read(gameParticipantNotifierProvider.notifier)
                   .setTeam(newTeam);
-              ref
-                  .read(roleThemeProvider.notifier)
-                  .setDarkMode(GameTeam.isRobber(newTeam));
             }
           }
         }
@@ -1063,9 +1051,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // close()의 최소 표시 대기 동안 대기실이 dispose될 수 있어(KICKED/GAME_START 등
       // 웹소켓 이벤트가 화면을 날림) ref 사용 전 mounted 확인
       if (!mounted) return;
-      ref
-          .read(roleThemeProvider.notifier)
-          .setDarkMode(GameTeam.isRobber(targetTeam));
+      // 서버 TEAM_CHANGED 이벤트를 기다리지 않고 먼저 반영한다(도착 시 같은 값으로 덮음).
+      // 역할 테마는 이 참가 정보에서 파생되므로 여기만 갱신하면 따라온다.
+      ref.read(gameParticipantNotifierProvider.notifier).setTeam(targetTeam);
     } on DioException catch (e) {
       await loading.close();
       if (!mounted) return;

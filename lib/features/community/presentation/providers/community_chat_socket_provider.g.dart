@@ -7,7 +7,7 @@ part of 'community_chat_socket_provider.dart';
 // **************************************************************************
 
 String _$communityChatSocketHash() =>
-    r'33e9b23dd0195fea93811eacb98fac7de99fd436';
+    r'ea185a4f5d93469729a12918ceb55a2a05a3492e';
 
 /// 커뮤니티 소켓의 수명 — 로그인~로그아웃
 ///
