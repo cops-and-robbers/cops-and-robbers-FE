@@ -579,6 +579,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityChatInviteSendFailed => '채팅방에 초대를 보내지 못했어요';
 
   @override
+  String get communityChatInviteDialogTitle => '게임 초대장';
+
+  @override
+  String communityChatInviteDialogBody(String nickname) {
+    return '$nickname님이\n게임에 초대했어요';
+  }
+
+  @override
+  String get communityChatInviteDialogCodeLabel => '방 코드';
+
+  @override
+  String get communityChatInviteDialogDecline => '거절';
+
+  @override
+  String get communityChatInviteDialogEnter => '입장';
+
+  @override
   String communityChatMemberCount(int count) {
     return '참가자 $count명';
   }

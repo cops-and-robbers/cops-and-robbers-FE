@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 게임 초대 카드 — "게임이 열렸어요!" + 초대 문구 + 초대코드 + 참가 버튼
@@ -70,9 +71,51 @@ class CommunityChatInviteCard extends StatelessWidget {
           textStyle: AppTextStyles.tag_14,
           borderRadius: BorderRadius.circular(6.r),
           showBorder: false,
-          onPressed: onJoin,
+          onPressed: () => _confirmJoin(context, l10n),
         ),
       ],
+    );
+  }
+
+  /// 참가 전 확인 — 초대장 다이얼로그(거절/입장). 입장을 눌러야 기존 초대코드
+  /// 흐름([onJoin])으로 넘어간다.
+  void _confirmJoin(BuildContext context, AppLocalizations l10n) {
+    AppDialog.show<void>(
+      context: context,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            l10n.communityChatInviteDialogTitle,
+            style: AppTextStyles.tag_12.copyWith(color: AppColors.black500),
+          ),
+          SizedBox(height: AppSpacing.vertical12),
+          Text(
+            l10n.communityChatInviteDialogBody(nickname),
+            textAlign: TextAlign.center,
+            style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+          ),
+          SizedBox(height: AppSpacing.vertical12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.communityChatInviteDialogCodeLabel,
+                style: AppTextStyles.label_16.copyWith(color: AppColors.blue),
+              ),
+              SizedBox(width: AppSpacing.horizontal8),
+              Text(
+                inviteCode,
+                style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+              ),
+            ],
+          ),
+        ],
+      ),
+      cancelText: l10n.communityChatInviteDialogDecline,
+      confirmText: l10n.communityChatInviteDialogEnter,
+      confirmColor: AppColors.blue,
+      onConfirm: onJoin,
     );
   }
 }

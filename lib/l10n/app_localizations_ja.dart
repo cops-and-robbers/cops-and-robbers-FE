@@ -581,6 +581,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityChatInviteSendFailed => 'チャットに招待を送れませんでした';
 
   @override
+  String get communityChatInviteDialogTitle => 'ゲーム招待状';
+
+  @override
+  String communityChatInviteDialogBody(String nickname) {
+    return '$nicknameさんが\nゲームに招待しました';
+  }
+
+  @override
+  String get communityChatInviteDialogCodeLabel => 'ルームコード';
+
+  @override
+  String get communityChatInviteDialogDecline => '拒否';
+
+  @override
+  String get communityChatInviteDialogEnter => '入場';
+
+  @override
   String communityChatMemberCount(int count) {
     return '参加者 $count名';
   }
