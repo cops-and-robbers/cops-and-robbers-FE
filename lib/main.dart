@@ -23,6 +23,7 @@ import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
 import 'package:cops_and_robbers/features/auth/domain/entities/auth_result_entity.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_socket_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/pending_community_post_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/pending_invite_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
@@ -226,6 +227,10 @@ class _LocalizedApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(appLocaleProvider).locale;
+
+    // 커뮤니티 소켓은 화면이 아니라 로그인 수명이다(DEC-0045) — keepAlive
+    // Notifier를 여기서 한 번 살려 두면 로그인·로그아웃을 스스로 따라간다.
+    ref.listen(communityChatSocketProvider, (_, _) {});
 
     // 딥링크 URI 수신 시 GoRouter 로 dispatch
     ref.listen<AsyncValue<DeeplinkEvent>>(deeplinkEventsProvider, (prev, next) {
