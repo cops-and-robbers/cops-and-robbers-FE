@@ -87,26 +87,30 @@ class CommunityChatInviteCard extends StatelessWidget {
         children: [
           Text(
             l10n.communityChatInviteDialogTitle,
-            style: AppTextStyles.tag_12.copyWith(color: AppColors.black500),
+            style: AppTextStyles.tag_12.copyWith(color: AppColors.black300),
           ),
-          SizedBox(height: AppSpacing.vertical12),
+          SizedBox(height: AppSpacing.vertical14),
           Text(
             l10n.communityChatInviteDialogBody(nickname),
             textAlign: TextAlign.center,
             style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
           ),
-          SizedBox(height: AppSpacing.vertical12),
+          SizedBox(height: AppSpacing.vertical14),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 l10n.communityChatInviteDialogCodeLabel,
-                style: AppTextStyles.label_16.copyWith(color: AppColors.blue),
+                style: AppTextStyles.paragraph_14.copyWith(
+                  color: AppColors.black600,
+                ),
               ),
               SizedBox(width: AppSpacing.horizontal8),
               Text(
                 inviteCode,
-                style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+                style: AppTextStyles.paragraph_14.copyWith(
+                  color: AppColors.black600,
+                ),
               ),
             ],
           ),
