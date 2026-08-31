@@ -95,8 +95,9 @@ void main() {
 
     test('ignores_unknown_fields_when_backend_adds_extras', () {
       // 서버가 필드를 더해도 앱이 먼저 깨지면 안 된다 — 실제로 v2.25.0이
-      // `senderProfileIcon`을 이렇게 더했다.
-      final json = _roomJson()..['unreadCount'] = 3;
+      // `senderProfileIcon`을 이렇게 더했다. `unreadCount`는 이제 앱이 아는
+      // 필드라 예시로 못 쓴다 — 정말 모르는 키로 확인한다.
+      final json = _roomJson()..['someFutureField'] = 3;
 
       expect(
         () => CommunityChatRoomResponseModel.fromJson(json),
@@ -231,6 +232,58 @@ void main() {
           <String, dynamic>{},
         ).members,
         isEmpty,
+      );
+    });
+  });
+
+  group('v2.26.0 fields', () {
+    test('reads_unread_count_from_room_json', () {
+      final json = _roomJson()..['unreadCount'] = 3;
+      expect(CommunityChatRoomResponseModel.fromJson(json).unreadCount, 3);
+    });
+
+    test('defaults_unread_count_to_zero_when_missing', () {
+      expect(
+        CommunityChatRoomResponseModel.fromJson(_roomJson()).unreadCount,
+        0,
+      );
+    });
+
+    test('reads_community_post_id_from_socket_payload', () {
+      // 개인 채널에서는 이 키가 없으면 어느 방 이벤트인지 모른다 (DEC-0045).
+      final json = _messageJson()..['communityPostId'] = 42;
+      expect(
+        CommunityChatMessageResponseModel.fromJson(json).communityPostId,
+        42,
+      );
+    });
+
+    test('reads_notification_enabled_from_member_list_json', () {
+      final model = CommunityChatMemberListResponseModel.fromJson({
+        'notificationEnabled': false,
+        'members': [_memberJson()],
+      });
+      expect(model.notificationEnabled, isFalse);
+      expect(model.members.single.userId, 7);
+    });
+
+    test('defaults_notification_enabled_to_true_when_missing', () {
+      final model = CommunityChatMemberListResponseModel.fromJson({
+        'members': [_memberJson()],
+      });
+      expect(model.notificationEnabled, isTrue);
+    });
+
+    test('serializes_read_and_notification_requests', () {
+      expect(
+        const CommunityChatReadRequestModel(lastReadMessageId: 17).toJson(),
+        {'lastReadMessageId': 17},
+      );
+      expect(
+        const CommunityChatNotificationRequestModel(
+          allowNotification: false,
+        ).toJson(),
+        {'allowNotification': false},
       );
     });
   });

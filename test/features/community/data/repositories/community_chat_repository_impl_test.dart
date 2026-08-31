@@ -24,6 +24,10 @@ class _FakeApi implements CommunityRemoteDataSource {
   Object? joinError;
   final calls = <String>[];
   int? lastCursor;
+  Object? readError;
+  Object? notificationError;
+  CommunityChatReadRequestModel? lastRead;
+  CommunityChatNotificationRequestModel? lastNotification;
 
   @override
   Future<CommunityChatRoomListResponseModel> getChatRooms() async {
@@ -60,6 +64,23 @@ class _FakeApi implements CommunityRemoteDataSource {
   }
 
   @override
+  Future<void> readChat(int postId, CommunityChatReadRequestModel body) async {
+    calls.add('readChat:$postId');
+    lastRead = body;
+    if (readError != null) throw readError!;
+  }
+
+  @override
+  Future<void> updateChatNotification(
+    int postId,
+    CommunityChatNotificationRequestModel body,
+  ) async {
+    calls.add('updateChatNotification:$postId');
+    lastNotification = body;
+    if (notificationError != null) throw notificationError!;
+  }
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
@@ -71,6 +92,7 @@ class _FakeStomp implements CommunityChatStompDatasource {
   final errors = StreamController<StompErrorInfo>.broadcast();
 
   final calls = <String>[];
+  int? connectedUserId;
   int? subscribedPostId;
 
   @override
@@ -84,10 +106,22 @@ class _FakeStomp implements CommunityChatStompDatasource {
   Stream<StompErrorInfo> get onError => errors.stream;
 
   @override
-  void subscribeRoom(int postId) => subscribedPostId = postId;
+  void connectAs(String wsUrl, String accessToken, {required int userId}) {
+    calls.add('connect');
+    connectedUserId = userId;
+  }
 
   @override
-  void connect(String wsUrl, String accessToken) => calls.add('connect');
+  void subscribeRoom(int postId) {
+    calls.add('subscribeRoom:$postId');
+    subscribedPostId = postId;
+  }
+
+  @override
+  void unsubscribeRoom(int postId) {
+    calls.add('unsubscribeRoom:$postId');
+    if (subscribedPostId == postId) subscribedPostId = null;
+  }
 
   @override
   void disconnect() => calls.add('disconnect');
@@ -111,6 +145,7 @@ Map<String, dynamic> _messageJson({
   String message = '안녕하세요!',
 }) => {
   'id': 1234,
+  'communityPostId': _postId,
   'messageKey': 'key-1',
   'senderId': 7,
   'senderNickname': '홍길동',
@@ -259,12 +294,24 @@ void main() {
       final member = (await _repo(
         api,
         _FakeStomp(),
-      ).getMembers(_postId)).single;
+      ).getMembers(_postId)).members.single;
 
       expect(member.userId, 7);
       expect(member.nickname, '무서운경찰관');
       expect(member.profileIcon, 2);
       expect(member.isAuthor, true);
+    });
+
+    test('maps_notification_enabled_from_the_member_list_response', () async {
+      final api = _FakeApi(
+        members: CommunityChatMemberListResponseModel.fromJson({
+          'notificationEnabled': false,
+          'members': [],
+        }),
+      );
+      final result = await _repo(api, _FakeStomp()).getMembers(_postId);
+      expect(result.notificationEnabled, isFalse);
+      expect(result.members, isEmpty);
     });
   });
 
@@ -274,7 +321,7 @@ void main() {
       final repo = _repo(_FakeApi(), stomp);
 
       final events = <CommunityChatEvent>[];
-      repo.connect(_postId).listen(events.add);
+      repo.connect(7).listen(events.add);
       await Future<void>.delayed(Duration.zero);
 
       stomp.connection.add(StompConnectionState.connected);
@@ -296,35 +343,131 @@ void main() {
         const CommunityChatEvent.connection(
           CommunityChatConnectionState.connected,
         ),
-        isA<CommunityChatMessageEvent>(),
+        isA<CommunityChatMessageEvent>().having(
+          (e) => e.postId,
+          'postId',
+          _postId,
+        ),
         const CommunityChatEvent.error('NOT_A_CHAT_MEMBER'),
       ]);
-      expect(stomp.subscribedPostId, _postId);
+      expect(stomp.connectedUserId, 7);
+    });
+
+    test('drops_a_socket_message_that_names_no_room', () async {
+      // 개인 채널은 방 번호가 payload에만 있다 — 없으면 어느 방인지 몰라 버린다.
+      final stomp = _FakeStomp();
+      final repo = _repo(_FakeApi(), stomp);
+      final events = <CommunityChatEvent>[];
+      repo.connect(7).listen(events.add);
+      await Future<void>.delayed(Duration.zero);
+
+      stomp.messages.add(
+        CommunityChatMessageResponseModel.fromJson(
+          _messageJson()..remove('communityPostId'),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(events.whereType<CommunityChatMessageEvent>(), isEmpty);
+    });
+
+    test('marks_system_messages_by_wire_type', () async {
+      final stomp = _FakeStomp();
+      final repo = _repo(_FakeApi(), stomp);
+      final events = <CommunityChatEvent>[];
+      repo.connect(7).listen(events.add);
+      await Future<void>.delayed(Duration.zero);
+
+      stomp.messages.add(
+        CommunityChatMessageResponseModel.fromJson(
+          _messageJson(messageType: 'SYSTEM', message: '{"event":"JOIN"}'),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      final m = events.whereType<CommunityChatMessageEvent>().single.message;
+      expect(m.isSystem, isTrue);
+      expect(m.countsAsUnread, isFalse);
+    });
+
+    test('emits_disconnected_after_the_error_when_there_is_no_token', () async {
+      // connect()의 모든 종료 경로는 연결 이벤트를 낸다 — 안 내면 소켓 Notifier가
+      // connecting에 갇혀 재연결 가드가 영원히 막는다(최종 리뷰 I-1).
+      final repo = CommunityChatRepositoryImpl(
+        _FakeApi(),
+        _FakeStomp(),
+        () async => null,
+      );
+
+      final events = <CommunityChatEvent>[];
+      repo.connect(7).listen(events.add);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(events, [
+        const CommunityChatEvent.error('ACCESS_TOKEN_EXPIRED'),
+        const CommunityChatEvent.connection(
+          CommunityChatConnectionState.disconnected,
+        ),
+      ]);
+    });
+  });
+
+  group('room subscription', () {
+    test('passes_subscribe_and_unsubscribe_through_to_the_socket', () {
+      final stomp = _FakeStomp();
+      final repo = _repo(_FakeApi(), stomp);
+
+      repo.subscribeRoom(_postId);
+      repo.unsubscribeRoom(_postId);
+
+      expect(stomp.calls, [
+        'subscribeRoom:$_postId',
+        'unsubscribeRoom:$_postId',
+      ]);
+      expect(stomp.subscribedPostId, isNull);
     });
   });
 
   group('disconnect', () {
-    test('ignores_a_room_it_no_longer_owns', () async {
-      // 방 A에서 방 B로 옮기면 A의 provider가 B보다 늦게 정리될 수 있다.
-      // 방 번호를 확인하지 않으면 그때 B의 소켓이 끊긴다.
+    test('closes_the_socket_and_the_event_stream', () async {
       final stomp = _FakeStomp();
       final repo = _repo(_FakeApi(), stomp);
+      var done = false;
+      repo.connect(7).listen((_) {}, onDone: () => done = true);
 
-      repo.connect(_postId);
-      repo.connect(43);
-      await repo.disconnect(_postId);
-
-      expect(stomp.calls, isNot(contains('disconnect')));
-    });
-
-    test('closes_the_socket_when_the_room_still_owns_it', () async {
-      final stomp = _FakeStomp();
-      final repo = _repo(_FakeApi(), stomp);
-
-      repo.connect(_postId);
-      await repo.disconnect(_postId);
+      await repo.disconnect();
+      await Future<void>.delayed(Duration.zero);
 
       expect(stomp.calls, contains('disconnect'));
+      expect(done, isTrue);
+    });
+  });
+
+  group('markRead / setNotification', () {
+    test('sends_the_last_read_message_id', () async {
+      final api = _FakeApi();
+      await _repo(api, _FakeStomp()).markRead(_postId, 17);
+      expect(api.calls, ['readChat:$_postId']);
+      expect(api.lastRead?.lastReadMessageId, 17);
+    });
+
+    test('sends_allow_notification_flag', () async {
+      final api = _FakeApi();
+      await _repo(api, _FakeStomp()).setNotification(_postId, enabled: false);
+      expect(api.calls, ['updateChatNotification:$_postId']);
+      expect(api.lastNotification?.allowNotification, isFalse);
+    });
+
+    test('maps_unread_count_into_the_room_entity', () async {
+      final api = _FakeApi(
+        rooms: CommunityChatRoomListResponseModel.fromJson({
+          'chatRooms': [
+            {'postId': _postId, 'title': '방', 'unreadCount': 5},
+          ],
+        }),
+      );
+      final rooms = await _repo(api, _FakeStomp()).getRooms();
+      expect(rooms.single.unreadCount, 5);
     });
   });
 }

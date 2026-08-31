@@ -320,10 +320,9 @@ class _ActionMenu extends StatelessWidget {
         if (onReport != null) ...[
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
-            iconPath: 'assets/icons/icon_siren.svg',
+            iconPath: 'assets/icons/icon_warning_light.svg',
             label: l10n.buttonReport,
             textColor: AppColors.red,
-            iconColor: AppColors.red900,
             isDarkMode: isDarkMode,
             onTap: onReport!,
           ),
@@ -384,6 +383,9 @@ class _MenuItem extends StatelessWidget {
   final String iconPath;
   final String label;
   final Color textColor;
+
+  /// 아이콘 틴트. null이면 SVG에 박힌 색을 그대로 쓴다 —
+  /// 다색 아이콘(경고)은 덧칠하면 뭉개져서 원본이 정답이다(CommunityMenuItem과 같은 규약).
   final Color? iconColor;
   final bool isDarkMode;
   final VoidCallback onTap;
@@ -405,10 +407,9 @@ class _MenuItem extends StatelessWidget {
               iconPath,
               width: 20.w,
               height: 20.w,
-              colorFilter: ColorFilter.mode(
-                iconColor ?? textColor,
-                BlendMode.srcIn,
-              ),
+              colorFilter: iconColor == null
+                  ? null
+                  : ColorFilter.mode(iconColor!, BlendMode.srcIn),
             ),
             SizedBox(width: AppSpacing.horizontal8),
             Text(

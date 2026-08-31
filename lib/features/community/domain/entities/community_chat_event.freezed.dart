@@ -19,19 +19,20 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CommunityChatEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(CommunityChatMessageEntity message) message,
+    required TResult Function(int postId, CommunityChatMessageEntity message)
+    message,
     required TResult Function(CommunityChatConnectionState state) connection,
     required TResult Function(String errorCode) error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(CommunityChatMessageEntity message)? message,
+    TResult? Function(int postId, CommunityChatMessageEntity message)? message,
     TResult? Function(CommunityChatConnectionState state)? connection,
     TResult? Function(String errorCode)? error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(CommunityChatMessageEntity message)? message,
+    TResult Function(int postId, CommunityChatMessageEntity message)? message,
     TResult Function(CommunityChatConnectionState state)? connection,
     TResult Function(String errorCode)? error,
     required TResult orElse(),
@@ -86,7 +87,7 @@ abstract class _$$CommunityChatMessageEventImplCopyWith<$Res> {
     $Res Function(_$CommunityChatMessageEventImpl) then,
   ) = __$$CommunityChatMessageEventImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({CommunityChatMessageEntity message});
+  $Res call({int postId, CommunityChatMessageEntity message});
 
   $CommunityChatMessageEntityCopyWith<$Res> get message;
 }
@@ -105,9 +106,13 @@ class __$$CommunityChatMessageEventImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? message = null}) {
+  $Res call({Object? postId = null, Object? message = null}) {
     return _then(
       _$CommunityChatMessageEventImpl(
+        null == postId
+            ? _value.postId
+            : postId // ignore: cast_nullable_to_non_nullable
+                  as int,
         null == message
             ? _value.message
             : message // ignore: cast_nullable_to_non_nullable
@@ -130,14 +135,16 @@ class __$$CommunityChatMessageEventImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
-  const _$CommunityChatMessageEventImpl(this.message);
+  const _$CommunityChatMessageEventImpl(this.postId, this.message);
 
+  @override
+  final int postId;
   @override
   final CommunityChatMessageEntity message;
 
   @override
   String toString() {
-    return 'CommunityChatEvent.message(message: $message)';
+    return 'CommunityChatEvent.message(postId: $postId, message: $message)';
   }
 
   @override
@@ -145,11 +152,12 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CommunityChatMessageEventImpl &&
+            (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.message, message) || other.message == message));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, message);
+  int get hashCode => Object.hash(runtimeType, postId, message);
 
   /// Create a copy of CommunityChatEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -165,33 +173,34 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(CommunityChatMessageEntity message) message,
+    required TResult Function(int postId, CommunityChatMessageEntity message)
+    message,
     required TResult Function(CommunityChatConnectionState state) connection,
     required TResult Function(String errorCode) error,
   }) {
-    return message(this.message);
+    return message(postId, this.message);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(CommunityChatMessageEntity message)? message,
+    TResult? Function(int postId, CommunityChatMessageEntity message)? message,
     TResult? Function(CommunityChatConnectionState state)? connection,
     TResult? Function(String errorCode)? error,
   }) {
-    return message?.call(this.message);
+    return message?.call(postId, this.message);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(CommunityChatMessageEntity message)? message,
+    TResult Function(int postId, CommunityChatMessageEntity message)? message,
     TResult Function(CommunityChatConnectionState state)? connection,
     TResult Function(String errorCode)? error,
     required TResult orElse(),
   }) {
     if (message != null) {
-      return message(this.message);
+      return message(postId, this.message);
     }
     return orElse();
   }
@@ -233,9 +242,11 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
 
 abstract class CommunityChatMessageEvent implements CommunityChatEvent {
   const factory CommunityChatMessageEvent(
+    final int postId,
     final CommunityChatMessageEntity message,
   ) = _$CommunityChatMessageEventImpl;
 
+  int get postId;
   CommunityChatMessageEntity get message;
 
   /// Create a copy of CommunityChatEvent
@@ -325,7 +336,8 @@ class _$CommunityChatConnectionEventImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(CommunityChatMessageEntity message) message,
+    required TResult Function(int postId, CommunityChatMessageEntity message)
+    message,
     required TResult Function(CommunityChatConnectionState state) connection,
     required TResult Function(String errorCode) error,
   }) {
@@ -335,7 +347,7 @@ class _$CommunityChatConnectionEventImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(CommunityChatMessageEntity message)? message,
+    TResult? Function(int postId, CommunityChatMessageEntity message)? message,
     TResult? Function(CommunityChatConnectionState state)? connection,
     TResult? Function(String errorCode)? error,
   }) {
@@ -345,7 +357,7 @@ class _$CommunityChatConnectionEventImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(CommunityChatMessageEntity message)? message,
+    TResult Function(int postId, CommunityChatMessageEntity message)? message,
     TResult Function(CommunityChatConnectionState state)? connection,
     TResult Function(String errorCode)? error,
     required TResult orElse(),
@@ -482,7 +494,8 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(CommunityChatMessageEntity message) message,
+    required TResult Function(int postId, CommunityChatMessageEntity message)
+    message,
     required TResult Function(CommunityChatConnectionState state) connection,
     required TResult Function(String errorCode) error,
   }) {
@@ -492,7 +505,7 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(CommunityChatMessageEntity message)? message,
+    TResult? Function(int postId, CommunityChatMessageEntity message)? message,
     TResult? Function(CommunityChatConnectionState state)? connection,
     TResult? Function(String errorCode)? error,
   }) {
@@ -502,7 +515,7 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(CommunityChatMessageEntity message)? message,
+    TResult Function(int postId, CommunityChatMessageEntity message)? message,
     TResult Function(CommunityChatConnectionState state)? connection,
     TResult Function(String errorCode)? error,
     required TResult orElse(),

@@ -228,3 +228,188 @@ abstract class _CommunityChatMemberEntity implements CommunityChatMemberEntity {
   _$$CommunityChatMemberEntityImplCopyWith<_$CommunityChatMemberEntityImpl>
   get copyWith => throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+mixin _$CommunityChatMembersEntity {
+  bool get notificationEnabled => throw _privateConstructorUsedError;
+  List<CommunityChatMemberEntity> get members =>
+      throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityChatMembersEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityChatMembersEntityCopyWith<CommunityChatMembersEntity>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityChatMembersEntityCopyWith<$Res> {
+  factory $CommunityChatMembersEntityCopyWith(
+    CommunityChatMembersEntity value,
+    $Res Function(CommunityChatMembersEntity) then,
+  ) =
+      _$CommunityChatMembersEntityCopyWithImpl<
+        $Res,
+        CommunityChatMembersEntity
+      >;
+  @useResult
+  $Res call({
+    bool notificationEnabled,
+    List<CommunityChatMemberEntity> members,
+  });
+}
+
+/// @nodoc
+class _$CommunityChatMembersEntityCopyWithImpl<
+  $Res,
+  $Val extends CommunityChatMembersEntity
+>
+    implements $CommunityChatMembersEntityCopyWith<$Res> {
+  _$CommunityChatMembersEntityCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityChatMembersEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? notificationEnabled = null, Object? members = null}) {
+    return _then(
+      _value.copyWith(
+            notificationEnabled: null == notificationEnabled
+                ? _value.notificationEnabled
+                : notificationEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            members: null == members
+                ? _value.members
+                : members // ignore: cast_nullable_to_non_nullable
+                      as List<CommunityChatMemberEntity>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityChatMembersEntityImplCopyWith<$Res>
+    implements $CommunityChatMembersEntityCopyWith<$Res> {
+  factory _$$CommunityChatMembersEntityImplCopyWith(
+    _$CommunityChatMembersEntityImpl value,
+    $Res Function(_$CommunityChatMembersEntityImpl) then,
+  ) = __$$CommunityChatMembersEntityImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    bool notificationEnabled,
+    List<CommunityChatMemberEntity> members,
+  });
+}
+
+/// @nodoc
+class __$$CommunityChatMembersEntityImplCopyWithImpl<$Res>
+    extends
+        _$CommunityChatMembersEntityCopyWithImpl<
+          $Res,
+          _$CommunityChatMembersEntityImpl
+        >
+    implements _$$CommunityChatMembersEntityImplCopyWith<$Res> {
+  __$$CommunityChatMembersEntityImplCopyWithImpl(
+    _$CommunityChatMembersEntityImpl _value,
+    $Res Function(_$CommunityChatMembersEntityImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityChatMembersEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? notificationEnabled = null, Object? members = null}) {
+    return _then(
+      _$CommunityChatMembersEntityImpl(
+        notificationEnabled: null == notificationEnabled
+            ? _value.notificationEnabled
+            : notificationEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        members: null == members
+            ? _value._members
+            : members // ignore: cast_nullable_to_non_nullable
+                  as List<CommunityChatMemberEntity>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CommunityChatMembersEntityImpl implements _CommunityChatMembersEntity {
+  const _$CommunityChatMembersEntityImpl({
+    this.notificationEnabled = true,
+    required final List<CommunityChatMemberEntity> members,
+  }) : _members = members;
+
+  @override
+  @JsonKey()
+  final bool notificationEnabled;
+  final List<CommunityChatMemberEntity> _members;
+  @override
+  List<CommunityChatMemberEntity> get members {
+    if (_members is EqualUnmodifiableListView) return _members;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_members);
+  }
+
+  @override
+  String toString() {
+    return 'CommunityChatMembersEntity(notificationEnabled: $notificationEnabled, members: $members)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityChatMembersEntityImpl &&
+            (identical(other.notificationEnabled, notificationEnabled) ||
+                other.notificationEnabled == notificationEnabled) &&
+            const DeepCollectionEquality().equals(other._members, _members));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    notificationEnabled,
+    const DeepCollectionEquality().hash(_members),
+  );
+
+  /// Create a copy of CommunityChatMembersEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityChatMembersEntityImplCopyWith<_$CommunityChatMembersEntityImpl>
+  get copyWith =>
+      __$$CommunityChatMembersEntityImplCopyWithImpl<
+        _$CommunityChatMembersEntityImpl
+      >(this, _$identity);
+}
+
+abstract class _CommunityChatMembersEntity
+    implements CommunityChatMembersEntity {
+  const factory _CommunityChatMembersEntity({
+    final bool notificationEnabled,
+    required final List<CommunityChatMemberEntity> members,
+  }) = _$CommunityChatMembersEntityImpl;
+
+  @override
+  bool get notificationEnabled;
+  @override
+  List<CommunityChatMemberEntity> get members;
+
+  /// Create a copy of CommunityChatMembersEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityChatMembersEntityImplCopyWith<_$CommunityChatMembersEntityImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}

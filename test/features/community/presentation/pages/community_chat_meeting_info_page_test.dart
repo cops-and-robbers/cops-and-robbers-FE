@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/services/lifecycle/lifecycle_provider.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
@@ -58,6 +59,9 @@ Widget _wrap(FakeCommunityChatRepository chatRepo, CommunityRepository repo) =>
         communityChatRepositoryProvider.overrideWithValue(chatRepo),
         communityRepositoryProvider.overrideWithValue(repo),
         currentUserIdProvider.overrideWithValue(2),
+        lifecycleStateProvider.overrideWith(
+          (ref) => const Stream<AppLifecycleState>.empty(),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(393, 852),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/services/lifecycle/lifecycle_provider.dart';
 import '../core/widgets/navigation/app_bottom_nav.dart';
 import '../l10n/app_localizations.dart';
 import 'current_branch_index_provider.dart';
@@ -26,6 +27,10 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
   @override
   void initState() {
     super.initState();
+    // 앱 복귀 이벤트는 observer가 등록돼야 온다. 커뮤니티 탭을 거치지 않아도
+    // 소켓 Notifier가 resumed를 받도록 셸에서 켠다(idempotent).
+    // 커뮤니티 소켓 Notifier의 복귀 재연결이 이 등록에 기댄다.
+    ref.read(appLifecycleServiceProvider).activate();
     // 첫 진입 값. build 중이 아니라 여기서 넣어야 provider 쓰기가 안전하다.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;

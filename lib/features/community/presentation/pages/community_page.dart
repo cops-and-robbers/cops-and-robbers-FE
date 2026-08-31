@@ -20,7 +20,7 @@ import '../../../../router/current_branch_index_provider.dart';
 import '../../../../router/route_paths.dart';
 import '../../domain/entities/community_scope.dart';
 import '../../domain/entities/community_sort_option.dart';
-import '../providers/community_chat_rooms_provider.dart';
+import '../providers/community_chat_socket_provider.dart';
 import '../providers/community_notification_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_chat_room_list.dart';
@@ -165,14 +165,11 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   /// 검색어 자리에 항상 `null`을 넘기는 이유: 검색 결과는 화면을 나가면
   /// 폐기되므로 유효 시간을 따질 대상이 아니다.
   Future<void> _refreshIfStale() async {
-    // 내 모임은 채팅방 목록이라 모집글 피드와 별개다. 실시간 채널이 없어
-    // (DOC-0037 §10) 이렇게 돌아오는 순간이 새 메시지를 알 유일한 기회다.
+    // 내 모임은 소켓이 갱신한다(유저당 알림 채널, DEC-0045). 돌아오는 순간에
+    // 할 일은 재조회가 아니라 "혹시 끊겼으면 다시 붙이기"다 — 붙어 있으면 무동작.
+    // 재연결이 소진된 뒤에도 사용자가 돌아오는 것으로 다시 시도가 풀린다.
     if (ref.read(selectedCommunityScopeProvider) == CommunityScope.mine) {
-      try {
-        await ref.read(communityChatRoomsProvider.notifier).refreshOnReturn();
-      } on AppException catch (_) {
-        debugPrint('[내 모임] ⚠️ 배경 갱신 실패 — 보던 목록 유지');
-      }
+      ref.read(communityChatSocketProvider.notifier).reconnectNow();
       return;
     }
 

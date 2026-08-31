@@ -1,9 +1,12 @@
+import 'package:cops_and_robbers/core/errors/app_exception.dart';
+import 'package:cops_and_robbers/core/services/lifecycle/lifecycle_provider.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_event.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_message_entity.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_room_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/widgets.dart' show AppLifecycleState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -36,6 +39,9 @@ ProviderContainer _container(FakeCommunityChatRepository repo) {
     overrides: [
       communityChatRepositoryProvider.overrideWithValue(repo),
       currentUserIdProvider.overrideWithValue(1),
+      lifecycleStateProvider.overrideWith(
+        (ref) => const Stream<AppLifecycleState>.empty(),
+      ),
     ],
   );
   addTearDown(c.dispose);
@@ -81,10 +87,8 @@ void main() {
         expect(pending.status, CommunityChatMessageStatus.pending);
         expect(pending.senderId, 1);
 
-        repo.emit(
-          CommunityChatEvent.message(
-            pending.copyWith(id: 9, status: CommunityChatMessageStatus.sent),
-          ),
+        repo.emitMessage(
+          pending.copyWith(id: 9, status: CommunityChatMessageStatus.sent),
         );
         async.flushMicrotasks();
 
@@ -161,23 +165,17 @@ void main() {
         final repo = FakeCommunityChatRepository();
         final c = _opened(async, repo);
 
-        repo.emit(
-          CommunityChatEvent.message(_system(5, CommunityChatSystemEvent.join)),
-        );
+        repo.emitMessage(_system(5, CommunityChatSystemEvent.join));
         async.flushMicrotasks();
         expect(_state(c).memberCount, 9);
 
-        repo.emit(
-          CommunityChatEvent.message(
-            _system(6, CommunityChatSystemEvent.leave),
-          ),
-        );
+        repo.emitMessage(_system(6, CommunityChatSystemEvent.leave));
         async.flushMicrotasks();
         expect(_state(c).memberCount, 8);
       });
     });
 
-    test('disconnects_only_after_leave_succeeds', () {
+    test('unsubscribes_only_after_leave_succeeds', () {
       fakeAsync((async) {
         final repo = FakeCommunityChatRepository();
         final c = _opened(async, repo);
@@ -186,13 +184,16 @@ void main() {
         async.flushMicrotasks();
 
         expect(
-          repo.calls.where((x) => x == 'leave' || x == 'disconnect').toList(),
-          ['leave', 'disconnect'],
+          repo.calls
+              .where((x) => x == 'leave' || x.startsWith('unsubscribeRoom'))
+              .toList(),
+          ['leave', 'unsubscribeRoom:$_postId'],
         );
       });
     });
 
     test('merges_latest_page_when_connection_is_restored', () {
+      // 재연결은 소켓 Notifier가 한다(1초 백오프) — 동작은 같다.
       fakeAsync((async) {
         final repo = FakeCommunityChatRepository()..firstPage = [_text(1)];
         final c = _opened(async, repo);
@@ -213,59 +214,20 @@ void main() {
       });
     });
 
-    test(
-      'marks_disconnected_and_reconnects_when_stream_closes_without_event',
-      () {
-        fakeAsync((async) {
-          final repo = FakeCommunityChatRepository();
-          final c = _opened(async, repo);
-
-          repo.controller!.close();
-          async.flushMicrotasks();
-          expect(
-            _state(c).connection,
-            CommunityChatConnectionState.disconnected,
-          );
-
-          async.elapse(const Duration(seconds: 1)); // 첫 재연결 백오프
-          async.flushMicrotasks();
-          expect(repo.calls.where((x) => x == 'connect').length, 2);
-          expect(_state(c).connection, CommunityChatConnectionState.connected);
-        });
-      },
-    );
-
-    test('stops_reconnecting_after_five_failed_attempts', () {
+    test('marks_evicted_and_unsubscribes_when_not_a_member_error_arrives', () {
       fakeAsync((async) {
-        final repo = FakeCommunityChatRepository()
-          ..connectEmitsDisconnected = true;
+        final repo = FakeCommunityChatRepository();
         final c = _opened(async, repo);
 
-        // 1+2+4+8+10초 — 다섯 번째 시도까지 끝나고도 남는 시간
+        repo.emit(const CommunityChatEvent.error('NOT_A_CHAT_MEMBER'));
+        async.flushMicrotasks();
         async.elapse(const Duration(seconds: 30));
 
-        expect(repo.calls.where((x) => x == 'connect').length, 6);
-        expect(_state(c).reconnectExhausted, isTrue);
-        expect(_state(c).connection, CommunityChatConnectionState.disconnected);
+        expect(_state(c).evicted, isTrue);
+        expect(repo.calls, contains('unsubscribeRoom:$_postId'));
+        expect(repo.calls, isNot(contains('disconnect')));
       });
     });
-
-    test(
-      'marks_evicted_and_stops_reconnecting_when_not_a_member_error_arrives',
-      () {
-        fakeAsync((async) {
-          final repo = FakeCommunityChatRepository();
-          final c = _opened(async, repo);
-
-          repo.emit(const CommunityChatEvent.error('NOT_A_CHAT_MEMBER'));
-          async.flushMicrotasks();
-          async.elapse(const Duration(seconds: 30));
-
-          expect(_state(c).evicted, isTrue);
-          expect(repo.calls.where((x) => x == 'connect').length, 1);
-        });
-      },
-    );
 
     test('keeps_receiving_messages_when_provider_is_rebuilt', () {
       fakeAsync((async) {
@@ -279,47 +241,10 @@ void main() {
         c.invalidate(communityChatRoomNotifierProvider(_postId));
         async.elapse(Duration.zero);
 
-        repo.emit(CommunityChatEvent.message(_text(5)));
+        repo.emitMessage(_text(5));
         async.flushMicrotasks();
 
         expect(_state(c).timeline.messages.map((m) => m.id), [5]);
-      });
-    });
-
-    test('ignores_reconnect_requests_while_a_connection_is_in_flight', () {
-      // 띠의 "다시 연결"을 연타하면 붙는 중인 연결을 계속 죽이고 새로 만들어
-      // 영영 못 붙는다. 게임 채널도 같은 가드를 둔다.
-      fakeAsync((async) {
-        final repo = FakeCommunityChatRepository()
-          ..connectEmitsDisconnected = true;
-        final c = _opened(async, repo);
-        async.elapse(const Duration(seconds: 30));
-        final before = repo.calls.where((x) => x == 'connect').length;
-
-        _notifier(c)
-          ..reconnectNow()
-          ..reconnectNow()
-          ..reconnectNow();
-        async.flushMicrotasks();
-
-        expect(repo.calls.where((x) => x == 'connect').length, before + 1);
-      });
-    });
-
-    test('refetches_over_rest_before_reconnecting_when_the_token_expired', () {
-      // 소켓만 다시 붙으면 만료된 토큰으로 계속 거절당한다. REST를 한 번 태워야
-      // AuthInterceptor가 재발급하고, 그 다음 연결이 새 토큰으로 붙는다.
-      fakeAsync((async) {
-        final repo = FakeCommunityChatRepository();
-        final c = _opened(async, repo);
-        repo.calls.clear();
-
-        repo.emit(const CommunityChatEvent.error('ACCESS_TOKEN_EXPIRED'));
-        async.flushMicrotasks();
-        async.elapse(const Duration(seconds: 2));
-
-        expect(repo.calls, contains('getMessages'));
-        expect(_state(c).evicted, isFalse);
       });
     });
 
@@ -331,15 +256,21 @@ void main() {
         final c = _opened(async, repo);
         repo.calls.clear();
 
-        repo.emit(
-          CommunityChatEvent.message(
-            _system(99, CommunityChatSystemEvent.kick).copyWith(senderId: 1),
-          ),
+        repo.emitMessage(
+          _system(99, CommunityChatSystemEvent.kick).copyWith(senderId: 1),
         );
         async.flushMicrotasks();
 
         expect(_state(c).evicted, isTrue);
-        expect(repo.calls, contains('disconnect'));
+        expect(repo.calls, contains('unsubscribeRoom:$_postId'));
+
+        // 강퇴로 밀려난 방이 배지를 단 채 목록에 남으면 안 된다 — leave()와
+        // 축을 맞춰 목록도 다시 받아야 한다(최종 리뷰 I-3).
+        final before = repo.calls.where((x) => x == 'getRooms').length;
+        c.read(communityChatRoomsProvider.future);
+        async.flushMicrotasks();
+        final after = repo.calls.where((x) => x == 'getRooms').length;
+        expect(after, before + 1);
       });
     });
 
@@ -349,10 +280,8 @@ void main() {
         final c = _opened(async, repo);
         repo.calls.clear();
 
-        repo.emit(
-          CommunityChatEvent.message(
-            _system(99, CommunityChatSystemEvent.kick).copyWith(senderId: 7),
-          ),
+        repo.emitMessage(
+          _system(99, CommunityChatSystemEvent.kick).copyWith(senderId: 7),
         );
         async.flushMicrotasks();
 
@@ -361,46 +290,7 @@ void main() {
       });
     });
 
-    test('updates_the_room_list_preview_when_a_message_arrives', () {
-      // 채팅방은 루트 네비게이터에 push돼서 뒤로 가도 내 모임 탭 위젯이 살아
-      // 있다 — 재진입 갱신이 안 걸린다. 대화하는 동안 목록을 같이 고쳐 둔다.
-      fakeAsync((async) {
-        final repo = FakeCommunityChatRepository();
-        final c = _opened(async, repo);
-        c.listen(communityChatRoomsProvider, (_, _) {});
-        async.flushMicrotasks();
-
-        repo.emit(CommunityChatEvent.message(_text(99, sender: 7)));
-        async.flushMicrotasks();
-
-        final room = c
-            .read(communityChatRoomsProvider)
-            .requireValue
-            .firstWhere((r) => r.postId == _postId);
-        expect(room.lastMessage?.id, 99);
-        expect(
-          room.lastMessage?.body,
-          const CommunityChatMessageBody.text('m99'),
-        );
-      });
-    });
-
-    test('leaves_the_room_list_alone_when_the_room_is_not_cached_yet', () {
-      // 방금 참여해 목록에 아직 없는 방 — 없는 칸을 만들어 내면 안 된다.
-      fakeAsync((async) {
-        final repo = FakeCommunityChatRepository()..rooms = [];
-        final c = _opened(async, repo);
-        c.listen(communityChatRoomsProvider, (_, _) {});
-        async.flushMicrotasks();
-
-        repo.emit(CommunityChatEvent.message(_text(99, sender: 7)));
-        async.flushMicrotasks();
-
-        expect(c.read(communityChatRoomsProvider).requireValue, isEmpty);
-      });
-    });
-
-    test('disconnects_when_provider_is_disposed_without_leaving', () {
+    test('unsubscribes_when_provider_is_disposed_without_leaving', () {
       fakeAsync((async) {
         final repo = FakeCommunityChatRepository();
         // addTearDown(c.dispose)를 쓰는 _container를 그대로 쓰면 테스트 안에서
@@ -409,6 +299,9 @@ void main() {
           overrides: [
             communityChatRepositoryProvider.overrideWithValue(repo),
             currentUserIdProvider.overrideWithValue(1),
+            lifecycleStateProvider.overrideWith(
+              (ref) => const Stream<AppLifecycleState>.empty(),
+            ),
           ],
         );
         c.listen(communityChatRoomNotifierProvider(_postId), (_, _) {});
@@ -417,26 +310,141 @@ void main() {
         c.dispose();
         async.flushMicrotasks();
 
-        expect(repo.calls, contains('disconnect'));
+        expect(repo.calls, contains('unsubscribeRoom:$_postId'));
         expect(repo.calls, isNot(contains('leave')));
       });
     });
-  });
 
-  group('backoffDelay', () {
-    test('doubles_each_attempt_and_caps_at_ten_seconds', () {
-      expect(
-        CommunityChatRoomNotifier.backoffDelay(1),
-        const Duration(seconds: 1),
-      );
-      expect(
-        CommunityChatRoomNotifier.backoffDelay(4),
-        const Duration(seconds: 8),
-      );
-      expect(
-        CommunityChatRoomNotifier.backoffDelay(5),
-        const Duration(seconds: 10),
-      );
+    test('subscribes_the_room_when_opened', () {
+      // 해제는 기존 `unsubscribes_when_provider_is_disposed_without_leaving`가 본다.
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository();
+        _opened(async, repo);
+
+        expect(repo.calls, contains('subscribeRoom:$_postId'));
+        expect(repo.calls, isNot(contains('disconnect')));
+      });
+    });
+
+    test('ignores_messages_addressed_to_other_rooms', () {
+      // 개인 채널은 모든 방의 메시지를 한 구독으로 보낸다 — 제 방 것만 받는다.
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository();
+        final c = _opened(async, repo);
+
+        repo.emitMessage(_text(9), postId: 77);
+        async.flushMicrotasks();
+
+        expect(_state(c).timeline.messages, isEmpty);
+      });
+    });
+
+    test('starts_connected_when_the_socket_is_already_up', () {
+      // 소켓은 로그인 때 이미 붙어 있다 — 방을 열 때 연결 이벤트가 다시 오지
+      // 않으므로 소켓 상태를 씨앗으로 쓴다. 안 그러면 입력창이 영영 잠긴다.
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository();
+        final c = _opened(async, repo);
+
+        expect(_state(c).connection, CommunityChatConnectionState.connected);
+      });
+    });
+
+    test('marks_the_newest_message_read_when_opened', () {
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository()
+          ..firstPage = [_text(3), _text(2), _text(1)];
+        _opened(async, repo);
+
+        expect(repo.calls, contains('markRead:$_postId:3'));
+      });
+    });
+
+    test('skips_the_read_receipt_when_the_room_is_empty', () {
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository();
+        _opened(async, repo);
+
+        expect(repo.calls.where((x) => x.startsWith('markRead')), isEmpty);
+      });
+    });
+
+    test('marks_read_on_exit_only_when_new_messages_arrived', () {
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository()..firstPage = [_text(3)];
+        final c = _opened(async, repo);
+
+        // 아무것도 안 왔다 — 진입 때 보낸 3과 같으니 다시 보내지 않는다
+        _notifier(c).markReadOnExit();
+        async.flushMicrotasks();
+        expect(repo.calls.where((x) => x.startsWith('markRead')).length, 1);
+
+        repo.emitMessage(_text(4));
+        async.flushMicrotasks();
+        _notifier(c).markReadOnExit();
+        async.flushMicrotasks();
+        expect(repo.calls.last, 'markRead:$_postId:4');
+      });
+    });
+
+    test('keeps_the_screen_alive_when_the_read_receipt_fails', () {
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository()
+          ..firstPage = [_text(3)]
+          ..markReadError = const ServerException(
+            message: 'read failed',
+            messageKey: 'errorTemporaryRetry',
+          );
+        final c = _opened(async, repo);
+
+        expect(_state(c).timeline.messages.map((m) => m.id), [3]);
+      });
+    });
+
+    test(
+      'clears_the_badge_as_soon_as_the_room_is_opened_regardless_of_the_read_receipt',
+      () {
+        // 사용자가 방을 실제로 열었다 — REST 성공 여부·dedupe와 무관하게
+        // 로컬 배지부터 내린다. 서버 진실은 다음 기준선 조회가 맞춘다(최종
+        // 리뷰 M-1).
+        fakeAsync((async) {
+          final repo = FakeCommunityChatRepository()
+            ..firstPage = [_text(3)]
+            ..markReadError = const ServerException(
+              message: 'read failed',
+              messageKey: 'errorTemporaryRetry',
+            );
+          repo.rooms = [repo.rooms.single.copyWith(unreadCount: 5)];
+          final c = _opened(async, repo);
+
+          expect(
+            c.read(communityChatRoomsProvider).requireValue.single.unreadCount,
+            0,
+          );
+        });
+      },
+    );
+
+    test('retries_the_read_receipt_on_exit_when_the_entry_call_failed', () {
+      // 진입 markRead가 실패했는데 _lastReadSent를 안 되돌리면, 이탈 때
+      // 같은 id로 다시 보내는 재시도가 dedupe 가드에 막혀 서버 커서가 영영
+      // 안 옮겨진다(I-3).
+      fakeAsync((async) {
+        final repo = FakeCommunityChatRepository()
+          ..firstPage = [_text(3)]
+          ..markReadError = const ServerException(
+            message: 'read failed',
+            messageKey: 'errorTemporaryRetry',
+          );
+        final c = _opened(async, repo);
+        expect(repo.calls.where((x) => x == 'markRead:$_postId:3').length, 1);
+
+        repo.markReadError = null;
+        _notifier(c).markReadOnExit();
+        async.flushMicrotasks();
+
+        expect(repo.calls.where((x) => x == 'markRead:$_postId:3').length, 2);
+      });
     });
   });
 }

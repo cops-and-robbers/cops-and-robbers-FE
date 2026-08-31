@@ -281,4 +281,25 @@ abstract class CommunityRemoteDataSource {
   Future<CommunityChatMemberListResponseModel> getChatMembers(
     @Path('postId') int postId,
   );
+
+  /// 채팅방 읽음 처리 — 읽음 커서를 [body]의 메시지 id로 옮긴다 (204)
+  ///
+  /// 내역 조회(GET)만으로는 읽음 처리되지 않는다(DEC-0044). 커서는 앞으로만
+  /// 가므로 과거 id를 보내도 뒤로 밀리지 않는다. 방 멤버가 아니면 403
+  /// `NOT_A_CHAT_MEMBER`.
+  @POST('${ApiEndpoints.communityPosts}/{postId}/chat/read')
+  Future<void> readChat(
+    @Path('postId') int postId,
+    @Body() CommunityChatReadRequestModel body,
+  );
+
+  /// 채팅방 알림 켜기/끄기 (204)
+  ///
+  /// 끄면 푸시만 오지 않는다 — 메시지는 그대로 저장되고 안 읽은 개수도 그대로
+  /// 오른다. 현재 상태는 [getChatMembers] 응답의 `notificationEnabled`로 온다.
+  @PUT('${ApiEndpoints.communityPosts}/{postId}/chat/notification')
+  Future<void> updateChatNotification(
+    @Path('postId') int postId,
+    @Body() CommunityChatNotificationRequestModel body,
+  );
 }

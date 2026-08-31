@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
@@ -11,10 +10,7 @@ import '../community_chat_preview_text.dart';
 import '../community_chat_time_format.dart';
 import 'community_chat_avatar.dart';
 
-/// 내 모임 탭의 채팅방 한 칸 — 아바타 · 제목+인원 · 마지막 메시지 · 시각
-///
-/// 안 읽은 개수 배지는 그리지 않는다 — 서버가 만들지 않기로 확정했고(DEC-0030)
-/// 앱 로컬로는 개수를 못 센다(보고 있는 방만 구독하므로).
+/// 내 모임 탭의 채팅방 한 칸 — 아바타 · 제목+인원 · 마지막 메시지 · 시각 · 안 읽은 배지
 class CommunityChatRoomTile extends StatelessWidget {
   const CommunityChatRoomTile({
     required this.room,
@@ -92,20 +88,51 @@ class CommunityChatRoomTile extends StatelessWidget {
             ),
             if (last != null) ...[
               SizedBox(width: AppSpacing.horizontal8),
-              // label_16 제목과 글자 크기가 달라 위쪽에 살짝 여백을 줘야
-              // 두 텍스트의 시각적 중심이 맞는다.
-              Padding(
-                padding: EdgeInsets.only(top: 2.h),
-                child: Text(
-                  formatChatListTime(l10n, last.createdAt, now),
-                  style: AppTextStyles.tag_12.copyWith(
-                    color: AppColors.black600,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // label_16 제목과 글자 크기가 달라 위쪽에 살짝 여백을 줘야
+                  // 두 텍스트의 시각적 중심이 맞는다.
+                  Text(
+                    formatChatListTime(l10n, last.createdAt, now),
+                    style: AppTextStyles.tag_12.copyWith(
+                      color: AppColors.black600,
+                    ),
                   ),
-                ),
+                  if (room.unreadCount > 0) ...[
+                    SizedBox(height: AppSpacing.vertical8),
+                    _UnreadBadge(count: room.unreadCount),
+                  ],
+                ],
               ),
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// 안 읽은 개수 알약. 99를 넘으면 `99+` — 세 자리가 되면 칸이 넓어져 제목을 민다.
+class _UnreadBadge extends StatelessWidget {
+  const _UnreadBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal6,
+        vertical: AppSpacing.vertical4,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.blueVer2Strong,
+        borderRadius: AppRadius.large,
+      ),
+      child: Text(
+        count > 99 ? '99+' : '$count',
+        style: AppTextStyles.tag_12.copyWith(color: AppColors.white),
       ),
     );
   }

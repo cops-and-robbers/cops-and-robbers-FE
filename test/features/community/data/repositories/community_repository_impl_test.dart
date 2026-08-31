@@ -211,6 +211,16 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
   Future<CommunityChatMemberListResponseModel> getChatMembers(int postId) =>
       throw UnimplementedError('이 테스트는 채팅방 멤버 조회를 쓰지 않는다');
 
+  @override
+  Future<void> readChat(int postId, CommunityChatReadRequestModel body) =>
+      throw UnimplementedError('이 테스트는 채팅방 읽음 처리를 쓰지 않는다');
+
+  @override
+  Future<void> updateChatNotification(
+    int postId,
+    CommunityChatNotificationRequestModel body,
+  ) => throw UnimplementedError('이 테스트는 채팅방 알림 설정을 쓰지 않는다');
+
   // ── 내 스크랩 목록 ──
   CommunityScrapListResponseModel? scrapsToReturn;
   int? lastScrapsCursor;

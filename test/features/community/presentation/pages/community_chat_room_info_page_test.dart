@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/services/lifecycle/lifecycle_provider.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_member_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -81,6 +83,9 @@ Widget _wrap(
         communityRepo ?? _PostOnlyRepository(),
       ),
       currentUserIdProvider.overrideWithValue(currentUserId),
+      lifecycleStateProvider.overrideWith(
+        (ref) => const Stream<AppLifecycleState>.empty(),
+      ),
     ],
     child: ScreenUtilInit(
       designSize: const Size(393, 852),
@@ -100,14 +105,16 @@ Widget _wrap(
 }
 
 FakeCommunityChatRepository _repo() => FakeCommunityChatRepository()
-  ..members = const [
-    CommunityChatMemberEntity(
-      userId: _authorId,
-      nickname: '경도매우러버',
-      isAuthor: true,
-    ),
-    CommunityChatMemberEntity(userId: 2, nickname: '홍길동그라미', isAuthor: false),
-  ];
+  ..members = const CommunityChatMembersEntity(
+    members: [
+      CommunityChatMemberEntity(
+        userId: _authorId,
+        nickname: '경도매우러버',
+        isAuthor: true,
+      ),
+      CommunityChatMemberEntity(userId: 2, nickname: '홍길동그라미', isAuthor: false),
+    ],
+  );
 
 void main() {
   group('CommunityChatRoomInfoPage', () {
@@ -129,7 +136,8 @@ void main() {
     testWidgets('shows_room_member_count_when_member_list_is_empty', (
       tester,
     ) async {
-      final repo = _repo()..members = const [];
+      final repo = _repo()
+        ..members = const CommunityChatMembersEntity(members: []);
       await tester.pumpWidget(_wrap(repo, currentUserId: 2));
       await tester.pump(const Duration(milliseconds: 300)); // 상세 목(200ms) 로드
       await tester.pumpAndSettle();
@@ -141,9 +149,15 @@ void main() {
       tester,
     ) async {
       final repo = _repo()
-        ..members = const [
-          CommunityChatMemberEntity(userId: 2, nickname: 'me', isAuthor: true),
-        ];
+        ..members = const CommunityChatMembersEntity(
+          members: [
+            CommunityChatMemberEntity(
+              userId: 2,
+              nickname: 'me',
+              isAuthor: true,
+            ),
+          ],
+        );
       await tester.pumpWidget(
         _wrap(repo, currentUserId: 2, communityRepo: _ThrowingPostRepository()),
       );
@@ -168,12 +182,12 @@ void main() {
       await tester.tap(find.text('채팅방 나가기').last); // 다이얼로그 확인 버튼
       await tester.pumpAndSettle();
 
-      // 화면이 걷히며 provider dispose가 disconnect를 한 번 더 부른다 — 앞 둘만 본다.
+      // 화면이 걷히며 provider dispose가 방 구독 해제를 한 번 더 부른다 — 앞 둘만 본다.
       final order = repo.calls
-          .where((c) => c == 'leave' || c == 'disconnect')
+          .where((c) => c == 'leave' || c.startsWith('unsubscribeRoom'))
           .take(2)
           .toList();
-      expect(order, ['leave', 'disconnect']);
+      expect(order, ['leave', 'unsubscribeRoom:$_postId']);
       expect(find.text('목록'), findsOneWidget);
     });
 
@@ -192,6 +206,46 @@ void main() {
 
       expect(repo.calls, isNot(contains('leave')));
       expect(find.text('홍길동그라미'), findsOneWidget);
+    });
+
+    testWidgets('shows_the_muted_bell_when_notifications_are_off', (
+      tester,
+    ) async {
+      final repo = _repo()
+        ..members = const CommunityChatMembersEntity(
+          notificationEnabled: false,
+          members: [],
+        );
+      await tester.pumpWidget(_wrap(repo, currentUserId: 2));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is SvgPicture &&
+              (w.bytesLoader as SvgAssetLoader).assetName ==
+                  'assets/icons/icon_bell_block.svg',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('saves_the_flip_when_the_bell_is_tapped', (tester) async {
+      final repo = _repo();
+      await tester.pumpWidget(_wrap(repo, currentUserId: 2));
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byWidgetPredicate(
+          (w) =>
+              w is SvgPicture &&
+              (w.bytesLoader as SvgAssetLoader).assetName ==
+                  'assets/icons/icon_bell.svg',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(repo.calls, contains('setNotification:$_postId:false'));
     });
   });
 }

@@ -1,7 +1,7 @@
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
+import 'package:cops_and_robbers/core/services/lifecycle/lifecycle_provider.dart';
 import 'package:cops_and_robbers/core/widgets/chat/chat_bubble.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
-import 'package:cops_and_robbers/features/community/domain/entities/community_chat_event.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_message_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
@@ -83,6 +83,9 @@ Widget _wrap(FakeCommunityChatRepository chatRepo) => ProviderScope(
     ),
     currentUserIdProvider.overrideWithValue(1),
     clockProvider.overrideWithValue(() => DateTime(2026, 8, 24, 17, 40)),
+    lifecycleStateProvider.overrideWith(
+      (ref) => const Stream<AppLifecycleState>.empty(),
+    ),
   ],
   child: ScreenUtilInit(
     designSize: const Size(393, 852),
@@ -200,16 +203,14 @@ void main() {
           .firstWhere((c) => c.startsWith('send:'))
           .substring(5);
 
-      repo.emit(
-        CommunityChatEvent.message(
-          CommunityChatMessageEntity(
-            id: 99,
-            messageKey: key,
-            senderId: 1,
-            senderNickname: '나',
-            body: const CommunityChatMessageBody.text('곧 봬요'),
-            createdAt: DateTime(2026, 8, 24, 17, 41),
-          ),
+      repo.emitMessage(
+        CommunityChatMessageEntity(
+          id: 99,
+          messageKey: key,
+          senderId: 1,
+          senderNickname: '나',
+          body: const CommunityChatMessageBody.text('곧 봬요'),
+          createdAt: DateTime(2026, 8, 24, 17, 41),
         ),
       );
       // 브로드캐스트 스트림 전달(마이크로태스크) 뒤 리빌드까지 기다린다
@@ -233,6 +234,28 @@ void main() {
 
       expect(find.text('연결이 끊겼어요'), findsOneWidget);
       expect(find.text('다시 연결'), findsOneWidget);
+    });
+
+    testWidgets('sends_the_read_receipt_when_the_page_is_popped', (
+      tester,
+    ) async {
+      final repo = FakeCommunityChatRepository()
+        ..firstPage = [_text(3, 7, '먼저 온 말')];
+      await tester.pumpWidget(_wrap(repo));
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
+      // 머무는 동안 하나 더 왔다 — 떠날 때 그 id로 한 번 더 보낸다
+      repo.emitMessage(_text(4, 7, '나중 말'));
+      await tester.pumpAndSettle();
+
+      final NavigatorState navigator = tester.state(find.byType(Navigator));
+      navigator.pop();
+      await tester.pumpAndSettle();
+
+      expect(repo.calls.where((x) => x.startsWith('markRead:')), [
+        'markRead:$_postId:3',
+        'markRead:$_postId:4',
+      ]);
     });
   });
 }

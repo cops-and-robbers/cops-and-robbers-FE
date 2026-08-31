@@ -713,6 +713,11 @@ mixin _$CommunityChatMessageEntity {
   DateTime get createdAt => throw _privateConstructorUsedError;
   CommunityChatMessageStatus get status => throw _privateConstructorUsedError;
 
+  /// 와이어 `messageType == 'SYSTEM'`. 본문 타입으로 판정하지 않는 이유: 파서는
+  /// 모르는 시스템 이벤트를 `unknown` 본문으로 접는데, 서버의 안 읽은 개수 집계는
+  /// `messageType`으로만 제외한다 — 본문으로 세면 그 경우 숫자가 어긋난다.
+  bool get isSystem => throw _privateConstructorUsedError;
+
   /// Create a copy of CommunityChatMessageEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -740,6 +745,7 @@ abstract class $CommunityChatMessageEntityCopyWith<$Res> {
     CommunityChatMessageBody body,
     DateTime createdAt,
     CommunityChatMessageStatus status,
+    bool isSystem,
   });
 
   $CommunityChatMessageBodyCopyWith<$Res> get body;
@@ -771,6 +777,7 @@ class _$CommunityChatMessageEntityCopyWithImpl<
     Object? body = null,
     Object? createdAt = null,
     Object? status = null,
+    Object? isSystem = null,
   }) {
     return _then(
       _value.copyWith(
@@ -806,6 +813,10 @@ class _$CommunityChatMessageEntityCopyWithImpl<
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as CommunityChatMessageStatus,
+            isSystem: null == isSystem
+                ? _value.isSystem
+                : isSystem // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -840,6 +851,7 @@ abstract class _$$CommunityChatMessageEntityImplCopyWith<$Res>
     CommunityChatMessageBody body,
     DateTime createdAt,
     CommunityChatMessageStatus status,
+    bool isSystem,
   });
 
   @override
@@ -872,6 +884,7 @@ class __$$CommunityChatMessageEntityImplCopyWithImpl<$Res>
     Object? body = null,
     Object? createdAt = null,
     Object? status = null,
+    Object? isSystem = null,
   }) {
     return _then(
       _$CommunityChatMessageEntityImpl(
@@ -907,6 +920,10 @@ class __$$CommunityChatMessageEntityImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as CommunityChatMessageStatus,
+        isSystem: null == isSystem
+            ? _value.isSystem
+            : isSystem // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -924,6 +941,7 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
     required this.body,
     required this.createdAt,
     this.status = CommunityChatMessageStatus.sent,
+    this.isSystem = false,
   }) : super._();
 
   @override
@@ -946,9 +964,16 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
   @JsonKey()
   final CommunityChatMessageStatus status;
 
+  /// 와이어 `messageType == 'SYSTEM'`. 본문 타입으로 판정하지 않는 이유: 파서는
+  /// 모르는 시스템 이벤트를 `unknown` 본문으로 접는데, 서버의 안 읽은 개수 집계는
+  /// `messageType`으로만 제외한다 — 본문으로 세면 그 경우 숫자가 어긋난다.
+  @override
+  @JsonKey()
+  final bool isSystem;
+
   @override
   String toString() {
-    return 'CommunityChatMessageEntity(id: $id, messageKey: $messageKey, senderId: $senderId, senderNickname: $senderNickname, senderProfileIcon: $senderProfileIcon, body: $body, createdAt: $createdAt, status: $status)';
+    return 'CommunityChatMessageEntity(id: $id, messageKey: $messageKey, senderId: $senderId, senderNickname: $senderNickname, senderProfileIcon: $senderProfileIcon, body: $body, createdAt: $createdAt, status: $status, isSystem: $isSystem)';
   }
 
   @override
@@ -968,7 +993,9 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
             (identical(other.body, body) || other.body == body) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.isSystem, isSystem) ||
+                other.isSystem == isSystem));
   }
 
   @override
@@ -982,6 +1009,7 @@ class _$CommunityChatMessageEntityImpl extends _CommunityChatMessageEntity {
     body,
     createdAt,
     status,
+    isSystem,
   );
 
   /// Create a copy of CommunityChatMessageEntity
@@ -1006,6 +1034,7 @@ abstract class _CommunityChatMessageEntity extends CommunityChatMessageEntity {
     required final CommunityChatMessageBody body,
     required final DateTime createdAt,
     final CommunityChatMessageStatus status,
+    final bool isSystem,
   }) = _$CommunityChatMessageEntityImpl;
   const _CommunityChatMessageEntity._() : super._();
 
@@ -1027,6 +1056,12 @@ abstract class _CommunityChatMessageEntity extends CommunityChatMessageEntity {
   DateTime get createdAt;
   @override
   CommunityChatMessageStatus get status;
+
+  /// 와이어 `messageType == 'SYSTEM'`. 본문 타입으로 판정하지 않는 이유: 파서는
+  /// 모르는 시스템 이벤트를 `unknown` 본문으로 접는데, 서버의 안 읽은 개수 집계는
+  /// `messageType`으로만 제외한다 — 본문으로 세면 그 경우 숫자가 어긋난다.
+  @override
+  bool get isSystem;
 
   /// Create a copy of CommunityChatMessageEntity
   /// with the given fields replaced by the non-null parameter values.
