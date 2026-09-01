@@ -118,7 +118,8 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     if (_points.isNotEmpty) {
       _initialCamera = _centroidOf(_points);
     } else {
-      _initialCamera = currentLocation ?? DeviceLocationService.fallbackLocation;
+      _initialCamera =
+          currentLocation ?? DeviceLocationService.fallbackLocation;
     }
     _lastCamera = CameraPosition(target: _initialCamera, zoom: _initialZoom);
     _isLocationFocused = _isCameraFocusedOnLocation(_lastCamera!);

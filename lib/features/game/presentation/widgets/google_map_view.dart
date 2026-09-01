@@ -39,7 +39,6 @@ class GoogleMapView extends StatefulWidget {
 class GoogleMapViewState extends State<GoogleMapView> {
   GoogleMapController? _controller;
 
-
   Set<Circle> _areaCircles = {};
   Set<Polygon> _areaPolygons = {};
 
