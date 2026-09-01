@@ -4459,17 +4459,11 @@ abstract class AppLocalizations {
   /// **'앱 소개 다시 보기'**
   String get settingsGuideAppIntro;
 
-  /// 온보딩 마지막 장 — 팀명 '동심지키미'와 잇는 시작 버튼
+  /// 온보딩 마지막 장 — 온보딩을 닫고 로그인으로 진행
   ///
   /// In ko, this message translates to:
-  /// **'동심으로 들어가기'**
-  String get onboardingEnterButton;
-
-  /// 온보딩 마지막 장 — 사이트 게임 소개 페이지로 이동
-  ///
-  /// In ko, this message translates to:
-  /// **'게임 소개 보기'**
-  String get onboardingGuideButton;
+  /// **'시작하기'**
+  String get onboardingStartButton;
 }
 
 class _AppLocalizationsDelegate

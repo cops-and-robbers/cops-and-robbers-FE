@@ -2346,8 +2346,5 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsGuideAppIntro => '앱 소개 다시 보기';
 
   @override
-  String get onboardingEnterButton => '동심으로 들어가기';
-
-  @override
-  String get onboardingGuideButton => '게임 소개 보기';
+  String get onboardingStartButton => '시작하기';
 }

@@ -3,20 +3,6 @@ import 'package:cops_and_robbers/core/constants/legal_doc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('AppUrls.gameGuide', () {
-    test('returns_no_prefix_for_korean', () {
-      expect(AppUrls.gameGuide('ko'), 'https://copsandrobbers.app/game');
-    });
-
-    test('returns_language_prefix_for_japanese', () {
-      expect(AppUrls.gameGuide('ja'), 'https://copsandrobbers.app/ja/game');
-    });
-
-    test('falls_back_to_korean_for_unsupported_language', () {
-      expect(AppUrls.gameGuide('fr'), 'https://copsandrobbers.app/game');
-    });
-  });
-
   group('AppUrls.legalDocument', () {
     test('returns_no_prefix_for_korean', () {
       expect(

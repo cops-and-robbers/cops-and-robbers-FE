@@ -19,18 +19,6 @@ class AppUrls {
   /// 공식 사이트
   static const String site = 'https://copsandrobbers.app';
 
-  /// 사이트의 게임 소개 페이지
-  ///
-  /// 온보딩 마지막 장에서 "더 자세히"로 연결한다. 로케일 접두사 규칙은
-  /// [legalDocument] 와 같다 — ko 는 접두사 없음, 그 밖은 `/<언어>`.
-  static String gameGuide(String languageCode) {
-    final language = _legalLanguages.contains(languageCode)
-        ? languageCode
-        : 'ko';
-    final prefix = language == 'ko' ? '' : '/$language';
-    return '$site$prefix/game';
-  }
-
   /// 사이트가 법적 문서를 제공하는 언어
   ///
   /// 앱 지원 언어와 3:3으로 맞습니다. 그 밖의 로케일이 들어오면 한국어로 떨어뜨립니다.

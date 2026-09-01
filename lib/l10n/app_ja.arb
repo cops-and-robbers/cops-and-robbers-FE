@@ -807,6 +807,5 @@
   "onboardingCommunityBody": "近くで一緒に走る人をコミュニティで探してみてください。場所と時間を見て、そのまま参加できます",
   "buttonSkip": "スキップ",
   "settingsGuideAppIntro": "アプリ紹介をもう一度見る",
-  "onboardingEnterButton": "童心に返る",
-  "onboardingGuideButton": "遊び方を見る"
+  "onboardingStartButton": "始める"
 }

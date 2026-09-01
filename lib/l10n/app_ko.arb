@@ -2381,12 +2381,8 @@
   "@settingsGuideAppIntro": {
     "description": "마이페이지 이용 안내 — 온보딩 재열람"
   },
-  "onboardingEnterButton": "동심으로 들어가기",
-  "@onboardingEnterButton": {
-    "description": "온보딩 마지막 장 — 팀명 '동심지키미'와 잇는 시작 버튼"
-  },
-  "onboardingGuideButton": "게임 소개 보기",
-  "@onboardingGuideButton": {
-    "description": "온보딩 마지막 장 — 사이트 게임 소개 페이지로 이동"
+  "onboardingStartButton": "시작하기",
+  "@onboardingStartButton": {
+    "description": "온보딩 마지막 장 — 온보딩을 닫고 로그인으로 진행"
   }
 }

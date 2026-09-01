@@ -65,12 +65,6 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   /// 네트워크 미연결 감지 시 true가 되며, 외부 API 호출을 차단한다.
   bool _isOffline = false;
 
-  /// 온보딩을 보여주고 스플래시로 돌아온 직후인지.
-  ///
-  /// `go` 로 화면을 바꾸므로 State 가 새로 만들어진다 — 인스턴스 필드로는
-  /// 전달되지 않아 static 으로 둔다.
-  static bool _skipMinDelayOnce = false;
-
   /// `_navigateToNextScreen` 동시 실행 방지 플래그
   /// 리스너/재시도 버튼/initState가 중복으로 진입하는 것을 막는다.
   bool _isNavigating = false;
@@ -134,12 +128,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       }
 
       final startTime = DateTime.now();
-      // 온보딩을 막 보고 돌아온 길이면 최소 노출을 건너뛴다 —
-      // 방금 네 장을 넘긴 사람을 2초 더 세우지 않는다.
-      final minDelay = _skipMinDelayOnce
-          ? Duration.zero
-          : const Duration(seconds: 2);
-      _skipMinDelayOnce = false;
+      const minDelay = Duration(seconds: 2);
 
       // ================================================================
       // Remote Config: 점검 모드 및 앱 버전 체크
@@ -174,32 +163,6 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       unawaited(ref.read(adServiceProvider).initialize());
 
       if (!mounted) return;
-
-      // ================================================================
-      // 앱 소개(온보딩) — 이 기기에서 최초 1회, 로그인 화면 앞
-      //
-      // 로그인보다 먼저 오는 이유: 계정을 요구하기 전에 왜 필요한지 먼저
-      // 말한다. 가입 마찰이 이탈의 최대 원인이고, 우리 온보딩은 계정에 붙일
-      // 데이터를 받는 개인화형이 아니라 "이게 무슨 앱인지"를 말하는 가치
-      // 설명형이다. 점검 모드·강제 업데이트 게이트 뒤에 둔다 — 앞에 두면
-      // 차단될 버전에서도 소개가 먼저 떠 버린다.
-      //
-      // ⚠️ `push` 로 띄우고 그 future 를 기다리면 안 된다. 라우터가
-      // `refreshListenable` 로 auth 확정에 반응해 스택을 URI 기준으로 다시
-      // 짜는데, 그때 imperative 로 push 된 라우트가 떨어져 나간다. 그러면
-      // await 가 영영 끝나지 않아 스플래시가 조용히 멈춘다(무한 로딩).
-      // 그래서 위치 자체를 `/onboarding` 으로 옮기고, 이 흐름은 여기서 끝낸다.
-      // 온보딩이 닫히면 스플래시로 돌아와 이 절차를 처음부터 다시 탄다.
-      //
-      // 기록은 노출 전에 한다 — 온보딩 도중 앱이 죽어도 영구 재노출은 막는다.
-      // ================================================================
-      if (!await OnboardingPrefs.seen()) {
-        await OnboardingPrefs.markSeen();
-        if (!mounted) return;
-        _skipMinDelayOnce = true;
-        context.go(RoutePaths.onboarding);
-        return;
-      }
 
       // ================================================================
       // 콜드 스타트 딥링크 양보 (cold-start 네비게이션 경합 방지)
@@ -265,6 +228,34 @@ class _SplashPageState extends ConsumerState<SplashPage> {
           await ref.read(pendingCommunityPostProvider.notifier).save(postId);
         }
         await _waitRemaining(startTime, minDelay);
+        if (!mounted) return;
+
+        // ================================================================
+        // 앱 소개(온보딩) — 이 기기에서 최초 1회, 로그인 화면 앞
+        //
+        // 로그인보다 먼저 오는 이유: 계정을 요구하기 전에 왜 필요한지 먼저
+        // 말한다. 가입 마찰이 이탈의 최대 원인이고, 우리 온보딩은 계정에 붙일
+        // 데이터를 받는 개인화형이 아니라 "이게 무슨 앱인지"를 말하는 가치
+        // 설명형이다.
+        //
+        // "로그인으로 간다"가 확정된 이 지점에 두는 이유: 온보딩이 닫힐 때
+        // 스플래시를 다시 거치지 않고 로그인으로 직행할 수 있다 (중간에
+        // 스플래시가 한 번 더 번쩍이던 문제). 점검·강제 업데이트 게이트와
+        // 초대 딥링크 양보, 인증 복원(재설치로 세션이 살아 있는 기기)은 모두
+        // 이 위에서 이미 빠져나갔으므로 온보딩이 그 흐름들을 가로막지 않는다.
+        //
+        // ⚠️ `push` 후 future 대기 금지 — 라우터 refreshListenable 이 스택을
+        // 재계산하며 imperative push 가 떨어져 나가 무한 대기가 된다(LSN-0041).
+        //
+        // 기록은 노출 전에 한다 — 온보딩 도중 앱이 죽어도 영구 재노출은 막는다.
+        // ================================================================
+        if (!await OnboardingPrefs.seen()) {
+          await OnboardingPrefs.markSeen();
+          if (!mounted) return;
+          context.go(RoutePaths.onboarding);
+          return;
+        }
+
         if (!mounted) return;
         context.go(RoutePaths.login);
         return;

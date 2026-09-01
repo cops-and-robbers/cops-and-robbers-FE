@@ -2347,8 +2347,5 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsGuideAppIntro => 'アプリ紹介をもう一度見る';
 
   @override
-  String get onboardingEnterButton => '童心に返る';
-
-  @override
-  String get onboardingGuideButton => '遊び方を見る';
+  String get onboardingStartButton => '始める';
 }
