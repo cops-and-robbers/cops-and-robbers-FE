@@ -547,7 +547,10 @@ class _MyPageState extends ConsumerState<MyPage> {
                   value: value,
                   onChanged: (_) {},
                   activeThumbColor: AppColors.white,
-                  activeTrackColor: AppColors.black,
+                  // 켜짐은 v3 강조색. 바텀 네비 활성 아이콘·선택된 프로필
+                  // 아이콘 테두리와 같은 값이라 "켜짐/선택됨"이 앱 전체에서
+                  // 한 색으로 읽힌다. 꺼짐은 중립 회색 그대로 둔다.
+                  activeTrackColor: AppColors.blueVer2Basic,
                   inactiveThumbColor: AppColors.white,
                   inactiveTrackColor: AppColors.black200,
                   trackOutlineColor: WidgetStateProperty.all(

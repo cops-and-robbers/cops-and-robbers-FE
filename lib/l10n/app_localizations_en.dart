@@ -2503,6 +2503,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeChatPinNotFound => 'There is no notice to change';
 
   @override
+  String get errorCommunityChatNoticeLoadGeneric =>
+      'We couldn\'t load the notice. Please try again in a moment';
+
+  @override
+  String get errorCommunityChatNoticeSaveGeneric =>
+      'We couldn\'t save the notice. Please try again in a moment';
+
+  @override
+  String get errorCommunityChatNoticeDeleteGeneric =>
+      'We couldn\'t delete the notice. Please try again in a moment';
+
+  @override
   String get errorCodeConflictingCountryFilter =>
       'These country filters can\'t be combined';
 

@@ -349,6 +349,14 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       // 공통 에러 (서버 응답 에러의 DioExceptionHandler 표준 키)
       case 'errorTemporaryRetry':
         return errorTemporaryRetry;
+      // 커뮤니티 채팅 공지 (없으면 폴백이 `_guard`의 한국어 하드코딩이라 로케일을
+      // 무시한 문구가 그대로 나간다)
+      case 'errorCommunityChatNoticeLoadGeneric':
+        return errorCommunityChatNoticeLoadGeneric;
+      case 'errorCommunityChatNoticeSaveGeneric':
+        return errorCommunityChatNoticeSaveGeneric;
+      case 'errorCommunityChatNoticeDeleteGeneric':
+        return errorCommunityChatNoticeDeleteGeneric;
       // 네트워크/API 에러 (dio_exception_handler.dart)
       case 'errorNetworkTimeout':
         return errorNetworkTimeout;

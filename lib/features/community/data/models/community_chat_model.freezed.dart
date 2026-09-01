@@ -2370,7 +2370,9 @@ CommunityChatPinResponseModel _$CommunityChatPinResponseModelFromJson(
 
 /// @nodoc
 mixin _$CommunityChatPinResponseModel {
-  int get postId => throw _privateConstructorUsedError;
+  // 앱은 이 값을 쓰지 않는다(어느 방인지는 요청 경로가 안다). `required`로 두면
+  // 서버가 안 줬을 때 "공지 없음"이 예외가 되어 이 기능의 대전제가 깨진다.
+  int? get postId => throw _privateConstructorUsedError;
   int? get id => throw _privateConstructorUsedError;
   int? get writerId => throw _privateConstructorUsedError;
   String? get writerNickname => throw _privateConstructorUsedError;
@@ -2401,7 +2403,7 @@ abstract class $CommunityChatPinResponseModelCopyWith<$Res> {
       >;
   @useResult
   $Res call({
-    int postId,
+    int? postId,
     int? id,
     int? writerId,
     String? writerNickname,
@@ -2430,7 +2432,7 @@ class _$CommunityChatPinResponseModelCopyWithImpl<
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postId = null,
+    Object? postId = freezed,
     Object? id = freezed,
     Object? writerId = freezed,
     Object? writerNickname = freezed,
@@ -2441,10 +2443,10 @@ class _$CommunityChatPinResponseModelCopyWithImpl<
   }) {
     return _then(
       _value.copyWith(
-            postId: null == postId
+            postId: freezed == postId
                 ? _value.postId
                 : postId // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as int?,
             id: freezed == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
@@ -2489,7 +2491,7 @@ abstract class _$$CommunityChatPinResponseModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    int postId,
+    int? postId,
     int? id,
     int? writerId,
     String? writerNickname,
@@ -2518,7 +2520,7 @@ class __$$CommunityChatPinResponseModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postId = null,
+    Object? postId = freezed,
     Object? id = freezed,
     Object? writerId = freezed,
     Object? writerNickname = freezed,
@@ -2529,10 +2531,10 @@ class __$$CommunityChatPinResponseModelImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$CommunityChatPinResponseModelImpl(
-        postId: null == postId
+        postId: freezed == postId
             ? _value.postId
             : postId // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as int?,
         id: freezed == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
@@ -2571,7 +2573,7 @@ class __$$CommunityChatPinResponseModelImplCopyWithImpl<$Res>
 class _$CommunityChatPinResponseModelImpl
     implements _CommunityChatPinResponseModel {
   const _$CommunityChatPinResponseModelImpl({
-    required this.postId,
+    this.postId,
     this.id,
     this.writerId,
     this.writerNickname,
@@ -2585,8 +2587,10 @@ class _$CommunityChatPinResponseModelImpl
     Map<String, dynamic> json,
   ) => _$$CommunityChatPinResponseModelImplFromJson(json);
 
+  // 앱은 이 값을 쓰지 않는다(어느 방인지는 요청 경로가 안다). `required`로 두면
+  // 서버가 안 줬을 때 "공지 없음"이 예외가 되어 이 기능의 대전제가 깨진다.
   @override
-  final int postId;
+  final int? postId;
   @override
   final int? id;
   @override
@@ -2663,7 +2667,7 @@ class _$CommunityChatPinResponseModelImpl
 abstract class _CommunityChatPinResponseModel
     implements CommunityChatPinResponseModel {
   const factory _CommunityChatPinResponseModel({
-    required final int postId,
+    final int? postId,
     final int? id,
     final int? writerId,
     final String? writerNickname,
@@ -2676,8 +2680,10 @@ abstract class _CommunityChatPinResponseModel
   factory _CommunityChatPinResponseModel.fromJson(Map<String, dynamic> json) =
       _$CommunityChatPinResponseModelImpl.fromJson;
 
+  // 앱은 이 값을 쓰지 않는다(어느 방인지는 요청 경로가 안다). `required`로 두면
+  // 서버가 안 줬을 때 "공지 없음"이 예외가 되어 이 기능의 대전제가 깨진다.
   @override
-  int get postId;
+  int? get postId;
   @override
   int? get id;
   @override

@@ -78,7 +78,8 @@ class CommunityMenuButton extends StatelessWidget {
       child: SvgPicture.asset(
         AppIcons.meatballs,
         width: iconSize.w,
-        height: iconSize.h,
+        // 세로도 `.w`다 — `.h`를 섞으면 화면 비율에 따라 정사각 아이콘이 눌린다.
+        height: iconSize.w,
         colorFilter: iconColor == null
             ? null
             : ColorFilter.mode(iconColor!, BlendMode.srcIn),

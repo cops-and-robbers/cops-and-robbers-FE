@@ -2312,6 +2312,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeChatPinNotFound => '등록된 공지가 없어요';
 
   @override
+  String get errorCommunityChatNoticeLoadGeneric =>
+      '공지를 불러오지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
+  String get errorCommunityChatNoticeSaveGeneric =>
+      '공지를 저장하지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
+  String get errorCommunityChatNoticeDeleteGeneric =>
+      '공지를 삭제하지 못했어요. 잠시 후 다시 시도해주세요';
+
+  @override
   String get errorCodeConflictingCountryFilter => '국가 조건이 서로 충돌해요';
 
   @override

@@ -219,7 +219,9 @@ class CommunityChatNotificationRequestModel
 @freezed
 class CommunityChatPinResponseModel with _$CommunityChatPinResponseModel {
   const factory CommunityChatPinResponseModel({
-    required int postId,
+    // 앱은 이 값을 쓰지 않는다(어느 방인지는 요청 경로가 안다). `required`로 두면
+    // 서버가 안 줬을 때 "공지 없음"이 예외가 되어 이 기능의 대전제가 깨진다.
+    int? postId,
     int? id,
     int? writerId,
     String? writerNickname,

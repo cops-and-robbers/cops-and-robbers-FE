@@ -4387,17 +4387,35 @@ abstract class AppLocalizations {
   /// **'이미 채팅방을 나간 참여자예요'**
   String get errorCodeChatMemberNotFound;
 
-  /// No description provided for @errorCodeForbiddenNotChatPinHost.
+  /// FORBIDDEN_NOT_CHAT_PIN_HOST — 공지 등록·수정·삭제는 방장만. 강퇴의 FORBIDDEN_NOT_CHAT_HOST와 코드가 다르다
   ///
   /// In ko, this message translates to:
   /// **'방장만 공지를 등록하거나 수정할 수 있어요'**
   String get errorCodeForbiddenNotChatPinHost;
 
-  /// No description provided for @errorCodeChatPinNotFound.
+  /// CHAT_PIN_NOT_FOUND — 방장이 삭제한 직후 다른 기기에서 수정을 누른 경우
   ///
   /// In ko, this message translates to:
   /// **'등록된 공지가 없어요'**
   String get errorCodeChatPinNotFound;
+
+  /// No description provided for @errorCommunityChatNoticeLoadGeneric.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지를 불러오지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityChatNoticeLoadGeneric;
+
+  /// No description provided for @errorCommunityChatNoticeSaveGeneric.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지를 저장하지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityChatNoticeSaveGeneric;
+
+  /// No description provided for @errorCommunityChatNoticeDeleteGeneric.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지를 삭제하지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityChatNoticeDeleteGeneric;
 
   /// No description provided for @errorCodeConflictingCountryFilter.
   ///

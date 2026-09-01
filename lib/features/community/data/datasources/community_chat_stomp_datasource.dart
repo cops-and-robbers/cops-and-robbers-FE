@@ -76,7 +76,9 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
     _roomSub = null;
     _pinSub?.call(unsubscribeHeaders: {});
     _pinSub = null;
-    debugPrint('[$logTag] 채팅방 구독 해제: ${roomChannel(postId)}');
+    debugPrint(
+      '[$logTag] 채팅방 구독 해제: ${roomChannel(postId)} + ${pinChannel(postId)}',
+    );
   }
 
   @override
@@ -109,10 +111,16 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
       callback: _handleMessage,
     );
     // 공지 채널은 방 채널과 수명이 같다 — 방을 보고 있는 동안만이다.
+    // payload를 읽지 않고 구독 시점의 방 번호를 그대로 흘린다: 채널이 이미 방
+    // 단위라 프레임 안에 답이 또 있을 이유가 없고, 서버가 필드 이름을 바꿔도
+    // 조용히 죽지 않는다(공지 채널 payload는 api-docs가 담지 않는 계약이다).
     _pinSub?.call(unsubscribeHeaders: {});
     _pinSub = stompClient!.subscribe(
       destination: pinChannel(postId),
-      callback: _handlePin,
+      callback: (_) {
+        if (isDisposed) return;
+        _pinController.add(postId);
+      },
     );
     debugPrint('[$logTag] ✅ 채팅방 구독: ${roomChannel(postId)}');
   }
@@ -175,25 +183,6 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
     super.dispose();
     _messageController.close();
     _pinController.close();
-  }
-
-  /// 공지 payload에서 방 번호만 꺼낸다 — 내용은 소비자가 REST로 다시 받는다.
-  void _handlePin(StompFrame frame) {
-    if (isDisposed) return;
-    final body = frame.body;
-    if (body == null || body.isEmpty) return;
-
-    try {
-      final decoded = jsonDecode(body);
-      final postId = decoded is Map<String, dynamic> ? decoded['postId'] : null;
-      if (postId is! int) {
-        debugPrint('[$logTag] ⚠️ postId 없는 공지 프레임 무시');
-        return;
-      }
-      _pinController.add(postId);
-    } catch (e) {
-      debugPrint('[$logTag] ❌ 공지 파싱 실패: $e');
-    }
   }
 
   void _handleMessage(StompFrame frame) {

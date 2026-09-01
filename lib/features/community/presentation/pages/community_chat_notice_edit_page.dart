@@ -170,6 +170,8 @@ class _CommunityChatNoticeEditPageState
       messenger.showSnackBar(SnackBar(content: Text(l10n.errorByException(e))));
       return;
     }
-    navigator.pop();
+    // 저장이 도는 동안 취소를 눌렀으면 이 화면은 이미 사라졌다 — 그때 pop하면
+    // 그 아래 공지 화면까지 닫혀 채팅방으로 튕긴다.
+    if (mounted) navigator.pop();
   }
 }

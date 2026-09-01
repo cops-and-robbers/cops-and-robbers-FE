@@ -52,7 +52,9 @@ class CommunityChatNoticePage extends ConsumerWidget {
         title: l10n.communityChatNoticeTitle,
         onBack: () => Navigator.of(context).maybePop(),
         actions: [
-          if (isHost)
+          // 공지가 아직 안 왔는데 열면 빈 편집기 = 등록 모드가 된다. 등록은 기존
+          // 공지를 이력 없이 교체하므로(DEC-0054) 방장이 자기 글을 날린다.
+          if (isHost && notice.hasValue)
             _WriteAction(
               tooltip: l10n.communityChatNoticeWriteTitle,
               onTap: () => _openEditor(context, notice.valueOrNull),

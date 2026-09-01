@@ -200,7 +200,7 @@ Map<String, dynamic> _$$CommunityChatNotificationRequestModelImplToJson(
 _$CommunityChatPinResponseModelImpl
 _$$CommunityChatPinResponseModelImplFromJson(Map<String, dynamic> json) =>
     _$CommunityChatPinResponseModelImpl(
-      postId: (json['postId'] as num).toInt(),
+      postId: (json['postId'] as num?)?.toInt(),
       id: (json['id'] as num?)?.toInt(),
       writerId: (json['writerId'] as num?)?.toInt(),
       writerNickname: json['writerNickname'] as String?,

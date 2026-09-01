@@ -2313,6 +2313,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeChatPinNotFound => '登録されたお知らせがありません';
 
   @override
+  String get errorCommunityChatNoticeLoadGeneric =>
+      'お知らせを読み込めませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCommunityChatNoticeSaveGeneric =>
+      'お知らせを保存できませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCommunityChatNoticeDeleteGeneric =>
+      'お知らせを削除できませんでした。しばらくしてからもう一度お試しください';
+
+  @override
   String get errorCodeConflictingCountryFilter => '国の条件が競合しています';
 
   @override

@@ -2317,11 +2317,20 @@
   "errorCodeNotAChatMember": "해당 채팅방의 참여자가 아니에요",
   "errorCodeForbiddenNotChatHost": "방장만 참여자를 강퇴할 수 있어요",
   "errorCodeChatMemberNotFound": "이미 채팅방을 나간 참여자예요",
-  "errorCodeForbiddenNotChatPinHost": "방장만 공지를 등록하거나 수정할 수 있어요",
-  "errorCodeChatPinNotFound": "등록된 공지가 없어요",
   "@errorCodeChatMemberNotFound": {
     "description": "CHAT_MEMBER_NOT_FOUND — 강퇴 대상이 이미 나간 경우. NOT_A_CHAT_MEMBER(내가 멤버가 아님)와 주체가 달라 문구를 나눈다"
   },
+  "errorCodeForbiddenNotChatPinHost": "방장만 공지를 등록하거나 수정할 수 있어요",
+  "@errorCodeForbiddenNotChatPinHost": {
+    "description": "FORBIDDEN_NOT_CHAT_PIN_HOST — 공지 등록·수정·삭제는 방장만. 강퇴의 FORBIDDEN_NOT_CHAT_HOST와 코드가 다르다"
+  },
+  "errorCodeChatPinNotFound": "등록된 공지가 없어요",
+  "@errorCodeChatPinNotFound": {
+    "description": "CHAT_PIN_NOT_FOUND — 방장이 삭제한 직후 다른 기기에서 수정을 누른 경우"
+  },
+  "errorCommunityChatNoticeLoadGeneric": "공지를 불러오지 못했어요. 잠시 후 다시 시도해주세요",
+  "errorCommunityChatNoticeSaveGeneric": "공지를 저장하지 못했어요. 잠시 후 다시 시도해주세요",
+  "errorCommunityChatNoticeDeleteGeneric": "공지를 삭제하지 못했어요. 잠시 후 다시 시도해주세요",
   "errorCodeConflictingCountryFilter": "국가 조건이 서로 충돌해요",
   "errorCodeReactionAlreadyApplied": "이미 반영된 상태예요",
   "@errorCodeReactionAlreadyApplied": {
