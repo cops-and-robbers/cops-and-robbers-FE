@@ -219,10 +219,7 @@ class TeamSection extends StatelessWidget {
         children: [
           // 첫 번째 칸: + 버튼 카드 (대기실에서만 표시)
           if (hasAddSlot)
-            AddSlotCard(
-              onTap: onAddSlotTap,
-              isDarkMode: isDarkMode,
-            ),
+            AddSlotCard(onTap: onAddSlotTap, isDarkMode: isDarkMode),
           // 참가자 카드 (방장 우선)
           ...sorted.map(
             (member) => ParticipantCard(

@@ -575,6 +575,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityChatLeaveConfirmMessage => '나가면 대화 내용을 다시 볼 수 없어요';
 
   @override
+  String get communityChatKickConfirmMessage =>
+      '내보낸 사람은 바로 방에서 나가게 돼요\n다시 참여하는 건 막지 않아요';
+
+  @override
   String get communityChatMeetingInfoTitle => '모임 정보';
 
   @override

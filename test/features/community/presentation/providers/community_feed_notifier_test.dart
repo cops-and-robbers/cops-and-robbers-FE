@@ -10,9 +10,12 @@ import 'package:cops_and_robbers/features/community/domain/repositories/communit
 import 'package:cops_and_robbers/features/community/domain/repositories/community_reaction_repository.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_detail_provider.dart';
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../community_chat_fakes.dart';
 import '../../community_fakes.dart';
 
 CommunityPostEntity _post(int id) => CommunityPostEntity(
@@ -834,6 +837,46 @@ void main() {
           .items;
       expect(items[1].status, CommunityPostStatus.ended);
       expect(repo.statusCalls, isEmpty);
+    });
+
+    test('refetches_chat_rooms_when_a_post_is_deleted', () async {
+      // 글을 지우면 서버가 그 채팅방과 대화 내역도 함께 지운다. 목록은 keepAlive라
+      // 스스로 다시 받지 않고, 사라진 방은 소켓 이벤트도 만들지 않는다 (LSN-0042).
+      final chat = FakeCommunityChatRepository();
+      final repo = _MutatingRepository([_post(1), _post(2)]);
+      final container = _containerWith(
+        repo,
+        extraOverrides: [
+          communityChatRepositoryProvider.overrideWithValue(chat),
+          currentUserIdProvider.overrideWithValue(1),
+        ],
+      );
+      await container.read(communityChatRoomsProvider.future);
+      // 연결 직후 기준선 재동기화까지 흘려보낸 뒤에 판을 짠다 — 그걸로 통과하면
+      // 삭제가 아니라 소켓이 갱신한 것이라 이 테스트가 아무것도 지키지 못한다.
+      await pumpEventQueue();
+      await container.read(
+        communityFeedNotifierProvider(
+          CommunityScope.all,
+          CommunitySortOption.latest,
+          null,
+        ).future,
+      );
+      // 서버에서는 글과 함께 방도 사라졌다.
+      chat.rooms = [];
+
+      await container
+          .read(
+            communityFeedNotifierProvider(
+              CommunityScope.all,
+              CommunitySortOption.latest,
+              null,
+            ).notifier,
+          )
+          .deletePost(2);
+      await container.read(communityChatRoomsProvider.future);
+
+      expect(container.read(communityChatRoomsProvider).requireValue, isEmpty);
     });
 
     test('removes_the_post_from_the_list_when_deleted', () async {

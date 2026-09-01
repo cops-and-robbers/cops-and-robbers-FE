@@ -238,7 +238,7 @@ final communityChatRoomsProvider =
 
 typedef _$CommunityChatRooms = AsyncNotifier<List<CommunityChatRoomEntity>>;
 String _$communityChatMembersNotifierHash() =>
-    r'3fdc80aaf42afc7c6734d2722bd2ec6801f2ae23';
+    r'ad92c1af0a72c01a28466e0c04944ae1f35fb2e3';
 
 abstract class _$CommunityChatMembersNotifier
     extends BuildlessAutoDisposeAsyncNotifier<CommunityChatMembersEntity> {

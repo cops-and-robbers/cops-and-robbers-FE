@@ -85,21 +85,20 @@ void main() {
     SharedPreferences.setMockInitialValues({draftKey: staleDraft});
   });
 
-  testWidgets(
-    'clears_the_saved_draft_when_entering_from_a_community_post',
-    (tester) async {
-      await pumpEntry(tester, gate: _FakeGate(true), communityPostId: 7);
+  testWidgets('clears_the_saved_draft_when_entering_from_a_community_post', (
+    tester,
+  ) async {
+    await pumpEntry(tester, gate: _FakeGate(true), communityPostId: 7);
 
-      final prefs = await SharedPreferences.getInstance();
-      expect(
-        prefs.getString(draftKey),
-        isNull,
-        reason:
-            '이전 초안이 남으면 플로우가 그 중심점을 복원하고, 구역 설정 지도가 '
-            '현재 위치 조회를 건너뛴다 (#525)',
-      );
-    },
-  );
+    final prefs = await SharedPreferences.getInstance();
+    expect(
+      prefs.getString(draftKey),
+      isNull,
+      reason:
+          '이전 초안이 남으면 플로우가 그 중심점을 복원하고, 구역 설정 지도가 '
+          '현재 위치 조회를 건너뛴다 (#525)',
+    );
+  });
 
   testWidgets('clears_the_saved_draft_when_entering_from_home', (tester) async {
     await pumpEntry(tester, gate: _FakeGate(true), replace: true);

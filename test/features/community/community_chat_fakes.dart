@@ -25,9 +25,10 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
   List<CommunityChatMessageEntity> firstPage = [];
   List<CommunityChatMessageEntity> olderPage = [];
 
-  /// 던지면 markRead / setNotification이 실패한다
+  /// 던지면 markRead / setNotification / kickMember가 실패한다
   Object? markReadError;
   Object? setNotificationError;
+  Object? kickError;
 
   /// non-null이면 getRooms가 반환 전에 이 future를 기다린다 — 로드 중 타이밍 검증용
   Future<void>? roomsGate;
@@ -114,6 +115,12 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
 
   @override
   Future<CommunityChatMembersEntity> getMembers(int postId) async => members;
+
+  @override
+  Future<void> kickMember(int postId, int userId) async {
+    calls.add('kickMember:$postId:$userId');
+    if (kickError != null) throw kickError!;
+  }
 
   @override
   Future<void> join(int postId) async => calls.add('join');

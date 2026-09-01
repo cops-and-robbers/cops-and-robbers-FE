@@ -1,7 +1,10 @@
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_address_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_chat_room_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_create_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/pages/community_location_picker_page.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
@@ -15,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../community_chat_fakes.dart';
 import '../../community_fakes.dart';
 
 /// 주소 조회와 글 등록만 응답한다 — 작성 흐름이 쓰는 건 그 둘이다.
@@ -123,12 +127,16 @@ CommunityPostEntity existingPost() => CommunityPostEntity(
 
 /// 기본 테스트 뷰포트(800×600)는 디자인 기준(393×852)보다 넓고 낮아, 글자가 2배로
 /// 커진 채 아래 항목이 화면 밖으로 밀린다 — 탭이 빗나가는 원인이라 실기기 크기로 맞춘다.
-Future<void> _pumpPage(WidgetTester tester, [_CreateRepository? repo]) async {
+Future<void> _pumpPage(
+  WidgetTester tester, [
+  _CreateRepository? repo,
+  FakeCommunityChatRepository? chat,
+]) async {
   tester.view.physicalSize = const Size(393, 852);
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.reset);
 
-  await tester.pumpWidget(_wrap(repo ?? _CreateRepository()));
+  await tester.pumpWidget(_wrap(repo ?? _CreateRepository(), chat: chat));
   await tester.pumpAndSettle();
 }
 
@@ -150,7 +158,8 @@ Future<_Popped> _pumpEditPage(
   return popped;
 }
 
-Widget _wrap(_CreateRepository repo) => _app(repo, const CommunityCreatePage());
+Widget _wrap(_CreateRepository repo, {FakeCommunityChatRepository? chat}) =>
+    _app(repo, const CommunityCreatePage(), chat: chat);
 
 /// 수정 화면은 상세 위로 열려 결과를 상세로 돌려준다. 그 왕복까지 재현해야
 /// "무엇을 돌려주는지"가 검증된다.
@@ -184,9 +193,17 @@ class _Popped {
   CommunityPostEntity? value;
 }
 
-Widget _app(_CreateRepository repo, Widget home) => ProviderScope(
+Widget _app(
+  _CreateRepository repo,
+  Widget home, {
+  FakeCommunityChatRepository? chat,
+}) => ProviderScope(
   overrides: [
     communityRepositoryProvider.overrideWithValue(repo),
+    if (chat != null) ...[
+      communityChatRepositoryProvider.overrideWithValue(chat),
+      currentUserIdProvider.overrideWithValue(1),
+    ],
     // 장소 선택 화면이 시작 좌표를 물을 때 GPS·권한을 친다. 덮지 않으면
     // 플랫폼 채널이 응답하지 않는다.
     currentPositionResolverProvider.overrideWithValue(
@@ -344,6 +361,44 @@ void main() {
       expect(repo.lastLatitude, 37.5502);
       expect(repo.lastPlaceName, '어린이대공원 정문');
       expect(repo.lastCreated?.title, '퇴근하고 한 판');
+    });
+
+    testWidgets('shows_the_new_chat_room_in_my_rooms_after_creating', (
+      tester,
+    ) async {
+      // 서버는 글을 만들 때 작성자를 채팅 멤버로 자동 등록한다. 그런데 새 방은
+      // 메시지가 0건이라 소켓이 아무것도 보내지 않고, 목록은 keepAlive라 스스로
+      // 다시 받지 않는다 — 앱이 계기를 만들어야 한다 (LSN-0042).
+      final repo = _CreateRepository();
+      final chat = FakeCommunityChatRepository()..rooms = [];
+      await _pumpPage(tester, repo, chat);
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(CommunityCreatePage)),
+      );
+      await container.read(communityChatRoomsProvider.future);
+      await tester.pumpAndSettle();
+      expect(container.read(communityChatRoomsProvider).requireValue, isEmpty);
+
+      chat.rooms = [
+        CommunityChatRoomEntity(
+          postId: 1,
+          title: '퇴근하고 한 판',
+          status: CommunityPostStatus.recruiting,
+          meetingAt: DateTime(2026, 9, 10, 18),
+          memberCount: 1,
+        ),
+      ];
+      await _fillTextFields(tester);
+      await _pickDate(tester);
+      await _pickLocation(tester);
+      await tester.tap(find.text('완료'));
+      await tester.pumpAndSettle();
+
+      await container.read(communityChatRoomsProvider.future);
+      expect(
+        container.read(communityChatRoomsProvider).requireValue,
+        hasLength(1),
+      );
     });
 
     testWidgets('shows_loading_while_the_post_is_being_created', (

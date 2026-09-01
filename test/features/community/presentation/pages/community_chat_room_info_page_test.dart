@@ -179,7 +179,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('채팅방에서 나갈까요?'), findsOneWidget);
 
-      await tester.tap(find.text('채팅방 나가기').last); // 다이얼로그 확인 버튼
+      await tester.tap(find.text('나가기')); // 다이얼로그 확인 버튼
       await tester.pumpAndSettle();
 
       // 화면이 걷히며 provider dispose가 방 구독 해제를 한 번 더 부른다 — 앞 둘만 본다.
@@ -206,6 +206,83 @@ void main() {
 
       expect(repo.calls, isNot(contains('leave')));
       expect(find.text('홍길동그라미'), findsOneWidget);
+    });
+
+    testWidgets('shows_a_kick_chip_per_other_member_when_viewer_is_author', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(_repo(), currentUserId: _authorId));
+      await tester.pump(const Duration(milliseconds: 300)); // 상세 목(200ms) 로드
+      await tester.pumpAndSettle();
+
+      // 방장 자신의 행에는 붙지 않는다 — 멤버 2명 중 1개.
+      expect(find.text('내보내기'), findsOneWidget);
+    });
+
+    testWidgets('hides_kick_chips_when_viewer_is_not_author', (tester) async {
+      await tester.pumpWidget(_wrap(_repo(), currentUserId: 2));
+      await tester.pump(const Duration(milliseconds: 300)); // 상세 목(200ms) 로드
+      await tester.pumpAndSettle();
+
+      expect(find.text('내보내기'), findsNothing);
+    });
+
+    testWidgets('kicks_the_member_when_the_author_confirms', (tester) async {
+      final repo = _repo();
+      await tester.pumpWidget(_wrap(repo, currentUserId: _authorId));
+      await tester.pump(const Duration(milliseconds: 300)); // 상세 목(200ms) 로드
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('내보내기'));
+      await tester.pumpAndSettle();
+      expect(find.text('홍길동그라미님을 내보낼까요?'), findsOneWidget);
+
+      await tester.tap(find.text('내보내기').last); // 다이얼로그 확인 버튼
+      await tester.pumpAndSettle();
+
+      expect(repo.calls, contains('kickMember:$_postId:2'));
+    });
+
+    testWidgets('keeps_the_member_when_the_author_declines', (tester) async {
+      final repo = _repo();
+      await tester.pumpWidget(_wrap(repo, currentUserId: _authorId));
+      await tester.pump(const Duration(milliseconds: 300)); // 상세 목(200ms) 로드
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('내보내기'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('닫기'));
+      await tester.pumpAndSettle();
+
+      expect(repo.calls, isNot(contains('kickMember:$_postId:2')));
+      expect(find.text('홍길동그라미'), findsOneWidget);
+    });
+
+    testWidgets('keeps_the_row_within_bounds_when_the_nickname_is_longest', (
+      tester,
+    ) async {
+      // 닉네임 양쪽에 고정 폭 칩이 붙는다 — 최장 닉네임(20자)에서 Row가 넘치면
+      // RenderFlex overflow가 예외로 터진다 (LSN-0035).
+      final repo = _repo()
+        ..members = const CommunityChatMembersEntity(
+          members: [
+            CommunityChatMemberEntity(
+              userId: _authorId,
+              nickname: 'CheerfulSquirrel9999',
+              isAuthor: true,
+            ),
+            CommunityChatMemberEntity(
+              userId: 2,
+              nickname: 'すばやいネコ3721すばやいネコ3721',
+              isAuthor: false,
+            ),
+          ],
+        );
+      await tester.pumpWidget(_wrap(repo, currentUserId: _authorId));
+      await tester.pump(const Duration(milliseconds: 300)); // 상세 목(200ms) 로드
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('shows_the_muted_bell_when_notifications_are_off', (

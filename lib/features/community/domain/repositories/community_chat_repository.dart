@@ -19,6 +19,10 @@ abstract class CommunityChatRepository {
   /// 채팅방 멤버 목록 + 내 알림 수신 여부. 방 멤버만 부를 수 있다(403 `NOT_A_CHAT_MEMBER`).
   Future<CommunityChatMembersEntity> getMembers(int postId);
 
+  /// 멤버 강퇴. 방장만 부를 수 있고 강퇴된 유저는 재입장 제한이 없다(DEC-0043).
+  /// 서버는 소켓 세션을 끊지 않고 `KICK` 시스템 메시지를 브로드캐스트한다.
+  Future<void> kickMember(int postId, int userId);
+
   /// 참여. 이미 멤버(409 `ALREADY_JOINED`)면 성공으로 삼킨다 — 화면은 "입장"만 알면 된다.
   Future<void> join(int postId);
 

@@ -626,6 +626,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'You won\'t be able to see this conversation again';
 
   @override
+  String get communityChatKickConfirmMessage =>
+      'They leave the room right away\nNothing stops them from joining again';
+
+  @override
   String get communityChatMeetingInfoTitle => 'Meeting info';
 
   @override

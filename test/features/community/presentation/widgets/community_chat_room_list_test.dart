@@ -45,6 +45,10 @@ class _RoomsOnlyRepository implements CommunityChatRepository {
   Duration? delay;
 
   @override
+  Future<void> kickMember(int postId, int userId) =>
+      throw UnimplementedError('이 테스트는 강퇴를 쓰지 않는다');
+
+  @override
   Future<List<CommunityChatRoomEntity>> getRooms() async {
     getRoomsCalls++;
     if (delay != null) await Future<void>.delayed(delay!);

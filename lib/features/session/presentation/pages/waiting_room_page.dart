@@ -543,7 +543,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
   }
 
-
   /// 재연결 모달 표시
   ///
   /// 이미 표시 중이거나 끊김/에러 상태가 아니면 스킵.
@@ -1082,9 +1081,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                       ? AppTextStyles.robberLabel.copyWith(
                           color: AppColors.white,
                         )
-                      : AppTextStyles.label_16.copyWith(
-                          color: AppColors.black,
-                        ),
+                      : AppTextStyles.label_16.copyWith(color: AppColors.black),
                 ),
                 SizedBox(width: AppSpacing.horizontal4),
                 SvgPicture.asset(

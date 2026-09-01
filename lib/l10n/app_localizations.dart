@@ -1150,6 +1150,12 @@ abstract class AppLocalizations {
   /// **'나가면 대화 내용을 다시 볼 수 없어요'**
   String get communityChatLeaveConfirmMessage;
 
+  /// 강퇴 확인 다이얼로그 본문 — 게임 로비(dialogKickConfirmMessage)와 달리 재입장 제한이 없다(DEC-0043)
+  ///
+  /// In ko, this message translates to:
+  /// **'내보낸 사람은 바로 방에서 나가게 돼요\n다시 참여하는 건 막지 않아요'**
+  String get communityChatKickConfirmMessage;
+
   /// 채팅방 상단 모임 카드를 눌러 여는 모임 정보 화면 제목
   ///
   /// In ko, this message translates to:

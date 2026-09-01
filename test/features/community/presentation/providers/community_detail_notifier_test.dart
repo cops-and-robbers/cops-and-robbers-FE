@@ -6,10 +6,13 @@ import 'package:cops_and_robbers/features/community/domain/entities/community_po
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
 import 'package:cops_and_robbers/features/community/domain/repositories/community_comment_repository.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_detail_provider.dart';
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_rooms_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../community_chat_fakes.dart';
 import '../../community_fakes.dart';
 
 const _postId = 7;
@@ -60,6 +63,9 @@ class _FakeRepository
   Future<CommunityPostEntity> getPost(int postId) async => post;
 
   @override
+  Future<void> deletePost(int postId) async {}
+
+  @override
   Future<CommunityPostEntity> updateStatus({
     required int postId,
     required CommunityPostStatus status,
@@ -107,9 +113,11 @@ class _FakeCommentRepository implements CommunityCommentRepository {
 ProviderContainer _container(
   _FakeRepository repo, [
   _FakeCommentRepository? comments,
+  List<Override> extraOverrides = const [],
 ]) {
   final container = ProviderContainer(
     overrides: [
+      ...extraOverrides,
       communityRepositoryProvider.overrideWithValue(repo),
       communityCommentRepositoryProvider.overrideWithValue(
         comments ?? _FakeCommentRepository(),
@@ -244,6 +252,30 @@ void main() {
           .applyUpdatedPost(_post(setting: null).copyWith(title: '고친 제목'));
 
       expect(_settingOf(container), _on);
+    });
+  });
+
+  group('CommunityDetailNotifier.deletePost', () {
+    test('refetches_chat_rooms_after_the_post_is_deleted', () async {
+      // 글을 지우면 그 채팅방도 사라진다. 목록은 keepAlive라 스스로 다시 받지
+      // 않고, 사라진 방은 소켓 이벤트도 만들지 않는다 (LSN-0042).
+      final chat = FakeCommunityChatRepository();
+      final container = _container(_FakeRepository(_post()), null, [
+        communityChatRepositoryProvider.overrideWithValue(chat),
+        currentUserIdProvider.overrideWithValue(1),
+      ]);
+      await container.read(communityChatRoomsProvider.future);
+      // 연결 직후 기준선 재동기화까지 흘려보낸 뒤에 판을 짠다.
+      await pumpEventQueue();
+      await container.read(communityDetailNotifierProvider(_postId).future);
+      chat.rooms = [];
+
+      await container
+          .read(communityDetailNotifierProvider(_postId).notifier)
+          .deletePost();
+      await container.read(communityChatRoomsProvider.future);
+
+      expect(container.read(communityChatRoomsProvider).requireValue, isEmpty);
     });
   });
 

@@ -195,6 +195,7 @@
   "communityChatLeave": "チャットを退出",
   "communityChatLeaveConfirmTitle": "チャットを退出しますか？",
   "communityChatLeaveConfirmMessage": "退出すると会話を再び見ることはできません",
+  "communityChatKickConfirmMessage": "退出させた人はすぐに部屋から出ます\n再び参加することは防げません",
   "communityChatMeetingInfoTitle": "集まりの情報",
   "communityChatConnectionLost": "接続が切れました",
   "communityChatReconnect": "再接続",

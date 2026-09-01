@@ -117,7 +117,13 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
                 children: [
                   for (final (i, m) in list.members.indexed) ...[
                     if (i > 0) SizedBox(height: AppSpacing.vertical12),
-                    _MemberRow(member: m),
+                    _MemberRow(
+                      member: m,
+                      // 방장만, 그리고 자기 자신은 뺀다. 서버도 403·400으로 다시
+                      // 검증하므로 여기서 막는 것은 UI 차원의 1차 제한이다.
+                      canKick: isAuthor && !m.isAuthor,
+                      onKick: () => _confirmKick(context, ref, l10n, m),
+                    ),
                   ],
                 ],
               ),
@@ -165,6 +171,35 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
     }
   }
 
+  /// 강퇴 확인 → 실행. 목록 갱신은 Notifier가 서버에서 다시 받아 한다.
+  Future<void> _confirmKick(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    CommunityChatMemberEntity member,
+  ) async {
+    final confirmed = await AppDialog.confirm(
+      context: context,
+      title: l10n.dialogKickConfirmTitle(member.nickname),
+      // 게임 로비의 dialogKickConfirmMessage를 재사용하지 않는다 — 그쪽은
+      // 재입장에 초대코드가 필요하지만 채팅방은 제한이 없다 (DEC-0043).
+      message: l10n.communityChatKickConfirmMessage,
+      confirmText: l10n.buttonKick,
+      cancelText: l10n.buttonCancel,
+      isDestructive: true,
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      await ref
+          .read(communityChatMembersNotifierProvider(postId).notifier)
+          .kick(member.userId);
+    } on AppException catch (e) {
+      if (!context.mounted) return;
+      AppSnackbar.show(context, message: l10n.errorByException(e));
+    }
+  }
+
   Future<void> _confirmLeave(
     BuildContext context,
     WidgetRef ref,
@@ -174,7 +209,7 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
       context: context,
       title: l10n.communityChatLeaveConfirmTitle,
       message: l10n.communityChatLeaveConfirmMessage,
-      confirmText: l10n.communityChatLeave,
+      confirmText: l10n.buttonLeave, // 제목이 이미 "채팅방에서" — 버튼은 동사만
       cancelText: l10n.buttonCancel, // "닫기" — 취소는 작업 취소로 오해된다(UX 가이드)
       isDestructive: true,
     );
@@ -218,8 +253,17 @@ class _Card extends StatelessWidget {
 }
 
 class _MemberRow extends StatelessWidget {
-  const _MemberRow({required this.member});
+  const _MemberRow({
+    required this.member,
+    required this.canKick,
+    required this.onKick,
+  });
+
   final CommunityChatMemberEntity member;
+
+  /// 이 행에 내보내기 칩을 붙일지 — 보는 사람이 방장이고 대상이 방장이 아닐 때만
+  final bool canKick;
+  final VoidCallback onKick;
 
   @override
   Widget build(BuildContext context) {
@@ -228,6 +272,16 @@ class _MemberRow extends StatelessWidget {
       children: [
         const CommunityChatAvatar(size: 32),
         SizedBox(width: AppSpacing.horizontal12),
+        if (member.isAuthor) ...[
+          _Chip(
+            label: l10n.communityChatAuthorBadge,
+            // 채도 높은 배경 위 10px 흰 글자라 Bold로 획을 지킨다 (대비 4.85:1)
+            style: AppTextStyles.tag10Bold.copyWith(color: AppColors.white),
+            background: AppColors.blueVer2Strong,
+          ),
+          SizedBox(width: AppSpacing.horizontal6),
+        ],
+        // 폭이 모자라면 양보하는 쪽은 닉네임이다 — 칩 둘은 고정 폭이다.
         Expanded(
           child: Text(
             member.nickname,
@@ -236,12 +290,63 @@ class _MemberRow extends StatelessWidget {
             style: AppTextStyles.label_16.copyWith(color: AppColors.black),
           ),
         ),
-        if (member.isAuthor)
-          Text(
-            l10n.communityChatAuthorBadge,
-            style: AppTextStyles.label_16.copyWith(color: AppColors.logo),
+        if (canKick) ...[
+          SizedBox(width: AppSpacing.horizontal12),
+          _Chip(
+            label: l10n.buttonKick,
+            // 행마다 반복되는 액션이라 Medium — Bold면 닉네임보다 먼저 읽힌다
+            style: AppTextStyles.tag_10.copyWith(color: AppColors.black700),
+            background: AppColors.white,
+            borderColor: AppColors.black400,
+            onTap: onKick,
           ),
+        ],
       ],
+    );
+  }
+}
+
+/// 참가자 행의 작은 칩 — 채워진 방장 표시와 테두리만 있는 내보내기를 함께 그린다.
+///
+/// `core/widgets/chips/ActionChip`을 쓰지 않는 이유: 그쪽은 최소 폭 100.w·높이
+/// 40.h·`label_16` 고정에 테두리도 없어, 이 크기로 맞추려면 파라미터를 넷 더
+/// 뚫어야 한다. 여기서만 쓰는 모양이라 지역 위젯이 더 싸다.
+class _Chip extends StatelessWidget {
+  const _Chip({
+    required this.label,
+    required this.style,
+    required this.background,
+    this.borderColor,
+    this.onTap,
+  });
+
+  final String label;
+  final TextStyle style;
+  final Color background;
+  final Color? borderColor;
+
+  /// null이면 누를 수 없는 표시용 칩
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final chip = Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal10,
+        vertical: AppSpacing.vertical4,
+      ),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: AppRadius.pill,
+        border: borderColor == null ? null : Border.all(color: borderColor!),
+      ),
+      child: Text(label, style: style),
+    );
+    if (onTap == null) return chip;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: chip,
     );
   }
 }

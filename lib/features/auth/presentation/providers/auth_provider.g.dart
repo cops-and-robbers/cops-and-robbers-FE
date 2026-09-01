@@ -178,7 +178,7 @@ final currentUserIdProvider = AutoDisposeProvider<int?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CurrentUserIdRef = AutoDisposeProviderRef<int?>;
-String _$authNotifierHash() => r'a7faa3b9bc11b674afb33e363be880de24e4465b';
+String _$authNotifierHash() => r'8605d979da40b7d98249166a4f7b91e4c9a79227';
 
 /// 인증 상태를 관리하는 Notifier
 ///
