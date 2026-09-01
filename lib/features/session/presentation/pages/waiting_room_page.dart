@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -1237,7 +1238,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                 AppSnackbar.show(
                   context,
                   message: l10n.messageCodeCopied,
-                  iconPath: 'assets/icons/icon_copy.svg',
+                  iconPath: AppIcons.copy,
                 );
               },
               behavior: HitTestBehavior.opaque,
@@ -1257,7 +1258,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                   ),
                   SizedBox(width: AppSpacing.horizontal4),
                   SvgPicture.asset(
-                    'assets/icons/icon_copy.svg',
+                    AppIcons.copy,
                     width: 20.w,
                     height: 20.w,
                     colorFilter: ColorFilter.mode(
@@ -1434,7 +1435,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       leading: Padding(
         padding: EdgeInsets.only(left: 18.w),
         child: FlatIconButton(
-          assetPath: 'assets/icons/icon_exit.svg',
+          assetPath: AppIcons.exit,
           iconColor: isDark ? AppColors.black200 : AppColors.black800,
           onPressed: _confirmLeaveRoom,
         ),
@@ -1471,7 +1472,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           : null,
       actions: [
         FlatIconButton(
-          assetPath: 'assets/icons/icon_info.svg',
+          assetPath: AppIcons.info,
           alignment: Alignment.centerRight,
           iconColor: isDark ? AppColors.black200 : AppColors.black800,
           onPressed: _showGameRulesDialog,
@@ -1479,7 +1480,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         FlatIconButton(
           // 게임 설정 버튼 — 튜토리얼 하이라이트 대상
           key: _tutorialKeyGameRules,
-          assetPath: 'assets/icons/icon_settiing_2.svg',
+          assetPath: AppIcons.setting2,
           iconColor: isDark ? AppColors.black200 : AppColors.black800,
           onPressed: () =>
               context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),

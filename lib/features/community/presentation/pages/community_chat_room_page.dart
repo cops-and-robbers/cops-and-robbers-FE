@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -111,7 +112,7 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage> {
                   horizontal: AppSpacing.horizontal16,
                 ),
                 child: SvgPicture.asset(
-                  'assets/icons/icon_hamburger.svg',
+                  AppIcons.hamburger,
                   width: 24.w,
                   height: 24.w,
                 ),

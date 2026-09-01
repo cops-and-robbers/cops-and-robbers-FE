@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 
@@ -136,7 +137,7 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
             child: Row(
               children: [
                 SvgPicture.asset(
-                  'assets/icons/Loudspeaker.svg',
+                  AppIcons.loudspeaker,
                   width: 20.w,
                   height: 20.w,
                   colorFilter: const ColorFilter.mode(

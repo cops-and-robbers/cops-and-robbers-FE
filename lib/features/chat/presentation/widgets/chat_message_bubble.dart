@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -50,14 +51,10 @@ class ChatMessageBubble extends StatelessWidget {
   String? get _roleIconPath {
     final team = message.sender.team.toUpperCase();
     if (team == ChatTeam.police) {
-      return isDarkMode
-          ? 'assets/icons/icon_police_darkmode.svg'
-          : 'assets/icons/icon_police_lightmode.svg';
+      return AppIcons.role(isPolice: true, isDark: isDarkMode);
     }
     if (team == ChatTeam.robber) {
-      return isDarkMode
-          ? 'assets/icons/mdi_robber_darkmode.svg'
-          : 'assets/icons/mdi_robber_lightmode.svg';
+      return AppIcons.role(isPolice: false, isDark: isDarkMode);
     }
     return null;
   }
@@ -105,7 +102,7 @@ class ChatMessageBubble extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SvgPicture.asset(
-            'assets/icons/Loudspeaker.svg',
+            AppIcons.loudspeaker,
             width: 16.w,
             height: 16.w,
             colorFilter: ColorFilter.mode(
@@ -149,13 +146,7 @@ class ChatMessageBubble extends StatelessWidget {
       }
       // 아이콘 WidgetSpan (원본 SVG 색상 유지 — colorFilter 미적용)
       final isPolice = GameTeam.isPolice(match.group(1));
-      final iconPath = isPolice
-          ? (isDarkMode
-                ? 'assets/icons/icon_police_darkmode.svg'
-                : 'assets/icons/icon_police_lightmode.svg')
-          : (isDarkMode
-                ? 'assets/icons/mdi_robber_darkmode.svg'
-                : 'assets/icons/mdi_robber_lightmode.svg');
+      final iconPath = AppIcons.role(isPolice: isPolice, isDark: isDarkMode);
       spans.add(
         WidgetSpan(
           alignment: PlaceholderAlignment.middle,

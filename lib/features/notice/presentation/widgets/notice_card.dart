@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -57,11 +58,7 @@ class NoticeCard extends StatelessWidget {
                 if (notice.pinned) ...[
                   // viewBox가 10x15라 정사각으로 그리면 가로로 늘어난다.
                   // 색상(#F64C4F)은 SVG에 박혀 있어 colorFilter를 주지 않는다.
-                  SvgPicture.asset(
-                    'assets/icons/icon_pin.svg',
-                    width: 10.w,
-                    height: 15.h,
-                  ),
+                  SvgPicture.asset(AppIcons.pin, width: 10.w, height: 15.h),
                   SizedBox(width: AppSpacing.horizontal8),
                 ],
                 Expanded(

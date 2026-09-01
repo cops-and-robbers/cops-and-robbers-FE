@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -107,10 +108,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // 돋보기 든 캐릭터 — 라우터 404 화면과 같은 에셋으로 톤을 맞춘다
-                  SvgPicture.asset(
-                    'assets/icons/icon_not_found.svg',
-                    width: 110.w,
-                  ),
+                  SvgPicture.asset(AppIcons.notFound, width: 110.w),
                   SizedBox(height: AppSpacing.vertical16),
                   Text(
                     error is AppException
@@ -208,7 +206,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                           // 흰색으로 덧칠하면 안쪽 흰 점도 같이 흰색이 되어 통짜
                           // 실루엣으로 보인다 — 의도한 모양이다.
                           icon: SvgPicture.asset(
-                            'assets/icons/icon_joining_game.svg',
+                            AppIcons.joiningGame,
                             width: 20.w,
                             height: 24.h,
                             colorFilter: ColorFilter.mode(
@@ -345,7 +343,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         // 지역·장소명이 둘 다 없으면 행 자체를 숨긴다 (좌표는 사용자에게 무의미).
         if (state.post.locationLabel != null) ...[
           _MetaRow(
-            iconPath: 'assets/icons/icon_location.svg',
+            iconPath: AppIcons.location,
             label: state.post.locationLabel!,
             // 탭하면 복사된다 (DEC-0015) — 보이는 건 라벨, 담기는 건 지번 주소.
             onTap: () => _copyLocation(l10n, state.post),
@@ -353,7 +351,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
           SizedBox(height: AppSpacing.vertical6),
         ],
         _MetaRow(
-          iconPath: 'assets/icons/icon_date.svg',
+          iconPath: AppIcons.date,
           label: _formatMeetingAt(l10n, state.post),
         ),
       ],
@@ -369,9 +367,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         Expanded(
           child: _ActionButton(
             key: const Key('community_detail_like'),
-            assetPath: post.isLiked
-                ? 'assets/icons/icon_like_on.svg'
-                : 'assets/icons/icon_like_off.svg',
+            assetPath: post.isLiked ? AppIcons.likeOn : AppIcons.likeOff,
             color: AppColors.red,
             label: '${post.likeCount}',
             textStyle: AppTextStyles.label16Medium,
@@ -390,9 +386,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         Expanded(
           child: _ActionButton(
             key: const Key('community_detail_scrap'),
-            assetPath: post.isScrapped
-                ? 'assets/icons/icon_save_on.svg'
-                : 'assets/icons/icon_save_off.svg',
+            assetPath: post.isScrapped ? AppIcons.saveOn : AppIcons.saveOff,
             color: AppColors.yellow,
             label: '${post.scrapCount}',
             textStyle: AppTextStyles.label16Medium,
@@ -410,7 +404,7 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         SizedBox(width: AppSpacing.horizontal18),
         Expanded(
           child: _ActionButton(
-            assetPath: 'assets/icons/icon_upload.svg',
+            assetPath: AppIcons.upload,
             color: AppColors.black700,
             label: l10n.communityDetailShare,
             textStyle: AppTextStyles.label16Medium,

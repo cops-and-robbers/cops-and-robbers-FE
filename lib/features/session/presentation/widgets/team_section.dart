@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -118,16 +119,8 @@ class TeamSection extends StatelessWidget {
   String _teamName(AppLocalizations l10n) =>
       _isPolice ? l10n.gameTeamCop : l10n.gameTeamRobber;
 
-  String get _iconPath {
-    if (_isPolice) {
-      return isDarkMode
-          ? 'assets/icons/icon_police_darkmode.svg'
-          : 'assets/icons/icon_police_lightmode.svg';
-    }
-    return isDarkMode
-        ? 'assets/icons/mdi_robber_darkmode.svg'
-        : 'assets/icons/mdi_robber_lightmode.svg';
-  }
+  String get _iconPath =>
+      AppIcons.role(isPolice: _isPolice, isDark: isDarkMode);
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +184,7 @@ class TeamSection extends StatelessWidget {
               turns: isExpanded ? 0.5 : 0.0,
               duration: const Duration(milliseconds: 250),
               child: SvgPicture.asset(
-                'assets/icons/icon_down.svg',
+                AppIcons.down,
                 width: 24.w,
                 height: 24.w,
                 colorFilter: isDarkMode

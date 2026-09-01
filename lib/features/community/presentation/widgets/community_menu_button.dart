@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -75,7 +76,7 @@ class CommunityMenuButton extends StatelessWidget {
       // icon: 대신 child: 를 쓴다. icon:은 IconButton으로 감싸져 최소 48×48이 붙고,
       // 그만큼 제목 행 높이가 늘어난다.
       child: SvgPicture.asset(
-        'assets/icons/icon_meatballs.svg',
+        AppIcons.meatballs,
         width: iconSize.w,
         height: iconSize.h,
         colorFilter: iconColor == null

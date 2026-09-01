@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -173,11 +174,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           tooltip: l10n.buttonCancel,
-          icon: SvgPicture.asset(
-            'assets/icons/icon_delete.svg',
-            width: 24.w,
-            height: 24.h,
-          ),
+          icon: SvgPicture.asset(AppIcons.delete, width: 24.w, height: 24.h),
         ),
         actions: [_buildDoneAction(l10n)],
       ),
@@ -339,7 +336,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
             borderRadius: AppRadius.large,
             showBorder: false,
             hintColor: AppColors.black200,
-            prefixIcon: _buildPrefixIcon('assets/icons/icon_date.svg'),
+            prefixIcon: _buildPrefixIcon(AppIcons.date),
             prefixIconConstraints: const BoxConstraints(),
           ),
         ),
@@ -372,7 +369,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
             borderRadius: AppRadius.large,
             showBorder: false,
             hintColor: AppColors.black200,
-            prefixIcon: _buildPrefixIcon('assets/icons/icon_location.svg'),
+            prefixIcon: _buildPrefixIcon(AppIcons.location),
             prefixIconConstraints: const BoxConstraints(),
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../constants/app_icons.dart';
 import '../../services/vibration_service.dart';
 import '../../constants/app_colors.dart';
 
@@ -36,7 +37,7 @@ class PreviousButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: SvgPicture.asset(
-        'assets/icons/icon_previous.svg',
+        AppIcons.previous,
         width: size,
         height: size,
         colorFilter: color != null

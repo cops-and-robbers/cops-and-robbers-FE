@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
@@ -2021,7 +2022,7 @@ class _GamePageState extends ConsumerState<GamePage>
                 child: Column(
                   children: [
                     SvgIconButton(
-                      assetPath: 'assets/icons/icon_map.svg',
+                      assetPath: AppIcons.map,
                       onPressed: () =>
                           setState(() => _showParticipants = false),
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
@@ -2064,7 +2065,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     // 복귀 경로는 좌측 하단 내 위치 버튼이 담당.
                     if (!_isZoneExitWarningActive) ...[
                       SvgIconButton(
-                        assetPath: 'assets/icons/icon_person.svg',
+                        assetPath: AppIcons.person,
                         onPressed: () =>
                             setState(() => _showParticipants = true),
                         iconColor: _isDarkMode
@@ -2282,8 +2283,8 @@ class _GamePageState extends ConsumerState<GamePage>
   Widget _buildQrButton() {
     return SvgIconButton(
       assetPath: GameTeam.isPolice(widget.team)
-          ? 'assets/icons/icon_qr_scan.svg'
-          : 'assets/icons/icon_qr_code.svg',
+          ? AppIcons.qrScan
+          : AppIcons.qrCode,
       onPressed: GameTeam.isPolice(widget.team)
           ? _openQrScanner
           : _showMyQrCode,
@@ -2474,7 +2475,7 @@ class _GamePageState extends ConsumerState<GamePage>
             child: Padding(
               padding: EdgeInsets.only(left: 18.w),
               child: FlatIconButton(
-                assetPath: 'assets/icons/icon_exit.svg',
+                assetPath: AppIcons.exit,
                 iconColor: _isDarkMode
                     ? AppColors.black200
                     : AppColors.black800,
@@ -2488,7 +2489,7 @@ class _GamePageState extends ConsumerState<GamePage>
             child: Padding(
               padding: EdgeInsets.only(right: AppSpacing.horizontal12),
               child: FlatIconButton(
-                assetPath: 'assets/icons/icon_info.svg',
+                assetPath: AppIcons.info,
                 iconColor: _isDarkMode
                     ? AppColors.black200
                     : AppColors.black800,

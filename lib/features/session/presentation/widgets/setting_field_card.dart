@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 
@@ -149,7 +150,7 @@ class SettingFieldCard extends StatelessWidget {
               Row(
                 children: [
                   SvgPicture.asset(
-                    'assets/icons/icon_info.svg',
+                    AppIcons.info,
                     width: 16.w,
                     height: 16.w,
                     colorFilter: ColorFilter.mode(_hintColor, BlendMode.srcIn),

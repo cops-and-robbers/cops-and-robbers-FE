@@ -9,6 +9,7 @@ import '../../../features/report/domain/report_target.dart';
 import '../../../features/report/presentation/report_flow.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../constants/app_colors.dart';
+import '../../constants/app_icons.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../dividers/solid_divider.dart';
@@ -133,7 +134,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     AppSnackbar.show(
       widget.callerContext,
       message: l10n.messageMessageCopied,
-      iconPath: 'assets/icons/icon_copy.svg',
+      iconPath: AppIcons.copy,
       isDarkMode: widget.isDarkMode,
     );
   }
@@ -160,7 +161,7 @@ class _ChatContextMenuState extends State<ChatContextMenu> {
     AppSnackbar.show(
       widget.callerContext,
       message: l10n.messageUserBlocked,
-      iconPath: 'assets/icons/icon_block.svg',
+      iconPath: AppIcons.block,
       isDarkMode: widget.isDarkMode,
     );
   }
@@ -310,7 +311,7 @@ class _ActionMenu extends StatelessWidget {
       isDarkMode: isDarkMode,
       children: [
         _MenuItem(
-          iconPath: 'assets/icons/icon_copy.svg',
+          iconPath: AppIcons.copy,
           label: l10n.buttonCopy,
           textColor: isDarkMode ? AppColors.white : AppColors.black,
           iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,
@@ -320,7 +321,7 @@ class _ActionMenu extends StatelessWidget {
         if (onReport != null) ...[
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
-            iconPath: 'assets/icons/icon_warning_light.svg',
+            iconPath: AppIcons.warningLight,
             label: l10n.buttonReport,
             textColor: AppColors.red,
             isDarkMode: isDarkMode,
@@ -330,7 +331,7 @@ class _ActionMenu extends StatelessWidget {
         if (onBlock != null) ...[
           _MenuDivider(isDarkMode: isDarkMode),
           _MenuItem(
-            iconPath: 'assets/icons/icon_block.svg',
+            iconPath: AppIcons.block,
             label: l10n.buttonBlock,
             textColor: isDarkMode ? AppColors.white : AppColors.black,
             iconColor: isDarkMode ? AppColors.black200 : AppColors.black800,

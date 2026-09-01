@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart' show LocationPermission;
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -256,11 +257,7 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
             style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
           ),
           SizedBox(width: AppSpacing.horizontal4),
-          SvgPicture.asset(
-            'assets/icons/icon_sort.svg',
-            width: 10.w,
-            height: 6.h,
-          ),
+          SvgPicture.asset(AppIcons.sort, width: 10.w, height: 6.h),
         ],
       ),
     );

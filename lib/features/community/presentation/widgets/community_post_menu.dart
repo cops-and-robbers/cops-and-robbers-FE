@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/community_post_entity.dart';
@@ -80,7 +81,7 @@ class CommunityPostMenu extends ConsumerWidget {
     if (currentUserId == null) {
       return [
         CommunityMenuItem(
-          iconPath: 'assets/icons/icon_person.svg',
+          iconPath: AppIcons.person,
           iconColor: AppColors.black700,
           label: l10n.communityMenuLoginRequired,
           onTap: () => onAction(CommunityPostMenuAction.login),
@@ -97,9 +98,7 @@ class CommunityPostMenu extends ConsumerWidget {
     final notification = setting == null
         ? null
         : CommunityMenuItem(
-            iconPath: setting.enabled
-                ? 'assets/icons/icon_bell_block.svg'
-                : 'assets/icons/icon_bell.svg',
+            iconPath: setting.enabled ? AppIcons.bellBlock : AppIcons.bell,
             label: setting.enabled
                 ? l10n.communityMenuNotificationOff
                 : l10n.communityMenuNotificationOn,
@@ -110,7 +109,7 @@ class CommunityPostMenu extends ConsumerWidget {
       return [
         if (notification != null) notification,
         CommunityMenuItem(
-          iconPath: 'assets/icons/icon_warning_light.svg',
+          iconPath: AppIcons.warningLight,
           label: l10n.buttonReport,
           onTap: () => onAction(CommunityPostMenuAction.report),
           isDestructive: true,
@@ -121,7 +120,7 @@ class CommunityPostMenu extends ConsumerWidget {
     return [
       if (notification != null) notification,
       CommunityMenuItem(
-        iconPath: 'assets/icons/icon_write.svg',
+        iconPath: AppIcons.write,
         label: l10n.communityMenuEdit,
         onTap: () => onAction(CommunityPostMenuAction.edit),
       ),
@@ -129,7 +128,7 @@ class CommunityPostMenu extends ConsumerWidget {
       // 눌러도 아무 변화가 없어 사용자 눈에는 버그로 보인다.
       if (post.status != CommunityPostStatus.ended)
         CommunityMenuItem(
-          iconPath: 'assets/icons/icon_check.svg',
+          iconPath: AppIcons.check,
           // 체크는 단색(#333D48) 선 아이콘이다. 쓰기 아이콘의 파랑(#339DFF)에
           // 맞춰 칠해 두 항목이 같은 계열로 읽히게 한다.
           iconColor: AppColors.blueVer2Basic,
@@ -141,7 +140,7 @@ class CommunityPostMenu extends ConsumerWidget {
           onTap: () => onAction(CommunityPostMenuAction.toggleStatus),
         ),
       CommunityMenuItem(
-        iconPath: 'assets/icons/icon_trash.svg',
+        iconPath: AppIcons.trash,
         label: l10n.communityMenuDelete,
         onTap: () => onAction(CommunityPostMenuAction.delete),
         isDestructive: true,

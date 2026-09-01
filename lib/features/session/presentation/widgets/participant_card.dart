@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/participant_status.dart';
@@ -84,11 +85,7 @@ class ParticipantCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (isHost) ...[
-                  SvgPicture.asset(
-                    'assets/icons/icon_crown.svg',
-                    width: 12.w,
-                    height: 12.w,
-                  ),
+                  SvgPicture.asset(AppIcons.crown, width: 12.w, height: 12.w),
                   SizedBox(width: 4.w),
                 ],
                 Flexible(
@@ -174,7 +171,7 @@ class AddSlotCard extends StatelessWidget {
               ),
               child: Center(
                 child: SvgPicture.asset(
-                  'assets/icons/icon_change.svg',
+                  AppIcons.change,
                   width: 24.w,
                   height: 24.w,
                   colorFilter: ColorFilter.mode(

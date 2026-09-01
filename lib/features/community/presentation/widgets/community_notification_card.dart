@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -29,7 +30,7 @@ class CommunityNotificationCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final iconAsset = switch (notification.type) {
       CommunityNotificationType.comment ||
-      CommunityNotificationType.reply => 'assets/icons/icon_comment.svg',
+      CommunityNotificationType.reply => AppIcons.comment,
     };
 
     return GestureDetector(

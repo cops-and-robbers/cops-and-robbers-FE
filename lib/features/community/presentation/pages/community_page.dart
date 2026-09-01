@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -100,7 +101,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         title: l10n.pageCommunityTitle,
         actions: [
           _buildAppBarIcon(
-            'assets/icons/icon_search.svg',
+            AppIcons.search,
             onTap: () {
               VibrationService.instance().buttonTap();
               context.pushNamed(RoutePaths.communitySearchName);
@@ -117,7 +118,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
               // 종 모양을 캔버스 안 다른 위치에 그려놔서(배지 자리만큼 내부
               // 여백이 다름) 전환할 때 종 모양이 미세하게 움직여 보였다(실측).
               return _buildAppBarIcon(
-                'assets/icons/icon_noti.svg',
+                AppIcons.noti,
                 showBadge: hasUnread,
                 onTap: () {
                   VibrationService.instance().buttonTap();
@@ -324,7 +325,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         height: _createButtonHeight,
         // pill 가장자리와 아이콘·텍스트 사이 여백
         icon: SvgPicture.asset(
-          'assets/icons/icon_write.svg',
+          AppIcons.write,
           width: 14.w,
           height: 14.h,
           colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),

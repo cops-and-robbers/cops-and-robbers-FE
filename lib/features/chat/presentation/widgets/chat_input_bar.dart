@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -210,7 +211,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
           child: Transform.rotate(
             angle: -math.pi / 2,
             child: SvgPicture.asset(
-              'assets/icons/icon_arrow.svg',
+              AppIcons.arrow,
               width: 20.w,
               height: 20.w,
               colorFilter: ColorFilter.mode(
