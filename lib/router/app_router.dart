@@ -58,8 +58,6 @@ import '../features/notice/presentation/pages/notices_page.dart';
 import '../features/report/domain/report_target.dart';
 import '../features/report/presentation/pages/report_category_page.dart';
 import '../features/report/presentation/pages/report_reason_page.dart';
-import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
-import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/buttons/previous_button.dart';
 import '../core/widgets/pages/legal_document_page.dart';
@@ -292,17 +290,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // ====================================================================
-      // Tutorial Routes (튜토리얼 — 카탈로그 + 항목별 디테일)
-      // ====================================================================
-      GoRoute(
-        path: '/tutorial',
-        pageBuilder: (context, state) => buildDirectionalSlide(
-          key: state.pageKey,
-          child: const TutorialCatalogPage(),
-          isForward: true,
-        ),
-      ),
-      // ====================================================================
       // Legal Document Routes (약관·정책·라이선스)
       // ====================================================================
       GoRoute(
@@ -366,15 +353,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
-      GoRoute(
-        path: '/tutorial/in-game',
-        pageBuilder: (context, state) => buildDirectionalSlide(
-          key: state.pageKey,
-          child: const InGameTutorialPage(),
-          isForward: true,
-        ),
-      ),
-
       // ====================================================================
       // Home & Main Navigation
       // ====================================================================

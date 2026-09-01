@@ -8,9 +8,6 @@ import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
-import '../../../../core/services/tutorial/tutorial_keys.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
@@ -94,16 +91,6 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   final _storageService = SessionDraftStorageService();
 
   // ============================================
-  // Tutorial Keys
-  // ============================================
-
-  /// 지도 영역(Expanded) 튜토리얼 타겟 키
-  final _tutorialKeyMap = GlobalKey();
-
-  /// 반경 칩 튜토리얼 타겟 키
-  final _tutorialKeyRadiusChip = GlobalKey();
-
-  // ============================================
   // Lifecycle Methods
   // ============================================
 
@@ -152,39 +139,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
         _currentRadius = draft?.playgroundRadiusInMeters ?? 500.0;
         _isLoading = false;
       });
-
-      // 로딩 완료 후 다음 프레임에서 튜토리얼 트리거
-      // ZoneSettingWidget이 렌더된 뒤에 실행해야 GlobalKey가 유효함
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showTutorialIfNeeded();
-      });
     }
-  }
-
-  /// 처음 방문한 사용자에게 튜토리얼 표시
-  Future<void> _showTutorialIfNeeded() async {
-    final completed = await TutorialService.isCompleted(
-      TutorialKeys.setupPlayground,
-    );
-    if (completed || !mounted) return;
-
-    // ZoneSettingWidget 내부 초기화(위치 조회 등)를 기다리기 위한 지연
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    final l10n = AppLocalizations.of(context);
-    AppTutorialStyle.show(
-      context: context,
-      targets: [
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyRadiusChip,
-          description: l10n.setupPlaygroundRadiusInputHint,
-          align: TutorialAlign.bottom,
-        ),
-      ],
-      onFinish: () =>
-          TutorialService.markCompleted(TutorialKeys.setupPlayground),
-    );
   }
 
   // ============================================
@@ -378,7 +333,6 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
               // dispose→재생성되며 매번 지도를 다시 로드하는 것을 막는다.
               // 방문하지 않은 모드는 빈 위젯으로 두어 최초 지도 로드도 지연시킨다.
               Expanded(
-                key: _tutorialKeyMap,
                 child: IndexedStack(
                   sizing: StackFit.expand,
                   index: _areaType == GameAreaType.polygon ? 1 : 0,
@@ -400,7 +354,6 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                             valueTextStyle: isDark
                                 ? AppTextStyles.robberLabel
                                 : null,
-                            radiusChipKey: _tutorialKeyRadiusChip,
                           )
                         : const SizedBox.shrink(),
                     // 1: 핀(폴리곤) 모드

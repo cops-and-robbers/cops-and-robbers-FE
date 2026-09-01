@@ -20,7 +20,6 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
@@ -200,16 +199,6 @@ class _MyPageState extends ConsumerState<MyPage> {
             // ══════════════════════════════════════════
             _buildSectionHeader(l10n.settingsSectionGuide),
             _buildVersionItem(),
-            _buildItemDivider(),
-            _buildMenuItem(
-              text: l10n.settingsGuideTutorialRewatch,
-              onTap: () => context.push('/tutorial'),
-            ),
-            _buildItemDivider(),
-            _buildMenuItem(
-              text: l10n.settingsGuideTutorialReset,
-              onTap: _onResetTutorial,
-            ),
             _buildItemDivider(),
             _buildMenuItem(
               text: l10n.settingsGuideBugReport,
@@ -671,32 +660,6 @@ class _MyPageState extends ConsumerState<MyPage> {
   }
 
   /// 버그 제보 입력 화면 진입
-  /// 튜토리얼 초기화 (코치마크 한정)
-  ///
-  /// SharedPreferences의 모든 코치마크 키를 삭제하고, 신호를 발행해
-  /// 부모 위젯이 dispose되지 않은 화면도 즉시 재노출되게 한다.
-  /// 마지막에 홈으로 이동해 첫 코치마크가 바로 떠 보이도록 한다.
-  Future<void> _onResetTutorial() async {
-    final l10n = AppLocalizations.of(context);
-    final result = await AppDialog.confirm(
-      context: context,
-      title: l10n.dialogTutorialResetTitle,
-      message: l10n.dialogTutorialResetMessage,
-      confirmText: l10n.buttonReset,
-    );
-    if (result != true || !mounted) return;
-
-    await TutorialService.resetAll();
-    if (!mounted) return;
-
-    ref.read(tutorialResetSignalProvider.notifier).state++;
-    AppSnackbar.show(
-      context,
-      message: AppLocalizations.of(context).messageTutorialReset,
-    );
-    context.go(RoutePaths.home);
-  }
-
   /// 로그아웃
   Future<void> _onLogout() async {
     final l10n = AppLocalizations.of(context);
