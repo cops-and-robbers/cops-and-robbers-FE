@@ -138,6 +138,21 @@ void main() {
         -1,
       );
     });
+    test('returns_zero_when_system_pin_registered', () {
+      // 공지 등록은 사람이 드나든 사건이 아니다 — 1이나 -1로 흘리면 헤더
+      // 인원수가 방장이 공지를 손댈 때마다 어긋난다.
+      expect(
+        memberDelta(
+          _msg(
+            body: const CommunityChatMessageBody.system(
+              CommunityChatSystemEvent.pinRegistered,
+            ),
+          ),
+        ),
+        0,
+      );
+    });
+
     test('returns_zero_when_text', () {
       expect(memberDelta(_msg()), 0);
     });

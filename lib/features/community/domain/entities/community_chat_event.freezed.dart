@@ -22,18 +22,21 @@ mixin _$CommunityChatEvent {
     required TResult Function(int postId, CommunityChatMessageEntity message)
     message,
     required TResult Function(CommunityChatConnectionState state) connection,
+    required TResult Function(int postId) noticeChanged,
     required TResult Function(String errorCode) error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int postId, CommunityChatMessageEntity message)? message,
     TResult? Function(CommunityChatConnectionState state)? connection,
+    TResult? Function(int postId)? noticeChanged,
     TResult? Function(String errorCode)? error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int postId, CommunityChatMessageEntity message)? message,
     TResult Function(CommunityChatConnectionState state)? connection,
+    TResult Function(int postId)? noticeChanged,
     TResult Function(String errorCode)? error,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -41,18 +44,22 @@ mixin _$CommunityChatEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(CommunityChatMessageEvent value) message,
     required TResult Function(CommunityChatConnectionEvent value) connection,
+    required TResult Function(CommunityChatNoticeChangedEvent value)
+    noticeChanged,
     required TResult Function(CommunityChatErrorEvent value) error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CommunityChatMessageEvent value)? message,
     TResult? Function(CommunityChatConnectionEvent value)? connection,
+    TResult? Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
     TResult? Function(CommunityChatErrorEvent value)? error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CommunityChatMessageEvent value)? message,
     TResult Function(CommunityChatConnectionEvent value)? connection,
+    TResult Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
     TResult Function(CommunityChatErrorEvent value)? error,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -176,6 +183,7 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
     required TResult Function(int postId, CommunityChatMessageEntity message)
     message,
     required TResult Function(CommunityChatConnectionState state) connection,
+    required TResult Function(int postId) noticeChanged,
     required TResult Function(String errorCode) error,
   }) {
     return message(postId, this.message);
@@ -186,6 +194,7 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int postId, CommunityChatMessageEntity message)? message,
     TResult? Function(CommunityChatConnectionState state)? connection,
+    TResult? Function(int postId)? noticeChanged,
     TResult? Function(String errorCode)? error,
   }) {
     return message?.call(postId, this.message);
@@ -196,6 +205,7 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int postId, CommunityChatMessageEntity message)? message,
     TResult Function(CommunityChatConnectionState state)? connection,
+    TResult Function(int postId)? noticeChanged,
     TResult Function(String errorCode)? error,
     required TResult orElse(),
   }) {
@@ -210,6 +220,8 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(CommunityChatMessageEvent value) message,
     required TResult Function(CommunityChatConnectionEvent value) connection,
+    required TResult Function(CommunityChatNoticeChangedEvent value)
+    noticeChanged,
     required TResult Function(CommunityChatErrorEvent value) error,
   }) {
     return message(this);
@@ -220,6 +232,7 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CommunityChatMessageEvent value)? message,
     TResult? Function(CommunityChatConnectionEvent value)? connection,
+    TResult? Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
     TResult? Function(CommunityChatErrorEvent value)? error,
   }) {
     return message?.call(this);
@@ -230,6 +243,7 @@ class _$CommunityChatMessageEventImpl implements CommunityChatMessageEvent {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CommunityChatMessageEvent value)? message,
     TResult Function(CommunityChatConnectionEvent value)? connection,
+    TResult Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
     TResult Function(CommunityChatErrorEvent value)? error,
     required TResult orElse(),
   }) {
@@ -339,6 +353,7 @@ class _$CommunityChatConnectionEventImpl
     required TResult Function(int postId, CommunityChatMessageEntity message)
     message,
     required TResult Function(CommunityChatConnectionState state) connection,
+    required TResult Function(int postId) noticeChanged,
     required TResult Function(String errorCode) error,
   }) {
     return connection(state);
@@ -349,6 +364,7 @@ class _$CommunityChatConnectionEventImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int postId, CommunityChatMessageEntity message)? message,
     TResult? Function(CommunityChatConnectionState state)? connection,
+    TResult? Function(int postId)? noticeChanged,
     TResult? Function(String errorCode)? error,
   }) {
     return connection?.call(state);
@@ -359,6 +375,7 @@ class _$CommunityChatConnectionEventImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int postId, CommunityChatMessageEntity message)? message,
     TResult Function(CommunityChatConnectionState state)? connection,
+    TResult Function(int postId)? noticeChanged,
     TResult Function(String errorCode)? error,
     required TResult orElse(),
   }) {
@@ -373,6 +390,8 @@ class _$CommunityChatConnectionEventImpl
   TResult map<TResult extends Object?>({
     required TResult Function(CommunityChatMessageEvent value) message,
     required TResult Function(CommunityChatConnectionEvent value) connection,
+    required TResult Function(CommunityChatNoticeChangedEvent value)
+    noticeChanged,
     required TResult Function(CommunityChatErrorEvent value) error,
   }) {
     return connection(this);
@@ -383,6 +402,7 @@ class _$CommunityChatConnectionEventImpl
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CommunityChatMessageEvent value)? message,
     TResult? Function(CommunityChatConnectionEvent value)? connection,
+    TResult? Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
     TResult? Function(CommunityChatErrorEvent value)? error,
   }) {
     return connection?.call(this);
@@ -393,6 +413,7 @@ class _$CommunityChatConnectionEventImpl
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CommunityChatMessageEvent value)? message,
     TResult Function(CommunityChatConnectionEvent value)? connection,
+    TResult Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
     TResult Function(CommunityChatErrorEvent value)? error,
     required TResult orElse(),
   }) {
@@ -415,6 +436,175 @@ abstract class CommunityChatConnectionEvent implements CommunityChatEvent {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityChatConnectionEventImplCopyWith<
     _$CommunityChatConnectionEventImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CommunityChatNoticeChangedEventImplCopyWith<$Res> {
+  factory _$$CommunityChatNoticeChangedEventImplCopyWith(
+    _$CommunityChatNoticeChangedEventImpl value,
+    $Res Function(_$CommunityChatNoticeChangedEventImpl) then,
+  ) = __$$CommunityChatNoticeChangedEventImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int postId});
+}
+
+/// @nodoc
+class __$$CommunityChatNoticeChangedEventImplCopyWithImpl<$Res>
+    extends
+        _$CommunityChatEventCopyWithImpl<
+          $Res,
+          _$CommunityChatNoticeChangedEventImpl
+        >
+    implements _$$CommunityChatNoticeChangedEventImplCopyWith<$Res> {
+  __$$CommunityChatNoticeChangedEventImplCopyWithImpl(
+    _$CommunityChatNoticeChangedEventImpl _value,
+    $Res Function(_$CommunityChatNoticeChangedEventImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityChatEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? postId = null}) {
+    return _then(
+      _$CommunityChatNoticeChangedEventImpl(
+        null == postId
+            ? _value.postId
+            : postId // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CommunityChatNoticeChangedEventImpl
+    implements CommunityChatNoticeChangedEvent {
+  const _$CommunityChatNoticeChangedEventImpl(this.postId);
+
+  @override
+  final int postId;
+
+  @override
+  String toString() {
+    return 'CommunityChatEvent.noticeChanged(postId: $postId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityChatNoticeChangedEventImpl &&
+            (identical(other.postId, postId) || other.postId == postId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, postId);
+
+  /// Create a copy of CommunityChatEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityChatNoticeChangedEventImplCopyWith<
+    _$CommunityChatNoticeChangedEventImpl
+  >
+  get copyWith =>
+      __$$CommunityChatNoticeChangedEventImplCopyWithImpl<
+        _$CommunityChatNoticeChangedEventImpl
+      >(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int postId, CommunityChatMessageEntity message)
+    message,
+    required TResult Function(CommunityChatConnectionState state) connection,
+    required TResult Function(int postId) noticeChanged,
+    required TResult Function(String errorCode) error,
+  }) {
+    return noticeChanged(postId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int postId, CommunityChatMessageEntity message)? message,
+    TResult? Function(CommunityChatConnectionState state)? connection,
+    TResult? Function(int postId)? noticeChanged,
+    TResult? Function(String errorCode)? error,
+  }) {
+    return noticeChanged?.call(postId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int postId, CommunityChatMessageEntity message)? message,
+    TResult Function(CommunityChatConnectionState state)? connection,
+    TResult Function(int postId)? noticeChanged,
+    TResult Function(String errorCode)? error,
+    required TResult orElse(),
+  }) {
+    if (noticeChanged != null) {
+      return noticeChanged(postId);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(CommunityChatMessageEvent value) message,
+    required TResult Function(CommunityChatConnectionEvent value) connection,
+    required TResult Function(CommunityChatNoticeChangedEvent value)
+    noticeChanged,
+    required TResult Function(CommunityChatErrorEvent value) error,
+  }) {
+    return noticeChanged(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(CommunityChatMessageEvent value)? message,
+    TResult? Function(CommunityChatConnectionEvent value)? connection,
+    TResult? Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
+    TResult? Function(CommunityChatErrorEvent value)? error,
+  }) {
+    return noticeChanged?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(CommunityChatMessageEvent value)? message,
+    TResult Function(CommunityChatConnectionEvent value)? connection,
+    TResult Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
+    TResult Function(CommunityChatErrorEvent value)? error,
+    required TResult orElse(),
+  }) {
+    if (noticeChanged != null) {
+      return noticeChanged(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class CommunityChatNoticeChangedEvent implements CommunityChatEvent {
+  const factory CommunityChatNoticeChangedEvent(final int postId) =
+      _$CommunityChatNoticeChangedEventImpl;
+
+  int get postId;
+
+  /// Create a copy of CommunityChatEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityChatNoticeChangedEventImplCopyWith<
+    _$CommunityChatNoticeChangedEventImpl
   >
   get copyWith => throw _privateConstructorUsedError;
 }
@@ -497,6 +687,7 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
     required TResult Function(int postId, CommunityChatMessageEntity message)
     message,
     required TResult Function(CommunityChatConnectionState state) connection,
+    required TResult Function(int postId) noticeChanged,
     required TResult Function(String errorCode) error,
   }) {
     return error(errorCode);
@@ -507,6 +698,7 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int postId, CommunityChatMessageEntity message)? message,
     TResult? Function(CommunityChatConnectionState state)? connection,
+    TResult? Function(int postId)? noticeChanged,
     TResult? Function(String errorCode)? error,
   }) {
     return error?.call(errorCode);
@@ -517,6 +709,7 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int postId, CommunityChatMessageEntity message)? message,
     TResult Function(CommunityChatConnectionState state)? connection,
+    TResult Function(int postId)? noticeChanged,
     TResult Function(String errorCode)? error,
     required TResult orElse(),
   }) {
@@ -531,6 +724,8 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(CommunityChatMessageEvent value) message,
     required TResult Function(CommunityChatConnectionEvent value) connection,
+    required TResult Function(CommunityChatNoticeChangedEvent value)
+    noticeChanged,
     required TResult Function(CommunityChatErrorEvent value) error,
   }) {
     return error(this);
@@ -541,6 +736,7 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CommunityChatMessageEvent value)? message,
     TResult? Function(CommunityChatConnectionEvent value)? connection,
+    TResult? Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
     TResult? Function(CommunityChatErrorEvent value)? error,
   }) {
     return error?.call(this);
@@ -551,6 +747,7 @@ class _$CommunityChatErrorEventImpl implements CommunityChatErrorEvent {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CommunityChatMessageEvent value)? message,
     TResult Function(CommunityChatConnectionEvent value)? connection,
+    TResult Function(CommunityChatNoticeChangedEvent value)? noticeChanged,
     TResult Function(CommunityChatErrorEvent value)? error,
     required TResult orElse(),
   }) {

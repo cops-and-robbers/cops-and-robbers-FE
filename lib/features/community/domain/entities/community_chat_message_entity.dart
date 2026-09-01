@@ -2,12 +2,23 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'community_chat_message_entity.freezed.dart';
 
-/// 서버 `SYSTEM` 메시지의 `{"event":"JOIN"|"LEAVE"|"KICK"}`
+/// 서버 `SYSTEM` 메시지의 `{"event":"JOIN"|"LEAVE"|"KICK"|"PIN_*"}`
 ///
 /// [kick]은 방장이 내보낸 경우다. 서버가 강퇴당한 쪽 소켓 세션을 끊지 않으므로
 /// (Swagger 명시) 본인이 이 메시지를 보고 스스로 구독을 해제해야 한다 — 안 하면
 /// 나간 방의 메시지가 계속 들어온다.
-enum CommunityChatSystemEvent { join, leave, kick }
+///
+/// `pin*` 3종은 방장이 고정 공지를 등록·수정·삭제한 사건이다(BE #190). 배너
+/// 갱신은 전용 소켓 채널이 따로 나르고, 이쪽은 대화창에 남는 흔적이다 —
+/// 공지는 이력을 남기지 않으므로(DEC-0054) "언제 바뀌었나"의 유일한 기록이다.
+enum CommunityChatSystemEvent {
+  join,
+  leave,
+  kick,
+  pinRegistered,
+  pinUpdated,
+  pinDeleted,
+}
 
 /// 내가 보낸 메시지의 확정 상태. 서버·남이 보낸 것은 항상 [sent]다.
 enum CommunityChatMessageStatus { pending, sent, failed }
