@@ -52,7 +52,7 @@ class SetupPlaygroundPage extends ConsumerStatefulWidget {
   /// 생성 흐름에서 열렸을 때 상단에 진행 표시(1/3)를 보여줄지
   final bool showStepIndicator;
 
-  /// 편집 모드 초기 구역 (null이면 생성 모드)
+  /// 지도에 미리 그려둘 초기 구역 (null이면 빈 상태로 시작)
   final AreaShape? editInitialShape;
 
   @override
@@ -113,13 +113,13 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     _loadExistingData();
   }
 
-  /// 편집 모드 여부
-  bool get _isEditMode => widget.editInitialShape != null;
+  /// 초기 도형을 받았는지 (모드가 아니다 — 다크 판정은 [SetupPlaygroundPage.isInGameEdit])
+  bool get _hasInitialShape => widget.editInitialShape != null;
 
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
-    // 편집 모드: 전달받은 초기값 사용
-    if (_isEditMode) {
+    // 초기 도형을 받았으면 로컬 초안 대신 그 값을 쓴다
+    if (_hasInitialShape) {
       if (mounted) {
         setState(() {
           final initialShape = widget.editInitialShape!;
@@ -262,7 +262,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   Future<void> _onComplete() async {
     // 핀 모드: 정렬된 꼭짓점 목록 반환
     if (_areaType == GameAreaType.polygon) {
-      if (!_isEditMode) {
+      if (!_hasInitialShape) {
         await _storageService.updatePlaygroundPinZone(_pinPoints);
       }
       if (mounted) {
@@ -283,7 +283,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     if (center == null) return;
 
     // 생성 모드에서만 로컬 저장소에 저장
-    if (!_isEditMode) {
+    if (!_hasInitialShape) {
       await _storageService.updatePlaygroundZone(center, _currentRadius);
     }
 

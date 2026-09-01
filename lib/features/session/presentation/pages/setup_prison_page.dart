@@ -61,7 +61,7 @@ class SetupPrisonPage extends ConsumerStatefulWidget {
   /// 생성 흐름에서 열렸을 때 상단에 진행 표시(1/3)를 보여줄지
   final bool showStepIndicator;
 
-  /// 편집 모드 구역 정보 (null이면 생성 모드)
+  /// 지도에 미리 그려둘 구역 정보 (null이면 빈 상태로 시작)
   final PrisonEditArgs? editArgs;
 
   @override
@@ -111,18 +111,18 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     _loadExistingData();
   }
 
-  /// 편집 모드 여부
+  /// 초기 도형을 받았는지 (모드가 아니다 — 다크 판정은 [SetupPrisonPage.isInGameEdit])
   ///
-  /// 감옥 초기값 또는 플레이그라운드 편집값이 전달되면 편집 모드로 동작합니다.
-  bool get _isEditMode => widget.editArgs != null;
+  /// 감옥 초기값 또는 플레이그라운드 값이 전달되면 로컬 초안 대신 그 값을 쓴다.
+  bool get _hasInitialShape => widget.editArgs != null;
 
   /// 핀(폴리곤) 모드 여부 — 플레이그라운드가 정한 타입을 따른다
   bool get _isPinMode => _areaType == GameAreaType.polygon;
 
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
-    // 편집 모드: 전달받은 초기값 사용
-    if (_isEditMode) {
+    // 초기 도형을 받았으면 로컬 초안 대신 그 값을 쓴다
+    if (_hasInitialShape) {
       if (mounted) {
         setState(() {
           final args = widget.editArgs!;
@@ -290,7 +290,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
   Future<void> _onComplete() async {
     // 핀 모드: 정렬된 감옥 꼭짓점 목록 반환
     if (_isPinMode) {
-      if (!_isEditMode) {
+      if (!_hasInitialShape) {
         await _storageService.updatePrisonPinZone(_pinPoints);
       }
       if (mounted) {
@@ -311,7 +311,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     if (center == null) return;
 
     // 생성 모드에서만 로컬 저장소에 저장
-    if (!_isEditMode) {
+    if (!_hasInitialShape) {
       await _storageService.updatePrisonZone(center, _currentRadius);
     }
 
