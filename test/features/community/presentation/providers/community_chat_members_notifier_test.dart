@@ -8,6 +8,13 @@ import '../../community_chat_fakes.dart';
 
 const _postId = 42;
 
+const _twoMembers = CommunityChatMembersEntity(
+  members: [
+    CommunityChatMemberEntity(userId: 1, nickname: '방장', isAuthor: true),
+    CommunityChatMemberEntity(userId: 2, nickname: '홍길동그라미', isAuthor: false),
+  ],
+);
+
 ProviderContainer _container(FakeCommunityChatRepository repo) {
   final c = ProviderContainer(
     overrides: [communityChatRepositoryProvider.overrideWithValue(repo)],
@@ -50,6 +57,56 @@ void main() {
         isFalse,
       );
       expect(repo.calls, contains('setNotification:$_postId:false'));
+    });
+
+    test('replaces_members_with_the_server_list_after_kick', () async {
+      final repo = FakeCommunityChatRepository()..members = _twoMembers;
+      final c = _container(repo);
+      await c.read(communityChatMembersNotifierProvider(_postId).future);
+      // 강퇴 뒤 서버가 돌려줄 목록 — 앱이 로컬에서 지우는 게 아니라 다시 받는다.
+      repo.members = const CommunityChatMembersEntity(
+        members: [
+          CommunityChatMemberEntity(userId: 1, nickname: '방장', isAuthor: true),
+        ],
+      );
+
+      await c
+          .read(communityChatMembersNotifierProvider(_postId).notifier)
+          .kick(2);
+
+      expect(
+        c
+            .read(communityChatMembersNotifierProvider(_postId))
+            .requireValue
+            .members
+            .map((m) => m.userId),
+        [1],
+      );
+      expect(repo.calls, contains('kickMember:$_postId:2'));
+    });
+
+    test('keeps_members_and_rethrows_when_kick_fails', () async {
+      final repo = FakeCommunityChatRepository()
+        ..members = _twoMembers
+        ..kickError = const ServerException(
+          message: 'fail',
+          messageKey: 'errorCodeForbiddenNotChatHost',
+        );
+      final c = _container(repo);
+      await c.read(communityChatMembersNotifierProvider(_postId).future);
+
+      await expectLater(
+        c.read(communityChatMembersNotifierProvider(_postId).notifier).kick(2),
+        throwsA(isA<AppException>()),
+      );
+
+      expect(
+        c
+            .read(communityChatMembersNotifierProvider(_postId))
+            .requireValue
+            .members,
+        hasLength(2),
+      );
     });
 
     test('reverts_the_flip_when_saving_fails', () async {

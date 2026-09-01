@@ -15,6 +15,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// 시스템 경계(HTTP)만 대체한다 — 그 안쪽 변환 로직은 전부 실물이다.
 class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
+  @override
+  Future<void> kickChatMember(int postId, int userId) =>
+      throw UnimplementedError('이 테스트는 강퇴를 쓰지 않는다');
+
   CommunityPostListResponseModel? responseToReturn;
   Object? errorToThrow;
 

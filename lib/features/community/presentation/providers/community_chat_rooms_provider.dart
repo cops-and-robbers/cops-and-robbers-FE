@@ -199,6 +199,18 @@ class CommunityChatMembersNotifier extends _$CommunityChatMembersNotifier {
       rethrow;
     }
   }
+
+  /// 멤버를 강퇴하고 목록을 **서버에서 다시 받는다**.
+  ///
+  /// 성공 응답만 믿고 로컬에서 지우지 않는 이유: 서버가 정본이고, 강퇴와 동시에
+  /// 다른 사람이 들어오거나 나갔을 수 있다(게임 로비 강퇴 ISS-0061의 판단과 같다).
+  Future<void> kick(int userId) async {
+    final repo = ref.read(communityChatRepositoryProvider);
+    await repo.kickMember(postId, userId);
+    final fresh = await repo.getMembers(postId);
+    if (_disposed) return;
+    state = AsyncData(fresh);
+  }
 }
 
 /// 채팅방이 보는 모집글 — 상단 모임 카드와 모임 정보 화면이 쓴다

@@ -282,6 +282,17 @@ abstract class CommunityRemoteDataSource {
     @Path('postId') int postId,
   );
 
+  /// 채팅방 멤버 강퇴 — 방장 전용 (204)
+  ///
+  /// 방장이 아니면 403 `FORBIDDEN_NOT_CHAT_HOST`, 대상이 멤버가 아니면 404
+  /// `CHAT_MEMBER_NOT_FOUND`, 자기 자신이면 400 `CANNOT_KICK_SELF`.
+  /// 강퇴된 유저는 재입장 제한이 없다(DEC-0043).
+  @DELETE('${ApiEndpoints.communityPosts}/{postId}/chat/members/{userId}')
+  Future<void> kickChatMember(
+    @Path('postId') int postId,
+    @Path('userId') int userId,
+  );
+
   /// 채팅방 읽음 처리 — 읽음 커서를 [body]의 메시지 id로 옮긴다 (204)
   ///
   /// 내역 조회(GET)만으로는 읽음 처리되지 않는다(DEC-0044). 커서는 앞으로만

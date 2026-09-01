@@ -17,6 +17,7 @@ import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/community_post_entity.dart';
+import '../providers/community_chat_rooms_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_date_sheet.dart';
 import '../widgets/community_headcount_sheet.dart';
@@ -677,7 +678,16 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
 
       // 작성만 목록을 무효화한다 — 방금 쓴 글이 맨 위에 보여야 하기 때문이다.
       // 수정은 저장된 글을 pop으로 돌려주므로 호출자가 그 자리에서 반영한다.
-      if (post == null) ref.invalidate(communityFeedNotifierProvider);
+      if (post == null) {
+        ref.invalidate(communityFeedNotifierProvider);
+        // 서버가 작성자를 그 글의 채팅 멤버로 자동 등록한다. 그런데 새 방은
+        // 메시지가 0건이라 소켓이 아무것도 보내지 않고, 채팅방 목록은
+        // keepAlive라 스스로 다시 받지 않는다 — 여기가 유일한 계기다 (LSN-0042).
+        // 아직 안 만들어졌으면 둔다 — 처음 열 때 어차피 새로 받는다.
+        if (ref.exists(communityChatRoomsProvider)) {
+          ref.invalidate(communityChatRoomsProvider);
+        }
+      }
       Navigator.of(context).pop(saved);
     } on AppException catch (e) {
       // 불투명 배리어가 스낵바를 가리므로 로딩을 먼저 걷어낸다.

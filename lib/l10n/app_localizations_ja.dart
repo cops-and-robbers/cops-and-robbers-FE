@@ -577,6 +577,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityChatLeaveConfirmMessage => '退出すると会話を再び見ることはできません';
 
   @override
+  String get communityChatKickConfirmMessage =>
+      '退出させた人はすぐに部屋から出ます\n再び参加することは防げません';
+
+  @override
   String get communityChatMeetingInfoTitle => '集まりの情報';
 
   @override

@@ -195,6 +195,7 @@
   "communityChatLeave": "Leave chat",
   "communityChatLeaveConfirmTitle": "Leave this chat?",
   "communityChatLeaveConfirmMessage": "You won't be able to see this conversation again",
+  "communityChatKickConfirmMessage": "They leave the room right away\nNothing stops them from joining again",
   "communityChatMeetingInfoTitle": "Meeting info",
   "communityChatConnectionLost": "Connection lost",
   "communityChatReconnect": "Reconnect",

@@ -18,6 +18,7 @@ import '../../data/repositories/community_repository_impl.dart';
 import '../../domain/repositories/community_comment_repository.dart';
 import '../../domain/repositories/community_reaction_repository.dart';
 import '../../domain/community_post_errors.dart';
+import 'community_chat_rooms_provider.dart';
 import '../../domain/entities/community_post_entity.dart';
 import '../../domain/entities/community_post_status.dart';
 import '../../domain/entities/community_scope.dart';
@@ -476,6 +477,13 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
       rethrow;
     }
     removePost(postId);
+    // 글이 지워지면 서버가 그 채팅방도 지운다. 채팅방 목록은 keepAlive라 스스로
+    // 다시 받지 않고, 사라진 방은 소켓 이벤트도 만들지 않는다 (LSN-0042).
+    // 아직 안 만들어졌으면 두는 이유: 없는 걸 invalidate하면 그 자리에서 빌드돼
+    // 로그인 상태·소켓까지 끌고 온다. 처음 열 때 어차피 새로 받는다.
+    if (ref.exists(communityChatRoomsProvider)) {
+      ref.invalidate(communityChatRoomsProvider);
+    }
   }
 
   /// 글 하나를 최신 값으로 갈아끼운다 (네트워크 없음).

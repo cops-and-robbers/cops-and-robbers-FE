@@ -60,6 +60,12 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
     );
   }, messageKey: 'errorCommunityChatMembersLoadGeneric');
 
+  @override
+  Future<void> kickMember(int postId, int userId) => _guard(
+    () => _api.kickChatMember(postId, userId),
+    messageKey: 'errorCommunityChatKickGeneric',
+  );
+
   /// 이미 멤버(409)면 성공으로 삼킨다 — 서버가 `chatJoined`를 주지 않아 앱은
   /// 참여 여부를 미리 알 수 없다. 무조건 보내고 409면 이미 들어가 있다는 뜻이다.
   @override
