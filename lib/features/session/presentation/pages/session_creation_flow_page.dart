@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_status.dart';
@@ -16,15 +18,12 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
-import '../../../../core/services/tutorial/tutorial_keys.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
@@ -36,28 +35,41 @@ import '../../domain/entities/create_session_result.dart';
 import '../../data/models/session_creation_draft_model.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../community/presentation/providers/community_chat_rooms_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
-import '../widgets/session_creation_steps/step_0_select_area_content.dart';
-import '../widgets/session_creation_steps/step_1_participant_settings_content.dart';
-import '../widgets/session_creation_steps/step_2_game_settings_content.dart';
-import '../widgets/session_creation_steps/step_3_invite_code_content.dart';
+import '../widgets/basic_settings_form.dart';
+import '../widgets/game_setting_values_editor.dart';
+import '../widgets/setting_list_card.dart';
+import '../widgets/zone_list_card.dart';
+import 'setup_prison_page.dart';
+
+/// 방 생성 흐름의 단계
+enum _CreationPhase {
+  /// 지도에서 구역을 그리는 중 (플레이그라운드·감옥 페이지가 위에 떠 있다)
+  zone,
+
+  /// 기본 정보 입력 (한 항목씩 묻고 쌓기)
+  basic,
+
+  /// 최종 확인 (행을 탭하면 해당 화면으로 되돌아가 수정)
+  confirm,
+}
 
 /// 세션 생성 플로우 페이지
 ///
-/// PageView 기반으로 4단계 세션 생성 과정을 관리합니다:
-/// - Step 0: 구역 선택 (플레이그라운드, 감옥)
-/// - Step 1: 인원 설정 (최대 참가자)
-/// - Step 2: 게임 설정 (라운드 시간, 위치 공유 간격, 경찰 대기 시간)
-/// - Step 3: 최종 설정 확인 → "방 생성하기" → API 호출 → 대기실 이동
+/// 생성을 누르면 바로 플레이그라운드 지도로 들어가고, 감옥 지도와 기본 정보
+/// 입력을 거쳐 최종 확인에서 방을 만든다. 최종 확인의 각 행을 탭하면 해당
+/// 화면으로 이동해 고칠 수 있다.
 ///
-/// 특징:
-/// - 좌우 슬라이드 애니메이션으로 단계 전환
-/// - 뒤로가기 시 이전 단계로 이동 (Step 0에서는 홈으로)
-/// - 임시 저장 기능 (SessionDraftStorageService)
-/// - Step 3에서 "방 생성하기" 버튼 클릭 시 세션 생성 API 호출
+/// 임시 저장(SessionDraftStorageService)은 숫자 값을 조용히 복원하고, 구역은
+/// 지도를 열 때 이전 도형이 그려진 채로 연다.
 class SessionCreationFlowPage extends ConsumerStatefulWidget {
-  const SessionCreationFlowPage({super.key});
+  const SessionCreationFlowPage({this.communityPostId, super.key});
+
+  /// 커뮤니티 채팅방에서 진입한 생성이면 그 방의 postId — 생성 성공 직후
+  /// 발급된 초대 코드를 GAME_INVITE로 그 방에 쏜다(#516). 홈 진입은 null.
+  final int? communityPostId;
 
   @override
   ConsumerState<SessionCreationFlowPage> createState() =>
@@ -66,27 +78,23 @@ class SessionCreationFlowPage extends ConsumerStatefulWidget {
 
 class _SessionCreationFlowPageState
     extends ConsumerState<SessionCreationFlowPage> {
-  // ============================================
-  // Controllers & State
-  // ============================================
-
-  late final PageController _pageController;
   late final SessionDraftStorageService _storageService;
-  int _currentStep = 0;
+
+  _CreationPhase _phase = _CreationPhase.zone;
+
+  /// 최종 확인에서 항목 하나를 고치러 기본 정보로 들어왔을 때의 대상
+  GameSettingField? _editTarget;
+
+  /// 최종 확인에서 뒤로 와서 네 항목이 펼쳐진 채 시작하는지
+  bool _revealAllOnBasic = false;
+
+  /// 기본 정보 폼 상태 접근용. 폼을 새로 시작할 때마다 새 키로 갈아 상태를 재생성한다.
+  GlobalKey<BasicSettingsFormState> _formKey =
+      GlobalKey<BasicSettingsFormState>();
+
   bool _isLoading = false;
 
-  // ============================================
-  // Tutorial GlobalKeys
-  // ============================================
-
-  // Step 0
-  final _tutorialKeyPlayground = GlobalKey();
-  // Step 1
-  // Step 2
-  final _tutorialKeySettings = GlobalKey();
-  // Step 3
-
-  // Step 0: 구역 선택
+  // 구역
   LatLng? _playgroundCenter;
   double? _playgroundRadiusMeters;
   LatLng? _prisonCenter;
@@ -99,10 +107,8 @@ class _SessionCreationFlowPageState
   List<LatLng>? _playgroundPinPoints;
   List<LatLng>? _prisonPinPoints;
 
-  // Step 1: 인원 설정
+  // 설정 값
   int _maxParticipants = 10;
-
-  // Step 2: 게임 설정
   int _roundDurationMinutes = 30;
   int _locationShareMinutes = 5;
   int _policeWaitMinutes = 5;
@@ -114,79 +120,13 @@ class _SessionCreationFlowPageState
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
     _storageService = SessionDraftStorageService();
-    _loadDraftData();
-    // Step 0 튜토리얼은 첫 프레임 렌더링 후 표시
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showStepTutorial(0);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _loadDraftData();
+      if (!mounted) return;
+      // 생성 진입 즉시 구역 설정(지도)으로 들어간다
+      await _runZoneSetup(returnToConfirm: false);
     });
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  // ============================================
-  // Tutorial
-  // ============================================
-
-  /// 단계별 튜토리얼 표시
-  ///
-  /// 이미 완료된 단계는 건너뜁니다.
-  /// 페이지 전환 애니메이션(300ms) 완료 후 렌더링이 안정될 때까지 추가 대기합니다.
-  Future<void> _showStepTutorial(int step) async {
-    final String key;
-
-    switch (step) {
-      case 0:
-        key = TutorialKeys.createStep0;
-      case 2:
-        key = TutorialKeys.createStep2;
-      default:
-        return;
-    }
-
-    final completed = await TutorialService.isCompleted(key);
-    if (completed || !mounted) return;
-
-    // 페이지 전환 애니메이션(300ms) + 렌더링 안정 대기
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    final targets = _buildTutorialTargets(step);
-    if (targets.isEmpty) return;
-
-    AppTutorialStyle.show(
-      context: context,
-      targets: targets,
-      onFinish: () => TutorialService.markCompleted(key),
-    );
-  }
-
-  /// 단계별 튜토리얼 타겟 목록 생성
-  List<TutorialTarget> _buildTutorialTargets(int step) {
-    final l10n = AppLocalizations.of(context);
-    switch (step) {
-      case 0:
-        return [
-          AppTutorialStyle.target(
-            keyTarget: _tutorialKeyPlayground,
-            description: l10n.sessionCreationStepZoneSubtitle,
-          ),
-        ];
-      case 2:
-        return [
-          AppTutorialStyle.target(
-            keyTarget: _tutorialKeySettings,
-            description: l10n.sessionCreationStepRulesSubtitle,
-          ),
-        ];
-      default:
-        return [];
-    }
   }
 
   // ============================================
@@ -236,39 +176,129 @@ class _SessionCreationFlowPageState
   }
 
   // ============================================
-  // Navigation & Step Management
+  // Zone Setup Navigation
   // ============================================
 
-  /// 이전 단계로 이동
-  void _goToPreviousStep() {
-    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
-    FocusScope.of(context).unfocus();
-    if (_currentStep > 0) {
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+  /// 플레이그라운드 → 감옥 순서로 지도를 연다.
+  ///
+  /// 감옥에서 뒤로 가면 플레이그라운드로 되돌아가고, 플레이그라운드에서 뒤로
+  /// 가면 흐름을 끝낸다([returnToConfirm] 이면 최종 확인으로 복귀).
+  /// 이전에 그린 도형은 초기값으로 넘겨 지도에 그려진 채로 열린다.
+  Future<void> _runZoneSetup({required bool returnToConfirm}) async {
+    while (true) {
+      if (!mounted) return;
+      final playground = await context.pushNamed<AreaShape>(
+        RoutePaths.setupPlaygroundFromFlowName,
+        extra: _playgroundShape,
       );
-    } else {
-      // Step 0에서 뒤로가기 → 홈으로
-      context.pop();
+      if (!mounted) return;
+      if (playground == null) {
+        if (returnToConfirm) {
+          setState(() => _phase = _CreationPhase.confirm);
+        } else {
+          context.pop();
+        }
+        return;
+      }
+      _onPlaygroundResult(playground);
+      await _saveDraft();
+      if (!mounted) return;
+
+      final prison = await context.pushNamed<AreaShape>(
+        RoutePaths.setupPrisonFromFlowName,
+        extra: PrisonEditArgs(playground: playground),
+      );
+      if (!mounted) return;
+      if (prison == null) continue; // 감옥에서 뒤로 → 플레이그라운드부터 다시
+      _onPrisonResult(prison);
+      await _saveDraft();
+      break;
+    }
+    if (!mounted) return;
+    setState(() {
+      _formKey = GlobalKey<BasicSettingsFormState>();
+      _revealAllOnBasic = false;
+      _phase = returnToConfirm ? _CreationPhase.confirm : _CreationPhase.basic;
+    });
+  }
+
+  /// 최종 확인에서 감옥만 고치러 들어간다
+  Future<void> _editPrisonOnly() async {
+    final playground = _playgroundShape;
+    if (playground == null) return;
+    final prison = await context.pushNamed<AreaShape>(
+      RoutePaths.setupPrisonFromFlowName,
+      extra: PrisonEditArgs(playground: playground, initialJail: _prisonShape),
+    );
+    if (!mounted || prison == null) return;
+    _onPrisonResult(prison);
+    await _saveDraft();
+    if (mounted) setState(() {});
+  }
+
+  /// 기본 정보 첫 항목에서 뒤로 → 감옥 지도로 되돌아간다
+  Future<void> _reenterZoneFromBasic() async {
+    final playground = _playgroundShape;
+    if (playground == null) {
+      await _runZoneSetup(returnToConfirm: false);
+      return;
+    }
+    final prison = await context.pushNamed<AreaShape>(
+      RoutePaths.setupPrisonFromFlowName,
+      extra: PrisonEditArgs(playground: playground, initialJail: _prisonShape),
+    );
+    if (!mounted) return;
+    if (prison == null) {
+      // 감옥에서 또 뒤로 → 플레이그라운드부터
+      await _runZoneSetup(returnToConfirm: false);
+      return;
+    }
+    _onPrisonResult(prison);
+    await _saveDraft();
+    if (mounted) {
+      setState(() {
+        _formKey = GlobalKey<BasicSettingsFormState>();
+        _revealAllOnBasic = false;
+        _phase = _CreationPhase.basic;
+      });
     }
   }
 
-  /// 다음 단계로 이동 (Step 0~2: "다음" / Step 3: "방 생성하기")
-  Future<void> _goToNextStep() async {
-    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
-    FocusScope.of(context).unfocus();
-    if (_currentStep < 3) {
-      await _saveDraft();
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      // Step 3: "방 생성하기" → API 호출 → 대기실 이동
-      await _createSessionAndNavigate();
+  // ============================================
+  // Back Handling
+  // ============================================
+
+  void _handleBack() {
+    switch (_phase) {
+      case _CreationPhase.zone:
+        // 지도가 떠 있는 동안 이 페이지가 직접 받을 일은 없지만, 혹시 받으면 홈으로
+        context.pop();
+      case _CreationPhase.basic:
+        if (_formKey.currentState?.handleBack() ?? false) return;
+        if (_editTarget != null) {
+          // 고치러 들어온 경우 → 반영하지 않고 최종 확인으로
+          setState(() {
+            _editTarget = null;
+            _phase = _CreationPhase.confirm;
+          });
+          return;
+        }
+        unawaited(_reenterZoneFromBasic());
+      case _CreationPhase.confirm:
+        // 전 항목이 펼쳐진 기본 정보로 되돌아간다. 항목 수정 모드가 아니라
+        // 생성 흐름의 뒤로가기 규칙을 따라 계속 되짚을 수 있는 상태다.
+        setState(() {
+          _editTarget = null;
+          _revealAllOnBasic = true;
+          _formKey = GlobalKey<BasicSettingsFormState>();
+          _phase = _CreationPhase.basic;
+        });
     }
   }
+
+  // ============================================
+  // Session Creation
+  // ============================================
 
   /// 세션 생성 API 호출 후 대기실로 이동
   Future<void> _createSessionAndNavigate() async {
@@ -349,6 +379,25 @@ class _SessionCreationFlowPageState
             isHost: true,
           );
 
+      // 채팅방에서 온 생성이면 초대 코드를 그 방에 쏜다(#516).
+      // 소켓은 로그인 수명이라 보통 붙어 있다 — 끊겼으면 초대만 조용히
+      // 사라지는 게 최악이라 스낵바로 알린다. 화면 이탈 전 동기 호출(LSN-0021).
+      if (widget.communityPostId != null) {
+        final sent = ref
+            .read(communityChatRepositoryProvider)
+            .sendGameInvite(
+              widget.communityPostId!,
+              messageKey: const Uuid().v4(),
+              inviteCode: result.inviteCode,
+            );
+        if (!sent) {
+          AppSnackbar.show(
+            context,
+            message: AppLocalizations.of(context).communityChatInviteSendFailed,
+          );
+        }
+      }
+
       context.go(
         '${RoutePaths.waitingRoomWithId('${result.gameId}')}?inviteCode=${result.inviteCode}&showInvite=true',
       );
@@ -358,14 +407,10 @@ class _SessionCreationFlowPageState
         debugPrint('❌ [SessionCreationFlow] 세션 생성 실패: ${sessionState.error}');
       }
 
-      // 필수 약관 미동의 차단 → 스낵바 + /agreement 리디렉트
-      if (mounted &&
-          handleRequiredTermsErrorIfNeeded(
-            context: context,
-            ref: ref,
-            error: sessionState.error,
-          )) {
-        setState(() => _isLoading = false);
+      // 필수 약관 미동의는 전역 인터셉터가 안내 + /agreement 리디렉트까지 처리한다.
+      // 여기서는 일반 에러 스낵바가 겹치지 않도록 건너뛰기만 한다.
+      if (isRequiredTermsMissingError(sessionState.error)) {
+        if (mounted) setState(() => _isLoading = false);
         return;
       }
 
@@ -393,7 +438,7 @@ class _SessionCreationFlowPageState
 
   /// 에러 타입별 사용자 메시지 반환
   ///
-  /// [AppException]인 경우 백엔드의 RFC 7807 `detail` 메시지를 그대로 표시합니다.
+  /// [AppException]인 경우 백엔드의 RFC 7807 `detail` 메시지를 그대로 보여준다.
   /// (예: 409 → "이미 게임에 참가하고 있습니다.")
   String _getErrorMessage(AppLocalizations l10n, Object error) {
     if (error is AppException) {
@@ -405,7 +450,7 @@ class _SessionCreationFlowPageState
   /// 에러가 409 Conflict인지 확인
   ///
   /// DioExceptionHandler가 변환한 AppException의 originalException에서
-  /// HTTP 상태 코드를 추출합니다.
+  /// HTTP 상태 코드를 꺼낸다.
   bool _is409Conflict(Object? error) {
     if (error is AppException && error.originalException is DioException) {
       final dioError = error.originalException as DioException;
@@ -417,7 +462,7 @@ class _SessionCreationFlowPageState
   /// 409 에러 시 활성 게임으로 자동 이동
   ///
   /// `/api/user/me/game` 조회 → 게임 상태에 따라 대기실/게임 화면 이동.
-  /// 조회 실패 시 fallback 스낵바를 표시하고 로딩 상태를 복원합니다.
+  /// 조회에 실패하면 fallback 스낵바를 띄우고 로딩 상태를 되돌린다.
   Future<void> _redirectToActiveGame() async {
     try {
       final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
@@ -469,7 +514,7 @@ class _SessionCreationFlowPageState
   }
 
   // ============================================
-  // Step Callbacks
+  // Zone Result Handling
   // ============================================
 
   /// 플레이그라운드 설정 결과 처리
@@ -550,9 +595,6 @@ class _SessionCreationFlowPageState
               )
             : null);
 
-  /// 구역 설정 전체 완료 여부 (Step3 표시·방 생성 가능 조건)
-  bool get _isAreaComplete => _buildAreaEntity() != null;
-
   bool _isValidPolygonPoints(List<LatLng>? points) {
     if (points == null || points.length < GameConfig.minPolygonVertexCount) {
       return false;
@@ -598,74 +640,45 @@ class _SessionCreationFlowPageState
     return null;
   }
 
-  void _onMaxParticipantsChanged(int value) {
-    setState(() => _maxParticipants = value);
+  // ============================================
+  // Basic Settings
+  // ============================================
+
+  void _applyValues(GameSettingValues values) {
+    _maxParticipants = values[GameSettingField.participants];
+    _roundDurationMinutes = values[GameSettingField.roundDuration];
+    _locationShareMinutes = values[GameSettingField.locationShare];
+    _policeWaitMinutes = values[GameSettingField.policeWait];
   }
 
-  void _onRoundDurationChanged(int value) {
-    setState(() => _roundDurationMinutes = value);
+  void _onBasicSubmit(GameSettingValues values) {
+    setState(() {
+      _applyValues(values);
+      _editTarget = null;
+      _phase = _CreationPhase.confirm;
+    });
+    unawaited(_saveDraft());
   }
 
-  void _onLocationShareChanged(int value) {
-    setState(() => _locationShareMinutes = value);
+  void _onBasicValuesChanged(GameSettingValues values) {
+    // 항목 하나를 고치는 모드에서는 확인을 눌러야 반영된다.
+    // 여기서도 반영하면 뒤로 가기(취소)가 취소가 아니게 된다.
+    if (_editTarget != null) return;
+    _applyValues(values);
+    unawaited(_saveDraft());
   }
 
-  void _onPoliceWaitChanged(int value) {
-    setState(() => _policeWaitMinutes = value);
+  void _onSettingRowTap(GameSettingField field) {
+    setState(() {
+      _editTarget = field;
+      _revealAllOnBasic = false;
+      _formKey = GlobalKey<BasicSettingsFormState>();
+      _phase = _CreationPhase.basic;
+    });
   }
 
   // ============================================
-  // Step Configuration
-  // ============================================
-
-  /// 각 단계별 제목 (l10n 기반)
-  List<String> _stepTitles(AppLocalizations l10n) => [
-    l10n.sessionCreationZoneFirstQuestion,
-    l10n.sessionCreationStepParticipantsTitle,
-    l10n.sessionCreationStepBasicTitle,
-    l10n.sessionCreationStepReviewTitle,
-  ];
-
-  /// 각 단계별 설명 (l10n 기반)
-  List<String> _stepDescriptions(AppLocalizations l10n) => [
-    l10n.sessionCreationStepZoneIntro,
-    l10n.sessionCreationStepParticipantsHint,
-    l10n.sessionCreationStepBasicHint,
-    l10n.sessionCreationStepReviewHint,
-  ];
-
-  /// 각 단계별 버튼 텍스트 (l10n 기반)
-  String _buttonText(AppLocalizations l10n) {
-    switch (_currentStep) {
-      case 0:
-      case 1:
-      case 2:
-        return l10n.buttonNext;
-      case 3:
-        return l10n.buttonCreateRoom;
-      default:
-        return l10n.buttonNext;
-    }
-  }
-
-  /// 다음 버튼 활성화 여부
-  bool get _isNextButtonEnabled {
-    switch (_currentStep) {
-      case 0:
-        return _isAreaComplete;
-      case 1:
-        return true; // 항상 활성화 (슬라이더 기본값 존재)
-      case 2:
-        return true; // 항상 활성화 (슬라이더 기본값 존재)
-      case 3:
-        return true; // 항상 활성화 (모든 데이터는 이미 검증됨)
-      default:
-        return false;
-    }
-  }
-
-  // ============================================
-  // Build Methods
+  // Build
   // ============================================
 
   @override
@@ -678,139 +691,137 @@ class _SessionCreationFlowPageState
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
-          _goToPreviousStep();
+          _handleBack();
         }
       },
       child: Scaffold(
         backgroundColor: AppColors.white,
-        appBar: _buildAppBar(context),
-        body: SafeArea(
-          child: Padding(
-            padding: AppPadding.all20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: AppSpacing.vertical16),
-                _buildHeader(l10n),
-                SizedBox(height: AppSpacing.vertical28),
-                Expanded(child: _buildPageView(l10n)),
-                _buildBottomButton(l10n),
-              ],
-            ),
+        appBar: AppTopBar(
+          titleWidget: StepIndicator(
+            totalSteps: 3,
+            currentStep: switch (_phase) {
+              _CreationPhase.zone => 0,
+              _CreationPhase.basic => 1,
+              _CreationPhase.confirm => 2,
+            },
+            activeColor: AppColors.blue,
           ),
+          centerTitle: false,
+          titleSpacing: 0,
+          onBack: _handleBack,
+          actions: [SizedBox(width: AppSpacing.horizontal20)],
+        ),
+        body: SafeArea(
+          child: switch (_phase) {
+            _CreationPhase.zone => const SizedBox.shrink(),
+            _CreationPhase.basic => _buildBasicPhase(l10n),
+            _CreationPhase.confirm => _buildConfirmPhase(l10n),
+          },
         ),
       ),
     );
   }
 
-  /// AppBar (StepIndicator + PreviousButton)
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      iconTheme: const IconThemeData(color: AppColors.black800),
-      automaticallyImplyLeading: false,
-      leading: PreviousButton(onPressed: _goToPreviousStep),
-      title: StepIndicator(totalSteps: 4, currentStep: _currentStep),
-      centerTitle: false,
-      titleSpacing: 0,
-      actions: [SizedBox(width: AppSpacing.horizontal20)],
-    );
-  }
-
-  /// Header (제목 + 설명)
-  Widget _buildHeader(AppLocalizations l10n) {
+  /// 화면 제목 영역 (시안: 상단 바에서 28, 제목 20px, 간격 10, 보조 14px)
+  Widget _buildHeader(AppLocalizations l10n, String title, String description) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal4),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: AppSpacing.vertical28),
           Text(
-            _stepTitles(l10n)[_currentStep],
-            style: AppTextStyles.heading_24.copyWith(color: AppColors.black),
+            title,
+            style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
           ),
-          SizedBox(height: AppSpacing.vertical16),
+          SizedBox(height: 10.h),
           Text(
-            _stepDescriptions(l10n)[_currentStep],
+            description,
             style: AppTextStyles.paragraph_14_100.copyWith(
               color: AppColors.black600,
             ),
           ),
+          SizedBox(height: AppSpacing.vertical20),
         ],
       ),
     );
   }
 
-  /// PageView (4개 스텝 콘텐츠)
-  Widget _buildPageView(AppLocalizations l10n) {
-    return PageView(
-      controller: _pageController,
-      physics: const NeverScrollableScrollPhysics(), // 스와이프 비활성화 (버튼으로만 이동)
-      onPageChanged: (index) {
-        setState(() => _currentStep = index);
-        // Step 0은 initState에서 처리, 1~3은 페이지 전환 완료 후 트리거
-        if (index > 0) {
-          _showStepTutorial(index);
-        }
-      },
+  Widget _buildBasicPhase(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Step 0: 구역 선택
-        SingleChildScrollView(
-          child: Step0SelectAreaContent(
-            playgroundShape: _playgroundShape,
-            prisonShape: _prisonShape,
-            onPlaygroundResult: _onPlaygroundResult,
-            onPrisonResult: _onPrisonResult,
-            playgroundKey: _tutorialKeyPlayground,
-          ),
+        _buildHeader(
+          l10n,
+          l10n.sessionCreationStepBasicTitle,
+          l10n.sessionCreationStepBasicHint,
         ),
-
-        // Step 1: 인원 설정
-        SingleChildScrollView(
-          child: Step1ParticipantSettingsContent(
-            maxParticipants: _maxParticipants,
-            onChanged: _onMaxParticipantsChanged,
+        Expanded(
+          child: BasicSettingsForm(
+            key: _formKey,
+            initialParticipants: _maxParticipants,
+            initialRoundDuration: _roundDurationMinutes,
+            initialLocationShare: _locationShareMinutes,
+            initialPoliceWait: _policeWaitMinutes,
+            editTarget: _editTarget,
+            revealAll: _revealAllOnBasic,
+            onSubmit: _onBasicSubmit,
+            onValuesChanged: _onBasicValuesChanged,
           ),
-        ),
-
-        // Step 2: 게임 설정
-        SingleChildScrollView(
-          child: Step2GameSettingsContent(
-            roundDurationMinutes: _roundDurationMinutes,
-            locationShareMinutes: _locationShareMinutes,
-            policeWaitMinutes: _policeWaitMinutes,
-            onRoundDurationChanged: _onRoundDurationChanged,
-            onLocationShareChanged: _onLocationShareChanged,
-            onPoliceWaitChanged: _onPoliceWaitChanged,
-            settingsKey: _tutorialKeySettings,
-          ),
-        ),
-
-        // Step 3: 최종 설정 확인
-        SingleChildScrollView(
-          child: _isAreaComplete
-              ? Step3InviteCodeContent(
-                  area: _buildAreaEntity()!,
-                  settings: SessionSettings(
-                    maxPlayers: _maxParticipants,
-                    roundTimeMinutes: _roundDurationMinutes,
-                    locationShareMinutes: _locationShareMinutes,
-                    policeStartDelayMinutes: _policeWaitMinutes,
-                  ),
-                )
-              : Center(child: Text(l10n.errorZoneNotConfigured)),
         ),
       ],
     );
   }
 
-  /// 하단 버튼
-  Widget _buildBottomButton(AppLocalizations l10n) {
-    return AppButton(
-      text: _buttonText(l10n),
-      onPressed: _isNextButtonEnabled && !_isLoading ? _goToNextStep : null,
-      isLoading: _isLoading,
-      showBorder: false,
+  Widget _buildConfirmPhase(AppLocalizations l10n) {
+    final area = _buildAreaEntity();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(
+          l10n,
+          l10n.sessionCreationStepReviewTitle,
+          l10n.sessionCreationStepReviewHint,
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal20),
+            child: area == null
+                ? Center(child: Text(l10n.errorZoneNotConfigured))
+                : Column(
+                    children: [
+                      ZoneListCard(
+                        area: area,
+                        onTapPlayground: () =>
+                            unawaited(_runZoneSetup(returnToConfirm: true)),
+                        onTapJail: () => unawaited(_editPrisonOnly()),
+                      ),
+                      SizedBox(height: AppSpacing.vertical8),
+                      SettingListCard(
+                        settings: SessionSettings(
+                          maxPlayers: _maxParticipants,
+                          roundTimeMinutes: _roundDurationMinutes,
+                          locationShareMinutes: _locationShareMinutes,
+                          policeStartDelayMinutes: _policeWaitMinutes,
+                        ),
+                        onTapField: _onSettingRowTap,
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+        Padding(
+          padding: AppPadding.all20,
+          child: AppButton(
+            text: l10n.buttonCreateRoom,
+            onPressed: area != null && !_isLoading
+                ? _createSessionAndNavigate
+                : null,
+            isLoading: _isLoading,
+          ),
+        ),
+      ],
     );
   }
 }

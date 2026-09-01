@@ -6,6 +6,8 @@ import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../buttons/app_button.dart';
 import '../buttons/previous_button.dart';
+import '../../utils/utf16_length_limiting_formatter.dart';
+import '../navigation/app_top_bar.dart';
 
 /// 텍스트 입력 + 제출 버튼으로 구성된 범용 페이지
 ///
@@ -72,8 +74,9 @@ class TextSubmitPage extends StatefulWidget {
 
   /// 입력 가능한 최대 글자 수. null이면 제한 없음.
   ///
-  /// 설정 시 TextField에 maxLength가 적용되어 입력이 차단되고,
-  /// Material 기본 카운터(현재/최대) 위젯이 우측 하단에 표시된다.
+  /// 설정하면 그 길이에서 입력이 막힌다. 남은 글자 수는 따로 보여 주지 않는다 —
+  /// 댓글·채팅 입력과 같은 방식이다.
+  /// 서버 검증값을 그대로 넣는다 — 세는 단위도 서버와 같은 UTF-16이다.
   final int? maxLength;
 
   @override
@@ -104,19 +107,13 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
+    final maxLength = widget.maxLength;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.black900 : AppColors.white,
-      appBar: AppBar(
-        backgroundColor: isDark ? AppColors.black900 : AppColors.white,
-        surfaceTintColor: isDark ? AppColors.black900 : AppColors.white,
-        centerTitle: true,
-        title: Text(
-          widget.title,
-          style:
-              (isDark ? AppTextStyles.robberHeading : AppTextStyles.heading_20)
-                  .copyWith(color: isDark ? AppColors.white : AppColors.black),
-        ),
+      appBar: AppTopBar(
+        title: widget.title,
+        isDarkMode: isDark,
         leading: Padding(
           padding: EdgeInsets.only(left: 4.w),
           child: PreviousButton(
@@ -154,7 +151,11 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
                     constraints: BoxConstraints(minHeight: 300.h),
                     child: TextField(
                       controller: _controller,
-                      maxLength: widget.maxLength,
+                      // 길이 제한은 아래 포매터가 건다 — Flutter 기본 maxLength는
+                      // 세는 단위가 서버와 달라 쓰지 않는다.
+                      inputFormatters: maxLength == null
+                          ? null
+                          : [Utf16LengthLimitingFormatter(maxLength)],
                       maxLines: null,
                       minLines: 7,
                       textAlignVertical: TextAlignVertical.top,
@@ -166,6 +167,9 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
                         hintStyle: AppTextStyles.paragraph_14.copyWith(
                           color: AppColors.black400,
                         ),
+                        // 기본 카운터는 입력창 아래 한 줄을 더 먹는다. 제한은
+                        // 걸되 표시는 않는다 (댓글·채팅 입력과 같은 처리).
+                        counterText: '',
                         filled: true,
                         fillColor: isDark
                             ? AppColors.black900
@@ -213,10 +217,7 @@ class _TextSubmitPageState extends State<TextSubmitPage> {
                 width: double.infinity,
                 backgroundColor: widget.isDestructive
                     ? AppColors.red
-                    : (isDark ? AppColors.green : AppColors.black),
-                foregroundColor: AppColors.white,
-                borderRadius: AppRadius.xlarge,
-                showBorder: false,
+                    : (isDark ? AppColors.green : AppColors.blue),
                 textStyle: isDark
                     ? AppTextStyles.robberLabel
                     : AppTextStyles.label_16,

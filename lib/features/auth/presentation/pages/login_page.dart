@@ -10,7 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_urls.dart';
+import '../../../../core/constants/legal_doc.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
@@ -18,7 +18,7 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/widgets/buttons/social_login_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
-import '../../../settings/presentation/pages/legal_document_page.dart';
+import '../../../../router/route_paths.dart';
 import '../providers/auth_provider.dart';
 
 /// Google 로그인 화면
@@ -62,35 +62,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     _privacyRecognizer = TapGestureRecognizer()
-      ..onTap = () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).linkPrivacyPolicy,
-            assetPath: 'assets/legals/privacy_policy.json',
-            externalUrl: AppUrls.privacyPolicy,
-          ),
-        ),
-      );
+      ..onTap = () =>
+          context.push(RoutePaths.legalDocumentOf(LegalDoc.privacy));
     _termsRecognizer = TapGestureRecognizer()
-      ..onTap = () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).linkTermsOfService,
-            assetPath: 'assets/legals/terms_of_service.json',
-            externalUrl: AppUrls.termsOfService,
-          ),
-        ),
-      );
+      ..onTap = () => context.push(RoutePaths.legalDocumentOf(LegalDoc.terms));
     _locationRecognizer = TapGestureRecognizer()
-      ..onTap = () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => LegalDocumentPage(
-            title: AppLocalizations.of(context).linkLocationTerms,
-            assetPath: 'assets/legals/location_terms.json',
-            externalUrl: AppUrls.locationTerms,
-          ),
-        ),
-      );
+      ..onTap = () =>
+          context.push(RoutePaths.legalDocumentOf(LegalDoc.location));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;

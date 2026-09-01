@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import '../device/device_info_service.dart';
 import '../device/device_id_manager.dart';
+import 'push_navigation_event.dart';
 
 /// Firebase Cloud Messaging 서비스
 /// FCM 푸시 알림을 관리하고 메시지를 처리합니다
@@ -86,6 +87,28 @@ class FirebaseMessagingService {
   /// 같은 시점에 STOMP가 dead 상태라면 재연결을 시도할 좋은 트리거다.
   static Stream<String> get gameSystemEventStream =>
       _gameSystemEventController.stream;
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 푸시 탭 → 화면 이동 (커뮤니티 댓글·답글 알림 등)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  /// 앱이 살아 있을 때 알림을 탭하면 이동 목적지를 발행한다(warm).
+  ///
+  /// 구독자는 `pushNavigationEventsProvider` → `_LocalizedApp`이며 GoRouter로
+  /// push한다. 콜드 스타트 메시지는 여기로 보내지 않고 [coldStartNavigation]에
+  /// 보관한다 — `init()`은 `runApp()` 전에 돌아 그 시점엔 구독자가 없다.
+  static final _navigationTapController =
+      StreamController<PushNavigationEvent>.broadcast();
+
+  static Stream<PushNavigationEvent> get navigationTapStream =>
+      _navigationTapController.stream;
+
+  /// 콜드 스타트(앱 종료 상태)에서 앱을 실행시킨 알림의 이동 목적지.
+  ///
+  /// `init()`이 `getInitialMessage()`를 소비하면서 채운다. 플러그인이 두 번째
+  /// 호출부터 null을 주므로 값을 다시 읽을 수 없어 여기 보관한다. 소비는
+  /// SplashPage가 `coldStartPushNavigationProvider`를 통해 한다.
+  PushNavigationEvent? coldStartNavigation;
 
   /// 백엔드 등록용 FCM 토큰을 가져옵니다
   ///
@@ -200,7 +223,7 @@ class FirebaseMessagingService {
     // 앱이 종료 상태에서 알림으로 실행된 경우 초기 메시지 확인
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      _onMessageOpenedApp(initialMessage);
+      _onMessageOpenedApp(initialMessage, coldStart: true);
     }
   }
 
@@ -317,7 +340,11 @@ class FirebaseMessagingService {
   /// `getInitialMessage()`로 종료 상태에서 진입한 경우에도 동일하게 호출되므로,
   /// 포그라운드 핸들러와 동일한 Stream 발행을 수행해 STOMP 좀비 연결
   /// 자동 복구 트리거가 누락되지 않도록 한다.
-  void _onMessageOpenedApp(RemoteMessage message) {
+  ///
+  /// [coldStart]면 이동 목적지를 스트림에 흘리지 않고 [coldStartNavigation]에
+  /// 보관한다 — `init()`은 `runApp()` 전에 돌아 구독자가 아직 없고, 콜드 스타트
+  /// 이동은 SplashPage가 인증·활성 게임 확인을 마친 뒤 직접 한다.
+  void _onMessageOpenedApp(RemoteMessage message, {bool coldStart = false}) {
     // 알림 탭 시 notification 페이로드(제목/본문)와 data 페이로드를 분리해서 출력
     debugPrint('[FCM] Notification tapped (app opened)');
     debugPrint('  notification.title: ${message.notification?.title}');
@@ -342,6 +369,17 @@ class FirebaseMessagingService {
       debugPrint('[FCM] 게임 시스템 이벤트 수신(알림 탭): $messageType');
       _gameSystemEventController.add(messageType);
     }
+
+    // 이동 목적지가 있는 푸시(커뮤니티 댓글·답글 등)
+    final navigation = PushNavigationEvent.fromData(message.data);
+    if (navigation == null) return;
+    if (coldStart) {
+      debugPrint('[FCM] 콜드 스타트 이동 목적지 보관: $navigation');
+      coldStartNavigation = navigation;
+      return;
+    }
+    debugPrint('[FCM] 알림 탭 이동: $navigation');
+    _navigationTapController.add(navigation);
   }
 
   /// StreamController 정리
@@ -350,6 +388,7 @@ class FirebaseMessagingService {
   static void dispose() {
     _contentCompletedController.close();
     _gameSystemEventController.close();
+    _navigationTapController.close();
   }
 }
 

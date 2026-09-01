@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_shadows.dart';
 import '../../services/vibration_service.dart';
 
 /// SVG 아이콘을 감싼 컨테이너 버튼
@@ -13,7 +14,7 @@ import '../../services/vibration_service.dart';
 /// **사용 예시**:
 /// ```dart
 /// SvgIconButton(
-///   assetPath: 'assets/icons/Loudspeaker.svg',
+///   assetPath: AppIcons.loudspeaker,
 ///   onPressed: () => context.push('/notices'),
 /// )
 /// ```
@@ -67,16 +68,7 @@ class SvgIconButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor ?? AppColors.white,
           borderRadius: BorderRadius.circular(borderRadius.r),
-          boxShadow: [
-            BoxShadow(
-              offset: const Offset(1, 1),
-              blurRadius: 8,
-              spreadRadius: 0,
-              color: isDarkMode
-                  ? AppColors.white.withValues(alpha: 0.2)
-                  : AppColors.black.withValues(alpha: 0.1),
-            ),
-          ],
+          boxShadow: AppShadows.softThemed(isDarkMode),
         ),
         child: Center(
           child: SvgPicture.asset(

@@ -4,13 +4,6 @@
   "@appTitle": {
     "description": "앱 이름 (MaterialApp.title) — i18n 스모크 테스트용 첫 키"
   },
-  "legalDocumentKoreanOnlyNotice": "",
-  "@legalDocumentKoreanOnlyNotice": {
-    "description": "법적 문서 페이지 상단 고지문 — 한국어 원본만 제공함을 비-ko 로케일에 안내 (ko는 빈 문자열 → 미표시)"
-  },
-  "loadingDefault": "처리 중...",
-  "permissionLocationFallbackTitle": "위치 권한 안내",
-  "permissionLocationFallbackMessage": "위치 권한을 허용해주세요",
   "dialogUpdateOptionalTitle": "새 버전 안내",
   "dialogUpdateOptionalMessage": "더 좋아진 새 버전이 있어요\n업데이트할까요?",
   "dialogUpdateOptionalConfirm": "업데이트",
@@ -19,25 +12,6 @@
   "dialogUpdateMandatoryMessage": "새로운 버전이 나왔어요\n업데이트할까요?",
   "dialogUpdateMandatoryConfirm": "업데이트",
   "dialogUpdateMandatoryCancel": "나중에",
-  "chatSystemGameStartTime": "제한 시간은 {minutes}분이에요",
-  "@chatSystemGameStartTime": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "chatSystemGameStartReportTip": "게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요",
-  "chatSystemPoliceMoveWarning": "경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!",
-  "chatSystemRemainingRobbers": "현재 {count}명 도주 중!",
-  "@chatSystemRemainingRobbers": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "chatSystemFiveMinutesLeft": "게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!",
   "errorNetworkTimeout": "서버 연결이 너무 오래 걸려요",
   "errorNetworkOffline": "네트워크 연결을 확인하세요",
   "errorServerInternal": "서버에 문제가 생겼어요",
@@ -88,15 +62,10 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "pinTooCloseMessage": "핀이 너무 가까워요",
-  "dialogAgreementRequiredTermsTitle": "필수 약관 미동의",
   "errorAuthLoginCancelled": "로그인이 취소됐어요",
   "settingsLanguageLabel": "언어",
   "@settingsLanguageLabel": {
     "description": "설정 화면의 언어 설정 메뉴 라벨"
-  },
-  "settingsLanguageSubtitle": "앱 표시 언어를 변경할 수 있어요",
-  "@settingsLanguageSubtitle": {
-    "description": "언어 메뉴 부제 (서브타이틀)"
   },
   "settingsLanguagePageTitle": "언어 선택",
   "@settingsLanguagePageTitle": {
@@ -248,7 +217,7 @@
       }
     }
   },
-  "gameSettingPoliceStartDelay": "도둑 도망 후 {minutes}분 뒤",
+  "gameSettingPoliceStartDelay": "도둑 시작 후 {minutes}분 뒤",
   "@gameSettingPoliceStartDelay": {
     "description": "게임 설정 — 경찰 출동 시작 지연 시간 표기",
     "placeholders": {
@@ -256,10 +225,6 @@
         "type": "int"
       }
     }
-  },
-  "errorSettingsSaveFailed": "설정 저장에 실패했어요",
-  "@errorSettingsSaveFailed": {
-    "description": "게임 설정 저장 실패 안내"
   },
   "pageGameSettingsEditTitle": "설정 수정",
   "@pageGameSettingsEditTitle": {
@@ -272,10 +237,6 @@
   "buttonSave": "저장",
   "@buttonSave": {
     "description": "공통 — 저장 버튼"
-  },
-  "errorAreaSaveFailed": "영역 저장에 실패했어요",
-  "@errorAreaSaveFailed": {
-    "description": "게임 구역 저장 실패 안내"
   },
   "pageGameSettingsTitle": "게임 설정",
   "@pageGameSettingsTitle": {
@@ -297,9 +258,515 @@
   "@zoneJail": {
     "description": "공통 — 감옥 라벨"
   },
-  "homePageGameButtonsHint": "게임을 만들거나 초대 코드로 참가할 수 있어요",
-  "@homePageGameButtonsHint": {
-    "description": "홈 페이지 — 방 만들기/참여하기 버튼 통합 안내"
+  "mypageProfileIconLabel": "프로필 아이콘",
+  "@mypageProfileIconLabel": {
+    "description": "마이페이지 — 프로필 아이콘 선택 섹션 헤더"
+  },
+  "bottomNavHome": "홈",
+  "@bottomNavHome": {
+    "description": "바텀 네비게이션 — 홈 탭 라벨"
+  },
+  "bottomNavCommunity": "커뮤니티",
+  "@bottomNavCommunity": {
+    "description": "바텀 네비게이션 — 커뮤니티 탭 라벨"
+  },
+  "pageCommunityDetailTitle": "모집글",
+  "@pageCommunityDetailTitle": {
+    "description": "모집글 상세 화면 앱바 제목"
+  },
+  "communityDetailJoinChat": "채팅 참여하기",
+  "@communityDetailJoinChat": {
+    "description": "모집글 상세 — 모임 채팅방에 들어가는 버튼"
+  },
+  "communityDetailShare": "공유",
+  "@communityDetailShare": {
+    "description": "모집글 상세 — 공유 액션 라벨"
+  },
+  "communityChatRoomsEmpty": "참여 중인 채팅방이 없어요",
+  "@communityChatRoomsEmpty": { "description": "내 모임 탭 — 참여한 채팅방이 없을 때" },
+  "communityChatRoomsLoginRequired": "로그인하면 내 모임을 볼 수 있어요",
+  "@communityChatRoomsLoginRequired": { "description": "내 모임 탭 — 비로그인 안내" },
+  "communityChatSystemJoined": "{nickname}님이 참여했어요",
+  "@communityChatSystemJoined": { "description": "채팅방 시스템 메시지 — 참여", "placeholders": { "nickname": { "type": "String" } } },
+  "communityChatSystemLeft": "{nickname}님이 나갔어요",
+  "@communityChatSystemLeft": { "description": "채팅방 시스템 메시지 — 나감", "placeholders": { "nickname": { "type": "String" } } },
+  "communityChatPreviewJoined": "새로운 멤버가 참여했어요",
+  "@communityChatPreviewJoined": { "description": "목록 미리보기 — 닉네임 없는 참여 알림" },
+  "communityChatPreviewLeft": "멤버가 나갔어요",
+  "@communityChatPreviewLeft": { "description": "목록 미리보기 — 닉네임 없는 나감 알림" },
+  "communityChatSystemKicked": "{nickname}님이 내보내졌어요",
+  "@communityChatSystemKicked": { "description": "채팅방 시스템 메시지 — 방장이 내보냄", "placeholders": { "nickname": { "type": "String" } } },
+  "communityChatPreviewKicked": "멤버가 내보내졌어요",
+  "@communityChatPreviewKicked": { "description": "목록 미리보기 — 닉네임 없는 강퇴 알림" },
+  "communityChatPreviewInvite": "게임 초대",
+  "@communityChatPreviewInvite": { "description": "목록 미리보기 — 게임 초대 메시지" },
+  "communityChatPreviewUnsupported": "새 메시지",
+  "@communityChatPreviewUnsupported": { "description": "목록 미리보기 — 앱이 모르는 메시지 타입" },
+  "communityChatInviteOpened": "게임이 열렸어요!",
+  "@communityChatInviteOpened": { "description": "채팅방 게임 초대 카드 상단 제목" },
+  "communityChatInviteTitle": "{nickname}님이 [{roomTitle}] 방에 초대했어요",
+  "@communityChatInviteTitle": { "description": "채팅방 게임 초대 카드 본문", "placeholders": { "nickname": { "type": "String" }, "roomTitle": { "type": "String" } } },
+  "communityChatInviteCode": "초대코드 {inviteCode}",
+  "@communityChatInviteCode": { "description": "채팅방 게임 초대 카드 — 초대코드 표시", "placeholders": { "inviteCode": { "type": "String" } } },
+  "communityChatInviteJoin": "게임 참여",
+  "@communityChatInviteJoin": { "description": "채팅방 게임 초대 카드 — 참가 버튼" },
+  "communityChatInputHint": "메시지 보내기",
+  "@communityChatInputHint": { "description": "채팅방 입력창 힌트" },
+  "communityChatEnterRoom": "채팅방 입장",
+  "@communityChatEnterRoom": { "description": "모집글 상세 — 이미 참여한 채팅방에 들어가는 버튼" },
+  "communityChatMeetingMembers": "현재 인원 {current}/{max}명",
+  "@communityChatMeetingMembers": { "description": "채팅방 상단 모임 카드 — 인원", "placeholders": { "current": { "type": "String" }, "max": { "type": "int" } } },
+  "communityChatViewLocation": "장소 보기",
+  "@communityChatViewLocation": { "description": "채팅방 상단 모임 카드 — 모집글(지도)로 가는 링크" },
+  "communityChatStartGame": "게임 시작",
+  "@communityChatStartGame": { "description": "채팅방 상단 모임 카드 — 방장 전용 게임 시작 버튼" },
+  "communityChatInviteSendFailed": "채팅방에 초대를 보내지 못했어요",
+  "@communityChatInviteSendFailed": { "description": "게임 생성 후 채팅방 GAME_INVITE 전송 실패 스낵바" },
+  "communityChatInviteDialogTitle": "게임 초대장",
+  "@communityChatInviteDialogTitle": { "description": "초대 카드 참가 확인 다이얼로그 — 상단 캡션" },
+  "communityChatInviteDialogBody": "{nickname}님이\n게임에 초대했어요",
+  "@communityChatInviteDialogBody": { "description": "초대 카드 참가 확인 다이얼로그 — 본문 2줄", "placeholders": { "nickname": { "type": "String" } } },
+  "communityChatInviteDialogCodeLabel": "방 코드",
+  "@communityChatInviteDialogCodeLabel": { "description": "초대 카드 참가 확인 다이얼로그 — 초대코드 라벨" },
+  "communityChatInviteDialogDecline": "거절",
+  "@communityChatInviteDialogDecline": { "description": "초대 카드 참가 확인 다이얼로그 — 취소 버튼" },
+  "communityChatInviteDialogEnter": "입장",
+  "@communityChatInviteDialogEnter": { "description": "초대 카드 참가 확인 다이얼로그 — 확인 버튼" },
+  "communityChatMemberCount": "참가자 {count}명",
+  "@communityChatMemberCount": { "description": "채팅방 사이드바 — 참가자 수 제목", "placeholders": { "count": { "type": "int" } } },
+  "communityChatAuthorBadge": "방장",
+  "@communityChatAuthorBadge": { "description": "채팅방 사이드바 — 방장 표시" },
+  "communityChatViewPost": "모집글 보기",
+  "@communityChatViewPost": { "description": "채팅방 사이드바 — 모집글 상세로" },
+  "communityChatLeave": "채팅방 나가기",
+  "@communityChatLeave": { "description": "채팅방 사이드바 — 나가기 버튼" },
+  "communityChatLeaveConfirmTitle": "채팅방에서 나갈까요?",
+  "@communityChatLeaveConfirmTitle": { "description": "나가기 확인 다이얼로그 제목" },
+  "communityChatLeaveConfirmMessage": "나가면 대화 내용을 다시 볼 수 없어요",
+  "@communityChatLeaveConfirmMessage": { "description": "나가기 확인 다이얼로그 본문" },
+  "communityChatMeetingInfoTitle": "모임 정보",
+  "@communityChatMeetingInfoTitle": { "description": "채팅방 상단 모임 카드를 눌러 여는 모임 정보 화면 제목" },
+  "communityChatConnectionLost": "연결이 끊겼어요",
+  "@communityChatConnectionLost": { "description": "채팅방 상단 띠 — 재연결 포기 상태" },
+  "communityChatReconnect": "다시 연결",
+  "@communityChatReconnect": { "description": "채팅방 상단 띠 — 수동 재연결 버튼" },
+  "communityChatReconnecting": "연결 중...",
+  "@communityChatReconnecting": { "description": "채팅방 상단 띠 — 자동 재연결 중" },
+  "communityChatSendFailed": "전송 실패 · 눌러서 다시 보내기",
+  "@communityChatSendFailed": { "description": "실패한 내 말풍선 아래 안내" },
+  "communityChatEvicted": "더 이상 이 채팅방의 멤버가 아니에요",
+  "@communityChatEvicted": { "description": "다른 기기에서 나간 방 — 목록으로 내보내며 알림" },
+  "timePeriodAm": "오전",
+  "@timePeriodAm": { "description": "시각 라벨 오전" },
+  "timePeriodPm": "오후",
+  "@timePeriodPm": { "description": "시각 라벨 오후" },
+  "communityChatTime": "{period} {hour}:{minute}",
+  "@communityChatTime": { "description": "채팅 시각 — 오후 5:34", "placeholders": { "period": { "type": "String" }, "hour": { "type": "String" }, "minute": { "type": "String" } } },
+  "communityChatDateShort": "{month}/{day}",
+  "@communityChatDateShort": { "description": "목록 시각 — 오늘이 아닌 날", "placeholders": { "month": { "type": "String" }, "day": { "type": "String" } } },
+  "buttonLogin": "로그인",
+  "@buttonLogin": { "description": "로그인 화면으로 가는 버튼" },
+  "errorCodeInvalidMessageType": "보낼 수 없는 메시지예요",
+  "errorCodeEmptyMessage": "메시지를 입력해주세요",
+  "errorCodeMessageTooLong": "메시지는 500자까지 보낼 수 있어요",
+  "errorCodeInvalidGameInvite": "초대 정보가 올바르지 않아요",
+  "errorCodeInvalidMessageKey": "메시지를 보낼 수 없어요. 다시 시도해주세요",
+  "communityDetailCommentCount": "댓글 {count}",
+  "@communityDetailCommentCount": {
+    "description": "모집글 상세 — 댓글 섹션 제목 (대댓글 포함 개수)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "communityCommentHint": "댓글을 남겨보세요",
+  "@communityCommentHint": {
+    "description": "댓글 입력창 placeholder"
+  },
+  "communityCommentReplyHint": "대댓글을 남겨보세요",
+  "@communityCommentReplyHint": {
+    "description": "대댓글 입력창 placeholder"
+  },
+  "communityCommentDeleted": "삭제된 댓글이에요",
+  "@communityCommentDeleted": {
+    "description": "커뮤니티 — 대댓글이 남아 자리만 지킨 삭제 댓글 자리 문구"
+  },
+  "communityCommentEmpty": "첫 댓글을 남겨보세요",
+  "@communityCommentEmpty": {
+    "description": "댓글이 하나도 없을 때 표시"
+  },
+  "communityCommentJustNow": "방금",
+  "@communityCommentJustNow": {
+    "description": "댓글 작성 시각 — 1분 미만"
+  },
+  "communityCommentMinutesAgo": "{minutes}분 전",
+  "@communityCommentMinutesAgo": {
+    "description": "댓글 작성 시각 — 1시간 미만",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "communityCommentHoursAgo": "{hours}시간 전",
+  "@communityCommentHoursAgo": {
+    "description": "댓글 작성 시각 — 하루 미만",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "communityDeleteConfirmTitle": "모집글을 삭제할까요",
+  "@communityDeleteConfirmTitle": {
+    "description": "모집글 삭제 확인 다이얼로그 제목"
+  },
+  "communityDeleteConfirmMessage": "삭제하면 되돌릴 수 없어요",
+  "@communityDeleteConfirmMessage": {
+    "description": "모집글 삭제 확인 다이얼로그 본문"
+  },
+  "communityLoginRequiredMessage": "로그인이 필요한 기능이에요",
+  "@communityLoginRequiredMessage": {
+    "description": "비로그인 사용자가 쓰기 동작을 시도했을 때 안내"
+  },
+  "communityMenuEdit": "수정하기",
+  "@communityMenuEdit": {
+    "description": "모집글 더보기 메뉴 — 내 글 수정"
+  },
+  "communityMenuDelete": "삭제하기",
+  "@communityMenuDelete": {
+    "description": "모집글 더보기 메뉴 — 내 글 삭제"
+  },
+  "communityMenuMarkCompleted": "마감하기",
+  "@communityMenuMarkCompleted": {
+    "description": "모집글 더보기 메뉴 — 모집중인 글을 마감으로 바꾸기"
+  },
+  "communityMenuMarkRecruiting": "다시 모집하기",
+  "@communityMenuMarkRecruiting": {
+    "description": "모집글 더보기 메뉴 — 마감된 글을 모집중으로 되돌리기"
+  },
+  "communityMenuLoginRequired": "로그인하고 이용하기",
+  "@communityMenuLoginRequired": {
+    "description": "모집글 더보기 메뉴 — 비로그인 사용자에게 보이는 로그인 유도"
+  },
+  "communityMenuNotificationOn": "알림 켜기",
+  "@communityMenuNotificationOn": {
+    "description": "모집글 더보기 메뉴 — 이 글 알림이 꺼져 있을 때 (누르면 켜짐)"
+  },
+  "communityMenuNotificationOff": "알림 끄기",
+  "@communityMenuNotificationOff": {
+    "description": "모집글 더보기 메뉴 — 이 글 알림이 켜져 있을 때 (누르면 꺼짐)"
+  },
+  "communityMenuReplyNotificationOn": "대댓글 알림 켜기",
+  "@communityMenuReplyNotificationOn": {
+    "description": "내 댓글 더보기 메뉴 — 대댓글 알림이 꺼져 있을 때 (누르면 켜짐)"
+  },
+  "communityMenuReplyNotificationOff": "대댓글 알림 끄기",
+  "@communityMenuReplyNotificationOff": {
+    "description": "내 댓글 더보기 메뉴 — 대댓글 알림이 켜져 있을 때 (누르면 꺼짐)"
+  },
+  "communityStatusRecruiting": "모집중",
+  "@communityStatusRecruiting": {
+    "description": "커뮤니티 카드 — 모집 중인 게시글 배지"
+  },
+  "communityStatusCompleted": "마감",
+  "@communityStatusCompleted": {
+    "description": "커뮤니티 카드 — 모집이 끝난 게시글 배지"
+  },
+  "communityStatusEnded": "종료",
+  "@communityStatusEnded": {
+    "description": "커뮤니티 카드 — 모임 날짜가 지나 끝난 게시글 배지"
+  },
+  "communityHeadcount": "{current}/{max}명",
+  "@communityHeadcount": {
+    "description": "커뮤니티 카드 — 현재 참여 인원 / 정원",
+    "placeholders": {
+      "current": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "communityHeadcountMaxOnly": "정원 {max}명",
+  "@communityHeadcountMaxOnly": {
+    "description": "커뮤니티 카드 — 현재 인원을 백엔드가 아직 주지 않을 때 정원만 표시",
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "communityMeetingAt": "{month}/{day} ({weekday}) {time}",
+  "@communityMeetingAt": {
+    "description": "커뮤니티 카드 — 모임 일시 표기",
+    "placeholders": {
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "pageCommunityTitle": "커뮤니티",
+  "@pageCommunityTitle": {
+    "description": "커뮤니티 탭 화면 제목"
+  },
+  "pageCommunityEmpty": "등록된 모집글이 없어요",
+  "@pageCommunityEmpty": {
+    "description": "커뮤니티 목록이 비어 있을 때 표시되는 안내"
+  },
+  "pageCommunityScrapTitle": "스크랩",
+  "@pageCommunityScrapTitle": {
+    "description": "내 스크랩 목록 화면 AppBar 제목"
+  },
+  "communityScrapEmpty": "스크랩한 글이 없어요",
+  "@communityScrapEmpty": {
+    "description": "내 스크랩 목록이 비어 있을 때 표시되는 안내"
+  },
+  "pageCommunityNotificationTitle": "알림",
+  "@pageCommunityNotificationTitle": {
+    "description": "알림함 화면 AppBar 제목"
+  },
+  "communityNotificationEmpty": "받은 알림이 없어요",
+  "@communityNotificationEmpty": {
+    "description": "알림함이 비어 있을 때 표시되는 안내"
+  },
+  "communityNotificationNewComment": "새 댓글: {content}",
+  "@communityNotificationNewComment": {
+    "description": "알림함 카드 — 내 글에 달린 댓글 알림",
+    "placeholders": {
+      "content": {
+        "type": "String"
+      }
+    }
+  },
+  "communityNotificationNewReply": "새 대댓글: {content}",
+  "@communityNotificationNewReply": {
+    "description": "알림함 카드 — 내 댓글에 달린 대댓글 알림",
+    "placeholders": {
+      "content": {
+        "type": "String"
+      }
+    }
+  },
+  "communityScopeAll": "전체",
+  "@communityScopeAll": {
+    "description": "커뮤니티 범위 필터 — 전체 글"
+  },
+  "communityScopeNearby": "우리 동네",
+  "@communityScopeNearby": {
+    "description": "커뮤니티 범위 필터 — 내 주변 글"
+  },
+  "communityScopeMine": "내 모임",
+  "@communityScopeMine": {
+    "description": "커뮤니티 범위 필터 — 내가 참여하는 모임"
+  },
+  "communitySortLatest": "최신순",
+  "@communitySortLatest": {
+    "description": "커뮤니티 목록 정렬 — 최신순"
+  },
+  "communitySortPopular": "인기순",
+  "@communitySortPopular": {
+    "description": "커뮤니티 목록 정렬 — 인기순"
+  },
+  "communitySortDistance": "거리순",
+  "@communitySortDistance": {
+    "description": "커뮤니티 목록 정렬 — 거리순 (현재 위치 기준)"
+  },
+  "communitySortDeadline": "마감 임박순",
+  "@communitySortDeadline": {
+    "description": "커뮤니티 목록 정렬 — 마감 임박순"
+  },
+  "communitySortNeedsLocation": "위치 권한이 있어야 거리순으로 볼 수 있어요",
+  "@communitySortNeedsLocation": {
+    "description": "커뮤니티 정렬 — 거리순 선택 시 위치 권한을 거부했을 때"
+  },
+  "communitySortLocationDenied": "설정에서 위치 권한을 켜주세요",
+  "@communitySortLocationDenied": {
+    "description": "커뮤니티 정렬 — 위치 권한이 영구 거부돼 다시 물을 수 없을 때"
+  },
+  "communitySearchHint": "제목, 장소를 검색해보세요",
+  "@communitySearchHint": {
+    "description": "커뮤니티 검색 — 입력창 안내 문구"
+  },
+  "communitySearchRecent": "최근 검색어",
+  "@communitySearchRecent": {
+    "description": "커뮤니티 검색 — 최근 검색어 목록 제목"
+  },
+  "communitySearchClearAll": "모두 삭제",
+  "@communitySearchClearAll": {
+    "description": "커뮤니티 검색 — 최근 검색어 전체 삭제 버튼"
+  },
+  "communitySearchEmpty": "검색 결과가 없어요",
+  "@communitySearchEmpty": {
+    "description": "커뮤니티 검색 — 결과가 하나도 없을 때"
+  },
+  "communitySearchTooShort": "두 글자 이상 입력해주세요",
+  "@communitySearchTooShort": {
+    "description": "커뮤니티 검색 — 공백을 제외한 검색어가 2자 미만일 때"
+  },
+  "communityCreatePost": "모집글 작성",
+  "@communityCreatePost": {
+    "description": "커뮤니티 목록 하단 모집글 작성 버튼 (작성 화면 제목 겸용)"
+  },
+  "communityEditPost": "모집글 수정",
+  "@communityEditPost": {
+    "description": "모집글 수정 화면 제목 (작성 화면을 수정 모드로 열었을 때)"
+  },
+  "communityBackToList": "목록으로 돌아가기",
+  "@communityBackToList": {
+    "description": "사라진 모집글 상세에서 목록으로 나가는 버튼 — 재시도가 무의미한 경우라 '다시 시도' 대신 쓴다"
+  },
+  "communityCreateLabelTitle": "제목",
+  "@communityCreateLabelTitle": {
+    "description": "모집글 작성 — 제목 섹션 라벨"
+  },
+  "communityCreateHintTitle": "퇴근하고 한 판! 초보 환영",
+  "@communityCreateHintTitle": {
+    "description": "모집글 작성 — 제목 입력 힌트"
+  },
+  "communityCreateLabelContent": "설명",
+  "@communityCreateLabelContent": {
+    "description": "모집글 작성 — 설명 섹션 라벨"
+  },
+  "communityCreateHintContent": "규칙, 준비물, 뒤풀이 여부 등을 적어주세요",
+  "@communityCreateHintContent": {
+    "description": "모집글 작성 — 설명 입력 힌트"
+  },
+  "communityCreateLabelDate": "날짜",
+  "@communityCreateLabelDate": {
+    "description": "모집글 작성 — 날짜 섹션 라벨 (날짜 선택 바텀시트 제목 겸용)"
+  },
+  "communityCreateHintDate": "모임 날짜를 골라주세요",
+  "@communityCreateHintDate": {
+    "description": "모집글 작성 — 날짜 미선택 상태 힌트"
+  },
+  "communityCreateDateValue": "{year}.{month}.{day} ({weekday}) {time}",
+  "@communityCreateDateValue": {
+    "description": "모집글 작성 — 선택된 모임 일시 표기 (26.08.29 (목) 14:30)",
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "communityDateSheetTitle": "모임 날짜 및 시간",
+  "@communityDateSheetTitle": {
+    "description": "날짜 선택 바텀시트 제목"
+  },
+  "communityDateSheetRowTime": "시간",
+  "@communityDateSheetRowTime": {
+    "description": "날짜 선택 바텀시트 — 시간 행 라벨"
+  },
+  "communityDateSheetRowDateValue": "{year}.{month}.{day} {weekday}",
+  "@communityDateSheetRowDateValue": {
+    "description": "날짜 선택 바텀시트 — 날짜 행의 값 (26.08.29 목)",
+    "placeholders": {
+      "year": { "type": "String" },
+      "month": { "type": "String" },
+      "day": { "type": "String" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "communityCreateLabelLocation": "장소",
+  "@communityCreateLabelLocation": {
+    "description": "모집글 작성 — 장소 섹션 라벨"
+  },
+  "communityCreateHintLocation": "상세주소를 입력해주세요 ex) 어린이대공원 정문",
+  "communityCreateHintAddress": "지도에서 위치를 고르면 채워져요",
+  "@communityCreateHintAddress": {
+    "description": "모집글 작성 - 기본 주소 칸(읽기 전용)의 빈 상태 힌트. 값은 GET /api/community-posts/address가 채우며 지도로만 바뀐다"
+  },
+  "@communityCreateHintLocation": {
+    "description": "모집글 작성 — 만나는 곳(placeName) 입력 힌트"
+  },
+  "communityCreateHintPickLocation": "지도에서 위치를 골라주세요",
+  "@communityCreateHintPickLocation": {
+    "description": "모집글 작성 — 좌표를 아직 안 고른 상태의 지도 카드 안내"
+  },
+  "communityLocationCopied": "장소를 복사했어요",
+  "@communityLocationCopied": {
+    "description": "모집글 상세 — 장소 텍스트를 탭해 클립보드에 담았을 때의 안내"
+  },
+  "communityLocationPickerTitle": "장소 선택",
+  "@communityLocationPickerTitle": {
+    "description": "장소 선택 지도 화면 제목"
+  },
+  "communityLocationPickerConfirm": "이 위치로 선택",
+  "@communityLocationPickerConfirm": {
+    "description": "장소 선택 지도 화면 — 현재 핀 위치를 확정하는 버튼"
+  },
+  "communityLocationPickerLoading": "주소를 확인하는 중이에요",
+  "@communityLocationPickerLoading": {
+    "description": "장소 선택 지도 화면 — 좌표 주소를 조회하는 동안의 안내"
+  },
+  "communityLocationPickerHint": "지도를 눌러 만날 곳을 정해요",
+  "@communityLocationPickerHint": {
+    "description": "장소 선택 지도 화면 — 표시할 주소가 없을 때의 안내"
+  },
+  "communityLocationPickerNotFound": "주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요",
+  "@communityLocationPickerNotFound": {
+    "description": "장소 선택 지도 화면 — 좌표 주소 조회가 실패했을 때의 안내"
+  },
+  "communityCreateLoading": "모집글 올리는 중...",
+  "@communityCreateLoading": {
+    "description": "모집글 등록 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)"
+  },
+  "communityCreateLoadingSub": "모집글을 등록하는 중이에요. 잠시만 기다려주세요",
+  "communityEditLoading": "모집글 고치는 중...",
+  "@communityEditLoading": {
+    "description": "모집글 수정 API 대기 중 로딩 화면 제목 (AppLoading.showMessage)"
+  },
+  "communityEditLoadingSub": "모집글을 수정하는 중이에요. 잠시만 기다려주세요",
+  "communityCreateLabelHeadcount": "모집 인원",
+  "@communityCreateLabelHeadcount": {
+    "description": "모집글 작성 — 모집 인원 섹션 라벨 (인원 선택 바텀시트 제목 겸용)"
+  },
+  "communityHeadcountValue": "{count}명",
+  "@communityHeadcountValue": {
+    "description": "모집글 작성 — 선택된 모집 인원",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "communityHeadcountQuickAdd": "+ {count}명",
+  "@communityHeadcountQuickAdd": {
+    "description": "인원 선택 바텀시트 — 인원을 한 번에 더하는 칩",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "communityHeadcountDecrease": "인원 줄이기",
+  "@communityHeadcountDecrease": {
+    "description": "모집글 작성 — 인원 감소 버튼 접근성 라벨"
+  },
+  "communityHeadcountIncrease": "인원 늘리기",
+  "@communityHeadcountIncrease": {
+    "description": "모집글 작성 — 인원 증가 버튼 접근성 라벨"
+  },
+  "weekdayMon": "월",
+  "@weekdayMon": { "description": "요일 단축 라벨 — 월요일" },
+  "weekdayTue": "화",
+  "@weekdayTue": { "description": "요일 단축 라벨 — 화요일" },
+  "weekdayWed": "수",
+  "@weekdayWed": { "description": "요일 단축 라벨 — 수요일" },
+  "weekdayThu": "목",
+  "@weekdayThu": { "description": "요일 단축 라벨 — 목요일" },
+  "weekdayFri": "금",
+  "@weekdayFri": { "description": "요일 단축 라벨 — 금요일" },
+  "weekdaySat": "토",
+  "@weekdaySat": { "description": "요일 단축 라벨 — 토요일" },
+  "weekdaySun": "일",
+  "@weekdaySun": { "description": "요일 단축 라벨 — 일요일" },
+  "bottomNavMyPage": "마이페이지",
+  "@bottomNavMyPage": {
+    "description": "바텀 네비게이션 — 마이페이지 탭 라벨"
+  },
+  "comingSoonMessage": "준비 중이에요",
+  "@comingSoonMessage": {
+    "description": "아직 구현되지 않은 탭(커뮤니티·마이페이지)의 안내 문구"
+  },
+  "homeBannerSemanticsLabel": "이벤트 배너",
+  "@homeBannerSemanticsLabel": {
+    "description": "홈 페이지 — 원격 이미지 배너 접근성 라벨"
   },
   "dialogSafetyWarningTitle": "주변을 확인하며 이용해 주세요",
   "@dialogSafetyWarningTitle": {
@@ -329,10 +796,6 @@
   "@buttonGoToSettings": {
     "description": "기기 설정 화면으로 이동하는 버튼"
   },
-  "errorJoinFailedCheckCode": "참여에 실패했어요. 초대 코드를 확인해주세요",
-  "@errorJoinFailedCheckCode": {
-    "description": "방 참여 실패 — 초대 코드 확인 안내"
-  },
   "errorJoinRetry": "참여에 실패했어요. 다시 시도해주세요",
   "@errorJoinRetry": {
     "description": "방 참여 실패 — 일반 재시도 안내"
@@ -353,45 +816,21 @@
   "@buttonJoin": {
     "description": "방 참여 액션 버튼"
   },
-  "appBrandName": "경찰과도둑",
-  "@appBrandName": {
-    "description": "앱 브랜드명 — ko: 한글 '경찰과도둑', en: 영문 'Cops and Robbers', ja: 일본 현지명 'ケイドロ'"
-  },
-  "messageComingSoon": "준비 중이에요",
-  "@messageComingSoon": {
-    "description": "미구현 기능 안내 메시지"
-  },
   "homePageWelcomeMessage": "누가 내 치즈\n훔쳐갔어!!!!🧀",
   "@homePageWelcomeMessage": {
     "description": "홈 페이지 — 메인 환영 메시지"
   },
-  "buttonCreateRoom": "방 만들기",
+  "buttonCreateRoom": "게임 생성하기",
   "@buttonCreateRoom": {
-    "description": "공통 — 방 만들기 버튼"
+    "description": "공통 — 게임 생성 버튼"
   },
-  "buttonJoinRoom": "방 참여하기",
+  "buttonJoinRoom": "게임 참여하기",
   "@buttonJoinRoom": {
-    "description": "공통 — 방 참여하기 버튼"
-  },
-  "sessionCreationStepZoneSubtitle": "게임할 구역을 설정해요.\n먼저 플레이그라운드를 지정하세요",
-  "@sessionCreationStepZoneSubtitle": {
-    "description": "방 생성 — 구역 설정 단계 안내"
-  },
-  "sessionCreationStepRulesSubtitle": "게임 규칙을 정해요\n숫자를 탭하면 직접 입력할 수 있어요",
-  "@sessionCreationStepRulesSubtitle": {
-    "description": "방 생성 — 규칙 설정 단계 안내"
+    "description": "공통 — 게임 참여 버튼"
   },
   "errorCreateRoomFailed": "게임 방 생성에 실패했어요. 다시 시도해주세요",
   "@errorCreateRoomFailed": {
     "description": "방 생성 실패 안내"
-  },
-  "sessionCreationZoneFirstQuestion": "구역 선택을 먼저 설정할까요?",
-  "@sessionCreationZoneFirstQuestion": {
-    "description": "방 생성 — 구역 미설정 시 안내"
-  },
-  "sessionCreationStepParticipantsTitle": "인원을 설정해요",
-  "@sessionCreationStepParticipantsTitle": {
-    "description": "방 생성 — 인원 설정 단계 타이틀"
   },
   "sessionCreationStepBasicTitle": "기본 정보를 설정해요",
   "@sessionCreationStepBasicTitle": {
@@ -400,10 +839,6 @@
   "sessionCreationStepReviewTitle": "최종 설정을 확인해요",
   "@sessionCreationStepReviewTitle": {
     "description": "방 생성 — 최종 설정 확인 단계 타이틀"
-  },
-  "sessionCreationStepZoneIntro": "게임에 필요한 구역을 설정해요",
-  "@sessionCreationStepZoneIntro": {
-    "description": "방 생성 — 구역 설정 단계 보조 설명"
   },
   "sessionCreationStepParticipantsHint": "최소 2명부터 게임 진행이 가능해요",
   "@sessionCreationStepParticipantsHint": {
@@ -424,10 +859,6 @@
   "errorZoneNotConfigured": "구역 정보를 먼저 설정해주세요",
   "@errorZoneNotConfigured": {
     "description": "구역 미설정 상태에서 다음 단계 진입 시 안내"
-  },
-  "setupPlaygroundRadiusInputHint": "여기를 누르면 반경을 직접 입력할 수 있어요",
-  "@setupPlaygroundRadiusInputHint": {
-    "description": "플레이그라운드 설정 — 반경 입력 안내"
   },
   "setupPlaygroundDescription": "게임이 진행될 전체 구역의 크기를 설정해요",
   "@setupPlaygroundDescription": {
@@ -460,34 +891,6 @@
   "errorNotInGame": "해당 게임에 참가하지 않은 사용자예요",
   "@errorNotInGame": {
     "description": "권한 없음 — 해당 게임 참가자가 아닐 때 안내"
-  },
-  "waitingRoomTutorialTeamSwitch": "이 버튼을 눌러 다른 팀으로 이동할 수 있어요",
-  "@waitingRoomTutorialTeamSwitch": {
-    "description": "대기실 튜토리얼 — 팀 변경 버튼 안내"
-  },
-  "waitingRoomTutorialInvite": "친구에게 초대 코드를 공유할 수 있어요",
-  "@waitingRoomTutorialInvite": {
-    "description": "대기실 튜토리얼 — 초대 코드 공유 안내"
-  },
-  "waitingRoomTutorialSettings": "게임 설정을 확인할 수 있어요",
-  "@waitingRoomTutorialSettings": {
-    "description": "대기실 튜토리얼 — 설정 확인 안내"
-  },
-  "waitingRoomTutorialReady": "준비가 되면 눌러주세요",
-  "@waitingRoomTutorialReady": {
-    "description": "대기실 튜토리얼 — 준비 버튼 안내"
-  },
-  "dialogInGamePreviewTitle": "인게임 화면 미리 보기",
-  "@dialogInGamePreviewTitle": {
-    "description": "인게임 미리보기 다이얼로그 제목"
-  },
-  "dialogTutorialPromptMessage": "게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?",
-  "@dialogTutorialPromptMessage": {
-    "description": "대기실에서 튜토리얼 진행을 권유하는 다이얼로그 본문"
-  },
-  "buttonViewInGamePreview": "보러 가기",
-  "@buttonViewInGamePreview": {
-    "description": "인게임 튜토리얼 미리보기로 이동 버튼"
   },
   "dialogKickConfirmTitle": "{nickname}님을 내보낼까요?",
   "@dialogKickConfirmTitle": {
@@ -527,18 +930,6 @@
       }
     }
   },
-  "errorTeamChangeFailed": "팀 변경에 실패했어요",
-  "@errorTeamChangeFailed": {
-    "description": "대기실 — 팀 변경 실패 안내"
-  },
-  "errorReadyChangeFailed": "준비 상태 변경에 실패했어요",
-  "@errorReadyChangeFailed": {
-    "description": "대기실 — 준비 상태 변경 실패 안내"
-  },
-  "errorGameStartFailed": "게임 시작에 실패했어요",
-  "@errorGameStartFailed": {
-    "description": "대기실 — 게임 시작 실패 안내"
-  },
   "dialogLeaveRoomTitle": "방을 나갈까요?",
   "@dialogLeaveRoomTitle": {
     "description": "대기실 퇴장 확인 다이얼로그 타이틀"
@@ -550,10 +941,6 @@
   "buttonLeave": "나가기",
   "@buttonLeave": {
     "description": "대기실 퇴장 확정 버튼"
-  },
-  "errorLeaveRoomFailed": "퇴장 처리 중 오류가 생겼어요",
-  "@errorLeaveRoomFailed": {
-    "description": "대기실 — 퇴장 처리 실패 안내"
   },
   "dialogInviteCodeCreatedTitle": "초대코드를 생성했어요",
   "@dialogInviteCodeCreatedTitle": {
@@ -591,21 +978,9 @@
   "@zonePreviewSubtitle": {
     "description": "구역 미리보기 — 본문 안내"
   },
-  "dummyNicknameRaccoon": "오동통 너구리",
-  "@dummyNicknameRaccoon": {
-    "description": "더미 닉네임 — 너구리 (튜토리얼/스켈레톤용)"
-  },
-  "defaultNicknameLabel": "닉네임",
-  "@defaultNicknameLabel": {
-    "description": "닉네임 누락 시 기본 표시 라벨"
-  },
   "titleGameRules": "게임 규칙",
   "@titleGameRules": {
     "description": "게임 규칙 다이얼로그 타이틀"
-  },
-  "buttonViewInGame": "인게임 보기",
-  "@buttonViewInGame": {
-    "description": "게임 규칙 다이얼로그의 '인게임 보기' 버튼"
   },
   "gameRulesCopGoalPrefix": "경찰은 모든 도둑을 잡아서",
   "@gameRulesCopGoalPrefix": {
@@ -652,31 +1027,66 @@
   "@gameRulesZoneRuleLine2": {
     "description": "게임 규칙 — 구역 이탈 금지 2줄 (개행 + 화살표 포함)"
   },
-  "dialogstep0SelectAreaContentTitle": "플레이그라운드",
-  "dialogstep0SelectAreaContentTitle5bc0": "감옥",
-  "fieldstep1ParticipantSettingsContentLabel": "최대 참가자",
   "unitPerson": "명",
   "@unitPerson": {
     "description": "공통 — 인원수 단위 (명)"
   },
-  "fieldstep2GameSettingsContentLabel": "라운드 제한 시간",
   "unitMinutes": "분",
   "@unitMinutes": {
     "description": "공통 — 시간 단위 (분)"
   },
-  "fieldstep2GameSettingsContentLabel5ab2": "도둑 위치 공유 간격",
   "gameSettingNoLocationShareWarning": "도둑의 위치가 공유되지 않아요!",
   "@gameSettingNoLocationShareWarning": {
     "description": "게임 설정 — 위치 공유 비활성 경고"
   },
-  "fieldstep2GameSettingsContentLabelCe3b": "경찰 출동 시간",
-  "gameSettingPoliceStartPrefix": "도둑 도망 후",
+  "gameSettingPoliceStartPrefix": "도둑 시작 후",
   "@gameSettingPoliceStartPrefix": {
     "description": "게임 설정 — 경찰 출동 시간 prefix"
   },
   "gameSettingPoliceStartSuffix": "뒤",
   "@gameSettingPoliceStartSuffix": {
     "description": "게임 설정 — 경찰 출동 시간 suffix"
+  },
+  "buttonCompleteSetup": "완료하기",
+  "@buttonCompleteSetup": {
+    "description": "방 생성 — 기본 정보 마지막 항목 완료 버튼"
+  },
+  "warnMaxReached": "최대 {max}까지 설정할 수 있어요",
+  "@warnMaxReached": {
+    "description": "방 생성 — 상한을 넘는 입력을 막았을 때 안내 (max 는 단위 포함, 예: 50명)",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "warnRoundDurationRange": "게임 시간은 10분부터 180분까지 설정할 수 있어요",
+  "@warnRoundDurationRange": {
+    "description": "방 생성 — 게임 시간 범위 경고"
+  },
+  "warnShorterThanRoundDuration": "게임 시간보다 짧게 설정해 주세요",
+  "@warnShorterThanRoundDuration": {
+    "description": "방 생성 — 위치 공유·경찰 시작이 게임 시간 이상일 때 경고"
+  },
+  "warnPoliceWaitMin": "경찰 시작 시간은 1분부터 설정할 수 있어요",
+  "@warnPoliceWaitMin": {
+    "description": "방 생성 — 경찰 시작 시간 하한 경고"
+  },
+  "dialogQuitCreationTitle": "방 만들기를 그만할까요?",
+  "@dialogQuitCreationTitle": {
+    "description": "방 생성 — 구역을 그리다 나갈 때 확인 타이틀"
+  },
+  "dialogQuitCreationMessage": "그리던 구역은 사라져요",
+  "@dialogQuitCreationMessage": {
+    "description": "방 생성 — 이탈 확인 본문"
+  },
+  "buttonKeepCreating": "계속 만들기",
+  "@buttonKeepCreating": {
+    "description": "방 생성 — 이탈 확인의 계속 버튼"
+  },
+  "buttonQuitCreation": "그만하기",
+  "@buttonQuitCreation": {
+    "description": "방 생성 — 이탈 확인의 그만 버튼"
   },
   "sectionTitleSettings": "설정",
   "@sectionTitleSettings": {
@@ -686,15 +1096,15 @@
   "@labelParticipantCount": {
     "description": "대기실 설정 카드의 참여 인원 라벨"
   },
-  "fieldRoundTimeLimit": "라운드 제한 시간",
+  "fieldRoundTimeLimit": "게임 시간",
   "@fieldRoundTimeLimit": {
     "description": "게임 설정 — 라운드 제한 시간 라벨"
   },
-  "fieldLocationShareInterval": "위치 공유 간격",
+  "fieldLocationShareInterval": "도둑 위치 공유 간격",
   "@fieldLocationShareInterval": {
     "description": "게임 설정 — 위치 공유 간격 라벨"
   },
-  "fieldPoliceDispatchTime": "경찰 출동 시간",
+  "fieldPoliceDispatchTime": "경찰 시작 시간",
   "@fieldPoliceDispatchTime": {
     "description": "게임 설정 — 경찰 출동 시간 라벨"
   },
@@ -1028,14 +1438,6 @@
   "@buttonPlayAgain": {
     "description": "공통 — 다시 플레이 버튼"
   },
-  "labelMyRecord": "내 기록",
-  "@labelMyRecord": {
-    "description": "내 기록 다이얼로그 — 제목"
-  },
-  "labelResult": "결과",
-  "@labelResult": {
-    "description": "내 기록 — 승패 결과 라벨"
-  },
   "messageSaveFailed": "저장에 실패했어요",
   "@messageSaveFailed": {
     "description": "내 기록 — 저장 실패 스낵바"
@@ -1135,22 +1537,6 @@
   "@gameZoneExitBanner": {
     "description": "플레이 영역 이탈 시 표시되는 배너"
   },
-  "chatTeamPrefix": "[팀]",
-  "@chatTeamPrefix": {
-    "description": "팀 채팅 메시지 prefix 라벨 (예: [팀])"
-  },
-  "chatSystemGameTimeLimit30Min": "제한 시간은 30분이에요",
-  "@chatSystemGameTimeLimit30Min": {
-    "description": "더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)"
-  },
-  "chatSystemGoodLuckRobber": "도둑 잘 도망쳐 봐요~",
-  "@chatSystemGoodLuckRobber": {
-    "description": "더미 채팅 메시지 — 경찰의 도둑 응원 메시지"
-  },
-  "chatSystemLetsWin": "이겨봅시다!",
-  "@chatSystemLetsWin": {
-    "description": "더미 채팅 메시지 — 팀 응원 메시지"
-  },
   "messageMessageCopied": "메시지가 복사되었어요",
   "@messageMessageCopied": {
     "description": "채팅 메시지 복사 완료 토스트"
@@ -1179,18 +1565,6 @@
   "@errorReportFailed": {
     "description": "신고 제출 실패 안내"
   },
-  "dialogReportConfirmTitle": "해당 유저를 신고할까요?",
-  "@dialogReportConfirmTitle": {
-    "description": "신고 확인 다이얼로그 제목"
-  },
-  "chatReportSelectedCategoryLabel": "선택한 신고 사유:",
-  "@chatReportSelectedCategoryLabel": {
-    "description": "신고 폼 — 선택한 카테고리 라벨 (뒤에 카테고리 이름 이어붙음)"
-  },
-  "chatReportSubmitNotice": "\n신고된 내용은 검토 후 조치할게요",
-  "@chatReportSubmitNotice": {
-    "description": "신고 폼 — 제출 시 검토 안내 (선두 줄바꿈은 위 라벨과 줄 분리 의도)"
-  },
   "buttonCopy": "복사하기",
   "@buttonCopy": {
     "description": "텍스트 복사 액션 버튼"
@@ -1199,9 +1573,9 @@
   "@buttonBlock": {
     "description": "사용자 차단 액션 버튼"
   },
-  "chatReportCategoryTitle": "신고 유형 선택",
-  "@chatReportCategoryTitle": {
-    "description": "신고 폼 — 카테고리 선택 섹션 제목"
+  "reportCategoryLabel": "신고 유형",
+  "@reportCategoryLabel": {
+    "description": "신고 유형 선택 화면 — 목록 위 라벨"
   },
   "chatInputBarUnreadAll": "전체 {all}개",
   "@chatInputBarUnreadAll": {
@@ -1352,6 +1726,10 @@
   "@settingsAccountChangeNickname": {
     "description": "설정 — 닉네임 변경 메뉴"
   },
+  "settingsAccountMyScraps": "내 스크랩",
+  "@settingsAccountMyScraps": {
+    "description": "설정 — 내 스크랩 목록 메뉴"
+  },
   "settingsSectionAppPreferences": "앱 설정",
   "@settingsSectionAppPreferences": {
     "description": "설정 — 앱 설정 섹션 헤더"
@@ -1363,6 +1741,14 @@
   "settingsAppGameNotificationDescription": "게임 진행 중 발생하는 이벤트 알림을 설정해요",
   "@settingsAppGameNotificationDescription": {
     "description": "설정 — 게임 알림 토글 메뉴 부제"
+  },
+  "settingsAppCommunityNotification": "커뮤니티 알림",
+  "@settingsAppCommunityNotification": {
+    "description": "마이페이지 앱 설정 — 커뮤니티 푸시 알림 수신 동의 스위치"
+  },
+  "settingsAppCommunityNotificationDescription": "댓글·대댓글·채팅 푸시를 받아요. 꺼도 알림함에는 쌓여요",
+  "@settingsAppCommunityNotificationDescription": {
+    "description": "커뮤니티 알림 스위치 설명 — 끄면 푸시만 막히고 알림함은 그대로라는 점을 알린다"
   },
   "settingsAppGeneralNotification": "알림",
   "@settingsAppGeneralNotification": {
@@ -1392,17 +1778,13 @@
   "@settingsGuideBugReport": {
     "description": "설정 — 버그 제보 메뉴 라벨"
   },
-  "settingsGuideTutorialRewatch": "튜토리얼 다시 보기",
-  "@settingsGuideTutorialRewatch": {
-    "description": "설정 — 튜토리얼 다시 보기 메뉴"
-  },
-  "settingsGuideTutorialReset": "튜토리얼 초기화",
-  "@settingsGuideTutorialReset": {
-    "description": "설정 — 튜토리얼 초기화 메뉴"
-  },
   "settingsGuideAgreements": "이용약관 및 정책",
   "@settingsGuideAgreements": {
     "description": "설정 — 이용약관 및 정책 메뉴 (페이지 진입)"
+  },
+  "settingsGuideOpenSourceLicenses": "오픈소스 라이선스",
+  "@settingsGuideOpenSourceLicenses": {
+    "description": "설정 — 오픈소스 라이선스 및 데이터 출처 메뉴 (웹뷰 진입)"
   },
   "settingsSectionEtc": "기타",
   "@settingsSectionEtc": {
@@ -1424,6 +1806,10 @@
   "@errorGameNotificationToggleFailed": {
     "description": "게임 알림 설정 변경 실패 메시지"
   },
+  "errorProfileIconUpdateFailed": "프로필 아이콘을 변경하지 못했어요",
+  "@errorProfileIconUpdateFailed": {
+    "description": "프로필 아이콘 변경 실패 메시지"
+  },
   "titleBugReport": "버그 제보",
   "@titleBugReport": {
     "description": "버그 제보 다이얼로그 타이틀"
@@ -1443,22 +1829,6 @@
   "messageBugReportSubmitted": "버그 제보가 접수되었어요",
   "@messageBugReportSubmitted": {
     "description": "버그 제보 접수 완료 안내"
-  },
-  "dialogTutorialResetTitle": "튜토리얼 초기화",
-  "@dialogTutorialResetTitle": {
-    "description": "튜토리얼 초기화 확인 다이얼로그 타이틀"
-  },
-  "dialogTutorialResetMessage": "모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?",
-  "@dialogTutorialResetMessage": {
-    "description": "튜토리얼 초기화 확인 다이얼로그 본문"
-  },
-  "buttonReset": "초기화",
-  "@buttonReset": {
-    "description": "초기화 확인 버튼"
-  },
-  "messageTutorialReset": "튜토리얼이 초기화되었어요",
-  "@messageTutorialReset": {
-    "description": "튜토리얼 초기화 완료 안내 메시지"
   },
   "dialogLogoutTitle": "로그아웃",
   "@dialogLogoutTitle": {
@@ -1491,264 +1861,6 @@
   "buttonDeleteAccount": "탈퇴",
   "@buttonDeleteAccount": {
     "description": "회원 탈퇴 확정 버튼"
-  },
-  "tutorialDummyNicknameCop1": "경찰1",
-  "@tutorialDummyNicknameCop1": {
-    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
-  },
-  "tutorialDummyNicknameRobberKing": "도둑킹",
-  "@tutorialDummyNicknameRobberKing": {
-    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
-  },
-  "tutorialDummyNicknameRobberOrNot": "도둑이게아니게",
-  "@tutorialDummyNicknameRobberOrNot": {
-    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
-  },
-  "tutorialDummyNicknameCapturedRobber": "잡힌도둑",
-  "@tutorialDummyNicknameCapturedRobber": {
-    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
-  },
-  "titleTutorialComplete": "튜토리얼 완료!",
-  "@titleTutorialComplete": {
-    "description": "튜토리얼 완료 다이얼로그 타이틀"
-  },
-  "messageTutorialComplete": "핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요",
-  "@messageTutorialComplete": {
-    "description": "튜토리얼 완료 다이얼로그 본문"
-  },
-  "buttonFinishTutorial": "튜토리얼 끝내기",
-  "@buttonFinishTutorial": {
-    "description": "튜토리얼 완료 다이얼로그의 종료 버튼"
-  },
-  "tutorialInGameMyLocation": "내 위치로 카메라가 이동했어요",
-  "@tutorialInGameMyLocation": {
-    "description": "튜토리얼 — 내 위치 버튼 동작 안내"
-  },
-  "tutorialMapPreviewLabel": "지도 미리보기",
-  "@tutorialMapPreviewLabel": {
-    "description": "튜토리얼 — 인게임 지도 미리보기 상단 라벨"
-  },
-  "tutorialLocationRevealCountdown": "다음 도둑 위치 공개까지 04:30",
-  "@tutorialLocationRevealCountdown": {
-    "description": "튜토리얼 — 도둑 위치 공개 카운트다운 (시연용 고정값)"
-  },
-  "tutorialInGameRulesGuide": "게임 룰 안내가 열려요",
-  "@tutorialInGameRulesGuide": {
-    "description": "튜토리얼 — 게임 룰 버튼 동작 안내"
-  },
-  "tutorialQrRobberHint": "내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포",
-  "@tutorialQrRobberHint": {
-    "description": "튜토리얼 — 도둑 시점 QR 안내 (수배 QR 표시)"
-  },
-  "tutorialQrCopHint": "카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요",
-  "@tutorialQrCopHint": {
-    "description": "튜토리얼 — 경찰 시점 QR 안내 (스캐너 사용)"
-  },
-  "tutorialMissionParticipantsButton": "참가자 보기 버튼을 눌러보세요",
-  "@tutorialMissionParticipantsButton": {
-    "description": "튜토리얼 미션 — 참가자 버튼 탭 안내 (총 4 중 하나)"
-  },
-  "tutorialMissionQrButton": "QR 버튼을 눌러보세요",
-  "@tutorialMissionQrButton": {
-    "description": "튜토리얼 미션 — QR 버튼 탭 안내 (총 4 중 하나)"
-  },
-  "tutorialMissionMapButton": "지도로 돌아가 보세요",
-  "@tutorialMissionMapButton": {
-    "description": "튜토리얼 미션 3/4 — 지도로 복귀 안내"
-  },
-  "tutorialMissionDropPing": "지도를 길게 눌러 핀을 찍어보세요",
-  "@tutorialMissionDropPing": {
-    "description": "튜토리얼 미션 4/4 — 지도 롱프레스로 핀 찍기 안내"
-  },
-  "tutorialPingLongPressHint": "맵 아무 곳이나 길게 눌러보세요",
-  "@tutorialPingLongPressHint": {
-    "description": "튜토리얼 — 지도 롱프레스 핀 찍기 힌트 인디케이터"
-  },
-  "tutorialMissionProgress": "미션 {step}/4",
-  "@tutorialMissionProgress": {
-    "description": "튜토리얼 진행도 라벨 (현재 미션 / 총 4)",
-    "placeholders": {
-      "step": {
-        "type": "String"
-      }
-    }
-  },
-  "tutorialPerspectiveRobber": "도둑 시점 보는 중",
-  "@tutorialPerspectiveRobber": {
-    "description": "튜토리얼 — 도둑 시점 시연 상태 표시"
-  },
-  "tutorialPerspectiveCop": "경찰 시점 보는 중",
-  "@tutorialPerspectiveCop": {
-    "description": "튜토리얼 — 경찰 시점 시연 상태 표시"
-  },
-  "tutorialInGameSelfEscape": "본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요",
-  "@tutorialInGameSelfEscape": {
-    "description": "튜토리얼 — 본인 수감 시 카드 탭으로 탈옥 시도 안내"
-  },
-  "tutorialInGameQrArrest": "실제 게임에서는 QR 스캔으로 도둑을 체포해요",
-  "@tutorialInGameQrArrest": {
-    "description": "튜토리얼 — 실제 게임 QR 체포 방식 안내"
-  },
-  "tutorialCurrentLabel": "현재",
-  "@tutorialCurrentLabel": {
-    "description": "튜토리얼 — '현재' 라벨 (현재 도주 중인 도둑 수 앞 텍스트)"
-  },
-  "tutorialPlayerCount": "{count}명",
-  "@tutorialPlayerCount": {
-    "description": "튜토리얼 — 인원수 표시 (예: 3명)",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "tutorialOnTheRun": "도주 중!",
-  "@tutorialOnTheRun": {
-    "description": "튜토리얼 — 도주 중 강조 텍스트"
-  },
-  "tutorialInGameChatExpand": "핸들을 위로 드래그하면 채팅이 펼쳐져요",
-  "@tutorialInGameChatExpand": {
-    "description": "튜토리얼 — 채팅 시트 확장 제스처 안내"
-  },
-  "tutorialInGameChatInput": "여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요",
-  "@tutorialInGameChatInput": {
-    "description": "튜토리얼 — 채팅 입력 영역 사용법 안내"
-  },
-  "tutorialChatHint": "채팅을 입력하세요",
-  "@tutorialChatHint": {
-    "description": "튜토리얼 — 채팅 입력바 placeholder (인게임 chat과 동일 문구지만 컨텍스트 분리)"
-  },
-  "tutorialCatalogAreaSubtitle": "플레이그라운드·감옥 설정과 슬라이더 조작",
-  "@tutorialCatalogAreaSubtitle": {
-    "description": "튜토리얼 카탈로그 — 방 만들기 단계 부제"
-  },
-  "tutorialCatalogInviteSubtitle": "초대 코드 입력과 QR 스캔",
-  "@tutorialCatalogInviteSubtitle": {
-    "description": "튜토리얼 카탈로그 — 방 참여하기 단계 부제"
-  },
-  "tutorialCatalogWaitingRoomTitle": "대기방",
-  "@tutorialCatalogWaitingRoomTitle": {
-    "description": "튜토리얼 카탈로그 — 대기방 단계 제목"
-  },
-  "tutorialCatalogLobbySubtitle": "팀 변경, 게임 설정, 준비 완료",
-  "@tutorialCatalogLobbySubtitle": {
-    "description": "튜토리얼 카탈로그 — 대기방 단계 부제"
-  },
-  "tutorialCatalogInGameTitle": "인게임",
-  "@tutorialCatalogInGameTitle": {
-    "description": "튜토리얼 카탈로그 — 인게임 단계 제목"
-  },
-  "tutorialCatalogGameSubtitle": "타이머·지도·참가자·채팅·QR",
-  "@tutorialCatalogGameSubtitle": {
-    "description": "튜토리얼 카탈로그 — 인게임 단계 부제"
-  },
-  "pageTutorialCatalogTitle": "튜토리얼",
-  "@pageTutorialCatalogTitle": {
-    "description": "튜토리얼 카탈로그 페이지 타이틀"
-  },
-  "tutorialCatalogIntro": "게임을 처음 한다면 한 번씩 보고 시작해보세요",
-  "@tutorialCatalogIntro": {
-    "description": "튜토리얼 카탈로그 페이지 인트로 안내"
-  },
-  "tutorialCatalogComingSoon": "준비 중",
-  "@tutorialCatalogComingSoon": {
-    "description": "튜토리얼 카탈로그 — 미구현 단계의 '준비 중' 라벨"
-  },
-  "creditMemberHongEuiMin": "홍의민",
-  "@creditMemberHongEuiMin": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hong Eui-min)"
-  },
-  "creditMemberParkChanBin": "박찬빈",
-  "@creditMemberParkChanBin": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Park Chan-bin)"
-  },
-  "creditMemberLeeChangHee": "이창희",
-  "@creditMemberLeeChangHee": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Chang-hee)"
-  },
-  "creditMemberJeongSangHee": "정상희",
-  "@creditMemberJeongSangHee": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Sang-hee)"
-  },
-  "creditMemberHwangHyeRim": "황혜림",
-  "@creditMemberHwangHyeRim": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hwang Hye-rim)"
-  },
-  "creditMemberYoonJiHee": "윤지희",
-  "@creditMemberYoonJiHee": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Yoon Ji-hee)"
-  },
-  "creditMemberKimDaim": "김다임",
-  "@creditMemberKimDaim": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Da-im)"
-  },
-  "creditMemberShinJiHoon": "신지훈",
-  "@creditMemberShinJiHoon": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Ji-hoon)"
-  },
-  "creditMemberNamHaeYoon": "남해윤",
-  "@creditMemberNamHaeYoon": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Nam Hae-yoon)"
-  },
-  "creditMemberSongHyeJung": "송혜정",
-  "@creditMemberSongHyeJung": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Song Hye-jung)"
-  },
-  "creditMemberLeeJin": "이진",
-  "@creditMemberLeeJin": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Lee Jin)"
-  },
-  "creditMemberAhnGeumSeo": "안금서",
-  "@creditMemberAhnGeumSeo": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Ahn Geum-seo)"
-  },
-  "creditMemberSonGeonWoo": "손건우",
-  "@creditMemberSonGeonWoo": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Son Geon-woo)"
-  },
-  "creditMemberShinHyeBin": "신혜빈",
-  "@creditMemberShinHyeBin": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Shin Hye-bin)"
-  },
-  "creditMemberJeongChangWoo": "정창우",
-  "@creditMemberJeongChangWoo": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Chang-woo)"
-  },
-  "creditMemberHeoSeokJun": "허석준",
-  "@creditMemberHeoSeokJun": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Heo Seok-jun)"
-  },
-  "creditMemberSeoHyunJin": "서현진",
-  "@creditMemberSeoHyunJin": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Seo Hyun-jin)"
-  },
-  "creditMemberOhDongHyun": "오동현",
-  "@creditMemberOhDongHyun": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Oh Dong-hyun)"
-  },
-  "creditMemberChoiSeungHoon": "최승훈",
-  "@creditMemberChoiSeungHoon": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Choi Seung-hoon)"
-  },
-  "creditMemberKimMinWook": "김민욱",
-  "@creditMemberKimMinWook": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kim Min-wook)"
-  },
-  "creditMemberJeongMyeongJun": "정명준",
-  "@creditMemberJeongMyeongJun": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Jeong Myeong-jun)"
-  },
-  "creditMemberKangDaeHyun": "강대현",
-  "@creditMemberKangDaeHyun": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Kang Dae-hyun)"
-  },
-  "creditMemberSimHyuk": "심 혁",
-  "@creditMemberSimHyuk": {
-    "description": "크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Sim Hyuk)"
-  },
-  "pageCreditsTitle": "경찰과 도둑을 만든 사람들",
-  "@pageCreditsTitle": {
-    "description": "크레딧 페이지 상단 헤더 — 제작진 소개"
   },
   "errorReportGeneric": "신고 처리 중 오류가 생겼어요",
   "@errorReportGeneric": {
@@ -1814,6 +1926,14 @@
   "@errorGamePushUpdateUnexpected": {
     "description": "게임 푸시 알림 동의 업데이트 중 예기치 않은 오류 안내"
   },
+  "errorCommunityPushFetchUnexpected": "커뮤니티 푸시 알림 동의 조회 중 예기치 않은 오류가 생겼어요",
+  "@errorCommunityPushFetchUnexpected": {
+    "description": "커뮤니티 푸시 알림 동의 조회 실패"
+  },
+  "errorCommunityPushUpdateUnexpected": "커뮤니티 알림 설정을 변경하지 못했어요",
+  "@errorCommunityPushUpdateUnexpected": {
+    "description": "커뮤니티 푸시 알림 동의 업데이트 실패"
+  },
   "errorAuthTokenMissing": "로그인 정보를 확인할 수 없어요. 다시 로그인해주세요",
   "@errorAuthTokenMissing": {
     "description": "인증 토큰 조회 실패 — secure storage에 토큰이 없거나 만료된 토큰 정리 후"
@@ -1830,9 +1950,73 @@
   "@errorNoticesLoadGeneric": {
     "description": "공지사항 로딩 중 예외가 발생했을 때 표시되는 메시지"
   },
-  "messageLoadingNotices": "공지사항을 불러오는 중...",
-  "@messageLoadingNotices": {
-    "description": "공지사항 로딩 중 표시되는 안내"
+  "errorCommunityPostsLoadGeneric": "모집글을 불러오는 중 오류가 생겼어요",
+  "@errorCommunityPostsLoadGeneric": {
+    "description": "커뮤니티 모집글 로딩 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostsLoadFailed": "모집글을 불러오지 못했어요",
+  "@errorCommunityPostsLoadFailed": {
+    "description": "커뮤니티 목록 조회 실패 시 화면에 표시되는 메시지"
+  },
+  "errorCommunityPostUpdateGeneric": "모집글을 수정하는 중 오류가 생겼어요",
+  "@errorCommunityPostUpdateGeneric": {
+    "description": "커뮤니티 모집글 수정 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostDeleteGeneric": "모집글을 삭제하는 중 오류가 생겼어요",
+  "@errorCommunityPostDeleteGeneric": {
+    "description": "커뮤니티 모집글 삭제 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostStatusGeneric": "모집 상태를 바꾸는 중 오류가 생겼어요",
+  "@errorCommunityPostStatusGeneric": {
+    "description": "커뮤니티 모집 상태 변경 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityPostCreateGeneric": "모집글을 등록하는 중 오류가 생겼어요",
+  "@errorCommunityPostCreateGeneric": {
+    "description": "커뮤니티 모집글 등록 중 예외가 발생했을 때 표시되는 메시지"
+  },
+  "errorCommunityCommentsLoadGeneric": "댓글을 불러오는 중 오류가 생겼어요",
+  "@errorCommunityCommentsLoadGeneric": {
+    "description": "커뮤니티 — 댓글 목록 조회 실패(일반)"
+  },
+  "errorCommunityCommentCreateGeneric": "댓글을 남기는 중 오류가 생겼어요",
+  "@errorCommunityCommentCreateGeneric": {
+    "description": "커뮤니티 — 댓글 작성 실패(일반)"
+  },
+  "errorCommunityCommentDeleteGeneric": "댓글을 삭제하는 중 오류가 생겼어요",
+  "@errorCommunityCommentDeleteGeneric": {
+    "description": "커뮤니티 — 댓글 삭제 실패(일반)"
+  },
+  "errorCommunityReactionGeneric": "요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요",
+  "@errorCommunityReactionGeneric": {
+    "description": "커뮤니티 — 좋아요·스크랩 토글 실패(일반)"
+  },
+  "errorCommunityScrapsLoadGeneric": "스크랩 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요",
+  "@errorCommunityScrapsLoadGeneric": {
+    "description": "커뮤니티 — 내 스크랩 목록 조회 실패(일반)"
+  },
+  "errorCommunityNotificationsLoadGeneric": "알림 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요",
+  "@errorCommunityNotificationsLoadGeneric": {
+    "description": "커뮤니티 — 알림함 목록 조회 실패(일반)"
+  },
+  "errorCommunityNotificationUnreadCountLoadGeneric": "안 읽은 알림 개수를 불러오지 못했어요",
+  "@errorCommunityNotificationUnreadCountLoadGeneric": {
+    "description": "커뮤니티 — 안 읽은 알림 개수 조회 실패(일반)"
+  },
+  "errorCommunityNotificationReadGeneric": "알림 읽음 처리에 실패했어요",
+  "@errorCommunityNotificationReadGeneric": {
+    "description": "커뮤니티 — 알림 읽음 처리 실패(일반)"
+  },
+  "errorCommunityPostNotificationUpdateGeneric": "이 글의 알림 설정을 변경하지 못했어요",
+  "@errorCommunityPostNotificationUpdateGeneric": {
+    "description": "게시글별 알림 켜기/끄기 실패"
+  },
+  "errorCommunityCommentNotificationUpdateGeneric": "대댓글 알림 설정을 변경하지 못했어요",
+  "@errorCommunityCommentNotificationUpdateGeneric": {
+    "description": "댓글별 대댓글 알림 켜기/끄기 실패"
+  },
+  "errorCommunityAddressLoadGeneric": "주소를 불러오는 중 오류가 생겼어요",
+  "@errorCommunityAddressLoadGeneric": {
+    "description": "모집글 작성 중 좌표 주소 조회에 실패했을 때 표시되는 메시지"
   },
   "errorNoticeLoadFailed": "공지사항을 불러오지 못했어요",
   "@errorNoticeLoadFailed": {
@@ -1845,6 +2029,30 @@
   "pageNoticesEmpty": "등록된 공지사항이 없어요",
   "@pageNoticesEmpty": {
     "description": "공지사항 페이지 — 공지가 0건일 때 표시하는 빈 상태 메시지"
+  },
+  "noticeCategoryAll": "전체",
+  "@noticeCategoryAll": {
+    "description": "공지사항 카테고리 필터 칩 — 전체(필터 없음)"
+  },
+  "noticeCategoryNotice": "공지",
+  "@noticeCategoryNotice": {
+    "description": "공지사항 카테고리 필터 칩 — 일반 공지(백엔드 기본 카테고리)"
+  },
+  "noticeCategoryMaintenance": "점검",
+  "@noticeCategoryMaintenance": {
+    "description": "공지사항 카테고리 필터 칩 — 서버 점검"
+  },
+  "noticeCategoryEvent": "이벤트",
+  "@noticeCategoryEvent": {
+    "description": "공지사항 카테고리 필터 칩 — 이벤트"
+  },
+  "noticeCategoryUpdate": "업데이트",
+  "@noticeCategoryUpdate": {
+    "description": "공지사항 카테고리 필터 칩 — 앱 업데이트"
+  },
+  "noticeTranslationFallback": "아직 번역 준비 중이라 원문 그대로 보여드려요",
+  "@noticeTranslationFallback": {
+    "description": "공지 카드 펼침 본문 위 — 요청한 언어의 번역이 없어 서버가 대체한 공지(language != requestedLanguage)에만 표시"
   },
   "errorAreaLoadFailed": "구역 정보를 불러오지 못했어요",
   "@errorAreaLoadFailed": {
@@ -1941,33 +2149,9 @@
   "@errorGameJoinUnexpected": {
     "description": "게임 입장 시 발생한 예기치 않은 오류"
   },
-  "errorAlreadyInAnotherRoom": "이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요",
-  "@errorAlreadyInAnotherRoom": {
-    "description": "다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)"
-  },
   "deeplinkAlreadyInRoom": "이미 참여 중인 방이 있어요",
   "@deeplinkAlreadyInRoom": {
     "description": "딥링크로 새 방 참가 시도 시 이미 참여 중인 방이 있어 현재 방으로 복귀할 때 표시하는 안내 (409)"
-  },
-  "errorGameAlreadyStarted": "이미 시작되어 입장할 수 없는 게임이에요",
-  "@errorGameAlreadyStarted": {
-    "description": "초대 코드는 유효하지만 게임이 이미 시작된 경우 (400 이미 시작된 게임)"
-  },
-  "errorRoomSwitchFailed": "새 방에 입장하지 못했어요. 이전 방에서는 나온 상태예요",
-  "@errorRoomSwitchFailed": {
-    "description": "방 이동 중 현재 방 퇴장 후 새 방 입장에 실패한 경우"
-  },
-  "deeplinkSwitchRoomTitle": "방을 이동할까요?",
-  "@deeplinkSwitchRoomTitle": {
-    "description": "이미 다른 대기방 참가 중 딥링크 진입 시 방 이동 확인 다이얼로그 제목"
-  },
-  "deeplinkSwitchRoomMessage": "현재 참여 중인 방에서 나가고 새 방에 참가해요",
-  "@deeplinkSwitchRoomMessage": {
-    "description": "방 이동 확인 다이얼로그 본문"
-  },
-  "deeplinkSwitchRoomConfirm": "나가고 참가",
-  "@deeplinkSwitchRoomConfirm": {
-    "description": "방 이동 확인 다이얼로그 확인 버튼"
   },
   "errorPendingInviteLoad": "대기 중인 초대 코드를 불러오지 못했어요",
   "@errorPendingInviteLoad": {
@@ -1995,6 +2179,10 @@
   "errorCodeInvalidQueryParameter": "쿼리 파라미터의 형식이 잘못됐어요",
   "errorCodeQueryParameterTypeMismatch": "요청 파라미터의 타입이 잘못됐어요",
   "errorCodeInvalidInputValue": "입력값이 조건에 맞지 않아요",
+  "errorCodeAddressNotFound": "주소를 찾을 수 없는 곳이에요. 다른 곳을 골라주세요",
+  "@errorCodeAddressNotFound": {
+    "description": "ADDRESS_NOT_FOUND — 좌표에 주소·국가가 없어 게시글 생성·수정이 거절된 경우. 같은 핀으로는 재시도해도 실패하므로 공통 폴백(errorTemporaryRetry)을 쓰면 안 된다. 장소 선택 화면의 communityLocationPickerNotFound와 같은 문구."
+  },
   "errorCodeInvalidDestination": "잘못된 연결 경로예요",
   "errorCodeUnsupportedMediaType": "지원하지 않는 형식이에요",
   "errorCodeMethodNotAllowed": "허용되지 않은 요청이에요",
@@ -2003,7 +2191,7 @@
   "errorCodeUnauthorizedSubscription": "해당 팀 전용 채널을 구독할 권한이 없어요",
   "errorCodeInternalServerError": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "@errorCodeInternalServerError": {
-    "description": "의도적으로 docs/error-codes.md detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용."
+    "description": "의도적으로 백엔드 detail과 다름. INTERNAL_SERVER_ERROR·FIREBASE_INIT_ERROR·FIREBASE_CONFIG_NOT_FOUND·ENCRYPTION_FAILED·DECRYPTION_FAILED·INVALID_ENCRYPTION_KEY·FIREBASE_SERVER_ERROR·NICKNAME_GENERATION_FAILED·INVITE_CODE_GENERATION_FAILED 등 서버 내부/인프라성 5xx 코드는 내부 기술 정보(암호화 키 규격, Firebase 설정 경로, 관리자 문의 안내 등) 노출을 막기 위해 공통 문구로 collapse한다. 신규 5xx 코드도 동일 정책 적용."
   },
   "errorCodeFirebaseInitError": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
   "errorCodeFirebaseConfigNotFound": "일시적인 오류가 생겼어요. 잠시 후 다시 시도해주세요",
@@ -2057,12 +2245,60 @@
   "errorCodePoliceWaitingTime": "경찰은 대기 시간 동안 도둑을 체포할 수 없어요",
   "errorCodeCannotKickYourself": "방장은 자기 자신을 강퇴할 수 없어요",
   "errorCodeNoticeNotFound": "해당 공지사항을 찾을 수 없어요",
+  "errorCodeNoticeTranslationInvalid": "공지 번역 정보가 올바르지 않아요",
+  "@errorCodeNoticeTranslationInvalid": {
+    "description": "DUPLICATE_TRANSLATION_LANGUAGE·MISSING_ORIGINAL_TRANSLATION 공용. 공지 작성·수정은 어드민 콘솔만 부르므로 앱에는 노출되지 않는다"
+  },
   "errorCodeGameResultNotFound": "해당 게임 결과를 찾을 수 없어요",
   "errorCodeEtcReasonRequired": "신고 유형이 기타일 때 사유를 입력해야 해요",
   "errorCodeSelfReport": "본인을 신고할 수 없어요",
   "errorCodeDuplicateReport": "해당 게임에서 이미 신고한 사용자예요",
   "errorCodeReportNotFound": "해당 신고 내역이 존재하지 않아요",
+  "errorCodeChatMessageNotFound": "해당 메시지를 찾을 수 없어요",
+  "@errorCodeChatMessageNotFound": { "description": "커뮤니티 채팅 신고 — 대상 메시지가 서버에 없음" },
   "errorCodeReportTargetNotFound": "해당 게임에 존재하지 않는 참가자예요",
+  "errorCodeInvalidMeetingDate": "모임 시간은 지금 이후로 골라주세요",
+  "errorCodeCommentNotFound": "이미 삭제된 댓글이에요",
+  "@errorCodeCommentNotFound": {
+    "description": "커뮤니티 — 댓글이 서버에 없음"
+  },
+  "errorCodeForbiddenNotCommentAuthor": "내가 쓴 댓글만 지울 수 있어요",
+  "@errorCodeForbiddenNotCommentAuthor": {
+    "description": "커뮤니티 — 남의 댓글 삭제 시도"
+  },
+  "errorCodeReplyTargetGone": "대댓글을 달려던 댓글이 사라졌어요. 새로고침 후 다시 시도해주세요",
+  "@errorCodeReplyTargetGone": {
+    "description": "커뮤니티 — 대댓글 대상이 사라졌거나 조건이 어긋남"
+  },
+  "errorCodeInvalidCommentDepth": "대댓글에는 대댓글을 달 수 없어요",
+  "@errorCodeInvalidCommentDepth": {
+    "description": "커뮤니티 — 2단을 넘는 대댓글 시도"
+  },
+  "errorCodePostNotFound": "이미 삭제된 모집글이에요",
+  "errorCodeForbiddenNotAuthor": "방장만 수정하거나 삭제할 수 있어요",
+  "errorCodeCountryNotSpecified": "국가를 확인할 수 없는 곳이에요. 다른 곳에서 다시 시도해주세요",
+  "errorCodeAddressLookupFailed": "주소 조회에 실패했어요. 잠시 후 다시 시도해주세요",
+  "@errorCodeAddressLookupFailed": {
+    "description": "ADDRESS_LOOKUP_FAILED — 역지오코딩 벤더가 둘 다 실패한 경우. ADDRESS_NOT_FOUND(그 좌표에 주소 자체가 없음)와 달리 일시적 장애라 같은 핀으로 재시도하면 될 수 있다."
+  },
+  "errorCodeRecruitmentClosed": "이미 마감된 모집글이에요",
+  "errorCodeUnsupportedListScope": "지원하지 않는 목록 범위예요",
+  "errorCodeUnsupportedListSort": "지원하지 않는 정렬 방식이에요",
+  "errorCodeAlreadyJoined": "이미 참여한 채팅방이에요",
+  "errorCodeAuthorCannotLeave": "방장은 채팅방을 나갈 수 없어요",
+  "errorCodeChatRoomFull": "채팅방 정원이 가득 찼어요",
+  "errorCodeJoinedChatRoomLimitExceeded": "참여할 수 있는 채팅방 수를 초과했어요. 다른 채팅방을 나간 뒤 다시 시도해주세요",
+  "errorCodeNotAChatMember": "해당 채팅방의 참여자가 아니에요",
+  "errorCodeForbiddenNotChatHost": "방장만 참여자를 강퇴할 수 있어요",
+  "errorCodeChatMemberNotFound": "이미 채팅방을 나간 참여자예요",
+  "@errorCodeChatMemberNotFound": {
+    "description": "CHAT_MEMBER_NOT_FOUND — 강퇴 대상이 이미 나간 경우. NOT_A_CHAT_MEMBER(내가 멤버가 아님)와 주체가 달라 문구를 나눈다"
+  },
+  "errorCodeConflictingCountryFilter": "국가 조건이 서로 충돌해요",
+  "errorCodeReactionAlreadyApplied": "이미 반영된 상태예요",
+  "@errorCodeReactionAlreadyApplied": {
+    "description": "좋아요·스크랩 상태가 서버와 어긋났을 때 (ALREADY_LIKED·LIKE_NOT_FOUND·ALREADY_SCRAPPED·SCRAP_NOT_FOUND 공용)"
+  },
   "pingFound": "발견",
   "@pingFound": {
     "description": "맵 핑 선택 카드 — 상대 발견 핑 라벨"
@@ -2104,5 +2340,49 @@
   "@gameEventResultArrestCount": {
     "description": "이벤트 모드 결과 — 검거한 운영진 수",
     "placeholders": { "count": { "type": "int" } }
+  },
+  "onboardingOutdoorTitle": "밖에서 진짜로 뛰는 술래잡기예요",
+  "@onboardingOutdoorTitle": {
+    "description": "온보딩 1/4 — 오프라인 게임이라는 정체"
+  },
+  "onboardingOutdoorBody": "어릴 때 하던 경찰과 도둑 그대로예요. 앱은 옆에서 진행만 봐줘요",
+  "@onboardingOutdoorBody": {
+    "description": "온보딩 1/4 본문"
+  },
+  "onboardingWinTitle": "경찰은 잡고, 도둑은 버텨요",
+  "@onboardingWinTitle": {
+    "description": "온보딩 2/4 — 승패 조건"
+  },
+  "onboardingWinBody": "경찰이 도둑을 모두 잡으면 경찰이 이겨요. 시간이 끝날 때까지 한 명이라도 살아남으면 도둑이 이겨요",
+  "@onboardingWinBody": {
+    "description": "온보딩 2/4 본문"
+  },
+  "onboardingRefereeTitle": "앱이 심판을 봐요",
+  "@onboardingRefereeTitle": {
+    "description": "온보딩 3/4 — 구역·발자국·QR"
+  },
+  "onboardingRefereeBody": "구역은 지도에 그리고, 도둑 위치는 정해진 주기마다 발자국으로 떠요. QR을 찍어야 체포라서 판정이 늘 깔끔해요",
+  "@onboardingRefereeBody": {
+    "description": "온보딩 3/4 본문"
+  },
+  "onboardingCommunityTitle": "같이 할 사람도 여기서 구해요",
+  "@onboardingCommunityTitle": {
+    "description": "온보딩 4/4 — 커뮤니티"
+  },
+  "onboardingCommunityBody": "동네에서 함께 뛸 사람을 커뮤니티에서 찾아보세요. 장소와 시간을 보고 바로 참여할 수 있어요",
+  "@onboardingCommunityBody": {
+    "description": "온보딩 4/4 본문"
+  },
+  "buttonSkip": "건너뛰기",
+  "@buttonSkip": {
+    "description": "온보딩 건너뛰기 버튼"
+  },
+  "settingsGuideAppIntro": "앱 소개 다시 보기",
+  "@settingsGuideAppIntro": {
+    "description": "마이페이지 이용 안내 — 온보딩 재열람"
+  },
+  "onboardingStartButton": "시작하기",
+  "@onboardingStartButton": {
+    "description": "온보딩 마지막 장 — 온보딩을 닫고 로그인으로 진행"
   }
 }

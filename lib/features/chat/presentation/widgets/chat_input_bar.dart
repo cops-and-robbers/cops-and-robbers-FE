@@ -1,16 +1,17 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/input_focus_guard.dart';
+import '../../../../core/utils/utf16_length_limiting_formatter.dart';
 
 /// 채팅 입력 바 위젯
 ///
@@ -132,16 +133,22 @@ class _ChatInputBarState extends State<ChatInputBar> {
       ),
       color: widget.isDarkMode ? AppColors.black900 : AppColors.black100,
       child: Container(
-        height: 48.h,
+        // 개행 키를 주므로 여러 줄로 자라야 한다 — 고정 높이로 묶으면 둘째 줄이
+        // 안쪽으로 숨는다. 한 줄일 때 높이(48)는 최소값으로 그대로 유지된다.
+        constraints: BoxConstraints(minHeight: 48.h),
         padding: EdgeInsets.only(
           left: AppSpacing.horizontal20,
           right: AppSpacing.horizontal12,
+          top: AppSpacing.vertical6,
+          bottom: AppSpacing.vertical6,
         ),
         decoration: BoxDecoration(
           color: widget.isDarkMode ? AppColors.black : AppColors.white,
           borderRadius: AppRadius.large,
         ),
         child: Row(
+          // 여러 줄로 자라도 전송 버튼은 아래에 붙어 있어야 한다.
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
               child: Listener(
@@ -150,8 +157,13 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   controller: _controller,
                   focusNode: _focusNode,
                   enabled: widget.enabled,
-                  maxLength: 300,
-                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  // 서버와 같은 단위(UTF-16)로 막는다 — 기본 maxLength는 자소
+                  // 단위라 이모지가 섞이면 세는 값이 서버와 어긋난다.
+                  inputFormatters: const [Utf16LengthLimitingFormatter(300)],
+                  // 전송은 옆 버튼이 맡는다 — 키보드 키는 개행(커뮤니티 입력창과 동일).
+                  maxLines: 4,
+                  minLines: 1,
+                  textInputAction: TextInputAction.newline,
                   style: AppTextStyles.paragraph_14.copyWith(
                     color: widget.isDarkMode
                         ? AppColors.black200
@@ -172,7 +184,6 @@ class _ChatInputBarState extends State<ChatInputBar> {
                     contentPadding: EdgeInsets.symmetric(vertical: 8.h),
                   ),
                   onTap: _focusGuard.markUserTapped,
-                  onSubmitted: (_) => _handleSend(),
                 ),
               ),
             ),
@@ -200,7 +211,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
           child: Transform.rotate(
             angle: -math.pi / 2,
             child: SvgPicture.asset(
-              'assets/icons/icon_arrow.svg',
+              AppIcons.arrow,
               width: 20.w,
               height: 20.w,
               colorFilter: ColorFilter.mode(

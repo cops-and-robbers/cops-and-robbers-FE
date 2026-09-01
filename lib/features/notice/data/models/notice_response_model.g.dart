@@ -12,6 +12,8 @@ _$NoticeResponseModelImpl _$$NoticeResponseModelImplFromJson(
   id: (json['id'] as num).toInt(),
   title: json['title'] as String,
   content: json['content'] as String,
+  language: json['language'] as String?,
+  requestedLanguage: json['requestedLanguage'] as String?,
   pinned: json['pinned'] as bool,
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -23,6 +25,8 @@ Map<String, dynamic> _$$NoticeResponseModelImplToJson(
   'id': instance.id,
   'title': instance.title,
   'content': instance.content,
+  'language': instance.language,
+  'requestedLanguage': instance.requestedLanguage,
   'pinned': instance.pinned,
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt.toIso8601String(),
@@ -43,19 +47,3 @@ Map<String, dynamic> _$$NoticeListResponseModelImplToJson(
   'content': instance.content.map((e) => e.toJson()).toList(),
   'page': instance.page.toJson(),
 };
-
-_$PageInfoModelImpl _$$PageInfoModelImplFromJson(Map<String, dynamic> json) =>
-    _$PageInfoModelImpl(
-      size: (json['size'] as num).toInt(),
-      number: (json['number'] as num).toInt(),
-      totalElements: (json['totalElements'] as num).toInt(),
-      totalPages: (json['totalPages'] as num).toInt(),
-    );
-
-Map<String, dynamic> _$$PageInfoModelImplToJson(_$PageInfoModelImpl instance) =>
-    <String, dynamic>{
-      'size': instance.size,
-      'number': instance.number,
-      'totalElements': instance.totalElements,
-      'totalPages': instance.totalPages,
-    };

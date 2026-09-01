@@ -89,7 +89,6 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
   CameraPosition? _lastCamera;
 
   // Fallback 위치 (어린이대공원)
-  static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
   static const double _initialZoom = 15;
   static const double _locationFocusToleranceInMeters = 5;
   late LatLng _initialCamera;
@@ -112,29 +111,19 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     _pinIcon = await PolygonPinMarkerFactory.create(color: widget.pinColor);
     _hitboxIcon = await PolygonPinMarkerFactory.createHitbox();
 
-    final currentLocation = await _currentLocation();
+    final currentLocation = await DeviceLocationService.getCurrentLatLng();
     _locationFocusTarget = currentLocation;
 
     // 초기 카메라: 기존 핀 있으면 그 중심, 없으면 현재 위치 → fallback
     if (_points.isNotEmpty) {
       _initialCamera = _centroidOf(_points);
     } else {
-      _initialCamera = currentLocation ?? _fallbackLocation;
+      _initialCamera = currentLocation ?? DeviceLocationService.fallbackLocation;
     }
     _lastCamera = CameraPosition(target: _initialCamera, zoom: _initialZoom);
     _isLocationFocused = _isCameraFocusedOnLocation(_lastCamera!);
 
     if (mounted) setState(() => _isInitialized = true);
-  }
-
-  Future<LatLng?> _currentLocation() async {
-    try {
-      final pos = await DeviceLocationService.getCurrentPosition();
-      if (pos == null) return null;
-      return LatLng(pos.latitude, pos.longitude);
-    } catch (_) {
-      return null;
-    }
   }
 
   LatLng _centroidOf(List<LatLng> pts) {
@@ -345,7 +334,7 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
   }
 
   Future<void> _resetToCurrentLocation() async {
-    final loc = await _currentLocation();
+    final loc = await DeviceLocationService.getCurrentLatLng();
     if (loc == null || !mounted) return;
     _locationFocusTarget = loc;
     _isProgrammaticMove = true;

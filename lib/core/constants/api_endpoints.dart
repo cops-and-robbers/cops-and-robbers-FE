@@ -147,11 +147,18 @@ class ApiEndpoints {
   /// 닉네임 중복 확인
   static const String checkNickname = '/api/user/check-nickname';
 
+  /// 프로필 아이콘 변경
+  static const String updateProfileIcon = '/api/user/me/profile-icon';
+
   /// 약관 동의 상태 조회 / 저장
   static const String agreements = '/api/user/agreements';
 
   /// 게임 푸시 알림 수신 동의 조회 / 업데이트
   static const String agreementsGamePush = '/api/user/agreements/game-push';
+
+  /// 커뮤니티 푸시 알림 수신 동의 조회 / 업데이트 (BE #182)
+  static const String agreementsCommunityPush =
+      '/api/user/agreements/community-push';
 
   /// 참여 중인 게임 정보 조회
   static const String myActiveGame = '/api/user/me/game';
@@ -162,6 +169,13 @@ class ApiEndpoints {
 
   /// 채팅 신고
   static const String reportChat = '/api/report/chat';
+
+  /// 커뮤니티 모집글 신고
+  static const String reportCommunityPost = '/api/report/community-post';
+
+  /// 커뮤니티 채팅 메시지 신고. 대상은 서버가 발급한 메시지 id다 —
+  /// 앱이 만든 `messageKey`를 보내면 404(`CHAT_MESSAGE_NOT_FOUND`)다.
+  static const String reportCommunityChat = '/api/report/community-chat';
 
   // ============================================
   // Bug API - 버그 제보
@@ -176,4 +190,11 @@ class ApiEndpoints {
 
   /// 공지사항 목록 조회
   static const String getNotices = '/api/notices';
+
+  // ============================================
+  // Community
+  // ============================================
+
+  /// 모집 게시글 목록 조회 / 생성
+  static const String communityPosts = '/api/community-posts';
 }

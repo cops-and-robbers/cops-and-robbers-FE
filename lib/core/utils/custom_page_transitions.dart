@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,6 +44,38 @@ CustomTransitionPage<T> buildDirectionalSlide<T>({
     transitionDuration: duration ?? const Duration(milliseconds: 300),
     reverseTransitionDuration:
         reverseDuration ?? const Duration(milliseconds: 200),
+  );
+}
+
+/// 아래에서 위로 올라오는 전환
+///
+/// 화면 하단의 버튼에서 여는 화면에 쓴다 — 누른 자리에서 그대로 솟아올라야
+/// 어디서 열렸는지가 보인다 (커뮤니티 하단 "모집글 작성" 버튼).
+///
+/// 사용 예시:
+/// ```dart
+/// pageBuilder: (context, state) => buildSlideUp(
+///   child: const CommunityCreatePage(),
+///   key: state.pageKey,
+/// )
+/// ```
+CustomTransitionPage<T> buildSlideUp<T>({
+  required Widget child,
+  required LocalKey key,
+}) {
+  return CustomTransitionPage<T>(
+    key: key,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final tween = Tween(
+        begin: const Offset(0.0, 1.0),
+        end: Offset.zero,
+      ).chain(CurveTween(curve: Curves.easeInOut));
+
+      return SlideTransition(position: animation.drive(tween), child: child);
+    },
+    transitionDuration: const Duration(milliseconds: 300),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
   );
 }
 
@@ -93,6 +127,35 @@ CustomTransitionPage<T> buildSmoothFade<T>({
     reverseTransitionDuration: const Duration(milliseconds: 180),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(opacity: animation, child: child);
+    },
+  );
+}
+
+/// 블러가 걷히며 나타나는 전환
+///
+/// 크레딧 화면(버전 5회 탭 이스터에그) 전용입니다. 다른 화면과 다른 방식으로 등장해야
+/// 숨겨진 화면이라는 느낌이 살아서, 공용 전환을 쓰지 않고 따로 둡니다.
+CustomTransitionPage<T> buildBlurFade<T>({
+  required Widget child,
+  required LocalKey key,
+}) {
+  return CustomTransitionPage<T>(
+    key: key,
+    transitionDuration: const Duration(milliseconds: 500),
+    reverseTransitionDuration: const Duration(milliseconds: 300),
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return AnimatedBuilder(
+        animation: animation,
+        builder: (context, _) {
+          // 블러: 10 → 0 (선명해짐)
+          final blur = (1 - animation.value) * 10;
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+            child: Opacity(opacity: animation.value, child: child),
+          );
+        },
+      );
     },
   );
 }

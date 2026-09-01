@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/character_assets.dart';
-import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../providers/game_event_provider.dart';
@@ -93,10 +92,8 @@ class ArrestLockOverlay extends ConsumerWidget {
                       text: l10n.gameArrestOverlayEscapeCompleteButton,
                       width: 288.w,
                       height: 48.h,
-                      borderRadius: AppRadius.medium,
                       backgroundColor: AppColors.green,
                       foregroundColor: AppColors.black,
-                      showBorder: false,
                       textStyle: AppTextStyles.robberLabel,
                       onPressed: () {
                         GameActionModal.show(

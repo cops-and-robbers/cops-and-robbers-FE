@@ -3,13 +3,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/constants/app_icons.dart';
+import '../core/constants/legal_doc.dart';
 import '../core/constants/game_team.dart';
 import '../core/constants/spacing_and_radius.dart';
 import '../core/constants/text_styles.dart';
 import '../core/utils/custom_page_transitions.dart';
+import '../core/widgets/buttons/app_button.dart';
 import '../l10n/app_localizations.dart';
 import 'route_paths.dart';
 
@@ -23,6 +28,22 @@ import '../features/auth/presentation/pages/onboarding_page.dart';
 import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
+import '../features/community/domain/entities/community_post_entity.dart';
+import '../features/community/presentation/pages/community_chat_meeting_info_page.dart';
+import '../features/community/presentation/pages/community_chat_room_info_page.dart';
+import '../features/community/presentation/pages/community_chat_room_page.dart';
+import '../features/community/presentation/pages/community_create_page.dart';
+import '../features/community/presentation/pages/community_detail_page.dart';
+import '../features/community/presentation/pages/community_page.dart';
+import '../features/community/presentation/pages/community_notification_page.dart';
+import '../features/community/presentation/pages/community_scrap_page.dart';
+import '../features/community/presentation/pages/community_search_page.dart';
+import '../features/credits/presentation/pages/credits_page.dart';
+import '../features/mypage/presentation/pages/agreement_settings_page.dart';
+import '../features/mypage/presentation/pages/bug_report_page.dart';
+import '../features/mypage/presentation/pages/language_settings_page.dart';
+import '../features/mypage/presentation/pages/my_page.dart';
+import 'main_scaffold.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
 import '../features/session/presentation/pages/setup_playground_page.dart';
 import '../features/session/presentation/pages/setup_prison_page.dart';
@@ -34,12 +55,12 @@ import '../features/session/presentation/pages/game_settings_edit_page.dart';
 import '../features/session/data/models/game_settings_response.dart';
 import '../features/game/presentation/pages/game_page.dart';
 import '../features/notice/presentation/pages/notices_page.dart';
-import '../features/settings/presentation/pages/settings_page.dart';
-import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
-import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
-import '../features/credits/presentation/pages/credits_page.dart';
+import '../features/report/domain/report_target.dart';
+import '../features/report/presentation/pages/report_category_page.dart';
+import '../features/report/presentation/pages/report_reason_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/buttons/previous_button.dart';
+import '../core/widgets/pages/legal_document_page.dart';
 import '../core/widgets/pages/maintenance_page.dart';
 import '../core/widgets/pages/force_update_page.dart';
 import '../features/session/presentation/pages/deeplink_join_page.dart';
@@ -142,6 +163,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         ];
 
         // ====================================================================
+        // 0. 법적 문서 - 로그인·약관 동의 이전에도 열 수 있어야 한다
+        //    로그인 화면과 가입 동의 화면이 약관을 띄운다. 아래 가드에 걸리면
+        //    각각 /login 과 /agreement 로 되돌아가 문서가 열리지 않는다.
+        // ====================================================================
+        if (currentPath.startsWith('${RoutePaths.legalDocument}/')) {
+          return null;
+        }
+
+        // ====================================================================
+        // 0-1. 앱 소개(온보딩) - 로그인 이전에 뜬다
+        //    아래 인증 가드보다 먼저 통과시켜야 미인증 사용자가 /login 으로
+        //    되돌려지지 않는다. publicPaths 에만 넣으면 안 된다 — 그건
+        //    !isAuthenticated 분기 안이라, 인증 상태로 마이페이지에서 다시 열 때
+        //    requiresAgreement/isNewUser 분기에 걸린다.
+        // ====================================================================
+        if (currentPath == RoutePaths.onboarding) {
+          return null;
+        }
+
+        // ====================================================================
         // 1. 인증 체크 - 로그인 필요한 페이지 보호
         // ====================================================================
         if (!isAuthenticated) {
@@ -223,7 +264,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.splash,
         name: RoutePaths.splashName,
-        builder: (context, state) => const SplashPage(),
+        // 무전환 — 온보딩이 닫히며 스플래시로 복귀할 때 기본 전환이 끼지 않게 한다
+        pageBuilder: (context, state) => buildInstantTransition(
+          key: state.pageKey,
+          child: const SplashPage(),
+        ),
       ),
 
       GoRoute(
@@ -236,8 +281,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.onboarding,
         name: RoutePaths.onboardingName,
-        pageBuilder: (context, state) =>
-            buildSmoothFade(key: state.pageKey, child: const OnboardingPage()),
+        // 무전환 — 온보딩을 닫고 로그인으로 갈 때 애니메이션이 보이지 않게 한다
+        pageBuilder: (context, state) => buildInstantTransition(
+          key: state.pageKey,
+          child: const OnboardingPage(),
+        ),
       ),
 
       GoRoute(
@@ -260,109 +308,398 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // ====================================================================
-      // Tutorial Routes (튜토리얼 — 카탈로그 + 항목별 디테일)
+      // Legal Document Routes (약관·정책·라이선스)
       // ====================================================================
       GoRoute(
-        path: '/tutorial',
+        path: '${RoutePaths.legalDocument}/:doc',
+        name: RoutePaths.legalDocumentName,
+        redirect: (context, state) =>
+            legalDocFromSlug(state.pathParameters['doc']) == null
+            ? RoutePaths.home
+            : null,
+        // redirect 가 먼저 돌아 모르는 조각을 걸러내므로 여기서는 null 이 아니다.
         pageBuilder: (context, state) => buildDirectionalSlide(
           key: state.pageKey,
-          child: const TutorialCatalogPage(),
+          child: LegalDocumentPage(
+            doc: legalDocFromSlug(state.pathParameters['doc'])!,
+          ),
           isForward: true,
         ),
       ),
+      // ====================================================================
+      // Report Routes (신고)
+      //
+      // 어느 화면에서든 열리므로 최상위에 둔다. `extra`로 무엇을 신고하는지를
+      // 넘긴다 — 콜백 대신 대상만 넘겨야 라우트로 다룰 수 있다.
+      // ====================================================================
       GoRoute(
-        path: '/tutorial/in-game',
-        pageBuilder: (context, state) => buildDirectionalSlide(
-          key: state.pageKey,
-          child: const InGameTutorialPage(),
-          isForward: true,
-        ),
+        path: RoutePaths.report,
+        name: RoutePaths.reportName,
+        // 대상 없이 주소만 찍고 들어오면 그릴 것이 없다.
+        redirect: (context, state) =>
+            state.extra is ReportArgs ? null : RoutePaths.home,
+        pageBuilder: (context, state) {
+          final args = state.extra! as ReportArgs;
+          return buildDirectionalSlide(
+            key: state.pageKey,
+            child: ReportCategoryPage(
+              target: args.target,
+              isDarkMode: args.isDarkMode,
+            ),
+            isForward: true,
+          );
+        },
       ),
-
+      // 자식이 아니라 형제로 둔다. 자식으로 두면 이 화면으로 이동할 때 부모
+      // `/report`의 redirect와 pageBuilder가 같은 `extra`를 다시 보는데, 여기서
+      // 넘기는 값은 대상이 아니라 화면 테마라 부모가 홈으로 튕기고 캐스트가 터진다.
+      // push는 경로 계층과 무관하게 스택에 쌓이므로 뒤로 가면 유형 목록으로 돌아온다.
+      GoRoute(
+        path: RoutePaths.reportReason,
+        name: RoutePaths.reportReasonName,
+        redirect: (context, state) =>
+            state.extra is ReportReasonArgs ? null : RoutePaths.home,
+        pageBuilder: (context, state) {
+          final args = state.extra! as ReportReasonArgs;
+          return buildDirectionalSlide(
+            key: state.pageKey,
+            child: ReportReasonPage(
+              target: args.target,
+              isDarkMode: args.isDarkMode,
+            ),
+            isForward: true,
+          );
+        },
+      ),
       // ====================================================================
       // Home & Main Navigation
       // ====================================================================
-      GoRoute(
-        path: RoutePaths.home,
-        name: RoutePaths.homeName,
-        pageBuilder: (context, state) => buildSmoothFade(
-          key: state.pageKey,
-          // fromGameExit: 게임 종료 후 "홈으로" 이탈 직후 진입 —
-          // 퇴장 API가 비행 중일 수 있어 활성 게임 안전망을 1회 건너뛴다
-          child: HomePage(
-            skipActiveGameCheck:
-                state.uri.queryParameters['fromGameExit'] == 'true',
-          ),
-        ),
-        routes: [
-          // ==============================================================
-          // Settings Page
-          // ==============================================================
-          GoRoute(
-            path: 'settings',
-            name: RoutePaths.settingsName,
-            pageBuilder: (context, state) => buildDirectionalSlide(
+      StatefulShellRoute.indexedStack(
+        pageBuilder: (context, state, navigationShell) =>
+            buildInstantTransition(
               key: state.pageKey,
-              child: const SettingsPage(),
-              isForward: true,
+              child: MainScaffold(navigationShell: navigationShell),
             ),
+        branches: [
+          // ==============================================================
+          // Home Branch
+          // ==============================================================
+          StatefulShellBranch(
             routes: [
-              // 히든 크레딧 페이지 (앱 버전 5탭으로 진입)
               GoRoute(
-                path: 'credits',
-                name: RoutePaths.creditsName,
-                pageBuilder: (context, state) => buildDirectionalSlide(
-                  key: state.pageKey,
-                  child: const CreditsPage(),
-                  isForward: true,
+                path: RoutePaths.home,
+                name: RoutePaths.homeName,
+                builder: (context, state) => HomePage(
+                  // fromGameExit: 게임 종료 후 "홈으로" 이탈 직후 진입 —
+                  // 퇴장 API가 비행 중일 수 있어 활성 게임 안전망을 1회 건너뛴다
+                  skipActiveGameCheck:
+                      state.uri.queryParameters['fromGameExit'] == 'true',
                 ),
+                routes: [
+                  // ======================================================
+                  // Notices Page
+                  // ======================================================
+                  GoRoute(
+                    path: 'notices',
+                    name: RoutePaths.noticesName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const NoticesPage(),
+                      isForward: true,
+                    ),
+                  ),
+
+                  // ======================================================
+                  // Session Creation Flow (Single PageView Page) - NEW
+                  // ======================================================
+                  GoRoute(
+                    path: 'create-session',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: SessionCreationFlowPage(
+                        communityPostId: state.extra as int?,
+                      ),
+                      isForward: true,
+                    ),
+                    routes: [
+                      // 플레이그라운드 설정 (모달 페이지)
+                      GoRoute(
+                        path: 'playground',
+                        name: RoutePaths.setupPlaygroundFromFlowName,
+                        // go_router는 parentNavigatorKey를 자식에 상속하지 않으므로
+                        // 각 라우트에 명시적으로 지정해야 한다
+                        parentNavigatorKey: rootNavigatorKey,
+                        pageBuilder: (context, state) => buildDirectionalSlide(
+                          key: state.pageKey,
+                          child: SetupPlaygroundPage(
+                            editInitialShape: state.extra as AreaShape?,
+                            showStepIndicator: true,
+                          ),
+                          isForward: true,
+                        ),
+                      ),
+                      // 감옥 설정 (모달 페이지)
+                      GoRoute(
+                        path: 'prison',
+                        name: RoutePaths.setupPrisonFromFlowName,
+                        parentNavigatorKey: rootNavigatorKey,
+                        pageBuilder: (context, state) => buildDirectionalSlide(
+                          key: state.pageKey,
+                          child: SetupPrisonPage(
+                            editArgs: state.extra as PrisonEditArgs?,
+                            showStepIndicator: true,
+                          ),
+                          isForward: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
 
           // ==============================================================
-          // Notices Page
+          // Community Branch (준비중 placeholder)
           // ==============================================================
-          GoRoute(
-            path: 'notices',
-            name: RoutePaths.noticesName,
-            pageBuilder: (context, state) => buildDirectionalSlide(
-              key: state.pageKey,
-              child: const NoticesPage(),
-              isForward: true,
-            ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.community,
+                name: RoutePaths.communityName,
+                pageBuilder: (context, state) => buildSmoothFade(
+                  key: state.pageKey,
+                  child: const CommunityPage(),
+                ),
+                routes: [
+                  // ======================================================
+                  // 모집글 작성 (바텀 네비 위 전체 화면)
+                  // ======================================================
+                  GoRoute(
+                    path: 'create',
+                    name: RoutePaths.communityCreateName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    // 목록 하단 버튼에서 여는 화면이라 그 자리에서 솟아오른다.
+                    pageBuilder: (context, state) => buildSlideUp(
+                      key: state.pageKey,
+                      child: const CommunityCreatePage(),
+                    ),
+                  ),
+                  // ======================================================
+                  // 모집글 검색 (바텀 네비 위 전체 화면)
+                  //
+                  // `:postId`보다 앞에 둔다 — 뒤에 두면 `/community/search`가
+                  // postId="search"로 잡힌다.
+                  // ======================================================
+                  GoRoute(
+                    path: 'search',
+                    name: RoutePaths.communitySearchName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildSmoothFade(
+                      key: state.pageKey,
+                      child: const CommunitySearchPage(),
+                    ),
+                  ),
+                  // ======================================================
+                  // 알림함 (바텀 네비 위 전체 화면)
+                  //
+                  // `:postId`보다 앞에 둔다 — 뒤에 두면 `/community/notifications`가
+                  // postId="notifications"로 잡힌다.
+                  // ======================================================
+                  GoRoute(
+                    path: 'notifications',
+                    name: RoutePaths.communityNotificationName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const CommunityNotificationPage(),
+                      isForward: true,
+                    ),
+                  ),
+                  // ======================================================
+                  // 모집글 상세 (바텀 네비 위 전체 화면)
+                  //
+                  // `create`보다 뒤에 둔다 — 앞에 두면 `/community/create`가
+                  // postId="create"로 잡힌다.
+                  // ======================================================
+                  GoRoute(
+                    path: ':postId',
+                    name: RoutePaths.communityDetailName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) {
+                      // 숫자가 아닌 경로가 들어오면 목록으로 돌려보내는 대신
+                      // 0으로 조회해 404 화면을 그린다 — 잘못된 링크임을
+                      // 사용자가 알 수 있어야 한다.
+                      final postId =
+                          int.tryParse(state.pathParameters['postId'] ?? '') ??
+                          0;
+                      final page = CommunityDetailPage(postId: postId);
+
+                      // 목록에서 "수정"을 고르면 이 상세 위로 곧장 수정 화면이
+                      // 솟아오른다 — 두 전환이 겹치지 않도록 그때만 생략한다.
+                      return state.extra == CommunityDetailEntry.silent
+                          ? buildInstantTransition(
+                              key: state.pageKey,
+                              child: page,
+                            )
+                          : buildSmoothFade(key: state.pageKey, child: page);
+                    },
+                    routes: [
+                      // ==================================================
+                      // 모집글 수정 (상세 위로 솟아오름)
+                      //
+                      // 작성 화면을 수정 모드로 재사용한다 — 서버가 PUT 전체
+                      // 교체라 보낼 값이 작성과 같기 때문. 전환도 작성과 같은
+                      // slideUp이라 닫을 때 아래로 내려간다(가로 슬라이드 없음).
+                      // ==================================================
+                      GoRoute(
+                        path: 'edit',
+                        name: RoutePaths.communityEditName,
+                        parentNavigatorKey: rootNavigatorKey,
+                        // 고칠 글을 함께 받아야만 열 수 있다. 딥링크로 직접
+                        // 들어오면 넘겨줄 글이 없으므로 상세로 되돌린다.
+                        redirect: (context, state) =>
+                            state.extra is CommunityPostEntity
+                            ? null
+                            : '/community/${state.pathParameters['postId']}',
+                        pageBuilder: (context, state) => buildSlideUp(
+                          key: state.pageKey,
+                          child: CommunityCreatePage(
+                            post: state.extra as CommunityPostEntity,
+                          ),
+                        ),
+                      ),
+                      // ==================================================
+                      // 모집글 채팅방 (상세 위로, 바텀 네비 없음)
+                      // ==================================================
+                      GoRoute(
+                        path: 'chat',
+                        name: RoutePaths.communityChatName,
+                        parentNavigatorKey: rootNavigatorKey,
+                        pageBuilder: (context, state) => buildSmoothFade(
+                          key: state.pageKey,
+                          child: CommunityChatRoomPage(
+                            postId:
+                                int.tryParse(
+                                  state.pathParameters['postId'] ?? '',
+                                ) ??
+                                0,
+                          ),
+                        ),
+                        routes: [
+                          GoRoute(
+                            path: 'menu',
+                            name: RoutePaths.communityChatMenuName,
+                            parentNavigatorKey: rootNavigatorKey,
+                            pageBuilder: (context, state) =>
+                                buildDirectionalSlide(
+                                  key: state.pageKey,
+                                  child: CommunityChatRoomInfoPage(
+                                    postId:
+                                        int.tryParse(
+                                          state.pathParameters['postId'] ?? '',
+                                        ) ??
+                                        0,
+                                  ),
+                                  isForward: true,
+                                ),
+                          ),
+                          GoRoute(
+                            path: 'meeting-info',
+                            name: RoutePaths.communityChatMeetingInfoName,
+                            parentNavigatorKey: rootNavigatorKey,
+                            pageBuilder: (context, state) =>
+                                buildDirectionalSlide(
+                                  key: state.pageKey,
+                                  child: CommunityChatMeetingInfoPage(
+                                    postId:
+                                        int.tryParse(
+                                          state.pathParameters['postId'] ?? '',
+                                        ) ??
+                                        0,
+                                  ),
+                                  isForward: true,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
 
           // ==============================================================
-          // Session Creation Flow (Single PageView Page) - NEW
+          // MyPage Branch (준비중 placeholder)
           // ==============================================================
-          GoRoute(
-            path: 'create-session',
-            pageBuilder: (context, state) => buildDirectionalSlide(
-              key: state.pageKey,
-              child: const SessionCreationFlowPage(),
-              isForward: true,
-            ),
+          StatefulShellBranch(
             routes: [
-              // 플레이그라운드 설정 (모달 페이지)
               GoRoute(
-                path: 'playground',
-                name: RoutePaths.setupPlaygroundFromFlowName,
-                pageBuilder: (context, state) => buildDirectionalSlide(
-                  key: state.pageKey,
-                  child: const SetupPlaygroundPage(),
-                  isForward: true,
-                ),
-              ),
-              // 감옥 설정 (모달 페이지)
-              GoRoute(
-                path: 'prison',
-                name: RoutePaths.setupPrisonFromFlowName,
-                pageBuilder: (context, state) => buildDirectionalSlide(
-                  key: state.pageKey,
-                  child: const SetupPrisonPage(),
-                  isForward: true,
-                ),
+                path: RoutePaths.mypage,
+                name: RoutePaths.mypageName,
+                pageBuilder: (context, state) =>
+                    buildSmoothFade(key: state.pageKey, child: const MyPage()),
+                // 하위 화면은 전부 루트 네비게이터에 올린다. 탭 안에 쌓으면 홈으로
+                // 갔다 마이페이지로 돌아왔을 때 그 화면이 그대로 떠 있고, 전환도
+                // 다른 화면과 달라진다. go_router 는 parentNavigatorKey 를 자식에
+                // 상속하지 않으므로 라우트마다 붙인다.
+                routes: [
+                  // 화면은 커뮤니티 글 목록이지만 진입점이 마이페이지라 여기에 둔다.
+                  GoRoute(
+                    path: 'scraps',
+                    name: RoutePaths.myScrapsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const CommunityScrapPage(),
+                      isForward: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'language',
+                    name: RoutePaths.languageSettingsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const LanguageSettingsPage(),
+                      isForward: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'agreements',
+                    name: RoutePaths.agreementSettingsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const AgreementSettingsPage(),
+                      isForward: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'bug-report',
+                    name: RoutePaths.bugReportName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildDirectionalSlide(
+                      key: state.pageKey,
+                      child: const BugReportPage(),
+                      isForward: true,
+                    ),
+                  ),
+                  // 버전 5회 탭으로만 닿는 이스터에그. 등장 연출이 다른 화면과
+                  // 달라야 숨겨진 화면이라는 느낌이 살아서 전용 전환을 쓴다.
+                  GoRoute(
+                    path: 'credits',
+                    name: RoutePaths.creditsName,
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => buildBlurFade(
+                      key: state.pageKey,
+                      child: const CreditsPage(),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -444,6 +781,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                     key: state.pageKey,
                     child: SetupPlaygroundPage(
                       editInitialShape: state.extra as AreaShape?,
+                      // 대기방에서 진행 중인 게임의 구역을 고치는 경로 — 역할 테마 적용
+                      isInGameEdit: true,
                     ),
                     isForward: true,
                   );
@@ -458,6 +797,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                     key: state.pageKey,
                     child: SetupPrisonPage(
                       editArgs: state.extra as PrisonEditArgs?,
+                      // 대기방에서 진행 중인 게임의 구역을 고치는 경로 — 역할 테마 적용
+                      isInGameEdit: true,
                     ),
                     isForward: true,
                   );
@@ -541,6 +882,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      // 모집글 딥링크 별칭 — 웹 주소(/g/{id} 등)를 라우터가 그대로 소화한다.
+      // 필요한 이유는 RoutePaths.communityPostDeeplinkAliases 주석 참조.
+      // 숫자가 아닌 id 는 상세 라우트의 기존 정책(0 으로 조회해 404 화면)이 받는다.
+      for (final alias in RoutePaths.communityPostDeeplinkAliases)
+        GoRoute(
+          path: alias,
+          redirect: (context, state) =>
+              '/community/${state.pathParameters['postId']}',
+        ),
+
       // ====================================================================
       // System Status Routes (인증 불필요)
       // ====================================================================
@@ -602,7 +953,7 @@ class _ErrorPage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: AppColors.red),
+              SvgPicture.asset(AppIcons.notFound, width: 110.w),
               SizedBox(height: AppSpacing.vertical16),
               Text(l10n.pageNotFoundMessage, style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical8),
@@ -611,17 +962,14 @@ class _ErrorPage extends ConsumerWidget {
                 style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
               ),
               SizedBox(height: AppSpacing.vertical24),
-              ElevatedButton(
+              AppButton(
+                text: l10n.buttonLogout,
                 onPressed: () async {
                   await ref.read(authNotifierProvider.notifier).signOut();
                   if (context.mounted) {
                     context.go(RoutePaths.login);
                   }
                 },
-                child: Text(
-                  l10n.buttonLogout,
-                  style: AppTextStyles.paragraph_14,
-                ),
               ),
             ],
           ),

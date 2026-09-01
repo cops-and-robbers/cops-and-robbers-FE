@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../constants/app_colors.dart';
+import '../constants/app_icons.dart';
+import '../constants/app_shadows.dart';
 import '../constants/spacing_and_radius.dart';
 import '../constants/text_styles.dart';
 
@@ -50,13 +52,7 @@ class PaginationBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: AppRadius.pill,
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(1, 1),
-            blurRadius: 8,
-            color: AppColors.black.withValues(alpha: 0.1),
-          ),
-        ],
+        boxShadow: AppShadows.soft,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -175,7 +171,7 @@ class PaginationBar extends StatelessWidget {
   }) {
     final color = enabled ? AppColors.black600 : AppColors.black200;
     final icon = SvgPicture.asset(
-      'assets/icons/icon_previous.svg',
+      AppIcons.previous,
       width: 16.w,
       height: 16.w,
       colorFilter: ColorFilter.mode(color, BlendMode.srcIn),

@@ -11,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/services/location/device_location_service.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../domain/entities/ping.dart';
 import 'map_error_widget.dart';
 import 'ping_marker_factory.dart';
@@ -38,12 +39,14 @@ class GoogleMapView extends StatefulWidget {
 class GoogleMapViewState extends State<GoogleMapView> {
   GoogleMapController? _controller;
 
-  static const LatLng _fallback = LatLng(37.5480, 127.0810);
 
   Set<Circle> _areaCircles = {};
   Set<Polygon> _areaPolygons = {};
 
   double _minZoom = 12.0;
+
+  /// 카메라 이동 허용 범위 — 구역 로드 전에는 무제한
+  CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
 
   // 도둑 공개 위치 마커
   BitmapDescriptor? _redRobberMarker;
@@ -112,7 +115,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
     final physHeight = (_shoeprintHeight * dpr).round();
 
     // SVG 로드 후 fill 색상 교체 (#080A0C → 타겟 색상)
-    final svgString = await rootBundle.loadString('assets/icons/shoeprint.svg');
+    final svgString = await rootBundle.loadString(AppIcons.shoeprint);
     final hex =
         '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
     final colorized = svgString.replaceAll('fill="#080A0C"', 'fill="$hex"');
@@ -222,6 +225,12 @@ class GoogleMapViewState extends State<GoogleMapView> {
         <= 1000 => 13.0,
         _ => 12.0,
       };
+
+  /// 카메라 이동 허용 범위를 갱신합니다 (플레이그라운드 주변 제한).
+  void updateCameraBounds(LatLngBounds bounds) {
+    if (!mounted) return;
+    setState(() => _cameraTargetBounds = CameraTargetBounds(bounds));
+  }
 
   void updateAreaCircles(Set<Circle> circles) {
     if (!mounted) return;
@@ -382,7 +391,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
     try {
       return GoogleMap(
         initialCameraPosition: const CameraPosition(
-          target: _fallback,
+          target: DeviceLocationService.fallbackLocation,
           zoom: 15,
         ),
         // Cloud Map ID는 콜드 스타트 시 회색 타일 영구 실패 가능성으로 미사용 — JSON 다크 스타일로 통일
@@ -407,6 +416,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
         myLocationButtonEnabled: false, // 커스텀 내 위치 버튼 사용
 
         minMaxZoomPreference: MinMaxZoomPreference(_minZoom, 20),
+        cameraTargetBounds: _cameraTargetBounds,
         zoomControlsEnabled: false,
         compassEnabled: false,
         circles: _areaCircles,

@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import 'agreement_checkbox.dart';
@@ -88,7 +89,7 @@ class AgreementItem extends StatelessWidget {
                 child: Transform.rotate(
                   angle: math.pi,
                   child: SvgPicture.asset(
-                    'assets/icons/icon_previous.svg',
+                    AppIcons.previous,
                     width: 20.w,
                     height: 20.w,
                     colorFilter: const ColorFilter.mode(

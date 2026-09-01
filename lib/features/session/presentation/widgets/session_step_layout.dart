@@ -5,7 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -119,14 +119,11 @@ class SessionStepLayout extends StatelessWidget {
 
   /// AppBar 생성 (StepIndicator + PreviousButton)
   PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      iconTheme: const IconThemeData(color: AppColors.black800),
-      title: StepIndicator(totalSteps: 4, currentStep: currentStep),
+    return AppTopBar(
+      titleWidget: StepIndicator(totalSteps: 4, currentStep: currentStep),
       centerTitle: false,
       titleSpacing: 0,
-      leading: PreviousButton(onPressed: onPrevious ?? () => context.pop()),
+      onBack: onPrevious ?? () => context.pop(),
       actions: [SizedBox(width: AppSpacing.horizontal20)],
     );
   }
@@ -159,7 +156,6 @@ class SessionStepLayout extends StatelessWidget {
     return AppButton(
       text: buttonText ?? l10n.buttonNext,
       onPressed: isButtonEnabled ? onNext : null,
-      showBorder: false,
     );
   }
 }

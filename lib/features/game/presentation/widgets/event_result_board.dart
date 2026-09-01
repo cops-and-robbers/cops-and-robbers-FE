@@ -120,10 +120,6 @@ class EventResultBoard extends StatelessWidget {
             AppButton(
               text: buttonText ?? l10n.buttonGoHome,
               onPressed: onGoHome,
-              backgroundColor: AppColors.blue,
-              foregroundColor: AppColors.white,
-              borderRadius: AppRadius.medium,
-              showBorder: false,
               height: 48.h,
             ),
           ],

@@ -21,28 +21,28 @@ enum IconPosition {
 ///
 /// **기본 스펙**:
 /// - 크기: 353x56 (반응형)
-/// - 모서리: 16px 라운드
+/// - 모서리: 12px 라운드
 /// - 텍스트: AppTextStyles.label_16
-/// - 테두리: 기본 1px (showBorder로 제어 가능)
+/// - 테두리: 기본 없음 (showBorder: true로 켠다)
 ///
 /// **색상**:
-/// - 활성화: 배경 black, 텍스트 white, 테두리 black100
-/// - 비활성화: 배경 black100, 텍스트 white, 테두리 없음
+/// - 활성화: 배경 blue, 텍스트 white
+/// - 비활성화: 배경 black100, 텍스트 white
 ///
 /// **사용 예시**:
 /// ```dart
-/// // 기본 버튼 (테두리 있음)
+/// // 기본 버튼 (blue · radius 12 · 테두리 없음)
 /// AppButton(
 ///   text: '로그인',
 ///   onPressed: () {},
 /// )
 ///
-/// // 테두리 없는 버튼
+/// // 테두리 있는 버튼
 /// AppButton(
 ///   text: '건너뛰기',
 ///   onPressed: () {},
-///   showBorder: false,
-///   backgroundColor: AppColors.green,
+///   showBorder: true,
+///   backgroundColor: AppColors.white,
 /// )
 ///
 /// // 아이콘 포함 버튼
@@ -69,19 +69,22 @@ class AppButton extends StatelessWidget {
     this.foregroundColor,
     this.disabledBackgroundColor,
     this.disabledForegroundColor,
-    this.showBorder = true,
+    this.showBorder = false,
     this.borderWidth = 1.0,
     this.borderColor,
     this.width,
     this.height,
+    this.padding,
     this.borderRadius,
     this.icon,
     this.iconPosition = IconPosition.leading,
+    this.iconGap,
     this.isLoading = false,
     this.subtitle,
     this.subtitleColor,
     this.contentAlignment,
     this.textStyle,
+    this.boxShadow,
   });
 
   /// 버튼 텍스트 (필수)
@@ -90,7 +93,7 @@ class AppButton extends StatelessWidget {
   /// 버튼 클릭 핸들러 (필수, null이면 비활성화)
   final VoidCallback? onPressed;
 
-  /// 활성화 상태 배경색 (기본: AppColors.black)
+  /// 활성화 상태 배경색 (기본: AppColors.blue)
   final Color? backgroundColor;
 
   /// 활성화 상태 텍스트/아이콘 색상 (기본: AppColors.white)
@@ -102,7 +105,7 @@ class AppButton extends StatelessWidget {
   /// 비활성화 상태 텍스트/아이콘 색상 (기본: AppColors.white)
   final Color? disabledForegroundColor;
 
-  /// 테두리 표시 여부 (기본: true)
+  /// 테두리 표시 여부 (기본: false)
   final bool showBorder;
 
   /// 테두리 두께 (기본: 1.0px)
@@ -117,7 +120,13 @@ class AppButton extends StatelessWidget {
   /// 버튼 높이 (기본: 56.h)
   final double? height;
 
-  /// 모서리 반경 (기본: 16.r)
+  /// 내용물(아이콘·텍스트) 안쪽 여백 (기본: 없음)
+  ///
+  /// 기본이 0인 이유: 대부분의 호출부가 [width]를 고정하고 내용을 가운데 두므로
+  /// 여백이 필요 없다. 폭 대비 내용이 짧아 가장자리와의 간격을 직접 잡아야 할 때만 준다.
+  final EdgeInsetsGeometry? padding;
+
+  /// 모서리 반경 (기본: 12.r)
   final BorderRadius? borderRadius;
 
   /// 아이콘 위젯 (선택 사항)
@@ -125,6 +134,11 @@ class AppButton extends StatelessWidget {
 
   /// 아이콘 위치 (기본: leading - 텍스트 왼쪽)
   final IconPosition iconPosition;
+
+  /// 아이콘과 텍스트 사이 간격 (기본: 8)
+  ///
+  /// `contentAlignment: spaceBetween`이면 좌우로 밀어붙이므로 이 값은 무시된다.
+  final double? iconGap;
 
   /// 로딩 상태 (true면 CircularProgressIndicator 표시)
   final bool isLoading;
@@ -141,6 +155,10 @@ class AppButton extends StatelessWidget {
   /// 텍스트 스타일 오버라이드 (미지정 시 label_16)
   final TextStyle? textStyle;
 
+  /// 버튼 바깥 그림자 (기본: 없음) — ElevatedButton의 elevation은 항상 0으로
+  /// 고정하므로, 그림자가 필요하면 이 필드로 감싸는 Container에 직접 그린다.
+  final List<BoxShadow>? boxShadow;
+
   // ============================================
   // 기본값 Getter 메서드
   // ============================================
@@ -150,7 +168,7 @@ class AppButton extends StatelessWidget {
     if (isLoading || onPressed == null) {
       return disabledBackgroundColor ?? AppColors.black100;
     }
-    return backgroundColor ?? AppColors.black;
+    return backgroundColor ?? AppColors.blue;
   }
 
   /// 활성 상태 텍스트/아이콘 색상
@@ -175,9 +193,9 @@ class AppButton extends StatelessWidget {
   /// 기본 높이 (56px)
   double get _effectiveHeight => height ?? 56.h;
 
-  /// 기본 모서리 반경 (16px)
+  /// 기본 모서리 반경 (12px)
   BorderRadius get _effectiveBorderRadius {
-    return borderRadius ?? AppRadius.xlarge;
+    return borderRadius ?? AppRadius.large;
   }
 
   /// 기본 정렬 방식 (center)
@@ -204,6 +222,7 @@ class AppButton extends StatelessWidget {
         border: showBorder
             ? Border.all(color: _effectiveBorderColor, width: borderWidth)
             : null,
+        boxShadow: boxShadow,
       ),
       child: ElevatedButton(
         onPressed: (isLoading || onPressed == null)
@@ -221,7 +240,7 @@ class AppButton extends StatelessWidget {
               disabledBackgroundColor ?? AppColors.black100,
           disabledForegroundColor: disabledForegroundColor ?? AppColors.white,
           shape: RoundedRectangleBorder(borderRadius: _effectiveBorderRadius),
-          padding: EdgeInsets.zero,
+          padding: padding ?? EdgeInsets.zero,
           elevation: 0,
           shadowColor: Colors.transparent,
         ),
@@ -254,6 +273,7 @@ class AppButton extends StatelessWidget {
       // 기존: 단일 텍스트
       textWidget = Text(
         text,
+        overflow: TextOverflow.ellipsis,
         style: (textStyle ?? AppTextStyles.label_16).copyWith(
           color: _effectiveForegroundColor,
         ),
@@ -266,6 +286,7 @@ class AppButton extends StatelessWidget {
         children: [
           Text(
             text,
+            overflow: TextOverflow.ellipsis,
             style: (textStyle ?? AppTextStyles.label_16).copyWith(
               color: _effectiveForegroundColor,
             ),
@@ -273,6 +294,7 @@ class AppButton extends StatelessWidget {
           SizedBox(height: AppSpacing.vertical4), // 간격
           Text(
             subtitle!,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.tag_12.copyWith(
               color: _effectiveSubtitleColor,
             ),
@@ -282,6 +304,7 @@ class AppButton extends StatelessWidget {
     }
 
     if (icon == null) {
+      // Row가 없어 Flexible을 못 쓰지만, 부모 제약에 맞춰 Text가 알아서 줄어든다
       return textWidget;
     }
 
@@ -289,21 +312,17 @@ class AppButton extends StatelessWidget {
     final iconWidget = icon!;
     final isSpaceBetween =
         _effectiveContentAlignment == MainAxisAlignment.spaceBetween;
+    // 버튼 폭이 고정(fixedSize)이라 아이콘+간격+텍스트 합이 넘칠 수 있어
+    // Row 안에서만 Flexible로 감싸 텍스트가 줄어들도록 한다
+    final flexibleTextWidget = Flexible(child: textWidget);
+    final gap = SizedBox(width: iconGap ?? AppSpacing.horizontal8);
 
     return Row(
       mainAxisAlignment: _effectiveContentAlignment,
       mainAxisSize: MainAxisSize.max, // 전체 너비 사용
       children: iconPosition == IconPosition.trailing
-          ? [
-              textWidget,
-              if (!isSpaceBetween) SizedBox(width: AppSpacing.horizontal8),
-              iconWidget,
-            ]
-          : [
-              iconWidget,
-              if (!isSpaceBetween) SizedBox(width: AppSpacing.horizontal8),
-              textWidget,
-            ],
+          ? [flexibleTextWidget, if (!isSpaceBetween) gap, iconWidget]
+          : [iconWidget, if (!isSpaceBetween) gap, flexibleTextWidget],
     );
   }
 }

@@ -585,8 +585,9 @@ class ChatNotifier extends _$ChatNotifier {
     if (_isDisposed ||
         _intentionalDisconnect ||
         _gameId == null ||
-        _team == null)
+        _team == null) {
       return;
+    }
 
     _reconnectCount++;
     if (_reconnectCount > _maxReconnectRetries) {
@@ -622,8 +623,9 @@ class ChatNotifier extends _$ChatNotifier {
     if (_isDisposed ||
         _intentionalDisconnect ||
         _gameId == null ||
-        _team == null)
+        _team == null) {
       return;
+    }
 
     final datasource = ref.read(chatStompDatasourceProvider);
 
@@ -643,8 +645,9 @@ class ChatNotifier extends _$ChatNotifier {
     if (_isDisposed ||
         _intentionalDisconnect ||
         _gameId == null ||
-        _team == null)
+        _team == null) {
       return;
+    }
 
     if (accessToken == null) {
       debugPrint('[ChatNotifier] ❌ 재연결 토큰 획득 실패');
@@ -715,8 +718,9 @@ class ChatNotifier extends _$ChatNotifier {
       if (_isDisposed ||
           _intentionalDisconnect ||
           _gameId == null ||
-          _team == null)
+          _team == null) {
         return;
+      }
 
       if (newToken == null) {
         debugPrint('[ChatNotifier] ❌ 토큰 갱신 실패 - 재로그인 필요');

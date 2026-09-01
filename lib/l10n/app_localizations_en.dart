@@ -12,20 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Cops and Robbers';
 
   @override
-  String get legalDocumentKoreanOnlyNotice =>
-      'This document is provided in Korean only. The Korean version is the legally binding text';
-
-  @override
-  String get loadingDefault => 'Processing...';
-
-  @override
-  String get permissionLocationFallbackTitle => 'Location permission guide';
-
-  @override
-  String get permissionLocationFallbackMessage =>
-      'Please allow location permission';
-
-  @override
   String get dialogUpdateOptionalTitle => 'New version notice';
 
   @override
@@ -50,28 +36,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialogUpdateMandatoryCancel => 'Later';
-
-  @override
-  String chatSystemGameStartTime(int minutes) {
-    return 'The time limit is $minutes minutes';
-  }
-
-  @override
-  String get chatSystemGameStartReportTip =>
-      'During the game, you can long-press a chat message to report and block disruptive users';
-
-  @override
-  String get chatSystemPoliceMoveWarning =>
-      'The Cops will move out shortly. Robbers, hurry up and move!';
-
-  @override
-  String chatSystemRemainingRobbers(int count) {
-    return 'Currently $count people running away!';
-  }
-
-  @override
-  String get chatSystemFiveMinutesLeft =>
-      '5 minutes left until game over. Don\'t miss your last chance!';
 
   @override
   String get errorNetworkTimeout => 'Server connection timed out';
@@ -179,16 +143,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pinTooCloseMessage => 'Pins are too close together';
 
   @override
-  String get dialogAgreementRequiredTermsTitle => 'Required terms not agreed';
-
-  @override
   String get errorAuthLoginCancelled => 'Sign in was cancelled';
 
   @override
   String get settingsLanguageLabel => 'Language';
-
-  @override
-  String get settingsLanguageSubtitle => 'Change the app display language';
 
   @override
   String get settingsLanguagePageTitle => 'Select language';
@@ -511,11 +469,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String gameSettingPoliceStartDelay(int minutes) {
-    return '$minutes min after Robbers run away';
+    return '$minutes min after Robbers start';
   }
-
-  @override
-  String get errorSettingsSaveFailed => 'Failed to save settings';
 
   @override
   String get pageGameSettingsEditTitle => 'Edit settings';
@@ -525,9 +480,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buttonSave => 'Save';
-
-  @override
-  String get errorAreaSaveFailed => 'Failed to save game area';
 
   @override
   String get pageGameSettingsTitle => 'Game settings';
@@ -545,8 +497,506 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneJail => 'Jail';
 
   @override
-  String get homePageGameButtonsHint =>
-      'You can create a game or join with an invite code';
+  String get mypageProfileIconLabel => 'Profile icon';
+
+  @override
+  String get bottomNavHome => 'Home';
+
+  @override
+  String get bottomNavCommunity => 'Community';
+
+  @override
+  String get pageCommunityDetailTitle => 'Post';
+
+  @override
+  String get communityDetailJoinChat => 'Join the chat';
+
+  @override
+  String get communityDetailShare => 'Share';
+
+  @override
+  String get communityChatRoomsEmpty => 'No chat rooms yet';
+
+  @override
+  String get communityChatRoomsLoginRequired => 'Log in to see your meetups';
+
+  @override
+  String communityChatSystemJoined(String nickname) {
+    return '$nickname joined';
+  }
+
+  @override
+  String communityChatSystemLeft(String nickname) {
+    return '$nickname left';
+  }
+
+  @override
+  String get communityChatPreviewJoined => 'A new member joined';
+
+  @override
+  String get communityChatPreviewLeft => 'A member left';
+
+  @override
+  String communityChatSystemKicked(String nickname) {
+    return '$nickname was removed';
+  }
+
+  @override
+  String get communityChatPreviewKicked => 'A member was removed';
+
+  @override
+  String get communityChatPreviewInvite => 'Game invite';
+
+  @override
+  String get communityChatPreviewUnsupported => 'New message';
+
+  @override
+  String get communityChatInviteOpened => 'The game has started!';
+
+  @override
+  String communityChatInviteTitle(String nickname, String roomTitle) {
+    return '$nickname invited you to [$roomTitle]';
+  }
+
+  @override
+  String communityChatInviteCode(String inviteCode) {
+    return 'Invite code $inviteCode';
+  }
+
+  @override
+  String get communityChatInviteJoin => 'Join game';
+
+  @override
+  String get communityChatInputHint => 'Send a message';
+
+  @override
+  String get communityChatEnterRoom => 'Enter chat';
+
+  @override
+  String communityChatMeetingMembers(String current, int max) {
+    return '$current/$max members';
+  }
+
+  @override
+  String get communityChatViewLocation => 'View location';
+
+  @override
+  String get communityChatStartGame => 'Start game';
+
+  @override
+  String get communityChatInviteSendFailed =>
+      'Couldn\'t send the invite to the chat';
+
+  @override
+  String get communityChatInviteDialogTitle => 'Game invitation';
+
+  @override
+  String communityChatInviteDialogBody(String nickname) {
+    return '$nickname invited you\nto a game';
+  }
+
+  @override
+  String get communityChatInviteDialogCodeLabel => 'Room code';
+
+  @override
+  String get communityChatInviteDialogDecline => 'Decline';
+
+  @override
+  String get communityChatInviteDialogEnter => 'Enter';
+
+  @override
+  String communityChatMemberCount(int count) {
+    return '$count participants';
+  }
+
+  @override
+  String get communityChatAuthorBadge => 'Host';
+
+  @override
+  String get communityChatViewPost => 'View post';
+
+  @override
+  String get communityChatLeave => 'Leave chat';
+
+  @override
+  String get communityChatLeaveConfirmTitle => 'Leave this chat?';
+
+  @override
+  String get communityChatLeaveConfirmMessage =>
+      'You won\'t be able to see this conversation again';
+
+  @override
+  String get communityChatMeetingInfoTitle => 'Meeting info';
+
+  @override
+  String get communityChatConnectionLost => 'Connection lost';
+
+  @override
+  String get communityChatReconnect => 'Reconnect';
+
+  @override
+  String get communityChatReconnecting => 'Connecting...';
+
+  @override
+  String get communityChatSendFailed => 'Failed · Tap to retry';
+
+  @override
+  String get communityChatEvicted => 'You\'re no longer a member of this chat';
+
+  @override
+  String get timePeriodAm => 'AM';
+
+  @override
+  String get timePeriodPm => 'PM';
+
+  @override
+  String communityChatTime(String period, String hour, String minute) {
+    return '$hour:$minute $period';
+  }
+
+  @override
+  String communityChatDateShort(String month, String day) {
+    return '$month/$day';
+  }
+
+  @override
+  String get buttonLogin => 'Log in';
+
+  @override
+  String get errorCodeInvalidMessageType => 'This message can\'t be sent';
+
+  @override
+  String get errorCodeEmptyMessage => 'Please enter a message';
+
+  @override
+  String get errorCodeMessageTooLong => 'Messages can be up to 500 characters';
+
+  @override
+  String get errorCodeInvalidGameInvite => 'The invite information is invalid';
+
+  @override
+  String get errorCodeInvalidMessageKey =>
+      'Couldn\'t send the message. Please try again';
+
+  @override
+  String communityDetailCommentCount(int count) {
+    return 'Comments $count';
+  }
+
+  @override
+  String get communityCommentHint => 'Leave a comment';
+
+  @override
+  String get communityCommentReplyHint => 'Leave a reply';
+
+  @override
+  String get communityCommentDeleted => 'This comment was deleted';
+
+  @override
+  String get communityCommentEmpty => 'Be the first to comment';
+
+  @override
+  String get communityCommentJustNow => 'Just now';
+
+  @override
+  String communityCommentMinutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String communityCommentHoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String get communityDeleteConfirmTitle => 'Delete this post?';
+
+  @override
+  String get communityDeleteConfirmMessage => 'This can\'t be undone';
+
+  @override
+  String get communityLoginRequiredMessage => 'You need to log in for this';
+
+  @override
+  String get communityMenuEdit => 'Edit';
+
+  @override
+  String get communityMenuDelete => 'Delete';
+
+  @override
+  String get communityMenuMarkCompleted => 'Close recruiting';
+
+  @override
+  String get communityMenuMarkRecruiting => 'Reopen recruiting';
+
+  @override
+  String get communityMenuLoginRequired => 'Log in to continue';
+
+  @override
+  String get communityMenuNotificationOn => 'Turn on notifications';
+
+  @override
+  String get communityMenuNotificationOff => 'Turn off notifications';
+
+  @override
+  String get communityMenuReplyNotificationOn => 'Turn on reply notifications';
+
+  @override
+  String get communityMenuReplyNotificationOff =>
+      'Turn off reply notifications';
+
+  @override
+  String get communityStatusRecruiting => 'Open';
+
+  @override
+  String get communityStatusCompleted => 'Closed';
+
+  @override
+  String get communityStatusEnded => 'Ended';
+
+  @override
+  String communityHeadcount(int current, int max) {
+    return '$current/$max';
+  }
+
+  @override
+  String communityHeadcountMaxOnly(int max) {
+    return 'Max $max';
+  }
+
+  @override
+  String communityMeetingAt(
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$month/$day ($weekday) $time';
+  }
+
+  @override
+  String get pageCommunityTitle => 'Community';
+
+  @override
+  String get pageCommunityEmpty => 'No posts yet';
+
+  @override
+  String get pageCommunityScrapTitle => 'Scraps';
+
+  @override
+  String get communityScrapEmpty => 'Nothing scrapped yet';
+
+  @override
+  String get pageCommunityNotificationTitle => 'Notifications';
+
+  @override
+  String get communityNotificationEmpty => 'No notifications yet';
+
+  @override
+  String communityNotificationNewComment(String content) {
+    return 'New comment: $content';
+  }
+
+  @override
+  String communityNotificationNewReply(String content) {
+    return 'New reply: $content';
+  }
+
+  @override
+  String get communityScopeAll => 'All';
+
+  @override
+  String get communityScopeNearby => 'Nearby';
+
+  @override
+  String get communityScopeMine => 'My meetups';
+
+  @override
+  String get communitySortLatest => 'Latest';
+
+  @override
+  String get communitySortPopular => 'Popular';
+
+  @override
+  String get communitySortDistance => 'Nearest';
+
+  @override
+  String get communitySortDeadline => 'Closing soon';
+
+  @override
+  String get communitySortNeedsLocation =>
+      'Location access is needed to sort by distance';
+
+  @override
+  String get communitySortLocationDenied =>
+      'Turn on location access in Settings';
+
+  @override
+  String get communitySearchHint => 'Search by title or place';
+
+  @override
+  String get communitySearchRecent => 'Recent searches';
+
+  @override
+  String get communitySearchClearAll => 'Clear all';
+
+  @override
+  String get communitySearchEmpty => 'No results found';
+
+  @override
+  String get communitySearchTooShort => 'Enter at least 2 characters';
+
+  @override
+  String get communityCreatePost => 'New post';
+
+  @override
+  String get communityEditPost => 'Edit post';
+
+  @override
+  String get communityBackToList => 'Back to list';
+
+  @override
+  String get communityCreateLabelTitle => 'Title';
+
+  @override
+  String get communityCreateHintTitle => 'After-work match! Beginners welcome';
+
+  @override
+  String get communityCreateLabelContent => 'Details';
+
+  @override
+  String get communityCreateHintContent =>
+      'Add rules, what to bring, after-party plans';
+
+  @override
+  String get communityCreateLabelDate => 'Date';
+
+  @override
+  String get communityCreateHintDate => 'Pick a date for the meetup';
+
+  @override
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$year.$month.$day ($weekday) $time';
+  }
+
+  @override
+  String get communityDateSheetTitle => 'Meetup date & time';
+
+  @override
+  String get communityDateSheetRowTime => 'Time';
+
+  @override
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  ) {
+    return '$year.$month.$day $weekday';
+  }
+
+  @override
+  String get communityCreateLabelLocation => 'Location';
+
+  @override
+  String get communityCreateHintLocation =>
+      'Enter the exact spot, e.g. main gate';
+
+  @override
+  String get communityCreateHintAddress =>
+      'Filled in when you pick a spot on the map';
+
+  @override
+  String get communityCreateHintPickLocation => 'Pick a spot on the map';
+
+  @override
+  String get communityLocationCopied => 'Location copied';
+
+  @override
+  String get communityLocationPickerTitle => 'Pick a location';
+
+  @override
+  String get communityLocationPickerConfirm => 'Use this location';
+
+  @override
+  String get communityLocationPickerLoading => 'Checking the address';
+
+  @override
+  String get communityLocationPickerHint =>
+      'Tap the map to set your meeting spot';
+
+  @override
+  String get communityLocationPickerNotFound =>
+      'No address here. Please pick another spot';
+
+  @override
+  String get communityCreateLoading => 'Posting your recruitment';
+
+  @override
+  String get communityCreateLoadingSub =>
+      'We\'re publishing your post. Please wait a moment';
+
+  @override
+  String get communityEditLoading => 'Updating your recruitment';
+
+  @override
+  String get communityEditLoadingSub =>
+      'We\'re saving your changes. Please wait a moment';
+
+  @override
+  String get communityCreateLabelHeadcount => 'Headcount';
+
+  @override
+  String communityHeadcountValue(int count) {
+    return '$count';
+  }
+
+  @override
+  String communityHeadcountQuickAdd(int count) {
+    return '+ $count';
+  }
+
+  @override
+  String get communityHeadcountDecrease => 'Decrease headcount';
+
+  @override
+  String get communityHeadcountIncrease => 'Increase headcount';
+
+  @override
+  String get weekdayMon => 'Mon';
+
+  @override
+  String get weekdayTue => 'Tue';
+
+  @override
+  String get weekdayWed => 'Wed';
+
+  @override
+  String get weekdayThu => 'Thu';
+
+  @override
+  String get weekdayFri => 'Fri';
+
+  @override
+  String get weekdaySat => 'Sat';
+
+  @override
+  String get weekdaySun => 'Sun';
+
+  @override
+  String get bottomNavMyPage => 'My Page';
+
+  @override
+  String get comingSoonMessage => 'Coming soon';
+
+  @override
+  String get homeBannerSemanticsLabel => 'Event banner';
 
   @override
   String get dialogSafetyWarningTitle =>
@@ -572,10 +1022,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonGoToSettings => 'Go to settings';
 
   @override
-  String get errorJoinFailedCheckCode =>
-      'Failed to join. Please check the invite code';
-
-  @override
   String get errorJoinRetry => 'Failed to join. Please try again';
 
   @override
@@ -591,49 +1037,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonJoin => 'Join';
 
   @override
-  String get appBrandName => 'Cops and Robbers';
-
-  @override
-  String get messageComingSoon => 'In preparation';
-
-  @override
   String get homePageWelcomeMessage => 'Who stole\nMy cheese!!!!🧀';
 
   @override
-  String get buttonCreateRoom => 'Create room';
+  String get buttonCreateRoom => 'Create game';
 
   @override
-  String get buttonJoinRoom => 'Join room';
-
-  @override
-  String get sessionCreationStepZoneSubtitle =>
-      'Set up the game area\nPlease designate the playground first';
-
-  @override
-  String get sessionCreationStepRulesSubtitle =>
-      'Set up the game rules\nTap the number to enter it directly';
+  String get buttonJoinRoom => 'Join game';
 
   @override
   String get errorCreateRoomFailed =>
       'Failed to create game room. Please try again';
 
   @override
-  String get sessionCreationZoneFirstQuestion =>
-      'Shall we set up the game area selection first?';
-
-  @override
-  String get sessionCreationStepParticipantsTitle =>
-      'Set up the number of players';
-
-  @override
   String get sessionCreationStepBasicTitle => 'Set up basic information';
 
   @override
   String get sessionCreationStepReviewTitle => 'Verify final settings';
-
-  @override
-  String get sessionCreationStepZoneIntro =>
-      'Set up the required game area for the game';
 
   @override
   String get sessionCreationStepParticipantsHint =>
@@ -653,10 +1073,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorZoneNotConfigured =>
       'Please set up game area information first';
-
-  @override
-  String get setupPlaygroundRadiusInputHint =>
-      'Tap here to enter the radius directly';
 
   @override
   String get setupPlaygroundDescription =>
@@ -687,30 +1103,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This user is not a participant in the corresponding game';
 
   @override
-  String get waitingRoomTutorialTeamSwitch =>
-      'Tap this button to move to another team';
-
-  @override
-  String get waitingRoomTutorialInvite =>
-      'You can share the invite code with friends';
-
-  @override
-  String get waitingRoomTutorialSettings => 'You can view the game settings';
-
-  @override
-  String get waitingRoomTutorialReady => 'Please tap when you are ready';
-
-  @override
-  String get dialogInGamePreviewTitle => 'In-game screen preview';
-
-  @override
-  String get dialogTutorialPromptMessage =>
-      'Shall we check how it works\nonce the game starts before we begin?';
-
-  @override
-  String get buttonViewInGamePreview => 'Let\'s view';
-
-  @override
   String dialogKickConfirmTitle(String nickname) {
     return 'Remove $nickname?';
   }
@@ -739,15 +1131,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get errorTeamChangeFailed => 'Failed to change the team';
-
-  @override
-  String get errorReadyChangeFailed => 'Failed to change the readiness status';
-
-  @override
-  String get errorGameStartFailed => 'Failed to start the game';
-
-  @override
   String get dialogLeaveRoomTitle => 'Would you like to leave the room?';
 
   @override
@@ -756,10 +1139,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buttonLeave => 'Leave';
-
-  @override
-  String get errorLeaveRoomFailed =>
-      'An error occurred while processing your exit';
 
   @override
   String get dialogInviteCodeCreatedTitle => 'Created an invite code';
@@ -791,16 +1170,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'This is the currently configured game area';
 
   @override
-  String get dummyNicknameRaccoon => 'Plump raccoon';
-
-  @override
-  String get defaultNicknameLabel => 'Nickname';
-
-  @override
   String get titleGameRules => 'Game rules';
-
-  @override
-  String get buttonViewInGame => 'View in-game';
 
   @override
   String get gameRulesCopGoalPrefix =>
@@ -838,39 +1208,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ Screen locks if you leave the zone';
 
   @override
-  String get dialogstep0SelectAreaContentTitle => 'Playground';
-
-  @override
-  String get dialogstep0SelectAreaContentTitle5bc0 => 'Jail';
-
-  @override
-  String get fieldstep1ParticipantSettingsContentLabel => 'Max players';
-
-  @override
   String get unitPerson => 'people';
 
   @override
-  String get fieldstep2GameSettingsContentLabel => 'Round time limit';
-
-  @override
   String get unitMinutes => 'min';
-
-  @override
-  String get fieldstep2GameSettingsContentLabel5ab2 =>
-      'Robber location reveal interval';
 
   @override
   String get gameSettingNoLocationShareWarning =>
       'The Robbers\' locations will not be shared!';
 
   @override
-  String get fieldstep2GameSettingsContentLabelCe3b => 'Cop dispatch delay';
-
-  @override
-  String get gameSettingPoliceStartPrefix => 'After Robbers run away,';
+  String get gameSettingPoliceStartPrefix => 'After Robbers start,';
 
   @override
   String get gameSettingPoliceStartSuffix => 'later';
+
+  @override
+  String get buttonCompleteSetup => 'Done';
+
+  @override
+  String warnMaxReached(String max) {
+    return 'You can set up to $max';
+  }
+
+  @override
+  String get warnRoundDurationRange =>
+      'Game time must be between 10 and 180 minutes';
+
+  @override
+  String get warnShorterThanRoundDuration =>
+      'Set this shorter than the game time';
+
+  @override
+  String get warnPoliceWaitMin => 'Cop start time must be at least 1 minute';
+
+  @override
+  String get dialogQuitCreationTitle => 'Stop creating the room?';
+
+  @override
+  String get dialogQuitCreationMessage =>
+      'The zone you\'re drawing will be lost';
+
+  @override
+  String get buttonKeepCreating => 'Keep creating';
+
+  @override
+  String get buttonQuitCreation => 'Stop';
 
   @override
   String get sectionTitleSettings => 'Settings';
@@ -879,13 +1262,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelParticipantCount => 'Player count';
 
   @override
-  String get fieldRoundTimeLimit => 'Round time limit';
+  String get fieldRoundTimeLimit => 'Game time';
 
   @override
-  String get fieldLocationShareInterval => 'Location reveal interval';
+  String get fieldLocationShareInterval => 'Robber location share interval';
 
   @override
-  String get fieldPoliceDispatchTime => 'Cop dispatch delay';
+  String get fieldPoliceDispatchTime => 'Cop start time';
 
   @override
   String teamSectionCurrentCount(int count) {
@@ -1154,12 +1537,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonPlayAgain => 'One more time';
 
   @override
-  String get labelMyRecord => 'My record';
-
-  @override
-  String get labelResult => 'Result';
-
-  @override
   String get messageSaveFailed => 'Failed to save';
 
   @override
@@ -1232,18 +1609,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameZoneExitBanner => 'Left the playground';
 
   @override
-  String get chatTeamPrefix => '[Team]';
-
-  @override
-  String get chatSystemGameTimeLimit30Min => 'The time limit is 30 minutes';
-
-  @override
-  String get chatSystemGoodLuckRobber => 'Good luck running away, Robbers~';
-
-  @override
-  String get chatSystemLetsWin => 'Let\'s win this!';
-
-  @override
   String get messageMessageCopied => 'Message has been copied';
 
   @override
@@ -1266,23 +1631,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorReportFailed => 'Failed to submit the report';
 
   @override
-  String get dialogReportConfirmTitle => 'Would you like to report this user?';
-
-  @override
-  String get chatReportSelectedCategoryLabel => 'Selected reason for report:';
-
-  @override
-  String get chatReportSubmitNotice =>
-      '\nThe reported content will be reviewed and acted upon';
-
-  @override
   String get buttonCopy => 'Copy';
 
   @override
   String get buttonBlock => 'Block';
 
   @override
-  String get chatReportCategoryTitle => 'Select report type';
+  String get reportCategoryLabel => 'Report type';
 
   @override
   String chatInputBarUnreadAll(String all) {
@@ -1389,6 +1744,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAccountChangeNickname => 'Change nickname';
 
   @override
+  String get settingsAccountMyScraps => 'My scraps';
+
+  @override
   String get settingsSectionAppPreferences => 'App settings';
 
   @override
@@ -1397,6 +1755,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsAppGameNotificationDescription =>
       'Configure notifications for events occurring during the game';
+
+  @override
+  String get settingsAppCommunityNotification => 'Community notifications';
+
+  @override
+  String get settingsAppCommunityNotificationDescription =>
+      'Get push alerts for comments, replies, and chats. Your inbox keeps them even when this is off';
 
   @override
   String get settingsAppGeneralNotification => 'Notification';
@@ -1422,13 +1787,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsGuideBugReport => 'Bug report';
 
   @override
-  String get settingsGuideTutorialRewatch => 'Replay tutorial';
-
-  @override
-  String get settingsGuideTutorialReset => 'Reset tutorial';
-
-  @override
   String get settingsGuideAgreements => 'Terms and policies';
+
+  @override
+  String get settingsGuideOpenSourceLicenses => 'Open source licenses';
 
   @override
   String get settingsSectionEtc => 'Others';
@@ -1447,6 +1809,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to change game notification settings';
 
   @override
+  String get errorProfileIconUpdateFailed =>
+      'Couldn\'t change your profile icon';
+
+  @override
   String get titleBugReport => 'Bug report';
 
   @override
@@ -1461,19 +1827,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messageBugReportSubmitted => 'Bug report has been received';
-
-  @override
-  String get dialogTutorialResetTitle => 'Reset tutorial';
-
-  @override
-  String get dialogTutorialResetMessage =>
-      'Would you like to reset the tutorials\nso you can see them on all screens again?';
-
-  @override
-  String get buttonReset => 'Reset';
-
-  @override
-  String get messageTutorialReset => 'Tutorial has been reset';
 
   @override
   String get dialogLogoutTitle => 'Sign out';
@@ -1499,211 +1852,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buttonDeleteAccount => 'Delete';
-
-  @override
-  String get tutorialDummyNicknameCop1 => 'Cop1';
-
-  @override
-  String get tutorialDummyNicknameRobberKing => 'RobberKing';
-
-  @override
-  String get tutorialDummyNicknameRobberOrNot => 'RobberOrNot';
-
-  @override
-  String get tutorialDummyNicknameCapturedRobber => 'CapturedRobber';
-
-  @override
-  String get titleTutorialComplete => 'Tutorial complete!';
-
-  @override
-  String get messageTutorialComplete =>
-      'You have learned the core gameplay\nTry using it in a real game';
-
-  @override
-  String get buttonFinishTutorial => 'Finish tutorial';
-
-  @override
-  String get tutorialInGameMyLocation => 'Camera has moved to my location';
-
-  @override
-  String get tutorialMapPreviewLabel => 'Map preview';
-
-  @override
-  String get tutorialLocationRevealCountdown =>
-      'Until next Robber location reveal: 04:30';
-
-  @override
-  String get tutorialInGameRulesGuide => 'Game rules guide opens';
-
-  @override
-  String get tutorialQrRobberHint =>
-      'My wanted QR code is displayed on the screen. Show it to the Cops to get arrested';
-
-  @override
-  String get tutorialQrCopHint =>
-      'Camera turns on and you can scan a Robber\'s QR to arrest them';
-
-  @override
-  String get tutorialMissionParticipantsButton =>
-      'Try pressing the view participants button';
-
-  @override
-  String get tutorialMissionQrButton => 'Try pressing the QR button';
-
-  @override
-  String get tutorialMissionMapButton => 'Try returning to the map';
-
-  @override
-  String get tutorialMissionDropPing =>
-      'Try long-pressing the map to drop a pin';
-
-  @override
-  String get tutorialPingLongPressHint => 'Long-press anywhere on the map';
-
-  @override
-  String tutorialMissionProgress(String step) {
-    return 'Mission $step/4';
-  }
-
-  @override
-  String get tutorialPerspectiveRobber => 'Viewing from Robber\'s perspective';
-
-  @override
-  String get tutorialPerspectiveCop => 'Viewing from Cops\' perspective';
-
-  @override
-  String get tutorialInGameSelfEscape =>
-      'If you are jailed, you can attempt a jailbreak by tapping the card';
-
-  @override
-  String get tutorialInGameQrArrest =>
-      'In the actual game, you arrest Robbers by scanning their QR code';
-
-  @override
-  String get tutorialCurrentLabel => 'Currently';
-
-  @override
-  String tutorialPlayerCount(int count) {
-    return '$count people';
-  }
-
-  @override
-  String get tutorialOnTheRun => 'running away!';
-
-  @override
-  String get tutorialInGameChatExpand =>
-      'Drag the handle up to expand the chat';
-
-  @override
-  String get tutorialInGameChatInput =>
-      'Enter a message here to send it to team/global chat';
-
-  @override
-  String get tutorialChatHint => 'Enter chat message';
-
-  @override
-  String get tutorialCatalogAreaSubtitle =>
-      'Playground/jail setup and slider controls';
-
-  @override
-  String get tutorialCatalogInviteSubtitle =>
-      'Invite code entry and QR scanning';
-
-  @override
-  String get tutorialCatalogWaitingRoomTitle => 'Waiting room';
-
-  @override
-  String get tutorialCatalogLobbySubtitle =>
-      'Team changes, game settings, and ready status';
-
-  @override
-  String get tutorialCatalogInGameTitle => 'In-game';
-
-  @override
-  String get tutorialCatalogGameSubtitle =>
-      'Timer, map, participants, chat, and QR';
-
-  @override
-  String get pageTutorialCatalogTitle => 'Tutorial';
-
-  @override
-  String get tutorialCatalogIntro =>
-      'If it\'s your first time playing, take a look before starting';
-
-  @override
-  String get tutorialCatalogComingSoon => 'In preparation';
-
-  @override
-  String get creditMemberHongEuiMin => 'Hong Eui-min';
-
-  @override
-  String get creditMemberParkChanBin => 'Park Chan-bin';
-
-  @override
-  String get creditMemberLeeChangHee => 'Lee Chang-hee';
-
-  @override
-  String get creditMemberJeongSangHee => 'Jeong Sang-hee';
-
-  @override
-  String get creditMemberHwangHyeRim => 'Hwang Hye-rim';
-
-  @override
-  String get creditMemberYoonJiHee => 'Yoon Ji-hee';
-
-  @override
-  String get creditMemberKimDaim => 'Kim Da-im';
-
-  @override
-  String get creditMemberShinJiHoon => 'Shin Ji-hoon';
-
-  @override
-  String get creditMemberNamHaeYoon => 'Nam Hae-yoon';
-
-  @override
-  String get creditMemberSongHyeJung => 'Song Hye-jung';
-
-  @override
-  String get creditMemberLeeJin => 'Lee Jin';
-
-  @override
-  String get creditMemberAhnGeumSeo => 'Ahn Geum-seo';
-
-  @override
-  String get creditMemberSonGeonWoo => 'Son Geon-woo';
-
-  @override
-  String get creditMemberShinHyeBin => 'Shin Hye-bin';
-
-  @override
-  String get creditMemberJeongChangWoo => 'Jeong Chang-woo';
-
-  @override
-  String get creditMemberHeoSeokJun => 'Heo Seok-jun';
-
-  @override
-  String get creditMemberSeoHyunJin => 'Seo Hyun-jin';
-
-  @override
-  String get creditMemberOhDongHyun => 'Oh Dong-hyun';
-
-  @override
-  String get creditMemberChoiSeungHoon => 'Choi Seung-hoon';
-
-  @override
-  String get creditMemberKimMinWook => 'Kim Min-wook';
-
-  @override
-  String get creditMemberJeongMyeongJun => 'Jeong Myeong-jun';
-
-  @override
-  String get creditMemberKangDaeHyun => 'Kang Dae-hyun';
-
-  @override
-  String get creditMemberSimHyuk => 'Sim Hyuk';
-
-  @override
-  String get pageCreditsTitle => 'Creators of Cops and Robbers';
 
   @override
   String get errorReportGeneric =>
@@ -1763,6 +1911,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while updating push notification consent';
 
   @override
+  String get errorCommunityPushFetchUnexpected =>
+      'An unexpected error occurred while loading community push notification consent';
+
+  @override
+  String get errorCommunityPushUpdateUnexpected =>
+      'Couldn\'t update community notification settings';
+
+  @override
   String get errorAuthTokenMissing =>
       'We couldn\'t verify your login. Please sign in again';
 
@@ -1779,7 +1935,71 @@ class AppLocalizationsEn extends AppLocalizations {
       'An error occurred while loading notices';
 
   @override
-  String get messageLoadingNotices => 'Loading notices...';
+  String get errorCommunityPostsLoadGeneric =>
+      'Something went wrong while loading posts';
+
+  @override
+  String get errorCommunityPostsLoadFailed => 'Couldn\'t load posts';
+
+  @override
+  String get errorCommunityPostUpdateGeneric =>
+      'Something went wrong while updating the post';
+
+  @override
+  String get errorCommunityPostDeleteGeneric =>
+      'Something went wrong while deleting the post';
+
+  @override
+  String get errorCommunityPostStatusGeneric =>
+      'Something went wrong while changing the status';
+
+  @override
+  String get errorCommunityPostCreateGeneric =>
+      'Something went wrong while posting';
+
+  @override
+  String get errorCommunityCommentsLoadGeneric =>
+      'Something went wrong while loading comments';
+
+  @override
+  String get errorCommunityCommentCreateGeneric =>
+      'Something went wrong while posting your comment';
+
+  @override
+  String get errorCommunityCommentDeleteGeneric =>
+      'Something went wrong while deleting the comment';
+
+  @override
+  String get errorCommunityReactionGeneric =>
+      'Couldn\'t complete that. Please try again shortly';
+
+  @override
+  String get errorCommunityScrapsLoadGeneric =>
+      'Couldn\'t load your scraps. Please try again shortly';
+
+  @override
+  String get errorCommunityNotificationsLoadGeneric =>
+      'Couldn\'t load notifications. Please try again shortly';
+
+  @override
+  String get errorCommunityNotificationUnreadCountLoadGeneric =>
+      'Couldn\'t load your unread notification count';
+
+  @override
+  String get errorCommunityNotificationReadGeneric =>
+      'Failed to mark notifications as read';
+
+  @override
+  String get errorCommunityPostNotificationUpdateGeneric =>
+      'Couldn\'t update notifications for this post';
+
+  @override
+  String get errorCommunityCommentNotificationUpdateGeneric =>
+      'Couldn\'t update reply notifications';
+
+  @override
+  String get errorCommunityAddressLoadGeneric =>
+      'Something went wrong while loading the address';
 
   @override
   String get errorNoticeLoadFailed => 'Failed to load notices';
@@ -1789,6 +2009,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pageNoticesEmpty => 'There are no notices registered';
+
+  @override
+  String get noticeCategoryAll => 'All';
+
+  @override
+  String get noticeCategoryNotice => 'Notice';
+
+  @override
+  String get noticeCategoryMaintenance => 'Maintenance';
+
+  @override
+  String get noticeCategoryEvent => 'Event';
+
+  @override
+  String get noticeCategoryUpdate => 'Update';
+
+  @override
+  String get noticeTranslationFallback =>
+      'Translation is on the way — showing the original for now';
 
   @override
   String get errorAreaLoadFailed => 'Unable to load game area information';
@@ -1857,29 +2096,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while joining the game';
 
   @override
-  String get errorAlreadyInAnotherRoom =>
-      'You\'re already in another room. Please leave it first';
-
-  @override
   String get deeplinkAlreadyInRoom => 'You\'re already in a room';
-
-  @override
-  String get errorGameAlreadyStarted =>
-      'This game has already started, so you can\'t join';
-
-  @override
-  String get errorRoomSwitchFailed =>
-      'Couldn\'t join the new room. You\'ve already left the previous one';
-
-  @override
-  String get deeplinkSwitchRoomTitle => 'Move to this room?';
-
-  @override
-  String get deeplinkSwitchRoomMessage =>
-      'You\'ll leave your current room and join this new one';
-
-  @override
-  String get deeplinkSwitchRoomConfirm => 'Leave and join';
 
   @override
   String get errorPendingInviteLoad => 'Failed to load the pending invite code';
@@ -1914,6 +2131,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeInvalidInputValue =>
       'The value you entered doesn\'t meet the requirements';
+
+  @override
+  String get errorCodeAddressNotFound =>
+      'No address here. Please pick another spot';
 
   @override
   String get errorCodeInvalidDestination => 'Invalid connection path';
@@ -2132,6 +2353,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeNoticeNotFound => 'Notice not found';
 
   @override
+  String get errorCodeNoticeTranslationInvalid =>
+      'The notice translations are invalid';
+
+  @override
   String get errorCodeGameResultNotFound => 'Game result not found';
 
   @override
@@ -2149,8 +2374,85 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeReportNotFound => 'The report does not exist';
 
   @override
+  String get errorCodeChatMessageNotFound => 'This message could not be found';
+
+  @override
   String get errorCodeReportTargetNotFound =>
       'This participant does not exist in the game';
+
+  @override
+  String get errorCodeInvalidMeetingDate => 'Pick a meeting time in the future';
+
+  @override
+  String get errorCodeCommentNotFound => 'This comment was already deleted';
+
+  @override
+  String get errorCodeForbiddenNotCommentAuthor =>
+      'You can only delete your own comments';
+
+  @override
+  String get errorCodeReplyTargetGone =>
+      'The comment you\'re replying to is gone. Refresh and try again';
+
+  @override
+  String get errorCodeInvalidCommentDepth => 'You can\'t reply to a reply';
+
+  @override
+  String get errorCodePostNotFound => 'This post has been deleted';
+
+  @override
+  String get errorCodeForbiddenNotAuthor =>
+      'Only the host can edit or delete this post';
+
+  @override
+  String get errorCodeCountryNotSpecified =>
+      'We can\'t identify the country here. Please try from another spot';
+
+  @override
+  String get errorCodeAddressLookupFailed =>
+      'Couldn\'t look up the address. Please try again later';
+
+  @override
+  String get errorCodeRecruitmentClosed =>
+      'This recruitment post is already closed';
+
+  @override
+  String get errorCodeUnsupportedListScope =>
+      'This list scope isn\'t supported';
+
+  @override
+  String get errorCodeUnsupportedListSort =>
+      'This sort option isn\'t supported';
+
+  @override
+  String get errorCodeAlreadyJoined => 'You\'re already in this chat';
+
+  @override
+  String get errorCodeAuthorCannotLeave => 'The host can\'t leave this chat';
+
+  @override
+  String get errorCodeChatRoomFull => 'This chat is full';
+
+  @override
+  String get errorCodeJoinedChatRoomLimitExceeded =>
+      'You\'ve joined too many chats. Leave one and try again';
+
+  @override
+  String get errorCodeNotAChatMember => 'You\'re not a member of this chat';
+
+  @override
+  String get errorCodeForbiddenNotChatHost =>
+      'Only the host can remove members';
+
+  @override
+  String get errorCodeChatMemberNotFound => 'This member already left the chat';
+
+  @override
+  String get errorCodeConflictingCountryFilter =>
+      'These country filters can\'t be combined';
+
+  @override
+  String get errorCodeReactionAlreadyApplied => 'This is already up to date';
 
   @override
   String get pingFound => 'Found';
@@ -2202,4 +2504,41 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingOutdoorTitle => 'A real-world game of tag';
+
+  @override
+  String get onboardingOutdoorBody =>
+      'The same rules you grew up with. The app just runs the game';
+
+  @override
+  String get onboardingWinTitle => 'Catch them all, or hold out';
+
+  @override
+  String get onboardingWinBody =>
+      'Cops win by arresting every Robber. If even one is still free when time runs out, the Robbers take it';
+
+  @override
+  String get onboardingRefereeTitle => 'The app referees';
+
+  @override
+  String get onboardingRefereeBody =>
+      'Draw the zone on the map, and footprints drop on a timer. An arrest counts only when a Cop scans the Robber\'s QR, so every call is clear';
+
+  @override
+  String get onboardingCommunityTitle => 'Find people to play with';
+
+  @override
+  String get onboardingCommunityBody =>
+      'Look for players nearby in the community. Check the place and time, then join right from the app';
+
+  @override
+  String get buttonSkip => 'Skip';
+
+  @override
+  String get settingsGuideAppIntro => 'See the intro again';
+
+  @override
+  String get onboardingStartButton => 'Get started';
 }

@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -194,7 +195,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       AppSnackbar.show(
         context,
         message: AppLocalizations.of(context).messageNicknameSaved,
-        iconPath: 'assets/icons/icon_check mark.svg',
+        iconPath: AppIcons.checkMark,
       );
 
       // ⚠️ 네비게이션을 먼저 수행 후 상태 갱신
@@ -293,7 +294,6 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
                               _validationState == NicknameValidationState.valid)
                       ? _onConfirm
                       : null,
-                  showBorder: false,
                 ),
               ],
             ),
@@ -314,7 +314,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
               ? widget.initialNickname
               : l10n.fieldNicknameHint,
           controller: _nicknameController,
-          maxLength: 10,
+          maxLength: 20,
           textColor: _isNicknameChanged ? null : AppColors.black600,
           // NOTE: inputFormatters 제거 — 천지인/나랏글 등 일부 한국어 IME가
           // 자모 조합 중 임시 문자를 사용해 필터링되면 입력 자체가 깨지는 문제 방지.
@@ -360,22 +360,22 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       case NicknameValidationState.empty:
         message = l10n.errorNicknameTooShort;
         color = AppColors.red;
-        iconPath = 'assets/icons/icon_wrong mark.svg';
+        iconPath = AppIcons.wrongMark;
         break;
       case NicknameValidationState.duplicate:
         message = l10n.errorNicknameDuplicated;
         color = AppColors.red;
-        iconPath = 'assets/icons/icon_wrong mark.svg';
+        iconPath = AppIcons.wrongMark;
         break;
       case NicknameValidationState.valid:
         message = l10n.nicknameAvailable;
         color = AppColors.deepGreen;
-        iconPath = 'assets/icons/icon_check mark.svg';
+        iconPath = AppIcons.checkMark;
         break;
       case NicknameValidationState.error:
         message = l10n.errorTemporaryRetry;
         color = AppColors.red;
-        iconPath = 'assets/icons/icon_wrong mark.svg';
+        iconPath = AppIcons.wrongMark;
         break;
       case NicknameValidationState.none:
         return const SizedBox.shrink();

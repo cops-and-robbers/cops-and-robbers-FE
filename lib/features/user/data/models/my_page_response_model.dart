@@ -34,6 +34,19 @@ class MyPageResponseModel with _$MyPageResponseModel {
 
     /// 마케팅 푸시 알림 허용 여부
     required bool allowMarketingPush,
+
+    /// 커뮤니티 푸시 알림 허용 여부 (BE #182, v2.26.0)
+    ///
+    /// [profileIcon]과 같은 이유로 `required`를 피한다 — 계약상 필수가 아니다.
+    /// 가입 기본값과 같은 true로 채운다.
+    @Default(true) bool allowCommunityPush,
+
+    /// 프로필 아이콘 번호 (앱 에셋 번호와 1:1)
+    ///
+    /// OpenAPI 계약상 필수가 아니다. `required`로 두면 서버가 이 필드를 빼는
+    /// 순간 응답 파싱이 통째로 실패해 닉네임 조회까지 같이 죽는다 — 서버 기본값과
+    /// 같은 1로 채우고 넘어간다.
+    @Default(1) int profileIcon,
   }) = _MyPageResponseModel;
 
   factory MyPageResponseModel.fromJson(Map<String, dynamic> json) =>

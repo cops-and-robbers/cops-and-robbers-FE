@@ -12,19 +12,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appTitle => 'Cops and Robbers';
 
   @override
-  String get legalDocumentKoreanOnlyNotice =>
-      '本書面は韓国語のみで提供されます。法的効力を持つのは韓国語版です';
-
-  @override
-  String get loadingDefault => '処理中...';
-
-  @override
-  String get permissionLocationFallbackTitle => '位置情報権限の案内';
-
-  @override
-  String get permissionLocationFallbackMessage => '位置情報の権限を許可してください';
-
-  @override
   String get dialogUpdateOptionalTitle => '新バージョン案内';
 
   @override
@@ -47,26 +34,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dialogUpdateMandatoryCancel => '後で';
-
-  @override
-  String chatSystemGameStartTime(int minutes) {
-    return '制限時間は $minutes分です';
-  }
-
-  @override
-  String get chatSystemGameStartReportTip =>
-      'ゲーム中、チャットを長押しして迷惑なユーザーを通報およびブロックできます';
-
-  @override
-  String get chatSystemPoliceMoveWarning => '警察がまもなく出動します。泥棒は急いで移動してください！';
-
-  @override
-  String chatSystemRemainingRobbers(int count) {
-    return '現在 $count人 逃走中！';
-  }
-
-  @override
-  String get chatSystemFiveMinutesLeft => 'ゲーム終了まで残り5分です。最後のチャンスを逃さないでください！';
 
   @override
   String get errorNetworkTimeout => 'サーバーへの接続時間がタイムアウトしました';
@@ -169,16 +136,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pinTooCloseMessage => 'ピン同士が近すぎます';
 
   @override
-  String get dialogAgreementRequiredTermsTitle => '必須規約未同意';
-
-  @override
   String get errorAuthLoginCancelled => 'ログインがキャンセルされました';
 
   @override
   String get settingsLanguageLabel => '言語';
-
-  @override
-  String get settingsLanguageSubtitle => 'アプリの表示言語を変更できます';
 
   @override
   String get settingsLanguagePageTitle => '言語を選択';
@@ -461,11 +422,8 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String gameSettingPoliceStartDelay(int minutes) {
-    return '泥棒が逃げたあと $minutes分後';
+    return '泥棒スタートから $minutes分後';
   }
-
-  @override
-  String get errorSettingsSaveFailed => '設定の保存に失敗しました';
 
   @override
   String get pageGameSettingsEditTitle => '設定の編集';
@@ -475,9 +433,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonSave => '保存';
-
-  @override
-  String get errorAreaSaveFailed => 'エリアの保存に失敗しました';
 
   @override
   String get pageGameSettingsTitle => 'ゲーム設定';
@@ -495,7 +450,493 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zoneJail => '牢屋';
 
   @override
-  String get homePageGameButtonsHint => 'ゲームを作成したり、招待コードで参加したりできます';
+  String get mypageProfileIconLabel => 'プロフィールアイコン';
+
+  @override
+  String get bottomNavHome => 'ホーム';
+
+  @override
+  String get bottomNavCommunity => 'コミュニティ';
+
+  @override
+  String get pageCommunityDetailTitle => '募集';
+
+  @override
+  String get communityDetailJoinChat => 'チャットに参加する';
+
+  @override
+  String get communityDetailShare => '共有';
+
+  @override
+  String get communityChatRoomsEmpty => '参加中のチャットルームはありません';
+
+  @override
+  String get communityChatRoomsLoginRequired => 'ログインすると参加中の集まりが見られます';
+
+  @override
+  String communityChatSystemJoined(String nickname) {
+    return '$nicknameさんが参加しました';
+  }
+
+  @override
+  String communityChatSystemLeft(String nickname) {
+    return '$nicknameさんが退出しました';
+  }
+
+  @override
+  String get communityChatPreviewJoined => '新しいメンバーが参加しました';
+
+  @override
+  String get communityChatPreviewLeft => 'メンバーが退出しました';
+
+  @override
+  String communityChatSystemKicked(String nickname) {
+    return '$nicknameさんが退出させられました';
+  }
+
+  @override
+  String get communityChatPreviewKicked => 'メンバーが退出させられました';
+
+  @override
+  String get communityChatPreviewInvite => 'ゲーム招待';
+
+  @override
+  String get communityChatPreviewUnsupported => '新しいメッセージ';
+
+  @override
+  String get communityChatInviteOpened => 'ゲームが始まりました!';
+
+  @override
+  String communityChatInviteTitle(String nickname, String roomTitle) {
+    return '$nicknameさんが[$roomTitle]部屋に招待しました';
+  }
+
+  @override
+  String communityChatInviteCode(String inviteCode) {
+    return '招待コード $inviteCode';
+  }
+
+  @override
+  String get communityChatInviteJoin => 'ゲームに参加';
+
+  @override
+  String get communityChatInputHint => 'メッセージを送る';
+
+  @override
+  String get communityChatEnterRoom => 'チャットに入る';
+
+  @override
+  String communityChatMeetingMembers(String current, int max) {
+    return '現在 $current/$max名';
+  }
+
+  @override
+  String get communityChatViewLocation => '場所を見る';
+
+  @override
+  String get communityChatStartGame => 'ゲーム開始';
+
+  @override
+  String get communityChatInviteSendFailed => 'チャットに招待を送れませんでした';
+
+  @override
+  String get communityChatInviteDialogTitle => 'ゲーム招待状';
+
+  @override
+  String communityChatInviteDialogBody(String nickname) {
+    return '$nicknameさんが\nゲームに招待しました';
+  }
+
+  @override
+  String get communityChatInviteDialogCodeLabel => 'ルームコード';
+
+  @override
+  String get communityChatInviteDialogDecline => '拒否';
+
+  @override
+  String get communityChatInviteDialogEnter => '入場';
+
+  @override
+  String communityChatMemberCount(int count) {
+    return '参加者 $count名';
+  }
+
+  @override
+  String get communityChatAuthorBadge => 'ホスト';
+
+  @override
+  String get communityChatViewPost => '募集を見る';
+
+  @override
+  String get communityChatLeave => 'チャットを退出';
+
+  @override
+  String get communityChatLeaveConfirmTitle => 'チャットを退出しますか？';
+
+  @override
+  String get communityChatLeaveConfirmMessage => '退出すると会話を再び見ることはできません';
+
+  @override
+  String get communityChatMeetingInfoTitle => '集まりの情報';
+
+  @override
+  String get communityChatConnectionLost => '接続が切れました';
+
+  @override
+  String get communityChatReconnect => '再接続';
+
+  @override
+  String get communityChatReconnecting => '接続中...';
+
+  @override
+  String get communityChatSendFailed => '送信失敗・タップで再送';
+
+  @override
+  String get communityChatEvicted => 'このチャットのメンバーではなくなりました';
+
+  @override
+  String get timePeriodAm => '午前';
+
+  @override
+  String get timePeriodPm => '午後';
+
+  @override
+  String communityChatTime(String period, String hour, String minute) {
+    return '$period $hour:$minute';
+  }
+
+  @override
+  String communityChatDateShort(String month, String day) {
+    return '$month/$day';
+  }
+
+  @override
+  String get buttonLogin => 'ログイン';
+
+  @override
+  String get errorCodeInvalidMessageType => '送信できないメッセージです';
+
+  @override
+  String get errorCodeEmptyMessage => 'メッセージを入力してください';
+
+  @override
+  String get errorCodeMessageTooLong => 'メッセージは500文字まで送れます';
+
+  @override
+  String get errorCodeInvalidGameInvite => '招待情報が正しくありません';
+
+  @override
+  String get errorCodeInvalidMessageKey => 'メッセージを送れませんでした。もう一度お試しください';
+
+  @override
+  String communityDetailCommentCount(int count) {
+    return 'コメント $count';
+  }
+
+  @override
+  String get communityCommentHint => 'コメントを残してみましょう';
+
+  @override
+  String get communityCommentReplyHint => '返信を残してみましょう';
+
+  @override
+  String get communityCommentDeleted => '削除されたコメントです';
+
+  @override
+  String get communityCommentEmpty => '最初のコメントを残してみましょう';
+
+  @override
+  String get communityCommentJustNow => 'たった今';
+
+  @override
+  String communityCommentMinutesAgo(int minutes) {
+    return '$minutes分前';
+  }
+
+  @override
+  String communityCommentHoursAgo(int hours) {
+    return '$hours時間前';
+  }
+
+  @override
+  String get communityDeleteConfirmTitle => '募集を削除しますか';
+
+  @override
+  String get communityDeleteConfirmMessage => '削除すると元に戻せません';
+
+  @override
+  String get communityLoginRequiredMessage => 'ログインが必要な機能です';
+
+  @override
+  String get communityMenuEdit => '修正する';
+
+  @override
+  String get communityMenuDelete => '削除する';
+
+  @override
+  String get communityMenuMarkCompleted => '締め切る';
+
+  @override
+  String get communityMenuMarkRecruiting => '再募集する';
+
+  @override
+  String get communityMenuLoginRequired => 'ログインして利用する';
+
+  @override
+  String get communityMenuNotificationOn => '通知をオンにする';
+
+  @override
+  String get communityMenuNotificationOff => '通知をオフにする';
+
+  @override
+  String get communityMenuReplyNotificationOn => '返信通知をオンにする';
+
+  @override
+  String get communityMenuReplyNotificationOff => '返信通知をオフにする';
+
+  @override
+  String get communityStatusRecruiting => '募集中';
+
+  @override
+  String get communityStatusCompleted => '締切';
+
+  @override
+  String get communityStatusEnded => '終了';
+
+  @override
+  String communityHeadcount(int current, int max) {
+    return '$current/$max人';
+  }
+
+  @override
+  String communityHeadcountMaxOnly(int max) {
+    return '定員$max人';
+  }
+
+  @override
+  String communityMeetingAt(
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$month/$day ($weekday) $time';
+  }
+
+  @override
+  String get pageCommunityTitle => 'コミュニティ';
+
+  @override
+  String get pageCommunityEmpty => '募集がまだありません';
+
+  @override
+  String get pageCommunityScrapTitle => 'スクラップ';
+
+  @override
+  String get communityScrapEmpty => 'スクラップした投稿がありません';
+
+  @override
+  String get pageCommunityNotificationTitle => '通知';
+
+  @override
+  String get communityNotificationEmpty => '届いた通知がありません';
+
+  @override
+  String communityNotificationNewComment(String content) {
+    return '新しいコメント: $content';
+  }
+
+  @override
+  String communityNotificationNewReply(String content) {
+    return '新しい返信: $content';
+  }
+
+  @override
+  String get communityScopeAll => 'すべて';
+
+  @override
+  String get communityScopeNearby => '近所';
+
+  @override
+  String get communityScopeMine => 'マイ募集';
+
+  @override
+  String get communitySortLatest => '新着順';
+
+  @override
+  String get communitySortPopular => '人気順';
+
+  @override
+  String get communitySortDistance => '近い順';
+
+  @override
+  String get communitySortDeadline => '締切間近順';
+
+  @override
+  String get communitySortNeedsLocation => '距離順で見るには位置情報の許可が必要です';
+
+  @override
+  String get communitySortLocationDenied => '設定で位置情報をオンにしてください';
+
+  @override
+  String get communitySearchHint => 'タイトル・場所で検索';
+
+  @override
+  String get communitySearchRecent => '最近の検索';
+
+  @override
+  String get communitySearchClearAll => 'すべて削除';
+
+  @override
+  String get communitySearchEmpty => '検索結果がありません';
+
+  @override
+  String get communitySearchTooShort => '2文字以上入力してください';
+
+  @override
+  String get communityCreatePost => '募集を作成';
+
+  @override
+  String get communityEditPost => '募集を修正';
+
+  @override
+  String get communityBackToList => '一覧に戻る';
+
+  @override
+  String get communityCreateLabelTitle => 'タイトル';
+
+  @override
+  String get communityCreateHintTitle => '仕事帰りに一戦！初心者歓迎';
+
+  @override
+  String get communityCreateLabelContent => '説明';
+
+  @override
+  String get communityCreateHintContent => 'ルール、持ち物、打ち上げの有無などを書いてください';
+
+  @override
+  String get communityCreateLabelDate => '日時';
+
+  @override
+  String get communityCreateHintDate => '集合日時を選んでください';
+
+  @override
+  String communityCreateDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+    String time,
+  ) {
+    return '$year.$month.$day ($weekday) $time';
+  }
+
+  @override
+  String get communityDateSheetTitle => '集合日時';
+
+  @override
+  String get communityDateSheetRowTime => '時間';
+
+  @override
+  String communityDateSheetRowDateValue(
+    String year,
+    String month,
+    String day,
+    String weekday,
+  ) {
+    return '$year.$month.$day $weekday';
+  }
+
+  @override
+  String get communityCreateLabelLocation => '場所';
+
+  @override
+  String get communityCreateHintLocation => '詳細な集合場所を入力してください 例) 正門';
+
+  @override
+  String get communityCreateHintAddress => '地図で位置を選ぶと入力されます';
+
+  @override
+  String get communityCreateHintPickLocation => '地図で位置を選んでください';
+
+  @override
+  String get communityLocationCopied => '場所をコピーしました';
+
+  @override
+  String get communityLocationPickerTitle => '場所の選択';
+
+  @override
+  String get communityLocationPickerConfirm => 'この位置にする';
+
+  @override
+  String get communityLocationPickerLoading => '住所を確認しています';
+
+  @override
+  String get communityLocationPickerHint => '地図をタップして集合場所を決めます';
+
+  @override
+  String get communityLocationPickerNotFound => '住所が見つかりません。別の場所を選んでください';
+
+  @override
+  String get communityCreateLoading => '募集を投稿しています';
+
+  @override
+  String get communityCreateLoadingSub => '募集を登録しています。少々お待ちください';
+
+  @override
+  String get communityEditLoading => '募集を修正しています';
+
+  @override
+  String get communityEditLoadingSub => '募集を修正しています。少々お待ちください';
+
+  @override
+  String get communityCreateLabelHeadcount => '募集人数';
+
+  @override
+  String communityHeadcountValue(int count) {
+    return '$count人';
+  }
+
+  @override
+  String communityHeadcountQuickAdd(int count) {
+    return '+ $count人';
+  }
+
+  @override
+  String get communityHeadcountDecrease => '人数を減らす';
+
+  @override
+  String get communityHeadcountIncrease => '人数を増やす';
+
+  @override
+  String get weekdayMon => '月';
+
+  @override
+  String get weekdayTue => '火';
+
+  @override
+  String get weekdayWed => '水';
+
+  @override
+  String get weekdayThu => '木';
+
+  @override
+  String get weekdayFri => '金';
+
+  @override
+  String get weekdaySat => '土';
+
+  @override
+  String get weekdaySun => '日';
+
+  @override
+  String get bottomNavMyPage => 'マイページ';
+
+  @override
+  String get comingSoonMessage => '準備中です';
+
+  @override
+  String get homeBannerSemanticsLabel => 'イベントバナー';
 
   @override
   String get dialogSafetyWarningTitle => '周囲を確認しながらご利用ください';
@@ -520,9 +961,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonGoToSettings => '設定へ移動';
 
   @override
-  String get errorJoinFailedCheckCode => '参加に失敗しました。招待コードをご確認ください';
-
-  @override
   String get errorJoinRetry => '参加に失敗しました。もう一度お試しください';
 
   @override
@@ -538,45 +976,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonJoin => '参加する';
 
   @override
-  String get appBrandName => 'ケイドロ';
-
-  @override
-  String get messageComingSoon => '準備中です';
-
-  @override
   String get homePageWelcomeMessage => '誰がぼくのチーズを\n盗んだの!!!!🧀';
 
   @override
-  String get buttonCreateRoom => '待機室を作る';
+  String get buttonCreateRoom => 'ゲーム作成';
 
   @override
-  String get buttonJoinRoom => '待機室に参加する';
-
-  @override
-  String get sessionCreationStepZoneSubtitle =>
-      'ゲームを行うゲームエリアを設定します\nまずプレイグラウンドを指定してください';
-
-  @override
-  String get sessionCreationStepRulesSubtitle =>
-      'ゲームルールを決めます\n数字をタップすると直接入力できます';
+  String get buttonJoinRoom => 'ゲーム参加';
 
   @override
   String get errorCreateRoomFailed => '待機室の作成に失敗しました。もう一度お試しください';
-
-  @override
-  String get sessionCreationZoneFirstQuestion => 'エリア選択を先に設定しましょうか';
-
-  @override
-  String get sessionCreationStepParticipantsTitle => '人数を設定します';
 
   @override
   String get sessionCreationStepBasicTitle => '基本情報を設定します';
 
   @override
   String get sessionCreationStepReviewTitle => '最終設定を確認します';
-
-  @override
-  String get sessionCreationStepZoneIntro => 'ゲームに必要なエリアを設定します';
 
   @override
   String get sessionCreationStepParticipantsHint => '最低2人からゲームの進行が可能です';
@@ -592,9 +1007,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorZoneNotConfigured => 'エリア情報を先に設定してください';
-
-  @override
-  String get setupPlaygroundRadiusInputHint => 'ここをタップすると半径を直接入力できます';
 
   @override
   String get setupPlaygroundDescription => 'ゲームを行うエリア全体の大きさを設定します';
@@ -619,28 +1031,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorNotInGame => '該当ゲームに参加していないユーザーです';
-
-  @override
-  String get waitingRoomTutorialTeamSwitch => 'このボタンを押して別のチームに移動できます';
-
-  @override
-  String get waitingRoomTutorialInvite => '友達に招待コードを共有できます';
-
-  @override
-  String get waitingRoomTutorialSettings => 'ゲーム設定を確認できます';
-
-  @override
-  String get waitingRoomTutorialReady => '準備ができたら押してください';
-
-  @override
-  String get dialogInGamePreviewTitle => 'インゲーム画面のプレビュー';
-
-  @override
-  String get dialogTutorialPromptMessage =>
-      'ゲームが開始されたらどのように動作するか\n一度確認してから始めてみましょうか';
-
-  @override
-  String get buttonViewInGamePreview => '見に行く';
 
   @override
   String dialogKickConfirmTitle(String nickname) {
@@ -669,15 +1059,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get errorTeamChangeFailed => 'チーム変更に失敗しました';
-
-  @override
-  String get errorReadyChangeFailed => '準備状態の変更に失敗しました';
-
-  @override
-  String get errorGameStartFailed => 'ゲーム開始に失敗しました';
-
-  @override
   String get dialogLeaveRoomTitle => '待機室から退室しますか';
 
   @override
@@ -685,9 +1066,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonLeave => '退室';
-
-  @override
-  String get errorLeaveRoomFailed => '退出処理中にエラーが発生しました';
 
   @override
   String get dialogInviteCodeCreatedTitle => '招待コードを作成しました';
@@ -717,16 +1095,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zonePreviewSubtitle => '現在設定されているゲームエリアです';
 
   @override
-  String get dummyNicknameRaccoon => 'おてんばタヌキ';
-
-  @override
-  String get defaultNicknameLabel => 'ニックネーム';
-
-  @override
   String get titleGameRules => 'ゲームルール';
-
-  @override
-  String get buttonViewInGame => 'インゲームを見る';
 
   @override
   String get gameRulesCopGoalPrefix => '警察はすべての泥棒を捕まえて';
@@ -761,37 +1130,48 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ エリア外に出ると画面がロックされます';
 
   @override
-  String get dialogstep0SelectAreaContentTitle => 'プレイグラウンド';
-
-  @override
-  String get dialogstep0SelectAreaContentTitle5bc0 => '牢屋';
-
-  @override
-  String get fieldstep1ParticipantSettingsContentLabel => '最大参加者';
-
-  @override
   String get unitPerson => '人';
-
-  @override
-  String get fieldstep2GameSettingsContentLabel => 'ラウンド制限時間';
 
   @override
   String get unitMinutes => '分';
 
   @override
-  String get fieldstep2GameSettingsContentLabel5ab2 => '泥棒の位置公開間隔';
-
-  @override
   String get gameSettingNoLocationShareWarning => '泥棒の位置が公開されません！';
 
   @override
-  String get fieldstep2GameSettingsContentLabelCe3b => '警察出動時間';
-
-  @override
-  String get gameSettingPoliceStartPrefix => '泥棒が逃げたあと';
+  String get gameSettingPoliceStartPrefix => '泥棒スタートから';
 
   @override
   String get gameSettingPoliceStartSuffix => '後';
+
+  @override
+  String get buttonCompleteSetup => '完了する';
+
+  @override
+  String warnMaxReached(String max) {
+    return '最大$maxまで設定できます';
+  }
+
+  @override
+  String get warnRoundDurationRange => 'ゲーム時間は10分から180分まで設定できます';
+
+  @override
+  String get warnShorterThanRoundDuration => 'ゲーム時間より短く設定してください';
+
+  @override
+  String get warnPoliceWaitMin => '警察スタート時間は1分から設定できます';
+
+  @override
+  String get dialogQuitCreationTitle => 'ルーム作成をやめますか？';
+
+  @override
+  String get dialogQuitCreationMessage => '描いていたエリアは消えます';
+
+  @override
+  String get buttonKeepCreating => '作成を続ける';
+
+  @override
+  String get buttonQuitCreation => 'やめる';
 
   @override
   String get sectionTitleSettings => '設定';
@@ -800,13 +1180,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelParticipantCount => '参加人数';
 
   @override
-  String get fieldRoundTimeLimit => 'ラウンド制限時間';
+  String get fieldRoundTimeLimit => 'ゲーム時間';
 
   @override
-  String get fieldLocationShareInterval => '位置公開間隔';
+  String get fieldLocationShareInterval => '泥棒の位置公開間隔';
 
   @override
-  String get fieldPoliceDispatchTime => '警察出動時間';
+  String get fieldPoliceDispatchTime => '警察スタート時間';
 
   @override
   String teamSectionCurrentCount(int count) {
@@ -1057,12 +1437,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonPlayAgain => 'もう一度';
 
   @override
-  String get labelMyRecord => 'マイ記録';
-
-  @override
-  String get labelResult => '結果';
-
-  @override
   String get messageSaveFailed => '保存に失敗しました';
 
   @override
@@ -1133,18 +1507,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameZoneExitBanner => 'プレイグラウンドを外れました';
 
   @override
-  String get chatTeamPrefix => '[チーム]';
-
-  @override
-  String get chatSystemGameTimeLimit30Min => '制限時間は30分です';
-
-  @override
-  String get chatSystemGoodLuckRobber => '泥棒さん、うまく逃げてくださいね〜';
-
-  @override
-  String get chatSystemLetsWin => '勝ちましょう！';
-
-  @override
   String get messageMessageCopied => 'メッセージがコピーされました';
 
   @override
@@ -1166,22 +1528,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorReportFailed => '通報に失敗しました';
 
   @override
-  String get dialogReportConfirmTitle => '該当ユーザーを通報しますか';
-
-  @override
-  String get chatReportSelectedCategoryLabel => '選択した通報理由:';
-
-  @override
-  String get chatReportSubmitNotice => '\n報告された内容は検討した上で対処いたします';
-
-  @override
   String get buttonCopy => 'コピーする';
 
   @override
   String get buttonBlock => 'ブロック';
 
   @override
-  String get chatReportCategoryTitle => '通報タイプの選択';
+  String get reportCategoryLabel => '通報の種類';
 
   @override
   String chatInputBarUnreadAll(String all) {
@@ -1287,6 +1640,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAccountChangeNickname => 'ニックネーム変更';
 
   @override
+  String get settingsAccountMyScraps => 'マイスクラップ';
+
+  @override
   String get settingsSectionAppPreferences => 'アプリ設定';
 
   @override
@@ -1295,6 +1651,13 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get settingsAppGameNotificationDescription =>
       'ゲーム進行中に発生するイベントの通知を設定します';
+
+  @override
+  String get settingsAppCommunityNotification => 'コミュニティ通知';
+
+  @override
+  String get settingsAppCommunityNotificationDescription =>
+      'コメント・返信・チャットのプッシュ通知を受け取ります。オフにしても通知ボックスには残ります';
 
   @override
   String get settingsAppGeneralNotification => '通知';
@@ -1319,13 +1682,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsGuideBugReport => 'バグ報告';
 
   @override
-  String get settingsGuideTutorialRewatch => 'チュートリアルをもう一度見る';
-
-  @override
-  String get settingsGuideTutorialReset => 'チュートリアル初期化';
-
-  @override
   String get settingsGuideAgreements => '利用規約とポリシー';
+
+  @override
+  String get settingsGuideOpenSourceLicenses => 'オープンソースライセンス';
 
   @override
   String get settingsSectionEtc => 'その他';
@@ -1343,6 +1703,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGameNotificationToggleFailed => 'ゲーム通知の設定を変更できませんでした';
 
   @override
+  String get errorProfileIconUpdateFailed => 'プロフィールアイコンを変更できませんでした';
+
+  @override
   String get titleBugReport => 'バグ報告';
 
   @override
@@ -1357,19 +1720,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get messageBugReportSubmitted => 'バグ報告が受け付けられました';
-
-  @override
-  String get dialogTutorialResetTitle => 'チュートリアル初期化';
-
-  @override
-  String get dialogTutorialResetMessage =>
-      'すべての画面のチュートリアルを\nもう一度見られるように初期化しますか';
-
-  @override
-  String get buttonReset => '初期化';
-
-  @override
-  String get messageTutorialReset => 'チュートリアルが初期化されました';
 
   @override
   String get dialogLogoutTitle => 'ログアウト';
@@ -1395,196 +1745,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonDeleteAccount => '退会';
-
-  @override
-  String get tutorialDummyNicknameCop1 => 'Cop1';
-
-  @override
-  String get tutorialDummyNicknameRobberKing => 'RobberKing';
-
-  @override
-  String get tutorialDummyNicknameRobberOrNot => 'RobberOrNot';
-
-  @override
-  String get tutorialDummyNicknameCapturedRobber => 'CapturedRobber';
-
-  @override
-  String get titleTutorialComplete => 'チュートリアル完了！';
-
-  @override
-  String get messageTutorialComplete => '核心となる流れをマスターしました\n実際のゲームで活用してみましょう';
-
-  @override
-  String get buttonFinishTutorial => 'チュートリアルを終了する';
-
-  @override
-  String get tutorialInGameMyLocation => '自分の位置にカメラが移動しました';
-
-  @override
-  String get tutorialMapPreviewLabel => '地図のプレビュー';
-
-  @override
-  String get tutorialLocationRevealCountdown => '次の泥棒の位置公開まで 04:30';
-
-  @override
-  String get tutorialInGameRulesGuide => 'ゲームルールの案内が開きます';
-
-  @override
-  String get tutorialQrRobberHint => '自分の指名手配QRが画面に表示されます。警察に見せると逮捕されます';
-
-  @override
-  String get tutorialQrCopHint => 'カメラが起動し、泥棒のQRをスキャンして逮捕できます';
-
-  @override
-  String get tutorialMissionParticipantsButton => '参加者表示ボタンを押してみてください';
-
-  @override
-  String get tutorialMissionQrButton => 'QRボタンを押してみてください';
-
-  @override
-  String get tutorialMissionMapButton => '地図に戻ってみてください';
-
-  @override
-  String get tutorialMissionDropPing => '地図を長押ししてピンを置いてみてください';
-
-  @override
-  String get tutorialPingLongPressHint => '地図のどこでも長押し';
-
-  @override
-  String tutorialMissionProgress(String step) {
-    return 'ミッション $step/4';
-  }
-
-  @override
-  String get tutorialPerspectiveRobber => '泥棒視点で見ているところです';
-
-  @override
-  String get tutorialPerspectiveCop => '警察視点で見ているところです';
-
-  @override
-  String get tutorialInGameSelfEscape => '自分が収監された場合、カードタップで脱獄を試みることができます';
-
-  @override
-  String get tutorialInGameQrArrest => '実際のゲームでは、QRスキャンで泥棒を逮捕します';
-
-  @override
-  String get tutorialCurrentLabel => '現在';
-
-  @override
-  String tutorialPlayerCount(int count) {
-    return '$count人';
-  }
-
-  @override
-  String get tutorialOnTheRun => '逃走中！';
-
-  @override
-  String get tutorialInGameChatExpand => 'ハンドルを上にドラッグするとチャットが展開されます';
-
-  @override
-  String get tutorialInGameChatInput => 'ここにメッセージを入力すると、チーム/全体チャットに送信できます';
-
-  @override
-  String get tutorialChatHint => 'チャットを入力してください';
-
-  @override
-  String get tutorialCatalogAreaSubtitle => 'プレイグラウンド・牢屋の設定とスライダー操作';
-
-  @override
-  String get tutorialCatalogInviteSubtitle => '招待コードの入力とQRスキャン';
-
-  @override
-  String get tutorialCatalogWaitingRoomTitle => '待機室';
-
-  @override
-  String get tutorialCatalogLobbySubtitle => 'チーム変更、ゲーム設定、準備完了';
-
-  @override
-  String get tutorialCatalogInGameTitle => 'インゲーム';
-
-  @override
-  String get tutorialCatalogGameSubtitle => 'タイマー・地図・参加者・チャット・QR';
-
-  @override
-  String get pageTutorialCatalogTitle => 'チュートリアル';
-
-  @override
-  String get tutorialCatalogIntro => 'ゲームを初めてプレイする場合は、一度見てから始めてみてください';
-
-  @override
-  String get tutorialCatalogComingSoon => '準備中';
-
-  @override
-  String get creditMemberHongEuiMin => 'Hong Eui-min';
-
-  @override
-  String get creditMemberParkChanBin => 'Park Chan-bin';
-
-  @override
-  String get creditMemberLeeChangHee => 'Lee Chang-hee';
-
-  @override
-  String get creditMemberJeongSangHee => 'Jeong Sang-hee';
-
-  @override
-  String get creditMemberHwangHyeRim => 'Hwang Hye-rim';
-
-  @override
-  String get creditMemberYoonJiHee => 'Yoon Ji-hee';
-
-  @override
-  String get creditMemberKimDaim => 'Kim Da-im';
-
-  @override
-  String get creditMemberShinJiHoon => 'Shin Ji-hoon';
-
-  @override
-  String get creditMemberNamHaeYoon => 'Nam Hae-yoon';
-
-  @override
-  String get creditMemberSongHyeJung => 'Song Hye-jung';
-
-  @override
-  String get creditMemberLeeJin => 'Lee Jin';
-
-  @override
-  String get creditMemberAhnGeumSeo => 'Ahn Geum-seo';
-
-  @override
-  String get creditMemberSonGeonWoo => 'Son Geon-woo';
-
-  @override
-  String get creditMemberShinHyeBin => 'Shin Hye-bin';
-
-  @override
-  String get creditMemberJeongChangWoo => 'Jeong Chang-woo';
-
-  @override
-  String get creditMemberHeoSeokJun => 'Heo Seok-jun';
-
-  @override
-  String get creditMemberSeoHyunJin => 'Seo Hyun-jin';
-
-  @override
-  String get creditMemberOhDongHyun => 'Oh Dong-hyun';
-
-  @override
-  String get creditMemberChoiSeungHoon => 'Choi Seung-hoon';
-
-  @override
-  String get creditMemberKimMinWook => 'Kim Min-wook';
-
-  @override
-  String get creditMemberJeongMyeongJun => 'Jeong Myeong-jun';
-
-  @override
-  String get creditMemberKangDaeHyun => 'Kang Dae-hyun';
-
-  @override
-  String get creditMemberSimHyuk => 'Sim Hyuk';
-
-  @override
-  String get pageCreditsTitle => 'ケイドロを作った人々';
 
   @override
   String get errorReportGeneric => '通報処理中にエラーが発生しました';
@@ -1635,6 +1795,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGamePushUpdateUnexpected => 'ゲームプッシュ通知の同意更新中に予期しないエラーが発生しました';
 
   @override
+  String get errorCommunityPushFetchUnexpected =>
+      'コミュニティプッシュ通知の同意取得中に予期しないエラーが発生しました';
+
+  @override
+  String get errorCommunityPushUpdateUnexpected => 'コミュニティ通知の設定を変更できませんでした';
+
+  @override
   String get errorAuthTokenMissing => 'ログイン情報を確認できません。再度ログインしてください';
 
   @override
@@ -1647,7 +1814,60 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorNoticesLoadGeneric => '知らせを読み込む中にエラーが発生しました';
 
   @override
-  String get messageLoadingNotices => '知らせを読み込んでいます...';
+  String get errorCommunityPostsLoadGeneric => '募集の読み込み中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostsLoadFailed => '募集を読み込めませんでした';
+
+  @override
+  String get errorCommunityPostUpdateGeneric => '募集の修正中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostDeleteGeneric => '募集の削除中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostStatusGeneric => '募集状態の変更中にエラーが発生しました';
+
+  @override
+  String get errorCommunityPostCreateGeneric => '募集の登録中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentsLoadGeneric => 'コメントの読み込み中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentCreateGeneric => 'コメントの投稿中にエラーが発生しました';
+
+  @override
+  String get errorCommunityCommentDeleteGeneric => 'コメントの削除中にエラーが発生しました';
+
+  @override
+  String get errorCommunityReactionGeneric => '処理できませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCommunityScrapsLoadGeneric =>
+      'スクラップ一覧を読み込めませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCommunityNotificationsLoadGeneric =>
+      '通知一覧を読み込めませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCommunityNotificationUnreadCountLoadGeneric =>
+      '未読通知件数を読み込めませんでした';
+
+  @override
+  String get errorCommunityNotificationReadGeneric => '通知の既読処理に失敗しました';
+
+  @override
+  String get errorCommunityPostNotificationUpdateGeneric =>
+      'この投稿の通知設定を変更できませんでした';
+
+  @override
+  String get errorCommunityCommentNotificationUpdateGeneric =>
+      '返信通知の設定を変更できませんでした';
+
+  @override
+  String get errorCommunityAddressLoadGeneric => '住所の読み込み中にエラーが発生しました';
 
   @override
   String get errorNoticeLoadFailed => 'お知らせを読み込めませんでした';
@@ -1657,6 +1877,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pageNoticesEmpty => '登録されたお知らせはありません';
+
+  @override
+  String get noticeCategoryAll => 'すべて';
+
+  @override
+  String get noticeCategoryNotice => 'お知らせ';
+
+  @override
+  String get noticeCategoryMaintenance => 'メンテナンス';
+
+  @override
+  String get noticeCategoryEvent => 'イベント';
+
+  @override
+  String get noticeCategoryUpdate => 'アップデート';
+
+  @override
+  String get noticeTranslationFallback => '翻訳を準備中のため、原文のまま表示しています';
 
   @override
   String get errorAreaLoadFailed => 'エリア情報を読み込めません';
@@ -1720,25 +1958,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGameJoinUnexpected => 'ゲーム参加中に予期しないエラーが発生しました';
 
   @override
-  String get errorAlreadyInAnotherRoom => '既に他の部屋に参加中です。今の部屋から退出してから再度お試しください';
-
-  @override
   String get deeplinkAlreadyInRoom => '既に参加中の部屋があります';
-
-  @override
-  String get errorGameAlreadyStarted => '既に開始されたゲームのため入場できません';
-
-  @override
-  String get errorRoomSwitchFailed => '新しい部屋に入室できませんでした。前の部屋からは退出済みです';
-
-  @override
-  String get deeplinkSwitchRoomTitle => '部屋を移動しますか？';
-
-  @override
-  String get deeplinkSwitchRoomMessage => '現在参加中の部屋から退出し、新しい部屋に参加します';
-
-  @override
-  String get deeplinkSwitchRoomConfirm => '退出して参加';
 
   @override
   String get errorPendingInviteLoad => '保留中の招待コードを読み込めませんでした';
@@ -1768,6 +1988,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeInvalidInputValue => '入力値が条件に合いません';
+
+  @override
+  String get errorCodeAddressNotFound => '住所が見つかりません。別の場所を選んでください';
 
   @override
   String get errorCodeInvalidDestination => '接続先が正しくありません';
@@ -1955,6 +2178,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeNoticeNotFound => 'お知らせが見つかりません';
 
   @override
+  String get errorCodeNoticeTranslationInvalid => 'お知らせの翻訳情報が正しくありません';
+
+  @override
   String get errorCodeGameResultNotFound => 'ゲーム結果が見つかりません';
 
   @override
@@ -1970,7 +2196,75 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeReportNotFound => '該当する通報履歴が存在しません';
 
   @override
+  String get errorCodeChatMessageNotFound => 'このメッセージが見つかりません';
+
+  @override
   String get errorCodeReportTargetNotFound => 'このゲームに存在しない参加者です';
+
+  @override
+  String get errorCodeInvalidMeetingDate => '集まる時間は現在より後を選んでください';
+
+  @override
+  String get errorCodeCommentNotFound => 'すでに削除されたコメントです';
+
+  @override
+  String get errorCodeForbiddenNotCommentAuthor => '自分が書いたコメントのみ削除できます';
+
+  @override
+  String get errorCodeReplyTargetGone =>
+      '返信しようとしたコメントがなくなりました。更新してからもう一度お試しください';
+
+  @override
+  String get errorCodeInvalidCommentDepth => '返信に返信はできません';
+
+  @override
+  String get errorCodePostNotFound => 'この募集はすでに削除されました';
+
+  @override
+  String get errorCodeForbiddenNotAuthor => 'ホストのみ編集・削除できます';
+
+  @override
+  String get errorCodeCountryNotSpecified => '国を確認できない場所です。別の場所で試してください';
+
+  @override
+  String get errorCodeAddressLookupFailed => '住所の取得に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get errorCodeRecruitmentClosed => 'この募集はすでに締め切られました';
+
+  @override
+  String get errorCodeUnsupportedListScope => 'サポートされていない一覧の範囲です';
+
+  @override
+  String get errorCodeUnsupportedListSort => 'サポートされていない並び替え方法です';
+
+  @override
+  String get errorCodeAlreadyJoined => '既にこのチャットに参加しています';
+
+  @override
+  String get errorCodeAuthorCannotLeave => 'ホストはこのチャットから退出できません';
+
+  @override
+  String get errorCodeChatRoomFull => 'このチャットの定員に達しました';
+
+  @override
+  String get errorCodeJoinedChatRoomLimitExceeded =>
+      '参加できるチャット数の上限を超えました。他のチャットから退出してからもう一度お試しください';
+
+  @override
+  String get errorCodeNotAChatMember => 'このチャットの参加者ではありません';
+
+  @override
+  String get errorCodeForbiddenNotChatHost => 'ホストのみメンバーを追放できます';
+
+  @override
+  String get errorCodeChatMemberNotFound => 'このメンバーはすでにチャットから退出しています';
+
+  @override
+  String get errorCodeConflictingCountryFilter => '国の条件が競合しています';
+
+  @override
+  String get errorCodeReactionAlreadyApplied => 'すでに反映されています';
 
   @override
   String get pingFound => '発見';
@@ -2019,4 +2313,39 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingOutdoorTitle => '外で本当に走る鬼ごっこです';
+
+  @override
+  String get onboardingOutdoorBody => '昔ながらのルールそのままです。進行はアプリにおまかせします';
+
+  @override
+  String get onboardingWinTitle => '全員逮捕したら警察、逃げ切れば泥棒の勝ちです';
+
+  @override
+  String get onboardingWinBody => '泥棒を全員逮捕したら警察の勝ち。時間切れまでひとりでも逃げ切れば泥棒の勝ちです';
+
+  @override
+  String get onboardingRefereeTitle => 'アプリが審判をします';
+
+  @override
+  String get onboardingRefereeBody =>
+      'エリアは地図に描いて、泥棒の位置は一定間隔で足跡として公開されます。逮捕はQRスキャンなので、判定はいつも明確です';
+
+  @override
+  String get onboardingCommunityTitle => '一緒に遊ぶ人もここで探せます';
+
+  @override
+  String get onboardingCommunityBody =>
+      '近くで一緒に走る人をコミュニティで探してみてください。場所と時間を見て、そのまま参加できます';
+
+  @override
+  String get buttonSkip => 'スキップ';
+
+  @override
+  String get settingsGuideAppIntro => 'アプリ紹介をもう一度見る';
+
+  @override
+  String get onboardingStartButton => '始める';
 }

@@ -16,6 +16,12 @@ abstract class UserRepository {
   /// 성공 시 아무것도 반환하지 않습니다 (204 No Content).
   Future<void> updateNickname(String nickname);
 
+  /// 프로필 아이콘 변경
+  ///
+  /// 서버는 번호만 보관한다 (앱 에셋 번호와 1:1).
+  /// 성공 시 아무것도 반환하지 않습니다 (204 No Content).
+  Future<void> updateProfileIcon(int profileIcon);
+
   /// 내 프로필 조회
   ///
   /// 현재 로그인한 사용자의 프로필 정보를 반환합니다.
@@ -53,4 +59,18 @@ abstract class UserRepository {
   /// [allowGamePush]: 게임 푸시 알림 수신 동의 여부
   /// Throws: [NetworkException], [ServerException], [ValidationException]
   Future<void> updateGamePushAgreement({required bool allowGamePush});
+
+  /// 커뮤니티 푸시 알림 수신 동의 여부를 조회합니다.
+  ///
+  /// Returns: 동의 여부 (true/false)
+  /// Throws: [NetworkException], [ServerException], [AuthException]
+  Future<bool> getCommunityPushAgreement();
+
+  /// 커뮤니티 푸시 알림 수신 동의 여부를 업데이트합니다.
+  ///
+  /// 끄면 푸시만 막힙니다 — 알림함과 게시글별·댓글별 설정은 그대로입니다.
+  ///
+  /// [allowCommunityPush]: 커뮤니티 푸시 알림 수신 동의 여부
+  /// Throws: [NetworkException], [ServerException], [ValidationException]
+  Future<void> updateCommunityPushAgreement({required bool allowCommunityPush});
 }

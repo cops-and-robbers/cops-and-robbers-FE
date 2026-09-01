@@ -21,4 +21,21 @@ abstract class ReportRemoteDataSource {
   /// 201 성공 시 응답 본문 없음
   @POST(ApiEndpoints.reportChat)
   Future<void> reportChat(@Body() ReportRequestModel request);
+
+  /// 커뮤니티 모집글 신고
+  ///
+  /// 201 성공 시 응답 본문 없음. 자기 글 신고와 중복 신고는 서버가 막는다.
+  @POST(ApiEndpoints.reportCommunityPost)
+  Future<void> reportCommunityPost(
+    @Body() CommunityPostReportRequestModel request,
+  );
+
+  /// 커뮤니티 채팅 메시지 신고
+  ///
+  /// 201 성공 시 응답 본문 없음. 자기 메시지 신고와 중복 신고는 서버가 막고,
+  /// 없는 메시지면 404(`CHAT_MESSAGE_NOT_FOUND`)다.
+  @POST(ApiEndpoints.reportCommunityChat)
+  Future<void> reportCommunityChat(
+    @Body() CommunityChatReportRequestModel request,
+  );
 }

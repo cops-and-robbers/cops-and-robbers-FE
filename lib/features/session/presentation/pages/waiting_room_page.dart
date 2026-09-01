@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -25,6 +26,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -43,9 +45,6 @@ import '../../data/models/lobby_info_response.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../providers/waiting_room_participants_provider.dart';
-import '../../../../core/services/tutorial/tutorial_keys.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../widgets/game_rules_content.dart';
 import '../widgets/team_section.dart';
 
@@ -120,43 +119,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 로비 STOMP 최초 연결 성공 여부
   bool _hasLobbyConnectedOnce = false;
-
-  // ── 튜토리얼용 GlobalKey ──────────────────────────────────────────────────
-  /// 팀 변경 버튼 (경찰팀 AddSlotCard)
-  final _tutorialKeyAddSlotPolice = GlobalKey();
-
-  /// 팀 변경 버튼 (도둑팀 AddSlotCard)
-  final _tutorialKeyAddSlotRobber = GlobalKey();
-
-  /// 준비 완료 / 게임 시작 버튼
-  final _tutorialKeyReadyButton = GlobalKey();
-
-  /// 앱바 초대 코드 영역
-  final _tutorialKeyInviteCode = GlobalKey();
-
-  /// 앱바 게임 규칙 버튼
-  final _tutorialKeyGameRules = GlobalKey();
-
-  /// 현재 표시 중인 튜토리얼 컨트롤러
-  ///
-  /// 참가자 변경으로 레이아웃이 밀렸을 때 `refresh()`로 타겟 좌표를 다시
-  /// 계산하기 위해 보관한다. 튜토리얼 종료 시 null 처리.
-  AppTutorialController? _tutorialController;
-
-  /// 튜토리얼 표시 상태
-  ///
-  /// STOMP 재연결로 `_fetchAndInitParticipants()`가 여러 번 호출될 때
-  /// `TutorialService.markCompleted()` 기록 이전이라도 중복 오버레이가
-  /// 쌓이지 않도록 로컬 플래그로 차단한다.
-  bool _isTutorialShowing = false;
-
-  /// 초대코드 다이얼로그가 화면에 떠 있는 동안 true.
-  ///
-  /// 방장 플로우에서 [_showInviteCodeDialog] 실행 중 STOMP 이벤트로
-  /// 트리거된 [_showTutorialIfNeeded] 가 다이얼로그 위에 튜토리얼을
-  /// 오버레이하는 경쟁 상태를 막기 위한 가드.
-  bool _isInviteDialogOpen = false;
-  // ─────────────────────────────────────────────────────────────────────────
 
   /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
   ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
@@ -245,10 +207,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       setState(() => _isLocationPermissionDenied = false);
     }
 
-    // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
-    final team = ref.read(gameParticipantNotifierProvider)?.team;
-    ref.read(roleThemeProvider.notifier).setDarkMode(GameTeam.isRobber(team));
-
     // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
     _pendingInviteDialog = widget.showInviteDialog && _inviteCode != null;
 
@@ -259,13 +217,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   @override
   void dispose() {
     _isDisposed = true;
-    // 페이지 사라질 때 떠 있는 튜토리얼 오버레이를 정리
-    if (_tutorialController?.isShowing == true) {
-      _tutorialController!.finish();
-    }
-    _tutorialController = null;
-    _isTutorialShowing = false;
-    _isInviteDialogOpen = false;
     _reconnectStateNotifier?.dispose();
     _reconnectStateNotifier = null;
     _lobbyEventSub?.close();
@@ -307,9 +258,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       if (!status.isParticipating || info == null) {
         // 강퇴 또는 게임 종료 → 홈
-        ref.read(gameParticipantNotifierProvider.notifier).clear();
-        ref.read(waitingRoomParticipantsProvider.notifier).clear();
-        context.go(RoutePaths.home);
+        _goHomeClearingSession();
       } else if (info.gameStatus == GameStatus.inProgress) {
         // 게임 시작됨 → 게임 설정 재조회로 gameStartTime 확보 후 게임 화면으로 이동
         final gameId = int.tryParse(widget.sessionId);
@@ -491,25 +440,11 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
       ref.read(gameParticipantNotifierProvider.notifier).setIsHost(isHost);
 
-      // 역할 기반 다크/라이트 모드 동기화
-      ref
-          .read(roleThemeProvider.notifier)
-          .setDarkMode(GameTeam.isRobber(myTeam));
-
       // 방 생성 직후 초대코드 다이얼로그 표시 (팀 확정 후)
       // 다이얼로그 닫힌 후 튜토리얼 트리거 (겹침 방지)
       if (_pendingInviteDialog && mounted) {
         _pendingInviteDialog = false;
         await _showInviteCodeDialog();
-      }
-
-      // 튜토리얼 트리거 단일 진입점.
-      // 단일 키 정책으로 팀 변경 재트리거 리스너가 제거되었으므로, 본 호출이
-      // 유일한 진입 경로다. STOMP 재연결 등으로 _fetchAndInitParticipants 가
-      // 여러 번 호출되어도 _isTutorialShowing 가드와 isCompleted 가드로
-      // 중복 노출이 차단된다.
-      if (mounted && myTeam != null) {
-        _showTutorialIfNeeded(myTeam);
       }
     } finally {
       _isFetchingParticipants = false;
@@ -568,9 +503,20 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
       isDarkMode: ref.read(roleThemeProvider),
       onConfirm: () {
-        if (mounted) context.go(RoutePaths.home);
+        if (mounted) _goHomeClearingSession();
       },
     );
+  }
+
+  /// 대기방을 떠나 홈으로 — 세션 상태를 반드시 비우고 나간다.
+  ///
+  /// 참가 정보가 남으면 역할 테마(도둑=다크)가 앱 전역에 남아, 이후 게임 생성·홈·
+  /// 마이페이지의 풀스크린 로딩이 검게 뜬다(#520). 나가는 경로가 넷이라 각자 비우게
+  /// 두면 하나가 빠진다 — 실제로 [_handleNotParticipating]이 빠져 있었다.
+  void _goHomeClearingSession() {
+    ref.read(gameParticipantNotifierProvider.notifier).clear();
+    ref.read(waitingRoomParticipantsProvider.notifier).clear();
+    context.go(RoutePaths.home);
   }
 
   /// 사용자 액션 catch 공통 처리: 404 "참가자 아님" 이면 [_handleNotParticipating]
@@ -597,115 +543,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
   }
 
-  /// 대기실 튜토리얼 (사용자당 1회)
-  ///
-  /// 참가자 데이터가 로딩된 이후 호출되며, 전달된 [team] 값 기준으로
-  /// 반대 팀 `AddSlotCard` 를 가리키는 팀 변경 카드 스텝을 포함한다.
-  /// 반대 팀 정원이 꽉 차서 `AddSlotCard` 가 렌더링되지 않은 경우 해당
-  /// 스텝은 스킵된다. 완료 상태는 단일 키 [TutorialKeys.waitingRoom] 에
-  /// 저장되며, 한 번 본 사용자는 팀을 바꾸거나 재입장해도 다시 노출되지
-  /// 않는다(설정의 "튜토리얼 초기화"로만 재노출).
-  Future<void> _showTutorialIfNeeded(String team) async {
-    // 이미 표시 중이면 STOMP 재연결 등에 의한 중복 호출을 무시한다.
-    if (_isTutorialShowing) return;
-
-    // 초대코드 다이얼로그가 화면에 떠 있는 동안에는 튜토리얼을 띄우지
-    // 않는다. 다이얼로그 닫힘 후 _fetchAndInitParticipants 의 명시적
-    // 호출이 fallback 튜토리얼을 트리거하므로 누락 없음.
-    if (_pendingInviteDialog || _isInviteDialogOpen) return;
-
-    const key = TutorialKeys.waitingRoom;
-
-    final completed = await TutorialService.isCompleted(key);
-    if (completed || !mounted || _isTutorialShowing) return;
-
-    _isTutorialShowing = true;
-
-    // 오버레이 삽입 직후 바로 타겟 좌표가 잡히도록 레이아웃 반영을 한 프레임 대기.
-    await WidgetsBinding.instance.endOfFrame;
-    if (!mounted || !_isTutorialShowing) {
-      _isTutorialShowing = false;
-      return;
-    }
-
-    // endOfFrame 대기 사이에 TEAM_UPDATE 가 들어와 팀이 바뀌었다면 이 경로는
-    // 낡은 값이므로 표시하지 않는다. 단일 키 정책으로 재트리거 리스너가
-    // 제거되었으므로 새 호출은 _fetchAndInitParticipants() 의 명시 경로에서만
-    // 발생한다. 낡은 값에서는 _isTutorialShowing 플래그를 해제하지 않고 조용히
-    // 종료한다 — 새 경로가 진행 중일 수 있다.
-    final currentTeam = ref.read(gameParticipantNotifierProvider)?.team;
-    if (currentTeam != team) return;
-
-    // 1번 스텝 타겟: 현재 팀 기준 반대 팀의 첫 빈 AddSlotCard.
-    final isPolice = GameTeam.isPolice(team);
-    final opponentKey = isPolice
-        ? _tutorialKeyAddSlotRobber
-        : _tutorialKeyAddSlotPolice;
-
-    final l10n = AppLocalizations.of(context);
-    final targets = <TutorialTarget>[
-      // 팀 변경 카드 (반대 팀 AddSlotCard 가 렌더링된 경우에만)
-      if (opponentKey.currentContext != null)
-        AppTutorialStyle.target(
-          keyTarget: opponentKey,
-          description: l10n.waitingRoomTutorialTeamSwitch,
-          align: TutorialAlign.bottom,
-        ),
-      // 초대 코드 공유
-      AppTutorialStyle.target(
-        keyTarget: _tutorialKeyInviteCode,
-        description: l10n.waitingRoomTutorialInvite,
-      ),
-      // 게임 설정 확인
-      AppTutorialStyle.target(
-        keyTarget: _tutorialKeyGameRules,
-        description: l10n.waitingRoomTutorialSettings,
-      ),
-      // 준비 완료
-      AppTutorialStyle.target(
-        keyTarget: _tutorialKeyReadyButton,
-        description: l10n.waitingRoomTutorialReady,
-        align: TutorialAlign.top,
-      ),
-    ];
-
-    _tutorialController = AppTutorialStyle.show(
-      context: context,
-      targets: targets,
-      onFinish: () async {
-        await TutorialService.markCompleted(key);
-        _tutorialController = null;
-        _isTutorialShowing = false;
-        if (!mounted) return;
-        await _showInGameTutorialPromptIfNeeded();
-      },
-    );
-  }
-
-  /// 대기방 코치마크가 처음 끝난 직후 1회 노출되는 인게임 튜토리얼 안내.
-  ///
-  /// 키가 이미 mark되어 있으면 아무 동작도 하지 않는다.
-  /// 다이얼로그 표시 **전에** mark를 수행해 어떤 이유로 다이얼로그가
-  /// 중단되더라도 영구 재노출을 방지한다.
-  Future<void> _showInGameTutorialPromptIfNeeded() async {
-    final shown = await TutorialService.isCompleted(TutorialKeys.inGamePrompt);
-    if (shown || !mounted) return;
-
-    await TutorialService.markCompleted(TutorialKeys.inGamePrompt);
-    if (!mounted) return;
-
-    final l10n = AppLocalizations.of(context);
-    await AppDialog.show<void>(
-      context: context,
-      title: l10n.dialogInGamePreviewTitle,
-      message: l10n.dialogTutorialPromptMessage,
-      confirmText: l10n.buttonViewInGamePreview,
-      barrierDismissible: false,
-      // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
-      isDarkMode: ref.read(roleThemeProvider),
-      onConfirm: () => context.push('/tutorial/in-game'),
-    );
-  }
 
   /// 재연결 모달 표시
   ///
@@ -901,9 +738,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               ref
                   .read(gameParticipantNotifierProvider.notifier)
                   .setTeam(newTeam);
-              ref
-                  .read(roleThemeProvider.notifier)
-                  .setDarkMode(GameTeam.isRobber(newTeam));
             }
           }
         }
@@ -958,8 +792,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         isDarkMode: ref.read(roleThemeProvider),
       );
       if (!mounted) return;
-      ref.read(gameParticipantNotifierProvider.notifier).clear();
-      GoRouter.of(context).go(RoutePaths.home);
+      _goHomeClearingSession();
     } else {
       // 다른 유저 강퇴 → 스낵바
       if (!mounted) return;
@@ -1062,9 +895,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // close()의 최소 표시 대기 동안 대기실이 dispose될 수 있어(KICKED/GAME_START 등
       // 웹소켓 이벤트가 화면을 날림) ref 사용 전 mounted 확인
       if (!mounted) return;
-      ref
-          .read(roleThemeProvider.notifier)
-          .setDarkMode(GameTeam.isRobber(targetTeam));
+      // 서버 TEAM_CHANGED 이벤트를 기다리지 않고 먼저 반영한다(도착 시 같은 값으로 덮음).
+      // 역할 테마는 이 참가 정보에서 파생되므로 여기만 갱신하면 따라온다.
+      ref.read(gameParticipantNotifierProvider.notifier).setTeam(targetTeam);
     } on DioException catch (e) {
       await loading.close();
       if (!mounted) return;
@@ -1182,9 +1015,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _lobbyEventSub?.close();
     _lobbyEventSub = null;
     ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
-    ref.read(gameParticipantNotifierProvider.notifier).clear();
-    ref.read(waitingRoomParticipantsProvider.notifier).clear();
-    context.go(RoutePaths.home);
+    _goHomeClearingSession();
   }
 
   /// 게임 규칙 다이얼로그
@@ -1202,106 +1033,84 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
   /// 초대코드 모달 (방 생성 직후 표시)
   Future<void> _showInviteCodeDialog() async {
-    // 다이얼로그가 열려 있는 동안 리스너/STOMP 경로가 튜토리얼을 띄우지
-    // 못하도록 가드 플래그를 올린다. pop/예외 어느 경로든 반드시 내려야
-    // 하므로 try/finally 사용.
-    _isInviteDialogOpen = true;
-    try {
-      final code = _inviteCode!;
-      final isDark = ref.read(roleThemeProvider);
-      final l10n = AppLocalizations.of(context);
+    final code = _inviteCode!;
+    final isDark = ref.read(roleThemeProvider);
+    final l10n = AppLocalizations.of(context);
 
-      await AppDialog.show<void>(
-        context: context,
-        isDarkMode: isDark,
-        title: l10n.dialogInviteCodeCreatedTitle,
-        message: l10n.dialogInviteCodeShareMessage,
-        customContent: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // QR 코드 이미지
-            // 딥링크 URL 인코딩 (share_util 의 공유 버튼과 동일 형식).
-            // 앱 내 QR 스캐너는 URL 뒤 초대코드를 파싱해 입장하고, 일반 카메라로
-            // 촬영하면 딥링크로 앱이 실행돼 자동 참가한다.
-            ClipRRect(
-              borderRadius: AppRadius.xxlarge,
-              child: QrImageView(
-                data: buildInviteDeeplink(code),
-                version: QrVersions.auto,
-                size: 220.w,
-                backgroundColor: isDark ? AppColors.white : AppColors.black100,
-              ),
+    await AppDialog.show<void>(
+      context: context,
+      isDarkMode: isDark,
+      title: l10n.dialogInviteCodeCreatedTitle,
+      message: l10n.dialogInviteCodeShareMessage,
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // QR 코드 이미지
+          // 딥링크 URL 인코딩 (share_util 의 공유 버튼과 동일 형식).
+          // 앱 내 QR 스캐너는 URL 뒤 초대코드를 파싱해 입장하고, 일반 카메라로
+          // 촬영하면 딥링크로 앱이 실행돼 자동 참가한다.
+          ClipRRect(
+            borderRadius: AppRadius.xxlarge,
+            child: QrImageView(
+              data: buildInviteDeeplink(code),
+              version: QrVersions.auto,
+              size: 220.w,
+              backgroundColor: isDark ? AppColors.white : AppColors.black100,
             ),
-            SizedBox(height: AppSpacing.vertical12),
-            // 초대코드 + 복사 아이콘
-            GestureDetector(
-              onTap: () async {
-                VibrationService.instance().buttonTap();
-                await Clipboard.setData(ClipboardData(text: code));
-                if (!mounted) return;
-                AppSnackbar.show(
-                  context,
-                  message: l10n.messageCodeCopied,
-                  iconPath: 'assets/icons/icon_copy.svg',
-                );
-              },
-              behavior: HitTestBehavior.opaque,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    code,
-                    style: isDark
-                        ? AppTextStyles.robberLabel.copyWith(
-                            color: AppColors.white,
-                          )
-                        : AppTextStyles.label_16.copyWith(
-                            color: AppColors.black,
-                          ),
+          ),
+          SizedBox(height: AppSpacing.vertical12),
+          // 초대코드 + 복사 아이콘
+          GestureDetector(
+            onTap: () async {
+              VibrationService.instance().buttonTap();
+              await Clipboard.setData(ClipboardData(text: code));
+              if (!mounted) return;
+              AppSnackbar.show(
+                context,
+                message: l10n.messageCodeCopied,
+                iconPath: AppIcons.copy,
+              );
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  code,
+                  style: isDark
+                      ? AppTextStyles.robberLabel.copyWith(
+                          color: AppColors.white,
+                        )
+                      : AppTextStyles.label_16.copyWith(
+                          color: AppColors.black,
+                        ),
+                ),
+                SizedBox(width: AppSpacing.horizontal4),
+                SvgPicture.asset(
+                  AppIcons.copy,
+                  width: 20.w,
+                  height: 20.w,
+                  colorFilter: ColorFilter.mode(
+                    isDark ? AppColors.black500 : AppColors.black300,
+                    BlendMode.srcIn,
                   ),
-                  SizedBox(width: AppSpacing.horizontal4),
-                  SvgPicture.asset(
-                    'assets/icons/icon_copy.svg',
-                    width: 20.w,
-                    height: 20.w,
-                    colorFilter: ColorFilter.mode(
-                      isDark ? AppColors.black500 : AppColors.black300,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-        cancelText: l10n.buttonClose,
-        confirmText: l10n.buttonShare,
-        confirmColor: isDark ? null : AppColors.blue,
-        confirmTextColor: isDark ? null : AppColors.white,
-        onConfirm: () {
-          shareInviteCode(code, l10n.shareInviteMessage(code));
-        },
-      );
-    } finally {
-      _isInviteDialogOpen = false;
-    }
+          ),
+        ],
+      ),
+      cancelText: l10n.buttonClose,
+      confirmText: l10n.buttonShare,
+      onConfirm: () {
+        shareInviteCode(code, l10n.shareInviteMessage(code));
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // 참가자 목록이 바뀌면 팀 섹션 Wrap의 높이가 달라져 아래쪽 타겟 좌표가 밀림.
-    // 튜토리얼 패키지는 타겟 활성화 시점의 좌표를 캐시하므로, 변경 프레임 직후
-    // refresh()를 호출해 현재 타겟 위치를 다시 잡아준다.
-    ref.listen(waitingRoomParticipantsProvider, (prev, next) {
-      final controller = _tutorialController;
-      if (controller == null || !controller.isShowing) return;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        controller.refresh();
-      });
-    });
-
     final participantsState = ref.watch(waitingRoomParticipantsProvider);
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
@@ -1358,7 +1167,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam(GameTeam.police)
                                 : null,
-                            addSlotKey: _tutorialKeyAddSlotPolice,
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
                                 ? (member) {
@@ -1373,8 +1181,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                           // 구분선
                           Padding(
                             padding: AppPadding.horizontal20,
-                            child: Divider(
-                              height: 1,
+                            child: SolidDivider(
                               color: isDark
                                   ? AppColors.black800
                                   : AppColors.black100,
@@ -1395,7 +1202,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                             onAddSlotTap: !_isReady
                                 ? () => _changeTeam(GameTeam.robber)
                                 : null,
-                            addSlotKey: _tutorialKeyAddSlotRobber,
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
                                 ? (member) {
@@ -1412,11 +1218,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                     ),
             ),
 
-            // 하단 버튼 (준비 / 게임 시작) — 튜토리얼 하이라이트 대상
+            // 하단 버튼 (준비 / 게임 시작)
             SafeArea(
               top: false,
               child: Padding(
-                key: _tutorialKeyReadyButton,
                 padding: EdgeInsets.fromLTRB(
                   AppSpacing.horizontal20,
                   AppSpacing.vertical12,
@@ -1442,15 +1247,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       leading: Padding(
         padding: EdgeInsets.only(left: 18.w),
         child: FlatIconButton(
-          assetPath: 'assets/icons/icon_exit.svg',
+          assetPath: AppIcons.exit,
           iconColor: isDark ? AppColors.black200 : AppColors.black800,
           onPressed: _confirmLeaveRoom,
         ),
       ),
       title: _inviteCode != null
           ? GestureDetector(
-              // 초대 코드 영역 — 튜토리얼 하이라이트 대상
-              key: _tutorialKeyInviteCode,
               onTap: _showInviteCodeDialog,
               child: IntrinsicWidth(
                 child: Column(
@@ -1479,15 +1282,13 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           : null,
       actions: [
         FlatIconButton(
-          assetPath: 'assets/icons/icon_info.svg',
+          assetPath: AppIcons.info,
           alignment: Alignment.centerRight,
           iconColor: isDark ? AppColors.black200 : AppColors.black800,
           onPressed: _showGameRulesDialog,
         ),
         FlatIconButton(
-          // 게임 설정 버튼 — 튜토리얼 하이라이트 대상
-          key: _tutorialKeyGameRules,
-          assetPath: 'assets/icons/icon_settiing_2.svg',
+          assetPath: AppIcons.setting2,
           iconColor: isDark ? AppColors.black200 : AppColors.black800,
           onPressed: () =>
               context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
@@ -1525,7 +1326,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             : AppColors.black200,
         disabledForegroundColor: isDark ? AppColors.green : AppColors.black400,
         textStyle: isDark ? AppTextStyles.robberLabel : null,
-        showBorder: false,
       );
     }
 
@@ -1536,7 +1336,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
         foregroundColor: isDark ? AppColors.green : AppColors.blue,
         textStyle: isDark ? AppTextStyles.robberLabel : null,
-        showBorder: false,
         isLoading: _isUpdatingReady,
       );
     }
@@ -1547,7 +1346,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       backgroundColor: isDark ? AppColors.green : AppColors.blue,
       foregroundColor: isDark ? AppColors.black : AppColors.white,
       textStyle: isDark ? AppTextStyles.robberLabel : null,
-      showBorder: false,
       isLoading: _isUpdatingReady,
     );
   }

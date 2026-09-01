@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,14 +12,19 @@ import 'package:cops_and_robbers/core/config/env_config.dart';
 import 'package:cops_and_robbers/core/deeplink/deeplink_event.dart';
 import 'package:cops_and_robbers/core/deeplink/deeplink_service.dart';
 import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
+import 'package:cops_and_robbers/core/services/analytics/analytics_service.dart';
 import 'package:cops_and_robbers/core/services/app_icon/locale_app_icon_observer.dart';
 import 'package:cops_and_robbers/core/services/fcm/firebase_messaging_service.dart';
 import 'package:cops_and_robbers/core/services/fcm/local_notifications_service.dart';
+import 'package:cops_and_robbers/core/services/fcm/push_navigation_event.dart';
+import 'package:cops_and_robbers/core/services/fcm/push_navigation_service.dart';
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
 import 'package:cops_and_robbers/features/auth/domain/entities/auth_result_entity.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_socket_provider.dart';
+import 'package:cops_and_robbers/features/community/presentation/providers/pending_community_post_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/pending_invite_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
@@ -221,6 +228,10 @@ class _LocalizedApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(appLocaleProvider).locale;
 
+    // 커뮤니티 소켓은 화면이 아니라 로그인 수명이다(DEC-0045) — keepAlive
+    // Notifier를 여기서 한 번 살려 두면 로그인·로그아웃을 스스로 따라간다.
+    ref.listen(communityChatSocketProvider, (_, _) {});
+
     // 딥링크 URI 수신 시 GoRouter 로 dispatch
     ref.listen<AsyncValue<DeeplinkEvent>>(deeplinkEventsProvider, (prev, next) {
       next.whenData((event) {
@@ -231,9 +242,48 @@ class _LocalizedApp extends ConsumerWidget {
             if (ctx != null) {
               ctx.push(RoutePaths.joinByInviteWithCode(inviteCode));
             }
+          case CommunityPostEvent(:final postId):
+            // 웜 전용 — 콜드 스타트 모집글은 SplashPage 가 단독 처리한다
+            // (deeplink_service 의 emit 제외 참조).
+            final user = ref.read(authNotifierProvider).valueOrNull;
+            if (user == null || user.isNewUser || user.requiresAgreement) {
+              // 진입 절차가 남았으면 보존 — 아래 auth listener 가 완료 시점에 소비
+              unawaited(
+                ref.read(pendingCommunityPostProvider.notifier).save(postId),
+              );
+              break;
+            }
+            unawaited(
+              ref
+                  .read(analyticsServiceProvider)
+                  .logCommunityPostDeeplink(entry: 'warm'),
+            );
+            rootNavigatorKey.currentContext?.pushNamed(
+              RoutePaths.communityDetailName,
+              pathParameters: {'postId': '$postId'},
+            );
           case UnknownEvent():
             // 의도된 무시 — 로깅은 DeepLinkService 내부에서 처리
             break;
+        }
+      });
+    });
+
+    // 푸시 알림 탭(앱이 살아 있을 때) → 목적지 화면으로 push.
+    // 콜드 스타트는 여기로 오지 않는다 — SplashPage가 인증·활성 게임 확인을 마친
+    // 뒤 coldStartPushNavigationProvider를 보고 직접 go 한다.
+    // 상세 라우트는 rootNavigatorKey 위에 뜨므로 어느 탭·화면에서든 그 위에 얹힌다.
+    ref.listen<AsyncValue<PushNavigationEvent>>(pushNavigationEventsProvider, (
+      prev,
+      next,
+    ) {
+      next.whenData((event) {
+        switch (event) {
+          case CommunityPostPushEvent(:final postId):
+            rootNavigatorKey.currentContext?.pushNamed(
+              RoutePaths.communityDetailName,
+              pathParameters: {'postId': '$postId'},
+            );
         }
       });
     });
@@ -260,12 +310,30 @@ class _LocalizedApp extends ConsumerWidget {
       // rootNavigatorKey 는 GlobalKey 이므로 async gap 이후에도 BuildContext 없이 안전하게 접근 가능.
       Future(() async {
         final pending = await ref.read(pendingInviteProvider.future);
-        if (pending == null) return;
+        if (pending != null) {
+          await ref.read(pendingInviteProvider.notifier).clear();
+          // 보존된 모집글이 함께 있으면 버린다 — 게임 참여가 글 열람보다 앞선다
+          await ref.read(pendingCommunityPostProvider.notifier).clear();
+          // ignore: use_build_context_synchronously
+          rootNavigatorKey.currentContext?.push(
+            RoutePaths.joinByInviteWithCode(pending),
+          );
+          return;
+        }
 
-        await ref.read(pendingInviteProvider.notifier).clear();
-        // ignore: use_build_context_synchronously
-        rootNavigatorKey.currentContext?.push(
-          RoutePaths.joinByInviteWithCode(pending),
+        // 보존된 모집글 딥링크 — 진입 절차가 끝난 지금 소비한다
+        final postId = await ref.read(pendingCommunityPostProvider.future);
+        if (postId == null) return;
+
+        await ref.read(pendingCommunityPostProvider.notifier).clear();
+        unawaited(
+          ref
+              .read(analyticsServiceProvider)
+              .logCommunityPostDeeplink(entry: 'pending'),
+        );
+        rootNavigatorKey.currentContext?.pushNamed(
+          RoutePaths.communityDetailName,
+          pathParameters: {'postId': '$postId'},
         );
       });
     });

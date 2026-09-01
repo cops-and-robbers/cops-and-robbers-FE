@@ -16,7 +16,11 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/deeplink/deeplink_event.dart';
 import '../../../../core/deeplink/deeplink_service.dart';
+import '../../../../core/services/analytics/analytics_service.dart';
+import '../../../../core/services/fcm/push_navigation_event.dart';
+import '../../../../core/services/fcm/push_navigation_service.dart';
 import '../../../../core/network/connectivity_service.dart';
+import '../../../../core/services/storage/onboarding_prefs.dart';
 import '../../../../core/network/network_failure_detector.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
@@ -24,6 +28,7 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../router/route_paths.dart';
+import '../../../community/presentation/providers/pending_community_post_provider.dart';
 import '../../../session/domain/entities/user_game_status_entity.dart';
 import '../../domain/entities/auth_result_entity.dart';
 import '../providers/auth_provider.dart';
@@ -169,11 +174,14 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // coldStartDeeplinkProvider 는 deeplinkEvents 의 emit 과 동일한 dedup 을
       // 공유하므로, 양보했는데 딥링크가 스킵돼 splash 에 갇히는 불일치는 없다.
       // ================================================================
+      // 모집글 딥링크는 양보하지 않는다 — 아래에서 홈 대신 상세를 목적지로 삼는다
+      // (푸시 알림의 콜드 스타트와 같은 방식).
+      DeeplinkEvent? coldDeeplink;
       try {
-        final coldEvent = await ref
+        coldDeeplink = await ref
             .read(coldStartDeeplinkProvider.future)
             .timeout(const Duration(seconds: 2));
-        if (coldEvent is InviteJoinEvent) {
+        if (coldDeeplink is InviteJoinEvent) {
           debugPrint('🔗 SplashPage: 콜드 스타트 딥링크 감지 → 네비게이션 양보');
           return;
         }
@@ -215,7 +223,39 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
       // 인증되지 않은 경우 → 남은 딜레이 후 로그인
       if (authUser == null) {
+        // 콜드 스타트 모집글 링크는 보존해 두고, 진입 절차가 끝나면 소비된다
+        if (coldDeeplink case CommunityPostEvent(:final postId)) {
+          await ref.read(pendingCommunityPostProvider.notifier).save(postId);
+        }
         await _waitRemaining(startTime, minDelay);
+        if (!mounted) return;
+
+        // ================================================================
+        // 앱 소개(온보딩) — 이 기기에서 최초 1회, 로그인 화면 앞
+        //
+        // 로그인보다 먼저 오는 이유: 계정을 요구하기 전에 왜 필요한지 먼저
+        // 말한다. 가입 마찰이 이탈의 최대 원인이고, 우리 온보딩은 계정에 붙일
+        // 데이터를 받는 개인화형이 아니라 "이게 무슨 앱인지"를 말하는 가치
+        // 설명형이다.
+        //
+        // "로그인으로 간다"가 확정된 이 지점에 두는 이유: 온보딩이 닫힐 때
+        // 스플래시를 다시 거치지 않고 로그인으로 직행할 수 있다 (중간에
+        // 스플래시가 한 번 더 번쩍이던 문제). 점검·강제 업데이트 게이트와
+        // 초대 딥링크 양보, 인증 복원(재설치로 세션이 살아 있는 기기)은 모두
+        // 이 위에서 이미 빠져나갔으므로 온보딩이 그 흐름들을 가로막지 않는다.
+        //
+        // ⚠️ `push` 후 future 대기 금지 — 라우터 refreshListenable 이 스택을
+        // 재계산하며 imperative push 가 떨어져 나가 무한 대기가 된다(LSN-0041).
+        //
+        // 기록은 노출 전에 한다 — 온보딩 도중 앱이 죽어도 영구 재노출은 막는다.
+        // ================================================================
+        if (!await OnboardingPrefs.seen()) {
+          await OnboardingPrefs.markSeen();
+          if (!mounted) return;
+          context.go(RoutePaths.onboarding);
+          return;
+        }
+
         if (!mounted) return;
         context.go(RoutePaths.login);
         return;
@@ -240,7 +280,11 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         if (!mounted) return;
 
         if (!status.isParticipating || status.participationInfo == null) {
-          context.go(RoutePaths.home);
+          context.go(
+            await _coldStartPushDestination() ??
+                _coldStartDeeplinkDestination(coldDeeplink) ??
+                RoutePaths.home,
+          );
           return;
         }
 
@@ -374,6 +418,47 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   }
 
   /// 시작 시각 기준 최소 딜레이가 남아있으면 대기
+  /// 콜드 스타트가 푸시 알림 탭이었으면 홈 대신 갈 곳. 아니면 null.
+  ///
+  /// 인증·활성 게임 확인을 모두 통과한 "홈으로 갈 자리"에서만 부른다 — 진행
+  /// 중인 게임 복구가 알림 탭보다 우선이고, 비로그인·약관 미동의는 라우터
+  /// redirect가 어차피 다른 곳으로 보낸다(그때 목적지는 버려진다).
+  /// 딥링크(초대)와 달리 스플래시가 직접 `go` 한다 — 중간 페이지가 없어
+  /// "양보"만 하면 상세 아래 스플래시가 남아 뒤로가기에 갇힌다.
+  Future<String?> _coldStartPushDestination() async {
+    try {
+      final event = await ref
+          .read(coldStartPushNavigationProvider.future)
+          .timeout(const Duration(seconds: 2));
+      return switch (event) {
+        CommunityPostPushEvent(:final postId) =>
+          RoutePaths.communityDetailWithId(postId),
+        null => null,
+      };
+    } catch (e) {
+      // 프로브 실패는 홈으로 가면 그만이다 — 알림 탭 한 번을 잃을 뿐이다.
+      debugPrint('⚠️ SplashPage: 콜드 스타트 푸시 확인 실패, 홈으로 진행 - $e');
+      return null;
+    }
+  }
+
+  /// 콜드 스타트 모집글 딥링크의 이동 목적지 (없으면 null).
+  ///
+  /// 초대 딥링크는 전용 페이지가 단독 담당하므로(위의 네비게이션 양보) 여기 오지
+  /// 않는다. 상세 라우트는 커뮤니티 탭의 중첩 라우트라 go 만으로 뒤로 가기가
+  /// 목록으로 떨어진다.
+  String? _coldStartDeeplinkDestination(DeeplinkEvent? event) {
+    if (event case CommunityPostEvent(:final postId)) {
+      unawaited(
+        ref
+            .read(analyticsServiceProvider)
+            .logCommunityPostDeeplink(entry: 'cold'),
+      );
+      return RoutePaths.communityDetailWithId(postId);
+    }
+    return null;
+  }
+
   Future<void> _waitRemaining(DateTime startTime, Duration minDelay) async {
     final elapsed = DateTime.now().difference(startTime);
     final remaining = minDelay - elapsed;
@@ -504,11 +589,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                   ),
                 ),
               ),
-              AppButton(
-                text: l10n.buttonRetry,
-                onPressed: _onManualRetry,
-                showBorder: false,
-              ),
+              AppButton(text: l10n.buttonRetry, onPressed: _onManualRetry),
             ],
           ),
         ),

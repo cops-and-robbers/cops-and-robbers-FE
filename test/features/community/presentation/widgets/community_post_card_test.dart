@@ -1,0 +1,297 @@
+import 'package:cops_and_robbers/core/constants/app_colors.dart';
+import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_post_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_card.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_post_menu.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+CommunityPostEntity _post({
+  CommunityPostStatus status = CommunityPostStatus.recruiting,
+  String? placeName,
+  String? region,
+  int? currentParticipants,
+  int likeCount = 0,
+  bool isLiked = false,
+  int scrapCount = 0,
+  bool isScrapped = false,
+}) => CommunityPostEntity(
+  id: 1,
+  writerId: 7,
+  title: '나랑 경도하자',
+  content: '본문',
+  meetingAt: DateTime(2026, 9, 10, 18, 0),
+  latitude: 37.4979,
+  longitude: 127.0276,
+  maxParticipants: 10,
+  status: status,
+  createdAt: DateTime(2026, 9, 1),
+  placeName: placeName,
+  region: region,
+  currentParticipants: currentParticipants,
+  likeCount: likeCount,
+  isLiked: isLiked,
+  scrapCount: scrapCount,
+  isScrapped: isScrapped,
+);
+
+/// 카드 안의 더보기 메뉴가 로그인 사용자 id를 watch 하므로 ProviderScope가 필요하다.
+/// [currentUserId]로 내 글/남의 글/비로그인 분기를 바꿔 검증한다.
+Widget _wrap(Widget child, {int? currentUserId}) => ProviderScope(
+  overrides: [currentUserIdProvider.overrideWithValue(currentUserId)],
+  child: ScreenUtilInit(
+    designSize: const Size(393, 852),
+    builder: (_, _) => MaterialApp(
+      locale: const Locale('ko'),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: child),
+    ),
+  ),
+);
+
+Future<void> _pumpCard(WidgetTester tester, CommunityPostEntity post) async {
+  await tester.pumpWidget(
+    _wrap(CommunityPostCard(onMenuAction: (_) {}, post: post)),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// 좋아요·스크랩 아이콘의 자산 경로를 읽는다. 카드에 SvgPicture가 여럿이라
+/// (날짜·인원 아이콘 포함) 자산명에 `icon_$kind`가 들어간 것만 골라낸다.
+String _assetPathOf(WidgetTester tester, String kind) {
+  return tester
+      .widgetList<SvgPicture>(find.byType(SvgPicture))
+      .map((svg) => (svg.bytesLoader as SvgAssetLoader).assetName)
+      .singleWhere((path) => path.contains('icon_$kind'));
+}
+
+/// 카운트 숫자를 색으로 식별한다 — 좋아요는 빨강, 스크랩은 노랑(`_CountLabel`
+/// 호출부에 고정된 값이라 count 인자가 서로 바뀌어도 색은 그대로다).
+/// 단순 `find.text(n)`은 두 라벨의 숫자가 화면 어딘가에 존재하기만 하면
+/// 통과하므로 count 인자가 맞바뀌는 회귀를 못 잡는다 — 색으로 자리를 고정한다.
+String _countTextOf(WidgetTester tester, Color color) {
+  return tester
+      .widgetList<Text>(find.byType(Text))
+      .firstWhere((t) => t.style?.color == color)
+      .data!;
+}
+
+void main() {
+  group('CommunityPostCard', () {
+    testWidgets('hides_location_row_when_no_place_or_region', (tester) async {
+      // 지역·장소명이 둘 다 null인 글. 좌표 문자열은 사용자에게 무의미하므로
+      // 행을 숨긴다.
+      await tester.pumpWidget(
+        _wrap(CommunityPostCard(onMenuAction: (_) {}, post: _post())),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(CommunityPostCard.locationRowKey), findsNothing);
+    });
+
+    testWidgets('shows_region_and_place_name_together_when_both_present', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(region: '서울특별시 광진구 군자동', placeName: '세종대학교 정문'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('서울특별시 광진구 군자동 · 세종대학교 정문'), findsOneWidget);
+      expect(find.byKey(CommunityPostCard.locationRowKey), findsOneWidget);
+    });
+
+    testWidgets('shows_capacity_only_when_current_headcount_is_unknown', (
+      tester,
+    ) async {
+      // "0/10명"은 아무도 안 모인 것으로 오독된다.
+      await tester.pumpWidget(
+        _wrap(CommunityPostCard(onMenuAction: (_) {}, post: _post())),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('정원 10명'), findsOneWidget);
+      expect(find.text('0/10명'), findsNothing);
+      // meetingAt: DateTime(2026, 9, 10) → weekday 4(목) 회귀 방지.
+      expect(find.text('9/10 (목) 18:00'), findsOneWidget);
+    });
+
+    testWidgets('shows_current_over_max_when_headcount_is_known', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(currentParticipants: 2),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('2/10명'), findsOneWidget);
+    });
+
+    testWidgets('renders_zero_counts_when_like_and_bookmark_are_unknown', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(CommunityPostCard(onMenuAction: (_) {}, post: _post())),
+      );
+      await tester.pumpAndSettle();
+
+      // 좋아요·스크랩 자리는 지금부터 표시한다 (탭은 받지 않는다).
+      expect(find.text('0'), findsNWidgets(2));
+    });
+
+    testWidgets('fills_the_heart_when_i_liked_the_post', (tester) async {
+      await _pumpCard(
+        tester,
+        _post(likeCount: 6, isLiked: true, scrapCount: 3, isScrapped: false),
+      );
+
+      // 좋아요·스크랩 카운트를 색으로 각각 확인한다 — likeCount 자리에 '6'이
+      // 있는지만 보면 두 `_CountLabel`의 count 인자가 서로 바뀌어도(스크랩
+      // 라벨이 6을, 좋아요 라벨이 3을 그려도) '6'과 '3' 모두 화면에 그대로
+      // 존재해 잡히지 않는다.
+      expect(_countTextOf(tester, AppColors.red), '6');
+      expect(_countTextOf(tester, AppColors.yellow), '3');
+      expect(_assetPathOf(tester, 'like'), 'assets/icons/icon_like_on.svg');
+      expect(_assetPathOf(tester, 'save'), 'assets/icons/icon_save_off.svg');
+    });
+
+    testWidgets('fills_the_bookmark_when_i_scrapped_the_post', (tester) async {
+      await _pumpCard(
+        tester,
+        _post(likeCount: 2, isLiked: false, scrapCount: 9, isScrapped: true),
+      );
+
+      expect(_countTextOf(tester, AppColors.red), '2');
+      expect(_countTextOf(tester, AppColors.yellow), '9');
+      expect(_assetPathOf(tester, 'like'), 'assets/icons/icon_like_off.svg');
+      expect(_assetPathOf(tester, 'save'), 'assets/icons/icon_save_on.svg');
+    });
+
+    testWidgets('dims_content_when_post_is_completed', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(status: CommunityPostStatus.completed),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final opacity = tester.widget<Opacity>(
+        find.byKey(CommunityPostCard.contentOpacityKey),
+      );
+      expect(opacity.opacity, 0.6);
+    });
+
+    testWidgets('keeps_content_fully_opaque_when_post_is_recruiting', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(CommunityPostCard(onMenuAction: (_) {}, post: _post())),
+      );
+      await tester.pumpAndSettle();
+
+      final opacity = tester.widget<Opacity>(
+        find.byKey(CommunityPostCard.contentOpacityKey),
+      );
+      expect(opacity.opacity, 1.0);
+    });
+
+    testWidgets('shows_closed_label_when_post_is_completed', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(status: CommunityPostStatus.completed),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('마감'), findsOneWidget);
+      expect(find.text('모집중'), findsNothing);
+    });
+
+    testWidgets('shows_ended_label_when_meeting_date_has_passed', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(status: CommunityPostStatus.ended),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('종료'), findsOneWidget);
+      expect(find.text('마감'), findsNothing);
+    });
+
+    testWidgets('dims_card_content_when_status_is_ended', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(status: CommunityPostStatus.ended),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final opacity = tester.widget<Opacity>(
+        find.byKey(CommunityPostCard.contentOpacityKey),
+      );
+      expect(opacity.opacity, 0.6);
+    });
+
+    testWidgets('hides_status_toggle_menu_item_when_post_is_ended', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          CommunityPostCard(
+            onMenuAction: (_) {},
+            post: _post(status: CommunityPostStatus.ended),
+          ),
+          // _post()의 writerId(7)와 같아야 내 글 메뉴(수정·상태변경·삭제)가 뜬다.
+          currentUserId: 7,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(CommunityPostMenu));
+      await tester.pumpAndSettle();
+
+      // 수정·삭제는 그대로, 상태 변경(마감하기/다시 모집하기)만 사라진다.
+      expect(find.text('수정하기'), findsOneWidget);
+      expect(find.text('삭제하기'), findsOneWidget);
+      expect(find.text('마감하기'), findsNothing);
+      expect(find.text('다시 모집하기'), findsNothing);
+    });
+  });
+}

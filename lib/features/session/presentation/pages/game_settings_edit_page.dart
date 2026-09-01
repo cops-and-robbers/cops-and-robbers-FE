@@ -6,25 +6,27 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
-import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/buttons/keypad_cta_button.dart';
+import '../../../../core/widgets/inputs/number_pad.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
 import '../providers/session_provider.dart';
-import '../widgets/session_creation_steps/step_1_participant_settings_content.dart';
-import '../widgets/session_creation_steps/step_2_game_settings_content.dart';
+import '../widgets/game_setting_values_editor.dart';
+import '../widgets/setting_field_card.dart';
 
-/// 게임 설정 수정 페이지
+/// 게임 설정 수정 페이지 (대기실)
 ///
-/// Step1(인원 설정) + Step2(게임 규칙 설정) 슬라이더를 하나의 페이지에 표시합니다.
-/// 수정 완료 시 PUT /api/games/{gameId}/settings API를 호출합니다.
+/// 네 항목 카드가 모두 펼쳐져 있고, 카드를 탭하면 하단 고정 키패드가 그 항목을
+/// 겨냥한다. 방 생성의 기본 정보 화면과 같은 입력 방식이다.
+/// 저장하면 PUT /api/games/{gameId}/settings 를 호출한다.
 class GameSettingsEditPage extends ConsumerStatefulWidget {
   const GameSettingsEditPage({
     super.key,
@@ -44,10 +46,7 @@ class GameSettingsEditPage extends ConsumerStatefulWidget {
 }
 
 class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
-  late int _maxParticipants;
-  late int _roundDurationMinutes;
-  late int _locationShareMinutes;
-  late int _policeWaitMinutes;
+  late final GameSettingValues _values;
 
   /// API 호출 중 여부
   bool _isSaving = false;
@@ -55,28 +54,46 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
   @override
   void initState() {
     super.initState();
-    _maxParticipants = widget.initialSettings.maxParticipants;
-    _roundDurationMinutes = widget.initialSettings.roundDurationMinutes;
-    _locationShareMinutes =
-        widget.initialSettings.locationRevealIntervalMinutes;
-    _policeWaitMinutes = widget.initialSettings.policeWaitMinutes;
+    _values = GameSettingValues(
+      participants: widget.initialSettings.maxParticipants,
+      roundDuration: widget.initialSettings.roundDurationMinutes,
+      locationShare: widget.initialSettings.locationRevealIntervalMinutes,
+      policeWait: widget.initialSettings.policeWaitMinutes,
+      // 이미 정해진 값을 고치는 화면이라 제안값 표시가 없다
+      touched: true,
+    );
+  }
+
+  /// 숫자 입력. 상한에 막히면 안내 힌트와 함께 더 무거운 진동으로 알린다.
+  void _onDigit(int digit) {
+    setState(() => _values.inputDigit(digit));
+    if (_values.lastInputExceededMax) VibrationService.instance().longPress();
+  }
+
+  void _onQuickAdd(int amount) {
+    setState(() => _values.quickAdd(amount));
+    if (_values.lastInputExceededMax) VibrationService.instance().longPress();
   }
 
   /// 변경 사항이 있는지 확인
   bool get _hasChanges {
     final s = widget.initialSettings;
-    return _maxParticipants != s.maxParticipants ||
-        _roundDurationMinutes != s.roundDurationMinutes ||
-        _locationShareMinutes != s.locationRevealIntervalMinutes ||
-        _policeWaitMinutes != s.policeWaitMinutes;
+    return _values[GameSettingField.participants] != s.maxParticipants ||
+        _values[GameSettingField.roundDuration] != s.roundDurationMinutes ||
+        _values[GameSettingField.locationShare] !=
+            s.locationRevealIntervalMinutes ||
+        _values[GameSettingField.policeWait] != s.policeWaitMinutes;
   }
 
-  /// 설정 저장 API 호출
+  /// 설정 저장
+  ///
+  /// 바뀐 것이 없으면 API 호출 없이 닫는다 (닉네임 설정 화면과 같은 방식).
   Future<void> _saveSettings() async {
-    if (!_hasChanges || _isSaving) return;
-
-    // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
-    FocusScope.of(context).unfocus();
+    if (!_values.allValid || _isSaving) return;
+    if (!_hasChanges) {
+      context.pop();
+      return;
+    }
 
     final gameId = int.tryParse(widget.sessionId);
     if (gameId == null) return;
@@ -89,10 +106,11 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
         updateGameSettingsProvider(
           gameId,
           request: GameSettingsRequestModel(
-            roundDurationMinutes: _roundDurationMinutes,
-            locationRevealIntervalMinutes: _locationShareMinutes,
-            policeWaitMinutes: _policeWaitMinutes,
-            maxParticipants: _maxParticipants,
+            roundDurationMinutes: _values[GameSettingField.roundDuration],
+            locationRevealIntervalMinutes:
+                _values[GameSettingField.locationShare],
+            policeWaitMinutes: _values[GameSettingField.policeWait],
+            maxParticipants: _values[GameSettingField.participants],
           ),
         ).future,
       );
@@ -126,94 +144,76 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
   Widget build(BuildContext context) {
     final isDark = ref.watch(roleThemeProvider);
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
-    final titleStyle = isDark
-        ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
-        : AppTextStyles.heading_20.copyWith(color: AppColors.black);
     final l10n = AppLocalizations.of(context);
+    final active = _values.active;
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: bgColor,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: PreviousButton(
-          onPressed: () {
-            // AppSlider 숫자 편집용 키패드 잔존 방지 (숫자 전용 키패드에 완료 키가 없음)
-            FocusScope.of(context).unfocus();
-            context.pop();
-          },
-          color: isDark ? AppColors.black200 : AppColors.black800,
-        ),
-        centerTitle: true,
-        title: Text(l10n.pageGameSettingsEditTitle, style: titleStyle),
+      appBar: AppTopBar(
+        title: l10n.pageGameSettingsEditTitle,
+        isDarkMode: isDark,
+        onBack: () => context.pop(),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: AppPadding.horizontal24,
-                  child: Column(
-                    children: [
-                      SizedBox(height: AppSpacing.vertical20),
-
-                      // Step 1: 인원 설정
-                      Step1ParticipantSettingsContent(
-                        maxParticipants: _maxParticipants,
-                        onChanged: (v) => setState(() => _maxParticipants = v),
-                        isDarkMode: isDark,
-                        valueTextStyle: isDark
-                            ? AppTextStyles.robberLabel
-                            : null,
-                      ),
-
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.horizontal20,
+                  vertical: AppSpacing.vertical20,
+                ),
+                child: Column(
+                  children: [
+                    for (final field in GameSettingField.values) ...[
+                      _buildCard(l10n, field, isDark),
                       SizedBox(height: AppSpacing.vertical8),
-
-                      // Step 2: 게임 규칙 설정 (공용 컴포넌트 재사용)
-                      Step2GameSettingsContent(
-                        roundDurationMinutes: _roundDurationMinutes,
-                        locationShareMinutes: _locationShareMinutes,
-                        policeWaitMinutes: _policeWaitMinutes,
-                        onRoundDurationChanged: (v) =>
-                            setState(() => _roundDurationMinutes = v),
-                        onLocationShareChanged: (v) =>
-                            setState(() => _locationShareMinutes = v),
-                        onPoliceWaitChanged: (v) =>
-                            setState(() => _policeWaitMinutes = v),
-                        isDarkMode: isDark,
-                        valueTextStyle: isDark
-                            ? AppTextStyles.robberLabel
-                            : null,
-                      ),
                     ],
-                  ),
+                  ],
                 ),
               ),
             ),
 
-            // 하단 저장 버튼
-            Padding(
-              padding: AppPadding.all20,
-              child: AppButton(
-                text: _isSaving ? l10n.buttonSaving : l10n.buttonSave,
-                onPressed: _hasChanges && !_isSaving ? _saveSettings : null,
-                backgroundColor: isDark ? AppColors.green : AppColors.blue,
-                foregroundColor: isDark ? AppColors.black : AppColors.white,
-                disabledBackgroundColor: isDark
-                    ? AppColors.black800
-                    : AppColors.black200,
-                disabledForegroundColor: isDark
-                    ? AppColors.green
-                    : AppColors.black400,
-                textStyle: isDark ? AppTextStyles.robberLabel : null,
-                showBorder: false,
-              ),
+            // 저장 버튼 — 방 생성 CTA 와 같은 전폭 형태로 키패드에 붙는다
+            KeypadCtaButton(
+              label: _isSaving ? l10n.buttonSaving : l10n.buttonSave,
+              isDarkMode: isDark,
+              onPressed: _values.allValid && !_isSaving ? _saveSettings : null,
+            ),
+
+            NumberPad(
+              quickAmounts: active.quickAmounts,
+              unit: settingFieldUnit(l10n, active),
+              isDarkMode: isDark,
+              onDigit: _onDigit,
+              onQuickAdd: _onQuickAdd,
+              onBackspace: () => setState(_values.backspace),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCard(
+    AppLocalizations l10n,
+    GameSettingField field,
+    bool isDark,
+  ) {
+    final isActive = field == _values.active;
+    final hint = settingFieldHint(l10n, _values, field);
+    final isPolice = field == GameSettingField.policeWait;
+
+    return SettingFieldCard(
+      label: settingFieldLabel(l10n, field),
+      value: '${_values[field]}${settingFieldUnit(l10n, field)}',
+      valuePrefix: isPolice ? l10n.gameSettingPoliceStartPrefix : null,
+      valueSuffix: isPolice ? l10n.gameSettingPoliceStartSuffix : null,
+      hint: hint?.$1,
+      isHintWarning: hint?.$2 ?? false,
+      isActive: isActive,
+      isDarkMode: isDark,
+      onTap: isActive ? null : () => setState(() => _values.activate(field)),
     );
   }
 }

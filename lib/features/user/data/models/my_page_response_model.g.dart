@@ -14,6 +14,8 @@ _$MyPageResponseModelImpl _$$MyPageResponseModelImplFromJson(
   socialPlatform: json['socialPlatform'] as String,
   allowGamePush: json['allowGamePush'] as bool,
   allowMarketingPush: json['allowMarketingPush'] as bool,
+  allowCommunityPush: json['allowCommunityPush'] as bool? ?? true,
+  profileIcon: (json['profileIcon'] as num?)?.toInt() ?? 1,
 );
 
 Map<String, dynamic> _$$MyPageResponseModelImplToJson(
@@ -24,4 +26,6 @@ Map<String, dynamic> _$$MyPageResponseModelImplToJson(
   'socialPlatform': instance.socialPlatform,
   'allowGamePush': instance.allowGamePush,
   'allowMarketingPush': instance.allowMarketingPush,
+  'allowCommunityPush': instance.allowCommunityPush,
+  'profileIcon': instance.profileIcon,
 };

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'core/constants/app_colors.dart';
+import 'core/constants/app_icons.dart';
 import 'core/constants/spacing_and_radius.dart';
 import 'core/constants/text_styles.dart';
 import 'core/network/websocket/stomp_connection.dart';
@@ -15,6 +16,9 @@ import 'core/widgets/dialogs/reconnect_modal.dart';
 import 'core/widgets/map/pin_zone_setting_widget.dart';
 import 'features/auth/presentation/pages/agreement_page.dart';
 import 'features/auth/presentation/pages/nickname_setup_page.dart';
+import 'features/community/domain/entities/community_post_entity.dart';
+import 'features/community/domain/entities/community_post_status.dart';
+import 'features/community/presentation/widgets/community_post_card.dart';
 import 'features/game/data/models/game_area_model.dart';
 import 'features/game/domain/entities/area_shape.dart';
 import 'features/game/domain/entities/game_result_entity.dart';
@@ -334,6 +338,63 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
               SizedBox(height: AppSpacing.vertical64),
 
               // ============================================
+              // 커뮤니티 카드 (#475) 테스트
+              // ============================================
+              _buildSectionTitle('커뮤니티 카드 (#475) 테스트'),
+              SizedBox(height: AppSpacing.vertical8),
+              Text(
+                '백엔드 address·currentParticipants 도착 전에도 시안을 대조할 수 있는 프리뷰. '
+                '위: 값이 다 있는 상태, 아래: 지금 API가 주는 상태(주소 행 숨김, 정원만).',
+                style: AppTextStyles.paragraph_14.copyWith(
+                  color: AppColors.black400,
+                ),
+              ),
+              SizedBox(height: AppSpacing.vertical16),
+              CommunityPostCard(
+                onMenuAction: (_) {},
+                post: CommunityPostEntity(
+                  id: 1,
+                  writerId: 7,
+                  title: '나랑 경도하자!!!!!',
+                  content: '본문',
+                  meetingAt: DateTime(2026, 9, 10, 18, 0),
+                  latitude: 37.5511,
+                  longitude: 127.0739,
+                  maxParticipants: 10,
+                  status: CommunityPostStatus.recruiting,
+                  createdAt: DateTime(2026, 9, 1),
+                  placeName: '세종대학교 정문',
+                  region: '서울특별시 광진구 군자동',
+                  currentParticipants: 2,
+                  likeCount: 6,
+                  isLiked: false,
+                  scrapCount: 3,
+                  isScrapped: true,
+                ),
+              ),
+              SizedBox(height: AppSpacing.vertical12),
+              CommunityPostCard(
+                onMenuAction: (_) {},
+                post: CommunityPostEntity(
+                  id: 2,
+                  writerId: 8,
+                  title: '번개로 경도하실 분',
+                  content: '본문',
+                  meetingAt: DateTime(2026, 9, 12, 20, 0),
+                  latitude: 37.5511,
+                  longitude: 127.0739,
+                  maxParticipants: 15,
+                  status: CommunityPostStatus.completed,
+                  createdAt: DateTime(2026, 9, 1),
+                  likeCount: 6,
+                  isLiked: false,
+                  scrapCount: 3,
+                  isScrapped: true,
+                ),
+              ),
+              SizedBox(height: AppSpacing.vertical32),
+
+              // ============================================
               // 폴리곤 구역 (#456) 테스트
               // ============================================
               _buildSectionTitle('폴리곤 구역 (#456) 테스트'),
@@ -570,9 +631,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
   /// 핑 마커 미리보기 (지도에 찍히는 핑은 종류 심볼 단독 — 핀 꼬리 없음)
   Widget _buildPingMarkerPreview({required String type, required bool isDark}) {
-    final theme = isDark ? 'darkmode' : 'lightmode';
     return SvgPicture.asset(
-      'assets/icons/icon_ping_${type}_marker_$theme.svg',
+      AppIcons.pingMarker(type: type, isDark: isDark),
       width: 24.w,
       height: 24.w,
     );

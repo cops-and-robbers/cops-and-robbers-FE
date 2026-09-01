@@ -47,7 +47,34 @@ final noticeRepositoryProvider = AutoDisposeProvider<NoticeRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef NoticeRepositoryRef = AutoDisposeProviderRef<NoticeRepository>;
-String _$noticesNotifierHash() => r'c40ecd535922c0195c51fdd5eef3f80f29999194';
+String _$selectedNoticeCategoryHash() =>
+    r'6b749d9d3f2fadacf45391e181dae73bbf197f8f';
+
+/// 현재 선택된 카테고리 필터
+///
+/// `NoticesNotifier.build()`가 이 값을 watch 하므로, 값이 바뀌면 build가
+/// 재실행되며 자동으로 0페이지부터 다시 조회된다 — 페이지 리셋 로직이 따로 없다.
+/// 칩 UI는 이 provider를 직접 watch 해서 네트워크 응답을 기다리지 않고
+/// 탭 즉시 선택 표시를 바꾼다.
+///
+/// Copied from [SelectedNoticeCategory].
+@ProviderFor(SelectedNoticeCategory)
+final selectedNoticeCategoryProvider =
+    AutoDisposeNotifierProvider<
+      SelectedNoticeCategory,
+      NoticeCategory
+    >.internal(
+      SelectedNoticeCategory.new,
+      name: r'selectedNoticeCategoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$selectedNoticeCategoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$SelectedNoticeCategory = AutoDisposeNotifier<NoticeCategory>;
+String _$noticesNotifierHash() => r'e42d1d2ab4705cc5c5a37ce106507b139a12c15a';
 
 /// 공지사항 목록 페이지 상태 관리 Notifier
 ///

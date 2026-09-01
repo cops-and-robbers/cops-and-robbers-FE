@@ -4,9 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../report/presentation/providers/report_provider.dart';
-import '../../../report/domain/constants/report_categories.dart';
+import '../../../../core/constants/app_icons.dart';
+import '../../../report/domain/report_target.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/constants/chat_constants.dart';
@@ -15,7 +16,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_notification_provider.dart';
 import '../providers/chat_provider.dart';
-import 'chat_context_menu.dart';
+import '../../../../core/widgets/chat/chat_context_menu.dart';
 import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
 import 'chat_preview_card.dart';
@@ -159,31 +160,37 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     BuildContext bubbleContext,
     bool isMe,
   ) {
+    VibrationService.instance().longPress();
     ChatContextMenu.show(
       context: bubbleContext,
-      message: message,
-      isMe: isMe,
+      bubble: ChatContextMenuBubble(
+        text: message.filteredMessage,
+        backgroundColor: widget.isDarkMode ? AppColors.black : AppColors.white,
+        textStyle: AppTextStyles.paragraph_14.copyWith(
+          color: widget.isDarkMode ? AppColors.white : AppColors.black900,
+        ),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12.r),
+          topRight: Radius.circular(12.r),
+          bottomLeft: Radius.circular(isMe ? 12.r : 4.r),
+          bottomRight: Radius.circular(isMe ? 4.r : 12.r),
+        ),
+      ),
+      copyText: message.message,
       isDarkMode: widget.isDarkMode,
-      onBlock: (participantId) {
-        ref.read(chatNotifierProvider.notifier).blockUser(participantId);
-      },
-      onReport:
-          ({
-            required ReportCategory category,
-            required String messageContent,
-            required int reportedParticipantId,
-            String? etcReason,
-          }) async {
-            await ref
-                .read(reportRepositoryProvider)
-                .reportChat(
-                  gameId: widget.gameId,
-                  reportedParticipantId: reportedParticipantId,
-                  messageContent: messageContent,
-                  category: category,
-                  etcReason: etcReason,
-                );
-          },
+      // 내 메시지는 신고·차단할 대상이 아니다.
+      reportTarget: isMe
+          ? null
+          : GameChatReportTarget(
+              gameId: widget.gameId,
+              reportedParticipantId: message.sender.participantId,
+              messageContent: message.message,
+            ),
+      onBlock: isMe
+          ? null
+          : () => ref
+                .read(chatNotifierProvider.notifier)
+                .blockUser(message.sender.participantId),
     );
   }
 
@@ -328,13 +335,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                       topLeft: AppRadius.xl20.topLeft,
                       topRight: AppRadius.xl20.topRight,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: const Offset(0, -2),
-                        blurRadius: 10,
-                        color: AppColors.black.withValues(alpha: 0.1),
-                      ),
-                    ],
+                    boxShadow: AppShadows.topLift,
                   ),
                   child: Column(
                     children: [
@@ -500,9 +501,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
               height: 48.w,
               child: Center(
                 child: SvgPicture.asset(
-                  isNotificationOn
-                      ? 'assets/icons/icon_bell_on.svg'
-                      : 'assets/icons/icon_bell_off.svg',
+                  isNotificationOn ? AppIcons.chatBellOn : AppIcons.chatBellOff,
                   width: 24.w,
                   height: 24.w,
                   colorFilter: ColorFilter.mode(

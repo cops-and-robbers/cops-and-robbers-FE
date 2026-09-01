@@ -8,8 +8,10 @@ import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_remote_datasource.dart';
 import '../models/agreement_request_model.dart';
+import '../models/community_push_agreement_model.dart';
 import '../models/game_push_agreement_model.dart';
 import '../models/nickname_update_request_model.dart';
+import '../models/profile_icon_update_request_model.dart';
 
 /// User Repository 구현체
 ///
@@ -62,6 +64,21 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<void> updateProfileIcon(int profileIcon) async {
+    try {
+      await _dataSource.updateProfileIcon(
+        ProfileIconUpdateRequestModel(profileIcon: profileIcon),
+      );
+
+      if (kDebugMode) {
+        debugPrint('✅ 프로필 아이콘 변경 성공: $profileIcon');
+      }
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    }
+  }
+
+  @override
   Future<UserProfileEntity> getMyProfile() async {
     try {
       final response = await _dataSource.getMyPage();
@@ -76,6 +93,8 @@ class UserRepositoryImpl implements UserRepository {
         socialPlatform: response.socialPlatform,
         allowGamePush: response.allowGamePush,
         allowMarketingPush: response.allowMarketingPush,
+        allowCommunityPush: response.allowCommunityPush,
+        profileIcon: response.profileIcon,
       );
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
@@ -206,6 +225,56 @@ class UserRepositoryImpl implements UserRepository {
       throw ServerException(
         message: '게임 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다.',
         messageKey: 'errorGamePushUpdateUnexpected',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<bool> getCommunityPushAgreement() async {
+    try {
+      final response = await _dataSource.getCommunityPushAgreement();
+
+      if (kDebugMode) {
+        debugPrint('✅ 커뮤니티 푸시 알림 동의 조회: ${response.allowCommunityPush}');
+      }
+
+      return response.allowCommunityPush;
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ServerException(
+        message: '커뮤니티 푸시 알림 동의 조회 중 예기치 않은 오류가 발생했습니다.',
+        messageKey: 'errorCommunityPushFetchUnexpected',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> updateCommunityPushAgreement({
+    required bool allowCommunityPush,
+  }) async {
+    try {
+      await _dataSource.updateCommunityPushAgreement(
+        CommunityPushAgreementRequestModel(
+          allowCommunityPush: allowCommunityPush,
+        ),
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          '✅ 커뮤니티 푸시 알림 동의 업데이트 성공 (allowCommunityPush=$allowCommunityPush)',
+        );
+      }
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ServerException(
+        message: '커뮤니티 푸시 알림 동의 업데이트 중 예기치 않은 오류가 발생했습니다.',
+        messageKey: 'errorCommunityPushUpdateUnexpected',
         originalException: e,
       );
     }

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -75,6 +77,31 @@ class AreaShape with _$AreaShape {
           .reduce((a, b) => a > b ? a : b);
     },
   );
+
+  /// 구역을 덮는 위경도 박스 (남서/북동 꼭짓점) — 인게임 카메라 이동 제한용
+  ///
+  /// centroid ± boundingRadius × (1 + [marginRatio])를 평면 근사로 환산한다.
+  /// 길쭉한 폴리곤은 짧은 축이 실제보다 후해지지만, "구역에서 크게 못 벗어나게"
+  /// 하는 목적에는 충분하다 (도형별 정밀 박스는 필요해질 때).
+  ({GeoPoint southWest, GeoPoint northEast}) boundingBox({
+    double marginRatio = 0,
+  }) {
+    const earthRadius = 6371000.0;
+    final c = centroid;
+    final halfInMeters = boundingRadiusInMeters * (1 + marginRatio);
+    final latOffset = (halfInMeters / earthRadius) * (180 / math.pi);
+    final lngOffset = latOffset / math.cos(c.latitude * math.pi / 180);
+    return (
+      southWest: GeoPoint(
+        latitude: c.latitude - latOffset,
+        longitude: c.longitude - lngOffset,
+      ),
+      northEast: GeoPoint(
+        latitude: c.latitude + latOffset,
+        longitude: c.longitude + lngOffset,
+      ),
+    );
+  }
 }
 
 /// 게임 구역 엔티티 — 서버 제약상 두 구역은 항상 같은 도형 타입이지만,
