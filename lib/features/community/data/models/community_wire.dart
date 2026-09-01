@@ -122,6 +122,15 @@ CommunityChatMessageBody communityChatMessageBodyFromWire(
         'KICK' => const CommunityChatMessageBody.system(
           CommunityChatSystemEvent.kick,
         ),
+        'PIN_REGISTERED' => const CommunityChatMessageBody.system(
+          CommunityChatSystemEvent.pinRegistered,
+        ),
+        'PIN_UPDATED' => const CommunityChatMessageBody.system(
+          CommunityChatSystemEvent.pinUpdated,
+        ),
+        'PIN_DELETED' => const CommunityChatMessageBody.system(
+          CommunityChatSystemEvent.pinDeleted,
+        ),
         _ => _unknown('시스템 이벤트', event ?? message),
       };
     case 'GAME_INVITE':

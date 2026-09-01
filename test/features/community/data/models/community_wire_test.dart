@@ -92,6 +92,38 @@ void main() {
       );
     });
 
+    test('reads_pin_registered_event_from_json_when_type_is_system', () {
+      // BE #190이 시스템 이벤트를 3종 → 6종으로 늘렸다. 모르는 값으로 접으면
+      // 대화창에 아무것도 안 보인다 — 공지가 바뀐 사실을 방에서 알 길이 없다.
+      expect(
+        communityChatMessageBodyFromWire(
+          'SYSTEM',
+          '{"event":"PIN_REGISTERED"}',
+        ),
+        const CommunityChatMessageBody.system(
+          CommunityChatSystemEvent.pinRegistered,
+        ),
+      );
+    });
+
+    test('reads_pin_updated_event_from_json_when_type_is_system', () {
+      expect(
+        communityChatMessageBodyFromWire('SYSTEM', '{"event":"PIN_UPDATED"}'),
+        const CommunityChatMessageBody.system(
+          CommunityChatSystemEvent.pinUpdated,
+        ),
+      );
+    });
+
+    test('reads_pin_deleted_event_from_json_when_type_is_system', () {
+      expect(
+        communityChatMessageBodyFromWire('SYSTEM', '{"event":"PIN_DELETED"}'),
+        const CommunityChatMessageBody.system(
+          CommunityChatSystemEvent.pinDeleted,
+        ),
+      );
+    });
+
     test('reads_invite_code_from_json_when_type_is_game_invite', () {
       expect(
         communityChatMessageBodyFromWire(

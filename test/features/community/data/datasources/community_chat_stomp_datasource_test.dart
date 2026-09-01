@@ -66,6 +66,15 @@ void main() {
         '/subscribe/community/42/chat',
       );
     });
+
+    test('pin_channel_hangs_under_the_room_path', () {
+      // 방 채널과 같은 `/subscribe/community/**` 패턴이어야 서버의 멤버 검증
+      // 인터셉터를 그대로 탄다 — 벗어나면 INVALID_DESTINATION이다.
+      expect(
+        CommunityChatStompDatasource.pinChannel(42),
+        '/subscribe/community/42/chat/pin',
+      );
+    });
   });
 
   group('CommunityChatStompDatasource subscriptions', () {
@@ -79,6 +88,8 @@ void main() {
       expect(ds.client.subscriptions, [
         '/subscribe/user/7/community/chat',
         '/subscribe/community/42/chat',
+        // 공지 배너는 대화와 채널이 갈린다(DEC-0055) — 방을 구독하면 같이 붙는다.
+        '/subscribe/community/42/chat/pin',
       ]);
     });
 
@@ -90,10 +101,11 @@ void main() {
 
       ds.fireConnected(); // 예약된 방이 재연결에 살아남는다
 
-      expect(ds.client.subscriptions.length, 4);
-      expect(ds.client.subscriptions.sublist(2), [
+      expect(ds.client.subscriptions.length, 6);
+      expect(ds.client.subscriptions.sublist(3), [
         '/subscribe/user/7/community/chat',
         '/subscribe/community/42/chat',
+        '/subscribe/community/42/chat/pin',
       ]);
     });
 
@@ -107,10 +119,14 @@ void main() {
       expect(ds.client.unsubscribed, isEmpty);
 
       ds.unsubscribeRoom(42);
-      expect(ds.client.unsubscribed, ['/subscribe/community/42/chat']);
+      // 방을 떠나면 공지 채널도 함께 풀린다 — 남기면 나간 방의 배너가 계속 온다.
+      expect(ds.client.unsubscribed, [
+        '/subscribe/community/42/chat',
+        '/subscribe/community/42/chat/pin',
+      ]);
 
       ds.fireConnected(); // 방 채널은 더 이상 재구독되지 않는다 — 개인 채널만 추가
-      expect(ds.client.subscriptions.length, 3);
+      expect(ds.client.subscriptions.length, 4);
       expect(ds.client.subscriptions.last, '/subscribe/user/7/community/chat');
     });
   });

@@ -26,6 +26,12 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
       '/subscribe/user/$userId/community/chat';
   static String roomChannel(int postId) => '/subscribe/community/$postId/chat';
 
+  /// 고정 공지 전용 채널(BE #190). 배너와 말풍선은 성격이 달라 서버가 채널을
+  /// 나눴다(DEC-0055). 방 채널과 같은 `/subscribe/community/**` 패턴이라 구독
+  /// 자격 검증은 동일하다.
+  static String pinChannel(int postId) =>
+      '/subscribe/community/$postId/chat/pin';
+
   final _messageController =
       StreamController<CommunityChatMessageResponseModel>.broadcast();
 
@@ -35,9 +41,16 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
   Stream<CommunityChatMessageResponseModel> get onChatMessage =>
       _messageController.stream;
 
+  final _pinController = StreamController<int>.broadcast();
+
+  /// 고정 공지가 바뀐 방 번호. 내용은 싣지 않는다 — payload에 프로필 아이콘·등록
+  /// 시각이 없어 반쪽짜리라, 소비자가 REST로 다시 받는 편이 정확하다.
+  Stream<int> get onPinChanged => _pinController.stream;
+
   int? _userId;
   int? _pendingPostId;
   StompUnsubscribe? _roomSub;
+  StompUnsubscribe? _pinSub;
 
   /// [userId]의 알림 채널을 연결될 때마다 다시 구독하도록 기억하고 연결한다.
   void connectAs(String wsUrl, String accessToken, {required int userId}) {
@@ -61,6 +74,8 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
     _pendingPostId = null;
     _roomSub?.call(unsubscribeHeaders: {});
     _roomSub = null;
+    _pinSub?.call(unsubscribeHeaders: {});
+    _pinSub = null;
     debugPrint('[$logTag] 채팅방 구독 해제: ${roomChannel(postId)}');
   }
 
@@ -92,6 +107,12 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
     _roomSub = stompClient!.subscribe(
       destination: roomChannel(postId),
       callback: _handleMessage,
+    );
+    // 공지 채널은 방 채널과 수명이 같다 — 방을 보고 있는 동안만이다.
+    _pinSub?.call(unsubscribeHeaders: {});
+    _pinSub = stompClient!.subscribe(
+      destination: pinChannel(postId),
+      callback: _handlePin,
     );
     debugPrint('[$logTag] ✅ 채팅방 구독: ${roomChannel(postId)}');
   }
@@ -145,6 +166,7 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
   void disconnect() {
     // 클라이언트가 내려가면 구독 핸들도 같이 죽는다 — 다음 연결에서 다시 건다.
     _roomSub = null;
+    _pinSub = null;
     super.disconnect();
   }
 
@@ -152,6 +174,26 @@ class CommunityChatStompDatasource extends BaseStompDatasource {
   void dispose() {
     super.dispose();
     _messageController.close();
+    _pinController.close();
+  }
+
+  /// 공지 payload에서 방 번호만 꺼낸다 — 내용은 소비자가 REST로 다시 받는다.
+  void _handlePin(StompFrame frame) {
+    if (isDisposed) return;
+    final body = frame.body;
+    if (body == null || body.isEmpty) return;
+
+    try {
+      final decoded = jsonDecode(body);
+      final postId = decoded is Map<String, dynamic> ? decoded['postId'] : null;
+      if (postId is! int) {
+        debugPrint('[$logTag] ⚠️ postId 없는 공지 프레임 무시');
+        return;
+      }
+      _pinController.add(postId);
+    } catch (e) {
+      debugPrint('[$logTag] ❌ 공지 파싱 실패: $e');
+    }
   }
 
   void _handleMessage(StompFrame frame) {

@@ -209,3 +209,39 @@ class CommunityChatNotificationRequestModel
     Map<String, dynamic> json,
   ) => _$CommunityChatNotificationRequestModelFromJson(json);
 }
+
+/// 채팅방 고정 공지 응답 DTO — `GET·POST·PUT /{postId}/chat/pin`
+///
+/// 백엔드 스키마: api-docs.json#CommunityChatPinResponse (v2.31.0)
+///
+/// **공지가 없어도 200이 온다** — 그때 `id`를 비롯한 필드가 전부 null이고
+/// `writerProfileIcon`만 0이다. 404가 아니므로 "없음"은 예외가 아니라 값이다.
+@freezed
+class CommunityChatPinResponseModel with _$CommunityChatPinResponseModel {
+  const factory CommunityChatPinResponseModel({
+    required int postId,
+    int? id,
+    int? writerId,
+    String? writerNickname,
+    int? writerProfileIcon,
+    String? content,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) = _CommunityChatPinResponseModel;
+
+  factory CommunityChatPinResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityChatPinResponseModelFromJson(json);
+}
+
+/// 고정 공지 등록·수정 요청 DTO — `POST·PUT /{postId}/chat/pin`
+///
+/// 백엔드 스키마: api-docs.json#CommunityChatPinRegisterRequest / …UpdateRequest
+/// (v2.31.0). 두 스키마가 `content` 하나로 같아 요청 DTO도 하나만 둔다.
+@freezed
+class CommunityChatPinRequestModel with _$CommunityChatPinRequestModel {
+  const factory CommunityChatPinRequestModel({required String content}) =
+      _CommunityChatPinRequestModel;
+
+  factory CommunityChatPinRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$CommunityChatPinRequestModelFromJson(json);
+}

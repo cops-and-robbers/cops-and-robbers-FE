@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_event.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_member_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_message_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_chat_notice_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_page_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_room_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
@@ -138,6 +139,57 @@ class FakeCommunityChatRepository implements CommunityChatRepository {
   Future<void> setNotification(int postId, {required bool enabled}) async {
     calls.add('setNotification:$postId:$enabled');
     if (setNotificationError != null) throw setNotificationError!;
+  }
+
+  /// 서버가 들고 있는 고정 공지. null이면 "아직 없음"이다(DEC-0054 — 방마다 하나).
+  CommunityChatNoticeEntity? notice;
+
+  /// 던지면 getNotice / registerNotice / updateNotice / deleteNotice가 실패한다
+  Object? noticeError;
+
+  @override
+  Future<CommunityChatNoticeEntity?> getNotice(int postId) async {
+    calls.add('getNotice:$postId');
+    if (noticeError != null) throw noticeError!;
+    return notice;
+  }
+
+  @override
+  Future<CommunityChatNoticeEntity> registerNotice(
+    int postId,
+    String content,
+  ) async {
+    calls.add('registerNotice:$postId');
+    if (noticeError != null) throw noticeError!;
+    return notice = CommunityChatNoticeEntity(
+      id: 9,
+      writerId: 7,
+      writerNickname: '경도매우러버',
+      writerProfileIcon: 3,
+      content: content,
+      createdAt: DateTime(2026, 9, 19, 13, 24),
+      updatedAt: DateTime(2026, 9, 19, 13, 24),
+    );
+  }
+
+  @override
+  Future<CommunityChatNoticeEntity> updateNotice(
+    int postId,
+    String content,
+  ) async {
+    calls.add('updateNotice:$postId');
+    if (noticeError != null) throw noticeError!;
+    return notice = (notice ?? await registerNotice(postId, content)).copyWith(
+      content: content,
+      updatedAt: DateTime(2026, 9, 19, 14, 0),
+    );
+  }
+
+  @override
+  Future<void> deleteNotice(int postId) async {
+    calls.add('deleteNotice:$postId');
+    if (noticeError != null) throw noticeError!;
+    notice = null;
   }
 
   @override
