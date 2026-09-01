@@ -28,7 +28,6 @@ import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/services/tutorial/tutorial_keys.dart';
 import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../../core/tutorial/app_tutorial_style.dart';
@@ -45,6 +44,7 @@ import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
+import '../game_creation_entry.dart';
 import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../game/presentation/widgets/qr_scanner_page.dart';
@@ -298,19 +298,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   ///
   /// 위치 권한 + (Android) 배터리 최적화 게이트 통과 후 세션 생성 플로우로 이동.
   Future<void> _onCreateSession() async {
-    final passed = await ref
-        .read(gameEntryGateProvider)
-        .ensure(
-          context: context,
-          locationContext: LocationPermissionContext.home,
-        );
-    // 미통과 시 헬퍼가 이미 안내 다이얼로그를 띄운 상태 → 홈에 머무름
-    if (!passed || !mounted) return;
-
-    await SessionDraftStorageService().clearDraft();
-    if (mounted) {
-      context.go(RoutePaths.sessionCreationFlow);
-    }
+    await startGameCreation(context: context, ref: ref, replace: true);
   }
 
   /// 개발자 도구 메뉴 표시

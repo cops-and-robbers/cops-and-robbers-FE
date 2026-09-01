@@ -17,6 +17,7 @@ import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
+import '../../../session/presentation/game_creation_entry.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/community_chat_event.dart';
 import '../providers/community_chat_room_provider.dart';
@@ -237,8 +238,12 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage> {
   /// 뒤로 두 번이면 돌아오므로 감수한다.
   /// 방장 전용 — 기존 세션 생성 플로우로 진입해 방을 만든다. postId를 넘기면
   /// 플로우가 생성 성공 직후 이 방에 GAME_INVITE를 쏜다(#516).
-  void _startGame() {
-    context.push(RoutePaths.sessionCreationFlow, extra: widget.postId);
+  Future<void> _startGame() async {
+    await startGameCreation(
+      context: context,
+      ref: ref,
+      communityPostId: widget.postId,
+    );
   }
 
   void _openPost() {
