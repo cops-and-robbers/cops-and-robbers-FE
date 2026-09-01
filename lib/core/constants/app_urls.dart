@@ -36,4 +36,10 @@ class AppUrls {
     final prefix = language == 'ko' ? '' : '/$language';
     return '$site$prefix/legal/${doc.slug}/embed';
   }
+
+  /// 앱 웹뷰가 여는 크레딧(만든 사람들) 주소
+  ///
+  /// 법적 문서와 같은 임베드 방식이지만 화면에 문장이 거의 없어(이름·역할)
+  /// 언어를 나누지 않은 단일 주소입니다. 인원이 바뀌면 웹 배포만으로 갱신됩니다.
+  static const String credits = '$site/credits/embed';
 }
