@@ -46,3 +46,14 @@ String formatCommunityMeetingAt(AppLocalizations l10n, DateTime dt) {
     time,
   );
 }
+
+/// `09/19 13:24` — 1년이 넘으면 `yy/09/19 13:24` (24시 기준)
+///
+/// 댓글 목록과 채팅방 공지가 같이 쓴다. 숫자뿐이라 로케일을 타지 않아 ARB가 없다.
+String formatCommunityDateTime(DateTime at, {DateTime? now}) {
+  String two(int n) => n.toString().padLeft(2, '0');
+  final hhmm = '${two(at.hour)}:${two(at.minute)}';
+  final mmdd = '${two(at.month)}/${two(at.day)} $hhmm';
+  if ((now ?? DateTime.now()).difference(at).inDays < 365) return mmdd;
+  return '${two(at.year % 100)}/$mmdd';
+}

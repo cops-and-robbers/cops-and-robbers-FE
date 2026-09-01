@@ -86,6 +86,37 @@ void main() {
       );
     });
 
+    test('says_pin_registered_not_left_when_system_pin_registered', () {
+      // 시스템 이벤트 폴백이 "나갔어요"라 새 이벤트가 조용히 퇴장으로 읽힌다 —
+      // 아무도 나가지 않았는데 목록에 "나갔어요"가 뜬다.
+      expect(
+        chatPreviewText(
+          l10n,
+          _last(
+            const CommunityChatMessageBody.system(
+              CommunityChatSystemEvent.pinRegistered,
+            ),
+            nickname: '도둑쥐',
+          ),
+        ),
+        '도둑쥐님이 공지를 등록했어요',
+      );
+    });
+
+    test('falls_back_to_generic_when_system_pin_deleted_has_no_nickname', () {
+      expect(
+        chatPreviewText(
+          l10n,
+          _last(
+            const CommunityChatMessageBody.system(
+              CommunityChatSystemEvent.pinDeleted,
+            ),
+          ),
+        ),
+        '공지가 삭제됐어요',
+      );
+    });
+
     test('returns_invite_label_when_game_invite', () {
       expect(
         chatPreviewText(

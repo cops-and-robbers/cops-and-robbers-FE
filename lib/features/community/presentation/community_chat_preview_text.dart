@@ -23,6 +23,20 @@ String chatPreviewText(
       nickname == null
           ? l10n.communityChatPreviewKicked
           : l10n.communityChatSystemKicked(nickname),
+    // 공지 3종을 열거하지 않으면 아래 폴백이 잡아 "나갔어요"로 읽힌다 —
+    // 아무도 나가지 않았는데 목록에 퇴장이 뜬다.
+    CommunityChatSystemBody(event: CommunityChatSystemEvent.pinRegistered) =>
+      nickname == null
+          ? l10n.communityChatPreviewPinRegistered
+          : l10n.communityChatSystemPinRegistered(nickname),
+    CommunityChatSystemBody(event: CommunityChatSystemEvent.pinUpdated) =>
+      nickname == null
+          ? l10n.communityChatPreviewPinUpdated
+          : l10n.communityChatSystemPinUpdated(nickname),
+    CommunityChatSystemBody(event: CommunityChatSystemEvent.pinDeleted) =>
+      nickname == null
+          ? l10n.communityChatPreviewPinDeleted
+          : l10n.communityChatSystemPinDeleted(nickname),
     CommunityChatSystemBody() =>
       nickname == null
           ? l10n.communityChatPreviewLeft

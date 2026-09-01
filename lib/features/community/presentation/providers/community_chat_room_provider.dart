@@ -305,6 +305,9 @@ class CommunityChatRoomNotifier extends _$CommunityChatRoomNotifier {
     CommunityChatConnectionEvent() => s.copyWith(
       connection: CommunityChatConnectionState.connecting,
     ),
+    // 공지 변경은 공지 화면이 따로 듣는다 — 방 상태에는 아무 영향이 없다.
+    // 대화창에 남는 자국은 같은 사건의 SYSTEM 메시지가 따로 나른다.
+    CommunityChatNoticeChangedEvent() => s,
     CommunityChatErrorEvent(errorCode: 'NOT_A_CHAT_MEMBER') => s.copyWith(
       evicted: true,
     ),

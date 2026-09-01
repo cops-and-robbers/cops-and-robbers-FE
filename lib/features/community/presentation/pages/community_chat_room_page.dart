@@ -162,8 +162,8 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage> {
                             post: post,
                             memberCount: state.memberCount,
                             onViewLocation: _openPost,
-                            onOpenMeetingInfo: () => context.push(
-                              RoutePaths.communityChatMeetingInfoWithId(
+                            onOpenNotice: () => context.push(
+                              RoutePaths.communityChatNoticeWithId(
                                 widget.postId,
                               ),
                             ),
