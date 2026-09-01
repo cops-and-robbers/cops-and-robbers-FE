@@ -136,7 +136,6 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   double get _effectiveChipHeight => 40.h;
 
   // Fallback 위치 (어린이대공원)
-  static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
 
   @override
   void initState() {
@@ -162,8 +161,8 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     // 1. 초기 중심점 설정
     _currentCenter =
         widget.initialCenter ??
-        await _getCurrentLocation() ??
-        _fallbackLocation;
+        await DeviceLocationService.getCurrentLatLng() ??
+        DeviceLocationService.fallbackLocation;
 
     debugPrint(
       '📍 ZoneSettingWidget: 중심점 = ${_currentCenter.latitude}, ${_currentCenter.longitude}',
@@ -211,23 +210,6 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       strokeColor: strokeColor,
       strokeWidth: 2,
     );
-  }
-
-  /// 현재 위치 조회 (DeviceLocationService 사용)
-  /// Get current location using DeviceLocationService
-  Future<LatLng?> _getCurrentLocation() async {
-    try {
-      final pos = await DeviceLocationService.getCurrentPosition();
-      if (pos == null) {
-        debugPrint('⚠️ ZoneSettingWidget: 현재 위치 조회 실패 → fallback 사용');
-        return null;
-      }
-      return LatLng(pos.latitude, pos.longitude);
-    } catch (e, stack) {
-      debugPrint('❌ ZoneSettingWidget: 현재 위치 조회 에러 - $e');
-      debugPrint('Stack: $stack');
-      return null;
-    }
   }
 
   @override
@@ -525,7 +507,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
 
     try {
       // 현재 위치 조회
-      final currentLocation = await _getCurrentLocation();
+      final currentLocation = await DeviceLocationService.getCurrentLatLng();
 
       if (currentLocation == null) {
         debugPrint('⚠️ 현재 위치를 가져올 수 없습니다');

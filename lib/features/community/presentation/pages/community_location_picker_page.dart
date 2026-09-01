@@ -7,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -53,7 +54,6 @@ class CommunityLocationPickerPage extends ConsumerStatefulWidget {
 class _CommunityLocationPickerPageState
     extends ConsumerState<CommunityLocationPickerPage> {
   /// 위치 권한이 없을 때 처음 보여 줄 좌표 — 구역 설정 위젯들과 같은 값을 쓴다.
-  static const LatLng _fallbackTarget = LatLng(37.5480, 127.0810);
 
   static const double _zoom = 16;
 
@@ -100,7 +100,7 @@ class _CommunityLocationPickerPageState
   /// 목록이 쓰는 판별기를 그대로 재사용한다 — 좌표가 비면 권한이 없는 것이다.
   Future<LatLng> _currentOrFallback() async {
     final position = await ref.read(currentPositionResolverProvider)();
-    if (position == null) return _fallbackTarget;
+    if (position == null) return DeviceLocationService.fallbackLocation;
     return LatLng(position.latitude, position.longitude);
   }
 

@@ -39,7 +39,6 @@ class GoogleMapView extends StatefulWidget {
 class GoogleMapViewState extends State<GoogleMapView> {
   GoogleMapController? _controller;
 
-  static const LatLng _fallback = LatLng(37.5480, 127.0810);
 
   Set<Circle> _areaCircles = {};
   Set<Polygon> _areaPolygons = {};
@@ -392,7 +391,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
     try {
       return GoogleMap(
         initialCameraPosition: const CameraPosition(
-          target: _fallback,
+          target: DeviceLocationService.fallbackLocation,
           zoom: 15,
         ),
         // Cloud Map ID는 콜드 스타트 시 회색 타일 영구 실패 가능성으로 미사용 — JSON 다크 스타일로 통일
