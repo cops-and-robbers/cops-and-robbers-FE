@@ -32,15 +32,10 @@ Future<void> _pump(WidgetTester tester) async {
 }
 
 /// 4장 구성 — 3번 넘기면 마지막 장.
-///
-/// `pumpAndSettle` 을 쓰지 않는다 — 프레임이 남아 있는 동안 계속 펌프하면서
-/// 시계를 500ms 너머로 밀어버려, 두 번째 버튼이 "아직 안 나온" 구간을 관찰할 수
-/// 없게 된다. 페이지 전환(300ms)만큼만 정확히 흘린다.
 Future<void> _goToLastSlide(WidgetTester tester) async {
   for (var i = 0; i < 3; i++) {
     await tester.tap(find.text('다음'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 320));
+    await tester.pumpAndSettle();
   }
 }
 
@@ -51,7 +46,7 @@ void main() {
     await _pump(tester);
 
     expect(find.text('다음'), findsOneWidget);
-    expect(find.text('동심으로 들어가기'), findsNothing);
+    expect(find.text('시작하기'), findsNothing);
   });
 
   testWidgets('onboarding_swaps_the_primary_button_on_the_last_slide', (
@@ -60,31 +55,12 @@ void main() {
     await _pump(tester);
     await _goToLastSlide(tester);
 
-    expect(find.text('게임 소개 보기'), findsOneWidget);
+    expect(find.text('시작하기'), findsOneWidget);
     expect(find.text('다음'), findsNothing);
   });
 
-  testWidgets('onboarding_delays_the_enter_button_until_the_page_settles', (
-    tester,
-  ) async {
-    await _pump(tester);
-    await _goToLastSlide(tester);
-
-    // 지연이 없으면 타이머가 이 펌프 안에서 터져 버튼이 붙는다.
-    // (이 한 번을 빼면 지연을 0으로 만들어도 테스트가 통과해 버린다)
-    await tester.pump(const Duration(milliseconds: 100));
-
-    // 넘기자마자 버튼이 하나 더 생기면 방금 누른 자리가 움직여 이질감이 든다
-    expect(find.text('동심으로 들어가기'), findsNothing);
-
-    await tester.pump(const Duration(milliseconds: 700));
-    await tester.pumpAndSettle();
-
-    expect(find.text('동심으로 들어가기'), findsOneWidget);
-  });
-
   testWidgets('onboarding_hides_skip_when_on_the_last_slide', (tester) async {
-    // 화면에 Opacity 가 여럿이라(마지막 장 버튼 등장 연출) 건너뛰기 것만 집는다
+    // 화면에 Opacity 가 여럿일 수 있어 건너뛰기 것만 집는다
     double skipOpacity() => tester
         .widget<Opacity>(
           find

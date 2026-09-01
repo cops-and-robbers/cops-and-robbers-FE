@@ -264,7 +264,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.splash,
         name: RoutePaths.splashName,
-        builder: (context, state) => const SplashPage(),
+        // 무전환 — 온보딩이 닫히며 스플래시로 복귀할 때 기본 전환이 끼지 않게 한다
+        pageBuilder: (context, state) => buildInstantTransition(
+          key: state.pageKey,
+          child: const SplashPage(),
+        ),
       ),
 
       GoRoute(
@@ -277,8 +281,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.onboarding,
         name: RoutePaths.onboardingName,
-        pageBuilder: (context, state) =>
-            buildSmoothFade(key: state.pageKey, child: const OnboardingPage()),
+        // 무전환 — 온보딩을 닫고 로그인으로 갈 때 애니메이션이 보이지 않게 한다
+        pageBuilder: (context, state) => buildInstantTransition(
+          key: state.pageKey,
+          child: const OnboardingPage(),
+        ),
       ),
 
       GoRoute(

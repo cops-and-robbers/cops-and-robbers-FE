@@ -2540,8 +2540,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsGuideAppIntro => 'See the intro again';
 
   @override
-  String get onboardingEnterButton => 'Let\'s be kids again';
-
-  @override
-  String get onboardingGuideButton => 'See how to play';
+  String get onboardingStartButton => 'Get started';
 }
