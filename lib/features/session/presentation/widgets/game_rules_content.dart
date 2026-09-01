@@ -50,8 +50,6 @@ class GameRulesContent extends StatelessWidget {
       // 한 번 본 사용자도 게임 규칙 다이얼로그를 통해 언제든 다시 학습 가능.
       cancelText: l10n.buttonConfirm,
       confirmText: l10n.buttonViewInGame,
-      confirmColor: isDarkMode ? null : AppColors.blue,
-      confirmTextColor: isDarkMode ? null : AppColors.white,
       onConfirm: () => context.push('/tutorial/in-game'),
     );
   }

@@ -156,7 +156,6 @@ class SessionStepLayout extends StatelessWidget {
     return AppButton(
       text: buttonText ?? l10n.buttonNext,
       onPressed: isButtonEnabled ? onNext : null,
-      showBorder: false,
     );
   }
 }

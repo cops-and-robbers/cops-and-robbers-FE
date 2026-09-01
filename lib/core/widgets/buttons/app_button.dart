@@ -21,28 +21,28 @@ enum IconPosition {
 ///
 /// **기본 스펙**:
 /// - 크기: 353x56 (반응형)
-/// - 모서리: 16px 라운드
+/// - 모서리: 12px 라운드
 /// - 텍스트: AppTextStyles.label_16
-/// - 테두리: 기본 1px (showBorder로 제어 가능)
+/// - 테두리: 기본 없음 (showBorder: true로 켠다)
 ///
 /// **색상**:
-/// - 활성화: 배경 black, 텍스트 white, 테두리 black100
-/// - 비활성화: 배경 black100, 텍스트 white, 테두리 없음
+/// - 활성화: 배경 blue, 텍스트 white
+/// - 비활성화: 배경 black100, 텍스트 white
 ///
 /// **사용 예시**:
 /// ```dart
-/// // 기본 버튼 (테두리 있음)
+/// // 기본 버튼 (blue · radius 12 · 테두리 없음)
 /// AppButton(
 ///   text: '로그인',
 ///   onPressed: () {},
 /// )
 ///
-/// // 테두리 없는 버튼
+/// // 테두리 있는 버튼
 /// AppButton(
 ///   text: '건너뛰기',
 ///   onPressed: () {},
-///   showBorder: false,
-///   backgroundColor: AppColors.green,
+///   showBorder: true,
+///   backgroundColor: AppColors.white,
 /// )
 ///
 /// // 아이콘 포함 버튼
@@ -69,7 +69,7 @@ class AppButton extends StatelessWidget {
     this.foregroundColor,
     this.disabledBackgroundColor,
     this.disabledForegroundColor,
-    this.showBorder = true,
+    this.showBorder = false,
     this.borderWidth = 1.0,
     this.borderColor,
     this.width,
@@ -93,7 +93,7 @@ class AppButton extends StatelessWidget {
   /// 버튼 클릭 핸들러 (필수, null이면 비활성화)
   final VoidCallback? onPressed;
 
-  /// 활성화 상태 배경색 (기본: AppColors.black)
+  /// 활성화 상태 배경색 (기본: AppColors.blue)
   final Color? backgroundColor;
 
   /// 활성화 상태 텍스트/아이콘 색상 (기본: AppColors.white)
@@ -105,7 +105,7 @@ class AppButton extends StatelessWidget {
   /// 비활성화 상태 텍스트/아이콘 색상 (기본: AppColors.white)
   final Color? disabledForegroundColor;
 
-  /// 테두리 표시 여부 (기본: true)
+  /// 테두리 표시 여부 (기본: false)
   final bool showBorder;
 
   /// 테두리 두께 (기본: 1.0px)
@@ -126,7 +126,7 @@ class AppButton extends StatelessWidget {
   /// 여백이 필요 없다. 폭 대비 내용이 짧아 가장자리와의 간격을 직접 잡아야 할 때만 준다.
   final EdgeInsetsGeometry? padding;
 
-  /// 모서리 반경 (기본: 16.r)
+  /// 모서리 반경 (기본: 12.r)
   final BorderRadius? borderRadius;
 
   /// 아이콘 위젯 (선택 사항)
@@ -168,7 +168,7 @@ class AppButton extends StatelessWidget {
     if (isLoading || onPressed == null) {
       return disabledBackgroundColor ?? AppColors.black100;
     }
-    return backgroundColor ?? AppColors.black;
+    return backgroundColor ?? AppColors.blue;
   }
 
   /// 활성 상태 텍스트/아이콘 색상
@@ -193,9 +193,9 @@ class AppButton extends StatelessWidget {
   /// 기본 높이 (56px)
   double get _effectiveHeight => height ?? 56.h;
 
-  /// 기본 모서리 반경 (16px)
+  /// 기본 모서리 반경 (12px)
   BorderRadius get _effectiveBorderRadius {
-    return borderRadius ?? AppRadius.xlarge;
+    return borderRadius ?? AppRadius.large;
   }
 
   /// 기본 정렬 방식 (center)

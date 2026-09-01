@@ -211,7 +211,7 @@ class _CommunityChatPostProviderElement
 }
 
 String _$communityChatRoomsHash() =>
-    r'262d787b9d0eca069fd268f97d76bd604c40bc9a';
+    r'e111222c4b75ad2dbb589cfdec40bd9373ff5a67';
 
 /// 내가 참여 중인 채팅방 목록 (`GET /chat/rooms`)
 ///

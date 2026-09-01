@@ -39,7 +39,7 @@ class PrisonEditArgs {
 /// ZoneSettingWidget을 통해 중심점과 반경을 설정하고,
 /// 설정 완료 시 데이터를 로컬 저장소에 저장한 후 이전 페이지로 반환합니다.
 ///
-/// **편집 모드**: [editArgs]가 제공되면
+/// **초기 도형**: [editArgs]가 제공되면
 /// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
 /// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
 class SetupPrisonPage extends ConsumerStatefulWidget {
@@ -47,12 +47,21 @@ class SetupPrisonPage extends ConsumerStatefulWidget {
     super.key,
     this.editArgs,
     this.showStepIndicator = false,
+    this.isInGameEdit = false,
   });
+
+  /// 진행 중인 게임의 구역을 대기방에서 수정하러 들어왔는지
+  ///
+  /// 역할 테마(도둑=다크)는 **대기방·인게임에서만** 분기한다. 생성 흐름은 아직
+  /// 게임이 없으므로 항상 라이트다. 진입 라우트가 아는 사실이므로 라우터가 내려준다
+  /// — 초기 도형을 받았는지([editArgs])로는 판정할 수 없다. 생성 흐름도 되돌아올 때
+  /// 초기 도형을 넘기기 때문이다(#520).
+  final bool isInGameEdit;
 
   /// 생성 흐름에서 열렸을 때 상단에 진행 표시(1/3)를 보여줄지
   final bool showStepIndicator;
 
-  /// 편집 모드 구역 정보 (null이면 생성 모드)
+  /// 지도에 미리 그려둘 구역 정보 (null이면 빈 상태로 시작)
   final PrisonEditArgs? editArgs;
 
   @override
@@ -102,18 +111,18 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     _loadExistingData();
   }
 
-  /// 편집 모드 여부
+  /// 초기 도형을 받았는지 (모드가 아니다 — 다크 판정은 [SetupPrisonPage.isInGameEdit])
   ///
-  /// 감옥 초기값 또는 플레이그라운드 편집값이 전달되면 편집 모드로 동작합니다.
-  bool get _isEditMode => widget.editArgs != null;
+  /// 감옥 초기값 또는 플레이그라운드 값이 전달되면 로컬 초안 대신 그 값을 쓴다.
+  bool get _hasInitialShape => widget.editArgs != null;
 
   /// 핀(폴리곤) 모드 여부 — 플레이그라운드가 정한 타입을 따른다
   bool get _isPinMode => _areaType == GameAreaType.polygon;
 
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
-    // 편집 모드: 전달받은 초기값 사용
-    if (_isEditMode) {
+    // 초기 도형을 받았으면 로컬 초안 대신 그 값을 쓴다
+    if (_hasInitialShape) {
       if (mounted) {
         setState(() {
           final args = widget.editArgs!;
@@ -281,7 +290,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
   Future<void> _onComplete() async {
     // 핀 모드: 정렬된 감옥 꼭짓점 목록 반환
     if (_isPinMode) {
-      if (!_isEditMode) {
+      if (!_hasInitialShape) {
         await _storageService.updatePrisonPinZone(_pinPoints);
       }
       if (mounted) {
@@ -302,7 +311,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
     if (center == null) return;
 
     // 생성 모드에서만 로컬 저장소에 저장
-    if (!_isEditMode) {
+    if (!_hasInitialShape) {
       await _storageService.updatePrisonZone(center, _currentRadius);
     }
 
@@ -360,7 +369,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = _isEditMode && ref.watch(roleThemeProvider);
+    final isDark = widget.isInGameEdit && ref.watch(roleThemeProvider);
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
     final textColor = isDark ? AppColors.white : AppColors.black;
     final l10n = AppLocalizations.of(context);
@@ -468,7 +477,6 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                   text: l10n.buttonDone,
                   onPressed: _canComplete ? _onComplete : null,
                   backgroundColor: AppColors.red,
-                  showBorder: false,
                 ),
               ),
             ],

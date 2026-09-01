@@ -7,7 +7,7 @@ part of 'community_chat_room_provider.dart';
 // **************************************************************************
 
 String _$communityChatRoomNotifierHash() =>
-    r'19903072aea02972cfbbadb718475c21f2450eb3';
+    r'69dbcb8eb7bd3331764d04c082db0a5a7aadcd97';
 
 /// Copied from Dart SDK
 class _SystemHash {

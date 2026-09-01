@@ -62,7 +62,6 @@ class ForceUpdatePage extends StatelessWidget {
               AppButton(
                 text: l10n.pageForceUpdateButton,
                 onPressed: () => launchExternalUrl(AppUrls.storeUrl),
-                showBorder: false,
               ),
             ],
           ),

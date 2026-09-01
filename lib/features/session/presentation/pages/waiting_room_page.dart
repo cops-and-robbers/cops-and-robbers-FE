@@ -246,10 +246,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       setState(() => _isLocationPermissionDenied = false);
     }
 
-    // 대기방 진입 시 현재 팀 기준으로 역할 테마 동기화
-    final team = ref.read(gameParticipantNotifierProvider)?.team;
-    ref.read(roleThemeProvider.notifier).setDarkMode(GameTeam.isRobber(team));
-
     // 초대코드 다이얼로그는 API 응답 후 팀 정보가 확정된 시점에 표시
     _pendingInviteDialog = widget.showInviteDialog && _inviteCode != null;
 
@@ -308,9 +304,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       if (!status.isParticipating || info == null) {
         // 강퇴 또는 게임 종료 → 홈
-        ref.read(gameParticipantNotifierProvider.notifier).clear();
-        ref.read(waitingRoomParticipantsProvider.notifier).clear();
-        context.go(RoutePaths.home);
+        _goHomeClearingSession();
       } else if (info.gameStatus == GameStatus.inProgress) {
         // 게임 시작됨 → 게임 설정 재조회로 gameStartTime 확보 후 게임 화면으로 이동
         final gameId = int.tryParse(widget.sessionId);
@@ -492,11 +486,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
       ref.read(gameParticipantNotifierProvider.notifier).setIsHost(isHost);
 
-      // 역할 기반 다크/라이트 모드 동기화
-      ref
-          .read(roleThemeProvider.notifier)
-          .setDarkMode(GameTeam.isRobber(myTeam));
-
       // 방 생성 직후 초대코드 다이얼로그 표시 (팀 확정 후)
       // 다이얼로그 닫힌 후 튜토리얼 트리거 (겹침 방지)
       if (_pendingInviteDialog && mounted) {
@@ -569,9 +558,20 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
       isDarkMode: ref.read(roleThemeProvider),
       onConfirm: () {
-        if (mounted) context.go(RoutePaths.home);
+        if (mounted) _goHomeClearingSession();
       },
     );
+  }
+
+  /// 대기방을 떠나 홈으로 — 세션 상태를 반드시 비우고 나간다.
+  ///
+  /// 참가 정보가 남으면 역할 테마(도둑=다크)가 앱 전역에 남아, 이후 게임 생성·홈·
+  /// 마이페이지의 풀스크린 로딩이 검게 뜬다(#520). 나가는 경로가 넷이라 각자 비우게
+  /// 두면 하나가 빠진다 — 실제로 [_handleNotParticipating]이 빠져 있었다.
+  void _goHomeClearingSession() {
+    ref.read(gameParticipantNotifierProvider.notifier).clear();
+    ref.read(waitingRoomParticipantsProvider.notifier).clear();
+    context.go(RoutePaths.home);
   }
 
   /// 사용자 액션 catch 공통 처리: 404 "참가자 아님" 이면 [_handleNotParticipating]
@@ -902,9 +902,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
               ref
                   .read(gameParticipantNotifierProvider.notifier)
                   .setTeam(newTeam);
-              ref
-                  .read(roleThemeProvider.notifier)
-                  .setDarkMode(GameTeam.isRobber(newTeam));
             }
           }
         }
@@ -959,8 +956,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         isDarkMode: ref.read(roleThemeProvider),
       );
       if (!mounted) return;
-      ref.read(gameParticipantNotifierProvider.notifier).clear();
-      GoRouter.of(context).go(RoutePaths.home);
+      _goHomeClearingSession();
     } else {
       // 다른 유저 강퇴 → 스낵바
       if (!mounted) return;
@@ -1063,9 +1059,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // close()의 최소 표시 대기 동안 대기실이 dispose될 수 있어(KICKED/GAME_START 등
       // 웹소켓 이벤트가 화면을 날림) ref 사용 전 mounted 확인
       if (!mounted) return;
-      ref
-          .read(roleThemeProvider.notifier)
-          .setDarkMode(GameTeam.isRobber(targetTeam));
+      // 서버 TEAM_CHANGED 이벤트를 기다리지 않고 먼저 반영한다(도착 시 같은 값으로 덮음).
+      // 역할 테마는 이 참가 정보에서 파생되므로 여기만 갱신하면 따라온다.
+      ref.read(gameParticipantNotifierProvider.notifier).setTeam(targetTeam);
     } on DioException catch (e) {
       await loading.close();
       if (!mounted) return;
@@ -1183,9 +1179,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _lobbyEventSub?.close();
     _lobbyEventSub = null;
     ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
-    ref.read(gameParticipantNotifierProvider.notifier).clear();
-    ref.read(waitingRoomParticipantsProvider.notifier).clear();
-    context.go(RoutePaths.home);
+    _goHomeClearingSession();
   }
 
   /// 게임 규칙 다이얼로그
@@ -1278,8 +1272,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         ),
         cancelText: l10n.buttonClose,
         confirmText: l10n.buttonShare,
-        confirmColor: isDark ? null : AppColors.blue,
-        confirmTextColor: isDark ? null : AppColors.white,
         onConfirm: () {
           shareInviteCode(code, l10n.shareInviteMessage(code));
         },
@@ -1525,7 +1517,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             : AppColors.black200,
         disabledForegroundColor: isDark ? AppColors.green : AppColors.black400,
         textStyle: isDark ? AppTextStyles.robberLabel : null,
-        showBorder: false,
       );
     }
 
@@ -1536,7 +1527,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
         foregroundColor: isDark ? AppColors.green : AppColors.blue,
         textStyle: isDark ? AppTextStyles.robberLabel : null,
-        showBorder: false,
         isLoading: _isUpdatingReady,
       );
     }
@@ -1547,7 +1537,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       backgroundColor: isDark ? AppColors.green : AppColors.blue,
       foregroundColor: isDark ? AppColors.black : AppColors.white,
       textStyle: isDark ? AppTextStyles.robberLabel : null,
-      showBorder: false,
       isLoading: _isUpdatingReady,
     );
   }

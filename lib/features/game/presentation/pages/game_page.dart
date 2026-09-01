@@ -1533,8 +1533,6 @@ class _GamePageState extends ConsumerState<GamePage>
       confirmText: l10n.buttonPlayAgain,
       isDarkMode: _isDarkMode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
-      confirmColor: _isDarkMode ? null : AppColors.blue,
-      confirmTextColor: _isDarkMode ? null : AppColors.white,
       barrierDismissible: false,
       onCancel: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;

@@ -136,7 +136,6 @@ class _AgreementPageState extends ConsumerState<AgreementPage> {
                       ? () => _onSubmit(context)
                       : null,
                   isLoading: state.isLoading || state.isSubmitting,
-                  showBorder: false,
                 ),
               ],
             ),

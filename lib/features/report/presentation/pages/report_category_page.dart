@@ -113,9 +113,6 @@ class _ReportCategoryPageState extends ConsumerState<ReportCategoryPage> {
                   onPressed: _selected == null || _submitting ? null : _submit,
                   width: double.infinity,
                   backgroundColor: AppColors.red,
-                  foregroundColor: AppColors.white,
-                  borderRadius: AppRadius.xlarge,
-                  showBorder: false,
                   textStyle: isDark
                       ? AppTextStyles.robberLabel
                       : AppTextStyles.label_16,

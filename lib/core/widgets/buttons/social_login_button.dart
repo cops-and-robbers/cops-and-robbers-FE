@@ -93,8 +93,6 @@ class AppleLoginButton extends StatelessWidget {
       ),
       iconPosition: IconPosition.leading,
       backgroundColor: AppColors.black,
-      foregroundColor: AppColors.white,
-      showBorder: false,
       isLoading: isLoading,
     );
   }

@@ -46,7 +46,6 @@ class LoadFailureView extends StatelessWidget {
           AppButton(
             text: AppLocalizations.of(context).buttonRetry,
             onPressed: onRetry,
-            showBorder: false,
           ),
         ],
       ),
