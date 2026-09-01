@@ -12,15 +12,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appTitle => '경찰과도둑';
 
   @override
-  String get loadingDefault => '처리 중...';
-
-  @override
-  String get permissionLocationFallbackTitle => '위치 권한 안내';
-
-  @override
-  String get permissionLocationFallbackMessage => '위치 권한을 허용해주세요';
-
-  @override
   String get dialogUpdateOptionalTitle => '새 버전 안내';
 
   @override
@@ -43,26 +34,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dialogUpdateMandatoryCancel => '나중에';
-
-  @override
-  String chatSystemGameStartTime(int minutes) {
-    return '제한 시간은 $minutes분이에요';
-  }
-
-  @override
-  String get chatSystemGameStartReportTip =>
-      '게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요';
-
-  @override
-  String get chatSystemPoliceMoveWarning => '경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!';
-
-  @override
-  String chatSystemRemainingRobbers(int count) {
-    return '현재 $count명 도주 중!';
-  }
-
-  @override
-  String get chatSystemFiveMinutesLeft => '게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!';
 
   @override
   String get errorNetworkTimeout => '서버 연결이 너무 오래 걸려요';
@@ -164,16 +135,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pinTooCloseMessage => '핀이 너무 가까워요';
 
   @override
-  String get dialogAgreementRequiredTermsTitle => '필수 약관 미동의';
-
-  @override
   String get errorAuthLoginCancelled => '로그인이 취소됐어요';
 
   @override
   String get settingsLanguageLabel => '언어';
-
-  @override
-  String get settingsLanguageSubtitle => '앱 표시 언어를 변경할 수 있어요';
 
   @override
   String get settingsLanguagePageTitle => '언어 선택';
@@ -459,9 +424,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get errorSettingsSaveFailed => '설정 저장에 실패했어요';
-
-  @override
   String get pageGameSettingsEditTitle => '설정 수정';
 
   @override
@@ -469,9 +431,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get buttonSave => '저장';
-
-  @override
-  String get errorAreaSaveFailed => '영역 저장에 실패했어요';
 
   @override
   String get pageGameSettingsTitle => '게임 설정';
@@ -679,9 +638,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityCommentReplyHint => '대댓글을 남겨보세요';
 
   @override
-  String get communityCommentReply => '대댓글 달기';
-
-  @override
   String get communityCommentDeleted => '삭제된 댓글이에요';
 
   @override
@@ -813,9 +769,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get communitySortDeadline => '마감 임박순';
-
-  @override
-  String get communitySortSheetTitle => '정렬 기준';
 
   @override
   String get communitySortNeedsLocation => '위치 권한이 있어야 거리순으로 볼 수 있어요';
@@ -981,9 +934,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get comingSoonMessage => '준비 중이에요';
 
   @override
-  String get homePageGameButtonsHint => '게임을 만들거나 초대 코드로 참가할 수 있어요';
-
-  @override
   String get homeBannerSemanticsLabel => '이벤트 배너';
 
   @override
@@ -1009,9 +959,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonGoToSettings => '설정으로 이동';
 
   @override
-  String get errorJoinFailedCheckCode => '참여에 실패했어요. 초대 코드를 확인해주세요';
-
-  @override
   String get errorJoinRetry => '참여에 실패했어요. 다시 시도해주세요';
 
   @override
@@ -1025,12 +972,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get buttonJoin => '참여하기';
-
-  @override
-  String get appBrandName => '경찰과도둑';
-
-  @override
-  String get messageComingSoon => '준비 중이에요';
 
   @override
   String get homePageWelcomeMessage => '누가 내 치즈\n훔쳐갔어!!!!🧀';
@@ -1066,9 +1007,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorZoneNotConfigured => '구역 정보를 먼저 설정해주세요';
 
   @override
-  String get setupPlaygroundRadiusInputHint => '여기를 누르면 반경을 직접 입력할 수 있어요';
-
-  @override
   String get setupPlaygroundDescription => '게임이 진행될 전체 구역의 크기를 설정해요';
 
   @override
@@ -1091,28 +1029,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorNotInGame => '해당 게임에 참가하지 않은 사용자예요';
-
-  @override
-  String get waitingRoomTutorialTeamSwitch => '이 버튼을 눌러 다른 팀으로 이동할 수 있어요';
-
-  @override
-  String get waitingRoomTutorialInvite => '친구에게 초대 코드를 공유할 수 있어요';
-
-  @override
-  String get waitingRoomTutorialSettings => '게임 설정을 확인할 수 있어요';
-
-  @override
-  String get waitingRoomTutorialReady => '준비가 되면 눌러주세요';
-
-  @override
-  String get dialogInGamePreviewTitle => '인게임 화면 미리 보기';
-
-  @override
-  String get dialogTutorialPromptMessage =>
-      '게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?';
-
-  @override
-  String get buttonViewInGamePreview => '보러 가기';
 
   @override
   String dialogKickConfirmTitle(String nickname) {
@@ -1141,15 +1057,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get errorTeamChangeFailed => '팀 변경에 실패했어요';
-
-  @override
-  String get errorReadyChangeFailed => '준비 상태 변경에 실패했어요';
-
-  @override
-  String get errorGameStartFailed => '게임 시작에 실패했어요';
-
-  @override
   String get dialogLeaveRoomTitle => '방을 나갈까요?';
 
   @override
@@ -1157,9 +1064,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get buttonLeave => '나가기';
-
-  @override
-  String get errorLeaveRoomFailed => '퇴장 처리 중 오류가 생겼어요';
 
   @override
   String get dialogInviteCodeCreatedTitle => '초대코드를 생성했어요';
@@ -1189,16 +1093,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get zonePreviewSubtitle => '현재 설정된 게임 구역이에요';
 
   @override
-  String get dummyNicknameRaccoon => '오동통 너구리';
-
-  @override
-  String get defaultNicknameLabel => '닉네임';
-
-  @override
   String get titleGameRules => '게임 규칙';
-
-  @override
-  String get buttonViewInGame => '인게임 보기';
 
   @override
   String get gameRulesCopGoalPrefix => '경찰은 모든 도둑을 잡아서';
@@ -1541,12 +1436,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonPlayAgain => '한 번 더';
 
   @override
-  String get labelMyRecord => '내 기록';
-
-  @override
-  String get labelResult => '결과';
-
-  @override
   String get messageSaveFailed => '저장에 실패했어요';
 
   @override
@@ -1617,18 +1506,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameZoneExitBanner => '플레이그라운드를 벗어났어요';
 
   @override
-  String get chatTeamPrefix => '[팀]';
-
-  @override
-  String get chatSystemGameTimeLimit30Min => '제한 시간은 30분이에요';
-
-  @override
-  String get chatSystemGoodLuckRobber => '도둑 잘 도망쳐 봐요~';
-
-  @override
-  String get chatSystemLetsWin => '이겨봅시다!';
-
-  @override
   String get messageMessageCopied => '메시지가 복사되었어요';
 
   @override
@@ -1651,15 +1528,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorReportFailed => '신고에 실패했어요';
 
   @override
-  String get dialogReportConfirmTitle => '해당 유저를 신고할까요?';
-
-  @override
-  String get chatReportSelectedCategoryLabel => '선택한 신고 사유:';
-
-  @override
-  String get chatReportSubmitNotice => '\n신고된 내용은 검토 후 조치할게요';
-
-  @override
   String get buttonCopy => '복사하기';
 
   @override
@@ -1667,9 +1535,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get reportCategoryLabel => '신고 유형';
-
-  @override
-  String get chatReportCategoryTitle => '신고 유형 선택';
 
   @override
   String chatInputBarUnreadAll(String all) {
@@ -1818,12 +1683,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsGuideBugReport => '버그 제보';
 
   @override
-  String get settingsGuideTutorialRewatch => '튜토리얼 다시 보기';
-
-  @override
-  String get settingsGuideTutorialReset => '튜토리얼 초기화';
-
-  @override
   String get settingsGuideAgreements => '이용약관 및 정책';
 
   @override
@@ -1864,18 +1723,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get messageBugReportSubmitted => '버그 제보가 접수되었어요';
 
   @override
-  String get dialogTutorialResetTitle => '튜토리얼 초기화';
-
-  @override
-  String get dialogTutorialResetMessage => '모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?';
-
-  @override
-  String get buttonReset => '초기화';
-
-  @override
-  String get messageTutorialReset => '튜토리얼이 초기화되었어요';
-
-  @override
   String get dialogLogoutTitle => '로그아웃';
 
   @override
@@ -1899,124 +1746,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get buttonDeleteAccount => '탈퇴';
-
-  @override
-  String get tutorialDummyNicknameCop1 => '경찰1';
-
-  @override
-  String get tutorialDummyNicknameRobberKing => '도둑킹';
-
-  @override
-  String get tutorialDummyNicknameRobberOrNot => '도둑이게아니게';
-
-  @override
-  String get tutorialDummyNicknameCapturedRobber => '잡힌도둑';
-
-  @override
-  String get titleTutorialComplete => '튜토리얼 완료!';
-
-  @override
-  String get messageTutorialComplete => '핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요';
-
-  @override
-  String get buttonFinishTutorial => '튜토리얼 끝내기';
-
-  @override
-  String get tutorialInGameMyLocation => '내 위치로 카메라가 이동했어요';
-
-  @override
-  String get tutorialMapPreviewLabel => '지도 미리보기';
-
-  @override
-  String get tutorialLocationRevealCountdown => '다음 도둑 위치 공개까지 04:30';
-
-  @override
-  String get tutorialInGameRulesGuide => '게임 룰 안내가 열려요';
-
-  @override
-  String get tutorialQrRobberHint => '내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포';
-
-  @override
-  String get tutorialQrCopHint => '카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요';
-
-  @override
-  String get tutorialMissionParticipantsButton => '참가자 보기 버튼을 눌러보세요';
-
-  @override
-  String get tutorialMissionQrButton => 'QR 버튼을 눌러보세요';
-
-  @override
-  String get tutorialMissionMapButton => '지도로 돌아가 보세요';
-
-  @override
-  String get tutorialMissionDropPing => '지도를 길게 눌러 핀을 찍어보세요';
-
-  @override
-  String get tutorialPingLongPressHint => '맵 아무 곳이나 길게 눌러보세요';
-
-  @override
-  String tutorialMissionProgress(String step) {
-    return '미션 $step/4';
-  }
-
-  @override
-  String get tutorialPerspectiveRobber => '도둑 시점 보는 중';
-
-  @override
-  String get tutorialPerspectiveCop => '경찰 시점 보는 중';
-
-  @override
-  String get tutorialInGameSelfEscape => '본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요';
-
-  @override
-  String get tutorialInGameQrArrest => '실제 게임에서는 QR 스캔으로 도둑을 체포해요';
-
-  @override
-  String get tutorialCurrentLabel => '현재';
-
-  @override
-  String tutorialPlayerCount(int count) {
-    return '$count명';
-  }
-
-  @override
-  String get tutorialOnTheRun => '도주 중!';
-
-  @override
-  String get tutorialInGameChatExpand => '핸들을 위로 드래그하면 채팅이 펼쳐져요';
-
-  @override
-  String get tutorialInGameChatInput => '여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요';
-
-  @override
-  String get tutorialChatHint => '채팅을 입력하세요';
-
-  @override
-  String get tutorialCatalogAreaSubtitle => '플레이그라운드·감옥 설정과 슬라이더 조작';
-
-  @override
-  String get tutorialCatalogInviteSubtitle => '초대 코드 입력과 QR 스캔';
-
-  @override
-  String get tutorialCatalogWaitingRoomTitle => '대기방';
-
-  @override
-  String get tutorialCatalogLobbySubtitle => '팀 변경, 게임 설정, 준비 완료';
-
-  @override
-  String get tutorialCatalogInGameTitle => '인게임';
-
-  @override
-  String get tutorialCatalogGameSubtitle => '타이머·지도·참가자·채팅·QR';
-
-  @override
-  String get pageTutorialCatalogTitle => '튜토리얼';
-
-  @override
-  String get tutorialCatalogIntro => '게임을 처음 한다면 한 번씩 보고 시작해보세요';
-
-  @override
-  String get tutorialCatalogComingSoon => '준비 중';
 
   @override
   String get errorReportGeneric => '신고 처리 중 오류가 생겼어요';
@@ -2232,26 +1961,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorGameJoinUnexpected => '게임 입장 중 예기치 않은 오류가 생겼어요';
 
   @override
-  String get errorAlreadyInAnotherRoom =>
-      '이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요';
-
-  @override
   String get deeplinkAlreadyInRoom => '이미 참여 중인 방이 있어요';
-
-  @override
-  String get errorGameAlreadyStarted => '이미 시작되어 입장할 수 없는 게임이에요';
-
-  @override
-  String get errorRoomSwitchFailed => '새 방에 입장하지 못했어요. 이전 방에서는 나온 상태예요';
-
-  @override
-  String get deeplinkSwitchRoomTitle => '방을 이동할까요?';
-
-  @override
-  String get deeplinkSwitchRoomMessage => '현재 참여 중인 방에서 나가고 새 방에 참가해요';
-
-  @override
-  String get deeplinkSwitchRoomConfirm => '나가고 참가';
 
   @override
   String get errorPendingInviteLoad => '대기 중인 초대 코드를 불러오지 못했어요';
@@ -2601,4 +2311,43 @@ class AppLocalizationsKo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingOutdoorTitle => '밖에서 진짜로 뛰는 술래잡기예요';
+
+  @override
+  String get onboardingOutdoorBody => '어릴 때 하던 경찰과 도둑 그대로예요. 앱은 옆에서 진행만 봐줘요';
+
+  @override
+  String get onboardingWinTitle => '경찰은 잡고, 도둑은 버텨요';
+
+  @override
+  String get onboardingWinBody =>
+      '경찰이 도둑을 모두 잡으면 경찰이 이겨요. 시간이 끝날 때까지 한 명이라도 살아남으면 도둑이 이겨요';
+
+  @override
+  String get onboardingRefereeTitle => '앱이 심판을 봐요';
+
+  @override
+  String get onboardingRefereeBody =>
+      '구역은 지도에 그리고, 도둑 위치는 정해진 주기마다 발자국으로 떠요. QR을 찍어야 체포라서 판정이 늘 깔끔해요';
+
+  @override
+  String get onboardingCommunityTitle => '같이 할 사람도 여기서 구해요';
+
+  @override
+  String get onboardingCommunityBody =>
+      '동네에서 함께 뛸 사람을 커뮤니티에서 찾아보세요. 장소와 시간을 보고 바로 참여할 수 있어요';
+
+  @override
+  String get buttonSkip => '건너뛰기';
+
+  @override
+  String get settingsGuideAppIntro => '앱 소개 다시 보기';
+
+  @override
+  String get onboardingEnterButton => '동심으로 들어가기';
+
+  @override
+  String get onboardingGuideButton => '게임 소개 보기';
 }

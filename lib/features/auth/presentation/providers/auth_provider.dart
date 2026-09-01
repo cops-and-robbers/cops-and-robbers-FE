@@ -24,7 +24,6 @@ import '../../../../router/active_game_route.dart';
 import '../pages/login_page.dart';
 import '../../../session/presentation/pages/home_page.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 
 part 'auth_provider.g.dart';
@@ -344,7 +343,6 @@ class AuthNotifier extends _$AuthNotifier {
       HomePage.resetSafetyNotice();
       LoginPage.resetAgeVerification();
       ref.read(requiredTermsBlockedProvider.notifier).state = false;
-      await TutorialService.resetAll();
       state = const AsyncValue.data(null);
     } catch (e, stack) {
       state = AsyncValue.error(
@@ -440,7 +438,6 @@ class AuthNotifier extends _$AuthNotifier {
       await firebaseDataSource.signOut();
     } finally {
       await ref.read(secureTokenStorageProvider).clearTokens();
-      await TutorialService.resetAll();
     }
   }
 
@@ -452,7 +449,6 @@ class AuthNotifier extends _$AuthNotifier {
     HomePage.resetSafetyNotice();
     LoginPage.resetAgeVerification();
     ref.read(requiredTermsBlockedProvider.notifier).state = false;
-    TutorialService.resetAll();
     state = const AsyncValue.data(null);
   }
 }

@@ -12,15 +12,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appTitle => 'Cops and Robbers';
 
   @override
-  String get loadingDefault => '処理中...';
-
-  @override
-  String get permissionLocationFallbackTitle => '位置情報権限の案内';
-
-  @override
-  String get permissionLocationFallbackMessage => '位置情報の権限を許可してください';
-
-  @override
   String get dialogUpdateOptionalTitle => '新バージョン案内';
 
   @override
@@ -43,26 +34,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dialogUpdateMandatoryCancel => '後で';
-
-  @override
-  String chatSystemGameStartTime(int minutes) {
-    return '制限時間は $minutes分です';
-  }
-
-  @override
-  String get chatSystemGameStartReportTip =>
-      'ゲーム中、チャットを長押しして迷惑なユーザーを通報およびブロックできます';
-
-  @override
-  String get chatSystemPoliceMoveWarning => '警察がまもなく出動します。泥棒は急いで移動してください！';
-
-  @override
-  String chatSystemRemainingRobbers(int count) {
-    return '現在 $count人 逃走中！';
-  }
-
-  @override
-  String get chatSystemFiveMinutesLeft => 'ゲーム終了まで残り5分です。最後のチャンスを逃さないでください！';
 
   @override
   String get errorNetworkTimeout => 'サーバーへの接続時間がタイムアウトしました';
@@ -165,16 +136,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pinTooCloseMessage => 'ピン同士が近すぎます';
 
   @override
-  String get dialogAgreementRequiredTermsTitle => '必須規約未同意';
-
-  @override
   String get errorAuthLoginCancelled => 'ログインがキャンセルされました';
 
   @override
   String get settingsLanguageLabel => '言語';
-
-  @override
-  String get settingsLanguageSubtitle => 'アプリの表示言語を変更できます';
 
   @override
   String get settingsLanguagePageTitle => '言語を選択';
@@ -461,9 +426,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get errorSettingsSaveFailed => '設定の保存に失敗しました';
-
-  @override
   String get pageGameSettingsEditTitle => '設定の編集';
 
   @override
@@ -471,9 +433,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonSave => '保存';
-
-  @override
-  String get errorAreaSaveFailed => 'エリアの保存に失敗しました';
 
   @override
   String get pageGameSettingsTitle => 'ゲーム設定';
@@ -681,9 +640,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityCommentReplyHint => '返信を残してみましょう';
 
   @override
-  String get communityCommentReply => '返信する';
-
-  @override
   String get communityCommentDeleted => '削除されたコメントです';
 
   @override
@@ -815,9 +771,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get communitySortDeadline => '締切間近順';
-
-  @override
-  String get communitySortSheetTitle => '並び替え';
 
   @override
   String get communitySortNeedsLocation => '距離順で見るには位置情報の許可が必要です';
@@ -983,9 +936,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get comingSoonMessage => '準備中です';
 
   @override
-  String get homePageGameButtonsHint => 'ゲームを作成したり、招待コードで参加したりできます';
-
-  @override
   String get homeBannerSemanticsLabel => 'イベントバナー';
 
   @override
@@ -1011,9 +961,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonGoToSettings => '設定へ移動';
 
   @override
-  String get errorJoinFailedCheckCode => '参加に失敗しました。招待コードをご確認ください';
-
-  @override
   String get errorJoinRetry => '参加に失敗しました。もう一度お試しください';
 
   @override
@@ -1027,12 +974,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonJoin => '参加する';
-
-  @override
-  String get appBrandName => 'ケイドロ';
-
-  @override
-  String get messageComingSoon => '準備中です';
 
   @override
   String get homePageWelcomeMessage => '誰がぼくのチーズを\n盗んだの!!!!🧀';
@@ -1068,9 +1009,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorZoneNotConfigured => 'エリア情報を先に設定してください';
 
   @override
-  String get setupPlaygroundRadiusInputHint => 'ここをタップすると半径を直接入力できます';
-
-  @override
   String get setupPlaygroundDescription => 'ゲームを行うエリア全体の大きさを設定します';
 
   @override
@@ -1093,28 +1031,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorNotInGame => '該当ゲームに参加していないユーザーです';
-
-  @override
-  String get waitingRoomTutorialTeamSwitch => 'このボタンを押して別のチームに移動できます';
-
-  @override
-  String get waitingRoomTutorialInvite => '友達に招待コードを共有できます';
-
-  @override
-  String get waitingRoomTutorialSettings => 'ゲーム設定を確認できます';
-
-  @override
-  String get waitingRoomTutorialReady => '準備ができたら押してください';
-
-  @override
-  String get dialogInGamePreviewTitle => 'インゲーム画面のプレビュー';
-
-  @override
-  String get dialogTutorialPromptMessage =>
-      'ゲームが開始されたらどのように動作するか\n一度確認してから始めてみましょうか';
-
-  @override
-  String get buttonViewInGamePreview => '見に行く';
 
   @override
   String dialogKickConfirmTitle(String nickname) {
@@ -1143,15 +1059,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get errorTeamChangeFailed => 'チーム変更に失敗しました';
-
-  @override
-  String get errorReadyChangeFailed => '準備状態の変更に失敗しました';
-
-  @override
-  String get errorGameStartFailed => 'ゲーム開始に失敗しました';
-
-  @override
   String get dialogLeaveRoomTitle => '待機室から退室しますか';
 
   @override
@@ -1159,9 +1066,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonLeave => '退室';
-
-  @override
-  String get errorLeaveRoomFailed => '退出処理中にエラーが発生しました';
 
   @override
   String get dialogInviteCodeCreatedTitle => '招待コードを作成しました';
@@ -1191,16 +1095,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zonePreviewSubtitle => '現在設定されているゲームエリアです';
 
   @override
-  String get dummyNicknameRaccoon => 'おてんばタヌキ';
-
-  @override
-  String get defaultNicknameLabel => 'ニックネーム';
-
-  @override
   String get titleGameRules => 'ゲームルール';
-
-  @override
-  String get buttonViewInGame => 'インゲームを見る';
 
   @override
   String get gameRulesCopGoalPrefix => '警察はすべての泥棒を捕まえて';
@@ -1542,12 +1437,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonPlayAgain => 'もう一度';
 
   @override
-  String get labelMyRecord => 'マイ記録';
-
-  @override
-  String get labelResult => '結果';
-
-  @override
   String get messageSaveFailed => '保存に失敗しました';
 
   @override
@@ -1618,18 +1507,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameZoneExitBanner => 'プレイグラウンドを外れました';
 
   @override
-  String get chatTeamPrefix => '[チーム]';
-
-  @override
-  String get chatSystemGameTimeLimit30Min => '制限時間は30分です';
-
-  @override
-  String get chatSystemGoodLuckRobber => '泥棒さん、うまく逃げてくださいね〜';
-
-  @override
-  String get chatSystemLetsWin => '勝ちましょう！';
-
-  @override
   String get messageMessageCopied => 'メッセージがコピーされました';
 
   @override
@@ -1651,15 +1528,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorReportFailed => '通報に失敗しました';
 
   @override
-  String get dialogReportConfirmTitle => '該当ユーザーを通報しますか';
-
-  @override
-  String get chatReportSelectedCategoryLabel => '選択した通報理由:';
-
-  @override
-  String get chatReportSubmitNotice => '\n報告された内容は検討した上で対処いたします';
-
-  @override
   String get buttonCopy => 'コピーする';
 
   @override
@@ -1667,9 +1535,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get reportCategoryLabel => '通報の種類';
-
-  @override
-  String get chatReportCategoryTitle => '通報タイプの選択';
 
   @override
   String chatInputBarUnreadAll(String all) {
@@ -1817,12 +1682,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsGuideBugReport => 'バグ報告';
 
   @override
-  String get settingsGuideTutorialRewatch => 'チュートリアルをもう一度見る';
-
-  @override
-  String get settingsGuideTutorialReset => 'チュートリアル初期化';
-
-  @override
   String get settingsGuideAgreements => '利用規約とポリシー';
 
   @override
@@ -1863,19 +1722,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get messageBugReportSubmitted => 'バグ報告が受け付けられました';
 
   @override
-  String get dialogTutorialResetTitle => 'チュートリアル初期化';
-
-  @override
-  String get dialogTutorialResetMessage =>
-      'すべての画面のチュートリアルを\nもう一度見られるように初期化しますか';
-
-  @override
-  String get buttonReset => '初期化';
-
-  @override
-  String get messageTutorialReset => 'チュートリアルが初期化されました';
-
-  @override
   String get dialogLogoutTitle => 'ログアウト';
 
   @override
@@ -1899,124 +1745,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonDeleteAccount => '退会';
-
-  @override
-  String get tutorialDummyNicknameCop1 => 'Cop1';
-
-  @override
-  String get tutorialDummyNicknameRobberKing => 'RobberKing';
-
-  @override
-  String get tutorialDummyNicknameRobberOrNot => 'RobberOrNot';
-
-  @override
-  String get tutorialDummyNicknameCapturedRobber => 'CapturedRobber';
-
-  @override
-  String get titleTutorialComplete => 'チュートリアル完了！';
-
-  @override
-  String get messageTutorialComplete => '核心となる流れをマスターしました\n実際のゲームで活用してみましょう';
-
-  @override
-  String get buttonFinishTutorial => 'チュートリアルを終了する';
-
-  @override
-  String get tutorialInGameMyLocation => '自分の位置にカメラが移動しました';
-
-  @override
-  String get tutorialMapPreviewLabel => '地図のプレビュー';
-
-  @override
-  String get tutorialLocationRevealCountdown => '次の泥棒の位置公開まで 04:30';
-
-  @override
-  String get tutorialInGameRulesGuide => 'ゲームルールの案内が開きます';
-
-  @override
-  String get tutorialQrRobberHint => '自分の指名手配QRが画面に表示されます。警察に見せると逮捕されます';
-
-  @override
-  String get tutorialQrCopHint => 'カメラが起動し、泥棒のQRをスキャンして逮捕できます';
-
-  @override
-  String get tutorialMissionParticipantsButton => '参加者表示ボタンを押してみてください';
-
-  @override
-  String get tutorialMissionQrButton => 'QRボタンを押してみてください';
-
-  @override
-  String get tutorialMissionMapButton => '地図に戻ってみてください';
-
-  @override
-  String get tutorialMissionDropPing => '地図を長押ししてピンを置いてみてください';
-
-  @override
-  String get tutorialPingLongPressHint => '地図のどこでも長押し';
-
-  @override
-  String tutorialMissionProgress(String step) {
-    return 'ミッション $step/4';
-  }
-
-  @override
-  String get tutorialPerspectiveRobber => '泥棒視点で見ているところです';
-
-  @override
-  String get tutorialPerspectiveCop => '警察視点で見ているところです';
-
-  @override
-  String get tutorialInGameSelfEscape => '自分が収監された場合、カードタップで脱獄を試みることができます';
-
-  @override
-  String get tutorialInGameQrArrest => '実際のゲームでは、QRスキャンで泥棒を逮捕します';
-
-  @override
-  String get tutorialCurrentLabel => '現在';
-
-  @override
-  String tutorialPlayerCount(int count) {
-    return '$count人';
-  }
-
-  @override
-  String get tutorialOnTheRun => '逃走中！';
-
-  @override
-  String get tutorialInGameChatExpand => 'ハンドルを上にドラッグするとチャットが展開されます';
-
-  @override
-  String get tutorialInGameChatInput => 'ここにメッセージを入力すると、チーム/全体チャットに送信できます';
-
-  @override
-  String get tutorialChatHint => 'チャットを入力してください';
-
-  @override
-  String get tutorialCatalogAreaSubtitle => 'プレイグラウンド・牢屋の設定とスライダー操作';
-
-  @override
-  String get tutorialCatalogInviteSubtitle => '招待コードの入力とQRスキャン';
-
-  @override
-  String get tutorialCatalogWaitingRoomTitle => '待機室';
-
-  @override
-  String get tutorialCatalogLobbySubtitle => 'チーム変更、ゲーム設定、準備完了';
-
-  @override
-  String get tutorialCatalogInGameTitle => 'インゲーム';
-
-  @override
-  String get tutorialCatalogGameSubtitle => 'タイマー・地図・参加者・チャット・QR';
-
-  @override
-  String get pageTutorialCatalogTitle => 'チュートリアル';
-
-  @override
-  String get tutorialCatalogIntro => 'ゲームを初めてプレイする場合は、一度見てから始めてみてください';
-
-  @override
-  String get tutorialCatalogComingSoon => '準備中';
 
   @override
   String get errorReportGeneric => '通報処理中にエラーが発生しました';
@@ -2230,25 +1958,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGameJoinUnexpected => 'ゲーム参加中に予期しないエラーが発生しました';
 
   @override
-  String get errorAlreadyInAnotherRoom => '既に他の部屋に参加中です。今の部屋から退出してから再度お試しください';
-
-  @override
   String get deeplinkAlreadyInRoom => '既に参加中の部屋があります';
-
-  @override
-  String get errorGameAlreadyStarted => '既に開始されたゲームのため入場できません';
-
-  @override
-  String get errorRoomSwitchFailed => '新しい部屋に入室できませんでした。前の部屋からは退出済みです';
-
-  @override
-  String get deeplinkSwitchRoomTitle => '部屋を移動しますか？';
-
-  @override
-  String get deeplinkSwitchRoomMessage => '現在参加中の部屋から退出し、新しい部屋に参加します';
-
-  @override
-  String get deeplinkSwitchRoomConfirm => '退出して参加';
 
   @override
   String get errorPendingInviteLoad => '保留中の招待コードを読み込めませんでした';
@@ -2603,4 +2313,42 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingOutdoorTitle => '外で本当に走る鬼ごっこです';
+
+  @override
+  String get onboardingOutdoorBody => '昔ながらのルールそのままです。進行はアプリにおまかせします';
+
+  @override
+  String get onboardingWinTitle => '全員逮捕したら警察、逃げ切れば泥棒の勝ちです';
+
+  @override
+  String get onboardingWinBody => '泥棒を全員逮捕したら警察の勝ち。時間切れまでひとりでも逃げ切れば泥棒の勝ちです';
+
+  @override
+  String get onboardingRefereeTitle => 'アプリが審判をします';
+
+  @override
+  String get onboardingRefereeBody =>
+      'エリアは地図に描いて、泥棒の位置は一定間隔で足跡として公開されます。逮捕はQRスキャンなので、判定はいつも明確です';
+
+  @override
+  String get onboardingCommunityTitle => '一緒に遊ぶ人もここで探せます';
+
+  @override
+  String get onboardingCommunityBody =>
+      '近くで一緒に走る人をコミュニティで探してみてください。場所と時間を見て、そのまま参加できます';
+
+  @override
+  String get buttonSkip => 'スキップ';
+
+  @override
+  String get settingsGuideAppIntro => 'アプリ紹介をもう一度見る';
+
+  @override
+  String get onboardingEnterButton => '童心に返る';
+
+  @override
+  String get onboardingGuideButton => '遊び方を見る';
 }

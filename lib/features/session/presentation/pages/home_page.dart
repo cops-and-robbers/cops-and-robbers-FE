@@ -28,9 +28,6 @@ import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/services/tutorial/tutorial_keys.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
@@ -96,8 +93,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   /// 홈 진입 시 활성 게임 체크 완료 여부 (세션당 1회)
   static bool _activeGameChecked = false;
 
-  // 튜토리얼 대상(방 만들기 + 참여하기 버튼)을 한 영역으로 특정하기 위한 GlobalKey
-  final _tutorialKeyGameButtons = GlobalKey();
   StreamSubscription<void>? _remoteConfigSubscription;
 
   @override
@@ -112,10 +107,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             debugPrint('⚠️ Remote Config 실시간 연결 실패: $error');
           },
         );
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _showTutorialIfNeeded();
-      if (mounted) _showSafetyNoticeIfNeeded();
-      if (mounted) _checkActiveGameAndRedirect();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showSafetyNoticeIfNeeded();
+      _checkActiveGameAndRedirect();
     });
   }
 
@@ -123,29 +117,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   void dispose() {
     _remoteConfigSubscription?.cancel();
     super.dispose();
-  }
-
-  /// 홈 튜토리얼 표시 (최초 1회)
-  Future<void> _showTutorialIfNeeded() async {
-    final completed = await TutorialService.isCompleted(TutorialKeys.home);
-    if (completed || !mounted) return;
-
-    // 위젯 렌더링 완료 대기
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    final l10n = AppLocalizations.of(context);
-    AppTutorialStyle.show(
-      context: context,
-      targets: [
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyGameButtons,
-          description: l10n.homePageGameButtonsHint,
-          align: TutorialAlign.top,
-        ),
-      ],
-      onFinish: () => TutorialService.markCompleted(TutorialKeys.home),
-    );
   }
 
   /// 안전 안내 다이얼로그 표시 (오늘 처음 홈 진입 시)
@@ -587,12 +558,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
     final remoteConfig = RemoteConfigService.instance;
-    // 설정에서 튜토리얼 초기화 시 신호를 받아 재노출 (홈 인스턴스가 살아있어 initState 재실행 안 되는 문제 대응)
-    ref.listen<int>(tutorialResetSignalProvider, (previous, next) {
-      if (previous == null || previous == next) return;
-      _showTutorialIfNeeded();
-    });
-
     return Scaffold(
       backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: false,
@@ -645,10 +610,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
               SizedBox(height: AppSpacing.vertical14),
 
-              // 코치마크가 두 버튼을 한 영역으로 하이라이트하도록
-              // Row에 단일 GlobalKey를 부여한다
               Row(
-                key: _tutorialKeyGameButtons,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _withButtonShadow(

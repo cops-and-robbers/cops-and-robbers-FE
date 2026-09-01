@@ -58,8 +58,6 @@ import '../features/notice/presentation/pages/notices_page.dart';
 import '../features/report/domain/report_target.dart';
 import '../features/report/presentation/pages/report_category_page.dart';
 import '../features/report/presentation/pages/report_reason_page.dart';
-import '../features/tutorial/presentation/pages/in_game_tutorial_page.dart';
-import '../features/tutorial/presentation/pages/tutorial_catalog_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/buttons/previous_button.dart';
 import '../core/widgets/pages/legal_document_page.dart';
@@ -170,6 +168,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         //    각각 /login 과 /agreement 로 되돌아가 문서가 열리지 않는다.
         // ====================================================================
         if (currentPath.startsWith('${RoutePaths.legalDocument}/')) {
+          return null;
+        }
+
+        // ====================================================================
+        // 0-1. 앱 소개(온보딩) - 로그인 이전에 뜬다
+        //    아래 인증 가드보다 먼저 통과시켜야 미인증 사용자가 /login 으로
+        //    되돌려지지 않는다. publicPaths 에만 넣으면 안 된다 — 그건
+        //    !isAuthenticated 분기 안이라, 인증 상태로 마이페이지에서 다시 열 때
+        //    requiresAgreement/isNewUser 분기에 걸린다.
+        // ====================================================================
+        if (currentPath == RoutePaths.onboarding) {
           return null;
         }
 
@@ -292,17 +301,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // ====================================================================
-      // Tutorial Routes (튜토리얼 — 카탈로그 + 항목별 디테일)
-      // ====================================================================
-      GoRoute(
-        path: '/tutorial',
-        pageBuilder: (context, state) => buildDirectionalSlide(
-          key: state.pageKey,
-          child: const TutorialCatalogPage(),
-          isForward: true,
-        ),
-      ),
-      // ====================================================================
       // Legal Document Routes (약관·정책·라이선스)
       // ====================================================================
       GoRoute(
@@ -366,15 +364,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
-      GoRoute(
-        path: '/tutorial/in-game',
-        pageBuilder: (context, state) => buildDirectionalSlide(
-          key: state.pageKey,
-          child: const InGameTutorialPage(),
-          isForward: true,
-        ),
-      ),
-
       // ====================================================================
       // Home & Main Navigation
       // ====================================================================

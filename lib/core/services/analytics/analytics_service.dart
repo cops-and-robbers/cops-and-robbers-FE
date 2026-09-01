@@ -91,7 +91,6 @@ class AnalyticsService {
       _log('community_post_deeplink', {'entry': entry});
 
   /// 인게임 튜토리얼 완료
-  Future<void> logTutorialComplete() => _log('tutorial_complete');
 
   /// 전면 광고 표시 시도 결과 — [status]: 'shown' | 'not_loaded' | 'failed'
   Future<void> logAdInterstitialResult({required String status}) =>
