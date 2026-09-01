@@ -304,9 +304,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
       if (!status.isParticipating || info == null) {
         // 강퇴 또는 게임 종료 → 홈
-        ref.read(gameParticipantNotifierProvider.notifier).clear();
-        ref.read(waitingRoomParticipantsProvider.notifier).clear();
-        context.go(RoutePaths.home);
+        _goHomeClearingSession();
       } else if (info.gameStatus == GameStatus.inProgress) {
         // 게임 시작됨 → 게임 설정 재조회로 gameStartTime 확보 후 게임 화면으로 이동
         final gameId = int.tryParse(widget.sessionId);
@@ -560,9 +558,20 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // 도둑팀 사용자의 다크 화면 위에 라이트 다이얼로그가 뜨는 부조화 방지
       isDarkMode: ref.read(roleThemeProvider),
       onConfirm: () {
-        if (mounted) context.go(RoutePaths.home);
+        if (mounted) _goHomeClearingSession();
       },
     );
+  }
+
+  /// 대기방을 떠나 홈으로 — 세션 상태를 반드시 비우고 나간다.
+  ///
+  /// 참가 정보가 남으면 역할 테마(도둑=다크)가 앱 전역에 남아, 이후 게임 생성·홈·
+  /// 마이페이지의 풀스크린 로딩이 검게 뜬다(#520). 나가는 경로가 넷이라 각자 비우게
+  /// 두면 하나가 빠진다 — 실제로 [_handleNotParticipating]이 빠져 있었다.
+  void _goHomeClearingSession() {
+    ref.read(gameParticipantNotifierProvider.notifier).clear();
+    ref.read(waitingRoomParticipantsProvider.notifier).clear();
+    context.go(RoutePaths.home);
   }
 
   /// 사용자 액션 catch 공통 처리: 404 "참가자 아님" 이면 [_handleNotParticipating]
@@ -947,8 +956,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         isDarkMode: ref.read(roleThemeProvider),
       );
       if (!mounted) return;
-      ref.read(gameParticipantNotifierProvider.notifier).clear();
-      GoRouter.of(context).go(RoutePaths.home);
+      _goHomeClearingSession();
     } else {
       // 다른 유저 강퇴 → 스낵바
       if (!mounted) return;
@@ -1171,9 +1179,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _lobbyEventSub?.close();
     _lobbyEventSub = null;
     ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
-    ref.read(gameParticipantNotifierProvider.notifier).clear();
-    ref.read(waitingRoomParticipantsProvider.notifier).clear();
-    context.go(RoutePaths.home);
+    _goHomeClearingSession();
   }
 
   /// 게임 규칙 다이얼로그
