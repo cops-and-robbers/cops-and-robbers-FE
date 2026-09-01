@@ -12,6 +12,11 @@
 /// **상수 이름은 올바른 표기, 값은 실제 파일명 그대로다.** [wrongMark] · [checkMark]
 /// (파일명에 공백) 와 [setting2] (`settiing` 오타) 가 그 예다. 에셋 파일명 교정은
 /// 별도 작업이며, 그때 고칠 곳은 이 파일의 값 한 줄뿐이다.
+///
+/// **여기에 상수가 없는데 `assets/icons/` 에 남아 있는 파일**: 날씨 아이콘 5종
+/// (`icon_cloud` · `icon_light` · `icon_rain` · `icon_snow` · `icon_sun`, #471 에서
+/// v3 용으로 미리 받아 둠). 아직 배선되지 않았을 뿐 쓸 예정이므로 미사용 에셋
+/// 정리에서 지우지 않는다 (사용자 판단 2026-09-01). 배선할 때 상수를 추가한다.
 abstract final class AppIcons {
   static const String apple = 'assets/icons/icon_apple.svg';
   static const String arrow = 'assets/icons/icon_arrow.svg';
