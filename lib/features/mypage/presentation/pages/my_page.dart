@@ -201,6 +201,11 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildVersionItem(),
             _buildItemDivider(),
             _buildMenuItem(
+              text: l10n.settingsGuideAppIntro,
+              onTap: () => context.push(RoutePaths.onboarding),
+            ),
+            _buildItemDivider(),
+            _buildMenuItem(
               text: l10n.settingsGuideBugReport,
               onTap: () => context.push(RoutePaths.bugReport),
             ),

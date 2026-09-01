@@ -106,24 +106,6 @@ abstract class AppLocalizations {
   /// **'경찰과도둑'**
   String get appTitle;
 
-  /// No description provided for @loadingDefault.
-  ///
-  /// In ko, this message translates to:
-  /// **'처리 중...'**
-  String get loadingDefault;
-
-  /// No description provided for @permissionLocationFallbackTitle.
-  ///
-  /// In ko, this message translates to:
-  /// **'위치 권한 안내'**
-  String get permissionLocationFallbackTitle;
-
-  /// No description provided for @permissionLocationFallbackMessage.
-  ///
-  /// In ko, this message translates to:
-  /// **'위치 권한을 허용해주세요'**
-  String get permissionLocationFallbackMessage;
-
   /// No description provided for @dialogUpdateOptionalTitle.
   ///
   /// In ko, this message translates to:
@@ -171,36 +153,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'나중에'**
   String get dialogUpdateMandatoryCancel;
-
-  /// No description provided for @chatSystemGameStartTime.
-  ///
-  /// In ko, this message translates to:
-  /// **'제한 시간은 {minutes}분이에요'**
-  String chatSystemGameStartTime(int minutes);
-
-  /// No description provided for @chatSystemGameStartReportTip.
-  ///
-  /// In ko, this message translates to:
-  /// **'게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요'**
-  String get chatSystemGameStartReportTip;
-
-  /// No description provided for @chatSystemPoliceMoveWarning.
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!'**
-  String get chatSystemPoliceMoveWarning;
-
-  /// No description provided for @chatSystemRemainingRobbers.
-  ///
-  /// In ko, this message translates to:
-  /// **'현재 {count}명 도주 중!'**
-  String chatSystemRemainingRobbers(int count);
-
-  /// No description provided for @chatSystemFiveMinutesLeft.
-  ///
-  /// In ko, this message translates to:
-  /// **'게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!'**
-  String get chatSystemFiveMinutesLeft;
 
   /// No description provided for @errorNetworkTimeout.
   ///
@@ -388,12 +340,6 @@ abstract class AppLocalizations {
   /// **'핀이 너무 가까워요'**
   String get pinTooCloseMessage;
 
-  /// No description provided for @dialogAgreementRequiredTermsTitle.
-  ///
-  /// In ko, this message translates to:
-  /// **'필수 약관 미동의'**
-  String get dialogAgreementRequiredTermsTitle;
-
   /// No description provided for @errorAuthLoginCancelled.
   ///
   /// In ko, this message translates to:
@@ -405,12 +351,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'언어'**
   String get settingsLanguageLabel;
-
-  /// 언어 메뉴 부제 (서브타이틀)
-  ///
-  /// In ko, this message translates to:
-  /// **'앱 표시 언어를 변경할 수 있어요'**
-  String get settingsLanguageSubtitle;
 
   /// 언어 설정 페이지 AppBar 제목
   ///
@@ -940,12 +880,6 @@ abstract class AppLocalizations {
   /// **'도둑 시작 후 {minutes}분 뒤'**
   String gameSettingPoliceStartDelay(int minutes);
 
-  /// 게임 설정 저장 실패 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'설정 저장에 실패했어요'**
-  String get errorSettingsSaveFailed;
-
   /// 게임 설정 수정 페이지 타이틀
   ///
   /// In ko, this message translates to:
@@ -963,12 +897,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'저장'**
   String get buttonSave;
-
-  /// 게임 구역 저장 실패 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'영역 저장에 실패했어요'**
-  String get errorAreaSaveFailed;
 
   /// 게임 설정 페이지 타이틀
   ///
@@ -1336,12 +1264,6 @@ abstract class AppLocalizations {
   /// **'대댓글을 남겨보세요'**
   String get communityCommentReplyHint;
 
-  /// 댓글 아래 대댓글 작성 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'대댓글 달기'**
-  String get communityCommentReply;
-
   /// 커뮤니티 — 대댓글이 남아 자리만 지킨 삭제 댓글 자리 문구
   ///
   /// In ko, this message translates to:
@@ -1574,12 +1496,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'마감 임박순'**
   String get communitySortDeadline;
-
-  /// 정렬 선택 바텀시트 접근성 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'정렬 기준'**
-  String get communitySortSheetTitle;
 
   /// 커뮤니티 정렬 — 거리순 선택 시 위치 권한을 거부했을 때
   ///
@@ -1880,12 +1796,6 @@ abstract class AppLocalizations {
   /// **'준비 중이에요'**
   String get comingSoonMessage;
 
-  /// 홈 페이지 — 방 만들기/참여하기 버튼 통합 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'게임을 만들거나 초대 코드로 참가할 수 있어요'**
-  String get homePageGameButtonsHint;
-
   /// 홈 페이지 — 원격 이미지 배너 접근성 라벨
   ///
   /// In ko, this message translates to:
@@ -1934,12 +1844,6 @@ abstract class AppLocalizations {
   /// **'설정으로 이동'**
   String get buttonGoToSettings;
 
-  /// 방 참여 실패 — 초대 코드 확인 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'참여에 실패했어요. 초대 코드를 확인해주세요'**
-  String get errorJoinFailedCheckCode;
-
   /// 방 참여 실패 — 일반 재시도 안내
   ///
   /// In ko, this message translates to:
@@ -1969,18 +1873,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'참여하기'**
   String get buttonJoin;
-
-  /// 앱 브랜드명 — ko: 한글 '경찰과도둑', en: 영문 'Cops and Robbers', ja: 일본 현지명 'ケイドロ'
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰과도둑'**
-  String get appBrandName;
-
-  /// 미구현 기능 안내 메시지
-  ///
-  /// In ko, this message translates to:
-  /// **'준비 중이에요'**
-  String get messageComingSoon;
 
   /// 홈 페이지 — 메인 환영 메시지
   ///
@@ -2048,12 +1940,6 @@ abstract class AppLocalizations {
   /// **'구역 정보를 먼저 설정해주세요'**
   String get errorZoneNotConfigured;
 
-  /// 플레이그라운드 설정 — 반경 입력 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'여기를 누르면 반경을 직접 입력할 수 있어요'**
-  String get setupPlaygroundRadiusInputHint;
-
   /// 플레이그라운드 설정 — 화면 안내문
   ///
   /// In ko, this message translates to:
@@ -2102,48 +1988,6 @@ abstract class AppLocalizations {
   /// **'해당 게임에 참가하지 않은 사용자예요'**
   String get errorNotInGame;
 
-  /// 대기실 튜토리얼 — 팀 변경 버튼 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'이 버튼을 눌러 다른 팀으로 이동할 수 있어요'**
-  String get waitingRoomTutorialTeamSwitch;
-
-  /// 대기실 튜토리얼 — 초대 코드 공유 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'친구에게 초대 코드를 공유할 수 있어요'**
-  String get waitingRoomTutorialInvite;
-
-  /// 대기실 튜토리얼 — 설정 확인 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'게임 설정을 확인할 수 있어요'**
-  String get waitingRoomTutorialSettings;
-
-  /// 대기실 튜토리얼 — 준비 버튼 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'준비가 되면 눌러주세요'**
-  String get waitingRoomTutorialReady;
-
-  /// 인게임 미리보기 다이얼로그 제목
-  ///
-  /// In ko, this message translates to:
-  /// **'인게임 화면 미리 보기'**
-  String get dialogInGamePreviewTitle;
-
-  /// 대기실에서 튜토리얼 진행을 권유하는 다이얼로그 본문
-  ///
-  /// In ko, this message translates to:
-  /// **'게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?'**
-  String get dialogTutorialPromptMessage;
-
-  /// 인게임 튜토리얼 미리보기로 이동 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'보러 가기'**
-  String get buttonViewInGamePreview;
-
   /// 강퇴 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
@@ -2186,24 +2030,6 @@ abstract class AppLocalizations {
   /// **'{kickedNickname}님이 내보내졌어요'**
   String messageMemberKicked(String kickedNickname);
 
-  /// 대기실 — 팀 변경 실패 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'팀 변경에 실패했어요'**
-  String get errorTeamChangeFailed;
-
-  /// 대기실 — 준비 상태 변경 실패 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'준비 상태 변경에 실패했어요'**
-  String get errorReadyChangeFailed;
-
-  /// 대기실 — 게임 시작 실패 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'게임 시작에 실패했어요'**
-  String get errorGameStartFailed;
-
   /// 대기실 퇴장 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
@@ -2221,12 +2047,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'나가기'**
   String get buttonLeave;
-
-  /// 대기실 — 퇴장 처리 실패 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'퇴장 처리 중 오류가 생겼어요'**
-  String get errorLeaveRoomFailed;
 
   /// 초대코드 생성 완료 알림 다이얼로그 타이틀
   ///
@@ -2282,29 +2102,11 @@ abstract class AppLocalizations {
   /// **'현재 설정된 게임 구역이에요'**
   String get zonePreviewSubtitle;
 
-  /// 더미 닉네임 — 너구리 (튜토리얼/스켈레톤용)
-  ///
-  /// In ko, this message translates to:
-  /// **'오동통 너구리'**
-  String get dummyNicknameRaccoon;
-
-  /// 닉네임 누락 시 기본 표시 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'닉네임'**
-  String get defaultNicknameLabel;
-
   /// 게임 규칙 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
   /// **'게임 규칙'**
   String get titleGameRules;
-
-  /// 게임 규칙 다이얼로그의 '인게임 보기' 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'인게임 보기'**
-  String get buttonViewInGame;
 
   /// 게임 규칙 — 경찰 승리 조건 도입부
   ///
@@ -2960,18 +2762,6 @@ abstract class AppLocalizations {
   /// **'한 번 더'**
   String get buttonPlayAgain;
 
-  /// 내 기록 다이얼로그 — 제목
-  ///
-  /// In ko, this message translates to:
-  /// **'내 기록'**
-  String get labelMyRecord;
-
-  /// 내 기록 — 승패 결과 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'결과'**
-  String get labelResult;
-
   /// 내 기록 — 저장 실패 스낵바
   ///
   /// In ko, this message translates to:
@@ -3098,30 +2888,6 @@ abstract class AppLocalizations {
   /// **'플레이그라운드를 벗어났어요'**
   String get gameZoneExitBanner;
 
-  /// 팀 채팅 메시지 prefix 라벨 (예: [팀])
-  ///
-  /// In ko, this message translates to:
-  /// **'[팀]'**
-  String get chatTeamPrefix;
-
-  /// 더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)
-  ///
-  /// In ko, this message translates to:
-  /// **'제한 시간은 30분이에요'**
-  String get chatSystemGameTimeLimit30Min;
-
-  /// 더미 채팅 메시지 — 경찰의 도둑 응원 메시지
-  ///
-  /// In ko, this message translates to:
-  /// **'도둑 잘 도망쳐 봐요~'**
-  String get chatSystemGoodLuckRobber;
-
-  /// 더미 채팅 메시지 — 팀 응원 메시지
-  ///
-  /// In ko, this message translates to:
-  /// **'이겨봅시다!'**
-  String get chatSystemLetsWin;
-
   /// 채팅 메시지 복사 완료 토스트
   ///
   /// In ko, this message translates to:
@@ -3164,24 +2930,6 @@ abstract class AppLocalizations {
   /// **'신고에 실패했어요'**
   String get errorReportFailed;
 
-  /// 신고 확인 다이얼로그 제목
-  ///
-  /// In ko, this message translates to:
-  /// **'해당 유저를 신고할까요?'**
-  String get dialogReportConfirmTitle;
-
-  /// 신고 폼 — 선택한 카테고리 라벨 (뒤에 카테고리 이름 이어붙음)
-  ///
-  /// In ko, this message translates to:
-  /// **'선택한 신고 사유:'**
-  String get chatReportSelectedCategoryLabel;
-
-  /// 신고 폼 — 제출 시 검토 안내 (선두 줄바꿈은 위 라벨과 줄 분리 의도)
-  ///
-  /// In ko, this message translates to:
-  /// **'\n신고된 내용은 검토 후 조치할게요'**
-  String get chatReportSubmitNotice;
-
   /// 텍스트 복사 액션 버튼
   ///
   /// In ko, this message translates to:
@@ -3199,12 +2947,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'신고 유형'**
   String get reportCategoryLabel;
-
-  /// 신고 폼 — 카테고리 선택 섹션 제목
-  ///
-  /// In ko, this message translates to:
-  /// **'신고 유형 선택'**
-  String get chatReportCategoryTitle;
 
   /// 미읽음 힌트 부분 — 전체 채팅 미읽음 수
   ///
@@ -3469,18 +3211,6 @@ abstract class AppLocalizations {
   /// **'버그 제보'**
   String get settingsGuideBugReport;
 
-  /// 설정 — 튜토리얼 다시 보기 메뉴
-  ///
-  /// In ko, this message translates to:
-  /// **'튜토리얼 다시 보기'**
-  String get settingsGuideTutorialRewatch;
-
-  /// 설정 — 튜토리얼 초기화 메뉴
-  ///
-  /// In ko, this message translates to:
-  /// **'튜토리얼 초기화'**
-  String get settingsGuideTutorialReset;
-
   /// 설정 — 이용약관 및 정책 메뉴 (페이지 진입)
   ///
   /// In ko, this message translates to:
@@ -3559,30 +3289,6 @@ abstract class AppLocalizations {
   /// **'버그 제보가 접수되었어요'**
   String get messageBugReportSubmitted;
 
-  /// 튜토리얼 초기화 확인 다이얼로그 타이틀
-  ///
-  /// In ko, this message translates to:
-  /// **'튜토리얼 초기화'**
-  String get dialogTutorialResetTitle;
-
-  /// 튜토리얼 초기화 확인 다이얼로그 본문
-  ///
-  /// In ko, this message translates to:
-  /// **'모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?'**
-  String get dialogTutorialResetMessage;
-
-  /// 초기화 확인 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'초기화'**
-  String get buttonReset;
-
-  /// 튜토리얼 초기화 완료 안내 메시지
-  ///
-  /// In ko, this message translates to:
-  /// **'튜토리얼이 초기화되었어요'**
-  String get messageTutorialReset;
-
   /// 로그아웃 확인 다이얼로그 제목
   ///
   /// In ko, this message translates to:
@@ -3630,234 +3336,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'탈퇴'**
   String get buttonDeleteAccount;
-
-  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰1'**
-  String get tutorialDummyNicknameCop1;
-
-  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
-  ///
-  /// In ko, this message translates to:
-  /// **'도둑킹'**
-  String get tutorialDummyNicknameRobberKing;
-
-  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
-  ///
-  /// In ko, this message translates to:
-  /// **'도둑이게아니게'**
-  String get tutorialDummyNicknameRobberOrNot;
-
-  /// 튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기
-  ///
-  /// In ko, this message translates to:
-  /// **'잡힌도둑'**
-  String get tutorialDummyNicknameCapturedRobber;
-
-  /// 튜토리얼 완료 다이얼로그 타이틀
-  ///
-  /// In ko, this message translates to:
-  /// **'튜토리얼 완료!'**
-  String get titleTutorialComplete;
-
-  /// 튜토리얼 완료 다이얼로그 본문
-  ///
-  /// In ko, this message translates to:
-  /// **'핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요'**
-  String get messageTutorialComplete;
-
-  /// 튜토리얼 완료 다이얼로그의 종료 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'튜토리얼 끝내기'**
-  String get buttonFinishTutorial;
-
-  /// 튜토리얼 — 내 위치 버튼 동작 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'내 위치로 카메라가 이동했어요'**
-  String get tutorialInGameMyLocation;
-
-  /// 튜토리얼 — 인게임 지도 미리보기 상단 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'지도 미리보기'**
-  String get tutorialMapPreviewLabel;
-
-  /// 튜토리얼 — 도둑 위치 공개 카운트다운 (시연용 고정값)
-  ///
-  /// In ko, this message translates to:
-  /// **'다음 도둑 위치 공개까지 04:30'**
-  String get tutorialLocationRevealCountdown;
-
-  /// 튜토리얼 — 게임 룰 버튼 동작 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'게임 룰 안내가 열려요'**
-  String get tutorialInGameRulesGuide;
-
-  /// 튜토리얼 — 도둑 시점 QR 안내 (수배 QR 표시)
-  ///
-  /// In ko, this message translates to:
-  /// **'내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포'**
-  String get tutorialQrRobberHint;
-
-  /// 튜토리얼 — 경찰 시점 QR 안내 (스캐너 사용)
-  ///
-  /// In ko, this message translates to:
-  /// **'카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요'**
-  String get tutorialQrCopHint;
-
-  /// 튜토리얼 미션 — 참가자 버튼 탭 안내 (총 4 중 하나)
-  ///
-  /// In ko, this message translates to:
-  /// **'참가자 보기 버튼을 눌러보세요'**
-  String get tutorialMissionParticipantsButton;
-
-  /// 튜토리얼 미션 — QR 버튼 탭 안내 (총 4 중 하나)
-  ///
-  /// In ko, this message translates to:
-  /// **'QR 버튼을 눌러보세요'**
-  String get tutorialMissionQrButton;
-
-  /// 튜토리얼 미션 3/4 — 지도로 복귀 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'지도로 돌아가 보세요'**
-  String get tutorialMissionMapButton;
-
-  /// 튜토리얼 미션 4/4 — 지도 롱프레스로 핀 찍기 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'지도를 길게 눌러 핀을 찍어보세요'**
-  String get tutorialMissionDropPing;
-
-  /// 튜토리얼 — 지도 롱프레스 핀 찍기 힌트 인디케이터
-  ///
-  /// In ko, this message translates to:
-  /// **'맵 아무 곳이나 길게 눌러보세요'**
-  String get tutorialPingLongPressHint;
-
-  /// 튜토리얼 진행도 라벨 (현재 미션 / 총 4)
-  ///
-  /// In ko, this message translates to:
-  /// **'미션 {step}/4'**
-  String tutorialMissionProgress(String step);
-
-  /// 튜토리얼 — 도둑 시점 시연 상태 표시
-  ///
-  /// In ko, this message translates to:
-  /// **'도둑 시점 보는 중'**
-  String get tutorialPerspectiveRobber;
-
-  /// 튜토리얼 — 경찰 시점 시연 상태 표시
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰 시점 보는 중'**
-  String get tutorialPerspectiveCop;
-
-  /// 튜토리얼 — 본인 수감 시 카드 탭으로 탈옥 시도 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요'**
-  String get tutorialInGameSelfEscape;
-
-  /// 튜토리얼 — 실제 게임 QR 체포 방식 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'실제 게임에서는 QR 스캔으로 도둑을 체포해요'**
-  String get tutorialInGameQrArrest;
-
-  /// 튜토리얼 — '현재' 라벨 (현재 도주 중인 도둑 수 앞 텍스트)
-  ///
-  /// In ko, this message translates to:
-  /// **'현재'**
-  String get tutorialCurrentLabel;
-
-  /// 튜토리얼 — 인원수 표시 (예: 3명)
-  ///
-  /// In ko, this message translates to:
-  /// **'{count}명'**
-  String tutorialPlayerCount(int count);
-
-  /// 튜토리얼 — 도주 중 강조 텍스트
-  ///
-  /// In ko, this message translates to:
-  /// **'도주 중!'**
-  String get tutorialOnTheRun;
-
-  /// 튜토리얼 — 채팅 시트 확장 제스처 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'핸들을 위로 드래그하면 채팅이 펼쳐져요'**
-  String get tutorialInGameChatExpand;
-
-  /// 튜토리얼 — 채팅 입력 영역 사용법 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요'**
-  String get tutorialInGameChatInput;
-
-  /// 튜토리얼 — 채팅 입력바 placeholder (인게임 chat과 동일 문구지만 컨텍스트 분리)
-  ///
-  /// In ko, this message translates to:
-  /// **'채팅을 입력하세요'**
-  String get tutorialChatHint;
-
-  /// 튜토리얼 카탈로그 — 방 만들기 단계 부제
-  ///
-  /// In ko, this message translates to:
-  /// **'플레이그라운드·감옥 설정과 슬라이더 조작'**
-  String get tutorialCatalogAreaSubtitle;
-
-  /// 튜토리얼 카탈로그 — 방 참여하기 단계 부제
-  ///
-  /// In ko, this message translates to:
-  /// **'초대 코드 입력과 QR 스캔'**
-  String get tutorialCatalogInviteSubtitle;
-
-  /// 튜토리얼 카탈로그 — 대기방 단계 제목
-  ///
-  /// In ko, this message translates to:
-  /// **'대기방'**
-  String get tutorialCatalogWaitingRoomTitle;
-
-  /// 튜토리얼 카탈로그 — 대기방 단계 부제
-  ///
-  /// In ko, this message translates to:
-  /// **'팀 변경, 게임 설정, 준비 완료'**
-  String get tutorialCatalogLobbySubtitle;
-
-  /// 튜토리얼 카탈로그 — 인게임 단계 제목
-  ///
-  /// In ko, this message translates to:
-  /// **'인게임'**
-  String get tutorialCatalogInGameTitle;
-
-  /// 튜토리얼 카탈로그 — 인게임 단계 부제
-  ///
-  /// In ko, this message translates to:
-  /// **'타이머·지도·참가자·채팅·QR'**
-  String get tutorialCatalogGameSubtitle;
-
-  /// 튜토리얼 카탈로그 페이지 타이틀
-  ///
-  /// In ko, this message translates to:
-  /// **'튜토리얼'**
-  String get pageTutorialCatalogTitle;
-
-  /// 튜토리얼 카탈로그 페이지 인트로 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'게임을 처음 한다면 한 번씩 보고 시작해보세요'**
-  String get tutorialCatalogIntro;
-
-  /// 튜토리얼 카탈로그 — 미구현 단계의 '준비 중' 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'준비 중'**
-  String get tutorialCatalogComingSoon;
 
   /// 크레딧 멤버 표시명 — 한국어는 원본, 비-ko 로케일은 영문 표기 (Hong Eui-min)
   ///
@@ -4393,47 +3871,11 @@ abstract class AppLocalizations {
   /// **'게임 입장 중 예기치 않은 오류가 생겼어요'**
   String get errorGameJoinUnexpected;
 
-  /// 다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)
-  ///
-  /// In ko, this message translates to:
-  /// **'이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요'**
-  String get errorAlreadyInAnotherRoom;
-
   /// 딥링크로 새 방 참가 시도 시 이미 참여 중인 방이 있어 현재 방으로 복귀할 때 표시하는 안내 (409)
   ///
   /// In ko, this message translates to:
   /// **'이미 참여 중인 방이 있어요'**
   String get deeplinkAlreadyInRoom;
-
-  /// 초대 코드는 유효하지만 게임이 이미 시작된 경우 (400 이미 시작된 게임)
-  ///
-  /// In ko, this message translates to:
-  /// **'이미 시작되어 입장할 수 없는 게임이에요'**
-  String get errorGameAlreadyStarted;
-
-  /// 방 이동 중 현재 방 퇴장 후 새 방 입장에 실패한 경우
-  ///
-  /// In ko, this message translates to:
-  /// **'새 방에 입장하지 못했어요. 이전 방에서는 나온 상태예요'**
-  String get errorRoomSwitchFailed;
-
-  /// 이미 다른 대기방 참가 중 딥링크 진입 시 방 이동 확인 다이얼로그 제목
-  ///
-  /// In ko, this message translates to:
-  /// **'방을 이동할까요?'**
-  String get deeplinkSwitchRoomTitle;
-
-  /// 방 이동 확인 다이얼로그 본문
-  ///
-  /// In ko, this message translates to:
-  /// **'현재 참여 중인 방에서 나가고 새 방에 참가해요'**
-  String get deeplinkSwitchRoomMessage;
-
-  /// 방 이동 확인 다이얼로그 확인 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'나가고 참가'**
-  String get deeplinkSwitchRoomConfirm;
 
   /// 로그인 후 자동 join 시 SharedPreferences 읽기 실패
   ///
@@ -5100,6 +4542,78 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{count, plural, other{운영진 {count}명 검거}}'**
   String gameEventResultArrestCount(int count);
+
+  /// 온보딩 1/4 — 오프라인 게임이라는 정체
+  ///
+  /// In ko, this message translates to:
+  /// **'밖에서 진짜로 뛰는 술래잡기예요'**
+  String get onboardingOutdoorTitle;
+
+  /// 온보딩 1/4 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'어릴 때 하던 경찰과 도둑 그대로예요. 앱은 옆에서 진행만 봐줘요'**
+  String get onboardingOutdoorBody;
+
+  /// 온보딩 2/4 — 승패 조건
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰은 잡고, 도둑은 버텨요'**
+  String get onboardingWinTitle;
+
+  /// 온보딩 2/4 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰이 도둑을 모두 잡으면 경찰이 이겨요. 시간이 끝날 때까지 한 명이라도 살아남으면 도둑이 이겨요'**
+  String get onboardingWinBody;
+
+  /// 온보딩 3/4 — 구역·발자국·QR
+  ///
+  /// In ko, this message translates to:
+  /// **'앱이 심판을 봐요'**
+  String get onboardingRefereeTitle;
+
+  /// 온보딩 3/4 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'구역은 지도에 그리고, 도둑 위치는 정해진 주기마다 발자국으로 떠요. QR을 찍어야 체포라서 판정이 늘 깔끔해요'**
+  String get onboardingRefereeBody;
+
+  /// 온보딩 4/4 — 커뮤니티
+  ///
+  /// In ko, this message translates to:
+  /// **'같이 할 사람도 여기서 구해요'**
+  String get onboardingCommunityTitle;
+
+  /// 온보딩 4/4 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'동네에서 함께 뛸 사람을 커뮤니티에서 찾아보세요. 장소와 시간을 보고 바로 참여할 수 있어요'**
+  String get onboardingCommunityBody;
+
+  /// 온보딩 건너뛰기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'건너뛰기'**
+  String get buttonSkip;
+
+  /// 마이페이지 이용 안내 — 온보딩 재열람
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 소개 다시 보기'**
+  String get settingsGuideAppIntro;
+
+  /// 온보딩 마지막 장 — 팀명 '동심지키미'와 잇는 시작 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'동심으로 들어가기'**
+  String get onboardingEnterButton;
+
+  /// 온보딩 마지막 장 — 사이트 게임 소개 페이지로 이동
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 소개 보기'**
+  String get onboardingGuideButton;
 }
 
 class _AppLocalizationsDelegate

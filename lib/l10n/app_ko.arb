@@ -4,9 +4,6 @@
   "@appTitle": {
     "description": "앱 이름 (MaterialApp.title) — i18n 스모크 테스트용 첫 키"
   },
-  "loadingDefault": "처리 중...",
-  "permissionLocationFallbackTitle": "위치 권한 안내",
-  "permissionLocationFallbackMessage": "위치 권한을 허용해주세요",
   "dialogUpdateOptionalTitle": "새 버전 안내",
   "dialogUpdateOptionalMessage": "더 좋아진 새 버전이 있어요\n업데이트할까요?",
   "dialogUpdateOptionalConfirm": "업데이트",
@@ -15,25 +12,6 @@
   "dialogUpdateMandatoryMessage": "새로운 버전이 나왔어요\n업데이트할까요?",
   "dialogUpdateMandatoryConfirm": "업데이트",
   "dialogUpdateMandatoryCancel": "나중에",
-  "chatSystemGameStartTime": "제한 시간은 {minutes}분이에요",
-  "@chatSystemGameStartTime": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "chatSystemGameStartReportTip": "게임 중 채팅을 길게 누르면 불편한 유저를 신고하고 차단할 수 있어요",
-  "chatSystemPoliceMoveWarning": "경찰이 곧 출동해요.  도둑은 서둘러 이동하세요!",
-  "chatSystemRemainingRobbers": "현재 {count}명 도주 중!",
-  "@chatSystemRemainingRobbers": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "chatSystemFiveMinutesLeft": "게임 종료까지 5분 남았어요. 마지막 기회를 놓치지 마세요!",
   "errorNetworkTimeout": "서버 연결이 너무 오래 걸려요",
   "errorNetworkOffline": "네트워크 연결을 확인하세요",
   "errorServerInternal": "서버에 문제가 생겼어요",
@@ -84,15 +62,10 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "pinTooCloseMessage": "핀이 너무 가까워요",
-  "dialogAgreementRequiredTermsTitle": "필수 약관 미동의",
   "errorAuthLoginCancelled": "로그인이 취소됐어요",
   "settingsLanguageLabel": "언어",
   "@settingsLanguageLabel": {
     "description": "설정 화면의 언어 설정 메뉴 라벨"
-  },
-  "settingsLanguageSubtitle": "앱 표시 언어를 변경할 수 있어요",
-  "@settingsLanguageSubtitle": {
-    "description": "언어 메뉴 부제 (서브타이틀)"
   },
   "settingsLanguagePageTitle": "언어 선택",
   "@settingsLanguagePageTitle": {
@@ -253,10 +226,6 @@
       }
     }
   },
-  "errorSettingsSaveFailed": "설정 저장에 실패했어요",
-  "@errorSettingsSaveFailed": {
-    "description": "게임 설정 저장 실패 안내"
-  },
   "pageGameSettingsEditTitle": "설정 수정",
   "@pageGameSettingsEditTitle": {
     "description": "게임 설정 수정 페이지 타이틀"
@@ -268,10 +237,6 @@
   "buttonSave": "저장",
   "@buttonSave": {
     "description": "공통 — 저장 버튼"
-  },
-  "errorAreaSaveFailed": "영역 저장에 실패했어요",
-  "@errorAreaSaveFailed": {
-    "description": "게임 구역 저장 실패 안내"
   },
   "pageGameSettingsTitle": "게임 설정",
   "@pageGameSettingsTitle": {
@@ -422,10 +387,6 @@
   "communityCommentReplyHint": "대댓글을 남겨보세요",
   "@communityCommentReplyHint": {
     "description": "대댓글 입력창 placeholder"
-  },
-  "communityCommentReply": "대댓글 달기",
-  "@communityCommentReply": {
-    "description": "댓글 아래 대댓글 작성 버튼"
   },
   "communityCommentDeleted": "삭제된 댓글이에요",
   "@communityCommentDeleted": {
@@ -611,10 +572,6 @@
   "communitySortDeadline": "마감 임박순",
   "@communitySortDeadline": {
     "description": "커뮤니티 목록 정렬 — 마감 임박순"
-  },
-  "communitySortSheetTitle": "정렬 기준",
-  "@communitySortSheetTitle": {
-    "description": "정렬 선택 바텀시트 접근성 라벨"
   },
   "communitySortNeedsLocation": "위치 권한이 있어야 거리순으로 볼 수 있어요",
   "@communitySortNeedsLocation": {
@@ -807,10 +764,6 @@
   "@comingSoonMessage": {
     "description": "아직 구현되지 않은 탭(커뮤니티·마이페이지)의 안내 문구"
   },
-  "homePageGameButtonsHint": "게임을 만들거나 초대 코드로 참가할 수 있어요",
-  "@homePageGameButtonsHint": {
-    "description": "홈 페이지 — 방 만들기/참여하기 버튼 통합 안내"
-  },
   "homeBannerSemanticsLabel": "이벤트 배너",
   "@homeBannerSemanticsLabel": {
     "description": "홈 페이지 — 원격 이미지 배너 접근성 라벨"
@@ -843,10 +796,6 @@
   "@buttonGoToSettings": {
     "description": "기기 설정 화면으로 이동하는 버튼"
   },
-  "errorJoinFailedCheckCode": "참여에 실패했어요. 초대 코드를 확인해주세요",
-  "@errorJoinFailedCheckCode": {
-    "description": "방 참여 실패 — 초대 코드 확인 안내"
-  },
   "errorJoinRetry": "참여에 실패했어요. 다시 시도해주세요",
   "@errorJoinRetry": {
     "description": "방 참여 실패 — 일반 재시도 안내"
@@ -866,14 +815,6 @@
   "buttonJoin": "참여하기",
   "@buttonJoin": {
     "description": "방 참여 액션 버튼"
-  },
-  "appBrandName": "경찰과도둑",
-  "@appBrandName": {
-    "description": "앱 브랜드명 — ko: 한글 '경찰과도둑', en: 영문 'Cops and Robbers', ja: 일본 현지명 'ケイドロ'"
-  },
-  "messageComingSoon": "준비 중이에요",
-  "@messageComingSoon": {
-    "description": "미구현 기능 안내 메시지"
   },
   "homePageWelcomeMessage": "누가 내 치즈\n훔쳐갔어!!!!🧀",
   "@homePageWelcomeMessage": {
@@ -919,10 +860,6 @@
   "@errorZoneNotConfigured": {
     "description": "구역 미설정 상태에서 다음 단계 진입 시 안내"
   },
-  "setupPlaygroundRadiusInputHint": "여기를 누르면 반경을 직접 입력할 수 있어요",
-  "@setupPlaygroundRadiusInputHint": {
-    "description": "플레이그라운드 설정 — 반경 입력 안내"
-  },
   "setupPlaygroundDescription": "게임이 진행될 전체 구역의 크기를 설정해요",
   "@setupPlaygroundDescription": {
     "description": "플레이그라운드 설정 — 화면 안내문"
@@ -954,34 +891,6 @@
   "errorNotInGame": "해당 게임에 참가하지 않은 사용자예요",
   "@errorNotInGame": {
     "description": "권한 없음 — 해당 게임 참가자가 아닐 때 안내"
-  },
-  "waitingRoomTutorialTeamSwitch": "이 버튼을 눌러 다른 팀으로 이동할 수 있어요",
-  "@waitingRoomTutorialTeamSwitch": {
-    "description": "대기실 튜토리얼 — 팀 변경 버튼 안내"
-  },
-  "waitingRoomTutorialInvite": "친구에게 초대 코드를 공유할 수 있어요",
-  "@waitingRoomTutorialInvite": {
-    "description": "대기실 튜토리얼 — 초대 코드 공유 안내"
-  },
-  "waitingRoomTutorialSettings": "게임 설정을 확인할 수 있어요",
-  "@waitingRoomTutorialSettings": {
-    "description": "대기실 튜토리얼 — 설정 확인 안내"
-  },
-  "waitingRoomTutorialReady": "준비가 되면 눌러주세요",
-  "@waitingRoomTutorialReady": {
-    "description": "대기실 튜토리얼 — 준비 버튼 안내"
-  },
-  "dialogInGamePreviewTitle": "인게임 화면 미리 보기",
-  "@dialogInGamePreviewTitle": {
-    "description": "인게임 미리보기 다이얼로그 제목"
-  },
-  "dialogTutorialPromptMessage": "게임이 시작되면 어떻게 동작하는지\n한 번 확인하고 시작해볼까요?",
-  "@dialogTutorialPromptMessage": {
-    "description": "대기실에서 튜토리얼 진행을 권유하는 다이얼로그 본문"
-  },
-  "buttonViewInGamePreview": "보러 가기",
-  "@buttonViewInGamePreview": {
-    "description": "인게임 튜토리얼 미리보기로 이동 버튼"
   },
   "dialogKickConfirmTitle": "{nickname}님을 내보낼까요?",
   "@dialogKickConfirmTitle": {
@@ -1021,18 +930,6 @@
       }
     }
   },
-  "errorTeamChangeFailed": "팀 변경에 실패했어요",
-  "@errorTeamChangeFailed": {
-    "description": "대기실 — 팀 변경 실패 안내"
-  },
-  "errorReadyChangeFailed": "준비 상태 변경에 실패했어요",
-  "@errorReadyChangeFailed": {
-    "description": "대기실 — 준비 상태 변경 실패 안내"
-  },
-  "errorGameStartFailed": "게임 시작에 실패했어요",
-  "@errorGameStartFailed": {
-    "description": "대기실 — 게임 시작 실패 안내"
-  },
   "dialogLeaveRoomTitle": "방을 나갈까요?",
   "@dialogLeaveRoomTitle": {
     "description": "대기실 퇴장 확인 다이얼로그 타이틀"
@@ -1044,10 +941,6 @@
   "buttonLeave": "나가기",
   "@buttonLeave": {
     "description": "대기실 퇴장 확정 버튼"
-  },
-  "errorLeaveRoomFailed": "퇴장 처리 중 오류가 생겼어요",
-  "@errorLeaveRoomFailed": {
-    "description": "대기실 — 퇴장 처리 실패 안내"
   },
   "dialogInviteCodeCreatedTitle": "초대코드를 생성했어요",
   "@dialogInviteCodeCreatedTitle": {
@@ -1085,21 +978,9 @@
   "@zonePreviewSubtitle": {
     "description": "구역 미리보기 — 본문 안내"
   },
-  "dummyNicknameRaccoon": "오동통 너구리",
-  "@dummyNicknameRaccoon": {
-    "description": "더미 닉네임 — 너구리 (튜토리얼/스켈레톤용)"
-  },
-  "defaultNicknameLabel": "닉네임",
-  "@defaultNicknameLabel": {
-    "description": "닉네임 누락 시 기본 표시 라벨"
-  },
   "titleGameRules": "게임 규칙",
   "@titleGameRules": {
     "description": "게임 규칙 다이얼로그 타이틀"
-  },
-  "buttonViewInGame": "인게임 보기",
-  "@buttonViewInGame": {
-    "description": "게임 규칙 다이얼로그의 '인게임 보기' 버튼"
   },
   "gameRulesCopGoalPrefix": "경찰은 모든 도둑을 잡아서",
   "@gameRulesCopGoalPrefix": {
@@ -1557,14 +1438,6 @@
   "@buttonPlayAgain": {
     "description": "공통 — 다시 플레이 버튼"
   },
-  "labelMyRecord": "내 기록",
-  "@labelMyRecord": {
-    "description": "내 기록 다이얼로그 — 제목"
-  },
-  "labelResult": "결과",
-  "@labelResult": {
-    "description": "내 기록 — 승패 결과 라벨"
-  },
   "messageSaveFailed": "저장에 실패했어요",
   "@messageSaveFailed": {
     "description": "내 기록 — 저장 실패 스낵바"
@@ -1664,22 +1537,6 @@
   "@gameZoneExitBanner": {
     "description": "플레이 영역 이탈 시 표시되는 배너"
   },
-  "chatTeamPrefix": "[팀]",
-  "@chatTeamPrefix": {
-    "description": "팀 채팅 메시지 prefix 라벨 (예: [팀])"
-  },
-  "chatSystemGameTimeLimit30Min": "제한 시간은 30분이에요",
-  "@chatSystemGameTimeLimit30Min": {
-    "description": "더미 채팅 시스템 메시지 — 제한 시간 안내 (30분 고정)"
-  },
-  "chatSystemGoodLuckRobber": "도둑 잘 도망쳐 봐요~",
-  "@chatSystemGoodLuckRobber": {
-    "description": "더미 채팅 메시지 — 경찰의 도둑 응원 메시지"
-  },
-  "chatSystemLetsWin": "이겨봅시다!",
-  "@chatSystemLetsWin": {
-    "description": "더미 채팅 메시지 — 팀 응원 메시지"
-  },
   "messageMessageCopied": "메시지가 복사되었어요",
   "@messageMessageCopied": {
     "description": "채팅 메시지 복사 완료 토스트"
@@ -1708,18 +1565,6 @@
   "@errorReportFailed": {
     "description": "신고 제출 실패 안내"
   },
-  "dialogReportConfirmTitle": "해당 유저를 신고할까요?",
-  "@dialogReportConfirmTitle": {
-    "description": "신고 확인 다이얼로그 제목"
-  },
-  "chatReportSelectedCategoryLabel": "선택한 신고 사유:",
-  "@chatReportSelectedCategoryLabel": {
-    "description": "신고 폼 — 선택한 카테고리 라벨 (뒤에 카테고리 이름 이어붙음)"
-  },
-  "chatReportSubmitNotice": "\n신고된 내용은 검토 후 조치할게요",
-  "@chatReportSubmitNotice": {
-    "description": "신고 폼 — 제출 시 검토 안내 (선두 줄바꿈은 위 라벨과 줄 분리 의도)"
-  },
   "buttonCopy": "복사하기",
   "@buttonCopy": {
     "description": "텍스트 복사 액션 버튼"
@@ -1731,10 +1576,6 @@
   "reportCategoryLabel": "신고 유형",
   "@reportCategoryLabel": {
     "description": "신고 유형 선택 화면 — 목록 위 라벨"
-  },
-  "chatReportCategoryTitle": "신고 유형 선택",
-  "@chatReportCategoryTitle": {
-    "description": "신고 폼 — 카테고리 선택 섹션 제목"
   },
   "chatInputBarUnreadAll": "전체 {all}개",
   "@chatInputBarUnreadAll": {
@@ -1937,14 +1778,6 @@
   "@settingsGuideBugReport": {
     "description": "설정 — 버그 제보 메뉴 라벨"
   },
-  "settingsGuideTutorialRewatch": "튜토리얼 다시 보기",
-  "@settingsGuideTutorialRewatch": {
-    "description": "설정 — 튜토리얼 다시 보기 메뉴"
-  },
-  "settingsGuideTutorialReset": "튜토리얼 초기화",
-  "@settingsGuideTutorialReset": {
-    "description": "설정 — 튜토리얼 초기화 메뉴"
-  },
   "settingsGuideAgreements": "이용약관 및 정책",
   "@settingsGuideAgreements": {
     "description": "설정 — 이용약관 및 정책 메뉴 (페이지 진입)"
@@ -1997,22 +1830,6 @@
   "@messageBugReportSubmitted": {
     "description": "버그 제보 접수 완료 안내"
   },
-  "dialogTutorialResetTitle": "튜토리얼 초기화",
-  "@dialogTutorialResetTitle": {
-    "description": "튜토리얼 초기화 확인 다이얼로그 타이틀"
-  },
-  "dialogTutorialResetMessage": "모든 화면의 튜토리얼을\n다시 볼 수 있도록 초기화할까요?",
-  "@dialogTutorialResetMessage": {
-    "description": "튜토리얼 초기화 확인 다이얼로그 본문"
-  },
-  "buttonReset": "초기화",
-  "@buttonReset": {
-    "description": "초기화 확인 버튼"
-  },
-  "messageTutorialReset": "튜토리얼이 초기화되었어요",
-  "@messageTutorialReset": {
-    "description": "튜토리얼 초기화 완료 안내 메시지"
-  },
   "dialogLogoutTitle": "로그아웃",
   "@dialogLogoutTitle": {
     "description": "로그아웃 확인 다이얼로그 제목"
@@ -2044,168 +1861,6 @@
   "buttonDeleteAccount": "탈퇴",
   "@buttonDeleteAccount": {
     "description": "회원 탈퇴 확정 버튼"
-  },
-  "tutorialDummyNicknameCop1": "경찰1",
-  "@tutorialDummyNicknameCop1": {
-    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
-  },
-  "tutorialDummyNicknameRobberKing": "도둑킹",
-  "@tutorialDummyNicknameRobberKing": {
-    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
-  },
-  "tutorialDummyNicknameRobberOrNot": "도둑이게아니게",
-  "@tutorialDummyNicknameRobberOrNot": {
-    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
-  },
-  "tutorialDummyNicknameCapturedRobber": "잡힌도둑",
-  "@tutorialDummyNicknameCapturedRobber": {
-    "description": "튜토리얼용 더미 캐릭터 닉네임 — 한국어는 원본, 비-ko는 영문 표기"
-  },
-  "titleTutorialComplete": "튜토리얼 완료!",
-  "@titleTutorialComplete": {
-    "description": "튜토리얼 완료 다이얼로그 타이틀"
-  },
-  "messageTutorialComplete": "핵심 흐름을 익혔어요\n실제 게임에서 활용해보세요",
-  "@messageTutorialComplete": {
-    "description": "튜토리얼 완료 다이얼로그 본문"
-  },
-  "buttonFinishTutorial": "튜토리얼 끝내기",
-  "@buttonFinishTutorial": {
-    "description": "튜토리얼 완료 다이얼로그의 종료 버튼"
-  },
-  "tutorialInGameMyLocation": "내 위치로 카메라가 이동했어요",
-  "@tutorialInGameMyLocation": {
-    "description": "튜토리얼 — 내 위치 버튼 동작 안내"
-  },
-  "tutorialMapPreviewLabel": "지도 미리보기",
-  "@tutorialMapPreviewLabel": {
-    "description": "튜토리얼 — 인게임 지도 미리보기 상단 라벨"
-  },
-  "tutorialLocationRevealCountdown": "다음 도둑 위치 공개까지 04:30",
-  "@tutorialLocationRevealCountdown": {
-    "description": "튜토리얼 — 도둑 위치 공개 카운트다운 (시연용 고정값)"
-  },
-  "tutorialInGameRulesGuide": "게임 룰 안내가 열려요",
-  "@tutorialInGameRulesGuide": {
-    "description": "튜토리얼 — 게임 룰 버튼 동작 안내"
-  },
-  "tutorialQrRobberHint": "내 수배 QR이 화면에 표시돼요. 경찰에게 보여주면 체포",
-  "@tutorialQrRobberHint": {
-    "description": "튜토리얼 — 도둑 시점 QR 안내 (수배 QR 표시)"
-  },
-  "tutorialQrCopHint": "카메라가 켜지고 도둑의 QR을 스캔해 체포할 수 있어요",
-  "@tutorialQrCopHint": {
-    "description": "튜토리얼 — 경찰 시점 QR 안내 (스캐너 사용)"
-  },
-  "tutorialMissionParticipantsButton": "참가자 보기 버튼을 눌러보세요",
-  "@tutorialMissionParticipantsButton": {
-    "description": "튜토리얼 미션 — 참가자 버튼 탭 안내 (총 4 중 하나)"
-  },
-  "tutorialMissionQrButton": "QR 버튼을 눌러보세요",
-  "@tutorialMissionQrButton": {
-    "description": "튜토리얼 미션 — QR 버튼 탭 안내 (총 4 중 하나)"
-  },
-  "tutorialMissionMapButton": "지도로 돌아가 보세요",
-  "@tutorialMissionMapButton": {
-    "description": "튜토리얼 미션 3/4 — 지도로 복귀 안내"
-  },
-  "tutorialMissionDropPing": "지도를 길게 눌러 핀을 찍어보세요",
-  "@tutorialMissionDropPing": {
-    "description": "튜토리얼 미션 4/4 — 지도 롱프레스로 핀 찍기 안내"
-  },
-  "tutorialPingLongPressHint": "맵 아무 곳이나 길게 눌러보세요",
-  "@tutorialPingLongPressHint": {
-    "description": "튜토리얼 — 지도 롱프레스 핀 찍기 힌트 인디케이터"
-  },
-  "tutorialMissionProgress": "미션 {step}/4",
-  "@tutorialMissionProgress": {
-    "description": "튜토리얼 진행도 라벨 (현재 미션 / 총 4)",
-    "placeholders": {
-      "step": {
-        "type": "String"
-      }
-    }
-  },
-  "tutorialPerspectiveRobber": "도둑 시점 보는 중",
-  "@tutorialPerspectiveRobber": {
-    "description": "튜토리얼 — 도둑 시점 시연 상태 표시"
-  },
-  "tutorialPerspectiveCop": "경찰 시점 보는 중",
-  "@tutorialPerspectiveCop": {
-    "description": "튜토리얼 — 경찰 시점 시연 상태 표시"
-  },
-  "tutorialInGameSelfEscape": "본인이 수감됐다면 카드 탭으로 탈옥을 시도할 수 있어요",
-  "@tutorialInGameSelfEscape": {
-    "description": "튜토리얼 — 본인 수감 시 카드 탭으로 탈옥 시도 안내"
-  },
-  "tutorialInGameQrArrest": "실제 게임에서는 QR 스캔으로 도둑을 체포해요",
-  "@tutorialInGameQrArrest": {
-    "description": "튜토리얼 — 실제 게임 QR 체포 방식 안내"
-  },
-  "tutorialCurrentLabel": "현재",
-  "@tutorialCurrentLabel": {
-    "description": "튜토리얼 — '현재' 라벨 (현재 도주 중인 도둑 수 앞 텍스트)"
-  },
-  "tutorialPlayerCount": "{count}명",
-  "@tutorialPlayerCount": {
-    "description": "튜토리얼 — 인원수 표시 (예: 3명)",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "tutorialOnTheRun": "도주 중!",
-  "@tutorialOnTheRun": {
-    "description": "튜토리얼 — 도주 중 강조 텍스트"
-  },
-  "tutorialInGameChatExpand": "핸들을 위로 드래그하면 채팅이 펼쳐져요",
-  "@tutorialInGameChatExpand": {
-    "description": "튜토리얼 — 채팅 시트 확장 제스처 안내"
-  },
-  "tutorialInGameChatInput": "여기에 메시지를 입력하면 팀/전체 채팅으로 보낼 수 있어요",
-  "@tutorialInGameChatInput": {
-    "description": "튜토리얼 — 채팅 입력 영역 사용법 안내"
-  },
-  "tutorialChatHint": "채팅을 입력하세요",
-  "@tutorialChatHint": {
-    "description": "튜토리얼 — 채팅 입력바 placeholder (인게임 chat과 동일 문구지만 컨텍스트 분리)"
-  },
-  "tutorialCatalogAreaSubtitle": "플레이그라운드·감옥 설정과 슬라이더 조작",
-  "@tutorialCatalogAreaSubtitle": {
-    "description": "튜토리얼 카탈로그 — 방 만들기 단계 부제"
-  },
-  "tutorialCatalogInviteSubtitle": "초대 코드 입력과 QR 스캔",
-  "@tutorialCatalogInviteSubtitle": {
-    "description": "튜토리얼 카탈로그 — 방 참여하기 단계 부제"
-  },
-  "tutorialCatalogWaitingRoomTitle": "대기방",
-  "@tutorialCatalogWaitingRoomTitle": {
-    "description": "튜토리얼 카탈로그 — 대기방 단계 제목"
-  },
-  "tutorialCatalogLobbySubtitle": "팀 변경, 게임 설정, 준비 완료",
-  "@tutorialCatalogLobbySubtitle": {
-    "description": "튜토리얼 카탈로그 — 대기방 단계 부제"
-  },
-  "tutorialCatalogInGameTitle": "인게임",
-  "@tutorialCatalogInGameTitle": {
-    "description": "튜토리얼 카탈로그 — 인게임 단계 제목"
-  },
-  "tutorialCatalogGameSubtitle": "타이머·지도·참가자·채팅·QR",
-  "@tutorialCatalogGameSubtitle": {
-    "description": "튜토리얼 카탈로그 — 인게임 단계 부제"
-  },
-  "pageTutorialCatalogTitle": "튜토리얼",
-  "@pageTutorialCatalogTitle": {
-    "description": "튜토리얼 카탈로그 페이지 타이틀"
-  },
-  "tutorialCatalogIntro": "게임을 처음 한다면 한 번씩 보고 시작해보세요",
-  "@tutorialCatalogIntro": {
-    "description": "튜토리얼 카탈로그 페이지 인트로 안내"
-  },
-  "tutorialCatalogComingSoon": "준비 중",
-  "@tutorialCatalogComingSoon": {
-    "description": "튜토리얼 카탈로그 — 미구현 단계의 '준비 중' 라벨"
   },
   "creditMemberHongEuiMin": "홍의민",
   "@creditMemberHongEuiMin": {
@@ -2590,33 +2245,9 @@
   "@errorGameJoinUnexpected": {
     "description": "게임 입장 시 발생한 예기치 않은 오류"
   },
-  "errorAlreadyInAnotherRoom": "이미 참여 중인 방이 있어요. 현재 방에서 나간 후 다시 시도해주세요",
-  "@errorAlreadyInAnotherRoom": {
-    "description": "다른 방에 이미 참가 중이라 새 방 참가가 거부된 경우 (409)"
-  },
   "deeplinkAlreadyInRoom": "이미 참여 중인 방이 있어요",
   "@deeplinkAlreadyInRoom": {
     "description": "딥링크로 새 방 참가 시도 시 이미 참여 중인 방이 있어 현재 방으로 복귀할 때 표시하는 안내 (409)"
-  },
-  "errorGameAlreadyStarted": "이미 시작되어 입장할 수 없는 게임이에요",
-  "@errorGameAlreadyStarted": {
-    "description": "초대 코드는 유효하지만 게임이 이미 시작된 경우 (400 이미 시작된 게임)"
-  },
-  "errorRoomSwitchFailed": "새 방에 입장하지 못했어요. 이전 방에서는 나온 상태예요",
-  "@errorRoomSwitchFailed": {
-    "description": "방 이동 중 현재 방 퇴장 후 새 방 입장에 실패한 경우"
-  },
-  "deeplinkSwitchRoomTitle": "방을 이동할까요?",
-  "@deeplinkSwitchRoomTitle": {
-    "description": "이미 다른 대기방 참가 중 딥링크 진입 시 방 이동 확인 다이얼로그 제목"
-  },
-  "deeplinkSwitchRoomMessage": "현재 참여 중인 방에서 나가고 새 방에 참가해요",
-  "@deeplinkSwitchRoomMessage": {
-    "description": "방 이동 확인 다이얼로그 본문"
-  },
-  "deeplinkSwitchRoomConfirm": "나가고 참가",
-  "@deeplinkSwitchRoomConfirm": {
-    "description": "방 이동 확인 다이얼로그 확인 버튼"
   },
   "errorPendingInviteLoad": "대기 중인 초대 코드를 불러오지 못했어요",
   "@errorPendingInviteLoad": {
@@ -2805,5 +2436,53 @@
   "@gameEventResultArrestCount": {
     "description": "이벤트 모드 결과 — 검거한 운영진 수",
     "placeholders": { "count": { "type": "int" } }
+  },
+  "onboardingOutdoorTitle": "밖에서 진짜로 뛰는 술래잡기예요",
+  "@onboardingOutdoorTitle": {
+    "description": "온보딩 1/4 — 오프라인 게임이라는 정체"
+  },
+  "onboardingOutdoorBody": "어릴 때 하던 경찰과 도둑 그대로예요. 앱은 옆에서 진행만 봐줘요",
+  "@onboardingOutdoorBody": {
+    "description": "온보딩 1/4 본문"
+  },
+  "onboardingWinTitle": "경찰은 잡고, 도둑은 버텨요",
+  "@onboardingWinTitle": {
+    "description": "온보딩 2/4 — 승패 조건"
+  },
+  "onboardingWinBody": "경찰이 도둑을 모두 잡으면 경찰이 이겨요. 시간이 끝날 때까지 한 명이라도 살아남으면 도둑이 이겨요",
+  "@onboardingWinBody": {
+    "description": "온보딩 2/4 본문"
+  },
+  "onboardingRefereeTitle": "앱이 심판을 봐요",
+  "@onboardingRefereeTitle": {
+    "description": "온보딩 3/4 — 구역·발자국·QR"
+  },
+  "onboardingRefereeBody": "구역은 지도에 그리고, 도둑 위치는 정해진 주기마다 발자국으로 떠요. QR을 찍어야 체포라서 판정이 늘 깔끔해요",
+  "@onboardingRefereeBody": {
+    "description": "온보딩 3/4 본문"
+  },
+  "onboardingCommunityTitle": "같이 할 사람도 여기서 구해요",
+  "@onboardingCommunityTitle": {
+    "description": "온보딩 4/4 — 커뮤니티"
+  },
+  "onboardingCommunityBody": "동네에서 함께 뛸 사람을 커뮤니티에서 찾아보세요. 장소와 시간을 보고 바로 참여할 수 있어요",
+  "@onboardingCommunityBody": {
+    "description": "온보딩 4/4 본문"
+  },
+  "buttonSkip": "건너뛰기",
+  "@buttonSkip": {
+    "description": "온보딩 건너뛰기 버튼"
+  },
+  "settingsGuideAppIntro": "앱 소개 다시 보기",
+  "@settingsGuideAppIntro": {
+    "description": "마이페이지 이용 안내 — 온보딩 재열람"
+  },
+  "onboardingEnterButton": "동심으로 들어가기",
+  "@onboardingEnterButton": {
+    "description": "온보딩 마지막 장 — 팀명 '동심지키미'와 잇는 시작 버튼"
+  },
+  "onboardingGuideButton": "게임 소개 보기",
+  "@onboardingGuideButton": {
+    "description": "온보딩 마지막 장 — 사이트 게임 소개 페이지로 이동"
   }
 }
