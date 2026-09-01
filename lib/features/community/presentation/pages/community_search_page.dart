@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
@@ -159,11 +160,7 @@ class _CommunitySearchPageState extends ConsumerState<CommunitySearchPage> {
           IconButton(
             // 커뮤니티 목록과 같은 계산 — 24 + 아이콘 24 = 최소 폭 48.
             padding: EdgeInsets.only(left: AppSpacing.horizontal24),
-            icon: SvgPicture.asset(
-              'assets/icons/icon_search.svg',
-              width: 24.w,
-              height: 24.h,
-            ),
+            icon: SvgPicture.asset(AppIcons.search, width: 24.w, height: 24.h),
             onPressed: () => unawaited(_search(_controller.text)),
           ),
           SizedBox(width: AppSpacing.horizontal16),
@@ -270,7 +267,7 @@ class _RecentChip extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               onTap: onRemove,
               child: SvgPicture.asset(
-                'assets/icons/icon_delete.svg',
+                AppIcons.delete,
                 width: 12.w,
                 height: 12.h,
                 colorFilter: const ColorFilter.mode(

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../report/domain/report_target.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
@@ -500,9 +501,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
               height: 48.w,
               child: Center(
                 child: SvgPicture.asset(
-                  isNotificationOn
-                      ? 'assets/icons/icon_chat_bell_on.svg'
-                      : 'assets/icons/icon_chat_bell_off.svg',
+                  isNotificationOn ? AppIcons.chatBellOn : AppIcons.chatBellOff,
                   width: 24.w,
                   height: 24.w,
                   colorFilter: ColorFilter.mode(

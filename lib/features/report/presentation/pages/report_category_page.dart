@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -194,7 +195,7 @@ class _ReportCategoryPageState extends ConsumerState<ReportCategoryPage> {
               ),
               if (isSelected)
                 SvgPicture.asset(
-                  'assets/icons/icon_check.svg',
+                  AppIcons.check,
                   width: 14.w,
                   height: 14.w,
                   // 밝은 화면에서는 에셋에 박힌 색을 그대로 쓴다. 어두운 화면에서는

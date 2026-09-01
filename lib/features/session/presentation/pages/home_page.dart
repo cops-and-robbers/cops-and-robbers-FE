@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/deeplink/deeplink_constants.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
@@ -178,8 +179,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 children: [
                   SvgPicture.asset(
                     doNotShowToday
-                        ? 'assets/icons/check_circle_true.svg'
-                        : 'assets/icons/check_circle_false.svg',
+                        ? AppIcons.checkCircleTrue
+                        : AppIcons.checkCircleFalse,
                     width: 16.w,
                     height: 16.w,
                   ),
@@ -500,7 +501,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: Padding(
             padding: EdgeInsets.only(right: 16.w),
             child: SvgPicture.asset(
-              'assets/icons/icon_camera.svg',
+              AppIcons.camera,
               width: 24.w,
               height: 24.w,
               colorFilter: const ColorFilter.mode(
@@ -620,7 +621,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         actions: [
           // 다색 SVG라 iconColor를 주지 않는다(원본 색 유지).
           FlatIconButton(
-            assetPath: 'assets/icons/icon_noti.svg',
+            assetPath: AppIcons.noti,
             onPressed: () => context.push(RoutePaths.notices),
             alignment: Alignment.centerRight,
           ),
@@ -668,7 +669,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       onPressed: _onCreateSession,
                       width: 176.w,
                       icon: SvgPicture.asset(
-                        'assets/icons/icon_default_light.svg',
+                        AppIcons.defaultLight,
                         height: AppSpacing.vertical20,
                       ),
                     ),
@@ -682,7 +683,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       backgroundColor: AppColors.white,
                       foregroundColor: AppColors.black600,
                       icon: SvgPicture.asset(
-                        'assets/icons/icon_joining_game.svg',
+                        AppIcons.joiningGame,
                         height: AppSpacing.vertical20,
                       ),
                     ),

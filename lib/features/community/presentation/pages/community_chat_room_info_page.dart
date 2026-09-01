@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -76,9 +77,7 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
                 horizontal: AppSpacing.horizontal16,
               ),
               child: SvgPicture.asset(
-                isNotificationOn
-                    ? 'assets/icons/icon_bell.svg'
-                    : 'assets/icons/icon_bell_block.svg',
+                isNotificationOn ? AppIcons.bell : AppIcons.bellBlock,
                 width: 24.w,
                 height: 24.w,
               ),
@@ -126,7 +125,7 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
           ),
           SizedBox(height: AppSpacing.vertical10),
           _MenuButton(
-            iconPath: 'assets/icons/icon_post.svg',
+            iconPath: AppIcons.post,
             label: l10n.communityChatViewPost,
             tint: false, // icon_post.svg는 다색 아이콘이라 단색 필터를 씌우면 뭉개진다
             // push하면 detail이 스택에 중복으로 쌓여 뒤로가기를 여러 번 눌러야
@@ -139,7 +138,7 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
           if (!isAuthor) ...[
             SizedBox(height: AppSpacing.vertical10),
             _MenuButton(
-              iconPath: 'assets/icons/icon_gameout.svg',
+              iconPath: AppIcons.gameOut,
               label: l10n.communityChatLeave,
               color: AppColors.red,
               onPressed: () => _confirmLeave(context, ref, l10n),

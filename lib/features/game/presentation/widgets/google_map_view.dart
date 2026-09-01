@@ -11,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/services/location/device_location_service.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../domain/entities/ping.dart';
 import 'map_error_widget.dart';
 import 'ping_marker_factory.dart';
@@ -115,7 +116,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
     final physHeight = (_shoeprintHeight * dpr).round();
 
     // SVG 로드 후 fill 색상 교체 (#080A0C → 타겟 색상)
-    final svgString = await rootBundle.loadString('assets/icons/shoeprint.svg');
+    final svgString = await rootBundle.loadString(AppIcons.shoeprint);
     final hex =
         '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
     final colorized = svgString.replaceAll('fill="#080A0C"', 'fill="$hex"');

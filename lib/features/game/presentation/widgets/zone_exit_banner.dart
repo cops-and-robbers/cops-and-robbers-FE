@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -53,7 +54,7 @@ class ZoneExitBanner extends StatelessWidget {
             // 아이콘 — SVG 원본 색상은 ColorFilter(srcIn)로 흰색 덮어쓰기.
             // 가로/세로 동일 사이즈라 .r 권장 (디자인 시스템 일관성).
             SvgPicture.asset(
-              'assets/icons/icon_zone_exit.svg',
+              AppIcons.zoneExit,
               width: 20.r,
               height: 20.r,
               colorFilter: const ColorFilter.mode(

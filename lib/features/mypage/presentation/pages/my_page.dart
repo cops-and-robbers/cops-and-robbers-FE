@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -104,7 +105,7 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildSectionHeader(l10n.settingsSectionAccount),
             _buildMenuItem(
               text: l10n.settingsAccountChangeNickname,
-              leadingAsset: 'assets/icons/icon_nickname.svg',
+              leadingAsset: AppIcons.nickname,
               trailing: _buildForwardArrow(),
               onTap: _onNicknameChange,
             ),
@@ -114,7 +115,7 @@ class _MyPageState extends ConsumerState<MyPage> {
               // 모집글 카드의 스크랩 아이콘과 같은 에셋·같은 원본 색(노랑).
               // 세로 20 — 24 슬롯 안에서 다른 아이콘과 눈높이를 맞춘 값이다.
               // 가로는 SvgPicture 기본 contain이 원본 비율(12:14)대로 잡는다.
-              leadingAsset: 'assets/icons/icon_save_on.svg',
+              leadingAsset: AppIcons.saveOn,
               leadingAssetSize: 20,
               trailing: _buildForwardArrow(),
               onTap: () => context.push(RoutePaths.myScraps),
@@ -130,7 +131,7 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildSwitchMenuItem(
               text: l10n.settingsAppGameNotification,
               subtitle: l10n.settingsAppGameNotificationDescription,
-              leadingAsset: 'assets/icons/icon_game_notification.svg',
+              leadingAsset: AppIcons.gameNotification,
               value: gamePushState.valueOrNull ?? false,
               onToggle: _onGamePushToggle,
             ),
@@ -140,14 +141,14 @@ class _MyPageState extends ConsumerState<MyPage> {
               subtitle: l10n.settingsAppCommunityNotificationDescription,
               // 커뮤니티 알림함 진입 아이콘과 같은 종 — "커뮤니티 알림"이 한 정체로 읽힌다.
               // ponytail: 시안이 다른 아이콘을 주면 이 한 줄만 바꾼다.
-              leadingAsset: 'assets/icons/icon_noti.svg',
+              leadingAsset: AppIcons.noti,
               value: communityPushState.valueOrNull ?? false,
               onToggle: _onCommunityPushToggle,
             ),
             _buildItemDivider(),
             _buildMenuItem(
               text: l10n.settingsAppGeneralNotification,
-              leadingAsset: 'assets/icons/icon_notification.svg',
+              leadingAsset: AppIcons.notification,
               // "게임 중 알림" 부분만 더 큰 스타일 + 진한 색상으로 강조
               subtitleWidget: Text.rich(
                 TextSpan(
@@ -178,7 +179,7 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildMenuItem(
               text: l10n.settingsLanguageLabel,
               subtitle: _currentLanguageDisplay(),
-              leadingAsset: 'assets/icons/icon_language.svg',
+              leadingAsset: AppIcons.language,
               onTap: () => context.push(RoutePaths.languageSettings),
             ),
             _buildItemDivider(),
@@ -186,7 +187,7 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildMenuItem(
               text: l10n.settingsAppLocationPermission,
               subtitle: l10n.settingsAppLocationPermissionDescription,
-              leadingAsset: 'assets/icons/icon_location_pin.svg',
+              leadingAsset: AppIcons.locationPin,
               onTap: () =>
                   AppSettings.openAppSettings(type: AppSettingsType.location),
             ),
@@ -367,7 +368,7 @@ class _MyPageState extends ConsumerState<MyPage> {
   Widget _buildForwardArrow() {
     // 예전에는 icon_previous 를 180도 돌려 썼다. 전용 에셋이 생겨 그대로 쓴다.
     return SvgPicture.asset(
-      'assets/icons/icon_next.svg',
+      AppIcons.next,
       width: 20,
       height: 20,
       colorFilter: const ColorFilter.mode(AppColors.black300, BlendMode.srcIn),

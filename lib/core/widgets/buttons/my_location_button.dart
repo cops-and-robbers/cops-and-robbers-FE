@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../constants/app_icons.dart';
 import 'svg_icon_button.dart';
 
 /// 현재 위치로 이동하는 지도 버튼
@@ -51,7 +52,7 @@ class MyLocationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SvgIconButton(
-      assetPath: 'assets/icons/mage_location-fill.svg',
+      assetPath: AppIcons.mageLocationFill,
       onPressed: onPressed,
       containerSize: containerSize,
       iconSize: iconSize,

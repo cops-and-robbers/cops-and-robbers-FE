@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../features/game/domain/entities/area_shape.dart';
 import '../../constants/app_colors.dart';
+import '../../constants/app_icons.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../../services/vibration_service.dart';
@@ -166,7 +167,7 @@ class ZoneSettingButton extends StatelessWidget {
                     ),
                   ),
                   SvgPicture.asset(
-                    'assets/icons/icon_arrow.svg',
+                    AppIcons.arrow,
                     width: 24.w,
                     height: 24.h,
                     colorFilter: ColorFilter.mode(_iconColor, BlendMode.srcIn),

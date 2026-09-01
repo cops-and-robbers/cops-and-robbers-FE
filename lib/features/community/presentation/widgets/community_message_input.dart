@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -174,7 +175,7 @@ class _CommunityMessageInputState extends State<CommunityMessageInput> {
                   child: const CircularProgressIndicator(strokeWidth: 2),
                 )
               : SvgPicture.asset(
-                  'assets/icons/icon_sending.svg',
+                  AppIcons.sending,
                   width: 24.w,
                   height: 24.w,
                   colorFilter: ColorFilter.mode(

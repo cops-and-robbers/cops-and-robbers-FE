@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
@@ -222,7 +223,7 @@ class _CommentTile extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(top: AppSpacing.vertical6),
               child: SvgPicture.asset(
-                'assets/icons/icon_reply.svg',
+                AppIcons.reply,
                 width: 14.w,
                 height: 14.h,
                 colorFilter: ColorFilter.mode(
@@ -265,7 +266,7 @@ class _CommentTile extends StatelessWidget {
                             behavior: HitTestBehavior.opaque,
                             onTap: onReply,
                             child: SvgPicture.asset(
-                              'assets/icons/icon_speech_bubble.svg',
+                              AppIcons.speechBubble,
                               width: 16.w,
                               height: 16.h,
                               colorFilter: ColorFilter.mode(
@@ -286,22 +287,22 @@ class _CommentTile extends StatelessWidget {
                                   // 같이 누르면 되는 것을 가리킨다(모집글 메뉴와
                                   // 같은 규칙).
                                   iconPath: comment.replyNotificationsEnabled
-                                      ? 'assets/icons/icon_bell_block.svg'
-                                      : 'assets/icons/icon_bell.svg',
+                                      ? AppIcons.bellBlock
+                                      : AppIcons.bell,
                                   label: comment.replyNotificationsEnabled
                                       ? l10n.communityMenuReplyNotificationOff
                                       : l10n.communityMenuReplyNotificationOn,
                                   onTap: onToggleReplyNotification!,
                                 ),
                               CommunityMenuItem(
-                                iconPath: 'assets/icons/icon_trash.svg',
+                                iconPath: AppIcons.trash,
                                 label: l10n.communityMenuDelete,
                                 onTap: onDelete,
                                 isDestructive: true,
                               ),
                             ] else
                               CommunityMenuItem(
-                                iconPath: 'assets/icons/icon_warning_light.svg',
+                                iconPath: AppIcons.warningLight,
                                 label: l10n.buttonReport,
                                 onTap: onReport,
                                 isDestructive: true,

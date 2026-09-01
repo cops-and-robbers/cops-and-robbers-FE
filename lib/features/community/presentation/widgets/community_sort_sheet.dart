@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -169,7 +170,7 @@ class CommunitySortSheet extends StatelessWidget {
                 // 색이 SVG에 박혀 있어 colorFilter를 주지 않는다.
                 child: isSelected
                     ? SvgPicture.asset(
-                        'assets/icons/icon_check.svg',
+                        AppIcons.check,
                         width: _checkSize,
                         height: _checkSize,
                       )

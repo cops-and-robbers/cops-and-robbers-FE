@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -40,11 +41,7 @@ class CommunityChatInviteCard extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset(
-              'assets/icons/icon_game_console.svg',
-              width: 24.w,
-              height: 24.w,
-            ),
+            SvgPicture.asset(AppIcons.gameConsole, width: 24.w, height: 24.w),
             SizedBox(width: AppSpacing.horizontal8),
             Text(
               l10n.communityChatInviteOpened,

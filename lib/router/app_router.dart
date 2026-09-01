@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/constants/app_icons.dart';
 import '../core/constants/legal_doc.dart';
 import '../core/constants/game_team.dart';
 import '../core/constants/spacing_and_radius.dart';
@@ -956,7 +957,7 @@ class _ErrorPage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset('assets/icons/icon_not_found.svg', width: 110.w),
+              SvgPicture.asset(AppIcons.notFound, width: 110.w),
               SizedBox(height: AppSpacing.vertical16),
               Text(l10n.pageNotFoundMessage, style: AppTextStyles.label_16),
               SizedBox(height: AppSpacing.vertical8),

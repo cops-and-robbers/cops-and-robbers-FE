@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
@@ -252,7 +253,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
                     child: Transform.rotate(
                       angle: 3 * math.pi / 2,
                       child: SvgPicture.asset(
-                        'assets/icons/icon_previous.svg',
+                        AppIcons.previous,
                         width: 24.w,
                         height: 24.w,
                         colorFilter: ColorFilter.mode(

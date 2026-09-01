@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_icons.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 
@@ -538,11 +539,7 @@ class AppSlider extends StatelessWidget {
   Widget _buildWarning() {
     return Row(
       children: [
-        SvgPicture.asset(
-          'assets/icons/icon_exclamation_mark.svg',
-          width: 16.w,
-          height: 16.w,
-        ),
+        SvgPicture.asset(AppIcons.exclamationMark, width: 16.w, height: 16.w),
         SizedBox(width: AppSpacing.horizontal8),
         Flexible(
           child: Text(

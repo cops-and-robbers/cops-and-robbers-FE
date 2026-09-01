@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -58,11 +59,7 @@ class CommunityChatMeetingCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            SvgPicture.asset(
-              'assets/icons/icon_notice.svg',
-              width: 20.w,
-              height: 20.w,
-            ),
+            SvgPicture.asset(AppIcons.notice, width: 20.w, height: 20.w),
             SizedBox(width: AppSpacing.horizontal12),
             Expanded(
               child: Column(

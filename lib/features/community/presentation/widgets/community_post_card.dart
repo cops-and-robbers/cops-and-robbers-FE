@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -114,11 +115,7 @@ class CommunityPostCard extends StatelessWidget {
     return Row(
       key: locationRowKey,
       children: [
-        SvgPicture.asset(
-          'assets/icons/icon_location.svg',
-          width: 14.w,
-          height: 14.h,
-        ),
+        SvgPicture.asset(AppIcons.location, width: 14.w, height: 14.h),
         SizedBox(width: AppSpacing.horizontal4),
         Expanded(
           child: Text(
@@ -146,11 +143,7 @@ class CommunityPostCard extends StatelessWidget {
         Expanded(
           child: Row(
             children: [
-              SvgPicture.asset(
-                'assets/icons/icon_date.svg',
-                width: 14.w,
-                height: 14.h,
-              ),
+              SvgPicture.asset(AppIcons.date, width: 14.w, height: 14.h),
               SizedBox(width: AppSpacing.horizontal4),
               Flexible(
                 child: Text(
@@ -163,11 +156,7 @@ class CommunityPostCard extends StatelessWidget {
                 ),
               ),
               SizedBox(width: AppSpacing.horizontal16),
-              SvgPicture.asset(
-                'assets/icons/icon_headcount.svg',
-                width: 14.w,
-                height: 14.h,
-              ),
+              SvgPicture.asset(AppIcons.headcount, width: 14.w, height: 14.h),
               SizedBox(width: AppSpacing.horizontal4),
               Flexible(
                 child: Text(
@@ -185,17 +174,13 @@ class CommunityPostCard extends StatelessWidget {
         // 표시 전용이다 — 누르는 자리는 상세 화면이다(시안 결정). 채움만
         // 서버가 준 내 반응을 따른다.
         _CountLabel(
-          assetPath: post.isLiked
-              ? 'assets/icons/icon_like_on.svg'
-              : 'assets/icons/icon_like_off.svg',
+          assetPath: post.isLiked ? AppIcons.likeOn : AppIcons.likeOff,
           count: post.likeCount,
           color: AppColors.red,
         ),
         SizedBox(width: AppSpacing.horizontal10),
         _CountLabel(
-          assetPath: post.isScrapped
-              ? 'assets/icons/icon_save_on.svg'
-              : 'assets/icons/icon_save_off.svg',
+          assetPath: post.isScrapped ? AppIcons.saveOn : AppIcons.saveOff,
           count: post.scrapCount,
           color: AppColors.yellow,
         ),

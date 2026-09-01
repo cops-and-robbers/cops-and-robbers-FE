@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/cards/info_card.dart';
@@ -64,7 +65,7 @@ class SettingListCard extends StatelessWidget {
             ? Transform.rotate(
                 angle: math.pi,
                 child: SvgPicture.asset(
-                  'assets/icons/icon_previous.svg',
+                  AppIcons.previous,
                   width: 16.w,
                   height: 16.w,
                   colorFilter: ColorFilter.mode(
@@ -171,7 +172,7 @@ class _SettingRow extends StatelessWidget {
                 Transform.rotate(
                   angle: math.pi,
                   child: SvgPicture.asset(
-                    'assets/icons/icon_previous.svg',
+                    AppIcons.previous,
                     width: 14.w,
                     height: 14.w,
                     colorFilter: ColorFilter.mode(

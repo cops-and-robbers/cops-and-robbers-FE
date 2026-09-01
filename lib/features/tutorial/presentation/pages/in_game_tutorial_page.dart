@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -323,7 +324,7 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
                   _pulseButtonScale(
                     step: 1,
                     child: SvgIconButton(
-                      assetPath: 'assets/icons/icon_person.svg',
+                      assetPath: AppIcons.person,
                       onPressed: () {
                         _tryAdvanceMission(1);
                         setState(() => _showParticipants = true);
@@ -406,9 +407,10 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
             child: FractionalTranslation(
               translation: const Offset(-0.5, -0.5),
               child: SvgPicture.asset(
-                'assets/icons/icon_ping_'
-                '${_placedPingType == PingType.found ? 'found' : 'suspect'}'
-                '_marker_${_isDarkMode ? 'darkmode' : 'lightmode'}.svg',
+                AppIcons.pingMarker(
+                  type: _placedPingType!.name,
+                  isDark: _isDarkMode,
+                ),
                 width: 24.w,
                 height: 24.w,
               ),
@@ -485,7 +487,7 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
                   _pulseButtonScale(
                     step: 2,
                     child: SvgIconButton(
-                      assetPath: 'assets/icons/icon_map.svg',
+                      assetPath: AppIcons.map,
                       onPressed: () {
                         _tryAdvanceMission(2);
                         setState(() => _showParticipants = false);
@@ -631,7 +633,7 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
           Align(
             alignment: Alignment.centerRight,
             child: FlatIconButton(
-              assetPath: 'assets/icons/icon_info.svg',
+              assetPath: AppIcons.info,
               iconColor: _isDarkMode ? AppColors.black200 : AppColors.black800,
               onPressed: () {
                 AppSnackbar.show(
@@ -660,9 +662,7 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
     return _pulseButtonScale(
       step: 0,
       child: SvgIconButton(
-        assetPath: _isDarkMode
-            ? 'assets/icons/icon_qr_code.svg'
-            : 'assets/icons/icon_qr_scan.svg',
+        assetPath: _isDarkMode ? AppIcons.qrCode : AppIcons.qrScan,
         onPressed: () {
           _tryAdvanceMission(0);
           final l10n = AppLocalizations.of(context);
@@ -761,7 +761,7 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
           mainAxisSize: MainAxisSize.min,
           children: [
             SvgPicture.asset(
-              'assets/icons/icon_change.svg',
+              AppIcons.change,
               width: 16.w,
               height: 16.w,
               colorFilter: ColorFilter.mode(
@@ -1032,7 +1032,7 @@ class _InGameTutorialPageState extends ConsumerState<InGameTutorialPage>
         child: Transform.rotate(
           angle: -math.pi / 2,
           child: SvgPicture.asset(
-            'assets/icons/icon_arrow.svg',
+            AppIcons.arrow,
             width: 20.w,
             height: 20.w,
             colorFilter: ColorFilter.mode(

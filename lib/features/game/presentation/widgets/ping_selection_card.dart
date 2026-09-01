@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../domain/entities/ping.dart';
 
 /// 맵 롱프레스 시 좌표 위에 뜨는 핑 종류 선택 카드
 ///
@@ -26,7 +28,6 @@ class PingSelectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = isDarkMode ? 'darkmode' : 'lightmode';
     final cardColor = isDarkMode ? AppColors.black : AppColors.blue;
     final dividerColor = isDarkMode ? AppColors.black800 : AppColors.blue800;
 
@@ -43,7 +44,10 @@ class PingSelectionCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               _cell(
-                iconAsset: 'assets/icons/icon_ping_found_select_$theme.svg',
+                iconAsset: AppIcons.pingSelect(
+                  type: PingType.found.name,
+                  isDark: isDarkMode,
+                ),
                 label: l10n.pingFound,
                 onTap: onFound,
               ),
@@ -57,7 +61,10 @@ class PingSelectionCard extends StatelessWidget {
                 ),
               ),
               _cell(
-                iconAsset: 'assets/icons/icon_ping_suspect_select_$theme.svg',
+                iconAsset: AppIcons.pingSelect(
+                  type: PingType.suspect.name,
+                  isDark: isDarkMode,
+                ),
                 label: l10n.pingSuspect,
                 onTap: onSuspect,
               ),
@@ -66,7 +73,7 @@ class PingSelectionCard extends StatelessWidget {
         ),
         SizedBox(height: AppSpacing.vertical4),
         SvgPicture.asset(
-          'assets/icons/icon_ping_pin_$theme.svg',
+          AppIcons.pingPin(isDark: isDarkMode),
           width: 20.w,
           height: 32.h,
         ),

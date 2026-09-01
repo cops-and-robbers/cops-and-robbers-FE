@@ -1,6 +1,7 @@
 import 'package:flutter/painting.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_icons.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// 소셜 링크 타입
@@ -28,13 +29,13 @@ enum SocialType {
 
   /// SVG 에셋 경로
   String get svgAsset => switch (this) {
-    SocialType.github => 'assets/icons/github.svg',
-    SocialType.instagram => 'assets/icons/instagram.svg',
-    SocialType.discord => 'assets/icons/discord.svg',
-    SocialType.linkedin => 'assets/icons/linkedin.svg',
-    SocialType.youtube => 'assets/icons/youtube.svg',
-    SocialType.website => 'assets/icons/website.svg',
-    SocialType.blog => 'assets/icons/blog.svg',
+    SocialType.github => AppIcons.github,
+    SocialType.instagram => AppIcons.instagram,
+    SocialType.discord => AppIcons.discord,
+    SocialType.linkedin => AppIcons.linkedin,
+    SocialType.youtube => AppIcons.youtube,
+    SocialType.website => AppIcons.website,
+    SocialType.blog => AppIcons.blog,
   };
 
   /// 타입별 고유 색상 (null이면 기본 white 사용)

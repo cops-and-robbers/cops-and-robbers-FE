@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'core/constants/app_colors.dart';
+import 'core/constants/app_icons.dart';
 import 'core/constants/spacing_and_radius.dart';
 import 'core/constants/text_styles.dart';
 import 'core/network/websocket/stomp_connection.dart';
@@ -630,9 +631,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
   /// 핑 마커 미리보기 (지도에 찍히는 핑은 종류 심볼 단독 — 핀 꼬리 없음)
   Widget _buildPingMarkerPreview({required String type, required bool isDark}) {
-    final theme = isDark ? 'darkmode' : 'lightmode';
     return SvgPicture.asset(
-      'assets/icons/icon_ping_${type}_marker_$theme.svg',
+      AppIcons.pingMarker(type: type, isDark: isDark),
       width: 24.w,
       height: 24.w,
     );

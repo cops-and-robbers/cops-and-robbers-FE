@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart'; // SvgStringLoader + vg
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_icons.dart';
 
 /// 폴리곤 꼭짓점 핀 마커 BitmapDescriptor 생성기
 ///
@@ -36,9 +37,7 @@ class PolygonPinMarkerFactory {
     final physHeight = (_height * dpr).round();
 
     final pic = await vg.loadPicture(
-      SvgStringLoader(
-        await rootBundle.loadString('assets/icons/polygon_pin.svg'),
-      ),
+      SvgStringLoader(await rootBundle.loadString(AppIcons.polygonPin)),
       null,
     );
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/constants/app_icons.dart';
 import '../core/services/lifecycle/lifecycle_provider.dart';
 import '../core/widgets/navigation/app_bottom_nav.dart';
 import '../l10n/app_localizations.dart';
@@ -69,20 +70,20 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
         ),
         items: [
           BottomNavItem(
-            activeIconAsset: 'assets/icons/icon_home_active.svg',
-            inactiveIconAsset: 'assets/icons/icon_home_inactive.svg',
+            activeIconAsset: AppIcons.homeActive,
+            inactiveIconAsset: AppIcons.homeInactive,
             labelBuilder: (context) =>
                 AppLocalizations.of(context).bottomNavHome,
           ),
           BottomNavItem(
-            activeIconAsset: 'assets/icons/icon_commu_active.svg',
-            inactiveIconAsset: 'assets/icons/icon_commu_inactive.svg',
+            activeIconAsset: AppIcons.commuActive,
+            inactiveIconAsset: AppIcons.commuInactive,
             labelBuilder: (context) =>
                 AppLocalizations.of(context).bottomNavCommunity,
           ),
           BottomNavItem(
-            activeIconAsset: 'assets/icons/icon_mypage_active.svg',
-            inactiveIconAsset: 'assets/icons/icon_mypage_inactive.svg',
+            activeIconAsset: AppIcons.mypageActive,
+            inactiveIconAsset: AppIcons.mypageInactive,
             labelBuilder: (context) =>
                 AppLocalizations.of(context).bottomNavMyPage,
           ),

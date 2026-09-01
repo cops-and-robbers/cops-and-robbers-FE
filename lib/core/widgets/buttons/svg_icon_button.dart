@@ -14,7 +14,7 @@ import '../../services/vibration_service.dart';
 /// **사용 예시**:
 /// ```dart
 /// SvgIconButton(
-///   assetPath: 'assets/icons/Loudspeaker.svg',
+///   assetPath: AppIcons.loudspeaker,
 ///   onPressed: () => context.push('/notices'),
 /// )
 /// ```
