@@ -498,6 +498,51 @@ class AppLocalizationsJa extends AppLocalizations {
   String get communityChatPreviewKicked => 'メンバーが退出させられました';
 
   @override
+  String communityChatSystemPinRegistered(String nickname) {
+    return '$nicknameさんがお知らせを登録しました';
+  }
+
+  @override
+  String communityChatSystemPinUpdated(String nickname) {
+    return '$nicknameさんがお知らせを修正しました';
+  }
+
+  @override
+  String communityChatSystemPinDeleted(String nickname) {
+    return '$nicknameさんがお知らせを削除しました';
+  }
+
+  @override
+  String get communityChatPreviewPinRegistered => 'お知らせが登録されました';
+
+  @override
+  String get communityChatPreviewPinUpdated => 'お知らせが修正されました';
+
+  @override
+  String get communityChatPreviewPinDeleted => 'お知らせが削除されました';
+
+  @override
+  String get communityChatNoticeTitle => 'お知らせ';
+
+  @override
+  String get communityChatNoticeWriteTitle => 'お知らせを書く';
+
+  @override
+  String get communityChatNoticeLabelContent => '内容';
+
+  @override
+  String get communityChatNoticeHint => '場所や時間、持ち物、打ち上げの有無などを書いてみましょう';
+
+  @override
+  String get communityChatNoticeEmpty => '登録されたお知らせがありません';
+
+  @override
+  String get communityChatNoticeEmptyHost => 'お知らせを登録して集まりの情報を伝えましょう';
+
+  @override
+  String get communityChatNoticeDeleteConfirmTitle => 'お知らせを削除しますか';
+
+  @override
   String get communityChatPreviewInvite => 'ゲーム招待';
 
   @override
@@ -579,9 +624,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get communityChatKickConfirmMessage =>
       '退出させた人はすぐに部屋から出ます\n再び参加することは防げません';
-
-  @override
-  String get communityChatMeetingInfoTitle => '集まりの情報';
 
   @override
   String get communityChatConnectionLost => '接続が切れました';
@@ -2263,6 +2305,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeChatMemberNotFound => 'このメンバーはすでにチャットから退出しています';
+
+  @override
+  String get errorCodeForbiddenNotChatPinHost => 'ホストのみお知らせを登録・修正できます';
+
+  @override
+  String get errorCodeChatPinNotFound => '登録されたお知らせがありません';
 
   @override
   String get errorCodeConflictingCountryFilter => '国の条件が競合しています';

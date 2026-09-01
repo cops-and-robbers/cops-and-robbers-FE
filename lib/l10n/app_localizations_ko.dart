@@ -496,6 +496,52 @@ class AppLocalizationsKo extends AppLocalizations {
   String get communityChatPreviewKicked => '멤버가 내보내졌어요';
 
   @override
+  String communityChatSystemPinRegistered(String nickname) {
+    return '$nickname님이 공지를 등록했어요';
+  }
+
+  @override
+  String communityChatSystemPinUpdated(String nickname) {
+    return '$nickname님이 공지를 수정했어요';
+  }
+
+  @override
+  String communityChatSystemPinDeleted(String nickname) {
+    return '$nickname님이 공지를 삭제했어요';
+  }
+
+  @override
+  String get communityChatPreviewPinRegistered => '공지가 등록됐어요';
+
+  @override
+  String get communityChatPreviewPinUpdated => '공지가 수정됐어요';
+
+  @override
+  String get communityChatPreviewPinDeleted => '공지가 삭제됐어요';
+
+  @override
+  String get communityChatNoticeTitle => '공지';
+
+  @override
+  String get communityChatNoticeWriteTitle => '공지글 작성';
+
+  @override
+  String get communityChatNoticeLabelContent => '내용';
+
+  @override
+  String get communityChatNoticeHint =>
+      '구체적 장소, 시간, 안내 사항, 뒷풀이 여부, 준비물 등을 작성해 보세요';
+
+  @override
+  String get communityChatNoticeEmpty => '등록된 공지가 없어요';
+
+  @override
+  String get communityChatNoticeEmptyHost => '공지를 등록해 모임 소식을 전해 보세요';
+
+  @override
+  String get communityChatNoticeDeleteConfirmTitle => '공지를 삭제할까요';
+
+  @override
   String get communityChatPreviewInvite => '게임 초대';
 
   @override
@@ -577,9 +623,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get communityChatKickConfirmMessage =>
       '내보낸 사람은 바로 방에서 나가게 돼요\n다시 참여하는 건 막지 않아요';
-
-  @override
-  String get communityChatMeetingInfoTitle => '모임 정보';
 
   @override
   String get communityChatConnectionLost => '연결이 끊겼어요';
@@ -2261,6 +2304,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeChatMemberNotFound => '이미 채팅방을 나간 참여자예요';
+
+  @override
+  String get errorCodeForbiddenNotChatPinHost => '방장만 공지를 등록하거나 수정할 수 있어요';
+
+  @override
+  String get errorCodeChatPinNotFound => '등록된 공지가 없어요';
 
   @override
   String get errorCodeConflictingCountryFilter => '국가 조건이 서로 충돌해요';
