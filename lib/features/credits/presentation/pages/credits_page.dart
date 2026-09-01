@@ -4,7 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/utils/url_launcher_util.dart';
-import '../../../../core/widgets/load_failure_view.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 
 /// 크레딧(만든 사람들) 페이지
@@ -130,11 +130,14 @@ class _CreditsPageState extends State<CreditsPage> {
           Positioned.fill(
             child: ColoredBox(
               color: _nightMap,
-              child: LoadFailureView(
-                message: AppLocalizations.of(
-                  context,
-                ).errorLegalDocumentLoadFailed,
-                onRetry: _retry,
+              child: Center(
+                child: EmptyState(
+                  message: AppLocalizations.of(
+                    context,
+                  ).errorLegalDocumentLoadFailed,
+                  actionText: AppLocalizations.of(context).buttonRetry,
+                  onAction: _retry,
+                ),
               ),
             ),
           ),

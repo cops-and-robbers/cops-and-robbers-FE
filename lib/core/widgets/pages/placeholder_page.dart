@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
-import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
+import '../empty_state.dart';
 
 /// 아직 구현되지 않은 탭을 위한 공용 "준비중" 화면
 ///
@@ -33,18 +33,7 @@ class PlaceholderPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: AppPadding.horizontal20,
-          child: Text(
-            message,
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: AppColors.black600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
+      body: Center(child: EmptyState(message: message)),
     );
   }
 }

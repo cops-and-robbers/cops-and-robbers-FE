@@ -18,6 +18,7 @@ import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/utils/share_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -103,23 +104,16 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
         padding: AppPadding.horizontal24,
         child: Column(
           children: [
+            // 버튼은 EmptyState에 맡기지 않고 하단에 고정한다 — "다음 행동"을
+            // 주는 화면들의 공통 배치다.
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // 돋보기 든 캐릭터 — 라우터 404 화면과 같은 에셋으로 톤을 맞춘다
-                  SvgPicture.asset(AppIcons.notFound, width: 110.w),
-                  SizedBox(height: AppSpacing.vertical16),
-                  Text(
-                    error is AppException
-                        ? l10n.errorByException(error)
-                        : l10n.errorCommunityPostsLoadFailed,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.paragraph_14.copyWith(
-                      color: AppColors.black600,
-                    ),
-                  ),
-                ],
+              child: Center(
+                child: EmptyState(
+                  iconWidth: 110,
+                  message: error is AppException
+                      ? l10n.errorByException(error)
+                      : l10n.errorCommunityPostsLoadFailed,
+                ),
               ),
             ),
             AppButton(

@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
-import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/loading/app_refresh_control.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -36,22 +34,26 @@ class CommunityChatRoomList extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     if (ref.watch(currentUserIdProvider) == null) {
-      return _Notice(
-        message: l10n.communityChatRoomsLoginRequired,
-        actionText: l10n.buttonLogin,
-        onAction: () => context.push(RoutePaths.login),
+      return Center(
+        child: EmptyState(
+          message: l10n.communityChatRoomsLoginRequired,
+          actionText: l10n.buttonLogin,
+          onAction: () => context.push(RoutePaths.login),
+        ),
       );
     }
 
     final rooms = ref.watch(communityChatRoomsProvider);
     return rooms.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _Notice(
-        message: e is AppException
-            ? l10n.errorByException(e)
-            : l10n.errorTemporaryRetry,
-        actionText: l10n.buttonRetry,
-        onAction: () => ref.invalidate(communityChatRoomsProvider),
+      error: (e, _) => Center(
+        child: EmptyState(
+          message: e is AppException
+              ? l10n.errorByException(e)
+              : l10n.errorTemporaryRetry,
+          actionText: l10n.buttonRetry,
+          onAction: () => ref.invalidate(communityChatRoomsProvider),
+        ),
       ),
       data: (list) => AppRefreshControl(
         onRefresh: () => _refresh(context, ref),
@@ -60,7 +62,7 @@ class CommunityChatRoomList extends ConsumerWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   SizedBox(height: AppSpacing.vertical64 * 2),
-                  _Notice(message: l10n.communityChatRoomsEmpty),
+                  EmptyState(message: l10n.communityChatRoomsEmpty),
                 ],
               )
             : ListView.separated(
@@ -97,43 +99,5 @@ class CommunityChatRoomList extends ConsumerWidget {
         message: AppLocalizations.of(context).errorByException(e),
       );
     }
-  }
-}
-
-/// 가운데 안내 문구 + 선택 버튼 (빈 목록·로그인·실패)
-class _Notice extends StatelessWidget {
-  const _Notice({required this.message, this.actionText, this.onAction});
-
-  final String message;
-  final String? actionText;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: AppPadding.horizontal24,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.paragraph_14.copyWith(
-                color: AppColors.black600,
-              ),
-            ),
-            if (actionText != null) ...[
-              SizedBox(height: AppSpacing.vertical16),
-              AppButton(
-                width: double.infinity,
-                text: actionText!,
-                onPressed: onAction,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
   }
 }

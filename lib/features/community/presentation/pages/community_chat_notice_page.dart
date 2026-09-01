@@ -11,6 +11,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
@@ -76,16 +77,8 @@ class CommunityChatNoticePage extends ConsumerWidget {
     );
   }
 
-  Widget _centered(String text) => Center(
-    child: Padding(
-      padding: AppPadding.horizontal16,
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: AppTextStyles.paragraph_14.copyWith(color: AppColors.black500),
-      ),
-    ),
-  );
+  /// 공지가 없을 때·못 불러왔을 때 — 목록이 빈 화면들과 같은 모양을 쓴다.
+  Widget _centered(String text) => Center(child: EmptyState(message: text));
 
   Widget _body(
     BuildContext context,

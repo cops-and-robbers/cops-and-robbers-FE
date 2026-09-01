@@ -5,7 +5,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_urls.dart';
 import '../../constants/legal_doc.dart';
-import '../load_failure_view.dart';
+import '../empty_state.dart';
 import '../navigation/app_top_bar.dart';
 
 /// 이용약관·개인정보 처리방침 등 법적 문서 열람 페이지
@@ -156,11 +156,14 @@ class _LegalDocumentPageState extends State<LegalDocumentPage> {
           Positioned.fill(
             child: ColoredBox(
               color: AppColors.white,
-              child: LoadFailureView(
-                message: AppLocalizations.of(
-                  context,
-                ).errorLegalDocumentLoadFailed,
-                onRetry: _retry,
+              child: Center(
+                child: EmptyState(
+                  message: AppLocalizations.of(
+                    context,
+                  ).errorLegalDocumentLoadFailed,
+                  actionText: AppLocalizations.of(context).buttonRetry,
+                  onAction: _retry,
+                ),
               ),
             ),
           ),
