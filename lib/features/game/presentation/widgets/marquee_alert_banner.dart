@@ -136,14 +136,11 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
             clipBehavior: Clip.hardEdge,
             child: Row(
               children: [
+                // 다색 svg라 틴트하지 않고 원본 색 그대로 그린다.
                 SvgPicture.asset(
                   AppIcons.loudspeaker,
                   width: 20.w,
                   height: 20.w,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.white,
-                    BlendMode.srcIn,
-                  ),
                 ),
                 SizedBox(width: AppSpacing.horizontal8),
                 Expanded(
