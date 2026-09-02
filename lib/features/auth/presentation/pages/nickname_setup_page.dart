@@ -13,6 +13,7 @@ import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/chips/action_chip.dart' as custom_chip;
@@ -228,6 +229,9 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // 설정에서 수정으로 진입(push)했는지 여부 - 첫 로그인은 redirect 진입이라
+    // 되돌아갈 곳이 없다 (_navigateAfterComplete와 같은 기준)
+    final isEditEntry = context.canPop();
     return GestureDetector(
       onTap: () {
         // 빈 공간 클릭 시 키보드 닫기
@@ -235,13 +239,18 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       },
       child: Scaffold(
         backgroundColor: AppColors.white,
+        // 수정 진입일 때만 뒤로가기 앱바를 단다 (#542) - 첫 로그인 설정에서는
+        // 기존처럼 앱바 없이 둔다
+        appBar: isEditEntry ? AppTopBar(onBack: () => context.pop()) : null,
         body: SafeArea(
           child: Padding(
             padding: AppPadding.all20,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 50.h),
+                // 앱바가 있으면 페이지 패딩 20과 합쳐 28 - 다른 화면들의
+                // "상단 바에서 제목까지 28" 시안 관례에 맞춘다
+                SizedBox(height: isEditEntry ? AppSpacing.vertical8 : 50.h),
 
                 // 제목, 설명, 입력칸 영역 (좌우 패딩 4)
                 Padding(
