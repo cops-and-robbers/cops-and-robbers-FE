@@ -179,8 +179,6 @@ class _ReconnectModalState extends State<ReconnectModal> {
                     foregroundColor: _buttonFg,
                     disabledBackgroundColor: _buttonDisabledBg,
                     disabledForegroundColor: _buttonDisabledFg,
-                    borderRadius: AppRadius.medium,
-                    showBorder: false,
                     width: double.infinity,
                     height: 48.h,
                   ),

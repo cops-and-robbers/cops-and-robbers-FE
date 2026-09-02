@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/character_assets.dart';
@@ -733,7 +734,7 @@ class _ResultTitleRow extends StatelessWidget {
                   },
                   behavior: HitTestBehavior.opaque,
                   child: SvgPicture.asset(
-                    'assets/icons/icon_upload.svg',
+                    AppIcons.upload,
                     width: _iconSize.w,
                     height: _iconSize.w,
                     // 에셋 원본 fill이 black400이라 라이트는 틴트가 필요 없다.
@@ -909,8 +910,6 @@ class _ActionButtons extends StatelessWidget {
             onPressed: onGoHome,
             backgroundColor: cancelBg,
             foregroundColor: cancelFg,
-            borderRadius: AppRadius.medium,
-            showBorder: false,
             height: 48.h,
             textStyle: isDarkMode ? AppTextStyles.robberLabel : null,
           ),
@@ -923,8 +922,6 @@ class _ActionButtons extends StatelessWidget {
             onPressed: onRematch,
             backgroundColor: confirmBg,
             foregroundColor: confirmFg,
-            borderRadius: AppRadius.medium,
-            showBorder: false,
             height: 48.h,
             textStyle: isDarkMode ? AppTextStyles.robberLabel : null,
           ),

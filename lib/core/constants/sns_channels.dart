@@ -1,3 +1,5 @@
+import 'app_icons.dart';
+
 /// 공식 SNS 홍보 채널 정보
 ///
 /// 설정 화면 하단 아이콘 행에서 사용한다. 균일한 슬레이트 톤 원 배경 위에
@@ -22,17 +24,17 @@ class SnsChannel {
 /// 설정 화면에 노출할 공식 채널 목록 (좌 → 우 순서)
 const List<SnsChannel> officialSnsChannels = [
   SnsChannel(
-    svgAsset: 'assets/icons/instagram_black.svg',
+    svgAsset: AppIcons.instagramBlack,
     label: 'Instagram',
     url: 'https://www.instagram.com/cops._.robbers',
   ),
   SnsChannel(
-    svgAsset: 'assets/icons/youtube_black.svg',
+    svgAsset: AppIcons.youtubeBlack,
     label: 'YouTube',
     url: 'https://www.youtube.com/@cops._.nrobbers',
   ),
   SnsChannel(
-    svgAsset: 'assets/icons/tiktok_black.svg',
+    svgAsset: AppIcons.tiktokBlack,
     label: 'TikTok',
     url: 'https://www.tiktok.com/@cops._.robbers',
   ),

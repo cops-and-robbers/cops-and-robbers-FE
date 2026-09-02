@@ -1,7 +1,75 @@
 # Changelog
 
-**현재 버전:** 2.4.8  
-**마지막 업데이트:** 2026-07-30T17:17:44Z  
+**현재 버전:** 3.0.1  
+**마지막 업데이트:** 2026-09-02T00:43:10Z  
+
+---
+
+## [3.0.1] - 2026-09-02
+
+**PR:** #536  
+
+**기타**
+- Merge pull request #535 from cops-and-robbers/20260901_#534_채팅방_고정_공지_고정_채팅_배너_등록_수정_삭제_실시간_푸시_연동
+- docs : v3.0.0 릴리즈 노트 작성
+- docs : 리포트 문서 작성 #534
+- chore : 버전 3.0.0으로 상향 #534
+- fix : 채팅방 고정 공지 안정화 및 에러 메시지 다국어 처리 #534
+- docs : 리포트 문서 작성 #534
+- refactor : LoadFailureView를 EmptyState로 통합
+- docs : 고정 공지 API 명세 동기화 #534
+- feat : 고정 공지 관련 다국어(ko/en/ja) 문구 추가 #534
+- feat : 라우터에 고정 공지 화면 경로 추가 #534
+- feat : 채팅방 고정 공지 화면 및 Provider 구현 #534
+- feat : 채팅방 고정 공지 데이터 계층 구현 #534
+- feat : 채팅방 고정 공지 도메인 모델 정의 #534
+- Merge pull request #533 from cops-and-robbers/20260901_#532_채팅방_멤버_내보내기_강퇴_방장_전용_UI_API_연동
+- docs : 리포트 문서 작성 #532
+- style : dart format 정리
+- chore : build_runner 코드 생성 해시 갱신
+- feat : 채팅방 멤버 강퇴(방장 전용) UI/API 연동 #532
+- Merge pull request #531 from cops-and-robbers/20260812_#470_v3_앱_전면_개편
+- docs : 커뮤니티 반영 약관 4종 시행일 확정 2026-09-08 #528
+- Merge pull request #530 from cops-and-robbers/20260901_#528_커뮤니티_기능_반영_약관_4종_개정
+- docs : 리포트 문서 작성 #528
+- fix : 온보딩 마지막 장 버튼 단순화 및 스플래시 재진입 전환 정리 #528
+- docs : 커뮤니티 기능 반영 약관 4종 개정 원고 작성 #528
+- Merge pull request #529 from cops-and-robbers/20260901_#523_코치마크_튜토리얼_전면_제거_및_introduction_screen_온보딩_도입
+- Merge remote-tracking branch 'origin/20260812_#470_v3_앱_전면_개편' into 20260901_#523_코치마크_튜토리얼_전면_제거_및_introduction_screen_온보딩_도입
+- docs : 리포트 문서 작성 #523
+- feat : 앱 소개 온보딩 도입 (FE #523)
+- refactor : 코치마크 튜토리얼 전면 제거 (FE #523)
+- Merge pull request #527 from cops-and-robbers/20260901_#519_크레딧_화면을_웹_정본_웹뷰로_전환
+- docs : 리포트 문서 작성 #519
+- docs : 크레딧 웹뷰 전환 이슈 문서 추가 (#519)
+- chore : 미사용 크레딧 문자열 정리 #519
+- chore : 네이티브 크레딧 위젯·데이터·사진 에셋 제거 #519
+- feat : 크레딧 화면을 웹 정본 웹뷰로 전환 #519
+- docs : 리포트 문서 작성 #525
+- refactor : 현재 위치 폴백 결정을 DeviceLocationService 한 곳으로 모은다 #525
+- fix : 게임 생성 진입을 한 함수로 모아 채팅방 진입이 이전 초안을 남기지 않게 한다 #525
+- Merge pull request #524 from cops-and-robbers/20260831_#521_아이콘_에셋_경로_매직_스트링_상수화
+- docs : 리포트 문서 작성 #521
+- chore : 미사용 아이콘 에셋 6개 삭제 #521
+- refactor : 아이콘 에셋 경로를 AppIcons 상수·경로 함수로 일원화 #521
+- docs : 이슈 작성
+- Merge pull request #522 from cops-and-robbers/20260831_#520_v3_출시_전_디자인_상수_AppButton_radius_UX_일괄_정리
+- docs : 리포트 문서 작성 #520
+- refactor : _isEditMode를 _hasInitialShape로 (모드가 아니라 인자 유무) #520
+- fix : 대기방 퇴장 경로를 하나로 모아 세션 상태를 반드시 비운다 #520
+- docs : 아이콘 에셋 경로 상수화 이슈 초안 추가 (#521)
+- fix : 구역 설정 화면의 다크 적용 조건을 진입 경로로 판정 #520
+- fix : 역할 테마를 참가 정보에서 파생하도록 변경 #520
+- style : 초대장 다이얼로그 캡션·본문 스타일 보정 #520
+- style : 상단바 액션 아이콘 우측 여백 16으로 통일 #520
+- refactor : 홈 상단바를 공용 AppTopBar로 교체 #520
+- feat : 채팅방 목록 탭으로 키보드 내리기 #520
+- test : AppButton·AppDialog 기본 스펙 회귀 테스트 추가 #520
+- style : 다이얼로그 내부 패딩 조정 및 버튼 기본값 위임 #520
+- style : AppButton 기본값 변경 및 호출부 중복 지정 제거 #520
+- Merge pull request #518 from cops-and-robbers/20260831_#516_채팅방에서_게임_생성_및_초대_전송
+- style : 다이얼로그 기본값 조정(radius 16/12·패딩 14), 초대장 다이얼로그 시안 보정 #516
+- docs : 리포트 갱신 — 참가 확인 다이얼로그 반영 #516
 
 ---
 

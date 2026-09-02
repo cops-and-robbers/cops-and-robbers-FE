@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
@@ -69,6 +70,7 @@ import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
 import '../widgets/zone_exit_banner.dart';
 import '../widgets/zone_exit_vignette.dart';
+import 'package:cops_and_robbers/core/constants/game_config.dart';
 import 'package:cops_and_robbers/core/constants/game_status.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
 import 'package:cops_and_robbers/core/constants/game_result_reason.dart';
@@ -1448,8 +1450,9 @@ class _GamePageState extends ConsumerState<GamePage>
         context: context,
         arrestCount: arrestCount,
         onGoHome: () {
-          if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted))
+          if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) {
             return;
+          }
           if (GameOverGuard.shouldRequestLeaveGameAfterGameOver() &&
               gameId != null) {
             _requestLeaveGameSilently(gameId);
@@ -1531,8 +1534,6 @@ class _GamePageState extends ConsumerState<GamePage>
       confirmText: l10n.buttonPlayAgain,
       isDarkMode: _isDarkMode,
       backgroundColor: _isDarkMode ? AppColors.black : null,
-      confirmColor: _isDarkMode ? null : AppColors.blue,
-      confirmTextColor: _isDarkMode ? null : AppColors.white,
       barrierDismissible: false,
       onCancel: () {
         if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) return;
@@ -1867,6 +1868,16 @@ class _GamePageState extends ConsumerState<GamePage>
         _googleMapKey.currentState?.updateMinZoom(
           area.playground.boundingRadiusInMeters,
         );
+        // 카메라 이동을 플레이그라운드 주변(반경 비례 여유)으로 제한 (#486)
+        final box = area.playground.boundingBox(
+          marginRatio: GameConfig.cameraPanMarginRatio,
+        );
+        _googleMapKey.currentState?.updateCameraBounds(
+          LatLngBounds(
+            southwest: LatLng(box.southWest.latitude, box.southWest.longitude),
+            northeast: LatLng(box.northEast.latitude, box.northEast.longitude),
+          ),
+        );
         _googleMapKey.currentState?.updateAreaCircles(_buildAreaCircles(area));
         _googleMapKey.currentState?.updateAreaPolygons({
           ..._buildAreaBorderPolygons(area),
@@ -2011,7 +2022,7 @@ class _GamePageState extends ConsumerState<GamePage>
                 child: Column(
                   children: [
                     SvgIconButton(
-                      assetPath: 'assets/icons/icon_map.svg',
+                      assetPath: AppIcons.map,
                       onPressed: () =>
                           setState(() => _showParticipants = false),
                       iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
@@ -2054,7 +2065,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     // 복귀 경로는 좌측 하단 내 위치 버튼이 담당.
                     if (!_isZoneExitWarningActive) ...[
                       SvgIconButton(
-                        assetPath: 'assets/icons/icon_person.svg',
+                        assetPath: AppIcons.person,
                         onPressed: () =>
                             setState(() => _showParticipants = true),
                         iconColor: _isDarkMode
@@ -2272,8 +2283,8 @@ class _GamePageState extends ConsumerState<GamePage>
   Widget _buildQrButton() {
     return SvgIconButton(
       assetPath: GameTeam.isPolice(widget.team)
-          ? 'assets/icons/icon_qr_scan.svg'
-          : 'assets/icons/icon_qr_code.svg',
+          ? AppIcons.qrScan
+          : AppIcons.qrCode,
       onPressed: GameTeam.isPolice(widget.team)
           ? _openQrScanner
           : _showMyQrCode,
@@ -2464,7 +2475,7 @@ class _GamePageState extends ConsumerState<GamePage>
             child: Padding(
               padding: EdgeInsets.only(left: 18.w),
               child: FlatIconButton(
-                assetPath: 'assets/icons/icon_exit.svg',
+                assetPath: AppIcons.exit,
                 iconColor: _isDarkMode
                     ? AppColors.black200
                     : AppColors.black800,
@@ -2478,7 +2489,7 @@ class _GamePageState extends ConsumerState<GamePage>
             child: Padding(
               padding: EdgeInsets.only(right: AppSpacing.horizontal12),
               child: FlatIconButton(
-                assetPath: 'assets/icons/icon_info.svg',
+                assetPath: AppIcons.info,
                 iconColor: _isDarkMode
                     ? AppColors.black200
                     : AppColors.black800,

@@ -11,26 +11,27 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/deeplink/deeplink_constants.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
+import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/services/permission/game_entry_gate.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
+import '../../../../core/services/remote_config/remote_config_service.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/dev_flags.dart';
 import '../../../../core/constants/game_status.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/locale_brand_assets.dart';
-import '../../../../core/services/storage/session_draft_storage_service.dart';
-import '../../../../core/services/tutorial/tutorial_keys.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/buttons/flat_icon_button.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
@@ -40,13 +41,15 @@ import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
+import '../game_creation_entry.dart';
 import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../game/presentation/widgets/qr_scanner_page.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
 import '../providers/session_provider.dart';
-import '../widgets/home_character_stack.dart';
+import '../widgets/home_banner.dart';
+import '../widgets/home_profile_card.dart';
 
 class _UpperCaseFormatter extends TextInputFormatter {
   @override
@@ -90,40 +93,30 @@ class _HomePageState extends ConsumerState<HomePage> {
   /// 홈 진입 시 활성 게임 체크 완료 여부 (세션당 1회)
   static bool _activeGameChecked = false;
 
-  // 튜토리얼 대상(방 만들기 + 참여하기 버튼)을 한 영역으로 특정하기 위한 GlobalKey
-  final _tutorialKeyGameButtons = GlobalKey();
+  StreamSubscription<void>? _remoteConfigSubscription;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _showTutorialIfNeeded();
-      if (mounted) _showSafetyNoticeIfNeeded();
-      if (mounted) _checkActiveGameAndRedirect();
+    _remoteConfigSubscription = RemoteConfigService.instance.onConfigUpdated
+        .listen(
+          (_) {
+            if (mounted) setState(() {});
+          },
+          onError: (Object error) {
+            debugPrint('⚠️ Remote Config 실시간 연결 실패: $error');
+          },
+        );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showSafetyNoticeIfNeeded();
+      _checkActiveGameAndRedirect();
     });
   }
 
-  /// 홈 튜토리얼 표시 (최초 1회)
-  Future<void> _showTutorialIfNeeded() async {
-    final completed = await TutorialService.isCompleted(TutorialKeys.home);
-    if (completed || !mounted) return;
-
-    // 위젯 렌더링 완료 대기
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    final l10n = AppLocalizations.of(context);
-    AppTutorialStyle.show(
-      context: context,
-      targets: [
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyGameButtons,
-          description: l10n.homePageGameButtonsHint,
-          align: TutorialAlign.top,
-        ),
-      ],
-      onFinish: () => TutorialService.markCompleted(TutorialKeys.home),
-    );
+  @override
+  void dispose() {
+    _remoteConfigSubscription?.cancel();
+    super.dispose();
   }
 
   /// 안전 안내 다이얼로그 표시 (오늘 처음 홈 진입 시)
@@ -157,8 +150,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 children: [
                   SvgPicture.asset(
                     doNotShowToday
-                        ? 'assets/icons/check_circle_true.svg'
-                        : 'assets/icons/check_circle_false.svg',
+                        ? AppIcons.checkCircleTrue
+                        : AppIcons.checkCircleFalse,
                     width: 16.w,
                     height: 16.w,
                   ),
@@ -276,19 +269,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   ///
   /// 위치 권한 + (Android) 배터리 최적화 게이트 통과 후 세션 생성 플로우로 이동.
   Future<void> _onCreateSession() async {
-    final passed = await ref
-        .read(gameEntryGateProvider)
-        .ensure(
-          context: context,
-          locationContext: LocationPermissionContext.home,
-        );
-    // 미통과 시 헬퍼가 이미 안내 다이얼로그를 띄운 상태 → 홈에 머무름
-    if (!passed || !mounted) return;
-
-    await SessionDraftStorageService().clearDraft();
-    if (mounted) {
-      context.go(RoutePaths.sessionCreationFlow);
-    }
+    await startGameCreation(context: context, ref: ref, replace: true);
   }
 
   /// 개발자 도구 메뉴 표시
@@ -350,13 +331,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       await loading.close();
     } on DioException catch (e) {
       await loading.close();
-      // 필수 약관 미동의 차단 → 스낵바 + /agreement 리디렉트
-      if (mounted &&
-          handleRequiredTermsErrorIfNeeded(
-            context: context,
-            ref: ref,
-            error: e,
-          )) {
+      // 필수 약관 미동의는 전역 인터셉터가 안내 + /agreement 리디렉트까지 처리한다.
+      // 여기서는 일반 에러 스낵바가 겹치지 않도록 건너뛰기만 한다.
+      if (isRequiredTermsMissingError(e)) {
         return;
       }
       // 409: 이미 참가 중인 게임 → 해당 게임으로 자동 이동 시도
@@ -483,7 +460,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: Padding(
             padding: EdgeInsets.only(right: 16.w),
             child: SvgPicture.asset(
-              'assets/icons/icon_camera.svg',
+              AppIcons.camera,
               width: 24.w,
               height: 24.w,
               colorFilter: const ColorFilter.mode(
@@ -512,28 +489,99 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
   }
 
+  /// 캐릭터 일러스트 카드
+  ///
+  /// 배경이 카드 크기를 정하고, 그 위에 말풍선(상단)과 경찰·도둑 캐릭터 쌍(하단)을
+  /// Stack으로 얹는다. 배경과 캐릭터 쌍은 각각 독립적으로 교체 가능한 별도 에셋이다.
+  ///
+  /// Stack을 쓰는 이유: 캐릭터를 배경의 잔디선에 맞춰 독립적으로 배치할 수 있고,
+  /// 말풍선이 시스템 글자 크기로 커져도 Flex 오버플로가 발생하지 않는다.
+  Widget _buildIllustrationCard(AppLocalizations l10n) {
+    // 배경 이미지는 BoxDecoration의 borderRadius만으로는 라운드로 잘리지 않아
+    // (실기 확인 결과 모서리가 직각으로 렌더됨) ClipRRect로 명시적으로 감싼다.
+    return ClipRRect(
+      borderRadius: AppRadius.xxlarge,
+      child: Stack(
+        children: [
+          // 배경 — 카드의 크기를 결정한다
+          Image.asset(
+            'assets/backgrounds/default.png',
+            width: double.infinity,
+            height: 330.h,
+            fit: BoxFit.cover,
+          ),
+
+          // 말풍선 (상단 중앙)
+          Positioned(
+            top: AppSpacing.vertical50,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SpeechBubble(text: l10n.homePageWelcomeMessage),
+            ),
+          ),
+
+          // 경찰+도둑 캐릭터 쌍 (하단 중앙, 잔디선 위)
+          // 겹침·정렬이 에셋 한 장에 이미 확정돼 있다
+          Positioned(
+            bottom: AppSpacing.vertical28,
+            left: AppSpacing.horizontal10,
+            right: 0,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/characters/home/default.svg',
+                width: 249.w,
+                height: 154.h,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 버튼에 ver2 쉐도우를 입히는 래퍼
+  ///
+  /// AppButton은 자체 boxShadow를 갖지 않아 외곽 Container로 그림자를 준다.
+  Widget _withButtonShadow(Widget button) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.large,
+        boxShadow: AppShadows.ver2,
+      ),
+      child: button,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // 설정에서 튜토리얼 초기화 시 신호를 받아 재노출 (홈 인스턴스가 살아있어 initState 재실행 안 되는 문제 대응)
-    ref.listen<int>(tutorialResetSignalProvider, (previous, next) {
-      if (previous == null || previous == next) return;
-      _showTutorialIfNeeded();
-    });
-
+    final locale = Localizations.localeOf(context);
+    final remoteConfig = RemoteConfigService.instance;
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: false,
 
-      // floatingActionButton: kDebugMode
-      // ? FloatingActionButton(
-      //     mini: true,
-      //     backgroundColor: AppColors.black.withValues(alpha: 0.7),
-      //     foregroundColor: AppColors.white,
-      //     onPressed: () => _showDevMenu(context),
-      //     child: const Icon(Icons.bug_report),
-      //   )
-      // : null,
+      // 로고 + 공지도 다른 탭과 같은 공용 앱바를 쓴다 — 탭을 오갈 때 우측
+      // 아이콘이 제자리에 있으려면 높이와 정렬이 같아야 한다.
+      appBar: AppTopBar(
+        centerTitle: false,
+        // 로케일별 워드마크 로고 — en은 세로 비중이 커 36, ko/ja는 18
+        titleWidget: SvgPicture.asset(
+          localizedAppLogo(locale),
+          height: locale.languageCode == 'en' ? 36.h : AppSpacing.vertical18,
+        ),
+        actions: [
+          // 다색 SVG라 iconColor를 주지 않는다(원본 색 유지).
+          FlatIconButton(
+            assetPath: AppIcons.noti,
+            onPressed: () => context.push(RoutePaths.notices),
+            alignment: Alignment.centerRight,
+          ),
+          // 상단바 액션의 우측 여백은 본문 거터와 같은 16으로 통일돼 있다.
+          SizedBox(width: AppSpacing.horizontal16),
+        ],
+      ),
 
       // 개발자 도구 버튼 (디버그 모드에서만 표시)
       floatingActionButton: kDebugMode
@@ -546,102 +594,62 @@ class _HomePageState extends ConsumerState<HomePage> {
             )
           : null,
 
-      body: SafeArea(
+      // 좌우 패딩은 스크롤 영역만 갖는다 — 앱바는 자체 여백을 쓴다.
+      body: SingleChildScrollView(
         child: Padding(
-          padding: AppPadding.horizontal20,
+          padding: AppPadding.horizontal16,
           child: Column(
             children: [
-              SizedBox(height: AppSpacing.vertical8),
+              SizedBox(height: AppSpacing.vertical18),
 
-              // ── Top Bar: LOGO + Settings (좌우 24px) ──
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.horizontal4,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // 로케일별 워드마크 로고 — en은 세로 비중이 커 40, ko/ja는 20
-                    SvgPicture.asset(
-                      localizedAppLogo(Localizations.localeOf(context)),
-                      height:
-                          (Localizations.localeOf(context).languageCode == 'en'
-                                  ? 40
-                                  : 20)
-                              .h,
-                    ),
-                    // 우측 아이콘 그룹 (공지 + 설정)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FlatIconButton(
-                          assetPath: 'assets/icons/icon_alert.svg',
-                          iconColor: AppColors.black800,
-                          iconSize: 22,
-                          onPressed: () {
-                            context.push(RoutePaths.notices);
-                          },
-                          alignment: Alignment.centerRight,
-                        ),
-                        FlatIconButton(
-                          assetPath: 'assets/icons/icon_setting_1.svg',
-                          iconColor: AppColors.black800,
-                          onPressed: () {
-                            context.push(RoutePaths.settings);
-                          },
-                          alignment: Alignment.centerRight,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              const HomeProfileCard(),
 
-              // ── Middle Content (Expandable) ──
-              Expanded(
-                child: Column(
-                  children: [
-                    SizedBox(height: 134.h),
+              SizedBox(height: AppSpacing.vertical10),
 
-                    // ── Speech Bubble ──
-                    SpeechBubble(text: l10n.homePageWelcomeMessage),
+              _buildIllustrationCard(l10n),
 
-                    SizedBox(height: AppSpacing.vertical40),
+              SizedBox(height: AppSpacing.vertical14),
 
-                    // ── 캐릭터 Stack (경찰 앞, 도둑 뒤) ──
-                    const HomeCharacterStack(),
-                  ],
-                ),
-              ),
-
-              // ── Bottom Buttons ──
-              // 코치마크가 두 버튼을 한 영역으로 하이라이트하도록 Column으로 묶어
-              // 단일 GlobalKey를 부여한다. 하단 여백 SizedBox는 영역 밖으로 둔다.
-              // (부모 Column이 비-flex 자식에 무한 높이 제약을 주므로 min 필수)
-              Column(
-                key: _tutorialKeyGameButtons,
-                mainAxisSize: MainAxisSize.min,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AppButton(
-                    text: l10n.buttonCreateRoom,
-                    onPressed: _onCreateSession,
-                    showBorder: false,
+                  _withButtonShadow(
+                    AppButton(
+                      text: l10n.buttonCreateRoom,
+                      onPressed: _onCreateSession,
+                      width: 176.w,
+                      icon: SvgPicture.asset(
+                        AppIcons.defaultLight,
+                        height: AppSpacing.vertical20,
+                      ),
+                    ),
                   ),
-                  SizedBox(height: AppSpacing.vertical12),
-                  AppButton(
-                    text: l10n.buttonJoinRoom,
-                    onPressed: _showJoinRoomDialog,
-                    backgroundColor: AppColors.black100,
-                    foregroundColor: AppColors.black600,
-                    showBorder: false,
+                  SizedBox(width: AppSpacing.horizontal8),
+                  _withButtonShadow(
+                    AppButton(
+                      text: l10n.buttonJoinRoom,
+                      onPressed: _showJoinRoomDialog,
+                      width: 176.w,
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.black600,
+                      icon: SvgPicture.asset(
+                        AppIcons.joiningGame,
+                        height: AppSpacing.vertical20,
+                      ),
+                    ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: defaultTargetPlatform == TargetPlatform.android
-                    ? AppSpacing.vertical40
-                    : AppSpacing.vertical20,
-              ),
+
+              if (remoteConfig.bannerEnabled)
+                HomeBanner(
+                  imageUrl: remoteConfig.bannerImageUrl,
+                  onTap: remoteConfig.bannerLinkUrl.isEmpty
+                      ? null
+                      : () => launchExternalUrl(remoteConfig.bannerLinkUrl),
+                ),
+
+              SizedBox(height: AppSpacing.vertical20),
             ],
           ),
         ),

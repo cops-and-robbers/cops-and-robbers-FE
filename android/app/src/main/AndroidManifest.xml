@@ -65,24 +65,29 @@
             <meta-data
                 android:name="flutter_deeplinking_enabled"
                 android:value="false" />
-            <!-- App Links intent-filter for /join/* deep links -->
+            <!-- App Links intent-filter for /join/* and community post deep links -->
             <!-- autoVerify=true: Play Store will verify domain ownership via .well-known/assetlinks.json -->
+            <!-- 언어 경로 추가 시 웹 AASA·DeeplinkEvent 파서와 함께 넓힌다 (docs/DEEPLINK.md) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
-                    android:host="copsnro66ers.site"
+                    android:host="copsandrobbers.app"
                     android:pathPrefix="/join/" />
+                <data android:pathPrefix="/g/" />
+                <data android:pathPrefix="/ja/g/" />
+                <data android:pathPrefix="/en/g/" />
             </intent-filter>
-            <!-- Custom scheme intent-filter: copsandrobbers://join/{code} -->
+            <!-- Custom scheme intent-filter: copsandrobbers://join/{code}, copsandrobbers://open/community/{postId} -->
             <!-- 인앱 브라우저(카톡 등)/QR에서 웹 브릿지가 앱을 깨울 때 사용. https App Links와 별개 폴백 경로 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="copsandrobbers" android:host="join" />
+                <data android:host="open" />
             </intent-filter>
         </activity>
         <!-- 로케일별 런처 아이콘 (activity-alias). 동시에 1개만 enabled. -->

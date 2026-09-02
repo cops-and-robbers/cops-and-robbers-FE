@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/services/location/device_location_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/map_styles.dart';
@@ -77,7 +78,6 @@ class RecordRouteMapState extends State<RecordRouteMap> {
   ImageProvider? _snapshot;
 
   /// 경로가 비었을 때의 폴백 중심 (인게임 GoogleMapView와 동일 좌표)
-  static const LatLng _fallbackCenter = LatLng(37.5480, 127.0810);
 
   /// 경계 여백(px) — 궤적이 지도 가장자리에 붙지 않게
   static const double _boundsPadding = 24;
@@ -116,7 +116,7 @@ class RecordRouteMapState extends State<RecordRouteMap> {
   }
 
   LatLng get _initialTarget {
-    if (widget.route.isEmpty) return _fallbackCenter;
+    if (widget.route.isEmpty) return DeviceLocationService.fallbackLocation;
     final p = widget.route.first;
     return LatLng(p.latitude, p.longitude);
   }

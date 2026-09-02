@@ -24,6 +24,13 @@ mixin _$NoticeResponseModel {
   int get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
+
+  /// 본문의 실제 언어 코드(소문자 `ko`·`ja`·`en`).
+  /// 요청한 언어의 번역이 없으면 서버가 대체한 언어가 내려온다.
+  String? get language => throw _privateConstructorUsedError;
+
+  /// 요청한 언어 코드. [language]와 다르면 요청한 언어의 번역이 아직 없다는 뜻.
+  String? get requestedLanguage => throw _privateConstructorUsedError;
   bool get pinned => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -49,6 +56,8 @@ abstract class $NoticeResponseModelCopyWith<$Res> {
     int id,
     String title,
     String content,
+    String? language,
+    String? requestedLanguage,
     bool pinned,
     DateTime createdAt,
     DateTime updatedAt,
@@ -73,6 +82,8 @@ class _$NoticeResponseModelCopyWithImpl<$Res, $Val extends NoticeResponseModel>
     Object? id = null,
     Object? title = null,
     Object? content = null,
+    Object? language = freezed,
+    Object? requestedLanguage = freezed,
     Object? pinned = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -91,6 +102,14 @@ class _$NoticeResponseModelCopyWithImpl<$Res, $Val extends NoticeResponseModel>
                 ? _value.content
                 : content // ignore: cast_nullable_to_non_nullable
                       as String,
+            language: freezed == language
+                ? _value.language
+                : language // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            requestedLanguage: freezed == requestedLanguage
+                ? _value.requestedLanguage
+                : requestedLanguage // ignore: cast_nullable_to_non_nullable
+                      as String?,
             pinned: null == pinned
                 ? _value.pinned
                 : pinned // ignore: cast_nullable_to_non_nullable
@@ -122,6 +141,8 @@ abstract class _$$NoticeResponseModelImplCopyWith<$Res>
     int id,
     String title,
     String content,
+    String? language,
+    String? requestedLanguage,
     bool pinned,
     DateTime createdAt,
     DateTime updatedAt,
@@ -145,6 +166,8 @@ class __$$NoticeResponseModelImplCopyWithImpl<$Res>
     Object? id = null,
     Object? title = null,
     Object? content = null,
+    Object? language = freezed,
+    Object? requestedLanguage = freezed,
     Object? pinned = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -163,6 +186,14 @@ class __$$NoticeResponseModelImplCopyWithImpl<$Res>
             ? _value.content
             : content // ignore: cast_nullable_to_non_nullable
                   as String,
+        language: freezed == language
+            ? _value.language
+            : language // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        requestedLanguage: freezed == requestedLanguage
+            ? _value.requestedLanguage
+            : requestedLanguage // ignore: cast_nullable_to_non_nullable
+                  as String?,
         pinned: null == pinned
             ? _value.pinned
             : pinned // ignore: cast_nullable_to_non_nullable
@@ -182,15 +213,17 @@ class __$$NoticeResponseModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$NoticeResponseModelImpl implements _NoticeResponseModel {
+class _$NoticeResponseModelImpl extends _NoticeResponseModel {
   const _$NoticeResponseModelImpl({
     required this.id,
     required this.title,
     required this.content,
+    this.language,
+    this.requestedLanguage,
     required this.pinned,
     required this.createdAt,
     required this.updatedAt,
-  });
+  }) : super._();
 
   factory _$NoticeResponseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$NoticeResponseModelImplFromJson(json);
@@ -201,6 +234,15 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
   final String title;
   @override
   final String content;
+
+  /// 본문의 실제 언어 코드(소문자 `ko`·`ja`·`en`).
+  /// 요청한 언어의 번역이 없으면 서버가 대체한 언어가 내려온다.
+  @override
+  final String? language;
+
+  /// 요청한 언어 코드. [language]와 다르면 요청한 언어의 번역이 아직 없다는 뜻.
+  @override
+  final String? requestedLanguage;
   @override
   final bool pinned;
   @override
@@ -210,7 +252,7 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
 
   @override
   String toString() {
-    return 'NoticeResponseModel(id: $id, title: $title, content: $content, pinned: $pinned, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'NoticeResponseModel(id: $id, title: $title, content: $content, language: $language, requestedLanguage: $requestedLanguage, pinned: $pinned, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -221,6 +263,10 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.content, content) || other.content == content) &&
+            (identical(other.language, language) ||
+                other.language == language) &&
+            (identical(other.requestedLanguage, requestedLanguage) ||
+                other.requestedLanguage == requestedLanguage) &&
             (identical(other.pinned, pinned) || other.pinned == pinned) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -235,6 +281,8 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
     id,
     title,
     content,
+    language,
+    requestedLanguage,
     pinned,
     createdAt,
     updatedAt,
@@ -257,15 +305,18 @@ class _$NoticeResponseModelImpl implements _NoticeResponseModel {
   }
 }
 
-abstract class _NoticeResponseModel implements NoticeResponseModel {
+abstract class _NoticeResponseModel extends NoticeResponseModel {
   const factory _NoticeResponseModel({
     required final int id,
     required final String title,
     required final String content,
+    final String? language,
+    final String? requestedLanguage,
     required final bool pinned,
     required final DateTime createdAt,
     required final DateTime updatedAt,
   }) = _$NoticeResponseModelImpl;
+  const _NoticeResponseModel._() : super._();
 
   factory _NoticeResponseModel.fromJson(Map<String, dynamic> json) =
       _$NoticeResponseModelImpl.fromJson;
@@ -276,6 +327,15 @@ abstract class _NoticeResponseModel implements NoticeResponseModel {
   String get title;
   @override
   String get content;
+
+  /// 본문의 실제 언어 코드(소문자 `ko`·`ja`·`en`).
+  /// 요청한 언어의 번역이 없으면 서버가 대체한 언어가 내려온다.
+  @override
+  String? get language;
+
+  /// 요청한 언어 코드. [language]와 다르면 요청한 언어의 번역이 아직 없다는 뜻.
+  @override
+  String? get requestedLanguage;
   @override
   bool get pinned;
   @override
@@ -497,220 +557,4 @@ abstract class _NoticeListResponseModel implements NoticeListResponseModel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NoticeListResponseModelImplCopyWith<_$NoticeListResponseModelImpl>
   get copyWith => throw _privateConstructorUsedError;
-}
-
-PageInfoModel _$PageInfoModelFromJson(Map<String, dynamic> json) {
-  return _PageInfoModel.fromJson(json);
-}
-
-/// @nodoc
-mixin _$PageInfoModel {
-  int get size => throw _privateConstructorUsedError;
-  int get number => throw _privateConstructorUsedError;
-  int get totalElements => throw _privateConstructorUsedError;
-  int get totalPages => throw _privateConstructorUsedError;
-
-  /// Serializes this PageInfoModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of PageInfoModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $PageInfoModelCopyWith<PageInfoModel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PageInfoModelCopyWith<$Res> {
-  factory $PageInfoModelCopyWith(
-    PageInfoModel value,
-    $Res Function(PageInfoModel) then,
-  ) = _$PageInfoModelCopyWithImpl<$Res, PageInfoModel>;
-  @useResult
-  $Res call({int size, int number, int totalElements, int totalPages});
-}
-
-/// @nodoc
-class _$PageInfoModelCopyWithImpl<$Res, $Val extends PageInfoModel>
-    implements $PageInfoModelCopyWith<$Res> {
-  _$PageInfoModelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of PageInfoModel
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? size = null,
-    Object? number = null,
-    Object? totalElements = null,
-    Object? totalPages = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            size: null == size
-                ? _value.size
-                : size // ignore: cast_nullable_to_non_nullable
-                      as int,
-            number: null == number
-                ? _value.number
-                : number // ignore: cast_nullable_to_non_nullable
-                      as int,
-            totalElements: null == totalElements
-                ? _value.totalElements
-                : totalElements // ignore: cast_nullable_to_non_nullable
-                      as int,
-            totalPages: null == totalPages
-                ? _value.totalPages
-                : totalPages // ignore: cast_nullable_to_non_nullable
-                      as int,
-          )
-          as $Val,
-    );
-  }
-}
-
-/// @nodoc
-abstract class _$$PageInfoModelImplCopyWith<$Res>
-    implements $PageInfoModelCopyWith<$Res> {
-  factory _$$PageInfoModelImplCopyWith(
-    _$PageInfoModelImpl value,
-    $Res Function(_$PageInfoModelImpl) then,
-  ) = __$$PageInfoModelImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({int size, int number, int totalElements, int totalPages});
-}
-
-/// @nodoc
-class __$$PageInfoModelImplCopyWithImpl<$Res>
-    extends _$PageInfoModelCopyWithImpl<$Res, _$PageInfoModelImpl>
-    implements _$$PageInfoModelImplCopyWith<$Res> {
-  __$$PageInfoModelImplCopyWithImpl(
-    _$PageInfoModelImpl _value,
-    $Res Function(_$PageInfoModelImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of PageInfoModel
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? size = null,
-    Object? number = null,
-    Object? totalElements = null,
-    Object? totalPages = null,
-  }) {
-    return _then(
-      _$PageInfoModelImpl(
-        size: null == size
-            ? _value.size
-            : size // ignore: cast_nullable_to_non_nullable
-                  as int,
-        number: null == number
-            ? _value.number
-            : number // ignore: cast_nullable_to_non_nullable
-                  as int,
-        totalElements: null == totalElements
-            ? _value.totalElements
-            : totalElements // ignore: cast_nullable_to_non_nullable
-                  as int,
-        totalPages: null == totalPages
-            ? _value.totalPages
-            : totalPages // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$PageInfoModelImpl implements _PageInfoModel {
-  const _$PageInfoModelImpl({
-    required this.size,
-    required this.number,
-    required this.totalElements,
-    required this.totalPages,
-  });
-
-  factory _$PageInfoModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PageInfoModelImplFromJson(json);
-
-  @override
-  final int size;
-  @override
-  final int number;
-  @override
-  final int totalElements;
-  @override
-  final int totalPages;
-
-  @override
-  String toString() {
-    return 'PageInfoModel(size: $size, number: $number, totalElements: $totalElements, totalPages: $totalPages)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PageInfoModelImpl &&
-            (identical(other.size, size) || other.size == size) &&
-            (identical(other.number, number) || other.number == number) &&
-            (identical(other.totalElements, totalElements) ||
-                other.totalElements == totalElements) &&
-            (identical(other.totalPages, totalPages) ||
-                other.totalPages == totalPages));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, size, number, totalElements, totalPages);
-
-  /// Create a copy of PageInfoModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PageInfoModelImplCopyWith<_$PageInfoModelImpl> get copyWith =>
-      __$$PageInfoModelImplCopyWithImpl<_$PageInfoModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PageInfoModelImplToJson(this);
-  }
-}
-
-abstract class _PageInfoModel implements PageInfoModel {
-  const factory _PageInfoModel({
-    required final int size,
-    required final int number,
-    required final int totalElements,
-    required final int totalPages,
-  }) = _$PageInfoModelImpl;
-
-  factory _PageInfoModel.fromJson(Map<String, dynamic> json) =
-      _$PageInfoModelImpl.fromJson;
-
-  @override
-  int get size;
-  @override
-  int get number;
-  @override
-  int get totalElements;
-  @override
-  int get totalPages;
-
-  /// Create a copy of PageInfoModel
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PageInfoModelImplCopyWith<_$PageInfoModelImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }

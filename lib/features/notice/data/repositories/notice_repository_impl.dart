@@ -2,9 +2,11 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
+import '../../domain/entities/notice_category.dart';
 import '../../domain/entities/notice_entity.dart';
 import '../../domain/repositories/notice_repository.dart';
 import '../datasources/notice_remote_datasource.dart';
+import '../models/notice_category_query.dart';
 
 /// `NoticeRepository` 구현체
 ///
@@ -19,9 +21,16 @@ class NoticeRepositoryImpl implements NoticeRepository {
   Future<NoticePageEntity> getNotices({
     required int page,
     required int size,
+    required String language,
+    NoticeCategory category = NoticeCategory.all,
   }) async {
     try {
-      final res = await _dataSource.getNotices(page: page, size: size);
+      final res = await _dataSource.getNotices(
+        page: page,
+        size: size,
+        language: language,
+        category: category.queryValue,
+      );
       return NoticePageEntity(
         items: res.content
             .map(
@@ -34,6 +43,7 @@ class NoticeRepositoryImpl implements NoticeRepository {
                 // json_serializable이 UTC DateTime으로 파싱한다. UI는 단말 local
                 // 기준 날짜 표기를 기대하므로 Entity 경계에서 local로 정규화한다.
                 createdAt: m.createdAt.toLocal(),
+                isTranslationFallback: m.isTranslationFallback,
               ),
             )
             .toList(),

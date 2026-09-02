@@ -8,11 +8,10 @@ import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
-import '../../../../core/services/tutorial/tutorial_keys.dart';
-import '../../../../core/services/tutorial/tutorial_service.dart';
-import '../../../../core/tutorial/app_tutorial_style.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/buttons/previous_button.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
+import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../core/constants/game_config.dart';
 import '../../../../core/widgets/map/pin_zone_setting_widget.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
@@ -28,13 +27,29 @@ import '../../../../l10n/app_localizations.dart';
 /// ZoneSettingWidget을 통해 중심점과 반경을 설정하고,
 /// 설정 완료 시 데이터를 로컬 저장소에 저장한 후 이전 페이지로 반환합니다.
 ///
-/// **편집 모드**: [editInitialShape]이 제공되면
+/// **초기 도형**: [editInitialShape]이 제공되면
 /// 로컬 저장소(SessionDraftStorage) 대신 전달받은 초기값을 사용하고,
 /// 완료 시 저장소에 쓰지 않고 pop 결과만 반환합니다.
 class SetupPlaygroundPage extends ConsumerStatefulWidget {
-  const SetupPlaygroundPage({super.key, this.editInitialShape});
+  const SetupPlaygroundPage({
+    super.key,
+    this.editInitialShape,
+    this.showStepIndicator = false,
+    this.isInGameEdit = false,
+  });
 
-  /// 편집 모드 초기 구역 (null이면 생성 모드)
+  /// 진행 중인 게임의 구역을 대기방에서 수정하러 들어왔는지
+  ///
+  /// 역할 테마(도둑=다크)는 **대기방·인게임에서만** 분기한다. 생성 흐름은 아직
+  /// 게임이 없으므로 항상 라이트다. 진입 라우트가 아는 사실이므로 라우터가 내려준다
+  /// — 초기 도형을 받았는지([editInitialShape])로는 판정할 수 없다. 생성 흐름도 되돌아올 때
+  /// 초기 도형을 넘기기 때문이다(#520).
+  final bool isInGameEdit;
+
+  /// 생성 흐름에서 열렸을 때 상단에 진행 표시(1/3)를 보여줄지
+  final bool showStepIndicator;
+
+  /// 지도에 미리 그려둘 초기 구역 (null이면 빈 상태로 시작)
   final AreaShape? editInitialShape;
 
   @override
@@ -76,16 +91,6 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   final _storageService = SessionDraftStorageService();
 
   // ============================================
-  // Tutorial Keys
-  // ============================================
-
-  /// 지도 영역(Expanded) 튜토리얼 타겟 키
-  final _tutorialKeyMap = GlobalKey();
-
-  /// 반경 칩 튜토리얼 타겟 키
-  final _tutorialKeyRadiusChip = GlobalKey();
-
-  // ============================================
   // Lifecycle Methods
   // ============================================
 
@@ -95,13 +100,13 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     _loadExistingData();
   }
 
-  /// 편집 모드 여부
-  bool get _isEditMode => widget.editInitialShape != null;
+  /// 초기 도형을 받았는지 (모드가 아니다 — 다크 판정은 [SetupPlaygroundPage.isInGameEdit])
+  bool get _hasInitialShape => widget.editInitialShape != null;
 
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
-    // 편집 모드: 전달받은 초기값 사용
-    if (_isEditMode) {
+    // 초기 도형을 받았으면 로컬 초안 대신 그 값을 쓴다
+    if (_hasInitialShape) {
       if (mounted) {
         setState(() {
           final initialShape = widget.editInitialShape!;
@@ -134,39 +139,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
         _currentRadius = draft?.playgroundRadiusInMeters ?? 500.0;
         _isLoading = false;
       });
-
-      // 로딩 완료 후 다음 프레임에서 튜토리얼 트리거
-      // ZoneSettingWidget이 렌더된 뒤에 실행해야 GlobalKey가 유효함
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showTutorialIfNeeded();
-      });
     }
-  }
-
-  /// 처음 방문한 사용자에게 튜토리얼 표시
-  Future<void> _showTutorialIfNeeded() async {
-    final completed = await TutorialService.isCompleted(
-      TutorialKeys.setupPlayground,
-    );
-    if (completed || !mounted) return;
-
-    // ZoneSettingWidget 내부 초기화(위치 조회 등)를 기다리기 위한 지연
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    final l10n = AppLocalizations.of(context);
-    AppTutorialStyle.show(
-      context: context,
-      targets: [
-        AppTutorialStyle.target(
-          keyTarget: _tutorialKeyRadiusChip,
-          description: l10n.setupPlaygroundRadiusInputHint,
-          align: TutorialAlign.bottom,
-        ),
-      ],
-      onFinish: () =>
-          TutorialService.markCompleted(TutorialKeys.setupPlayground),
-    );
   }
 
   // ============================================
@@ -174,6 +147,50 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   // ============================================
 
   /// 구역 변경 시 호출되는 콜백
+  /// 상단 바 — 생성 흐름에서는 제목 대신 진행 표시(1/3)를 보여준다
+  PreferredSizeWidget _buildTopBar(String title, bool isDark) {
+    if (!widget.showStepIndicator) {
+      return AppTopBar(title: title, isDarkMode: isDark, onBack: _handleBack);
+    }
+    return AppTopBar(
+      titleWidget: const StepIndicator(
+        totalSteps: 3,
+        currentStep: 0,
+        activeColor: AppColors.blue,
+      ),
+      centerTitle: false,
+      titleSpacing: 0,
+      isDarkMode: isDark,
+      onBack: _handleBack,
+      actions: [SizedBox(width: AppSpacing.horizontal20)],
+    );
+  }
+
+  /// 뒤로 가기 처리
+  ///
+  /// 핀을 하나라도 찍은 상태에서 처음 그리던 중이면 이탈 확인을 띄운다.
+  /// 원형 모드는 그린 노력이 없어 바로 나간다. 고치러 들어온 경우(초기 도형
+  /// 있음)는 나가도 원래 도형이 남으므로 묻지 않는다.
+  void _handleBack() {
+    final shouldConfirm =
+        _areaType == GameAreaType.polygon &&
+        _pinPoints.isNotEmpty &&
+        widget.editInitialShape == null;
+    if (!shouldConfirm) {
+      context.pop();
+      return;
+    }
+    final l10n = AppLocalizations.of(context);
+    AppDialog.show(
+      context: context,
+      title: l10n.dialogQuitCreationTitle,
+      message: l10n.dialogQuitCreationMessage,
+      cancelText: l10n.buttonKeepCreating,
+      confirmText: l10n.buttonQuitCreation,
+      onConfirm: () => context.pop(),
+    );
+  }
+
   void _onZoneChanged(LatLng center, double radius) {
     setState(() {
       _currentCenter = center;
@@ -200,7 +217,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   Future<void> _onComplete() async {
     // 핀 모드: 정렬된 꼭짓점 목록 반환
     if (_areaType == GameAreaType.polygon) {
-      if (!_isEditMode) {
+      if (!_hasInitialShape) {
         await _storageService.updatePlaygroundPinZone(_pinPoints);
       }
       if (mounted) {
@@ -221,7 +238,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     if (center == null) return;
 
     // 생성 모드에서만 로컬 저장소에 저장
-    if (!_isEditMode) {
+    if (!_hasInitialShape) {
       await _storageService.updatePlaygroundZone(center, _currentRadius);
     }
 
@@ -244,28 +261,16 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = _isEditMode && ref.watch(roleThemeProvider);
+    final isDark = widget.isInGameEdit && ref.watch(roleThemeProvider);
     final bgColor = isDark ? AppColors.black900 : AppColors.white;
     final textColor = isDark ? AppColors.white : AppColors.black;
-    final titleStyle = isDark
-        ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
-        : AppTextStyles.heading_20.copyWith(color: AppColors.black);
     final l10n = AppLocalizations.of(context);
 
     // 로딩 중일 때는 로딩 인디케이터 표시
     if (_isLoading) {
       return Scaffold(
         backgroundColor: bgColor,
-        appBar: AppBar(
-          title: Text(l10n.zonePlayground, style: titleStyle),
-          backgroundColor: bgColor,
-          elevation: 0,
-          centerTitle: true,
-          leading: PreviousButton(
-            onPressed: () => context.pop(),
-            color: isDark ? AppColors.black200 : AppColors.black800,
-          ),
-        ),
+        appBar: _buildTopBar(l10n.zonePlayground, isDark),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -274,116 +279,111 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     _visitedAreaTypes.add(_areaType);
 
     // 로딩 완료 후 정상 UI 렌더링
-    return Scaffold(
-      backgroundColor: bgColor,
-      appBar: AppBar(
-        title: Text(l10n.zonePlayground, style: titleStyle),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _handleBack();
+      },
+      child: Scaffold(
         backgroundColor: bgColor,
-        elevation: 0,
-        centerTitle: true,
-        leading: PreviousButton(
-          onPressed: () => context.pop(),
-          color: isDark ? AppColors.black200 : AppColors.black800,
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 간격 20px
-            SizedBox(height: AppSpacing.vertical20),
+        appBar: _buildTopBar(l10n.zonePlayground, isDark),
+        body: SafeArea(
+          child: Column(
+            children: [
+              // 간격 20px
+              SizedBox(height: AppSpacing.vertical20),
 
-            // 구역 설정 방식 토글 (거리/핀)
-            Center(
-              child: AreaTypeToggle(
-                selected: _areaType,
-                isDarkMode: isDark,
-                onChanged: (type) {
-                  // 각 모드의 입력값은 유지 — 완료 시 선택된 모드 것만 사용
-                  setState(() => _areaType = type);
-                },
-              ),
-            ),
-
-            // 간격 20px
-            SizedBox(height: AppSpacing.vertical20),
-
-            // 설명 텍스트
-            Padding(
-              padding: AppPadding.horizontal24,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  _areaType == GameAreaType.polygon
-                      ? l10n.setupPlaygroundPinDescription
-                      : l10n.setupPlaygroundDescription,
-                  style: AppTextStyles.label16Medium.copyWith(color: textColor),
+              // 구역 설정 방식 토글 (거리/핀)
+              Center(
+                child: AreaTypeToggle(
+                  selected: _areaType,
+                  isDarkMode: isDark,
+                  onChanged: (type) {
+                    // 각 모드의 입력값은 유지 — 완료 시 선택된 모드 것만 사용
+                    setState(() => _areaType = type);
+                  },
                 ),
               ),
-            ),
 
-            // 간격 20px
-            SizedBox(height: AppSpacing.vertical20),
+              // 간격 20px
+              SizedBox(height: AppSpacing.vertical20),
 
-            // 지도 영역 (모드에 따라 원형/핀 위젯 스위칭)
-            //
-            // IndexedStack으로 두 위젯을 유지해 토글 시 GoogleMap이
-            // dispose→재생성되며 매번 지도를 다시 로드하는 것을 막는다.
-            // 방문하지 않은 모드는 빈 위젯으로 두어 최초 지도 로드도 지연시킨다.
-            Expanded(
-              key: _tutorialKeyMap,
-              child: IndexedStack(
-                sizing: StackFit.expand,
-                index: _areaType == GameAreaType.polygon ? 1 : 0,
-                children: [
-                  // 0: 원형(거리) 모드
-                  _visitedAreaTypes.contains(GameAreaType.circle)
-                      ? ZoneSettingWidget(
-                          initialCenter: _currentCenter,
-                          initialRadius: _currentRadius,
-                          minRadius: 100,
-                          maxRadius: 1000,
-                          // 플레이그라운드 색상 (파란색 계열)
-                          centerColor: AppColors.blue,
-                          borderColor: AppColors.blue800,
-                          fillColor: AppColors.blue500,
-                          locationButtonColor: AppColors.blue,
-                          onZoneChanged: _onZoneChanged,
-                          isDarkMode: isDark,
-                          valueTextStyle: isDark
-                              ? AppTextStyles.robberLabel
-                              : null,
-                          radiusChipKey: _tutorialKeyRadiusChip,
-                        )
-                      : const SizedBox.shrink(),
-                  // 1: 핀(폴리곤) 모드
-                  _visitedAreaTypes.contains(GameAreaType.polygon)
-                      ? PinZoneSettingWidget(
-                          initialPoints: _pinPoints,
-                          pinColor: AppColors.blue,
-                          fillColor: AppColors.blue500Alpha20,
-                          strokeColor: AppColors.blue800,
-                          locationButtonColor: AppColors.blue,
-                          isDarkMode: isDark,
-                          onPointsChanged: (points) {
-                            setState(() => _pinPoints = points);
-                          },
-                        )
-                      : const SizedBox.shrink(),
-                ],
+              // 설명 텍스트
+              Padding(
+                padding: AppPadding.horizontal24,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _areaType == GameAreaType.polygon
+                        ? l10n.setupPlaygroundPinDescription
+                        : l10n.setupPlaygroundDescription,
+                    style: AppTextStyles.label16Medium.copyWith(
+                      color: textColor,
+                    ),
+                  ),
+                ),
               ),
-            ),
 
-            // 하단 버튼 영역
-            Padding(
-              padding: AppPadding.all20,
-              child: AppButton(
-                text: l10n.buttonDone,
-                onPressed: _canComplete ? _onComplete : null,
-                backgroundColor: AppColors.blue,
-                showBorder: false,
+              // 간격 20px
+              SizedBox(height: AppSpacing.vertical20),
+
+              // 지도 영역 (모드에 따라 원형/핀 위젯 스위칭)
+              //
+              // IndexedStack으로 두 위젯을 유지해 토글 시 GoogleMap이
+              // dispose→재생성되며 매번 지도를 다시 로드하는 것을 막는다.
+              // 방문하지 않은 모드는 빈 위젯으로 두어 최초 지도 로드도 지연시킨다.
+              Expanded(
+                child: IndexedStack(
+                  sizing: StackFit.expand,
+                  index: _areaType == GameAreaType.polygon ? 1 : 0,
+                  children: [
+                    // 0: 원형(거리) 모드
+                    _visitedAreaTypes.contains(GameAreaType.circle)
+                        ? ZoneSettingWidget(
+                            initialCenter: _currentCenter,
+                            initialRadius: _currentRadius,
+                            minRadius: 100,
+                            maxRadius: 1000,
+                            // 플레이그라운드 색상 (파란색 계열)
+                            centerColor: AppColors.blue,
+                            borderColor: AppColors.blue800,
+                            fillColor: AppColors.blue500,
+                            locationButtonColor: AppColors.blue,
+                            onZoneChanged: _onZoneChanged,
+                            isDarkMode: isDark,
+                            valueTextStyle: isDark
+                                ? AppTextStyles.robberLabel
+                                : null,
+                          )
+                        : const SizedBox.shrink(),
+                    // 1: 핀(폴리곤) 모드
+                    _visitedAreaTypes.contains(GameAreaType.polygon)
+                        ? PinZoneSettingWidget(
+                            initialPoints: _pinPoints,
+                            pinColor: AppColors.blue,
+                            fillColor: AppColors.blue500Alpha20,
+                            strokeColor: AppColors.blue800,
+                            locationButtonColor: AppColors.blue,
+                            isDarkMode: isDark,
+                            onPointsChanged: (points) {
+                              setState(() => _pinPoints = points);
+                            },
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                ),
               ),
-            ),
-          ],
+
+              // 하단 버튼 영역
+              Padding(
+                padding: AppPadding.all20,
+                child: AppButton(
+                  text: l10n.buttonDone,
+                  onPressed: _canComplete ? _onComplete : null,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

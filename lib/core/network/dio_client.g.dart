@@ -6,7 +6,7 @@ part of 'dio_client.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$dioHash() => r'81b126b0e131c021cfa8ca57f7a2f8f6d4908c3b';
+String _$dioHash() => r'9afc63beca28bab6c5c1e47c0c7dc3d5995e3953';
 
 /// Dio Provider (AuthInterceptor 포함)
 ///
@@ -50,5 +50,27 @@ final forceLogoutCallbackNotifierProvider =
     );
 
 typedef _$ForceLogoutCallbackNotifier = Notifier<ForceLogoutFn?>;
+String _$requiredTermsCallbackNotifierHash() =>
+    r'8e3fad1d90a483f51eeebc0f476e26078c3dc790';
+
+/// 필수 약관 미동의 감지 콜백 Provider
+///
+/// [ForceLogoutCallbackNotifier]와 같은 역전 패턴. auth 모듈이
+/// `markNeedsAgreement` 호출을 등록한다.
+///
+/// Copied from [RequiredTermsCallbackNotifier].
+@ProviderFor(RequiredTermsCallbackNotifier)
+final requiredTermsCallbackNotifierProvider =
+    NotifierProvider<RequiredTermsCallbackNotifier, VoidCallback?>.internal(
+      RequiredTermsCallbackNotifier.new,
+      name: r'requiredTermsCallbackNotifierProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$requiredTermsCallbackNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$RequiredTermsCallbackNotifier = Notifier<VoidCallback?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,6 +1,6 @@
 /// Firebase Remote Config 파라미터 키 및 fail-safe 기본값.
 ///
-/// Firebase 콘솔에 아래 6개 파라미터를 동일한 키로 생성해야 한다.
+/// Firebase 콘솔에 아래 9개 파라미터를 동일한 키로 생성해야 한다.
 class RemoteConfigKeys {
   RemoteConfigKeys._();
 
@@ -21,6 +21,15 @@ class RemoteConfigKeys {
 
   /// 광고 전역 스위치 (bool, kill switch)
   static const String adsEnabled = 'ads_enabled';
+
+  /// 원격 배너 활성 여부 (bool)
+  static const String bannerEnabled = 'banner_enabled';
+
+  /// 원격 배너 이미지 주소 (String)
+  static const String bannerImageUrl = 'banner_image_url';
+
+  /// 원격 배너 이동 링크 (String)
+  static const String bannerLinkUrl = 'banner_link_url';
 }
 
 /// Remote Config fetch 실패 시 사용하는 fail-safe 기본값.
@@ -36,5 +45,8 @@ class RemoteConfigDefaults {
     RemoteConfigKeys.maintenance: false,
     RemoteConfigKeys.maintenanceMessage: '',
     RemoteConfigKeys.adsEnabled: false,
+    RemoteConfigKeys.bannerEnabled: false,
+    RemoteConfigKeys.bannerImageUrl: '',
+    RemoteConfigKeys.bannerLinkUrl: '',
   };
 }

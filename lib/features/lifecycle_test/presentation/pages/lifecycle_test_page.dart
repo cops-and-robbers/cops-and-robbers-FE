@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../../core/services/lifecycle/lifecycle_provider.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../features/session/presentation/providers/game_participant_provider.dart';
 import '../../../../features/session/presentation/providers/session_provider.dart';
 import '../widgets/current_state_card.dart';
@@ -252,7 +253,7 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
           // 현재 상태 표시
           CurrentStateCard(stateAsync: currentStateAsync),
 
-          const Divider(height: 1),
+          const SolidDivider(),
 
           // 백그라운드 위치 추적 테스트 버튼
           Container(
@@ -297,7 +298,7 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
             ),
           ),
 
-          const Divider(height: 1),
+          const SolidDivider(),
 
           // 방 나가기 API 강제 호출
           Container(
@@ -348,7 +349,7 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
             ),
           ),
 
-          const Divider(height: 1),
+          const SolidDivider(),
 
           // 안내 메시지
           Container(
@@ -379,7 +380,7 @@ class _LifecycleTestPageState extends ConsumerState<LifecycleTestPage> {
             ),
           ),
 
-          const Divider(height: 1),
+          const SolidDivider(),
 
           // 상태 변화 이력 로그
           Expanded(child: LifecycleLogList(logs: logs)),

@@ -54,7 +54,6 @@ class ZoneSettingWidget extends StatefulWidget {
     this.initialCenter,
     this.isDarkMode = false,
     this.valueTextStyle,
-    this.radiusChipKey,
   });
 
   /// 초기 반경 (미터)
@@ -115,9 +114,6 @@ class ZoneSettingWidget extends StatefulWidget {
   /// 값 텍스트 스타일 (InfoRadiusChip에 전달, null이면 기본 스타일)
   final TextStyle? valueTextStyle;
 
-  /// 반경 칩(InfoRadiusChip)에 부착할 GlobalKey (튜토리얼 타겟용)
-  final GlobalKey? radiusChipKey;
-
   @override
   State<ZoneSettingWidget> createState() => ZoneSettingWidgetState();
 }
@@ -136,7 +132,6 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
   double get _effectiveChipHeight => 40.h;
 
   // Fallback 위치 (어린이대공원)
-  static const LatLng _fallbackLocation = LatLng(37.5480, 127.0810);
 
   @override
   void initState() {
@@ -162,8 +157,8 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     // 1. 초기 중심점 설정
     _currentCenter =
         widget.initialCenter ??
-        await _getCurrentLocation() ??
-        _fallbackLocation;
+        await DeviceLocationService.getCurrentLatLng() ??
+        DeviceLocationService.fallbackLocation;
 
     debugPrint(
       '📍 ZoneSettingWidget: 중심점 = ${_currentCenter.latitude}, ${_currentCenter.longitude}',
@@ -211,23 +206,6 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
       strokeColor: strokeColor,
       strokeWidth: 2,
     );
-  }
-
-  /// 현재 위치 조회 (DeviceLocationService 사용)
-  /// Get current location using DeviceLocationService
-  Future<LatLng?> _getCurrentLocation() async {
-    try {
-      final pos = await DeviceLocationService.getCurrentPosition();
-      if (pos == null) {
-        debugPrint('⚠️ ZoneSettingWidget: 현재 위치 조회 실패 → fallback 사용');
-        return null;
-      }
-      return LatLng(pos.latitude, pos.longitude);
-    } catch (e, stack) {
-      debugPrint('❌ ZoneSettingWidget: 현재 위치 조회 에러 - $e');
-      debugPrint('Stack: $stack');
-      return null;
-    }
   }
 
   @override
@@ -406,8 +384,6 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
     final displayValue = formatRadiusValue(_currentRadius);
 
     return InfoRadiusChip(
-      // 튜토리얼 타겟 키 (외부에서 주입된 경우)
-      key: widget.radiusChipKey,
       prefix: AppLocalizations.of(context).zoneRadiusLabel,
       value: displayValue,
       backgroundColor:
@@ -525,7 +501,7 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
 
     try {
       // 현재 위치 조회
-      final currentLocation = await _getCurrentLocation();
+      final currentLocation = await DeviceLocationService.getCurrentLatLng();
 
       if (currentLocation == null) {
         debugPrint('⚠️ 현재 위치를 가져올 수 없습니다');

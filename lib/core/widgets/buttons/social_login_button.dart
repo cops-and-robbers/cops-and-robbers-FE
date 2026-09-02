@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_icons.dart';
 import '../../constants/spacing_and_radius.dart';
 import 'app_button.dart';
 
@@ -11,7 +12,7 @@ import 'app_button.dart';
 /// **디자인 스펙**:
 /// - 배경색: AppColors.black100 (#EDF0F2)
 /// - 텍스트색: AppColors.black (#080A0C)
-/// - 아이콘: assets/icons/icon_google.svg (20x20)
+/// - 아이콘: AppIcons.google (20x20)
 /// - 아이콘-텍스트 간격: 8px
 ///
 /// **사용 예시**:
@@ -40,7 +41,7 @@ class GoogleLoginButton extends StatelessWidget {
       text: AppLocalizations.of(context).buttonGoogleSignIn,
       onPressed: onPressed,
       icon: SvgPicture.asset(
-        'assets/icons/icon_google.svg',
+        AppIcons.google,
         width: AppSpacing.horizontal20,
         height: AppSpacing.vertical20,
       ),
@@ -58,7 +59,7 @@ class GoogleLoginButton extends StatelessWidget {
 /// **디자인 스펙**:
 /// - 배경색: AppColors.black (#080A0C)
 /// - 텍스트색: AppColors.white (#FFFFFF)
-/// - 아이콘: assets/icons/icon_apple.svg (20x20)
+/// - 아이콘: AppIcons.apple (20x20)
 /// - 아이콘-텍스트 간격: 8px
 ///
 /// **사용 예시**:
@@ -87,14 +88,12 @@ class AppleLoginButton extends StatelessWidget {
       text: AppLocalizations.of(context).buttonAppleSignIn,
       onPressed: onPressed,
       icon: SvgPicture.asset(
-        'assets/icons/icon_apple.svg',
+        AppIcons.apple,
         width: AppSpacing.horizontal20,
         height: AppSpacing.vertical20,
       ),
       iconPosition: IconPosition.leading,
       backgroundColor: AppColors.black,
-      foregroundColor: AppColors.white,
-      showBorder: false,
       isLoading: isLoading,
     );
   }

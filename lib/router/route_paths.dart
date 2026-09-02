@@ -1,3 +1,5 @@
+import '../core/constants/legal_doc.dart';
+
 /// 앱 전체의 라우트 경로 상수를 정의하는 클래스
 ///
 /// 모든 라우트 경로는 이 클래스를 통해 접근하여
@@ -54,14 +56,110 @@ class RoutePaths {
   /// 홈 화면 (인증 필수, 게임 세션 생성/참가 선택)
   static const String home = '/home';
 
-  /// 설정 화면
-  static const String settings = '/home/settings';
+  /// 커뮤니티 화면 (바텀 네비게이션 탭 — 현재 준비중 placeholder)
+  static const String community = '/community';
+
+  /// 바텀 네비에서 커뮤니티가 몇 번째 브랜치인가 (`app_router.dart`의
+  /// `StatefulShellBranch` 순서 — 홈 0 · 커뮤니티 1 · 마이페이지 2).
+  ///
+  /// 탭 화면이 "지금 내가 보이는가"를 판정할 때 쓴다. 브랜치 순서를 바꾸면
+  /// 여기도 함께 고쳐야 한다.
+  static const int communityBranchIndex = 1;
+
+  /// 모집글 작성 화면 (커뮤니티 목록의 작성 버튼에서 진입)
+  static const String communityCreate = '/community/create';
+
+  /// 모집글 검색 화면 (커뮤니티 목록 상단 돋보기에서 진입)
+  ///
+  /// `:postId`보다 먼저 등록해야 한다 — 뒤에 두면 `/community/search`가
+  /// postId="search"로 잡힌다 (`create`와 같은 이유).
+  static const String communitySearch = '/community/search';
+
+  /// 모집글 상세 화면 (목록 카드 탭에서 진입)
+  ///
+  /// `create`보다 뒤에 등록해야 한다 — 먼저 두면 `/community/create`가
+  /// postId="create"로 잡힌다.
+  static const String communityDetail = '/community/:postId';
+
+  /// 상세 절대 경로 — 푸시 알림 탭처럼 셸 밖에서 `go`로 진입할 때 쓴다.
+  /// `go`는 커뮤니티 탭 셸까지 함께 세우므로 뒤로가기가 커뮤니티 목록으로 간다.
+  static String communityDetailWithId(int postId) => '/community/$postId';
+
+  /// 모집글 딥링크 경로 별칭 (웹 주소와 동일 — ko·ja·en)
+  ///
+  /// 엔진이 warm 인텐트의 원시 URI 경로를 라우터로 전달하므로
+  /// (AndroidManifest 의 flutter_deeplinking_enabled=false 를 존중하지 않는
+  /// 것을 실기기에서 확인), 딥링크 경로는 라우터에 실제 라우트로 존재해야
+  /// 404 가 화면을 덮지 않는다. /join 과 같은 원리이며 전부 상세로 넘긴다.
+  static const List<String> communityPostDeeplinkAliases = [
+    '/g/:postId',
+    '/ja/g/:postId',
+    '/en/g/:postId',
+  ];
+
+  /// 모집글 수정 화면 (상세·목록 카드의 더보기 메뉴에서 진입)
+  ///
+  /// 고칠 글을 `extra`로 함께 넘겨야 한다 — 없으면 상세로 되돌린다(딥링크 방지).
+  static const String communityEdit = '/community/:postId/edit';
+
+  /// 모집글 채팅방 (상세의 참여 버튼 또는 내 모임 목록에서 진입)
+  ///
+  /// `:postId` 하위에 등록한다 — 상세·채팅방·사이드바가 같은 글 id를 공유한다.
+  static const String communityChat = '/community/:postId/chat';
+  static String communityChatWithId(int postId) => '/community/$postId/chat';
+
+  /// 채팅방 사이드바 — 시안이 전체 화면이라 drawer 대신 push한다
+  static const String communityChatMenu = '/community/:postId/chat/menu';
+  static String communityChatMenuWithId(int postId) =>
+      '/community/$postId/chat/menu';
+
+  /// 채팅방 고정 공지 — 상단 모임 카드를 누르면 전체 화면으로 연다
+  static const String communityChatNotice = '/community/:postId/chat/notice';
+  static String communityChatNoticeWithId(int postId) =>
+      '/community/$postId/chat/notice';
+
+  /// 공지글 작성·수정. 기존 본문은 `extra`로 넘긴다 — 있으면 수정이다.
+  static const String communityChatNoticeEdit =
+      '/community/:postId/chat/notice/edit';
+  static String communityChatNoticeEditWithId(int postId) =>
+      '/community/$postId/chat/notice/edit';
+
+  /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
+  static const String mypage = '/mypage';
+
+  /// 내 스크랩 목록 (마이페이지 계정 섹션에서 진입)
+  static const String myScraps = '/mypage/scraps';
+
+  /// 언어 설정 화면
+  static const String languageSettings = '/mypage/language';
+
+  /// 약관 설정 화면
+  static const String agreementSettings = '/mypage/agreements';
+
+  /// 버그 제보 화면
+  static const String bugReport = '/mypage/bug-report';
+
+  /// 법적 문서 화면 (최상위)
+  ///
+  /// 로그인, 가입 동의, 약관 설정 세 곳에서 같은 화면을 열기 때문에 마이페이지
+  /// 하위가 아니라 최상위에 둡니다.
+  /// 신고 유형 선택 — 어느 화면에서든 열리므로 최상위에 둔다.
+  /// `extra`로 `ReportTarget`을 넘긴다.
+  static const String report = '/report';
+
+  /// 기타 신고 사유 작성 (신고 유형 선택의 자식 — 뒤로 가면 유형 목록으로)
+  static const String reportReason = '/report/reason';
+
+  static const String legalDocument = '/legal';
+
+  /// 문서 종류에 해당하는 법적 문서 화면 경로
+  static String legalDocumentOf(LegalDoc doc) => '$legalDocument/${doc.slug}';
+
+  /// 크레딧 화면 (버전 5회 탭 이스터에그)
+  static const String credits = '/mypage/credits';
 
   /// 공지사항 화면
   static const String notices = '/home/notices';
-
-  /// 크레딧 페이지 (히든)
-  static const String credits = '/home/settings/credits';
 
   // ============================================================================
   // Session Creation Flow Routes (PRD F1.1)
@@ -166,11 +264,28 @@ class RoutePaths {
   static const String nicknameSetupName = 'nicknameSetup';
   static const String agreementName = 'agreement';
   static const String homeName = 'home';
+  static const String communityName = 'community';
+  static const String communityCreateName = 'communityCreate';
+  static const String communitySearchName = 'communitySearch';
+  static const String communityNotificationName = 'communityNotification';
+  static const String communityDetailName = 'communityDetail';
+  static const String communityEditName = 'communityEdit';
+  static const String communityChatName = 'communityChat';
+  static const String communityChatMenuName = 'communityChatMenu';
+  static const String communityChatNoticeName = 'communityChatNotice';
+  static const String communityChatNoticeEditName = 'communityChatNoticeEdit';
+  static const String mypageName = 'mypage';
+  static const String myScrapsName = 'myScraps';
+  static const String languageSettingsName = 'languageSettings';
+  static const String agreementSettingsName = 'agreementSettings';
+  static const String bugReportName = 'bugReport';
+  static const String reportName = 'report';
+  static const String reportReasonName = 'reportReason';
+  static const String legalDocumentName = 'legalDocument';
+  static const String creditsName = 'credits';
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
-  static const String settingsName = 'settings';
   static const String noticesName = 'notices';
-  static const String creditsName = 'credits';
   static const String setupPlaygroundFromFlowName = 'setupPlaygroundFromFlow';
   static const String setupPrisonFromFlowName = 'setupPrisonFromFlow';
   static const String gameSettingsName = 'gameSettings';
@@ -189,4 +304,17 @@ class RoutePaths {
 
   /// 딥링크 초대 코드 진입 (예: /join/ABC123)
   static const String joinByInvite = '/join';
+}
+
+/// 모집글 상세를 여는 방식.
+///
+/// 목록 카드에서 "수정"을 고르면 상세를 깐 **직후** 그 위로 수정 화면이 솟아
+/// 오른다. 이때 상세까지 전환 애니메이션을 타면 화면이 두 번 움직여 어디로
+/// 가는지가 흐려진다 — 그 경우만 전환을 생략한다.
+enum CommunityDetailEntry {
+  /// 목록 카드를 탭해 상세 자체를 보러 온 경우 — 평소의 페이드 전환.
+  normal,
+
+  /// 수정 화면으로 가는 길목으로만 깔리는 경우 — 전환 없음.
+  silent,
 }

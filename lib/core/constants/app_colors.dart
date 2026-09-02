@@ -26,6 +26,10 @@ class AppColors {
   /// Transparent color
   static const Color transparent = Color(0x00000000);
 
+  /// 배경 (연한 하늘색)
+  /// Background color (pale sky blue)
+  static const Color background = Color(0xFFF4FAFF);
+
   // ============================================
   // 흑백 계열 (Black Scale)
   // ============================================
@@ -103,9 +107,37 @@ class AppColors {
   // 파랑 계열 (Blue Scale)
   // ============================================
 
+  /// 로고 색상
+  /// Logo color
+  static const Color logo = Color(0xFF4D63FF);
+
+  /// 파랑 ver2 - 진한
+  /// Blue ver2 - rich
+  static const Color blueVer2Rich = Color(0xFF69B6FF);
+
+  /// 파랑 ver2 - 기본
+  /// Blue ver2 - basic
+  static const Color blueVer2Basic = Color(0xFF339DFF);
+
+  /// 파랑 ver2 - 연한
+  /// Blue ver2 - vague
+  static const Color blueVer2Vague = Color(0xFFC4E3FF);
+
+  /// 파랑 ver2 - 강조
+  /// Blue ver2 - strong
+  static const Color blueVer2Strong = Color(0xFF2264FF);
+
+  /// 파랑 ver2 - 50
+  /// Blue ver2 - 50
+  static const Color blueVer2_50 = Color(0xFFE7F4FF);
+
+  /// 파랑 ver2 - 70
+  /// Blue ver2 - 70
+  static const Color blueVer2_70 = Color(0xFFD3EAFF);
+
   /// 파랑
   /// Blue color
-  static const Color blue = Color(0xFF3F63D9);
+  static const Color blue = Color(0xFF0088FF);
 
   /// 파랑 800
   /// Blue 800
@@ -129,7 +161,7 @@ class AppColors {
 
   /// 빨강
   /// Red color
-  static const Color red = Color(0xFFF5383B);
+  static const Color red = Color(0xFFFF383C);
 
   /// 빨강 900
   /// Red 900
@@ -157,7 +189,7 @@ class AppColors {
 
   /// 노랑
   /// Yellow color
-  static const Color yellow = Color(0xFFF5EF38);
+  static const Color yellow = Color(0xFFFFCC00);
 
   /// 노랑 900
   /// Yellow 900

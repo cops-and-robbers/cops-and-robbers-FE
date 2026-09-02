@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
@@ -46,13 +45,7 @@ class GameRulesContent extends StatelessWidget {
         locationRevealIntervalMinutes: locationRevealIntervalMinutes,
         isDarkMode: isDarkMode,
       ),
-      // 좌측은 단순 닫기, 우측 primary로 인게임 튜토리얼 재방문 경로 노출.
-      // 한 번 본 사용자도 게임 규칙 다이얼로그를 통해 언제든 다시 학습 가능.
-      cancelText: l10n.buttonConfirm,
-      confirmText: l10n.buttonViewInGame,
-      confirmColor: isDarkMode ? null : AppColors.blue,
-      confirmTextColor: isDarkMode ? null : AppColors.white,
-      onConfirm: () => context.push('/tutorial/in-game'),
+      confirmText: l10n.buttonConfirm,
     );
   }
 

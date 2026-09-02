@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -54,7 +55,6 @@ class TeamSection extends StatelessWidget {
     this.myParticipantId,
     this.currentUserTeam,
     this.onAddSlotTap,
-    this.addSlotKey,
     this.badge,
     this.onMemberTap,
     this.isDarkMode = false,
@@ -91,9 +91,6 @@ class TeamSection extends StatelessWidget {
   /// + 버튼 카드 탭 콜백 (팀 변경용)
   final VoidCallback? onAddSlotTap;
 
-  /// + 버튼 카드 GlobalKey (튜토리얼 하이라이트용)
-  final GlobalKey? addSlotKey;
-
   /// 팀명 옆 배지 위젯 (null이면 인원 카운트 표시)
   ///
   /// 예: "현재 X명 도주 중!" 텍스트 (인게임 참가자 오버레이용)
@@ -118,16 +115,8 @@ class TeamSection extends StatelessWidget {
   String _teamName(AppLocalizations l10n) =>
       _isPolice ? l10n.gameTeamCop : l10n.gameTeamRobber;
 
-  String get _iconPath {
-    if (_isPolice) {
-      return isDarkMode
-          ? 'assets/icons/icon_police_darkmode.svg'
-          : 'assets/icons/icon_police_lightmode.svg';
-    }
-    return isDarkMode
-        ? 'assets/icons/mdi_robber_darkmode.svg'
-        : 'assets/icons/mdi_robber_lightmode.svg';
-  }
+  String get _iconPath =>
+      AppIcons.role(isPolice: _isPolice, isDark: isDarkMode);
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +180,7 @@ class TeamSection extends StatelessWidget {
               turns: isExpanded ? 0.5 : 0.0,
               duration: const Duration(milliseconds: 250),
               child: SvgPicture.asset(
-                'assets/icons/icon_down.svg',
+                AppIcons.down,
                 width: 24.w,
                 height: 24.w,
                 colorFilter: isDarkMode
@@ -230,11 +219,7 @@ class TeamSection extends StatelessWidget {
         children: [
           // 첫 번째 칸: + 버튼 카드 (대기실에서만 표시)
           if (hasAddSlot)
-            AddSlotCard(
-              key: addSlotKey,
-              onTap: onAddSlotTap,
-              isDarkMode: isDarkMode,
-            ),
+            AddSlotCard(onTap: onAddSlotTap, isDarkMode: isDarkMode),
           // 참가자 카드 (방장 우선)
           ...sorted.map(
             (member) => ParticipantCard(

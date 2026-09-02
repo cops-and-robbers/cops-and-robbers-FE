@@ -3,14 +3,18 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_urls.dart';
+import '../../../../core/constants/legal_doc.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
-import '../../../settings/presentation/pages/legal_document_page.dart';
+import '../../../../router/route_paths.dart';
 import '../providers/agreement_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/agreement_all_checkbox.dart';
@@ -20,11 +24,38 @@ import '../widgets/agreement_item.dart';
 ///
 /// 로그인 후 필수 약관 미동의 사용자에게 노출되며, 동의 완료 전까지
 /// 앱의 다른 화면으로 진입할 수 없습니다 (AppBar 없음, PopScope로 백 차단).
-class AgreementPage extends ConsumerWidget {
+class AgreementPage extends ConsumerStatefulWidget {
   const AgreementPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AgreementPage> createState() => _AgreementPageState();
+}
+
+class _AgreementPageState extends ConsumerState<AgreementPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    // 서버가 필수 약관 미동의로 차단해서 여기로 온 경우에만 사유를 안내한다.
+    // 플래그는 전역 Dio 인터셉터가 켜며, 여기서 1회 소비한다
+    // (신규 가입 동의 플로우에서는 켜지지 않아 안내가 뜨지 않는다).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (!ref.read(requiredTermsBlockedProvider)) return;
+
+      ref.read(requiredTermsBlockedProvider.notifier).state = false;
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(
+          context,
+        ).errorByCode(requiredTermsErrorCode),
+        backgroundColor: AppColors.red,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(agreementNotifierProvider);
     final notifier = ref.read(agreementNotifierProvider.notifier);
     final l10n = AppLocalizations.of(context);
@@ -52,18 +83,15 @@ class AgreementPage extends ConsumerWidget {
                           onToggle: () => notifier.toggleAll(!state.allAgreed),
                         ),
                         SizedBox(height: AppSpacing.vertical6),
-                        const Divider(color: AppColors.black100, height: 1),
+                        const SolidDivider(),
                         SizedBox(height: AppSpacing.vertical6),
                         AgreementItem(
                           checked: state.termsOfService,
                           required: true,
                           title: l10n.linkTermsOfService,
                           onToggle: notifier.toggleTerms,
-                          onDetailTap: () => _openDetail(
-                            context,
-                            title: l10n.linkTermsOfService,
-                            assetPath: 'assets/legals/terms_of_service.json',
-                            externalUrl: AppUrls.termsOfService,
+                          onDetailTap: () => context.push(
+                            RoutePaths.legalDocumentOf(LegalDoc.terms),
                           ),
                         ),
                         AgreementItem(
@@ -71,11 +99,8 @@ class AgreementPage extends ConsumerWidget {
                           required: true,
                           title: l10n.linkPrivacyPolicy,
                           onToggle: notifier.togglePrivacy,
-                          onDetailTap: () => _openDetail(
-                            context,
-                            title: l10n.linkPrivacyPolicy,
-                            assetPath: 'assets/legals/privacy_policy.json',
-                            externalUrl: AppUrls.privacyPolicy,
+                          onDetailTap: () => context.push(
+                            RoutePaths.legalDocumentOf(LegalDoc.privacy),
                           ),
                         ),
                         AgreementItem(
@@ -83,11 +108,8 @@ class AgreementPage extends ConsumerWidget {
                           required: true,
                           title: l10n.linkLocationTerms,
                           onToggle: notifier.toggleLocation,
-                          onDetailTap: () => _openDetail(
-                            context,
-                            title: l10n.linkLocationTerms,
-                            assetPath: 'assets/legals/location_terms.json',
-                            externalUrl: AppUrls.locationTerms,
+                          onDetailTap: () => context.push(
+                            RoutePaths.legalDocumentOf(LegalDoc.location),
                           ),
                         ),
                         AgreementItem(
@@ -95,11 +117,8 @@ class AgreementPage extends ConsumerWidget {
                           required: false,
                           title: l10n.linkMarketingConsent,
                           onToggle: notifier.toggleMarketing,
-                          onDetailTap: () => _openDetail(
-                            context,
-                            title: l10n.linkMarketingConsent,
-                            assetPath: 'assets/legals/marketing_consent.json',
-                            externalUrl: AppUrls.marketingConsent,
+                          onDetailTap: () => context.push(
+                            RoutePaths.legalDocumentOf(LegalDoc.marketing),
                           ),
                         ),
                       ],
@@ -114,10 +133,9 @@ class AgreementPage extends ConsumerWidget {
                       state.hasAllRequired &&
                           !state.isSubmitting &&
                           !state.isLoading
-                      ? () => _onSubmit(context, ref)
+                      ? () => _onSubmit(context)
                       : null,
                   isLoading: state.isLoading || state.isSubmitting,
-                  showBorder: false,
                 ),
               ],
             ),
@@ -149,24 +167,7 @@ class AgreementPage extends ConsumerWidget {
     );
   }
 
-  void _openDetail(
-    BuildContext context, {
-    required String title,
-    required String assetPath,
-    String? externalUrl,
-  }) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => LegalDocumentPage(
-          title: title,
-          assetPath: assetPath,
-          externalUrl: externalUrl,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _onSubmit(BuildContext context, WidgetRef ref) async {
+  Future<void> _onSubmit(BuildContext context) async {
     final notifier = ref.read(agreementNotifierProvider.notifier);
     final result = await notifier.submit();
 

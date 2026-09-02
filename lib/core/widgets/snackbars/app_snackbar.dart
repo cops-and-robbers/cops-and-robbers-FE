@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_icons.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 
@@ -17,7 +18,7 @@ import '../../constants/text_styles.dart';
 /// ```dart
 /// AppSnackbar.show(context, message: '저장되었습니다.');
 /// AppSnackbar.show(context, message: '오류 발생', backgroundColor: AppColors.red);
-/// AppSnackbar.show(context, message: '복사됨', iconPath: 'assets/icons/icon_copy.svg');
+/// AppSnackbar.show(context, message: '복사됨', iconPath: AppIcons.copy);
 /// ```
 class AppSnackbar {
   AppSnackbar._();
@@ -165,7 +166,7 @@ class _SnackbarOverlayState extends State<_SnackbarOverlay>
               child: Row(
                 children: [
                   SvgPicture.asset(
-                    widget.iconPath ?? 'assets/icons/icon_siren.svg',
+                    widget.iconPath ?? AppIcons.siren,
                     width: (widget.iconSize ?? 20).w,
                     height: (widget.iconSize ?? 20).w,
                     colorFilter: const ColorFilter.mode(

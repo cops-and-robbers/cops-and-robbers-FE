@@ -60,7 +60,10 @@ class ActionChip extends StatelessWidget {
   /// 텍스트 색상 (기본: AppColors.white)
   final Color? textColor;
 
-  /// 너비 (기본: 100.w)
+  /// 너비 (기본: 내용에 맞춰 조절, 최소 100.w)
+  ///
+  /// 값을 주면 그 너비로 고정됩니다. 주지 않으면 최소 100.w를 지키되
+  /// 영어 등 긴 텍스트는 잘리지 않게 칩이 넓어집니다.
   final double? width;
 
   /// 높이 (기본: 40.h)
@@ -81,9 +84,6 @@ class ActionChip extends StatelessWidget {
   /// 텍스트 색상 (기본: AppColors.white)
   Color get _effectiveTextColor => textColor ?? AppColors.white;
 
-  /// 너비 (기본: 100.w)
-  double get _effectiveWidth => width ?? 100.w;
-
   /// 높이 (기본: 40.h)
   double get _effectiveHeight => height ?? 40.h;
 
@@ -99,7 +99,11 @@ class ActionChip extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(_effectiveBorderRadius),
       child: Container(
-        width: _effectiveWidth,
+        width: width,
+        // 너비 미지정 시 내용에 맞추되 최소 100.w 유지. 텍스트가 그보다 길면
+        // 칩이 넓어져 넘침(overflow)이 생기지 않는다.
+        constraints: width == null ? BoxConstraints(minWidth: 100.w) : null,
+        padding: width == null ? EdgeInsets.symmetric(horizontal: 12.w) : null,
         height: _effectiveHeight,
         decoration: BoxDecoration(
           color: _effectiveBackgroundColor,

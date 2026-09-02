@@ -25,3 +25,35 @@ Map<String, dynamic> _$$ReportRequestModelImplToJson(
   'reportType': instance.reportType,
   'etcReason': instance.etcReason,
 };
+
+_$CommunityPostReportRequestModelImpl
+_$$CommunityPostReportRequestModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityPostReportRequestModelImpl(
+      postId: (json['postId'] as num).toInt(),
+      reportType: json['reportType'] as String,
+      etcReason: json['etcReason'] as String?,
+    );
+
+Map<String, dynamic> _$$CommunityPostReportRequestModelImplToJson(
+  _$CommunityPostReportRequestModelImpl instance,
+) => <String, dynamic>{
+  'postId': instance.postId,
+  'reportType': instance.reportType,
+  'etcReason': instance.etcReason,
+};
+
+_$CommunityChatReportRequestModelImpl
+_$$CommunityChatReportRequestModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityChatReportRequestModelImpl(
+      chatMessageId: (json['chatMessageId'] as num).toInt(),
+      reportType: json['reportType'] as String,
+      etcReason: json['etcReason'] as String?,
+    );
+
+Map<String, dynamic> _$$CommunityChatReportRequestModelImplToJson(
+  _$CommunityChatReportRequestModelImpl instance,
+) => <String, dynamic>{
+  'chatMessageId': instance.chatMessageId,
+  'reportType': instance.reportType,
+  'etcReason': instance.etcReason,
+};

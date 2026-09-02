@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // SvgStringLoader + vg
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/constants/app_icons.dart';
 import '../../domain/entities/ping.dart';
 
 /// 핑 마커 BitmapDescriptor 생성기
@@ -35,7 +36,7 @@ class PingMarkerFactory {
     required bool isDark,
   }) async {
     final theme = isDark ? 'darkmode' : 'lightmode';
-    final typeName = type == PingType.found ? 'found' : 'suspect';
+    final typeName = type.name;
 
     // 이미 렌더한 (type, theme) 비트맵이면 즉시 재사용 — 반복 SVG 로드·래스터화 회피
     final cacheKey = '${typeName}_$theme';
@@ -49,7 +50,7 @@ class PingMarkerFactory {
     final symbolPic = await vg.loadPicture(
       SvgStringLoader(
         await rootBundle.loadString(
-          'assets/icons/icon_ping_${typeName}_marker_$theme.svg',
+          AppIcons.pingMarker(type: typeName, isDark: isDark),
         ),
       ),
       null,

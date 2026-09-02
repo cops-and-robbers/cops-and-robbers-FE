@@ -42,4 +42,57 @@ class ReportRepositoryImpl implements ReportRepository {
       );
     }
   }
+
+  @override
+  Future<void> reportCommunityPost({
+    required int postId,
+    required ReportCategory category,
+    String? etcReason,
+  }) async {
+    try {
+      await _dataSource.reportCommunityPost(
+        CommunityPostReportRequestModel(
+          postId: postId,
+          reportType: category.apiType,
+          // 서버는 ETC일 때만 사유를 받는다. 유형을 바꾸기 전에 쓰다 만 문구가
+          // 남아 있어도 그대로 딸려 가지 않게 여기서 끊는다.
+          etcReason: category == ReportCategory.other ? etcReason : null,
+        ),
+      );
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '신고 처리 중 오류가 발생했습니다.',
+        messageKey: 'errorReportGeneric',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> reportCommunityChat({
+    required int chatMessageId,
+    required ReportCategory category,
+    String? etcReason,
+  }) async {
+    try {
+      await _dataSource.reportCommunityChat(
+        CommunityChatReportRequestModel(
+          chatMessageId: chatMessageId,
+          reportType: category.apiType,
+          // 모집글 신고와 같은 이유로 여기서 끊는다.
+          etcReason: category == ReportCategory.other ? etcReason : null,
+        ),
+      );
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '신고 처리 중 오류가 발생했습니다.',
+        messageKey: 'errorReportGeneric',
+        originalException: e,
+      );
+    }
+  }
 }

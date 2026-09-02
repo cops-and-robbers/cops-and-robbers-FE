@@ -17,6 +17,10 @@ class NoticeEntity with _$NoticeEntity {
     /// UI에서는 제목 앞에 아이콘을 표시한다.
     required bool pinned,
     required DateTime createdAt,
+
+    /// 요청한 언어의 번역이 없어 서버가 다른 언어로 대체했는지 여부.
+    /// 언어 코드 두 개를 도메인까지 끌지 않고 판정 결과만 넘긴다.
+    @Default(false) bool isTranslationFallback,
   }) = _NoticeEntity;
 }
 

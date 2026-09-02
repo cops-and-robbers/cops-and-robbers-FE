@@ -3,10 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/constants/chat_constants.dart';
+import '../../../../core/widgets/chat/chat_bubble.dart';
 import '../../data/models/chat_message_dto.dart';
 
 /// 채팅 메시지 버블 위젯
@@ -49,14 +51,10 @@ class ChatMessageBubble extends StatelessWidget {
   String? get _roleIconPath {
     final team = message.sender.team.toUpperCase();
     if (team == ChatTeam.police) {
-      return isDarkMode
-          ? 'assets/icons/icon_police_darkmode.svg'
-          : 'assets/icons/icon_police_lightmode.svg';
+      return AppIcons.role(isPolice: true, isDark: isDarkMode);
     }
     if (team == ChatTeam.robber) {
-      return isDarkMode
-          ? 'assets/icons/mdi_robber_darkmode.svg'
-          : 'assets/icons/mdi_robber_lightmode.svg';
+      return AppIcons.role(isPolice: false, isDark: isDarkMode);
     }
     return null;
   }
@@ -69,14 +67,26 @@ class ChatMessageBubble extends StatelessWidget {
       return _buildSystemMessage(context);
     }
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: isMe ? AppSpacing.horizontal16 : AppSpacing.horizontal24,
-        right: isMe ? AppSpacing.horizontal24 : AppSpacing.horizontal16,
-        top: showNickname ? AppSpacing.vertical8 : 2.h,
-        bottom: 2.h,
+    final roleIconPath = _roleIconPath;
+    return ChatBubble(
+      text: message.filteredMessage,
+      isMe: isMe,
+      nickname: message.sender.nickname,
+      timeLabel: _formattedTime,
+      showNickname: showNickname,
+      showTime: showTime,
+      bubbleColor: isDarkMode ? AppColors.black : AppColors.white,
+      textStyle: AppTextStyles.paragraph_14.copyWith(
+        color: isDarkMode ? AppColors.white : AppColors.black,
       ),
-      child: isMe ? _buildMyMessage() : _buildOtherMessage(),
+      nicknameStyle: AppTextStyles.tag_12.copyWith(
+        color: isDarkMode ? AppColors.black400 : AppColors.black600,
+      ),
+      timeStyle: AppTextStyles.tag_10.copyWith(color: AppColors.black400),
+      leading: roleIconPath == null
+          ? null
+          : SvgPicture.asset(roleIconPath, width: 12.w, height: 12.w),
+      onLongPress: onLongPress,
     );
   }
 
@@ -92,7 +102,7 @@ class ChatMessageBubble extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SvgPicture.asset(
-            'assets/icons/Loudspeaker.svg',
+            AppIcons.loudspeaker,
             width: 16.w,
             height: 16.w,
             colorFilter: ColorFilter.mode(
@@ -136,13 +146,7 @@ class ChatMessageBubble extends StatelessWidget {
       }
       // 아이콘 WidgetSpan (원본 SVG 색상 유지 — colorFilter 미적용)
       final isPolice = GameTeam.isPolice(match.group(1));
-      final iconPath = isPolice
-          ? (isDarkMode
-                ? 'assets/icons/icon_police_darkmode.svg'
-                : 'assets/icons/icon_police_lightmode.svg')
-          : (isDarkMode
-                ? 'assets/icons/mdi_robber_darkmode.svg'
-                : 'assets/icons/mdi_robber_lightmode.svg');
+      final iconPath = AppIcons.role(isPolice: isPolice, isDark: isDarkMode);
       spans.add(
         WidgetSpan(
           alignment: PlaceholderAlignment.middle,
@@ -166,169 +170,5 @@ class ChatMessageBubble extends StatelessWidget {
     }
 
     return spans;
-  }
-
-  Widget _buildMyMessage() {
-    // getter 반복 호출 방지 — null 체크와 실제 사용을 동일 인스턴스로 보장
-    final roleIconPath = _roleIconPath;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        if (showNickname)
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: AppSpacing.vertical8,
-              right: AppSpacing.horizontal4,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (roleIconPath != null) ...[
-                  SvgPicture.asset(roleIconPath, width: 12.w, height: 12.w),
-                  SizedBox(width: AppSpacing.horizontal4),
-                ],
-                Text(
-                  message.sender.nickname,
-                  style: AppTextStyles.tag_12.copyWith(
-                    color: isDarkMode ? AppColors.black400 : AppColors.black600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            if (showTime)
-              Padding(
-                padding: EdgeInsets.only(
-                  right: AppSpacing.horizontal4,
-                  bottom: 2.h,
-                ),
-                child: Text(
-                  _formattedTime,
-                  style: AppTextStyles.tag_10.copyWith(
-                    color: AppColors.black400,
-                  ),
-                ),
-              ),
-            Flexible(
-              child: Builder(
-                builder: (bubbleCtx) => GestureDetector(
-                  onLongPress: onLongPress != null
-                      ? () => onLongPress!(bubbleCtx)
-                      : null,
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: 240.w),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.horizontal12,
-                      vertical: AppSpacing.vertical8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDarkMode ? AppColors.black : AppColors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12.r),
-                        topRight: Radius.circular(12.r),
-                        bottomLeft: Radius.circular(12.r),
-                        bottomRight: Radius.circular(4.r),
-                      ),
-                    ),
-                    child: Text(
-                      message.filteredMessage,
-                      style: AppTextStyles.paragraph_14.copyWith(
-                        color: isDarkMode ? AppColors.white : AppColors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOtherMessage() {
-    // getter 반복 호출 방지 — null 체크와 실제 사용을 동일 인스턴스로 보장
-    final roleIconPath = _roleIconPath;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (showNickname)
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: AppSpacing.vertical8,
-              left: AppSpacing.horizontal4,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (roleIconPath != null) ...[
-                  SvgPicture.asset(roleIconPath, width: 12.w, height: 12.w),
-                  SizedBox(width: AppSpacing.horizontal4),
-                ],
-                Text(
-                  message.sender.nickname,
-                  style: AppTextStyles.tag_12.copyWith(
-                    color: isDarkMode ? AppColors.black400 : AppColors.black600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Flexible(
-              child: Builder(
-                builder: (bubbleCtx) => GestureDetector(
-                  onLongPress: onLongPress != null
-                      ? () => onLongPress!(bubbleCtx)
-                      : null,
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: 240.w),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.horizontal12,
-                      vertical: AppSpacing.vertical8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDarkMode ? AppColors.black : AppColors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12.r),
-                        topRight: Radius.circular(12.r),
-                        bottomLeft: Radius.circular(4.r),
-                        bottomRight: Radius.circular(12.r),
-                      ),
-                    ),
-                    child: Text(
-                      message.filteredMessage,
-                      style: AppTextStyles.paragraph_14.copyWith(
-                        color: isDarkMode ? AppColors.white : AppColors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (showTime)
-              Padding(
-                padding: EdgeInsets.only(
-                  left: AppSpacing.horizontal4,
-                  bottom: 2.h,
-                ),
-                child: Text(
-                  _formattedTime,
-                  style: AppTextStyles.tag_10.copyWith(
-                    color: AppColors.black400,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
   }
 }

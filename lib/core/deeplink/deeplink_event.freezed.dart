@@ -20,32 +20,38 @@ mixin _$DeeplinkEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String inviteCode) inviteJoin,
+    required TResult Function(int postId) communityPost,
     required TResult Function(Uri uri) unknown,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String inviteCode)? inviteJoin,
+    TResult? Function(int postId)? communityPost,
     TResult? Function(Uri uri)? unknown,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String inviteCode)? inviteJoin,
+    TResult Function(int postId)? communityPost,
     TResult Function(Uri uri)? unknown,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InviteJoinEvent value) inviteJoin,
+    required TResult Function(CommunityPostEvent value) communityPost,
     required TResult Function(UnknownEvent value) unknown,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InviteJoinEvent value)? inviteJoin,
+    TResult? Function(CommunityPostEvent value)? communityPost,
     TResult? Function(UnknownEvent value)? unknown,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InviteJoinEvent value)? inviteJoin,
+    TResult Function(CommunityPostEvent value)? communityPost,
     TResult Function(UnknownEvent value)? unknown,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -148,6 +154,7 @@ class _$InviteJoinEventImpl implements InviteJoinEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String inviteCode) inviteJoin,
+    required TResult Function(int postId) communityPost,
     required TResult Function(Uri uri) unknown,
   }) {
     return inviteJoin(inviteCode);
@@ -157,6 +164,7 @@ class _$InviteJoinEventImpl implements InviteJoinEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String inviteCode)? inviteJoin,
+    TResult? Function(int postId)? communityPost,
     TResult? Function(Uri uri)? unknown,
   }) {
     return inviteJoin?.call(inviteCode);
@@ -166,6 +174,7 @@ class _$InviteJoinEventImpl implements InviteJoinEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String inviteCode)? inviteJoin,
+    TResult Function(int postId)? communityPost,
     TResult Function(Uri uri)? unknown,
     required TResult orElse(),
   }) {
@@ -179,6 +188,7 @@ class _$InviteJoinEventImpl implements InviteJoinEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InviteJoinEvent value) inviteJoin,
+    required TResult Function(CommunityPostEvent value) communityPost,
     required TResult Function(UnknownEvent value) unknown,
   }) {
     return inviteJoin(this);
@@ -188,6 +198,7 @@ class _$InviteJoinEventImpl implements InviteJoinEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InviteJoinEvent value)? inviteJoin,
+    TResult? Function(CommunityPostEvent value)? communityPost,
     TResult? Function(UnknownEvent value)? unknown,
   }) {
     return inviteJoin?.call(this);
@@ -197,6 +208,7 @@ class _$InviteJoinEventImpl implements InviteJoinEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InviteJoinEvent value)? inviteJoin,
+    TResult Function(CommunityPostEvent value)? communityPost,
     TResult Function(UnknownEvent value)? unknown,
     required TResult orElse(),
   }) {
@@ -217,6 +229,158 @@ abstract class InviteJoinEvent implements DeeplinkEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$InviteJoinEventImplCopyWith<_$InviteJoinEventImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CommunityPostEventImplCopyWith<$Res> {
+  factory _$$CommunityPostEventImplCopyWith(
+    _$CommunityPostEventImpl value,
+    $Res Function(_$CommunityPostEventImpl) then,
+  ) = __$$CommunityPostEventImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int postId});
+}
+
+/// @nodoc
+class __$$CommunityPostEventImplCopyWithImpl<$Res>
+    extends _$DeeplinkEventCopyWithImpl<$Res, _$CommunityPostEventImpl>
+    implements _$$CommunityPostEventImplCopyWith<$Res> {
+  __$$CommunityPostEventImplCopyWithImpl(
+    _$CommunityPostEventImpl _value,
+    $Res Function(_$CommunityPostEventImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DeeplinkEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? postId = null}) {
+    return _then(
+      _$CommunityPostEventImpl(
+        postId: null == postId
+            ? _value.postId
+            : postId // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CommunityPostEventImpl implements CommunityPostEvent {
+  const _$CommunityPostEventImpl({required this.postId});
+
+  @override
+  final int postId;
+
+  @override
+  String toString() {
+    return 'DeeplinkEvent.communityPost(postId: $postId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityPostEventImpl &&
+            (identical(other.postId, postId) || other.postId == postId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, postId);
+
+  /// Create a copy of DeeplinkEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityPostEventImplCopyWith<_$CommunityPostEventImpl> get copyWith =>
+      __$$CommunityPostEventImplCopyWithImpl<_$CommunityPostEventImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String inviteCode) inviteJoin,
+    required TResult Function(int postId) communityPost,
+    required TResult Function(Uri uri) unknown,
+  }) {
+    return communityPost(postId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String inviteCode)? inviteJoin,
+    TResult? Function(int postId)? communityPost,
+    TResult? Function(Uri uri)? unknown,
+  }) {
+    return communityPost?.call(postId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String inviteCode)? inviteJoin,
+    TResult Function(int postId)? communityPost,
+    TResult Function(Uri uri)? unknown,
+    required TResult orElse(),
+  }) {
+    if (communityPost != null) {
+      return communityPost(postId);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(InviteJoinEvent value) inviteJoin,
+    required TResult Function(CommunityPostEvent value) communityPost,
+    required TResult Function(UnknownEvent value) unknown,
+  }) {
+    return communityPost(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(InviteJoinEvent value)? inviteJoin,
+    TResult? Function(CommunityPostEvent value)? communityPost,
+    TResult? Function(UnknownEvent value)? unknown,
+  }) {
+    return communityPost?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(InviteJoinEvent value)? inviteJoin,
+    TResult Function(CommunityPostEvent value)? communityPost,
+    TResult Function(UnknownEvent value)? unknown,
+    required TResult orElse(),
+  }) {
+    if (communityPost != null) {
+      return communityPost(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class CommunityPostEvent implements DeeplinkEvent {
+  const factory CommunityPostEvent({required final int postId}) =
+      _$CommunityPostEventImpl;
+
+  int get postId;
+
+  /// Create a copy of DeeplinkEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityPostEventImplCopyWith<_$CommunityPostEventImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -291,6 +455,7 @@ class _$UnknownEventImpl implements UnknownEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String inviteCode) inviteJoin,
+    required TResult Function(int postId) communityPost,
     required TResult Function(Uri uri) unknown,
   }) {
     return unknown(uri);
@@ -300,6 +465,7 @@ class _$UnknownEventImpl implements UnknownEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String inviteCode)? inviteJoin,
+    TResult? Function(int postId)? communityPost,
     TResult? Function(Uri uri)? unknown,
   }) {
     return unknown?.call(uri);
@@ -309,6 +475,7 @@ class _$UnknownEventImpl implements UnknownEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String inviteCode)? inviteJoin,
+    TResult Function(int postId)? communityPost,
     TResult Function(Uri uri)? unknown,
     required TResult orElse(),
   }) {
@@ -322,6 +489,7 @@ class _$UnknownEventImpl implements UnknownEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InviteJoinEvent value) inviteJoin,
+    required TResult Function(CommunityPostEvent value) communityPost,
     required TResult Function(UnknownEvent value) unknown,
   }) {
     return unknown(this);
@@ -331,6 +499,7 @@ class _$UnknownEventImpl implements UnknownEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InviteJoinEvent value)? inviteJoin,
+    TResult? Function(CommunityPostEvent value)? communityPost,
     TResult? Function(UnknownEvent value)? unknown,
   }) {
     return unknown?.call(this);
@@ -340,6 +509,7 @@ class _$UnknownEventImpl implements UnknownEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InviteJoinEvent value)? inviteJoin,
+    TResult Function(CommunityPostEvent value)? communityPost,
     TResult Function(UnknownEvent value)? unknown,
     required TResult orElse(),
   }) {
