@@ -129,13 +129,9 @@ abstract final class AppIcons {
   static String pingPin({required bool isDark}) =>
       'assets/icons/icon_ping_pin_${_theme(isDark)}.svg';
 
-  /// 참가자 역할(경찰/도둑) 아이콘
-  ///
-  /// 두 파일의 접두어가 서로 다르다(`icon_police_` / `mdi_robber_`). 호출부가 그
-  /// 불일치를 알 필요가 없도록 여기서 흡수한다.
-  static String role({required bool isPolice, required bool isDark}) => isPolice
-      ? 'assets/icons/icon_police_${_theme(isDark)}.svg'
-      : 'assets/icons/mdi_robber_${_theme(isDark)}.svg';
+  /// 참가자 역할(경찰/도둑) 아이콘 — `icon_{police|robber}_{theme}.svg`
+  static String role({required bool isPolice, required bool isDark}) =>
+      'assets/icons/icon_${isPolice ? 'police' : 'robber'}_${_theme(isDark)}.svg';
 
   /// 파일명에 들어가는 테마 조각 (색상 테마가 아니라 에셋 명명 규칙)
   static String _theme(bool isDark) => isDark ? 'darkmode' : 'lightmode';
