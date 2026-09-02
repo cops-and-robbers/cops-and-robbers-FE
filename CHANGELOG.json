@@ -1,11 +1,32 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-02T16:43:39Z",
-    "currentVersion": "3.0.10",
+    "lastUpdated": "2026-09-02T16:52:31Z",
+    "currentVersion": "3.0.11",
     "projectType": "flutter",
-    "totalReleases": 123
+    "totalReleases": 124
   },
   "releases": [
+    {
+      "version": "3.0.11",
+      "project_type": "flutter",
+      "date": "2026-09-02",
+      "pr_number": 553,
+      "raw_summary": "## Summary by CodeRabbit\n\n- **새 기능**\n  - 해당 없음\n\n- **개선 사항**\n  - 마퀴 알림 배너의 확성기 아이콘이 원래의 다채로운 색상으로 표시됩니다.\n\n- **릴리스**\n  - 앱 버전이 3.0.11로 업데이트되었습니다.\n  - 빌드 번호가 322로 갱신되었습니다.",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": [
+            "해당 없음",
+            "**개선 사항**",
+            "마퀴 알림 배너의 확성기 아이콘이 원래의 다채로운 색상으로 표시됩니다.",
+            "**릴리스**",
+            "앱 버전이 3.0.11로 업데이트되었습니다.",
+            "빌드 번호가 322로 갱신되었습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.0.10",
       "project_type": "flutter",
