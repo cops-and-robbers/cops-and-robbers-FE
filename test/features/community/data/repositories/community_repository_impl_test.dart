@@ -19,6 +19,26 @@ class _FakeCommunityRemoteDataSource implements CommunityRemoteDataSource {
   Future<void> kickChatMember(int postId, int userId) =>
       throw UnimplementedError('이 테스트는 강퇴를 쓰지 않는다');
 
+  @override
+  Future<CommunityChatPinResponseModel> getChatPin(int postId) =>
+      throw UnimplementedError('이 테스트는 고정 공지를 쓰지 않는다');
+
+  @override
+  Future<CommunityChatPinResponseModel> registerChatPin(
+    int postId,
+    CommunityChatPinRequestModel body,
+  ) => throw UnimplementedError('이 테스트는 고정 공지를 쓰지 않는다');
+
+  @override
+  Future<CommunityChatPinResponseModel> updateChatPin(
+    int postId,
+    CommunityChatPinRequestModel body,
+  ) => throw UnimplementedError('이 테스트는 고정 공지를 쓰지 않는다');
+
+  @override
+  Future<void> deleteChatPin(int postId) =>
+      throw UnimplementedError('이 테스트는 고정 공지를 쓰지 않는다');
+
   CommunityPostListResponseModel? responseToReturn;
   Object? errorToThrow;
 

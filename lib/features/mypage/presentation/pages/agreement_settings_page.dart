@@ -12,7 +12,7 @@ import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
-import '../../../../core/widgets/load_failure_view.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../router/route_paths.dart';
 import '../../../auth/presentation/widgets/agreement_item.dart';
@@ -144,12 +144,15 @@ class _AgreementSettingsPageState extends ConsumerState<AgreementSettingsPage> {
     final message = error is AppException
         ? l10n.errorByException(error)
         : l10n.errorAgreementLoadFailed;
-    return LoadFailureView(
-      message: message,
-      onRetry: () {
-        setState(() => _status = const AsyncValue.loading());
-        _loadAgreements();
-      },
+    return Center(
+      child: EmptyState(
+        message: message,
+        actionText: l10n.buttonRetry,
+        onAction: () {
+          setState(() => _status = const AsyncValue.loading());
+          _loadAgreements();
+        },
+      ),
     );
   }
 

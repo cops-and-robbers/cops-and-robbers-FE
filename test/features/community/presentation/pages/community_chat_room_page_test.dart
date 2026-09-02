@@ -220,6 +220,32 @@ void main() {
       expect(find.text('오후 5:41'), findsOneWidget);
     });
 
+    testWidgets('shows_notice_pill_when_host_registers_a_pin', (tester) async {
+      // 공지는 이력을 남기지 않는다(DEC-0054) — 대화창의 이 자국이 "언제
+      // 바뀌었나"의 유일한 기록이다. 모르는 이벤트로 접히면 아무것도 안 남는다.
+      final repo = FakeCommunityChatRepository();
+      await tester.pumpWidget(_wrap(repo));
+      await tester.pump(const Duration(milliseconds: 300)); // 상세 목(200ms) 로드
+      await tester.pumpAndSettle();
+
+      repo.emitMessage(
+        CommunityChatMessageEntity(
+          id: 101,
+          messageKey: 'pin-1',
+          senderId: 7,
+          senderNickname: '경도매우러버',
+          body: const CommunityChatMessageBody.system(
+            CommunityChatSystemEvent.pinRegistered,
+          ),
+          createdAt: DateTime(2026, 8, 24, 17, 45),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('경도매우러버님이 공지를 등록했어요'), findsOneWidget);
+      expect(find.byType(CommunityChatSystemPill), findsOneWidget);
+    });
+
     testWidgets('shows_reconnect_banner_when_connection_is_exhausted', (
       tester,
     ) async {

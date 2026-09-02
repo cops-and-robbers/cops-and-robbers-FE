@@ -29,7 +29,8 @@ import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
 import '../features/community/domain/entities/community_post_entity.dart';
-import '../features/community/presentation/pages/community_chat_meeting_info_page.dart';
+import '../features/community/presentation/pages/community_chat_notice_edit_page.dart';
+import '../features/community/presentation/pages/community_chat_notice_page.dart';
 import '../features/community/presentation/pages/community_chat_room_info_page.dart';
 import '../features/community/presentation/pages/community_chat_room_page.dart';
 import '../features/community/presentation/pages/community_create_page.dart';
@@ -607,13 +608,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 ),
                           ),
                           GoRoute(
-                            path: 'meeting-info',
-                            name: RoutePaths.communityChatMeetingInfoName,
+                            path: 'notice',
+                            name: RoutePaths.communityChatNoticeName,
                             parentNavigatorKey: rootNavigatorKey,
                             pageBuilder: (context, state) =>
                                 buildDirectionalSlide(
                                   key: state.pageKey,
-                                  child: CommunityChatMeetingInfoPage(
+                                  child: CommunityChatNoticePage(
                                     postId:
                                         int.tryParse(
                                           state.pathParameters['postId'] ?? '',
@@ -622,6 +623,28 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   ),
                                   isForward: true,
                                 ),
+                            routes: [
+                              GoRoute(
+                                path: 'edit',
+                                name: RoutePaths.communityChatNoticeEditName,
+                                parentNavigatorKey: rootNavigatorKey,
+                                pageBuilder: (context, state) =>
+                                    buildDirectionalSlide(
+                                      key: state.pageKey,
+                                      child: CommunityChatNoticeEditPage(
+                                        postId:
+                                            int.tryParse(
+                                              state.pathParameters['postId'] ??
+                                                  '',
+                                            ) ??
+                                            0,
+                                        // 기존 본문이 있으면 수정, 없으면 등록이다.
+                                        initialContent: state.extra as String?,
+                                      ),
+                                      isForward: true,
+                                    ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

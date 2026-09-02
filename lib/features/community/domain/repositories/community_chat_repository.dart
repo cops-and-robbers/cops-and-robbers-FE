@@ -1,5 +1,6 @@
 import '../entities/community_chat_event.dart';
 import '../entities/community_chat_member_entity.dart';
+import '../entities/community_chat_notice_entity.dart';
 import '../entities/community_chat_page_entity.dart';
 import '../entities/community_chat_room_entity.dart';
 
@@ -40,6 +41,19 @@ abstract class CommunityChatRepository {
 
   /// 이 방의 푸시 알림 수신 여부. 끄면 푸시만 막고 안 읽은 개수는 그대로 오른다.
   Future<void> setNotification(int postId, {required bool enabled});
+
+  /// 고정 공지. 없으면 `null` — 서버가 200 + 필드 null로 주는 것을 여기서 접는다.
+  /// 방 멤버만 부를 수 있다(403 `NOT_A_CHAT_MEMBER`).
+  Future<CommunityChatNoticeEntity?> getNotice(int postId);
+
+  /// 고정 공지 등록. 방장만 부를 수 있고, 이미 있으면 이력 없이 교체된다(DEC-0054).
+  Future<CommunityChatNoticeEntity> registerNotice(int postId, String content);
+
+  /// 고정 공지 수정. 등록된 공지가 없으면 404 `CHAT_PIN_NOT_FOUND`.
+  Future<CommunityChatNoticeEntity> updateNotice(int postId, String content);
+
+  /// 고정 공지 삭제. 방장 전용.
+  Future<void> deleteNotice(int postId);
 
   /// 소켓 연결. 연결될 때마다 [userId]의 알림 채널을 다시 구독한다.
   /// 메시지(방 채널·개인 채널 모두)·연결 상태·소켓 에러가 한 스트림으로 온다.

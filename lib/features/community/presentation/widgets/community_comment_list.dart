@@ -10,6 +10,7 @@ import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/providers/profile_icon_provider.dart';
 import '../../domain/entities/community_comment_entity.dart';
+import '../community_chat_time_format.dart';
 import 'community_menu_button.dart';
 
 /// 댓글 목록 (답글 한 겹 중첩)
@@ -323,7 +324,7 @@ class _CommentTile extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.vertical6),
                 Text(
-                  _formattedDate(comment.createdAt),
+                  formatCommunityDateTime(comment.createdAt),
                   style: AppTextStyles.tag_12.copyWith(
                     color: AppColors.black300,
                   ),
@@ -334,14 +335,5 @@ class _CommentTile extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  /// 1년 안이면 `mm/dd hh:mm`, 1년이 넘으면 `yy/mm/dd hh:mm` (24시 기준).
-  String _formattedDate(DateTime at) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    final hhmm = '${two(at.hour)}:${two(at.minute)}';
-    final mmdd = '${two(at.month)}/${two(at.day)} $hhmm';
-    if (DateTime.now().difference(at).inDays < 365) return mmdd;
-    return '${two(at.year % 100)}/$mmdd';
   }
 }

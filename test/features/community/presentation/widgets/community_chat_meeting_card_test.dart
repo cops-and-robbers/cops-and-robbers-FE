@@ -50,7 +50,7 @@ void main() {
           post: _post(),
           memberCount: 3,
           onViewLocation: () {},
-          onOpenMeetingInfo: () {},
+          onOpenNotice: () {},
         ),
       ),
     );
@@ -67,7 +67,7 @@ void main() {
           post: _post(),
           memberCount: 3,
           onViewLocation: () {},
-          onOpenMeetingInfo: () {},
+          onOpenNotice: () {},
           onStartGame: () => tapped++,
         ),
       ),

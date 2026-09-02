@@ -322,7 +322,7 @@ final selectedCommunitySortProvider =
 
 typedef _$SelectedCommunitySort = AutoDisposeNotifier<CommunitySortOption>;
 String _$communityFeedNotifierHash() =>
-    r'705d355dfecfc2956c53af58e5c6d239e49980d3';
+    r'12e578e8ebdd87e33a630f7ce4d7ca37b15c0c02';
 
 /// Copied from Dart SDK
 class _SystemHash {

@@ -196,3 +196,41 @@ _$$CommunityChatNotificationRequestModelImplFromJson(
 Map<String, dynamic> _$$CommunityChatNotificationRequestModelImplToJson(
   _$CommunityChatNotificationRequestModelImpl instance,
 ) => <String, dynamic>{'allowNotification': instance.allowNotification};
+
+_$CommunityChatPinResponseModelImpl
+_$$CommunityChatPinResponseModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommunityChatPinResponseModelImpl(
+      postId: (json['postId'] as num?)?.toInt(),
+      id: (json['id'] as num?)?.toInt(),
+      writerId: (json['writerId'] as num?)?.toInt(),
+      writerNickname: json['writerNickname'] as String?,
+      writerProfileIcon: (json['writerProfileIcon'] as num?)?.toInt(),
+      content: json['content'] as String?,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+    );
+
+Map<String, dynamic> _$$CommunityChatPinResponseModelImplToJson(
+  _$CommunityChatPinResponseModelImpl instance,
+) => <String, dynamic>{
+  'postId': instance.postId,
+  'id': instance.id,
+  'writerId': instance.writerId,
+  'writerNickname': instance.writerNickname,
+  'writerProfileIcon': instance.writerProfileIcon,
+  'content': instance.content,
+  'createdAt': instance.createdAt?.toIso8601String(),
+  'updatedAt': instance.updatedAt?.toIso8601String(),
+};
+
+_$CommunityChatPinRequestModelImpl _$$CommunityChatPinRequestModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$CommunityChatPinRequestModelImpl(content: json['content'] as String);
+
+Map<String, dynamic> _$$CommunityChatPinRequestModelImplToJson(
+  _$CommunityChatPinRequestModelImpl instance,
+) => <String, dynamic>{'content': instance.content};

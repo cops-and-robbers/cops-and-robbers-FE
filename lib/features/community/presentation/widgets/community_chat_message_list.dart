@@ -121,6 +121,12 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
                 CommunityChatSystemEvent.kick => l10n.communityChatSystemKicked(
                   m.senderNickname,
                 ),
+                CommunityChatSystemEvent.pinRegistered =>
+                  l10n.communityChatSystemPinRegistered(m.senderNickname),
+                CommunityChatSystemEvent.pinUpdated =>
+                  l10n.communityChatSystemPinUpdated(m.senderNickname),
+                CommunityChatSystemEvent.pinDeleted =>
+                  l10n.communityChatSystemPinDeleted(m.senderNickname),
               },
             ),
           ),

@@ -314,6 +314,14 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       // 채팅방 방장에게도 그대로 맞는 말이라 문구를 새로 만들지 않는다.
       case 'CANNOT_KICK_SELF':
         return errorCodeCannotKickYourself;
+      // ── 채팅방 고정 공지 에러 (방장 전용, DEC-0054) ────────────────────
+      // 강퇴의 FORBIDDEN_NOT_CHAT_HOST와 코드가 다르다 — 재사용하면 "참여자를
+      // 강퇴할 수 있어요"가 공지 화면에 뜬다.
+      case 'FORBIDDEN_NOT_CHAT_PIN_HOST':
+        return errorCodeForbiddenNotChatPinHost;
+      // 방장이 삭제한 직후 다른 기기에서 수정을 누른 경우다.
+      case 'CHAT_PIN_NOT_FOUND':
+        return errorCodeChatPinNotFound;
       // ── 채팅 소켓 에러 (STOMP ERROR 프레임, REST 문서에는 없음) ───────────
       // 앱이 빈 메시지·500자를 먼저 막고 messageKey는 UUID(36자)라 정상 경로에선
       // 안 나온다. 연동 가이드(DOC-0037)에 실린 코드라 매핑은 채운다.
@@ -341,6 +349,14 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       // 공통 에러 (서버 응답 에러의 DioExceptionHandler 표준 키)
       case 'errorTemporaryRetry':
         return errorTemporaryRetry;
+      // 커뮤니티 채팅 공지 (없으면 폴백이 `_guard`의 한국어 하드코딩이라 로케일을
+      // 무시한 문구가 그대로 나간다)
+      case 'errorCommunityChatNoticeLoadGeneric':
+        return errorCommunityChatNoticeLoadGeneric;
+      case 'errorCommunityChatNoticeSaveGeneric':
+        return errorCommunityChatNoticeSaveGeneric;
+      case 'errorCommunityChatNoticeDeleteGeneric':
+        return errorCommunityChatNoticeDeleteGeneric;
       // 네트워크/API 에러 (dio_exception_handler.dart)
       case 'errorNetworkTimeout':
         return errorNetworkTimeout;

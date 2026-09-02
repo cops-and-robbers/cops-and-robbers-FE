@@ -545,6 +545,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communityChatPreviewKicked => 'A member was removed';
 
   @override
+  String communityChatSystemPinRegistered(String nickname) {
+    return '$nickname posted a notice';
+  }
+
+  @override
+  String communityChatSystemPinUpdated(String nickname) {
+    return '$nickname edited the notice';
+  }
+
+  @override
+  String communityChatSystemPinDeleted(String nickname) {
+    return '$nickname deleted the notice';
+  }
+
+  @override
+  String get communityChatPreviewPinRegistered => 'A notice was posted';
+
+  @override
+  String get communityChatPreviewPinUpdated => 'The notice was edited';
+
+  @override
+  String get communityChatPreviewPinDeleted => 'The notice was deleted';
+
+  @override
+  String get communityChatNoticeTitle => 'Notice';
+
+  @override
+  String get communityChatNoticeWriteTitle => 'Write a notice';
+
+  @override
+  String get communityChatNoticeLabelContent => 'Content';
+
+  @override
+  String get communityChatNoticeHint =>
+      'Share the exact place, time, what to bring, and whether there\'s an after-party';
+
+  @override
+  String get communityChatNoticeEmpty => 'No notice yet';
+
+  @override
+  String get communityChatNoticeEmptyHost =>
+      'Post a notice to keep everyone posted';
+
+  @override
+  String get communityChatNoticeDeleteConfirmTitle => 'Delete this notice?';
+
+  @override
   String get communityChatPreviewInvite => 'Game invite';
 
   @override
@@ -628,9 +675,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get communityChatKickConfirmMessage =>
       'They leave the room right away\nNothing stops them from joining again';
-
-  @override
-  String get communityChatMeetingInfoTitle => 'Meeting info';
 
   @override
   String get communityChatConnectionLost => 'Connection lost';
@@ -2450,6 +2494,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeChatMemberNotFound => 'This member already left the chat';
+
+  @override
+  String get errorCodeForbiddenNotChatPinHost =>
+      'Only the host can post or edit the notice';
+
+  @override
+  String get errorCodeChatPinNotFound => 'There is no notice to change';
+
+  @override
+  String get errorCommunityChatNoticeLoadGeneric =>
+      'We couldn\'t load the notice. Please try again in a moment';
+
+  @override
+  String get errorCommunityChatNoticeSaveGeneric =>
+      'We couldn\'t save the notice. Please try again in a moment';
+
+  @override
+  String get errorCommunityChatNoticeDeleteGeneric =>
+      'We couldn\'t delete the notice. Please try again in a moment';
 
   @override
   String get errorCodeConflictingCountryFilter =>

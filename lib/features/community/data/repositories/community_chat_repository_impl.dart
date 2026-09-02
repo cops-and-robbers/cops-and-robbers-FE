@@ -9,6 +9,7 @@ import '../../../../core/network/dio_exception_handler.dart';
 import '../../domain/entities/community_chat_event.dart';
 import '../../domain/entities/community_chat_member_entity.dart';
 import '../../domain/entities/community_chat_message_entity.dart';
+import '../../domain/entities/community_chat_notice_entity.dart';
 import '../../domain/entities/community_chat_page_entity.dart';
 import '../../domain/entities/community_chat_room_entity.dart';
 import '../../domain/repositories/community_chat_repository.dart';
@@ -116,6 +117,44 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
     messageKey: 'errorCommunityChatNotificationGeneric',
   );
 
+  @override
+  Future<CommunityChatNoticeEntity?> getNotice(int postId) => _guard(
+    () async => _toNotice(await _api.getChatPin(postId)),
+    messageKey: 'errorCommunityChatNoticeLoadGeneric',
+  );
+
+  @override
+  Future<CommunityChatNoticeEntity> registerNotice(
+    int postId,
+    String content,
+  ) => _guard(
+    () async => _requireNotice(
+      await _api.registerChatPin(
+        postId,
+        CommunityChatPinRequestModel(content: content),
+      ),
+    ),
+    messageKey: 'errorCommunityChatNoticeSaveGeneric',
+  );
+
+  @override
+  Future<CommunityChatNoticeEntity> updateNotice(int postId, String content) =>
+      _guard(
+        () async => _requireNotice(
+          await _api.updateChatPin(
+            postId,
+            CommunityChatPinRequestModel(content: content),
+          ),
+        ),
+        messageKey: 'errorCommunityChatNoticeSaveGeneric',
+      );
+
+  @override
+  Future<void> deleteNotice(int postId) => _guard(
+    () => _api.deleteChatPin(postId),
+    messageKey: 'errorCommunityChatNoticeDeleteGeneric',
+  );
+
   // ── 소켓 ──────────────────────────────────────────────────────
 
   @override
@@ -138,6 +177,11 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
           (e) => events.add(
             CommunityChatEvent.error(e.errorCode ?? 'INTERNAL_SERVER_ERROR'),
           ),
+        ),
+      )
+      ..add(
+        _stomp.onPinChanged.listen(
+          (postId) => events.add(CommunityChatEvent.noticeChanged(postId)),
         ),
       );
 
@@ -231,6 +275,36 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
         lastMessage: _toLastMessage(m.lastMessage),
         unreadCount: m.unreadCount,
       );
+
+  /// 공지 없음은 예외가 아니라 값이다 — 서버가 200 + 필드 null로 준다.
+  /// `id`가 없으면 나머지도 전부 비어 있다(`writerProfileIcon`만 0).
+  CommunityChatNoticeEntity? _toNotice(CommunityChatPinResponseModel m) {
+    final id = m.id;
+    if (id == null) return null;
+    return CommunityChatNoticeEntity(
+      id: id,
+      writerId: m.writerId ?? 0,
+      writerNickname: m.writerNickname ?? '',
+      writerProfileIcon: m.writerProfileIcon,
+      content: m.content ?? '',
+      // 서버가 UTC로 주므로 기기 시간대로 맞춘다.
+      createdAt: (m.createdAt ?? DateTime.now()).toLocal(),
+      updatedAt: (m.updatedAt ?? m.createdAt ?? DateTime.now()).toLocal(),
+    );
+  }
+
+  /// 등록·수정 응답은 방금 저장한 공지라 비어 올 수 없다. 그래도 비면 화면이
+  /// "없음"으로 되돌아가 방장이 방금 쓴 글이 사라진 것처럼 보이므로 에러로 끊는다.
+  CommunityChatNoticeEntity _requireNotice(CommunityChatPinResponseModel m) {
+    final notice = _toNotice(m);
+    if (notice == null) {
+      throw const ServerException(
+        message: '고정 공지 저장 응답이 비어 있다',
+        messageKey: 'errorCommunityChatNoticeSaveGeneric',
+      );
+    }
+    return notice;
+  }
 
   CommunityChatLastMessageEntity? _toLastMessage(
     CommunityChatLastMessageResponseModel? m,

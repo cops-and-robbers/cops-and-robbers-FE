@@ -313,4 +313,35 @@ abstract class CommunityRemoteDataSource {
     @Path('postId') int postId,
     @Body() CommunityChatNotificationRequestModel body,
   );
+
+  /// 채팅방 고정 공지 조회 — 방 멤버 전용 (200)
+  ///
+  /// **공지가 없어도 200**이고 본문 필드가 전부 null이다(404 아님). 방 멤버가
+  /// 아니면 403 `NOT_A_CHAT_MEMBER`.
+  @GET('${ApiEndpoints.communityPosts}/{postId}/chat/pin')
+  Future<CommunityChatPinResponseModel> getChatPin(@Path('postId') int postId);
+
+  /// 고정 공지 등록 — 방장 전용 (201)
+  ///
+  /// 방마다 하나뿐이라 이미 있으면 **이전 것이 이력 없이 교체**된다(DEC-0054).
+  /// 방장이 아니면 403 `FORBIDDEN_NOT_CHAT_PIN_HOST` — 강퇴의
+  /// `FORBIDDEN_NOT_CHAT_HOST`와 다른 코드다.
+  @POST('${ApiEndpoints.communityPosts}/{postId}/chat/pin')
+  Future<CommunityChatPinResponseModel> registerChatPin(
+    @Path('postId') int postId,
+    @Body() CommunityChatPinRequestModel body,
+  );
+
+  /// 고정 공지 수정 — 방장 전용 (200)
+  ///
+  /// 등록된 공지가 없으면 404 `CHAT_PIN_NOT_FOUND`.
+  @PUT('${ApiEndpoints.communityPosts}/{postId}/chat/pin')
+  Future<CommunityChatPinResponseModel> updateChatPin(
+    @Path('postId') int postId,
+    @Body() CommunityChatPinRequestModel body,
+  );
+
+  /// 고정 공지 삭제 — 방장 전용 (204)
+  @DELETE('${ApiEndpoints.communityPosts}/{postId}/chat/pin')
+  Future<void> deleteChatPin(@Path('postId') int postId);
 }

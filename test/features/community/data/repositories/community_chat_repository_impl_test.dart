@@ -15,11 +15,14 @@ const _postId = 42;
 
 /// 시스템 경계(HTTP)만 대역으로 세운다 — Repository는 진짜 코드가 돈다.
 class _FakeApi implements CommunityRemoteDataSource {
-  _FakeApi({this.rooms, this.history, this.members});
+  _FakeApi({this.rooms, this.history, this.members, this.pin});
 
   final CommunityChatRoomListResponseModel? rooms;
   final CommunityChatHistoryResponseModel? history;
   final CommunityChatMemberListResponseModel? members;
+  final CommunityChatPinResponseModel? pin;
+
+  CommunityChatPinRequestModel? lastPin;
 
   Object? joinError;
   final calls = <String>[];
@@ -81,6 +84,36 @@ class _FakeApi implements CommunityRemoteDataSource {
   }
 
   @override
+  Future<CommunityChatPinResponseModel> getChatPin(int postId) async {
+    calls.add('getChatPin:$postId');
+    return pin!;
+  }
+
+  @override
+  Future<CommunityChatPinResponseModel> registerChatPin(
+    int postId,
+    CommunityChatPinRequestModel body,
+  ) async {
+    calls.add('registerChatPin:$postId');
+    lastPin = body;
+    return pin!;
+  }
+
+  @override
+  Future<CommunityChatPinResponseModel> updateChatPin(
+    int postId,
+    CommunityChatPinRequestModel body,
+  ) async {
+    calls.add('updateChatPin:$postId');
+    lastPin = body;
+    return pin!;
+  }
+
+  @override
+  Future<void> deleteChatPin(int postId) async =>
+      calls.add('deleteChatPin:$postId');
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
@@ -104,6 +137,11 @@ class _FakeStomp implements CommunityChatStompDatasource {
 
   @override
   Stream<StompErrorInfo> get onError => errors.stream;
+
+  final pins = StreamController<int>.broadcast();
+
+  @override
+  Stream<int> get onPinChanged => pins.stream;
 
   @override
   void connectAs(String wsUrl, String accessToken, {required int userId}) {
@@ -171,6 +209,75 @@ Map<String, dynamic> _messageJson({
 void main() {
   // 소켓 연결이 ApiEndpoints.gameConnectionUrl(.env)을 읽는다 (게임 쪽 테스트와 동일).
   setUpAll(() => dotenv.loadFromString(envString: '', isOptional: true));
+
+  group('고정 공지', () {
+    test('returns_null_when_server_answers_with_empty_pin', () async {
+      // 공지가 없으면 서버가 404가 아니라 200 + 필드 null을 준다(DOC-0053).
+      // 예외로 다루면 공지 없는 방이 전부 에러 화면이 된다.
+      final api = _FakeApi(
+        pin: CommunityChatPinResponseModel.fromJson({
+          'postId': _postId,
+          'id': null,
+          'writerId': null,
+          'writerNickname': null,
+          'writerProfileIcon': 0,
+          'content': null,
+          'createdAt': null,
+          'updatedAt': null,
+        }),
+      );
+
+      expect(await _repo(api, _FakeStomp()).getNotice(_postId), isNull);
+    });
+
+    test('maps_writer_and_content_when_pin_exists', () async {
+      final api = _FakeApi(
+        pin: CommunityChatPinResponseModel.fromJson({
+          'id': 9,
+          'postId': _postId,
+          'writerId': 7,
+          'writerNickname': '경도매우러버',
+          'writerProfileIcon': 3,
+          'content': '오늘 오후 7시 정문에서 만나요!',
+          // UTC로 오는 값 — 화면은 기기 시간대로 그린다.
+          'createdAt': '2026-09-19T04:24:00Z',
+          'updatedAt': '2026-09-19T04:24:00Z',
+        }),
+      );
+
+      final notice = await _repo(api, _FakeStomp()).getNotice(_postId);
+
+      expect(notice?.id, 9);
+      expect(notice?.writerId, 7);
+      expect(notice?.writerNickname, '경도매우러버');
+      expect(notice?.writerProfileIcon, 3);
+      expect(notice?.content, '오늘 오후 7시 정문에서 만나요!');
+      expect(notice?.updatedAt, DateTime.utc(2026, 9, 19, 4, 24).toLocal());
+    });
+
+    test('sends_content_and_returns_saved_pin_when_registered', () async {
+      final api = _FakeApi(
+        pin: CommunityChatPinResponseModel.fromJson({
+          'id': 9,
+          'postId': _postId,
+          'writerId': 7,
+          'writerNickname': '경도매우러버',
+          'writerProfileIcon': 3,
+          'content': '장소가 후문으로 변경되었습니다!',
+          'createdAt': '2026-09-19T04:24:00Z',
+          'updatedAt': '2026-09-19T05:00:00Z',
+        }),
+      );
+
+      final saved = await _repo(
+        api,
+        _FakeStomp(),
+      ).registerNotice(_postId, '장소가 후문으로 변경되었습니다!');
+
+      expect(api.lastPin?.content, '장소가 후문으로 변경되었습니다!');
+      expect(saved.content, '장소가 후문으로 변경되었습니다!');
+    });
+  });
 
   group('getRooms', () {
     test(
@@ -328,6 +435,22 @@ void main() {
   });
 
   group('connect', () {
+    test('forwards_notice_changed_event_when_pin_frame_arrives', () async {
+      // 배너 payload에는 프로필 아이콘도 등록 시각도 없다 — 이벤트는 "바뀌었다"만
+      // 나르고 내용은 화면이 REST로 다시 받는다.
+      final stomp = _FakeStomp();
+      final repo = _repo(_FakeApi(), stomp);
+
+      final events = <CommunityChatEvent>[];
+      repo.connect(7).listen(events.add);
+      await Future<void>.delayed(Duration.zero);
+
+      stomp.pins.add(_postId);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(events, [const CommunityChatEvent.noticeChanged(_postId)]);
+    });
+
     test('merges_messages_connection_and_errors_into_one_stream', () async {
       final stomp = _FakeStomp();
       final repo = _repo(_FakeApi(), stomp);

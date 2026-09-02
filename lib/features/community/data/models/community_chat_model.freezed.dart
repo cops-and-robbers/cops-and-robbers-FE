@@ -2361,3 +2361,525 @@ abstract class _CommunityChatNotificationRequestModel
   >
   get copyWith => throw _privateConstructorUsedError;
 }
+
+CommunityChatPinResponseModel _$CommunityChatPinResponseModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityChatPinResponseModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityChatPinResponseModel {
+  // 앱은 이 값을 쓰지 않는다(어느 방인지는 요청 경로가 안다). `required`로 두면
+  // 서버가 안 줬을 때 "공지 없음"이 예외가 되어 이 기능의 대전제가 깨진다.
+  int? get postId => throw _privateConstructorUsedError;
+  int? get id => throw _privateConstructorUsedError;
+  int? get writerId => throw _privateConstructorUsedError;
+  String? get writerNickname => throw _privateConstructorUsedError;
+  int? get writerProfileIcon => throw _privateConstructorUsedError;
+  String? get content => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityChatPinResponseModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityChatPinResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityChatPinResponseModelCopyWith<CommunityChatPinResponseModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityChatPinResponseModelCopyWith<$Res> {
+  factory $CommunityChatPinResponseModelCopyWith(
+    CommunityChatPinResponseModel value,
+    $Res Function(CommunityChatPinResponseModel) then,
+  ) =
+      _$CommunityChatPinResponseModelCopyWithImpl<
+        $Res,
+        CommunityChatPinResponseModel
+      >;
+  @useResult
+  $Res call({
+    int? postId,
+    int? id,
+    int? writerId,
+    String? writerNickname,
+    int? writerProfileIcon,
+    String? content,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  });
+}
+
+/// @nodoc
+class _$CommunityChatPinResponseModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityChatPinResponseModel
+>
+    implements $CommunityChatPinResponseModelCopyWith<$Res> {
+  _$CommunityChatPinResponseModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityChatPinResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? postId = freezed,
+    Object? id = freezed,
+    Object? writerId = freezed,
+    Object? writerNickname = freezed,
+    Object? writerProfileIcon = freezed,
+    Object? content = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            postId: freezed == postId
+                ? _value.postId
+                : postId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            id: freezed == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            writerId: freezed == writerId
+                ? _value.writerId
+                : writerId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            writerNickname: freezed == writerNickname
+                ? _value.writerNickname
+                : writerNickname // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            writerProfileIcon: freezed == writerProfileIcon
+                ? _value.writerProfileIcon
+                : writerProfileIcon // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            content: freezed == content
+                ? _value.content
+                : content // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityChatPinResponseModelImplCopyWith<$Res>
+    implements $CommunityChatPinResponseModelCopyWith<$Res> {
+  factory _$$CommunityChatPinResponseModelImplCopyWith(
+    _$CommunityChatPinResponseModelImpl value,
+    $Res Function(_$CommunityChatPinResponseModelImpl) then,
+  ) = __$$CommunityChatPinResponseModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    int? postId,
+    int? id,
+    int? writerId,
+    String? writerNickname,
+    int? writerProfileIcon,
+    String? content,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  });
+}
+
+/// @nodoc
+class __$$CommunityChatPinResponseModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityChatPinResponseModelCopyWithImpl<
+          $Res,
+          _$CommunityChatPinResponseModelImpl
+        >
+    implements _$$CommunityChatPinResponseModelImplCopyWith<$Res> {
+  __$$CommunityChatPinResponseModelImplCopyWithImpl(
+    _$CommunityChatPinResponseModelImpl _value,
+    $Res Function(_$CommunityChatPinResponseModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityChatPinResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? postId = freezed,
+    Object? id = freezed,
+    Object? writerId = freezed,
+    Object? writerNickname = freezed,
+    Object? writerProfileIcon = freezed,
+    Object? content = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+  }) {
+    return _then(
+      _$CommunityChatPinResponseModelImpl(
+        postId: freezed == postId
+            ? _value.postId
+            : postId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        id: freezed == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        writerId: freezed == writerId
+            ? _value.writerId
+            : writerId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        writerNickname: freezed == writerNickname
+            ? _value.writerNickname
+            : writerNickname // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        writerProfileIcon: freezed == writerProfileIcon
+            ? _value.writerProfileIcon
+            : writerProfileIcon // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        content: freezed == content
+            ? _value.content
+            : content // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityChatPinResponseModelImpl
+    implements _CommunityChatPinResponseModel {
+  const _$CommunityChatPinResponseModelImpl({
+    this.postId,
+    this.id,
+    this.writerId,
+    this.writerNickname,
+    this.writerProfileIcon,
+    this.content,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory _$CommunityChatPinResponseModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityChatPinResponseModelImplFromJson(json);
+
+  // 앱은 이 값을 쓰지 않는다(어느 방인지는 요청 경로가 안다). `required`로 두면
+  // 서버가 안 줬을 때 "공지 없음"이 예외가 되어 이 기능의 대전제가 깨진다.
+  @override
+  final int? postId;
+  @override
+  final int? id;
+  @override
+  final int? writerId;
+  @override
+  final String? writerNickname;
+  @override
+  final int? writerProfileIcon;
+  @override
+  final String? content;
+  @override
+  final DateTime? createdAt;
+  @override
+  final DateTime? updatedAt;
+
+  @override
+  String toString() {
+    return 'CommunityChatPinResponseModel(postId: $postId, id: $id, writerId: $writerId, writerNickname: $writerNickname, writerProfileIcon: $writerProfileIcon, content: $content, createdAt: $createdAt, updatedAt: $updatedAt)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityChatPinResponseModelImpl &&
+            (identical(other.postId, postId) || other.postId == postId) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.writerId, writerId) ||
+                other.writerId == writerId) &&
+            (identical(other.writerNickname, writerNickname) ||
+                other.writerNickname == writerNickname) &&
+            (identical(other.writerProfileIcon, writerProfileIcon) ||
+                other.writerProfileIcon == writerProfileIcon) &&
+            (identical(other.content, content) || other.content == content) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    postId,
+    id,
+    writerId,
+    writerNickname,
+    writerProfileIcon,
+    content,
+    createdAt,
+    updatedAt,
+  );
+
+  /// Create a copy of CommunityChatPinResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityChatPinResponseModelImplCopyWith<
+    _$CommunityChatPinResponseModelImpl
+  >
+  get copyWith =>
+      __$$CommunityChatPinResponseModelImplCopyWithImpl<
+        _$CommunityChatPinResponseModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityChatPinResponseModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityChatPinResponseModel
+    implements CommunityChatPinResponseModel {
+  const factory _CommunityChatPinResponseModel({
+    final int? postId,
+    final int? id,
+    final int? writerId,
+    final String? writerNickname,
+    final int? writerProfileIcon,
+    final String? content,
+    final DateTime? createdAt,
+    final DateTime? updatedAt,
+  }) = _$CommunityChatPinResponseModelImpl;
+
+  factory _CommunityChatPinResponseModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityChatPinResponseModelImpl.fromJson;
+
+  // 앱은 이 값을 쓰지 않는다(어느 방인지는 요청 경로가 안다). `required`로 두면
+  // 서버가 안 줬을 때 "공지 없음"이 예외가 되어 이 기능의 대전제가 깨진다.
+  @override
+  int? get postId;
+  @override
+  int? get id;
+  @override
+  int? get writerId;
+  @override
+  String? get writerNickname;
+  @override
+  int? get writerProfileIcon;
+  @override
+  String? get content;
+  @override
+  DateTime? get createdAt;
+  @override
+  DateTime? get updatedAt;
+
+  /// Create a copy of CommunityChatPinResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityChatPinResponseModelImplCopyWith<
+    _$CommunityChatPinResponseModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+CommunityChatPinRequestModel _$CommunityChatPinRequestModelFromJson(
+  Map<String, dynamic> json,
+) {
+  return _CommunityChatPinRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CommunityChatPinRequestModel {
+  String get content => throw _privateConstructorUsedError;
+
+  /// Serializes this CommunityChatPinRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CommunityChatPinRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CommunityChatPinRequestModelCopyWith<CommunityChatPinRequestModel>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CommunityChatPinRequestModelCopyWith<$Res> {
+  factory $CommunityChatPinRequestModelCopyWith(
+    CommunityChatPinRequestModel value,
+    $Res Function(CommunityChatPinRequestModel) then,
+  ) =
+      _$CommunityChatPinRequestModelCopyWithImpl<
+        $Res,
+        CommunityChatPinRequestModel
+      >;
+  @useResult
+  $Res call({String content});
+}
+
+/// @nodoc
+class _$CommunityChatPinRequestModelCopyWithImpl<
+  $Res,
+  $Val extends CommunityChatPinRequestModel
+>
+    implements $CommunityChatPinRequestModelCopyWith<$Res> {
+  _$CommunityChatPinRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CommunityChatPinRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? content = null}) {
+    return _then(
+      _value.copyWith(
+            content: null == content
+                ? _value.content
+                : content // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CommunityChatPinRequestModelImplCopyWith<$Res>
+    implements $CommunityChatPinRequestModelCopyWith<$Res> {
+  factory _$$CommunityChatPinRequestModelImplCopyWith(
+    _$CommunityChatPinRequestModelImpl value,
+    $Res Function(_$CommunityChatPinRequestModelImpl) then,
+  ) = __$$CommunityChatPinRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String content});
+}
+
+/// @nodoc
+class __$$CommunityChatPinRequestModelImplCopyWithImpl<$Res>
+    extends
+        _$CommunityChatPinRequestModelCopyWithImpl<
+          $Res,
+          _$CommunityChatPinRequestModelImpl
+        >
+    implements _$$CommunityChatPinRequestModelImplCopyWith<$Res> {
+  __$$CommunityChatPinRequestModelImplCopyWithImpl(
+    _$CommunityChatPinRequestModelImpl _value,
+    $Res Function(_$CommunityChatPinRequestModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CommunityChatPinRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? content = null}) {
+    return _then(
+      _$CommunityChatPinRequestModelImpl(
+        content: null == content
+            ? _value.content
+            : content // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CommunityChatPinRequestModelImpl
+    implements _CommunityChatPinRequestModel {
+  const _$CommunityChatPinRequestModelImpl({required this.content});
+
+  factory _$CommunityChatPinRequestModelImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$CommunityChatPinRequestModelImplFromJson(json);
+
+  @override
+  final String content;
+
+  @override
+  String toString() {
+    return 'CommunityChatPinRequestModel(content: $content)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityChatPinRequestModelImpl &&
+            (identical(other.content, content) || other.content == content));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, content);
+
+  /// Create a copy of CommunityChatPinRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityChatPinRequestModelImplCopyWith<
+    _$CommunityChatPinRequestModelImpl
+  >
+  get copyWith =>
+      __$$CommunityChatPinRequestModelImplCopyWithImpl<
+        _$CommunityChatPinRequestModelImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CommunityChatPinRequestModelImplToJson(this);
+  }
+}
+
+abstract class _CommunityChatPinRequestModel
+    implements CommunityChatPinRequestModel {
+  const factory _CommunityChatPinRequestModel({required final String content}) =
+      _$CommunityChatPinRequestModelImpl;
+
+  factory _CommunityChatPinRequestModel.fromJson(Map<String, dynamic> json) =
+      _$CommunityChatPinRequestModelImpl.fromJson;
+
+  @override
+  String get content;
+
+  /// Create a copy of CommunityChatPinRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityChatPinRequestModelImplCopyWith<
+    _$CommunityChatPinRequestModelImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}

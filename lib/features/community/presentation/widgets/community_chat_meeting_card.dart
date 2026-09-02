@@ -20,7 +20,7 @@ class CommunityChatMeetingCard extends StatelessWidget {
     required this.post,
     required this.memberCount,
     required this.onViewLocation,
-    required this.onOpenMeetingInfo,
+    required this.onOpenNotice,
     this.onStartGame,
     super.key,
   });
@@ -29,8 +29,8 @@ class CommunityChatMeetingCard extends StatelessWidget {
   final int? memberCount;
   final VoidCallback onViewLocation;
 
-  /// 카드 전체를 누르면 모임 정보(전체 화면)로 이동.
-  final VoidCallback onOpenMeetingInfo;
+  /// 카드 전체를 누르면 채팅방 공지(전체 화면)로 이동.
+  final VoidCallback onOpenNotice;
 
   /// 방장 전용 "게임 시작" — null이면 버튼을 그리지 않는다(비방장).
   final VoidCallback? onStartGame;
@@ -39,7 +39,7 @@ class CommunityChatMeetingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return GestureDetector(
-      onTap: onOpenMeetingInfo,
+      onTap: onOpenNotice,
       behavior: HitTestBehavior.opaque,
       child: Container(
         margin: EdgeInsets.fromLTRB(

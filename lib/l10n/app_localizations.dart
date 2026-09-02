@@ -1012,6 +1012,84 @@ abstract class AppLocalizations {
   /// **'멤버가 내보내졌어요'**
   String get communityChatPreviewKicked;
 
+  /// 채팅방 시스템 메시지 — 방장이 공지 등록
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님이 공지를 등록했어요'**
+  String communityChatSystemPinRegistered(String nickname);
+
+  /// 채팅방 시스템 메시지 — 방장이 공지 수정
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님이 공지를 수정했어요'**
+  String communityChatSystemPinUpdated(String nickname);
+
+  /// 채팅방 시스템 메시지 — 방장이 공지 삭제
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname}님이 공지를 삭제했어요'**
+  String communityChatSystemPinDeleted(String nickname);
+
+  /// 목록 미리보기 — 닉네임 없는 공지 등록 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'공지가 등록됐어요'**
+  String get communityChatPreviewPinRegistered;
+
+  /// 목록 미리보기 — 닉네임 없는 공지 수정 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'공지가 수정됐어요'**
+  String get communityChatPreviewPinUpdated;
+
+  /// 목록 미리보기 — 닉네임 없는 공지 삭제 알림
+  ///
+  /// In ko, this message translates to:
+  /// **'공지가 삭제됐어요'**
+  String get communityChatPreviewPinDeleted;
+
+  /// 채팅방 고정 공지 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'공지'**
+  String get communityChatNoticeTitle;
+
+  /// 고정 공지 작성·수정 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'공지글 작성'**
+  String get communityChatNoticeWriteTitle;
+
+  /// 고정 공지 작성 화면 — 본문 입력 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'내용'**
+  String get communityChatNoticeLabelContent;
+
+  /// 고정 공지 작성 화면 — 본문 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'구체적 장소, 시간, 안내 사항, 뒷풀이 여부, 준비물 등을 작성해 보세요'**
+  String get communityChatNoticeHint;
+
+  /// 고정 공지 화면 — 공지가 없을 때(멤버)
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 공지가 없어요'**
+  String get communityChatNoticeEmpty;
+
+  /// 고정 공지 화면 — 공지가 없을 때(방장)
+  ///
+  /// In ko, this message translates to:
+  /// **'공지를 등록해 모임 소식을 전해 보세요'**
+  String get communityChatNoticeEmptyHost;
+
+  /// 고정 공지 삭제 확인 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'공지를 삭제할까요'**
+  String get communityChatNoticeDeleteConfirmTitle;
+
   /// 목록 미리보기 — 게임 초대 메시지
   ///
   /// In ko, this message translates to:
@@ -1155,12 +1233,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'내보낸 사람은 바로 방에서 나가게 돼요\n다시 참여하는 건 막지 않아요'**
   String get communityChatKickConfirmMessage;
-
-  /// 채팅방 상단 모임 카드를 눌러 여는 모임 정보 화면 제목
-  ///
-  /// In ko, this message translates to:
-  /// **'모임 정보'**
-  String get communityChatMeetingInfoTitle;
 
   /// 채팅방 상단 띠 — 재연결 포기 상태
   ///
@@ -4314,6 +4386,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이미 채팅방을 나간 참여자예요'**
   String get errorCodeChatMemberNotFound;
+
+  /// FORBIDDEN_NOT_CHAT_PIN_HOST — 공지 등록·수정·삭제는 방장만. 강퇴의 FORBIDDEN_NOT_CHAT_HOST와 코드가 다르다
+  ///
+  /// In ko, this message translates to:
+  /// **'방장만 공지를 등록하거나 수정할 수 있어요'**
+  String get errorCodeForbiddenNotChatPinHost;
+
+  /// CHAT_PIN_NOT_FOUND — 방장이 삭제한 직후 다른 기기에서 수정을 누른 경우
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 공지가 없어요'**
+  String get errorCodeChatPinNotFound;
+
+  /// No description provided for @errorCommunityChatNoticeLoadGeneric.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지를 불러오지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityChatNoticeLoadGeneric;
+
+  /// No description provided for @errorCommunityChatNoticeSaveGeneric.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지를 저장하지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityChatNoticeSaveGeneric;
+
+  /// No description provided for @errorCommunityChatNoticeDeleteGeneric.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지를 삭제하지 못했어요. 잠시 후 다시 시도해주세요'**
+  String get errorCommunityChatNoticeDeleteGeneric;
 
   /// No description provided for @errorCodeConflictingCountryFilter.
   ///

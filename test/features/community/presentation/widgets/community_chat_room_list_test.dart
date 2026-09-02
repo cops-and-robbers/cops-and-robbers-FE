@@ -5,6 +5,7 @@ import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provi
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_event.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_member_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_message_entity.dart';
+import 'package:cops_and_robbers/features/community/domain/entities/community_chat_notice_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_page_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_chat_room_entity.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_post_status.dart';
@@ -47,6 +48,22 @@ class _RoomsOnlyRepository implements CommunityChatRepository {
   @override
   Future<void> kickMember(int postId, int userId) =>
       throw UnimplementedError('이 테스트는 강퇴를 쓰지 않는다');
+
+  @override
+  Future<CommunityChatNoticeEntity?> getNotice(int postId) =>
+      throw UnimplementedError('이 테스트는 고정 공지를 쓰지 않는다');
+
+  @override
+  Future<CommunityChatNoticeEntity> registerNotice(int postId, String c) =>
+      throw UnimplementedError('이 테스트는 고정 공지를 쓰지 않는다');
+
+  @override
+  Future<CommunityChatNoticeEntity> updateNotice(int postId, String c) =>
+      throw UnimplementedError('이 테스트는 고정 공지를 쓰지 않는다');
+
+  @override
+  Future<void> deleteNotice(int postId) =>
+      throw UnimplementedError('이 테스트는 고정 공지를 쓰지 않는다');
 
   @override
   Future<List<CommunityChatRoomEntity>> getRooms() async {

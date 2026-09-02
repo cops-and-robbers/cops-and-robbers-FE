@@ -113,11 +113,16 @@ class RoutePaths {
   static String communityChatMenuWithId(int postId) =>
       '/community/$postId/chat/menu';
 
-  /// 모임 정보 — 상단 모임 카드를 누르면 전체 화면으로 연다
-  static const String communityChatMeetingInfo =
-      '/community/:postId/chat/meeting-info';
-  static String communityChatMeetingInfoWithId(int postId) =>
-      '/community/$postId/chat/meeting-info';
+  /// 채팅방 고정 공지 — 상단 모임 카드를 누르면 전체 화면으로 연다
+  static const String communityChatNotice = '/community/:postId/chat/notice';
+  static String communityChatNoticeWithId(int postId) =>
+      '/community/$postId/chat/notice';
+
+  /// 공지글 작성·수정. 기존 본문은 `extra`로 넘긴다 — 있으면 수정이다.
+  static const String communityChatNoticeEdit =
+      '/community/:postId/chat/notice/edit';
+  static String communityChatNoticeEditWithId(int postId) =>
+      '/community/$postId/chat/notice/edit';
 
   /// 마이페이지 화면 (바텀 네비게이션 탭 — 설정 메뉴)
   static const String mypage = '/mypage';
@@ -267,7 +272,8 @@ class RoutePaths {
   static const String communityEditName = 'communityEdit';
   static const String communityChatName = 'communityChat';
   static const String communityChatMenuName = 'communityChatMenu';
-  static const String communityChatMeetingInfoName = 'communityChatMeetingInfo';
+  static const String communityChatNoticeName = 'communityChatNotice';
+  static const String communityChatNoticeEditName = 'communityChatNoticeEdit';
   static const String mypageName = 'mypage';
   static const String myScrapsName = 'myScraps';
   static const String languageSettingsName = 'languageSettings';

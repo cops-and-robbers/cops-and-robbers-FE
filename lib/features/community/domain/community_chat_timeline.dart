@@ -74,6 +74,10 @@ int memberDelta(CommunityChatMessageEntity m) => switch (m.body) {
     CommunityChatSystemEvent.join => 1,
     CommunityChatSystemEvent.leave => -1,
     CommunityChatSystemEvent.kick => -1,
+    // 공지 등록·수정·삭제는 사람이 드나든 사건이 아니다.
+    CommunityChatSystemEvent.pinRegistered => 0,
+    CommunityChatSystemEvent.pinUpdated => 0,
+    CommunityChatSystemEvent.pinDeleted => 0,
   },
   _ => 0,
 };
