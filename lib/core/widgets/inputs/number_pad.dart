@@ -71,12 +71,16 @@ class NumberPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 하단 세이프 에어리어(홈 인디케이터)까지 키패드 배경색으로 채운다 (#539).
+    // 화면 쪽 SafeArea는 bottom: false여야 인셋이 이중 적용되지 않는다.
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+
     // 시안 실측: 키패드 영역 전체 높이 361 (상단 여백 20 + 칩 34 + 키 4줄)
     return Container(
       width: double.infinity,
-      height: 361.h,
+      height: 361.h + bottomInset,
       color: _backgroundColor,
-      padding: EdgeInsets.only(top: AppSpacing.vertical20),
+      padding: EdgeInsets.only(top: AppSpacing.vertical20, bottom: bottomInset),
       child: Column(
         children: [
           _buildQuickChips(),
