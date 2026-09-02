@@ -91,6 +91,15 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  /// Label - 버튼 기본 텍스트 (18px SemiBold) - AppButton 기본값 (#540)
+  /// Line Height: 140%, Letter Spacing: -0.36px (label_16과 같은 -2% 문법)
+  static TextStyle get label_18 => TextStyle(
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 18.sp,
+    height: 1.0, // 140% line height
+    letterSpacing: -0.36,
+  );
+
   static TextStyle get label16Medium => TextStyle(
     fontFamily: 'Pretendard-Medium',
     fontSize: 16.sp,
