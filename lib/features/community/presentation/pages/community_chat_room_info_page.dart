@@ -385,6 +385,7 @@ class _MenuButton extends StatelessWidget {
       height: 52.h,
       backgroundColor: AppColors.white,
       foregroundColor: color,
+      textStyle: AppTextStyles.label16Medium,
       showBorder: true,
       borderColor: AppColors.black100,
       boxShadow: AppShadows.vague,

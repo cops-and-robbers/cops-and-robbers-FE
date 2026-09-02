@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -27,12 +28,12 @@ import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/services/vibration_service.dart';
-import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
 import '../../../../core/widgets/dialogs/countdown_timer_content.dart';
+import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../router/route_paths.dart';
 import '../../../chat/presentation/providers/chat_notification_provider.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
@@ -1980,7 +1981,7 @@ class _GamePageState extends ConsumerState<GamePage>
               SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: EdgeInsets.only(top: 64.h + 24.h),
+                  padding: EdgeInsets.only(top: kToolbarHeight + 24.h),
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: PoliceStartCountdown(
@@ -2003,7 +2004,7 @@ class _GamePageState extends ConsumerState<GamePage>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(height: 64.h + 8.h),
+                    SizedBox(height: kToolbarHeight + 8.h),
                     MarqueeAlertBanner(
                       message: bannerMessage,
                       isDarkMode: _isDarkMode,
@@ -2162,10 +2163,12 @@ class _GamePageState extends ConsumerState<GamePage>
                 top: 0,
                 child: SafeArea(
                   bottom: false,
-                  // 64.h: 상단 타이머 HUD Container 높이와 동일.
+                  // kToolbarHeight: 상단 AppTopBar 높이와 동일.
                   // HUD 아래로 살짝 띄워 디버그 버튼이 타이머/서브타이머와 겹치지 않게.
                   child: Padding(
-                    padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
+                    padding: EdgeInsets.only(
+                      top: kToolbarHeight + AppSpacing.vertical8,
+                    ),
                     child: FloatingActionButton(
                       heroTag: 'game_debug',
                       mini: true,
@@ -2196,9 +2199,11 @@ class _GamePageState extends ConsumerState<GamePage>
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  // 64.h: 상단 HUD(타이머·서브타이머) Container 높이와 동일.
+                  // kToolbarHeight: 상단 AppTopBar(타이머·서브타이머) 높이와 동일.
                   // HUD 아래에 배너가 겹쳐 들어가지 않도록 같은 값을 패딩으로 둔다.
-                  padding: EdgeInsets.only(top: 64.h + AppSpacing.vertical8),
+                  padding: EdgeInsets.only(
+                    top: kToolbarHeight + AppSpacing.vertical8,
+                  ),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     reverseDuration: const Duration(milliseconds: 200),
@@ -2432,72 +2437,76 @@ class _GamePageState extends ConsumerState<GamePage>
       if (base != null) nextRevealTime = base.add(Duration(minutes: interval));
     }
 
-    return Container(
-      height: 64.h,
-      color: _isDarkMode ? AppColors.black900 : AppColors.white,
-      // 좌우 인셋은 각 버튼의 Padding으로 부여(나가기 18.w / info 12.w) —
-      // 일괄 패딩을 두면 대기방 leading의 18.w 값을 그대로 못 쓰기 때문.
-      child: Stack(
-        alignment: Alignment.center,
+    return AppTopBar(
+      isDarkMode: _isDarkMode,
+      leading: _buildAppBarIcon(
+        AppIcons.gameOut,
+        onTap: _confirmLeaveGame,
+        isDark: _isDarkMode,
+      ),
+      titleWidget: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // 중앙: 타이머 + 서브 타이머
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // START 이벤트 수신 후 경과 시간 표시
-              gameStartTime != null && totalDuration != null
-                  ? GameTimerText(
-                      startTime: gameStartTime,
-                      totalDuration: totalDuration,
-                      isDarkMode: _isDarkMode,
-                    )
-                  : Text(
-                      '--:--',
-                      style: _isDarkMode
-                          ? AppTextStyles.robberHeading.copyWith(
-                              color: AppColors.white,
-                            )
-                          : AppTextStyles.heading_20.copyWith(
-                              color: AppColors.black,
-                            ),
-                    ),
-              SizedBox(height: 6.h),
-              LocationRevealCountdown(
-                nextRevealTime: nextRevealTime,
-                intervalMinutes: interval,
-                isDarkMode: _isDarkMode,
-              ),
-            ],
-          ),
-          // 좌측: 나가기 버튼 (대기방 leading과 동일 — 화면 좌측에서 18.w)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 18.w),
-              child: FlatIconButton(
-                assetPath: AppIcons.exit,
-                iconColor: _isDarkMode
-                    ? AppColors.black200
-                    : AppColors.black800,
-                onPressed: _confirmLeaveGame,
-              ),
-            ),
-          ),
-          // 우측: info 버튼 (화면 우측에서 12.w)
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: AppSpacing.horizontal12),
-              child: FlatIconButton(
-                assetPath: AppIcons.info,
-                iconColor: _isDarkMode
-                    ? AppColors.black200
-                    : AppColors.black800,
-                onPressed: _showGameRulesDialog,
-              ),
-            ),
+          // START 이벤트 수신 후 경과 시간 표시
+          gameStartTime != null && totalDuration != null
+              ? GameTimerText(
+                  startTime: gameStartTime,
+                  totalDuration: totalDuration,
+                  isDarkMode: _isDarkMode,
+                )
+              : Text(
+                  '--:--',
+                  style: _isDarkMode
+                      ? AppTextStyles.robberHeading.copyWith(
+                          color: AppColors.white,
+                        )
+                      : AppTextStyles.heading_20.copyWith(
+                          color: AppColors.black,
+                        ),
+                ),
+          SizedBox(height: 6.h),
+          LocationRevealCountdown(
+            nextRevealTime: nextRevealTime,
+            intervalMinutes: interval,
+            isDarkMode: _isDarkMode,
           ),
         ],
+      ),
+      actions: [
+        _buildAppBarIcon(
+          AppIcons.info,
+          padding: EdgeInsets.only(left: AppSpacing.horizontal24),
+          onTap: _showGameRulesDialog,
+          isDark: _isDarkMode,
+        ),
+        SizedBox(width: AppSpacing.horizontal16),
+      ],
+    );
+  }
+
+  /// 커뮤니티 앱바와 같은 아이콘 버튼 — 왼쪽 여백 24 + 아이콘 24 = IconButton
+  /// 최소 폭 48에 딱 맞아 아이콘 간격이 24가 되고, 뒤의 SizedBox(16)로 우측
+  /// 여백이 16이 된다. leading은 padding 없이 기본 슬롯(56)에 두면 좌측 16.
+  Widget _buildAppBarIcon(
+    String assetPath, {
+    required VoidCallback onTap,
+    required bool isDark,
+    EdgeInsetsGeometry? padding,
+  }) {
+    return IconButton(
+      onPressed: () {
+        VibrationService.instance().buttonTap();
+        onTap();
+      },
+      padding: padding,
+      icon: SvgPicture.asset(
+        assetPath,
+        width: 24.w,
+        height: 24.h,
+        colorFilter: ColorFilter.mode(
+          isDark ? AppColors.black200 : AppColors.black500,
+          BlendMode.srcIn,
+        ),
       ),
     );
   }
