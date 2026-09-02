@@ -285,7 +285,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             leading: const Icon(Icons.pending_actions),
             title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
             onTap: () {
-              Navigator.pop(context);
+              // 홈 페이지 context로 pop하면 다이얼로그 대신 홈이 pop된다 (#537)
+              Navigator.of(context, rootNavigator: true).pop();
               context.push(RoutePaths.lifecycleTest);
             },
           ),
@@ -293,9 +294,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             leading: const Icon(Icons.widgets),
             title: Text('Test Widget', style: AppTextStyles.paragraph_14),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
+              final rootNavigator = Navigator.of(context, rootNavigator: true);
+              rootNavigator.pop();
+              rootNavigator.push(
                 MaterialPageRoute(builder: (context) => const TestWidgetPage()),
               );
             },
