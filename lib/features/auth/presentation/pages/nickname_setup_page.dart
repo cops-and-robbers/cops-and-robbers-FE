@@ -239,9 +239,15 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
       },
       child: Scaffold(
         backgroundColor: AppColors.white,
-        // 수정 진입일 때만 뒤로가기 앱바를 단다 (#542) - 첫 로그인 설정에서는
+        // 수정 진입일 때만 앱바를 단다 (#542) - 마이페이지에서 진입하는 다른
+        // 화면들(언어 설정 등)과 같은 타이틀+뒤로가기 형식. 첫 로그인 설정에서는
         // 기존처럼 앱바 없이 둔다
-        appBar: isEditEntry ? AppTopBar(onBack: () => context.pop()) : null,
+        appBar: isEditEntry
+            ? AppTopBar(
+                title: l10n.settingsAccountChangeNickname,
+                onBack: () => context.pop(),
+              )
+            : null,
         body: SafeArea(
           child: Padding(
             padding: AppPadding.all20,
