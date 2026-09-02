@@ -280,9 +280,9 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       case 'CONFLICTING_COUNTRY_FILTER':
         return errorCodeConflictingCountryFilter;
       // 앱은 scope=ALL 외의 값을 보내지 않으므로(datasource 참조) SCOPE는
-      // 정상 경로로 오지 않는다. sort는 LATEST 외에 DISTANCE·DEADLINE도 보내지만
-      // 인기순(POPULAR)은 정렬 시트가 노출하지 않아 SORT도 마찬가지로 오지
-      // 않는다 — 둘 다 문서화된 코드라 커버리지 테스트가 요구하는 매핑은 채워 둔다.
+      // 정상 경로로 오지 않는다. sort는 넷 다 서버가 지원해(BE #175) SORT도
+      // 정상 경로로는 오지 않는다 — 둘 다 문서화된 코드라 커버리지 테스트가
+      // 요구하는 매핑은 채워 둔다.
       case 'UNSUPPORTED_LIST_SCOPE':
         return errorCodeUnsupportedListScope;
       case 'UNSUPPORTED_LIST_SORT':

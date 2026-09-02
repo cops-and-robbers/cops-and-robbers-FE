@@ -28,7 +28,8 @@ abstract class CommunityRemoteDataSource {
   /// [countryCode]는 필수다 — 목록은 DB만 보고 국가로 나뉜다(DEC-0021). 국가는
   /// [getCountry]로 먼저 구한다. 빈 문자열을 보내면 400(`COUNTRY_NOT_SPECIFIED`).
   ///
-  /// [sort]는 `LATEST`·`DEADLINE`·`DISTANCE`만 동작하고 `POPULAR`는 400이다.
+  /// [sort]는 `LATEST`·`POPULAR`·`DEADLINE`·`DISTANCE` 넷 다 동작한다
+  /// (`POPULAR`는 BE #175, v2.24.0부터).
   /// [latitude]·[longitude]는 `sort=DISTANCE`일 때만 필수이며, 다른 정렬에서
   /// 보내면 400이다 — Repository가 그 분기를 진다.
   /// [keyword]는 공백을 제외하고 2자 이상이어야 하며 미만이면 400이다.

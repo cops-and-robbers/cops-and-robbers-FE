@@ -476,15 +476,15 @@ void main() {
       expect(find.text('모집글 12'), findsOneWidget);
     });
 
-    testWidgets('hides_popular_option_when_sort_sheet_opens', (tester) async {
-      // 서버가 400을 주는 값이라 고를 수 없어야 한다.
+    testWidgets('shows_all_four_options_when_sort_sheet_opens', (tester) async {
+      // 인기순은 BE #175(v2.24.0)가 열어 넷 다 노출한다.
       await _pumpCommunityPage(tester, _FakeCommunityRepository([_post(1)]));
       await tester.tap(find.text('최신순'));
       await tester.pumpAndSettle();
 
+      expect(find.text('인기순'), findsOneWidget);
       expect(find.text('거리순'), findsOneWidget);
       expect(find.text('마감 임박순'), findsOneWidget);
-      expect(find.text('인기순'), findsNothing);
     });
 
     testWidgets(

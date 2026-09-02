@@ -92,8 +92,6 @@ class SelectedCommunityScope extends _$SelectedCommunityScope {
 /// `CommunityFeedNotifier`의 family 키에 그대로 들어가므로, 값이 바뀌면 그 정렬의
 /// 인스턴스가 커서 없이 첫 페이지를 부른다. 서버 커서에 정렬이 봉인돼 있어
 /// 재사용하면 400이라, 이 구조가 곧 계약이다.
-///
-/// 인기순은 서버가 아직 400을 주므로 정렬 시트가 노출하지 않는다.
 @riverpod
 class SelectedCommunitySort extends _$SelectedCommunitySort {
   @override
