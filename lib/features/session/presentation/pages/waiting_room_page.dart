@@ -1244,8 +1244,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       leading: Padding(
         padding: EdgeInsets.only(left: 18.w),
         child: FlatIconButton(
-          assetPath: AppIcons.exit,
-          iconColor: isDark ? AppColors.black200 : AppColors.black800,
+          assetPath: AppIcons.gameOut,
+          iconColor: isDark ? AppColors.black200 : AppColors.black500,
           onPressed: _confirmLeaveRoom,
         ),
       ),
@@ -1281,12 +1281,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         FlatIconButton(
           assetPath: AppIcons.info,
           alignment: Alignment.centerRight,
-          iconColor: isDark ? AppColors.black200 : AppColors.black800,
+          iconColor: isDark ? AppColors.black200 : AppColors.black500,
           onPressed: _showGameRulesDialog,
         ),
         FlatIconButton(
           assetPath: AppIcons.setting2,
-          iconColor: isDark ? AppColors.black200 : AppColors.black800,
+          iconColor: isDark ? AppColors.black200 : AppColors.black500,
           onPressed: () =>
               context.push(RoutePaths.gameSettingsWithId(widget.sessionId)),
         ),
