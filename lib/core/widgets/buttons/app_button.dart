@@ -22,7 +22,7 @@ enum IconPosition {
 /// **기본 스펙**:
 /// - 크기: 353x56 (반응형)
 /// - 모서리: 12px 라운드
-/// - 텍스트: AppTextStyles.label_16
+/// - 텍스트: AppTextStyles.label_18
 /// - 테두리: 기본 없음 (showBorder: true로 켠다)
 ///
 /// **색상**:
@@ -152,7 +152,7 @@ class AppButton extends StatelessWidget {
   /// 버튼 내용 정렬 (기본: center, spaceBetween으로 좌우 정렬 가능)
   final MainAxisAlignment? contentAlignment;
 
-  /// 텍스트 스타일 오버라이드 (미지정 시 label_16)
+  /// 텍스트 스타일 오버라이드 (미지정 시 label_18)
   final TextStyle? textStyle;
 
   /// 버튼 바깥 그림자 (기본: 없음) — ElevatedButton의 elevation은 항상 0으로
@@ -274,7 +274,7 @@ class AppButton extends StatelessWidget {
       textWidget = Text(
         text,
         overflow: TextOverflow.ellipsis,
-        style: (textStyle ?? AppTextStyles.label_16).copyWith(
+        style: (textStyle ?? AppTextStyles.label_18).copyWith(
           color: _effectiveForegroundColor,
         ),
       );
@@ -287,7 +287,7 @@ class AppButton extends StatelessWidget {
           Text(
             text,
             overflow: TextOverflow.ellipsis,
-            style: (textStyle ?? AppTextStyles.label_16).copyWith(
+            style: (textStyle ?? AppTextStyles.label_18).copyWith(
               color: _effectiveForegroundColor,
             ),
           ),

@@ -285,7 +285,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             leading: const Icon(Icons.pending_actions),
             title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
             onTap: () {
-              Navigator.pop(context);
+              // 홈 페이지 context로 pop하면 다이얼로그 대신 홈이 pop된다 (#537)
+              Navigator.of(context, rootNavigator: true).pop();
               context.push(RoutePaths.lifecycleTest);
             },
           ),
@@ -293,9 +294,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             leading: const Icon(Icons.widgets),
             title: Text('Test Widget', style: AppTextStyles.paragraph_14),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
+              final rootNavigator = Navigator.of(context, rootNavigator: true);
+              rootNavigator.pop();
+              rootNavigator.push(
                 MaterialPageRoute(builder: (context) => const TestWidgetPage()),
               );
             },
@@ -419,11 +420,15 @@ class _HomePageState extends ConsumerState<HomePage> {
         inputFormatters: [_UpperCaseFormatter()],
         suffixIcon: GestureDetector(
           onTap: () async {
-            // 다이얼로그 닫기 → QR 스캐너 열기 → 코드 파싱 → 방 참여
-            Navigator.of(context).pop();
+            // 다이얼로그 닫기 → QR 스캐너 열기 → 코드 파싱 → 방 참여.
+            // 이 context는 홈 페이지의 것이라 Navigator.of(context)는
+            // StatefulShellRoute 브랜치 내비게이터를 잡는다. 다이얼로그는
+            // 루트 내비게이터에 떠 있으므로 rootNavigator 없이 pop하면
+            // 다이얼로그 대신 홈 페이지가 pop되어 화면이 검게 빈다 (#537).
+            final rootNavigator = Navigator.of(context, rootNavigator: true);
+            rootNavigator.pop();
 
-            final inviteCode = await Navigator.push<String>(
-              context,
+            final inviteCode = await rootNavigator.push<String>(
               MaterialPageRoute(
                 builder: (_) => QrScannerPage<String>(
                   title: l10n.dialogScanInviteQrTitle,

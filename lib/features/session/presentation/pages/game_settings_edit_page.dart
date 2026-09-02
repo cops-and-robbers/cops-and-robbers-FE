@@ -155,6 +155,8 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
         onBack: () => context.pop(),
       ),
       body: SafeArea(
+        // 키패드가 하단 인셋까지 배경으로 채우므로 하단은 풀어준다 (#539)
+        bottom: false,
         child: Column(
           children: [
             Expanded(
