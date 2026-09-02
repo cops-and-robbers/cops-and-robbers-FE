@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-02T11:40:50Z",
-    "currentVersion": "3.0.8",
+    "lastUpdated": "2026-09-02T14:26:41Z",
+    "currentVersion": "3.0.9",
     "projectType": "flutter",
-    "totalReleases": 121
+    "totalReleases": 122
   },
   "releases": [
+    {
+      "version": "3.0.9",
+      "project_type": "flutter",
+      "date": "2026-09-02",
+      "pr_number": 548,
+      "raw_summary": "## Summary by CodeRabbit\n\n* **새로운 기능**\n  * 커뮤니티 채팅 화면에서 메시지 목록 영역의 배경 표시를 개선했습니다.\n  * iOS 반투명 키보드 사용 시 화면 배경이 비치는 현상을 완화했습니다.\n\n* **버그 수정**\n  * 채팅 시스템 메시지와 말풍선 사이의 간격 및 초대 카드 간격을 조정했습니다.\n  * 키보드 영역을 탭할 때 입력 포커스가 해제되도록 개선했습니다.\n\n* **기타**\n  * 앱 버전을 3.0.9로 업데이트했습니다.",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "커뮤니티 채팅 화면에서 메시지 목록 영역의 배경 표시를 개선했습니다.",
+            "iOS 반투명 키보드 사용 시 화면 배경이 비치는 현상을 완화했습니다."
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "채팅 시스템 메시지와 말풍선 사이의 간격 및 초대 카드 간격을 조정했습니다.",
+            "키보드 영역을 탭할 때 입력 포커스가 해제되도록 개선했습니다."
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "앱 버전을 3.0.9로 업데이트했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.0.8",
       "project_type": "flutter",
