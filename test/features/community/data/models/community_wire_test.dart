@@ -54,7 +54,6 @@ void main() {
       expect(CommunitySortOption.latest.wireValue, 'LATEST');
       expect(CommunitySortOption.deadline.wireValue, 'DEADLINE');
       expect(CommunitySortOption.distance.wireValue, 'DISTANCE');
-      // 서버가 400을 주는 값이지만 switch를 total로 두기 위해 매핑은 해 둔다.
       expect(CommunitySortOption.popular.wireValue, 'POPULAR');
     });
   });

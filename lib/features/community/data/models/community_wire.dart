@@ -80,10 +80,6 @@ extension CommunityScopeQuery on CommunityScope {
 }
 
 /// `GET /api/community-posts`의 `sort` 쿼리 값.
-///
-/// [CommunitySortOption.popular]까지 매핑해 switch를 total로 둔다 — 서버가
-/// `UNSUPPORTED_LIST_SORT`(400)를 주는 값이라 정렬 시트가 노출하지 않으므로
-/// 실제로 전송되지는 않는다.
 extension CommunitySortOptionWire on CommunitySortOption {
   String get wireValue => switch (this) {
     CommunitySortOption.latest => 'LATEST',

@@ -13,7 +13,7 @@ import '../../domain/entities/community_sort_option.dart';
 
 /// 정렬 기준 선택 바텀시트
 ///
-/// 목록 상단의 "최신순 ▾"을 누르면 아래에서 올라온다. 항목이 3개뿐이라
+/// 목록 상단의 "최신순 ▾"을 누르면 아래에서 올라온다. 항목이 4개뿐이라
 /// 드롭다운보다 바텀시트가 터치 영역이 넓고 한 손으로 닿는다.
 ///
 /// 선택 결과는 [Navigator.pop]으로 돌려준다 — 시트가 상태를 들고 있지 않으므로
@@ -55,11 +55,10 @@ class CommunitySortSheet extends StatelessWidget {
 
   /// 표시 순서 — 인덱스 ↔ enum 변환의 단일 기준.
   ///
-  /// 인기순은 뺀다. 서버가 `UNSUPPORTED_LIST_SORT`(400)를 주기 때문이다 —
-  /// 좋아요·스크랩 테이블이 없어 셀 대상이 없다. enum 값은 남겨 둬야
-  /// 서버가 열렸을 때 여기 한 줄만 되돌리면 된다(DEC-0020).
+  /// 인기순은 BE #175(v2.24.0)가 열어 넷 다 노출한다(DEC-0020의 예정 경로).
   static const List<CommunitySortOption> _order = [
     CommunitySortOption.latest,
+    CommunitySortOption.popular,
     CommunitySortOption.distance,
     CommunitySortOption.deadline,
   ];
@@ -84,12 +83,12 @@ class CommunitySortSheet extends StatelessWidget {
         ? 30.h
         : 0.0;
 
-    // 높이 고정. 패딩·텍스트 줄높이만으로 셈한 값(202 안팎)은 실제 렌더링에서
-    // 오버플로우가 났다 — 위젯 테스트로 실측해 항목 3개가 겹치지 않는 최소값(약
-    // 265) 위에 여유를 둔 270으로 뒀다. 홈 인디케이터 자리를 겸하므로 SafeArea를
-    // 두지 않는다.
+    // 높이 고정. 패딩·텍스트 줄높이만으로 셈한 값은 실제 렌더링에서 오버플로우가
+    // 났다 — 위젯 테스트로 실측해 항목 4개가 겹치지 않는 최소값(약 300) 위에
+    // 여유를 둔 300로 뒀다(3개 시절 270에서 인기순 추가로 상향). 홈 인디케이터
+    // 자리를 겸하므로 SafeArea를 두지 않는다.
     return SizedBox(
-      height: 270.h + androidExtra,
+      height: 300.h + androidExtra,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

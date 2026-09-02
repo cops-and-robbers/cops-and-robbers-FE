@@ -9,6 +9,7 @@ import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -70,7 +71,10 @@ class CommunityChatRoomInfoPage extends ConsumerWidget {
         onBack: () => context.pop(),
         actions: [
           GestureDetector(
-            onTap: () => _toggleNotification(context, ref, l10n),
+            onTap: () {
+              VibrationService.instance().buttonTap();
+              _toggleNotification(context, ref, l10n);
+            },
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -344,7 +348,10 @@ class _Chip extends StatelessWidget {
     );
     if (onTap == null) return chip;
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        VibrationService.instance().buttonTap();
+        onTap!();
+      },
       behavior: HitTestBehavior.opaque,
       child: chip,
     );

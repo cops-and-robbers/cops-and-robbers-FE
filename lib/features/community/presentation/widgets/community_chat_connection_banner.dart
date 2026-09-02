@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/community_chat_event.dart';
 
@@ -45,7 +46,10 @@ class CommunityChatConnectionBanner extends StatelessWidget {
           ),
           if (exhausted)
             GestureDetector(
-              onTap: onReconnect,
+              onTap: () {
+                VibrationService.instance().buttonTap();
+                onReconnect();
+              },
               behavior: HitTestBehavior.opaque,
               child: Text(
                 l10n.communityChatReconnect,

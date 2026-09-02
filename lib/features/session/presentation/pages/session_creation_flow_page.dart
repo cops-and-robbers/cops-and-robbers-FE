@@ -712,6 +712,9 @@ class _SessionCreationFlowPageState
           actions: [SizedBox(width: AppSpacing.horizontal20)],
         ),
         body: SafeArea(
+          // 기본 정보 단계는 키패드가 하단 인셋까지 배경으로 채우므로
+          // 하단 세이프 에어리어를 풀어 흰 띠가 생기지 않게 한다 (#539)
+          bottom: _phase != _CreationPhase.basic,
           child: switch (_phase) {
             _CreationPhase.zone => const SizedBox.shrink(),
             _CreationPhase.basic => _buildBasicPhase(l10n),
