@@ -408,6 +408,10 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
             label: l10n.communityDetailShare,
             textStyle: AppTextStyles.label16Medium,
             onTap: () {
+              // 좋아요·스크랩은 _runInteraction이 햅틱을 얹지만 공유는 서버를
+              // 안 불러 래퍼를 타지 않는다 — 진동만 직접 준다 (게임 결과
+              // 다이얼로그 공유 버튼과 동일).
+              VibrationService.instance().buttonTap();
               unawaited(
                 ref.read(analyticsServiceProvider).logCommunityPostShare(),
               );
