@@ -91,7 +91,9 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage> {
         );
       },
       child: Scaffold(
-        backgroundColor: AppColors.blueVer2_50,
+        // 흰색이어야 한다 — iOS 키보드는 반투명이라 Scaffold 배경이 비친다.
+        // 목록의 파란 바탕은 아래 ColoredBox가 칠한다.
+        backgroundColor: AppColors.white,
         appBar: AppTopBar(
           onBack: () => context.pop(),
           centerTitle: false,
@@ -137,44 +139,48 @@ class _CommunityChatRoomPageState extends ConsumerState<CommunityChatRoomPage> {
                 // 목록 아무 곳이나 누르면 키보드가 내려간다 — 모집글 상세와 같은
                 // 패턴. 메시지 재시도·모임 카드처럼 자기 탭을 가진 것들은 제스처
                 // 경쟁에서 안쪽이 이기므로 그대로 동작한다.
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () => FocusScope.of(context).unfocus(),
-                  child: Stack(
-                    children: [
-                      CommunityChatMessageList(
-                        state: state,
-                        myUserId: ref.watch(currentUserIdProvider),
-                        roomTitle: chatTitle,
-                        onLoadOlder: _loadOlder,
-                        onRetry: (key) =>
-                            ref.read(provider.notifier).retry(key),
-                        onJoinInvite: (code) =>
-                            context.push(RoutePaths.joinByInviteWithCode(code)),
-                      ),
-                      // 목록 위에 떠 있는 카드 — 스크롤에 밀리지 않고 항상 상단 고정.
-                      if (post != null)
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: CommunityChatMeetingCard(
-                            post: post,
-                            memberCount: state.memberCount,
-                            onViewLocation: _openPost,
-                            onOpenNotice: () => context.push(
-                              RoutePaths.communityChatNoticeWithId(
-                                widget.postId,
-                              ),
-                            ),
-                            onStartGame:
-                                post.writerId ==
-                                    ref.watch(currentUserIdProvider)
-                                ? _startGame
-                                : null,
+                child: ColoredBox(
+                  color: AppColors.blueVer2_50,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () => FocusScope.of(context).unfocus(),
+                    child: Stack(
+                      children: [
+                        CommunityChatMessageList(
+                          state: state,
+                          myUserId: ref.watch(currentUserIdProvider),
+                          roomTitle: chatTitle,
+                          onLoadOlder: _loadOlder,
+                          onRetry: (key) =>
+                              ref.read(provider.notifier).retry(key),
+                          onJoinInvite: (code) => context.push(
+                            RoutePaths.joinByInviteWithCode(code),
                           ),
                         ),
-                    ],
+                        // 목록 위에 떠 있는 카드 — 스크롤에 밀리지 않고 항상 상단 고정.
+                        if (post != null)
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: CommunityChatMeetingCard(
+                              post: post,
+                              memberCount: state.memberCount,
+                              onViewLocation: _openPost,
+                              onOpenNotice: () => context.push(
+                                RoutePaths.communityChatNoticeWithId(
+                                  widget.postId,
+                                ),
+                              ),
+                              onStartGame:
+                                  post.writerId ==
+                                      ref.watch(currentUserIdProvider)
+                                  ? _startGame
+                                  : null,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),

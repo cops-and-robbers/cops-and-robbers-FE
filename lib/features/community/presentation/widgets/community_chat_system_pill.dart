@@ -15,7 +15,8 @@ class CommunityChatSystemPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 6.h),
+        // 앞 항목 bottom 2 + 이 top 12 = 14 — 말풍선 경계 간격과 같다.
+        margin: EdgeInsets.only(top: 12.h, bottom: 2.h),
         padding: EdgeInsets.symmetric(
           horizontal: AppSpacing.horizontal12,
           vertical: 6.h,

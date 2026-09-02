@@ -95,9 +95,9 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
           );
         }
         final m = visible[index];
-        // 같은 발신자 묶음 안(연속)이면 6, 발신자가 바뀌거나 시스템/초대 이벤트가
-        // 끼면(groupFlagsAt이 항상 boundary로 판정) 18 — 각 위젯 자체 여백을 뺀
-        // 나머지를 이 top padding으로 채운다.
+        // 항목 사이 간격은 "앞 항목 bottom + 뒤 항목 top"의 합이다. 말풍선은
+        // bottom 2 / top(경계 12·연속 6), 시스템 pill은 bottom 2 / top 12 —
+        // 그래서 경계(발신자 변경·이벤트)는 14, 같은 사람 연속은 8이 된다.
         final flags = groupFlagsAt(visible, index);
         return switch (m.body) {
           CommunityChatTextBody(:final text) => _buildBubble(
@@ -106,29 +106,26 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
             text,
             flags,
           ),
-          CommunityChatSystemBody(:final event) => Padding(
-            padding: EdgeInsets.only(top: 12.h), // pill 자체 margin 6 + 12 = 18
-            child: CommunityChatSystemPill(
-              // 이벤트를 전부 열거한다 — 삼항으로 두면 새 이벤트가 조용히
-              // "나갔어요"로 흘러간다(KICK이 추가됐을 때 실제로 그랬다).
-              text: switch (event) {
-                CommunityChatSystemEvent.join => l10n.communityChatSystemJoined(
-                  m.senderNickname,
-                ),
-                CommunityChatSystemEvent.leave => l10n.communityChatSystemLeft(
-                  m.senderNickname,
-                ),
-                CommunityChatSystemEvent.kick => l10n.communityChatSystemKicked(
-                  m.senderNickname,
-                ),
-                CommunityChatSystemEvent.pinRegistered =>
-                  l10n.communityChatSystemPinRegistered(m.senderNickname),
-                CommunityChatSystemEvent.pinUpdated =>
-                  l10n.communityChatSystemPinUpdated(m.senderNickname),
-                CommunityChatSystemEvent.pinDeleted =>
-                  l10n.communityChatSystemPinDeleted(m.senderNickname),
-              },
-            ),
+          CommunityChatSystemBody(:final event) => CommunityChatSystemPill(
+            // 이벤트를 전부 열거한다 — 삼항으로 두면 새 이벤트가 조용히
+            // "나갔어요"로 흘러간다(KICK이 추가됐을 때 실제로 그랬다).
+            text: switch (event) {
+              CommunityChatSystemEvent.join => l10n.communityChatSystemJoined(
+                m.senderNickname,
+              ),
+              CommunityChatSystemEvent.leave => l10n.communityChatSystemLeft(
+                m.senderNickname,
+              ),
+              CommunityChatSystemEvent.kick => l10n.communityChatSystemKicked(
+                m.senderNickname,
+              ),
+              CommunityChatSystemEvent.pinRegistered =>
+                l10n.communityChatSystemPinRegistered(m.senderNickname),
+              CommunityChatSystemEvent.pinUpdated =>
+                l10n.communityChatSystemPinUpdated(m.senderNickname),
+              CommunityChatSystemEvent.pinDeleted =>
+                l10n.communityChatSystemPinDeleted(m.senderNickname),
+            },
           ),
           CommunityChatGameInviteBody(:final inviteCode) => _buildInvite(
             l10n,
@@ -149,8 +146,8 @@ class _CommunityChatMessageListState extends State<CommunityChatMessageList> {
     ChatGroupFlags flags,
   ) {
     final isMe = m.senderId == widget.myUserId;
-    // ChatBubble 자체 top padding(묶음 시작 8 / 연속 2)에 더해 최종 간격을
-    // 묶음 시작(다른 사람·이벤트 경계) 18, 같은 사람 연속 6으로 맞춘다.
+    // ChatBubble 자체 top padding(닉네임 행 있으면 8 / 없으면 2)에 더해 이 항목의
+    // top을 묶음 시작 12(내 말풍선) 또는 18(닉네임 행까지), 연속 6으로 맞춘다.
     final groupGap = flags.showNickname ? 10.h : 4.h;
     final bubble = ChatBubble(
       text: ProfanityFilter.filter(text),
