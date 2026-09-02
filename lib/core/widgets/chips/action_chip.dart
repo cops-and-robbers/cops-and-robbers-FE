@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/text_styles.dart';
+import '../../services/vibration_service.dart';
 
 /// 액션 버튼용 칩 컴포넌트
 ///
@@ -96,7 +97,14 @@ class ActionChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      // 다른 공용 버튼(AppButton·FlatIconButton 등)처럼 햅틱을 내장한다 —
+      // 호출부는 진동을 신경 쓰지 않는다.
+      onTap: onTap == null
+          ? null
+          : () {
+              VibrationService.instance().buttonTap();
+              onTap!();
+            },
       borderRadius: BorderRadius.circular(_effectiveBorderRadius),
       child: Container(
         width: width,

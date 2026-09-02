@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -79,9 +80,14 @@ class CommunityChatRoomList extends ConsumerWidget {
                 itemBuilder: (context, i) => CommunityChatRoomTile(
                   room: list[i],
                   now: ref.read(clockProvider)(),
-                  onTap: () => context.push(
-                    RoutePaths.communityChatWithId(list[i].postId),
-                  ),
+                  // 게시글 카드(community_feed_list)와 같은 방식 — 진동은
+                  // 호출부가 준다.
+                  onTap: () {
+                    VibrationService.instance().buttonTap();
+                    context.push(
+                      RoutePaths.communityChatWithId(list[i].postId),
+                    );
+                  },
                 ),
               ),
       ),

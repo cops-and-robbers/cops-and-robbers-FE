@@ -7,6 +7,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/services/vibration_service.dart';
 import '../../../../router/route_paths.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -101,7 +102,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       child: Opacity(
                         opacity: isLast ? 0 : 1,
                         child: TextButton(
-                          onPressed: isLast ? null : _finish,
+                          // 같은 화면의 다음/시작(AppButton)은 햅틱 내장 —
+                          // raw TextButton이라 직접 준다.
+                          onPressed: isLast
+                              ? null
+                              : () {
+                                  VibrationService.instance().buttonTap();
+                                  _finish();
+                                },
                           child: Text(
                             l10n.buttonSkip,
                             style: AppTextStyles.paragraph_14.copyWith(

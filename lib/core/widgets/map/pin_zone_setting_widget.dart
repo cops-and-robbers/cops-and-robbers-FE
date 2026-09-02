@@ -240,10 +240,9 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
     widget.onPointsChanged(sortedPoints);
   }
 
-  /// 모든 핀 제거 (전체 해제)
+  /// 모든 핀 제거 (전체 해제) — 햅틱은 호출하는 ActionChip이 내장한다.
   void _clearAll() {
     if (_points.isEmpty) return;
-    VibrationService.instance().buttonTap();
     setState(() => _points.clear());
     widget.onPointsChanged(const []);
   }
