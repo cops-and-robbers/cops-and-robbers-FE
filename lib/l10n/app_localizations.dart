@@ -262,6 +262,18 @@ abstract class AppLocalizations {
   /// **'더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!'**
   String get pageMaintenanceMessage;
 
+  /// No description provided for @pageServerErrorTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버에 문제가 생겼어요'**
+  String get pageServerErrorTitle;
+
+  /// No description provided for @pageServerErrorMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 연결이 원활하지 않아요\n잠시 후 다시 시도해 주세요!'**
+  String get pageServerErrorMessage;
+
   /// No description provided for @buttonGoogleSignIn.
   ///
   /// In ko, this message translates to:

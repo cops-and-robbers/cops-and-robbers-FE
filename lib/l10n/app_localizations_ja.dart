@@ -91,6 +91,12 @@ class AppLocalizationsJa extends AppLocalizations {
       'より良いサービスのためにメンテナンス中です\nしばらくしてからもう一度お試しください！';
 
   @override
+  String get pageServerErrorTitle => 'サーバーに問題が発生しました';
+
+  @override
+  String get pageServerErrorMessage => 'サーバーに接続できませんでした\nしばらくしてからもう一度お試しください！';
+
+  @override
   String get buttonGoogleSignIn => 'Googleで続ける';
 
   @override
