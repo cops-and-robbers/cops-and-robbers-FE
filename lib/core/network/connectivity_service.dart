@@ -27,8 +27,19 @@ class ConnectivityService {
   ///
   /// `true` = 연결됨, `false` = 끊김.
   /// broadcast 스트림이라 여러 구독자가 동시에 구독 가능하다.
-  Stream<bool> get onConnectivityChanged =>
-      _connectivity.onConnectivityChanged.map(_hasConnectivity);
+  ///
+  /// `skip(1)`로 구독 시점의 첫 이벤트를 버린다 — connectivity_plus는 새
+  /// 리스너가 붙을 때마다(Android `ConnectivityBroadcastReceiver.onListen`,
+  /// iOS `ConnectivityPlusPlugin.onListen` 둘 다) "실제 변화"가 아니라 그
+  /// 순간의 현재 상태를 즉시 한 번 흘려보낸다. 구독자가 이 재생 이벤트를
+  /// "연결 복구"로 오인하면, cancel 후 재구독하는 코드(스플래시 서버 장애
+  /// 복구 등)는 재구독할 때마다 자기 자신이 쏜 이벤트에 반응해 여전히 죽어
+  /// 있는 서버에 재시도를 무한 반복하게 된다.
+  /// `distinct()`로 그 이후의 반복 발화(같은 상태를 다시 보고하는 경우)도 접는다.
+  Stream<bool> get onConnectivityChanged => _connectivity.onConnectivityChanged
+      .map(_hasConnectivity)
+      .skip(1)
+      .distinct();
 
   bool _hasConnectivity(List<ConnectivityResult> result) {
     if (result.isEmpty) return false;
