@@ -59,4 +59,47 @@ void main() {
     expect(find.text('5분'), findsOneWidget);
     expect(find.text('10분'), findsOneWidget);
   });
+
+  testWidgets(
+    'keeps_full_inset_on_android_and_reduces_it_on_ios',
+    (tester) async {
+      tester.view.viewPadding = FakeViewPadding(
+        bottom: 34 * tester.view.devicePixelRatio,
+      );
+      addTearDown(tester.view.resetViewPadding);
+
+      await tester.pumpWidget(
+        _wrap(
+          NumberPad(
+            quickAmounts: const [5, 10, 20],
+            unit: '명',
+            onDigit: (_) {},
+            onQuickAdd: (_) {},
+            onBackspace: () {},
+          ),
+        ),
+      );
+      final context = tester.element(find.byType(NumberPad));
+      final deviceBottomInset = MediaQuery.viewPaddingOf(context).bottom;
+      final expectedBottomInset =
+          Theme.of(context).platform == TargetPlatform.iOS
+          ? deviceBottomInset - 18.h
+          : deviceBottomInset;
+      final numberPadSurface = find
+          .descendant(
+            of: find.byType(NumberPad),
+            matching: find.byType(Container),
+          )
+          .first;
+
+      expect(
+        tester.getSize(numberPadSurface).height,
+        closeTo(361.h + expectedBottomInset, 0.001),
+      );
+    },
+    variant: const TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
 }

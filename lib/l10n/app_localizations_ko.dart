@@ -90,6 +90,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageMaintenanceMessage => '더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!';
 
   @override
+  String get pageServerErrorTitle => '서버에 문제가 생겼어요';
+
+  @override
+  String get pageServerErrorMessage => '서버 연결이 원활하지 않아요\n잠시 후 다시 시도해 주세요!';
+
+  @override
   String get buttonGoogleSignIn => 'Google로 계속하기';
 
   @override

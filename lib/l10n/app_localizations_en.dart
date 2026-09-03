@@ -96,6 +96,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'We are performing maintenance to provide better service\nPlease reconnect in a moment!';
 
   @override
+  String get pageServerErrorTitle => 'Something went wrong on the server';
+
+  @override
+  String get pageServerErrorMessage =>
+      'We couldn\'t reach the server\nPlease try again in a moment!';
+
+  @override
   String get buttonGoogleSignIn => 'Continue with Google';
 
   @override

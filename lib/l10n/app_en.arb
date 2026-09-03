@@ -27,6 +27,8 @@
   "pageForceUpdateButton": "Update",
   "pageMaintenanceTitle": "Under maintenance",
   "pageMaintenanceMessage": "We are performing maintenance to provide better service\nPlease reconnect in a moment!",
+  "pageServerErrorTitle": "Something went wrong on the server",
+  "pageServerErrorMessage": "We couldn't reach the server\nPlease try again in a moment!",
   "buttonGoogleSignIn": "Continue with Google",
   "buttonAppleSignIn": "Continue with Apple",
   "zoneRadiusLabel": "Radius",
