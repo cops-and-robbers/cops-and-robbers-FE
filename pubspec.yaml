@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 3.0.12+322
+version: 3.0.13+323
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
