@@ -35,8 +35,8 @@ class CommunityChatRoomList extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     if (ref.watch(currentUserIdProvider) == null) {
-      return Center(
-        child: EmptyState(
+      return _centered(
+        EmptyState(
           message: l10n.communityChatRoomsLoginRequired,
           actionText: l10n.buttonLogin,
           onAction: () => context.push(RoutePaths.login),
@@ -47,8 +47,8 @@ class CommunityChatRoomList extends ConsumerWidget {
     final rooms = ref.watch(communityChatRoomsProvider);
     return rooms.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(
-        child: EmptyState(
+      error: (e, _) => _centered(
+        EmptyState(
           message: e is AppException
               ? l10n.errorByException(e)
               : l10n.errorTemporaryRetry,
@@ -59,11 +59,17 @@ class CommunityChatRoomList extends ConsumerWidget {
       data: (list) => AppRefreshControl(
         onRefresh: () => _refresh(context, ref),
         child: list.isEmpty
-            ? ListView(
+            // 컨텐츠가 뷰포트를 다 채우지 않아도 당길 수 있어야 하므로
+            // 남는 높이를 채운다 (community_feed_list와 같은 트리).
+            ? CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  SizedBox(height: AppSpacing.vertical64 * 2),
-                  EmptyState(message: l10n.communityChatRoomsEmpty),
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _centered(
+                      EmptyState(message: l10n.communityChatRoomsEmpty),
+                    ),
+                  ),
                 ],
               )
             : ListView.separated(
@@ -90,6 +96,20 @@ class CommunityChatRoomList extends ConsumerWidget {
                   },
                 ),
               ),
+      ),
+    );
+  }
+
+  /// 다른 탭(전체·우리 동네)의 빈 상태와 같은 높이 — 위쪽 스코프 토글만큼
+  /// 아래를 채워 화면 기준 가운데로 보정한다 (community_page._buildPlaceholder).
+  Widget _centered(Widget child) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          child,
+          SizedBox(height: AppSpacing.vertical64),
+        ],
       ),
     );
   }

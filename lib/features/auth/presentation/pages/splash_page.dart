@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,10 +22,10 @@ import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/services/storage/onboarding_prefs.dart';
 import '../../../../core/network/network_failure_detector.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
+import '../../../../core/widgets/pages/server_error_page.dart';
 import '../../../../router/route_paths.dart';
 import '../../../community/presentation/providers/pending_community_post_provider.dart';
 import '../../../session/domain/entities/user_game_status_entity.dart';
@@ -38,6 +37,9 @@ import '../../../../core/services/remote_config/remote_config_service.dart';
 import '../../../../core/services/remote_config/app_version_checker.dart';
 import '../../../../core/services/remote_config/update_dialog_helper.dart';
 
+/// 스플래시가 진행을 멈추고 재시도 화면을 띄우는 사유
+enum _BlockReason { offline, serverError }
+
 /// 앱 시작 시 초기 화면
 ///
 /// 최소 2초 스플래시를 표시한 후 인증 상태 및 게임 참여 상태에 따라
@@ -47,7 +49,8 @@ import '../../../../core/services/remote_config/update_dialog_helper.dart';
 /// - 인증 + 참여 중인 게임 없음 → 홈 화면
 /// - 인증 + `WAITING` → 대기실 자동 복귀
 /// - 인증 + `IN_PROGRESS` → 게임 화면 자동 복귀
-/// - API 실패 → 홈 화면 (fallback)
+/// - 기기 오프라인 / 서버 장애(5xx·연결 불가) → 차단 화면 + 재시도
+/// - 그 외 API 실패(파싱 등) → 홈 화면 (fallback)
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
@@ -61,16 +64,21 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   // (build() 시 l10n.splashReturningToScene으로 폴백)
   String? _reconnectMessage;
 
-  /// 오프라인 차단 상태
-  /// 네트워크 미연결 감지 시 true가 되며, 외부 API 호출을 차단한다.
-  bool _isOffline = false;
+  /// 차단 화면 사유. null이면 정상 진행 중.
+  ///
+  /// 두 사유 모두 수동 재시도 + 연결 복구 자동 재시도를 받는다. 서버 장애를 홈으로
+  /// 흘리지 않는 이유: 홈의 활성 게임 안전망도 같은 API를 부르므로 서버가 내려간
+  /// 동안은 복구가 안 되고, 게임 중이던 사용자가 홈에 갇힌다.
+  _BlockReason? _block;
+
+  bool get _isOffline => _block == _BlockReason.offline;
 
   /// `_navigateToNextScreen` 동시 실행 방지 플래그
   /// 리스너/재시도 버튼/initState가 중복으로 진입하는 것을 막는다.
   bool _isNavigating = false;
 
   /// 연결 상태 변화 스트림 구독 핸들
-  /// 오프라인 상태에서만 구독되며, 복구 재진입 시 cancel 후 재구독된다.
+  /// 차단 상태에서만 구독되며, 복구 재진입 시 cancel 후 재구독된다.
   StreamSubscription<bool>? _connectivitySub;
 
   @override
@@ -116,15 +124,15 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         }
         if (!connected) {
           if (!mounted) return;
-          setState(() => _isOffline = true);
+          setState(() => _block = _BlockReason.offline);
           _subscribeConnectivity();
           return;
         }
       }
 
-      // 복구 경로에서 진입한 경우 오프라인 플래그 해제
-      if (_isOffline && mounted) {
-        setState(() => _isOffline = false);
+      // 복구 경로에서 진입한 경우 차단 해제
+      if (_block != null && mounted) {
+        setState(() => _block = null);
       }
 
       final startTime = DateTime.now();
@@ -148,7 +156,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       } catch (e) {
         // 복구 경로에서의 네트워크성 실패는 오프라인 UI로 복귀
         if (isRecovery && isNetworkFailure(e)) {
-          await _returnToOffline();
+          await _returnToBlocked();
           return;
         }
         debugPrint('⚠️ SplashPage: Remote Config 체크 실패, 앱 진행: $e');
@@ -201,23 +209,24 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             .timeout(const Duration(seconds: 5));
       } on TimeoutException {
         if (isRecovery) {
-          await _returnToOffline();
+          await _returnToBlocked();
           return;
         }
-        debugPrint('⚠️ SplashPage: auth 초기화 타임아웃, 로그인으로 이동');
+        // AuthNotifier는 서버 조회 실패를 안에서 삼키므로, 여기 오는 타임아웃은
+        // 서버가 응답을 안 주는 경우다(connectTimeout 10초 × 2 > 5초). 로그인
+        // 화면으로 보내면 로그인된 사용자가 같은 죽은 서버에 다시 부딪힌다.
+        debugPrint('⚠️ SplashPage: auth 초기화 타임아웃, 서버 장애로 차단');
         await _waitRemaining(startTime, minDelay);
-        if (mounted) context.go(RoutePaths.login);
+        if (mounted) _showBlock(_BlockReason.serverError);
         return;
       } on NetworkException {
         if (isRecovery) {
-          await _returnToOffline();
+          await _returnToBlocked();
           return;
         }
-        // 비복구 모드에서 Auth가 NetworkException을 던지는 경우 —
-        // 기존 코드에선 해당 경로가 정의돼 있지 않아 generic catch로 빠졌으므로
-        // 동일하게 홈 fallback으로 이동한다.
+        // 연결 사전 체크는 통과했는데 서버에 못 닿았다 → 서버 장애로 차단.
         await _waitRemaining(startTime, minDelay);
-        if (mounted) context.go(RoutePaths.home);
+        if (mounted) _showBlock(_BlockReason.serverError);
         return;
       }
 
@@ -317,47 +326,60 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         }
 
         context.go(RoutePaths.home);
-      } on NetworkException catch (e) {
-        if (isRecovery) {
-          await _returnToOffline();
-          return;
-        }
-        // 비복구 모드 — 기존 동작 유지 (홈 fallback).
-        debugPrint('⚠️ SplashPage: 게임 상태 조회 실패 (Network), 홈으로 이동 - ${e.code}');
-        await _waitRemaining(startTime, minDelay);
-        if (mounted) context.go(RoutePaths.home);
-      } on DioException catch (e) {
-        // 원시 DioException이 올라오는 경우에 대비해 유지
-        if (isRecovery) {
-          await _returnToOffline();
-          return;
-        }
-        debugPrint('⚠️ SplashPage: 네트워크 에러, 재시도 모달 표시 - ${e.type}');
-        await _waitRemaining(startTime, minDelay);
-        if (mounted) await _showNetworkErrorDialog();
       } catch (e) {
-        // 비네트워크 에러 (파싱 등) → 기존대로 홈 fallback
-        if (isRecovery && isNetworkFailure(e)) {
-          await _returnToOffline();
-          return;
+        switch (classifyFailure(e)) {
+          case FailureKind.network:
+            if (isRecovery) {
+              await _returnToBlocked();
+              return;
+            }
+            // 연결 사전 체크는 통과했는데 서버에 못 닿았다 → 서버 장애로 차단.
+            debugPrint('⚠️ SplashPage: 게임 상태 조회 실패 (Network), 차단 - $e');
+            await _waitRemaining(startTime, minDelay);
+            if (mounted) _showBlock(_BlockReason.serverError);
+          case FailureKind.server:
+            // 서버가 내려간 동안 홈으로 보내면 홈 안전망도 같은 API라 복구가 안 된다.
+            debugPrint('⚠️ SplashPage: 게임 상태 조회 실패 (5xx), 차단 - $e');
+            await _waitRemaining(startTime, minDelay);
+            if (mounted) _showBlock(_BlockReason.serverError);
+          case FailureKind.client:
+          case FailureKind.other:
+            // 재시도해도 같은 결과 (파싱·거절) → 기존대로 홈 fallback
+            debugPrint('⚠️ SplashPage: 게임 상태 조회 실패, 홈으로 이동 - $e');
+            await _waitRemaining(startTime, minDelay);
+            if (mounted) context.go(RoutePaths.home);
         }
-        debugPrint('⚠️ SplashPage: 게임 상태 조회 실패, 홈으로 이동 - $e');
-        await _waitRemaining(startTime, minDelay);
-        if (mounted) context.go(RoutePaths.home);
       }
     } finally {
       _isNavigating = false;
     }
   }
 
-  /// 오프라인 상태로 전환하고 연결 스트림을 재구독한다.
+  /// 복구 시도가 네트워크성 실패로 끝났을 때 차단 화면으로 되돌린다.
   ///
-  /// 네트워크성 실패로 복구 루프에 진입할 때 호출한다.
-  /// 폭주 방지를 위해 1초 delay 후 전환한다.
-  Future<void> _returnToOffline() async {
+  /// 재시도는 연결 사전 체크를 건너뛰므로 여기서 기기 연결을 본다 — 연결돼
+  /// 있는데도 실패했으면 서버 쪽 문제다. 폭주 방지를 위해 1초 delay 후 전환한다.
+  Future<void> _returnToBlocked() async {
     await Future<void>.delayed(const Duration(seconds: 1));
     if (!mounted) return;
-    setState(() => _isOffline = true);
+    bool connected;
+    try {
+      connected = await ref.read(connectivityServiceProvider).isConnected();
+    } catch (e) {
+      // 플랫폼 채널 실패 — 판정 불가면 재시도 버튼이 있는 쪽으로 둔다
+      debugPrint('⚠️ SplashPage: 연결 확인 실패, 서버 장애로 간주 - $e');
+      connected = true;
+    }
+    if (!mounted) return;
+    _showBlock(connected ? _BlockReason.serverError : _BlockReason.offline);
+  }
+
+  /// 차단 화면을 띄우고 연결 복구를 구독한다.
+  ///
+  /// 서버 장애로 판정했어도 구독한다 — connectivity_plus의 보고값이 stale해
+  /// 실제로는 오프라인인 경우가 있어, 연결이 돌아오면 자동 재시도가 살아야 한다.
+  void _showBlock(_BlockReason reason) {
+    setState(() => _block = reason);
     _subscribeConnectivity();
   }
 
@@ -378,7 +400,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   void _handleConnectivityChange(bool isConnected) {
     if (!mounted) return;
     if (!isConnected) return;
-    if (!_isOffline) return;
+    if (_block == null) return;
     if (_isNavigating) return;
     _navigateToNextScreen(isRecovery: true);
   }
@@ -401,17 +423,20 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       );
     } catch (e) {
       debugPrint('⚠️ SplashPage: 수동 재시도 중 예외 - $e');
-      // 예기치 못한 예외 시에도 오프라인 UI로 되돌린다.
-      if (isNetworkFailure(e) && mounted && !_isOffline) {
-        await _returnToOffline();
+      // 예기치 못한 예외 시에도 차단 UI로 되돌린다.
+      if (isNetworkFailure(e) && mounted && _block == null) {
+        await _returnToBlocked();
       }
     }
 
-    // 복구 이후에도 여전히 오프라인이면 사용자에게 명시적 피드백 제공
-    if (mounted && _isOffline) {
+    // 복구 이후에도 여전히 차단 상태면 사용자에게 명시적 피드백 제공
+    if (mounted && _block != null) {
+      final l10n = AppLocalizations.of(context);
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).errorNetworkNotConnected,
+        message: _isOffline
+            ? l10n.errorNetworkNotConnected
+            : l10n.errorServerUnreachable,
         backgroundColor: AppColors.red,
       );
     }
@@ -467,23 +492,6 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     }
   }
 
-  /// 네트워크 에러 시 재시도 모달 표시
-  ///
-  /// 모달의 "재시도" 버튼을 누르면 [_navigateToNextScreen]을 처음부터 재실행합니다.
-  Future<void> _showNetworkErrorDialog() async {
-    final l10n = AppLocalizations.of(context);
-    await AppDialog.show(
-      context: context,
-      title: l10n.dialogNetworkConnectionFailedTitle,
-      message: l10n.dialogSplashOfflineMessage,
-      confirmText: l10n.buttonRetry,
-      barrierDismissible: false,
-      onConfirm: () {
-        if (mounted) _navigateToNextScreen();
-      },
-    );
-  }
-
   /// 활성 게임 조회 (DioException 시 최대 [maxRetries]회 재시도)
   ///
   /// 콜드 스타트 시 네트워크 스택이 아직 준비되지 않아
@@ -516,6 +524,10 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // 서버 장애는 점검·강제 업데이트와 같은 전면 안내 페이지, 오프라인은 기존 인라인 뷰.
+    if (_block == _BlockReason.serverError) {
+      return ServerErrorPage(onRetry: _onManualRetry);
+    }
     if (_isOffline) {
       return _buildOfflineView(context);
     }
