@@ -1,11 +1,34 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-03T15:50:42Z",
-    "currentVersion": "3.0.13",
+    "lastUpdated": "2026-09-04T12:31:29Z",
+    "currentVersion": "3.0.15",
     "projectType": "flutter",
-    "totalReleases": 125
+    "totalReleases": 126
   },
   "releases": [
+    {
+      "version": "3.0.15",
+      "project_type": "flutter",
+      "date": "2026-09-04",
+      "pr_number": 562,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #561 from cops-and-robbers/20260904_#560_같은_모집글_링크를_다시_누르면_콜드_스타트에서_홈으로_이동함\n  * docs : 리포트 문서 작성 #560\n  * docs : 리뷰 반영 — dedup 범위 주석 정정·모집글 키 불변 테스트 단언 보강 #560\n  * fix : 콜드 스타트 딥링크 dedup 을 초대에만 적용 #560\n  * docs : 이슈 문서 작성 #560\n  * Merge pull request #559 from cops-and-robbers/20260904_#558_콜드_스타트_딥링크_타임아웃_유실_수정\n  * docs : 리포트 문서 작성 #558\n  * fix : 콜드 스타트 딥링크 프로브 타임아웃 유실 수정 #558\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #561 from cops-and-robbers/20260904_#560_같은_모집글_링크를_다시_누르면_콜드_스타트에서_홈으로_이동함",
+            "docs : 리포트 문서 작성 #560",
+            "docs : 리뷰 반영 — dedup 범위 주석 정정·모집글 키 불변 테스트 단언 보강 #560",
+            "fix : 콜드 스타트 딥링크 dedup 을 초대에만 적용 #560",
+            "docs : 이슈 문서 작성 #560",
+            "Merge pull request #559 from cops-and-robbers/20260904_#558_콜드_스타트_딥링크_타임아웃_유실_수정",
+            "docs : 리포트 문서 작성 #558",
+            "fix : 콜드 스타트 딥링크 프로브 타임아웃 유실 수정 #558"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.0.13",
       "project_type": "flutter",
