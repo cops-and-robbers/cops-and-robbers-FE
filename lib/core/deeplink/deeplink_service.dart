@@ -52,20 +52,27 @@ Future<DeeplinkEvent?> coldStartDeeplink(Ref ref) async {
   final initial = await ref.read(coldStartDeeplinkUriProvider.future);
   if (initial == null) return null;
 
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString(_lastHandledDeeplinkKey) == initial.toString()) {
-      // 새 클릭이 아니라 OS 가 보관한 launch intent 재전달 → 자동 재진입 차단
-      debugPrint('[DeepLink] cold start 중복 스킵: $initial');
-      return null;
+  final event = DeeplinkEvent.fromUri(initial);
+
+  // dedup 은 초대에만 적용한다 (#560). join 은 참가 API 부작용이 있어 recents
+  // 재실행의 재참가를 막아야 하지만, 모집글 링크는 글 하나에 URI 가 고정이라
+  // 같은 링크를 다시 여는 것이 정상 사용이다 — 여기서 걸러 버리면 두 번째
+  // 탭부터 매번 홈으로 떨어진다. 글 열람은 두 번 열려도 무해하다.
+  if (event is InviteJoinEvent) {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getString(_lastHandledDeeplinkKey) == initial.toString()) {
+        // 새 클릭이 아니라 OS 가 보관한 launch intent 재전달 → 자동 재진입 차단
+        debugPrint('[DeepLink] cold start 중복 스킵: $initial');
+        return null;
+      }
+      await prefs.setString(_lastHandledDeeplinkKey, initial.toString());
+    } catch (e) {
+      // prefs 실패 시 dedup 을 포기하고 처리 진행 (자동 진입을 막느니 한 번 더 시도)
+      debugPrint('[DeepLink] cold start last-handled 접근 실패(처리 진행): $e');
     }
-    await prefs.setString(_lastHandledDeeplinkKey, initial.toString());
-  } catch (e) {
-    // prefs 실패 시 dedup 을 포기하고 처리 진행 (자동 진입을 막느니 한 번 더 시도)
-    debugPrint('[DeepLink] cold start last-handled 접근 실패(처리 진행): $e');
   }
 
-  final event = DeeplinkEvent.fromUri(initial);
   debugPrint('[DeepLink] cold start: $event');
   return event;
 }
