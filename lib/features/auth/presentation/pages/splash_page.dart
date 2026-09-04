@@ -245,8 +245,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       //
       // 프로브가 4초를 넘겼어도 auth 대기(최대 5초)를 거친 지금은 대부분
       // 끝나 있다. 완료된 결과가 있으면 이번 실행에서 그대로 쓴다 —
-      // 타임아웃이라고 버리면 사용자는 링크를 눌렀는데 홈만 보게 되고,
-      // dedup(last-handled) 때문에 같은 링크 재클릭도 스킵될 수 있다.
+      // 타임아웃이라고 버리면 사용자는 링크를 눌렀는데 홈만 보게 된다.
       // ================================================================
       if (deeplinkProbeTimedOut && coldDeeplink == null) {
         coldDeeplink = ref.read(coldStartDeeplinkProvider).valueOrNull;
