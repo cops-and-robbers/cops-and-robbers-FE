@@ -18,7 +18,7 @@ const _lastHandledDeeplinkKey = 'last_handled_deeplink_uri';
 
 /// 콜드 스타트로 앱을 실행시킨 초기 딥링크를 1회 평가한다.
 ///
-/// `getInitialLink()` 를 단 한 번 읽고 dedup(직전 처리 URI 비교)까지 적용해,
+/// `getInitialLink()` 를 단 한 번 읽고 dedup(직전 처리 URI 비교, 초대에만)까지 적용해,
 /// "이번 콜드 스타트에서 실제로 처리할 [DeeplinkEvent]"(없으면 null)를 반환한다.
 ///
 /// ## 왜 별도 단일 소스인가 (cold-start 네비게이션 경합 방지)
@@ -32,7 +32,8 @@ const _lastHandledDeeplinkKey = 'last_handled_deeplink_uri';
 /// ## cold-start 중복 처리 방지 (idempotency)
 /// Android `singleTop` 액티비티는 앱을 실행시킨 VIEW intent(딥링크 URI)를 보관한다.
 /// recents 에서 재실행하면 OS 가 그 intent 를 다시 전달하고 `getInitialLink()` 가
-/// 매번 같은 URI 를 반환하므로, 직전 처리 URI 와 같으면 스킵한다.
+/// 매번 같은 URI 를 반환하므로, 직전 처리 URI 와 같으면 스킵한다. 이 스킵은 초대에만
+/// 적용한다 — 모집글은 URI 가 글마다 고정이라 같은 링크 재탭이 정상 사용이다 (#560).
 /// 콜드 스타트를 일으킨 initial link URI (없으면 null). 1회만 읽어 캐시한다.
 ///
 /// [coldStartDeeplink] 의 재료이면서, [deeplinkEvents] 가 initial link 의 스트림
@@ -80,7 +81,7 @@ Future<DeeplinkEvent?> coldStartDeeplink(Ref ref) async {
 /// `app_links` 를 래핑하여 cold start + warm 양쪽의 URI 를 Broadcast Stream 으로 노출.
 ///
 /// 앱 전역 단일 인스턴스 (keepAlive). 여러 listener 가능.
-/// 콜드 스타트는 [coldStartDeeplink] 의 결과(dedup 적용 완료)를 emit 하고,
+/// 콜드 스타트는 [coldStartDeeplink] 의 결과(초대 dedup 적용 완료)를 emit 하고,
 /// warm(앱 실행 중 클릭)은 항상 처리하되 last-handled 를 갱신한다.
 @Riverpod(keepAlive: true)
 Stream<DeeplinkEvent> deeplinkEvents(Ref ref) {

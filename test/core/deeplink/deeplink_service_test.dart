@@ -43,6 +43,9 @@ void main() {
         const DeeplinkEvent.communityPost(postId: 12),
         reason: '같은 모집글 링크 재탭은 정상 사용이다 — dedup 으로 버리면 홈으로 떨어진다 (#560)',
       );
+      // 모집글은 last-handled 를 건드리지 않는다 — 기록하면 초대 dedup 키를 덮는다
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(lastHandledKey), postUri.toString());
     },
   );
 
