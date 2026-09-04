@@ -184,18 +184,27 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // ================================================================
       // 모집글 딥링크는 양보하지 않는다 — 아래에서 홈 대신 상세를 목적지로 삼는다
       // (푸시 알림의 콜드 스타트와 같은 방식).
+      //
+      // 프로브 대기는 4초 — 설치 직후 첫 콜드 스타트는 플러그인 채널 초기화와
+      // prefs 첫 로드가 겹쳐 2초를 넘길 수 있고, 그때 링크가 통째로 유실됐다
+      // (#558). 링크 없는 일반 실행은 getInitialLink 가 즉시 null 을 반환하므로
+      // 이 값이 커도 시작이 느려지지 않는다 — 대기가 실제로 발생하는 건
+      // 딥링크 실행에서 프로브가 밀린 경우뿐이고, 그때는 기다리는 게 맞다.
       DeeplinkEvent? coldDeeplink;
+      var deeplinkProbeTimedOut = false;
       try {
         coldDeeplink = await ref
             .read(coldStartDeeplinkProvider.future)
-            .timeout(const Duration(seconds: 2));
+            .timeout(const Duration(seconds: 4));
         if (coldDeeplink is InviteJoinEvent) {
           debugPrint('🔗 SplashPage: 콜드 스타트 딥링크 감지 → 네비게이션 양보');
           return;
         }
       } on TimeoutException {
-        // 프로브 지연 시 양보하지 않고 정상 진행 (기존 동작 유지)
-        debugPrint('⚠️ SplashPage: 콜드 스타트 딥링크 프로브 타임아웃, 정상 진행');
+        // 여기서 링크를 버리면 목적지가 유실된다(#558) — 포기하지 않고
+        // 아래 auth 대기가 끝난 시점에 프로브를 한 번 더 확인한다.
+        deeplinkProbeTimedOut = true;
+        debugPrint('⚠️ SplashPage: 콜드 딥링크 프로브 타임아웃, auth 대기 후 재확인');
       } catch (e) {
         debugPrint('⚠️ SplashPage: 콜드 스타트 딥링크 확인 실패, 정상 진행 - $e');
       }
@@ -228,6 +237,48 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         await _waitRemaining(startTime, minDelay);
         if (mounted) _showBlock(_BlockReason.serverError);
         return;
+      }
+      if (!mounted) return;
+
+      // ================================================================
+      // 늦게 완료된 콜드 스타트 프로브 회수 (#558)
+      //
+      // 프로브가 4초를 넘겼어도 auth 대기(최대 5초)를 거친 지금은 대부분
+      // 끝나 있다. 완료된 결과가 있으면 이번 실행에서 그대로 쓴다 —
+      // 타임아웃이라고 버리면 사용자는 링크를 눌렀는데 홈만 보게 되고,
+      // dedup(last-handled) 때문에 같은 링크 재클릭도 스킵될 수 있다.
+      // ================================================================
+      if (deeplinkProbeTimedOut && coldDeeplink == null) {
+        coldDeeplink = ref.read(coldStartDeeplinkProvider).valueOrNull;
+        if (coldDeeplink is InviteJoinEvent) {
+          // 초대는 프로브 완료 시점에 deeplinkEvents 가 emit 해 리스너가
+          // join 페이지를 이미 띄웠거나 곧 띄운다. 여기서 home 으로 가면
+          // 그 페이지가 언마운트되므로 원래 규칙대로 네비게이션을 양보한다.
+          debugPrint('🔗 SplashPage: 늦게 완료된 초대 딥링크 → 네비게이션 양보');
+          return;
+        }
+        if (coldDeeplink != null) {
+          debugPrint('🔗 SplashPage: 늦게 완료된 콜드 딥링크 회수 - $coldDeeplink');
+        } else {
+          // 최후 안전망 — 여기까지도 프로브가 안 끝난 극단 케이스.
+          // 모집글은 완료되는 대로 pending 으로 보존한다. 진입 절차가 남은
+          // 사용자는 절차 완료 시점에, 이미 로그인된 사용자는 늦어도 다음
+          // 실행에서 소비된다(유실 대신 지연). 초대는 emit 경로가 처리하므로
+          // 여기서 다루지 않는다. splash 가 dispose 된 뒤 완료될 수 있어
+          // ref 대신 앱 수명의 container 로 저장한다.
+          final container = ProviderScope.containerOf(context, listen: false);
+          unawaited(
+            container.read(coldStartDeeplinkProvider.future).then((event) {
+              if (event case CommunityPostEvent(:final postId)) {
+                unawaited(
+                  container
+                      .read(pendingCommunityPostProvider.notifier)
+                      .save(postId),
+                );
+              }
+            }),
+          );
+        }
       }
 
       // 인증되지 않은 경우 → 남은 딜레이 후 로그인
