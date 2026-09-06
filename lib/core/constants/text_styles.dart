@@ -107,6 +107,15 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  /// Paragraph - 긴 입력필드 (16px Medium)
+  /// Line Height: 140%, Letter Spacing: -0.32px
+  static TextStyle get paragraph_16 => TextStyle(
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 16.sp,
+    height: 1.4, // 140% line height
+    letterSpacing: -0.32,
+  );
+
   /// Paragraph - 본문 (14px Medium)
   /// Line Height: 140%, Letter Spacing: -0.32px
   static TextStyle get paragraph_14 => TextStyle(

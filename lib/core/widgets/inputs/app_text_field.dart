@@ -9,12 +9,12 @@ import '../../constants/text_styles.dart';
 /// 앱 전역에서 사용하는 공용 TextField 컴포넌트
 ///
 /// **기본 스펙**:
-/// - 크기: 353x48 (반응형)
+/// - 너비: 353px, 높이: 텍스트 줄높이 + 내부 패딩 (반응형)
 /// - 모서리: 12px 라운드
-/// - 텍스트: AppTextStyles.label16Medium
+/// - 텍스트: AppTextStyles.paragraph_16
 /// - Hint: AppColors.black600
 /// - 입력 텍스트: AppColors.black
-/// - 패딩: 좌우 20px, 상하 16px
+/// - 패딩: 상하좌우 16px
 /// - 테두리: 기본 1px (showBorder로 제어 가능)
 ///
 /// **색상**:
@@ -80,6 +80,7 @@ class AppTextField extends StatelessWidget {
     this.errorBorderColor,
     this.width,
     this.height,
+    this.contentPadding,
     this.borderRadius,
     this.maxLines = 1,
     this.minLines,
@@ -139,8 +140,11 @@ class AppTextField extends StatelessWidget {
   /// TextField 너비 (기본: 353.w)
   final double? width;
 
-  /// TextField 높이 (기본: 48.h)
+  /// TextField 높이. 미지정하면 텍스트 줄높이와 내부 패딩에 맞춘다.
   final double? height;
+
+  /// 입력 내용의 내부 패딩 (기본: 상하좌우 16px)
+  final EdgeInsetsGeometry? contentPadding;
 
   /// 모서리 반경 (기본: 12.r)
   final BorderRadius? borderRadius;
@@ -196,9 +200,6 @@ class AppTextField extends StatelessWidget {
   /// 기본 너비 (353px)
   double get _effectiveWidth => width ?? 353.w;
 
-  /// 기본 높이 (48px)
-  double get _effectiveHeight => height ?? 48.h;
-
   /// 기본 모서리 반경 (12px)
   BorderRadius get _effectiveBorderRadius {
     return borderRadius ?? BorderRadius.circular(12.r);
@@ -241,9 +242,12 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveContentPadding = contentPadding ?? AppPadding.all16;
+    final textStyle = AppTextStyles.paragraph_16;
+
     return SizedBox(
       width: _effectiveWidth,
-      height: maxLines > 1 ? null : _effectiveHeight, // 여러 줄일 때는 자동 높이
+      height: height,
       child: TextField(
         controller: controller,
         focusNode: focusNode,
@@ -259,15 +263,13 @@ class AppTextField extends StatelessWidget {
         minLines: minLines,
         maxLength: maxLength,
         inputFormatters: inputFormatters,
-        style: AppTextStyles.label16Medium.copyWith(color: _effectiveTextColor),
+        style: textStyle.copyWith(color: _effectiveTextColor),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: AppTextStyles.label16Medium.copyWith(
-            color: _effectiveHintColor,
-          ),
+          hintStyle: textStyle.copyWith(color: _effectiveHintColor),
           filled: true,
           fillColor: _effectiveBackgroundColor,
-          contentPadding: AppPadding.all16, // 내부 패딩: 좌우 16px, 상하 16px
+          contentPadding: effectiveContentPadding,
           border: _buildBorder(
             hasError ? _effectiveErrorBorderColor : _effectiveBorderColor,
           ),
@@ -298,6 +300,9 @@ class AppTextField extends StatelessWidget {
   OutlineInputBorder _buildBorder(Color color) {
     return OutlineInputBorder(
       borderRadius: _effectiveBorderRadius,
+      // labelText를 지원하지 않는 필드라 노치 여백이 필요 없다. 기본값 4를 두면
+      // Material 3에서 contentPadding 좌우에 4px이 다시 더해진다.
+      gapPadding: 0,
       borderSide: showBorder
           ? BorderSide(color: color, width: borderWidth)
           : BorderSide.none,
