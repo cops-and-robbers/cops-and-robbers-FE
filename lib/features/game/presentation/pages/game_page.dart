@@ -46,6 +46,7 @@ import '../../data/models/game_area_model.dart';
 import '../../domain/entities/area_shape.dart';
 import '../../domain/arrest_lock_visibility.dart';
 import '../../domain/location_send_policy.dart';
+import '../../domain/jail_escape_detector.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
 import '../helpers/game_over_guard.dart';
@@ -179,6 +180,8 @@ class _GamePageState extends ConsumerState<GamePage>
     },
   );
 
+  final JailEscapeDetector _jailEscapeDetector = JailEscapeDetector();
+
   /// 이탈 경고(배너·펄스·보더·반복 진동) 노출 중 여부
   ///
   /// 의미: "구역 밖에 있어 시각·진동 신호가 노출 중".
@@ -206,6 +209,11 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 게임 이벤트 STOMP 최초 연결 성공 여부
   /// (초기 연결 실패는 모달 대신 기존 에러 처리에 위임)
   bool _hasGameEventConnectedOnce = false;
+
+  bool _isGameStateSyncing = false;
+  bool _isGameStateSynchronized = false;
+  int _gameStateSyncGeneration = 0;
+  Timer? _gameStateSyncRetryTimer;
 
   /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
   ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
@@ -386,6 +394,8 @@ class _GamePageState extends ConsumerState<GamePage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _gameStateSyncRetryTimer?.cancel();
+    _jailEscapeDetector.reset();
     _locationSubscription?.cancel();
     _zoneExitVibrationTimer?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
@@ -605,8 +615,14 @@ class _GamePageState extends ConsumerState<GamePage>
   ///
   /// STOMP는 끊김 구간의 이벤트를 재전송하지 않으므로,
   /// 재연결 시 서버 참가자 목록을 직접 조회해 체포 현황과 남은 도둑 수를 보정합니다.
-  Future<void> _syncGameStateOnReconnect() async {
-    if (widget.isDummy || !mounted) return;
+  Future<void> _syncGameStateOnReconnect({int retryAttempt = 0}) async {
+    _gameStateSyncRetryTimer?.cancel();
+    if (widget.isDummy || !mounted || _isLeaving) return;
+    final eventState = ref.read(gameEventNotifierProvider);
+    if (eventState.isGameOver ||
+        eventState.connectionState != StompConnectionState.connected) {
+      return;
+    }
     // GAME_OVER 후엔 서버가 400 "게임 진행 중 아님"을 응답하므로 호출 자체를 스킵.
     if (GameOverGuard.shouldSkipSync(
       gameOverDialogShown: _gameOverDialogShown,
@@ -614,6 +630,11 @@ class _GamePageState extends ConsumerState<GamePage>
       debugPrint('[GamePage] GameOver 표시 중 → sync 스킵');
       return;
     }
+
+    final syncGeneration = ++_gameStateSyncGeneration;
+    _isGameStateSyncing = true;
+    _isGameStateSynchronized = false;
+    _jailEscapeDetector.reset();
 
     try {
       // sync 요청 직전 상태 snapshot — sync 창에 STOMP가 추가한 변화 추적용
@@ -626,7 +647,7 @@ class _GamePageState extends ConsumerState<GamePage>
         fetchGameParticipantsProvider(_gameId).future,
       );
 
-      if (!mounted) return;
+      if (!mounted || syncGeneration != _gameStateSyncGeneration) return;
 
       // sync 요청~응답 사이에 STOMP가 반영한 ID delta 계산
       // HTTP 응답(서버 snapshot)은 요청 시점 기준이라, 그 동안 STOMP로 들어온
@@ -652,6 +673,16 @@ class _GamePageState extends ConsumerState<GamePage>
           .union(stompNewArrests)
           .difference(stompNewEscapes);
 
+      // 같은 sync 창에서 본인이 JAILED→ALIVE→JAILED로 돌아오면 set delta는
+      // 비어도 체포 주기는 바뀐다. 이 경우 HTTP snapshot보다 최신 STOMP 상태를 유지한다.
+      if (after.localArrestRevision != before.localArrestRevision) {
+        if (after.arrestedParticipantIds.contains(widget.participantId)) {
+          finalArrested.add(widget.participantId);
+        } else {
+          finalArrested.remove(widget.participantId);
+        }
+      }
+
       // 서버 기준 생존 수에 sync 창 delta를 반영 (0 ~ 전체 도둑 수 범위로 clamp)
       final serverAlive = result.robbers
           .where((p) => p.status == ParticipantStatus.alive)
@@ -668,7 +699,9 @@ class _GamePageState extends ConsumerState<GamePage>
             arrestedIds: finalArrested,
             remainingThieves: remainingThieves,
           );
+      _isGameStateSynchronized = true;
     } on DioException catch (e) {
+      if (!mounted || syncGeneration != _gameStateSyncGeneration) return;
       final apiError = ApiErrorResponse.tryParse(e.response?.data);
       if (GameOverGuard.isGameNotInProgressError(
         statusCode: e.response?.statusCode,
@@ -683,6 +716,30 @@ class _GamePageState extends ConsumerState<GamePage>
     } catch (e) {
       // 동기화 실패 시 게임 진행에 지장을 주지 않도록 예외를 삼킴
       debugPrint('[GamePage] ⚠️ 재연결 후 상태 동기화 실패 (무시): $e');
+    } finally {
+      if (mounted && syncGeneration == _gameStateSyncGeneration) {
+        _isGameStateSyncing = false;
+        _jailEscapeDetector.reset();
+        // 소켓이 살아 있어도 HTTP 조회만 일시 실패할 수 있다. 총 3회로 제한한다.
+        final latest = ref.read(gameEventNotifierProvider);
+        if (!_isGameStateSynchronized &&
+            retryAttempt < 2 &&
+            !_isLeaving &&
+            !_gameOverDialogShown &&
+            !latest.isGameOver &&
+            latest.connectionState == StompConnectionState.connected) {
+          _gameStateSyncRetryTimer = Timer(
+            Duration(seconds: 2 << retryAttempt),
+            () {
+              if (mounted && syncGeneration == _gameStateSyncGeneration) {
+                unawaited(
+                  _syncGameStateOnReconnect(retryAttempt: retryAttempt + 1),
+                );
+              }
+            },
+          );
+        }
+      }
     }
   }
 
@@ -736,7 +793,8 @@ class _GamePageState extends ConsumerState<GamePage>
           (pos) {
             if (!mounted) return;
 
-            // 1) 구역 이탈 감지 — 양 팀, 매 틱
+            // 1) 감옥 자동 탈옥·플레이그라운드 이탈 감지 — 매 틱
+            _checkAutoEscape(pos);
             _checkZoneExit(pos);
 
             // 내 이동 경로 누적(양 팀, 휘발성). 잡힌 도둑도 로컬 수신은 계속된다.
@@ -809,6 +867,61 @@ class _GamePageState extends ConsumerState<GamePage>
       GeoPoint(latitude: pos.latitude, longitude: pos.longitude),
     );
     _zoneExitDetector.update(isOutside: isOutside);
+  }
+
+  /// 수감된 본인이 이번 체포 후 감옥에 들어왔다가 확실히 벗어나면 자동 탈옥한다.
+  void _checkAutoEscape(Position pos) {
+    if (widget.isDummy ||
+        !GameTeam.isRobber(widget.team) ||
+        _gameOverDialogShown ||
+        _isLeaving ||
+        _isGameStateSyncing ||
+        !_isGameStateSynchronized) {
+      return;
+    }
+    if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) {
+      return;
+    }
+
+    final eventState = ref.read(gameEventNotifierProvider);
+    if (eventState.isGameOver) {
+      _jailEscapeDetector.reset();
+      return;
+    }
+    final isArrested =
+        eventState.arrestedParticipantIds.contains(widget.participantId) &&
+        !eventState.escapedParticipantIds.contains(widget.participantId);
+    if (!isArrested) {
+      _jailEscapeDetector.reset();
+      return;
+    }
+    if (eventState.connectionState != StompConnectionState.connected) return;
+
+    final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
+    if (area == null) return;
+
+    final now = DateTime.now();
+    final shouldEscape = _jailEscapeDetector.update(
+      jail: area.jail,
+      sample: JailLocationSample(
+        point: GeoPoint(latitude: pos.latitude, longitude: pos.longitude),
+        accuracyInMeters: pos.accuracy,
+        timestamp: pos.timestamp,
+      ),
+      now: now,
+    );
+    if (shouldEscape) {
+      unawaited(_requestAutoEscape());
+    }
+  }
+
+  Future<void> _requestAutoEscape() async {
+    final result = await ref
+        .read(gameEventNotifierProvider.notifier)
+        .escape(_gameId, widget.participantId);
+    if (result == EscapeRequestResult.failure && mounted) {
+      await _syncGameStateOnReconnect();
+    }
   }
 
   /// 구역 이탈 진입 처리: 진동(즉시 + 5초 주기 반복) + 배너 표시 + 지도 리다이렉트
@@ -1581,6 +1694,11 @@ class _GamePageState extends ConsumerState<GamePage>
     }
 
     final gameEventState = ref.read(gameEventNotifierProvider).connectionState;
+    if (gameEventState == StompConnectionState.connected &&
+        !_isGameStateSyncing &&
+        !_isGameStateSynchronized) {
+      unawaited(_syncGameStateOnReconnect());
+    }
     if (gameEventState != StompConnectionState.connected &&
         gameEventState != StompConnectionState.connecting) {
       _gameEventNotifier?.connectAndSubscribe(
@@ -1673,11 +1791,18 @@ class _GamePageState extends ConsumerState<GamePage>
     // 이미 켜진 진동 타이머와 시각 신호 플래그는 ArrestLockOverlay 위에 잔존하므로
     // 여기서 명시적으로 정리한다.
     ref.listen(
-      gameEventNotifierProvider.select((s) => s.arrestedParticipantIds),
+      gameEventNotifierProvider.select(
+        (s) => (
+          revision: s.localArrestRevision,
+          isArrested: s.arrestedParticipantIds.contains(widget.participantId),
+        ),
+      ),
       (prev, next) {
-        if (prev == null) return;
-        final newlyArrested = next.difference(prev);
-        if (newlyArrested.contains(widget.participantId) && mounted) {
+        if (prev != null &&
+            next.revision != prev.revision &&
+            next.isArrested &&
+            mounted) {
+          _jailEscapeDetector.reset();
           _clearZoneExitWarning();
           Navigator.of(context).popUntil((route) => route is! PopupRoute);
         }
@@ -1843,6 +1968,17 @@ class _GamePageState extends ConsumerState<GamePage>
 
       if (!_hasGameEventConnectedOnce || widget.isDummy) return;
 
+      final didDisconnect =
+          next == StompConnectionState.disconnected ||
+          next == StompConnectionState.error;
+      if (didDisconnect) {
+        _gameStateSyncRetryTimer?.cancel();
+        _gameStateSyncGeneration++;
+        _isGameStateSyncing = false;
+        _isGameStateSynchronized = false;
+        _jailEscapeDetector.reset();
+      }
+
       // 모달이 이미 떠 있을 때: 상태 업데이트 → ReconnectModal이 스스로 닫힘
       if (_isReconnectModalShown) {
         _reconnectStateNotifier?.value = next;
@@ -1850,10 +1986,7 @@ class _GamePageState extends ConsumerState<GamePage>
       }
 
       // 끊김/에러 발생 → 모달 신규 표시 (게임 종료 후는 제외)
-      if (next == StompConnectionState.disconnected ||
-          next == StompConnectionState.error) {
-        _showReconnectModalIfNeeded();
-      }
+      if (didDisconnect) _showReconnectModalIfNeeded();
     });
 
     ref.listen(gameEventNotifierProvider.select((s) => s.robberLocations), (
@@ -1866,6 +1999,7 @@ class _GamePageState extends ConsumerState<GamePage>
     // 게임 맵 영역 로드 완료 시 지도에 구역 경계·외부 딤 추가
     ref.listen(gameAreaProvider(_gameId), (prev, next) {
       next.whenData((area) {
+        if (prev?.valueOrNull != null) _jailEscapeDetector.reset();
         _googleMapKey.currentState?.updateMinZoom(
           area.playground.boundingRadiusInMeters,
         );

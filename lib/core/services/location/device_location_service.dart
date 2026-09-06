@@ -107,6 +107,8 @@ class DeviceLocationService {
       return AndroidSettings(
         accuracy: accuracy,
         distanceFilter: distanceFilter,
+        // 요청 주기일 뿐 보장 간격은 아니다. 판정기는 수신 지연을 별도로 허용한다.
+        intervalDuration: const Duration(seconds: 2),
       );
     }
 
