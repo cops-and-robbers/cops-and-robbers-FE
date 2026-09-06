@@ -185,6 +185,9 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
       // 채팅 시트가 올라오는 현상 방지
       FocusScope.of(context).unfocus();
       final l10n = AppLocalizations.of(context);
+      final arrestRevision = ref
+          .read(gameEventNotifierProvider)
+          .localArrestRevision;
       GameActionModal.show(
         context: context,
         title: l10n.buttonEscape,
@@ -193,7 +196,11 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
         isDarkMode: widget.isDarkMode,
         onConfirm: () => ref
             .read(gameEventNotifierProvider.notifier)
-            .escape(widget.gameId, widget.myParticipantId),
+            .escape(
+              widget.gameId,
+              widget.myParticipantId,
+              expectedArrestRevision: arrestRevision,
+            ),
       );
     }
   }

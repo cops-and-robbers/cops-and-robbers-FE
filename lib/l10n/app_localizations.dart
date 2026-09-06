@@ -2801,13 +2801,13 @@ abstract class AppLocalizations {
   /// 체포 잠금 오버레이 안내 본문
   ///
   /// In ko, this message translates to:
-  /// **'체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!'**
+  /// **'감옥에 들어갔다가 벗어나면 자동으로 탈옥해요\n자동 탈옥이 안 되면 아래 버튼을 눌러 주세요'**
   String get gameArrestOverlayMessage;
 
-  /// 체포 잠금 오버레이에서 탈옥을 확정하는 버튼
+  /// 자동 탈옥 실패에 대비한 수동 탈옥 버튼
   ///
   /// In ko, this message translates to:
-  /// **'탈옥 완료'**
+  /// **'탈옥하기'**
   String get gameArrestOverlayEscapeCompleteButton;
 
   /// 공통 — 탈옥 액션 버튼 라벨

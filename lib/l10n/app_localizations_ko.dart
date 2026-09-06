@@ -1462,10 +1462,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gameArrestOverlayMessage =>
-      '체포되어 있는 동안에는 게임 상황을 확인할 수 없어요\n같은 팀에게 구조 요청을 하며 빠르게 탈옥해요!';
+      '감옥에 들어갔다가 벗어나면 자동으로 탈옥해요\n자동 탈옥이 안 되면 아래 버튼을 눌러 주세요';
 
   @override
-  String get gameArrestOverlayEscapeCompleteButton => '탈옥 완료';
+  String get gameArrestOverlayEscapeCompleteButton => '탈옥하기';
 
   @override
   String get buttonEscape => '탈옥';
