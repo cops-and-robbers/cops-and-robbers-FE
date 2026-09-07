@@ -46,6 +46,9 @@ class JailEscapeDetector {
 
   bool get hasEnteredJail => _hasEnteredJail;
 
+  bool get needsExitConfirmation =>
+      _outsideStartedAt != null && !_triggeredForCurrentExcursion;
+
   bool update({
     required AreaShape jail,
     required JailLocationSample sample,
@@ -68,8 +71,13 @@ class JailEscapeDetector {
       _outsideSamples = 0;
       _insideStartedAt ??= sample.timestamp;
       _insideSamples++;
-      if (_insideSamples >= minConsecutiveSamples &&
-          sample.timestamp.difference(_insideStartedAt!) >= minInsideDuration) {
+      final confidentlyInside =
+          jail.distanceToBoundaryInMeters(sample.point) >
+          sample.accuracyInMeters + minOutsideDistanceInMeters;
+      if (confidentlyInside ||
+          (_insideSamples >= minConsecutiveSamples &&
+              sample.timestamp.difference(_insideStartedAt!) >=
+                  minInsideDuration)) {
         _hasEnteredJail = true;
         _triggeredForCurrentExcursion = false;
       }
