@@ -1462,10 +1462,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get gameArrestOverlayMessage =>
-      '逮捕されている間はゲームの状況を確認できません\n同じチームに救助要請をして素早く脱獄しましょう！';
+      '牢屋に入ってから外に出ると自動で脱獄します\n自動脱獄が動作しない場合は下のボタンを押してください';
 
   @override
-  String get gameArrestOverlayEscapeCompleteButton => '脱獄完了';
+  String get gameArrestOverlayEscapeCompleteButton => '脱獄する';
 
   @override
   String get buttonEscape => '脱獄';

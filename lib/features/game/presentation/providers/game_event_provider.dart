@@ -34,6 +34,8 @@ part 'game_event_provider.g.dart';
 /// copyWith에서 "값을 전달하지 않음"과 "명시적 null"을 구분하기 위한 sentinel 객체
 const _sentinel = Object();
 
+enum EscapeRequestResult { success, failure, ignored, stale }
+
 /// GameEventStompDatasource Provider (싱글톤)
 @riverpod
 GameEventStompDatasource gameEventStompDatasource(Ref ref) {
@@ -114,6 +116,12 @@ class GameEventState {
   /// arrest/escape API 호출 중 여부
   final bool isApiLoading;
 
+  /// 탈옥 API 호출 중 여부 (자동·수동 중복 요청 및 버튼 연타 방지)
+  final bool isEscapeInFlight;
+
+  /// 본인의 체포·탈옥 주기가 바뀔 때마다 증가한다.
+  final int localArrestRevision;
+
   /// LOCATION_REVEAL 수신 시 갱신되는 도둑 위치 목록 (participantId → 위치)
   final Map<int, LatLngModel> robberLocations;
 
@@ -170,6 +178,8 @@ class GameEventState {
     this.lastLocationRevealTime,
     this.bannerMessage,
     this.isApiLoading = false,
+    this.isEscapeInFlight = false,
+    this.localArrestRevision = 0,
     this.robberLocations = const {},
     this.myArrestedRobberIds = const {},
     this.myArrestSeq = 0,
@@ -198,6 +208,8 @@ class GameEventState {
     Object? lastLocationRevealTime = _sentinel,
     Object? bannerMessage = _sentinel,
     bool? isApiLoading,
+    bool? isEscapeInFlight,
+    int? localArrestRevision,
     Map<int, LatLngModel>? robberLocations,
     Set<int>? myArrestedRobberIds,
     int? myArrestSeq,
@@ -251,6 +263,8 @@ class GameEventState {
           ? this.bannerMessage
           : bannerMessage as String?,
       isApiLoading: isApiLoading ?? this.isApiLoading,
+      isEscapeInFlight: isEscapeInFlight ?? this.isEscapeInFlight,
+      localArrestRevision: localArrestRevision ?? this.localArrestRevision,
       robberLocations: robberLocations ?? this.robberLocations,
       myArrestedRobberIds: myArrestedRobberIds ?? this.myArrestedRobberIds,
       myArrestSeq: myArrestSeq ?? this.myArrestSeq,
@@ -280,6 +294,14 @@ class GameEventNotifier extends _$GameEventNotifier {
 
   /// 현재 API 호출 중인 체포 대상 ID (race condition 방어)
   int? _pendingArrestId;
+
+  int _escapeRequestGeneration = 0;
+  int? _activeEscapeRequest;
+
+  void _invalidateEscapeRequest() {
+    _escapeRequestGeneration++;
+    _activeEscapeRequest = null;
+  }
 
   Timer? _reconnectTimer;
   Timer? _locationRevealBannerTimer;
@@ -311,6 +333,7 @@ class GameEventNotifier extends _$GameEventNotifier {
 
     ref.onDispose(() {
       _isDisposed = true;
+      _invalidateEscapeRequest();
       _eventSub?.cancel();
       _connectionSub?.cancel();
       _errorSub?.cancel();
@@ -437,6 +460,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     _authRetryCount = 0;
     _reconnectCount = 0;
     _isHandlingError = false;
+    _invalidateEscapeRequest();
     _gameId = null;
     _team = null;
 
@@ -444,6 +468,9 @@ class GameEventNotifier extends _$GameEventNotifier {
     state = state.copyWith(
       connectionState: StompConnectionState.disconnected,
       errorMessage: null,
+      isApiLoading: false,
+      isEscapeInFlight: false,
+      localArrestRevision: state.localArrestRevision + 1,
     );
   }
 
@@ -554,42 +581,55 @@ class GameEventNotifier extends _$GameEventNotifier {
     }
   }
 
-  /// 탈옥 API 호출 (수감된 도둑 전용)
+  /// 자동·수동 탈옥 요청의 단일 진입점.
   ///
-  /// STOMP ESCAPE 이벤트 도착 전 낙관적으로 [escapedParticipantIds]에 즉시 추가하고,
-  /// 동시에 [arrestedParticipantIds]에서는 제거하여 두 집합을 상호 배타적으로 유지한다
-  /// (STOMP `_handleEscape` 와 동일한 패턴). 같은 ID가 두 집합에 동시에 남아 있으면
-  /// `_effectiveRobberStatus` 우선순위(isEscaped > isArrested)로 인해 다른 참가자 화면에서
-  /// jailed SVG 가 잠깐 ALIVE 로 잘못 표시된다.
-  ///
-  /// API 실패 시 rollback (수감 상태 복원).
-  Future<void> escape(int gameId, int myParticipantId) async {
-    // 낙관적 업데이트: STOMP 이벤트 도착 전 즉시 UI 반영
-    state = state.copyWith(
-      arrestedParticipantIds: state.arrestedParticipantIds.difference({
-        myParticipantId,
-      }),
-      escapedParticipantIds: {...state.escapedParticipantIds, myParticipantId},
-      isApiLoading: true,
-    );
+  /// HTTP 응답보다 늦게 온 이전 요청이 재체포 상태를 덮지 않도록 요청 세대를
+  /// 확인한다. 서버가 성공을 응답하거나 STOMP ESCAPE가 오기 전에는 수감 상태를
+  /// 유지한다.
+  Future<EscapeRequestResult> escape(
+    int gameId,
+    int myParticipantId, {
+    int? expectedArrestRevision,
+  }) async {
+    if (_isDisposed ||
+        _activeEscapeRequest != null ||
+        (expectedArrestRevision != null &&
+            expectedArrestRevision != state.localArrestRevision) ||
+        !state.arrestedParticipantIds.contains(myParticipantId) ||
+        state.escapedParticipantIds.contains(myParticipantId)) {
+      return EscapeRequestResult.ignored;
+    }
+
+    final request = ++_escapeRequestGeneration;
+    _activeEscapeRequest = request;
+    state = state.copyWith(isApiLoading: true, isEscapeInFlight: true);
     try {
       await ref.read(gameSystemApiProvider).escape(gameId);
-      // API 성공 → 로딩 해제 (STOMP 이벤트에서 최종 상태 확정)
-      state = state.copyWith(isApiLoading: false);
-    } catch (e) {
-      debugPrint('[GameEventNotifier] ❌ 탈옥 요청 실패: $e');
-      // 낙관적 업데이트 rollback: 수감 상태 복원
+      if (_isDisposed || request != _escapeRequestGeneration) {
+        return EscapeRequestResult.stale;
+      }
       state = state.copyWith(
-        arrestedParticipantIds: {
-          ...state.arrestedParticipantIds,
-          myParticipantId,
-        },
-        escapedParticipantIds: state.escapedParticipantIds.difference({
+        arrestedParticipantIds: state.arrestedParticipantIds.difference({
           myParticipantId,
         }),
-        isApiLoading: false,
-        errorMessage: '탈옥 요청 실패',
+        escapedParticipantIds: {
+          ...state.escapedParticipantIds,
+          myParticipantId,
+        },
       );
+      return EscapeRequestResult.success;
+    } catch (e) {
+      debugPrint('[GameEventNotifier] ❌ 탈옥 요청 실패: $e');
+      if (_isDisposed || request != _escapeRequestGeneration) {
+        return EscapeRequestResult.stale;
+      }
+      state = state.copyWith(errorMessage: '탈옥 요청 실패');
+      return EscapeRequestResult.failure;
+    } finally {
+      if (!_isDisposed && _activeEscapeRequest == request) {
+        _activeEscapeRequest = null;
+        state = state.copyWith(isApiLoading: false, isEscapeInFlight: false);
+      }
     }
   }
 
@@ -641,6 +681,13 @@ class GameEventNotifier extends _$GameEventNotifier {
       '수감: $arrestedIds, 남은 도둑: $remainingThieves',
     );
 
+    final myParticipantId = _myParticipantId;
+    final localStateChanged =
+        myParticipantId != null &&
+        state.arrestedParticipantIds.contains(myParticipantId) !=
+            arrestedIds.contains(myParticipantId);
+    if (localStateChanged) _invalidateEscapeRequest();
+
     // 서버가 진실의 원천. 끊김 구간에 탈옥→재체포가 발생해도
     // 서버의 JAILED 목록을 그대로 반영하고, escaped 집합은 현재 수감자와 겹치지 않게 정리한다.
     state = state.copyWith(
@@ -649,6 +696,11 @@ class GameEventNotifier extends _$GameEventNotifier {
         arrestedIds,
       ),
       remainingThieves: remainingThieves,
+      isApiLoading: localStateChanged ? false : state.isApiLoading,
+      isEscapeInFlight: localStateChanged ? false : state.isEscapeInFlight,
+      localArrestRevision: localStateChanged
+          ? state.localArrestRevision + 1
+          : state.localArrestRevision,
     );
   }
 
@@ -846,6 +898,9 @@ class GameEventNotifier extends _$GameEventNotifier {
       _pendingArrestId = null;
     }
 
+    final isLocalArrestEvent = robberPid == _myParticipantId;
+    if (isLocalArrestEvent) _invalidateEscapeRequest();
+
     state = state.copyWith(
       arrestedParticipantIds: {...state.arrestedParticipantIds, robberPid},
       escapedParticipantIds: state.escapedParticipantIds.difference({
@@ -859,6 +914,10 @@ class GameEventNotifier extends _$GameEventNotifier {
           ? state.arrestEventCount + 1
           : state.arrestEventCount,
       isApiLoading: false,
+      isEscapeInFlight: isLocalArrestEvent ? false : state.isEscapeInFlight,
+      localArrestRevision: isLocalArrestEvent
+          ? state.localArrestRevision + 1
+          : state.localArrestRevision,
       // 배너는 plain Text이므로 아이콘 마커를 strip
       bannerMessage: _localizeGameEvent(GameEventMessageKey.arrestNotice, [
         policeNickname ?? _localizePoliceLabel(),
@@ -887,6 +946,9 @@ class GameEventNotifier extends _$GameEventNotifier {
     if (escapedId == null) return;
     final firstNickname = escapedThief['nickname'] as String?;
 
+    final isLocalEscapeEvent = escapedId == _myParticipantId;
+    if (isLocalEscapeEvent) _invalidateEscapeRequest();
+
     state = state.copyWith(
       arrestedParticipantIds: state.arrestedParticipantIds.difference({
         escapedId,
@@ -895,6 +957,10 @@ class GameEventNotifier extends _$GameEventNotifier {
       lastEscapeNickname: firstNickname,
       escapeEventCount: state.escapeEventCount + 1,
       isApiLoading: false,
+      isEscapeInFlight: isLocalEscapeEvent ? false : state.isEscapeInFlight,
+      localArrestRevision: isLocalEscapeEvent
+          ? state.localArrestRevision + 1
+          : state.localArrestRevision,
       bannerMessage: _localizeGameEvent(GameEventMessageKey.escapeNotice),
     );
     _startBannerTimer();
@@ -955,6 +1021,16 @@ class GameEventNotifier extends _$GameEventNotifier {
   // 스트림 설정 및 재연결 정책
   // ============================================================
 
+  void _invalidateEscapeOnConnectionLoss(StompConnectionState connectionState) {
+    _invalidateEscapeRequest();
+    state = state.copyWith(
+      connectionState: connectionState,
+      localArrestRevision: state.localArrestRevision + 1,
+      isApiLoading: state.isEscapeInFlight ? false : state.isApiLoading,
+      isEscapeInFlight: false,
+    );
+  }
+
   void _setupStreams() {
     final datasource = ref.read(gameEventStompDatasourceProvider);
 
@@ -963,7 +1039,12 @@ class GameEventNotifier extends _$GameEventNotifier {
     _errorSub?.cancel();
 
     _connectionSub = datasource.onConnectionState.listen((connState) {
-      state = state.copyWith(connectionState: connState);
+      if (connState == StompConnectionState.disconnected ||
+          connState == StompConnectionState.error) {
+        _invalidateEscapeOnConnectionLoss(connState);
+      } else {
+        state = state.copyWith(connectionState: connState);
+      }
 
       if (connState == StompConnectionState.connected) {
         _authRetryCount = 0;
@@ -1132,6 +1213,8 @@ class GameEventNotifier extends _$GameEventNotifier {
   }
 
   Future<void> _handleStompError(StompErrorInfo errorInfo) async {
+    // ERROR 프레임만 오고 연결 상태 이벤트가 늦어져도 이전 요청/확인은 폐기한다.
+    _invalidateEscapeOnConnectionLoss(StompConnectionState.error);
     if (errorInfo.isAuthExpired) {
       _authRetryCount++;
 

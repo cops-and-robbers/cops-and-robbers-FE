@@ -283,6 +283,39 @@ void main() {
       expect(find.text('10명'), findsOneWidget);
     });
 
+    testWidgets('keeps_requested_padding_for_text_fields', (tester) async {
+      await _pumpPage(tester);
+
+      final decorators = find.byType(InputDecorator);
+      final editables = find.byType(EditableText);
+
+      // 설명은 16px 전방향, 아이콘 없는 단일행은 좌우 16px다.
+      final content = tester.getRect(decorators.at(1));
+      final contentInput = tester.getRect(editables.at(1));
+      expect(contentInput.left - content.left, closeTo(16, 0.01));
+      expect(content.right - contentInput.right, closeTo(16, 0.01));
+      expect(contentInput.top - content.top, closeTo(16, 0.01));
+      expect(content.bottom - contentInput.bottom, closeTo(16, 0.01));
+
+      for (final index in [0, 4]) {
+        final field = tester.getRect(decorators.at(index));
+        final input = tester.getRect(editables.at(index));
+        expect(input.left - field.left, closeTo(16, 0.01));
+        expect(field.right - input.right, closeTo(16, 0.01));
+        expect(input.top - field.top, closeTo(14, 0.5));
+        expect(field.bottom - input.bottom, closeTo(14, 0.5));
+      }
+
+      // 아이콘 필드는 아이콘이 선두 16px을 차지하고, 우측은 16px이다.
+      for (final index in [2, 3]) {
+        final field = tester.getRect(decorators.at(index));
+        final input = tester.getRect(editables.at(index));
+        expect(field.right - input.right, closeTo(16, 0.01));
+        expect(input.top - field.top, closeTo(14, 0.5));
+        expect(field.bottom - input.bottom, closeTo(14, 0.5));
+      }
+    });
+
     testWidgets('keeps_done_disabled_when_date_is_not_picked', (tester) async {
       await _pumpPage(tester);
 

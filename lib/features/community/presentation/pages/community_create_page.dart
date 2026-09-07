@@ -80,11 +80,13 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
   /// 시안 기본값. 백엔드 허용 범위(2~50) 안에 있다.
   static const int _defaultHeadcount = 10;
 
-  /// 카드 높이 — 모두 내부 패딩 16(`AppPadding.all16`) 기준으로 잡았다.
-  /// 한 줄짜리 최소 높이는 16 + 16(label16Medium 한 줄) + 16 = 48이다.
-  static double get _fieldHeight => 48.h;
+  /// 단일행 필드는 좌우 16, 상하 14다.
+  static EdgeInsets get _fieldPadding => EdgeInsets.symmetric(
+    horizontal: AppSpacing.horizontal16,
+    vertical: AppSpacing.vertical14,
+  );
+
   static double get _contentHeight => 150.h;
-  static double get _locationHeight => 54.h;
   static double get _mapHeight => 120.h;
   static double get _stepperSize => 36.w;
 
@@ -278,7 +280,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
         // 백엔드 title 제약과 같은 값. 잘라내는 게 아니라 입력을 막는다.
         maxLength: 100,
         width: double.infinity,
-        height: _fieldHeight,
+        contentPadding: _fieldPadding,
         textInputAction: TextInputAction.next,
         onSubmitted: (_) => _contentFocus.requestFocus(),
         borderRadius: AppRadius.large,
@@ -333,7 +335,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
             hintText: l10n.communityCreateHintDate,
             readOnly: true,
             width: double.infinity,
-            height: _fieldHeight,
+            contentPadding: _fieldPadding,
             borderRadius: AppRadius.large,
             showBorder: false,
             hintColor: AppColors.black200,
@@ -366,7 +368,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
             hintText: l10n.communityCreateHintAddress,
             readOnly: true,
             width: double.infinity,
-            height: _fieldHeight,
+            contentPadding: _fieldPadding,
             borderRadius: AppRadius.large,
             showBorder: false,
             hintColor: AppColors.black200,
@@ -390,7 +392,7 @@ class _CommunityCreatePageState extends ConsumerState<CommunityCreatePage> {
         // 백엔드 placeName 제약과 같은 값. 넘겨 보내면 400이라 입력에서 막는다.
         maxLength: 50,
         width: double.infinity,
-        height: _locationHeight,
+        contentPadding: _fieldPadding,
         textInputAction: TextInputAction.done,
         borderRadius: AppRadius.large,
         showBorder: false,

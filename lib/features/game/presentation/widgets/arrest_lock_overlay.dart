@@ -16,7 +16,7 @@ import 'package:cops_and_robbers/core/constants/game_team.dart';
 ///
 /// - 배경: black 40% 반투명 → 지도·AppBar·우측 버튼 터치 차단
 /// - 중앙: 불투명 모달 카드 (아바타 + 체포 메시지)
-/// - 하단: "탈옥 완료" 버튼 → [GameActionModal] → [GameEventNotifier.escape]
+/// - 하단: GPS 문제에 대비한 수동 탈옥 버튼
 /// - 채팅은 이 오버레이 위(Stack index 7)에 렌더링되어 사용 가능
 class ArrestLockOverlay extends ConsumerWidget {
   const ArrestLockOverlay({
@@ -34,6 +34,9 @@ class ArrestLockOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final isEscapeInFlight = ref.watch(
+      gameEventNotifierProvider.select((state) => state.isEscapeInFlight),
+    );
     return Positioned.fill(
       child: Container(
         // 배경: black 40% 반투명 딤 처리
@@ -87,7 +90,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                     // 본문 ↔ 버튼 사이 명시적 간격 (이전 spaceBetween 대체)
                     SizedBox(height: 24.h),
 
-                    // 탈옥 완료 버튼: 288 x 48, green
+                    // 자동 감지 실패에 대비한 수동 탈옥 버튼
                     AppButton(
                       text: l10n.gameArrestOverlayEscapeCompleteButton,
                       width: 288.w,
@@ -95,18 +98,28 @@ class ArrestLockOverlay extends ConsumerWidget {
                       backgroundColor: AppColors.green,
                       foregroundColor: AppColors.black,
                       textStyle: AppTextStyles.robberLabel,
-                      onPressed: () {
-                        GameActionModal.show(
-                          context: context,
-                          title: l10n.buttonEscape,
-                          message: l10n.dialogEscapeAttemptMessage,
-                          confirmLabel: l10n.buttonEscape,
-                          isDarkMode: true,
-                          onConfirm: () => ref
-                              .read(gameEventNotifierProvider.notifier)
-                              .escape(gameId, myParticipantId),
-                        );
-                      },
+                      isLoading: isEscapeInFlight,
+                      onPressed: isEscapeInFlight
+                          ? null
+                          : () {
+                              final arrestRevision = ref
+                                  .read(gameEventNotifierProvider)
+                                  .localArrestRevision;
+                              GameActionModal.show(
+                                context: context,
+                                title: l10n.buttonEscape,
+                                message: l10n.dialogEscapeAttemptMessage,
+                                confirmLabel: l10n.buttonEscape,
+                                isDarkMode: true,
+                                onConfirm: () => ref
+                                    .read(gameEventNotifierProvider.notifier)
+                                    .escape(
+                                      gameId,
+                                      myParticipantId,
+                                      expectedArrestRevision: arrestRevision,
+                                    ),
+                              );
+                            },
                     ),
                   ],
                 ),

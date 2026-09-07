@@ -1565,10 +1565,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameArrestOverlayMessage =>
-      'You cannot check the game status while arrested\nRequest rescue from your teammates and jailbreak quickly!';
+      'Enter the jail, then leave it to jailbreak automatically\nUse the button below if automatic jailbreak does not work';
 
   @override
-  String get gameArrestOverlayEscapeCompleteButton => 'Jailbreak complete';
+  String get gameArrestOverlayEscapeCompleteButton => 'Jailbreak';
 
   @override
   String get buttonEscape => 'Jailbreak';

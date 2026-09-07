@@ -32,6 +32,7 @@ class _FakeGameSystemApi implements GameSystemApi {
   Object? arrestError;
   Object? escapeError;
   Completer<void>? arrestGate;
+  Completer<void>? escapeGate;
 
   int arrestCount = 0;
   int escapeCount = 0;
@@ -54,6 +55,7 @@ class _FakeGameSystemApi implements GameSystemApi {
   Future<void> escape(int gameId) async {
     escapeCount++;
     lastEscapeGameId = gameId;
+    if (escapeGate != null) await escapeGate!.future;
     if (escapeError != null) throw escapeError!;
   }
 
@@ -81,6 +83,22 @@ ProviderContainer _container({required _FakeGameSystemApi api}) {
 /// 서버 `ARREST` 브로드캐스트를 모사해 STOMP 기준 검거 집계(스펙 §3)를 검증한다.
 class _EventInjectableDatasource extends GameEventStompDatasource {
   final _events = StreamController<GameEventModel>.broadcast();
+  final connections = StreamController<StompConnectionState>.broadcast();
+  final errors = StreamController<StompErrorInfo>.broadcast();
+
+  @override
+  Stream<StompConnectionState> get onConnectionState => connections.stream;
+
+  @override
+  Stream<StompErrorInfo> get onError => errors.stream;
+
+  @override
+  void dispose() {
+    _events.close();
+    connections.close();
+    errors.close();
+    super.dispose();
+  }
 
   @override
   Stream<GameEventModel> get onEvent => _events.stream;
@@ -241,6 +259,7 @@ void main() {
       final notifier = c.read(gameEventNotifierProvider.notifier);
 
       // 5번 탈옥 상태 시드 (escaped={5})
+      notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
       await notifier.escape(1, 5);
       expect(
         c.read(gameEventNotifierProvider).escapedParticipantIds,
@@ -320,15 +339,93 @@ void main() {
   });
 
   group('GameEventNotifier.escape', () {
+    for (final loss in ['disconnected', 'error', 'stompError', 'intentional']) {
+      test(
+        '${loss}_invalidates_old_response_and_manual_confirmation',
+        () async {
+          SharedPreferences.setMockInitialValues({});
+          final oldGate = Completer<void>();
+          final api = _FakeGameSystemApi()..escapeGate = oldGate;
+          final datasource = _EventInjectableDatasource();
+          final c = ProviderContainer(
+            overrides: [
+              gameEventStompDatasourceProvider.overrideWithValue(datasource),
+              gameSystemApiProvider.overrideWithValue(api),
+              tokenProviderProvider.overrideWithValue(_FakeTokenProvider()),
+            ],
+          );
+          c.listen(gameEventNotifierProvider, (_, _) {}, fireImmediately: true);
+          addTearDown(c.dispose);
+          addTearDown(datasource.dispose);
+          final notifier = c.read(gameEventNotifierProvider.notifier)
+            ..setLocalParticipantId(5)
+            ..syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
+          await notifier.connectAndSubscribe(1, team: 'robber');
+          datasource.connections.add(StompConnectionState.connected);
+          await Future<void>.delayed(Duration.zero);
+          final revision = c
+              .read(gameEventNotifierProvider)
+              .localArrestRevision;
+          final oldRequest = notifier.escape(1, 5);
+
+          if (loss == 'intentional') {
+            notifier.disconnect();
+            await notifier.connectAndSubscribe(1, team: 'robber');
+          } else if (loss == 'stompError') {
+            datasource.errors.add(
+              const StompErrorInfo(
+                title: 'lost',
+                status: 500,
+                detail: '',
+                instance: 'STOMP',
+              ),
+            );
+          } else {
+            datasource.connections.add(
+              loss == 'error'
+                  ? StompConnectionState.error
+                  : StompConnectionState.disconnected,
+            );
+          }
+          await Future<void>.delayed(Duration.zero);
+          expect(c.read(gameEventNotifierProvider).isEscapeInFlight, isFalse);
+          datasource.connections.add(StompConnectionState.connected);
+          await Future<void>.delayed(Duration.zero);
+          // 끊김 중 탈옥→재체포를 놓쳐도 최종 JAILED 집합은 동일하다.
+          notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
+          expect(
+            await notifier.escape(1, 5, expectedArrestRevision: revision),
+            EscapeRequestResult.ignored,
+          );
+
+          final newGate = Completer<void>();
+          api.escapeGate = newGate;
+          final newRequest = notifier.escape(1, 5);
+          oldGate.complete();
+          expect(await oldRequest, EscapeRequestResult.stale);
+          expect(c.read(gameEventNotifierProvider).arrestedParticipantIds, {5});
+          expect(
+            c.read(gameEventNotifierProvider).escapedParticipantIds,
+            isEmpty,
+          );
+          expect(c.read(gameEventNotifierProvider).isEscapeInFlight, isTrue);
+          newGate.complete();
+          expect(await newRequest, EscapeRequestResult.success);
+          expect(api.escapeCount, 2);
+        },
+      );
+    }
+
     test('moves_from_arrested_to_escaped_when_api_succeeds', () async {
       final api = _FakeGameSystemApi();
       final c = _container(api: api);
       final notifier = c.read(gameEventNotifierProvider.notifier);
 
       notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
-      await notifier.escape(1, 5);
+      final result = await notifier.escape(1, 5);
 
       final state = c.read(gameEventNotifierProvider);
+      expect(result, EscapeRequestResult.success);
       expect(state.arrestedParticipantIds, isNot(contains(5)));
       expect(state.escapedParticipantIds, contains(5));
       expect(state.isApiLoading, isFalse);
@@ -340,12 +437,115 @@ void main() {
       final notifier = c.read(gameEventNotifierProvider.notifier);
 
       notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
-      await notifier.escape(1, 5);
+      final result = await notifier.escape(1, 5);
+
+      final state = c.read(gameEventNotifierProvider);
+      expect(result, EscapeRequestResult.failure);
+      expect(state.arrestedParticipantIds, contains(5));
+      expect(state.escapedParticipantIds, isNot(contains(5)));
+      expect(state.errorMessage, isNotNull);
+    });
+
+    test('submits_once_when_automatic_and_manual_requests_overlap', () async {
+      final gate = Completer<void>();
+      final api = _FakeGameSystemApi()..escapeGate = gate;
+      final c = _container(api: api);
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+      notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
+
+      final automatic = notifier.escape(1, 5);
+      await Future<void>.delayed(Duration.zero);
+      final manual = await notifier.escape(1, 5);
+
+      expect(manual, EscapeRequestResult.ignored);
+      expect(api.escapeCount, 1);
+      expect(c.read(gameEventNotifierProvider).isEscapeInFlight, isTrue);
+
+      gate.complete();
+      expect(await automatic, EscapeRequestResult.success);
+      expect(c.read(gameEventNotifierProvider).isEscapeInFlight, isFalse);
+    });
+
+    test('late_failure_does_not_overwrite_a_new_arrest_cycle', () async {
+      final gate = Completer<void>();
+      final api = _FakeGameSystemApi()
+        ..escapeGate = gate
+        ..escapeError = Exception('boom');
+      final c = _container(api: api);
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+      notifier.setLocalParticipantId(5);
+      notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
+
+      final oldRequest = notifier.escape(1, 5);
+      await Future<void>.delayed(Duration.zero);
+      notifier.syncFromParticipants(arrestedIds: {}, remainingThieves: 2);
+      notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
+      gate.complete();
+
+      expect(await oldRequest, EscapeRequestResult.stale);
+      final state = c.read(gameEventNotifierProvider);
+      expect(state.arrestedParticipantIds, contains(5));
+      expect(state.escapedParticipantIds, isNot(contains(5)));
+      expect(state.errorMessage, isNull);
+      expect(state.isEscapeInFlight, isFalse);
+    });
+
+    test('rearrest_event_wins_over_an_in_flight_escape_response', () async {
+      SharedPreferences.setMockInitialValues({});
+      final gate = Completer<void>();
+      final api = _FakeGameSystemApi()..escapeGate = gate;
+      final datasource = _EventInjectableDatasource();
+      final c = ProviderContainer(
+        overrides: [
+          gameEventStompDatasourceProvider.overrideWithValue(datasource),
+          gameSystemApiProvider.overrideWithValue(api),
+          tokenProviderProvider.overrideWithValue(_FakeTokenProvider()),
+        ],
+      );
+      c.listen(gameEventNotifierProvider, (_, _) {}, fireImmediately: true);
+      addTearDown(c.dispose);
+      final notifier = c.read(gameEventNotifierProvider.notifier)
+        ..setLocalParticipantId(5)
+        ..syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
+      await notifier.connectAndSubscribe(1, team: 'robber');
+
+      final escape = notifier.escape(1, 5);
+      await Future<void>.delayed(Duration.zero);
+      datasource.emitArrest(policeId: 2, robberId: 5);
+      await Future<void>.delayed(Duration.zero);
+      gate.complete();
+      expect(await escape, EscapeRequestResult.stale);
 
       final state = c.read(gameEventNotifierProvider);
       expect(state.arrestedParticipantIds, contains(5));
       expect(state.escapedParticipantIds, isNot(contains(5)));
-      expect(state.errorMessage, isNotNull);
+      expect(state.isEscapeInFlight, isFalse);
+    });
+
+    test('ignores_confirmation_opened_in_a_previous_arrest_cycle', () async {
+      final api = _FakeGameSystemApi();
+      final c = _container(api: api);
+      final notifier = c.read(gameEventNotifierProvider.notifier);
+      notifier.setLocalParticipantId(5);
+      notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
+      final previousRevision = c
+          .read(gameEventNotifierProvider)
+          .localArrestRevision;
+
+      notifier.syncFromParticipants(arrestedIds: {}, remainingThieves: 2);
+      notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
+      final result = await notifier.escape(
+        1,
+        5,
+        expectedArrestRevision: previousRevision,
+      );
+
+      expect(result, EscapeRequestResult.ignored);
+      expect(api.escapeCount, 0);
+      expect(
+        c.read(gameEventNotifierProvider).arrestedParticipantIds,
+        contains(5),
+      );
     });
   });
 
