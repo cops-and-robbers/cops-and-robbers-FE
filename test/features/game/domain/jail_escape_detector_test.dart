@@ -21,6 +21,37 @@ void main() {
 
   JailEscapeDetector detector() => JailEscapeDetector();
 
+  test('escapes_after_one_confident_inside_sample_for_both_shapes', () {
+    for (final shape in [
+      jail,
+      const AreaShape.polygon(
+        points: [
+          GeoPoint(latitude: 37.5663, longitude: 126.9778),
+          GeoPoint(latitude: 37.5663, longitude: 126.9782),
+          GeoPoint(latitude: 37.5667, longitude: 126.9782),
+          GeoPoint(latitude: 37.5667, longitude: 126.9778),
+        ],
+      ),
+    ]) {
+      for (final arrestedOutside in [false, true]) {
+        final subject = detector();
+        final route = [if (arrestedOutside) 37.5670, 37.5665, 37.5670, 37.5670];
+        final results = <bool>[];
+        for (var i = 0; i < route.length; i++) {
+          results.add(
+            subject.update(
+              jail: shape,
+              sample: sample(latitude: route[i], seconds: i * 3),
+              now: startedAt.add(Duration(seconds: i * 3)),
+            ),
+          );
+        }
+        expect(results.last, isTrue);
+        expect(results.where((result) => result), hasLength(1));
+      }
+    }
+  });
+
   test('accepts_delayed_android_samples_but_breaks_long_gaps', () {
     for (final intervalMs in [2000, 5100, 10000, 10001]) {
       final subject = detector();
@@ -134,7 +165,7 @@ void main() {
     expect(
       subject.update(
         jail: jail,
-        sample: sample(latitude: 37.5665, seconds: 2),
+        sample: sample(latitude: 37.56666, seconds: 2),
         now: startedAt.add(const Duration(seconds: 2)),
       ),
       isFalse,
@@ -142,7 +173,7 @@ void main() {
     expect(
       subject.update(
         jail: jail,
-        sample: sample(latitude: 37.5665, seconds: 2),
+        sample: sample(latitude: 37.56666, seconds: 2),
         now: startedAt.add(const Duration(seconds: 2)),
       ),
       isFalse,
@@ -151,7 +182,7 @@ void main() {
     expect(
       subject.update(
         jail: jail,
-        sample: sample(latitude: 37.5665, seconds: 3),
+        sample: sample(latitude: 37.56666, seconds: 3),
         now: startedAt.add(const Duration(seconds: 3)),
       ),
       isFalse,
