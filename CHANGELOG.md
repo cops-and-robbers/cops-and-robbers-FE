@@ -1,7 +1,22 @@
 # Changelog
 
-**현재 버전:** 3.0.18  
-**마지막 업데이트:** 2026-09-07T02:58:39Z  
+**현재 버전:** 3.0.21  
+**마지막 업데이트:** 2026-09-07T09:36:11Z  
+
+---
+
+## [3.0.21] - 2026-09-07
+
+**PR:** #567  
+
+**기타**
+- Merge branch 'main' of https://github.com/cops-and-robbers/cops-and-robbers-FE
+- docs : 리포트 업데이트 #565
+- Merge pull request #566 from cops-and-robbers/20260907_#565_게임_GPS_수신이_드문_경우_자동_탈옥_누락_수정
+- fix : 희소 GPS 이탈 재확인 및 요청 무효화 #565
+- fix : 명확한 감옥 진입을 단일 GPS로 인정 #565
+- docs : 자동 탈옥 누락 버그 이슈 추가 #565
+- chore : ISSUE 문서 자동 처리 GITACTION
 
 ---
 
