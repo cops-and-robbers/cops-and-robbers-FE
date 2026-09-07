@@ -1,0 +1,84 @@
+name: ✅ Complete Linked Issues
+
+on:
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  complete-linked-issues:
+    if: |
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Mark linked issues as completed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const statusLabels = new Set([
+              '작업전',
+              '작업중',
+              '담당자확인',
+              '피드백',
+              '작업완료',
+              '보류',
+              '취소',
+            ]);
+
+            const { repository } = await github.graphql(`
+              query($owner: String!, $repo: String!, $pullRequest: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pullRequest) {
+                    closingIssuesReferences(first: 100) {
+                      nodes {
+                        number
+                        repository {
+                          nameWithOwner
+                        }
+                        labels(first: 100) {
+                          nodes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pullRequest: context.payload.pull_request.number,
+            });
+
+            const issues = repository.pullRequest.closingIssuesReferences.nodes;
+
+            for (const issue of issues) {
+              // ponytail: GITHUB_TOKEN은 현재 저장소에만 쓸 수 있다. 교차 저장소는 GitHub App 토큰이 필요할 때 추가한다.
+              if (issue.repository.nameWithOwner !== context.payload.repository.full_name) {
+                core.warning(`Skipping cross-repository issue ${issue.repository.nameWithOwner}#${issue.number}`);
+                continue;
+              }
+
+              const labels = issue.labels.nodes
+                .map(({ name }) => name)
+                .filter((name) => !statusLabels.has(name));
+
+              await github.rest.issues.setLabels({
+                ...context.repo,
+                issue_number: issue.number,
+                labels: [...labels, '작업완료'],
+              });
+
+              await github.rest.issues.update({
+                ...context.repo,
+                issue_number: issue.number,
+                state: 'closed',
+                state_reason: 'completed',
+              });
+            }
