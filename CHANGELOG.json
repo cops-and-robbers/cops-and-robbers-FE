@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-07T02:58:39Z",
-    "currentVersion": "3.0.18",
+    "lastUpdated": "2026-09-07T09:36:11Z",
+    "currentVersion": "3.0.21",
     "projectType": "flutter",
-    "totalReleases": 127
+    "totalReleases": 128
   },
   "releases": [
+    {
+      "version": "3.0.21",
+      "project_type": "flutter",
+      "date": "2026-09-07",
+      "pr_number": 567,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge branch 'main' of https://github.com/cops-and-robbers/cops-and-robbers-FE\n  * docs : 리포트 업데이트 #565\n  * Merge pull request #566 from cops-and-robbers/20260907_#565_게임_GPS_수신이_드문_경우_자동_탈옥_누락_수정\n  * fix : 희소 GPS 이탈 재확인 및 요청 무효화 #565\n  * fix : 명확한 감옥 진입을 단일 GPS로 인정 #565\n  * docs : 자동 탈옥 누락 버그 이슈 추가 #565\n  * chore : ISSUE 문서 자동 처리 GITACTION\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge branch 'main' of https://github.com/cops-and-robbers/cops-and-robbers-FE",
+            "docs : 리포트 업데이트 #565",
+            "Merge pull request #566 from cops-and-robbers/20260907_#565_게임_GPS_수신이_드문_경우_자동_탈옥_누락_수정",
+            "fix : 희소 GPS 이탈 재확인 및 요청 무효화 #565",
+            "fix : 명확한 감옥 진입을 단일 GPS로 인정 #565",
+            "docs : 자동 탈옥 누락 버그 이슈 추가 #565",
+            "chore : ISSUE 문서 자동 처리 GITACTION"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.0.18",
       "project_type": "flutter",

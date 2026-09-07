@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:clock/clock.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -181,6 +182,8 @@ class _GamePageState extends ConsumerState<GamePage>
   );
 
   final JailEscapeDetector _jailEscapeDetector = JailEscapeDetector();
+  Timer? _escapeConfirmationTimer;
+  int _escapeConfirmationGeneration = 0;
 
   /// 이탈 경고(배너·펄스·보더·반복 진동) 노출 중 여부
   ///
@@ -395,7 +398,7 @@ class _GamePageState extends ConsumerState<GamePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _gameStateSyncRetryTimer?.cancel();
-    _jailEscapeDetector.reset();
+    _resetAutoEscape();
     _locationSubscription?.cancel();
     _zoneExitVibrationTimer?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
@@ -634,7 +637,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final syncGeneration = ++_gameStateSyncGeneration;
     _isGameStateSyncing = true;
     _isGameStateSynchronized = false;
-    _jailEscapeDetector.reset();
+    _resetAutoEscape();
 
     try {
       // sync 요청 직전 상태 snapshot — sync 창에 STOMP가 추가한 변화 추적용
@@ -719,7 +722,7 @@ class _GamePageState extends ConsumerState<GamePage>
     } finally {
       if (mounted && syncGeneration == _gameStateSyncGeneration) {
         _isGameStateSyncing = false;
-        _jailEscapeDetector.reset();
+        _resetAutoEscape();
         // 소켓이 살아 있어도 HTTP 조회만 일시 실패할 수 있다. 총 3회로 제한한다.
         final latest = ref.read(gameEventNotifierProvider);
         if (!_isGameStateSynchronized &&
@@ -870,8 +873,9 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 수감된 본인이 이번 체포 후 감옥에 들어왔다가 확실히 벗어나면 자동 탈옥한다.
-  void _checkAutoEscape(Position pos) {
-    if (widget.isDummy ||
+  void _checkAutoEscape(Position pos, {bool confirmIfNeeded = true}) {
+    if (!mounted ||
+        widget.isDummy ||
         !GameTeam.isRobber(widget.team) ||
         _gameOverDialogShown ||
         _isLeaving ||
@@ -885,14 +889,14 @@ class _GamePageState extends ConsumerState<GamePage>
 
     final eventState = ref.read(gameEventNotifierProvider);
     if (eventState.isGameOver) {
-      _jailEscapeDetector.reset();
+      _resetAutoEscape();
       return;
     }
     final isArrested =
         eventState.arrestedParticipantIds.contains(widget.participantId) &&
         !eventState.escapedParticipantIds.contains(widget.participantId);
     if (!isArrested) {
-      _jailEscapeDetector.reset();
+      _resetAutoEscape();
       return;
     }
     if (eventState.connectionState != StompConnectionState.connected) return;
@@ -900,7 +904,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
     if (area == null) return;
 
-    final now = DateTime.now();
+    final now = clock.now();
     final shouldEscape = _jailEscapeDetector.update(
       jail: area.jail,
       sample: JailLocationSample(
@@ -911,8 +915,43 @@ class _GamePageState extends ConsumerState<GamePage>
       now: now,
     );
     if (shouldEscape) {
+      _cancelEscapeConfirmation();
       unawaited(_requestAutoEscape());
+    } else if (!_jailEscapeDetector.needsExitConfirmation) {
+      _cancelEscapeConfirmation();
+    } else if (confirmIfNeeded && _escapeConfirmationTimer == null) {
+      final generation = _escapeConfirmationGeneration;
+      final revision = eventState.localArrestRevision;
+      _escapeConfirmationTimer = Timer(
+        _jailEscapeDetector.minOutsideDuration,
+        () async {
+          final position = await DeviceLocationService.getCurrentPosition(
+            timeLimit: const Duration(seconds: 5),
+            allowLastKnown: false,
+          );
+          if (!mounted || generation != _escapeConfirmationGeneration) return;
+          _escapeConfirmationTimer = null;
+          if (revision !=
+              ref.read(gameEventNotifierProvider).localArrestRevision) {
+            return;
+          }
+          if (position != null) {
+            _checkAutoEscape(position, confirmIfNeeded: false);
+          }
+        },
+      );
     }
+  }
+
+  void _cancelEscapeConfirmation() {
+    _escapeConfirmationTimer?.cancel();
+    _escapeConfirmationTimer = null;
+    _escapeConfirmationGeneration++;
+  }
+
+  void _resetAutoEscape() {
+    _cancelEscapeConfirmation();
+    _jailEscapeDetector.reset();
   }
 
   Future<void> _requestAutoEscape() async {
@@ -1802,7 +1841,7 @@ class _GamePageState extends ConsumerState<GamePage>
             next.revision != prev.revision &&
             next.isArrested &&
             mounted) {
-          _jailEscapeDetector.reset();
+          _resetAutoEscape();
           _clearZoneExitWarning();
           Navigator.of(context).popUntil((route) => route is! PopupRoute);
         }
@@ -1813,6 +1852,7 @@ class _GamePageState extends ConsumerState<GamePage>
     ref.listen(gameEventNotifierProvider, (prev, next) {
       if (_isLeaving) return;
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
+        _resetAutoEscape();
         _showGameOverDialog(next.winnerTeam, next.gameOverReason);
       }
     });
@@ -1976,7 +2016,7 @@ class _GamePageState extends ConsumerState<GamePage>
         _gameStateSyncGeneration++;
         _isGameStateSyncing = false;
         _isGameStateSynchronized = false;
-        _jailEscapeDetector.reset();
+        _resetAutoEscape();
       }
 
       // 모달이 이미 떠 있을 때: 상태 업데이트 → ReconnectModal이 스스로 닫힘
@@ -1999,7 +2039,7 @@ class _GamePageState extends ConsumerState<GamePage>
     // 게임 맵 영역 로드 완료 시 지도에 구역 경계·외부 딤 추가
     ref.listen(gameAreaProvider(_gameId), (prev, next) {
       next.whenData((area) {
-        if (prev?.valueOrNull != null) _jailEscapeDetector.reset();
+        if (prev?.valueOrNull != null) _resetAutoEscape();
         _googleMapKey.currentState?.updateMinZoom(
           area.playground.boundingRadiusInMeters,
         );

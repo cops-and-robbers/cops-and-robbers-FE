@@ -23,6 +23,7 @@ class DeviceLocationService {
   /// 현재 위치 1회 조회. 얻지 못하면 null.
   ///
   /// [timeLimit] 내 GPS 응답이 없으면 lastKnownPosition 으로 폴백한다.
+  /// 판정용 조회는 [allowLastKnown]을 false로 전달해 캐시 폴백을 막는다.
   ///
   /// 권한 거부·위치 서비스 꺼짐도 여기서 흡수해 null 로 돌려준다. 예전에는
   /// `TimeoutException` 만 잡아 나머지가 호출부로 던져졌고, 호출부마다 제각각인
@@ -31,17 +32,21 @@ class DeviceLocationService {
   static Future<Position?> getCurrentPosition({
     LocationAccuracy accuracy = LocationAccuracy.high,
     Duration timeLimit = const Duration(seconds: 10),
+    bool allowLastKnown = true,
   }) async {
     try {
       return await Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(accuracy: accuracy),
+        locationSettings: LocationSettings(
+          accuracy: accuracy,
+          timeLimit: allowLastKnown ? null : timeLimit,
+        ),
       ).timeout(timeLimit);
     } on TimeoutException {
-      return _lastKnownOrNull();
+      return allowLastKnown ? _lastKnownOrNull() : null;
     } catch (e) {
       // 권한 거부·서비스 꺼짐 등. 마지막으로 알던 위치라도 있으면 그것을 쓴다.
       debugPrint('[위치] 현재 위치 조회 실패: $e');
-      return _lastKnownOrNull();
+      return allowLastKnown ? _lastKnownOrNull() : null;
     }
   }
 
