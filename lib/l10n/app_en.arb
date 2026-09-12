@@ -1,5 +1,11 @@
 {
   "@@locale": "en",
+  "gameChatTitle": "Chat",
+  "gameChatTeamInputHint": "Message your team",
+  "gameChatAllInputHint": "Message everyone",
+  "gameChatBackToMap": "View map",
+  "gameChatTeamHint": "Only your teammates can see these messages",
+  "gameChatAllHint": "Both cops and robbers can see these messages",
   "appTitle": "Cops and Robbers",
   "dialogUpdateOptionalTitle": "New version notice",
   "dialogUpdateOptionalMessage": "An improved new version is available\nWould you like to update?",

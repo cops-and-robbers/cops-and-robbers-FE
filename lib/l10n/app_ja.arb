@@ -1,5 +1,11 @@
 {
   "@@locale": "ja",
+  "gameChatTitle": "チャット",
+  "gameChatTeamInputHint": "チームにメッセージを送る",
+  "gameChatAllInputHint": "全員にメッセージを送る",
+  "gameChatBackToMap": "マップへ",
+  "gameChatTeamHint": "メッセージはチームの仲間だけに表示されます",
+  "gameChatAllHint": "警察と泥棒の全員にメッセージが表示されます",
   "appTitle": "Cops and Robbers",
   "dialogUpdateOptionalTitle": "新バージョン案内",
   "dialogUpdateOptionalMessage": "さらに良くなった新バージョンがあります\nアップデートしますか",
