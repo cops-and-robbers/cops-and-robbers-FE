@@ -192,6 +192,10 @@ class AppColors {
   static const Color yellow = Color(0xFFFFCC00);
   static const Color yellowAlpha20 = Color(0x33FFCC00);
 
+  /// 창살 오버레이 상하 암부 그라데이션 양 끝 — black 60% → 0%
+  static const Color blackAlpha60 = Color(0x99080A0C);
+  static const Color blackAlpha0 = Color(0x00080A0C);
+
   /// 노랑 900
   /// Yellow 900
   static const Color yellow900 = Color(0xFFF7F260);

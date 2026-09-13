@@ -69,6 +69,7 @@ import '../../domain/entities/ping.dart';
 import '../providers/ping_provider.dart';
 import '../providers/player_game_record_provider.dart';
 import '../widgets/google_map_view.dart';
+import '../widgets/jail_bars_overlay.dart';
 import '../widgets/participant_overlay.dart';
 import '../widgets/ping_selection_card.dart';
 import '../widgets/marquee_alert_banner.dart';
@@ -2113,6 +2114,12 @@ class _GamePageState extends ConsumerState<GamePage>
                 ),
               ),
             ),
+
+            /// index 0b: 수감 중 전면 철창 — 지도 바로 위, 버튼·패널 아래 (if/else로 개수 고정)
+            if (isArrestedNow)
+              const JailBarsOverlay()
+            else
+              const SizedBox.shrink(),
 
             /// index 1: 참가자 목록 오버레이 (if/else로 개수 고정)
             if (_showParticipants)
