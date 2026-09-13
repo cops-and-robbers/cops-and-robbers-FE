@@ -11,7 +11,7 @@ import '../../../../core/widgets/dialogs/dialog_animation.dart';
 /// 이벤트 모드 — 운영진 체포 성공 피드백 다이얼로그(증거 공개).
 ///
 /// 체포 순서(=누적 검거 수)로 `assets/events/evidence{N}.png`를 공개한다.
-/// 에셋은 evidence1~3 고정이라 인덱스를 3으로 cap. 경찰 화면 전용(라이트 테마).
+/// 증거는 evidence1~2를 사용한다. 경찰 화면 전용(라이트 테마).
 class EventArrestSuccessDialog extends StatelessWidget {
   const EventArrestSuccessDialog({
     required this.evidenceIndex,
@@ -19,7 +19,7 @@ class EventArrestSuccessDialog extends StatelessWidget {
     super.key,
   });
 
-  /// 공개할 증거 인덱스 (1부터 시작, 3 초과 시 3으로 clamp).
+  /// 공개할 증거 인덱스 (1부터 시작, 2 초과 시 2로 clamp).
   final int evidenceIndex;
 
   /// 체포된 운영진 닉네임.
@@ -51,8 +51,8 @@ class EventArrestSuccessDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // 에셋은 evidence1~3만 존재하므로 범위 밖 값을 안전하게 처리
-    final slot = evidenceIndex.clamp(1, 3);
+    // 이전 게임의 초과 검거 기록도 현재 증거 2종 범위로 표시한다.
+    final slot = evidenceIndex.clamp(1, 2);
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -76,9 +76,8 @@ class EventArrestSuccessDialog extends StatelessWidget {
             // 증거 이미지 슬롯 — ValueKey로 테스트에서 slot 값 검증
             SizedBox(
               key: ValueKey('event_evidence_$slot'),
-              // 증거3은 그림이 작아 다이얼로그에서도 더 크게 표시
-              width: slot == 3 ? 210.w : 160.w,
-              height: slot == 3 ? 210.w : 160.w,
+              width: 160.w,
+              height: 160.w,
               child: Image.asset(
                 'assets/events/evidence$slot.png',
                 fit: BoxFit.contain,
