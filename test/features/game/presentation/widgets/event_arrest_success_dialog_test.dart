@@ -41,11 +41,19 @@ void main() {
     );
   });
 
-  testWidgets('caps_evidence_index_at_three', (tester) async {
-    await _pump(
-      tester,
-      const EventArrestSuccessDialog(evidenceIndex: 5, robberNickname: 'x'),
-    );
-    expect(find.byKey(const ValueKey('event_evidence_3')), findsOneWidget);
+  testWidgets('evidence_stays_in_two_asset_range_when_index_is_out_of_bounds', (
+    tester,
+  ) async {
+    for (final (index, slot) in [(0, 1), (5, 2)]) {
+      await _pump(
+        tester,
+        EventArrestSuccessDialog(evidenceIndex: index, robberNickname: 'x'),
+      );
+      expect(
+        (tester.widget<Image>(find.byType(Image)).image as AssetImage)
+            .assetName,
+        'assets/events/evidence$slot.png',
+      );
+    }
   });
 }

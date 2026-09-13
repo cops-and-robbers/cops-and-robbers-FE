@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> _pump(WidgetTester tester, Widget child) async {
-  tester.view.physicalSize = const Size(1125, 2436);
+Future<void> _pump(
+  WidgetTester tester,
+  Widget child, {
+  Size size = const Size(375, 812),
+}) async {
+  tester.view.physicalSize = size * 3;
   tester.view.devicePixelRatio = 3.0;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
@@ -23,20 +27,62 @@ Future<void> _pump(WidgetTester tester, Widget child) async {
 }
 
 void main() {
-  testWidgets('collected_slots_unlocked_and_remaining_slots_locked', (
+  testWidgets('evidence_board_reveals_two_slots_as_arrests_accumulate', (
     tester,
   ) async {
-    await _pump(tester, EventResultBoard(arrestCount: 2, onGoHome: () {}));
+    for (final count in [0, 1, 2, 3]) {
+      await _pump(
+        tester,
+        EventResultBoard(arrestCount: count, onGoHome: () {}),
+      );
 
-    // 3개 슬롯 모두 존재
-    expect(find.byKey(const ValueKey('event_result_slot_1')), findsOneWidget);
-    expect(find.byKey(const ValueKey('event_result_slot_2')), findsOneWidget);
-    expect(find.byKey(const ValueKey('event_result_slot_3')), findsOneWidget);
-    // 미수집(3번)만 자물쇠
-    expect(find.byKey(const ValueKey('event_result_lock_1')), findsNothing);
-    expect(find.byKey(const ValueKey('event_result_lock_2')), findsNothing);
-    expect(find.byKey(const ValueKey('event_result_lock_3')), findsOneWidget);
+      expect(find.byKey(const ValueKey('event_result_slot_1')), findsOneWidget);
+      expect(find.byKey(const ValueKey('event_result_slot_2')), findsOneWidget);
+      expect(find.byKey(const ValueKey('event_result_slot_3')), findsNothing);
+      final collected = count.clamp(0, 2);
+      expect(find.byIcon(Icons.lock), findsNWidgets(2 - collected));
+      expect(
+        tester
+            .widgetList<Image>(find.byType(Image))
+            .map((image) => (image.image as AssetImage).assetName),
+        [for (var i = 1; i <= collected; i++) 'assets/events/evidence$i.png'],
+      );
+    }
   });
+
+  for (final size in [const Size(320, 568), const Size(768, 1024)]) {
+    testWidgets('evidence_slots_fit_side_by_side_when_screen_is_$size', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        EventResultBoard(arrestCount: 2, onGoHome: () {}),
+        size: size,
+      );
+
+      final images = find.byType(Image);
+      final bounds = [
+        for (var i = 0; i < 2; i++)
+          MatrixUtils.transformRect(
+            tester.renderObject<RenderBox>(images.at(i)).getTransformTo(null),
+            Offset.zero & tester.getSize(images.at(i)),
+          ),
+      ];
+      final button = tester.getRect(
+        find.text(
+          AppLocalizations.of(
+            tester.element(find.byType(EventResultBoard)),
+          ).buttonGoHome,
+        ),
+      );
+      expect(bounds[0].right, lessThan(bounds[1].left));
+      expect(bounds[0].left, greaterThan(0));
+      expect(bounds[1].right, lessThan(size.width));
+      expect(bounds[0].center.dy, closeTo(bounds[1].center.dy, 0.01));
+      expect(bounds.every((rect) => rect.bottom < button.top), isTrue);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('shows_arrest_count_text_and_only_home_button', (tester) async {
     await _pump(tester, EventResultBoard(arrestCount: 2, onGoHome: () {}));

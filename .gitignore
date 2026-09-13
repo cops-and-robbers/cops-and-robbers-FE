@@ -61,7 +61,11 @@ app.*.map.json
 .env
 /env.*
 /secrets.json
-.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/claude
+!.agents/skills/commands/
 skills-lock.json
 
 # Android (local build config)
