@@ -80,85 +80,85 @@ class _AlwaysServerErrorSessionRepository implements SessionRepository {
 }
 
 void main() {
-  testWidgets(
-    '게임 상태 조회가 500을 반환해도 재구독 재생 이벤트로 재시도를 폭주시키지 않는다',
-    (tester) async {
-      tester.view.physicalSize = const Size(1125, 2436);
-      tester.view.devicePixelRatio = 3.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets('게임 상태 조회가 500을 반환해도 재구독 재생 이벤트로 재시도를 폭주시키지 않는다', (tester) async {
+    tester.view.physicalSize = const Size(1125, 2436);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
 
-      final repository = _AlwaysServerErrorSessionRepository();
-      const user = AuthResultEntity(
-        userId: 1,
-        nickname: 'u',
-        isNewUser: false,
-        requiresAgreement: false,
-      );
+    final repository = _AlwaysServerErrorSessionRepository();
+    const user = AuthResultEntity(
+      userId: 1,
+      nickname: 'u',
+      isNewUser: false,
+      requiresAgreement: false,
+    );
 
-      final router = GoRouter(
-        initialLocation: RoutePaths.splash,
-        routes: [
-          GoRoute(path: RoutePaths.splash, builder: (_, _) => const SplashPage()),
-          GoRoute(path: RoutePaths.home, builder: (_, _) => const SizedBox()),
-          GoRoute(path: RoutePaths.login, builder: (_, _) => const SizedBox()),
-        ],
-      );
+    final router = GoRouter(
+      initialLocation: RoutePaths.splash,
+      routes: [
+        GoRoute(path: RoutePaths.splash, builder: (_, _) => const SplashPage()),
+        GoRoute(path: RoutePaths.home, builder: (_, _) => const SizedBox()),
+        GoRoute(path: RoutePaths.login, builder: (_, _) => const SizedBox()),
+      ],
+    );
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            connectivityServiceProvider.overrideWith(
-              (ref) => ConnectivityService(
-                _ReplayingConnectivity(initial: [ConnectivityResult.wifi]),
-              ),
-            ),
-            authNotifierProvider.overrideWith(() => _FakeAuthNotifier(user)),
-            getMyActiveGameUsecaseProvider.overrideWithValue(
-              GetMyActiveGameUsecase(repository: repository),
-            ),
-            coldStartDeeplinkProvider.overrideWith((ref) async => null),
-            coldStartPushNavigationProvider.overrideWith((ref) async => null),
-            adServiceProvider.overrideWithValue(
-              AdService(isAdsEnabled: () => false, sdkInitializer: () async => true),
-            ),
-          ],
-          child: ScreenUtilInit(
-            designSize: const Size(375, 812),
-            builder: (_, _) => MaterialApp.router(
-              routerConfig: router,
-              locale: const Locale('ko'),
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          connectivityServiceProvider.overrideWith(
+            (ref) => ConnectivityService(
+              _ReplayingConnectivity(initial: [ConnectivityResult.wifi]),
             ),
           ),
+          authNotifierProvider.overrideWith(() => _FakeAuthNotifier(user)),
+          getMyActiveGameUsecaseProvider.overrideWithValue(
+            GetMyActiveGameUsecase(repository: repository),
+          ),
+          coldStartDeeplinkProvider.overrideWith((ref) async => null),
+          coldStartPushNavigationProvider.overrideWith((ref) async => null),
+          adServiceProvider.overrideWithValue(
+            AdService(
+              isAdsEnabled: () => false,
+              sdkInitializer: () async => true,
+            ),
+          ),
+        ],
+        child: ScreenUtilInit(
+          designSize: const Size(375, 812),
+          builder: (_, _) => MaterialApp.router(
+            routerConfig: router,
+            locale: const Locale('ko'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
         ),
-      );
+      ),
+    );
 
-      // 최소 스플래시 딜레이(2초) + 500 실패 판정까지 흘려보낸다.
-      await tester.pump(const Duration(seconds: 3));
+    // 최소 스플래시 딜레이(2초) + 500 실패 판정까지 흘려보낸다.
+    await tester.pump(const Duration(seconds: 3));
 
-      expect(find.byType(SplashPage), findsOneWidget);
-      final callsAfterFirstBlock = repository.callCount;
-      expect(
-        callsAfterFirstBlock,
-        1,
-        reason: '500은 네트워크성 실패가 아니므로 내부 재시도 없이 즉시 1회로 차단해야 한다',
-      );
+    expect(find.byType(SplashPage), findsOneWidget);
+    final callsAfterFirstBlock = repository.callCount;
+    expect(
+      callsAfterFirstBlock,
+      1,
+      reason: '500은 네트워크성 실패가 아니므로 내부 재시도 없이 즉시 1회로 차단해야 한다',
+    );
 
-      // 차단 화면이 연결 스트림을 구독한 뒤로 8초를 더 흘려보낸다. 재구독이
-      // "재생" 이벤트를 자가 발화로 오인하면 이 구간에서 재시도가 계속 쌓인다.
-      await tester.pump(const Duration(seconds: 8));
+    // 차단 화면이 연결 스트림을 구독한 뒤로 8초를 더 흘려보낸다. 재구독이
+    // "재생" 이벤트를 자가 발화로 오인하면 이 구간에서 재시도가 계속 쌓인다.
+    await tester.pump(const Duration(seconds: 8));
 
-      expect(
-        repository.callCount,
-        callsAfterFirstBlock,
-        reason:
-            '기기 연결은 처음부터 끊긴 적이 없다 — 재구독 재생 이벤트만으로 재시도가 '
-            '늘어나면 서버가 죽어 있는 동안 무한 루프를 타는 회귀다',
-      );
+    expect(
+      repository.callCount,
+      callsAfterFirstBlock,
+      reason:
+          '기기 연결은 처음부터 끊긴 적이 없다 — 재구독 재생 이벤트만으로 재시도가 '
+          '늘어나면 서버가 죽어 있는 동안 무한 루프를 타는 회귀다',
+    );
 
-      await tester.pump(const Duration(milliseconds: 1));
-    },
-  );
+    await tester.pump(const Duration(milliseconds: 1));
+  });
 }

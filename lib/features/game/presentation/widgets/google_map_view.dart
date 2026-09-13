@@ -438,9 +438,7 @@ class GoogleMapViewState extends State<GoogleMapView>
           zoom: 15,
         ),
         // Cloud Map ID는 콜드 스타트 시 회색 타일 영구 실패 가능성으로 미사용 — JSON 다크 스타일로 통일
-        style: widget.isArrested
-            ? MapStyles.arrested
-            : (widget.isDarkMode ? MapStyles.dark : null),
+        style: widget.isDarkMode ? MapStyles.dark : null,
         onMapCreated: (controller) {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
