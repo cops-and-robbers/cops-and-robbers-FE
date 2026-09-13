@@ -1,11 +1,30 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-13T16:47:41Z",
-    "currentVersion": "3.0.25",
+    "lastUpdated": "2026-09-13T23:35:39Z",
+    "currentVersion": "3.0.26",
     "projectType": "flutter",
-    "totalReleases": 131
+    "totalReleases": 132
   },
   "releases": [
+    {
+      "version": "3.0.26",
+      "project_type": "flutter",
+      "date": "2026-09-13",
+      "pr_number": 579,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #578 from cops-and-robbers/20260914_#577_조회_상태와_관계없이_정렬_메뉴_항상_표시\n  * chore : release note\n  * docs : 리포트 문서 작성 #577\n  * fix : 커뮤니티 정렬 메뉴 상시 표시 #577\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #578 from cops-and-robbers/20260914_#577_조회_상태와_관계없이_정렬_메뉴_항상_표시",
+            "chore : release note",
+            "docs : 리포트 문서 작성 #577",
+            "fix : 커뮤니티 정렬 메뉴 상시 표시 #577"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.0.25",
       "project_type": "flutter",

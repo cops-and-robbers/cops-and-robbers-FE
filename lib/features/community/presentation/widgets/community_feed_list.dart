@@ -208,29 +208,45 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return ref
-        .watch(
-          communityFeedNotifierProvider(
-            widget.scope,
-            widget.sort,
-            widget.keyword,
+    final feed = ref.watch(
+      communityFeedNotifierProvider(widget.scope, widget.sort, widget.keyword),
+    );
+    // 좌표 없이 최신순으로 조회한 경우에는 빈 결과여도 실제 정렬을 표시한다.
+    final shownSort =
+        widget.sort == CommunitySortOption.distance &&
+            feed.hasValue &&
+            feed.requireValue.latitude == null
+        ? CommunitySortOption.latest
+        : widget.sort;
+
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            left: AppSpacing.horizontal24,
+            right: AppSpacing.horizontal24,
+            bottom: AppSpacing.vertical12,
           ),
-        )
-        .when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          // AuthInterceptor가 강제 로그아웃(→ 화면 전환)을 처리하므로 UI는 무반응.
-          // 첫 로드라 화면에 아직 아무 데이터가 없어 무반응 = 빈 화면.
-          error: (e, _) => e is AuthException
-              ? const SizedBox.shrink()
-              : _buildRefreshablePlaceholder(
-                  e is AppException
-                      ? l10n.errorByException(e)
-                      : l10n.errorCommunityPostsLoadFailed,
-                ),
-          data: (feed) => feed.items.isEmpty
-              ? _buildRefreshablePlaceholder(widget.emptyMessage)
-              : _buildList(l10n, feed),
-        );
+          child: _buildSortLabel(l10n, shownSort),
+        ),
+        Expanded(
+          child: feed.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            // AuthInterceptor가 강제 로그아웃을 처리하므로 목록의 오류 안내는 생략한다.
+            error: (e, _) => e is AuthException
+                ? const SizedBox.shrink()
+                : _buildRefreshablePlaceholder(
+                    e is AppException
+                        ? l10n.errorByException(e)
+                        : l10n.errorCommunityPostsLoadFailed,
+                  ),
+            data: (feed) => feed.items.isEmpty
+                ? _buildRefreshablePlaceholder(widget.emptyMessage)
+                : _buildList(feed),
+          ),
+        ),
+      ],
+    );
   }
 
   /// 정렬 라벨 — 탭하면 정렬 선택 바텀시트를 연다.
@@ -357,16 +373,7 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
     );
   }
 
-  /// 정렬 라벨을 목록 맨 위 아이템으로 넣어 카드와 함께 스크롤되게 한다
-  /// (예전엔 Column 밖에 고정돼 있어 스크롤해도 안 내려갔다).
-  Widget _buildList(AppLocalizations l10n, CommunityFeedState feed) {
-    // 좌표를 못 구해 최신순으로 물러섰다면 라벨도 그렇게 읽혀야 한다 —
-    // "거리순"이라 써 놓고 최신순 목록을 보여주면 에러 없이 틀린 화면이 된다.
-    final shownSort =
-        widget.sort == CommunitySortOption.distance && feed.latitude == null
-        ? CommunitySortOption.latest
-        : widget.sort;
-
+  Widget _buildList(CommunityFeedState feed) {
     return AppRefreshControl(
       onRefresh: _refresh,
       child: ListView.separated(
@@ -377,23 +384,16 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
           right: AppSpacing.horizontal16,
           bottom: widget.bottomPadding + AppSpacing.vertical16,
         ),
-        itemCount: 1 + feed.items.length + (feed.isLoadingMore ? 1 : 0),
+        itemCount: feed.items.length + (feed.isLoadingMore ? 1 : 0),
         separatorBuilder: (_, _) => SizedBox(height: AppSpacing.vertical12),
         itemBuilder: (context, index) {
-          if (index == 0) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal8),
-              child: _buildSortLabel(l10n, shownSort),
-            );
-          }
-          final itemIndex = index - 1;
-          if (itemIndex >= feed.items.length) {
+          if (index >= feed.items.length) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical16),
               child: const Center(child: CircularProgressIndicator()),
             );
           }
-          final post = feed.items[itemIndex];
+          final post = feed.items[index];
           return CommunityPostCard(
             post: post,
             onTap: () => _openDetail(post.id),
