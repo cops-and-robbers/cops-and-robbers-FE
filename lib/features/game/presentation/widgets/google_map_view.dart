@@ -26,21 +26,62 @@ class GoogleMapView extends StatefulWidget {
     this.onCameraMoveStarted,
     this.onLongPress,
     this.isDarkMode = false,
+    this.isArrested = false,
   });
 
   final VoidCallback? onCameraMoveStarted;
   final ValueChanged<LatLng>? onLongPress;
   final bool isDarkMode;
+  final bool isArrested;
 
   @override
   State<GoogleMapView> createState() => GoogleMapViewState();
 }
 
-class GoogleMapViewState extends State<GoogleMapView> {
+class GoogleMapViewState extends State<GoogleMapView>
+    with WidgetsBindingObserver {
   GoogleMapController? _controller;
 
   Set<Circle> _areaCircles = {};
   Set<Polygon> _areaPolygons = {};
+  Timer? _jailPulseTimer;
+  double _jailPulse = 0;
+
+  void _syncJailPulse() {
+    _jailPulseTimer?.cancel();
+    _jailPulse = 0;
+    if (!widget.isArrested ||
+        MediaQuery.disableAnimationsOf(context) ||
+        !TickerMode.of(context) ||
+        (WidgetsBinding.instance.lifecycleState != null &&
+            WidgetsBinding.instance.lifecycleState !=
+                AppLifecycleState.resumed)) {
+      return;
+    }
+    // 네이티브 지도 업데이트는 프레임마다 보내지 않고 200ms 간격으로 제한한다.
+    _jailPulseTimer = Timer.periodic(const Duration(milliseconds: 200), (
+      timer,
+    ) {
+      setState(() => _jailPulse = (1 - cos(timer.tick * pi / 6)) / 2);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncJailPulse();
+  }
+
+  @override
+  void didUpdateWidget(GoogleMapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isArrested != widget.isArrested) _syncJailPulse();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _syncJailPulse();
+  }
 
   double _minZoom = 12.0;
 
@@ -79,6 +120,7 @@ class GoogleMapViewState extends State<GoogleMapView> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     debugPrint('========================================');
     debugPrint('🗺️ GoogleMapView initState 시작');
     debugPrint('🗺️ isDarkMode: ${widget.isDarkMode}');
@@ -90,6 +132,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
   void dispose() {
     debugPrint('🗺️ GoogleMapView dispose');
     _blinkTimer?.cancel();
+    _jailPulseTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     super.dispose();
   }
@@ -394,7 +438,9 @@ class GoogleMapViewState extends State<GoogleMapView> {
           zoom: 15,
         ),
         // Cloud Map ID는 콜드 스타트 시 회색 타일 영구 실패 가능성으로 미사용 — JSON 다크 스타일로 통일
-        style: widget.isDarkMode ? MapStyles.dark : null,
+        style: widget.isArrested
+            ? MapStyles.arrested
+            : (widget.isDarkMode ? MapStyles.dark : null),
         onMapCreated: (controller) {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
@@ -418,8 +464,38 @@ class GoogleMapViewState extends State<GoogleMapView> {
         cameraTargetBounds: _cameraTargetBounds,
         zoomControlsEnabled: false,
         compassEnabled: false,
-        circles: _areaCircles,
-        polygons: _areaPolygons,
+        circles: {
+          for (final circle in _areaCircles)
+            if (widget.isArrested && circle.circleId.value == 'jail')
+              circle.copyWith(
+                strokeColorParam: Color.lerp(
+                  AppColors.yellow,
+                  AppColors.yellow900,
+                  _jailPulse,
+                ),
+                strokeWidthParam: 3 + (_jailPulse * 3).round(),
+                fillColorParam: AppColors.yellowAlpha20,
+                zIndexParam: 3,
+              )
+            else
+              circle,
+        },
+        polygons: {
+          for (final polygon in _areaPolygons)
+            if (widget.isArrested && polygon.polygonId.value == 'jail_border')
+              polygon.copyWith(
+                strokeColorParam: Color.lerp(
+                  AppColors.yellow,
+                  AppColors.yellow900,
+                  _jailPulse,
+                ),
+                strokeWidthParam: 3 + (_jailPulse * 3).round(),
+                fillColorParam: AppColors.yellowAlpha20,
+                zIndexParam: 3,
+              )
+            else
+              polygon,
+        },
         markers: {..._robberMarkers, ..._pingMarkers},
       );
     } catch (e, stack) {

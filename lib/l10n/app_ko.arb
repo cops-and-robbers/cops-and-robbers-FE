@@ -1641,6 +1641,12 @@
     "description": "채팅 입력바 — 메시지 입력 placeholder"
   },
   "chatMessageListEmpty": "채팅을 시작해보세요",
+  "gameChatTitle": "채팅",
+  "gameChatTeamInputHint": "팀원에게 메시지 보내기",
+  "gameChatAllInputHint": "모두에게 메시지 보내기",
+  "gameChatBackToMap": "지도 보기",
+  "gameChatTeamHint": "팀원에게만 메시지가 보여요",
+  "gameChatAllHint": "경찰과 도둑 모두에게 메시지가 보여요",
   "@chatMessageListEmpty": {
     "description": "채팅 메시지 리스트 — 메시지 0건 빈 상태 안내"
   },

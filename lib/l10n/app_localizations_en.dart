@@ -1719,6 +1719,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatMessageListEmpty => 'Start chatting';
 
   @override
+  String get gameChatTitle => 'Chat';
+
+  @override
+  String get gameChatTeamInputHint => 'Message your team';
+
+  @override
+  String get gameChatAllInputHint => 'Message everyone';
+
+  @override
+  String get gameChatBackToMap => 'View map';
+
+  @override
+  String get gameChatTeamHint => 'Only your teammates can see these messages';
+
+  @override
+  String get gameChatAllHint => 'Both cops and robbers can see these messages';
+
+  @override
   String get buttonGoToLatestMessage => 'Go to the latest message';
 
   @override

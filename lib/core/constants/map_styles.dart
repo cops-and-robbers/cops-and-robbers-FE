@@ -2,6 +2,20 @@
 ///
 /// 다크/라이트 모드 등 지도 스타일 JSON을 관리합니다.
 abstract final class MapStyles {
+  /// 수감 중에도 길과 현재 위치를 읽을 수 있도록 배경 지도만 어둡게 한다.
+  static const String arrested = '''
+[
+  {"elementType":"geometry","stylers":[{"color":"#10141c"}]},
+  {"elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+  {"elementType":"labels.text.fill","stylers":[{"color":"#758795"}]},
+  {"elementType":"labels.text.stroke","stylers":[{"color":"#10141c"}]},
+  {"featureType":"road","elementType":"geometry","stylers":[{"color":"#282f3e"}]},
+  {"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#353d50"}]},
+  {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#112018"}]},
+  {"featureType":"water","elementType":"geometry","stylers":[{"color":"#08121e"}]}
+]
+''';
+
   /// 도둑 팀 지도 JSON 폴백 스타일 — Map ID 미설정 시 사용 (야간 도시 컨셉)
   static const String dark = '''
 [

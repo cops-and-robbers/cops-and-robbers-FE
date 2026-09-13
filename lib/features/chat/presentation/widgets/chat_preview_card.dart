@@ -2,17 +2,24 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/chat_constants.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
 
-/// 새 채팅 메시지 프리뷰 카드
+/// 새 채팅 메시지 프리뷰 — 채팅 버튼에서 튀어나오는 말풍선
 ///
-/// 입력바 위에 슬라이드-인으로 나타나며 3초 후 자동으로 사라집니다.
+/// 채팅 말풍선과 같은 모서리(내 말풍선: 우하만 4)로 우측 하단 채팅 버튼을
+/// 가리키며, 버튼 자리에서 커지며 나타나고 3초 뒤 같은 자리로 사라진다.
+/// 폭은 내용에 맞추고 오른쪽 정렬한다.
+/// 정보 우선순위: 메시지 본문(2줄) > 발신자(직업 아이콘 + 닉네임) > 채널
+/// (라벨 색). 미읽음 수는 채팅 버튼 배지가 맡으므로 그리지 않는다.
 /// 탭하면 [onTap] 콜백이 호출됩니다.
 class ChatPreviewCard extends StatefulWidget {
   const ChatPreviewCard({
@@ -20,7 +27,6 @@ class ChatPreviewCard extends StatefulWidget {
     required this.isDarkMode,
     required this.onTap,
     required this.onDismissed,
-    this.unreadCount = 0,
     super.key,
   });
 
@@ -31,8 +37,8 @@ class ChatPreviewCard extends StatefulWidget {
   /// 3초 후 자동 퇴장 완료 시 호출
   final VoidCallback onDismissed;
 
-  /// 읽지 않은 메시지 총 수 (전체 + 팀)
-  final int unreadCount;
+  /// 말풍선 본체의 키 — 테스트에서 실제 그려진 영역을 잡을 때 쓴다
+  static const bubbleKey = ValueKey('chat-preview-bubble');
 
   @override
   State<ChatPreviewCard> createState() => _ChatPreviewCardState();
@@ -103,133 +109,120 @@ class _ChatPreviewCardState extends State<ChatPreviewCard> {
     final isSystem = _isSystemMessage;
     final dark = widget.isDarkMode;
 
-    // 카드 배경/테두리
-    final bgColor = dark ? AppColors.black900 : AppColors.white;
-    final borderColor = dark ? AppColors.black800 : AppColors.black100;
+    // 채팅방의 상대 말풍선(ChatMessageBubble)과 같은 색. 팀·공지 라벨만 팀 색.
+    final accent = dark ? AppColors.green : AppColors.blue;
+    final fill = dark ? AppColors.black : AppColors.white;
+    final nameColor = dark ? AppColors.black400 : AppColors.black600;
+    final channelColor = (isSystem || isTeam) ? accent : nameColor;
+    final messageColor = isSystem
+        ? accent
+        : (dark ? AppColors.white : AppColors.black);
 
-    // 태그 색상: 전체=black, 팀=blue(라이트)/green(다크), 공지=red
-    final Color tagBg;
-    final Color tagText;
-    final String tagLabel;
-
+    final String headline;
+    final String channel;
+    final Widget leading;
     if (isSystem) {
-      tagBg = AppColors.red;
-      tagText = AppColors.white;
-      tagLabel = l10n.chatPreviewTagNotice;
-    } else if (isTeam) {
-      tagBg = dark ? AppColors.green : AppColors.blue;
-      tagText = dark ? AppColors.black : AppColors.white;
-      tagLabel = l10n.chatPreviewTagTeam;
+      headline = l10n.chatPreviewTagNotice;
+      channel = isTeam ? l10n.chatPreviewTagTeam : l10n.chatPreviewTagAll;
+      leading = SvgPicture.asset(
+        AppIcons.loudspeaker,
+        width: 12.w,
+        height: 12.w,
+        colorFilter: ColorFilter.mode(accent, BlendMode.srcIn),
+      );
     } else {
-      tagBg = AppColors.black;
-      tagText = AppColors.white;
-      tagLabel = l10n.chatPreviewTagAll;
+      headline = widget.message.sender.nickname;
+      channel = isTeam ? l10n.chatPreviewTagTeam : l10n.chatPreviewTagAll;
+      leading = SvgPicture.asset(
+        AppIcons.role(
+          isPolice: GameTeam.isPolice(widget.message.sender.team),
+          isDark: dark,
+        ),
+        width: 12.w,
+        height: 12.w,
+      );
     }
 
-    // 닉네임/메시지 색상 (채팅 버블과 동일)
-    final nicknameColor = dark ? AppColors.black400 : AppColors.black600;
-    final messageColor = dark ? AppColors.white : AppColors.black;
+    final inDuration = const Duration(milliseconds: 300);
+    final outDuration = const Duration(milliseconds: 200);
 
-    return AnimatedSlide(
-      offset: _visible ? Offset.zero : const Offset(0, 0.5),
-      duration: _visible
-          ? const Duration(milliseconds: 300)
-          : const Duration(milliseconds: 200),
-      curve: _visible ? Curves.easeOut : Curves.easeIn,
-      child: AnimatedOpacity(
-        opacity: _visible ? 1.0 : 0.0,
-        duration: _visible
-            ? const Duration(milliseconds: 300)
-            : const Duration(milliseconds: 200),
-        onEnd: () {
-          // 페이드아웃 완료 후 dismissed 콜백 (탭 시에는 onTap에서 이미 처리됨)
-          if (!_visible && mounted && !_tappedByUser) {
-            widget.onDismissed();
-          }
-        },
-        child: GestureDetector(
-          onTap: _handleTap,
-          child: Container(
-            width: double.infinity,
-            height: 48.h,
-            margin: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal16),
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal16),
-            decoration: BoxDecoration(
-              color: bgColor,
-              border: Border.all(color: borderColor),
-              borderRadius: AppRadius.medium,
-            ),
-            child: Row(
-              children: [
-                // 스코프 태그 (전체/팀/공지)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSpacing.horizontal8,
-                    vertical: AppSpacing.vertical4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: tagBg,
-                    borderRadius: BorderRadius.circular(4.r),
-                  ),
-                  child: Text(
-                    tagLabel,
-                    style: AppTextStyles.tag12Semibold.copyWith(color: tagText),
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: AnimatedScale(
+        scale: _visible ? 1.0 : 0.7,
+        alignment: Alignment.bottomRight,
+        duration: _visible ? inDuration : outDuration,
+        curve: _visible ? Curves.easeOutBack : Curves.easeIn,
+        child: AnimatedOpacity(
+          opacity: _visible ? 1.0 : 0.0,
+          duration: _visible ? inDuration : outDuration,
+          curve: _visible ? Curves.easeOut : Curves.easeIn,
+          onEnd: () {
+            // 페이드아웃 완료 후 dismissed 콜백 (탭 시에는 onTap에서 이미 처리됨)
+            if (!_visible && mounted && !_tappedByUser) {
+              widget.onDismissed();
+            }
+          },
+          child: Semantics(
+            button: true,
+            child: GestureDetector(
+              onTap: _handleTap,
+              child: Container(
+                key: ChatPreviewCard.bubbleKey,
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.horizontal12,
+                  vertical: AppSpacing.vertical8,
+                ),
+                decoration: BoxDecoration(
+                  color: fill,
+                  // 채팅 내 말풍선(ChatBubble isMe)과 동일한 모서리
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.r),
+                    topRight: Radius.circular(12.r),
+                    bottomLeft: Radius.circular(12.r),
+                    bottomRight: Radius.circular(4.r),
                   ),
                 ),
-                SizedBox(width: AppSpacing.horizontal8),
-                // 닉네임 : 메시지 (공지는 빨간 텍스트)
-                Expanded(
-                  child: isSystem
-                      ? Text(
-                          widget.message.filteredMessage,
-                          style: AppTextStyles.paragraph_14_100.copyWith(
-                            color: AppColors.red,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        leading,
+                        SizedBox(width: AppSpacing.horizontal4),
+                        Flexible(
+                          child: Text(
+                            headline,
+                            style: AppTextStyles.tag_12.copyWith(
+                              color: isSystem ? accent : nameColor,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        )
-                      : Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${widget.message.sender.nickname} : ',
-                                style: AppTextStyles.paragraph_14.copyWith(
-                                  color: nicknameColor,
-                                ),
-                              ),
-                              TextSpan(
-                                text: widget.message.filteredMessage,
-                                style: AppTextStyles.paragraph_14.copyWith(
-                                  color: messageColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
                         ),
-                ),
-                // +N 읽지 않은 메시지 배지 (공지에는 미표시)
-                if (!isSystem && widget.unreadCount > 0) ...[
-                  SizedBox(width: AppSpacing.horizontal8),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.horizontal8,
-                      vertical: AppSpacing.vertical4,
+                        SizedBox(width: AppSpacing.horizontal4),
+                        Text(
+                          '· $channel',
+                          style: AppTextStyles.tag_12.copyWith(
+                            color: channelColor,
+                          ),
+                        ),
+                      ],
                     ),
-                    decoration: BoxDecoration(
-                      color: dark ? AppColors.green : AppColors.blue,
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Text(
-                      '+${widget.unreadCount}',
-                      style: AppTextStyles.tag12Semibold.copyWith(
-                        color: dark ? AppColors.black : AppColors.white,
+                    SizedBox(height: AppSpacing.vertical4),
+                    Text(
+                      widget.message.filteredMessage,
+                      style: AppTextStyles.paragraph_14.copyWith(
+                        color: messageColor,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),
