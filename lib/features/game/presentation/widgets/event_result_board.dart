@@ -10,8 +10,7 @@ import '../../../../core/widgets/dialogs/dialog_animation.dart';
 
 /// 이벤트 모드 — 게임 종료 결과 증거 보드.
 ///
-/// 수집한 증거(1..arrestCount)는 선명, 미수집은 50% 흐림(Opacity 위젯) +
-/// 가운데 자물쇠 아이콘으로 표시한다.
+/// 수집한 증거는 선명하게, 미수집 증거는 회색 틀과 자물쇠로 표시한다.
 /// "운영진 N명 검거" 텍스트와 "홈으로" 버튼만 제공(이벤트 모드는 rematch 없음).
 class EventResultBoard extends StatelessWidget {
   const EventResultBoard({
@@ -22,7 +21,7 @@ class EventResultBoard extends StatelessWidget {
     super.key,
   });
 
-  /// 검거한 운영진 수 (0~3).
+  /// 검거한 운영진 수. 증거는 최대 2개까지 공개한다.
   final int arrestCount;
 
   /// 하단 버튼 콜백 (게임종료=홈 이동 / 인게임=오버레이 닫기).
@@ -33,18 +32,6 @@ class EventResultBoard extends StatelessWidget {
 
   /// 하단 버튼 라벨 (null이면 "홈으로").
   final String? buttonText;
-
-  /// 고정 증거 에셋 수(evidence1~3).
-  static const int _total = 3;
-
-  /// 슬롯별 핀보드 배치 — 좌/상 오프셋(dp), 회전 각도(라디안), 크기 배율.
-  /// 시각 QA 시 미세조정 가능. scale은 96x80 기준 슬롯별 확대율.
-  static const List<({double left, double top, double angle, double scale})>
-  _slots = [
-    (left: 16, top: 8, angle: -0.09, scale: 1.0),
-    (left: 150, top: 16, angle: 0.09, scale: 1.25),
-    (left: 70, top: 92, angle: -0.04, scale: 1.3),
-  ];
 
   /// 다이얼로그 형태로 표시하는 헬퍼.
   ///
@@ -96,17 +83,13 @@ class EventResultBoard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: AppSpacing.vertical16),
-            // 핀보드 콜라주 영역 — Stack으로 증거 슬롯 3개를 겹쳐 배치
-            SizedBox(
-              width: double.infinity,
-              height: 190.h,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  for (int i = 1; i <= _total; i++)
-                    _buildSlot(i, i <= arrestCount),
-                ],
-              ),
+            // 두 증거를 가용 너비에 맞춰 나란히 배치한다.
+            Row(
+              children: [
+                Expanded(child: _buildSlot(1, arrestCount >= 1)),
+                SizedBox(width: AppSpacing.horizontal16),
+                Expanded(child: _buildSlot(2, arrestCount >= 2)),
+              ],
             ),
             SizedBox(height: AppSpacing.vertical16),
             // 검거 수 텍스트 ("운영진 N명 검거")
@@ -130,23 +113,18 @@ class EventResultBoard extends StatelessWidget {
 
   /// 증거 슬롯 하나를 빌드한다.
   ///
-  /// [index] 1~3, [collected] true이면 선명 / false이면 Opacity(0.5) + 자물쇠.
+  /// [index] 1~2, [collected]가 false이면 회색 틀과 자물쇠를 표시한다.
   Widget _buildSlot(int index, bool collected) {
-    final cfg = _slots[index - 1];
     final evidenceImage = Image.asset(
       'assets/events/evidence$index.png',
-      width: 96.w * cfg.scale,
-      height: 80.w * cfg.scale,
       fit: BoxFit.contain,
     );
 
-    return Positioned(
-      // 슬롯 전체(흐림+자물쇠 포함)에 key를 붙여 테스트에서 개수 검증
+    return AspectRatio(
       key: ValueKey('event_result_slot_$index'),
-      left: cfg.left.w,
-      top: cfg.top.h,
+      aspectRatio: 96 / 80,
       child: Transform.rotate(
-        angle: cfg.angle,
+        angle: index == 1 ? -0.09 : 0.09,
         child: collected
             ? evidenceImage
             : Stack(
@@ -154,8 +132,6 @@ class EventResultBoard extends StatelessWidget {
                 children: [
                   // 미수집: 증거 사진은 숨기고 자리(형태)만 회색 틀로 표시
                   Container(
-                    width: 96.w * cfg.scale,
-                    height: 80.w * cfg.scale,
                     decoration: BoxDecoration(
                       color: AppColors.black100,
                       borderRadius: AppRadius.medium,

@@ -1,11 +1,30 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-13T12:34:05Z",
-    "currentVersion": "3.0.24",
+    "lastUpdated": "2026-09-13T16:47:41Z",
+    "currentVersion": "3.0.25",
     "projectType": "flutter",
-    "totalReleases": 130
+    "totalReleases": 131
   },
   "releases": [
+    {
+      "version": "3.0.25",
+      "project_type": "flutter",
+      "date": "2026-09-13",
+      "pr_number": 576,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #575 from cops-and-robbers/20260913_#574_이벤트_게임_증거품_2개로_축소_및_배치_조정\n  * docs : 리포트 문서 작성 #574\n  * feat : 이벤트 게임 증거품을 2개로 축소하고 배치 조정 #574\n  * chore : Claude 스킬과 커맨드를 Codex에 연결 #574\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #575 from cops-and-robbers/20260913_#574_이벤트_게임_증거품_2개로_축소_및_배치_조정",
+            "docs : 리포트 문서 작성 #574",
+            "feat : 이벤트 게임 증거품을 2개로 축소하고 배치 조정 #574",
+            "chore : Claude 스킬과 커맨드를 Codex에 연결 #574"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.0.24",
       "project_type": "flutter",

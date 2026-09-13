@@ -80,6 +80,17 @@ i18n은 `lib/l10n/app_*.arb` 수정 후 `flutter gen-l10n`을 실행한다.
 
 ---
 
+## Claude 스킬·커맨드 공유
+
+- `.agents/skills/claude`는 `.claude/skills/`를 연결하며, 스킬 내용은 원본에서 관리한다.
+- `.agents/skills/commands/`는 `.claude/commands/`를 읽는 Codex 진입점이다. `$issue-branch`, `$cr`, `$review-flutter`처럼 호출한다. `/Issue-Branch`의 Codex 이름은 `$issue-branch`다.
+- 커맨드 실행 시 [Codex 호환 규칙](.agents/skills/commands/COMPATIBILITY.md)을 먼저 읽는다. Claude 전용 도구·인자 표기를 현재 Codex 기능으로 해석한다.
+- 테스트 작성·수정·리뷰 전에 `.claude/rules/Agents.md`를 반드시 읽는다. Codex에서는 Claude의 자동 룰 로딩을 가정하지 않는다.
+- 새 커맨드를 추가하면 `.agents/skills/commands/`에도 같은 이름의 진입점을 추가한다. 본문을 복사하지 말고 원본 파일을 참조한다.
+- 목록에 반영되지 않으면 Codex를 재시작한다. 커맨드 이름·설명·원본 참조의 유효성을 확인하며 `.claude/settings.json`의 권한 설정을 Codex 설정으로 복사하지 않는다.
+
+---
+
 ## Superpowers 사용 기준
 
 Superpowers가 활성화되어 있으면 필요할 때만 사용한다.
