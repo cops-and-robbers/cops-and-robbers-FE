@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-13T04:52:23Z",
-    "currentVersion": "3.0.22",
+    "lastUpdated": "2026-09-13T12:34:05Z",
+    "currentVersion": "3.0.24",
     "projectType": "flutter",
-    "totalReleases": 129
+    "totalReleases": 130
   },
   "releases": [
+    {
+      "version": "3.0.24",
+      "project_type": "flutter",
+      "date": "2026-09-13",
+      "pr_number": 573,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #572 from cops-and-robbers/20260913_#571_수감_화면_전면_철창_오버레이_적용\n  * docs : 리포트 문서 작성 #571\n  * fix : 인게임 채팅 버튼 아이콘을 틴트에서도 줄이 보이는 말풍선으로 교체 #571\n  * style : dart format 적용 #571\n  * feat : 수감 화면을 지도 스타일 교체 대신 전면 철창 오버레이로 표현 #571\n  * docs : 이슈 문서 등록 #571\n  * docs : 리포트 문서 작성 #568\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #572 from cops-and-robbers/20260913_#571_수감_화면_전면_철창_오버레이_적용",
+            "docs : 리포트 문서 작성 #571",
+            "fix : 인게임 채팅 버튼 아이콘을 틴트에서도 줄이 보이는 말풍선으로 교체 #571",
+            "style : dart format 적용 #571",
+            "feat : 수감 화면을 지도 스타일 교체 대신 전면 철창 오버레이로 표현 #571",
+            "docs : 이슈 문서 등록 #571",
+            "docs : 리포트 문서 작성 #568"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.0.22",
       "project_type": "flutter",

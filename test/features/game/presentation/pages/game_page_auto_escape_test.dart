@@ -14,6 +14,7 @@ import 'package:cops_and_robbers/core/widgets/buttons/my_location_button.dart';
 import 'package:cops_and_robbers/core/widgets/chat/community_message_input.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/arrest_lock_overlay.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/google_map_view.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/jail_bars_overlay.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_event_model.dart';
 import 'package:cops_and_robbers/core/services/lifecycle/app_lifecycle_service.dart';
@@ -294,7 +295,7 @@ void main() {
         );
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
         final chatButton = find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
         );
         final message = ChatMessageDto(
           id: 'preview-1',
@@ -421,7 +422,7 @@ void main() {
     final timerState = tester.state(find.byType(GameTimerText));
     final revealState = tester.state(find.byType(LocationRevealCountdown));
     final chatButton = find.byWidgetPredicate(
-      (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+      (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
     );
     expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
     expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
@@ -502,7 +503,7 @@ void main() {
   ) async {
     await mount(tester);
     final chatButton = find.byWidgetPredicate(
-      (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+      (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
     );
     await tester.tap(chatButton);
     container
@@ -569,7 +570,7 @@ void main() {
     await mount(tester);
     await tester.tap(
       find.byWidgetPredicate(
-        (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
       ),
     );
     final notifier = container.read(chatNotifierProvider.notifier);
@@ -642,7 +643,7 @@ void main() {
       );
       await tester.tap(
         find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
         ),
       );
       await tester.pump();
@@ -700,7 +701,7 @@ void main() {
         await mount(tester, size: size);
         expect(find.byType(ArrestLockOverlay), findsNothing);
         final map = tester.widget<GoogleMap>(find.byType(GoogleMap));
-        expect(map.style, MapStyles.arrested);
+        expect(map.style, MapStyles.dark);
         expect(map.scrollGesturesEnabled, isTrue);
         expect(map.zoomGesturesEnabled, isTrue);
         final jail = map.circles.singleWhere((c) => c.circleId.value == 'jail');
@@ -731,7 +732,7 @@ void main() {
 
         await tester.tap(
           find.byWidgetPredicate(
-            (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+            (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
           ),
         );
         await tester.pump();
@@ -746,7 +747,7 @@ void main() {
         await tester.pump();
         await tester.tap(
           find.byWidgetPredicate(
-            (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+            (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
           ),
         );
         await tester.pump();
@@ -762,7 +763,7 @@ void main() {
         await tester.pump();
         await tester.tap(
           find.byWidgetPredicate(
-            (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+            (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
           ),
         );
         await tester.pump();
@@ -781,6 +782,37 @@ void main() {
       },
     );
   }
+
+  testWidgets(
+    'jailed_map_keeps_robber_style_and_is_covered_by_jail_bars_below_app_bar',
+    (tester) async {
+      await mount(tester, size: const Size(393, 852));
+      // 지도 스타일은 교체하지 않는다 — 창살 오버레이가 수감 상태를 표현한다.
+      expect(
+        tester.widget<GoogleMap>(find.byType(GoogleMap)).style,
+        MapStyles.dark,
+      );
+      expect(find.byType(JailBarsOverlay), findsOneWidget);
+      final bars = find.descendant(
+        of: find.byType(JailBarsOverlay),
+        matching: find.byType(CustomPaint),
+      );
+      // 앱바(타이머) 바로 아래부터 화면 바닥까지 끊김 없이 덮는다.
+      expect(
+        tester.getTopLeft(bars).dy,
+        closeTo(tester.getBottomLeft(find.byType(AppTopBar)).dy, 0.1),
+      );
+      expect(tester.getBottomLeft(bars).dy, closeTo(852, 0.1));
+    },
+  );
+
+  testWidgets('jail_bars_disappear_when_robber_escapes', (tester) async {
+    await mount(tester, size: const Size(393, 852));
+    expect(find.byType(JailBarsOverlay), findsOneWidget);
+    await container.read(gameEventNotifierProvider.notifier).escape(1, 5);
+    await tester.pump();
+    expect(find.byType(JailBarsOverlay), findsNothing);
+  });
 
   testWidgets(
     'jail_highlight_pulses_and_restores_circle_and_polygon_geometry',
