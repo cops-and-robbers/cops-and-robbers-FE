@@ -1614,6 +1614,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chatMessageListEmpty => '채팅을 시작해보세요';
 
   @override
+  String get gameChatTitle => '채팅';
+
+  @override
+  String get gameChatTeamInputHint => '팀원에게 메시지 보내기';
+
+  @override
+  String get gameChatAllInputHint => '모두에게 메시지 보내기';
+
+  @override
+  String get gameChatBackToMap => '지도 보기';
+
+  @override
+  String get gameChatTeamHint => '팀원에게만 메시지가 보여요';
+
+  @override
+  String get gameChatAllHint => '경찰과 도둑 모두에게 메시지가 보여요';
+
+  @override
   String get buttonGoToLatestMessage => '최신 메시지로 이동';
 
   @override

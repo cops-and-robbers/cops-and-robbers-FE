@@ -75,9 +75,11 @@ class ChatMessageBubble extends StatelessWidget {
       timeLabel: _formattedTime,
       showNickname: showNickname,
       showTime: showTime,
-      bubbleColor: isDarkMode ? AppColors.black : AppColors.white,
+      bubbleColor: isDarkMode
+          ? (isMe ? AppColors.green : AppColors.black)
+          : (isMe ? AppColors.blueVer2Basic : AppColors.white),
       textStyle: AppTextStyles.paragraph_14.copyWith(
-        color: isDarkMode ? AppColors.white : AppColors.black,
+        color: isDarkMode != isMe ? AppColors.white : AppColors.black,
       ),
       nicknameStyle: AppTextStyles.tag_12.copyWith(
         color: isDarkMode ? AppColors.black400 : AppColors.black600,

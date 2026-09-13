@@ -3074,6 +3074,42 @@ abstract class AppLocalizations {
   /// **'채팅을 시작해보세요'**
   String get chatMessageListEmpty;
 
+  /// No description provided for @gameChatTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅'**
+  String get gameChatTitle;
+
+  /// No description provided for @gameChatTeamInputHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원에게 메시지 보내기'**
+  String get gameChatTeamInputHint;
+
+  /// No description provided for @gameChatAllInputHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'모두에게 메시지 보내기'**
+  String get gameChatAllInputHint;
+
+  /// No description provided for @gameChatBackToMap.
+  ///
+  /// In ko, this message translates to:
+  /// **'지도 보기'**
+  String get gameChatBackToMap;
+
+  /// No description provided for @gameChatTeamHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원에게만 메시지가 보여요'**
+  String get gameChatTeamHint;
+
+  /// No description provided for @gameChatAllHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰과 도둑 모두에게 메시지가 보여요'**
+  String get gameChatAllHint;
+
   /// 채팅 화면에서 최신 메시지로 스크롤 이동하는 버튼 라벨
   ///
   /// In ko, this message translates to:

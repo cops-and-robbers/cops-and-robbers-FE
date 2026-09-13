@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_icons.dart';
+import '../../../../core/constants/character_assets.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
@@ -30,6 +31,7 @@ import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
+import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
@@ -114,13 +116,9 @@ class _GamePageState extends ConsumerState<GamePage>
     with WidgetsBindingObserver {
   final _googleMapKey = GlobalKey<GoogleMapViewState>();
 
-  /// 채팅 시트 collapsed 상단과 우측 액션 버튼 하단 사이의 **고정 시각 여백** (논리 dp).
-  ///
-  /// 시스템 네비 inset(`MediaQuery.viewPadding.bottom`)에 따라 변하지 않는 고정값이다.
-  /// inset은 별도로 더해지며 이 상수에는 포함되지 않는다.
-  static const double _kActionButtonChatGap = 45.0;
-
   bool _showParticipants = false;
+  bool _showChat = false;
+  bool _showArrestInfo = false;
   bool _gameOverDialogShown = false;
   // 결과 다이얼로그 버튼 연타 가드 — 라우팅·Analytics 중복 기록 방지
   bool _exitTriggered = false;
@@ -1843,6 +1841,11 @@ class _GamePageState extends ConsumerState<GamePage>
             mounted) {
           _resetAutoEscape();
           _clearZoneExitWarning();
+          setState(() {
+            _showParticipants = false;
+            _showChat = false;
+            _showArrestInfo = false;
+          });
           Navigator.of(context).popUntil((route) => route is! PopupRoute);
         }
       },
@@ -2075,36 +2078,39 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
-    // 우측 액션 버튼(및 개발용 디버그 FAB)이 채팅 시트와 겹치지 않게 정렬할 bottom.
-    //
-    // = 채팅 시트 collapsed 고정 부분([kChatOverlayCollapsedFixedHeight])
-    // + 시각 여백([_kActionButtonChatGap])
-    // + 시스템 네비 inset(`MediaQuery.viewPadding.bottom`, 안드로이드 3-button 등)
-    //
-    // ChatOverlay 측이 inset을 자동 흡수하므로 액션 버튼도 같은 inset을 더해 정렬한다.
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
-    final actionButtonBottom =
-        kChatOverlayCollapsedFixedHeight.h +
-        _kActionButtonChatGap.h +
-        bottomInset;
+    final actionButtonBottom = 38.h + bottomInset;
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
+        if (_showChat || _showParticipants || _showArrestInfo) {
+          setState(() {
+            _showChat = false;
+            _showParticipants = false;
+            _showArrestInfo = false;
+          });
+          return;
+        }
         _confirmLeaveGame();
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(
+          fit: StackFit.expand,
           children: [
             /// index 0: 지도 (항상 존재)
             Positioned.fill(
-              child: GoogleMapView(
-                key: _googleMapKey,
-                onCameraMoveStarted: _onMapCameraMoved,
-                onLongPress: _onMapLongPress,
-                isDarkMode: _isDarkMode,
+              child: TickerMode(
+                enabled: !_showChat && !_showParticipants,
+                child: GoogleMapView(
+                  key: _googleMapKey,
+                  onCameraMoveStarted: _onMapCameraMoved,
+                  onLongPress: _onMapLongPress,
+                  isDarkMode: _isDarkMode,
+                  isArrested: isArrestedNow,
+                ),
               ),
             ),
 
@@ -2206,6 +2212,8 @@ class _GamePageState extends ConsumerState<GamePage>
                     ),
                     SizedBox(height: AppSpacing.vertical8),
                     _buildQrButton(),
+                    SizedBox(height: AppSpacing.vertical8),
+                    _buildChatButton(),
                   ],
                 ),
               )
@@ -2252,6 +2260,8 @@ class _GamePageState extends ConsumerState<GamePage>
                       SizedBox(height: AppSpacing.vertical8),
                       _buildQrButton(),
                     ],
+                    SizedBox(height: AppSpacing.vertical8),
+                    _buildChatButton(),
                   ],
                 ),
               ),
@@ -2264,25 +2274,50 @@ class _GamePageState extends ConsumerState<GamePage>
               Positioned(
                 left: 20.w,
                 bottom: actionButtonBottom,
-                child: MyLocationButton(
-                  onPressed: _moveToCurrentLocation,
-                  isFocused: _isLocationFocused,
-                  focusedColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                  unfocusedColor: _isDarkMode
-                      ? AppColors.green500
-                      : AppColors.blue500,
-                  backgroundColor: _isDarkMode ? AppColors.black : null,
-                  isDarkMode: _isDarkMode,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isArrestedNow) ...[
+                      Semantics(
+                        button: true,
+                        label: l10n.gameArrestOverlayTitle,
+                        child: SvgIconButton(
+                          assetPath: characterAssetPath(
+                            team: GameTeam.toLowerKey(GameTeam.robber),
+                            state: 'jailed',
+                          ),
+                          onPressed: () =>
+                              setState(() => _showArrestInfo = true),
+                          backgroundColor: _isDarkMode ? AppColors.black : null,
+                          isDarkMode: _isDarkMode,
+                        ),
+                      ),
+                      SizedBox(height: AppSpacing.vertical8),
+                    ],
+                    MyLocationButton(
+                      onPressed: _moveToCurrentLocation,
+                      isFocused: _isLocationFocused,
+                      focusedColor: _isDarkMode
+                          ? AppColors.green
+                          : AppColors.blue,
+                      unfocusedColor: _isDarkMode
+                          ? AppColors.green500
+                          : AppColors.blue500,
+                      backgroundColor: _isDarkMode ? AppColors.black : null,
+                      isDarkMode: _isDarkMode,
+                    ),
+                  ],
                 ),
               )
             else
               const SizedBox.shrink(),
 
-            /// index 6: 체포 잠금 오버레이 (if/else로 개수 고정, 도둑팀 체포 시 표시)
-            if (isArrestedNow)
+            /// index 6: 수감 안내는 버튼을 누를 때만 표시한다.
+            if (isArrestedNow && _showArrestInfo)
               ArrestLockOverlay(
                 gameId: _gameId,
                 myParticipantId: widget.participantId,
+                onClose: () => setState(() => _showArrestInfo = false),
               )
             else
               const SizedBox.shrink(),
@@ -2325,13 +2360,22 @@ class _GamePageState extends ConsumerState<GamePage>
               myParticipantId: widget.participantId,
               myTeam: widget.team,
               isDarkMode: _isDarkMode,
+              visible: _showChat,
+              previewInsets: EdgeInsets.only(
+                // 양쪽 하단 버튼(56)과 버튼 사이 여백을 비우고, 바닥은 채팅
+                // 버튼 세로 중앙(반 칸 위)에 맞춰 화면 가장자리에서 띄운다.
+                left: AppSpacing.horizontal20 + 56.w + AppSpacing.horizontal8,
+                right: AppSpacing.horizontal20 + 56.w + AppSpacing.horizontal8,
+                bottom: actionButtonBottom + 28.w,
+              ),
+              onOpen: _openChat,
             ),
 
             /// index 8: [DEBUG] 개발자 도구 버튼 (if/else로 개수 고정)
             ///
             /// 홈 페이지 FloatingActionButton 패턴과 동일하게 단일 버그 아이콘으로 진입.
             /// release 빌드에서는 kDebugMode = false로 dead-code 제거됨.
-            if (kDebugMode)
+            if (kDebugMode && !_showChat)
               Positioned(
                 right: 12.w,
                 top: 0,
@@ -2390,7 +2434,10 @@ class _GamePageState extends ConsumerState<GamePage>
                       ).animate(anim),
                       child: FadeTransition(opacity: anim, child: child),
                     ),
-                    child: (_isZoneExitWarningActive && !_showParticipants)
+                    child:
+                        (_isZoneExitWarningActive &&
+                            !_showParticipants &&
+                            !_showChat)
                         ? ZoneExitBanner(
                             key: const ValueKey('zone-exit-banner'),
                             isDarkMode: _isDarkMode,
@@ -2454,6 +2501,41 @@ class _GamePageState extends ConsumerState<GamePage>
             },
           ),
         ],
+      ),
+    );
+  }
+
+  void _openChat() {
+    setState(() {
+      _showChat = true;
+      _showParticipants = false;
+      _showArrestInfo = false;
+    });
+    _closePingCard();
+  }
+
+  Widget _buildChatButton() {
+    final unreadCount = ref.watch(
+      chatNotifierProvider.select(
+        (state) => state.unreadAllCount + state.unreadTeamCount,
+      ),
+    );
+    return Semantics(
+      button: true,
+      label: AppLocalizations.of(context).chatScopeTeamTitle,
+      child: Badge.count(
+        count: unreadCount,
+        isLabelVisible: unreadCount > 0,
+        backgroundColor: AppColors.red,
+        textColor: AppColors.white,
+        textStyle: AppTextStyles.tag_10,
+        child: SvgIconButton(
+          assetPath: AppIcons.speechBubble,
+          onPressed: _openChat,
+          iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
+          backgroundColor: _isDarkMode ? AppColors.black : null,
+          isDarkMode: _isDarkMode,
+        ),
       ),
     );
   }
@@ -2569,6 +2651,8 @@ class _GamePageState extends ConsumerState<GamePage>
   ///
   /// 대기실 등 다른 페이지 앱바 스타일과 동일.
   Widget _buildAppBar() {
+    final l10n = AppLocalizations.of(context);
+    final notifications = ref.watch(chatNotificationEnabledProvider);
     // ref.watch는 항상 무조건 호출해야 Riverpod 구독이 올바르게 등록됨
     final stompGameStartTime = ref.watch(
       gameEventNotifierProvider.select((s) => s.gameStartTime),
@@ -2613,11 +2697,25 @@ class _GamePageState extends ConsumerState<GamePage>
 
     return AppTopBar(
       isDarkMode: _isDarkMode,
-      leading: _buildAppBarIcon(
-        AppIcons.gameOut,
-        onTap: _confirmLeaveGame,
-        isDark: _isDarkMode,
-      ),
+      leading: _showChat
+          ? Tooltip(
+              message: l10n.gameChatBackToMap,
+              child: PreviousButton(
+                onPressed: () {
+                  ref
+                      .read(chatNotifierProvider.notifier)
+                      .updateSheetExpanded(false);
+                  setState(() => _showChat = false);
+                },
+                color: _isDarkMode ? AppColors.black200 : AppColors.black800,
+              ),
+            )
+          : _buildAppBarIcon(
+              AppIcons.gameOut,
+              tooltip: l10n.buttonLeave,
+              onTap: _confirmLeaveGame,
+              isDark: _isDarkMode,
+            ),
       titleWidget: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -2647,12 +2745,33 @@ class _GamePageState extends ConsumerState<GamePage>
         ],
       ),
       actions: [
-        _buildAppBarIcon(
-          AppIcons.info,
-          padding: EdgeInsets.only(left: AppSpacing.horizontal24),
-          onTap: _showGameRulesDialog,
-          isDark: _isDarkMode,
-        ),
+        if (_showChat)
+          _buildAppBarIcon(
+            notifications ? AppIcons.chatBellOn : AppIcons.chatBellOff,
+            tooltip: notifications
+                ? l10n.communityMenuNotificationOff
+                : l10n.communityMenuNotificationOn,
+            padding: EdgeInsets.only(left: AppSpacing.horizontal24),
+            color: notifications
+                ? (_isDarkMode ? AppColors.green : AppColors.blueVer2Basic)
+                : AppColors.black400,
+            onTap: () {
+              ref.read(chatNotificationEnabledProvider.notifier).state =
+                  !notifications;
+              if (notifications) {
+                ref.read(chatNotifierProvider.notifier).dismissPreview();
+              }
+            },
+            isDark: _isDarkMode,
+          )
+        else
+          _buildAppBarIcon(
+            AppIcons.info,
+            tooltip: l10n.titleGameRules,
+            padding: EdgeInsets.only(left: AppSpacing.horizontal24),
+            onTap: _showGameRulesDialog,
+            isDark: _isDarkMode,
+          ),
         SizedBox(width: AppSpacing.horizontal16),
       ],
     );
@@ -2666,8 +2785,11 @@ class _GamePageState extends ConsumerState<GamePage>
     required VoidCallback onTap,
     required bool isDark,
     EdgeInsetsGeometry? padding,
+    String? tooltip,
+    Color? color,
   }) {
     return IconButton(
+      tooltip: tooltip,
       onPressed: () {
         VibrationService.instance().buttonTap();
         onTap();
@@ -2678,7 +2800,7 @@ class _GamePageState extends ConsumerState<GamePage>
         width: 24.w,
         height: 24.h,
         colorFilter: ColorFilter.mode(
-          isDark ? AppColors.black200 : AppColors.black500,
+          color ?? (isDark ? AppColors.black200 : AppColors.black500),
           BlendMode.srcIn,
         ),
       ),

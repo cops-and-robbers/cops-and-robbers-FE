@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -17,6 +18,16 @@ class GameTimerText extends StatefulWidget {
     required this.totalDuration,
     this.isDarkMode = false,
   });
+
+  /// 서버 남은 시간은 수신 시각과 함께 전달한다. 재수신하면 즉시 보정된다.
+  /// [receivedAt]은 매 build가 아니라 해당 응답을 받은 시각이어야 한다.
+  const GameTimerText.remaining({
+    super.key,
+    required Duration remainingTime,
+    required DateTime receivedAt,
+    this.isDarkMode = false,
+  }) : startTime = receivedAt,
+       totalDuration = remainingTime;
 
   /// 게임 시작 시각
   final DateTime startTime;
@@ -49,6 +60,12 @@ class _GameTimerTextState extends State<GameTimerText>
   }
 
   @override
+  void didUpdateWidget(GameTimerText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _remaining = _calcRemaining();
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
@@ -66,13 +83,13 @@ class _GameTimerTextState extends State<GameTimerText>
   }
 
   Duration _calcRemaining() {
-    final elapsed = DateTime.now().difference(widget.startTime);
+    final elapsed = clock.now().difference(widget.startTime);
     final remaining = widget.totalDuration - elapsed;
     return remaining.isNegative ? Duration.zero : remaining;
   }
 
   String get _formatted {
-    final m = _remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final m = _remaining.inMinutes.toString().padLeft(2, '0');
     final s = _remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$m:$s';
   }

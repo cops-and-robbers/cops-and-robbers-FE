@@ -1613,6 +1613,24 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chatMessageListEmpty => 'チャットを始めてみてください';
 
   @override
+  String get gameChatTitle => 'チャット';
+
+  @override
+  String get gameChatTeamInputHint => 'チームにメッセージを送る';
+
+  @override
+  String get gameChatAllInputHint => '全員にメッセージを送る';
+
+  @override
+  String get gameChatBackToMap => 'マップへ';
+
+  @override
+  String get gameChatTeamHint => 'メッセージはチームの仲間だけに表示されます';
+
+  @override
+  String get gameChatAllHint => '警察と泥棒の全員にメッセージが表示されます';
+
+  @override
   String get buttonGoToLatestMessage => '最新のメッセージへ移動';
 
   @override

@@ -6,6 +6,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
+import '../../../../core/constants/character_assets.dart';
+import '../../../../core/constants/chat_constants.dart';
+import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
@@ -24,6 +27,7 @@ class ChatMessageList extends StatefulWidget {
     required this.myParticipantId,
     required this.myTeam,
     this.isDarkMode = false,
+    this.scope = ChatScope.all,
     this.onOverscrollDown,
     this.onMessageLongPress,
     this.blockedParticipantIds = const {},
@@ -36,6 +40,7 @@ class ChatMessageList extends StatefulWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+  final String scope;
 
   /// 리스트 끝에서 아래로 overscroll 시 콜백 (바텀시트 닫기용)
   final VoidCallback? onOverscrollDown;
@@ -152,9 +157,49 @@ class _ChatMessageListState extends State<ChatMessageList> {
 
     if (filteredMessages.isEmpty) {
       return Center(
-        child: Text(
-          l10n.chatMessageListEmpty,
-          style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
+        child: SingleChildScrollView(
+          padding: AppPadding.all24,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (final team
+                      in widget.scope == ChatScope.team
+                          ? [GameTeam.toLowerKey(widget.myTeam)]
+                          : ['police', 'robber'])
+                    SvgPicture.asset(
+                      characterAssetPath(team: team, state: 'home'),
+                      width: 88.w,
+                      height: 88.w,
+                    ),
+                ],
+              ),
+              SizedBox(height: AppSpacing.vertical20),
+              Text(
+                l10n.chatMessageListEmpty,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.label_16.copyWith(
+                  color: widget.isDarkMode
+                      ? AppColors.white
+                      : AppColors.black800,
+                ),
+              ),
+              SizedBox(height: AppSpacing.vertical8),
+              Text(
+                widget.scope == ChatScope.team
+                    ? l10n.gameChatTeamHint
+                    : l10n.gameChatAllHint,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.tag_12.copyWith(
+                  color: widget.isDarkMode
+                      ? AppColors.black400
+                      : AppColors.black600,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }

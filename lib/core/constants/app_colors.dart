@@ -190,6 +190,7 @@ class AppColors {
   /// 노랑
   /// Yellow color
   static const Color yellow = Color(0xFFFFCC00);
+  static const Color yellowAlpha20 = Color(0x33FFCC00);
 
   /// 노랑 900
   /// Yellow 900

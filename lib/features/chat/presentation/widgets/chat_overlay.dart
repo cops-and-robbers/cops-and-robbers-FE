@@ -2,47 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../../../core/constants/app_icons.dart';
-import '../../../report/domain/report_target.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_shadows.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../../core/constants/chat_constants.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/widgets/chat/chat_context_menu.dart';
+import '../../../../core/widgets/chat/community_message_input.dart';
+import '../../../../core/widgets/toggles/segmented_toggle.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../report/domain/report_target.dart';
 import '../../data/models/chat_message_dto.dart';
 import '../providers/chat_notification_provider.dart';
 import '../providers/chat_provider.dart';
-import '../../../../core/widgets/chat/chat_context_menu.dart';
-import 'chat_input_bar.dart';
 import 'chat_message_list.dart';
 import 'chat_preview_card.dart';
 
-/// ChatOverlay collapsed 시트의 시스템 inset 제외 고정 부분 높이 (논리 dp).
-///
-/// 시트 상단부 합계: 드래그 핸들(28) + 핸들↔입력바 간격(8) + 입력바(64)
-///                  + 입력바 아래 안전 여백(12) = 112.
-/// 시스템 네비 바 inset(`MediaQuery.viewPadding.bottom`)은 호출 측에서
-/// 별도로 더해야 한다.
-///
-/// 같은 게임 화면 위에 절대 좌표로 떠 있는 위젯(우측 액션 버튼 등)이
-/// 채팅 시트와 충돌하지 않게 정렬할 때 이 상수를 단일 진실 공급원으로 참조한다.
-const double kChatOverlayCollapsedFixedHeight = 112.0;
-
-/// 채팅 오버레이 위젯
-///
-/// 게임 화면 하단에 표시되는 채팅 UI입니다.
-/// DraggableScrollableSheet로 드래그하여 높이 조절 가능하고,
-/// PageView로 전체 채팅 ↔ 팀 채팅을 스와이프 전환합니다.
-/// 입력바는 항상 화면 하단 고정 위치에 표시됩니다.
+/// 지도 버튼으로 여는 채팅. 닫혀 있어도 구독·미읽음·작성 중 입력은 유지한다.
 class ChatOverlay extends ConsumerStatefulWidget {
   const ChatOverlay({
     required this.gameId,
     required this.myParticipantId,
     required this.myTeam,
+    required this.visible,
+    required this.previewInsets,
+    required this.onOpen,
     this.isDarkMode = false,
     super.key,
   });
@@ -50,8 +34,9 @@ class ChatOverlay extends ConsumerStatefulWidget {
   final int gameId;
   final int myParticipantId;
   final String myTeam;
-
-  /// 다크 모드 여부 (도둑팀)
+  final bool visible;
+  final EdgeInsets previewInsets;
+  final VoidCallback onOpen;
   final bool isDarkMode;
 
   @override
@@ -59,100 +44,62 @@ class ChatOverlay extends ConsumerStatefulWidget {
 }
 
 class _ChatOverlayState extends ConsumerState<ChatOverlay> {
-  final DraggableScrollableController _sheetController =
-      DraggableScrollableController();
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-
-  bool _isExpanded = false;
-  double _sheetSize = 0;
-  double _prevKeyboardHeight = 0;
-
-  /// 키보드 열림 상태에서 배경 탭 시 "키보드 닫힌 뒤 시트 접기" 예약 플래그.
-  ///
-  /// 키보드 닫힘 중에는 effectiveMinSize가 75%로 고정되어 즉시 collapse가
-  /// 불가능하므로, 닫힘 완료 시점에 한 번만 소비한다. 다이얼로그 등 외부
-  /// 요인의 unfocus로는 이 플래그가 켜지지 않아 시트가 움직이지 않는다.
-  /// (#166/#177 실패 교훈: 위젯 로컬 단방향 플래그로만 관리, provider 전파 금지)
-  bool _pendingCollapse = false;
-
-  static const double _snap50 = 0.5;
-  static const double _snap75 = 0.75;
-
-  // 레이아웃 계산용 상수 (screenutil 적용 전 논리값)
-  /// SafeArea가 없는 기기(iPhone SE 등)의 기본 하단 여백
-  static const double _fallbackBottomPadding = 37;
-
-  /// ChatInputBar 고정 높이
-  static const double _inputBarHeight = 64;
-
-  /// 드래그 핸들 터치 영역 높이 (시각적 핸들 4pt + 상하 여백)
-  static const double _dragHandleHeight = 28;
-
-  /// 제목 영역 높이 (벨 아이콘 48 + 상단 16 + 하단 8)
-  static const double _titleAreaHeight = 72;
-
-  /// 페이지 인디케이터 높이 (dot 6 + vertical 패딩)
-  static const double _pageIndicatorHeight = 18;
-
-  /// 프리뷰 카드와 입력바 사이 간격
-  static const double _previewGap = 4;
+  int _currentPage = 1;
+  final _pageController = PageController();
+  final _focusNodes = [FocusNode(), FocusNode()];
+  FocusNode get _focusNode => _focusNodes[_currentPage];
 
   @override
   void initState() {
     super.initState();
-    _sheetController.addListener(_onSheetChanged);
-    // notifier에 본인 participantId 전달 (프리뷰 필터링용)
+    _syncVisibility();
+  }
+
+  @override
+  void didUpdateWidget(ChatOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.visible != widget.visible) {
+      if (!widget.visible) _focusNode.unfocus();
+      _syncVisibility();
+    }
+  }
+
+  void _syncVisibility() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(chatNotifierProvider.notifier)
-          .setMyParticipantId(widget.myParticipantId);
+      if (!mounted) return;
+      final notifier = ref.read(chatNotifierProvider.notifier);
+      notifier.setMyParticipantId(widget.myParticipantId);
+      notifier.updateSheetExpanded(false);
+      notifier.updateCurrentPage(_currentPage);
+      notifier.updateSheetExpanded(widget.visible);
+      if (widget.visible) notifier.dismissPreview();
     });
   }
 
-  double _minSize = 0.18;
-  double _expandedThreshold = 0.25;
-
-  void _onSheetChanged() {
-    final size = _sheetController.size;
-    _sheetSize = size;
-    final expanded = size > _expandedThreshold;
-    if (expanded != _isExpanded) {
-      setState(() {
-        _isExpanded = expanded;
-      });
-      // notifier에 시트 상태 통보
-      ref.read(chatNotifierProvider.notifier).updateSheetExpanded(expanded);
-      if (expanded) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_pageController.hasClients) {
-            _pageController.jumpToPage(_currentPage);
-          }
-        });
-      } else {
-        FocusScope.of(context).unfocus();
-      }
+  void _selectPage(int page) {
+    _onPageChanged(page);
+    if (_pageController.hasClients) {
+      _pageController.jumpToPage(page == 1 ? 0 : 1);
     }
   }
 
-  void _handleSend(String message) {
-    final scope = _currentPage == 0 ? ChatScope.all : ChatScope.team;
+  void _onPageChanged(int page) {
+    if (_currentPage == page) return;
+    final hadFocus = _focusNode.hasFocus;
+    _focusNode.unfocus();
+    setState(() => _currentPage = page);
+    ref.read(chatNotifierProvider.notifier).updateCurrentPage(page);
+    if (hadFocus && widget.visible) _focusNode.requestFocus();
+  }
+
+  void _handleSend(String text, int page) {
     ref
         .read(chatNotifierProvider.notifier)
-        .sendMessage(gameId: widget.gameId, message: message, scope: scope);
-  }
-
-  void _onInputFocused() {
-    // 배경 탭 직후 입력창을 다시 탭해 포커스를 되찾으면 접기 예약 취소
-    // (잔류 플래그로 인한 뒤늦은 collapse 방지)
-    _pendingCollapse = false;
-    if (_sheetController.isAttached && _sheetController.size < _snap50) {
-      _sheetController.animateTo(
-        _snap50,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
+        .sendMessage(
+          gameId: widget.gameId,
+          message: text,
+          scope: page == 0 ? ChatScope.all : ChatScope.team,
+        );
   }
 
   void _handleMessageLongPress(
@@ -165,9 +112,11 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       context: bubbleContext,
       bubble: ChatContextMenuBubble(
         text: message.filteredMessage,
-        backgroundColor: widget.isDarkMode ? AppColors.black : AppColors.white,
+        backgroundColor: widget.isDarkMode
+            ? (isMe ? AppColors.green : AppColors.black)
+            : (isMe ? AppColors.blueVer2Basic : AppColors.white),
         textStyle: AppTextStyles.paragraph_14.copyWith(
-          color: widget.isDarkMode ? AppColors.white : AppColors.black900,
+          color: widget.isDarkMode != isMe ? AppColors.white : AppColors.black,
         ),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12.r),
@@ -178,7 +127,6 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
       ),
       copyText: message.message,
       isDarkMode: widget.isDarkMode,
-      // 내 메시지는 신고·차단할 대상이 아니다.
       reportTarget: isMe
           ? null
           : GameChatReportTarget(
@@ -194,319 +142,135 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     );
   }
 
-  void _handlePreviewTap(ChatMessageDto message) {
-    final notifier = ref.read(chatNotifierProvider.notifier);
-    notifier.onPreviewTapped();
-
-    // 해당 스코프 탭으로 이동
-    final targetPage = message.scope == ChatScope.team ? 1 : 0;
-    setState(() => _currentPage = targetPage);
-
-    // 시트 펼치기
-    if (_sheetController.isAttached && _sheetController.size < _snap50) {
-      _sheetController.animateTo(
-        _snap50,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-
-    // 탭 이동
-    if (_pageController.hasClients) {
-      _pageController.animateToPage(
-        targetPage,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-
-    notifier.updateCurrentPage(targetPage);
-  }
-
-  /// 시트 바깥 영역 탭 시 최소 크기로 접기
-  void _collapseSheet() {
-    if (!_sheetController.isAttached) return;
-    FocusScope.of(context).unfocus();
-    _sheetController.animateTo(
-      _minSize,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
-  }
-
-  /// 배경 탭 핸들러 — 키보드 상태에 따라 즉시 접기/접기 예약 분기
-  void _onBackgroundTap() {
-    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    if (isKeyboardOpen) {
-      // 키보드 열림: unfocus만 하고 접기는 예약. 키보드 닫힘 애니메이션과
-      // 시트 애니메이션의 경합을 피하기 위해 닫힘 완료 후 build에서 소비한다.
-      _pendingCollapse = true;
-      FocusScope.of(context).unfocus();
-    } else {
-      _collapseSheet();
-    }
-  }
-
   @override
   void dispose() {
-    _sheetController.removeListener(_onSheetChanged);
-    _sheetController.dispose();
     _pageController.dispose();
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final chatState = ref.watch(chatNotifierProvider);
-    final isConnected =
-        chatState.connectionState == StompConnectionState.connected;
-
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    final isKeyboardOpen = keyboardHeight > 0;
-    final isKeyboardClosing =
-        _prevKeyboardHeight > 0 && keyboardHeight < _prevKeyboardHeight;
-    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
-    final safeBottomMargin =
-        (bottomPadding > 0 ? bottomPadding : _fallbackBottomPadding.h) +
-        AppSpacing.vertical12;
-    final bottomMargin = (isKeyboardOpen && !isKeyboardClosing)
-        ? keyboardHeight
-        : safeBottomMargin;
-    // collapsed 시트 총 높이 = inset 제외 고정 부분(상단 핸들 + 입력바 + 내부 여백)
-    //                          + 시스템 inset(viewPadding.bottom 또는 fallback)
-    // 고정 부분은 file-level [kChatOverlayCollapsedFixedHeight]를 단일 공급원으로 사용한다.
-    final collapsedHeight =
-        kChatOverlayCollapsedFixedHeight.h +
-        (bottomPadding > 0 ? bottomPadding : _fallbackBottomPadding.h);
-    final expandedMinHeight =
-        _dragHandleHeight.h +
-        _titleAreaHeight.h +
-        _pageIndicatorHeight.h +
-        _inputBarHeight.h +
-        safeBottomMargin;
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final availableHeight = constraints.maxHeight;
-        _minSize = (collapsedHeight / availableHeight).clamp(0.1, 0.25);
-        _expandedThreshold = (expandedMinHeight / availableHeight).clamp(
-          0.15,
-          0.35,
-        );
-
-        _prevKeyboardHeight = keyboardHeight;
-
-        // 키보드 열림: 시트 75% 고정, 닫힘: 기본 minSize
-        final effectiveMinSize = isKeyboardOpen ? _snap75 : _minSize;
-
-        // 배경 탭으로 예약된 접기를 키보드 닫힘 완료 시점에 한 번 소비
-        if (_pendingCollapse && !isKeyboardOpen) {
-          _pendingCollapse = false;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) _collapseSheet();
-          });
-        }
-
-        return Stack(
-          children: [
-            // 시트 바깥 영역 탭 → 시트 접기 (펼쳐진 상태에서만, 키보드 열림 포함)
-            if (_isExpanded)
-              Positioned.fill(
-                child: GestureDetector(
-                  onTap: _onBackgroundTap,
-                  behavior: HitTestBehavior.opaque,
-                ),
-              ),
-            DraggableScrollableSheet(
-              controller: _sheetController,
-              initialChildSize: effectiveMinSize,
-              minChildSize: effectiveMinSize,
-              maxChildSize: _snap75,
-              snap: true,
-              snapSizes: const [_snap50, _snap75],
-              builder: (context, scrollController) {
-                return Container(
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                    color: widget.isDarkMode
-                        ? AppColors.black900
-                        : AppColors.black100,
-                    borderRadius: BorderRadius.only(
-                      topLeft: AppRadius.xl20.topLeft,
-                      topRight: AppRadius.xl20.topRight,
-                    ),
-                    boxShadow: AppShadows.topLift,
-                  ),
-                  child: Column(
-                    children: [
-                      SingleChildScrollView(
-                        controller: scrollController,
-                        physics: const ClampingScrollPhysics(),
-                        child: _buildDragHandle(),
-                      ),
-                      if (_isExpanded)
-                        Expanded(
-                          child: Column(
-                            children: [
-                              _buildTitle(),
-                              Expanded(
-                                child: PageView(
-                                  controller: _pageController,
-                                  onPageChanged: (page) {
-                                    setState(() => _currentPage = page);
-                                    // notifier에 현재 페이지 통보
-                                    ref
-                                        .read(chatNotifierProvider.notifier)
-                                        .updateCurrentPage(page);
-                                  },
-                                  children: [
-                                    ChatMessageList(
-                                      messages: chatState.allScopeMessages,
-                                      myParticipantId: widget.myParticipantId,
-                                      myTeam: widget.myTeam,
-                                      isDarkMode: widget.isDarkMode,
-                                      onMessageLongPress:
-                                          _handleMessageLongPress,
-                                      blockedParticipantIds:
-                                          chatState.blockedParticipantIds,
-                                    ),
-                                    ChatMessageList(
-                                      messages: chatState.teamScopeMessages,
-                                      myParticipantId: widget.myParticipantId,
-                                      myTeam: widget.myTeam,
-                                      isDarkMode: widget.isDarkMode,
-                                      onMessageLongPress:
-                                          _handleMessageLongPress,
-                                      blockedParticipantIds:
-                                          chatState.blockedParticipantIds,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              _buildPageIndicator(chatState),
-                            ],
-                          ),
-                        )
-                      else
-                        const Expanded(child: SizedBox.shrink()),
-                      ChatInputBar(
-                        onSend: _handleSend,
-                        enabled: isConnected,
-                        onFocusGain: _onInputFocused,
-                        isDarkMode: widget.isDarkMode,
-                        unreadAllCount: chatState.unreadAllCount,
-                        unreadTeamCount: chatState.unreadTeamCount,
-                      ),
-                      SizedBox(height: bottomMargin),
-                    ],
-                  ),
-                );
-              },
-            ),
-            // 프리뷰 카드: 알림 ON + 메시지 존재 시에만 표시
-            if (ref.watch(chatNotificationEnabledProvider) &&
-                chatState.lastPreviewMessage != null)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: bottomMargin + _inputBarHeight.h + _previewGap.h,
-                child: ChatPreviewCard(
-                  message: chatState.lastPreviewMessage!,
-                  isDarkMode: widget.isDarkMode,
-                  unreadCount:
-                      chatState.unreadAllCount + chatState.unreadTeamCount,
-                  onTap: () => _handlePreviewTap(chatState.lastPreviewMessage!),
-                  onDismissed: () {
-                    ref.read(chatNotifierProvider.notifier).dismissPreview();
-                  },
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildDragHandle() {
-    // 터치 영역을 48pt로 확보하여 드래그/탭 조작성 향상
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        if (!_sheetController.isAttached) return;
-        final target = _sheetSize > _minSize + 0.01 ? _minSize : _snap50;
-        _sheetController.animateTo(
-          target,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      },
-      child: SizedBox(
-        height: 28.h,
-        child: Center(
-          child: Container(
-            width: 48.w,
-            height: 4.h,
-            decoration: BoxDecoration(
-              color: widget.isDarkMode
-                  ? AppColors.black600
-                  : AppColors.black200,
-              borderRadius: BorderRadius.circular(2.r),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTitle() {
+    final notifications = ref.watch(chatNotificationEnabledProvider);
     final l10n = AppLocalizations.of(context);
-    final title = _currentPage == 0
-        ? l10n.chatScopeAllTitle
-        : l10n.chatScopeTeamTitle;
-    final isNotificationOn = ref.watch(chatNotificationEnabledProvider);
+    final preview = chatState.lastPreviewMessage;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: AppSpacing.horizontal24,
-        right: AppSpacing.horizontal12,
-        top: AppSpacing.vertical16,
-        bottom: AppSpacing.vertical8,
-      ),
-      child: Row(
+    return Positioned.fill(
+      child: Stack(
         children: [
-          Text(
-            title,
-            style: widget.isDarkMode
-                ? AppTextStyles.robberSubHeading.copyWith(
-                    color: AppColors.white,
-                  )
-                : AppTextStyles.subHeading_18.copyWith(color: AppColors.black),
-          ),
-          const Spacer(),
-          // 채팅 알림 토글 (진동 + 프리뷰 on/off)
-          GestureDetector(
-            onTap: () {
-              VibrationService.instance().buttonTap();
-              final current = ref.read(chatNotificationEnabledProvider);
-              ref.read(chatNotificationEnabledProvider.notifier).state =
-                  !current;
-              // OFF 전환 시 잔여 프리뷰 즉시 제거
-              if (current) {
-                ref.read(chatNotifierProvider.notifier).dismissPreview();
-              }
-            },
-            behavior: HitTestBehavior.opaque,
-            child: SizedBox(
-              width: 48.w,
-              height: 48.w,
-              child: Center(
-                child: SvgPicture.asset(
-                  isNotificationOn ? AppIcons.chatBellOn : AppIcons.chatBellOff,
-                  width: 24.w,
-                  height: 24.w,
-                  colorFilter: ColorFilter.mode(
-                    _bellIconColor(isNotificationOn),
-                    BlendMode.srcIn,
+          if (!widget.visible && notifications && preview != null)
+            Positioned(
+              left: widget.previewInsets.left,
+              right: widget.previewInsets.right,
+              bottom: widget.previewInsets.bottom,
+              child: ChatPreviewCard(
+                message: preview,
+                isDarkMode: widget.isDarkMode,
+                onTap: () {
+                  _selectPage(preview.scope == ChatScope.team ? 1 : 0);
+                  ref.read(chatNotifierProvider.notifier).onPreviewTapped();
+                  widget.onOpen();
+                },
+                onDismissed: () =>
+                    ref.read(chatNotifierProvider.notifier).dismissPreview(),
+              ),
+            ),
+          Positioned.fill(
+            key: const ValueKey('game-chat-panel'),
+            top: MediaQuery.paddingOf(context).top + kToolbarHeight,
+            child: Offstage(
+              offstage: !widget.visible,
+              child: TickerMode(
+                enabled: widget.visible,
+                child: ColoredBox(
+                  color: widget.isDarkMode
+                      ? AppColors.black900
+                      : AppColors.black100,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.viewInsetsOf(context).bottom,
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: AppPadding.all16,
+                          color: widget.isDarkMode
+                              ? AppColors.black900
+                              : AppColors.white,
+                          child: SegmentedToggle(
+                            labels: [
+                              for (final page in [1, 0])
+                                _tabLabel(
+                                  page == 1
+                                      ? l10n.chatScopeTeamTitle
+                                      : l10n.chatScopeAllTitle,
+                                  page == 1
+                                      ? chatState.unreadTeamCount
+                                      : chatState.unreadAllCount,
+                                ),
+                            ],
+                            selectedIndex: _currentPage == 1 ? 0 : 1,
+                            onChanged: (index) =>
+                                _selectPage(index == 0 ? 1 : 0),
+                            isDarkMode: widget.isDarkMode,
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: _focusNode.unfocus,
+                            child: PageView(
+                              controller: _pageController,
+                              onPageChanged: (index) =>
+                                  _onPageChanged(index == 0 ? 1 : 0),
+                              children: [
+                                for (final page in [1, 0])
+                                  ChatMessageList(
+                                    key: PageStorageKey(
+                                      'game-chat-${widget.gameId}-$page',
+                                    ),
+                                    messages: page == 0
+                                        ? chatState.allScopeMessages
+                                        : chatState.teamScopeMessages,
+                                    myParticipantId: widget.myParticipantId,
+                                    myTeam: widget.myTeam,
+                                    isDarkMode: widget.isDarkMode,
+                                    scope: page == 0
+                                        ? ChatScope.all
+                                        : ChatScope.team,
+                                    onMessageLongPress: _handleMessageLongPress,
+                                    blockedParticipantIds:
+                                        chatState.blockedParticipantIds,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        for (final page in [0, 1])
+                          Offstage(
+                            offstage: _currentPage != page,
+                            child: CommunityMessageInput(
+                              isDarkMode: widget.isDarkMode,
+                              hintText:
+                                  chatState.connectionState ==
+                                      StompConnectionState.connected
+                                  ? (page == 1
+                                        ? l10n.gameChatTeamInputHint
+                                        : l10n.gameChatAllInputHint)
+                                  : l10n.chatInputBarConnecting,
+                              onSubmit: (text) async => _handleSend(text, page),
+                              maxLength: 300,
+                              enabled:
+                                  chatState.connectionState ==
+                                  StompConnectionState.connected,
+                              focusNode: _focusNodes[page],
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -517,59 +281,6 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
     );
   }
 
-  /// 벨 아이콘 색상 — 다크/라이트 × on/off 조합
-  Color _bellIconColor(bool isOn) {
-    if (widget.isDarkMode) {
-      return isOn ? AppColors.green : AppColors.green500;
-    }
-    return isOn ? AppColors.blue : AppColors.blue500;
-  }
-
-  Widget _buildPageIndicator(ChatState chatState) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(2, (index) {
-          final isActive = index == _currentPage;
-          final hasUnread = index == 0
-              ? chatState.unreadAllCount > 0
-              : chatState.unreadTeamCount > 0;
-
-          return Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 6.w,
-                height: 6.w,
-                margin: EdgeInsets.symmetric(horizontal: 3.w),
-                decoration: BoxDecoration(
-                  color: isActive
-                      ? (widget.isDarkMode ? AppColors.green : AppColors.blue)
-                      : (widget.isDarkMode
-                            ? AppColors.black600
-                            : AppColors.black200),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              // 읽지 않은 메시지 빨간 점
-              if (hasUnread && !isActive)
-                Positioned(
-                  top: -2.h,
-                  right: 0,
-                  child: Container(
-                    width: 5.w,
-                    height: 5.w,
-                    decoration: const BoxDecoration(
-                      color: AppColors.red,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-            ],
-          );
-        }),
-      ),
-    );
-  }
+  String _tabLabel(String title, int unread) =>
+      unread == 0 ? title : '$title · ${unread > 99 ? '99+' : unread}';
 }

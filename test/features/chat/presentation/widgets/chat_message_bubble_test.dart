@@ -63,6 +63,7 @@ void main() {
       expect(find.text('경찰이'), findsNothing);
       expect(find.text(_dto().formattedTimeLocal), findsNothing);
       expect(find.text('여기로 와'), findsOneWidget);
+      expect(_bubbleWithColor(AppColors.blueVer2Basic), findsOneWidget);
     });
 
     testWidgets('uses_black_bubble_when_dark_mode', (tester) async {
@@ -78,6 +79,26 @@ void main() {
       );
 
       expect(_bubbleWithColor(AppColors.black), findsOneWidget);
+    });
+
+    testWidgets('uses_green_bubble_and_dark_text_for_my_dark_message', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          ChatMessageBubble(
+            message: _dto(),
+            isMe: true,
+            myTeam: 'ROBBER',
+            isDarkMode: true,
+          ),
+        ),
+      );
+      expect(_bubbleWithColor(AppColors.green), findsOneWidget);
+      expect(
+        tester.widget<Text>(find.text('여기로 와')).style?.color,
+        AppColors.black,
+      );
     });
 
     testWidgets('renders_system_message_without_bubble_when_sender_is_system', (
