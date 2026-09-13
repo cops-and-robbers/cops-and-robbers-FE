@@ -295,7 +295,7 @@ void main() {
         );
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
         final chatButton = find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
         );
         final message = ChatMessageDto(
           id: 'preview-1',
@@ -422,7 +422,7 @@ void main() {
     final timerState = tester.state(find.byType(GameTimerText));
     final revealState = tester.state(find.byType(LocationRevealCountdown));
     final chatButton = find.byWidgetPredicate(
-      (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+      (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
     );
     expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
     expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
@@ -503,7 +503,7 @@ void main() {
   ) async {
     await mount(tester);
     final chatButton = find.byWidgetPredicate(
-      (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+      (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
     );
     await tester.tap(chatButton);
     container
@@ -570,7 +570,7 @@ void main() {
     await mount(tester);
     await tester.tap(
       find.byWidgetPredicate(
-        (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
       ),
     );
     final notifier = container.read(chatNotifierProvider.notifier);
@@ -643,7 +643,7 @@ void main() {
       );
       await tester.tap(
         find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
         ),
       );
       await tester.pump();
@@ -732,7 +732,7 @@ void main() {
 
         await tester.tap(
           find.byWidgetPredicate(
-            (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+            (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
           ),
         );
         await tester.pump();
@@ -747,7 +747,7 @@ void main() {
         await tester.pump();
         await tester.tap(
           find.byWidgetPredicate(
-            (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+            (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
           ),
         );
         await tester.pump();
@@ -763,7 +763,7 @@ void main() {
         await tester.pump();
         await tester.tap(
           find.byWidgetPredicate(
-            (w) => w is SvgIconButton && w.assetPath == AppIcons.speechBubble,
+            (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
           ),
         );
         await tester.pump();

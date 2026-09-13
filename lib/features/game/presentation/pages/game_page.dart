@@ -2537,7 +2537,7 @@ class _GamePageState extends ConsumerState<GamePage>
         textColor: AppColors.white,
         textStyle: AppTextStyles.tag_10,
         child: SvgIconButton(
-          assetPath: AppIcons.speechBubble,
+          assetPath: AppIcons.comment,
           onPressed: _openChat,
           iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
           backgroundColor: _isDarkMode ? AppColors.black : null,
