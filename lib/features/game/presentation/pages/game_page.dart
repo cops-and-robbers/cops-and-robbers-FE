@@ -2746,6 +2746,9 @@ class _GamePageState extends ConsumerState<GamePage>
           SizedBox(height: 6.h),
           LocationRevealCountdown(
             nextRevealTime: nextRevealTime,
+            gameEndTime: gameStartTime != null && totalDuration != null
+                ? gameStartTime.add(totalDuration)
+                : null,
             intervalMinutes: interval,
             isDarkMode: _isDarkMode,
           ),

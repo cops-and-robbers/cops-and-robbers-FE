@@ -543,6 +543,7 @@
   "messageImageSaved": "Image saved",
   "messageShareComplete": "Shared",
   "labelNoRoute": "No movement recorded",
+  "gameLocationRevealFinished": "No more Robber location reveals",
   "gameLocationRevealCountdown": "Until next Robber location reveal: {formatted}",
   "dialogArrestConfirmTitle": "Have you arrested this player?",
   "buttonYes": "Yes",

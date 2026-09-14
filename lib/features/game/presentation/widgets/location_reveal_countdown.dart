@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -12,16 +13,21 @@ import '../../../../core/constants/text_styles.dart';
 /// 그렇지 않으면 '--:--' 표시.
 /// [intervalMinutes]가 지정되면 카운트다운이 0에 도달 시
 /// 자동으로 다음 주기로 순환한다.
+/// 다음 공개가 [gameEndTime] 이상이면 추가 공개가 없다는 안내를 표시한다.
 class LocationRevealCountdown extends StatefulWidget {
   const LocationRevealCountdown({
     super.key,
     this.nextRevealTime,
+    this.gameEndTime,
     this.intervalMinutes,
     this.isDarkMode = false,
   });
 
   /// 다음 위치 공개 예정 시각
   final DateTime? nextRevealTime;
+
+  /// 게임 타이머와 같은 기준으로 계산한 종료 시각. 모르면 기존 표시를 유지한다.
+  final DateTime? gameEndTime;
 
   /// 위치 공개 간격 (분). 카운트다운 자동 순환에 사용.
   final int? intervalMinutes;
@@ -38,6 +44,7 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
     with WidgetsBindingObserver {
   late Timer _timer;
   Duration _remaining = Duration.zero;
+  bool _hasNextReveal = true;
 
   @override
   void initState() {
@@ -64,7 +71,9 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
   @override
   void didUpdateWidget(LocationRevealCountdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.nextRevealTime != widget.nextRevealTime) {
+    if (oldWidget.nextRevealTime != widget.nextRevealTime ||
+        oldWidget.gameEndTime != widget.gameEndTime ||
+        oldWidget.intervalMinutes != widget.intervalMinutes) {
       _update();
     }
   }
@@ -72,6 +81,9 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
   void _update() {
     if (!mounted) return;
     setState(() {
+      final now = clock.now();
+      final end = widget.gameEndTime;
+      _hasNextReveal = end == null || now.isBefore(end);
       if (widget.nextRevealTime == null) {
         _remaining = Duration.zero;
         return;
@@ -83,12 +95,13 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
       final interval = widget.intervalMinutes;
       if (interval != null && interval > 0) {
         final intervalDuration = Duration(minutes: interval);
-        while (target.isBefore(DateTime.now())) {
+        while (target.isBefore(now)) {
           target = target.add(intervalDuration);
         }
       }
 
-      final diff = target.difference(DateTime.now());
+      _hasNextReveal = _hasNextReveal && (end == null || target.isBefore(end));
+      final diff = target.difference(now);
       _remaining = diff.isNegative ? Duration.zero : diff;
     });
   }
@@ -106,8 +119,11 @@ class _LocationRevealCountdownState extends State<LocationRevealCountdown>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Text(
-      AppLocalizations.of(context).gameLocationRevealCountdown(_formatted),
+      _hasNextReveal
+          ? l10n.gameLocationRevealCountdown(_formatted)
+          : l10n.gameLocationRevealFinished,
       style: AppTextStyles.tag_12.copyWith(
         color: widget.isDarkMode ? AppColors.black400 : AppColors.red,
       ),

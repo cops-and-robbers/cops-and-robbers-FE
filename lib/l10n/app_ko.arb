@@ -1490,6 +1490,10 @@
   "@labelNoRoute": {
     "description": "내 기록 — 경로가 없을 때 표시"
   },
+  "gameLocationRevealFinished": "추가 도둑 위치 공개는 없어요",
+  "@gameLocationRevealFinished": {
+    "description": "게임 종료 전 추가 위치 공개가 없을 때 카운트다운 대신 표시하는 안내"
+  },
   "gameLocationRevealCountdown": "다음 도둑 위치 공개까지 {formatted}",
   "@gameLocationRevealCountdown": {
     "description": "다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)",

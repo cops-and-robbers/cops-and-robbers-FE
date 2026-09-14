@@ -1507,6 +1507,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelNoRoute => '이동 기록 없음';
 
   @override
+  String get gameLocationRevealFinished => '추가 도둑 위치 공개는 없어요';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return '다음 도둑 위치 공개까지 $formatted';
   }

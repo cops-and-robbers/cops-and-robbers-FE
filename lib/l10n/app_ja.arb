@@ -543,6 +543,7 @@
   "messageImageSaved": "画像を保存しました",
   "messageShareComplete": "共有しました",
   "labelNoRoute": "移動記録なし",
+  "gameLocationRevealFinished": "泥棒の位置はこれ以上公開されません",
   "gameLocationRevealCountdown": "次の泥棒の位置公開まで {formatted}",
   "dialogArrestConfirmTitle": "該当のプレイヤーを逮捕しましたか",
   "buttonYes": "はい",

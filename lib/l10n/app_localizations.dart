@@ -2888,6 +2888,12 @@ abstract class AppLocalizations {
   /// **'이동 기록 없음'**
   String get labelNoRoute;
 
+  /// 게임 종료 전 추가 위치 공개가 없을 때 카운트다운 대신 표시하는 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'추가 도둑 위치 공개는 없어요'**
+  String get gameLocationRevealFinished;
+
   /// 다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)
   ///
   /// In ko, this message translates to:

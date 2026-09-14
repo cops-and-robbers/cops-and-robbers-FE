@@ -1507,6 +1507,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelNoRoute => '移動記録なし';
 
   @override
+  String get gameLocationRevealFinished => '泥棒の位置はこれ以上公開されません';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return '次の泥棒の位置公開まで $formatted';
   }

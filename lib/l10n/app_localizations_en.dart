@@ -1611,6 +1611,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelNoRoute => 'No movement recorded';
 
   @override
+  String get gameLocationRevealFinished => 'No more Robber location reveals';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return 'Until next Robber location reveal: $formatted';
   }
