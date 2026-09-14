@@ -26,7 +26,7 @@ const List<SnsChannel> officialSnsChannels = [
   SnsChannel(
     svgAsset: AppIcons.instagramBlack,
     label: 'Instagram',
-    url: 'https://www.instagram.com/cops._.robbers',
+    url: 'https://www.instagram.com/dongsim_protector',
   ),
   SnsChannel(
     svgAsset: AppIcons.youtubeBlack,
