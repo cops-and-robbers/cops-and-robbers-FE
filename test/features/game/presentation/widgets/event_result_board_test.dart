@@ -27,6 +27,23 @@ Future<void> _pump(
 }
 
 void main() {
+  testWidgets('portrait_evidence_fills_same_size_card_as_locked_evidence', (
+    tester,
+  ) async {
+    await _pump(tester, EventResultBoard(arrestCount: 1, onGoHome: () {}));
+
+    final revealed = tester.getSize(
+      find.byKey(const ValueKey('event_result_slot_1')),
+    );
+    final locked = tester.getSize(
+      find.byKey(const ValueKey('event_result_slot_2')),
+    );
+    final fitted = applyBoxFit(BoxFit.contain, const Size(941, 1672), revealed);
+    expect(revealed, locked);
+    expect(fitted.destination.width, greaterThan(revealed.width * 0.99));
+    expect(fitted.destination.height, greaterThan(revealed.height * 0.99));
+  });
+
   testWidgets('evidence_board_reveals_two_slots_as_arrests_accumulate', (
     tester,
   ) async {

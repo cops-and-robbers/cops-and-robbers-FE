@@ -122,9 +122,9 @@ class EventResultBoard extends StatelessWidget {
 
     return AspectRatio(
       key: ValueKey('event_result_slot_$index'),
-      aspectRatio: 96 / 80,
+      aspectRatio: 9 / 16,
       child: Transform.rotate(
-        angle: index == 1 ? -0.09 : 0.09,
+        angle: index == 1 ? -0.05 : 0.05,
         child: collected
             ? evidenceImage
             : Stack(
