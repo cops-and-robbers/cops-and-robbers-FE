@@ -42,15 +42,17 @@ class CommunityNativeAdFactory(private val context: Context) : NativeAdFactory {
 
         val adView = NativeAdView(context)
         val content = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(22), dp(16), dp(22), dp(16))
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(22), dp(1), dp(22), dp(1))
         }
         adView.addView(content, FrameLayout.LayoutParams(-1, -1))
+        val copy = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+        content.addView(copy, LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(12) })
         val header = LinearLayout(context).apply {
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, 0, dp(20), 0) // SDK AdChoices 영역 확보
         }
-        content.addView(header, LinearLayout.LayoutParams(-1, dp(maxOf(24f, number("captionSize").toFloat() * 1.4f))))
+        copy.addView(header, LinearLayout.LayoutParams(-1, -2))
         val badge = label(options.getValue("adLabel") as String, "captionSize", "secondaryColor").apply {
             setPadding(dp(4), dp(2), dp(4), dp(2))
             background = GradientDrawable().apply {
@@ -59,35 +61,33 @@ class CommunityNativeAdFactory(private val context: Context) : NativeAdFactory {
             }
         }
         header.addView(badge)
+        val headline = label(nativeAd.headline, "headlineSize", "textColor", bold = true)
+        header.addView(headline, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(8) })
+        adView.headlineView = headline
+        val body = label(nativeAd.body, "bodySize", "secondaryColor")
+        copy.addView(body, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
+        adView.bodyView = body
+        val footer = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL }
+        copy.addView(footer, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
         val icon = ImageView(context).apply {
             setImageDrawable(nativeAd.icon?.drawable)
             scaleType = ImageView.ScaleType.FIT_CENTER
             visibility = if (nativeAd.icon == null) View.GONE else View.VISIBLE
         }
-        header.addView(icon, LinearLayout.LayoutParams(dp(24), dp(24)).apply { leftMargin = dp(8) })
+        footer.addView(icon, LinearLayout.LayoutParams(dp(24), dp(24)))
         adView.iconView = icon
         val advertiser = label(nativeAd.advertiser, "captionSize", "secondaryColor")
-        header.addView(advertiser, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(8) })
+        footer.addView(advertiser, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(8) })
         adView.advertiserView = advertiser
 
-        val row = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL }
-        content.addView(row, LinearLayout.LayoutParams(-1, 0, 1f).apply { topMargin = dp(8) })
-        val copy = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
-        row.addView(copy, LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(12) })
-        val headline = label(nativeAd.headline, "headlineSize", "textColor", 2, true)
-        copy.addView(headline)
-        adView.headlineView = headline
-        val body = label(nativeAd.body, "bodySize", "secondaryColor", 2)
-        copy.addView(body, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
-        adView.bodyView = body
         val action = label(nativeAd.callToAction, "bodySize", "accentColor", bold = true)
-        copy.addView(action, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })
+        footer.addView(action, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(8) })
         adView.callToActionView = action
         val media = MediaView(context).apply {
             mediaContent = nativeAd.mediaContent
             setImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
         }
-        row.addView(media, LinearLayout.LayoutParams(dp(120), dp(120)))
+        content.addView(media, LinearLayout.LayoutParams(dp(120), dp(120)))
         adView.mediaView = media
         adView.setNativeAd(nativeAd)
         return adView

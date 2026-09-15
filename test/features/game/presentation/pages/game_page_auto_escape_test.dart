@@ -7,8 +7,6 @@ import 'package:cops_and_robbers/core/constants/map_styles.dart';
 import 'package:cops_and_robbers/core/widgets/navigation/app_top_bar.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/previous_button.dart';
 import 'package:cops_and_robbers/features/chat/presentation/providers/chat_notification_provider.dart';
-import 'package:cops_and_robbers/features/game/presentation/widgets/game_timer_text.dart';
-import 'package:cops_and_robbers/features/game/presentation/widgets/location_reveal_countdown.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/svg_icon_button.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/my_location_button.dart';
 import 'package:cops_and_robbers/core/widgets/chat/community_message_input.dart';
@@ -19,6 +17,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_event_model.dart';
 import 'package:cops_and_robbers/core/services/lifecycle/app_lifecycle_service.dart';
 import 'package:cops_and_robbers/core/widgets/dialogs/reconnect_modal.dart';
+import 'package:cops_and_robbers/core/widgets/dialogs/app_popup.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/token_provider.dart';
 import 'package:cops_and_robbers/features/chat/data/datasources/chat_stomp_datasource.dart';
 import 'package:cops_and_robbers/features/chat/data/models/chat_message_dto.dart';
@@ -31,6 +30,7 @@ import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart
 import 'package:cops_and_robbers/features/game/presentation/providers/game_event_provider.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
 import 'package:cops_and_robbers/features/session/data/models/in_game_participants_response.dart';
+import 'package:cops_and_robbers/features/session/data/models/game_settings_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/user_game_status_model.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/session_provider.dart';
@@ -151,16 +151,22 @@ class _GameApi implements GameSystemApi {
 class _SessionApi implements SessionRemoteDataSource {
   int requests = 0;
   int failures = 0;
+  late GameSettingsResponse settings;
+  InGameParticipantsResponse participants = const InGameParticipantsResponse(
+    police: [],
+    robbers: [
+      InGameParticipant(participantId: 5, nickname: '도둑', status: 'JAILED'),
+    ],
+  );
+
+  @override
+  Future<GameSettingsResponse> fetchGameSettings(int gameId) async => settings;
+
   @override
   Future<InGameParticipantsResponse> fetchGameParticipants(int gameId) async {
     requests++;
     if (failures-- > 0) throw Exception('temporary HTTP failure');
-    return const InGameParticipantsResponse(
-      police: [],
-      robbers: [
-        InGameParticipant(participantId: 5, nickname: '도둑', status: 'JAILED'),
-      ],
-    );
+    return participants;
   }
 
   @override
@@ -272,6 +278,42 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
   }
+
+  testWidgets('경찰 재접속 시 설정을 불러와도 대기 팝업은 한 번만 열리고 만료되면 닫힌다', (tester) async {
+    container
+        .read(gameParticipantNotifierProvider.notifier)
+        .setGameInfo(
+          gameId: 1,
+          participantId: 5,
+          nickname: '경찰',
+          team: 'POLICE',
+        );
+    session.settings = GameSettingsResponse(
+      roundDurationMinutes: 30,
+      locationRevealIntervalMinutes: 3,
+      policeWaitMinutes: 1,
+      maxParticipants: 10,
+      gameStartTime: DateTime.now().toIso8601String(),
+    );
+    session.participants = const InGameParticipantsResponse(
+      police: [
+        InGameParticipant(
+          participantId: 5,
+          nickname: '경찰',
+          status: 'POLICE_WAITING',
+        ),
+      ],
+      robbers: [],
+    );
+    await mount(tester, team: 'POLICE');
+    expect(find.byType(AppPopup, skipOffstage: false), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 61));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(AppPopup, skipOffstage: false), findsNothing);
+    expect(find.byType(GamePage), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   for (final variant in [
     (team: 'POLICE', locale: 'ko', width: 393.0, scale: 1.0),
@@ -417,85 +459,106 @@ void main() {
   testWidgets('chat_app_bar_restores_game_controls_when_returning_to_map', (
     tester,
   ) async {
-    await mount(tester, size: const Size(393, 852));
-    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
-    final timerState = tester.state(find.byType(GameTimerText));
-    final revealState = tester.state(find.byType(LocationRevealCountdown));
-    final chatButton = find.byWidgetPredicate(
-      (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
-    );
-    expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
-    expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
+    var now = DateTime.now();
+    final start = now.subtract(const Duration(seconds: 64, milliseconds: 500));
+    container.read(gameParticipantNotifierProvider.notifier)
+      ..setGameStartTime(start.toIso8601String())
+      ..updateSettings(policeWaitMinutes: 1, locationRevealIntervalMinutes: 3);
+    await withClock(Clock(() => now), () async {
+      await mount(tester, size: const Size(393, 852));
+      final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+      void expectCountdowns(String game, String reveal) {
+        expect(find.text(game), findsOneWidget);
+        expect(
+          find.text(l10n.gameLocationRevealCountdown(reveal)),
+          findsOneWidget,
+        );
+      }
 
-    await tester.tap(chatButton);
-    container
-        .read(chatNotifierProvider.notifier)
-        .enableDummyMode(participantId: 5, team: 'ROBBER');
-    await tester.pump();
-    expect(find.byTooltip(l10n.buttonLeave), findsNothing);
-    expect(find.byTooltip(l10n.titleGameRules), findsNothing);
-    expect(find.text(l10n.gameChatTitle), findsNothing);
-    expect(
-      find.descendant(
-        of: find.byType(AppTopBar),
-        matching: find.byType(PreviousButton),
-      ),
-      findsOneWidget,
-    );
-    for (final label in [
-      l10n.gameChatBackToMap,
-      l10n.communityMenuNotificationOff,
-    ]) {
+      expectCountdowns('28:55', '02:55');
+      final chatButton = find.byWidgetPredicate(
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+      );
+      expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
+      expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
+
+      now = now.add(const Duration(seconds: 1));
+      await tester.tap(chatButton);
+      container
+          .read(chatNotifierProvider.notifier)
+          .enableDummyMode(participantId: 5, team: 'ROBBER');
+      await tester.pump();
+      expect(find.byTooltip(l10n.buttonLeave), findsNothing);
+      expect(find.byTooltip(l10n.titleGameRules), findsNothing);
+      expect(find.text(l10n.gameChatTitle), findsNothing);
       expect(
         find.descendant(
           of: find.byType(AppTopBar),
-          matching: find.byTooltip(label),
+          matching: find.byType(PreviousButton),
         ),
         findsOneWidget,
       );
-    }
-    expect(tester.state(find.byType(GameTimerText)), same(timerState));
-    expect(
-      tester.state(find.byType(LocationRevealCountdown)),
-      same(revealState),
-    );
+      for (final label in [
+        l10n.gameChatBackToMap,
+        l10n.communityMenuNotificationOff,
+      ]) {
+        expect(
+          find.descendant(
+            of: find.byType(AppTopBar),
+            matching: find.byTooltip(label),
+          ),
+          findsOneWidget,
+        );
+      }
+      expectCountdowns('28:54', '02:54');
 
-    await tester.tap(find.byTooltip(l10n.communityMenuNotificationOff));
-    await tester.pump();
-    expect(container.read(chatNotificationEnabledProvider), isFalse);
-    expect(container.read(chatNotifierProvider).lastPreviewMessage, isNull);
-    expect(find.byTooltip(l10n.communityMenuNotificationOn), findsOneWidget);
+      await tester.tap(find.byTooltip(l10n.communityMenuNotificationOff));
+      await tester.pump();
+      expect(container.read(chatNotificationEnabledProvider), isFalse);
+      expect(container.read(chatNotifierProvider).lastPreviewMessage, isNull);
+      expect(find.byTooltip(l10n.communityMenuNotificationOn), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField), '작성 중인 초안');
-    final inputFocus = tester
-        .widget<TextField>(find.byType(TextField))
-        .focusNode!;
-    expect(inputFocus.hasFocus, isTrue);
-    await tester.tap(find.byTooltip(l10n.gameChatBackToMap));
-    await tester.pump();
-    expect(inputFocus.hasFocus, isFalse);
-    expect(find.byType(CommunityMessageInput), findsNothing);
-    expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
-    expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
-    expect(tester.state(find.byType(GameTimerText)), same(timerState));
-    expect(
-      tester.state(find.byType(LocationRevealCountdown)),
-      same(revealState),
-    );
+      await tester.enterText(find.byType(TextField), '작성 중인 초안');
+      final inputFocus = tester
+          .widget<TextField>(find.byType(TextField))
+          .focusNode!;
+      expect(inputFocus.hasFocus, isTrue);
+      now = now.add(const Duration(seconds: 1));
+      await tester.tap(find.byTooltip(l10n.gameChatBackToMap));
+      await tester.pump();
+      expect(inputFocus.hasFocus, isFalse);
+      expect(find.byType(CommunityMessageInput), findsNothing);
+      expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
+      expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
+      expectCountdowns('28:53', '02:53');
 
-    await tester.tap(chatButton);
-    await tester.pump();
-    expect(find.text('작성 중인 초안'), findsOneWidget);
-    expect(find.byTooltip(l10n.communityMenuNotificationOn), findsOneWidget);
-    await tester.tap(find.byTooltip(l10n.communityMenuNotificationOn));
-    await tester.pump();
-    expect(container.read(chatNotificationEnabledProvider), isTrue);
-    expect(find.byTooltip(l10n.communityMenuNotificationOff), findsOneWidget);
-    await tester.binding.handlePopRoute();
-    await tester.pump();
-    expect(find.byType(CommunityMessageInput), findsNothing);
-    expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
-    expect(tester.takeException(), isNull);
+      await tester.tap(chatButton);
+      await tester.pump();
+      expect(find.text('작성 중인 초안'), findsOneWidget);
+      expect(find.byTooltip(l10n.communityMenuNotificationOn), findsOneWidget);
+      await tester.tap(find.byTooltip(l10n.communityMenuNotificationOn));
+      await tester.pump();
+      expect(container.read(chatNotificationEnabledProvider), isTrue);
+      expect(find.byTooltip(l10n.communityMenuNotificationOff), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(find.byType(CommunityMessageInput), findsNothing);
+      expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
+      socket.events.add(
+        GameEventModel(
+          type: GameEventType.policeMoveStart,
+          timestamp: start
+              .add(const Duration(minutes: 1, milliseconds: 800))
+              .toIso8601String(),
+        ),
+      );
+      await tester.pump();
+      expectCountdowns('28:53', '02:53');
+      now = now.add(const Duration(milliseconds: 8800));
+      await tester.pump(const Duration(milliseconds: 8800));
+      expectCountdowns('28:44', '02:44');
+      expect(tester.takeException(), isNull);
+    });
   });
 
   testWidgets('chat_channels_preserve_drafts_and_send_to_the_selected_scope', (

@@ -25,7 +25,7 @@ import '../providers/community_chat_socket_provider.dart';
 import '../providers/community_notification_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_chat_room_list.dart';
-import '../widgets/community_native_ad.dart';
+import '../widgets/community_ad_list.dart';
 import '../widgets/community_feed_list.dart';
 import '../widgets/community_scope_toggle.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
@@ -241,18 +241,14 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     if (scope == CommunityScope.nearby) {
       return _wrapWithCreateButton(
         createButton,
-        CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: CommunityNativeAd(
-                margin: EdgeInsets.all(AppSpacing.horizontal16),
-              ),
-            ),
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: _buildPlaceholder(l10n.comingSoonMessage),
-            ),
-          ],
+        CommunityAdList(
+          padding: EdgeInsets.only(
+            left: AppSpacing.horizontal16,
+            right: AppSpacing.horizontal16,
+            bottom: AppSpacing.vertical16,
+          ),
+          spacing: AppSpacing.vertical16,
+          emptyState: _buildPlaceholder(l10n.comingSoonMessage),
         ),
       );
     }

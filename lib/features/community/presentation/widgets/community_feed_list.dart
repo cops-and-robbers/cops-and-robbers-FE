@@ -27,7 +27,7 @@ import '../community_editor_route.dart';
 import '../providers/community_feed_state.dart';
 import '../providers/community_provider.dart';
 import 'community_post_card.dart';
-import 'community_native_ad.dart';
+import 'community_ad_list.dart';
 import 'community_post_menu.dart';
 import 'community_sort_sheet.dart';
 import '../community_report_action.dart';
@@ -239,14 +239,12 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
             // AuthInterceptor가 강제 로그아웃을 처리하므로 목록의 오류 안내는 생략한다.
             error: (e, _) => e is AuthException
                 ? const SizedBox.shrink()
-                : _buildRefreshablePlaceholder(
-                    e is AppException
+                : _buildList(
+                    message: e is AppException
                         ? l10n.errorByException(e)
                         : l10n.errorCommunityPostsLoadFailed,
                   ),
-            data: (feed) => feed.items.isEmpty
-                ? _buildRefreshablePlaceholder(widget.emptyMessage)
-                : _buildList(feed),
+            data: (feed) => _buildList(feed: feed),
           ),
         ),
       ],
@@ -357,64 +355,33 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
     );
   }
 
-  /// 당겨서 새로고침이 가능한 플레이스홀더 (빈 목록 / 첫 로드 에러).
-  ///
-  /// 컨텐츠가 뷰포트를 다 채우지 않아도 당길 수 있어야 하므로,
-  /// `SliverFillRemaining`으로 남는 높이를 채우고
-  /// `AlwaysScrollableScrollPhysics`로 항상 스크롤 가능하게 한다.
-  Widget _buildRefreshablePlaceholder(String message) {
+  Widget _buildList({CommunityFeedState? feed, String? message}) {
+    final items = feed?.items ?? const <CommunityPostEntity>[];
     return AppRefreshControl(
       onRefresh: _refresh,
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: _buildPlaceholder(message),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildList(CommunityFeedState feed) {
-    return AppRefreshControl(
-      onRefresh: _refresh,
-      child: ListView.separated(
+      child: CommunityAdList(
         controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
+        showAds: widget.showAds,
         padding: EdgeInsets.only(
           left: AppSpacing.horizontal16,
           right: AppSpacing.horizontal16,
           bottom: widget.bottomPadding + AppSpacing.vertical16,
         ),
-        itemCount: feed.items.length + (feed.isLoadingMore ? 1 : 0),
-        separatorBuilder: (_, _) => SizedBox(height: AppSpacing.vertical12),
+        spacing: AppSpacing.vertical12,
+        emptyState: _buildPlaceholder(message ?? widget.emptyMessage),
+        itemCount: items.length,
+        trailing: (feed?.isLoadingMore ?? false)
+            ? Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical16),
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            : null,
         itemBuilder: (context, index) {
-          if (index >= feed.items.length) {
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: AppSpacing.vertical16),
-              child: const Center(child: CircularProgressIndicator()),
-            );
-          }
-          final post = feed.items[index];
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (widget.showAds && index == 0)
-                CommunityNativeAd(
-                  margin: EdgeInsets.only(bottom: AppSpacing.vertical12),
-                ),
-              CommunityPostCard(
-                post: post,
-                onTap: () => _openDetail(post.id),
-                onMenuAction: (action) => _handleCardMenu(post, action),
-              ),
-              if (widget.showAds && (index + 1) % 5 == 0)
-                CommunityNativeAd(
-                  margin: EdgeInsets.only(top: AppSpacing.vertical12),
-                ),
-            ],
+          final post = items[index];
+          return CommunityPostCard(
+            post: post,
+            onTap: () => _openDetail(post.id),
+            onMenuAction: (action) => _handleCardMenu(post, action),
           );
         },
       ),
