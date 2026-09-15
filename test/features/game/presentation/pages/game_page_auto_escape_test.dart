@@ -7,8 +7,6 @@ import 'package:cops_and_robbers/core/constants/map_styles.dart';
 import 'package:cops_and_robbers/core/widgets/navigation/app_top_bar.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/previous_button.dart';
 import 'package:cops_and_robbers/features/chat/presentation/providers/chat_notification_provider.dart';
-import 'package:cops_and_robbers/features/game/presentation/widgets/game_timer_text.dart';
-import 'package:cops_and_robbers/features/game/presentation/widgets/location_reveal_countdown.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/svg_icon_button.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/my_location_button.dart';
 import 'package:cops_and_robbers/core/widgets/chat/community_message_input.dart';
@@ -417,85 +415,106 @@ void main() {
   testWidgets('chat_app_bar_restores_game_controls_when_returning_to_map', (
     tester,
   ) async {
-    await mount(tester, size: const Size(393, 852));
-    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
-    final timerState = tester.state(find.byType(GameTimerText));
-    final revealState = tester.state(find.byType(LocationRevealCountdown));
-    final chatButton = find.byWidgetPredicate(
-      (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
-    );
-    expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
-    expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
+    var now = DateTime.now();
+    final start = now.subtract(const Duration(seconds: 64, milliseconds: 500));
+    container.read(gameParticipantNotifierProvider.notifier)
+      ..setGameStartTime(start.toIso8601String())
+      ..updateSettings(policeWaitMinutes: 1, locationRevealIntervalMinutes: 3);
+    await withClock(Clock(() => now), () async {
+      await mount(tester, size: const Size(393, 852));
+      final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+      void expectCountdowns(String game, String reveal) {
+        expect(find.text(game), findsOneWidget);
+        expect(
+          find.text(l10n.gameLocationRevealCountdown(reveal)),
+          findsOneWidget,
+        );
+      }
 
-    await tester.tap(chatButton);
-    container
-        .read(chatNotifierProvider.notifier)
-        .enableDummyMode(participantId: 5, team: 'ROBBER');
-    await tester.pump();
-    expect(find.byTooltip(l10n.buttonLeave), findsNothing);
-    expect(find.byTooltip(l10n.titleGameRules), findsNothing);
-    expect(find.text(l10n.gameChatTitle), findsNothing);
-    expect(
-      find.descendant(
-        of: find.byType(AppTopBar),
-        matching: find.byType(PreviousButton),
-      ),
-      findsOneWidget,
-    );
-    for (final label in [
-      l10n.gameChatBackToMap,
-      l10n.communityMenuNotificationOff,
-    ]) {
+      expectCountdowns('28:55', '02:55');
+      final chatButton = find.byWidgetPredicate(
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+      );
+      expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
+      expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
+
+      now = now.add(const Duration(seconds: 1));
+      await tester.tap(chatButton);
+      container
+          .read(chatNotifierProvider.notifier)
+          .enableDummyMode(participantId: 5, team: 'ROBBER');
+      await tester.pump();
+      expect(find.byTooltip(l10n.buttonLeave), findsNothing);
+      expect(find.byTooltip(l10n.titleGameRules), findsNothing);
+      expect(find.text(l10n.gameChatTitle), findsNothing);
       expect(
         find.descendant(
           of: find.byType(AppTopBar),
-          matching: find.byTooltip(label),
+          matching: find.byType(PreviousButton),
         ),
         findsOneWidget,
       );
-    }
-    expect(tester.state(find.byType(GameTimerText)), same(timerState));
-    expect(
-      tester.state(find.byType(LocationRevealCountdown)),
-      same(revealState),
-    );
+      for (final label in [
+        l10n.gameChatBackToMap,
+        l10n.communityMenuNotificationOff,
+      ]) {
+        expect(
+          find.descendant(
+            of: find.byType(AppTopBar),
+            matching: find.byTooltip(label),
+          ),
+          findsOneWidget,
+        );
+      }
+      expectCountdowns('28:54', '02:54');
 
-    await tester.tap(find.byTooltip(l10n.communityMenuNotificationOff));
-    await tester.pump();
-    expect(container.read(chatNotificationEnabledProvider), isFalse);
-    expect(container.read(chatNotifierProvider).lastPreviewMessage, isNull);
-    expect(find.byTooltip(l10n.communityMenuNotificationOn), findsOneWidget);
+      await tester.tap(find.byTooltip(l10n.communityMenuNotificationOff));
+      await tester.pump();
+      expect(container.read(chatNotificationEnabledProvider), isFalse);
+      expect(container.read(chatNotifierProvider).lastPreviewMessage, isNull);
+      expect(find.byTooltip(l10n.communityMenuNotificationOn), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField), '작성 중인 초안');
-    final inputFocus = tester
-        .widget<TextField>(find.byType(TextField))
-        .focusNode!;
-    expect(inputFocus.hasFocus, isTrue);
-    await tester.tap(find.byTooltip(l10n.gameChatBackToMap));
-    await tester.pump();
-    expect(inputFocus.hasFocus, isFalse);
-    expect(find.byType(CommunityMessageInput), findsNothing);
-    expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
-    expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
-    expect(tester.state(find.byType(GameTimerText)), same(timerState));
-    expect(
-      tester.state(find.byType(LocationRevealCountdown)),
-      same(revealState),
-    );
+      await tester.enterText(find.byType(TextField), '작성 중인 초안');
+      final inputFocus = tester
+          .widget<TextField>(find.byType(TextField))
+          .focusNode!;
+      expect(inputFocus.hasFocus, isTrue);
+      now = now.add(const Duration(seconds: 1));
+      await tester.tap(find.byTooltip(l10n.gameChatBackToMap));
+      await tester.pump();
+      expect(inputFocus.hasFocus, isFalse);
+      expect(find.byType(CommunityMessageInput), findsNothing);
+      expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
+      expect(find.byTooltip(l10n.titleGameRules), findsOneWidget);
+      expectCountdowns('28:53', '02:53');
 
-    await tester.tap(chatButton);
-    await tester.pump();
-    expect(find.text('작성 중인 초안'), findsOneWidget);
-    expect(find.byTooltip(l10n.communityMenuNotificationOn), findsOneWidget);
-    await tester.tap(find.byTooltip(l10n.communityMenuNotificationOn));
-    await tester.pump();
-    expect(container.read(chatNotificationEnabledProvider), isTrue);
-    expect(find.byTooltip(l10n.communityMenuNotificationOff), findsOneWidget);
-    await tester.binding.handlePopRoute();
-    await tester.pump();
-    expect(find.byType(CommunityMessageInput), findsNothing);
-    expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
-    expect(tester.takeException(), isNull);
+      await tester.tap(chatButton);
+      await tester.pump();
+      expect(find.text('작성 중인 초안'), findsOneWidget);
+      expect(find.byTooltip(l10n.communityMenuNotificationOn), findsOneWidget);
+      await tester.tap(find.byTooltip(l10n.communityMenuNotificationOn));
+      await tester.pump();
+      expect(container.read(chatNotificationEnabledProvider), isTrue);
+      expect(find.byTooltip(l10n.communityMenuNotificationOff), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(find.byType(CommunityMessageInput), findsNothing);
+      expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
+      socket.events.add(
+        GameEventModel(
+          type: GameEventType.policeMoveStart,
+          timestamp: start
+              .add(const Duration(minutes: 1, milliseconds: 800))
+              .toIso8601String(),
+        ),
+      );
+      await tester.pump();
+      expectCountdowns('28:53', '02:53');
+      now = now.add(const Duration(milliseconds: 8800));
+      await tester.pump(const Duration(milliseconds: 8800));
+      expectCountdowns('28:44', '02:44');
+      expect(tester.takeException(), isNull);
+    });
   });
 
   testWidgets('chat_channels_preserve_drafts_and_send_to_the_selected_scope', (
