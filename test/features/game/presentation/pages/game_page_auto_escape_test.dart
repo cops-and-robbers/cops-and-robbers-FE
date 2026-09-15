@@ -17,6 +17,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_event_model.dart';
 import 'package:cops_and_robbers/core/services/lifecycle/app_lifecycle_service.dart';
 import 'package:cops_and_robbers/core/widgets/dialogs/reconnect_modal.dart';
+import 'package:cops_and_robbers/core/widgets/dialogs/app_popup.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/token_provider.dart';
 import 'package:cops_and_robbers/features/chat/data/datasources/chat_stomp_datasource.dart';
 import 'package:cops_and_robbers/features/chat/data/models/chat_message_dto.dart';
@@ -29,6 +30,7 @@ import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart
 import 'package:cops_and_robbers/features/game/presentation/providers/game_event_provider.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
 import 'package:cops_and_robbers/features/session/data/models/in_game_participants_response.dart';
+import 'package:cops_and_robbers/features/session/data/models/game_settings_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/user_game_status_model.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/session_provider.dart';
@@ -149,16 +151,22 @@ class _GameApi implements GameSystemApi {
 class _SessionApi implements SessionRemoteDataSource {
   int requests = 0;
   int failures = 0;
+  late GameSettingsResponse settings;
+  InGameParticipantsResponse participants = const InGameParticipantsResponse(
+    police: [],
+    robbers: [
+      InGameParticipant(participantId: 5, nickname: '도둑', status: 'JAILED'),
+    ],
+  );
+
+  @override
+  Future<GameSettingsResponse> fetchGameSettings(int gameId) async => settings;
+
   @override
   Future<InGameParticipantsResponse> fetchGameParticipants(int gameId) async {
     requests++;
     if (failures-- > 0) throw Exception('temporary HTTP failure');
-    return const InGameParticipantsResponse(
-      police: [],
-      robbers: [
-        InGameParticipant(participantId: 5, nickname: '도둑', status: 'JAILED'),
-      ],
-    );
+    return participants;
   }
 
   @override
@@ -270,6 +278,42 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
   }
+
+  testWidgets('경찰 재접속 시 설정을 불러와도 대기 팝업은 한 번만 열리고 만료되면 닫힌다', (tester) async {
+    container
+        .read(gameParticipantNotifierProvider.notifier)
+        .setGameInfo(
+          gameId: 1,
+          participantId: 5,
+          nickname: '경찰',
+          team: 'POLICE',
+        );
+    session.settings = GameSettingsResponse(
+      roundDurationMinutes: 30,
+      locationRevealIntervalMinutes: 3,
+      policeWaitMinutes: 1,
+      maxParticipants: 10,
+      gameStartTime: DateTime.now().toIso8601String(),
+    );
+    session.participants = const InGameParticipantsResponse(
+      police: [
+        InGameParticipant(
+          participantId: 5,
+          nickname: '경찰',
+          status: 'POLICE_WAITING',
+        ),
+      ],
+      robbers: [],
+    );
+    await mount(tester, team: 'POLICE');
+    expect(find.byType(AppPopup, skipOffstage: false), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 61));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(AppPopup, skipOffstage: false), findsNothing);
+    expect(find.byType(GamePage), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   for (final variant in [
     (team: 'POLICE', locale: 'ko', width: 393.0, scale: 1.0),

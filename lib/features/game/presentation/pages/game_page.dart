@@ -496,9 +496,6 @@ class _GamePageState extends ConsumerState<GamePage>
             .read(gameParticipantNotifierProvider.notifier)
             .setGameStartTime(settings.gameStartTime!);
       }
-
-      // 설정 로드 후 경찰 타이머 재확인 (첫 호출 시 설정 없어 early return됐을 수 있음)
-      if (mounted) _showPoliceTimerIfNeeded();
     } catch (_) {
       // 실패해도 게임 진행에는 영향 없음 (타이머만 미표시)
     }
