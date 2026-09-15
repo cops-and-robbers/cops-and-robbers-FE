@@ -1674,6 +1674,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chatScopeTeamTitle => 'チームチャット';
 
   @override
+  String get gameChatPushUnavailable => '現在このゲームのチャットを開けません';
+
+  @override
   String get chatPreviewTagNotice => '告知';
 
   @override

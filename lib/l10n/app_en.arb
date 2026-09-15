@@ -586,6 +586,7 @@
   "chatDateSeparator": "{year}-{month}-{day} {weekday}",
   "chatScopeAllTitle": "Global chat",
   "chatScopeTeamTitle": "Team chat",
+  "gameChatPushUnavailable": "You can't open this game's chat right now",
   "chatPreviewTagNotice": "Notice",
   "chatPreviewTagTeam": "Team",
   "chatPreviewTagAll": "All",

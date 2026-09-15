@@ -1675,6 +1675,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chatScopeTeamTitle => '팀 채팅';
 
   @override
+  String get gameChatPushUnavailable => '지금은 이 게임의 채팅을 열 수 없어요';
+
+  @override
   String get chatPreviewTagNotice => '공지';
 
   @override
