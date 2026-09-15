@@ -1,5 +1,7 @@
 {
   "@@locale": "ko",
+  "nativeAdLabel": "광고",
+  "@nativeAdLabel": {"description": "네이티브 광고임을 명시하는 배지"},
   "appTitle": "경찰과도둑",
   "@appTitle": {
     "description": "앱 이름 (MaterialApp.title) — i18n 스모크 테스트용 첫 키"

@@ -9,6 +9,9 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get nativeAdLabel => '광고';
+
+  @override
   String get appTitle => '경찰과도둑';
 
   @override

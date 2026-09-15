@@ -10,6 +10,15 @@ import 'ad_unit_ids.dart';
 
 part 'ad_service.g.dart';
 
+/// 기존 전역 스위치의 현재 값과 실시간 변경을 화면에 전달한다.
+final adsEnabledProvider = StreamProvider.autoDispose<bool>((ref) async* {
+  final config = RemoteConfigService.instance;
+  yield config.adsEnabled;
+  await for (final _ in config.onConfigUpdated) {
+    yield config.adsEnabled;
+  }
+});
+
 /// 로드된 전면 광고 1건의 경계 인터페이스 — google_mobile_ads SDK 경계.
 /// 테스트에서는 fake 구현으로 대체한다.
 abstract class LoadedInterstitial {
@@ -65,15 +74,17 @@ class AdService {
   final Duration _retryBaseDelay;
 
   bool _sdkInitialized = false;
+  Future<void>? _initialization;
   bool _isLoading = false;
   LoadedInterstitial? _gameEndAd;
 
   /// UMP 동의 플로우 → Mobile Ads SDK 초기화.
   /// 동의 폼 표시가 가능하도록 첫 프레임 이후(스플래시)에 호출해야 한다.
-  Future<void> initialize() async {
-    if (_sdkInitialized) return;
+  Future<void> initialize() => _initialization ??= () async {
     _sdkInitialized = await _sdkInitializer();
-  }
+  }();
+
+  bool get isInitialized => _sdkInitialized;
 
   /// 게임 종료 전면 광고 사전 로드 (GAME_OVER 수신 시점에 호출)
   ///

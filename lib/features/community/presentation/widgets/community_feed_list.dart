@@ -27,6 +27,7 @@ import '../community_editor_route.dart';
 import '../providers/community_feed_state.dart';
 import '../providers/community_provider.dart';
 import 'community_post_card.dart';
+import 'community_native_ad.dart';
 import 'community_post_menu.dart';
 import 'community_sort_sheet.dart';
 import '../community_report_action.dart';
@@ -47,6 +48,7 @@ class CommunityFeedList extends ConsumerStatefulWidget {
     required this.sort,
     required this.emptyMessage,
     this.keyword,
+    this.showAds = false,
     this.bottomPadding = 0,
     this.emptyStateCenterOffset = 0,
   });
@@ -56,6 +58,8 @@ class CommunityFeedList extends ConsumerStatefulWidget {
 
   /// null = 목록, 값 있음 = 검색 결과.
   final String? keyword;
+
+  final bool showAds;
 
   /// 조회 결과가 비었을 때 보여줄 문구. 목록과 검색이 다른 말을 쓴다.
   final String emptyMessage;
@@ -394,10 +398,23 @@ class _CommunityFeedListState extends ConsumerState<CommunityFeedList> {
             );
           }
           final post = feed.items[index];
-          return CommunityPostCard(
-            post: post,
-            onTap: () => _openDetail(post.id),
-            onMenuAction: (action) => _handleCardMenu(post, action),
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.showAds && index == 0)
+                CommunityNativeAd(
+                  margin: EdgeInsets.only(bottom: AppSpacing.vertical12),
+                ),
+              CommunityPostCard(
+                post: post,
+                onTap: () => _openDetail(post.id),
+                onMenuAction: (action) => _handleCardMenu(post, action),
+              ),
+              if (widget.showAds && (index + 1) % 5 == 0)
+                CommunityNativeAd(
+                  margin: EdgeInsets.only(top: AppSpacing.vertical12),
+                ),
+            ],
           );
         },
       ),

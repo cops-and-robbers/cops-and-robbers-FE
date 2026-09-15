@@ -100,6 +100,12 @@ abstract class AppLocalizations {
     Locale('ko'),
   ];
 
+  /// 네이티브 광고임을 명시하는 배지
+  ///
+  /// In ko, this message translates to:
+  /// **'광고'**
+  String get nativeAdLabel;
+
   /// 앱 이름 (MaterialApp.title) — i18n 스모크 테스트용 첫 키
   ///
   /// In ko, this message translates to:

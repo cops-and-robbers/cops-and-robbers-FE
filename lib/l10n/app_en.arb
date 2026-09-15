@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "nativeAdLabel": "Ad",
   "gameChatTitle": "Chat",
   "gameChatTeamInputHint": "Message your team",
   "gameChatAllInputHint": "Message everyone",
