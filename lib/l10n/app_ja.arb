@@ -1,5 +1,6 @@
 {
   "@@locale": "ja",
+  "nativeAdLabel": "広告",
   "gameChatTitle": "チャット",
   "gameChatTeamInputHint": "チームにメッセージを送る",
   "gameChatAllInputHint": "全員にメッセージを送る",

@@ -10,6 +10,18 @@ import 'package:flutter/foundation.dart';
 class AdUnitIds {
   AdUnitIds._();
 
+  /// 커뮤니티 목록·댓글 영역에서 공유하는 네이티브 광고 단위.
+  static String get communityNative {
+    if (!kReleaseMode) {
+      return Platform.isIOS
+          ? 'ca-app-pub-3940256099942544/3986624511'
+          : 'ca-app-pub-3940256099942544/2247696110';
+    }
+    return Platform.isIOS
+        ? 'ca-app-pub-7675755123462739/9922385728'
+        : 'ca-app-pub-7675755123462739/8609304058';
+  }
+
   /// 게임 종료 전면 광고
   static String get gameEndInterstitial {
     if (kDebugMode) {

@@ -9,6 +9,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get nativeAdLabel => 'Ad';
+
+  @override
   String get appTitle => 'Cops and Robbers';
 
   @override

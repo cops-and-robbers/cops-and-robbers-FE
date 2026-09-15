@@ -25,6 +25,7 @@ import '../providers/community_chat_socket_provider.dart';
 import '../providers/community_notification_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_chat_room_list.dart';
+import '../widgets/community_native_ad.dart';
 import '../widgets/community_feed_list.dart';
 import '../widgets/community_scope_toggle.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
@@ -240,7 +241,19 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     if (scope == CommunityScope.nearby) {
       return _wrapWithCreateButton(
         createButton,
-        _buildPlaceholder(l10n.comingSoonMessage),
+        CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: CommunityNativeAd(
+                margin: EdgeInsets.all(AppSpacing.horizontal16),
+              ),
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: _buildPlaceholder(l10n.comingSoonMessage),
+            ),
+          ],
+        ),
       );
     }
     // 내 모임 = 참여 중인 채팅방 목록 (시안 `커뮤니티_내 모임`)
@@ -256,6 +269,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     final feedList = CommunityFeedList(
       scope: scope,
       sort: sort,
+      showAds: true,
       emptyMessage: l10n.pageCommunityEmpty,
       // 마지막 카드가 떠 있는 작성 버튼에 가리지 않도록 비운다.
       bottomPadding: _buttonBottomOffset + _createButtonHeight,

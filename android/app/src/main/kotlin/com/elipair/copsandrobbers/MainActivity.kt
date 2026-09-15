@@ -9,6 +9,7 @@ import androidx.core.view.WindowCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin
 
 class MainActivity : FlutterActivity() {
 
@@ -28,6 +29,10 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+        GoogleMobileAdsPlugin.registerNativeAdFactory(
+            flutterEngine, "communityNative", CommunityNativeAdFactory(this),
+        )
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL_NAME)
             .setMethodCallHandler { call, result ->
@@ -82,6 +87,11 @@ class MainActivity : FlutterActivity() {
     // (완전한 클래스명을 넣으면 이중 접두어가 됨. ICON_ALIASES 상수로만 유지)
     private fun aliasComponent(alias: String): ComponentName =
         ComponentName(packageName, "$packageName.$alias")
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        GoogleMobileAdsPlugin.unregisterNativeAdFactory(flutterEngine, "communityNative")
+        super.cleanUpFlutterEngine(flutterEngine)
+    }
 
     /**
      * 현재 enabled 상태인 alias 이름 반환.

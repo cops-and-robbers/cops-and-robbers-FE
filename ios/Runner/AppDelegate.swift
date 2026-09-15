@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import GoogleMaps
+import google_mobile_ads
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -22,6 +23,10 @@ import GoogleMaps
     #endif
 
     GeneratedPluginRegistrant.register(with: self)
+
+    FLTGoogleMobileAdsPlugin.registerNativeAdFactory(
+      self, factoryId: "communityNative", nativeAdFactory: CommunityNativeAdFactory()
+    )
 
     // 로케일 기반 동적 앱 아이콘 — Android와 동일 채널(cops_and_robbers/app_icon)을 공유한다.
     // Primary(영어)는 식별자 "app_icon_en"으로 주고받고, iOS에선 nil(Primary)로 매핑한다.
