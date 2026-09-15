@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../constants/chat_constants.dart';
+
 part 'push_navigation_event.freezed.dart';
 
 /// 푸시 알림 탭으로 이동해야 할 목적지 — `DeeplinkEvent`와 같은 역할.
@@ -12,6 +14,11 @@ sealed class PushNavigationEvent with _$PushNavigationEvent {
   const factory PushNavigationEvent.communityPost({required int postId}) =
       CommunityPostPushEvent;
 
+  const factory PushNavigationEvent.gameChat({
+    required int gameId,
+    required String scope,
+  }) = GameChatPushEvent;
+
   /// 이동 목적지가 있는 페이로드만 event로 바꾼다. 그 외(게임 이벤트·콘텐츠
   /// 완료 등 이동이 없는 푸시)는 null — 호출자가 무시한다.
   ///
@@ -21,6 +28,19 @@ sealed class PushNavigationEvent with _$PushNavigationEvent {
   /// 것이므로 null이다.
   static PushNavigationEvent? fromData(Map<String, dynamic> data) {
     final type = data['type'];
+    if (type == 'CHAT') {
+      final gameId = int.tryParse('${data['gameId'] ?? ''}');
+      final scope = data['scope'];
+      if (gameId == null ||
+          gameId <= 0 ||
+          (scope != ChatScope.all && scope != ChatScope.team)) {
+        return null;
+      }
+      return PushNavigationEvent.gameChat(
+        gameId: gameId,
+        scope: scope as String,
+      );
+    }
     if (type != 'COMMENT' && type != 'REPLY') return null;
     final postId = int.tryParse('${data['postId'] ?? ''}');
     if (postId == null) return null;

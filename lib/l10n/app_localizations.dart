@@ -3187,6 +3187,12 @@ abstract class AppLocalizations {
   /// **'팀 채팅'**
   String get chatScopeTeamTitle;
 
+  /// No description provided for @gameChatPushUnavailable.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 이 게임의 채팅을 열 수 없어요'**
+  String get gameChatPushUnavailable;
+
   /// 채팅 프리뷰 카드 — 시스템 공지 태그
   ///
   /// In ko, this message translates to:

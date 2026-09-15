@@ -26,6 +26,7 @@ import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provi
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_socket_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/pending_community_post_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/pending_invite_provider.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/game_chat_push_listener.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
 import 'package:cops_and_robbers/router/route_paths.dart';
@@ -227,6 +228,7 @@ class _LocalizedApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(appLocaleProvider).locale;
+    final auth = ref.watch(authNotifierProvider);
 
     // 커뮤니티 소켓은 화면이 아니라 로그인 수명이다(DEC-0045) — keepAlive
     // Notifier를 여기서 한 번 살려 두면 로그인·로그아웃을 스스로 따라간다.
@@ -284,6 +286,8 @@ class _LocalizedApp extends ConsumerWidget {
               RoutePaths.communityDetailName,
               pathParameters: {'postId': '$postId'},
             );
+          case GameChatPushEvent():
+            ref.read(pendingGameChatPushProvider.notifier).state = event;
         }
       });
     });
@@ -351,6 +355,8 @@ class _LocalizedApp extends ConsumerWidget {
         useMaterial3: true,
       ),
       routerConfig: router,
+      builder: (_, child) =>
+          GameChatPushListener(router: router, auth: auth, child: child!),
     );
   }
 }

@@ -1780,6 +1780,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatScopeTeamTitle => 'Team chat';
 
   @override
+  String get gameChatPushUnavailable =>
+      'You can\'t open this game\'s chat right now';
+
+  @override
   String get chatPreviewTagNotice => 'Notice';
 
   @override

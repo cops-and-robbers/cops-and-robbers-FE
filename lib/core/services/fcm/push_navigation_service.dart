@@ -6,6 +6,17 @@ import 'push_navigation_event.dart';
 
 part 'push_navigation_service.g.dart';
 
+/// 인증·스플래시가 끝날 때까지 보관하는 탭 목적지. 앱 재실행까지 저장하지 않는다.
+final pendingGameChatPushProvider = StateProvider<GameChatPushEvent?>((ref) {
+  final event = FirebaseMessagingService.instance().coldStartNavigation;
+  return event is GameChatPushEvent ? event : null;
+});
+
+/// 참가 상태 검증 후 기존 채팅 패널이 한 번 소비한다.
+final openGameChatPushProvider = StateProvider<GameChatPushEvent?>(
+  (ref) => null,
+);
+
 /// 콜드 스타트(앱 종료 상태)에서 앱을 실행시킨 푸시 알림의 이동 목적지.
 ///
 /// `coldStartDeeplink`과 같은 자리다 — SplashPage가 이 프로브를 보고 홈 대신

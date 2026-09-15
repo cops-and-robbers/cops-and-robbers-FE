@@ -1707,6 +1707,7 @@
     "description": "채팅 오버레이 — 전체 채팅 탭 제목"
   },
   "chatScopeTeamTitle": "팀 채팅",
+  "gameChatPushUnavailable": "지금은 이 게임의 채팅을 열 수 없어요",
   "@chatScopeTeamTitle": {
     "description": "채팅 오버레이 — 팀 채팅 탭 제목"
   },
