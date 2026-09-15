@@ -17,7 +17,8 @@
 ## 절대 금지 사항
 
 - 이모지·아이콘 일체 사용 금지
-- 마크다운 문법 사용 금지. 일반 텍스트와 `-`, 숫자 리스트 마커만 허용
+- 콘솔에 복사하는 코드 블록 내부에는 일반 텍스트와 `-`, 숫자 리스트 마커만 사용
+- 파일 구조에는 섹션 헤더, 언어 라벨, 복사용 `text` 코드 블록만 허용
 - `#숫자` 이슈/PR 번호 노출 금지
 - 브랜치명, 파일 경로, 함수명 노출 금지
 - 기술 용어 노출 금지 (API, STOMP, WebSocket, Provider, Interceptor 등)
@@ -53,23 +54,25 @@
 **Android 섹션** (`# [Android]` 헤더 + 3개 태그)
 - `<ko-KR>` / `<en-US>` / `<ja-JP>` 태그로 감싸기
 - 각 태그 안 첫 줄에 `vX.Y.Z`, 빈 줄, 요약 bullet
+- 세 언어 태그 전체를 하나의 `text` 코드 블록으로 감싸 통째로 복사할 수 있게 하기
 
 **iOS 섹션** (`# [iOS]` 헤더 + 3개 블록)
 - `[한국어]` / `[English]` / `[日本語]` 라벨 후 다음 줄에 `vX.Y.Z`, 빈 줄, 요약 bullet
-- 블록 사이 빈 줄로 구분 (태그 없음)
+- 언어 라벨은 코드 블록 밖에 두고, 언어별 본문을 각각 `text` 코드 블록으로 감싸기
 
 **주요 변경사항 섹션** (`# [주요 변경사항 — 애플 제출용]` 헤더)
 - `[한국어]` / `[English]` 두 블록만 (일본어 제외)
-- 두 블록 사이 구분선 `==========`
+- 언어 라벨은 코드 블록 밖에 두고, 언어별 본문을 각각 `text` 코드 블록으로 감싸기
 - 한국어: "이번 버전의 주요 변경사항입니다." 도입문 + 번호 항목 + `-` 세부 불릿
 - 영어: "Key changes in this version:" 도입문 + 동일 구조
 - 기존 변경 전/후 문구가 있으면 "기존/변경" (한국어), "Before/After" (영어) 형태로 포함
 
 ## 출력 형식
 
-```text
+````text
 # [Android]
 
+```text
 <ko-KR>
 vX.Y.Z
 
@@ -93,38 +96,41 @@ vX.Y.Z
 - 項目 2
 - 安定性の改善とバグ修正
 </ja-JP>
-
-==========
+```
 
 # [iOS]
 
 [한국어]
+```text
 vX.Y.Z
 
 - 항목 1
 - 항목 2
 - 안정성 개선 및 버그 수정
+```
 
 [English]
+```text
 vX.Y.Z
 
 - Item 1
 - Item 2
 - Stability improvements and bug fixes
+```
 
 [日本語]
+```text
 vX.Y.Z
 
 - 項目 1
 - 項目 2
 - 安定性の改善とバグ修正
-
-==========
+```
 
 # [주요 변경사항 — 애플 제출용]
 
 [한국어]
-
+```text
 이번 버전의 주요 변경사항입니다.
 
 1. 항목 제목
@@ -132,11 +138,10 @@ vX.Y.Z
 
 2. 항목 제목
 - 세부 내용
-
-==========
+```
 
 [English]
-
+```text
 Key changes in this version:
 
 1. Item Title
@@ -145,6 +150,7 @@ Key changes in this version:
 2. Item Title
 - Detail
 ```
+````
 
 ## 파일 저장 및 문자 검증 (필수)
 
@@ -207,9 +213,10 @@ fix : 방 참여 시 자동 리다이렉트
 
 ### 출력 (`.release-note/v1.4.10.md`)
 
-```text
+````text
 # [Android]
 
+```text
 <ko-KR>
 v1.4.10
 
@@ -236,41 +243,44 @@ v1.4.10
 - ネットワーク再接続時に泥棒の位置が復元されます
 - 安定性の改善とバグ修正
 </ja-JP>
-
-==========
+```
 
 # [iOS]
 
 [한국어]
+```text
 v1.4.10
 
 - 대기실·게임 화면에 튜토리얼 가이드를 추가했습니다
 - 숨겨진 크레딧 페이지를 추가했습니다
 - 네트워크 재접속 시 도둑 위치가 복구됩니다
 - 안정성 개선 및 버그 수정
+```
 
 [English]
+```text
 v1.4.10
 
 - Added a tutorial guide to the waiting room and game screen
 - Added a hidden credits page
 - Robber locations are restored after network reconnection
 - Stability improvements and bug fixes
+```
 
 [日本語]
+```text
 v1.4.10
 
 - 待機室・ゲーム画面にチュートリアルガイドを追加しました
 - 隠しクレジットページを追加しました
 - ネットワーク再接続時に泥棒の位置が復元されます
 - 安定性の改善とバグ修正
-
-==========
+```
 
 # [주요 변경사항 — 애플 제출용]
 
 [한국어]
-
+```text
 이번 버전의 주요 변경사항입니다.
 
 1. 튜토리얼 가이드 추가
@@ -285,11 +295,10 @@ v1.4.10
 4. 안정성 개선 및 버그 수정
 - 닉네임 변경 후 로딩이 종료되지 않던 문제를 수정했습니다.
 - 방 참여 시 자동으로 대기실 화면으로 이동합니다.
-
-==========
+```
 
 [English]
-
+```text
 Key changes in this version:
 
 1. Tutorial Guide Added
@@ -305,6 +314,7 @@ Key changes in this version:
 - Fixed an issue where the loading indicator would not dismiss after updating a nickname.
 - The app now automatically navigates to the waiting room when joining a game.
 ```
+````
 
 ## 출력 후
 

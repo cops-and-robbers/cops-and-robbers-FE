@@ -508,6 +508,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       return switch (event) {
         CommunityPostPushEvent(:final postId) =>
           RoutePaths.communityDetailWithId(postId),
+        // 게임 복구가 끝나면 GameChatPushListener가 참가 상태를 검증해 연다.
+        GameChatPushEvent() => null,
         null => null,
       };
     } catch (e) {

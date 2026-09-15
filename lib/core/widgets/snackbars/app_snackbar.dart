@@ -42,6 +42,7 @@ class AppSnackbar {
     double? iconSize,
     Duration duration = const Duration(seconds: 3),
     bool isDarkMode = false,
+    OverlayState? overlay,
   }) {
     dismiss();
 
@@ -61,7 +62,7 @@ class AppSnackbar {
     );
 
     _currentEntry = entry;
-    Overlay.of(context).insert(entry);
+    (overlay ?? Overlay.of(context)).insert(entry);
   }
 
   /// 현재 표시 중인 스낵바 즉시 제거

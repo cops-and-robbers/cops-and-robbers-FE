@@ -7,6 +7,7 @@ import '../../../../core/constants/chat_constants.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/services/fcm/push_navigation_service.dart';
 import '../../../../core/widgets/chat/chat_context_menu.dart';
 import '../../../../core/widgets/chat/community_message_input.dart';
 import '../../../../core/widgets/toggles/segmented_toggle.dart';
@@ -53,6 +54,16 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
   void initState() {
     super.initState();
     _syncVisibility();
+    ref.listenManual(openGameChatPushProvider, (_, event) {
+      if (event == null || event.gameId != widget.gameId) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || ref.read(openGameChatPushProvider) != event) return;
+        _selectPage(event.scope == ChatScope.team ? 1 : 0);
+        widget.onOpen();
+        ref.read(openGameChatPushProvider.notifier).state = null;
+      });
+      WidgetsBinding.instance.ensureVisualUpdate();
+    }, fireImmediately: true);
   }
 
   @override

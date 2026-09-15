@@ -586,6 +586,7 @@
   "chatDateSeparator": "{year}年 {month}月 {day}日 {weekday}曜日",
   "chatScopeAllTitle": "全体チャット",
   "chatScopeTeamTitle": "チームチャット",
+  "gameChatPushUnavailable": "現在このゲームのチャットを開けません",
   "chatPreviewTagNotice": "告知",
   "chatPreviewTagTeam": "チーム",
   "chatPreviewTagAll": "全体",
