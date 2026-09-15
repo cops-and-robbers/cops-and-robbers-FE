@@ -64,7 +64,6 @@ import '../widgets/game_over_result_dialog.dart';
 import '../widgets/qr_display_dialog.dart';
 import '../widgets/qr_scanner_page.dart';
 import '../widgets/game_timer_text.dart';
-import '../widgets/location_reveal_countdown.dart';
 import '../../domain/entities/ping.dart';
 import '../providers/ping_provider.dart';
 import '../providers/player_game_record_provider.dart';
@@ -497,9 +496,6 @@ class _GamePageState extends ConsumerState<GamePage>
             .read(gameParticipantNotifierProvider.notifier)
             .setGameStartTime(settings.gameStartTime!);
       }
-
-      // 설정 로드 후 경찰 타이머 재확인 (첫 호출 시 설정 없어 early return됐을 수 있음)
-      if (mounted) _showPoliceTimerIfNeeded();
     } catch (_) {
       // 실패해도 게임 진행에는 영향 없음 (타이머만 미표시)
     }
@@ -2675,32 +2671,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final totalDuration = roundMinutes != null
         ? Duration(minutes: roundMinutes)
         : null;
-    final lastReveal = ref.watch(
-      gameEventNotifierProvider.select((s) => s.lastLocationRevealTime),
-    );
     final interval = participantInfo?.locationRevealIntervalMinutes;
-
-    final policeMoveStartTime = ref.watch(
-      gameEventNotifierProvider.select((s) => s.policeMoveStartTime),
-    );
-
-    DateTime? nextRevealTime;
-    if (interval != null && interval > 0) {
-      // 경찰 이동 시작 시각 fallback 우선순위:
-      // 1. STOMP POLICE_MOVE_START 이벤트 시각
-      // 2. gameStartTime + policeWaitMinutes (재접속 시 STOMP 미수신 대비)
-      // 3. policeWaitMinutes == 0이면 gameStartTime 직접 사용
-      final policeWaitMinutes = participantInfo?.policeWaitMinutes;
-      final effectiveMoveStartTime =
-          policeMoveStartTime ??
-          (policeWaitMinutes != null &&
-                  policeWaitMinutes > 0 &&
-                  gameStartTime != null
-              ? gameStartTime.add(Duration(minutes: policeWaitMinutes))
-              : (policeWaitMinutes == 0 ? gameStartTime : null));
-      final base = lastReveal ?? effectiveMoveStartTime;
-      if (base != null) nextRevealTime = base.add(Duration(minutes: interval));
-    }
 
     return AppTopBar(
       isDarkMode: _isDarkMode,
@@ -2723,33 +2694,12 @@ class _GamePageState extends ConsumerState<GamePage>
               onTap: _confirmLeaveGame,
               isDark: _isDarkMode,
             ),
-      titleWidget: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // START 이벤트 수신 후 경과 시간 표시
-          gameStartTime != null && totalDuration != null
-              ? GameTimerText(
-                  startTime: gameStartTime,
-                  totalDuration: totalDuration,
-                  isDarkMode: _isDarkMode,
-                )
-              : Text(
-                  '--:--',
-                  style: _isDarkMode
-                      ? AppTextStyles.robberHeading.copyWith(
-                          color: AppColors.white,
-                        )
-                      : AppTextStyles.heading_20.copyWith(
-                          color: AppColors.black,
-                        ),
-                ),
-          SizedBox(height: 6.h),
-          LocationRevealCountdown(
-            nextRevealTime: nextRevealTime,
-            intervalMinutes: interval,
-            isDarkMode: _isDarkMode,
-          ),
-        ],
+      titleWidget: GameTimerText(
+        startTime: gameStartTime,
+        totalDuration: totalDuration,
+        policeWaitMinutes: participantInfo?.policeWaitMinutes,
+        locationRevealIntervalMinutes: interval,
+        isDarkMode: _isDarkMode,
       ),
       actions: [
         if (_showChat)

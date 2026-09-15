@@ -118,15 +118,23 @@ class _AppPopupState extends State<AppPopup> with WidgetsBindingObserver {
     _autoCloseTimer?.cancel();
     final remaining = _closeTime!.difference(DateTime.now());
     if (remaining <= Duration.zero) {
-      _popIfCurrent();
+      _closePopup();
     } else {
-      _autoCloseTimer = Timer(remaining, _popIfCurrent);
+      _autoCloseTimer = Timer(remaining, _closePopup);
     }
   }
 
-  void _popIfCurrent() {
-    if (mounted && ModalRoute.of(context)?.isCurrent == true) {
-      Navigator.of(context).pop();
+  void _closePopup() {
+    if (!mounted) return;
+    final route = ModalRoute.of(context);
+    if (route == null || !route.isActive) return;
+
+    final navigator = Navigator.of(context);
+    if (route.isCurrent) {
+      navigator.pop();
+    } else {
+      // 다른 팝업에 가려져 있어도 만료된 자신의 라우트만 닫는다.
+      navigator.removeRoute(route);
     }
   }
 
