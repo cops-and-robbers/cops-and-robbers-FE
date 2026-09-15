@@ -15,7 +15,7 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/community_chat_rooms_provider.dart';
 import '../providers/community_provider.dart';
 import 'community_chat_room_tile.dart';
-import 'community_native_ad.dart';
+import 'community_ad_list.dart';
 
 /// 내 모임 탭 본문 — 참여 중인 채팅방 목록
 ///
@@ -59,61 +59,27 @@ class CommunityChatRoomList extends ConsumerWidget {
       ),
       data: (list) => AppRefreshControl(
         onRefresh: () => _refresh(context, ref),
-        child: list.isEmpty
-            // 컨텐츠가 뷰포트를 다 채우지 않아도 당길 수 있어야 하므로
-            // 남는 높이를 채운다 (community_feed_list와 같은 트리).
-            ? CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: CommunityNativeAd(
-                      margin: EdgeInsets.all(AppSpacing.horizontal16),
-                    ),
-                  ),
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _centered(
-                      EmptyState(message: l10n.communityChatRoomsEmpty),
-                    ),
-                  ),
-                ],
-              )
-            : ListView.separated(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.only(
-                  left: AppSpacing.horizontal16,
-                  right: AppSpacing.horizontal16,
-                  top: AppSpacing.vertical16,
-                  bottom: bottomPadding + AppSpacing.vertical16,
-                ),
-                itemCount: list.length,
-                separatorBuilder: (_, _) =>
-                    SizedBox(height: AppSpacing.vertical14),
-                itemBuilder: (context, i) => Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (i == 0)
-                      CommunityNativeAd(
-                        margin: EdgeInsets.only(bottom: AppSpacing.vertical14),
-                      ),
-                    CommunityChatRoomTile(
-                      room: list[i],
-                      now: ref.read(clockProvider)(),
-                      // 게시글 카드와 같은 방식으로 진동은 호출부가 준다.
-                      onTap: () {
-                        VibrationService.instance().buttonTap();
-                        context.push(
-                          RoutePaths.communityChatWithId(list[i].postId),
-                        );
-                      },
-                    ),
-                    if ((i + 1) % 5 == 0)
-                      CommunityNativeAd(
-                        margin: EdgeInsets.only(top: AppSpacing.vertical14),
-                      ),
-                  ],
-                ),
-              ),
+        child: CommunityAdList(
+          padding: EdgeInsets.only(
+            left: AppSpacing.horizontal16,
+            right: AppSpacing.horizontal16,
+            bottom: bottomPadding + AppSpacing.vertical16,
+          ),
+          spacing: AppSpacing.vertical14,
+          emptyState: _centered(
+            EmptyState(message: l10n.communityChatRoomsEmpty),
+          ),
+          itemCount: list.length,
+          itemBuilder: (context, i) => CommunityChatRoomTile(
+            room: list[i],
+            now: ref.read(clockProvider)(),
+            // 게시글 카드와 같은 방식으로 진동은 호출부가 준다.
+            onTap: () {
+              VibrationService.instance().buttonTap();
+              context.push(RoutePaths.communityChatWithId(list[i].postId));
+            },
+          ),
+        ),
       ),
     );
   }

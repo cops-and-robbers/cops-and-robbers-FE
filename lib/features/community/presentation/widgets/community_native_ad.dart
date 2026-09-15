@@ -24,22 +24,32 @@ class CommunityNativeAd extends ConsumerWidget {
     if (!(ref.watch(adsEnabledProvider).valueOrNull ?? false)) {
       return const SizedBox.shrink();
     }
-    return _NativeAdCard(
-      key: ValueKey((
-        Localizations.localeOf(context),
-        MediaQuery.textScalerOf(context),
-      )),
-      service: ref.read(adServiceProvider),
-      margin: margin,
+    return LayoutBuilder(
+      builder: (context, constraints) => _NativeAdCard(
+        key: ValueKey((
+          Localizations.localeOf(context),
+          MediaQuery.textScalerOf(context),
+          constraints.maxWidth - margin.horizontal,
+        )),
+        service: ref.read(adServiceProvider),
+        margin: margin,
+        width: constraints.maxWidth - margin.horizontal,
+      ),
     );
   }
 }
 
 class _NativeAdCard extends StatefulWidget {
-  const _NativeAdCard({super.key, required this.service, required this.margin});
+  const _NativeAdCard({
+    super.key,
+    required this.service,
+    required this.margin,
+    required this.width,
+  });
 
   final AdService service;
   final EdgeInsets margin;
+  final double width;
 
   @override
   State<_NativeAdCard> createState() => _NativeAdCardState();
@@ -61,13 +71,20 @@ class _NativeAdCardState extends State<_NativeAdCard> {
     final bodySize = scaler.scale(AppTextStyles.tag_12.fontSize!);
     final captionSize = scaler.scale(AppTextStyles.tag_10.fontSize!);
     // MediaView는 동영상 최소 크기인 120×120을 보장한다.
+    // 위아래 1pt씩 확보해 화면 좌표 변환 시 광고 경계 이탈 판정을 피한다.
     _height =
-        32 +
-        math.max(24, captionSize * 1.4) +
-        8 +
-        math.max(120, headlineSize * 2.4 + bodySize * 3.6 + 24);
+        2 +
+        math.max(
+          120,
+          math.max(headlineSize * 1.4, captionSize * 1.4 + 4) +
+              bodySize * 1.4 +
+              math.max(24, math.max(captionSize, bodySize) * 1.4) +
+              8,
+        );
     unawaited(
       _load({
+        'width': widget.width,
+        'height': _height,
         'adLabel': AppLocalizations.of(context).nativeAdLabel,
         'headlineSize': headlineSize,
         'bodySize': bodySize,

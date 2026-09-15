@@ -378,7 +378,7 @@ void main() {
       await tester.pumpAndSettle();
 
       repo.delay = const Duration(milliseconds: 200);
-      await tester.drag(find.byType(ListView), const Offset(0, 300));
+      await tester.drag(find.text('도착한 분 계신가요?'), const Offset(0, 300));
       await tester.pump();
 
       // 아직 응답 전인데도 캐시된 칸이 그대로 보인다.

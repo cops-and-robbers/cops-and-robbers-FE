@@ -4,6 +4,7 @@ import 'package:cops_and_robbers/core/network/dio_client.dart';
 import 'package:cops_and_robbers/features/community/domain/entities/community_scope.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/widgets/community_feed_list.dart';
+import 'package:cops_and_robbers/features/community/presentation/widgets/community_native_ad.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +72,7 @@ void main() {
                       return CommunityFeedList(
                         scope: CommunityScope.all,
                         sort: ref.watch(selectedCommunitySortProvider),
+                        showAds: true,
                         emptyMessage: 'empty feed',
                       );
                     },
@@ -93,6 +95,12 @@ void main() {
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
         expect(find.text('empty feed'), fails ? findsNothing : findsOneWidget);
+        if (!fails) {
+          expect(
+            find.byType(CommunityNativeAd, skipOffstage: false),
+            findsOneWidget,
+          );
+        }
         expect(find.text('인기순').hitTestable(), findsOneWidget);
         await tester.tap(find.text('인기순'));
         await tester.pumpAndSettle();
