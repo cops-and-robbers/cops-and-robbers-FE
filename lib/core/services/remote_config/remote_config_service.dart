@@ -16,6 +16,8 @@ import 'remote_config_keys.dart';
 /// - `maintenance` (bool): 서버 점검 모드
 /// - `maintenance_message` (String): 점검 안내 메시지 (시간 등)
 /// - `ads_enabled` (bool): 광고 전역 스위치 (kill switch)
+/// - `community_ads_enabled` (bool): 커뮤니티 목록·상세 광고 스위치
+/// - `game_end_ads_enabled` (bool): 게임 종료 전면 광고 스위치
 /// - `banner_enabled` (bool): 원격 배너 활성 여부
 /// - `banner_image_url` (String): 원격 배너 이미지 주소
 /// - `banner_link_url` (String): 원격 배너 이동 링크
@@ -119,6 +121,16 @@ class RemoteConfigService {
   /// 미초기화(Firebase 실패 등) 시에도 false (광고 끔 = fail-safe)
   bool get adsEnabled =>
       _isInitialized && _remoteConfig.getBool(RemoteConfigKeys.adsEnabled);
+
+  /// 커뮤니티 하위 스위치. 미설정 시 기존 전역 스위치 동작을 유지한다.
+  bool get communityAdsEnabled =>
+      !_isInitialized ||
+      _remoteConfig.getBool(RemoteConfigKeys.communityAdsEnabled);
+
+  /// 게임 종료 전면 광고 하위 스위치.
+  bool get gameEndAdsEnabled =>
+      !_isInitialized ||
+      _remoteConfig.getBool(RemoteConfigKeys.gameEndAdsEnabled);
 
   /// 원격 배너 활성 여부
   bool get bannerEnabled =>

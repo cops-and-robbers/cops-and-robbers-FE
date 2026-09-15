@@ -4,6 +4,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
@@ -12,8 +14,10 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/ads/ad_service.dart';
 import '../../../../core/services/ads/ad_unit_ids.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../router/route_paths.dart';
+import '../../../../core/services/remote_config/remote_config_service.dart';
 
-/// 슬롯별 광고를 소유한다. OFF·미로드·실패 시 여백도 남기지 않는다.
+/// 슬롯별 광고를 소유하며 로딩·실패에도 같은 크기를 유지한다.
 class CommunityNativeAd extends ConsumerWidget {
   const CommunityNativeAd({super.key, this.margin = EdgeInsets.zero});
 
@@ -21,7 +25,13 @@ class CommunityNativeAd extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!(ref.watch(adsEnabledProvider).valueOrNull ?? false)) {
+    final config = RemoteConfigService.instance;
+    final enabled =
+        ref.watch(adsEnabledProvider).valueOrNull ?? config.adsEnabled;
+    final communityEnabled =
+        ref.watch(communityAdsEnabledProvider).valueOrNull ??
+        config.communityAdsEnabled;
+    if (!enabled || !communityEnabled) {
       return const SizedBox.shrink();
     }
     return LayoutBuilder(
@@ -55,10 +65,13 @@ class _NativeAdCard extends StatefulWidget {
   State<_NativeAdCard> createState() => _NativeAdCardState();
 }
 
+enum _AdPhase { loading, loaded, fallback }
+
 class _NativeAdCardState extends State<_NativeAdCard> {
   NativeAd? _ad;
   bool _started = false;
-  bool _loaded = false;
+  _AdPhase _phase = _AdPhase.loading;
+  Timer? _timeout;
   late double _height;
 
   @override
@@ -81,6 +94,7 @@ class _NativeAdCardState extends State<_NativeAdCard> {
               math.max(24, math.max(captionSize, bodySize) * 1.4) +
               8,
         );
+    _timeout = Timer(const Duration(seconds: 15), _showFallback);
     unawaited(
       _load({
         'width': widget.width,
@@ -100,7 +114,11 @@ class _NativeAdCardState extends State<_NativeAdCard> {
   Future<void> _load(Map<String, Object> options) async {
     try {
       await widget.service.initialize();
-      if (!mounted || !widget.service.isInitialized) return;
+      if (!mounted || _phase != _AdPhase.loading) return;
+      if (!widget.service.isInitialized) {
+        _showFallback();
+        return;
+      }
       final ad = NativeAd(
         adUnitId: AdUnitIds.communityNative,
         factoryId: 'communityNative',
@@ -113,12 +131,12 @@ class _NativeAdCardState extends State<_NativeAdCard> {
         listener: NativeAdListener(
           onAdLoaded: (ad) {
             if (!mounted || !identical(_ad, ad)) return;
-            setState(() => _loaded = true);
+            _timeout?.cancel();
+            setState(() => _phase = _AdPhase.loaded);
           },
           onAdFailedToLoad: (ad, error) {
             debugPrint('[CommunityNativeAd] 로드 실패: $error');
-            if (identical(_ad, ad)) _ad = null;
-            unawaited(ad.dispose());
+            if (identical(_ad, ad)) _showFallback();
           },
         ),
       );
@@ -126,14 +144,22 @@ class _NativeAdCardState extends State<_NativeAdCard> {
       await ad.load();
     } catch (error) {
       debugPrint('[CommunityNativeAd] 광고 없이 진행: $error');
-      final ad = _ad;
-      _ad = null;
-      if (ad != null) unawaited(ad.dispose());
+      _showFallback();
     }
+  }
+
+  void _showFallback() {
+    if (!mounted || _phase != _AdPhase.loading) return;
+    _timeout?.cancel();
+    final ad = _ad;
+    _ad = null;
+    if (ad != null) unawaited(ad.dispose());
+    setState(() => _phase = _AdPhase.fallback);
   }
 
   @override
   void dispose() {
+    _timeout?.cancel();
     final ad = _ad;
     _ad = null;
     if (ad != null) unawaited(ad.dispose());
@@ -143,7 +169,6 @@ class _NativeAdCardState extends State<_NativeAdCard> {
   @override
   Widget build(BuildContext context) {
     final ad = _ad;
-    if (!_loaded || ad == null) return const SizedBox.shrink();
     return Container(
       margin: widget.margin,
       height: _height,
@@ -153,7 +178,74 @@ class _NativeAdCardState extends State<_NativeAdCard> {
         borderRadius: AppRadius.large,
         boxShadow: AppShadows.ver2,
       ),
-      child: AdWidget(ad: ad),
+      child: switch (_phase) {
+        _AdPhase.loaded => AdWidget(ad: ad!),
+        _AdPhase.loading => ExcludeSemantics(
+          child: Shimmer.fromColors(
+            enabled: !MediaQuery.disableAnimationsOf(context),
+            baseColor: AppColors.black100,
+            highlightColor: AppColors.black200,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(height: 16, color: AppColors.black100),
+                        const SizedBox(height: 10),
+                        FractionallySizedBox(
+                          widthFactor: .75,
+                          child: Container(
+                            height: 12,
+                            color: AppColors.black100,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          width: 64,
+                          height: 12,
+                          color: AppColors.black100,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Container(width: 80, height: 80, color: AppColors.black100),
+                ],
+              ),
+            ),
+          ),
+        ),
+        _AdPhase.fallback => Material(
+          color: Colors.transparent,
+          borderRadius: AppRadius.large,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => context.pushNamed(RoutePaths.communityCreateName),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              child: Row(
+                children: [
+                  const Icon(Icons.edit_outlined, color: AppColors.blue),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context).communityCreatePost,
+                      style: AppTextStyles.label_16.copyWith(
+                        color: AppColors.blue,
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, color: AppColors.blue),
+                ],
+              ),
+            ),
+          ),
+        ),
+      },
     );
   }
 }

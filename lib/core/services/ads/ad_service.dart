@@ -19,6 +19,17 @@ final adsEnabledProvider = StreamProvider.autoDispose<bool>((ref) async* {
   }
 });
 
+/// 커뮤니티 목록·상세 광고에만 적용하는 하위 스위치.
+final communityAdsEnabledProvider = StreamProvider.autoDispose<bool>((
+  ref,
+) async* {
+  final config = RemoteConfigService.instance;
+  yield config.communityAdsEnabled;
+  await for (final _ in config.onConfigUpdated) {
+    yield config.communityAdsEnabled;
+  }
+});
+
 /// 로드된 전면 광고 1건의 경계 인터페이스 — google_mobile_ads SDK 경계.
 /// 테스트에서는 fake 구현으로 대체한다.
 abstract class LoadedInterstitial {
@@ -47,7 +58,10 @@ enum AdShowResult {
 /// 광고 서비스 Provider (앱 생애주기 동안 단일 인스턴스 — 로드된 광고 보관)
 @Riverpod(keepAlive: true)
 AdService adService(Ref ref) {
-  return AdService(isAdsEnabled: () => RemoteConfigService.instance.adsEnabled);
+  final config = RemoteConfigService.instance;
+  return AdService(
+    isAdsEnabled: () => config.adsEnabled && config.gameEndAdsEnabled,
+  );
 }
 
 /// AdMob 전면 광고 서비스
