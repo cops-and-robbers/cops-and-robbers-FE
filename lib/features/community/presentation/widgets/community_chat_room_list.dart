@@ -15,6 +15,7 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/community_chat_rooms_provider.dart';
 import '../providers/community_provider.dart';
 import 'community_chat_room_tile.dart';
+import 'community_native_ad.dart';
 
 /// 내 모임 탭 본문 — 참여 중인 채팅방 목록
 ///
@@ -64,6 +65,11 @@ class CommunityChatRoomList extends ConsumerWidget {
             ? CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
+                  SliverToBoxAdapter(
+                    child: CommunityNativeAd(
+                      margin: EdgeInsets.all(AppSpacing.horizontal16),
+                    ),
+                  ),
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: _centered(
@@ -83,17 +89,29 @@ class CommunityChatRoomList extends ConsumerWidget {
                 itemCount: list.length,
                 separatorBuilder: (_, _) =>
                     SizedBox(height: AppSpacing.vertical14),
-                itemBuilder: (context, i) => CommunityChatRoomTile(
-                  room: list[i],
-                  now: ref.read(clockProvider)(),
-                  // 게시글 카드(community_feed_list)와 같은 방식 — 진동은
-                  // 호출부가 준다.
-                  onTap: () {
-                    VibrationService.instance().buttonTap();
-                    context.push(
-                      RoutePaths.communityChatWithId(list[i].postId),
-                    );
-                  },
+                itemBuilder: (context, i) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (i == 0)
+                      CommunityNativeAd(
+                        margin: EdgeInsets.only(bottom: AppSpacing.vertical14),
+                      ),
+                    CommunityChatRoomTile(
+                      room: list[i],
+                      now: ref.read(clockProvider)(),
+                      // 게시글 카드와 같은 방식으로 진동은 호출부가 준다.
+                      onTap: () {
+                        VibrationService.instance().buttonTap();
+                        context.push(
+                          RoutePaths.communityChatWithId(list[i].postId),
+                        );
+                      },
+                    ),
+                    if ((i + 1) % 5 == 0)
+                      CommunityNativeAd(
+                        margin: EdgeInsets.only(top: AppSpacing.vertical14),
+                      ),
+                  ],
                 ),
               ),
       ),

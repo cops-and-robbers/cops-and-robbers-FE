@@ -35,6 +35,7 @@ import '../providers/community_detail_provider.dart';
 import '../providers/community_provider.dart';
 import '../widgets/community_comment_input.dart';
 import '../widgets/community_comment_list.dart';
+import '../widgets/community_native_ad.dart';
 import '../community_report_action.dart';
 import '../widgets/community_map_preview.dart';
 import '../widgets/community_post_menu.dart';
@@ -227,6 +228,14 @@ class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  CommunityNativeAd(
+                    key: ValueKey(widget.postId),
+                    margin: EdgeInsets.only(
+                      left: AppSpacing.horizontal16,
+                      right: AppSpacing.horizontal16,
+                      top: AppSpacing.vertical16,
                     ),
                   ),
                   // 목록만 좌우 패딩 밖에 둔다 — 답글 대상 댓글의 배경색이 화면
