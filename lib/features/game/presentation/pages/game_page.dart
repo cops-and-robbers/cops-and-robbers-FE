@@ -1549,6 +1549,18 @@ class _GamePageState extends ConsumerState<GamePage>
               },
             ),
       );
+      // 개인 기록도 같이 — 「개인」 탭을 열 때 재요청이 없게. 실패는 전체 탭과 독립이라
+      // 여기서도 소비만 한다.
+      unawaited(
+        ref
+            .read(myGameRecordProvider(gameResultId).future)
+            .then<void>(
+              (_) {},
+              onError: (Object e, StackTrace st) {
+                debugPrint('[GamePage] ⚠️ 개인 기록 사전 조회 실패: $e');
+              },
+            ),
+      );
     }
 
     // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)

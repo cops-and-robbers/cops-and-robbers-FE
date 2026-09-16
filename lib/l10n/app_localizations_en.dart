@@ -1614,6 +1614,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelNoRoute => 'No movement recorded';
 
   @override
+  String get tabResultTeam => 'All';
+
+  @override
+  String get tabResultMine => 'Mine';
+
+  @override
+  String get labelNickname => 'Nickname';
+
+  @override
+  String get labelMyArrestCount => 'My arrests';
+
+  @override
+  String get labelTeamArrestShare => 'Team arrest share';
+
+  @override
+  String get labelMyArrestedCount => 'Times caught';
+
+  @override
+  String get labelFinalStatus => 'Final status';
+
+  @override
+  String get statusAlive => 'Alive';
+
+  @override
+  String get statusJailed => 'Jailed';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return 'Until next Robber location reveal: $formatted';
   }

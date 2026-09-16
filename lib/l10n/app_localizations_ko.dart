@@ -1510,6 +1510,33 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelNoRoute => '이동 기록 없음';
 
   @override
+  String get tabResultTeam => '전체';
+
+  @override
+  String get tabResultMine => '개인';
+
+  @override
+  String get labelNickname => '닉네임';
+
+  @override
+  String get labelMyArrestCount => '내 체포 횟수';
+
+  @override
+  String get labelTeamArrestShare => '팀 체포 기여도';
+
+  @override
+  String get labelMyArrestedCount => '잡힌 횟수';
+
+  @override
+  String get labelFinalStatus => '종료 시점 상태';
+
+  @override
+  String get statusAlive => '생존';
+
+  @override
+  String get statusJailed => '수감';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return '다음 도둑 위치 공개까지 $formatted';
   }

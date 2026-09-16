@@ -18,7 +18,9 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../../core/widgets/toggles/segmented_toggle.dart';
 import '../../domain/entities/game_result_entity.dart';
+import '../../domain/entities/my_game_record_entity.dart';
 import '../providers/game_result_provider.dart';
 import '../providers/player_game_record_provider.dart';
 import 'record_format.dart';
@@ -71,6 +73,21 @@ String resolveRightArmAsset({
   );
 }
 
+/// 종료 시점 상태 → 개인 탭 표시 문구.
+///
+/// 도둑만 의미가 있다(경찰은 늘 ALIVE). 게임 중 상태(WAITING·POLICE_WAITING)는
+/// 종료 시점에 올 수 없으므로 값 없음 `-`로 둔다.
+String finalStatusLabel(AppLocalizations l10n, String status) {
+  switch (status) {
+    case 'ALIVE':
+      return l10n.statusAlive;
+    case 'JAILED':
+      return l10n.statusJailed;
+    default:
+      return '-';
+  }
+}
+
 // ============================================================
 // 위젯
 // ============================================================
@@ -80,8 +97,9 @@ String resolveRightArmAsset({
 /// 프로젝트 표준 `AppDialog` 레이아웃(margin/padding/radius/버튼 스타일/애니메이션)을
 /// 그대로 따르며, 다이얼로그 상단 위에 팀/결과에 맞는 캐릭터 SVG를 오버레이로 얹는다.
 ///
-/// - 승/패 타이틀 + 통계 3행 + 액션 버튼 2개
+/// - 승/패 타이틀 + 전체/개인 토글 + 통계 3행 + 액션 버튼 2개
 /// - `gameResultProvider(gameResultId)` 구독 → AsyncValue로 통계 분기
+/// - `myGameRecordProvider(gameResultId)` 구독 → 「개인」 탭 3행 (실패는 전체 탭과 독립)
 /// - 캐릭터 오버레이는 Stack + Positioned + Clip.none으로 다이얼로그 위로 튀어나옴
 class GameOverResultDialog extends ConsumerWidget {
   const GameOverResultDialog({
@@ -448,6 +466,10 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
   /// 저장/공유 await가 남아 있어, 연타 시 권한 요청·갤러리 저장이 중복 호출된다.
   bool _shareFlowBusy = false;
 
+  /// 선택 탭 — 0 전체(기본), 1 개인. 기본을 전체로 두는 이유: 지금 카드와 같아
+  /// 공유 이미지가 안 바뀌고, 개인 탭은 한 번 넘기면 된다.
+  int _tabIndex = 0;
+
   /// 카드 폭 — 지도(콘텐츠 폭)가 좌우 패딩과 함께 이 값에 맞춰진다.
   static const double _cardWidth = 320;
 
@@ -521,6 +543,7 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
   @override
   Widget build(BuildContext context) {
     final resultAsync = ref.watch(gameResultProvider(widget.gameResultId));
+    final myRecordAsync = ref.watch(myGameRecordProvider(widget.gameResultId));
     final record = ref.watch(playerGameRecordNotifierProvider);
 
     final isWin = widget.myTeam == widget.winnerTeam;
@@ -557,6 +580,27 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                 onShare: _onShare,
               ),
               SizedBox(height: AppSpacing.vertical12),
+              // 캡처 이미지에는 UI 크롬(토글)이 찍히면 안 된다. Opacity는 자리를 남겨
+              // 제목-날짜 사이에 빈 띠가 생기므로(버튼/로고 교체와 달리 자기 행을
+              // 차지) Offstage로 자리째 접는다 — 뒤 여백까지 같이 접어야 빈 띠가 안 남는다.
+              Offstage(
+                offstage: _capturing,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SegmentedToggle(
+                      labels: [
+                        AppLocalizations.of(context).tabResultTeam,
+                        AppLocalizations.of(context).tabResultMine,
+                      ],
+                      selectedIndex: _tabIndex,
+                      onChanged: (index) => setState(() => _tabIndex = index),
+                      isDarkMode: widget.isDarkMode,
+                    ),
+                    SizedBox(height: AppSpacing.vertical12),
+                  ],
+                ),
+              ),
               // 본문(날짜·거리·지도·통계)만 좌우로 한 단계 더 들여쓴다.
               // 타이틀 행과 버튼은 카드 콘텐츠 폭을 그대로 쓴다.
               Padding(
@@ -622,7 +666,10 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                       ),
                       child: _StatsSection(
                         isDarkMode: widget.isDarkMode,
+                        isRobber: isRobber,
+                        tabIndex: _tabIndex,
                         resultAsync: resultAsync,
+                        myRecordAsync: myRecordAsync,
                       ),
                     ),
                   ],
@@ -783,65 +830,100 @@ class _ResultTitle extends StatelessWidget {
 }
 
 class _StatsSection extends StatelessWidget {
-  const _StatsSection({required this.isDarkMode, required this.resultAsync});
+  const _StatsSection({
+    required this.isDarkMode,
+    required this.isRobber,
+    required this.tabIndex,
+    required this.resultAsync,
+    required this.myRecordAsync,
+  });
 
   final bool isDarkMode;
+
+  /// 팀 갈림은 다이얼로그가 받은 `myTeam` 기준이다. `/me.team`도 같은 값이지만
+  /// 로딩 전에는 없어서, 그 사이에 팀에 맞는 라벨로 placeholder를 못 그린다.
+  final bool isRobber;
+
+  /// 0 전체 · 1 개인
+  final int tabIndex;
   final AsyncValue<GameResultEntity> resultAsync;
+  final AsyncValue<MyGameRecordEntity> myRecordAsync;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    return tabIndex == 0 ? _teamRows(l10n) : _myRows(l10n);
+  }
+
+  /// 전체 탭 — 기존 3행 그대로. 순서는 시안 기준: 게임 진행 시간 → 체포 횟수 → 남은 도둑.
+  Widget _teamRows(AppLocalizations l10n) {
+    final labels = [
+      l10n.fieldGamePlaytime,
+      l10n.labelArrestCount,
+      l10n.fieldRemainingRobbers,
+    ];
     return resultAsync.when(
-      // 순서는 시안 기준: 게임 진행 시간 → 체포 횟수 → 남은 도둑.
-      // placeholder 분기도 같은 순서를 유지해야 로딩→완료 전환에서 행이 튀지 않는다.
-      data: (entity) => Column(
-        children: [
-          _StatRow(
-            isDarkMode: isDarkMode,
-            label: l10n.fieldGamePlaytime,
-            value: formatDuration(entity.durationSeconds),
-          ),
-          SizedBox(height: AppSpacing.vertical12),
-          // 단위(회·명)는 시안에 없어 숫자만 노출한다. 라벨이 이미 의미를 말해준다.
-          _StatRow(
-            isDarkMode: isDarkMode,
-            label: l10n.labelArrestCount,
-            value: '${entity.totalArrestCount}',
-          ),
-          SizedBox(height: AppSpacing.vertical12),
-          _StatRow(
-            isDarkMode: isDarkMode,
-            label: l10n.fieldRemainingRobbers,
-            value: '${entity.remainingRobberCount}',
-          ),
-        ],
-      ),
-      loading: () => _placeholderRows(context),
-      error: (_, _) => _placeholderRows(context),
+      data: (entity) => _rows(labels, [
+        formatDuration(entity.durationSeconds),
+        // 단위(회·명)는 시안에 없어 숫자만 노출한다. 라벨이 이미 의미를 말해준다.
+        '${entity.totalArrestCount}',
+        '${entity.remainingRobberCount}',
+      ]),
+      loading: () => _placeholderRows(labels),
+      error: (_, _) => _placeholderRows(labels),
     );
   }
 
-  Widget _placeholderRows(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+  /// 개인 탭 — 닉네임이 첫 행. 팀에 로직상 불가능한 값(경찰의 잡힌 횟수,
+  /// 도둑의 체포 횟수)은 두지 않는다.
+  Widget _myRows(AppLocalizations l10n) {
+    final labels = isRobber
+        ? [l10n.labelNickname, l10n.labelMyArrestedCount, l10n.labelFinalStatus]
+        : [
+            l10n.labelNickname,
+            l10n.labelMyArrestCount,
+            l10n.labelTeamArrestShare,
+          ];
+
+    return myRecordAsync.when(
+      data: (me) => _rows(
+        labels,
+        isRobber
+            ? [
+                me.nickname,
+                '${me.arrestedCount}',
+                finalStatusLabel(l10n, me.status),
+              ]
+            : [
+                me.nickname,
+                '${me.arrestCount}',
+                // 기여도는 결과 API의 팀 합계가 있어야 나온다 — 없으면 값 없음.
+                resultAsync.maybeWhen(
+                  data: (entity) => formatTeamArrestShare(
+                    mine: me.arrestCount,
+                    total: entity.totalArrestCount,
+                  ),
+                  orElse: () => '-',
+                ),
+              ],
+      ),
+      loading: () => _placeholderRows(labels),
+      error: (_, _) => _placeholderRows(labels),
+    );
+  }
+
+  /// 로딩·실패 placeholder — 같은 라벨 순서로 값만 `-`. 로딩→완료 전환에서 행이 안 튄다.
+  Widget _placeholderRows(List<String> labels) =>
+      _rows(labels, List.filled(labels.length, '-'));
+
+  Widget _rows(List<String> labels, List<String> values) {
+    assert(labels.length == values.length);
     return Column(
       children: [
-        _StatRow(
-          isDarkMode: isDarkMode,
-          label: l10n.fieldGamePlaytime,
-          value: '-',
-        ),
-        SizedBox(height: AppSpacing.vertical12),
-        _StatRow(
-          isDarkMode: isDarkMode,
-          label: l10n.labelArrestCount,
-          value: '-',
-        ),
-        SizedBox(height: AppSpacing.vertical12),
-        _StatRow(
-          isDarkMode: isDarkMode,
-          label: l10n.fieldRemainingRobbers,
-          value: '-',
-        ),
+        for (var i = 0; i < labels.length; i++) ...[
+          if (i > 0) SizedBox(height: AppSpacing.vertical12),
+          _StatRow(isDarkMode: isDarkMode, label: labels[i], value: values[i]),
+        ],
       ],
     );
   }
@@ -873,7 +955,17 @@ class _StatRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: labelStyle),
-        Text(value, style: valueStyle),
+        SizedBox(width: AppSpacing.horizontal8),
+        // 값에 닉네임(최대 20자)이 올 수 있다 — 라벨은 짧게 통제되므로 값이 줄어든다.
+        Flexible(
+          child: Text(
+            value,
+            style: valueStyle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+          ),
+        ),
       ],
     );
   }
