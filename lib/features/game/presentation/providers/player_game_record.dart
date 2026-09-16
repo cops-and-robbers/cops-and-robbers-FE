@@ -17,12 +17,6 @@ class PlayerGameRecord with _$PlayerGameRecord {
     /// 누적 이동 거리(미터)
     @Default(0.0) double distanceMeters,
 
-    /// 경찰: 내가 잡은 도둑 수 (STOMP 확정 기준)
-    @Default(0) int myArrestCount,
-
-    /// 도둑: 내가 탈옥한 횟수 (STOMP 확정 기준)
-    @Default(0) int myEscapeCount,
-
     /// 경찰: 내가 도둑을 잡은 위치들 (체포 확정 순간의 내 위치)
     @Default(<LatLngModel>[]) List<LatLngModel> arrestLocations,
 

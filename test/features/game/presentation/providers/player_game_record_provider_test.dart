@@ -48,28 +48,17 @@ void main() {
       expect(state.distanceMeters, 0.0);
     });
 
-    test('increments_personal_arrest_and_escape_counts', () {
-      notifier()
-        ..incrementArrest()
-        ..incrementArrest()
-        ..incrementEscape();
-
-      final state = container.read(playerGameRecordNotifierProvider);
-      expect(state.myArrestCount, 2);
-      expect(state.myEscapeCount, 1);
-    });
-
     test('reset_clears_all_accumulated_data', () {
       notifier()
         ..addPoint(a)
         ..addPoint(b)
-        ..incrementArrest()
+        ..recordArrest()
         ..reset();
 
       final state = container.read(playerGameRecordNotifierProvider);
       expect(state.route, isEmpty);
       expect(state.distanceMeters, 0.0);
-      expect(state.myArrestCount, 0);
+      expect(state.arrestLocations, isEmpty);
     });
   });
 }
