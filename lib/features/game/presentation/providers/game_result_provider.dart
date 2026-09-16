@@ -8,7 +8,9 @@ import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/network/required_terms_interceptor.dart';
 import '../../../../core/storage/secure_token_storage.dart';
 import '../../data/datasources/game_result_api_datasource.dart';
+import '../../data/models/my_game_record_response_model.dart';
 import '../../domain/entities/game_result_entity.dart';
+import '../../domain/entities/my_game_record_entity.dart';
 
 part 'game_result_provider.g.dart';
 
@@ -92,6 +94,25 @@ Future<GameResultEntity> gameResult(Ref ref, int gameResultId) async {
       totalArrestCount: response.totalArrestCount,
       remainingRobberCount: response.remainingRobberCount,
     );
+  } on DioException catch (e) {
+    throw DioExceptionHandler.handle(e);
+  }
+}
+
+/// 내 개인 기록 조회 FutureProvider (family by gameResultId)
+///
+/// `GET /api/game-results/{gameResultId}/me` 응답을 캐시합니다.
+/// [gameResult]와 같은 이유로 `keepAlive: true`이며, GAME_OVER 직후 같이 사전 트리거해
+/// 결과 다이얼로그의 「개인」 탭이 열릴 때 재요청이 없게 합니다.
+///
+/// 실패는 [gameResult]와 독립이다 — 이 provider가 error여도 「전체」 탭은 그대로 뜬다.
+@Riverpod(keepAlive: true)
+Future<MyGameRecordEntity> myGameRecord(Ref ref, int gameResultId) async {
+  try {
+    final response = await ref
+        .read(gameResultApiProvider)
+        .getMyGameRecord(gameResultId);
+    return response.toEntity();
   } on DioException catch (e) {
     throw DioExceptionHandler.handle(e);
   }
