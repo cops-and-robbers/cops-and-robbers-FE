@@ -43,6 +43,7 @@
 ### 3단계: 섹션별 작성
 
 **공통 요약 규칙**
+
 - 각 항목 한 줄 bullet, 전체 10줄 이내
 - 한국어: "~했습니다" 체
 - 영어: 자연스러운 영어
@@ -52,24 +53,27 @@
 - Android `<ko-KR>` 본문 = iOS `[한국어]` 본문 (텍스트 동일, 감싸는 형식만 다름)
 
 **Android 섹션** (`# [Android]` 헤더 + 3개 태그)
+
 - `<ko-KR>` / `<en-US>` / `<ja-JP>` 태그로 감싸기
 - 각 태그 안 첫 줄에 `vX.Y.Z`, 빈 줄, 요약 bullet
 - 세 언어 태그 전체를 하나의 `text` 코드 블록으로 감싸 통째로 복사할 수 있게 하기
 
 **iOS 섹션** (`# [iOS]` 헤더 + 3개 블록)
+
 - `[한국어]` / `[English]` / `[日本語]` 라벨 후 다음 줄에 `vX.Y.Z`, 빈 줄, 요약 bullet
 - 언어 라벨은 코드 블록 밖에 두고, 언어별 본문을 각각 `text` 코드 블록으로 감싸기
 
 **주요 변경사항 섹션** (`# [주요 변경사항 — 애플 제출용]` 헤더)
-- `[한국어]` / `[English]` 두 블록만 (일본어 제외)
-- 언어 라벨은 코드 블록 밖에 두고, 언어별 본문을 각각 `text` 코드 블록으로 감싸기
-- 한국어: "이번 버전의 주요 변경사항입니다." 도입문 + 번호 항목 + `-` 세부 불릿
-- 영어: "Key changes in this version:" 도입문 + 동일 구조
+
+- **하나의 `text` 코드 블록** 안에 `[한국어]`·`[English]` 라벨(일본어 제외)까지 함께 담아 한 번에 복사할 수 있게 하기 — 라벨을 코드 블록 밖에 따로 두지 않는다
+- 블록 안 순서: `[한국어]` 라벨 → 바로 다음 줄부터 한국어 본문(도입문 + 번호 항목 + `-` 세부 불릿) → 빈 줄 → 구분선 `---` → `[English]` 라벨 → 빈 줄 → 영어 본문(동일 구조)
+- 한국어: "이번 버전의 주요 변경사항입니다." 도입문
+- 영어: "Key changes in this version:" 도입문
 - 기존 변경 전/후 문구가 있으면 "기존/변경" (한국어), "Before/After" (영어) 형태로 포함
 
 ## 출력 형식
 
-````text
+```text
 # [Android]
 
 ```text
@@ -129,8 +133,8 @@ vX.Y.Z
 
 # [주요 변경사항 — 애플 제출용]
 
-[한국어]
 ```text
+[한국어]
 이번 버전의 주요 변경사항입니다.
 
 1. 항목 제목
@@ -138,10 +142,10 @@ vX.Y.Z
 
 2. 항목 제목
 - 세부 내용
-```
 
+---
 [English]
-```text
+
 Key changes in this version:
 
 1. Item Title
@@ -150,7 +154,7 @@ Key changes in this version:
 2. Item Title
 - Detail
 ```
-````
+```
 
 ## 파일 저장 및 문자 검증 (필수)
 
@@ -213,7 +217,7 @@ fix : 방 참여 시 자동 리다이렉트
 
 ### 출력 (`.release-note/v1.4.10.md`)
 
-````text
+```text
 # [Android]
 
 ```text
@@ -279,8 +283,8 @@ v1.4.10
 
 # [주요 변경사항 — 애플 제출용]
 
-[한국어]
 ```text
+[한국어]
 이번 버전의 주요 변경사항입니다.
 
 1. 튜토리얼 가이드 추가
@@ -295,10 +299,10 @@ v1.4.10
 4. 안정성 개선 및 버그 수정
 - 닉네임 변경 후 로딩이 종료되지 않던 문제를 수정했습니다.
 - 방 참여 시 자동으로 대기실 화면으로 이동합니다.
-```
 
+---
 [English]
-```text
+
 Key changes in this version:
 
 1. Tutorial Guide Added
@@ -314,10 +318,11 @@ Key changes in this version:
 - Fixed an issue where the loading indicator would not dismiss after updating a nickname.
 - The app now automatically navigates to the waiting room when joining a game.
 ```
-````
+```
 
 ## 출력 후
 
 - 릴리즈 노트 **본문 전체를 채팅에 다시 출력하지 않는다** (채팅 복사 시 자소 분리 위험).
 - 검증 스크립트의 `✅`/`❌` 결과와 **저장된 파일 경로만** 안내한다.
 - "콘솔에 붙여넣을 때는 채팅이 아니라 저장된 파일(`.release-note/vX.Y.Z.md`)을 열어 복사하세요"라고 한 줄 덧붙인다.
+
