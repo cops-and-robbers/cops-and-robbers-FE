@@ -21,3 +21,12 @@ String formatDuration(int seconds) {
   final s = seconds % 60;
   return '$m:${s.toString().padLeft(2, '0')}';
 }
+
+/// 팀 체포 기여도 — 내 체포 횟수 ÷ 팀 총 체포 횟수를 정수 %로.
+///
+/// 소수점은 쓰지 않는다(디자인 판정 2026-09-17: `3÷7 → 43%`). 반올림.
+/// 팀이 한 번도 안 잡았으면(0 나눗셈) 값이 없으므로 `-`.
+String formatTeamArrestShare({required int mine, required int total}) {
+  if (total <= 0) return '-';
+  return '${(mine * 100 / total).round()}%';
+}

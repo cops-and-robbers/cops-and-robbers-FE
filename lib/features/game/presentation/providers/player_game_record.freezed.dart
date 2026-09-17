@@ -23,12 +23,6 @@ mixin _$PlayerGameRecord {
   /// 누적 이동 거리(미터)
   double get distanceMeters => throw _privateConstructorUsedError;
 
-  /// 경찰: 내가 잡은 도둑 수 (STOMP 확정 기준)
-  int get myArrestCount => throw _privateConstructorUsedError;
-
-  /// 도둑: 내가 탈옥한 횟수 (STOMP 확정 기준)
-  int get myEscapeCount => throw _privateConstructorUsedError;
-
   /// 경찰: 내가 도둑을 잡은 위치들 (체포 확정 순간의 내 위치)
   List<LatLngModel> get arrestLocations => throw _privateConstructorUsedError;
 
@@ -55,8 +49,6 @@ abstract class $PlayerGameRecordCopyWith<$Res> {
   $Res call({
     List<LatLngModel> route,
     double distanceMeters,
-    int myArrestCount,
-    int myEscapeCount,
     List<LatLngModel> arrestLocations,
     List<LatLngModel> caughtLocations,
     DateTime? endedAt,
@@ -80,8 +72,6 @@ class _$PlayerGameRecordCopyWithImpl<$Res, $Val extends PlayerGameRecord>
   $Res call({
     Object? route = null,
     Object? distanceMeters = null,
-    Object? myArrestCount = null,
-    Object? myEscapeCount = null,
     Object? arrestLocations = null,
     Object? caughtLocations = null,
     Object? endedAt = freezed,
@@ -96,14 +86,6 @@ class _$PlayerGameRecordCopyWithImpl<$Res, $Val extends PlayerGameRecord>
                 ? _value.distanceMeters
                 : distanceMeters // ignore: cast_nullable_to_non_nullable
                       as double,
-            myArrestCount: null == myArrestCount
-                ? _value.myArrestCount
-                : myArrestCount // ignore: cast_nullable_to_non_nullable
-                      as int,
-            myEscapeCount: null == myEscapeCount
-                ? _value.myEscapeCount
-                : myEscapeCount // ignore: cast_nullable_to_non_nullable
-                      as int,
             arrestLocations: null == arrestLocations
                 ? _value.arrestLocations
                 : arrestLocations // ignore: cast_nullable_to_non_nullable
@@ -134,8 +116,6 @@ abstract class _$$PlayerGameRecordImplCopyWith<$Res>
   $Res call({
     List<LatLngModel> route,
     double distanceMeters,
-    int myArrestCount,
-    int myEscapeCount,
     List<LatLngModel> arrestLocations,
     List<LatLngModel> caughtLocations,
     DateTime? endedAt,
@@ -158,8 +138,6 @@ class __$$PlayerGameRecordImplCopyWithImpl<$Res>
   $Res call({
     Object? route = null,
     Object? distanceMeters = null,
-    Object? myArrestCount = null,
-    Object? myEscapeCount = null,
     Object? arrestLocations = null,
     Object? caughtLocations = null,
     Object? endedAt = freezed,
@@ -174,14 +152,6 @@ class __$$PlayerGameRecordImplCopyWithImpl<$Res>
             ? _value.distanceMeters
             : distanceMeters // ignore: cast_nullable_to_non_nullable
                   as double,
-        myArrestCount: null == myArrestCount
-            ? _value.myArrestCount
-            : myArrestCount // ignore: cast_nullable_to_non_nullable
-                  as int,
-        myEscapeCount: null == myEscapeCount
-            ? _value.myEscapeCount
-            : myEscapeCount // ignore: cast_nullable_to_non_nullable
-                  as int,
         arrestLocations: null == arrestLocations
             ? _value._arrestLocations
             : arrestLocations // ignore: cast_nullable_to_non_nullable
@@ -205,8 +175,6 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
   const _$PlayerGameRecordImpl({
     final List<LatLngModel> route = const <LatLngModel>[],
     this.distanceMeters = 0.0,
-    this.myArrestCount = 0,
-    this.myEscapeCount = 0,
     final List<LatLngModel> arrestLocations = const <LatLngModel>[],
     final List<LatLngModel> caughtLocations = const <LatLngModel>[],
     this.endedAt,
@@ -230,16 +198,6 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
   @override
   @JsonKey()
   final double distanceMeters;
-
-  /// 경찰: 내가 잡은 도둑 수 (STOMP 확정 기준)
-  @override
-  @JsonKey()
-  final int myArrestCount;
-
-  /// 도둑: 내가 탈옥한 횟수 (STOMP 확정 기준)
-  @override
-  @JsonKey()
-  final int myEscapeCount;
 
   /// 경찰: 내가 도둑을 잡은 위치들 (체포 확정 순간의 내 위치)
   final List<LatLngModel> _arrestLocations;
@@ -271,7 +229,7 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
 
   @override
   String toString() {
-    return 'PlayerGameRecord(route: $route, distanceMeters: $distanceMeters, myArrestCount: $myArrestCount, myEscapeCount: $myEscapeCount, arrestLocations: $arrestLocations, caughtLocations: $caughtLocations, endedAt: $endedAt)';
+    return 'PlayerGameRecord(route: $route, distanceMeters: $distanceMeters, arrestLocations: $arrestLocations, caughtLocations: $caughtLocations, endedAt: $endedAt)';
   }
 
   @override
@@ -282,10 +240,6 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
             const DeepCollectionEquality().equals(other._route, _route) &&
             (identical(other.distanceMeters, distanceMeters) ||
                 other.distanceMeters == distanceMeters) &&
-            (identical(other.myArrestCount, myArrestCount) ||
-                other.myArrestCount == myArrestCount) &&
-            (identical(other.myEscapeCount, myEscapeCount) ||
-                other.myEscapeCount == myEscapeCount) &&
             const DeepCollectionEquality().equals(
               other._arrestLocations,
               _arrestLocations,
@@ -302,8 +256,6 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
     runtimeType,
     const DeepCollectionEquality().hash(_route),
     distanceMeters,
-    myArrestCount,
-    myEscapeCount,
     const DeepCollectionEquality().hash(_arrestLocations),
     const DeepCollectionEquality().hash(_caughtLocations),
     endedAt,
@@ -325,8 +277,6 @@ abstract class _PlayerGameRecord implements PlayerGameRecord {
   const factory _PlayerGameRecord({
     final List<LatLngModel> route,
     final double distanceMeters,
-    final int myArrestCount,
-    final int myEscapeCount,
     final List<LatLngModel> arrestLocations,
     final List<LatLngModel> caughtLocations,
     final DateTime? endedAt,
@@ -339,14 +289,6 @@ abstract class _PlayerGameRecord implements PlayerGameRecord {
   /// 누적 이동 거리(미터)
   @override
   double get distanceMeters;
-
-  /// 경찰: 내가 잡은 도둑 수 (STOMP 확정 기준)
-  @override
-  int get myArrestCount;
-
-  /// 도둑: 내가 탈옥한 횟수 (STOMP 확정 기준)
-  @override
-  int get myEscapeCount;
 
   /// 경찰: 내가 도둑을 잡은 위치들 (체포 확정 순간의 내 위치)
   @override

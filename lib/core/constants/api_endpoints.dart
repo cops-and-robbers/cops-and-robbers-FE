@@ -131,6 +131,13 @@ class ApiEndpoints {
   static String gameResult(int gameResultId) =>
       '/api/game-results/$gameResultId';
 
+  /// 내 개인 기록 조회
+  ///
+  /// `GET /api/game-results/{gameResultId}/me` — 닉네임·팀·종료 시점 상태·
+  /// 내 체포 횟수·내가 잡힌 횟수·퇴장 시각. 토큰 사용자 기준이라 participantId를 받지 않는다.
+  static String myGameRecord(int gameResultId) =>
+      '/api/game-results/$gameResultId/me';
+
   // ============================================
   // User API - 사용자 정보
   // ============================================

@@ -312,10 +312,11 @@ class GameEventNotifier extends _$GameEventNotifier {
   int? _gameId;
   String? _team;
 
-  /// 로컬 플레이어 participantId — 개인 체포/탈옥 카운트 판정용.
+  /// 로컬 플레이어 participantId — 체포/탈옥 이벤트가 나(로컬)의 것인지 판정하고
+  /// 내가 잡은/잡힌 위치를 기록하는 데 쓴다.
   int? _myParticipantId;
 
-  /// game_page가 연결 시 1회 주입(개인 기록 카운트 판정용).
+  /// game_page가 연결 시 1회 주입(잡은/잡힌 위치 기록·로컬 이벤트 판정용).
   void setLocalParticipantId(int participantId) {
     _myParticipantId = participantId;
   }
@@ -926,9 +927,9 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().arrested();
-    // 내가 잡은 경우에만 개인 카운트 증가(STOMP 확정 기준).
+    // 내가 잡은 경우에만 잡은 위치 기록(STOMP 확정 기준).
     if (policePid != null && policePid == _myParticipantId) {
-      ref.read(playerGameRecordNotifierProvider.notifier).incrementArrest();
+      ref.read(playerGameRecordNotifierProvider.notifier).recordArrest();
     }
     // 내가 잡힌 경우(도둑) 잡힌 위치 기록.
     if (robberPid == _myParticipantId) {
@@ -965,10 +966,6 @@ class GameEventNotifier extends _$GameEventNotifier {
     );
     _startBannerTimer();
     VibrationService.instance().escaped();
-    // 내가 탈옥한 경우에만 개인 카운트 증가(STOMP 확정 기준).
-    if (escapedId == _myParticipantId) {
-      ref.read(playerGameRecordNotifierProvider.notifier).incrementEscape();
-    }
     debugPrint('[GameEventNotifier] ✅ ESCAPE 이벤트 → escaped: $escapedId');
   }
 
