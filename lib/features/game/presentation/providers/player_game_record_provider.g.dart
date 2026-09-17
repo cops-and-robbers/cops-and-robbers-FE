@@ -7,9 +7,9 @@ part of 'player_game_record_provider.dart';
 // **************************************************************************
 
 String _$playerGameRecordNotifierHash() =>
-    r'fb99d578f14f23866d9835038faee1b1fbccbad3';
+    r'cc9ffce8e208e80946136d5860de1104fa54cdf5';
 
-/// 게임 중 내 활동(경로·거리·개인 카운트)을 누적하는 휘발성 Notifier.
+/// 게임 중 내 활동(경로·거리)을 누적하는 휘발성 Notifier.
 ///
 /// `keepAlive: true` — 게임 종료 정리 시 위치 스트림이 결과 다이얼로그보다 먼저
 /// 종료되므로(game_page `_prepareGameOverPresentation`), 누적값을 이 provider에

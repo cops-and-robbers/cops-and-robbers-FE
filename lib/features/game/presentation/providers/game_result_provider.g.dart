@@ -266,5 +266,173 @@ class _GameResultProviderElement extends FutureProviderElement<GameResultEntity>
   int get gameResultId => (origin as GameResultProvider).gameResultId;
 }
 
+String _$myGameRecordHash() => r'0cdec9274762f344063f3189fa6f99885a8a89db';
+
+/// 내 개인 기록 조회 FutureProvider (family by gameResultId)
+///
+/// `GET /api/game-results/{gameResultId}/me` 응답을 캐시합니다.
+/// [gameResult]와 같은 이유로 `keepAlive: true`이며, GAME_OVER 직후 같이 사전 트리거해
+/// 결과 다이얼로그의 「개인」 탭이 열릴 때 재요청이 없게 합니다.
+///
+/// 실패는 [gameResult]와 독립이다 — 이 provider가 error여도 「전체」 탭은 그대로 뜬다.
+///
+/// Copied from [myGameRecord].
+@ProviderFor(myGameRecord)
+const myGameRecordProvider = MyGameRecordFamily();
+
+/// 내 개인 기록 조회 FutureProvider (family by gameResultId)
+///
+/// `GET /api/game-results/{gameResultId}/me` 응답을 캐시합니다.
+/// [gameResult]와 같은 이유로 `keepAlive: true`이며, GAME_OVER 직후 같이 사전 트리거해
+/// 결과 다이얼로그의 「개인」 탭이 열릴 때 재요청이 없게 합니다.
+///
+/// 실패는 [gameResult]와 독립이다 — 이 provider가 error여도 「전체」 탭은 그대로 뜬다.
+///
+/// Copied from [myGameRecord].
+class MyGameRecordFamily extends Family<AsyncValue<MyGameRecordEntity>> {
+  /// 내 개인 기록 조회 FutureProvider (family by gameResultId)
+  ///
+  /// `GET /api/game-results/{gameResultId}/me` 응답을 캐시합니다.
+  /// [gameResult]와 같은 이유로 `keepAlive: true`이며, GAME_OVER 직후 같이 사전 트리거해
+  /// 결과 다이얼로그의 「개인」 탭이 열릴 때 재요청이 없게 합니다.
+  ///
+  /// 실패는 [gameResult]와 독립이다 — 이 provider가 error여도 「전체」 탭은 그대로 뜬다.
+  ///
+  /// Copied from [myGameRecord].
+  const MyGameRecordFamily();
+
+  /// 내 개인 기록 조회 FutureProvider (family by gameResultId)
+  ///
+  /// `GET /api/game-results/{gameResultId}/me` 응답을 캐시합니다.
+  /// [gameResult]와 같은 이유로 `keepAlive: true`이며, GAME_OVER 직후 같이 사전 트리거해
+  /// 결과 다이얼로그의 「개인」 탭이 열릴 때 재요청이 없게 합니다.
+  ///
+  /// 실패는 [gameResult]와 독립이다 — 이 provider가 error여도 「전체」 탭은 그대로 뜬다.
+  ///
+  /// Copied from [myGameRecord].
+  MyGameRecordProvider call(int gameResultId) {
+    return MyGameRecordProvider(gameResultId);
+  }
+
+  @override
+  MyGameRecordProvider getProviderOverride(
+    covariant MyGameRecordProvider provider,
+  ) {
+    return call(provider.gameResultId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'myGameRecordProvider';
+}
+
+/// 내 개인 기록 조회 FutureProvider (family by gameResultId)
+///
+/// `GET /api/game-results/{gameResultId}/me` 응답을 캐시합니다.
+/// [gameResult]와 같은 이유로 `keepAlive: true`이며, GAME_OVER 직후 같이 사전 트리거해
+/// 결과 다이얼로그의 「개인」 탭이 열릴 때 재요청이 없게 합니다.
+///
+/// 실패는 [gameResult]와 독립이다 — 이 provider가 error여도 「전체」 탭은 그대로 뜬다.
+///
+/// Copied from [myGameRecord].
+class MyGameRecordProvider extends FutureProvider<MyGameRecordEntity> {
+  /// 내 개인 기록 조회 FutureProvider (family by gameResultId)
+  ///
+  /// `GET /api/game-results/{gameResultId}/me` 응답을 캐시합니다.
+  /// [gameResult]와 같은 이유로 `keepAlive: true`이며, GAME_OVER 직후 같이 사전 트리거해
+  /// 결과 다이얼로그의 「개인」 탭이 열릴 때 재요청이 없게 합니다.
+  ///
+  /// 실패는 [gameResult]와 독립이다 — 이 provider가 error여도 「전체」 탭은 그대로 뜬다.
+  ///
+  /// Copied from [myGameRecord].
+  MyGameRecordProvider(int gameResultId)
+    : this._internal(
+        (ref) => myGameRecord(ref as MyGameRecordRef, gameResultId),
+        from: myGameRecordProvider,
+        name: r'myGameRecordProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$myGameRecordHash,
+        dependencies: MyGameRecordFamily._dependencies,
+        allTransitiveDependencies:
+            MyGameRecordFamily._allTransitiveDependencies,
+        gameResultId: gameResultId,
+      );
+
+  MyGameRecordProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameResultId,
+  }) : super.internal();
+
+  final int gameResultId;
+
+  @override
+  Override overrideWith(
+    FutureOr<MyGameRecordEntity> Function(MyGameRecordRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: MyGameRecordProvider._internal(
+        (ref) => create(ref as MyGameRecordRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameResultId: gameResultId,
+      ),
+    );
+  }
+
+  @override
+  FutureProviderElement<MyGameRecordEntity> createElement() {
+    return _MyGameRecordProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MyGameRecordProvider && other.gameResultId == gameResultId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameResultId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin MyGameRecordRef on FutureProviderRef<MyGameRecordEntity> {
+  /// The parameter `gameResultId` of this provider.
+  int get gameResultId;
+}
+
+class _MyGameRecordProviderElement
+    extends FutureProviderElement<MyGameRecordEntity>
+    with MyGameRecordRef {
+  _MyGameRecordProviderElement(super.provider);
+
+  @override
+  int get gameResultId => (origin as MyGameRecordProvider).gameResultId;
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

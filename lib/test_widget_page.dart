@@ -22,6 +22,7 @@ import 'features/community/presentation/widgets/community_post_card.dart';
 import 'features/game/data/models/game_area_model.dart';
 import 'features/game/domain/entities/area_shape.dart';
 import 'features/game/domain/entities/game_result_entity.dart';
+import 'features/game/domain/entities/my_game_record_entity.dart';
 import 'features/game/presentation/providers/game_result_provider.dart';
 import 'features/game/presentation/providers/player_game_record_provider.dart';
 import 'features/game/presentation/widgets/game_over_result_dialog.dart';
@@ -581,12 +582,25 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
     final mockRecord = PlayerGameRecord(
       route: _exampleMyRecordRoute,
       distanceMeters: 2543,
-      myArrestCount: isRobber ? 0 : 3,
-      myEscapeCount: isRobber ? 2 : 0,
       arrestLocations: isRobber ? const [] : _exampleArrestLocations,
       caughtLocations: isRobber ? _exampleCaughtLocations : const [],
       endedAt: DateTime.now(),
     );
+    final mockMyGameRecord = isRobber
+        ? const MyGameRecordEntity(
+            nickname: '살금살금고슴도치',
+            team: 'ROBBER',
+            status: 'JAILED',
+            arrestCount: 0,
+            arrestedCount: 2,
+          )
+        : const MyGameRecordEntity(
+            nickname: '살금살금고슴도치',
+            team: 'POLICE',
+            status: 'ALIVE',
+            arrestCount: 3,
+            arrestedCount: 0,
+          );
 
     // GameOverResultDialog.show()와 동일한 배리어/pop 설정 — Provider override가
     // 필요해 showDialog를 직접 쓰지만 표시 디자인은 실제와 같게 유지한다.
@@ -601,6 +615,9 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
             gameResultProvider(
               mockGameResultId,
             ).overrideWith((_) async => mockEntity),
+            myGameRecordProvider(
+              mockGameResultId,
+            ).overrideWith((_) async => mockMyGameRecord),
             playerGameRecordNotifierProvider.overrideWith(
               () => _MockPlayerGameRecord(mockRecord),
             ),

@@ -1510,6 +1510,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelNoRoute => '移動記録なし';
 
   @override
+  String get tabResultTeam => '全体';
+
+  @override
+  String get tabResultMine => '個人';
+
+  @override
+  String get labelNickname => 'ニックネーム';
+
+  @override
+  String get labelMyArrestCount => '私の逮捕回数';
+
+  @override
+  String get labelTeamArrestShare => 'チーム逮捕貢献度';
+
+  @override
+  String get labelMyArrestedCount => '捕まった回数';
+
+  @override
+  String get labelFinalStatus => '終了時の状態';
+
+  @override
+  String get statusAlive => '生存';
+
+  @override
+  String get statusJailed => '収監中';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return '次の泥棒の位置公開まで $formatted';
   }

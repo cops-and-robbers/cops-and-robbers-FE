@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cops_and_robbers/features/game/domain/entities/game_result_entity.dart';
+import 'package:cops_and_robbers/features/game/domain/entities/my_game_record_entity.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_result_provider.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/player_game_record_provider.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/game_over_result_dialog.dart';
@@ -22,6 +23,27 @@ void main() {
       expect(formatDuration(225), '3:45');
       expect(formatDuration(3600), '60:00');
       expect(formatDuration(3661), '61:01');
+    });
+  });
+
+  group('formatTeamArrestShare', () {
+    test('rounds_to_integer_percent_and_dashes_when_total_is_zero', () {
+      expect(formatTeamArrestShare(mine: 3, total: 7), '43%'); // 42.86 → 43
+      expect(formatTeamArrestShare(mine: 1, total: 8), '13%'); // 12.5 → 13
+      expect(formatTeamArrestShare(mine: 7, total: 7), '100%');
+      expect(formatTeamArrestShare(mine: 0, total: 7), '0%');
+      expect(formatTeamArrestShare(mine: 0, total: 0), '-');
+    });
+  });
+
+  group('finalStatusLabel', () {
+    test('maps_status_to_label_when_given_alive_jailed_or_other', () {
+      final l10n = lookupAppLocalizations(const Locale('ko'));
+
+      expect(finalStatusLabel(l10n, 'ALIVE'), '생존');
+      expect(finalStatusLabel(l10n, 'JAILED'), '수감');
+      expect(finalStatusLabel(l10n, 'WAITING'), '-');
+      expect(finalStatusLabel(l10n, ''), '-');
     });
   });
 
@@ -422,6 +444,28 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets('hides_tab_toggle_when_capturing_share_image', (tester) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 13,
+        resultFuture: () async => entity,
+      );
+
+      // 라이브 화면에는 탭 토글이 보인다.
+      expect(find.text('전체'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('game_over_share_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('공유하기'));
+      await tester.pump(); // _capturing = true 반영
+
+      // Opacity(투명화)가 아니라 Offstage(자리째 제거)라 skipOffstage 없이는
+      // 찾을 수 없다 — 공유 이미지에 빈 띠가 남지 않는다.
+      expect(find.text('전체'), findsNothing);
+
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('premounts_brand_lockup_offstage_before_capture', (
       tester,
     ) async {
@@ -443,6 +487,101 @@ void main() {
       );
     });
   });
+
+  group('개인 탭', () {
+    const entity = GameResultEntity(
+      winnerTeam: 'POLICE',
+      durationSeconds: 300,
+      totalArrestCount: 5,
+      remainingRobberCount: 1,
+    );
+
+    /// 토글 애니메이션(300ms)이 끝나고 새 행이 그려질 때까지.
+    Future<void> tapMineTab(WidgetTester tester) async {
+      await tester.tap(find.text('개인'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 350));
+    }
+
+    testWidgets('opens_on_team_tab_when_dialog_shown', (tester) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 21,
+        resultFuture: () async => entity,
+      );
+
+      expect(find.text('전체'), findsOneWidget);
+      expect(find.text('개인'), findsOneWidget);
+      expect(find.text('게임 진행 시간'), findsOneWidget);
+      expect(find.text('닉네임'), findsNothing);
+    });
+
+    testWidgets('shows_nickname_arrests_and_share_when_police_taps_mine', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 22,
+        resultFuture: () async => entity,
+        myRecordFuture: () async => const MyGameRecordEntity(
+          nickname: '살금살금고슴도치',
+          team: 'POLICE',
+          status: 'ALIVE',
+          arrestCount: 3,
+          arrestedCount: 0,
+        ),
+      );
+      await tapMineTab(tester);
+
+      expect(find.text('살금살금고슴도치'), findsOneWidget);
+      expect(find.text('3'), findsOneWidget);
+      expect(find.text('60%'), findsOneWidget); // 3 ÷ 5
+      expect(find.text('게임 진행 시간'), findsNothing); // 팀 행은 사라진다
+      expect(find.text('잡힌 횟수'), findsNothing); // 경찰에게 불가능한 값
+    });
+
+    testWidgets('shows_caught_count_and_final_status_when_robber_taps_mine', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 23,
+        resultFuture: () async => entity,
+        myTeam: 'ROBBER',
+        isDarkMode: true,
+        myRecordFuture: () async => const MyGameRecordEntity(
+          nickname: '덜렁덜렁너구리',
+          team: 'ROBBER',
+          status: 'JAILED',
+          arrestCount: 0,
+          arrestedCount: 2,
+        ),
+      );
+      await tapMineTab(tester);
+
+      expect(find.text('덜렁덜렁너구리'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('수감'), findsOneWidget);
+      expect(find.text('팀 체포 기여도'), findsNothing); // 도둑에게 불가능한 값
+    });
+
+    testWidgets('shows_dash_for_my_rows_when_my_record_api_fails', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 24,
+        resultFuture: () async => entity,
+        myRecordFuture: () async => throw Exception('boom'),
+      );
+      await tester.pump(); // 에러 전파
+      await tapMineTab(tester);
+
+      // 닉네임 · 내 체포 횟수 · 팀 체포 기여도 3행 모두 '-'
+      expect(find.text('-'), findsNWidgets(3));
+      expect(find.text('내 체포 횟수'), findsOneWidget); // 라벨은 그대로
+    });
+  });
 }
 
 /// 다이얼로그를 pumping하는 헬퍼
@@ -461,6 +600,7 @@ Future<void> pumpGameOverDialog(
   VoidCallback? onGoHome,
   VoidCallback? onRematch,
   PlayerGameRecord record = const PlayerGameRecord(),
+  Future<MyGameRecordEntity> Function() myRecordFuture = _defaultMyRecord,
 }) async {
   // 테스트 기본 화면(800×600)은 ScreenUtil designSize(375×812)와 어긋나 폭 기준 sp는
   // 2배로 커지고 높이 기준 h는 줄어든다. 실기기와 같은 비율이 되도록 맞춰준다.
@@ -475,6 +615,9 @@ Future<void> pumpGameOverDialog(
         playerGameRecordNotifierProvider.overrideWith(
           () => _FakeRecord(record),
         ),
+        myGameRecordProvider(
+          gameResultId,
+        ).overrideWith((_) => myRecordFuture()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
@@ -517,3 +660,13 @@ class _FakeRecord extends PlayerGameRecordNotifier {
   @override
   PlayerGameRecord build() => _initial;
 }
+
+/// 기본 개인 기록 — 개인 탭을 열지 않는 기존 테스트도 provider를 구독하므로
+/// 항상 resolve되는 값을 준다.
+Future<MyGameRecordEntity> _defaultMyRecord() async => const MyGameRecordEntity(
+  nickname: '살금살금고슴도치',
+  team: 'POLICE',
+  status: 'ALIVE',
+  arrestCount: 3,
+  arrestedCount: 0,
+);

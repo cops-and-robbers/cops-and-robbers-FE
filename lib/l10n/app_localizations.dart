@@ -2894,6 +2894,60 @@ abstract class AppLocalizations {
   /// **'이동 기록 없음'**
   String get labelNoRoute;
 
+  /// 게임 종료 결과 — 전체(팀) 통계 탭 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get tabResultTeam;
+
+  /// 게임 종료 결과 — 개인 기록 탭 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'개인'**
+  String get tabResultMine;
+
+  /// 게임 종료 결과 개인 탭 — 내 닉네임 행 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'닉네임'**
+  String get labelNickname;
+
+  /// 게임 종료 결과 개인 탭 — 경찰 본인이 체포한 횟수. 전체 탭의 팀 합계(labelArrestCount)와 구분
+  ///
+  /// In ko, this message translates to:
+  /// **'내 체포 횟수'**
+  String get labelMyArrestCount;
+
+  /// 게임 종료 결과 개인 탭 — 내 체포 ÷ 팀 총 체포 (정수 %)
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 체포 기여도'**
+  String get labelTeamArrestShare;
+
+  /// 게임 종료 결과 개인 탭 — 도둑 본인이 잡힌 횟수
+  ///
+  /// In ko, this message translates to:
+  /// **'잡힌 횟수'**
+  String get labelMyArrestedCount;
+
+  /// 게임 종료 결과 개인 탭 — 도둑의 종료 시점 상태 라벨 (값은 statusAlive/statusJailed)
+  ///
+  /// In ko, this message translates to:
+  /// **'종료 시점 상태'**
+  String get labelFinalStatus;
+
+  /// 게임 종료 결과 — 종료 시점 상태 값 ALIVE
+  ///
+  /// In ko, this message translates to:
+  /// **'생존'**
+  String get statusAlive;
+
+  /// 게임 종료 결과 — 종료 시점 상태 값 JAILED (용어집: 수감됨/Jailed/收監中)
+  ///
+  /// In ko, this message translates to:
+  /// **'수감'**
+  String get statusJailed;
+
   /// 다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)
   ///
   /// In ko, this message translates to:
