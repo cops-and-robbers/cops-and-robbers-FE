@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-17T01:40:55Z",
-    "currentVersion": "3.1.5",
+    "lastUpdated": "2026-09-18T17:01:52Z",
+    "currentVersion": "3.1.7",
     "projectType": "flutter",
-    "totalReleases": 136
+    "totalReleases": 137
   },
   "releases": [
+    {
+      "version": "3.1.7",
+      "project_type": "flutter",
+      "date": "2026-09-18",
+      "pr_number": 598,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **기타**\n\n  * Merge pull request #597 from cops-and-robbers/20260918_#596_핀_구역_설정을_꾹_눌러_그리는_방식으로_변경\n  * docs : 리포트 문서 작성 #596\n  * docs : 핀 구역 그리기 이슈 문서 추가 #596\n  * fix : 대기실 준비 상태 버튼 문구를 준비 취소로 변경 #596\n  * feat : 구역 설정 지도를 남는 높이로 확장 #596\n  * feat : 핀 구역 설정을 꾹 눌러 그리기·꼭짓점 끌기 방식으로 변경 #596\n  * chore : update release-note Command\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #597 from cops-and-robbers/20260918_#596_핀_구역_설정을_꾹_눌러_그리는_방식으로_변경",
+            "docs : 리포트 문서 작성 #596",
+            "docs : 핀 구역 그리기 이슈 문서 추가 #596",
+            "fix : 대기실 준비 상태 버튼 문구를 준비 취소로 변경 #596",
+            "feat : 구역 설정 지도를 남는 높이로 확장 #596",
+            "feat : 핀 구역 설정을 꾹 눌러 그리기·꼭짓점 끌기 방식으로 변경 #596",
+            "chore : update release-note Command"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.1.5",
       "project_type": "flutter",
