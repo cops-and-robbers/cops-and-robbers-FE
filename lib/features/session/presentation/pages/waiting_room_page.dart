@@ -1328,7 +1328,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
 
     if (_isReady) {
       return AppButton(
-        text: l10n.buttonReadyDone,
+        text: l10n.buttonCancelReady,
         onPressed: _isUpdatingReady ? null : _toggleReady,
         backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
         foregroundColor: isDark ? AppColors.green : AppColors.blue,

@@ -1138,7 +1138,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonStartGame => '게임 시작';
 
   @override
-  String get buttonReadyDone => '준비 완료';
+  String get buttonCancelReady => '준비 취소';
 
   @override
   String get buttonReady => '준비';

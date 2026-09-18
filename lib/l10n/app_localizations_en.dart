@@ -1217,7 +1217,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonStartGame => 'Game start';
 
   @override
-  String get buttonReadyDone => 'Ready';
+  String get buttonCancelReady => 'Cancel';
 
   @override
   String get buttonReady => 'Ready';

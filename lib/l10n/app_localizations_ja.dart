@@ -1139,10 +1139,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonStartGame => 'ゲーム開始';
 
   @override
-  String get buttonReadyDone => '準備完了';
+  String get buttonCancelReady => '準備取消';
 
   @override
-  String get buttonReady => '準備完了';
+  String get buttonReady => '準備';
 
   @override
   String get pageZonePreviewTitle => 'ゲームエリア';

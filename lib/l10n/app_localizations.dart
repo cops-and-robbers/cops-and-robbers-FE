@@ -2180,11 +2180,11 @@ abstract class AppLocalizations {
   /// **'게임 시작'**
   String get buttonStartGame;
 
-  /// 대기실 — 준비 완료 버튼
+  /// 대기실 — 준비 취소 버튼
   ///
   /// In ko, this message translates to:
-  /// **'준비 완료'**
-  String get buttonReadyDone;
+  /// **'준비 취소'**
+  String get buttonCancelReady;
 
   /// 대기실 — 준비 버튼
   ///

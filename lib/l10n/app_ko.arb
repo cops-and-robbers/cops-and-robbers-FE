@@ -990,9 +990,9 @@
   "@buttonStartGame": {
     "description": "공통 — 게임 시작 버튼"
   },
-  "buttonReadyDone": "준비 완료",
-  "@buttonReadyDone": {
-    "description": "대기실 — 준비 완료 버튼"
+  "buttonCancelReady": "준비 취소",
+  "@buttonCancelReady": {
+    "description": "대기실 — 준비 취소 버튼"
   },
   "buttonReady": "준비",
   "@buttonReady": {

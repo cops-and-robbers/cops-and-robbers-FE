@@ -415,7 +415,7 @@
   "messageCodeCopied": "The code has been copied",
   "buttonShare": "Share",
   "buttonStartGame": "Game start",
-  "buttonReadyDone": "Ready",
+  "buttonCancelReady": "Cancel",
   "buttonReady": "Ready",
   "pageZonePreviewTitle": "Game area",
   "zonePreviewSubtitle": "This is the currently configured game area",
