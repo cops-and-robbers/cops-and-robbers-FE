@@ -47,11 +47,9 @@
   "setupPrisonPinDescription": "Select the jail area to hold the thieves",
   "zoneAreaLabel": "Area",
   "zoneClearAllPins": "Clear all",
-  "pinMaxCountMessage": "You can place up to {count} pins",
-  "@pinMaxCountMessage": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "pinTooCloseMessage": "Pins are too close together",
+  "zoneDrawHint": "Press and hold the map, then draw",
+  "zoneDrawCrossedMessage": "Draw again without crossing the line",
+  "zoneVertexCrossedMessage": "Move it to a spot where the lines don't cross",
   "errorAuthLoginCancelled": "Sign in was cancelled",
   "settingsLanguageLabel": "Language",
   "settingsLanguagePageTitle": "Select language",

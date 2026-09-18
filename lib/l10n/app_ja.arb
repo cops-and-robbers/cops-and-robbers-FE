@@ -47,11 +47,9 @@
   "setupPrisonPinDescription": "泥棒を拘束しておく牢屋エリアを選択します",
   "zoneAreaLabel": "面積",
   "zoneClearAllPins": "すべて解除",
-  "pinMaxCountMessage": "ピンは最大{count}個まで置けます",
-  "@pinMaxCountMessage": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "pinTooCloseMessage": "ピン同士が近すぎます",
+  "zoneDrawHint": "地図を長押ししたまま描いてください",
+  "zoneDrawCrossedMessage": "線が交差しないようにもう一度描いてください",
+  "zoneVertexCrossedMessage": "線が交差しない位置に動かしてください",
   "errorAuthLoginCancelled": "ログインがキャンセルされました",
   "settingsLanguageLabel": "言語",
   "settingsLanguagePageTitle": "言語を選択",

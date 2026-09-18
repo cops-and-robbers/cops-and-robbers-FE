@@ -39,13 +39,9 @@ extension ZoneMetricDisplay on AreaShape {
   String metricText(AppLocalizations l10n) => when(
     circle: (_, radiusInMeters) =>
         l10n.zoneRadiusValue(formatRadiusValue(radiusInMeters)),
-    // 저장·응답의 꼭짓점 순서를 신뢰하지 않고 정렬 후 계산한다. shoelace는 자기교차
-    // 다각형에서 잘못된 값을 내지만 표시 시점에는 isValidPolygon 검증을 거칠 수 없다.
-    // n ≤ 10이라 정렬 비용은 무의미하다.
-    polygon: (points) => l10n.zoneAreaValue(
-      formatAreaValue(
-        polygonAreaInSquareMeters(sortByAngleAroundCentroid(points)),
-      ),
-    ),
+    // 저장·응답의 꼭짓점 순서가 곧 경계 순서다(그린 순서). 각도로 재정렬하면
+    // 오목한 구역의 면적이 틀리므로 그대로 계산한다.
+    polygon: (points) =>
+        l10n.zoneAreaValue(formatAreaValue(polygonAreaInSquareMeters(points))),
   );
 }

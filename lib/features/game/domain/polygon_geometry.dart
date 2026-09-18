@@ -4,30 +4,13 @@ import 'entities/area_shape.dart';
 
 /// 폴리곤 편집(핀 모드) 전용 순수 기하 함수 모음.
 ///
-/// 사용자가 무순서로 찍은 핀을 다각형으로 만들고 검증하는 데 쓰인다.
+/// 사용자가 그린 순서의 꼭짓점(경계 순서)을 검증하는 데 쓰인다.
 /// 전부 평면 근사 — 게임 스케일(수 km 이하)에서 충분하며,
 /// 날짜변경선·극지방은 미지원 (한국 서비스 전제).
 
-/// 무순서 핀 목록을 centroid 기준 방위각으로 정렬해 다각형 경계 순서로 만든다.
-///
-/// 찍은 순서·최근접 연결과 달리 순서 무관·결정적이며, 실사용 배치(≤10핀)에서
-/// 자기교차 없는 단순 다각형을 만든다. 예외 배치는 [hasSelfIntersection]이 거른다.
-List<GeoPoint> sortByAngleAroundCentroid(List<GeoPoint> points) {
-  if (points.length < 2) return List.of(points);
-  final cLat =
-      points.map((p) => p.latitude).reduce((a, b) => a + b) / points.length;
-  final cLng =
-      points.map((p) => p.longitude).reduce((a, b) => a + b) / points.length;
-  return List.of(points)..sort((a, b) {
-    final angleA = math.atan2(a.latitude - cLat, a.longitude - cLng);
-    final angleB = math.atan2(b.latitude - cLat, b.longitude - cLng);
-    return angleA.compareTo(angleB);
-  });
-}
-
 /// 다각형의 비인접 변끼리 교차하는지 검사 (완료 버튼 활성화 전 안전망)
 ///
-/// n ≤ 10이라 최대 45쌍 — 성능 문제 없음.
+/// n ≤ 40이라 최대 780쌍 — 성능 문제 없음.
 bool hasSelfIntersection(List<GeoPoint> polygon) {
   final n = polygon.length;
   if (n < 4) return false; // 삼각형 이하는 자기교차 불가
@@ -74,6 +57,16 @@ bool isValidPolygon(List<GeoPoint> polygon) =>
     polygon.length >= 3 &&
     polygonAreaInSquareMeters(polygon) > 0.01 &&
     !hasSelfIntersection(polygon);
+
+/// 링의 [index]번 꼭짓점을 [to]로 옮긴 새 링을 돌려준다.
+///
+/// 결과가 유효한 다각형이 아니면(자기교차·면적 0) null — 호출부는 이전 구역을 그대로 둔다.
+List<GeoPoint>? moveVertex(List<GeoPoint> ring, int index, GeoPoint to) {
+  final moved = [
+    for (var i = 0; i < ring.length; i++) i == index ? to : ring[i],
+  ];
+  return isValidPolygon(moved) ? moved : null;
+}
 
 /// inner 다각형이 outer 다각형 내부에 완전히 포함되는지 검사 (감옥⊂플레이그라운드)
 ///

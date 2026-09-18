@@ -145,12 +145,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneClearAllPins => 'Clear all';
 
   @override
-  String pinMaxCountMessage(int count) {
-    return 'You can place up to $count pins';
-  }
+  String get zoneDrawHint => 'Press and hold the map, then draw';
 
   @override
-  String get pinTooCloseMessage => 'Pins are too close together';
+  String get zoneDrawCrossedMessage => 'Draw again without crossing the line';
+
+  @override
+  String get zoneVertexCrossedMessage =>
+      'Move it to a spot where the lines don\'t cross';
 
   @override
   String get errorAuthLoginCancelled => 'Sign in was cancelled';

@@ -11,37 +11,6 @@ void main() {
     GeoPoint(latitude: 37.5645, longitude: 126.9760),
   ];
 
-  group('sortByAngleAroundCentroid', () {
-    test('produces_simple_polygon_regardless_of_input_order', () {
-      // 일부러 교차가 생기는 순서(나비넥타이)로 입력
-      final shuffled = [square[0], square[2], square[1], square[3]];
-      final sorted = sortByAngleAroundCentroid(shuffled);
-      expect(hasSelfIntersection(sorted), isFalse);
-    });
-
-    test('returns_same_ring_for_any_input_permutation', () {
-      final a = sortByAngleAroundCentroid([
-        square[0],
-        square[2],
-        square[1],
-        square[3],
-      ]);
-      final b = sortByAngleAroundCentroid([
-        square[3],
-        square[1],
-        square[0],
-        square[2],
-      ]);
-      // 같은 꼭짓점 집합 → 같은 각도 순서 (시작점만 다를 수 있으므로 순환 비교)
-      expect(a.toSet(), b.toSet());
-      final startInB = b.indexOf(a.first);
-      expect(startInB, isNot(-1));
-      for (var i = 0; i < a.length; i++) {
-        expect(a[i], b[(startInB + i) % b.length]);
-      }
-    });
-  });
-
   group('hasSelfIntersection', () {
     test('returns_true_for_bowtie_polygon', () {
       final bowtie = [square[0], square[2], square[1], square[3]];
@@ -68,6 +37,22 @@ void main() {
 
     test('returns_zero_when_less_than_three_points', () {
       expect(polygonAreaInSquareMeters(square.sublist(0, 2)), 0);
+    });
+  });
+
+  group('moveVertex', () {
+    test('returns_ring_with_the_vertex_replaced_when_result_is_simple', () {
+      // NW 꼭짓점을 조금 더 바깥(북서)으로
+      const to = GeoPoint(latitude: 37.5690, longitude: 126.9755);
+
+      expect(moveVertex(square, 0, to), [to, square[1], square[2], square[3]]);
+    });
+
+    test('returns_null_when_the_move_makes_edges_cross', () {
+      // NW 꼭짓점을 동쪽 변(NE→SE) 너머로 넘기면 SW→(새 점) 변이 동쪽 변을 가로지른다
+      const to = GeoPoint(latitude: 37.5665, longitude: 126.9850);
+
+      expect(moveVertex(square, 0, to), isNull);
     });
   });
 
