@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cops_and_robbers/core/utils/zone_metric_formatter.dart';
 import 'package:cops_and_robbers/features/game/domain/entities/area_shape.dart';
+import 'package:cops_and_robbers/features/game/domain/polygon_geometry.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 
 // lookupAppLocalizations은 WidgetsFlutterBinding 없이도 동기적으로 동작한다.
@@ -68,19 +69,26 @@ void main() {
       expect(shape.metricText(l10n), matches(RegExp(r'^면적 [\d,]+m²$')));
     });
 
-    test('area_is_identical_when_vertex_order_is_shuffled', () {
-      const sorted = AreaShape.polygon(points: _squarePoints);
-      // 대각선끼리 인접해 나비 모양이 되는 순서 — 정렬 없이 shoelace를 쓰면 값이 달라진다.
-      final shuffled = AreaShape.polygon(
-        points: [
-          _squarePoints[0],
-          _squarePoints[2],
-          _squarePoints[1],
-          _squarePoints[3],
-        ],
-      );
+    test('area_follows_vertex_ring_order_for_concave_polygon', () {
+      // 화살촉(오목) — 링 순서 (0,0)→(4,2)→(0,4)→(1.5,2.5) 면적 5 단위,
+      // 중심 각도로 재정렬하면 (0,0)→(4,2)→(1.5,2.5)→(0,4) 면적 6.5 단위가 된다.
+      // 저장·응답의 꼭짓점 순서가 곧 경계 순서이므로 재정렬 없이 계산해야 한다.
+      const unit = 0.001;
+      const arrowhead = [
+        GeoPoint(latitude: 37.5665, longitude: 126.9780),
+        GeoPoint(latitude: 37.5665 + 2 * unit, longitude: 126.9780 + 4 * unit),
+        GeoPoint(latitude: 37.5665 + 4 * unit, longitude: 126.9780),
+        GeoPoint(
+          latitude: 37.5665 + 2.5 * unit,
+          longitude: 126.9780 + 1.5 * unit,
+        ),
+      ];
+      const shape = AreaShape.polygon(points: arrowhead);
 
-      expect(shuffled.metricText(l10n), sorted.metricText(l10n));
+      expect(
+        shape.metricText(l10n),
+        '면적 ${formatAreaValue(polygonAreaInSquareMeters(arrowhead))}',
+      );
     });
   });
 }

@@ -78,7 +78,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   /// 방문한 모드만 실제 렌더링해 불필요한 지도 로드를 막는다.
   final Set<GameAreaType> _visitedAreaTypes = {};
 
-  /// 핀 모드 정렬된 꼭짓점 목록 (PinZoneSettingWidget 콜백으로 갱신)
+  /// 핀 모드 꼭짓점 목록 (그린 순서 = 경계 순서) (PinZoneSettingWidget 콜백으로 갱신)
   List<LatLng> _pinPoints = [];
 
   /// 로딩 상태 (데이터 로드 중 여부)
@@ -215,7 +215,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
 
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
-    // 핀 모드: 정렬된 꼭짓점 목록 반환
+    // 핀 모드: 꼭짓점 목록 반환 (그린 순서 = 경계 순서)
     if (_areaType == GameAreaType.polygon) {
       if (!_hasInitialShape) {
         await _storageService.updatePlaygroundPinZone(_pinPoints);
@@ -350,6 +350,8 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                             fillColor: AppColors.blue500,
                             locationButtonColor: AppColors.blue,
                             onZoneChanged: _onZoneChanged,
+                            // 남는 높이를 지도로 채운다 — 두 모드의 지도 크기는 같게 유지된다
+                            expandMap: true,
                             isDarkMode: isDark,
                             valueTextStyle: isDark
                                 ? AppTextStyles.robberLabel
@@ -365,6 +367,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                             strokeColor: AppColors.blue800,
                             locationButtonColor: AppColors.blue,
                             isDarkMode: isDark,
+                            expandMap: true,
                             onPointsChanged: (points) {
                               setState(() => _pinPoints = points);
                             },

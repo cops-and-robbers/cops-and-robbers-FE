@@ -137,12 +137,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get zoneClearAllPins => 'すべて解除';
 
   @override
-  String pinMaxCountMessage(int count) {
-    return 'ピンは最大$count個まで置けます';
-  }
+  String get zoneDrawHint => '地図を長押ししたまま描いてください';
 
   @override
-  String get pinTooCloseMessage => 'ピン同士が近すぎます';
+  String get zoneDrawCrossedMessage => '線が交差しないようにもう一度描いてください';
+
+  @override
+  String get zoneVertexCrossedMessage => '線が交差しない位置に動かしてください';
 
   @override
   String get errorAuthLoginCancelled => 'ログインがキャンセルされました';
@@ -1138,10 +1139,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonStartGame => 'ゲーム開始';
 
   @override
-  String get buttonReadyDone => '準備完了';
+  String get buttonCancelReady => '準備取消';
 
   @override
-  String get buttonReady => '準備完了';
+  String get buttonReady => '準備';
 
   @override
   String get pageZonePreviewTitle => 'ゲームエリア';

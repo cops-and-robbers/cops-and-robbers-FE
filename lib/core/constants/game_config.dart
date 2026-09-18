@@ -73,13 +73,10 @@ class GameConfig {
   /// Minimum polygon vertex count (3)
   static const int minPolygonVertexCount = 3;
 
-  /// 폴리곤 최대 꼭짓점 수 (10개)
-  /// Maximum polygon vertex count (10)
-  static const int maxPolygonVertexCount = 10;
-
-  /// 핀 간 최소 간격 (10m) — 연타·중복 꼭짓점으로 인한 퇴화 다각형 방지
-  /// Minimum spacing between pins (10 meters)
-  static const double minPinSpacingInMeters = 10.0;
+  /// 폴리곤 최대 꼭짓점 수 (40개) — 그린 궤적을 단순화한 뒤의 상한.
+  /// 서버 제약은 없고, 자기교차 검사 O(n²) 비용을 묶어 두기 위한 값이다.
+  /// Maximum polygon vertex count after stroke simplification (40)
+  static const int maxPolygonVertexCount = 40;
 
   /// 감옥 ⊂ 플레이그라운드 포함 판정 허용 오차 (1m)
   ///

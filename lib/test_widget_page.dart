@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_icons.dart';
+import 'core/constants/game_config.dart';
 import 'core/constants/spacing_and_radius.dart';
 import 'core/constants/text_styles.dart';
 import 'core/network/websocket/stomp_connection.dart';
@@ -435,7 +436,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
 
               // 2) PinZoneSettingWidget 인라인 (플레이그라운드 blue)
               Text(
-                'PinZoneSettingWidget (지도 탭 = 핀 추가 / 핀 탭 = 삭제)',
+                'PinZoneSettingWidget (꾹 눌러 그리기 = 구역 / 꼭짓점을 꾹 눌러 끌기 = 이동)',
                 style: AppTextStyles.tag_12.copyWith(color: AppColors.black600),
               ),
               SizedBox(height: AppSpacing.vertical8),
@@ -455,7 +456,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
               ),
               SizedBox(height: AppSpacing.vertical8),
               Text(
-                '현재 꼭짓점: $_pinPreviewCount개 (3~10개, 3개 이상부터 면적 칩 표시)',
+                '현재 꼭짓점: $_pinPreviewCount개 (단순화 후 최대 ${GameConfig.maxPolygonVertexCount}개, 3개 이상부터 면적 칩 표시)',
                 style: AppTextStyles.tag_12.copyWith(color: AppColors.black400),
               ),
               SizedBox(height: AppSpacing.vertical24),

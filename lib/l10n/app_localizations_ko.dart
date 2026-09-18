@@ -136,12 +136,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get zoneClearAllPins => '전체 해제';
 
   @override
-  String pinMaxCountMessage(int count) {
-    return '핀은 최대 $count개까지 찍을 수 있어요';
-  }
+  String get zoneDrawHint => '지도를 꾹 누른 채 그려 주세요';
 
   @override
-  String get pinTooCloseMessage => '핀이 너무 가까워요';
+  String get zoneDrawCrossedMessage => '선이 겹치지 않게 다시 그려 주세요';
+
+  @override
+  String get zoneVertexCrossedMessage => '선이 겹치지 않는 위치로 옮겨 주세요';
 
   @override
   String get errorAuthLoginCancelled => '로그인이 취소됐어요';
@@ -1137,7 +1138,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonStartGame => '게임 시작';
 
   @override
-  String get buttonReadyDone => '준비 완료';
+  String get buttonCancelReady => '준비 취소';
 
   @override
   String get buttonReady => '준비';

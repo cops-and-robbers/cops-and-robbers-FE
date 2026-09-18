@@ -61,11 +61,9 @@
   "setupPrisonPinDescription": "도둑을 잡아둘 감옥 구역을 선택해요",
   "zoneAreaLabel": "면적",
   "zoneClearAllPins": "전체 해제",
-  "pinMaxCountMessage": "핀은 최대 {count}개까지 찍을 수 있어요",
-  "@pinMaxCountMessage": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "pinTooCloseMessage": "핀이 너무 가까워요",
+  "zoneDrawHint": "지도를 꾹 누른 채 그려 주세요",
+  "zoneDrawCrossedMessage": "선이 겹치지 않게 다시 그려 주세요",
+  "zoneVertexCrossedMessage": "선이 겹치지 않는 위치로 옮겨 주세요",
   "errorAuthLoginCancelled": "로그인이 취소됐어요",
   "settingsLanguageLabel": "언어",
   "@settingsLanguageLabel": {
@@ -992,9 +990,9 @@
   "@buttonStartGame": {
     "description": "공통 — 게임 시작 버튼"
   },
-  "buttonReadyDone": "준비 완료",
-  "@buttonReadyDone": {
-    "description": "대기실 — 준비 완료 버튼"
+  "buttonCancelReady": "준비 취소",
+  "@buttonCancelReady": {
+    "description": "대기실 — 준비 취소 버튼"
   },
   "buttonReady": "준비",
   "@buttonReady": {

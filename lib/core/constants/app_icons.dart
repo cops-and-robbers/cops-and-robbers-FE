@@ -79,7 +79,6 @@ abstract final class AppIcons {
   static const String notification = 'assets/icons/icon_notification.svg';
   static const String person = 'assets/icons/icon_person.svg';
   static const String pin = 'assets/icons/icon_pin.svg';
-  static const String polygonPin = 'assets/icons/polygon_pin.svg';
   static const String post = 'assets/icons/icon_post.svg';
   static const String previous = 'assets/icons/icon_previous.svg';
   static const String qrCode = 'assets/icons/icon_qr_code.svg';
