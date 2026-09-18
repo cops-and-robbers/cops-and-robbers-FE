@@ -346,17 +346,23 @@ abstract class AppLocalizations {
   /// **'전체 해제'**
   String get zoneClearAllPins;
 
-  /// No description provided for @pinMaxCountMessage.
+  /// No description provided for @zoneDrawHint.
   ///
   /// In ko, this message translates to:
-  /// **'핀은 최대 {count}개까지 찍을 수 있어요'**
-  String pinMaxCountMessage(int count);
+  /// **'지도를 꾹 누른 채 그려 주세요'**
+  String get zoneDrawHint;
 
-  /// No description provided for @pinTooCloseMessage.
+  /// No description provided for @zoneDrawCrossedMessage.
   ///
   /// In ko, this message translates to:
-  /// **'핀이 너무 가까워요'**
-  String get pinTooCloseMessage;
+  /// **'선이 겹치지 않게 다시 그려 주세요'**
+  String get zoneDrawCrossedMessage;
+
+  /// No description provided for @zoneVertexCrossedMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'선이 겹치지 않는 위치로 옮겨 주세요'**
+  String get zoneVertexCrossedMessage;
 
   /// No description provided for @errorAuthLoginCancelled.
   ///
@@ -2174,11 +2180,11 @@ abstract class AppLocalizations {
   /// **'게임 시작'**
   String get buttonStartGame;
 
-  /// 대기실 — 준비 완료 버튼
+  /// 대기실 — 준비 취소 버튼
   ///
   /// In ko, this message translates to:
-  /// **'준비 완료'**
-  String get buttonReadyDone;
+  /// **'준비 취소'**
+  String get buttonCancelReady;
 
   /// 대기실 — 준비 버튼
   ///

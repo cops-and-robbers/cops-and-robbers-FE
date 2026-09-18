@@ -92,7 +92,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
   /// 현재 구역 설정 방식 (플레이그라운드가 정한 타입을 따름)
   GameAreaType _areaType = GameAreaType.circle;
 
-  /// 감옥 핀 목록 (정렬된 경계 순서, PinZoneSettingWidget 콜백으로 갱신)
+  /// 감옥 꼭짓점 목록 (그린 순서 = 경계 순서, PinZoneSettingWidget 콜백으로 갱신)
   List<LatLng> _pinPoints = [];
 
   /// 플레이그라운드 핀 목록 (참조·포함 검증용)
@@ -288,7 +288,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
 
   /// 설정 완료 버튼 클릭 시
   Future<void> _onComplete() async {
-    // 핀 모드: 정렬된 감옥 꼭짓점 목록 반환
+    // 핀 모드: 감옥 꼭짓점 목록 반환 (그린 순서 = 경계 순서)
     if (_isPinMode) {
       if (!_hasInitialShape) {
         await _storageService.updatePrisonPinZone(_pinPoints);
@@ -429,6 +429,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                         strokeColor: AppColors.red800,
                         locationButtonColor: AppColors.red,
                         referencePolygon: _playgroundPinPoints,
+                        expandMap: true,
                         isDarkMode: isDark,
                         onPointsChanged: (points) {
                           setState(() => _pinPoints = points);
@@ -448,6 +449,8 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                         locationButtonColor: AppColors.red,
                         referenceZone: _buildPlaygroundReferenceZone(),
                         onZoneChanged: _onZoneChanged,
+                        // 남는 높이를 지도로 채운다 — 두 모드의 지도 크기는 같게 유지된다
+                        expandMap: true,
                         isDarkMode: isDark,
                         valueTextStyle: isDark
                             ? AppTextStyles.robberLabel

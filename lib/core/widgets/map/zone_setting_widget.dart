@@ -51,6 +51,7 @@ class ZoneSettingWidget extends StatefulWidget {
     this.locationButtonColor,
     this.referenceZone,
     this.mapHeight,
+    this.expandMap = false,
     this.initialCenter,
     this.isDarkMode = false,
     this.valueTextStyle,
@@ -103,6 +104,11 @@ class ZoneSettingWidget extends StatefulWidget {
   /// 지도 높이 (기본: 360)
   /// Map height (default: 360)
   final double? mapHeight;
+
+  /// 지도가 남는 높이를 전부 차지한다 (슬라이더 몫만 남김). 부모가 높이를 정해 줄 때만
+  /// 켠다 — 스크롤·Column 안처럼 높이가 무한인 자리에서는 [mapHeight] 고정 높이를 쓴다.
+  /// 켜면 [mapHeight]는 무시된다.
+  final bool expandMap;
 
   /// 초기 중심점 (null이면 현재 위치)
   /// Initial center (null = current location)
@@ -210,62 +216,73 @@ class ZoneSettingWidgetState extends State<ZoneSettingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final fixedHeight = widget.mapHeight ?? 360.h;
     if (!_isInitialized) {
-      return SizedBox(
-        height: widget.mapHeight ?? 360.h,
-        child: const Center(child: CircularProgressIndicator()),
-      );
+      const loading = Center(child: CircularProgressIndicator());
+      return widget.expandMap
+          ? loading
+          : SizedBox(height: fixedHeight, child: loading);
     }
 
     return Column(
       children: [
         // 1. Google Map with info overlay
-        SizedBox(
-          height: widget.mapHeight ?? 360.h,
-          child: Stack(
-            children: [
-              // Google Map
-              _buildGoogleMap(),
-
-              // 내 위치 버튼 (좌측하단 16, 20)
-              Positioned(
-                bottom: 16.h,
-                left: 20.w,
-                child: MyLocationButton(
-                  onPressed: resetToCurrentLocation,
-                  isFocused: _isLocationFocused,
-                  containerSize: 40,
-                  iconSize: 24,
-                  borderRadius: 12,
-                  focusedColor: widget.locationButtonColor ?? AppColors.blue,
-                  unfocusedColor: _unfocusedLocationColor(),
-                  backgroundColor: widget.isDarkMode ? AppColors.black : null,
-                  isDarkMode: widget.isDarkMode,
-                ),
-              ),
-
-              // Info card (편집 중: 우측 상단 / 기본: 우측 하단)
-              // mapHeight 기준으로 top 값을 계산 (AnimatedPositioned는 null↔값 전환 시 보간 불가)
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                top: _isRadiusChipEditing
-                    ? 16.h
-                    : (widget.mapHeight ?? 360.h) -
-                          16.h -
-                          (_effectiveChipHeight),
-                right: 20.w,
-                child: _buildRadiusIndicator(),
-              ),
-            ],
-          ),
-        ),
+        // expandMap이면 남는 높이를 전부 지도에 준다. 칩 위치 계산에 실제 높이가 필요해
+        // LayoutBuilder로 받는다.
+        if (widget.expandMap)
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) =>
+                  _buildMapStack(constraints.maxHeight),
+            ),
+          )
+        else
+          SizedBox(height: fixedHeight, child: _buildMapStack(fixedHeight)),
 
         // 2. 공간
         SizedBox(height: AppSpacing.vertical20),
 
         // 3. 반경 슬라이더
         Padding(padding: AppPadding.horizontal20, child: _buildRadiusSlider()),
+      ],
+    );
+  }
+
+  /// 지도 + 오버레이(내 위치 버튼·반경 칩). [mapHeight]는 실제로 배치된 지도 높이.
+  Widget _buildMapStack(double mapHeight) {
+    return Stack(
+      children: [
+        // Google Map
+        _buildGoogleMap(),
+
+        // 내 위치 버튼 (좌측하단 16, 20)
+        Positioned(
+          bottom: 16.h,
+          left: 20.w,
+          child: MyLocationButton(
+            onPressed: resetToCurrentLocation,
+            isFocused: _isLocationFocused,
+            containerSize: 40,
+            iconSize: 24,
+            borderRadius: 12,
+            focusedColor: widget.locationButtonColor ?? AppColors.blue,
+            unfocusedColor: _unfocusedLocationColor(),
+            backgroundColor: widget.isDarkMode ? AppColors.black : null,
+            isDarkMode: widget.isDarkMode,
+          ),
+        ),
+
+        // Info card (편집 중: 우측 상단 / 기본: 우측 하단)
+        // mapHeight 기준으로 top 값을 계산 (AnimatedPositioned는 null↔값 전환 시 보간 불가)
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          top: _isRadiusChipEditing
+              ? 16.h
+              : mapHeight - 16.h - (_effectiveChipHeight),
+          right: 20.w,
+          child: _buildRadiusIndicator(),
+        ),
       ],
     );
   }
