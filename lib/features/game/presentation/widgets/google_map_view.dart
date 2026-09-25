@@ -16,6 +16,14 @@ import '../../domain/entities/ping.dart';
 import 'map_error_widget.dart';
 import 'ping_marker_factory.dart';
 
+enum LocationCameraResult {
+  failed,
+  initialized,
+
+  /// 카메라 이동을 실행했거나 네이티브 지도 생성 후 실행하도록 예약했다.
+  moved,
+}
+
 /// Google Maps 기반 게임 지도 뷰
 ///
 /// - 내장 위치 마커 사용 (myLocationEnabled)
@@ -23,12 +31,15 @@ import 'ping_marker_factory.dart';
 class GoogleMapView extends StatefulWidget {
   const GoogleMapView({
     super.key,
+    this.initialTarget,
     this.onCameraMoveStarted,
     this.onLongPress,
     this.isDarkMode = false,
     this.isArrested = false,
   });
 
+  /// GPS를 기다리는 동안 사용할 해당 게임 구역의 중심점.
+  final LatLng? initialTarget;
   final VoidCallback? onCameraMoveStarted;
   final ValueChanged<LatLng>? onLongPress;
   final bool isDarkMode;
@@ -41,6 +52,9 @@ class GoogleMapView extends StatefulWidget {
 class GoogleMapViewState extends State<GoogleMapView>
     with WidgetsBindingObserver {
   GoogleMapController? _controller;
+  LatLng? _initialTarget;
+  LatLng? _pendingCameraTarget;
+  bool _initialLocationPending = true;
 
   Set<Circle> _areaCircles = {};
   Set<Polygon> _areaPolygons = {};
@@ -75,6 +89,7 @@ class GoogleMapViewState extends State<GoogleMapView>
   @override
   void didUpdateWidget(GoogleMapView oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _initialTarget ??= widget.initialTarget;
     if (oldWidget.isArrested != widget.isArrested) _syncJailPulse();
   }
 
@@ -125,7 +140,9 @@ class GoogleMapViewState extends State<GoogleMapView>
     debugPrint('🗺️ GoogleMapView initState 시작');
     debugPrint('🗺️ isDarkMode: ${widget.isDarkMode}');
     debugPrint('========================================');
+    _initialTarget = widget.initialTarget;
     _preloadIcons();
+    _loadInitialLocation();
   }
 
   @override
@@ -227,28 +244,52 @@ class GoogleMapViewState extends State<GoogleMapView>
   // 공개 메서드
   // ---------------------------------------------------------------------------
 
-  Future<void> moveCameraToCurrentLocation() async {
+  Future<void> _loadInitialLocation() async {
+    final location = await DeviceLocationService.getCurrentLatLng();
+    // 게임 구역이 먼저 표시되거나 사용자가 내 위치를 요청했다면 초기 응답은 무시한다.
+    if (!mounted || !_initialLocationPending || _initialTarget != null) return;
+    if (location != null) setState(() => _initialTarget = location);
+  }
+
+  Future<LocationCameraResult> moveCameraToCurrentLocation() async {
     debugPrint('📍 GoogleMap: 현재 위치로 카메라 이동 시작');
+    _initialLocationPending = false;
     try {
       final pos = await DeviceLocationService.getCurrentPosition();
 
+      if (!mounted) return LocationCameraResult.failed;
       if (pos == null) {
-        debugPrint('[지도/Google] 위치 조회 실패 → fallback 사용');
-        return;
+        debugPrint('[지도/Google] 위치 조회 실패 → 게임 구역 유지');
+        return LocationCameraResult.failed;
       }
 
       debugPrint('[지도/Google] 초기 위치: ${pos.latitude}, ${pos.longitude}');
 
-      await _controller?.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: 16),
-        ),
-      );
+      final target = LatLng(pos.latitude, pos.longitude);
+      if (_initialTarget == null) {
+        setState(() => _initialTarget = target);
+        return LocationCameraResult.initialized;
+      } else {
+        _pendingCameraTarget = target;
+        await _applyPendingCameraTarget();
+      }
       debugPrint('✅ GoogleMap: 카메라 이동 완료');
+      return LocationCameraResult.moved;
     } catch (e, stack) {
       debugPrint('❌ GoogleMap: 카메라 이동 실패 - $e');
       debugPrint('Stack: $stack');
+      return LocationCameraResult.failed;
     }
+  }
+
+  Future<void> _applyPendingCameraTarget() async {
+    final controller = _controller;
+    final target = _pendingCameraTarget;
+    if (controller == null || target == null) return;
+    _pendingCameraTarget = null;
+    await controller.animateCamera(
+      CameraUpdate.newCameraPosition(CameraPosition(target: target, zoom: 16)),
+    );
   }
 
   /// 플레이그라운드 반경(미터)에 따라 지도 최소 줌 레벨을 갱신합니다.
@@ -431,19 +472,21 @@ class GoogleMapViewState extends State<GoogleMapView>
 
   @override
   Widget build(BuildContext context) {
+    final initialTarget = _initialTarget;
+    if (initialTarget == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     try {
       return GoogleMap(
-        initialCameraPosition: const CameraPosition(
-          target: DeviceLocationService.fallbackLocation,
-          zoom: 15,
-        ),
+        initialCameraPosition: CameraPosition(target: initialTarget, zoom: 16),
         // Cloud Map ID는 콜드 스타트 시 회색 타일 영구 실패 가능성으로 미사용 — JSON 다크 스타일로 통일
         style: widget.isDarkMode ? MapStyles.dark : null,
-        onMapCreated: (controller) {
+        onMapCreated: (controller) async {
           debugPrint('🗺️ GoogleMap onMapCreated 콜백 시작');
           try {
+            if (!mounted) return;
             _controller = controller;
-            moveCameraToCurrentLocation();
+            await _applyPendingCameraTarget();
             debugPrint('✅ google map ready');
           } catch (e, stack) {
             debugPrint('❌ GoogleMap onMapCreated 에러: $e');

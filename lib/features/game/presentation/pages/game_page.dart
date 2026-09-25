@@ -132,8 +132,8 @@ class _GamePageState extends ConsumerState<GamePage>
   LatLng? _pendingPingLatLng;
   bool _isCheckingGameStatus = false;
   bool _isLocationPermissionDenied = false;
-  bool _isLocationFocused = true;
-  bool _isProgrammaticMove = true; // 초기 카메라 이동(onMapCreated) 보호
+  bool _isLocationFocused = false;
+  bool _isProgrammaticMove = false;
 
   /// dispose()에서 ref 사용 불가이므로 사전에 저장
   ChatNotifier? _chatNotifier;
@@ -1046,10 +1046,17 @@ class _GamePageState extends ConsumerState<GamePage>
     _lastSentPosition = pos;
   }
 
-  void _moveToCurrentLocation() {
+  Future<void> _moveToCurrentLocation() async {
     _isProgrammaticMove = true;
     setState(() => _isLocationFocused = true);
-    _googleMapKey.currentState?.moveCameraToCurrentLocation();
+    final result =
+        await _googleMapKey.currentState?.moveCameraToCurrentLocation() ??
+        LocationCameraResult.failed;
+    if (!mounted || result == LocationCameraResult.moved) return;
+    _isProgrammaticMove = false;
+    setState(
+      () => _isLocationFocused = result == LocationCameraResult.initialized,
+    );
   }
 
   void _onMapCameraMoved() {
@@ -2059,6 +2066,11 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
+    final playgroundCenter = ref
+        .watch(gameAreaProvider(_gameId))
+        .valueOrNull
+        ?.playground
+        .centroid;
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
     final actionButtonBottom = 38.h + bottomInset;
 
@@ -2087,6 +2099,12 @@ class _GamePageState extends ConsumerState<GamePage>
                 enabled: !_showChat && !_showParticipants,
                 child: GoogleMapView(
                   key: _googleMapKey,
+                  initialTarget: playgroundCenter == null
+                      ? null
+                      : LatLng(
+                          playgroundCenter.latitude,
+                          playgroundCenter.longitude,
+                        ),
                   onCameraMoveStarted: _onMapCameraMoved,
                   onLongPress: _onMapLongPress,
                   isDarkMode: _isDarkMode,

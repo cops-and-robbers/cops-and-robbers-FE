@@ -18,7 +18,6 @@ import 'package:cops_and_robbers/features/game/data/models/game_event_model.dart
 import 'package:cops_and_robbers/core/services/lifecycle/app_lifecycle_service.dart';
 import 'package:cops_and_robbers/core/widgets/dialogs/reconnect_modal.dart';
 import 'package:cops_and_robbers/core/widgets/dialogs/app_popup.dart';
-import 'package:cops_and_robbers/features/auth/presentation/providers/token_provider.dart';
 import 'package:cops_and_robbers/features/chat/data/datasources/chat_stomp_datasource.dart';
 import 'package:cops_and_robbers/features/chat/data/models/chat_message_dto.dart';
 import 'package:cops_and_robbers/features/chat/presentation/widgets/chat_preview_card.dart';
@@ -40,6 +39,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
@@ -51,6 +51,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _Location extends GeolocatorPlatform {
   final positions = StreamController<Position>.broadcast();
   bool inside = true;
+  bool failCurrentPosition = false;
   @override
   Future<bool> isLocationServiceEnabled() async => true;
   @override
@@ -59,7 +60,15 @@ class _Location extends GeolocatorPlatform {
   @override
   Future<Position> getCurrentPosition({
     LocationSettings? locationSettings,
-  }) async => position(inside);
+  }) async {
+    if (failCurrentPosition) throw const LocationServiceDisabledException();
+    return position(inside);
+  }
+
+  @override
+  Future<Position?> getLastKnownPosition({
+    bool forceLocationManager = false,
+  }) async => null;
   @override
   Stream<Position> getPositionStream({LocationSettings? locationSettings}) =>
       positions.stream;
@@ -124,13 +133,6 @@ class _Chat extends ChatStompDatasource {
   void connect(String wsUrl, String accessToken) {}
 }
 
-class _Token implements TokenProvider {
-  @override
-  Future<String?> getAccessToken() async => 'test';
-  @override
-  Future<String?> refreshAccessTokenIfNeeded() async => 'test';
-}
-
 class _GameApi implements GameSystemApi {
   int escapes = 0;
   Completer<void>? escapeGate;
@@ -146,8 +148,8 @@ class _GameApi implements GameSystemApi {
     if (failures-- > 0) throw Exception('temporary HTTP failure');
   }
 
-  @override
-  Future<GameAreaModel> getArea(int gameId) async => const GameAreaModel(
+  Completer<GameAreaModel>? areaGate;
+  GameAreaModel area = const GameAreaModel(
     areaType: GameAreaType.circle,
     circle: CircleAreaModel(
       playgroundCenter: LatLngModel(latitude: 37.5665, longitude: 126.9780),
@@ -156,6 +158,9 @@ class _GameApi implements GameSystemApi {
       jailRadiusInMeters: 20,
     ),
   );
+  @override
+  Future<GameAreaModel> getArea(int gameId) =>
+      areaGate?.future ?? Future.value(area);
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -206,6 +211,7 @@ void main() {
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({'access_token': 'test'});
     dotenv.loadFromString(envString: 'API_BASE_URL=http://localhost:8080');
     location = _Location();
     socket = _Socket();
@@ -231,7 +237,6 @@ void main() {
         chatStompDatasourceProvider.overrideWithValue(chat),
         gameSystemApiProvider.overrideWithValue(game),
         sessionRemoteDataSourceProvider.overrideWithValue(session),
-        tokenProviderProvider.overrideWithValue(_Token()),
       ],
     );
     container.read(gameParticipantNotifierProvider.notifier)
@@ -296,6 +301,159 @@ void main() {
     location.inside = inside;
     location.positions.add(location.position(inside));
     await tester.pump();
+  }
+
+  for (final dragAfterFailure in [false, true]) {
+    testWidgets('failed_location_clears_focus_drag_$dragAfterFailure', (
+      tester,
+    ) async {
+      await mount(tester);
+      location.failCurrentPosition = true;
+      await tester.tap(find.byType(MyLocationButton));
+      await tester.pump();
+      if (dragAfterFailure) {
+        tester.widget<GoogleMap>(find.byType(GoogleMap)).onCameraMoveStarted!();
+        await tester.pump();
+      }
+      expect(
+        tester
+            .widget<MyLocationButton>(find.byType(MyLocationButton))
+            .isFocused,
+        isFalse,
+      );
+    });
+  }
+
+  for (final dragAfterCreation in [false, true]) {
+    testWidgets('manual_location_creates_map_drag_$dragAfterCreation', (
+      tester,
+    ) async {
+      location.failCurrentPosition = true;
+      game.areaGate = Completer<GameAreaModel>();
+      await mount(tester);
+      expect(find.byType(GoogleMap), findsNothing);
+      location.failCurrentPosition = false;
+      await tester.tap(find.byType(MyLocationButton));
+      await tester.pump();
+      await tester.pump();
+      final map = tester.widget<GoogleMap>(find.byType(GoogleMap));
+      expect(map.initialCameraPosition.target, const LatLng(37.5665, 126.9780));
+      if (dragAfterCreation) {
+        map.onCameraMoveStarted!();
+        await tester.pump();
+      }
+      expect(
+        tester
+            .widget<MyLocationButton>(find.byType(MyLocationButton))
+            .isFocused,
+        !dragAfterCreation,
+      );
+    });
+  }
+
+  testWidgets('manual_camera_move_keeps_focus_until_the_next_user_drag', (
+    tester,
+  ) async {
+    await mount(tester);
+    await tester.tap(find.byType(MyLocationButton));
+    await tester.pump();
+    final map = tester.widget<GoogleMap>(find.byType(GoogleMap));
+    map.onCameraMoveStarted!();
+    await tester.pump();
+    expect(
+      tester.widget<MyLocationButton>(find.byType(MyLocationButton)).isFocused,
+      isTrue,
+    );
+    map.onCameraMoveStarted!();
+    await tester.pump();
+    expect(
+      tester.widget<MyLocationButton>(find.byType(MyLocationButton)).isFocused,
+      isFalse,
+    );
+  });
+
+  for (final isPolygon in [false, true]) {
+    testWidgets(
+      'initial_map_uses_delayed_game_area_with_bounds_when_gps_fails_polygon_$isPolygon',
+      (tester) async {
+        location.failCurrentPosition = true;
+        game.areaGate = Completer<GameAreaModel>();
+        if (isPolygon) {
+          game.area = const GameAreaModel(
+            areaType: GameAreaType.polygon,
+            polygon: PolygonAreaModel(
+              playgroundPolygon: [
+                LatLngModel(latitude: 37.56, longitude: 126.97),
+                LatLngModel(latitude: 37.57, longitude: 126.97),
+                LatLngModel(latitude: 37.57, longitude: 126.98),
+                LatLngModel(latitude: 37.56, longitude: 126.98),
+              ],
+              jailPolygon: [
+                LatLngModel(latitude: 37.565, longitude: 126.975),
+                LatLngModel(latitude: 37.566, longitude: 126.975),
+                LatLngModel(latitude: 37.566, longitude: 126.976),
+              ],
+            ),
+          );
+        }
+        await mount(tester);
+        final mapState = tester.state<GoogleMapViewState>(
+          find.byType(GoogleMapView),
+        );
+        expect(find.byType(GoogleMap), findsNothing);
+        expect(
+          tester
+              .widget<MyLocationButton>(find.byType(MyLocationButton))
+              .isFocused,
+          isFalse,
+        );
+
+        game.areaGate!.complete(game.area);
+        await tester.pump();
+        await tester.pump();
+        expect(
+          tester.state<GoogleMapViewState>(find.byType(GoogleMapView)),
+          same(mapState),
+        );
+        final map = tester.widget<GoogleMap>(find.byType(GoogleMap));
+        final target = map.initialCameraPosition.target;
+        expect(target.latitude, closeTo(isPolygon ? 37.565 : 37.5665, 1e-9));
+        expect(target.longitude, closeTo(isPolygon ? 126.975 : 126.9780, 1e-9));
+        expect(map.cameraTargetBounds.bounds!.contains(target), isTrue);
+        expect(
+          map.cameraTargetBounds.bounds!.contains(
+            const LatLng(35.1796, 129.0756),
+          ),
+          isFalse,
+        );
+        expect(map.minMaxZoomPreference.minZoom, isPolygon ? 13 : 14);
+        expect(map.myLocationEnabled, isTrue);
+        expect(
+          map.polygons.any((p) => p.polygonId.value == 'outside_overlay'),
+          isTrue,
+        );
+        if (isPolygon) {
+          expect(map.circles, isEmpty);
+          expect(
+            map.polygons
+                .singleWhere((p) => p.polygonId.value == 'playground_border')
+                .points,
+            [
+              const LatLng(37.56, 126.97),
+              const LatLng(37.57, 126.97),
+              const LatLng(37.57, 126.98),
+              const LatLng(37.56, 126.98),
+            ],
+          );
+        } else {
+          expect(map.circles.map((c) => c.circleId.value).toSet(), {
+            'playground',
+            'jail',
+          });
+        }
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   testWidgets('경찰 재접속 시 설정을 불러와도 대기 팝업은 한 번만 열리고 만료되면 닫힌다', (tester) async {
