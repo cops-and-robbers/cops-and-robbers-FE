@@ -582,7 +582,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     }
   }
 
-  /// 수동 탈옥 요청의 단일 진입점.
+  /// 자동·수동 탈옥 요청의 단일 진입점.
   ///
   /// HTTP 응답보다 늦게 온 이전 요청이 재체포 상태를 덮지 않도록 요청 세대를
   /// 확인한다. 서버가 성공을 응답하거나 STOMP ESCAPE가 오기 전에는 수감 상태를

@@ -95,7 +95,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                       // 본문 ↔ 버튼 사이 명시적 간격 (이전 spaceBetween 대체)
                       SizedBox(height: 24.h),
 
-                      // 수동 탈옥 버튼
+                      // 자동 감지 실패에 대비한 수동 탈옥 버튼
                       AppButton(
                         text: l10n.gameArrestOverlayEscapeCompleteButton,
                         width: 288.w,
@@ -110,19 +110,22 @@ class ArrestLockOverlay extends ConsumerWidget {
                                 final arrestRevision = ref
                                     .read(gameEventNotifierProvider)
                                     .localArrestRevision;
+                                // 확인창이 열린 사이 자동 탈옥으로 이 오버레이가 사라질 수 있다.
+                                // 해제된 위젯의 ref를 쓰지 않도록 notifier를 미리 잡아 둔다.
+                                final notifier = ref.read(
+                                  gameEventNotifierProvider.notifier,
+                                );
                                 GameActionModal.show(
                                   context: context,
                                   title: l10n.buttonEscape,
                                   message: l10n.dialogEscapeAttemptMessage,
                                   confirmLabel: l10n.buttonEscape,
                                   isDarkMode: true,
-                                  onConfirm: () => ref
-                                      .read(gameEventNotifierProvider.notifier)
-                                      .escape(
-                                        gameId,
-                                        myParticipantId,
-                                        expectedArrestRevision: arrestRevision,
-                                      ),
+                                  onConfirm: () => notifier.escape(
+                                    gameId,
+                                    myParticipantId,
+                                    expectedArrestRevision: arrestRevision,
+                                  ),
                                 );
                               },
                       ),
