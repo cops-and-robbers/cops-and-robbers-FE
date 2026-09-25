@@ -47,6 +47,23 @@ class AreaShape with _$AreaShape {
     polygon: (points) => _rayCastContains(points, point),
   );
 
+  /// 점에서 실제 도형 경계까지의 최단 거리(m).
+  ///
+  /// 폴리곤을 외접 원으로 근사하지 않아 오목한 영역과 꼭짓점에서도 실제 경계를
+  /// 기준으로 GPS 이탈 여유를 적용할 수 있다.
+  double distanceToBoundaryInMeters(GeoPoint point) => when(
+    circle: (center, radiusInMeters) =>
+        (Geolocator.distanceBetween(
+                  center.latitude,
+                  center.longitude,
+                  point.latitude,
+                  point.longitude,
+                ) -
+                radiusInMeters)
+            .abs(),
+    polygon: (points) => _distanceToPolygonBoundary(points, point),
+  );
+
   /// 구역 대표 중심점 (카메라 초기 위치용)
   GeoPoint get centroid => when(
     circle: (center, _) => center,
@@ -154,4 +171,34 @@ bool _isPointOnSegment(GeoPoint a, GeoPoint b, GeoPoint p) {
       p.latitude <= maxLatitude + epsilon &&
       p.longitude >= minLongitude - epsilon &&
       p.longitude <= maxLongitude + epsilon;
+}
+
+double _distanceToPolygonBoundary(List<GeoPoint> points, GeoPoint point) {
+  if (points.isEmpty) return 0;
+
+  const metersPerDegreeLatitude = 111320.0;
+  final metersPerDegreeLongitude =
+      metersPerDegreeLatitude * math.cos(point.latitude * math.pi / 180);
+  var nearest = double.infinity;
+
+  for (var i = 0; i < points.length; i++) {
+    final a = points[i];
+    final b = points[(i + 1) % points.length];
+    final ax = (a.longitude - point.longitude) * metersPerDegreeLongitude;
+    final ay = (a.latitude - point.latitude) * metersPerDegreeLatitude;
+    final bx = (b.longitude - point.longitude) * metersPerDegreeLongitude;
+    final by = (b.latitude - point.latitude) * metersPerDegreeLatitude;
+    final dx = bx - ax;
+    final dy = by - ay;
+    final lengthSquared = dx * dx + dy * dy;
+    final t = lengthSquared == 0
+        ? 0.0
+        : (-(ax * dx + ay * dy) / lengthSquared).clamp(0.0, 1.0);
+    nearest = math.min(
+      nearest,
+      math.sqrt(math.pow(ax + t * dx, 2) + math.pow(ay + t * dy, 2)),
+    );
+  }
+
+  return nearest.isFinite ? nearest : 0;
 }
