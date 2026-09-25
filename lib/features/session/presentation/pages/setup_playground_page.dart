@@ -21,6 +21,11 @@ import '../../../game/domain/polygon_geometry.dart';
 import '../widgets/area_type_toggle.dart';
 import '../../../../l10n/app_localizations.dart';
 
+typedef PlaygroundSetupArgs = ({
+  AreaShape? initialShape,
+  LatLng? initialCenter,
+});
+
 /// 플레이그라운드 구역 설정 화면
 ///
 /// 지도에서 게임이 진행될 플레이그라운드 범위를 지정합니다.
@@ -34,6 +39,7 @@ class SetupPlaygroundPage extends ConsumerStatefulWidget {
   const SetupPlaygroundPage({
     super.key,
     this.editInitialShape,
+    this.initialCenter,
     this.showStepIndicator = false,
     this.isInGameEdit = false,
   });
@@ -51,6 +57,9 @@ class SetupPlaygroundPage extends ConsumerStatefulWidget {
 
   /// 지도에 미리 그려둘 초기 구역 (null이면 빈 상태로 시작)
   final AreaShape? editInitialShape;
+
+  /// 기존 도형이나 초안이 없을 때 사용할 초기 지도 위치 (null이면 현재 위치).
+  final LatLng? initialCenter;
 
   @override
   ConsumerState<SetupPlaygroundPage> createState() =>
@@ -102,6 +111,19 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
 
   /// 초기 도형을 받았는지 (모드가 아니다 — 다크 판정은 [SetupPlaygroundPage.isInGameEdit])
   bool get _hasInitialShape => widget.editInitialShape != null;
+
+  /// 첫 모드 전환도 이미 그린 구역에서 시작한다. 방문한 모드의 상태는 유지한다.
+  LatLng? get _initialMapCenter {
+    if (_currentCenter != null) return _currentCenter;
+    if (_pinPoints.isNotEmpty) {
+      final center = AreaShape.polygon(points: [
+        for (final point in _pinPoints)
+          GeoPoint(latitude: point.latitude, longitude: point.longitude),
+      ]).centroid;
+      return LatLng(center.latitude, center.longitude);
+    }
+    return widget.initialCenter;
+  }
 
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
@@ -340,7 +362,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                     // 0: 원형(거리) 모드
                     _visitedAreaTypes.contains(GameAreaType.circle)
                         ? ZoneSettingWidget(
-                            initialCenter: _currentCenter,
+                            initialCenter: _initialMapCenter,
                             initialRadius: _currentRadius,
                             minRadius: 100,
                             maxRadius: 1000,
@@ -362,6 +384,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                     _visitedAreaTypes.contains(GameAreaType.polygon)
                         ? PinZoneSettingWidget(
                             initialPoints: _pinPoints,
+                            initialCenter: _initialMapCenter,
                             pinColor: AppColors.blue,
                             fillColor: AppColors.blue500Alpha20,
                             strokeColor: AppColors.blue800,

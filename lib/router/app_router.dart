@@ -45,6 +45,7 @@ import '../features/mypage/presentation/pages/bug_report_page.dart';
 import '../features/mypage/presentation/pages/language_settings_page.dart';
 import '../features/mypage/presentation/pages/my_page.dart';
 import 'main_scaffold.dart';
+import '../features/session/presentation/game_creation_entry.dart';
 import '../features/session/presentation/pages/session_creation_flow_page.dart';
 import '../features/session/presentation/pages/setup_playground_page.dart';
 import '../features/session/presentation/pages/setup_prison_page.dart';
@@ -420,7 +421,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) => buildDirectionalSlide(
                       key: state.pageKey,
                       child: SessionCreationFlowPage(
-                        communityPostId: state.extra as int?,
+                        communityPostId:
+                            (state.extra as GameCreationArgs?)
+                                ?.communityPostId,
+                        initialCenter:
+                            (state.extra as GameCreationArgs?)
+                                ?.initialCenter,
                       ),
                       isForward: true,
                     ),
@@ -435,7 +441,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                         pageBuilder: (context, state) => buildDirectionalSlide(
                           key: state.pageKey,
                           child: SetupPlaygroundPage(
-                            editInitialShape: state.extra as AreaShape?,
+                            editInitialShape:
+                                (state.extra as PlaygroundSetupArgs?)
+                                    ?.initialShape,
+                            initialCenter:
+                                (state.extra as PlaygroundSetupArgs?)
+                                    ?.initialCenter,
                             showStepIndicator: true,
                           ),
                           isForward: true,

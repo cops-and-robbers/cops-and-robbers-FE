@@ -1,11 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/services/permission/game_entry_gate.dart';
 import '../../../core/services/permission/location_permission_messages.dart';
 import '../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../router/route_paths.dart';
+
+typedef GameCreationArgs = ({int? communityPostId, LatLng? initialCenter});
 
 /// 게임 생성 플로우 진입 — 위치 권한 게이트와 이전 초안 정리를 여기서 보장한다.
 ///
@@ -26,12 +29,14 @@ import '../../../router/route_paths.dart';
 ///
 /// - [communityPostId] 모집글 채팅방에서 왔을 때의 글 번호. 플로우가 생성 직후
 ///   그 방에 GAME_INVITE 를 쏘는 데 쓴다 (#516).
+/// - [initialCenter] 모집글 모임 장소. null이면 현재 위치에서 시작한다.
 /// - [replace] 현재 화면을 대체할지(`go`) 위에 쌓을지(`push`). 홈은 대체하고,
 ///   채팅방은 쌓아 두어 뒤로가기로 방에 돌아온다.
 Future<void> startGameCreation({
   required BuildContext context,
   required WidgetRef ref,
   int? communityPostId,
+  LatLng? initialCenter,
   bool replace = false,
 }) async {
   final passed = await ref
@@ -46,9 +51,10 @@ Future<void> startGameCreation({
   await SessionDraftStorageService().clearDraft();
   if (!context.mounted) return;
 
+  final args = (communityPostId: communityPostId, initialCenter: initialCenter);
   if (replace) {
-    context.go(RoutePaths.sessionCreationFlow, extra: communityPostId);
+    context.go(RoutePaths.sessionCreationFlow, extra: args);
   } else {
-    context.push(RoutePaths.sessionCreationFlow, extra: communityPostId);
+    context.push(RoutePaths.sessionCreationFlow, extra: args);
   }
 }
