@@ -1465,8 +1465,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameArrestOverlayTitle => '체포되었어요!';
 
   @override
-  String get gameArrestOverlayMessage =>
-      '감옥에 들어갔다가 벗어나면 자동으로 탈옥해요\n자동 탈옥이 안 되면 아래 버튼을 눌러 주세요';
+  String get gameArrestOverlayMessage => '감옥에서 빠져나왔다면\n아래 버튼을 눌러 탈옥을 완료해 주세요';
 
   @override
   String get gameArrestOverlayEscapeCompleteButton => '탈옥하기';

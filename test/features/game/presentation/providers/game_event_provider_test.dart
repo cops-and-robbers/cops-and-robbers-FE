@@ -446,23 +446,23 @@ void main() {
       expect(state.errorMessage, isNotNull);
     });
 
-    test('submits_once_when_automatic_and_manual_requests_overlap', () async {
+    test('escape_submits_once_when_manual_requests_overlap', () async {
       final gate = Completer<void>();
       final api = _FakeGameSystemApi()..escapeGate = gate;
       final c = _container(api: api);
       final notifier = c.read(gameEventNotifierProvider.notifier);
       notifier.syncFromParticipants(arrestedIds: {5}, remainingThieves: 1);
 
-      final automatic = notifier.escape(1, 5);
+      final firstRequest = notifier.escape(1, 5);
       await Future<void>.delayed(Duration.zero);
-      final manual = await notifier.escape(1, 5);
+      final duplicateRequest = await notifier.escape(1, 5);
 
-      expect(manual, EscapeRequestResult.ignored);
+      expect(duplicateRequest, EscapeRequestResult.ignored);
       expect(api.escapeCount, 1);
       expect(c.read(gameEventNotifierProvider).isEscapeInFlight, isTrue);
 
       gate.complete();
-      expect(await automatic, EscapeRequestResult.success);
+      expect(await firstRequest, EscapeRequestResult.success);
       expect(c.read(gameEventNotifierProvider).isEscapeInFlight, isFalse);
     });
 

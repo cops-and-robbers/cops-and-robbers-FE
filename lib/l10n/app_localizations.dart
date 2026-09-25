@@ -2813,10 +2813,10 @@ abstract class AppLocalizations {
   /// 체포 잠금 오버레이 안내 본문
   ///
   /// In ko, this message translates to:
-  /// **'감옥에 들어갔다가 벗어나면 자동으로 탈옥해요\n자동 탈옥이 안 되면 아래 버튼을 눌러 주세요'**
+  /// **'감옥에서 빠져나왔다면\n아래 버튼을 눌러 탈옥을 완료해 주세요'**
   String get gameArrestOverlayMessage;
 
-  /// 자동 탈옥 실패에 대비한 수동 탈옥 버튼
+  /// 수동 탈옥 버튼
   ///
   /// In ko, this message translates to:
   /// **'탈옥하기'**

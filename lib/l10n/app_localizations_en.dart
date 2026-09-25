@@ -1570,7 +1570,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameArrestOverlayMessage =>
-      'Enter the jail, then leave it to jailbreak automatically\nUse the button below if automatic jailbreak does not work';
+      'Once you have left the jail,\ntap the button below to complete your jailbreak';
 
   @override
   String get gameArrestOverlayEscapeCompleteButton => 'Jailbreak';

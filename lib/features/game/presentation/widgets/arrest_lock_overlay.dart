@@ -95,7 +95,7 @@ class ArrestLockOverlay extends ConsumerWidget {
                       // 본문 ↔ 버튼 사이 명시적 간격 (이전 spaceBetween 대체)
                       SizedBox(height: 24.h),
 
-                      // 자동 감지 실패에 대비한 수동 탈옥 버튼
+                      // 수동 탈옥 버튼
                       AppButton(
                         text: l10n.gameArrestOverlayEscapeCompleteButton,
                         width: 288.w,

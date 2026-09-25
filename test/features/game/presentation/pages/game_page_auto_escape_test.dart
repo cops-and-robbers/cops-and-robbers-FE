@@ -51,7 +51,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _Location extends GeolocatorPlatform {
   final positions = StreamController<Position>.broadcast();
   bool inside = true;
-  Future<Position> Function()? currentPosition;
   @override
   Future<bool> isLocationServiceEnabled() async => true;
   @override
@@ -60,7 +59,7 @@ class _Location extends GeolocatorPlatform {
   @override
   Future<Position> getCurrentPosition({
     LocationSettings? locationSettings,
-  }) async => currentPosition != null ? currentPosition!() : position(inside);
+  }) async => position(inside);
   @override
   Stream<Position> getPositionStream({LocationSettings? locationSettings}) =>
       positions.stream;
@@ -928,175 +927,104 @@ void main() {
     },
   );
 
-  testWidgets('sparse_positions_escape_with_a_fresh_confirmation', (
-    tester,
-  ) async {
-    await withClock(Clock(() => tester.binding.clock.now()), () async {
-      await mount(tester);
-      location.positions.add(location.position(true));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      location.inside = false;
-      location.positions.add(location.position(false));
-      await tester.pump();
-      expect(game.escapes, 0);
-      await tester.pump(const Duration(seconds: 2));
-      expect(game.escapes, 1);
-      expect(container.read(gameEventNotifierProvider).escapedParticipantIds, {
-        5,
-      });
-    });
-  });
-
-  testWidgets('late_confirmation_cannot_escape_after_disconnect', (
-    tester,
-  ) async {
-    await withClock(Clock(() => tester.binding.clock.now()), () async {
-      await mount(tester);
-      location.positions.add(location.position(true));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      location.positions.add(location.position(false));
-      await tester.pump();
-      final pending = Completer<Position>();
-      location.currentPosition = () => pending.future;
-      await tester.pump(const Duration(seconds: 2));
-      socket.emit(StompConnectionState.disconnected);
-      await tester.pump();
-      pending.complete(location.position(false));
-      await tester.pump();
-      container.read(gameEventNotifierProvider.notifier).disconnect();
-      expect(game.escapes, 0);
-      expect(container.read(gameEventNotifierProvider).arrestedParticipantIds, {
-        5,
-      });
-    });
-  });
-
-  testWidgets('cached_confirmation_does_not_count_as_a_new_position', (
-    tester,
-  ) async {
-    await withClock(Clock(() => tester.binding.clock.now()), () async {
-      await mount(tester);
-      location.positions.add(location.position(true));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      final cached = location.position(false);
-      location.positions.add(cached);
-      location.currentPosition = () async => cached;
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 2));
-      expect(game.escapes, 0);
-      await tester.pump(const Duration(seconds: 20));
-      expect(game.escapes, 0);
-    });
-  });
-
-  for (final interruption in ['rearrest', 'dispose', 'failure']) {
-    testWidgets('pending_confirmation_is_safe_on_$interruption', (
-      tester,
-    ) async {
+  testWidgets(
+    'jailed_robber_stays_jailed_when_leaving_jail_until_manual_escape',
+    (tester) async {
       await withClock(Clock(() => tester.binding.clock.now()), () async {
         await mount(tester);
         location.positions.add(location.position(true));
         await tester.pump();
         await tester.pump(const Duration(seconds: 1));
+        location.inside = false;
         location.positions.add(location.position(false));
         await tester.pump();
-        final pending = Completer<Position>();
-        location.currentPosition = () => pending.future;
-        await tester.pump(const Duration(seconds: 2));
-        if (interruption == 'rearrest') {
-          socket.events.add(
-            const GameEventModel(
-              eventId: 'new-arrest',
-              type: GameEventType.arrest,
-              data: {
-                'robber': {
-                  'participantId': 5,
-                  'nickname': '도둑',
-                  'status': 'JAILED',
-                },
-                'police': {
-                  'participantId': 2,
-                  'nickname': '경찰',
-                  'status': 'ALIVE',
-                },
-                'remainingThieves': 1,
-              },
-            ),
-          );
-          await tester.pump();
-        } else if (interruption == 'dispose') {
-          await tester.pumpWidget(const SizedBox());
-        }
-        if (interruption == 'failure') {
-          pending.completeError(Exception('GPS unavailable'));
-        } else {
-          pending.complete(location.position(false));
-        }
-        await tester.pump();
         expect(game.escapes, 0);
-        expect(tester.takeException(), isNull);
-        if (interruption == 'rearrest') {
-          // ARREST가 띄운 기존 배너(8.8초)의 표시 수명을 끝낸다.
-          await tester.pump(const Duration(seconds: 9));
-          expect(game.escapes, 0);
-        }
-        if (interruption == 'failure') {
-          location.currentPosition = null;
-          location.inside = false;
-          await tester.pump(const Duration(seconds: 1));
-          location.positions.add(location.position(false));
-          await tester.pump();
-          expect(game.escapes, 1);
-        }
-      });
-    });
-  }
+        await tester.pump(const Duration(seconds: 2));
+        location.positions.add(location.position(false));
+        await tester.pump(const Duration(seconds: 3));
+        expect(game.escapes, 0);
+        expect(
+          container.read(gameEventNotifierProvider).arrestedParticipantIds,
+          {5},
+        );
+        expect(
+          container.read(gameEventNotifierProvider).escapedParticipantIds,
+          isEmpty,
+        );
+        expect(find.byType(JailBarsOverlay), findsOneWidget);
 
-  testWidgets('paused_reconnect_retries_sync_and_escapes_without_a_frame', (
-    tester,
-  ) async {
-    await mount(tester);
-    expect(session.requests, 1);
-    socket.emit(StompConnectionState.disconnected);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.byType(ReconnectModal), findsOneWidget);
-    for (final state in [
-      AppLifecycleState.inactive,
-      AppLifecycleState.hidden,
-      AppLifecycleState.paused,
-    ]) {
-      tester.binding.handleAppLifecycleStateChanged(state);
-    }
-    // pause 직전에 예약된 마지막 프레임을 소비한 뒤, 실제 프레임 수를 감시한다.
-    await tester.pump();
-    var frames = 0;
-    tester.binding.addPersistentFrameCallback((_) {
-      frames++;
-    });
-    expect(tester.binding.framesEnabled, isFalse);
-    session.failures = 1;
-    socket.emit(StompConnectionState.connected);
-    await tester.idle();
-    // 프레임 예약이 없는 paused 상태: 가상 시계/마이크로태스크만 진행한다.
-    expect(tester.binding.hasScheduledFrame, isFalse);
-    await tester.pump(const Duration(seconds: 2));
-    expect(session.requests, 3); // 초기 1 + 재연결 실패 1 + 자동 재시도 1
-    for (final inside in [true, false]) {
-      location.inside = inside;
-      location.positions.add(location.position(inside));
+        final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+        await tester.tap(
+          find.byWidgetPredicate(
+            (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
+          ),
+        );
+        await tester.pump();
+        await tester.tap(find.text(l10n.gameArrestOverlayEscapeCompleteButton));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(game.escapes, 0);
+        await tester.tap(find.text(l10n.buttonEscape).last);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(game.escapes, 1);
+        expect(
+          container.read(gameEventNotifierProvider).escapedParticipantIds,
+          {5},
+        );
+        expect(find.byType(JailBarsOverlay), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    },
+  );
+
+  testWidgets(
+    'jailed_state_is_restored_when_paused_reconnect_retries_without_a_frame',
+    (tester) async {
+      await mount(tester);
+      expect(session.requests, 1);
+      socket.emit(StompConnectionState.disconnected);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byType(ReconnectModal), findsOneWidget);
+      for (final state in [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      // pause 직전에 예약된 마지막 프레임을 소비한 뒤, 실제 프레임 수를 감시한다.
+      await tester.pump();
+      var frames = 0;
+      tester.binding.addPersistentFrameCallback((_) {
+        frames++;
+      });
+      expect(tester.binding.framesEnabled, isFalse);
+      session.failures = 1;
+      socket.emit(StompConnectionState.connected);
       await tester.idle();
-      await tester.pump(const Duration(milliseconds: 2100));
-    }
-    expect(frames, 0);
-    expect(game.escapes, 1);
-    expect(container.read(gameEventNotifierProvider).escapedParticipantIds, {
-      5,
-    });
-  });
+      // 프레임 예약이 없는 paused 상태: 가상 시계/마이크로태스크만 진행한다.
+      expect(tester.binding.hasScheduledFrame, isFalse);
+      await tester.pump(const Duration(seconds: 2));
+      expect(session.requests, 3); // 초기 1 + 재연결 실패 1 + 자동 재시도 1
+      for (final inside in [true, false]) {
+        location.inside = inside;
+        location.positions.add(location.position(inside));
+        await tester.idle();
+        await tester.pump(const Duration(milliseconds: 2100));
+      }
+      expect(frames, 0);
+      expect(game.escapes, 0);
+      expect(container.read(gameEventNotifierProvider).arrestedParticipantIds, {
+        5,
+      });
+      expect(
+        container.read(gameEventNotifierProvider).escapedParticipantIds,
+        isEmpty,
+      );
+    },
+  );
 
   testWidgets('sync_retries_are_bounded_and_resume_recovers', (tester) async {
     session.failures = 3;
