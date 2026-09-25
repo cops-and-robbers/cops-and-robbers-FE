@@ -303,6 +303,75 @@ void main() {
     await tester.pump();
   }
 
+  for (final dragAfterFailure in [false, true]) {
+    testWidgets('failed_location_clears_focus_drag_$dragAfterFailure', (
+      tester,
+    ) async {
+      await mount(tester);
+      location.failCurrentPosition = true;
+      await tester.tap(find.byType(MyLocationButton));
+      await tester.pump();
+      if (dragAfterFailure) {
+        tester.widget<GoogleMap>(find.byType(GoogleMap)).onCameraMoveStarted!();
+        await tester.pump();
+      }
+      expect(
+        tester
+            .widget<MyLocationButton>(find.byType(MyLocationButton))
+            .isFocused,
+        isFalse,
+      );
+    });
+  }
+
+  for (final dragAfterCreation in [false, true]) {
+    testWidgets('manual_location_creates_map_drag_$dragAfterCreation', (
+      tester,
+    ) async {
+      location.failCurrentPosition = true;
+      game.areaGate = Completer<GameAreaModel>();
+      await mount(tester);
+      expect(find.byType(GoogleMap), findsNothing);
+      location.failCurrentPosition = false;
+      await tester.tap(find.byType(MyLocationButton));
+      await tester.pump();
+      await tester.pump();
+      final map = tester.widget<GoogleMap>(find.byType(GoogleMap));
+      expect(map.initialCameraPosition.target, const LatLng(37.5665, 126.9780));
+      if (dragAfterCreation) {
+        map.onCameraMoveStarted!();
+        await tester.pump();
+      }
+      expect(
+        tester
+            .widget<MyLocationButton>(find.byType(MyLocationButton))
+            .isFocused,
+        !dragAfterCreation,
+      );
+    });
+  }
+
+  testWidgets('manual_camera_move_keeps_focus_until_the_next_user_drag', (
+    tester,
+  ) async {
+    await mount(tester);
+    await tester.tap(find.byType(MyLocationButton));
+    await tester.pump();
+    final map = tester.widget<GoogleMap>(find.byType(GoogleMap));
+    map.onCameraMoveStarted!();
+    await tester.pump();
+    expect(
+      tester.widget<MyLocationButton>(find.byType(MyLocationButton)).isFocused,
+      isTrue,
+    );
+    map.onCameraMoveStarted!();
+    await tester.pump();
+    expect(
+      tester.widget<MyLocationButton>(find.byType(MyLocationButton)).isFocused,
+      isFalse,
+    );
+  });
+
   for (final isPolygon in [false, true]) {
     testWidgets(
       'initial_map_uses_delayed_game_area_with_bounds_when_gps_fails_polygon_$isPolygon',

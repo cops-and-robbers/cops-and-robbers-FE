@@ -38,6 +38,7 @@ class _Map extends Fake
   final createdIds = <int>{};
   bool disposed = false;
   Completer<void>? creationGate;
+  bool failCameraMove = false;
   final cameraMoves = StreamController<CameraMoveStartedEvent>.broadcast();
 
   @override
@@ -72,6 +73,7 @@ class _Map extends Fake
     CameraUpdateAnimationConfiguration configuration, {
     required int mapId,
   }) async {
+    if (failCameraMove) throw PlatformException(code: 'camera_unavailable');
     final update = cameraUpdate.toJson() as List<dynamic>;
     final position = update[1] as Map<String, dynamic>;
     final target = position['target'] as List<dynamic>;
@@ -292,6 +294,22 @@ void main() {
     location.requests.first.complete(_position(35.1796, 129.0756));
     await tester.pump();
     expect(map.cameraTargets.last, const LatLng(37.5668, 126.9785));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('native_camera_failure_reports_failure_without_moving', (
+    tester,
+  ) async {
+    final key = GlobalKey<GoogleMapViewState>();
+    await mount(tester, key: key, center: const LatLng(37.5665, 126.9780));
+    map.failCameraMove = true;
+    final move = key.currentState!.moveCameraToCurrentLocation();
+    location.requests.last.complete(_position(37.5668, 126.9785));
+    await tester.pump();
+    expect(await move, LocationCameraResult.failed);
+    expect(map.cameraTargets, [const LatLng(37.5665, 126.9780)]);
+    location.requests.first.complete(_position(35.1796, 129.0756));
+    await tester.pump();
     expect(tester.takeException(), isNull);
   });
 }

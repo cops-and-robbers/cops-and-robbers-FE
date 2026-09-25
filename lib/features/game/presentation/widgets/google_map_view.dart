@@ -16,6 +16,14 @@ import '../../domain/entities/ping.dart';
 import 'map_error_widget.dart';
 import 'ping_marker_factory.dart';
 
+enum LocationCameraResult {
+  failed,
+  initialized,
+
+  /// 카메라 이동을 실행했거나 네이티브 지도 생성 후 실행하도록 예약했다.
+  moved,
+}
+
 /// Google Maps 기반 게임 지도 뷰
 ///
 /// - 내장 위치 마커 사용 (myLocationEnabled)
@@ -243,16 +251,16 @@ class GoogleMapViewState extends State<GoogleMapView>
     if (location != null) setState(() => _initialTarget = location);
   }
 
-  Future<void> moveCameraToCurrentLocation() async {
+  Future<LocationCameraResult> moveCameraToCurrentLocation() async {
     debugPrint('📍 GoogleMap: 현재 위치로 카메라 이동 시작');
     _initialLocationPending = false;
     try {
       final pos = await DeviceLocationService.getCurrentPosition();
 
-      if (!mounted) return;
+      if (!mounted) return LocationCameraResult.failed;
       if (pos == null) {
         debugPrint('[지도/Google] 위치 조회 실패 → 게임 구역 유지');
-        return;
+        return LocationCameraResult.failed;
       }
 
       debugPrint('[지도/Google] 초기 위치: ${pos.latitude}, ${pos.longitude}');
@@ -260,14 +268,17 @@ class GoogleMapViewState extends State<GoogleMapView>
       final target = LatLng(pos.latitude, pos.longitude);
       if (_initialTarget == null) {
         setState(() => _initialTarget = target);
+        return LocationCameraResult.initialized;
       } else {
         _pendingCameraTarget = target;
         await _applyPendingCameraTarget();
       }
       debugPrint('✅ GoogleMap: 카메라 이동 완료');
+      return LocationCameraResult.moved;
     } catch (e, stack) {
       debugPrint('❌ GoogleMap: 카메라 이동 실패 - $e');
       debugPrint('Stack: $stack');
+      return LocationCameraResult.failed;
     }
   }
 

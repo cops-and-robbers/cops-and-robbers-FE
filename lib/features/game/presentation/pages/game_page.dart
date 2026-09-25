@@ -1046,10 +1046,17 @@ class _GamePageState extends ConsumerState<GamePage>
     _lastSentPosition = pos;
   }
 
-  void _moveToCurrentLocation() {
+  Future<void> _moveToCurrentLocation() async {
     _isProgrammaticMove = true;
     setState(() => _isLocationFocused = true);
-    _googleMapKey.currentState?.moveCameraToCurrentLocation();
+    final result =
+        await _googleMapKey.currentState?.moveCameraToCurrentLocation() ??
+        LocationCameraResult.failed;
+    if (!mounted || result == LocationCameraResult.moved) return;
+    _isProgrammaticMove = false;
+    setState(
+      () => _isLocationFocused = result == LocationCameraResult.initialized,
+    );
   }
 
   void _onMapCameraMoved() {
