@@ -1,11 +1,59 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-18T17:01:52Z",
-    "currentVersion": "3.1.7",
+    "lastUpdated": "2026-09-25T14:43:09Z",
+    "currentVersion": "3.1.14",
     "projectType": "flutter",
-    "totalReleases": 137
+    "totalReleases": 138
   },
   "releases": [
+    {
+      "version": "3.1.14",
+      "project_type": "flutter",
+      "date": "2026-09-25",
+      "pr_number": 610,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새 기능**\n\n  * 커뮤니티 모임 장소에서 게임 구역 생성 (#605)\n\n* **버그 수정**\n\n  * 탭 화면 스낵바 위치를 바텀 네비 기준으로 보정\n  * 인게임 지도 초기 위치 선노출 제거 (#606)\n\n* **기타**\n\n  * docs : v3.1.14 릴리즈 노트 추가\n  * Merge pull request #609 from cops-and-robbers/20260925_#605_커뮤니티_게임_생성_초기_위치\n  * Merge pull request #608 from cops-and-robbers/20260925_#606_인게임_지도_초기_위치\n  * fix : 내 위치 이동 결과에 따라 포커스 상태 정리 #606\n  * Merge pull request #607 from cops-and-robbers/20260925_#604_커뮤니티_채팅_푸시_알림_탭_시_채팅방으로_이동하지_않음\n  * docs : 리포트 문서 작성 #604\n  * docs : 이슈 문서 작성\n  * docs : 커뮤니티 채팅 푸시 탭 이슈 문서 작성 #604\n  * fix : 커뮤니티 채팅 푸시 탭 이동 및 게임 중 커뮤니티 알림 이동 차단 #604\n  * Merge pull request #603 from cops-and-robbers/20260925_#602_문서_디렉터리를_docs로_통합하고_참조_경로_정리\n  * chore : 작업 문서를 docs로 통합하고 참조 경로 정리 #602\n  * Merge pull request #601 from cops-and-robbers/20260925_#599_자동_탈옥_동작_불량_및_재설계\n  * docs : 리포트 문서 작성 #599\n  * Merge pull request #600 from cops-and-robbers/20260925_#599_자동_탈옥_동작_불량_및_재설계\n  * docs : v3.1.7 릴리즈 노트 추가 #599\n  * style : 사이렌 아이콘 모양을 14×17 영역에 맞게 조정 #599\n  * fix : 감옥 이탈 시 자동 탈옥 요청 및 수감 중 QR 자리에 수감 버튼 표시 #599\n  * fix : 체포 안내 문구를 자동 탈옥 기준으로 복원 #599\n  * fix : 자동 탈옥 판정기와 감옥 경계 거리 계산 추가 #599\n  * fix : 기존 자동 탈옥 로직 제거 #599\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": [
+            "커뮤니티 모임 장소에서 게임 구역 생성 (#605)"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "탭 화면 스낵바 위치를 바텀 네비 기준으로 보정",
+            "인게임 지도 초기 위치 선노출 제거 (#606)"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "docs : v3.1.14 릴리즈 노트 추가",
+            "Merge pull request #609 from cops-and-robbers/20260925_#605_커뮤니티_게임_생성_초기_위치",
+            "Merge pull request #608 from cops-and-robbers/20260925_#606_인게임_지도_초기_위치",
+            "fix : 내 위치 이동 결과에 따라 포커스 상태 정리 #606",
+            "Merge pull request #607 from cops-and-robbers/20260925_#604_커뮤니티_채팅_푸시_알림_탭_시_채팅방으로_이동하지_않음",
+            "docs : 리포트 문서 작성 #604",
+            "docs : 이슈 문서 작성",
+            "docs : 커뮤니티 채팅 푸시 탭 이슈 문서 작성 #604",
+            "fix : 커뮤니티 채팅 푸시 탭 이동 및 게임 중 커뮤니티 알림 이동 차단 #604",
+            "Merge pull request #603 from cops-and-robbers/20260925_#602_문서_디렉터리를_docs로_통합하고_참조_경로_정리",
+            "chore : 작업 문서를 docs로 통합하고 참조 경로 정리 #602",
+            "Merge pull request #601 from cops-and-robbers/20260925_#599_자동_탈옥_동작_불량_및_재설계",
+            "docs : 리포트 문서 작성 #599",
+            "Merge pull request #600 from cops-and-robbers/20260925_#599_자동_탈옥_동작_불량_및_재설계",
+            "docs : v3.1.7 릴리즈 노트 추가 #599",
+            "style : 사이렌 아이콘 모양을 14×17 영역에 맞게 조정 #599",
+            "fix : 감옥 이탈 시 자동 탈옥 요청 및 수감 중 QR 자리에 수감 버튼 표시 #599",
+            "fix : 체포 안내 문구를 자동 탈옥 기준으로 복원 #599",
+            "fix : 자동 탈옥 판정기와 감옥 경계 거리 계산 추가 #599",
+            "fix : 기존 자동 탈옥 로직 제거 #599"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.1.7",
       "project_type": "flutter",
