@@ -65,7 +65,14 @@ enum _CreationPhase {
 /// 임시 저장(SessionDraftStorageService)은 숫자 값을 조용히 복원하고, 구역은
 /// 지도를 열 때 이전 도형이 그려진 채로 연다.
 class SessionCreationFlowPage extends ConsumerStatefulWidget {
-  const SessionCreationFlowPage({this.communityPostId, super.key});
+  const SessionCreationFlowPage({
+    this.communityPostId,
+    this.initialCenter,
+    super.key,
+  });
+
+  /// 아직 설정한 구역이 없을 때 지도가 처음 표시할 모임 장소.
+  final LatLng? initialCenter;
 
   /// 커뮤니티 채팅방에서 진입한 생성이면 그 방의 postId — 생성 성공 직후
   /// 발급된 초대 코드를 GAME_INVITE로 그 방에 쏜다(#516). 홈 진입은 null.
@@ -189,7 +196,10 @@ class _SessionCreationFlowPageState
       if (!mounted) return;
       final playground = await context.pushNamed<AreaShape>(
         RoutePaths.setupPlaygroundFromFlowName,
-        extra: _playgroundShape,
+        extra: (
+          initialShape: _playgroundShape,
+          initialCenter: widget.initialCenter,
+        ),
       );
       if (!mounted) return;
       if (playground == null) {

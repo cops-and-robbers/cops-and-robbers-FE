@@ -41,6 +41,7 @@ class PinZoneSettingWidget extends StatefulWidget {
     required this.strokeColor,
     required this.onPointsChanged,
     this.referencePolygon,
+    this.initialCenter,
     this.locationButtonColor,
     this.areaChipBackgroundColor,
     this.isDarkMode = false,
@@ -50,6 +51,9 @@ class PinZoneSettingWidget extends StatefulWidget {
 
   /// 초기 꼭짓점 목록 (편집/복원용, 경계 순서)
   final List<LatLng> initialPoints;
+
+  /// 기존 꼭짓점이 없을 때의 초기 지도 위치 (null이면 현재 위치).
+  final LatLng? initialCenter;
 
   /// 구역 색상 (플레이그라운드 blue / 감옥 red) — 칩·버튼 기본색
   final Color pinColor;
@@ -142,16 +146,18 @@ class PinZoneSettingWidgetState extends State<PinZoneSettingWidget> {
 
   Future<void> _initialize() async {
     _handleIcon = await ZoneVertexHandleIcon.create(color: widget.pinColor);
-    final currentLocation = await DeviceLocationService.getCurrentLatLng();
+    final initialCenter = _points.isNotEmpty
+        ? _centroidOf(_points)
+        : widget.initialCenter;
+    final currentLocation = initialCenter == null
+        ? await DeviceLocationService.getCurrentLatLng()
+        : null;
     _locationFocusTarget = currentLocation;
 
-    // 초기 카메라: 기존 구역 있으면 그 중심, 없으면 현재 위치 → fallback
-    if (_points.isNotEmpty) {
-      _initialCamera = _centroidOf(_points);
-    } else {
-      _initialCamera =
-          currentLocation ?? DeviceLocationService.fallbackLocation;
-    }
+    _initialCamera =
+        initialCenter ??
+        currentLocation ??
+        DeviceLocationService.fallbackLocation;
     _lastCamera = CameraPosition(target: _initialCamera, zoom: _initialZoom);
     _isLocationFocused = _isCameraFocusedOnLocation(_lastCamera!);
 
