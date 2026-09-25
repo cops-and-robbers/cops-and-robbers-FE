@@ -3253,6 +3253,12 @@ abstract class AppLocalizations {
   /// **'지금은 이 게임의 채팅을 열 수 없어요'**
   String get gameChatPushUnavailable;
 
+  /// 게임·대기실 중 커뮤니티 채팅·댓글 알림을 탭했을 때 — 게임 화면을 지키려 이동하지 않음을 알리는 스낵바
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 커뮤니티 알림을 열 수 없어요'**
+  String get communityPushUnavailableInGame;
+
   /// 채팅 프리뷰 카드 — 시스템 공지 태그
   ///
   /// In ko, this message translates to:

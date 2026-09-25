@@ -594,6 +594,7 @@
   "chatScopeAllTitle": "全体チャット",
   "chatScopeTeamTitle": "チームチャット",
   "gameChatPushUnavailable": "現在このゲームのチャットを開けません",
+  "communityPushUnavailableInGame": "現在コミュニティの通知を開けません",
   "chatPreviewTagNotice": "告知",
   "chatPreviewTagTeam": "チーム",
   "chatPreviewTagAll": "全体",

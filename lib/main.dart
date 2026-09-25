@@ -21,6 +21,7 @@ import 'package:cops_and_robbers/core/services/fcm/push_navigation_service.dart'
 import 'package:cops_and_robbers/core/services/permission/location_permission_service.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
 import 'package:cops_and_robbers/core/storage/secure_token_storage.dart';
+import 'package:cops_and_robbers/core/widgets/snackbars/app_snackbar.dart';
 import 'package:cops_and_robbers/features/auth/domain/entities/auth_result_entity.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cops_and_robbers/features/community/presentation/providers/community_chat_socket_provider.dart';
@@ -28,6 +29,7 @@ import 'package:cops_and_robbers/features/community/presentation/providers/pendi
 import 'package:cops_and_robbers/features/session/presentation/providers/pending_invite_provider.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/game_chat_push_listener.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
+import 'package:cops_and_robbers/router/push_tap_action.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
 import 'package:cops_and_robbers/router/route_paths.dart';
 
@@ -280,13 +282,28 @@ class _LocalizedApp extends ConsumerWidget {
       next,
     ) {
       next.whenData((event) {
-        switch (event) {
-          case CommunityPostPushEvent(:final postId):
-            rootNavigatorKey.currentContext?.pushNamed(
-              RoutePaths.communityDetailName,
-              pathParameters: {'postId': '$postId'},
-            );
-          case GameChatPushEvent():
+        // 무엇을 할지는 resolvePushTap이 정한다(게임·대기실 중 차단 포함 —
+        // 이유는 그 함수 주석). 여기서는 실행만 한다.
+        switch (resolvePushTap(
+          event,
+          router.routerDelegate.currentConfiguration,
+        )) {
+          case OpenPushRoute(:final location):
+            rootNavigatorKey.currentContext?.push(location);
+          case BlockPushDuringGame():
+            final navigatorContext = rootNavigatorKey.currentContext;
+            final overlay =
+                router.routerDelegate.navigatorKey.currentState?.overlay;
+            if (navigatorContext != null && overlay != null) {
+              AppSnackbar.show(
+                navigatorContext,
+                message: AppLocalizations.of(
+                  navigatorContext,
+                ).communityPushUnavailableInGame,
+                overlay: overlay,
+              );
+            }
+          case HandOffGameChatPush(:final event):
             ref.read(pendingGameChatPushProvider.notifier).state = event;
         }
       });
