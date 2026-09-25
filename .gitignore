@@ -56,7 +56,7 @@ app.*.map.json
 # TEMPLATE: Auto-added entries
 # ====================================================================
 /.claude/settings.local.json
-/.pr
+/docs/pr/
 
 .env
 /env.*
@@ -75,7 +75,6 @@ skills-lock.json
 /ios/Flutter/Secrets.xcconfig
 
 # Claude
-.superpowers/
 docs/superpowers/
 docs/suh-template/review/
 docs/suh-template/troubleshoot/

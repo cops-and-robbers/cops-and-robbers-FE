@@ -333,7 +333,7 @@ Expected: 모든 테스트 통과. 이번 변경은 신규 함수 추가 + 1개 
 ## 참고
 
 - Spec: `docs/superpowers/specs/2026-04-19-zone-exit-popup-reconnect-restoration-design.md`
-- 이슈: `.issues/20260419_버그_게임스크린_팝업_중첩_사라짐.md`
+- 이슈: `docs/issues/20260419_버그_게임스크린_팝업_중첩_사라짐.md`
 - 관련 기존 파일:
   - `lib/features/game/domain/zone_exit_detector.dart`
   - `test/features/game/domain/zone_exit_detector_test.dart`
