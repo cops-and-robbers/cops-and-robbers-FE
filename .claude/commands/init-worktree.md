@@ -147,7 +147,7 @@ shutil.copy2('원본경로', 'worktree경로/원본경로')
 |----------|------|
 | `build/`, `target/`, `.gradle/` | 빌드 산출물 (새로 빌드 필요) |
 | `node_modules/`, `Pods/`, `.dart_tool/` | 의존성 (새로 설치 필요) |
-| `.report/`, `.run/` | 보고서 (worktree별로 별도 생성) |
+| `docs/report/`, `.run/` | 보고서 (worktree별로 별도 생성) |
 | `.idea/` | IDE 캐시 전체 |
 | `*.log`, `*.class`, `*.pyc` | 임시/컴파일 파일 |
 

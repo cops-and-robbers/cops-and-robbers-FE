@@ -1,284 +1,304 @@
+import 'dart:math' as math;
+
 import 'package:cops_and_robbers/features/game/domain/entities/area_shape.dart';
 import 'package:cops_and_robbers/features/game/domain/jail_escape_detector.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _metersPerDegreeLatitude = 111320.0;
+const _center = GeoPoint(latitude: 37.5665, longitude: 126.9780);
+const _circle = AreaShape.circle(center: _center, radiusInMeters: 20);
+// 약 44m(남북) × 35m(동서) 사각형 감옥. 중심은 _center.
+const _square = AreaShape.polygon(
+  points: [
+    GeoPoint(latitude: 37.5663, longitude: 126.9778),
+    GeoPoint(latitude: 37.5663, longitude: 126.9782),
+    GeoPoint(latitude: 37.5667, longitude: 126.9782),
+    GeoPoint(latitude: 37.5667, longitude: 126.9778),
+  ],
+);
+const _shapes = {'circle': _circle, 'polygon': _square};
+
+/// 북쪽 경계에서 [meters]만큼 떨어진 점. 양수면 밖, 음수면 안.
+GeoPoint _fromNorthEdge(AreaShape shape, double meters) {
+  final edgeLatitude = shape.when(
+    circle: (center, radius) =>
+        center.latitude + radius / _metersPerDegreeLatitude,
+    polygon: (_) => 37.5667,
+  );
+  return GeoPoint(
+    latitude: edgeLatitude + meters / _metersPerDegreeLatitude,
+    longitude: _center.longitude,
+  );
+}
+
+typedef _Step = (int second, GeoPoint point, double accuracy);
+
+/// [steps]를 차례로 넣고 요청(true)이 나온 초를 돌려준다.
+List<int> _requestSeconds(AreaShape jail, List<_Step> steps) {
+  final detector = JailEscapeDetector();
+  final start = DateTime.utc(2026, 9, 25, 9);
+  return [
+    for (final (second, point, accuracy) in steps)
+      if (detector.update(
+        jail: jail,
+        point: point,
+        accuracyInMeters: accuracy,
+        receivedAt: start.add(Duration(seconds: second)),
+      ))
+        second,
+  ];
+}
+
 void main() {
-  const jail = AreaShape.circle(
-    center: GeoPoint(latitude: 37.5665, longitude: 126.9780),
-    radiusInMeters: 20,
-  );
-  final startedAt = DateTime.utc(2026, 9, 6, 9);
+  for (final MapEntry(key: name, value: jail) in _shapes.entries) {
+    const inside = _center;
+    final outside = _fromNorthEdge(jail, 12);
+    final nearInside = _fromNorthEdge(jail, -2);
+    final nearOutside = _fromNorthEdge(jail, 2);
 
-  JailLocationSample sample({
-    required double latitude,
-    required int seconds,
-    double accuracy = 3,
-  }) => JailLocationSample(
-    point: GeoPoint(latitude: latitude, longitude: 126.9780),
-    accuracyInMeters: accuracy,
-    timestamp: startedAt.add(Duration(seconds: seconds)),
-  );
+    group(name, () {
+      test(
+        'detector_requests_once_when_robber_enters_then_stays_outside_3s',
+        () {
+          for (final arrestedOutside in [true, false]) {
+            expect(
+              _requestSeconds(jail, [
+                if (arrestedOutside) (0, outside, 3),
+                (1, inside, 3),
+                (2, outside, 3),
+                (4, outside, 3),
+                (5, outside, 3),
+              ]),
+              [5],
+              reason: 'arrestedOutside=$arrestedOutside',
+            );
+          }
+        },
+      );
 
-  JailEscapeDetector detector() => JailEscapeDetector();
+      test('detector_never_requests_when_robber_never_enters_jail', () {
+        expect(
+          _requestSeconds(jail, [
+            for (var second = 0; second <= 60; second += 2)
+              (second, outside, 3),
+          ]),
+          isEmpty,
+        );
+      });
 
-  test('escapes_after_one_confident_inside_sample_for_both_shapes', () {
-    for (final shape in [
-      jail,
-      const AreaShape.polygon(
-        points: [
-          GeoPoint(latitude: 37.5663, longitude: 126.9778),
-          GeoPoint(latitude: 37.5663, longitude: 126.9782),
-          GeoPoint(latitude: 37.5667, longitude: 126.9782),
-          GeoPoint(latitude: 37.5667, longitude: 126.9778),
-        ],
-      ),
-    ]) {
-      for (final arrestedOutside in [false, true]) {
-        final subject = detector();
-        final route = [if (arrestedOutside) 37.5670, 37.5665, 37.5670, 37.5670];
-        final results = <bool>[];
-        for (var i = 0; i < route.length; i++) {
-          results.add(
-            subject.update(
-              jail: shape,
-              sample: sample(latitude: route[i], seconds: i * 3),
-              now: startedAt.add(Duration(seconds: i * 3)),
-            ),
+      test(
+        'detector_counts_entry_when_two_inside_samples_span_1s_near_boundary',
+        () {
+          expect(
+            _requestSeconds(jail, [
+              (0, nearInside, 5),
+              (1, nearInside, 5),
+              (2, outside, 3),
+              (5, outside, 3),
+            ]),
+            [5],
+          );
+        },
+      );
+
+      test(
+        'detector_ignores_single_inside_sample_when_it_is_near_boundary',
+        () {
+          expect(
+            _requestSeconds(jail, [
+              (0, nearInside, 5),
+              (1, outside, 3),
+              (4, outside, 3),
+              (8, outside, 3),
+            ]),
+            isEmpty,
+          );
+        },
+      );
+
+      test('detector_never_requests_when_positions_flip_across_the_edge', () {
+        expect(
+          _requestSeconds(jail, [
+            (0, inside, 3),
+            for (var second = 1; second <= 30; second++)
+              (second, second.isEven ? nearInside : nearOutside, 3),
+          ]),
+          isEmpty,
+        );
+      });
+
+      test(
+        'detector_never_requests_when_accuracy_covers_the_outside_distance',
+        () {
+          expect(
+            _requestSeconds(jail, [
+              (0, inside, 3),
+              (1, outside, 20),
+              (4, outside, 20),
+              (8, outside, 20),
+            ]),
+            isEmpty,
+          );
+        },
+      );
+
+      test('detector_uses_inaccurate_sample_when_it_is_far_outside', () {
+        final far = _fromNorthEdge(jail, 80);
+        expect(
+          _requestSeconds(jail, [(0, inside, 3), (1, far, 30), (4, far, 30)]),
+          [4],
+        );
+      });
+
+      test('detector_skips_sample_when_accuracy_is_not_positive_or_finite', () {
+        expect(
+          _requestSeconds(jail, [
+            (0, inside, 3),
+            (1, outside, 3),
+            (2, outside, 0),
+            (3, outside, -1),
+            (3, outside, double.nan),
+            (4, outside, 3),
+          ]),
+          [4],
+        );
+      });
+
+      test(
+        'detector_requests_on_second_outside_sample_when_samples_are_sparse',
+        () {
+          expect(
+            _requestSeconds(jail, [
+              (0, inside, 3),
+              (1, outside, 3),
+              (11, outside, 3),
+            ]),
+            [11],
+          );
+        },
+      );
+
+      test(
+        'detector_restarts_outside_timer_when_accuracy_spikes_into_buffer',
+        () {
+          expect(
+            _requestSeconds(jail, [
+              (0, inside, 3),
+              (1, outside, 3),
+              (3, outside, 20),
+              (4, outside, 3),
+              (6, outside, 3),
+              (7, outside, 3),
+            ]),
+            [7],
+          );
+        },
+      );
+
+      test('detector_retries_every_5s_when_robber_stays_outside', () {
+        expect(
+          _requestSeconds(jail, [
+            (0, inside, 3),
+            (1, outside, 3),
+            (4, outside, 3),
+            (6, outside, 3),
+            (9, outside, 3),
+          ]),
+          [4, 9],
+        );
+      });
+    });
+  }
+
+  group('불변식 (시드 599)', () {
+    final random = math.Random(599);
+    double between(double min, double max) =>
+        min + random.nextDouble() * (max - min);
+    final metersPerDegreeLongitude =
+        _metersPerDegreeLatitude * math.cos(_center.latitude * math.pi / 180);
+    GeoPoint offset({required double north, required double east}) => GeoPoint(
+      latitude: _center.latitude + north / _metersPerDegreeLatitude,
+      longitude: _center.longitude + east / metersPerDegreeLongitude,
+    );
+
+    bool anyRequest(
+      AreaShape jail,
+      GeoPoint Function() nextPoint, {
+      required double minAccuracy,
+    }) {
+      final detector = JailEscapeDetector();
+      var at = DateTime.utc(2026, 9, 25, 9);
+      for (var i = 0; i < 30; i++) {
+        at = at.add(Duration(milliseconds: (between(0.2, 6) * 1000).round()));
+        final requested = detector.update(
+          jail: jail,
+          point: nextPoint(),
+          accuracyInMeters: between(minAccuracy, 15),
+          receivedAt: at,
+        );
+        if (requested) return true;
+      }
+      return false;
+    }
+
+    test('detector_never_requests_when_random_positions_never_enter_jail', () {
+      for (final MapEntry(key: name, value: jail) in _shapes.entries) {
+        for (var run = 0; run < 200; run++) {
+          GeoPoint far() {
+            final bearing = between(0, 2 * math.pi);
+            final distance = between(60, 250);
+            return offset(
+              north: distance * math.cos(bearing),
+              east: distance * math.sin(bearing),
+            );
+          }
+
+          expect(
+            anyRequest(jail, far, minAccuracy: 1),
+            isFalse,
+            reason: '$name run=$run',
           );
         }
-        expect(results.last, isTrue);
-        expect(results.where((result) => result), hasLength(1));
       }
-    }
-  });
+    });
 
-  test('accepts_delayed_android_samples_but_breaks_long_gaps', () {
-    for (final intervalMs in [2000, 5100, 10000, 10001]) {
-      final subject = detector();
-      final results = <bool>[];
-      for (var i = 0; i < 4; i++) {
-        final timestamp = startedAt.add(Duration(milliseconds: intervalMs * i));
-        results.add(
-          subject.update(
-            jail: jail,
-            sample: JailLocationSample(
-              point: GeoPoint(
-                latitude: i < 2 ? 37.5665 : 37.5668,
-                longitude: 126.9780,
-              ),
-              accuracyInMeters: 3,
-              timestamp: timestamp,
-            ),
-            now: timestamp,
+    test(
+      'detector_never_requests_when_random_positions_stay_inside_or_in_buffer',
+      () {
+        // 원: 중심에서 22.5m 이내 → 밖이어도 경계에서 2.5m 이내.
+        // 사각형: 각 변에서 2m 이내 → 모서리 바깥도 2.83m 이내.
+        // 정확도는 3m 이상이라 두 경우 모두 완충 구간이다.
+        final generators = <String, (AreaShape, GeoPoint Function())>{
+          'circle': (
+            _circle,
+            () {
+              final bearing = between(0, 2 * math.pi);
+              final distance = between(0, 22.5);
+              return offset(
+                north: distance * math.cos(bearing),
+                east: distance * math.sin(bearing),
+              );
+            },
           ),
-        );
-      }
-      expect(results, [
-        false,
-        false,
-        false,
-        intervalMs <= 10000,
-      ], reason: 'interval=${intervalMs}ms');
-    }
-  });
-
-  test('requests_escape_after_confirmed_entry_and_exit', () {
-    final subject = detector();
-
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5665, seconds: 0),
-        now: startedAt,
-      ),
-      isFalse,
-    );
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5665, seconds: 1),
-        now: startedAt.add(const Duration(seconds: 1)),
-      ),
-      isFalse,
-    );
-    expect(subject.hasEnteredJail, isTrue);
-
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5668, seconds: 3),
-        now: startedAt.add(const Duration(seconds: 3)),
-      ),
-      isFalse,
-    );
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5668, seconds: 5),
-        now: startedAt.add(const Duration(seconds: 5)),
-      ),
-      isTrue,
-    );
-  });
-
-  test('does_not_request_escape_without_entry_in_current_arrest', () {
-    final subject = detector();
-
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5668, seconds: 0),
-        now: startedAt,
-      ),
-      isFalse,
-    );
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5668, seconds: 3),
-        now: startedAt.add(const Duration(seconds: 3)),
-      ),
-      isFalse,
-    );
-  });
-
-  test('ignores_inaccurate_stale_and_duplicate_samples', () {
-    final subject = detector();
-
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5665, seconds: 0, accuracy: 30),
-        now: startedAt,
-      ),
-      isFalse,
-    );
-    final stale = sample(latitude: 37.5665, seconds: 1);
-    expect(
-      subject.update(
-        jail: jail,
-        sample: stale,
-        now: startedAt.add(const Duration(seconds: 10)),
-      ),
-      isFalse,
-    );
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.56666, seconds: 2),
-        now: startedAt.add(const Duration(seconds: 2)),
-      ),
-      isFalse,
-    );
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.56666, seconds: 2),
-        now: startedAt.add(const Duration(seconds: 2)),
-      ),
-      isFalse,
-    );
-    expect(subject.hasEnteredJail, isFalse);
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.56666, seconds: 3),
-        now: startedAt.add(const Duration(seconds: 3)),
-      ),
-      isFalse,
-    );
-    expect(subject.hasEnteredJail, isFalse);
-  });
-
-  test('supports_polygon_jails', () {
-    const polygonJail = AreaShape.polygon(
-      points: [
-        GeoPoint(latitude: 37.5663, longitude: 126.9778),
-        GeoPoint(latitude: 37.5663, longitude: 126.9782),
-        GeoPoint(latitude: 37.5667, longitude: 126.9782),
-        GeoPoint(latitude: 37.5667, longitude: 126.9778),
-      ],
-    );
-    final subject = JailEscapeDetector(
-      minConsecutiveSamples: 1,
-      minInsideDuration: Duration.zero,
-      minOutsideDuration: Duration.zero,
-    );
-
-    expect(
-      subject.update(
-        jail: polygonJail,
-        sample: sample(latitude: 37.5665, seconds: 0),
-        now: startedAt,
-      ),
-      isFalse,
-    );
-    expect(
-      subject.update(
-        jail: polygonJail,
-        sample: sample(latitude: 37.5670, seconds: 1),
-        now: startedAt.add(const Duration(seconds: 1)),
-      ),
-      isTrue,
-    );
-  });
-
-  test('reset_discards_entry_from_previous_arrest', () {
-    final subject = detector();
-    subject.update(
-      jail: jail,
-      sample: sample(latitude: 37.5665, seconds: 0),
-      now: startedAt,
-    );
-    subject.update(
-      jail: jail,
-      sample: sample(latitude: 37.5665, seconds: 1),
-      now: startedAt.add(const Duration(seconds: 1)),
-    );
-    expect(subject.hasEnteredJail, isTrue);
-
-    subject.reset();
-    expect(subject.hasEnteredJail, isFalse);
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5668, seconds: 3),
-        now: startedAt.add(const Duration(seconds: 3)),
-      ),
-      isFalse,
-    );
-  });
-
-  test('does_not_retrigger_until_the_robber_reenters', () {
-    final subject = JailEscapeDetector(
-      minConsecutiveSamples: 1,
-      minInsideDuration: Duration.zero,
-      minOutsideDuration: Duration.zero,
-    );
-
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5665, seconds: 0),
-        now: startedAt,
-      ),
-      isFalse,
-    );
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5668, seconds: 1),
-        now: startedAt.add(const Duration(seconds: 1)),
-      ),
-      isTrue,
-    );
-    expect(
-      subject.update(
-        jail: jail,
-        sample: sample(latitude: 37.5668, seconds: 2),
-        now: startedAt.add(const Duration(seconds: 2)),
-      ),
-      isFalse,
+          'polygon': (
+            _square,
+            () => offset(
+              north: between(-24.26, 24.26),
+              east: between(-19.65, 19.65),
+            ),
+          ),
+        };
+        for (final MapEntry(key: name, value: (jail, point))
+            in generators.entries) {
+          for (var run = 0; run < 200; run++) {
+            expect(
+              anyRequest(jail, point, minAccuracy: 3),
+              isFalse,
+              reason: '$name run=$run',
+            );
+          }
+        }
+      },
     );
   });
 }

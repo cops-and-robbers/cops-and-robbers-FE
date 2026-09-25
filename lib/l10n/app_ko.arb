@@ -1742,6 +1742,10 @@
   },
   "chatScopeTeamTitle": "팀 채팅",
   "gameChatPushUnavailable": "지금은 이 게임의 채팅을 열 수 없어요",
+  "communityPushUnavailableInGame": "지금은 커뮤니티 알림을 열 수 없어요",
+  "@communityPushUnavailableInGame": {
+    "description": "게임·대기실 중 커뮤니티 채팅·댓글 알림을 탭했을 때 — 게임 화면을 지키려 이동하지 않음을 알리는 스낵바"
+  },
   "@chatScopeTeamTitle": {
     "description": "채팅 오버레이 — 팀 채팅 탭 제목"
   },

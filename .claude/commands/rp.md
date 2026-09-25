@@ -2,8 +2,8 @@
 
 `/report`와 `/pr-description`을 **병렬로 동시 실행**하여 한 번에 두 산출물을 생성한다.
 
-- `.report/{YYYYMMDD}_{ISSUE#}_{설명}.md` — 구현 보고서
-- `.pr/{YYYYMMDD}_{ISSUE#}_{설명}.md` — PR 본문
+- `docs/report/{YYYYMMDD}_{ISSUE#}_{설명}.md` — 구현 보고서
+- `docs/pr/{YYYYMMDD}_{ISSUE#}_{설명}.md` — PR 본문
 
 ## 핵심 원칙
 
@@ -36,7 +36,7 @@ git diff main --name-only
 - `subagent_type`: `general-purpose`
 - `description`: "Generate implementation report"
 - `prompt`: 아래 템플릿
-- 반드시 Skill 도구로 `report` 스킬 호출 또는 `.claude/commands/report.md`의 지침을 그대로 따라 `.report/`에 파일 생성
+- 반드시 Skill 도구로 `report` 스킬 호출 또는 `.claude/commands/report.md`의 지침을 그대로 따라 `docs/report/`에 파일 생성
 
 ```
 프로젝트: /Users/luca/workspace/greedy/quickness-game
@@ -58,7 +58,7 @@ git diff main --name-only
 
 # 작업
 `.claude/commands/report.md`에 정의된 Report Mode 지침을 그대로 따라
-`.report/{YYYYMMDD}_#{N}_{한글설명}.md` 파일을 생성하라.
+`docs/report/{YYYYMMDD}_#{N}_{한글설명}.md` 파일을 생성하라.
 
 - 위 git 컨텍스트만 사용. 추가 git 명령 실행 금지.
 - 변경 파일을 직접 Read해서 분석.
@@ -92,12 +92,12 @@ git diff main --name-only
 {ARGUMENTS}
 
 # 기존 보고서 (있으면 우선 참조)
-.report/ 디렉토리에 같은 이슈/날짜 매칭 보고서가 있으면 1차 소스로 활용.
+docs/report/ 디렉토리에 같은 이슈/날짜 매칭 보고서가 있으면 1차 소스로 활용.
 없거나 본 세션에서 막 생성 중이라면 git 컨텍스트 + 변경 파일 직접 분석으로 작성.
 
 # 작업
 `.claude/commands/pr-description.md`에 정의된 PR Description Mode 지침을 따라
-`.pr/{YYYYMMDD}_#{N}_{한글설명}.md` 파일을 생성하라.
+`docs/pr/{YYYYMMDD}_#{N}_{한글설명}.md` 파일을 생성하라.
 
 - Summary / Changes / Behavior Change / Test Plan / Notes / Closes #N 구조.
 - AI/작성자 메타 정보 금지. 시크릿 마스킹.
@@ -110,11 +110,11 @@ git diff main --name-only
 두 Agent 완료 후 다음 형식으로 한 번만 출력:
 
 ```
-✅ 보고서: .report/{경로}.md
-✅ PR 본문: .pr/{경로}.md
+✅ 보고서: docs/report/{경로}.md
+✅ PR 본문: docs/pr/{경로}.md
 
 PR 생성:
-gh pr create --title "{type} : {제목} #{N}" --body-file ".pr/{경로}.md"
+gh pr create --title "{type} : {제목} #{N}" --body-file "docs/pr/{경로}.md"
 ```
 
 ## 절대 금지 사항

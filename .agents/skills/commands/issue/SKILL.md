@@ -1,6 +1,6 @@
 ---
 name: issue
-description: "경찰과 도둑 프로젝트: 설명을 GitHub 이슈 제목·본문으로 작성해 .issues/에 저장할 때 사용. 등록·브랜치 생성은 issue-branch."
+description: "경찰과 도둑 프로젝트: 설명을 GitHub 이슈 제목·본문으로 작성해 docs/issues/에 저장할 때 사용. 등록·브랜치 생성은 issue-branch."
 ---
 
 # issue

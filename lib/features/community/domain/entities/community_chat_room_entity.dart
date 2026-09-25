@@ -7,7 +7,7 @@ part 'community_chat_room_entity.freezed.dart';
 
 /// 내 채팅방 목록의 마지막 메시지. 대화가 없는 방은 엔티티 자체가 null이다.
 ///
-/// [senderNickname]은 BE 이슈(`.issues/20260824_BE요청_…`)에 요청한 필드라 서버가
+/// [senderNickname]은 BE 이슈(`docs/issues/20260824_BE요청_…`)에 요청한 필드라 서버가
 /// 아직 안 줄 수 있다 — null이면 미리보기가 타입별 일반 문구로 물러선다.
 @freezed
 class CommunityChatLastMessageEntity with _$CommunityChatLastMessageEntity {

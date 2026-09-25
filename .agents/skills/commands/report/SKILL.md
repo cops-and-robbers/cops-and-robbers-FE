@@ -1,6 +1,6 @@
 ---
 name: report
-description: "경찰과 도둑 프로젝트: Git 변경사항이나 이슈를 근거로 .report/에 구현 보고서를 작성할 때 사용."
+description: "경찰과 도둑 프로젝트: Git 변경사항이나 이슈를 근거로 docs/report/에 구현 보고서를 작성할 때 사용."
 ---
 
 # report

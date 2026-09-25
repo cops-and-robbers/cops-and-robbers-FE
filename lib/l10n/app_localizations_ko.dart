@@ -1706,6 +1706,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameChatPushUnavailable => '지금은 이 게임의 채팅을 열 수 없어요';
 
   @override
+  String get communityPushUnavailableInGame => '지금은 커뮤니티 알림을 열 수 없어요';
+
+  @override
   String get chatPreviewTagNotice => '공지';
 
   @override

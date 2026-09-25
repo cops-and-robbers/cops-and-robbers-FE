@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_icons.dart';
 import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
+import '../navigation/app_bottom_nav.dart';
 
 /// 앱 전역 커스텀 스낵바
 ///
@@ -46,9 +49,16 @@ class AppSnackbar {
   }) {
     dismiss();
 
+    final base = 105.h; // 피그마 시안: 화면 하단 105
+    // 탭 화면에서는 바텀 네비 위로 띄운다 — 안드로이드는 바가 높아 105.h만으론 겹친다
+    final bottom = StatefulNavigationShell.maybeOf(context) != null
+        ? math.max(base, AppBottomNav.heightOf(context) + AppSpacing.vertical12)
+        : base;
+
     final entry = OverlayEntry(
       builder: (_) => _SnackbarOverlay(
         message: message,
+        bottom: bottom,
         backgroundColor: backgroundColor,
         iconPath: iconPath,
         iconSize: iconSize,
@@ -62,7 +72,9 @@ class AppSnackbar {
     );
 
     _currentEntry = entry;
-    (overlay ?? Overlay.of(context)).insert(entry);
+    // 탭(StatefulShellRoute) 안에서는 가장 가까운 Overlay가 탭바 위에서 끝나므로,
+    // 화면 바닥 기준으로 위치를 맞추려고 루트 Overlay에 띄운다.
+    (overlay ?? Overlay.of(context, rootOverlay: true)).insert(entry);
   }
 
   /// 현재 표시 중인 스낵바 즉시 제거
@@ -80,6 +92,7 @@ class AppSnackbar {
 class _SnackbarOverlay extends StatefulWidget {
   const _SnackbarOverlay({
     required this.message,
+    required this.bottom,
     this.backgroundColor,
     this.iconPath,
     this.iconSize,
@@ -89,6 +102,7 @@ class _SnackbarOverlay extends StatefulWidget {
   });
 
   final String message;
+  final double bottom;
   final Color? backgroundColor;
   final String? iconPath;
   final double? iconSize;
@@ -146,7 +160,7 @@ class _SnackbarOverlayState extends State<_SnackbarOverlay>
     return Positioned(
       left: AppSpacing.horizontal20,
       right: AppSpacing.horizontal20,
-      bottom: 105.h,
+      bottom: widget.bottom,
       child: SlideTransition(
         position: _slideAnimation,
         child: FadeTransition(

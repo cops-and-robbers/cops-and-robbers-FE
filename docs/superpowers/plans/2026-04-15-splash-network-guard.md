@@ -1132,7 +1132,7 @@ Run: `cd /Users/luca/workspace/Flutter_Project/cops_and_robbers && flutter run`
 ## Task 10: 문서 업데이트 및 정리
 
 **Files:**
-- Modify: `.issues/20260415_기능추가_스플래시_네트워크_연결_확인.md` (선택)
+- Modify: `docs/issues/20260415_기능추가_스플래시_네트워크_연결_확인.md` (선택)
 
 - [ ] **Step 1: 이슈 파일에 PR 번호 또는 완료 표시 (선택)**
 
