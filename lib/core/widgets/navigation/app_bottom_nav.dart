@@ -37,24 +37,32 @@ class AppBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    // SafeArea 대신 직접 계산 — 홈 인디케이터 인셋에서 20 덜어낸 만큼만 하단 여백을 준다
-    // 안드로이드는 제스처 인셋이 없거나 작아 위 계산이 0으로 클램프되는 경우가 많아 20을 더해준다
+  // 하단 여백을 뺀 바 본체 높이 — build와 heightOf가 같은 값을 써야 스낵바가 안 겹친다
+  static double get _barHeight => 84.h;
+
+  /// 바의 전체 높이 (하단 여백 포함) — 바 위에 떠야 하는 스낵바 등이 쓴다
+  static double heightOf(BuildContext context) =>
+      _barHeight + _bottomInsetOf(context);
+
+  // SafeArea 대신 직접 계산 — 홈 인디케이터 인셋에서 20 덜어낸 만큼만 하단 여백을 준다
+  // 안드로이드는 제스처 인셋이 없거나 작아 위 계산이 0으로 클램프되는 경우가 많아 20을 더해준다
+  static double _bottomInsetOf(BuildContext context) {
     final androidExtra = Theme.of(context).platform == TargetPlatform.android
         ? 20.h
         : 0.0;
-    final bottomInset =
-        (MediaQuery.viewPaddingOf(context).bottom - AppSpacing.vertical18)
+    return (MediaQuery.viewPaddingOf(context).bottom - AppSpacing.vertical18)
             .clamp(0.0, double.infinity) +
         androidExtra;
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return ColoredBox(
       color: AppColors.white,
       child: Padding(
-        padding: EdgeInsets.only(bottom: bottomInset),
+        padding: EdgeInsets.only(bottom: _bottomInsetOf(context)),
         child: SizedBox(
-          height: 84.h,
+          height: _barHeight,
           child: Row(
             children: [
               for (var i = 0; i < items.length; i++)
