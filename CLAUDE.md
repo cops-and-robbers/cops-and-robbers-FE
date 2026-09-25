@@ -36,6 +36,9 @@ flutter test && flutter analyze                                  # 테스트 / �
 
 ## 참고 문서
 
+- 작업 문서는 `docs/issues/`, `docs/pr/`, `docs/report/`, `docs/release-note/`에 저장한다.
+- Superpowers 산출물은 `docs/superpowers/` 아래 `specs/`, `plans/`, `brainstorm/`, `sdd/`로 통일한다. 플러그인 기본 경로보다 이 규칙을 우선하며, 시각화 서버에도 이 경로를 전달한다.
+
 **항상 로드되는 룰** (`.claude/rules/`)
 
 - [Agents.md](.claude/rules/Agents.md) — **테스트 작성 룰 (최우선)**: Classist 스타일, 시스템 경계만 모킹, PR Red Flags
