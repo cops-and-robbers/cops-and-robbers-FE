@@ -116,19 +116,22 @@ void main() {
   });
 
   group('distanceToBoundaryInMeters', () {
-    test('circle_returns_distance_to_circumference_on_both_sides', () {
-      const circle = AreaShape.circle(center: base, radiusInMeters: 100);
+    test(
+      'distance_to_boundary_is_measured_to_circumference_when_shape_is_circle',
+      () {
+        const circle = AreaShape.circle(center: base, radiusInMeters: 100);
 
-      expect(circle.distanceToBoundaryInMeters(base), closeTo(100, 0.1));
-      expect(
-        circle.distanceToBoundaryInMeters(
-          const GeoPoint(latitude: 37.5683, longitude: 126.9780),
-        ),
-        closeTo(100, 3),
-      );
-    });
+        expect(circle.distanceToBoundaryInMeters(base), closeTo(100, 0.1));
+        expect(
+          circle.distanceToBoundaryInMeters(
+            const GeoPoint(latitude: 37.5683, longitude: 126.9780),
+          ),
+          closeTo(100, 3),
+        );
+      },
+    );
 
-    test('polygon_uses_nearest_edge_instead_of_bounding_circle', () {
+    test('distance_to_boundary_uses_nearest_edge_when_shape_is_polygon', () {
       const square = AreaShape.polygon(
         points: [
           GeoPoint(latitude: 37.5675, longitude: 126.9770),

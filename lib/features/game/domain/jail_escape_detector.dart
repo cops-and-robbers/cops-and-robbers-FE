@@ -1,144 +1,99 @@
+import 'dart:math' as math;
+
+import 'package:flutter/foundation.dart';
+
 import 'entities/area_shape.dart';
 
-/// 자동 탈옥 판정에 필요한 한 번의 위치 관측값.
-class JailLocationSample {
-  const JailLocationSample({
-    required this.point,
-    required this.accuracyInMeters,
-    required this.timestamp,
-  });
-
-  final GeoPoint point;
-  final double accuracyInMeters;
-  final DateTime timestamp;
-}
-
-/// 이번 체포 이후 감옥 진입과 확실한 이탈을 순서대로 확인한다.
+/// 수감 한 번 동안 "감옥에 들어갔다가 확실히 나갔는지"를 판정한다.
 ///
-/// 위치 구독과 API 호출은 소유하지 않는다. [update]가 true를 반환할 때 호출자가
-/// 탈옥을 요청하며, 같은 외부 체류 중에는 한 번만 true를 반환한다.
+/// 수감이 시작되거나 풀릴 때 호출자가 새로 만든다. 위치 구독·네트워크·Timer는
+/// 갖지 않는다. 시각은 앱이 위치를 받은 시각을 받는다 — Android 위치의 측정
+/// 시각은 기기 시계와 어긋날 수 있어 쓰지 않는다.
 class JailEscapeDetector {
   JailEscapeDetector({
-    this.maxAccuracyInMeters = 10,
-    this.maxSampleAge = const Duration(seconds: 5),
-    this.maxSampleGap = const Duration(seconds: 10),
-    this.minOutsideDistanceInMeters = 3,
-    this.minConsecutiveSamples = 2,
+    this.boundaryMarginInMeters = 3,
+    this.minInsideSamples = 2,
     this.minInsideDuration = const Duration(seconds: 1),
-    this.minOutsideDuration = const Duration(seconds: 2),
+    this.minOutsideDuration = const Duration(seconds: 3),
+    this.retryInterval = const Duration(seconds: 5),
   });
 
-  final double maxAccuracyInMeters;
-  final Duration maxSampleAge;
-  final Duration maxSampleGap;
-  final double minOutsideDistanceInMeters;
-  final int minConsecutiveSamples;
+  /// GPS 정확도에 더하거나 최소로 두는 경계 여유(m)
+  final double boundaryMarginInMeters;
+
+  /// 경계 근처 안쪽 위치를 입장으로 인정하는 연속 횟수와 시간
+  final int minInsideSamples;
   final Duration minInsideDuration;
+
+  /// 확실히 밖에 머물러야 하는 시간
   final Duration minOutsideDuration;
 
-  DateTime? _lastTimestamp;
-  DateTime? _insideStartedAt;
-  DateTime? _outsideStartedAt;
-  int _insideSamples = 0;
-  int _outsideSamples = 0;
+  /// 요청 뒤 다시 요청하기까지의 간격 — 실패나 응답 유실 뒤에도 밖이면 다시 보낸다
+  final Duration retryInterval;
+
   bool _hasEnteredJail = false;
-  bool _triggeredForCurrentExcursion = false;
+  int _insideStreak = 0;
+  DateTime? _insideSince;
+  DateTime? _outsideSince;
+  DateTime? _lastRequestAt;
 
-  bool get hasEnteredJail => _hasEnteredJail;
-
-  bool get needsExitConfirmation =>
-      _outsideStartedAt != null && !_triggeredForCurrentExcursion;
-
+  /// 위치 하나를 반영하고, 지금 탈옥을 요청해야 하면 true를 반환한다.
   bool update({
     required AreaShape jail,
-    required JailLocationSample sample,
-    required DateTime now,
+    required GeoPoint point,
+    required double accuracyInMeters,
+    required DateTime receivedAt,
   }) {
-    if (!_isValid(sample, now)) {
-      _clearCandidates();
-      return false;
-    }
+    // iOS는 쓸 수 없는 위치를 음수 정확도로 준다. 기록을 건드리지 않고 건너뛴다.
+    if (!accuracyInMeters.isFinite || accuracyInMeters <= 0) return false;
 
-    final lastTimestamp = _lastTimestamp;
-    if (lastTimestamp != null &&
-        sample.timestamp.difference(lastTimestamp) > maxSampleGap) {
-      _clearCandidates();
-    }
-    _lastTimestamp = sample.timestamp;
-
-    if (jail.contains(sample.point)) {
-      _outsideStartedAt = null;
-      _outsideSamples = 0;
-      _insideStartedAt ??= sample.timestamp;
-      _insideSamples++;
+    final distance = jail.distanceToBoundaryInMeters(point);
+    if (jail.contains(point)) {
+      _outsideSince = null;
+      _insideSince ??= receivedAt;
+      _insideStreak++;
       final confidentlyInside =
-          jail.distanceToBoundaryInMeters(sample.point) >
-          sample.accuracyInMeters + minOutsideDistanceInMeters;
-      if (confidentlyInside ||
-          (_insideSamples >= minConsecutiveSamples &&
-              sample.timestamp.difference(_insideStartedAt!) >=
-                  minInsideDuration)) {
+          distance > accuracyInMeters + boundaryMarginInMeters;
+      final stayedInside =
+          _insideStreak >= minInsideSamples &&
+          receivedAt.difference(_insideSince!) >= minInsideDuration;
+      if (!_hasEnteredJail && (confidentlyInside || stayedInside)) {
         _hasEnteredJail = true;
-        _triggeredForCurrentExcursion = false;
+        debugPrint(
+          '[자동탈옥] 들어감 — ${confidentlyInside ? '확실' : '연속'}, '
+          'a=${accuracyInMeters.toStringAsFixed(1)}m, '
+          'd=${distance.toStringAsFixed(1)}m',
+        );
       }
       return false;
     }
 
-    _insideStartedAt = null;
-    _insideSamples = 0;
-    if (!_hasEnteredJail || _triggeredForCurrentExcursion) return false;
-
-    final requiredDistance =
-        sample.accuracyInMeters > minOutsideDistanceInMeters
-        ? sample.accuracyInMeters
-        : minOutsideDistanceInMeters;
-    if (jail.distanceToBoundaryInMeters(sample.point) <= requiredDistance) {
-      _outsideStartedAt = null;
-      _outsideSamples = 0;
+    _insideStreak = 0;
+    _insideSince = null;
+    // 경계 완충 구간은 밖으로 치지 않는다 — 탈옥은 되돌릴 수 없다.
+    final confidentlyOutside =
+        distance > math.max(accuracyInMeters, boundaryMarginInMeters);
+    if (!_hasEnteredJail || !confidentlyOutside) {
+      _outsideSince = null;
       return false;
     }
 
-    _outsideStartedAt ??= sample.timestamp;
-    _outsideSamples++;
-    if (_outsideSamples < minConsecutiveSamples ||
-        sample.timestamp.difference(_outsideStartedAt!) < minOutsideDuration) {
+    if (_outsideSince == null) {
+      _outsideSince = receivedAt;
+      debugPrint(
+        '[자동탈옥] 밖 시작 — a=${accuracyInMeters.toStringAsFixed(1)}m, '
+        'd=${distance.toStringAsFixed(1)}m',
+      );
+    }
+    if (receivedAt.difference(_outsideSince!) < minOutsideDuration) {
       return false;
     }
-
-    _triggeredForCurrentExcursion = true;
+    final lastRequestAt = _lastRequestAt;
+    if (lastRequestAt != null &&
+        receivedAt.difference(lastRequestAt) < retryInterval) {
+      return false;
+    }
+    _lastRequestAt = receivedAt;
     return true;
-  }
-
-  void reset() {
-    _lastTimestamp = null;
-    _hasEnteredJail = false;
-    _triggeredForCurrentExcursion = false;
-    _clearCandidates();
-  }
-
-  bool _isValid(JailLocationSample sample, DateTime now) {
-    final point = sample.point;
-    final age = now.difference(sample.timestamp);
-    if (!point.latitude.isFinite ||
-        !point.longitude.isFinite ||
-        point.latitude < -90 ||
-        point.latitude > 90 ||
-        point.longitude < -180 ||
-        point.longitude > 180 ||
-        !sample.accuracyInMeters.isFinite ||
-        sample.accuracyInMeters <= 0 ||
-        sample.accuracyInMeters > maxAccuracyInMeters ||
-        age.isNegative ||
-        age > maxSampleAge) {
-      return false;
-    }
-    return _lastTimestamp == null || sample.timestamp.isAfter(_lastTimestamp!);
-  }
-
-  void _clearCandidates() {
-    _insideStartedAt = null;
-    _outsideStartedAt = null;
-    _insideSamples = 0;
-    _outsideSamples = 0;
   }
 }

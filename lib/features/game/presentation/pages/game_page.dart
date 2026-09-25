@@ -179,9 +179,9 @@ class _GamePageState extends ConsumerState<GamePage>
     },
   );
 
-  final JailEscapeDetector _jailEscapeDetector = JailEscapeDetector();
-  Timer? _escapeConfirmationTimer;
-  int _escapeConfirmationGeneration = 0;
+  /// 이번 수감의 자동 탈옥 판정기. 수감이 시작되거나 풀리면 버리고 새로 만든다.
+  /// 연결 끊김·재동기화로는 버리지 않는다(스펙 5장).
+  JailEscapeDetector? _jailEscapeDetector;
 
   /// 이탈 경고(배너·펄스·보더·반복 진동) 노출 중 여부
   ///
@@ -396,7 +396,6 @@ class _GamePageState extends ConsumerState<GamePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _gameStateSyncRetryTimer?.cancel();
-    _resetAutoEscape();
     _locationSubscription?.cancel();
     _zoneExitVibrationTimer?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
@@ -632,7 +631,6 @@ class _GamePageState extends ConsumerState<GamePage>
     final syncGeneration = ++_gameStateSyncGeneration;
     _isGameStateSyncing = true;
     _isGameStateSynchronized = false;
-    _resetAutoEscape();
 
     try {
       // sync 요청 직전 상태 snapshot — sync 창에 STOMP가 추가한 변화 추적용
@@ -717,7 +715,6 @@ class _GamePageState extends ConsumerState<GamePage>
     } finally {
       if (mounted && syncGeneration == _gameStateSyncGeneration) {
         _isGameStateSyncing = false;
-        _resetAutoEscape();
         // 소켓이 살아 있어도 HTTP 조회만 일시 실패할 수 있다. 총 3회로 제한한다.
         final latest = ref.read(gameEventNotifierProvider);
         if (!_isGameStateSynchronized &&
@@ -867,94 +864,51 @@ class _GamePageState extends ConsumerState<GamePage>
     _zoneExitDetector.update(isOutside: isOutside);
   }
 
-  /// 수감된 본인이 이번 체포 후 감옥에 들어왔다가 확실히 벗어나면 자동 탈옥한다.
-  void _checkAutoEscape(Position pos, {bool confirmIfNeeded = true}) {
-    if (!mounted ||
-        widget.isDummy ||
-        !GameTeam.isRobber(widget.team) ||
-        _gameOverDialogShown ||
-        _isLeaving ||
-        _isGameStateSyncing ||
-        !_isGameStateSynchronized) {
+  /// 수감된 본인이 이번 수감 중 감옥에 들어갔다가 확실히 나가면 탈옥을 요청한다.
+  ///
+  /// 소켓 연결·동기화 여부는 보지 않는다 — 탈옥은 HTTP이고 서버가 수감·진행 여부를
+  /// 다시 검증한다. 구역 이탈 감지와 같은 위치 콜백이라 백그라운드에서도 돈다.
+  void _checkAutoEscape(Position pos) {
+    if (!GameTeam.isRobber(widget.team) || _gameOverDialogShown || _isLeaving) {
       return;
     }
-    if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) {
-      return;
-    }
-
     final eventState = ref.read(gameEventNotifierProvider);
-    if (eventState.isGameOver) {
-      _resetAutoEscape();
-      return;
-    }
-    final isArrested =
-        eventState.arrestedParticipantIds.contains(widget.participantId) &&
-        !eventState.escapedParticipantIds.contains(widget.participantId);
-    if (!isArrested) {
-      _resetAutoEscape();
-      return;
-    }
-    if (eventState.connectionState != StompConnectionState.connected) return;
-
+    final isJailed =
+        !eventState.isGameOver &&
+        shouldShowArrestLock(
+          isRobber: true,
+          isEventGame:
+              ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false,
+          isArrested: eventState.arrestedParticipantIds.contains(
+            widget.participantId,
+          ),
+          isEscaped: eventState.escapedParticipantIds.contains(
+            widget.participantId,
+          ),
+        );
+    if (!isJailed) return;
     final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
     if (area == null) return;
 
-    final now = clock.now();
-    final shouldEscape = _jailEscapeDetector.update(
+    final detector = _jailEscapeDetector ??= JailEscapeDetector();
+    final shouldEscape = detector.update(
       jail: area.jail,
-      sample: JailLocationSample(
-        point: GeoPoint(latitude: pos.latitude, longitude: pos.longitude),
-        accuracyInMeters: pos.accuracy,
-        timestamp: pos.timestamp,
-      ),
-      now: now,
+      point: GeoPoint(latitude: pos.latitude, longitude: pos.longitude),
+      accuracyInMeters: pos.accuracy,
+      receivedAt: clock.now(),
     );
-    if (shouldEscape) {
-      _cancelEscapeConfirmation();
-      unawaited(_requestAutoEscape());
-    } else if (!_jailEscapeDetector.needsExitConfirmation) {
-      _cancelEscapeConfirmation();
-    } else if (confirmIfNeeded && _escapeConfirmationTimer == null) {
-      final generation = _escapeConfirmationGeneration;
-      final revision = eventState.localArrestRevision;
-      _escapeConfirmationTimer = Timer(
-        _jailEscapeDetector.minOutsideDuration,
-        () async {
-          final position = await DeviceLocationService.getCurrentPosition(
-            timeLimit: const Duration(seconds: 5),
-            allowLastKnown: false,
-          );
-          if (!mounted || generation != _escapeConfirmationGeneration) return;
-          _escapeConfirmationTimer = null;
-          if (revision !=
-              ref.read(gameEventNotifierProvider).localArrestRevision) {
-            return;
-          }
-          if (position != null) {
-            _checkAutoEscape(position, confirmIfNeeded: false);
-          }
-        },
-      );
-    }
-  }
-
-  void _cancelEscapeConfirmation() {
-    _escapeConfirmationTimer?.cancel();
-    _escapeConfirmationTimer = null;
-    _escapeConfirmationGeneration++;
-  }
-
-  void _resetAutoEscape() {
-    _cancelEscapeConfirmation();
-    _jailEscapeDetector.reset();
+    if (shouldEscape) unawaited(_requestAutoEscape());
   }
 
   Future<void> _requestAutoEscape() async {
     final result = await ref
         .read(gameEventNotifierProvider.notifier)
         .escape(_gameId, widget.participantId);
+    debugPrint('[자동탈옥] 요청 결과: ${result.name}');
+    // 실패해도 입장 기록은 유지한다. 서버가 이미 풀었는지는 기존 동기화로 확인하고
+    // (소켓 연결 시 실행), 계속 밖이면 판정기가 5초 뒤 다시 요청한다.
     if (result == EscapeRequestResult.failure && mounted) {
-      await _syncGameStateOnReconnect();
+      unawaited(_syncGameStateOnReconnect());
     }
   }
 
@@ -1002,9 +956,16 @@ class _GamePageState extends ConsumerState<GamePage>
   void _processPendingZoneExit() {
     if (!_pendingZoneExit) return;
     _pendingZoneExit = false;
-    if (_zoneExitDetector.isOutside && mounted) {
-      _onZoneExited();
+    if (!mounted || !_zoneExitDetector.isOutside) return;
+    // 체포 중에는 구역 이탈 경고를 켜지 않는다(_checkZoneExit와 같은 규칙).
+    // 켜면 오른쪽 버튼 줄이 숨어 그 자리의 수감 버튼까지 사라진다.
+    if (ref
+        .read(gameEventNotifierProvider)
+        .arrestedParticipantIds
+        .contains(widget.participantId)) {
+      return;
     }
+    _onZoneExited();
   }
 
   /// 재연결 모달 표시 헬퍼 — 중복 표시 방지 및 N회 연속 끊김 재귀 처리
@@ -1848,7 +1809,6 @@ class _GamePageState extends ConsumerState<GamePage>
             next.revision != prev.revision &&
             next.isArrested &&
             mounted) {
-          _resetAutoEscape();
           _clearZoneExitWarning();
           setState(() {
             _showParticipants = false;
@@ -1860,11 +1820,25 @@ class _GamePageState extends ConsumerState<GamePage>
       },
     );
 
+    // 수감이 시작되거나 풀리면 자동 탈옥 기록을 새로 시작한다(스펙 5장).
+    // localArrestRevision은 연결이 끊길 때도 오르므로 기준으로 쓰지 않는다.
+    ref.listen(
+      gameEventNotifierProvider.select(
+        (s) =>
+            s.arrestedParticipantIds.contains(widget.participantId) &&
+            !s.escapedParticipantIds.contains(widget.participantId),
+      ),
+      (prev, next) {
+        if (prev == next) return;
+        _jailEscapeDetector = null;
+        debugPrint('[자동탈옥] ${next ? '수감 — 판정 시작' : '수감 해제 — 판정 종료'}');
+      },
+    );
+
     // 게임 이벤트 감지 → 게임 종료 다이얼로그
     ref.listen(gameEventNotifierProvider, (prev, next) {
       if (_isLeaving) return;
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
-        _resetAutoEscape();
         _showGameOverDialog(next.winnerTeam, next.gameOverReason);
       }
     });
@@ -2028,7 +2002,6 @@ class _GamePageState extends ConsumerState<GamePage>
         _gameStateSyncGeneration++;
         _isGameStateSyncing = false;
         _isGameStateSynchronized = false;
-        _resetAutoEscape();
       }
 
       // 모달이 이미 떠 있을 때: 상태 업데이트 → ReconnectModal이 스스로 닫힘
@@ -2051,7 +2024,6 @@ class _GamePageState extends ConsumerState<GamePage>
     // 게임 맵 영역 로드 완료 시 지도에 구역 경계·외부 딤 추가
     ref.listen(gameAreaProvider(_gameId), (prev, next) {
       next.whenData((area) {
-        if (prev?.valueOrNull != null) _resetAutoEscape();
         _googleMapKey.currentState?.updateMinZoom(
           area.playground.boundingRadiusInMeters,
         );
@@ -2226,7 +2198,7 @@ class _GamePageState extends ConsumerState<GamePage>
                       isDarkMode: _isDarkMode,
                     ),
                     SizedBox(height: AppSpacing.vertical8),
-                    _buildQrButton(),
+                    _buildQrButton(isArrestedNow: isArrestedNow),
                     SizedBox(height: AppSpacing.vertical8),
                     _buildChatButton(),
                   ],
@@ -2273,7 +2245,7 @@ class _GamePageState extends ConsumerState<GamePage>
                         isDarkMode: _isDarkMode,
                       ),
                       SizedBox(height: AppSpacing.vertical8),
-                      _buildQrButton(),
+                      _buildQrButton(isArrestedNow: isArrestedNow),
                     ],
                     SizedBox(height: AppSpacing.vertical8),
                     _buildChatButton(),
@@ -2292,23 +2264,6 @@ class _GamePageState extends ConsumerState<GamePage>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (isArrestedNow) ...[
-                      Semantics(
-                        button: true,
-                        label: l10n.gameArrestOverlayTitle,
-                        child: SvgIconButton(
-                          assetPath: characterAssetPath(
-                            team: GameTeam.toLowerKey(GameTeam.robber),
-                            state: 'jailed',
-                          ),
-                          onPressed: () =>
-                              setState(() => _showArrestInfo = true),
-                          backgroundColor: _isDarkMode ? AppColors.black : null,
-                          isDarkMode: _isDarkMode,
-                        ),
-                      ),
-                      SizedBox(height: AppSpacing.vertical8),
-                    ],
                     MyLocationButton(
                       onPressed: _moveToCurrentLocation,
                       isFocused: _isLocationFocused,
@@ -2555,8 +2510,26 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  /// QR 버튼 (경찰: 스캔, 도둑: QR 표시)
-  Widget _buildQrButton() {
+  /// QR 버튼 자리 (경찰: 스캔, 도둑: QR 표시, 수감 중 도둑: 수감 안내)
+  ///
+  /// 수감 중에는 서버가 체포를 거부해 QR이 쓸모없다. 그 자리에 수감 안내 버튼을 둬
+  /// 자동 탈옥이 안 됐을 때 수동 탈옥을 바로 찾게 한다.
+  Widget _buildQrButton({required bool isArrestedNow}) {
+    if (isArrestedNow) {
+      return Semantics(
+        button: true,
+        label: AppLocalizations.of(context).gameArrestOverlayTitle,
+        child: SvgIconButton(
+          assetPath: characterAssetPath(
+            team: GameTeam.toLowerKey(GameTeam.robber),
+            state: 'jailed',
+          ),
+          onPressed: () => setState(() => _showArrestInfo = true),
+          backgroundColor: _isDarkMode ? AppColors.black : null,
+          isDarkMode: _isDarkMode,
+        ),
+      );
+    }
     return SvgIconButton(
       assetPath: GameTeam.isPolice(widget.team)
           ? AppIcons.qrScan

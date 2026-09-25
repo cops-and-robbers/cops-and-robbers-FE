@@ -51,7 +51,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _Location extends GeolocatorPlatform {
   final positions = StreamController<Position>.broadcast();
   bool inside = true;
-  Future<Position> Function()? currentPosition;
   @override
   Future<bool> isLocationServiceEnabled() async => true;
   @override
@@ -60,7 +59,7 @@ class _Location extends GeolocatorPlatform {
   @override
   Future<Position> getCurrentPosition({
     LocationSettings? locationSettings,
-  }) async => currentPosition != null ? currentPosition!() : position(inside);
+  }) async => position(inside);
   @override
   Stream<Position> getPositionStream({LocationSettings? locationSettings}) =>
       positions.stream;
@@ -105,9 +104,14 @@ class _Socket extends GameEventStompDatasource {
     connections.add(value);
   }
 
+  /// false면 재연결 시도가 와도 연결하지 않는다 — 끊긴 상태를 유지하는 시나리오용.
+  bool acceptConnect = true;
+
   @override
-  void connect(String wsUrl, String accessToken) =>
-      emit(StompConnectionState.connected);
+  void connect(String wsUrl, String accessToken) {
+    if (acceptConnect) emit(StompConnectionState.connected);
+  }
+
   @override
   void subscribeEvents(int gameId, {required String team}) {}
 }
@@ -129,9 +133,17 @@ class _Token implements TokenProvider {
 
 class _GameApi implements GameSystemApi {
   int escapes = 0;
+  Completer<void>? escapeGate;
+
+  /// 남은 횟수만큼 탈옥 요청을 실패시킨다. 요청 수(escapes)는 그대로 센다.
+  int failures = 0;
+
   @override
   Future<void> escape(int gameId) async {
     escapes++;
+    final gate = escapeGate;
+    if (gate != null) await gate.future;
+    if (failures-- > 0) throw Exception('temporary HTTP failure');
   }
 
   @override
@@ -277,6 +289,13 @@ void main() {
     );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
+  }
+
+  /// 위치 하나를 보내고 위치 콜백까지 처리한다.
+  Future<void> sendPosition(WidgetTester tester, {required bool inside}) async {
+    location.inside = inside;
+    location.positions.add(location.position(inside));
+    await tester.pump();
   }
 
   testWidgets('경찰 재접속 시 설정을 불러와도 대기 팝업은 한 번만 열리고 만료되면 닫힌다', (tester) async {
@@ -773,13 +792,16 @@ void main() {
         final jailButton = find.byWidgetPredicate(
           (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
         );
+        final chatButton = find.byWidgetPredicate(
+          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+        );
         expect(
           tester.getCenter(jailButton).dx,
-          tester.getCenter(find.byType(MyLocationButton)).dx,
+          tester.getCenter(chatButton).dx,
         );
         expect(
           tester.getBottomLeft(jailButton).dy,
-          lessThan(tester.getTopLeft(find.byType(MyLocationButton)).dy),
+          lessThan(tester.getTopLeft(chatButton).dy),
         );
         await tester.tap(jailButton);
         await tester.pump();
@@ -845,6 +867,215 @@ void main() {
       },
     );
   }
+
+  testWidgets('jailed_button_replaces_robber_qr_button_until_escape', (
+    tester,
+  ) async {
+    await mount(tester, size: const Size(393, 852));
+    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+    final jailButton = find.byWidgetPredicate(
+      (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
+    );
+    final qrButton = find.byWidgetPredicate(
+      (w) => w is SvgIconButton && w.assetPath == AppIcons.qrCode,
+    );
+    expect(jailButton, findsOneWidget);
+    expect(qrButton, findsNothing);
+
+    // 참가자 화면의 오른쪽 버튼 줄에서도 QR 대신 수감 버튼이 보인다.
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.person,
+      ),
+    );
+    await tester.pump();
+    expect(jailButton, findsOneWidget);
+    expect(qrButton, findsNothing);
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.map,
+      ),
+    );
+    await tester.pump();
+
+    // 누르면 기존 수감 안내 → "탈옥하기" → 확인
+    await tester.tap(jailButton);
+    await tester.pump();
+    expect(find.byType(ArrestLockOverlay), findsOneWidget);
+    await tester.tap(find.text(l10n.gameArrestOverlayEscapeCompleteButton));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text(l10n.buttonEscape).last);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(game.escapes, 1);
+
+    // 풀리면 QR 버튼이 돌아온다.
+    expect(qrButton, findsOneWidget);
+    expect(jailButton, findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('police_keeps_qr_scanner_button_when_a_robber_is_jailed', (
+    tester,
+  ) async {
+    container.read(gameParticipantNotifierProvider.notifier)
+      ..setGameInfo(gameId: 1, participantId: 5, nickname: '경찰', team: 'POLICE')
+      ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
+      ..setGameStartTime(
+        DateTime.now().subtract(const Duration(minutes: 1)).toIso8601String(),
+      );
+    session.settings = GameSettingsResponse(
+      roundDurationMinutes: 30,
+      locationRevealIntervalMinutes: 3,
+      policeWaitMinutes: 0,
+      maxParticipants: 10,
+      gameStartTime: DateTime.now()
+          .subtract(const Duration(minutes: 1))
+          .toIso8601String(),
+    );
+    session.participants = const InGameParticipantsResponse(
+      police: [
+        InGameParticipant(participantId: 5, nickname: '경찰', status: 'ALIVE'),
+      ],
+      robbers: [
+        InGameParticipant(participantId: 7, nickname: '도둑', status: 'JAILED'),
+      ],
+    );
+    await mount(tester, team: 'POLICE');
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.qrScan,
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets(
+    'jailed_button_stays_after_reconnect_when_robber_was_arrested_outside_playground',
+    (tester) async {
+      await withClock(Clock(() => tester.binding.clock.now()), () async {
+        session.participants = const InGameParticipantsResponse(
+          police: [],
+          robbers: [
+            InGameParticipant(
+              participantId: 5,
+              nickname: '도둑',
+              status: 'ALIVE',
+            ),
+          ],
+        );
+        await mount(tester);
+        // 플레이그라운드(반경 500m) 밖 600m에서 체포된다.
+        location.positions.add(
+          Position(
+            latitude: 37.5665 + 600 / 111320,
+            longitude: 126.9780,
+            timestamp: clock.now(),
+            accuracy: 3,
+            altitude: 0,
+            altitudeAccuracy: 0,
+            heading: 0,
+            headingAccuracy: 0,
+            speed: 0,
+            speedAccuracy: 0,
+          ),
+        );
+        await tester.pump();
+        session.participants = const InGameParticipantsResponse(
+          police: [],
+          robbers: [
+            InGameParticipant(
+              participantId: 5,
+              nickname: '도둑',
+              status: 'JAILED',
+            ),
+          ],
+        );
+        socket.events.add(
+          GameEventModel(
+            type: GameEventType.arrest,
+            data: {
+              'police': {
+                'participantId': 2,
+                'nickname': '경찰',
+                'status': 'ALIVE',
+              },
+              'robber': {
+                'participantId': 5,
+                'nickname': '도둑',
+                'status': 'JAILED',
+              },
+              'remainingThieves': 0,
+            },
+          ),
+        );
+        await tester.pump();
+        await sendPosition(tester, inside: true);
+
+        // 수감 중 재연결 — 체포 전의 구역 이탈 상태가 경고로 되살아나면
+        // 오른쪽 버튼 줄이 숨어 그 자리의 수감 버튼까지 사라진다.
+        socket.emit(StompConnectionState.disconnected);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        socket.emit(StompConnectionState.connected);
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+
+        expect(find.byType(JailBarsOverlay), findsOneWidget);
+        expect(
+          find.byWidgetPredicate(
+            (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
+          ),
+          findsOneWidget,
+        );
+        // 체포 알림 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+        await tester.pump(const Duration(seconds: 9));
+      });
+    },
+  );
+
+  testWidgets(
+    'escape_confirmation_left_open_is_harmless_when_auto_escape_wins',
+    (tester) async {
+      await withClock(Clock(() => tester.binding.clock.now()), () async {
+        await mount(tester);
+        final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+        await sendPosition(tester, inside: true);
+        // 수동 탈옥 확인창을 열어 둔다.
+        await tester.tap(
+          find.byWidgetPredicate(
+            (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
+          ),
+        );
+        await tester.pump();
+        await tester.tap(find.text(l10n.gameArrestOverlayEscapeCompleteButton));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        // 그 사이 감옥 밖으로 나가 자동 탈옥이 먼저 끝난다.
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(seconds: 3));
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(game.escapes, 1);
+        expect(find.byType(ArrestLockOverlay), findsNothing);
+
+        // 남아 있던 확인창을 눌러도 예외 없이 무시된다.
+        await tester.tap(find.text(l10n.buttonEscape).last);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(tester.takeException(), isNull);
+        expect(game.escapes, 1);
+      });
+    },
+  );
 
   testWidgets(
     'jailed_map_keeps_robber_style_and_is_covered_by_jail_bars_below_app_bar',
@@ -928,19 +1159,74 @@ void main() {
     },
   );
 
-  testWidgets('sparse_positions_escape_with_a_fresh_confirmation', (
+  testWidgets(
+    'jailed_robber_escapes_automatically_when_leaving_jail_after_entry',
+    (tester) async {
+      await withClock(Clock(() => tester.binding.clock.now()), () async {
+        await mount(tester);
+        await sendPosition(tester, inside: true);
+        await tester.pump(const Duration(seconds: 1));
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(seconds: 3));
+        // 타이머 없이 다음 위치에서 판단한다 — 새 위치가 오기 전에는 요청하지 않는다.
+        expect(game.escapes, 0);
+
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(game.escapes, 1);
+        expect(
+          container.read(gameEventNotifierProvider).escapedParticipantIds,
+          {5},
+        );
+        expect(find.byType(JailBarsOverlay), findsNothing);
+
+        // 풀린 뒤에는 밖 위치가 계속 와도 다시 요청하지 않는다.
+        await tester.pump(const Duration(seconds: 6));
+        await sendPosition(tester, inside: false);
+        expect(game.escapes, 1);
+        expect(tester.takeException(), isNull);
+      });
+    },
+  );
+
+  testWidgets(
+    'auto_escape_keeps_entry_when_socket_reconnects_before_leaving_jail',
+    (tester) async {
+      await withClock(Clock(() => tester.binding.clock.now()), () async {
+        await mount(tester);
+        await sendPosition(tester, inside: true);
+        socket.emit(StompConnectionState.disconnected);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        socket.emit(StompConnectionState.connected);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(seconds: 3));
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(game.escapes, 1);
+      });
+    },
+  );
+
+  testWidgets('auto_escape_requests_when_socket_stays_disconnected', (
     tester,
   ) async {
     await withClock(Clock(() => tester.binding.clock.now()), () async {
       await mount(tester);
-      location.positions.add(location.position(true));
+      await sendPosition(tester, inside: true);
+      socket.acceptConnect = false;
+      socket.emit(StompConnectionState.disconnected);
       await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      location.inside = false;
-      location.positions.add(location.position(false));
-      await tester.pump();
-      expect(game.escapes, 0);
-      await tester.pump(const Duration(seconds: 2));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(seconds: 3));
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(socket.connection, StompConnectionState.disconnected);
       expect(game.escapes, 1);
       expect(container.read(gameEventNotifierProvider).escapedParticipantIds, {
         5,
@@ -948,155 +1234,277 @@ void main() {
     });
   });
 
-  testWidgets('late_confirmation_cannot_escape_after_disconnect', (
+  testWidgets('auto_escape_retries_after_5s_when_escape_request_fails', (
     tester,
   ) async {
     await withClock(Clock(() => tester.binding.clock.now()), () async {
+      game.failures = 1;
       await mount(tester);
-      location.positions.add(location.position(true));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      location.positions.add(location.position(false));
-      await tester.pump();
-      final pending = Completer<Position>();
-      location.currentPosition = () => pending.future;
-      await tester.pump(const Duration(seconds: 2));
-      socket.emit(StompConnectionState.disconnected);
-      await tester.pump();
-      pending.complete(location.position(false));
-      await tester.pump();
-      container.read(gameEventNotifierProvider.notifier).disconnect();
-      expect(game.escapes, 0);
+      await sendPosition(tester, inside: true);
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(seconds: 3));
+      final syncsBefore = session.requests;
+
+      await sendPosition(tester, inside: false); // 요청 1 — 실패
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(game.escapes, 1);
       expect(container.read(gameEventNotifierProvider).arrestedParticipantIds, {
+        5,
+      });
+      expect(session.requests, syncsBefore + 1); // 실패 뒤 상태 동기화
+
+      await tester.pump(const Duration(seconds: 2));
+      await sendPosition(tester, inside: false); // 요청 후 약 2초 — 보내지 않음
+      expect(game.escapes, 1);
+
+      await tester.pump(const Duration(seconds: 3));
+      await sendPosition(tester, inside: false); // 요청 후 5초 이상 — 다시 요청
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(game.escapes, 2);
+      expect(container.read(gameEventNotifierProvider).escapedParticipantIds, {
         5,
       });
     });
   });
 
-  testWidgets('cached_confirmation_does_not_count_as_a_new_position', (
+  testWidgets(
+    'auto_escape_retries_when_socket_disconnects_during_escape_request',
+    (tester) async {
+      await withClock(Clock(() => tester.binding.clock.now()), () async {
+        final pendingEscape = Completer<void>();
+        game.escapeGate = pendingEscape;
+        await mount(tester);
+        await sendPosition(tester, inside: true);
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(seconds: 3));
+        await sendPosition(tester, inside: false);
+        expect(game.escapes, 1);
+        expect(
+          container.read(gameEventNotifierProvider).isEscapeInFlight,
+          isTrue,
+        );
+        expect(find.byType(JailBarsOverlay), findsOneWidget);
+
+        // 요청 중 연결 단절로 이전 성공 응답은 stale이 된다.
+        socket.acceptConnect = false;
+        socket.emit(StompConnectionState.disconnected);
+        await tester.pump();
+        pendingEscape.complete();
+        await tester.pump();
+        expect(
+          container.read(gameEventNotifierProvider).arrestedParticipantIds,
+          {5},
+        );
+        expect(
+          container.read(gameEventNotifierProvider).escapedParticipantIds,
+          isEmpty,
+        );
+        expect(find.byType(JailBarsOverlay), findsOneWidget);
+
+        // 다시 들어가지 않아도 입장 기록으로 재시도한다. 소켓은 계속 끊겨 있다.
+        game.escapeGate = null;
+        await tester.pump(const Duration(seconds: 4));
+        await sendPosition(tester, inside: false);
+        expect(game.escapes, 1);
+        await tester.pump(const Duration(seconds: 1));
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(socket.connection, StompConnectionState.disconnected);
+        expect(game.escapes, 2);
+        expect(
+          container.read(gameEventNotifierProvider).escapedParticipantIds,
+          {5},
+        );
+        expect(find.byType(JailBarsOverlay), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    },
+  );
+
+  testWidgets('auto_escape_requires_new_entry_when_robber_is_rearrested', (
     tester,
   ) async {
     await withClock(Clock(() => tester.binding.clock.now()), () async {
       await mount(tester);
-      location.positions.add(location.position(true));
+      await sendPosition(tester, inside: true);
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(seconds: 3));
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(game.escapes, 1);
+
+      socket.events.add(
+        GameEventModel(
+          type: GameEventType.arrest,
+          data: {
+            'police': {'participantId': 2, 'nickname': '경찰', 'status': 'ALIVE'},
+            'robber': {
+              'participantId': 5,
+              'nickname': '도둑',
+              'status': 'JAILED',
+            },
+            'remainingThieves': 1,
+          },
+        ),
+      );
       await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      final cached = location.position(false);
-      location.positions.add(cached);
-      location.currentPosition = () async => cached;
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 2));
-      expect(game.escapes, 0);
-      await tester.pump(const Duration(seconds: 20));
-      expect(game.escapes, 0);
+      expect(container.read(gameEventNotifierProvider).arrestedParticipantIds, {
+        5,
+      });
+
+      // 이전 수감의 "들어감"은 이어지지 않는다 — 밖에 계속 있어도 요청하지 않는다.
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(seconds: 6));
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(game.escapes, 1);
+      expect(find.byType(JailBarsOverlay), findsOneWidget);
+
+      // 새 수감에서도 다시 들어갔다 나오면 두 번째 자동 탈옥이 가능해야 한다.
+      await sendPosition(tester, inside: true);
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(seconds: 3));
+      await sendPosition(tester, inside: false);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(game.escapes, 2);
+      expect(container.read(gameEventNotifierProvider).escapedParticipantIds, {
+        5,
+      });
+      expect(find.byType(JailBarsOverlay), findsNothing);
+      expect(tester.takeException(), isNull);
+      // 체포 이벤트가 켠 알림 배너 타이머(8.8초)를 끝내 종료 시 남는 타이머를 없앤다.
+      await tester.pump(const Duration(seconds: 9));
     });
   });
 
-  for (final interruption in ['rearrest', 'dispose', 'failure']) {
-    testWidgets('pending_confirmation_is_safe_on_$interruption', (
-      tester,
-    ) async {
-      await withClock(Clock(() => tester.binding.clock.now()), () async {
-        await mount(tester);
-        location.positions.add(location.position(true));
-        await tester.pump();
-        await tester.pump(const Duration(seconds: 1));
-        location.positions.add(location.position(false));
-        await tester.pump();
-        final pending = Completer<Position>();
-        location.currentPosition = () => pending.future;
-        await tester.pump(const Duration(seconds: 2));
-        if (interruption == 'rearrest') {
-          socket.events.add(
-            const GameEventModel(
-              eventId: 'new-arrest',
-              type: GameEventType.arrest,
-              data: {
-                'robber': {
-                  'participantId': 5,
-                  'nickname': '도둑',
-                  'status': 'JAILED',
-                },
-                'police': {
-                  'participantId': 2,
-                  'nickname': '경찰',
-                  'status': 'ALIVE',
-                },
-                'remainingThieves': 1,
-              },
-            ),
-          );
-          await tester.pump();
-        } else if (interruption == 'dispose') {
-          await tester.pumpWidget(const SizedBox());
-        }
-        if (interruption == 'failure') {
-          pending.completeError(Exception('GPS unavailable'));
-        } else {
-          pending.complete(location.position(false));
-        }
-        await tester.pump();
-        expect(game.escapes, 0);
-        expect(tester.takeException(), isNull);
-        if (interruption == 'rearrest') {
-          // ARREST가 띄운 기존 배너(8.8초)의 표시 수명을 끝낸다.
-          await tester.pump(const Duration(seconds: 9));
-          expect(game.escapes, 0);
-        }
-        if (interruption == 'failure') {
-          location.currentPosition = null;
-          location.inside = false;
-          await tester.pump(const Duration(seconds: 1));
-          location.positions.add(location.position(false));
-          await tester.pump();
-          expect(game.escapes, 1);
-        }
-      });
-    });
-  }
-
-  testWidgets('paused_reconnect_retries_sync_and_escapes_without_a_frame', (
+  testWidgets('auto_escape_requests_without_a_frame_when_app_is_paused', (
     tester,
   ) async {
-    await mount(tester);
-    expect(session.requests, 1);
-    socket.emit(StompConnectionState.disconnected);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.byType(ReconnectModal), findsOneWidget);
-    for (final state in [
-      AppLifecycleState.inactive,
-      AppLifecycleState.hidden,
-      AppLifecycleState.paused,
-    ]) {
-      tester.binding.handleAppLifecycleStateChanged(state);
-    }
-    // pause 직전에 예약된 마지막 프레임을 소비한 뒤, 실제 프레임 수를 감시한다.
-    await tester.pump();
-    var frames = 0;
-    tester.binding.addPersistentFrameCallback((_) {
-      frames++;
-    });
-    expect(tester.binding.framesEnabled, isFalse);
-    session.failures = 1;
-    socket.emit(StompConnectionState.connected);
-    await tester.idle();
-    // 프레임 예약이 없는 paused 상태: 가상 시계/마이크로태스크만 진행한다.
-    expect(tester.binding.hasScheduledFrame, isFalse);
-    await tester.pump(const Duration(seconds: 2));
-    expect(session.requests, 3); // 초기 1 + 재연결 실패 1 + 자동 재시도 1
-    for (final inside in [true, false]) {
-      location.inside = inside;
-      location.positions.add(location.position(inside));
+    await withClock(Clock(() => tester.binding.clock.now()), () async {
+      await mount(tester);
+      await sendPosition(tester, inside: true);
+      for (final state in [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      // pause 직전에 예약된 마지막 프레임을 소비한 뒤 실제 프레임 수를 센다.
+      await tester.pump();
+      var frames = 0;
+      tester.binding.addPersistentFrameCallback((_) {
+        frames++;
+      });
+      expect(tester.binding.framesEnabled, isFalse);
+
+      location.inside = false;
+      location.positions.add(location.position(false));
       await tester.idle();
-      await tester.pump(const Duration(milliseconds: 2100));
-    }
-    expect(frames, 0);
-    expect(game.escapes, 1);
-    expect(container.read(gameEventNotifierProvider).escapedParticipantIds, {
-      5,
+      await tester.pump(const Duration(seconds: 3));
+      location.positions.add(location.position(false));
+      await tester.idle();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(frames, 0);
+      expect(game.escapes, 1);
+      expect(container.read(gameEventNotifierProvider).escapedParticipantIds, {
+        5,
+      });
     });
   });
+
+  for (final variant in [
+    (team: 'POLICE', isEventGame: false),
+    (team: 'ROBBER', isEventGame: true),
+  ]) {
+    testWidgets(
+      'auto_escape_never_requests_when_player_is_not_a_jailed_robber_$variant',
+      (tester) async {
+        await withClock(Clock(() => tester.binding.clock.now()), () async {
+          container.read(gameParticipantNotifierProvider.notifier)
+            ..setGameInfo(
+              gameId: 1,
+              participantId: 5,
+              nickname: '참가자',
+              team: variant.team,
+              isEventGame: variant.isEventGame,
+            )
+            ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
+            ..setGameStartTime(
+              DateTime.now()
+                  .subtract(const Duration(minutes: 1))
+                  .toIso8601String(),
+            );
+          session.settings = GameSettingsResponse(
+            roundDurationMinutes: 30,
+            locationRevealIntervalMinutes: 3,
+            policeWaitMinutes: 0,
+            maxParticipants: 10,
+            gameStartTime: DateTime.now()
+                .subtract(const Duration(minutes: 1))
+                .toIso8601String(),
+          );
+          await mount(tester, team: variant.team);
+          await sendPosition(tester, inside: true);
+          await tester.pump(const Duration(seconds: 1));
+          await sendPosition(tester, inside: false);
+          await tester.pump(const Duration(seconds: 3));
+          await sendPosition(tester, inside: false);
+          await tester.pump(const Duration(milliseconds: 300));
+          expect(game.escapes, 0);
+        });
+      },
+    );
+  }
+
+  testWidgets(
+    'jailed_state_is_restored_when_paused_reconnect_retries_without_a_frame',
+    (tester) async {
+      await mount(tester);
+      expect(session.requests, 1);
+      socket.emit(StompConnectionState.disconnected);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byType(ReconnectModal), findsOneWidget);
+      for (final state in [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      // pause 직전에 예약된 마지막 프레임을 소비한 뒤, 실제 프레임 수를 감시한다.
+      await tester.pump();
+      var frames = 0;
+      tester.binding.addPersistentFrameCallback((_) {
+        frames++;
+      });
+      expect(tester.binding.framesEnabled, isFalse);
+      session.failures = 1;
+      socket.emit(StompConnectionState.connected);
+      await tester.idle();
+      // 프레임 예약이 없는 paused 상태: 가상 시계/마이크로태스크만 진행한다.
+      expect(tester.binding.hasScheduledFrame, isFalse);
+      await tester.pump(const Duration(seconds: 2));
+      expect(session.requests, 3); // 초기 1 + 재연결 실패 1 + 자동 재시도 1
+      for (final inside in [true, false]) {
+        location.inside = inside;
+        location.positions.add(location.position(inside));
+        await tester.idle();
+        await tester.pump(const Duration(milliseconds: 2100));
+      }
+      expect(frames, 0);
+      expect(game.escapes, 0);
+      expect(container.read(gameEventNotifierProvider).arrestedParticipantIds, {
+        5,
+      });
+      expect(
+        container.read(gameEventNotifierProvider).escapedParticipantIds,
+        isEmpty,
+      );
+    },
+  );
 
   testWidgets('sync_retries_are_bounded_and_resume_recovers', (tester) async {
     session.failures = 3;
