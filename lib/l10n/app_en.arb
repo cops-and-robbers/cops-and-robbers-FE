@@ -594,6 +594,7 @@
   "chatScopeAllTitle": "Global chat",
   "chatScopeTeamTitle": "Team chat",
   "gameChatPushUnavailable": "You can't open this game's chat right now",
+  "communityPushUnavailableInGame": "You can't open community notifications right now",
   "chatPreviewTagNotice": "Notice",
   "chatPreviewTagTeam": "Team",
   "chatPreviewTagAll": "All",

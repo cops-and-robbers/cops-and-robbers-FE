@@ -16,7 +16,6 @@ import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/deeplink/deeplink_event.dart';
 import '../../../../core/deeplink/deeplink_service.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
-import '../../../../core/services/fcm/push_navigation_event.dart';
 import '../../../../core/services/fcm/push_navigation_service.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/services/storage/onboarding_prefs.dart';
@@ -26,6 +25,7 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/loading_page.dart';
 import '../../../../core/widgets/pages/server_error_page.dart';
+import '../../../../router/push_tap_action.dart';
 import '../../../../router/route_paths.dart';
 import '../../../community/presentation/providers/pending_community_post_provider.dart';
 import '../../../session/domain/entities/user_game_status_entity.dart';
@@ -505,13 +505,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       final event = await ref
           .read(coldStartPushNavigationProvider.future)
           .timeout(const Duration(seconds: 2));
-      return switch (event) {
-        CommunityPostPushEvent(:final postId) =>
-          RoutePaths.communityDetailWithId(postId),
-        // 게임 복구가 끝나면 GameChatPushListener가 참가 상태를 검증해 연다.
-        GameChatPushEvent() => null,
-        null => null,
-      };
+      // 앱이 살아 있을 때의 알림 탭과 같은 목적지를 쓴다(pushDestination).
+      return event == null ? null : pushDestination(event);
     } catch (e) {
       // 프로브 실패는 홈으로 가면 그만이다 — 알림 탭 한 번을 잃을 뿐이다.
       debugPrint('⚠️ SplashPage: 콜드 스타트 푸시 확인 실패, 홈으로 진행 - $e');

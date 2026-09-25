@@ -1705,6 +1705,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameChatPushUnavailable => '現在このゲームのチャットを開けません';
 
   @override
+  String get communityPushUnavailableInGame => '現在コミュニティの通知を開けません';
+
+  @override
   String get chatPreviewTagNotice => '告知';
 
   @override

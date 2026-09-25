@@ -20,32 +20,38 @@ mixin _$PushNavigationEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(int postId) communityPost,
+    required TResult Function(int postId) communityChat,
     required TResult Function(int gameId, String scope) gameChat,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int postId)? communityPost,
+    TResult? Function(int postId)? communityChat,
     TResult? Function(int gameId, String scope)? gameChat,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int postId)? communityPost,
+    TResult Function(int postId)? communityChat,
     TResult Function(int gameId, String scope)? gameChat,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(CommunityPostPushEvent value) communityPost,
+    required TResult Function(CommunityChatPushEvent value) communityChat,
     required TResult Function(GameChatPushEvent value) gameChat,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CommunityPostPushEvent value)? communityPost,
+    TResult? Function(CommunityChatPushEvent value)? communityChat,
     TResult? Function(GameChatPushEvent value)? gameChat,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CommunityPostPushEvent value)? communityPost,
+    TResult Function(CommunityChatPushEvent value)? communityChat,
     TResult Function(GameChatPushEvent value)? gameChat,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -149,6 +155,7 @@ class _$CommunityPostPushEventImpl implements CommunityPostPushEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(int postId) communityPost,
+    required TResult Function(int postId) communityChat,
     required TResult Function(int gameId, String scope) gameChat,
   }) {
     return communityPost(postId);
@@ -158,6 +165,7 @@ class _$CommunityPostPushEventImpl implements CommunityPostPushEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int postId)? communityPost,
+    TResult? Function(int postId)? communityChat,
     TResult? Function(int gameId, String scope)? gameChat,
   }) {
     return communityPost?.call(postId);
@@ -167,6 +175,7 @@ class _$CommunityPostPushEventImpl implements CommunityPostPushEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int postId)? communityPost,
+    TResult Function(int postId)? communityChat,
     TResult Function(int gameId, String scope)? gameChat,
     required TResult orElse(),
   }) {
@@ -180,6 +189,7 @@ class _$CommunityPostPushEventImpl implements CommunityPostPushEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(CommunityPostPushEvent value) communityPost,
+    required TResult Function(CommunityChatPushEvent value) communityChat,
     required TResult Function(GameChatPushEvent value) gameChat,
   }) {
     return communityPost(this);
@@ -189,6 +199,7 @@ class _$CommunityPostPushEventImpl implements CommunityPostPushEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CommunityPostPushEvent value)? communityPost,
+    TResult? Function(CommunityChatPushEvent value)? communityChat,
     TResult? Function(GameChatPushEvent value)? gameChat,
   }) {
     return communityPost?.call(this);
@@ -198,6 +209,7 @@ class _$CommunityPostPushEventImpl implements CommunityPostPushEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CommunityPostPushEvent value)? communityPost,
+    TResult Function(CommunityChatPushEvent value)? communityChat,
     TResult Function(GameChatPushEvent value)? gameChat,
     required TResult orElse(),
   }) {
@@ -218,6 +230,160 @@ abstract class CommunityPostPushEvent implements PushNavigationEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CommunityPostPushEventImplCopyWith<_$CommunityPostPushEventImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CommunityChatPushEventImplCopyWith<$Res> {
+  factory _$$CommunityChatPushEventImplCopyWith(
+    _$CommunityChatPushEventImpl value,
+    $Res Function(_$CommunityChatPushEventImpl) then,
+  ) = __$$CommunityChatPushEventImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int postId});
+}
+
+/// @nodoc
+class __$$CommunityChatPushEventImplCopyWithImpl<$Res>
+    extends
+        _$PushNavigationEventCopyWithImpl<$Res, _$CommunityChatPushEventImpl>
+    implements _$$CommunityChatPushEventImplCopyWith<$Res> {
+  __$$CommunityChatPushEventImplCopyWithImpl(
+    _$CommunityChatPushEventImpl _value,
+    $Res Function(_$CommunityChatPushEventImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of PushNavigationEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? postId = null}) {
+    return _then(
+      _$CommunityChatPushEventImpl(
+        postId: null == postId
+            ? _value.postId
+            : postId // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CommunityChatPushEventImpl implements CommunityChatPushEvent {
+  const _$CommunityChatPushEventImpl({required this.postId});
+
+  @override
+  final int postId;
+
+  @override
+  String toString() {
+    return 'PushNavigationEvent.communityChat(postId: $postId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CommunityChatPushEventImpl &&
+            (identical(other.postId, postId) || other.postId == postId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, postId);
+
+  /// Create a copy of PushNavigationEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CommunityChatPushEventImplCopyWith<_$CommunityChatPushEventImpl>
+  get copyWith =>
+      __$$CommunityChatPushEventImplCopyWithImpl<_$CommunityChatPushEventImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int postId) communityPost,
+    required TResult Function(int postId) communityChat,
+    required TResult Function(int gameId, String scope) gameChat,
+  }) {
+    return communityChat(postId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int postId)? communityPost,
+    TResult? Function(int postId)? communityChat,
+    TResult? Function(int gameId, String scope)? gameChat,
+  }) {
+    return communityChat?.call(postId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int postId)? communityPost,
+    TResult Function(int postId)? communityChat,
+    TResult Function(int gameId, String scope)? gameChat,
+    required TResult orElse(),
+  }) {
+    if (communityChat != null) {
+      return communityChat(postId);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(CommunityPostPushEvent value) communityPost,
+    required TResult Function(CommunityChatPushEvent value) communityChat,
+    required TResult Function(GameChatPushEvent value) gameChat,
+  }) {
+    return communityChat(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(CommunityPostPushEvent value)? communityPost,
+    TResult? Function(CommunityChatPushEvent value)? communityChat,
+    TResult? Function(GameChatPushEvent value)? gameChat,
+  }) {
+    return communityChat?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(CommunityPostPushEvent value)? communityPost,
+    TResult Function(CommunityChatPushEvent value)? communityChat,
+    TResult Function(GameChatPushEvent value)? gameChat,
+    required TResult orElse(),
+  }) {
+    if (communityChat != null) {
+      return communityChat(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class CommunityChatPushEvent implements PushNavigationEvent {
+  const factory CommunityChatPushEvent({required final int postId}) =
+      _$CommunityChatPushEventImpl;
+
+  int get postId;
+
+  /// Create a copy of PushNavigationEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CommunityChatPushEventImplCopyWith<_$CommunityChatPushEventImpl>
   get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -302,6 +468,7 @@ class _$GameChatPushEventImpl implements GameChatPushEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(int postId) communityPost,
+    required TResult Function(int postId) communityChat,
     required TResult Function(int gameId, String scope) gameChat,
   }) {
     return gameChat(gameId, scope);
@@ -311,6 +478,7 @@ class _$GameChatPushEventImpl implements GameChatPushEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int postId)? communityPost,
+    TResult? Function(int postId)? communityChat,
     TResult? Function(int gameId, String scope)? gameChat,
   }) {
     return gameChat?.call(gameId, scope);
@@ -320,6 +488,7 @@ class _$GameChatPushEventImpl implements GameChatPushEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int postId)? communityPost,
+    TResult Function(int postId)? communityChat,
     TResult Function(int gameId, String scope)? gameChat,
     required TResult orElse(),
   }) {
@@ -333,6 +502,7 @@ class _$GameChatPushEventImpl implements GameChatPushEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(CommunityPostPushEvent value) communityPost,
+    required TResult Function(CommunityChatPushEvent value) communityChat,
     required TResult Function(GameChatPushEvent value) gameChat,
   }) {
     return gameChat(this);
@@ -342,6 +512,7 @@ class _$GameChatPushEventImpl implements GameChatPushEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CommunityPostPushEvent value)? communityPost,
+    TResult? Function(CommunityChatPushEvent value)? communityChat,
     TResult? Function(GameChatPushEvent value)? gameChat,
   }) {
     return gameChat?.call(this);
@@ -351,6 +522,7 @@ class _$GameChatPushEventImpl implements GameChatPushEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CommunityPostPushEvent value)? communityPost,
+    TResult Function(CommunityChatPushEvent value)? communityChat,
     TResult Function(GameChatPushEvent value)? gameChat,
     required TResult orElse(),
   }) {

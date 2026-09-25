@@ -58,6 +58,32 @@ void main() {
       expect(event, const PushNavigationEvent.communityPost(postId: 12));
     });
 
+    test('returns_community_chat_when_community_chat_push_has_post_id', () {
+      // BE CommunityChatFcmNotifier: 채팅 메시지(TEXT·GAME_INVITE)와 고정 채팅
+      // 변경(PIN_*)은 모두 {type, postId}로 온다 — 전부 그 글의 채팅방이 목적지다.
+      for (final type in [
+        'TEXT',
+        'GAME_INVITE',
+        'PIN_REGISTERED',
+        'PIN_UPDATED',
+        'PIN_DELETED',
+      ]) {
+        expect(
+          PushNavigationEvent.fromData({'type': type, 'postId': '7'}),
+          const PushNavigationEvent.communityChat(postId: 7),
+          reason: type,
+        );
+      }
+    });
+
+    test('returns_null_when_community_chat_push_has_no_valid_post_id', () {
+      expect(PushNavigationEvent.fromData({'type': 'TEXT'}), isNull);
+      expect(
+        PushNavigationEvent.fromData({'type': 'GAME_INVITE', 'postId': 'x'}),
+        isNull,
+      );
+    });
+
     test('returns_null_when_push_type_has_no_destination', () {
       // 게임 이벤트·콘텐츠 완료 등은 이동 목적지가 없다 — 무시돼야 한다.
       expect(PushNavigationEvent.fromData({'type': 'ARREST'}), isNull);

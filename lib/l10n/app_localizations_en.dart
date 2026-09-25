@@ -1813,6 +1813,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can\'t open this game\'s chat right now';
 
   @override
+  String get communityPushUnavailableInGame =>
+      'You can\'t open community notifications right now';
+
+  @override
   String get chatPreviewTagNotice => 'Notice';
 
   @override
