@@ -527,7 +527,7 @@
   "errorExpiredQr": "This QR code has expired. Please request a QR refresh",
   "errorAlreadyArrested": "This Robber has already been arrested",
   "gameArrestOverlayTitle": "You have been arrested!",
-  "gameArrestOverlayMessage": "Once you have left the jail,\ntap the button below to complete your jailbreak",
+  "gameArrestOverlayMessage": "Enter the jail, then leave it to jailbreak automatically\nUse the button below if automatic jailbreak does not work",
   "gameArrestOverlayEscapeCompleteButton": "Jailbreak",
   "buttonEscape": "Jailbreak",
   "buttonNo": "No",

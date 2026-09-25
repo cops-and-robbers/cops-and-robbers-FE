@@ -527,7 +527,7 @@
   "errorExpiredQr": "有効期限切れのQRです。QRの更新をリクエストしてください",
   "errorAlreadyArrested": "すでに逮捕された泥棒です",
   "gameArrestOverlayTitle": "逮捕されました！",
-  "gameArrestOverlayMessage": "牢屋から抜け出したら\n下のボタンを押して脱獄を完了してください",
+  "gameArrestOverlayMessage": "牢屋に入ってから外に出ると自動で脱獄します\n自動脱獄が動作しない場合は下のボタンを押してください",
   "gameArrestOverlayEscapeCompleteButton": "脱獄する",
   "buttonEscape": "脱獄",
   "buttonNo": "いいえ",
