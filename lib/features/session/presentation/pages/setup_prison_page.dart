@@ -119,6 +119,24 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
   /// 핀(폴리곤) 모드 여부 — 플레이그라운드가 정한 타입을 따른다
   bool get _isPinMode => _areaType == GameAreaType.polygon;
 
+  /// 새 감옥 지도의 시작 위치 — 플레이그라운드 중심
+  ///
+  /// 감옥은 플레이그라운드 안에 있어야 하므로 진입 경로(홈·모집글·방 수정)와
+  /// 무관하게 플레이그라운드 가운데에서 시작한다. 기존 감옥이 있으면 그쪽이 우선한다.
+  LatLng? get _playgroundMiddle {
+    final pins = _playgroundPinPoints;
+    if (pins != null && pins.isNotEmpty) {
+      final c = AreaShape.polygon(
+        points: [
+          for (final p in pins)
+            GeoPoint(latitude: p.latitude, longitude: p.longitude),
+        ],
+      ).centroid;
+      return LatLng(c.latitude, c.longitude);
+    }
+    return _playgroundCenter;
+  }
+
   /// 기존에 저장된 데이터 불러오기 (재설정 시)
   Future<void> _loadExistingData() async {
     // 초기 도형을 받았으면 로컬 초안 대신 그 값을 쓴다
@@ -429,6 +447,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                         strokeColor: AppColors.red800,
                         locationButtonColor: AppColors.red,
                         referencePolygon: _playgroundPinPoints,
+                        initialCenter: _playgroundMiddle,
                         expandMap: true,
                         isDarkMode: isDark,
                         onPointsChanged: (points) {
@@ -436,7 +455,7 @@ class _SetupPrisonPageState extends ConsumerState<SetupPrisonPage> {
                         },
                       )
                     : ZoneSettingWidget(
-                        initialCenter: _currentCenter,
+                        initialCenter: _currentCenter ?? _playgroundMiddle,
                         initialRadius: _currentRadius,
                         minRadius: 5,
                         maxRadius: 300,
