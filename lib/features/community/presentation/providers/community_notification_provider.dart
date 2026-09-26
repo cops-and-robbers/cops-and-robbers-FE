@@ -30,9 +30,15 @@ class CommunityNotificationState with _$CommunityNotificationState {
 @riverpod
 class CommunityNotificationNotifier extends _$CommunityNotificationNotifier {
   static const _pageSize = 20;
+  int _generation = 0;
+  int _refreshRequestId = 0;
 
   @override
   FutureOr<CommunityNotificationState> build() async {
+    ref.onDispose(() {
+      _generation++;
+      _refreshRequestId++;
+    });
     final page = await ref
         .watch(communityRepositoryProvider)
         .getNotifications(size: _pageSize);
@@ -50,16 +56,26 @@ class CommunityNotificationNotifier extends _$CommunityNotificationNotifier {
   /// 다시 던진다 — 알림함은 소켓이 없어 이 당김이 새 알림을 확인할 유일한
   /// 수단이라, 실패를 조용히 삼키면 "당겼는데 아무 일도 없다"가 된다.
   Future<void> refresh() async {
-    final page = await ref
-        .read(communityRepositoryProvider)
-        .getNotifications(size: _pageSize);
-    state = AsyncData(
-      CommunityNotificationState(
-        items: page.items,
-        nextCursor: page.nextCursor,
-        hasMore: page.hasNext,
-      ),
-    );
+    final requestId = ++_refreshRequestId;
+    try {
+      final page = await ref
+          .read(communityRepositoryProvider)
+          .getNotifications(size: _pageSize);
+      if (requestId != _refreshRequestId) return;
+      // 성공해 목록이 바뀐 뒤에만 이전 커서의 페이지를 버린다.
+      // 새로고침이 실패하면 기존 목록의 추가 로딩은 계속 유효하다.
+      _generation++;
+      state = AsyncData(
+        CommunityNotificationState(
+          items: page.items,
+          nextCursor: page.nextCursor,
+          hasMore: page.hasNext,
+        ),
+      );
+    } catch (_) {
+      if (requestId != _refreshRequestId) return;
+      rethrow;
+    }
   }
 
   /// 다음 페이지를 이어붙인다. 실패해도 보이는 목록은 지우지 않고 다시 던진다.
@@ -67,11 +83,13 @@ class CommunityNotificationNotifier extends _$CommunityNotificationNotifier {
     final current = state.valueOrNull;
     if (current == null || !current.hasMore || current.isLoadingMore) return;
 
+    final generation = _generation;
     state = AsyncData(current.copyWith(isLoadingMore: true));
     try {
       final page = await ref
           .read(communityRepositoryProvider)
           .getNotifications(cursor: current.nextCursor, size: _pageSize);
+      if (generation != _generation) return;
       final latest = state.valueOrNull ?? current;
       state = AsyncData(
         latest.copyWith(
@@ -82,6 +100,7 @@ class CommunityNotificationNotifier extends _$CommunityNotificationNotifier {
         ),
       );
     } catch (_) {
+      if (generation != _generation) return;
       state = AsyncData(
         (state.valueOrNull ?? current).copyWith(isLoadingMore: false),
       );

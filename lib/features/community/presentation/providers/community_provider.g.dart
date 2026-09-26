@@ -302,8 +302,6 @@ String _$selectedCommunitySortHash() =>
 /// 인스턴스가 커서 없이 첫 페이지를 부른다. 서버 커서에 정렬이 봉인돼 있어
 /// 재사용하면 400이라, 이 구조가 곧 계약이다.
 ///
-/// 인기순은 서버가 아직 400을 주므로 정렬 시트가 노출하지 않는다.
-///
 /// Copied from [SelectedCommunitySort].
 @ProviderFor(SelectedCommunitySort)
 final selectedCommunitySortProvider =
@@ -322,7 +320,7 @@ final selectedCommunitySortProvider =
 
 typedef _$SelectedCommunitySort = AutoDisposeNotifier<CommunitySortOption>;
 String _$communityFeedNotifierHash() =>
-    r'12e578e8ebdd87e33a630f7ce4d7ca37b15c0c02';
+    r'b52a8c3e7a5f5cd74ffea68a4e52e354f958040c';
 
 /// Copied from Dart SDK
 class _SystemHash {
