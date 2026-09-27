@@ -240,6 +240,7 @@ Future<String> communityCountryCode(Ref ref) async {
 @riverpod
 class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   static const _pageSize = 20;
+  int _generation = 0;
 
   /// 마지막 조회로부터 이 시간이 지나면 낡은 것으로 본다.
   ///
@@ -253,6 +254,9 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
     CommunitySortOption sort,
     String? keyword,
   ) async {
+    // 새로고침·무효화·폐기 때만 이전 페이지 요청을 무효화한다.
+    // 글 하나를 수정하거나 삭제하는 것은 같은 목록의 변경이다.
+    ref.onDispose(() => _generation++);
     // 목록은 살려 둔다(위 주석). 검색은 화면을 나가면 폐기되게 둔다.
     if (keyword == null) ref.keepAlive();
 
@@ -327,24 +331,21 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
   /// 실패해도 이미 보이는 목록은 지우지 않고 예외를 다시 던진다 — 화면이
   /// 스낵바로만 알리게 하기 위함이다.
   Future<void> loadMore() async {
+    // 새 첫 페이지를 기다릴 때 남아 있는 이전 값의 커서는 사용하지 않는다.
+    if (state.isLoading) return;
     final current = state.valueOrNull;
     if (current == null || !current.hasMore || current.isLoadingMore) return;
 
     // 이 대입은 첫 await 이전이라 동기적으로 끝난다. 스크롤 리스너가 프레임마다
     // 호출해도 두 번째 호출은 위 isLoadingMore 가드에 걸린다.
-    // pending을 별도로 들고 있는 이유: family 키가 스코프·정렬·검색어별로 갈려
-    // 있어 이 인스턴스의 state가 다른 인스턴스로 교체되는 일은 없다. 대신
-    // await 도중 refresh()가 끼어들면 invalidateSelf가 build()를 다시 돌려
-    // 같은 인스턴스의 state를 이 pending과 다른 값으로 바꿔치운다. 응답이
-    // 돌아왔을 때 state가 여전히 pending과 identical한지 확인해야 그 새 state를
-    // 낡은 응답으로 덮어쓰지 않는다.
-    final pending = current.copyWith(isLoadingMore: true);
-    state = AsyncData(pending);
+    final generation = _generation;
+    state = AsyncData(current.copyWith(isLoadingMore: true));
 
     try {
       // 첫 페이지에서 이미 해석돼 provider가 들고 있는 값이라 즉시 돌아온다 —
       // 스크롤할 때마다 GPS를 켜거나 벤더를 부르지 않는다.
       final countryCode = await ref.read(communityCountryCodeProvider.future);
+      if (generation != _generation) return;
 
       final page = await ref
           .read(communityRepositoryProvider)
@@ -365,25 +366,22 @@ class CommunityFeedNotifier extends _$CommunityFeedNotifier {
             longitude: current.longitude,
           );
 
-      // refresh()가 끼어들어 state가 이미 교체됐다면 이 응답은 낡은 것이다 —
-      // 최신 상태를 덮지 않고 조용히 버린다.
-      if (!identical(state.valueOrNull, pending)) return;
+      if (generation != _generation) return;
+      final latest = state.requireValue;
 
       // 커서는 "몇 번째"가 아니라 "어디까지 봤는지"를 들고 다니므로, 스크롤 중
       // 새 글이 올라와도 경계가 밀리지 않는다 — id 중복 제거가 필요 없다.
       state = AsyncData(
-        current.copyWith(
-          items: [...current.items, ...page.items],
+        latest.copyWith(
+          items: [...latest.items, ...page.items],
           nextCursor: page.nextCursor,
           hasMore: page.hasNext,
           isLoadingMore: false,
         ),
       );
     } catch (_) {
-      // 그 사이 refresh()가 끼어들어 state가 이미 교체됐다면 건드리지 않는다.
-      if (identical(state.valueOrNull, pending)) {
-        state = AsyncData(current.copyWith(isLoadingMore: false));
-      }
+      if (generation != _generation) return;
+      state = AsyncData(state.requireValue.copyWith(isLoadingMore: false));
       rethrow;
     }
   }

@@ -31,7 +31,7 @@ final communityNotificationUnreadCountProvider =
 // ignore: unused_element
 typedef CommunityNotificationUnreadCountRef = AutoDisposeFutureProviderRef<int>;
 String _$communityNotificationNotifierHash() =>
-    r'1e990fc91840e0651578faa81c54c3f5c624aa5b';
+    r'e482af54d7a5c6b953392c0bee52a6fcfe5d23ea';
 
 /// 내 알림함 목록 상태
 ///

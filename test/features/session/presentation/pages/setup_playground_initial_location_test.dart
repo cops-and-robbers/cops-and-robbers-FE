@@ -10,6 +10,7 @@ import 'package:cops_and_robbers/features/game/domain/entities/area_shape.dart';
 import 'package:cops_and_robbers/features/session/presentation/game_creation_entry.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/session_creation_flow_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
 import 'package:cops_and_robbers/router/route_paths.dart';
@@ -125,16 +126,15 @@ class _Map extends MethodChannelGoogleMapsFlutter {
   }
 }
 
-Future<void> _pumpPage(WidgetTester tester, SetupPlaygroundPage page) =>
-    _pumpApp(
-      tester,
-      MaterialApp(
-        locale: const Locale('ko'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: page,
-      ),
-    );
+Future<void> _pumpPage(WidgetTester tester, Widget page) => _pumpApp(
+  tester,
+  MaterialApp(
+    locale: const Locale('ko'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: page,
+  ),
+);
 
 Future<void> _pumpApp(WidgetTester tester, Widget app) async {
   tester.view.physicalSize = const Size(1125, 2436);
@@ -150,8 +150,12 @@ Future<void> _pumpApp(WidgetTester tester, Widget app) async {
     ),
   );
   // 실제 이미지 인코딩은 fake async 밖에서 끝낸다. GPS와 지도만 플랫폼 페이크다.
+  // 플레이그라운드(파랑)·감옥(빨강) 핀 아이콘 모두 미리 캐시한다.
   await tester.runAsync(
-    () => ZoneVertexHandleIcon.create(color: AppColors.blue),
+    () => Future.wait([
+      ZoneVertexHandleIcon.create(color: AppColors.blue),
+      ZoneVertexHandleIcon.create(color: AppColors.red),
+    ]),
   );
   await tester.pumpAndSettle();
 }
@@ -392,4 +396,37 @@ void main() {
       expect(_visibleCenter(tester), _edited);
     },
   );
+
+  // 새 감옥은 진입 경로와 무관하게 플레이그라운드 가운데에서 시작한다
+  for (final playground in [_circle, _polygon]) {
+    final mode = playground is CircleShape ? 'circle' : 'polygon';
+
+    testWidgets('new_${mode}_prison_starts_at_the_playground_middle', (
+      tester,
+    ) async {
+      await _pumpPage(
+        tester,
+        SetupPrisonPage(editArgs: PrisonEditArgs(playground: playground)),
+      );
+      final center = _visibleCenter(tester);
+      expect(center.latitude, closeTo(_edited.latitude, .001));
+      expect(center.longitude, closeTo(_edited.longitude, .001));
+    });
+  }
+
+  testWidgets('existing_prison_wins_over_the_playground_middle', (
+    tester,
+  ) async {
+    const jail = AreaShape.circle(
+      center: GeoPoint(latitude: 35, longitude: 129),
+      radiusInMeters: 50,
+    );
+    await _pumpPage(
+      tester,
+      const SetupPrisonPage(
+        editArgs: PrisonEditArgs(playground: _circle, initialJail: jail),
+      ),
+    );
+    expect(_visibleCenter(tester), _meeting);
+  });
 }
