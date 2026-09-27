@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2026-09-25T14:43:09Z",
-    "currentVersion": "3.1.14",
+    "lastUpdated": "2026-09-27T09:40:26Z",
+    "currentVersion": "3.1.17",
     "projectType": "flutter",
-    "totalReleases": 138
+    "totalReleases": 139
   },
   "releases": [
+    {
+      "version": "3.1.17",
+      "project_type": "flutter",
+      "date": "2026-09-27",
+      "pr_number": 615,
+      "raw_summary": "## Summary by CodeRabbit\n\n- **새로운 기능**\n  - 새 감옥 설정 지도는 플레이그라운드 중심에서 시작합니다. 기존 감옥을 수정할 때는 기존 위치를 유지합니다.\n- **버그 수정**\n  - 커뮤니티 게시글과 알림 목록에서 새로고침·추가 로딩이 겹칠 때 오래된 응답이 최신 목록을 덮어쓰거나 로딩 상태가 남는 문제를 수정했습니다.",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "새 감옥 설정 지도는 플레이그라운드 중심에서 시작합니다. 기존 감옥을 수정할 때는 기존 위치를 유지합니다."
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "커뮤니티 게시글과 알림 목록에서 새로고침·추가 로딩이 겹칠 때 오래된 응답이 최신 목록을 덮어쓰거나 로딩 상태가 남는 문제를 수정했습니다."
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.1.14",
       "project_type": "flutter",
