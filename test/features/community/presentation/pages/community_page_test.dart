@@ -316,6 +316,11 @@ Future<void> _pumpCommunityPage(
   int? currentUserId,
   List<Override> overrides = const [],
 }) async {
+  // 기본 뷰포트(800x600)는 실존하지 않는 폰 비율이라 `.h`로 잡은 고정 높이가 줄어
+  // 정렬 시트가 가짜 오버플로우를 낸다 — 디자인 기준 크기로 고정한다.
+  tester.view.physicalSize = const Size(393, 852);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.reset);
   await tester.pumpWidget(
     _wrap(repo, currentUserId: currentUserId, overrides: overrides),
   );

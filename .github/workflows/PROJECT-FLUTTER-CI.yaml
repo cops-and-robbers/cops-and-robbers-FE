@@ -139,6 +139,12 @@ jobs:
           flutter analyze --no-fatal-infos
           echo "✅ 코드 분석 완료"
 
+      # Flutter Test 실행 — main 대상 PR에서만 (머지 후 push에서 중복 실행하지 않는다)
+      - name: Run Flutter Test
+        id: test
+        if: github.event_name != 'push'
+        run: flutter test
+
       # 분석 결과 기록
       - name: 분석 결과 기록
         id: result

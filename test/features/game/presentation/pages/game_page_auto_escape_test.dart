@@ -242,8 +242,13 @@ void main() {
     container.read(gameParticipantNotifierProvider.notifier)
       ..setGameInfo(gameId: 1, participantId: 5, nickname: '도둑', team: 'ROBBER')
       ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
+      // 서버 시각 문자열은 시간대를 명시한다 — 시간대가 없으면 IsoTimestampParser가
+      // KST로 해석하므로, 단말 시간대가 KST가 아닌 CI(UTC)에서 9시간 어긋난다.
       ..setGameStartTime(
-        DateTime.now().subtract(const Duration(minutes: 1)).toIso8601String(),
+        DateTime.now()
+            .subtract(const Duration(minutes: 1))
+            .toUtc()
+            .toIso8601String(),
       );
     addTearDown(container.dispose);
   });
@@ -470,7 +475,7 @@ void main() {
       locationRevealIntervalMinutes: 3,
       policeWaitMinutes: 1,
       maxParticipants: 10,
-      gameStartTime: DateTime.now().toIso8601String(),
+      gameStartTime: DateTime.now().toUtc().toIso8601String(),
     );
     session.participants = const InGameParticipantsResponse(
       police: [
@@ -525,7 +530,7 @@ void main() {
             team: 'POLICE',
           ),
           message: '정문 앞에서 만나서 같이 이동해요. 긴 메시지도 한 줄로 보여요.',
-          timestamp: DateTime.now().toIso8601String(),
+          timestamp: DateTime.now().toUtc().toIso8601String(),
           scope: 'ALL',
         );
         chat.messages.add(message);
@@ -639,7 +644,7 @@ void main() {
     var now = DateTime.now();
     final start = now.subtract(const Duration(seconds: 64, milliseconds: 500));
     container.read(gameParticipantNotifierProvider.notifier)
-      ..setGameStartTime(start.toIso8601String())
+      ..setGameStartTime(start.toUtc().toIso8601String())
       ..updateSettings(policeWaitMinutes: 1, locationRevealIntervalMinutes: 3);
     await withClock(Clock(() => now), () async {
       await mount(tester, size: const Size(393, 852));
@@ -726,6 +731,7 @@ void main() {
           type: GameEventType.policeMoveStart,
           timestamp: start
               .add(const Duration(minutes: 1, milliseconds: 800))
+              .toUtc()
               .toIso8601String(),
         ),
       );
@@ -1081,7 +1087,10 @@ void main() {
       ..setGameInfo(gameId: 1, participantId: 5, nickname: '경찰', team: 'POLICE')
       ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
       ..setGameStartTime(
-        DateTime.now().subtract(const Duration(minutes: 1)).toIso8601String(),
+        DateTime.now()
+            .subtract(const Duration(minutes: 1))
+            .toUtc()
+            .toIso8601String(),
       );
     session.settings = GameSettingsResponse(
       roundDurationMinutes: 30,
@@ -1090,6 +1099,7 @@ void main() {
       maxParticipants: 10,
       gameStartTime: DateTime.now()
           .subtract(const Duration(minutes: 1))
+          .toUtc()
           .toIso8601String(),
     );
     session.participants = const InGameParticipantsResponse(
@@ -1592,6 +1602,7 @@ void main() {
             ..setGameStartTime(
               DateTime.now()
                   .subtract(const Duration(minutes: 1))
+                  .toUtc()
                   .toIso8601String(),
             );
           session.settings = GameSettingsResponse(
@@ -1601,6 +1612,7 @@ void main() {
             maxParticipants: 10,
             gameStartTime: DateTime.now()
                 .subtract(const Duration(minutes: 1))
+                .toUtc()
                 .toIso8601String(),
           );
           await mount(tester, team: variant.team);
