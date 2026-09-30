@@ -27,6 +27,8 @@ import 'package:cops_and_robbers/features/game/data/datasources/game_system_api_
 import 'package:cops_and_robbers/features/game/data/models/game_area_model.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_event_provider.dart';
+import 'package:cops_and_robbers/core/services/background/background_service_provider.dart';
+import 'package:cops_and_robbers/core/services/background/method_channel_background_service.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
 import 'package:cops_and_robbers/features/session/data/models/in_game_participants_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/game_settings_response.dart';
@@ -208,9 +210,24 @@ void main() {
   late _GameApi game;
   late _SessionApi session;
   late ProviderContainer container;
+  late List<MethodCall> backgroundCalls;
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    // 백그라운드 인프라 채널(Android FGS / iOS Live Activity) 경계 — 호출만 기록한다.
+    backgroundCalls = [];
+    const backgroundChannel = MethodChannel(
+      MethodChannelBackgroundService.channelName,
+    );
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(backgroundChannel, (call) async {
+          backgroundCalls.add(call);
+          return null;
+        });
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(backgroundChannel, null),
+    );
     FlutterSecureStorage.setMockInitialValues({'access_token': 'test'});
     dotenv.loadFromString(envString: 'API_BASE_URL=http://localhost:8080');
     location = _Location();
@@ -237,13 +254,22 @@ void main() {
         chatStompDatasourceProvider.overrideWithValue(chat),
         gameSystemApiProvider.overrideWithValue(game),
         sessionRemoteDataSourceProvider.overrideWithValue(session),
+        // 실제 채널 구현으로 잠금 화면 현황 전송까지 연결한다(호스트 플랫폼 기본값은 no-op).
+        backgroundServiceProvider.overrideWithValue(
+          MethodChannelBackgroundService(),
+        ),
       ],
     );
     container.read(gameParticipantNotifierProvider.notifier)
       ..setGameInfo(gameId: 1, participantId: 5, nickname: '도둑', team: 'ROBBER')
       ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
+      // 서버 시각 문자열은 시간대를 명시한다 — 시간대가 없으면 IsoTimestampParser가
+      // KST로 해석하므로, 단말 시간대가 KST가 아닌 CI(UTC)에서 9시간 어긋난다.
       ..setGameStartTime(
-        DateTime.now().subtract(const Duration(minutes: 1)).toIso8601String(),
+        DateTime.now()
+            .subtract(const Duration(minutes: 1))
+            .toUtc()
+            .toIso8601String(),
       );
     addTearDown(container.dispose);
   });
@@ -470,7 +496,7 @@ void main() {
       locationRevealIntervalMinutes: 3,
       policeWaitMinutes: 1,
       maxParticipants: 10,
-      gameStartTime: DateTime.now().toIso8601String(),
+      gameStartTime: DateTime.now().toUtc().toIso8601String(),
     );
     session.participants = const InGameParticipantsResponse(
       police: [
@@ -525,7 +551,7 @@ void main() {
             team: 'POLICE',
           ),
           message: '정문 앞에서 만나서 같이 이동해요. 긴 메시지도 한 줄로 보여요.',
-          timestamp: DateTime.now().toIso8601String(),
+          timestamp: DateTime.now().toUtc().toIso8601String(),
           scope: 'ALL',
         );
         chat.messages.add(message);
@@ -639,7 +665,7 @@ void main() {
     var now = DateTime.now();
     final start = now.subtract(const Duration(seconds: 64, milliseconds: 500));
     container.read(gameParticipantNotifierProvider.notifier)
-      ..setGameStartTime(start.toIso8601String())
+      ..setGameStartTime(start.toUtc().toIso8601String())
       ..updateSettings(policeWaitMinutes: 1, locationRevealIntervalMinutes: 3);
     await withClock(Clock(() => now), () async {
       await mount(tester, size: const Size(393, 852));
@@ -726,6 +752,7 @@ void main() {
           type: GameEventType.policeMoveStart,
           timestamp: start
               .add(const Duration(minutes: 1, milliseconds: 800))
+              .toUtc()
               .toIso8601String(),
         ),
       );
@@ -1081,7 +1108,10 @@ void main() {
       ..setGameInfo(gameId: 1, participantId: 5, nickname: '경찰', team: 'POLICE')
       ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
       ..setGameStartTime(
-        DateTime.now().subtract(const Duration(minutes: 1)).toIso8601String(),
+        DateTime.now()
+            .subtract(const Duration(minutes: 1))
+            .toUtc()
+            .toIso8601String(),
       );
     session.settings = GameSettingsResponse(
       roundDurationMinutes: 30,
@@ -1090,6 +1120,7 @@ void main() {
       maxParticipants: 10,
       gameStartTime: DateTime.now()
           .subtract(const Duration(minutes: 1))
+          .toUtc()
           .toIso8601String(),
     );
     session.participants = const InGameParticipantsResponse(
@@ -1592,6 +1623,7 @@ void main() {
             ..setGameStartTime(
               DateTime.now()
                   .subtract(const Duration(minutes: 1))
+                  .toUtc()
                   .toIso8601String(),
             );
           session.settings = GameSettingsResponse(
@@ -1601,6 +1633,7 @@ void main() {
             maxParticipants: 10,
             gameStartTime: DateTime.now()
                 .subtract(const Duration(minutes: 1))
+                .toUtc()
                 .toIso8601String(),
           );
           await mount(tester, team: variant.team);
@@ -1725,4 +1758,29 @@ void main() {
     await tester.pump(const Duration(seconds: 10));
     expect(session.requests, 2);
   });
+
+  testWidgets(
+    'lock_screen_counts_robbers_from_game_sync_when_game_screen_opens',
+    (tester) async {
+      // 실제 게임 화면 + 실제 컨트롤러: 소켓 연결 시 동기화가 받은 명단(도둑 5번, JAILED)으로
+      // 잠금 화면 현황이 채워지고, 컨트롤러는 참가자 API를 따로 부르지 않는다.
+      await withClock(Clock(() => tester.binding.clock.now()), () async {
+        await mount(tester);
+        await tester.pump(const Duration(milliseconds: 300));
+
+        final updates = [
+          for (final c in backgroundCalls)
+            if (c.method == 'update') c.arguments as Map<Object?, Object?>,
+        ];
+        expect(
+          (
+            updates.last['aliveRobbers'],
+            updates.last['totalRobbers'],
+            session.requests,
+          ),
+          (0, 1, 1),
+        );
+      });
+    },
+  );
 }

@@ -22,6 +22,11 @@ import google_mobile_ads
     }
     #endif
 
+    // 게임 중 강제 종료되면 stop이 오지 않아 이전 게임의 Live Activity가 남는다 — 실행 때 정리.
+    if #available(iOS 16.2, *) {
+      MainActor.assumeIsolated { GameStatusActivityManager.shared.endAll() }
+    }
+
     GeneratedPluginRegistrant.register(with: self)
 
     FLTGoogleMobileAdsPlugin.registerNativeAdFactory(
@@ -57,6 +62,61 @@ import google_mobile_ads
               result(nil)
             }
           }
+        default:
+          result(FlutterMethodNotImplemented)
+        }
+      }
+
+      // 게임 진행 인프라 — Android와 같은 채널. iOS는 백그라운드 위치를 OS가 처리하므로
+      // start는 할 일이 없고, 잠금 화면 현황(Live Activity)만 update/stop으로 다룬다.
+      let backgroundChannel = FlutterMethodChannel(
+        name: "cops_and_robbers/background_service",
+        binaryMessenger: controller.binaryMessenger
+      )
+      backgroundChannel.setMethodCallHandler { call, result in
+        guard #available(iOS 16.2, *) else {
+          result(nil)
+          return
+        }
+        switch call.method {
+        case "start":
+          result(nil)
+        case "update":
+          guard let args = call.arguments as? [String: Any],
+                let endAtMs = (args["endAtMs"] as? NSNumber)?.doubleValue else {
+            result(nil)
+            return
+          }
+          func date(_ key: String) -> Date? {
+            (args[key] as? NSNumber).map { Date(timeIntervalSince1970: $0.doubleValue / 1000) }
+          }
+          let attributes = GameStatusAttributes(
+            title: args["title"] as? String ?? "",
+            remainingTimeLabel: args["remainingTimeLabel"] as? String ?? "",
+            remainingRobbersLabel: args["remainingRobbersLabel"] as? String ?? "",
+            locationRevealLabel: args["locationRevealLabel"] as? String ?? "",
+            gameOverLabel: args["gameOverLabel"] as? String ?? "",
+            isRobberTeam: args["isRobberTeam"] as? Bool ?? false,
+            teamLabel: args["teamLabel"] as? String ?? "",
+            localeCode: args["localeCode"] as? String ?? "en"
+          )
+          let endAt = Date(timeIntervalSince1970: endAtMs / 1000)
+          let state = GameStatusAttributes.ContentState(
+            startAt: date("startAtMs") ?? endAt,
+            endAt: endAt,
+            nextRevealAt: date("nextRevealAtMs"),
+            aliveRobbers: (args["aliveRobbers"] as? NSNumber)?.intValue,
+            totalRobbers: (args["totalRobbers"] as? NSNumber)?.intValue
+          )
+          // 채널 핸들러는 메인 스레드에서 불린다. Task로 예약하면 update·stop의 실행 순서가 보장되지 않아
+          // stop 뒤에 늦게 돈 update가 끝난 게임의 Live Activity를 다시 만들 수 있다 — 그 자리에서 실행한다.
+          MainActor.assumeIsolated {
+            GameStatusActivityManager.shared.update(attributes: attributes, state: state)
+          }
+          result(nil)
+        case "stop":
+          MainActor.assumeIsolated { GameStatusActivityManager.shared.stop() }
+          result(nil)
         default:
           result(FlutterMethodNotImplemented)
         }

@@ -79,4 +79,6 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // Live Updates(setRequestPromotedOngoing)는 1.17.0부터 있다.
+    implementation("androidx.core:core:1.17.0")
 }

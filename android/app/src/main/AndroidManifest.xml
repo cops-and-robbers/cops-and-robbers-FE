@@ -32,6 +32,8 @@
     <!-- Foreground Service permission for background location tracking -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <!-- Android 16 Live Updates: 게임 진행 알림을 상단바 칩·잠금 화면으로 승격 요청 (런타임 요청 없음) -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
 
     <!-- CPU 웨이크락 권한 (게임 중 화면 꺼짐 시에도 STOMP 연결 유지) -->
     <!-- Wake lock permission to keep CPU awake for STOMP heartbeat -->
@@ -170,6 +172,9 @@
         <service
             android:name=".GameSessionForegroundService"
             android:foregroundServiceType="location"
+            android:exported="false" />
+        <receiver
+            android:name=".GameSessionNotificationDismissReceiver"
             android:exported="false" />
     </application>
     <!-- Required to query activities that can process text, see:

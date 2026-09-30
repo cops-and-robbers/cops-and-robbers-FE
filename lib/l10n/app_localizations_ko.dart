@@ -1543,6 +1543,25 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get lockScreenRemainingTime => '남은 시간';
+
+  @override
+  String lockScreenRemainingRobbers(int alive, int total) {
+    return '남은 도둑 $alive/$total';
+  }
+
+  @override
+  String lockScreenRevealAt(String time) {
+    return '$time 위치 공개';
+  }
+
+  @override
+  String get lockScreenLocationReveal => '위치 공개';
+
+  @override
+  String get lockScreenGameOver => '게임 종료';
+
+  @override
   String get dialogArrestConfirmTitle => '해당 플레이어를 체포하셨나요?';
 
   @override

@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'background_service.dart';
-import 'background_service_android.dart';
-import 'background_service_ios.dart';
+import 'method_channel_background_service.dart';
+import 'noop_background_service.dart';
 
 part 'background_service_provider.g.dart';
 
@@ -16,12 +16,9 @@ part 'background_service_provider.g.dart';
 /// idempotent 동작을 보장한다.
 @Riverpod(keepAlive: true)
 BackgroundService backgroundService(Ref ref) {
-  if (Platform.isAndroid) {
-    return BackgroundServiceAndroid();
+  if (Platform.isAndroid || Platform.isIOS) {
+    return MethodChannelBackgroundService();
   }
-  if (Platform.isIOS) {
-    return BackgroundServiceIos();
-  }
-  // 웹·데스크톱 등 기타 플랫폼 fallback — iOS와 동일하게 no-op
-  return BackgroundServiceIos();
+  // 웹·데스크톱 등 기타 플랫폼 fallback
+  return NoopBackgroundService();
 }
