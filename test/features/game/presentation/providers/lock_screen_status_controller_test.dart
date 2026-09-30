@@ -92,7 +92,6 @@ class _FakeTokenProvider implements TokenProvider {
 }
 
 const _gameId = 1;
-// 로컬 시각으로 둔다 — IsoTimestampParser가 오프셋 없는 문자열을 로컬로 읽는다.
 final _start = DateTime(2026, 9, 30, 10);
 
 class _Harness {
@@ -135,7 +134,9 @@ void _fillGameInfo(
       policeWaitMinutes: 5,
       locationRevealIntervalMinutes: 3,
     )
-    ..setGameStartTime('2026-09-30T10:00:00');
+    // 서버 시각 문자열은 시간대를 명시한다 — 시간대가 없으면 IsoTimestampParser가 KST로 읽어
+    // 단말 시간대가 KST가 아닌 CI(UTC)에서 9시간 어긋난다(#616과 같은 원인).
+    ..setGameStartTime(_start.toUtc().toIso8601String());
 }
 
 _Harness _harness({
