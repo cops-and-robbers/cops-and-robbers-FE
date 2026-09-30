@@ -377,19 +377,24 @@ jobs:
           p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
           p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
-      - name: Install Provisioning Profile
+      - name: Install Provisioning Profiles
         run: |
-          echo "${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > profile.mobileprovision
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-          uuid=$(grep -A1 -a "UUID" profile.mobileprovision | grep string | sed -e "s/<string>//" -e "s/<\/string>//" -e "s/[[:space:]]//g")
-          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$uuid.mobileprovision
+          # 본 앱(Runner)과 Live Activity 확장 기능은 번들 ID가 달라 프로파일도 따로다.
+          install_profile() {
+            echo "$1" | base64 --decode > "$2"
+            uuid=$(grep -A1 -a "UUID" "$2" | grep string | sed -e "s/<string>//" -e "s/<\/string>//" -e "s/[[:space:]]//g")
+            cp "$2" ~/Library/MobileDevice/Provisioning\ Profiles/$uuid.mobileprovision
+          }
+          install_profile "${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}" profile.mobileprovision
+          install_profile "${{ secrets.APPLE_LIVEACTIVITY_PROVISIONING_PROFILE_BASE64 }}" liveactivity.mobileprovision
 
       - name: Inject signing config into ExportOptions.plist
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
           IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+          IOS_LIVEACTIVITY_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_LIVEACTIVITY_PROVISIONING_PROFILE_NAME }}
         run: |
           cd ios
           if [ ! -f "ExportOptions.plist" ]; then
@@ -400,6 +405,7 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :teamID ${APPLE_TEAM_ID}" ExportOptions.plist
           /usr/libexec/PlistBuddy -c "Delete :provisioningProfiles:__IOS_BUNDLE_ID__" ExportOptions.plist
           /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:${IOS_BUNDLE_ID} string ${IOS_PROVISIONING_PROFILE_NAME}" ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:${IOS_BUNDLE_ID}.LiveActivity string ${IOS_LIVEACTIVITY_PROVISIONING_PROFILE_NAME}" ExportOptions.plist
           echo "✅ ExportOptions.plist 주입 완료 (team/bundle/profile은 GitHub Secrets에서 가져옴)"
 
       - name: Flutter build (no codesign)
@@ -411,15 +417,20 @@ jobs:
       - name: Create Archive
         env:
           IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+          IOS_LIVEACTIVITY_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_LIVEACTIVITY_PROVISIONING_PROFILE_NAME }}
         run: |
           cd ios
+          # 프로파일을 전체 타깃에 하나로 주면 확장 기능이 본 앱 프로파일로 서명돼 실패한다.
+          # 타깃 이름으로 고른다. Pod 타깃은 PROFILE_<이름>이 없어 빈 값(프로파일 불필요).
           xcodebuild -workspace Runner.xcworkspace \
             -scheme Runner \
             -sdk iphoneos \
             -archivePath build/Runner.xcarchive \
             archive \
             CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="$IOS_PROVISIONING_PROFILE_NAME" \
+            PROVISIONING_PROFILE_SPECIFIER='$(PROFILE_$(TARGET_NAME))' \
+            PROFILE_Runner="$IOS_PROVISIONING_PROFILE_NAME" \
+            PROFILE_LiveActivity="$IOS_LIVEACTIVITY_PROVISIONING_PROFILE_NAME" \
             CODE_SIGN_IDENTITY="Apple Distribution"
 
       - name: Export IPA
