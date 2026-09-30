@@ -1,15 +1,12 @@
 package com.elipair.copsandrobbers
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
-import androidx.core.app.NotificationCompat
 
 /**
  * 게임 진행 중 백그라운드 위치 추적용 Foreground Service.
@@ -26,8 +23,6 @@ import androidx.core.app.NotificationCompat
 class GameSessionForegroundService : android.app.Service() {
 
     companion object {
-        private const val NOTIFICATION_ID = 1001
-        private const val CHANNEL_ID = "game_session_channel"
         // 누수 가드: release 누락(프로세스 비정상 종료 등) 시에도 OS가 자동 해제.
         // 게임 최대 길이보다 넉넉한 값.
         private const val WAKELOCK_TIMEOUT_MS = 4 * 60 * 60 * 1000L
@@ -37,11 +32,18 @@ class GameSessionForegroundService : android.app.Service() {
 
     override fun onCreate() {
         super.onCreate()
+        // 이전 게임 종료 직전에 닫은 알림의 delete 브로드캐스트가 reset()·onDestroy 뒤에 늦게 오면
+        // 닫힘 표시가 남아 이번 게임 내내 갱신이 막힌다 — 새 게임 서비스가 뜰 때 한 번 더 끈다.
+        GameSessionNotification.dismissedByUser = false
         createNotificationChannel()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIFICATION_ID, buildNotification())
+        GameSessionNotification.serviceRunning = true
+        startForeground(
+            GameSessionNotification.NOTIFICATION_ID,
+            GameSessionNotification.build(this),
+        )
         // FGS는 프로세스를 살려두지만 CPU를 깨워두진 않는다.
         // 화면이 꺼지면 main isolate의 Dart 타이머(STOMP 하트비트 10초)가 멈춰
         // 서버가 연결을 끊으므로, 세션 동안 partial wakelock으로 CPU를 유지한다.
@@ -79,6 +81,8 @@ class GameSessionForegroundService : android.app.Service() {
     override fun onDestroy() {
         wakeLock?.let { if (it.isHeld) it.release() }
         wakeLock = null
+        GameSessionNotification.serviceRunning = false
+        GameSessionNotification.reset()
         super.onDestroy()
     }
 
@@ -93,7 +97,7 @@ class GameSessionForegroundService : android.app.Service() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
         val channel = NotificationChannel(
-            CHANNEL_ID,
+            GameSessionNotification.CHANNEL_ID,
             getString(R.string.fgs_channel_name),
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
@@ -103,31 +107,5 @@ class GameSessionForegroundService : android.app.Service() {
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(channel)
-    }
-
-    /**
-     * 영구 알림 빌드
-     *
-     * 알림 탭 시 앱(MainActivity)으로 진입하도록 PendingIntent 연결.
-     */
-    private fun buildNotification(): Notification {
-        val openAppIntent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        }
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0,
-            openAppIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-        )
-
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(getString(R.string.fgs_notification_title))
-            .setContentText(getString(R.string.fgs_notification_text))
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setContentIntent(pendingIntent)
-            .build()
     }
 }

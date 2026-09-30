@@ -56,6 +56,7 @@ import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
 import '../providers/game_event_provider.dart';
+import '../providers/lock_screen_status_controller.dart';
 import '../providers/game_result_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
@@ -694,6 +695,8 @@ class _GamePageState extends ConsumerState<GamePage>
           .syncFromParticipants(
             arrestedIds: finalArrested,
             remainingThieves: remainingThieves,
+            // 잠금 화면 현황이 추가 조회 없이 도주 중 수를 세는 기준 명단
+            robberIds: result.robbers.map((p) => p.participantId).toSet(),
           );
       _isGameStateSynchronized = true;
     } on DioException catch (e) {
@@ -2054,6 +2057,9 @@ class _GamePageState extends ConsumerState<GamePage>
 
     // 핑 provider 생존 유지(autoDispose) — 2.5초 타이머 도중 dispose 방지
     ref.watch(pingNotifierProvider);
+    // 잠금 화면 현황 컨트롤러 생존 유지 — 게임 화면 수명 동안만 현황을 보낸다.
+    // 더미 게임은 서버 게임이 아니라 보내지 않는다.
+    if (!widget.isDummy) ref.watch(lockScreenStatusControllerProvider);
     ref.listen(pingNotifierProvider, (prev, next) {
       _googleMapKey.currentState?.updatePingMarkers(next, isDark: _isDarkMode);
     });

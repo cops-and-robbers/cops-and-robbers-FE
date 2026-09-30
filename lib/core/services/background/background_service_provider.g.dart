@@ -6,7 +6,7 @@ part of 'background_service_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$backgroundServiceHash() => r'eb0afcbb9d9438cf1662d6471018b49850bd16e0';
+String _$backgroundServiceHash() => r'11f9bbab7ec8694f4dfa67dfebb214439fabd2ba';
 
 /// 플랫폼별 BackgroundService 구현체를 제공하는 싱글톤 Provider
 ///

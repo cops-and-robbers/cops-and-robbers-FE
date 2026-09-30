@@ -1543,6 +1543,25 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get lockScreenRemainingTime => '残り時間';
+
+  @override
+  String lockScreenRemainingRobbers(int alive, int total) {
+    return '残りの泥棒 $alive/$total';
+  }
+
+  @override
+  String lockScreenRevealAt(String time) {
+    return '$time 位置公開';
+  }
+
+  @override
+  String get lockScreenLocationReveal => '位置公開';
+
+  @override
+  String get lockScreenGameOver => 'ゲーム終了';
+
+  @override
   String get dialogArrestConfirmTitle => '該当のプレイヤーを逮捕しましたか';
 
   @override

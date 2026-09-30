@@ -1,0 +1,3 @@
+// Flutter가 Runner에만 주입하는 FLUTTER_BUILD_NAME·FLUTTER_BUILD_NUMBER를 확장 기능도 받는다.
+// 버전이 본 앱과 달라지면 App Store 검증에서 거절된다.
+#include "../Flutter/Generated.xcconfig"

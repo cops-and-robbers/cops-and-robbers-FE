@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../domain/reveal_schedule.dart';
 import 'location_reveal_countdown.dart';
 
 /// 게임 제한 시간과 다음 위치 공개까지 남은 시간을 함께 표시한다.
@@ -109,16 +110,16 @@ class _GameTimerTextState extends State<GameTimerText>
         : null;
 
     final interval = widget.locationRevealIntervalMinutes;
-    final wait = widget.policeWaitMinutes;
-    Duration? revealRemaining;
-    if (elapsed != null && interval != null && interval > 0 && wait != null) {
-      final period = Duration(minutes: interval);
-      var untilReveal = Duration(minutes: wait) + period - elapsed;
-      while (untilReveal.isNegative) {
-        untilReveal += period;
-      }
-      revealRemaining = untilReveal;
-    }
+    // 잠금 화면과 같은 함수로 계산해 두 화면의 공개 시각이 어긋나지 않게 한다.
+    final nextReveal = startTime == null
+        ? null
+        : nextRevealAt(
+            start: startTime,
+            policeWaitMinutes: widget.policeWaitMinutes,
+            intervalMinutes: interval,
+            now: _now,
+          );
+    final revealRemaining = nextReveal?.difference(_now);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

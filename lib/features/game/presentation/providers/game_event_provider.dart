@@ -74,6 +74,10 @@ class GameEventState {
   /// 마지막 ARREST 기준 남은 도둑 수
   final int? remainingThieves;
 
+  /// 마지막 참가자 동기화 기준 도둑 participantId 명단 (동기화 전 null).
+  /// 잠금 화면이 추가 REST 없이 도주 중 수를 세는 기준 — 수감 여부는 위 집합들이 담는다.
+  final Set<int>? robberParticipantIds;
+
   /// 가장 최근 체포된 도둑 닉네임 (ARREST 이벤트 다이얼로그용)
   final String? lastArrestNickname;
 
@@ -164,6 +168,7 @@ class GameEventState {
     this.leftParticipantIds = const {},
     this.isPoliceMoving = false,
     this.remainingThieves,
+    this.robberParticipantIds,
     this.lastArrestNickname,
     this.lastArrestPoliceNickname,
     this.arrestEventCount = 0,
@@ -194,6 +199,7 @@ class GameEventState {
     Set<int>? leftParticipantIds,
     bool? isPoliceMoving,
     Object? remainingThieves = _sentinel,
+    Set<int>? robberParticipantIds,
     Object? lastArrestNickname = _sentinel,
     Object? lastArrestPoliceNickname = _sentinel,
     int? arrestEventCount,
@@ -229,6 +235,7 @@ class GameEventState {
       remainingThieves: remainingThieves == _sentinel
           ? this.remainingThieves
           : remainingThieves as int?,
+      robberParticipantIds: robberParticipantIds ?? this.robberParticipantIds,
       lastArrestNickname: lastArrestNickname == _sentinel
           ? this.lastArrestNickname
           : lastArrestNickname as String?,
@@ -671,9 +678,11 @@ class GameEventNotifier extends _$GameEventNotifier {
   ///
   /// [arrestedIds] - 서버 응답 기준 현재 수감 중인 도둑 participantId 집합
   /// [remainingThieves] - 서버 응답 기준 현재 생존(ALIVE) 도둑 수
+  /// [robberIds] - 서버 응답의 도둑 participantId 명단 (잠금 화면 도주 중 수 계산용)
   void syncFromParticipants({
     required Set<int> arrestedIds,
     required int remainingThieves,
+    Set<int>? robberIds,
   }) {
     if (_isDisposed) return;
 
@@ -697,6 +706,7 @@ class GameEventNotifier extends _$GameEventNotifier {
         arrestedIds,
       ),
       remainingThieves: remainingThieves,
+      robberParticipantIds: robberIds,
       isApiLoading: localStateChanged ? false : state.isApiLoading,
       isEscapeInFlight: localStateChanged ? false : state.isEscapeInFlight,
       localArrestRevision: localStateChanged

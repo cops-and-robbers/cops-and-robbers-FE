@@ -45,6 +45,11 @@ class MainActivity : FlutterActivity() {
                         stopGameSessionService()
                         result.success(null)
                     }
+                    "update" -> {
+                        GameSessionNotification.latest = call.arguments as? Map<*, *>
+                        GameSessionNotification.post(this)
+                        result.success(null)
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -80,6 +85,8 @@ class MainActivity : FlutterActivity() {
 
     private fun stopGameSessionService() {
         val intent = Intent(this, GameSessionForegroundService::class.java)
+        // 서비스 onDestroy보다 먼저 온 update가 이전 게임 값을 되살리지 않게 먼저 비운다.
+        GameSessionNotification.reset()
         stopService(intent)
     }
 
