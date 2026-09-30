@@ -1648,6 +1648,25 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get lockScreenRemainingTime => 'Time left';
+
+  @override
+  String lockScreenRemainingRobbers(int alive, int total) {
+    return 'Robbers left $alive/$total';
+  }
+
+  @override
+  String lockScreenRevealAt(String time) {
+    return 'Location reveal at $time';
+  }
+
+  @override
+  String get lockScreenLocationReveal => 'Location reveal';
+
+  @override
+  String get lockScreenGameOver => 'Game over';
+
+  @override
   String get dialogArrestConfirmTitle => 'Have you arrested this player?';
 
   @override

@@ -2960,6 +2960,36 @@ abstract class AppLocalizations {
   /// **'다음 도둑 위치 공개까지 {formatted}'**
   String gameLocationRevealCountdown(String formatted);
 
+  /// 잠금 화면 게임 현황 — 게임 남은 시간 라벨 (iOS Live Activity)
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 시간'**
+  String get lockScreenRemainingTime;
+
+  /// 잠금 화면 게임 현황 — Android 알림 본문의 도주 중 도둑 수 / 전체 도둑 수
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 도둑 {alive}/{total}'**
+  String lockScreenRemainingRobbers(int alive, int total);
+
+  /// 잠금 화면 게임 현황 — Android 알림 본문의 다음 위치 공개 시각 (time은 HH:mm)
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 위치 공개'**
+  String lockScreenRevealAt(String time);
+
+  /// 잠금 화면 게임 현황 — 다음 위치 공개 카운트다운 라벨 (iOS Live Activity)
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공개'**
+  String get lockScreenLocationReveal;
+
+  /// 잠금 화면 게임 현황 — 종료 시각이 지난 뒤(앱이 종료 신호를 못 보낸 경우) 표시 (iOS Live Activity)
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 종료'**
+  String get lockScreenGameOver;
+
   /// 참가자 체포 확인 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
