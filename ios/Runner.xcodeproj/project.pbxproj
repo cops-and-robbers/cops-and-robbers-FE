@@ -20,7 +20,6 @@
 		70FE0F095863455BF74986F6 /* GameStatusLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEC6B802A1DB6CFC3D2BFB /* GameStatusLiveActivity.swift */; };
 		72CEE24FB0939196291960B8 /* GameStatusAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312715D10469707EFD4FF62B /* GameStatusAttributes.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
-		789C7D9220510839FC1FC4B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BCDEA52D9543B8D5A9FBC6 /* Foundation.framework */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
@@ -83,7 +82,6 @@
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		33BD7DE3B8BCE089D94CBBB2 /* GameStatusActivityManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameStatusActivityManager.swift; sourceTree = "<group>"; };
-		34BCDEA52D9543B8D5A9FBC6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		34EE8658D95C9FEC484725A1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		5102A9F7510FF8921E62F227 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -136,7 +134,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				789C7D9220510839FC1FC4B9 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,7 +145,6 @@
 			children = (
 				058107DD45658C40645C4884 /* Pods_Runner.framework */,
 				0402095D0CA2206C2DEB8453 /* Pods_RunnerTests.framework */,
-				8603B1922A4777BF1A0A4211 /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -173,14 +169,6 @@
 			);
 			name = LiveActivity;
 			path = LiveActivity;
-			sourceTree = "<group>";
-		};
-		8603B1922A4777BF1A0A4211 /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-				34BCDEA52D9543B8D5A9FBC6 /* Foundation.framework */,
-			);
-			name = iOS;
 			sourceTree = "<group>";
 		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
