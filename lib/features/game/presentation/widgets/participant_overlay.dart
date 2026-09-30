@@ -15,6 +15,7 @@ import '../../../session/data/models/in_game_participants_response.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
 import '../../../session/presentation/widgets/team_section.dart';
+import '../../domain/robber_count.dart';
 import '../helpers/game_over_guard.dart';
 import '../providers/game_event_provider.dart';
 import 'game_action_modal.dart';
@@ -237,15 +238,16 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     // - isEscaped: 탈옥 낙관적 업데이트 (STOMP 이벤트 전 즉시 반영)
     final robberMembers =
         _participants?.robbers.map((p) {
-          final isArrested = arrestedIds.contains(p.participantId);
-          final isEscaped = escapedIds.contains(p.participantId);
           return LobbyParticipantInfo(
             participantId: p.participantId,
             nickname: p.nickname,
             team: GameTeam.robber,
-            isReady:
-                (isArrested || p.status == ParticipantStatus.jailed) &&
-                !isEscaped,
+            isReady: isRobberJailed(
+              participantId: p.participantId,
+              serverStatus: p.status,
+              arrestedIds: arrestedIds,
+              escapedIds: escapedIds,
+            ),
           );
         }).toList() ??
         const [];
