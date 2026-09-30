@@ -1759,24 +1759,28 @@ void main() {
     expect(session.requests, 2);
   });
 
-  testWidgets('lock_screen_counts_robbers_from_game_sync_when_game_screen_opens', (
-    tester,
-  ) async {
-    // 실제 게임 화면 + 실제 컨트롤러: 소켓 연결 시 동기화가 받은 명단(도둑 5번, JAILED)으로
-    // 잠금 화면 현황이 채워지고, 컨트롤러는 참가자 API를 따로 부르지 않는다.
-    await withClock(Clock(() => tester.binding.clock.now()), () async {
-      await mount(tester);
-      await tester.pump(const Duration(milliseconds: 300));
+  testWidgets(
+    'lock_screen_counts_robbers_from_game_sync_when_game_screen_opens',
+    (tester) async {
+      // 실제 게임 화면 + 실제 컨트롤러: 소켓 연결 시 동기화가 받은 명단(도둑 5번, JAILED)으로
+      // 잠금 화면 현황이 채워지고, 컨트롤러는 참가자 API를 따로 부르지 않는다.
+      await withClock(Clock(() => tester.binding.clock.now()), () async {
+        await mount(tester);
+        await tester.pump(const Duration(milliseconds: 300));
 
-      final updates = [
-        for (final c in backgroundCalls)
-          if (c.method == 'update') c.arguments as Map<Object?, Object?>,
-      ];
-      expect((
-        updates.last['aliveRobbers'],
-        updates.last['totalRobbers'],
-        session.requests,
-      ), (0, 1, 1));
-    });
-  });
+        final updates = [
+          for (final c in backgroundCalls)
+            if (c.method == 'update') c.arguments as Map<Object?, Object?>,
+        ];
+        expect(
+          (
+            updates.last['aliveRobbers'],
+            updates.last['totalRobbers'],
+            session.requests,
+          ),
+          (0, 1, 1),
+        );
+      });
+    },
+  );
 }

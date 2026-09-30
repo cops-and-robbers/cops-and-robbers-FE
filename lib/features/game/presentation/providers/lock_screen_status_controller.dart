@@ -87,8 +87,9 @@ class LockScreenStatusController extends _$LockScreenStatusController {
     if (info == null || start == null || round == null) return;
 
     // 동기화 뒤 나간 도둑은 명단에서 뺀다(다음 동기화 결과에는 원래 없다).
-    final robbers = game.robberParticipantIds
-        ?.difference(game.leftParticipantIds);
+    final robbers = game.robberParticipantIds?.difference(
+      game.leftParticipantIds,
+    );
     final now = clock.now();
     final status = buildLockScreenStatus(
       start: start,

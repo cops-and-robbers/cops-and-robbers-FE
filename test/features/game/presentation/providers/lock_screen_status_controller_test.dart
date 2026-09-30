@@ -210,10 +210,10 @@ void main() {
       _listenController(h);
       async.flushMicrotasks();
 
-      expect((
-        h.updates.last['aliveRobbers'],
-        h.updates.last['totalRobbers'],
-      ), (null, null));
+      expect(
+        (h.updates.last['aliveRobbers'], h.updates.last['totalRobbers']),
+        (null, null),
+      );
     }, initialTime: twoMinutesIn);
   });
 
@@ -227,10 +227,10 @@ void main() {
       h.sync(arrested: {5}, robbers: fiveRobbers);
       async.flushMicrotasks();
 
-      expect((
-        h.updates.last['aliveRobbers'],
-        h.updates.last['totalRobbers'],
-      ), (4, 5));
+      expect(
+        (h.updates.last['aliveRobbers'], h.updates.last['totalRobbers']),
+        (4, 5),
+      );
     }, initialTime: twoMinutesIn);
   });
 
@@ -246,10 +246,10 @@ void main() {
       _fillGameInfo(h.container);
       async.flushMicrotasks();
 
-      expect((
-        h.updates.last['aliveRobbers'],
-        h.updates.last['totalRobbers'],
-      ), (4, 5));
+      expect(
+        (h.updates.last['aliveRobbers'], h.updates.last['totalRobbers']),
+        (4, 5),
+      );
     }, initialTime: twoMinutesIn);
   });
 
@@ -284,10 +284,10 @@ void main() {
       ds.emitPlayerLeft(2);
       async.flushMicrotasks();
 
-      expect((
-        h.updates.last['aliveRobbers'],
-        h.updates.last['totalRobbers'],
-      ), (3, 4));
+      expect(
+        (h.updates.last['aliveRobbers'], h.updates.last['totalRobbers']),
+        (3, 4),
+      );
     }, initialTime: twoMinutesIn);
   });
 
