@@ -1,15 +1,20 @@
-/// 게임 진행 중 백그라운드 위치 추적/STOMP 유지용 native 인프라 추상화
+import 'lock_screen_status.dart';
+
+/// 게임 진행 중 백그라운드 위치 추적/STOMP 유지와 잠금 화면 현황을 맡는 native 인프라 추상화
 ///
 /// 역할:
-/// - Android: Foreground Service start/stop 호출 (영구 알림 표시)
-/// - iOS: no-op (UIBackgroundModes=location + geolocator 설정만으로 OS가 처리)
+/// - Android: Foreground Service start/stop (영구 알림) + 알림 내용 갱신(Live Update)
+/// - iOS: 백그라운드 위치는 OS가 처리(UIBackgroundModes=location). 잠금 화면 현황만 Live Activity로
 ///
 /// 멱등성: start()는 이미 실행 중이면 no-op. stop()도 마찬가지.
 abstract class BackgroundService {
   /// 백그라운드 service 시작
   ///
-  /// [gameId] 추적용 (현재는 사용 안 하지만 향후 알림 텍스트 등에 활용 가능)
+  /// [gameId] 추적용 (현재는 로그에만 사용)
   Future<void> start({required int gameId});
+
+  /// 잠금 화면 현황 갱신. 시작 전에 불려도 버리지 않고 시작 직후 보낸다.
+  Future<void> update(LockScreenStatus status);
 
   /// 백그라운드 service 종료
   Future<void> stop();
