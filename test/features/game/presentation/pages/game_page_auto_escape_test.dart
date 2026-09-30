@@ -27,6 +27,8 @@ import 'package:cops_and_robbers/features/game/data/datasources/game_system_api_
 import 'package:cops_and_robbers/features/game/data/models/game_area_model.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_event_provider.dart';
+import 'package:cops_and_robbers/core/services/background/background_service_provider.dart';
+import 'package:cops_and_robbers/core/services/background/method_channel_background_service.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
 import 'package:cops_and_robbers/features/session/data/models/in_game_participants_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/game_settings_response.dart';
@@ -208,9 +210,24 @@ void main() {
   late _GameApi game;
   late _SessionApi session;
   late ProviderContainer container;
+  late List<MethodCall> backgroundCalls;
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    // 백그라운드 인프라 채널(Android FGS / iOS Live Activity) 경계 — 호출만 기록한다.
+    backgroundCalls = [];
+    const backgroundChannel = MethodChannel(
+      MethodChannelBackgroundService.channelName,
+    );
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(backgroundChannel, (call) async {
+          backgroundCalls.add(call);
+          return null;
+        });
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(backgroundChannel, null),
+    );
     FlutterSecureStorage.setMockInitialValues({'access_token': 'test'});
     dotenv.loadFromString(envString: 'API_BASE_URL=http://localhost:8080');
     location = _Location();
@@ -237,6 +254,10 @@ void main() {
         chatStompDatasourceProvider.overrideWithValue(chat),
         gameSystemApiProvider.overrideWithValue(game),
         sessionRemoteDataSourceProvider.overrideWithValue(session),
+        // 실제 채널 구현으로 잠금 화면 현황 전송까지 연결한다(호스트 플랫폼 기본값은 no-op).
+        backgroundServiceProvider.overrideWithValue(
+          MethodChannelBackgroundService(),
+        ),
       ],
     );
     container.read(gameParticipantNotifierProvider.notifier)
@@ -1736,5 +1757,26 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(seconds: 10));
     expect(session.requests, 2);
+  });
+
+  testWidgets('lock_screen_counts_robbers_from_game_sync_when_game_screen_opens', (
+    tester,
+  ) async {
+    // 실제 게임 화면 + 실제 컨트롤러: 소켓 연결 시 동기화가 받은 명단(도둑 5번, JAILED)으로
+    // 잠금 화면 현황이 채워지고, 컨트롤러는 참가자 API를 따로 부르지 않는다.
+    await withClock(Clock(() => tester.binding.clock.now()), () async {
+      await mount(tester);
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final updates = [
+        for (final c in backgroundCalls)
+          if (c.method == 'update') c.arguments as Map<Object?, Object?>,
+      ];
+      expect((
+        updates.last['aliveRobbers'],
+        updates.last['totalRobbers'],
+        session.requests,
+      ), (0, 1, 1));
+    });
   });
 }
