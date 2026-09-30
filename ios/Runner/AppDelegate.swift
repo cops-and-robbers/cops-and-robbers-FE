@@ -24,7 +24,7 @@ import google_mobile_ads
 
     // 게임 중 강제 종료되면 stop이 오지 않아 이전 게임의 Live Activity가 남는다 — 실행 때 정리.
     if #available(iOS 16.2, *) {
-      Task { @MainActor in GameStatusActivityManager.shared.endAll() }
+      MainActor.assumeIsolated { GameStatusActivityManager.shared.endAll() }
     }
 
     GeneratedPluginRegistrant.register(with: self)
@@ -108,12 +108,14 @@ import google_mobile_ads
             aliveRobbers: (args["aliveRobbers"] as? NSNumber)?.intValue,
             totalRobbers: (args["totalRobbers"] as? NSNumber)?.intValue
           )
-          Task { @MainActor in
+          // 채널 핸들러는 메인 스레드에서 불린다. Task로 예약하면 update·stop의 실행 순서가 보장되지 않아
+          // stop 뒤에 늦게 돈 update가 끝난 게임의 Live Activity를 다시 만들 수 있다 — 그 자리에서 실행한다.
+          MainActor.assumeIsolated {
             GameStatusActivityManager.shared.update(attributes: attributes, state: state)
           }
           result(nil)
         case "stop":
-          Task { @MainActor in GameStatusActivityManager.shared.stop() }
+          MainActor.assumeIsolated { GameStatusActivityManager.shared.stop() }
           result(nil)
         default:
           result(FlutterMethodNotImplemented)
