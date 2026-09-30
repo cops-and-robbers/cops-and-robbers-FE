@@ -1,7 +1,39 @@
 # Changelog
 
-**현재 버전:** 3.1.17  
-**마지막 업데이트:** 2026-09-27T09:40:26Z  
+**현재 버전:** 3.1.20  
+**마지막 업데이트:** 2026-09-30T07:21:28Z  
+
+---
+
+## [3.1.20] - 2026-09-30
+
+**PR:** #620  
+
+**기타**
+- Merge pull request #619 from cops-and-robbers/20260930_#618_잠금_화면_게임_현황_표시
+- chore : LiveActivity 타깃의 낡은 Foundation 프레임워크 참조 제거 #618
+- fix : iOS Live Activity 채널 호출을 동기 실행해 update·stop 순서 보장 #618
+- ci : TestFlight 프로파일 설치 시 비밀값·UUID가 비면 즉시 실패 #618
+- docs : 리포트 문서 갱신 #618
+- test : 잠금 화면 컨트롤러 테스트 시작 시각에 시간대 명시해 CI(UTC) 실패 수정 #618
+- docs : 리포트 문서 갱신 #618
+- feat : 잠금 화면 캐릭터를 좌우반전해 카드 안쪽을 보도록 변경 #618
+- docs : 리포트 문서 작성 #618
+- style : 잠금 화면 현황 컨트롤러·테스트에 dart format 적용 #618
+- docs : 잠금 화면 게임 현황 이슈 문서 추가 #618
+- ci : TestFlight 빌드에 Live Activity 확장 서명 추가 #618
+- feat : iOS 잠금 화면 Live Activity 확장 추가 #618
+- feat : Android 게임 진행 알림을 Live Update로 승격하고 팀 테마 적용 #618
+- feat : 잠금 화면 현황 컨트롤러 추가 #618
+- feat : 백그라운드 서비스에 잠금 화면 현황 전달 추가 #618
+- feat : 잠금 화면 게임 현황 문구 추가 #618
+- feat : 다음 위치 공개·도주 중 도둑 계산을 공용 함수로 분리 #618
+- Merge pull request #617 from cops-and-robbers/20260928_#616_PR_CI에_flutter_test_추가_및_커뮤니티_페이지_테스트_뷰포트_고정
+- test : 자동 탈옥 테스트 서버 시각에 시간대 명시해 CI(UTC) 실패 수정 #616
+- docs : 리포트 문서 작성 #616
+- ci : PR CI에 flutter test 추가 및 커뮤니티 페이지 테스트 뷰포트 고정 #616
+- chore : 3.1.17 release-note
+- docs : ui-design-system 스킬을 현재 코드 상수로 갱신
 
 ---
 
