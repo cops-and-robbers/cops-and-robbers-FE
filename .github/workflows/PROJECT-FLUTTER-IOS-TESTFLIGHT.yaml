@@ -382,8 +382,18 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           # 본 앱(Runner)과 Live Activity 확장 기능은 번들 ID가 달라 프로파일도 따로다.
           install_profile() {
+            # 비밀값이 비었거나 깨졌으면 여기서 멈춘다 — 그대로 두면 archive 단계에서 원인 모를 서명 오류가 난다.
+            if [ -z "$1" ]; then
+              echo "::error::프로비저닝 프로파일 비밀값이 비어 있습니다 ($2)"
+              exit 1
+            fi
             echo "$1" | base64 --decode > "$2"
+            # UUID 추출은 기존 방식 유지 — security cms는 기본 키체인이 필요해 러너 상태에 따라 실패할 수 있다.
             uuid=$(grep -A1 -a "UUID" "$2" | grep string | sed -e "s/<string>//" -e "s/<\/string>//" -e "s/[[:space:]]//g")
+            if [ -z "$uuid" ]; then
+              echo "::error::프로비저닝 프로파일에서 UUID를 읽지 못했습니다 ($2)"
+              exit 1
+            fi
             cp "$2" ~/Library/MobileDevice/Provisioning\ Profiles/$uuid.mobileprovision
           }
           install_profile "${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}" profile.mobileprovision
