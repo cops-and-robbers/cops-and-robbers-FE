@@ -16,6 +16,7 @@ import '../../../../core/i18n/locale_brand_assets.dart';
 import '../../../../core/deeplink/deeplink_event.dart';
 import '../../../../core/deeplink/deeplink_service.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
+import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/fcm/push_navigation_service.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/services/storage/onboarding_prefs.dart';
@@ -282,6 +283,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
       // 인증되지 않은 경우 → 남은 딜레이 후 로그인
       if (authUser == null) {
+        await ref.read(backgroundServiceProvider).stop();
+        if (!mounted) return;
         // 콜드 스타트 모집글 링크는 보존해 두고, 진입 절차가 끝나면 소비된다
         if (coldDeeplink case CommunityPostEvent(:final postId)) {
           await ref.read(pendingCommunityPostProvider.notifier).save(postId);
@@ -337,6 +340,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         final status = results[0] as UserGameStatusEntity;
 
         if (!mounted) return;
+        // 조회 실패는 종료가 아니다. 서버가 진행 중인 게임이 없다고 확인한 경우에만 정리한다.
+        if (!status.isParticipating ||
+            status.participationInfo?.gameStatus != GameStatus.inProgress) {
+          await ref.read(backgroundServiceProvider).stop();
+          if (!mounted) return;
+        }
 
         if (!status.isParticipating || status.participationInfo == null) {
           context.go(
