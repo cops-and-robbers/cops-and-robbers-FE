@@ -10,7 +10,7 @@ import 'lock_screen_status.dart';
 abstract class BackgroundService {
   /// 백그라운드 service 시작
   ///
-  /// [gameId] 추적용 (현재는 로그에만 사용)
+  /// [gameId] iOS에서 재실행 전 Live Activity와 현재 게임을 대조하는 식별자.
   Future<void> start({required int gameId});
 
   /// 잠금 화면 현황 갱신. 시작 전에 불려도 버리지 않고 시작 직후 보낸다.
