@@ -13,6 +13,7 @@ final class GameStatusActivityManager {
 
   private var latest: (attributes: GameStatusAttributes, state: GameStatusAttributes.ContentState)?
   private var currentActivityID: String?
+  private var endingActivityIDs: Set<String> = []
   private var endedExternally = false
   private var foregroundObserver: NSObjectProtocol?
   private var stateTask: Task<Void, Never>?
@@ -30,7 +31,9 @@ final class GameStatusActivityManager {
     }
     guard !endedExternally else { return }
 
-    let activities = Activity<GameStatusAttributes>.activities
+    let activities = Activity<GameStatusAttributes>.activities.filter {
+      !endingActivityIDs.contains($0.id)
+    }
     // gameId만 같아도 같은 방의 새 라운드일 수 있으므로 시작 시각까지 대조한다.
     let activity = activities.first {
       $0.attributes.gameId == attributes.gameId && $0.content.state.startAt == state.startAt
@@ -73,10 +76,14 @@ final class GameStatusActivityManager {
 
   @discardableResult
   private func end(_ activities: [Activity<GameStatusAttributes>]) -> Task<Void, Never>? {
-    guard !activities.isEmpty else { return nil }
+    let pending = activities.filter { !endingActivityIDs.contains($0.id) }
+    guard !pending.isEmpty else { return nil }
+    // Task가 실행되기 전 update가 와도 종료 예정 카드를 다시 이어받지 않는다.
+    endingActivityIDs.formUnion(pending.map(\.id))
     return Task {
-      for activity in activities {
+      for activity in pending {
         await activity.end(nil, dismissalPolicy: .immediate)
+        endingActivityIDs.remove(activity.id)
       }
     }
   }

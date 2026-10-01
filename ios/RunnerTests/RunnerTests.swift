@@ -95,6 +95,27 @@ class RunnerTests: XCTestCase {
     XCTAssertTrue(Activity<GameStatusAttributes>.activities.isEmpty)
   }
 
+  func test_activity_remains_visible_when_updated_immediately_after_stop() async throws {
+    let manager = GameStatusActivityManager()
+    let attributes = attributes()
+    let state = state()
+    manager.update(attributes: attributes, state: state)
+    let existing = try XCTUnwrap(Activity<GameStatusAttributes>.activities.first)
+
+    manager.stop()
+    manager.stop()
+    manager.update(attributes: attributes, state: state)
+    manager.update(attributes: attributes, state: state)
+    await assertEnded(existing)
+
+    let remaining = Activity<GameStatusAttributes>.activities
+    XCTAssertEqual(remaining.count, 1)
+    let replacement = try XCTUnwrap(remaining.first)
+    XCTAssertNotEqual(replacement.id, existing.id)
+    manager.update(attributes: attributes, state: state)
+    XCTAssertEqual(Activity<GameStatusAttributes>.activities.map(\.id), [replacement.id])
+  }
+
   private func assertEnded(_ activity: Activity<GameStatusAttributes>) async {
     let ended = expectation(description: "Activity ended")
     let observer = Task {
