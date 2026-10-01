@@ -247,7 +247,7 @@ lib/
 <!-- 이 섹션은 .github/workflows/PROJECT-README-VERSION-UPDATE.yaml에 의해 자동으로 업데이트됩니다 -->
 <!-- 수정하지마세요 자동으로 동기화 됩니다 -->
 <!-- AUTO-VERSION-SECTION: DO NOT EDIT MANUALLY -->
-## 최신 버전 : v3.1.23 (2026-10-01)
+## 최신 버전 : v3.1.24 (2026-10-01)
 
 [전체 버전 기록 보기](CHANGELOG.md)
 <!-- END-AUTO-VERSION-SECTION -->
