@@ -22,9 +22,9 @@ import google_mobile_ads
     }
     #endif
 
-    // 게임 중 강제 종료되면 stop이 오지 않아 이전 게임의 Live Activity가 남는다 — 실행 때 정리.
+    // 진행 중인 Activity는 보존한다. 게임 복원 후 update가 같은 라운드를 이어받는다.
     if #available(iOS 16.2, *) {
-      MainActor.assumeIsolated { GameStatusActivityManager.shared.endAll() }
+      MainActor.assumeIsolated { GameStatusActivityManager.shared.restore() }
     }
 
     GeneratedPluginRegistrant.register(with: self)
@@ -83,7 +83,8 @@ import google_mobile_ads
           result(nil)
         case "update":
           guard let args = call.arguments as? [String: Any],
-                let endAtMs = (args["endAtMs"] as? NSNumber)?.doubleValue else {
+                let endAtMs = (args["endAtMs"] as? NSNumber)?.doubleValue,
+                let gameId = (args["gameId"] as? NSNumber)?.intValue, gameId > 0 else {
             result(nil)
             return
           }
@@ -98,7 +99,8 @@ import google_mobile_ads
             gameOverLabel: args["gameOverLabel"] as? String ?? "",
             isRobberTeam: args["isRobberTeam"] as? Bool ?? false,
             teamLabel: args["teamLabel"] as? String ?? "",
-            localeCode: args["localeCode"] as? String ?? "en"
+            localeCode: args["localeCode"] as? String ?? "en",
+            gameId: gameId
           )
           let endAt = Date(timeIntervalSince1970: endAtMs / 1000)
           let state = GameStatusAttributes.ContentState(

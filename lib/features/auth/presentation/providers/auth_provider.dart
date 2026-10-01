@@ -7,6 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/storage/secure_token_storage.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/datasources/firebase_auth_datasource.dart';
@@ -340,10 +341,7 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       final useCase = ref.read(signOutUseCaseProvider);
       await useCase.execute();
-      HomePage.resetSafetyNotice();
-      LoginPage.resetAgeVerification();
-      ref.read(requiredTermsBlockedProvider.notifier).state = false;
-      state = const AsyncValue.data(null);
+      forceLogout();
     } catch (e, stack) {
       state = AsyncValue.error(
         AuthException(
@@ -434,18 +432,22 @@ class AuthNotifier extends _$AuthNotifier {
   /// 탈퇴 완료 메시지 전달이 먼저 실행됩니다.
   Future<void> cleanupAfterAccountDeletion() async {
     final firebaseDataSource = ref.read(firebaseAuthDataSourceProvider);
+    final tokenStorage = ref.read(secureTokenStorageProvider);
+    await ref.read(backgroundServiceProvider).stop();
     try {
       await firebaseDataSource.signOut();
     } finally {
-      await ref.read(secureTokenStorageProvider).clearTokens();
+      await tokenStorage.clearTokens();
     }
   }
 
-  /// 강제 로그아웃 (AuthInterceptor에서 호출)
+  /// 로그아웃·인증 만료·회원 탈퇴 후 공통 세션 정리
   ///
   /// 토큰 재발급 실패 시 state를 null로 초기화하여
   /// GoRouter가 로그인 화면으로 리다이렉트하도록 합니다.
   void forceLogout() {
+    // 게임 화면을 거치지 않은 재실행에서도 OS에 남은 표시를 정리한다.
+    unawaited(ref.read(backgroundServiceProvider).stop());
     HomePage.resetSafetyNotice();
     LoginPage.resetAgeVerification();
     ref.read(requiredTermsBlockedProvider.notifier).state = false;

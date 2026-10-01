@@ -15,6 +15,7 @@ import '../../../../core/constants/app_icons.dart';
 import '../../../../core/deeplink/deeplink_constants.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
+import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/utils/url_launcher_util.dart';
@@ -191,6 +192,11 @@ class _HomePageState extends ConsumerState<HomePage> {
       final status = await ref.read(getMyActiveGameUsecaseProvider).execute();
 
       if (!mounted) return;
+      if (!status.isParticipating ||
+          status.participationInfo?.gameStatus != GameStatus.inProgress) {
+        await ref.read(backgroundServiceProvider).stop();
+        if (!mounted) return;
+      }
       if (!status.isParticipating || status.participationInfo == null) return;
 
       final info = status.participationInfo!;
