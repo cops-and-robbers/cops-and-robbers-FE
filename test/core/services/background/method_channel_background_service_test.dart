@@ -68,11 +68,12 @@ void main() {
       expect(service.isRunning, false);
     });
 
-    test('stop_is_no_op_when_not_running', () async {
+    test('stop_clears_native_activity_when_dart_has_restarted', () async {
+      await service.stop();
       await service.stop();
 
-      // 실행 중이 아닐 때 stop → native 채널 호출 없음
-      expect(calls, isEmpty);
+      // Dart의 초기 상태만으로 OS에 남은 Activity가 없다고 판단할 수 없다.
+      expect(calls.map((c) => c.method).toList(), ['stop']);
       expect(service.isRunning, false);
     });
 
@@ -104,7 +105,7 @@ void main() {
         await service.start(gameId: 1);
 
         expect(calls.map((c) => c.method).toList(), ['start', 'update']);
-        expect(calls.last.arguments, _status(4).toMap());
+        expect(calls.last.arguments, {..._status(4).toMap(), 'gameId': 1});
       },
     );
 
@@ -120,7 +121,9 @@ void main() {
               .where((c) => c.method == 'update')
               .map((c) => c.arguments)
               .toList(),
-          [_status(3).toMap()],
+          [
+            {..._status(3).toMap(), 'gameId': 1},
+          ],
         );
       },
     );

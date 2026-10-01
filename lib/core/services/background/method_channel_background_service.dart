@@ -12,7 +12,9 @@ class MethodChannelBackgroundService implements BackgroundService {
   static const channelName = 'cops_and_robbers/background_service';
 
   final MethodChannel _channel;
-  bool _isRunning = false;
+  // null: Dart 재시작 직후에는 OS에 이전 Live Activity가 남아 있을 수 있다.
+  bool? _isRunning;
+  int? _gameId;
 
   /// 마지막 현황. 게임 화면은 서비스 시작(비동기 초기화 뒤)보다 먼저 현황을 만들고,
   /// 컨트롤러는 같은 값을 다시 보내지 않는다 — 여기서 보관했다가 시작 직후 보내지 않으면
@@ -23,15 +25,16 @@ class MethodChannelBackgroundService implements BackgroundService {
     : _channel = channel ?? const MethodChannel(channelName);
 
   @override
-  bool get isRunning => _isRunning;
+  bool get isRunning => _isRunning == true;
 
   @override
   Future<void> start({required int gameId}) async {
     // 멱등 + 동시성 가드: 상태를 await 이전에 선반영(optimistic)해서
     // start/stop 교차 호출(예: 게임 화면 진입 직후 즉시 dispose) 시
     // stop 쪽 멱등 가드가 잘못 빠져나가는 race를 방지.
-    if (_isRunning) return;
+    if (isRunning) return;
     _isRunning = true;
+    _gameId = gameId;
 
     try {
       await _channel.invokeMethod('start');
@@ -43,6 +46,7 @@ class MethodChannelBackgroundService implements BackgroundService {
       rethrow;
     }
 
+    if (!isRunning || _gameId != gameId) return;
     final latest = _latest;
     if (latest != null) await _send(latest);
   }
@@ -50,7 +54,7 @@ class MethodChannelBackgroundService implements BackgroundService {
   @override
   Future<void> update(LockScreenStatus status) async {
     _latest = status;
-    if (!_isRunning) return;
+    if (!isRunning) return;
     await _send(status);
   }
 
@@ -58,8 +62,9 @@ class MethodChannelBackgroundService implements BackgroundService {
   Future<void> stop() async {
     // 실행 중이 아니어도 비운다 — 이전 게임 값이 다음 게임 시작 때 재생되지 않게.
     _latest = null;
+    _gameId = null;
     // 멱등 + 동시성 가드: start와 동일한 이유로 선반영.
-    if (!_isRunning) return;
+    if (_isRunning == false) return;
     _isRunning = false;
 
     try {
@@ -75,7 +80,10 @@ class MethodChannelBackgroundService implements BackgroundService {
 
   Future<void> _send(LockScreenStatus status) async {
     try {
-      await _channel.invokeMethod('update', status.toMap());
+      await _channel.invokeMethod('update', {
+        ...status.toMap(),
+        'gameId': _gameId,
+      });
     } catch (e) {
       // 표시 실패가 게임 진행을 막으면 안 된다.
       debugPrint('[BackgroundService] ❌ update 실패: $e');

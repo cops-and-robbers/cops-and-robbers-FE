@@ -22,4 +22,6 @@ struct GameStatusAttributes: ActivityAttributes {
   var isRobberTeam: Bool
   var teamLabel: String
   var localeCode: String
+  /// 재실행 시 같은 게임을 찾는다. 이전 버전의 Activity도 디코딩할 수 있게 optional.
+  var gameId: Int? = nil
 }
