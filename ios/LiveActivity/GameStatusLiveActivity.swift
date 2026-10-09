@@ -58,7 +58,7 @@ struct GameStatusLiveActivity: Widget {
           CountdownText(until: context.state.endAt)
             .font(.pretendard(14))
             .foregroundColor(accent)
-            .frame(maxWidth: 52)
+          // 타이머 Text에 frame을 붙이면 카드가 로딩 표시+흐림으로 멈출 수 있다 (developer.apple.com/forums/thread/763493)
         }
       } minimal: {
         context.character
