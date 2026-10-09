@@ -32,6 +32,9 @@ mixin _$MyGameRecordEntity {
   /// 내가 잡힌 횟수
   int get arrestedCount => throw _privateConstructorUsedError;
 
+  /// 내가 우리 팀 MVP인지 — true일 때만 개인 탭에 배너를 띄운다
+  bool get isMvp => throw _privateConstructorUsedError;
+
   /// Create a copy of MyGameRecordEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -52,6 +55,7 @@ abstract class $MyGameRecordEntityCopyWith<$Res> {
     String status,
     int arrestCount,
     int arrestedCount,
+    bool isMvp,
   });
 }
 
@@ -75,6 +79,7 @@ class _$MyGameRecordEntityCopyWithImpl<$Res, $Val extends MyGameRecordEntity>
     Object? status = null,
     Object? arrestCount = null,
     Object? arrestedCount = null,
+    Object? isMvp = null,
   }) {
     return _then(
       _value.copyWith(
@@ -98,6 +103,10 @@ class _$MyGameRecordEntityCopyWithImpl<$Res, $Val extends MyGameRecordEntity>
                 ? _value.arrestedCount
                 : arrestedCount // ignore: cast_nullable_to_non_nullable
                       as int,
+            isMvp: null == isMvp
+                ? _value.isMvp
+                : isMvp // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -119,6 +128,7 @@ abstract class _$$MyGameRecordEntityImplCopyWith<$Res>
     String status,
     int arrestCount,
     int arrestedCount,
+    bool isMvp,
   });
 }
 
@@ -141,6 +151,7 @@ class __$$MyGameRecordEntityImplCopyWithImpl<$Res>
     Object? status = null,
     Object? arrestCount = null,
     Object? arrestedCount = null,
+    Object? isMvp = null,
   }) {
     return _then(
       _$MyGameRecordEntityImpl(
@@ -164,6 +175,10 @@ class __$$MyGameRecordEntityImplCopyWithImpl<$Res>
             ? _value.arrestedCount
             : arrestedCount // ignore: cast_nullable_to_non_nullable
                   as int,
+        isMvp: null == isMvp
+            ? _value.isMvp
+            : isMvp // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -178,6 +193,7 @@ class _$MyGameRecordEntityImpl implements _MyGameRecordEntity {
     required this.status,
     required this.arrestCount,
     required this.arrestedCount,
+    this.isMvp = false,
   });
 
   /// 게임 시작 시점 닉네임 (개인 탭 1행)
@@ -200,9 +216,14 @@ class _$MyGameRecordEntityImpl implements _MyGameRecordEntity {
   @override
   final int arrestedCount;
 
+  /// 내가 우리 팀 MVP인지 — true일 때만 개인 탭에 배너를 띄운다
+  @override
+  @JsonKey()
+  final bool isMvp;
+
   @override
   String toString() {
-    return 'MyGameRecordEntity(nickname: $nickname, team: $team, status: $status, arrestCount: $arrestCount, arrestedCount: $arrestedCount)';
+    return 'MyGameRecordEntity(nickname: $nickname, team: $team, status: $status, arrestCount: $arrestCount, arrestedCount: $arrestedCount, isMvp: $isMvp)';
   }
 
   @override
@@ -217,7 +238,8 @@ class _$MyGameRecordEntityImpl implements _MyGameRecordEntity {
             (identical(other.arrestCount, arrestCount) ||
                 other.arrestCount == arrestCount) &&
             (identical(other.arrestedCount, arrestedCount) ||
-                other.arrestedCount == arrestedCount));
+                other.arrestedCount == arrestedCount) &&
+            (identical(other.isMvp, isMvp) || other.isMvp == isMvp));
   }
 
   @override
@@ -228,6 +250,7 @@ class _$MyGameRecordEntityImpl implements _MyGameRecordEntity {
     status,
     arrestCount,
     arrestedCount,
+    isMvp,
   );
 
   /// Create a copy of MyGameRecordEntity
@@ -249,6 +272,7 @@ abstract class _MyGameRecordEntity implements MyGameRecordEntity {
     required final String status,
     required final int arrestCount,
     required final int arrestedCount,
+    final bool isMvp,
   }) = _$MyGameRecordEntityImpl;
 
   /// 게임 시작 시점 닉네임 (개인 탭 1행)
@@ -270,6 +294,10 @@ abstract class _MyGameRecordEntity implements MyGameRecordEntity {
   /// 내가 잡힌 횟수
   @override
   int get arrestedCount;
+
+  /// 내가 우리 팀 MVP인지 — true일 때만 개인 탭에 배너를 띄운다
+  @override
+  bool get isMvp;
 
   /// Create a copy of MyGameRecordEntity
   /// with the given fields replaced by the non-null parameter values.

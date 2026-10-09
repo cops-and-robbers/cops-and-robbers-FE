@@ -886,27 +886,39 @@ class _StatsSection extends StatelessWidget {
           ];
 
     return myRecordAsync.when(
-      data: (me) => _rows(
-        labels,
-        isRobber
-            ? [
-                me.nickname,
-                '${me.arrestedCount}',
-                finalStatusLabel(l10n, me.status),
-              ]
-            : [
-                me.nickname,
-                '${me.arrestCount}',
-                // 기여도는 결과 API의 팀 합계가 있어야 나온다 — 없으면 값 없음.
-                resultAsync.maybeWhen(
-                  data: (entity) => formatTeamArrestShare(
-                    mine: me.arrestCount,
-                    total: entity.totalArrestCount,
+      data: (me) {
+        final rows = _rows(
+          labels,
+          isRobber
+              ? [
+                  me.nickname,
+                  '${me.arrestedCount}',
+                  finalStatusLabel(l10n, me.status),
+                ]
+              : [
+                  me.nickname,
+                  '${me.arrestCount}',
+                  // 기여도는 결과 API의 팀 합계가 있어야 나온다 — 없으면 값 없음.
+                  resultAsync.maybeWhen(
+                    data: (entity) => formatTeamArrestShare(
+                      mine: me.arrestCount,
+                      total: entity.totalArrestCount,
+                    ),
+                    orElse: () => '-',
                   ),
-                  orElse: () => '-',
-                ),
-              ],
-      ),
+                ],
+        );
+        if (!me.isMvp) return rows;
+        // MVP일 때만 배너가 붙어 카드가 한 줄 길어진다. 로딩·실패 중엔 MVP 여부를
+        // 모르므로 배너 없이 3행만 둔다.
+        return Column(
+          children: [
+            _MvpBanner(isDarkMode: isDarkMode, text: l10n.labelTeamMvpBanner),
+            SizedBox(height: AppSpacing.vertical12),
+            rows,
+          ],
+        );
+      },
       loading: () => _placeholderRows(labels),
       error: (_, _) => _placeholderRows(labels),
     );
@@ -925,6 +937,39 @@ class _StatsSection extends StatelessWidget {
           _StatRow(isDarkMode: isDarkMode, label: labels[i], value: values[i]),
         ],
       ],
+    );
+  }
+}
+
+/// 개인 탭 「이번 판 팀 MVP」 배너 — 경찰·도둑 모두 자기 팀 accent로 같은 모양.
+// ponytail: 시안 확정 전 임시 모양(팀색 10% 배경 + 굵은 라벨). 디자인 나오면 이 위젯만 교체.
+class _MvpBanner extends StatelessWidget {
+  const _MvpBanner({required this.isDarkMode, required this.text});
+
+  final bool isDarkMode;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = isDarkMode ? AppColors.green : AppColors.blue;
+    return Container(
+      key: const ValueKey('game_over_mvp_banner'),
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.horizontal12,
+        vertical: AppSpacing.vertical8,
+      ),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.1),
+        borderRadius: AppRadius.large,
+      ),
+      child: Text(
+        text,
+        style: AppTextStyles.label16Medium.copyWith(
+          color: accent,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 }

@@ -1532,6 +1532,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelFinalStatus => '終了時の状態';
 
   @override
+  String get labelTeamMvpBanner => '今回のチームMVP';
+
+  @override
   String get statusAlive => '生存';
 
   @override

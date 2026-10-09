@@ -549,6 +549,7 @@
   "labelTeamArrestShare": "チーム逮捕貢献度",
   "labelMyArrestedCount": "捕まった回数",
   "labelFinalStatus": "終了時の状態",
+  "labelTeamMvpBanner": "今回のチームMVP",
   "statusAlive": "生存",
   "statusJailed": "収監中",
   "gameLocationRevealCountdown": "次の泥棒の位置公開まで {formatted}",

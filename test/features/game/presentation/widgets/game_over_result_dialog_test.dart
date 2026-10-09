@@ -582,6 +582,97 @@ void main() {
       expect(find.text('내 체포 횟수'), findsOneWidget); // 라벨은 그대로
     });
   });
+
+  group('팀 MVP 배너', () {
+    const entity = GameResultEntity(
+      winnerTeam: 'POLICE',
+      durationSeconds: 300,
+      totalArrestCount: 5,
+      remainingRobberCount: 1,
+    );
+    const mvpBanner = ValueKey('game_over_mvp_banner');
+
+    Future<void> tapMineTab(WidgetTester tester) async {
+      await tester.tap(find.text('개인'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 350));
+    }
+
+    testWidgets('shows_mvp_banner_on_mine_tab_when_police_is_mvp', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 31,
+        resultFuture: () async => entity,
+        myRecordFuture: () async => const MyGameRecordEntity(
+          nickname: '살금살금고슴도치',
+          team: 'POLICE',
+          status: 'ALIVE',
+          arrestCount: 3,
+          arrestedCount: 0,
+          isMvp: true,
+        ),
+      );
+      await tapMineTab(tester);
+
+      expect(find.byKey(mvpBanner), findsOneWidget);
+      expect(find.text('살금살금고슴도치'), findsOneWidget); // 개인 행은 그대로
+    });
+
+    // 경찰·도둑 대등 원칙 — 도둑 MVP(잡힘 최소)도 같은 무게로 보여야 한다.
+    testWidgets('shows_mvp_banner_on_mine_tab_when_robber_is_mvp', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 32,
+        resultFuture: () async => entity,
+        myTeam: 'ROBBER',
+        isDarkMode: true,
+        myRecordFuture: () async => const MyGameRecordEntity(
+          nickname: '재빠른너구리',
+          team: 'ROBBER',
+          status: 'ALIVE',
+          arrestCount: 0,
+          arrestedCount: 0,
+          isMvp: true,
+        ),
+      );
+      await tapMineTab(tester);
+
+      expect(find.byKey(mvpBanner), findsOneWidget);
+    });
+
+    testWidgets('hides_mvp_banner_on_mine_tab_when_not_mvp', (tester) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 33,
+        resultFuture: () async => entity,
+      );
+      await tapMineTab(tester);
+
+      expect(find.byKey(mvpBanner), findsNothing);
+    });
+
+    testWidgets('hides_mvp_banner_on_team_tab_even_when_mvp', (tester) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 34,
+        resultFuture: () async => entity,
+        myRecordFuture: () async => const MyGameRecordEntity(
+          nickname: '살금살금고슴도치',
+          team: 'POLICE',
+          status: 'ALIVE',
+          arrestCount: 3,
+          arrestedCount: 0,
+          isMvp: true,
+        ),
+      );
+
+      expect(find.byKey(mvpBanner), findsNothing);
+    });
+  });
 }
 
 /// 다이얼로그를 pumping하는 헬퍼

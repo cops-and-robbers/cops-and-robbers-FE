@@ -20,5 +20,8 @@ class MyGameRecordEntity with _$MyGameRecordEntity {
 
     /// 내가 잡힌 횟수
     required int arrestedCount,
+
+    /// 내가 우리 팀 MVP인지 — true일 때만 개인 탭에 배너를 띄운다
+    @Default(false) bool isMvp,
   }) = _MyGameRecordEntity;
 }

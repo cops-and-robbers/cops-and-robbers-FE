@@ -41,6 +41,10 @@ mixin _$MyGameRecordResponseModel {
   /// 게임 중 퇴장한 시각. 끝까지 있었으면 null
   String? get leftAt => throw _privateConstructorUsedError;
 
+  /// 내가 우리 팀 MVP인지 (BE #212). 공동 MVP면 여러 명이 true, MVP가 없으면 전원 false.
+  /// 필드가 없는 구버전 서버 응답은 false로 읽는다.
+  bool get isMvp => throw _privateConstructorUsedError;
+
   /// Serializes this MyGameRecordResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -65,6 +69,7 @@ abstract class $MyGameRecordResponseModelCopyWith<$Res> {
     int arrestCount,
     int arrestedCount,
     String? leftAt,
+    bool isMvp,
   });
 }
 
@@ -92,6 +97,7 @@ class _$MyGameRecordResponseModelCopyWithImpl<
     Object? arrestCount = null,
     Object? arrestedCount = null,
     Object? leftAt = freezed,
+    Object? isMvp = null,
   }) {
     return _then(
       _value.copyWith(
@@ -119,6 +125,10 @@ class _$MyGameRecordResponseModelCopyWithImpl<
                 ? _value.leftAt
                 : leftAt // ignore: cast_nullable_to_non_nullable
                       as String?,
+            isMvp: null == isMvp
+                ? _value.isMvp
+                : isMvp // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -141,6 +151,7 @@ abstract class _$$MyGameRecordResponseModelImplCopyWith<$Res>
     int arrestCount,
     int arrestedCount,
     String? leftAt,
+    bool isMvp,
   });
 }
 
@@ -168,6 +179,7 @@ class __$$MyGameRecordResponseModelImplCopyWithImpl<$Res>
     Object? arrestCount = null,
     Object? arrestedCount = null,
     Object? leftAt = freezed,
+    Object? isMvp = null,
   }) {
     return _then(
       _$MyGameRecordResponseModelImpl(
@@ -195,6 +207,10 @@ class __$$MyGameRecordResponseModelImplCopyWithImpl<$Res>
             ? _value.leftAt
             : leftAt // ignore: cast_nullable_to_non_nullable
                   as String?,
+        isMvp: null == isMvp
+            ? _value.isMvp
+            : isMvp // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -210,6 +226,7 @@ class _$MyGameRecordResponseModelImpl implements _MyGameRecordResponseModel {
     required this.arrestCount,
     required this.arrestedCount,
     this.leftAt,
+    this.isMvp = false,
   });
 
   factory _$MyGameRecordResponseModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -239,9 +256,15 @@ class _$MyGameRecordResponseModelImpl implements _MyGameRecordResponseModel {
   @override
   final String? leftAt;
 
+  /// 내가 우리 팀 MVP인지 (BE #212). 공동 MVP면 여러 명이 true, MVP가 없으면 전원 false.
+  /// 필드가 없는 구버전 서버 응답은 false로 읽는다.
+  @override
+  @JsonKey()
+  final bool isMvp;
+
   @override
   String toString() {
-    return 'MyGameRecordResponseModel(nickname: $nickname, team: $team, status: $status, arrestCount: $arrestCount, arrestedCount: $arrestedCount, leftAt: $leftAt)';
+    return 'MyGameRecordResponseModel(nickname: $nickname, team: $team, status: $status, arrestCount: $arrestCount, arrestedCount: $arrestedCount, leftAt: $leftAt, isMvp: $isMvp)';
   }
 
   @override
@@ -257,7 +280,8 @@ class _$MyGameRecordResponseModelImpl implements _MyGameRecordResponseModel {
                 other.arrestCount == arrestCount) &&
             (identical(other.arrestedCount, arrestedCount) ||
                 other.arrestedCount == arrestedCount) &&
-            (identical(other.leftAt, leftAt) || other.leftAt == leftAt));
+            (identical(other.leftAt, leftAt) || other.leftAt == leftAt) &&
+            (identical(other.isMvp, isMvp) || other.isMvp == isMvp));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -270,6 +294,7 @@ class _$MyGameRecordResponseModelImpl implements _MyGameRecordResponseModel {
     arrestCount,
     arrestedCount,
     leftAt,
+    isMvp,
   );
 
   /// Create a copy of MyGameRecordResponseModel
@@ -297,6 +322,7 @@ abstract class _MyGameRecordResponseModel implements MyGameRecordResponseModel {
     required final int arrestCount,
     required final int arrestedCount,
     final String? leftAt,
+    final bool isMvp,
   }) = _$MyGameRecordResponseModelImpl;
 
   factory _MyGameRecordResponseModel.fromJson(Map<String, dynamic> json) =
@@ -325,6 +351,11 @@ abstract class _MyGameRecordResponseModel implements MyGameRecordResponseModel {
   /// 게임 중 퇴장한 시각. 끝까지 있었으면 null
   @override
   String? get leftAt;
+
+  /// 내가 우리 팀 MVP인지 (BE #212). 공동 MVP면 여러 명이 true, MVP가 없으면 전원 false.
+  /// 필드가 없는 구버전 서버 응답은 false로 읽는다.
+  @override
+  bool get isMvp;
 
   /// Create a copy of MyGameRecordResponseModel
   /// with the given fields replaced by the non-null parameter values.
