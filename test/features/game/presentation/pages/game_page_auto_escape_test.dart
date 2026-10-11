@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:clock/clock.dart';
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
@@ -27,6 +28,7 @@ import 'package:cops_and_robbers/features/game/data/datasources/game_system_api_
 import 'package:cops_and_robbers/features/game/data/models/game_area_model.dart';
 import 'package:cops_and_robbers/features/game/presentation/pages/game_page.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_event_provider.dart';
+import 'package:cops_and_robbers/features/game/presentation/providers/player_game_record_provider.dart';
 import 'package:cops_and_robbers/core/services/background/background_service_provider.dart';
 import 'package:cops_and_robbers/core/services/background/method_channel_background_service.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
@@ -248,6 +250,8 @@ void main() {
       chat.messages.close();
       socket.dispose();
     });
+    final recordDir = Directory.systemTemp.createTempSync('game_page_test');
+    addTearDown(() => recordDir.deleteSync(recursive: true));
     container = ProviderContainer(
       overrides: [
         gameEventStompDatasourceProvider.overrideWithValue(socket),
@@ -258,6 +262,8 @@ void main() {
         backgroundServiceProvider.overrideWithValue(
           MethodChannelBackgroundService(),
         ),
+        // 내 기록 파일은 실제 임시 디렉터리에 쓴다 (path_provider 채널은 테스트에 없다).
+        gameRecordDirProvider.overrideWith((ref) async => recordDir),
       ],
     );
     container.read(gameParticipantNotifierProvider.notifier)

@@ -651,6 +651,7 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                     RecordRouteMap(
                       key: _mapKey,
                       route: record.route,
+                      segmentStarts: record.segmentStarts,
                       // 경찰은 체포한 곳, 도둑은 잡힌 곳을 표시한다.
                       markerPoints: isRobber
                           ? record.caughtLocations
