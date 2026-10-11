@@ -20,6 +20,9 @@ mixin _$PlayerGameRecord {
   /// 누적 이동 경로 (2m 미만 이동은 노이즈로 제외)
   List<LatLngModel> get route => throw _privateConstructorUsedError;
 
+  /// [route]에서 새 구간이 시작되는 인덱스 — 앱이 꺼져 있던 구간은 선으로 잇지 않는다
+  List<int> get segmentStarts => throw _privateConstructorUsedError;
+
   /// 누적 이동 거리(미터)
   double get distanceMeters => throw _privateConstructorUsedError;
 
@@ -48,6 +51,7 @@ abstract class $PlayerGameRecordCopyWith<$Res> {
   @useResult
   $Res call({
     List<LatLngModel> route,
+    List<int> segmentStarts,
     double distanceMeters,
     List<LatLngModel> arrestLocations,
     List<LatLngModel> caughtLocations,
@@ -71,6 +75,7 @@ class _$PlayerGameRecordCopyWithImpl<$Res, $Val extends PlayerGameRecord>
   @override
   $Res call({
     Object? route = null,
+    Object? segmentStarts = null,
     Object? distanceMeters = null,
     Object? arrestLocations = null,
     Object? caughtLocations = null,
@@ -82,6 +87,10 @@ class _$PlayerGameRecordCopyWithImpl<$Res, $Val extends PlayerGameRecord>
                 ? _value.route
                 : route // ignore: cast_nullable_to_non_nullable
                       as List<LatLngModel>,
+            segmentStarts: null == segmentStarts
+                ? _value.segmentStarts
+                : segmentStarts // ignore: cast_nullable_to_non_nullable
+                      as List<int>,
             distanceMeters: null == distanceMeters
                 ? _value.distanceMeters
                 : distanceMeters // ignore: cast_nullable_to_non_nullable
@@ -115,6 +124,7 @@ abstract class _$$PlayerGameRecordImplCopyWith<$Res>
   @useResult
   $Res call({
     List<LatLngModel> route,
+    List<int> segmentStarts,
     double distanceMeters,
     List<LatLngModel> arrestLocations,
     List<LatLngModel> caughtLocations,
@@ -137,6 +147,7 @@ class __$$PlayerGameRecordImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? route = null,
+    Object? segmentStarts = null,
     Object? distanceMeters = null,
     Object? arrestLocations = null,
     Object? caughtLocations = null,
@@ -148,6 +159,10 @@ class __$$PlayerGameRecordImplCopyWithImpl<$Res>
             ? _value._route
             : route // ignore: cast_nullable_to_non_nullable
                   as List<LatLngModel>,
+        segmentStarts: null == segmentStarts
+            ? _value._segmentStarts
+            : segmentStarts // ignore: cast_nullable_to_non_nullable
+                  as List<int>,
         distanceMeters: null == distanceMeters
             ? _value.distanceMeters
             : distanceMeters // ignore: cast_nullable_to_non_nullable
@@ -174,11 +189,13 @@ class __$$PlayerGameRecordImplCopyWithImpl<$Res>
 class _$PlayerGameRecordImpl implements _PlayerGameRecord {
   const _$PlayerGameRecordImpl({
     final List<LatLngModel> route = const <LatLngModel>[],
+    final List<int> segmentStarts = const <int>[],
     this.distanceMeters = 0.0,
     final List<LatLngModel> arrestLocations = const <LatLngModel>[],
     final List<LatLngModel> caughtLocations = const <LatLngModel>[],
     this.endedAt,
   }) : _route = route,
+       _segmentStarts = segmentStarts,
        _arrestLocations = arrestLocations,
        _caughtLocations = caughtLocations;
 
@@ -192,6 +209,18 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
     if (_route is EqualUnmodifiableListView) return _route;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_route);
+  }
+
+  /// [route]에서 새 구간이 시작되는 인덱스 — 앱이 꺼져 있던 구간은 선으로 잇지 않는다
+  final List<int> _segmentStarts;
+
+  /// [route]에서 새 구간이 시작되는 인덱스 — 앱이 꺼져 있던 구간은 선으로 잇지 않는다
+  @override
+  @JsonKey()
+  List<int> get segmentStarts {
+    if (_segmentStarts is EqualUnmodifiableListView) return _segmentStarts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_segmentStarts);
   }
 
   /// 누적 이동 거리(미터)
@@ -229,7 +258,7 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
 
   @override
   String toString() {
-    return 'PlayerGameRecord(route: $route, distanceMeters: $distanceMeters, arrestLocations: $arrestLocations, caughtLocations: $caughtLocations, endedAt: $endedAt)';
+    return 'PlayerGameRecord(route: $route, segmentStarts: $segmentStarts, distanceMeters: $distanceMeters, arrestLocations: $arrestLocations, caughtLocations: $caughtLocations, endedAt: $endedAt)';
   }
 
   @override
@@ -238,6 +267,10 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
         (other.runtimeType == runtimeType &&
             other is _$PlayerGameRecordImpl &&
             const DeepCollectionEquality().equals(other._route, _route) &&
+            const DeepCollectionEquality().equals(
+              other._segmentStarts,
+              _segmentStarts,
+            ) &&
             (identical(other.distanceMeters, distanceMeters) ||
                 other.distanceMeters == distanceMeters) &&
             const DeepCollectionEquality().equals(
@@ -255,6 +288,7 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
   int get hashCode => Object.hash(
     runtimeType,
     const DeepCollectionEquality().hash(_route),
+    const DeepCollectionEquality().hash(_segmentStarts),
     distanceMeters,
     const DeepCollectionEquality().hash(_arrestLocations),
     const DeepCollectionEquality().hash(_caughtLocations),
@@ -276,6 +310,7 @@ class _$PlayerGameRecordImpl implements _PlayerGameRecord {
 abstract class _PlayerGameRecord implements PlayerGameRecord {
   const factory _PlayerGameRecord({
     final List<LatLngModel> route,
+    final List<int> segmentStarts,
     final double distanceMeters,
     final List<LatLngModel> arrestLocations,
     final List<LatLngModel> caughtLocations,
@@ -285,6 +320,10 @@ abstract class _PlayerGameRecord implements PlayerGameRecord {
   /// 누적 이동 경로 (2m 미만 이동은 노이즈로 제외)
   @override
   List<LatLngModel> get route;
+
+  /// [route]에서 새 구간이 시작되는 인덱스 — 앱이 꺼져 있던 구간은 선으로 잇지 않는다
+  @override
+  List<int> get segmentStarts;
 
   /// 누적 이동 거리(미터)
   @override

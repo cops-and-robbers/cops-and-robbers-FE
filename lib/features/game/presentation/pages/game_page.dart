@@ -233,10 +233,12 @@ class _GamePageState extends ConsumerState<GamePage>
     _backgroundService = ref.read(backgroundServiceProvider);
     _recordNotifier = ref.read(playerGameRecordNotifierProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // 새 게임 진입마다 이전 기록 초기화(앱 resume 시에는 initState 미실행 → 보존).
+      // 게임 진입마다 내 기록 시작 — 앱이 죽었다 같은 게임에 재진입하면 기기 파일에서
+      // 복원하고, 다른 게임이면 초기화한다(앱 resume 시에는 initState 미실행 → 보존).
       // initState 본문에서 직접 호출하면 build 중 provider 수정 에러(Riverpod) —
-      // 위치 스트림 시작(_ensureLocationAndInit)보다 먼저라 순서는 동일하다.
-      if (!widget.isDummy) _recordNotifier.reset();
+      // 복원이 끝난 뒤 위치 스트림을 시작해야 새 점이 복원된 경로 뒤에 붙는다.
+      if (!widget.isDummy) await _recordNotifier.begin(_gameId);
+      if (!mounted) return;
       // 위치 권한 + STOMP 초기화 + participantInfo 로드를 끝까지 기다린 뒤
       // 재진입 가드를 호출해야 콜드 재시작 케이스에서 participantInfo.gameStartTime
       // 이 채워진 상태로 가드가 판정 가능.
