@@ -601,6 +601,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
             status: 'ALIVE',
             arrestCount: 3,
             arrestedCount: 0,
+            // 경찰 미리보기는 MVP 배너가 뜬 상태, 도둑은 안 뜬 상태를 보여준다.
+            isMvp: true,
           );
 
     // GameOverResultDialog.show()와 동일한 배리어/pop 설정 — Provider override가

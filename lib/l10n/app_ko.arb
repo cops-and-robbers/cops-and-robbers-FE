@@ -1518,6 +1518,10 @@
   "@labelFinalStatus": {
     "description": "게임 종료 결과 개인 탭 — 도둑의 종료 시점 상태 라벨 (값은 statusAlive/statusJailed)"
   },
+  "labelTeamMvpBanner": "이번 판 팀 MVP",
+  "@labelTeamMvpBanner": {
+    "description": "게임 종료 결과 개인 탭 — 내가 우리 팀 MVP일 때만 통계 위에 뜨는 배너 (경찰·도둑 공통)"
+  },
   "statusAlive": "생존",
   "@statusAlive": {
     "description": "게임 종료 결과 — 종료 시점 상태 값 ALIVE"

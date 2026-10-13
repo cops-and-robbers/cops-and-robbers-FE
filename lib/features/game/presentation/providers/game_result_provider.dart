@@ -8,6 +8,7 @@ import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/network/required_terms_interceptor.dart';
 import '../../../../core/storage/secure_token_storage.dart';
 import '../../data/datasources/game_result_api_datasource.dart';
+import '../../data/models/game_result_response_model.dart';
 import '../../data/models/my_game_record_response_model.dart';
 import '../../domain/entities/game_result_entity.dart';
 import '../../domain/entities/my_game_record_entity.dart';
@@ -72,8 +73,8 @@ GameResultApi gameResultApi(Ref ref) {
 /// GAME_OVER 이벤트 수신 직후 `ref.read(gameResultProvider(id).future)`로
 /// 사전 트리거하여, 결과 다이얼로그가 뜰 때는 이미 데이터가 준비되도록 합니다.
 ///
-/// DTO → Entity 변환은 Provider 내부에서 직접 수행합니다
-/// (프로젝트 Entity 컨벤션 — Entity는 Data Layer에 의존하지 않음).
+/// DTO → Entity 변환은 모델의 `toEntity()`가 수행합니다 ([myGameRecord]와 같은 방식,
+/// Entity는 Data Layer에 의존하지 않음).
 ///
 /// 실패 시 `DioExceptionHandler.handle`로 AppException 변환 후 던져,
 /// UI 쪽에서 AsyncValue.error로 분기됩니다.
@@ -88,12 +89,7 @@ Future<GameResultEntity> gameResult(Ref ref, int gameResultId) async {
     final response = await ref
         .read(gameResultApiProvider)
         .getGameResult(gameResultId);
-    return GameResultEntity(
-      winnerTeam: response.winnerTeam,
-      durationSeconds: response.durationSeconds,
-      totalArrestCount: response.totalArrestCount,
-      remainingRobberCount: response.remainingRobberCount,
-    );
+    return response.toEntity();
   } on DioException catch (e) {
     throw DioExceptionHandler.handle(e);
   }

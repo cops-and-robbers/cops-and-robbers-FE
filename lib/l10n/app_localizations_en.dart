@@ -1637,6 +1637,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelFinalStatus => 'Final status';
 
   @override
+  String get labelTeamMvpBanner => 'Team MVP this round';
+
+  @override
   String get statusAlive => 'Alive';
 
   @override

@@ -48,6 +48,7 @@ import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
 import '../../domain/entities/area_shape.dart';
 import '../../domain/arrest_lock_visibility.dart';
+import '../../domain/distance_send_policy.dart';
 import '../../domain/location_send_policy.dart';
 import '../../domain/jail_escape_detector.dart';
 import '../../domain/qr_payload.dart';
@@ -152,6 +153,8 @@ class _GamePageState extends ConsumerState<GamePage>
   StreamSubscription<Position>? _locationSubscription;
   Position? _lastSentPosition;
   DateTime? _lastSentTime;
+  DateTime? _lastDistanceSentTime;
+  double? _lastSentDistanceMeters;
 
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
   DateTime? _lastHandledPoliceMove;
@@ -779,6 +782,31 @@ class _GamePageState extends ConsumerState<GamePage>
     }
   }
 
+  /// 내 누적 이동 거리를 30초마다 서버로 보낸다 (양 팀, 팀 MVP 동점 판정용 — BE #212).
+  ///
+  /// 서버는 게임 종료 순간 이미 받은 값으로 즉시 판정하므로 끝날 때가 아니라 게임 중에 보낸다.
+  /// 이벤트 게임은 서버가 MVP를 판정하지 않으므로 보내지 않는다.
+  void _maybePublishDistance() {
+    if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) return;
+    if (ref.read(gameEventNotifierProvider).connectionState !=
+        StompConnectionState.connected) {
+      return;
+    }
+    final now = DateTime.now();
+    final meters = ref.read(playerGameRecordNotifierProvider).distanceMeters;
+    if (!shouldSendDistance(
+      lastSentTime: _lastDistanceSentTime,
+      now: now,
+      lastSentMeters: _lastSentDistanceMeters,
+      currentMeters: meters,
+    )) {
+      return;
+    }
+    _gameEventDatasource?.publishDistance(_gameId, meters);
+    _lastDistanceSentTime = now;
+    _lastSentDistanceMeters = meters;
+  }
+
   /// 단일 GPS 스트림(양 팀): 구역 이탈 감지 + (도둑·연결됨) 위치 전송
   ///
   /// 기존 전송용(distanceFilter 10m)·구역감지용(0) 두 스트림을 하나로 통합하여
@@ -801,6 +829,7 @@ class _GamePageState extends ConsumerState<GamePage>
             _recordNotifier.addPoint(
               LatLngModel(latitude: pos.latitude, longitude: pos.longitude),
             );
+            _maybePublishDistance();
 
             // 2) 위치 전송 — 도둑 팀, STOMP 연결 상태에서만
             if (!GameTeam.isRobber(widget.team)) return;

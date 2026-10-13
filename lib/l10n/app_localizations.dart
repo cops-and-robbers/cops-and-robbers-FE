@@ -2942,6 +2942,12 @@ abstract class AppLocalizations {
   /// **'종료 시점 상태'**
   String get labelFinalStatus;
 
+  /// 게임 종료 결과 개인 탭 — 내가 우리 팀 MVP일 때만 통계 위에 뜨는 배너 (경찰·도둑 공통)
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 판 팀 MVP'**
+  String get labelTeamMvpBanner;
+
   /// 게임 종료 결과 — 종료 시점 상태 값 ALIVE
   ///
   /// In ko, this message translates to:

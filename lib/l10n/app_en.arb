@@ -549,6 +549,7 @@
   "labelTeamArrestShare": "Team arrest share",
   "labelMyArrestedCount": "Times caught",
   "labelFinalStatus": "Final status",
+  "labelTeamMvpBanner": "Team MVP this round",
   "statusAlive": "Alive",
   "statusJailed": "Jailed",
   "gameLocationRevealCountdown": "Until next Robber location reveal: {formatted}",
