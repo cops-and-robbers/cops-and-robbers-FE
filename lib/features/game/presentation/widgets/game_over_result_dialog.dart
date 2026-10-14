@@ -611,41 +611,57 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 날짜는 통계와 같은 들여쓰기(본문 8 + 8) — 거리·지도는 본문 폭 그대로.
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AppSpacing.horizontal8,
-                      ),
-                      child: Text(
-                        record.endedAt == null
-                            ? ''
-                            : formatRecordDate(record.endedAt!),
-                        style: AppTextStyles.paragraph_14_100.copyWith(
-                          color: widget.isDarkMode
-                              ? AppColors.black200
-                              : AppColors.black600,
+                    // 내가 우리 팀 MVP면 날짜·거리 오른쪽에 왕관을 둔다. 카드 안이라 저장
+                    // 이미지에도 찍힌다. 개인 기록을 못 받았으면(로딩·실패) 표시하지 않는다.
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 날짜는 통계와 같은 들여쓰기(본문 8 + 8) — 거리·지도는 본문 폭 그대로.
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.horizontal8,
+                                ),
+                                child: Text(
+                                  record.endedAt == null
+                                      ? ''
+                                      : formatRecordDate(record.endedAt!),
+                                  style: AppTextStyles.paragraph_14_100
+                                      .copyWith(
+                                        color: widget.isDarkMode
+                                            ? AppColors.black200
+                                            : AppColors.black600,
+                                      ),
+                                ),
+                              ),
+                              SizedBox(height: AppSpacing.vertical4),
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: distance.value,
+                                      style: AppTextStyles.semibold_56.copyWith(
+                                        color: accent,
+                                      ),
+                                    ),
+                                    const TextSpan(text: ' '),
+                                    TextSpan(
+                                      text: distance.unit,
+                                      style: AppTextStyles.heading_24.copyWith(
+                                        color: accent,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.vertical4),
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: distance.value,
-                            style: AppTextStyles.semibold_56.copyWith(
-                              color: accent,
-                            ),
-                          ),
-                          const TextSpan(text: ' '),
-                          TextSpan(
-                            text: distance.unit,
-                            style: AppTextStyles.heading_24.copyWith(
-                              color: accent,
-                            ),
-                          ),
-                        ],
-                      ),
+                        if (myRecordAsync.valueOrNull?.isMvp ?? false)
+                          _MvpCrown(isDarkMode: widget.isDarkMode),
+                      ],
                     ),
                     SizedBox(height: AppSpacing.vertical4),
                     RecordRouteMap(
@@ -887,39 +903,27 @@ class _StatsSection extends StatelessWidget {
           ];
 
     return myRecordAsync.when(
-      data: (me) {
-        final rows = _rows(
-          labels,
-          isRobber
-              ? [
-                  me.nickname,
-                  '${me.arrestedCount}',
-                  finalStatusLabel(l10n, me.status),
-                ]
-              : [
-                  me.nickname,
-                  '${me.arrestCount}',
-                  // 기여도는 결과 API의 팀 합계가 있어야 나온다 — 없으면 값 없음.
-                  resultAsync.maybeWhen(
-                    data: (entity) => formatTeamArrestShare(
-                      mine: me.arrestCount,
-                      total: entity.totalArrestCount,
-                    ),
-                    orElse: () => '-',
+      data: (me) => _rows(
+        labels,
+        isRobber
+            ? [
+                me.nickname,
+                '${me.arrestedCount}',
+                finalStatusLabel(l10n, me.status),
+              ]
+            : [
+                me.nickname,
+                '${me.arrestCount}',
+                // 기여도는 결과 API의 팀 합계가 있어야 나온다 — 없으면 값 없음.
+                resultAsync.maybeWhen(
+                  data: (entity) => formatTeamArrestShare(
+                    mine: me.arrestCount,
+                    total: entity.totalArrestCount,
                   ),
-                ],
-        );
-        if (!me.isMvp) return rows;
-        // MVP일 때만 배너가 붙어 카드가 한 줄 길어진다. 로딩·실패 중엔 MVP 여부를
-        // 모르므로 배너 없이 3행만 둔다.
-        return Column(
-          children: [
-            _MvpBanner(isDarkMode: isDarkMode, text: l10n.labelTeamMvpBanner),
-            SizedBox(height: AppSpacing.vertical12),
-            rows,
-          ],
-        );
-      },
+                  orElse: () => '-',
+                ),
+              ],
+      ),
       loading: () => _placeholderRows(labels),
       error: (_, _) => _placeholderRows(labels),
     );
@@ -942,35 +946,26 @@ class _StatsSection extends StatelessWidget {
   }
 }
 
-/// 개인 탭 「이번 판 팀 MVP」 배너 — 경찰·도둑 모두 자기 팀 accent로 같은 모양.
-// ponytail: 시안 확정 전 임시 모양(팀색 10% 배경 + 굵은 라벨). 디자인 나오면 이 위젯만 교체.
-class _MvpBanner extends StatelessWidget {
-  const _MvpBanner({required this.isDarkMode, required this.text});
+/// 「MVP」 왕관 — 대기실 방장 표시와 같은 왕관 아이콘을 크게 쓴다.
+class _MvpCrown extends StatelessWidget {
+  const _MvpCrown({required this.isDarkMode});
 
   final bool isDarkMode;
-  final String text;
 
   @override
   Widget build(BuildContext context) {
-    final accent = isDarkMode ? AppColors.green : AppColors.blue;
-    return Container(
-      key: const ValueKey('game_over_mvp_banner'),
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSpacing.horizontal12,
-        vertical: AppSpacing.vertical8,
-      ),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.1),
-        borderRadius: AppRadius.large,
-      ),
-      child: Text(
-        text,
-        style: AppTextStyles.label16Medium.copyWith(
-          color: accent,
-          fontWeight: FontWeight.w700,
+    return Column(
+      key: const ValueKey('game_over_mvp_crown'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SvgPicture.asset(AppIcons.crown, width: 52.w, height: 52.w),
+        Text(
+          AppLocalizations.of(context).labelMvp,
+          style: AppTextStyles.tag12Semibold.copyWith(
+            color: isDarkMode ? AppColors.white : AppColors.black,
+          ),
         ),
-      ),
+      ],
     );
   }
 }

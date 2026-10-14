@@ -1532,7 +1532,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelFinalStatus => '종료 시점 상태';
 
   @override
-  String get labelTeamMvpBanner => '이번 판 팀 MVP';
+  String get labelMvp => 'MVP';
 
   @override
   String get statusAlive => '생존';

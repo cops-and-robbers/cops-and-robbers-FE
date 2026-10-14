@@ -583,50 +583,43 @@ void main() {
     });
   });
 
-  group('팀 MVP 배너', () {
+  group('MVP 왕관', () {
     const entity = GameResultEntity(
       winnerTeam: 'POLICE',
-      durationSeconds: 300,
-      totalArrestCount: 5,
-      remainingRobberCount: 1,
+      durationSeconds: 1800,
+      totalArrestCount: 12,
+      remainingRobberCount: 0,
     );
-    const mvpBanner = ValueKey('game_over_mvp_banner');
+    const mvpCrown = ValueKey('game_over_mvp_crown');
 
-    Future<void> tapMineTab(WidgetTester tester) async {
-      await tester.tap(find.text('개인'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 350));
-    }
-
-    testWidgets('shows_mvp_banner_on_mine_tab_when_police_is_mvp', (
+    testWidgets('shows_crown_next_to_distance_when_police_is_team_mvp', (
       tester,
     ) async {
       await pumpGameOverDialog(
         tester,
-        gameResultId: 31,
+        gameResultId: 51,
         resultFuture: () async => entity,
         myRecordFuture: () async => const MyGameRecordEntity(
           nickname: '살금살금고슴도치',
           team: 'POLICE',
           status: 'ALIVE',
-          arrestCount: 3,
+          arrestCount: 5,
           arrestedCount: 0,
           isMvp: true,
         ),
       );
-      await tapMineTab(tester);
 
-      expect(find.byKey(mvpBanner), findsOneWidget);
-      expect(find.text('살금살금고슴도치'), findsOneWidget); // 개인 행은 그대로
+      expect(find.byKey(mvpCrown), findsOneWidget);
+      expect(find.text('MVP'), findsOneWidget);
     });
 
-    // 경찰·도둑 대등 원칙 — 도둑 MVP(잡힘 최소)도 같은 무게로 보여야 한다.
-    testWidgets('shows_mvp_banner_on_mine_tab_when_robber_is_mvp', (
+    // 경찰·도둑 대등 원칙 — 잡힘이 가장 적었던 도둑 MVP도 같은 표시를 받는다.
+    testWidgets('shows_crown_when_robber_is_team_mvp_in_dark_mode', (
       tester,
     ) async {
       await pumpGameOverDialog(
         tester,
-        gameResultId: 32,
+        gameResultId: 52,
         resultFuture: () async => entity,
         myTeam: 'ROBBER',
         isDarkMode: true,
@@ -639,38 +632,43 @@ void main() {
           isMvp: true,
         ),
       );
-      await tapMineTab(tester);
 
-      expect(find.byKey(mvpBanner), findsOneWidget);
+      expect(find.byKey(mvpCrown), findsOneWidget);
     });
 
-    testWidgets('hides_mvp_banner_on_mine_tab_when_not_mvp', (tester) async {
+    testWidgets('hides_crown_when_i_am_not_team_mvp', (tester) async {
       await pumpGameOverDialog(
         tester,
-        gameResultId: 33,
+        gameResultId: 53,
         resultFuture: () async => entity,
       );
-      await tapMineTab(tester);
 
-      expect(find.byKey(mvpBanner), findsNothing);
+      expect(find.byKey(mvpCrown), findsNothing);
     });
 
-    testWidgets('hides_mvp_banner_on_team_tab_even_when_mvp', (tester) async {
+    // 30분 내내 뛰어다닌 경찰 MVP — 두 자리 km 거리 옆에 왕관이 붙어도 넘치지 않아야 한다.
+    testWidgets('fits_crown_beside_double_digit_km_distance', (tester) async {
       await pumpGameOverDialog(
         tester,
-        gameResultId: 34,
+        gameResultId: 54,
         resultFuture: () async => entity,
+        record: PlayerGameRecord(
+          distanceMeters: 12340,
+          endedAt: DateTime(2026, 10, 14, 19, 28),
+        ),
         myRecordFuture: () async => const MyGameRecordEntity(
           nickname: '살금살금고슴도치',
           team: 'POLICE',
           status: 'ALIVE',
-          arrestCount: 3,
+          arrestCount: 5,
           arrestedCount: 0,
           isMvp: true,
         ),
       );
 
-      expect(find.byKey(mvpBanner), findsNothing);
+      expect(find.text('12.34 Km'), findsOneWidget);
+      expect(find.byKey(mvpCrown), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   });
 }
