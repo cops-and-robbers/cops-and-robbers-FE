@@ -38,7 +38,7 @@ struct GameStatusTheme {
         accent: Color(hex: 0x38F55B),  // AppColors.green
         onAccent: Color(hex: 0x080A0C),  // 도둑 CTA 글자 = black
         value: Color(hex: 0x38F55B),
-        timerFont: .cardFont(28)
+        timerFont: .cardFont(36)
       )
       : GameStatusTheme(
         background: Color(hex: 0xFFFFFF),  // AppColors.white
@@ -47,7 +47,7 @@ struct GameStatusTheme {
         accent: Color(hex: 0x0088FF),  // AppColors.blue
         onAccent: Color(hex: 0xFFFFFF),  // 경찰 CTA 글자 = white
         value: Color(hex: 0x080A0C),
-        timerFont: .cardFont(30)
+        timerFont: .cardFont(36)
       )
   }
 }
@@ -87,10 +87,11 @@ struct GameStatusCard: View {
   private var theme: GameStatusTheme { .of(isRobberTeam: model.isRobberTeam) }
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 10) {
+    // 잠금 화면 카드 높이 상한은 160pt — 36pt 타이머가 들어가도록 세로 간격을 8·4로 줄였다.
+    VStack(alignment: .leading, spacing: 8) {
       header
       HStack(alignment: .center, spacing: 12) {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
           headline
           if !model.isStale { detail }
         }
@@ -139,8 +140,8 @@ struct GameStatusCard: View {
         .font(theme.timerFont)
         .foregroundColor(theme.primary)
     } else {
-      // 라벨을 앞에 둔다 — 타이머 Text는 가능한 최대 폭을 차지해, 뒤에 두면 라벨이 카드 가운데로 밀린다.
-      HStack(alignment: .firstTextBaseline, spacing: 6) {
+      // 라벨을 위에 두고 타이머를 크게 — 타이머 Text는 가능한 최대 폭을 차지해, 옆에 두면 라벨이 카드 가운데로 밀린다.
+      VStack(alignment: .leading, spacing: 0) {
         Text(model.remainingTimeLabel)
           .font(.cardFont(13))
           .foregroundColor(theme.secondary)
