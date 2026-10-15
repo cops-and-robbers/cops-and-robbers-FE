@@ -23,11 +23,12 @@ struct GameStatusLiveActivity: Widget {
       // 다이내믹 아일랜드 배경은 항상 검정 — 팀과 무관하게 밝은 글자, 강조색만 팀을 따른다.
       let accent = GameStatusTheme.of(isRobberTeam: context.attributes.isRobberTeam).accent
       return DynamicIsland {
+        // 펼침 위쪽은 아일랜드 모서리가 둥글어 붙여 두면 잘린다 — 좌우·위로 띄운다.
         DynamicIslandExpandedRegion(.leading) {
-          context.character
-            .resizable()
-            .scaledToFit()
+          context.islandCharacter
             .frame(height: 44)
+            .padding(.leading, 8)
+            .padding(.top, 8)
         }
         DynamicIslandExpandedRegion(.trailing) {
           if context.isStale {
@@ -35,9 +36,19 @@ struct GameStatusLiveActivity: Widget {
               .font(.cardFont(15))
               .foregroundColor(.white)
           } else {
-            CountdownText(until: context.state.endAt)
-              .font(.cardFont(24))
-              .foregroundColor(accent)
+            // 타이머는 최대 폭을 잡고 왼쪽 정렬돼 가운데에 떠 보이므로, 오른쪽 끝에 붙이고 무엇의 숫자인지 라벨을 위에 단다.
+            VStack(alignment: .trailing, spacing: 2) {
+              Text(context.attributes.remainingTimeLabel)
+                .font(.cardFont(12))
+                .foregroundColor(Color(hex: 0x93A2B3))  // AppColors.black400
+              CountdownText(until: context.state.endAt)
+                .font(.cardFont(24))
+                .foregroundColor(accent)
+                .multilineTextAlignment(.trailing)
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing, 8)
+            .padding(.top, 8)
           }
         }
         DynamicIslandExpandedRegion(.bottom) {
@@ -46,19 +57,20 @@ struct GameStatusLiveActivity: Widget {
           }
         }
       } compactLeading: {
-        context.character
-          .resizable()
-          .scaledToFit()
+        context.islandCharacter
           .frame(width: 22, height: 22)
       } compactTrailing: {
         if context.isStale {
           Image(systemName: "flag.checkered")
             .foregroundColor(accent)
         } else {
+          // 타이머 Text는 폭을 주지 않으면 가능한 최대 폭을 잡아 아일랜드가 화면 끝까지 늘어난다.
+          // 52 = 최대 게임 시간(180분)의 "2:59:59"가 들어가는 폭. 카드가 사라지던 원인은 frame이 아니었다(archiveTooLarge).
           CountdownText(until: context.state.endAt)
             .font(.cardFont(14))
             .foregroundColor(accent)
-          // 타이머 Text에 frame을 붙이면 카드가 로딩 표시+흐림으로 멈출 수 있다 (developer.apple.com/forums/thread/763493)
+            .multilineTextAlignment(.trailing)
+            .frame(maxWidth: 52)
         }
       } minimal: {
         context.character
@@ -130,6 +142,15 @@ extension ActivityViewContext where Attributes == GameStatusAttributes {
 
   var character: Image {
     Image(attributes.isRobberTeam ? "character_robber" : "character_police")
+  }
+
+  /// 아일랜드 왼쪽에 두는 캐릭터 — 그림이 왼쪽을 보고 있어 좌우를 뒤집어 아일랜드 안쪽을 보게 한다.
+  /// 잠금 화면 카드는 캐릭터가 오른쪽 끝이라 원본 방향이 이미 안쪽이다.
+  var islandCharacter: some View {
+    character
+      .resizable()
+      .scaledToFit()
+      .scaleEffect(x: -1, y: 1)
   }
 }
 
