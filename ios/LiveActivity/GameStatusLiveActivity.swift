@@ -32,11 +32,11 @@ struct GameStatusLiveActivity: Widget {
         DynamicIslandExpandedRegion(.trailing) {
           if context.isStale {
             Text(context.attributes.gameOverLabel)
-              .font(.pretendard(15))
+              .font(.cardFont(15))
               .foregroundColor(.white)
           } else {
             CountdownText(until: context.state.endAt)
-              .font(.pretendard(24))
+              .font(.cardFont(24))
               .foregroundColor(accent)
           }
         }
@@ -56,7 +56,7 @@ struct GameStatusLiveActivity: Widget {
             .foregroundColor(accent)
         } else {
           CountdownText(until: context.state.endAt)
-            .font(.pretendard(14))
+            .font(.cardFont(14))
             .foregroundColor(accent)
           // 타이머 Text에 frame을 붙이면 카드가 로딩 표시+흐림으로 멈출 수 있다 (developer.apple.com/forums/thread/763493)
         }
@@ -88,7 +88,7 @@ private struct IslandDetail: View {
           }
         }
       }
-      .font(.pretendard(13))
+      .font(.cardFont(13))
       .foregroundColor(Color(hex: 0x93A2B3))  // AppColors.black400 — 어두운 배경의 보조 글자
       ProgressView(
         timerInterval: context.state.startAt...max(context.state.startAt, context.state.endAt),

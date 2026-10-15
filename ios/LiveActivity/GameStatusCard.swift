@@ -18,7 +18,7 @@ struct GameStatusCardModel {
 }
 
 /// 경찰과도둑 디자인 시스템(AppColors·AppTextStyles)의 팀 테마를 옮긴 값.
-/// 경찰 = 라이트(white·black·blue), 도둑 = 다크(black·white·green, 제목은 Moneygraphy).
+/// 경찰 = 라이트(white·black·blue), 도둑 = 다크(black·white·green). 서체는 양 팀 모두 시스템 서체.
 struct GameStatusTheme {
   let background: Color
   let primary: Color
@@ -38,7 +38,7 @@ struct GameStatusTheme {
         accent: Color(hex: 0x38F55B),  // AppColors.green
         onAccent: Color(hex: 0x080A0C),  // 도둑 CTA 글자 = black
         value: Color(hex: 0x38F55B),
-        timerFont: .custom("MoneygraphyTTF-Pixel", size: 28)  // robberHeading 계열
+        timerFont: .cardFont(28)
       )
       : GameStatusTheme(
         background: Color(hex: 0xFFFFFF),  // AppColors.white
@@ -47,7 +47,7 @@ struct GameStatusTheme {
         accent: Color(hex: 0x0088FF),  // AppColors.blue
         onAccent: Color(hex: 0xFFFFFF),  // 경찰 CTA 글자 = white
         value: Color(hex: 0x080A0C),
-        timerFont: .custom("Pretendard-SemiBold", size: 30)  // semibold 숫자 계열
+        timerFont: .cardFont(30)
       )
   }
 }
@@ -63,8 +63,9 @@ extension Color {
 }
 
 extension Font {
-  /// Pretendard SemiBold — 앱과 같은 서체. 확장 기능 번들에 한 굵기만 넣어 용량을 줄였다.
-  static func pretendard(_ size: CGFloat) -> Font { .custom("Pretendard-SemiBold", size: size) }
+  /// 시스템 서체 SemiBold. 커스텀 폰트(Pretendard 2.6MB)를 쓰면 렌더링 결과에 폰트가 함께 실려
+  /// 시스템이 archiveTooLarge(약 2.9MB)로 거절하고, 세 번 실패하면 Activity를 끝내 버린다.
+  static func cardFont(_ size: CGFloat) -> Font { .system(size: size, weight: .semibold) }
 }
 
 /// 남은 시간 카운트다운(OS가 초를 줄인다). 끝나면 0:00에 멈추고 앱이 종료를 알린다.
@@ -118,11 +119,11 @@ struct GameStatusCard: View {
         .frame(width: 20, height: 20)
         .clipShape(RoundedRectangle(cornerRadius: 5))
       Text(model.title)
-        .font(.pretendard(13))
+        .font(.cardFont(13))
         .foregroundColor(theme.secondary)
       Spacer()
       Text(model.teamLabel)
-        .font(.pretendard(12))
+        .font(.cardFont(12))
         .foregroundColor(theme.onAccent)
         .padding(.horizontal, 8)
         .padding(.vertical, 3)
@@ -143,7 +144,7 @@ struct GameStatusCard: View {
           .font(theme.timerFont)
           .foregroundColor(theme.primary)
         Text(model.remainingTimeLabel)
-          .font(.pretendard(13))
+          .font(.cardFont(13))
           .foregroundColor(theme.secondary)
       }
     }
@@ -172,7 +173,7 @@ struct GameStatusCard: View {
         .monospacedDigit()
         .foregroundColor(theme.value)
     }
-    .font(.pretendard(13))
+    .font(.cardFont(13))
     .lineLimit(1)
   }
 }
