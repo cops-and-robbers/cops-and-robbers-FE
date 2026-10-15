@@ -35,6 +35,11 @@ mixin _$GameResultResponseModel {
   /// 남은 도둑 수
   int get remainingRobberCount => throw _privateConstructorUsedError;
 
+  /// 팀 MVP (BE #212). 팀당 1명이고, 후보가 없거나(전원 중도 퇴장)
+  /// 필드가 없는 구버전 서버 응답이면 null이다.
+  GameMvpModel? get policeMvp => throw _privateConstructorUsedError;
+  GameMvpModel? get robberMvp => throw _privateConstructorUsedError;
+
   /// Serializes this GameResultResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -57,7 +62,12 @@ abstract class $GameResultResponseModelCopyWith<$Res> {
     int durationSeconds,
     int totalArrestCount,
     int remainingRobberCount,
+    GameMvpModel? policeMvp,
+    GameMvpModel? robberMvp,
   });
+
+  $GameMvpModelCopyWith<$Res>? get policeMvp;
+  $GameMvpModelCopyWith<$Res>? get robberMvp;
 }
 
 /// @nodoc
@@ -82,6 +92,8 @@ class _$GameResultResponseModelCopyWithImpl<
     Object? durationSeconds = null,
     Object? totalArrestCount = null,
     Object? remainingRobberCount = null,
+    Object? policeMvp = freezed,
+    Object? robberMvp = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -101,9 +113,45 @@ class _$GameResultResponseModelCopyWithImpl<
                 ? _value.remainingRobberCount
                 : remainingRobberCount // ignore: cast_nullable_to_non_nullable
                       as int,
+            policeMvp: freezed == policeMvp
+                ? _value.policeMvp
+                : policeMvp // ignore: cast_nullable_to_non_nullable
+                      as GameMvpModel?,
+            robberMvp: freezed == robberMvp
+                ? _value.robberMvp
+                : robberMvp // ignore: cast_nullable_to_non_nullable
+                      as GameMvpModel?,
           )
           as $Val,
     );
+  }
+
+  /// Create a copy of GameResultResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $GameMvpModelCopyWith<$Res>? get policeMvp {
+    if (_value.policeMvp == null) {
+      return null;
+    }
+
+    return $GameMvpModelCopyWith<$Res>(_value.policeMvp!, (value) {
+      return _then(_value.copyWith(policeMvp: value) as $Val);
+    });
+  }
+
+  /// Create a copy of GameResultResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $GameMvpModelCopyWith<$Res>? get robberMvp {
+    if (_value.robberMvp == null) {
+      return null;
+    }
+
+    return $GameMvpModelCopyWith<$Res>(_value.robberMvp!, (value) {
+      return _then(_value.copyWith(robberMvp: value) as $Val);
+    });
   }
 }
 
@@ -121,7 +169,14 @@ abstract class _$$GameResultResponseModelImplCopyWith<$Res>
     int durationSeconds,
     int totalArrestCount,
     int remainingRobberCount,
+    GameMvpModel? policeMvp,
+    GameMvpModel? robberMvp,
   });
+
+  @override
+  $GameMvpModelCopyWith<$Res>? get policeMvp;
+  @override
+  $GameMvpModelCopyWith<$Res>? get robberMvp;
 }
 
 /// @nodoc
@@ -146,6 +201,8 @@ class __$$GameResultResponseModelImplCopyWithImpl<$Res>
     Object? durationSeconds = null,
     Object? totalArrestCount = null,
     Object? remainingRobberCount = null,
+    Object? policeMvp = freezed,
+    Object? robberMvp = freezed,
   }) {
     return _then(
       _$GameResultResponseModelImpl(
@@ -165,6 +222,14 @@ class __$$GameResultResponseModelImplCopyWithImpl<$Res>
             ? _value.remainingRobberCount
             : remainingRobberCount // ignore: cast_nullable_to_non_nullable
                   as int,
+        policeMvp: freezed == policeMvp
+            ? _value.policeMvp
+            : policeMvp // ignore: cast_nullable_to_non_nullable
+                  as GameMvpModel?,
+        robberMvp: freezed == robberMvp
+            ? _value.robberMvp
+            : robberMvp // ignore: cast_nullable_to_non_nullable
+                  as GameMvpModel?,
       ),
     );
   }
@@ -178,6 +243,8 @@ class _$GameResultResponseModelImpl implements _GameResultResponseModel {
     required this.durationSeconds,
     required this.totalArrestCount,
     required this.remainingRobberCount,
+    this.policeMvp,
+    this.robberMvp,
   });
 
   factory _$GameResultResponseModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -199,9 +266,16 @@ class _$GameResultResponseModelImpl implements _GameResultResponseModel {
   @override
   final int remainingRobberCount;
 
+  /// 팀 MVP (BE #212). 팀당 1명이고, 후보가 없거나(전원 중도 퇴장)
+  /// 필드가 없는 구버전 서버 응답이면 null이다.
+  @override
+  final GameMvpModel? policeMvp;
+  @override
+  final GameMvpModel? robberMvp;
+
   @override
   String toString() {
-    return 'GameResultResponseModel(winnerTeam: $winnerTeam, durationSeconds: $durationSeconds, totalArrestCount: $totalArrestCount, remainingRobberCount: $remainingRobberCount)';
+    return 'GameResultResponseModel(winnerTeam: $winnerTeam, durationSeconds: $durationSeconds, totalArrestCount: $totalArrestCount, remainingRobberCount: $remainingRobberCount, policeMvp: $policeMvp, robberMvp: $robberMvp)';
   }
 
   @override
@@ -216,7 +290,11 @@ class _$GameResultResponseModelImpl implements _GameResultResponseModel {
             (identical(other.totalArrestCount, totalArrestCount) ||
                 other.totalArrestCount == totalArrestCount) &&
             (identical(other.remainingRobberCount, remainingRobberCount) ||
-                other.remainingRobberCount == remainingRobberCount));
+                other.remainingRobberCount == remainingRobberCount) &&
+            (identical(other.policeMvp, policeMvp) ||
+                other.policeMvp == policeMvp) &&
+            (identical(other.robberMvp, robberMvp) ||
+                other.robberMvp == robberMvp));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -227,6 +305,8 @@ class _$GameResultResponseModelImpl implements _GameResultResponseModel {
     durationSeconds,
     totalArrestCount,
     remainingRobberCount,
+    policeMvp,
+    robberMvp,
   );
 
   /// Create a copy of GameResultResponseModel
@@ -252,6 +332,8 @@ abstract class _GameResultResponseModel implements GameResultResponseModel {
     required final int durationSeconds,
     required final int totalArrestCount,
     required final int remainingRobberCount,
+    final GameMvpModel? policeMvp,
+    final GameMvpModel? robberMvp,
   }) = _$GameResultResponseModelImpl;
 
   factory _GameResultResponseModel.fromJson(Map<String, dynamic> json) =
@@ -273,10 +355,170 @@ abstract class _GameResultResponseModel implements GameResultResponseModel {
   @override
   int get remainingRobberCount;
 
+  /// 팀 MVP (BE #212). 팀당 1명이고, 후보가 없거나(전원 중도 퇴장)
+  /// 필드가 없는 구버전 서버 응답이면 null이다.
+  @override
+  GameMvpModel? get policeMvp;
+  @override
+  GameMvpModel? get robberMvp;
+
   /// Create a copy of GameResultResponseModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$GameResultResponseModelImplCopyWith<_$GameResultResponseModelImpl>
   get copyWith => throw _privateConstructorUsedError;
+}
+
+GameMvpModel _$GameMvpModelFromJson(Map<String, dynamic> json) {
+  return _GameMvpModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GameMvpModel {
+  String get nickname => throw _privateConstructorUsedError;
+
+  /// Serializes this GameMvpModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GameMvpModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GameMvpModelCopyWith<GameMvpModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GameMvpModelCopyWith<$Res> {
+  factory $GameMvpModelCopyWith(
+    GameMvpModel value,
+    $Res Function(GameMvpModel) then,
+  ) = _$GameMvpModelCopyWithImpl<$Res, GameMvpModel>;
+  @useResult
+  $Res call({String nickname});
+}
+
+/// @nodoc
+class _$GameMvpModelCopyWithImpl<$Res, $Val extends GameMvpModel>
+    implements $GameMvpModelCopyWith<$Res> {
+  _$GameMvpModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GameMvpModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? nickname = null}) {
+    return _then(
+      _value.copyWith(
+            nickname: null == nickname
+                ? _value.nickname
+                : nickname // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$GameMvpModelImplCopyWith<$Res>
+    implements $GameMvpModelCopyWith<$Res> {
+  factory _$$GameMvpModelImplCopyWith(
+    _$GameMvpModelImpl value,
+    $Res Function(_$GameMvpModelImpl) then,
+  ) = __$$GameMvpModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String nickname});
+}
+
+/// @nodoc
+class __$$GameMvpModelImplCopyWithImpl<$Res>
+    extends _$GameMvpModelCopyWithImpl<$Res, _$GameMvpModelImpl>
+    implements _$$GameMvpModelImplCopyWith<$Res> {
+  __$$GameMvpModelImplCopyWithImpl(
+    _$GameMvpModelImpl _value,
+    $Res Function(_$GameMvpModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GameMvpModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? nickname = null}) {
+    return _then(
+      _$GameMvpModelImpl(
+        nickname: null == nickname
+            ? _value.nickname
+            : nickname // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GameMvpModelImpl implements _GameMvpModel {
+  const _$GameMvpModelImpl({required this.nickname});
+
+  factory _$GameMvpModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GameMvpModelImplFromJson(json);
+
+  @override
+  final String nickname;
+
+  @override
+  String toString() {
+    return 'GameMvpModel(nickname: $nickname)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GameMvpModelImpl &&
+            (identical(other.nickname, nickname) ||
+                other.nickname == nickname));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, nickname);
+
+  /// Create a copy of GameMvpModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GameMvpModelImplCopyWith<_$GameMvpModelImpl> get copyWith =>
+      __$$GameMvpModelImplCopyWithImpl<_$GameMvpModelImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GameMvpModelImplToJson(this);
+  }
+}
+
+abstract class _GameMvpModel implements GameMvpModel {
+  const factory _GameMvpModel({required final String nickname}) =
+      _$GameMvpModelImpl;
+
+  factory _GameMvpModel.fromJson(Map<String, dynamic> json) =
+      _$GameMvpModelImpl.fromJson;
+
+  @override
+  String get nickname;
+
+  /// Create a copy of GameMvpModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GameMvpModelImplCopyWith<_$GameMvpModelImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

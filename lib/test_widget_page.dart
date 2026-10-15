@@ -26,6 +26,7 @@ import 'features/game/domain/entities/game_result_entity.dart';
 import 'features/game/domain/entities/my_game_record_entity.dart';
 import 'features/game/presentation/providers/game_result_provider.dart';
 import 'features/game/presentation/providers/player_game_record_provider.dart';
+import 'features/game/presentation/widgets/game_over_intro_modal.dart';
 import 'features/game/presentation/widgets/game_over_result_dialog.dart';
 import 'features/game/presentation/widgets/ping_selection_card.dart';
 import 'features/session/presentation/pages/setup_playground_page.dart';
@@ -184,6 +185,74 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 backgroundColor: AppColors.black800,
                 showBorder: false,
               ),
+
+              SizedBox(height: AppSpacing.vertical64),
+
+              // ============================================
+              // 게임 종료 + 팀 MVP 공개 (#628)
+              // ============================================
+              _buildSectionTitle('게임 종료 MVP 공개'),
+              SizedBox(height: AppSpacing.vertical16),
+              for (final (label, dark, entity) in [
+                (
+                  '경찰 승리 · 두 팀 MVP (light)',
+                  false,
+                  const GameResultEntity(
+                    winnerTeam: 'POLICE',
+                    durationSeconds: 1800,
+                    totalArrestCount: 12,
+                    remainingRobberCount: 0,
+                    policeMvpNickname: '살금살금고슴도치',
+                    robberMvpNickname: '재빠른너구리',
+                  ),
+                ),
+                (
+                  '도둑 승리 · 두 팀 MVP (dark)',
+                  true,
+                  const GameResultEntity(
+                    winnerTeam: 'ROBBER',
+                    durationSeconds: 1800,
+                    totalArrestCount: 3,
+                    remainingRobberCount: 4,
+                    policeMvpNickname: '살금살금고슴도치',
+                    robberMvpNickname: '재빠른너구리',
+                  ),
+                ),
+                (
+                  '도둑 전원 중도 퇴장 · 경찰 MVP만',
+                  false,
+                  const GameResultEntity(
+                    winnerTeam: 'POLICE',
+                    durationSeconds: 900,
+                    totalArrestCount: 4,
+                    remainingRobberCount: 0,
+                    policeMvpNickname: '살금살금고슴도치',
+                  ),
+                ),
+                (
+                  'MVP 없음 (이전 서버) — 예전 팝업과 같아야 함',
+                  false,
+                  const GameResultEntity(
+                    winnerTeam: 'POLICE',
+                    durationSeconds: 1800,
+                    totalArrestCount: 12,
+                    remainingRobberCount: 0,
+                  ),
+                ),
+              ]) ...[
+                AppButton(
+                  text: label,
+                  onPressed: () => GameOverIntroModal.show(
+                    context: context,
+                    isDarkMode: dark,
+                    reason: 'TIME_OVER',
+                    result: Future.value(entity),
+                  ),
+                  backgroundColor: AppColors.black800,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+              ],
 
               SizedBox(height: AppSpacing.vertical64),
 
@@ -601,6 +670,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
             status: 'ALIVE',
             arrestCount: 3,
             arrestedCount: 0,
+            // 경찰 미리보기는 내가 MVP인 상태, 도둑은 아닌 상태를 보여준다.
+            isMvp: true,
           );
 
     // GameOverResultDialog.show()와 동일한 배리어/pop 설정 — Provider override가

@@ -29,6 +29,10 @@ mixin _$GameResultEntity {
   /// 남은 도둑 수
   int get remainingRobberCount => throw _privateConstructorUsedError;
 
+  /// 경찰·도둑 팀 MVP 닉네임 — 없으면 null (MVP 공개 화면은 null 팀을 건너뛴다)
+  String? get policeMvpNickname => throw _privateConstructorUsedError;
+  String? get robberMvpNickname => throw _privateConstructorUsedError;
+
   /// Create a copy of GameResultEntity
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,6 +52,8 @@ abstract class $GameResultEntityCopyWith<$Res> {
     int durationSeconds,
     int totalArrestCount,
     int remainingRobberCount,
+    String? policeMvpNickname,
+    String? robberMvpNickname,
   });
 }
 
@@ -70,6 +76,8 @@ class _$GameResultEntityCopyWithImpl<$Res, $Val extends GameResultEntity>
     Object? durationSeconds = null,
     Object? totalArrestCount = null,
     Object? remainingRobberCount = null,
+    Object? policeMvpNickname = freezed,
+    Object? robberMvpNickname = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -89,6 +97,14 @@ class _$GameResultEntityCopyWithImpl<$Res, $Val extends GameResultEntity>
                 ? _value.remainingRobberCount
                 : remainingRobberCount // ignore: cast_nullable_to_non_nullable
                       as int,
+            policeMvpNickname: freezed == policeMvpNickname
+                ? _value.policeMvpNickname
+                : policeMvpNickname // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            robberMvpNickname: freezed == robberMvpNickname
+                ? _value.robberMvpNickname
+                : robberMvpNickname // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -109,6 +125,8 @@ abstract class _$$GameResultEntityImplCopyWith<$Res>
     int durationSeconds,
     int totalArrestCount,
     int remainingRobberCount,
+    String? policeMvpNickname,
+    String? robberMvpNickname,
   });
 }
 
@@ -130,6 +148,8 @@ class __$$GameResultEntityImplCopyWithImpl<$Res>
     Object? durationSeconds = null,
     Object? totalArrestCount = null,
     Object? remainingRobberCount = null,
+    Object? policeMvpNickname = freezed,
+    Object? robberMvpNickname = freezed,
   }) {
     return _then(
       _$GameResultEntityImpl(
@@ -149,6 +169,14 @@ class __$$GameResultEntityImplCopyWithImpl<$Res>
             ? _value.remainingRobberCount
             : remainingRobberCount // ignore: cast_nullable_to_non_nullable
                   as int,
+        policeMvpNickname: freezed == policeMvpNickname
+            ? _value.policeMvpNickname
+            : policeMvpNickname // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        robberMvpNickname: freezed == robberMvpNickname
+            ? _value.robberMvpNickname
+            : robberMvpNickname // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -162,6 +190,8 @@ class _$GameResultEntityImpl implements _GameResultEntity {
     required this.durationSeconds,
     required this.totalArrestCount,
     required this.remainingRobberCount,
+    this.policeMvpNickname,
+    this.robberMvpNickname,
   });
 
   /// 승리 팀 ("POLICE" | "ROBBER")
@@ -180,9 +210,15 @@ class _$GameResultEntityImpl implements _GameResultEntity {
   @override
   final int remainingRobberCount;
 
+  /// 경찰·도둑 팀 MVP 닉네임 — 없으면 null (MVP 공개 화면은 null 팀을 건너뛴다)
+  @override
+  final String? policeMvpNickname;
+  @override
+  final String? robberMvpNickname;
+
   @override
   String toString() {
-    return 'GameResultEntity(winnerTeam: $winnerTeam, durationSeconds: $durationSeconds, totalArrestCount: $totalArrestCount, remainingRobberCount: $remainingRobberCount)';
+    return 'GameResultEntity(winnerTeam: $winnerTeam, durationSeconds: $durationSeconds, totalArrestCount: $totalArrestCount, remainingRobberCount: $remainingRobberCount, policeMvpNickname: $policeMvpNickname, robberMvpNickname: $robberMvpNickname)';
   }
 
   @override
@@ -197,7 +233,11 @@ class _$GameResultEntityImpl implements _GameResultEntity {
             (identical(other.totalArrestCount, totalArrestCount) ||
                 other.totalArrestCount == totalArrestCount) &&
             (identical(other.remainingRobberCount, remainingRobberCount) ||
-                other.remainingRobberCount == remainingRobberCount));
+                other.remainingRobberCount == remainingRobberCount) &&
+            (identical(other.policeMvpNickname, policeMvpNickname) ||
+                other.policeMvpNickname == policeMvpNickname) &&
+            (identical(other.robberMvpNickname, robberMvpNickname) ||
+                other.robberMvpNickname == robberMvpNickname));
   }
 
   @override
@@ -207,6 +247,8 @@ class _$GameResultEntityImpl implements _GameResultEntity {
     durationSeconds,
     totalArrestCount,
     remainingRobberCount,
+    policeMvpNickname,
+    robberMvpNickname,
   );
 
   /// Create a copy of GameResultEntity
@@ -227,6 +269,8 @@ abstract class _GameResultEntity implements GameResultEntity {
     required final int durationSeconds,
     required final int totalArrestCount,
     required final int remainingRobberCount,
+    final String? policeMvpNickname,
+    final String? robberMvpNickname,
   }) = _$GameResultEntityImpl;
 
   /// 승리 팀 ("POLICE" | "ROBBER")
@@ -244,6 +288,12 @@ abstract class _GameResultEntity implements GameResultEntity {
   /// 남은 도둑 수
   @override
   int get remainingRobberCount;
+
+  /// 경찰·도둑 팀 MVP 닉네임 — 없으면 null (MVP 공개 화면은 null 팀을 건너뛴다)
+  @override
+  String? get policeMvpNickname;
+  @override
+  String? get robberMvpNickname;
 
   /// Create a copy of GameResultEntity
   /// with the given fields replaced by the non-null parameter values.

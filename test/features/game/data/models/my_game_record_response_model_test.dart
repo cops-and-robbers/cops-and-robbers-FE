@@ -41,4 +41,17 @@ void main() {
       );
     },
   );
+
+  test('carries_is_mvp_into_entity_when_response_marks_me_mvp', () {
+    final model = MyGameRecordResponseModel.fromJson({...json, 'isMvp': true});
+
+    expect(model.toEntity().isMvp, isTrue);
+  });
+
+  // BE #212 이전 서버는 isMvp를 내려주지 않는다 — 파싱이 깨지면 개인 탭 전체가 '-'가 된다.
+  test('treats_me_as_not_mvp_when_older_server_omits_is_mvp', () {
+    final model = MyGameRecordResponseModel.fromJson(json);
+
+    expect(model.toEntity().isMvp, isFalse);
+  });
 }

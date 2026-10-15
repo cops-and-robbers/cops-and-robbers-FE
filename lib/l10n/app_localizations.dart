@@ -2942,6 +2942,36 @@ abstract class AppLocalizations {
   /// **'종료 시점 상태'**
   String get labelFinalStatus;
 
+  /// 게임 종료 결과 카드 — 내가 우리 팀 MVP일 때 거리 옆 왕관 아래 라벨 (경찰·도둑 공통)
+  ///
+  /// In ko, this message translates to:
+  /// **'MVP'**
+  String get labelMvp;
+
+  /// 게임 종료 모달 — 팀 MVP가 있을 때 「게임 종료!」 카드가 흔들린 뒤 바뀌는 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'MVP는 누굴까?!'**
+  String get mvpRevealTease;
+
+  /// MVP 공개 화면 — 경찰 팀 MVP 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 팀 MVP'**
+  String get labelPoliceTeamMvp;
+
+  /// MVP 공개 화면 — 도둑 팀 MVP 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 팀 MVP'**
+  String get labelRobberTeamMvp;
+
+  /// MVP 공개 화면 하단 — 등장 연출이 끝난 뒤에만 보이는 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'탭하면 넘어가요'**
+  String get mvpRevealTapToContinue;
+
   /// 게임 종료 결과 — 종료 시점 상태 값 ALIVE
   ///
   /// In ko, this message translates to:

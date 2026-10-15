@@ -582,6 +582,95 @@ void main() {
       expect(find.text('내 체포 횟수'), findsOneWidget); // 라벨은 그대로
     });
   });
+
+  group('MVP 왕관', () {
+    const entity = GameResultEntity(
+      winnerTeam: 'POLICE',
+      durationSeconds: 1800,
+      totalArrestCount: 12,
+      remainingRobberCount: 0,
+    );
+    const mvpCrown = ValueKey('game_over_mvp_crown');
+
+    testWidgets('shows_crown_next_to_distance_when_police_is_team_mvp', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 51,
+        resultFuture: () async => entity,
+        myRecordFuture: () async => const MyGameRecordEntity(
+          nickname: '살금살금고슴도치',
+          team: 'POLICE',
+          status: 'ALIVE',
+          arrestCount: 5,
+          arrestedCount: 0,
+          isMvp: true,
+        ),
+      );
+
+      expect(find.byKey(mvpCrown), findsOneWidget);
+      expect(find.text('MVP'), findsOneWidget);
+    });
+
+    // 경찰·도둑 대등 원칙 — 잡힘이 가장 적었던 도둑 MVP도 같은 표시를 받는다.
+    testWidgets('shows_crown_when_robber_is_team_mvp_in_dark_mode', (
+      tester,
+    ) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 52,
+        resultFuture: () async => entity,
+        myTeam: 'ROBBER',
+        isDarkMode: true,
+        myRecordFuture: () async => const MyGameRecordEntity(
+          nickname: '재빠른너구리',
+          team: 'ROBBER',
+          status: 'ALIVE',
+          arrestCount: 0,
+          arrestedCount: 0,
+          isMvp: true,
+        ),
+      );
+
+      expect(find.byKey(mvpCrown), findsOneWidget);
+    });
+
+    testWidgets('hides_crown_when_i_am_not_team_mvp', (tester) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 53,
+        resultFuture: () async => entity,
+      );
+
+      expect(find.byKey(mvpCrown), findsNothing);
+    });
+
+    // 30분 내내 뛰어다닌 경찰 MVP — 두 자리 km 거리 옆에 왕관이 붙어도 넘치지 않아야 한다.
+    testWidgets('fits_crown_beside_double_digit_km_distance', (tester) async {
+      await pumpGameOverDialog(
+        tester,
+        gameResultId: 54,
+        resultFuture: () async => entity,
+        record: PlayerGameRecord(
+          distanceMeters: 12340,
+          endedAt: DateTime(2026, 10, 14, 19, 28),
+        ),
+        myRecordFuture: () async => const MyGameRecordEntity(
+          nickname: '살금살금고슴도치',
+          team: 'POLICE',
+          status: 'ALIVE',
+          arrestCount: 5,
+          arrestedCount: 0,
+          isMvp: true,
+        ),
+      );
+
+      expect(find.text('12.34 Km'), findsOneWidget);
+      expect(find.byKey(mvpCrown), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
 }
 
 /// 다이얼로그를 pumping하는 헬퍼

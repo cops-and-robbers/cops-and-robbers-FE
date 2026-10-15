@@ -1637,6 +1637,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelFinalStatus => 'Final status';
 
   @override
+  String get labelMvp => 'MVP';
+
+  @override
+  String get mvpRevealTease => 'Who\'s the MVP?!';
+
+  @override
+  String get labelPoliceTeamMvp => 'Cops team MVP';
+
+  @override
+  String get labelRobberTeamMvp => 'Robber team MVP';
+
+  @override
+  String get mvpRevealTapToContinue => 'Tap to continue';
+
+  @override
   String get statusAlive => 'Alive';
 
   @override

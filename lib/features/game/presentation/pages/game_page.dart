@@ -48,6 +48,7 @@ import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
 import '../../domain/entities/area_shape.dart';
 import '../../domain/arrest_lock_visibility.dart';
+import '../../domain/distance_send_policy.dart';
 import '../../domain/location_send_policy.dart';
 import '../../domain/jail_escape_detector.dart';
 import '../../domain/qr_payload.dart';
@@ -61,6 +62,7 @@ import '../providers/game_result_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
+import '../widgets/game_over_intro_modal.dart';
 import '../widgets/game_over_result_dialog.dart';
 import '../widgets/qr_display_dialog.dart';
 import '../widgets/qr_scanner_page.dart';
@@ -79,7 +81,6 @@ import '../widgets/zone_exit_vignette.dart';
 import 'package:cops_and_robbers/core/constants/game_config.dart';
 import 'package:cops_and_robbers/core/constants/game_status.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
-import 'package:cops_and_robbers/core/constants/game_result_reason.dart';
 import 'package:cops_and_robbers/core/constants/participant_status.dart';
 import '../../../../core/constants/dev_flags.dart';
 import '../widgets/event_arrest_success_dialog.dart';
@@ -152,6 +153,8 @@ class _GamePageState extends ConsumerState<GamePage>
   StreamSubscription<Position>? _locationSubscription;
   Position? _lastSentPosition;
   DateTime? _lastSentTime;
+  DateTime? _lastDistanceSentTime;
+  double? _lastSentDistanceMeters;
 
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
   DateTime? _lastHandledPoliceMove;
@@ -779,6 +782,31 @@ class _GamePageState extends ConsumerState<GamePage>
     }
   }
 
+  /// 내 누적 이동 거리를 30초마다 서버로 보낸다 (양 팀, 팀 MVP 동점 판정용 — BE #212).
+  ///
+  /// 서버는 게임 종료 순간 이미 받은 값으로 즉시 판정하므로 끝날 때가 아니라 게임 중에 보낸다.
+  /// 이벤트 게임은 서버가 MVP를 판정하지 않으므로 보내지 않는다.
+  void _maybePublishDistance() {
+    if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) return;
+    if (ref.read(gameEventNotifierProvider).connectionState !=
+        StompConnectionState.connected) {
+      return;
+    }
+    final now = DateTime.now();
+    final meters = ref.read(playerGameRecordNotifierProvider).distanceMeters;
+    if (!shouldSendDistance(
+      lastSentTime: _lastDistanceSentTime,
+      now: now,
+      lastSentMeters: _lastSentDistanceMeters,
+      currentMeters: meters,
+    )) {
+      return;
+    }
+    _gameEventDatasource?.publishDistance(_gameId, meters);
+    _lastDistanceSentTime = now;
+    _lastSentDistanceMeters = meters;
+  }
+
   /// 단일 GPS 스트림(양 팀): 구역 이탈 감지 + (도둑·연결됨) 위치 전송
   ///
   /// 기존 전송용(distanceFilter 10m)·구역감지용(0) 두 스트림을 하나로 통합하여
@@ -801,6 +829,7 @@ class _GamePageState extends ConsumerState<GamePage>
             _recordNotifier.addPoint(
               LatLngModel(latitude: pos.latitude, longitude: pos.longitude),
             );
+            _maybePublishDistance();
 
             // 2) 위치 전송 — 도둑 팀, STOMP 연결 상태에서만
             if (!GameTeam.isRobber(widget.team)) return;
@@ -1536,36 +1565,18 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
-    // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)
-    final l10n = AppLocalizations.of(context);
-    await AppPopup.show(
+    // 1단계: 게임 종료 알림 + 팀 MVP 공개 (DEC-0093 ⑤).
+    // MVP가 없으면(이전 서버·이벤트 게임·조회 실패) 예전 팝업처럼 3초 뒤 닫힌다.
+    // 결과는 위에서 사전 트리거한 같은 provider Future를 넘긴다(keepAlive 캐시).
+    final isEventGame =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    await GameOverIntroModal.show(
       context: context,
-      autoCloseDuration: const Duration(seconds: 3),
-      backgroundColor: _isDarkMode ? AppColors.black : null,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n.gameOverBannerTitle,
-            style: _isDarkMode
-                ? AppTextStyles.robberHeading.copyWith(color: AppColors.green)
-                : AppTextStyles.heading_20.copyWith(color: AppColors.black),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppSpacing.vertical8),
-          Text(
-            gameOverReasonMessage(l10n, reason),
-            style: _isDarkMode
-                ? AppTextStyles.paragraph_14_100.copyWith(
-                    color: AppColors.black400,
-                  )
-                : AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black600,
-                  ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+      isDarkMode: _isDarkMode,
+      reason: reason,
+      result: gameResultId == null || isEventGame
+          ? null
+          : ref.read(gameResultProvider(gameResultId).future),
     );
 
     if (!mounted) return;
