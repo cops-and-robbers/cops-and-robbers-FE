@@ -139,13 +139,14 @@ struct GameStatusCard: View {
         .font(theme.timerFont)
         .foregroundColor(theme.primary)
     } else {
+      // 라벨을 앞에 둔다 — 타이머 Text는 가능한 최대 폭을 차지해, 뒤에 두면 라벨이 카드 가운데로 밀린다.
       HStack(alignment: .firstTextBaseline, spacing: 6) {
-        CountdownText(until: model.endAt)
-          .font(theme.timerFont)
-          .foregroundColor(theme.primary)
         Text(model.remainingTimeLabel)
           .font(.cardFont(13))
           .foregroundColor(theme.secondary)
+        CountdownText(until: model.endAt)
+          .font(theme.timerFont)
+          .foregroundColor(theme.primary)
       }
     }
   }
