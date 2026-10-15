@@ -30,3 +30,11 @@ String resultCharacterAssetPath({
 }) {
   return 'assets/characters/$team/result/default/${result}_$part.svg';
 }
+
+/// MVP 공개 화면 캐릭터 SVG 경로.
+///
+/// - [team] `'police'` | `'robber'`
+// ponytail: 디자이너 MVP 에셋 전까지 홈 전신 그림을 쓴다. 오면
+// 'assets/characters/$team/mvp/default/mvp.svg'로 바꾸고 pubspec.yaml에 폴더를 등록한다.
+String mvpCharacterAssetPath({required String team}) =>
+    characterAssetPath(team: team, state: 'home');

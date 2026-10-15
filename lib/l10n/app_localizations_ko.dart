@@ -1535,6 +1535,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelMvp => 'MVP';
 
   @override
+  String get mvpRevealTease => 'MVP는 누굴까?!';
+
+  @override
+  String get labelPoliceTeamMvp => '경찰 팀 MVP';
+
+  @override
+  String get labelRobberTeamMvp => '도둑 팀 MVP';
+
+  @override
+  String get mvpRevealTapToContinue => '탭하면 넘어가요';
+
+  @override
   String get statusAlive => '생존';
 
   @override

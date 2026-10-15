@@ -62,6 +62,7 @@ import '../providers/game_result_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
+import '../widgets/game_over_intro_modal.dart';
 import '../widgets/game_over_result_dialog.dart';
 import '../widgets/qr_display_dialog.dart';
 import '../widgets/qr_scanner_page.dart';
@@ -80,7 +81,6 @@ import '../widgets/zone_exit_vignette.dart';
 import 'package:cops_and_robbers/core/constants/game_config.dart';
 import 'package:cops_and_robbers/core/constants/game_status.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
-import 'package:cops_and_robbers/core/constants/game_result_reason.dart';
 import 'package:cops_and_robbers/core/constants/participant_status.dart';
 import '../../../../core/constants/dev_flags.dart';
 import '../widgets/event_arrest_success_dialog.dart';
@@ -1565,36 +1565,18 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
-    // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)
-    final l10n = AppLocalizations.of(context);
-    await AppPopup.show(
+    // 1단계: 게임 종료 알림 + 팀 MVP 공개 (DEC-0093 ⑤).
+    // MVP가 없으면(이전 서버·이벤트 게임·조회 실패) 예전 팝업처럼 3초 뒤 닫힌다.
+    // 결과는 위에서 사전 트리거한 같은 provider Future를 넘긴다(keepAlive 캐시).
+    final isEventGame =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    await GameOverIntroModal.show(
       context: context,
-      autoCloseDuration: const Duration(seconds: 3),
-      backgroundColor: _isDarkMode ? AppColors.black : null,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n.gameOverBannerTitle,
-            style: _isDarkMode
-                ? AppTextStyles.robberHeading.copyWith(color: AppColors.green)
-                : AppTextStyles.heading_20.copyWith(color: AppColors.black),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppSpacing.vertical8),
-          Text(
-            gameOverReasonMessage(l10n, reason),
-            style: _isDarkMode
-                ? AppTextStyles.paragraph_14_100.copyWith(
-                    color: AppColors.black400,
-                  )
-                : AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black600,
-                  ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+      isDarkMode: _isDarkMode,
+      reason: reason,
+      result: gameResultId == null || isEventGame
+          ? null
+          : ref.read(gameResultProvider(gameResultId).future),
     );
 
     if (!mounted) return;
