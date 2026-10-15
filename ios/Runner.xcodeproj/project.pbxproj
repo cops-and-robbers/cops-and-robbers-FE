@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		15CB9D9D8AAF29ED6F2A6738 /* GameStatusActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33BD7DE3B8BCE089D94CBBB2 /* GameStatusActivityManager.swift */; };
-		2256357EDD9E151F985B769A /* Pretendard-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7E8230E3874839E4B326385F /* Pretendard-SemiBold.ttf */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		355E94CB10B10465338BF339 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 08FBD5AD3B022C376C54CD65 /* Assets.xcassets */; };
 		39EDD86485900A7263718156 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0402095D0CA2206C2DEB8453 /* Pods_RunnerTests.framework */; };
@@ -25,7 +24,6 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A1B2C3D40000000000000020 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000010 /* InfoPlist.strings */; };
 		CD1D8A44696441B6AA2F4F17 /* GameStatusAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312715D10469707EFD4FF62B /* GameStatusAttributes.swift */; };
-		D20F007B2528A23A891632FC /* Moneygraphy-Pixel.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 817A107F89CF55C3D68226D3 /* Moneygraphy-Pixel.ttf */; };
 		DFCD060CADB86995D93590CE /* GameStatusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69542730BF6E928D90B12409 /* GameStatusCard.swift */; };
 		FF0185575ADAFFF54CF1235B /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 058107DD45658C40645C4884 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
@@ -91,9 +89,7 @@
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
-		7E8230E3874839E4B326385F /* Pretendard-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pretendard-SemiBold.ttf"; sourceTree = "<group>"; };
 		7F662E43DCD7E69BFDCC8DA7 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
-		817A107F89CF55C3D68226D3 /* Moneygraphy-Pixel.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "Moneygraphy-Pixel.ttf"; sourceTree = "<group>"; };
 		819124FD2F02D2F900CB4FFA /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
@@ -165,7 +161,6 @@
 				E2846180B3B0EE7992D5EE02 /* LiveActivity.xcconfig */,
 				69542730BF6E928D90B12409 /* GameStatusCard.swift */,
 				08FBD5AD3B022C376C54CD65 /* Assets.xcassets */,
-				CDC9099F028A5BBFB1C6FBF3 /* Fonts */,
 			);
 			name = LiveActivity;
 			path = LiveActivity;
@@ -224,16 +219,6 @@
 				33BD7DE3B8BCE089D94CBBB2 /* GameStatusActivityManager.swift */,
 			);
 			path = Runner;
-			sourceTree = "<group>";
-		};
-		CDC9099F028A5BBFB1C6FBF3 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				7E8230E3874839E4B326385F /* Pretendard-SemiBold.ttf */,
-				817A107F89CF55C3D68226D3 /* Moneygraphy-Pixel.ttf */,
-			);
-			name = Fonts;
-			path = Fonts;
 			sourceTree = "<group>";
 		};
 		E62DC353A89F7CDE885161A5 /* Pods */ = {
@@ -381,8 +366,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				355E94CB10B10465338BF339 /* Assets.xcassets in Resources */,
-				2256357EDD9E151F985B769A /* Pretendard-SemiBold.ttf in Resources */,
-				D20F007B2528A23A891632FC /* Moneygraphy-Pixel.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

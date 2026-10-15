@@ -43,6 +43,10 @@ class MyGameRecordResponseModel with _$MyGameRecordResponseModel {
 
     /// 게임 중 퇴장한 시각. 끝까지 있었으면 null
     String? leftAt,
+
+    /// 내가 우리 팀 MVP인지 (BE #212). 팀당 1명만 true다(동점은 서버가 이동 거리로 가린다).
+    /// 필드가 없는 구버전 서버 응답은 false로 읽는다.
+    @Default(false) bool isMvp,
   }) = _MyGameRecordResponseModel;
 
   factory MyGameRecordResponseModel.fromJson(Map<String, dynamic> json) =>
@@ -60,5 +64,6 @@ extension MyGameRecordResponseModelX on MyGameRecordResponseModel {
     status: status,
     arrestCount: arrestCount,
     arrestedCount: arrestedCount,
+    isMvp: isMvp,
   );
 }

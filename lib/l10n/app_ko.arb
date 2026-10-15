@@ -1518,6 +1518,26 @@
   "@labelFinalStatus": {
     "description": "게임 종료 결과 개인 탭 — 도둑의 종료 시점 상태 라벨 (값은 statusAlive/statusJailed)"
   },
+  "labelMvp": "MVP",
+  "@labelMvp": {
+    "description": "게임 종료 결과 카드 — 내가 우리 팀 MVP일 때 거리 옆 왕관 아래 라벨 (경찰·도둑 공통)"
+  },
+  "mvpRevealTease": "MVP는 누굴까?!",
+  "@mvpRevealTease": {
+    "description": "게임 종료 모달 — 팀 MVP가 있을 때 「게임 종료!」 카드가 흔들린 뒤 바뀌는 문구"
+  },
+  "labelPoliceTeamMvp": "경찰 팀 MVP",
+  "@labelPoliceTeamMvp": {
+    "description": "MVP 공개 화면 — 경찰 팀 MVP 라벨"
+  },
+  "labelRobberTeamMvp": "도둑 팀 MVP",
+  "@labelRobberTeamMvp": {
+    "description": "MVP 공개 화면 — 도둑 팀 MVP 라벨"
+  },
+  "mvpRevealTapToContinue": "탭하면 넘어가요",
+  "@mvpRevealTapToContinue": {
+    "description": "MVP 공개 화면 하단 — 등장 연출이 끝난 뒤에만 보이는 안내"
+  },
   "statusAlive": "생존",
   "@statusAlive": {
     "description": "게임 종료 결과 — 종료 시점 상태 값 ALIVE"

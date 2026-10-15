@@ -15,6 +15,7 @@ _$MyGameRecordResponseModelImpl _$$MyGameRecordResponseModelImplFromJson(
   arrestCount: (json['arrestCount'] as num).toInt(),
   arrestedCount: (json['arrestedCount'] as num).toInt(),
   leftAt: json['leftAt'] as String?,
+  isMvp: json['isMvp'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$$MyGameRecordResponseModelImplToJson(
@@ -26,4 +27,5 @@ Map<String, dynamic> _$$MyGameRecordResponseModelImplToJson(
   'arrestCount': instance.arrestCount,
   'arrestedCount': instance.arrestedCount,
   'leftAt': instance.leftAt,
+  'isMvp': instance.isMvp,
 };
