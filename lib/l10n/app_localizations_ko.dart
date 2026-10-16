@@ -1203,9 +1203,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startMissionRobber => '끝날 때까지 잡히지 말고 도망치세요';
 
   @override
-  String get startMissionLabel => '미션';
-
-  @override
   String get startWaitCountdownLabel => '경찰 출동까지';
 
   @override

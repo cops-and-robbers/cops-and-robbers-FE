@@ -2306,12 +2306,6 @@ abstract class AppLocalizations {
   /// **'끝날 때까지 잡히지 말고 도망치세요'**
   String get startMissionRobber;
 
-  /// 대기·설명 화면 미션 줄 앞 팀색 라벨
-  ///
-  /// In ko, this message translates to:
-  /// **'미션'**
-  String get startMissionLabel;
-
   /// 대기·설명 화면 큰 남은 시간 위 라벨 (경찰·도둑 공통)
   ///
   /// In ko, this message translates to:

@@ -1286,9 +1286,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startMissionRobber => 'Don\'t get caught until time runs out';
 
   @override
-  String get startMissionLabel => 'Mission';
-
-  @override
   String get startWaitCountdownLabel => 'Cops move out in';
 
   @override

@@ -1079,10 +1079,6 @@
   "@startMissionRobber": {
     "description": "도둑 미션 한 줄 (역할 배너·설명 화면)"
   },
-  "startMissionLabel": "미션",
-  "@startMissionLabel": {
-    "description": "대기·설명 화면 미션 줄 앞 팀색 라벨"
-  },
   "startWaitCountdownLabel": "경찰 출동까지",
   "@startWaitCountdownLabel": {
     "description": "대기·설명 화면 큰 남은 시간 위 라벨 (경찰·도둑 공통)"

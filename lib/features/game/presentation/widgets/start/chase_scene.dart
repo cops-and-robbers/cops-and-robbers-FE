@@ -189,12 +189,6 @@ class _ChaseSceneState extends State<ChaseScene> {
                   right: 0,
                   child: Center(child: _title(l10n)),
                 ),
-                Positioned(
-                  top: 244 * s,
-                  left: 0,
-                  right: 0,
-                  child: _mission(l10n),
-                ),
                 Positioned.fill(
                   child: CustomSingleChildLayout(
                     delegate: _RuleSlot(
@@ -328,27 +322,6 @@ class _ChaseSceneState extends State<ChaseScene> {
     );
   }
 
-  Widget _mission(AppLocalizations l10n) {
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-            text: l10n.startMissionLabel,
-            style: AppTextStyles.paragraph14Semibold.copyWith(color: _team),
-          ),
-          const TextSpan(text: ' '),
-          TextSpan(
-            text: _isPolice ? l10n.startMissionPolice : l10n.startMissionRobber,
-            style: AppTextStyles.paragraph_14.copyWith(
-              color: _isPolice ? AppColors.black800 : AppColors.black100,
-            ),
-          ),
-        ],
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-
   /// 앞 캐릭터의 아래 끝(목업 y). 폭 96에 SVG 비율(고양이 272×323, 쥐 248×243)을 곱한 높이.
   double get _nearBottom =>
       _isPolice ? 400 + 96 * 323 / 272 : 392 + 96 * 243 / 248;
@@ -437,7 +410,7 @@ class _ChaseSceneState extends State<ChaseScene> {
         tallest,
         height(_counter(l10n, i, rules.length), AppTextStyles.tag12Semibold) +
             4 * s +
-            height(rules[i], AppTextStyles.paragraph_16),
+            height(rules[i], AppTextStyles.paragraph_14),
       );
     }
     return tallest;
@@ -472,7 +445,8 @@ class _ChaseSceneState extends State<ChaseScene> {
           SizedBox(height: 4 * s),
           Text(
             rules[index],
-            style: AppTextStyles.paragraph_16.copyWith(
+            // 숫자·제목보다 한 단계 아래 — 16이면 제목(18)과 경쟁해 화면이 난잡해 보였다
+            style: AppTextStyles.paragraph_14.copyWith(
               color: _isPolice ? AppColors.black800 : AppColors.black100,
             ),
           ),
@@ -485,7 +459,7 @@ class _ChaseSceneState extends State<ChaseScene> {
 /// 규칙 블록 자리(왼쪽 20·폭 205). 목업대로 아래(bottom 56)에 두되 앞 캐릭터와 겹치면
 /// 발 아래로 내린다. 가장 긴 규칙이 발 아래에 안 들어가는 화면(16:9 375×667·360×640,
 /// 영어 4줄 규칙의 360×740 등)은 하늘 쪽, 멀어지는 캐릭터가 가장 클 때의 머리(y 370)
-/// 위로 올리고 폭을 260으로 넓혀 미션 줄에 닿지 않게 줄 수를 줄인다.
+/// 위로 올리고 폭을 260으로 넓혀 제목에 닿지 않게 줄 수를 줄인다.
 class _RuleSlot extends SingleChildLayoutDelegate {
   const _RuleSlot({
     required this.scale,

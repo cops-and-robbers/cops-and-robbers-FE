@@ -327,6 +327,23 @@ void main() {
     await unmount(tester);
   });
 
+  // 정보가 많아 난잡하다는 리뷰 — 미션은 방금 본 역할 배너와 규칙 1번(승리 조건)에 이미 있다
+  testWidgets('police_wait_leaves_mission_to_role_banner_when_shown', (
+    tester,
+  ) async {
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.policeWait,
+      isPolice: true,
+      elapsed: const Duration(minutes: 2),
+    );
+    expect(
+      find.textContaining('도둑을 찾아 QR로 모두 체포하세요', findRichText: true),
+      findsNothing,
+    );
+    await unmount(tester);
+  });
+
   // 도둑 설명 화면도 ⓘ와 같은 "게임 규칙 n/m" 라벨을 쓴다
   testWidgets('robber_explainer_numbers_rules_as_game_rules_when_shown', (
     tester,
@@ -558,11 +575,11 @@ void main() {
     },
   );
 
-  // ⓘ 다시 보기 영어 규칙은 두 줄이 4줄까지 길어진다 — 짧은 폰에서도 미션 줄·앞 캐릭터와 겹치지 않아야 한다
+  // ⓘ 다시 보기 영어 규칙은 두 줄이 4줄까지 길어진다 — 짧은 폰에서도 제목·앞 캐릭터와 겹치지 않아야 한다
   for (final size in const [Size(375, 667), Size(360, 640), Size(360, 740)]) {
     for (final isPolice in [true, false]) {
       testWidgets(
-        'rulesReplay_english_rules_stay_clear_of_mission_and_character_when_'
+        'rulesReplay_english_rules_stay_clear_of_title_and_character_when_'
         '${isPolice ? 'police' : 'robber'}_phone_is_'
         '${size.width.toInt()}x${size.height.toInt()}',
         (tester) async {
@@ -575,10 +592,9 @@ void main() {
             locale: const Locale('en'),
           );
           final l10n = lookupAppLocalizations(const Locale('en'));
-          final mission = tester.getRect(
-            find.textContaining(
-              isPolice ? l10n.startMissionPolice : l10n.startMissionRobber,
-              findRichText: true,
+          final title = tester.getRect(
+            find.text(
+              isPolice ? l10n.startWaitPoliceTitle : l10n.startWaitRobberTitle,
             ),
           );
           final near = tester.getRect(find.byType(RunCycle).last);
@@ -592,9 +608,9 @@ void main() {
                   .first,
             );
             expect(
-              rule.overlaps(mission),
+              rule.overlaps(title),
               isFalse,
-              reason: '규칙 $i: $rule / 미션 $mission',
+              reason: '규칙 $i: $rule / 제목 $title',
             );
             expect(
               rule.overlaps(near),
