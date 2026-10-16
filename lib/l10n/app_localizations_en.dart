@@ -1268,6 +1268,105 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ Screen locks if you leave the zone';
 
   @override
+  String get gameRulesPingPrefix => '';
+
+  @override
+  String get gameRulesPingHighlight => 'Long-press the map';
+
+  @override
+  String get gameRulesPingSuffix => ' to drop a ping for your team';
+
+  @override
+  String get startRoleLabel => 'Your role';
+
+  @override
+  String get startMissionPolice => 'Find the Robbers and arrest them all by QR';
+
+  @override
+  String get startMissionRobber => 'Don\'t get caught until time runs out';
+
+  @override
+  String get startMissionLabel => 'Mission';
+
+  @override
+  String get startWaitCountdownLabel => 'Cops move out in';
+
+  @override
+  String get startGameTimeLeftLabel => 'Game time left';
+
+  @override
+  String get startWaitPoliceTitle => 'The Robbers are getting away';
+
+  @override
+  String get startWaitRobberTitle => 'You\'re getting away from the Cops';
+
+  @override
+  String startRulesCounter(int current, int total) {
+    return 'Game rules $current/$total';
+  }
+
+  @override
+  String get startRuleQrArrest => 'Scan a Robber\'s QR to arrest them';
+
+  @override
+  String get startRulePing => 'Long-press the map to drop a ping for your team';
+
+  @override
+  String startRuleRobberReveal(int minutes) {
+    return 'Robber locations are revealed to the Cops every $minutes min';
+  }
+
+  @override
+  String get startRuleZoneLock => 'Your screen locks if you leave the zone';
+
+  @override
+  String get startRuleQrCaught => 'You\'re caught when the Cops scan your QR';
+
+  @override
+  String startRuleMyReveal(int minutes) {
+    return 'Your location is revealed to the Cops every $minutes min';
+  }
+
+  @override
+  String get startRuleJailbreak =>
+      'If caught, you go to Jail. Step outside for 3 seconds to escape';
+
+  @override
+  String get startRuleWin =>
+      'Cops win by arresting every Robber, Robbers win by lasting until time runs out';
+
+  @override
+  String startRuleTeamReveal(int minutes) {
+    return 'Robber locations are shared with the Cops every $minutes min';
+  }
+
+  @override
+  String get startRuleZone =>
+      'Stay inside the game zone. Your screen locks if you leave it';
+
+  @override
+  String get startRuleJailbreakReplay =>
+      'Caught Robbers go to Jail and escape after 3 seconds outside it';
+
+  @override
+  String get startTapToMap => 'Tap to return to the map';
+
+  @override
+  String get dispatchPoliceLead => 'Time\'s up';
+
+  @override
+  String get dispatchPoliceMain => 'Move out!';
+
+  @override
+  String get dispatchRobberLead => 'The Cops are moving';
+
+  @override
+  String get dispatchRobberMain => 'Watch out!';
+
+  @override
+  String get startRulesHint => 'Tap ⓘ at the top right to see the rules again';
+
+  @override
   String get unitPerson => 'people';
 
   @override

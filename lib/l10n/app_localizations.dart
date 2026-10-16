@@ -2270,6 +2270,180 @@ abstract class AppLocalizations {
   /// **'\n→ 구역 밖으로 나가면 화면이 잠겨요'**
   String get gameRulesZoneRuleLine2;
 
+  /// 게임 규칙 — 핑 앞 조각 (대기실 다이얼로그 4번)
+  ///
+  /// In ko, this message translates to:
+  /// **'지도를 '**
+  String get gameRulesPingPrefix;
+
+  /// 게임 규칙 — 핑 강조 조각
+  ///
+  /// In ko, this message translates to:
+  /// **'길게 누르면'**
+  String get gameRulesPingHighlight;
+
+  /// 게임 규칙 — 핑 뒤 조각
+  ///
+  /// In ko, this message translates to:
+  /// **' 핑을 찍어 우리 팀에 알릴 수 있어요'**
+  String get gameRulesPingSuffix;
+
+  /// 게임 시작 역할 배너 — 팀 이름 위 작은 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'내 역할'**
+  String get startRoleLabel;
+
+  /// 경찰 미션 한 줄 (역할 배너·대기 화면)
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑을 찾아 QR로 모두 체포하세요'**
+  String get startMissionPolice;
+
+  /// 도둑 미션 한 줄 (역할 배너·설명 화면)
+  ///
+  /// In ko, this message translates to:
+  /// **'끝날 때까지 잡히지 말고 도망치세요'**
+  String get startMissionRobber;
+
+  /// 대기·설명 화면 미션 줄 앞 팀색 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'미션'**
+  String get startMissionLabel;
+
+  /// 대기·설명 화면 큰 남은 시간 위 라벨 (경찰·도둑 공통)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 출동까지'**
+  String get startWaitCountdownLabel;
+
+  /// 출동 뒤 규칙 다시 보기에서 카운트다운 자리의 남은 게임 시간 위 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 게임 시간'**
+  String get startGameTimeLeftLabel;
+
+  /// 경찰 대기 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑이 도망치는 중이에요'**
+  String get startWaitPoliceTitle;
+
+  /// 도둑 설명 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰에게서 멀어지는 중이에요'**
+  String get startWaitRobberTitle;
+
+  /// 경찰 대기·도둑 설명 화면과 규칙 다시 보기의 회전 규칙 번호
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 규칙 {current}/{total}'**
+  String startRulesCounter(int current, int total);
+
+  /// 규칙 — 경찰 QR 체포
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑의 QR을 스캔하면 체포돼요'**
+  String get startRuleQrArrest;
+
+  /// 규칙 — 핑(같은 팀에만 보임)
+  ///
+  /// In ko, this message translates to:
+  /// **'지도를 길게 누르면 핑을 찍어 우리 팀에 알릴 수 있어요'**
+  String get startRulePing;
+
+  /// 규칙(경찰 시점) — 도둑 위치 주기 공개, minutes = 방 설정
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 위치는 {minutes}분마다 경찰에게 공개돼요'**
+  String startRuleRobberReveal(int minutes);
+
+  /// 규칙 — 구역 이탈 시 화면 잠김
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 밖으로 나가면 화면이 잠겨요'**
+  String get startRuleZoneLock;
+
+  /// 규칙(도둑 시점) — QR 스캔되면 잡힘
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰이 내 QR을 스캔하면 잡혀요'**
+  String get startRuleQrCaught;
+
+  /// 규칙(도둑 시점) — 내 위치 주기 공개
+  ///
+  /// In ko, this message translates to:
+  /// **'내 위치는 {minutes}분마다 경찰에게 공개돼요'**
+  String startRuleMyReveal(int minutes);
+
+  /// 규칙(도둑 시점) — 탈옥. 3초는 JailEscapeDetector.minOutsideDuration
+  ///
+  /// In ko, this message translates to:
+  /// **'잡히면 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥돼요'**
+  String get startRuleJailbreak;
+
+  /// 규칙 다시 보기 1 — 승리 조건
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰은 모든 도둑을 체포하면, 도둑은 제한 시간이 끝날 때까지 버티면 승리해요'**
+  String get startRuleWin;
+
+  /// 규칙 다시 보기 2 — 위치 공유 주기
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑팀의 위치는 {minutes}분마다 경찰팀에게 공유돼요'**
+  String startRuleTeamReveal(int minutes);
+
+  /// 규칙 다시 보기 3 — 구역
+  ///
+  /// In ko, this message translates to:
+  /// **'지정된 게임 구역에서 벗어나면 안 돼요. 구역 밖으로 나가면 화면이 잠겨요'**
+  String get startRuleZone;
+
+  /// 규칙 다시 보기 6 — 탈옥(팀 공통 시점)
+  ///
+  /// In ko, this message translates to:
+  /// **'잡힌 도둑은 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥해요'**
+  String get startRuleJailbreakReplay;
+
+  /// 도둑 설명 화면 아래 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'탭하면 지도로 돌아가요'**
+  String get startTapToMap;
+
+  /// 출동 배너(경찰) 작은 줄
+  ///
+  /// In ko, this message translates to:
+  /// **'시간이 됐어요'**
+  String get dispatchPoliceLead;
+
+  /// 출동 배너(경찰) 큰 줄
+  ///
+  /// In ko, this message translates to:
+  /// **'출동!'**
+  String get dispatchPoliceMain;
+
+  /// 출동 배너(도둑) 작은 줄
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰이 출동했어요'**
+  String get dispatchRobberLead;
+
+  /// 출동 배너(도둑) 큰 줄
+  ///
+  /// In ko, this message translates to:
+  /// **'조심!'**
+  String get dispatchRobberMain;
+
+  /// ⓘ 위치 1회 안내 — 위쪽 공지 배너
+  ///
+  /// In ko, this message translates to:
+  /// **'규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요'**
+  String get startRulesHint;
+
   /// 공통 — 인원수 단위 (명)
   ///
   /// In ko, this message translates to:
