@@ -74,8 +74,8 @@ class AppLoading {
     ).read(roleThemeProvider);
     final backgroundColor = isDarkMode ? AppColors.black : AppColors.white;
 
-    // 자기 라우트만 정확히 닫기 위해 dialog route의 context를 캡처한다
-    BuildContext? dialogContext;
+    // 자기 라우트만 정확히 닫기 위해 dialog route를 캡처한다
+    ModalRoute<Object?>? dialogRoute;
 
     showGeneralDialog<void>(
       context: context,
@@ -85,7 +85,7 @@ class AppLoading {
       barrierColor: backgroundColor,
       transitionDuration: DialogAnimation.duration,
       pageBuilder: (ctx, animation, secondaryAnimation) {
-        dialogContext = ctx;
+        dialogRoute = ModalRoute.of(ctx);
         return PopScope(
           // 로딩 중 뒤로가기 차단 (Overlay로는 막을 수 없어 dialog route를 쓴다)
           canPop: false,
@@ -103,8 +103,16 @@ class AppLoading {
     return LoadingHandle._(
       shownAt: DateTime.now(),
       pop: () {
-        final ctx = dialogContext;
-        if (ctx != null && ctx.mounted) Navigator.of(ctx).pop();
+        // 다른 화면 전환(go)으로 이미 빠지는 중이면 위젯은 붙어 있어도 isActive가 false다.
+        // 이때 pop하면 그 아래 새 화면이 닫히므로 아무것도 하지 않는다.
+        final route = dialogRoute;
+        if (route == null || !route.isActive) return;
+        if (route.isCurrent) {
+          route.navigator!.pop();
+        } else {
+          // 로딩 위에 다른 라우트가 떠 있으면 pop은 그쪽을 닫는다 — 자기만 뺀다
+          route.navigator!.removeRoute(route);
+        }
       },
     );
   }

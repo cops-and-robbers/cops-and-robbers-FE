@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:cops_and_robbers/core/services/loading_message_service.dart';
 import 'package:cops_and_robbers/core/widgets/loading/app_loading.dart';
@@ -145,6 +146,87 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(LoadingContentView), findsOneWidget);
+    });
+
+    // 방장이 게임 시작: 시작 API 응답보다 소켓 GAME_START가 먼저 와 게임 화면으로 go한 직후
+    // 응답이 와서 close()가 불리는 상황. 로딩은 이미 대기실과 함께 빠지는 중이다.
+    testWidgets(
+      'keeps_game_page_when_loading_closes_after_page_replaced_by_go',
+      (tester) async {
+        late BuildContext waitingCtx;
+        final router = GoRouter(
+          initialLocation: '/waiting',
+          routes: [
+            GoRoute(
+              path: '/waiting',
+              builder: (_, _) => Builder(
+                builder: (c) {
+                  waitingCtx = c;
+                  return const Scaffold(body: Text('waiting'));
+                },
+              ),
+            ),
+            GoRoute(
+              path: '/game',
+              builder: (_, _) => const Scaffold(body: Text('game')),
+            ),
+          ],
+        );
+        addTearDown(router.dispose);
+        await tester.pumpWidget(
+          ProviderScope(
+            child: ScreenUtilInit(
+              designSize: const Size(375, 812),
+              builder: (_, _) => MaterialApp.router(
+                locale: const Locale('ko'),
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                routerConfig: router,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final handle = AppLoading.show(waitingCtx, LoadingCategory.startGame);
+        await _settleOverlayIn(tester);
+        // 최소 표시 시간은 실제 시계로 재므로 실제로 흘려보낸다
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 700)),
+        );
+
+        router.go('/game');
+        await tester.pump(); // 대기실과 로딩이 빠지기 시작 (로딩은 아직 붙어 있다)
+        await handle.close();
+        await tester.pump(const Duration(milliseconds: 600));
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('game'), findsOneWidget);
+      },
+    );
+
+    // 로딩 중 세션 만료 안내 같은 다이얼로그가 위에 뜬 뒤 로딩이 닫히는 상황
+    testWidgets('keeps_dialog_above_when_loading_closes_beneath_it', (
+      tester,
+    ) async {
+      final ctx = await _pump(tester);
+
+      final handle = AppLoading.show(ctx, LoadingCategory.startGame);
+      await _settleOverlayIn(tester);
+      showDialog<void>(
+        context: ctx,
+        builder: (_) => const AlertDialog(content: Text('session expired')),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 700)),
+      );
+      await handle.close();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.byType(LoadingContentView), findsNothing);
+      expect(find.text('session expired'), findsOneWidget);
     });
 
     testWidgets('shows_custom_message_when_using_show_message', (tester) async {
