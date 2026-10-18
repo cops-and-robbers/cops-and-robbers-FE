@@ -36,11 +36,13 @@ class PlayerGameRecordNotifier extends _$PlayerGameRecordNotifier {
   @override
   PlayerGameRecord build() => const PlayerGameRecord();
 
-  /// 게임 화면 진입 시 호출 — 같은 게임의 저장 기록이 있으면 복원, 없으면 새로 시작.
+  /// 게임 화면 진입 시 호출 — 같은 라운드의 저장 기록이 있으면 복원, 없으면 새로 시작.
   ///
+  /// 라운드는 [gameId]와 서버 시작 시각 [startedAt]으로 가른다. 같은 방의 다음 라운드는
+  /// gameId가 같아서, 앱이 꺼진 채 끝난 이전 라운드 기록이 이어지면 안 된다 (#641).
   /// 복원 후 첫 점은 새 구간으로 시작한다. 앱이 꺼져 있던 동안의 이동은 알 수 없으므로
   /// 거리에 넣지 않고 지도에서도 잇지 않는다.
-  Future<void> begin(int gameId) async {
+  Future<void> begin(int gameId, {required DateTime? startedAt}) async {
     _last = null;
     _store = null;
     state = const PlayerGameRecord();
@@ -49,7 +51,7 @@ class PlayerGameRecordNotifier extends _$PlayerGameRecordNotifier {
       final store = GameRecordLocalDatasource(
         File('${dir.path}/game_record.txt'),
       );
-      final saved = store.openForGame(gameId);
+      final saved = store.openForGame(gameId, startedAt: startedAt);
       if (saved != null) {
         for (final e in saved) {
           _apply(e);

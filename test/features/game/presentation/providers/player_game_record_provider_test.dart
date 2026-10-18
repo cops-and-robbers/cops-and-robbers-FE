@@ -31,6 +31,10 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
+  // 같은 방(gameId 7)의 1라운드·2라운드 서버 시작 시각
+  final round1 = DateTime.utc(2026, 10, 19, 5);
+  final round2 = round1.add(const Duration(minutes: 25));
+
   PlayerGameRecordNotifier notifier() =>
       container.read(playerGameRecordNotifierProvider.notifier);
 
@@ -82,14 +86,14 @@ void main() {
     test(
       'restores_route_distance_and_markers_when_reentering_same_game_after_restart',
       () async {
-        await notifier().begin(7);
+        await notifier().begin(7, startedAt: round1);
         notifier()
           ..addPoint(a)
           ..addPoint(b)
           ..recordArrest();
 
         restartApp();
-        await notifier().begin(7);
+        await notifier().begin(7, startedAt: round1);
 
         expect(
           container.read(playerGameRecordNotifierProvider),
@@ -103,29 +107,29 @@ void main() {
     );
 
     test('discards_previous_record_when_entering_different_game', () async {
-      await notifier().begin(7);
+      await notifier().begin(7, startedAt: round1);
       notifier()
         ..addPoint(a)
         ..addPoint(b);
 
-      await notifier().begin(8);
+      await notifier().begin(8, startedAt: round1);
       expect(container.read(playerGameRecordNotifierProvider).route, isEmpty);
 
       restartApp();
-      await notifier().begin(7);
+      await notifier().begin(7, startedAt: round1);
       expect(container.read(playerGameRecordNotifierProvider).route, isEmpty);
     });
 
     test(
       'starts_new_segment_without_gap_distance_when_point_follows_restore',
       () async {
-        await notifier().begin(7);
+        await notifier().begin(7, startedAt: round1);
         notifier()
           ..addPoint(a)
           ..addPoint(b);
 
         restartApp();
-        await notifier().begin(7);
+        await notifier().begin(7, startedAt: round1);
         notifier().addPoint(c);
 
         final state = container.read(playerGameRecordNotifierProvider);
@@ -139,16 +143,16 @@ void main() {
     test(
       'keeps_segment_break_when_restored_again_after_second_restart',
       () async {
-        await notifier().begin(7);
+        await notifier().begin(7, startedAt: round1);
         notifier()
           ..addPoint(a)
           ..addPoint(b);
         restartApp();
-        await notifier().begin(7);
+        await notifier().begin(7, startedAt: round1);
         notifier().addPoint(c);
 
         restartApp();
-        await notifier().begin(7);
+        await notifier().begin(7, startedAt: round1);
 
         final state = container.read(playerGameRecordNotifierProvider);
         expect(state.route, const [a, b, c]);
@@ -156,15 +160,35 @@ void main() {
       },
     );
 
+    test(
+      'starts_next_round_from_zero_when_previous_round_ended_while_app_was_dead',
+      () async {
+        await notifier().begin(7, startedAt: round1);
+        notifier()
+          ..addPoint(a)
+          ..addPoint(b);
+
+        // 1라운드 중 앱이 죽고 그대로 판이 끝남 — markEnd가 실행되지 않았다.
+        restartApp();
+        await notifier().begin(7, startedAt: round2);
+
+        // 이전 라운드 거리가 남으면 30초 전송으로 서버 MVP 동점 판정에 들어간다.
+        expect(
+          container.read(playerGameRecordNotifierProvider),
+          const PlayerGameRecord(),
+        );
+      },
+    );
+
     test('discards_saved_record_when_game_ends', () async {
-      await notifier().begin(7);
+      await notifier().begin(7, startedAt: round1);
       notifier()
         ..addPoint(a)
         ..addPoint(b)
         ..markEnd(DateTime(2026, 10, 12));
 
       restartApp();
-      await notifier().begin(7);
+      await notifier().begin(7, startedAt: round1);
 
       expect(container.read(playerGameRecordNotifierProvider).route, isEmpty);
     });
