@@ -1180,6 +1180,10 @@
   "@startRulesHint": {
     "description": "ⓘ 위치 1회 안내 — 위쪽 공지 배너"
   },
+  "gameGridToggle": "좌표 격자",
+  "@gameGridToggle": {
+    "description": "인게임 지도 좌측 하단 좌표 격자 켜기/끄기 버튼의 접근성 라벨 (#636)"
+  },
   "unitPerson": "명",
   "@unitPerson": {
     "description": "공통 — 인원수 단위 (명)"
@@ -2574,6 +2578,46 @@
   "pingCooldownNotice": "잠시 후 다시 시도해주세요",
   "@pingCooldownNotice": {
     "description": "핑 rate-limit 쿨다운 중 안내 (마침표 없음)"
+  },
+  "pingChatFoundRobber": "{cell}에서 도둑을 봤어요",
+  "@pingChatFoundRobber": {
+    "description": "격자를 켠 경찰이 발견 핑을 찍을 때 팀 채팅에 자동으로 올라가는 말 — 보낸 사람 이름으로 나감 (#636)",
+    "placeholders": {
+      "cell": {
+        "type": "String",
+        "example": "C3"
+      }
+    }
+  },
+  "pingChatSuspectRobber": "{cell}에 도둑이 있는 것 같아요",
+  "@pingChatSuspectRobber": {
+    "description": "격자를 켠 경찰이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)",
+    "placeholders": {
+      "cell": {
+        "type": "String",
+        "example": "C3"
+      }
+    }
+  },
+  "pingChatFoundCops": "{cell}에서 경찰을 봤어요",
+  "@pingChatFoundCops": {
+    "description": "격자를 켠 도둑이 발견 핑을 찍을 때 팀 채팅 자동 문구 (#636)",
+    "placeholders": {
+      "cell": {
+        "type": "String",
+        "example": "C3"
+      }
+    }
+  },
+  "pingChatSuspectCops": "{cell}에 경찰이 있는 것 같아요",
+  "@pingChatSuspectCops": {
+    "description": "격자를 켠 도둑이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)",
+    "placeholders": {
+      "cell": {
+        "type": "String",
+        "example": "C3"
+      }
+    }
   },
   "gameLeaveConfirmTitle": "게임에서 나갈까요?",
   "@gameLeaveConfirmTitle": {

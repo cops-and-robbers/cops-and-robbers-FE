@@ -1278,6 +1278,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startRulesHint => 'ルールは右上のⓘからいつでも確認できます';
 
   @override
+  String get gameGridToggle => '座標グリッド';
+
+  @override
   String get unitPerson => '人';
 
   @override
@@ -2525,6 +2528,26 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pingCooldownNotice => 'しばらくしてからもう一度お試しください';
+
+  @override
+  String pingChatFoundRobber(String cell) {
+    return '$cellで泥棒を見かけました';
+  }
+
+  @override
+  String pingChatSuspectRobber(String cell) {
+    return '$cellに泥棒がいるかもしれません';
+  }
+
+  @override
+  String pingChatFoundCops(String cell) {
+    return '$cellで警察を見かけました';
+  }
+
+  @override
+  String pingChatSuspectCops(String cell) {
+    return '$cellに警察がいるかもしれません';
+  }
 
   @override
   String get gameLeaveConfirmTitle => 'ゲームから退場しますか';

@@ -458,6 +458,7 @@
   "dispatchRobberLead": "The Cops are moving",
   "dispatchRobberMain": "Watch out!",
   "startRulesHint": "Tap ⓘ at the top right to see the rules again",
+  "gameGridToggle": "Coordinate grid",
   "unitPerson": "people",
   "unitMinutes": "min",
   "gameSettingNoLocationShareWarning": "The Robbers' locations will not be shared!",
@@ -864,6 +865,10 @@
   "@pingCooldownNotice": {
     "description": "Shown during ping rate-limit cooldown (no trailing period)"
   },
+  "pingChatFoundRobber": "Spotted a robber at {cell}",
+  "pingChatSuspectRobber": "A robber may be at {cell}",
+  "pingChatFoundCops": "Spotted cops at {cell}",
+  "pingChatSuspectCops": "Cops may be at {cell}",
   "gameLeaveConfirmTitle": "Leave the game?",
   "gameLeaveConfirmMessage": "You will leave the game in progress",
   "gameLeaveFailedMessage": "Couldn't leave the game. Please try again",

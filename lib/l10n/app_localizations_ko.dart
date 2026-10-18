@@ -1277,6 +1277,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startRulesHint => '규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요';
 
   @override
+  String get gameGridToggle => '좌표 격자';
+
+  @override
   String get unitPerson => '명';
 
   @override
@@ -2524,6 +2527,26 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pingCooldownNotice => '잠시 후 다시 시도해주세요';
+
+  @override
+  String pingChatFoundRobber(String cell) {
+    return '$cell에서 도둑을 봤어요';
+  }
+
+  @override
+  String pingChatSuspectRobber(String cell) {
+    return '$cell에 도둑이 있는 것 같아요';
+  }
+
+  @override
+  String pingChatFoundCops(String cell) {
+    return '$cell에서 경찰을 봤어요';
+  }
+
+  @override
+  String pingChatSuspectCops(String cell) {
+    return '$cell에 경찰이 있는 것 같아요';
+  }
 
   @override
   String get gameLeaveConfirmTitle => '게임에서 나갈까요?';

@@ -458,6 +458,7 @@
   "dispatchRobberLead": "警察が出動しました",
   "dispatchRobberMain": "気をつけて！",
   "startRulesHint": "ルールは右上のⓘからいつでも確認できます",
+  "gameGridToggle": "座標グリッド",
   "unitPerson": "人",
   "unitMinutes": "分",
   "gameSettingNoLocationShareWarning": "泥棒の位置が公開されません！",
@@ -864,6 +865,10 @@
   "@pingCooldownNotice": {
     "description": "ピンのレート制限クールダウン中に表示"
   },
+  "pingChatFoundRobber": "{cell}で泥棒を見かけました",
+  "pingChatSuspectRobber": "{cell}に泥棒がいるかもしれません",
+  "pingChatFoundCops": "{cell}で警察を見かけました",
+  "pingChatSuspectCops": "{cell}に警察がいるかもしれません",
   "gameLeaveConfirmTitle": "ゲームから退場しますか",
   "gameLeaveConfirmMessage": "進行中のゲームから退場します",
   "gameLeaveFailedMessage": "退場できませんでした。しばらくしてからもう一度お試しください",
