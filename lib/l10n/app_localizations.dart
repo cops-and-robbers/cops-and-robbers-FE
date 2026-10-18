@@ -2438,6 +2438,12 @@ abstract class AppLocalizations {
   /// **'규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요'**
   String get startRulesHint;
 
+  /// 인게임 지도 좌측 하단 좌표 격자 켜기/끄기 버튼의 접근성 라벨 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'좌표 격자'**
+  String get gameGridToggle;
+
   /// 공통 — 인원수 단위 (명)
   ///
   /// In ko, this message translates to:
@@ -4800,6 +4806,30 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'잠시 후 다시 시도해주세요'**
   String get pingCooldownNotice;
+
+  /// 격자를 켠 경찰이 발견 핑을 찍을 때 팀 채팅에 자동으로 올라가는 말 — 보낸 사람 이름으로 나감 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'{cell}에서 도둑을 봤어요'**
+  String pingChatFoundRobber(String cell);
+
+  /// 격자를 켠 경찰이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'{cell}에 도둑이 있는 것 같아요'**
+  String pingChatSuspectRobber(String cell);
+
+  /// 격자를 켠 도둑이 발견 핑을 찍을 때 팀 채팅 자동 문구 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'{cell}에서 경찰을 봤어요'**
+  String pingChatFoundCops(String cell);
+
+  /// 격자를 켠 도둑이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'{cell}에 경찰이 있는 것 같아요'**
+  String pingChatSuspectCops(String cell);
 
   /// 인게임 중도 퇴장 확인 다이얼로그 타이틀
   ///

@@ -1364,6 +1364,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startRulesHint => 'Tap ⓘ at the top right to see the rules again';
 
   @override
+  String get gameGridToggle => 'Coordinate grid';
+
+  @override
   String get unitPerson => 'people';
 
   @override
@@ -2724,6 +2727,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pingCooldownNotice => 'Please try again shortly';
+
+  @override
+  String pingChatFoundRobber(String cell) {
+    return 'Spotted a robber at $cell';
+  }
+
+  @override
+  String pingChatSuspectRobber(String cell) {
+    return 'A robber may be at $cell';
+  }
+
+  @override
+  String pingChatFoundCops(String cell) {
+    return 'Spotted cops at $cell';
+  }
+
+  @override
+  String pingChatSuspectCops(String cell) {
+    return 'Cops may be at $cell';
+  }
 
   @override
   String get gameLeaveConfirmTitle => 'Leave the game?';

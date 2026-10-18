@@ -2168,4 +2168,55 @@ void main() {
       });
     },
   );
+
+  group('좌표 격자 (#636)', () {
+    Finder gridButton() => find.byWidgetPredicate(
+      (w) => w is SvgIconButton && w.assetPath == AppIcons.grid,
+    );
+
+    GoogleMap map(WidgetTester tester) =>
+        tester.widget<GoogleMap>(find.byType(GoogleMap));
+
+    Iterable<Marker> gridLabels(WidgetTester tester) =>
+        map(tester).markers.where((m) => m.markerId.value.startsWith('grid_'));
+
+    testWidgets(
+      'grid_lines_appear_then_disappear_when_player_taps_grid_button_twice',
+      (tester) async {
+        await mount(tester);
+        expect(map(tester).polylines, isEmpty); // 게임마다 꺼진 상태로 시작
+
+        await tester.tap(gridButton());
+        await tester.pump();
+        expect(map(tester).polylines, isNotEmpty);
+
+        await tester.tap(gridButton());
+        await tester.pump();
+        expect(map(tester).polylines, isEmpty);
+      },
+    );
+
+    testWidgets(
+      'grid_labels_hide_when_player_zooms_out_to_see_whole_playground',
+      (tester) async {
+        await mount(tester);
+        await tester.tap(gridButton());
+        // 라벨 비트맵은 실제 이미지 인코딩이라 가짜 시계 밖에서 기다린다
+        await tester.runAsync(() async {
+          for (var i = 0; i < 500 && gridLabels(tester).isEmpty; i++) {
+            await Future<void>.delayed(const Duration(milliseconds: 20));
+            await tester.pump();
+          }
+        });
+        expect(gridLabels(tester), isNotEmpty); // 시작 줌 16에서는 50m 칸 라벨이 읽힌다
+
+        map(tester).onCameraMove!(
+          const CameraPosition(target: LatLng(37.5665, 126.978), zoom: 13),
+        );
+        await tester.pump();
+        expect(gridLabels(tester), isEmpty);
+        expect(map(tester).polylines, isNotEmpty); // 선은 남는다
+      },
+    );
+  });
 }

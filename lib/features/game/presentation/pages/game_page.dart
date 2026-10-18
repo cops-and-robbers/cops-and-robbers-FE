@@ -14,6 +14,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/character_assets.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
@@ -53,6 +54,8 @@ import '../../domain/location_send_policy.dart';
 import '../../domain/jail_escape_detector.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
+import '../../domain/ping_chat_policy.dart';
+import '../../domain/zone_grid.dart';
 import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
@@ -144,6 +147,11 @@ class _GamePageState extends ConsumerState<GamePage>
   bool _isLocationPermissionDenied = false;
   bool _isLocationFocused = false;
   bool _isProgrammaticMove = false;
+
+  /// 좌표 격자 (#636) — 게임마다 꺼진 상태로 시작, 구역이 로드되면 계산해 둔다
+  bool _showGrid = false;
+  ZoneGrid? _zoneGrid;
+  final _pingChatPolicy = PingChatPolicy();
 
   /// dispose()에서 ref 사용 불가이므로 사전에 저장
   ChatNotifier? _chatNotifier;
@@ -1255,6 +1263,11 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
+  void _toggleGrid() {
+    setState(() => _showGrid = !_showGrid);
+    _googleMapKey.currentState?.updateGrid(_showGrid ? _zoneGrid : null);
+  }
+
   void _onMapCameraMoved() {
     _closePingCard();
     if (_isProgrammaticMove) {
@@ -1310,6 +1323,7 @@ class _GamePageState extends ConsumerState<GamePage>
           gameId: _gameId,
         );
     _closePingCard();
+    if (ok) _announcePingInTeamChat(type, latLng);
     if (!ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1317,6 +1331,33 @@ class _GamePageState extends ConsumerState<GamePage>
         ),
       );
     }
+  }
+
+  /// 격자를 켠 상태면 핑 찍은 칸을 팀 채팅에도 내 이름으로 올린다 (#636)
+  ///
+  /// 핑은 2.5초면 사라지므로 그때 지도를 안 보던 팀원도 채팅으로 알 수 있게 한다.
+  /// 보낼지·어느 칸인지는 [PingChatPolicy]가 정한다.
+  void _announcePingInTeamChat(PingType type, LatLng latLng) {
+    final cell = _pingChatPolicy.cellToAnnounce(
+      grid: _showGrid ? _zoneGrid : null,
+      type: type,
+      point: GeoPoint(latitude: latLng.latitude, longitude: latLng.longitude),
+      now: clock.now(),
+    );
+    if (cell == null || !mounted) return;
+
+    final l10n = AppLocalizations.of(context);
+    final message = switch ((type, GameTeam.isPolice(widget.team))) {
+      (PingType.found, true) => l10n.pingChatFoundRobber(cell),
+      (PingType.suspect, true) => l10n.pingChatSuspectRobber(cell),
+      (PingType.found, false) => l10n.pingChatFoundCops(cell),
+      (PingType.suspect, false) => l10n.pingChatSuspectCops(cell),
+    };
+    _chatNotifier?.sendMessage(
+      gameId: _gameId,
+      message: message,
+      scope: ChatScope.team,
+    );
   }
 
   /// 게임 규칙 (앱바 우측 info 버튼)
@@ -2268,6 +2309,8 @@ class _GamePageState extends ConsumerState<GamePage>
           ),
         );
         _googleMapKey.currentState?.updateAreaCircles(_buildAreaCircles(area));
+        _zoneGrid = ZoneGrid.forArea(area.playground);
+        if (_showGrid) _googleMapKey.currentState?.updateGrid(_zoneGrid);
         _googleMapKey.currentState?.updateAreaPolygons({
           ..._buildAreaBorderPolygons(area),
           ..._buildOutsideOverlay(area),
@@ -2549,6 +2592,24 @@ class _GamePageState extends ConsumerState<GamePage>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Semantics(
+                      label: AppLocalizations.of(context).gameGridToggle,
+                      button: true,
+                      toggled: _showGrid,
+                      child: SvgIconButton(
+                        assetPath: AppIcons.grid,
+                        onPressed: _toggleGrid,
+                        iconColor: switch ((_showGrid, _isDarkMode)) {
+                          (true, true) => AppColors.green,
+                          (true, false) => AppColors.blue,
+                          (false, true) => AppColors.green500,
+                          (false, false) => AppColors.blue500,
+                        },
+                        backgroundColor: _isDarkMode ? AppColors.black : null,
+                        isDarkMode: _isDarkMode,
+                      ),
+                    ),
+                    SizedBox(height: AppSpacing.vertical8),
                     MyLocationButton(
                       onPressed: _moveToCurrentLocation,
                       isFocused: _isLocationFocused,
