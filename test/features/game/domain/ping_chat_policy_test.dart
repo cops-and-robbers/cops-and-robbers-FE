@@ -60,7 +60,7 @@ void main() {
     );
   });
 
-  test('stays_silent_when_the_ping_lands_outside_the_playground', () {
+  test('stays_silent_when_the_ping_lands_outside_every_grid_cell', () {
     final policy = PingChatPolicy();
 
     expect(
