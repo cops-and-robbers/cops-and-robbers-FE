@@ -68,6 +68,7 @@ abstract final class AppIcons {
   static const String loudspeaker = 'assets/icons/Loudspeaker.svg';
   static const String mageLocationFill = 'assets/icons/mage_location-fill.svg';
   static const String map = 'assets/icons/icon_map.svg';
+  static const String grid = 'assets/icons/icon_grid.svg';
   static const String meatballs = 'assets/icons/icon_meatballs.svg';
   static const String mypageActive = 'assets/icons/icon_mypage_active.svg';
   static const String mypageInactive = 'assets/icons/icon_mypage_inactive.svg';

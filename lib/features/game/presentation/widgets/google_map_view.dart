@@ -13,6 +13,8 @@ import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/services/location/device_location_service.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../domain/entities/ping.dart';
+import '../../domain/zone_grid.dart';
+import 'grid_label_marker_factory.dart';
 import 'map_error_widget.dart';
 import 'ping_marker_factory.dart';
 
@@ -91,6 +93,9 @@ class GoogleMapViewState extends State<GoogleMapView>
     super.didUpdateWidget(oldWidget);
     _initialTarget ??= widget.initialTarget;
     if (oldWidget.isArrested != widget.isArrested) _syncJailPulse();
+    if (oldWidget.isDarkMode != widget.isDarkMode && _grid != null) {
+      unawaited(updateGrid(_grid));
+    }
   }
 
   @override
@@ -110,6 +115,14 @@ class GoogleMapViewState extends State<GoogleMapView>
 
   // 핑 마커 (도둑 마커와 별도 세트, build에서 병합)
   Set<Marker> _pingMarkers = {};
+
+  // 좌표 격자 (#636) — 선은 바로, 라벨은 비트맵을 만든 뒤 표시. 축소하면 라벨만 숨긴다
+  ZoneGrid? _grid;
+  Set<Marker> _gridLabelMarkers = {};
+  bool _gridLabelsVisible = true;
+  int _gridGeneration = 0;
+  double _zoom = _initialZoom;
+  static const _initialZoom = 16.0;
 
   // 페이드 애니메이션용 마커 원본 데이터 (alpha 재계산 시 사용)
   Map<int, LatLng> _robberLocations = {};
@@ -404,6 +417,44 @@ class GoogleMapViewState extends State<GoogleMapView>
     setState(() => _pingMarkers = markers);
   }
 
+  /// 좌표 격자 표시 — null이면 숨긴다 (#636)
+  Future<void> updateGrid(ZoneGrid? grid) async {
+    if (!mounted) return;
+    final generation = ++_gridGeneration;
+    setState(() {
+      _grid = grid;
+      _gridLabelMarkers = {};
+      if (grid != null) _gridLabelsVisible = grid.labelsVisibleAt(_zoom);
+    });
+    if (grid == null) return;
+
+    final isDark = widget.isDarkMode;
+    // 라벨 수백 개를 하나씩 기다리면 첫 표시가 늦어지므로 한꺼번에 만든다 (두 번째부터는 캐시)
+    final markers = await Future.wait(
+      grid.cells.map(
+        (cell) async => Marker(
+          markerId: MarkerId('grid_${cell.label}'),
+          position: LatLng(cell.center.latitude, cell.center.longitude),
+          icon: await GridLabelMarkerFactory.create(cell.label, isDark: isDark),
+          anchor: GridLabelMarkerFactory.anchor,
+          consumeTapEvents: false,
+          zIndexInt: -1,
+        ),
+      ),
+    );
+    // 만드는 사이 끄거나 다시 켰으면 버린다
+    if (!mounted || generation != _gridGeneration) return;
+    setState(() => _gridLabelMarkers = markers.toSet());
+  }
+
+  void _onCameraMove(CameraPosition position) {
+    _zoom = position.zoom;
+    final visible = _grid?.labelsVisibleAt(position.zoom);
+    if (visible != null && visible != _gridLabelsVisible) {
+      setState(() => _gridLabelsVisible = visible);
+    }
+  }
+
   /// 1사이클(1400ms): 페이드 아웃 → 완전 비표시 → 페이드 인 → 완전 표시
   /// [_blinkCycles]회 반복 후 영구 표시
   ///
@@ -478,7 +529,10 @@ class GoogleMapViewState extends State<GoogleMapView>
     }
     try {
       return GoogleMap(
-        initialCameraPosition: CameraPosition(target: initialTarget, zoom: 16),
+        initialCameraPosition: CameraPosition(
+          target: initialTarget,
+          zoom: _initialZoom,
+        ),
         // Cloud Map ID는 콜드 스타트 시 회색 타일 영구 실패 가능성으로 미사용 — JSON 다크 스타일로 통일
         style: widget.isDarkMode ? MapStyles.dark : null,
         onMapCreated: (controller) async {
@@ -495,6 +549,7 @@ class GoogleMapViewState extends State<GoogleMapView>
         },
 
         onCameraMoveStarted: widget.onCameraMoveStarted,
+        onCameraMove: _onCameraMove,
         onLongPress: widget.onLongPress,
 
         // OS 내장 위치 마커 사용 — 커스텀 마커 대비 반응성 우수
@@ -537,7 +592,23 @@ class GoogleMapViewState extends State<GoogleMapView>
             else
               polygon,
         },
-        markers: {..._robberMarkers, ..._pingMarkers},
+        polylines: {
+          if (_grid case final grid?)
+            for (final (i, line) in grid.lines.indexed)
+              Polyline(
+                polylineId: PolylineId('grid_$i'),
+                points: [for (final p in line) LatLng(p.latitude, p.longitude)],
+                color: widget.isDarkMode
+                    ? AppColors.black600
+                    : AppColors.black400,
+                width: 1,
+              ),
+        },
+        markers: {
+          ..._robberMarkers,
+          ..._pingMarkers,
+          if (_gridLabelsVisible) ..._gridLabelMarkers,
+        },
       );
     } catch (e, stack) {
       debugPrint('❌ GoogleMap 생성 실패: $e');
