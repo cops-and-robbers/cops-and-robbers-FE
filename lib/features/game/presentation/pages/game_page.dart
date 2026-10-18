@@ -567,6 +567,11 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 실제로 띄웠을 때만 본 것으로 저장한다 — 띄우기 전에 화면이 닫히면 다음 게임에서 다시 뜬다.
   void _showRulesHint() {
     if (!mounted) return;
+    // 공지 배너가 가려지는 동안(구역 이탈 경고·참가자 목록)은 보이지 않으므로 잠시 뒤 다시 시도한다
+    if (_isZoneExitWarningActive || _showParticipants) {
+      _rulesHintTimer = Timer(const Duration(seconds: 3), _showRulesHint);
+      return;
+    }
     _gameEventNotifier?.setBannerMessage(
       AppLocalizations.of(context).startRulesHint,
     );
