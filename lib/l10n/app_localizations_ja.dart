@@ -1186,6 +1186,98 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ エリア外に出ると画面がロックされます';
 
   @override
+  String get gameRulesPingPrefix => '地図を';
+
+  @override
+  String get gameRulesPingHighlight => '長押しすると';
+
+  @override
+  String get gameRulesPingSuffix => 'ピンで味方に知らせられます';
+
+  @override
+  String get startRoleLabel => 'あなたの役割';
+
+  @override
+  String get startMissionPolice => '泥棒を見つけてQRで全員逮捕しましょう';
+
+  @override
+  String get startMissionRobber => '終了まで捕まらずに逃げ切りましょう';
+
+  @override
+  String get startWaitCountdownLabel => '警察出動まで';
+
+  @override
+  String get startGameTimeLeftLabel => '残りゲーム時間';
+
+  @override
+  String get startWaitPoliceTitle => '泥棒が逃げています';
+
+  @override
+  String get startWaitRobberTitle => '警察から離れています';
+
+  @override
+  String startRulesCounter(int current, int total) {
+    return 'ゲームルール $current/$total';
+  }
+
+  @override
+  String get startRuleQrArrest => '泥棒のQRをスキャンすると逮捕できます';
+
+  @override
+  String get startRulePing => '地図を長押しするとピンで味方に知らせられます';
+
+  @override
+  String startRuleRobberReveal(int minutes) {
+    return '泥棒の位置は$minutes分ごとに警察に公開されます';
+  }
+
+  @override
+  String get startRuleZoneLock => 'エリア外に出ると画面がロックされます';
+
+  @override
+  String get startRuleQrCaught => '警察にQRをスキャンされると捕まります';
+
+  @override
+  String startRuleMyReveal(int minutes) {
+    return 'あなたの位置は$minutes分ごとに警察に公開されます';
+  }
+
+  @override
+  String get startRuleJailbreak => '捕まると牢屋に入り、外に出て3秒たつと脱獄できます';
+
+  @override
+  String get startRuleWin => '警察は泥棒を全員逮捕すれば、泥棒は制限時間まで逃げ切れば勝ちです';
+
+  @override
+  String startRuleTeamReveal(int minutes) {
+    return '泥棒チームの位置は$minutes分ごとに警察チームに共有されます';
+  }
+
+  @override
+  String get startRuleZone => '指定されたゲームエリアから出てはいけません。エリア外に出ると画面がロックされます';
+
+  @override
+  String get startRuleJailbreakReplay => '捕まった泥棒は牢屋に入り、外に出て3秒たつと脱獄します';
+
+  @override
+  String get startTapToMap => 'タップすると地図に戻ります';
+
+  @override
+  String get dispatchPoliceLead => '時間です';
+
+  @override
+  String get dispatchPoliceMain => '出動！';
+
+  @override
+  String get dispatchRobberLead => '警察が出動しました';
+
+  @override
+  String get dispatchRobberMain => '気をつけて！';
+
+  @override
+  String get startRulesHint => 'ルールは右上のⓘからいつでも確認できます';
+
+  @override
   String get unitPerson => '人';
 
   @override

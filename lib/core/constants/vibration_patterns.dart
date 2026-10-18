@@ -58,4 +58,14 @@ abstract final class VibrationPatterns {
 
   static const List<int> gameEndPattern = [0, 200, 100, 200, 100, 500];
   static const List<int> gameEndIntensities = [0, 200, 0, 200, 0, 255];
+
+  // 경찰 대기 마지막 10초 — 초마다 아주 짧게 (화면을 안 봐도 출동이 임박했음을 안다)
+  static const int countdownTickDuration = 40;
+  static const int countdownTickAmplitude = 120;
+
+  // 출동 — 경찰: 짧게 두 번 / 도둑: 길게 한 번 (팀별로 구분되게)
+  static const List<int> policeDispatchPattern = [0, 90, 90, 90];
+  static const List<int> policeDispatchIntensities = [0, 255, 0, 255];
+  static const int robberDispatchDuration = 600;
+  static const int robberDispatchAmplitude = 255;
 }

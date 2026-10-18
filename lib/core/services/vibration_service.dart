@@ -152,4 +152,21 @@ class VibrationService {
     VibrationPatterns.gameEndPattern,
     VibrationPatterns.gameEndIntensities,
   );
+
+  /// 경찰 대기 마지막 10초 초 단위 진동
+  void countdownTick() => _vibrateSingle(
+    VibrationPatterns.countdownTickDuration,
+    VibrationPatterns.countdownTickAmplitude,
+  );
+
+  /// 출동 진동 — 경찰은 짧게 두 번, 도둑은 길게 한 번
+  void policeDispatch({required bool isPolice}) => isPolice
+      ? _vibratePattern(
+          VibrationPatterns.policeDispatchPattern,
+          VibrationPatterns.policeDispatchIntensities,
+        )
+      : _vibrateSingle(
+          VibrationPatterns.robberDispatchDuration,
+          VibrationPatterns.robberDispatchAmplitude,
+        );
 }

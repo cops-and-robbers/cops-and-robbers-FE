@@ -14,6 +14,10 @@ import 'package:cops_and_robbers/core/widgets/chat/community_message_input.dart'
 import 'package:cops_and_robbers/features/game/presentation/widgets/arrest_lock_overlay.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/google_map_view.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/jail_bars_overlay.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/police_start_countdown.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene_rules.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/start/start_banners.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_event_model.dart';
 import 'package:cops_and_robbers/core/services/lifecycle/app_lifecycle_service.dart';
@@ -33,6 +37,7 @@ import 'package:cops_and_robbers/core/services/background/background_service_pro
 import 'package:cops_and_robbers/core/services/background/method_channel_background_service.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
 import 'package:cops_and_robbers/features/session/data/models/in_game_participants_response.dart';
+import 'package:cops_and_robbers/core/services/storage/game_rules_hint_prefs.dart';
 import 'package:cops_and_robbers/features/session/data/models/game_settings_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/user_game_status_model.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
@@ -328,6 +333,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
   }
 
+  /// 펌프에 맞춰 흐르는 시계. tester.binding.clock은 2015년에서 시작해 하네스의
+  /// 서버 시작 시각(실제 지금 기준)과 11년 어긋난다 — 그대로 쓰면 게임이 미래에
+  /// 시작한 셈이 되어 시작 장면이 뜬다. 지금으로 옮겨 두 시각을 맞춘다.
+  Clock gameClock(WidgetTester tester) {
+    final offset = DateTime.now().difference(tester.binding.clock.now());
+    return Clock(() => tester.binding.clock.now().add(offset));
+  }
+
   /// 위치 하나를 보내고 위치 콜백까지 처리한다.
   Future<void> sendPosition(WidgetTester tester, {required bool inside}) async {
     location.inside = inside;
@@ -488,22 +501,166 @@ void main() {
     );
   }
 
-  testWidgets('경찰 재접속 시 설정을 불러와도 대기 팝업은 한 번만 열리고 만료되면 닫힌다', (tester) async {
+  /// 애니메이션이 프레임마다 진행하도록 100ms씩 흘린다.
+  Future<void> advance(WidgetTester tester, Duration d) async {
+    for (var i = 0; i < d.inMilliseconds ~/ 100; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+  }
+
+  /// 방금 시작한 게임 — 설정은 재접속처럼 서버에서 불러온다.
+  void setFreshGame({
+    required String team,
+    required int policeWaitMinutes,
+    bool isEventGame = false,
+  }) {
     container
         .read(gameParticipantNotifierProvider.notifier)
-        .setGameInfo(
-          gameId: 1,
-          participantId: 5,
-          nickname: '경찰',
-          team: 'POLICE',
-        );
+        .setGameInfo(gameId: 1, participantId: 5, nickname: '참가자', team: team);
     session.settings = GameSettingsResponse(
       roundDurationMinutes: 30,
       locationRevealIntervalMinutes: 3,
-      policeWaitMinutes: 1,
+      policeWaitMinutes: policeWaitMinutes,
       maxParticipants: 10,
+      isEventGame: isEventGame,
       gameStartTime: DateTime.now().toUtc().toIso8601String(),
     );
+  }
+
+  // 남은 시간이 00:00까지 내려간 걸 본 뒤에 출동 배너가 뜬다 — 00:01에서 끊기면 덜 센 것처럼 보인다
+  testWidgets('police_wait_shows_zero_before_dispatch_banner_when_wait_ends', (
+    tester,
+  ) async {
+    await withClock(gameClock(tester), () async {
+      setFreshGame(team: 'POLICE', policeWaitMinutes: 1);
+      session.participants = const InGameParticipantsResponse(
+        police: [
+          InGameParticipant(
+            participantId: 5,
+            nickname: '경찰',
+            status: 'POLICE_WAITING',
+          ),
+        ],
+        robbers: [],
+      );
+      await mount(tester, team: 'POLICE');
+      await advance(tester, const Duration(seconds: 5));
+      await tester.pump(const Duration(seconds: 50));
+
+      var sawZero = false;
+      for (var i = 0; i < 100; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+        if (find.byType(DispatchBanner).evaluate().isNotEmpty) break;
+        if (find.text('00:00').evaluate().isNotEmpty) sawZero = true;
+      }
+      expect(find.byType(DispatchBanner), findsOneWidget);
+      expect(sawZero, isTrue);
+      await advance(tester, const Duration(seconds: 4));
+      // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+      await tester.pump(const Duration(seconds: 30));
+    });
+  });
+
+  // 00:00을 1초 보여 준 뒤 대기 화면이 출동 띠 모양으로 접히고, 그 자리에서 출동 배너가 이어진다
+  testWidgets(
+    'police_wait_folds_into_band_before_dispatch_banner_when_wait_ends',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        setFreshGame(team: 'POLICE', policeWaitMinutes: 1);
+        session.participants = const InGameParticipantsResponse(
+          police: [
+            InGameParticipant(
+              participantId: 5,
+              nickname: '경찰',
+              status: 'POLICE_WAITING',
+            ),
+          ],
+          robbers: [],
+        );
+        await mount(tester, team: 'POLICE');
+        await advance(tester, const Duration(seconds: 5));
+        await tester.pump(const Duration(seconds: 50));
+        for (var i = 0; i < 100 && find.text('00:00').evaluate().isEmpty; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        await advance(tester, const Duration(milliseconds: 1100)); // 1초 뒤 접히는 중
+        expect(find.byType(ChaseScene), findsOneWidget);
+        expect(find.byType(DispatchBanner), findsNothing);
+        await advance(tester, const Duration(milliseconds: 500));
+        expect(find.byType(ChaseScene), findsNothing);
+        expect(find.byType(DispatchBanner), findsOneWidget);
+        await advance(tester, const Duration(seconds: 4));
+        expect(tester.takeException(), isNull);
+        // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+        await tester.pump(const Duration(seconds: 30));
+      });
+    },
+  );
+
+  testWidgets(
+    'police_wait_screen_then_dispatch_banner_replace_popup_when_normal_game_starts',
+    (tester) async {
+      // 출동 2초 여유 판정이 펌프로 흐르는 시계를 보도록 한다
+      await withClock(gameClock(tester), () async {
+        setFreshGame(team: 'POLICE', policeWaitMinutes: 1);
+        session.participants = const InGameParticipantsResponse(
+          police: [
+            InGameParticipant(
+              participantId: 5,
+              nickname: '경찰',
+              status: 'POLICE_WAITING',
+            ),
+          ],
+          robbers: [],
+        );
+        await mount(tester, team: 'POLICE');
+        expect(find.byType(RoleBanner), findsOneWidget);
+        await advance(tester, const Duration(seconds: 5));
+        expect(find.byType(RoleBanner), findsNothing);
+        expect(find.byType(ChaseScene), findsOneWidget);
+        expect(find.byType(AppPopup, skipOffstage: false), findsNothing);
+        // 대기 중엔 지금 대기 팝업처럼 나갈 수 없다 — 뒤로가기를 눌러도 나가기 확인창이 뜨지 않는다
+        final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+        await tester.binding.handlePopRoute();
+        await tester.pump();
+        expect(find.text(l10n.gameLeaveConfirmTitle), findsNothing);
+        expect(find.byType(ChaseScene), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 55)); // 출동 시각(시작 후 60초)을 지나도록
+        await advance(tester, const Duration(seconds: 2));
+        expect(find.byType(ChaseScene), findsNothing);
+        expect(find.byType(DispatchBanner), findsOneWidget);
+        await advance(tester, const Duration(seconds: 4));
+        expect(find.byType(DispatchBanner), findsNothing);
+        expect(tester.takeException(), isNull);
+        // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+        await tester.pump(const Duration(seconds: 30));
+      });
+    },
+  );
+
+  testWidgets(
+    'police_cannot_leave_while_role_banner_shows_before_wait_screen',
+    (tester) async {
+      setFreshGame(team: 'POLICE', policeWaitMinutes: 1);
+      await mount(tester, team: 'POLICE', size: const Size(393, 852));
+      expect(find.byType(RoleBanner), findsOneWidget);
+      // 대기 화면이 뜨기 전 역할 배너(3.37초)도 출동 전이다 — 나가기 버튼도, 뒤로가기 확인창도 없다
+      final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+      expect(find.byTooltip(l10n.buttonLeave), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(find.text(l10n.gameLeaveConfirmTitle), findsNothing);
+      expect(tester.takeException(), isNull);
+      // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+      await tester.pump(const Duration(seconds: 30));
+    },
+  );
+
+  testWidgets('event_game_police_still_gets_wait_popup_when_settings_reload', (
+    tester,
+  ) async {
+    setFreshGame(team: 'POLICE', policeWaitMinutes: 1, isEventGame: true);
     session.participants = const InGameParticipantsResponse(
       police: [
         InGameParticipant(
@@ -516,11 +673,233 @@ void main() {
     );
     await mount(tester, team: 'POLICE');
     expect(find.byType(AppPopup, skipOffstage: false), findsOneWidget);
+    expect(find.byType(RoleBanner), findsNothing);
 
     await tester.pump(const Duration(seconds: 61));
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byType(AppPopup, skipOffstage: false), findsNothing);
     expect(find.byType(GamePage), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('robber_explainer_hides_police_countdown_until_robber_taps_it', (
+    tester,
+  ) async {
+    setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
+    await mount(tester, size: const Size(393, 852));
+    await advance(tester, const Duration(seconds: 5));
+    expect(find.byType(ChaseScene), findsOneWidget);
+    expect(find.byType(PoliceStartCountdown), findsNothing);
+
+    await tester.tapAt(const Offset(150, 426));
+    await tester.pump();
+    expect(find.byType(ChaseScene), findsNothing);
+    expect(find.byType(PoliceStartCountdown), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+    // 설명 화면을 닫으면 ⓘ 안내가 신고 안내(20초) 배너 뒤인 28.8초에 떠 8.8초 남는다.
+    await tester.pump(const Duration(seconds: 40));
+  });
+
+  testWidgets('police_participant_list_shows_over_wait_screen_when_opened', (
+    tester,
+  ) async {
+    setFreshGame(team: 'POLICE', policeWaitMinutes: 5);
+    await mount(tester, team: 'POLICE', size: const Size(393, 852));
+    await advance(tester, const Duration(seconds: 5));
+    expect(find.byType(ChaseScene), findsOneWidget);
+
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.person,
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(ChaseScene), findsNothing); // Offstage — 목록을 덮지 않는다
+    expect(find.byType(ChaseScene, skipOffstage: false), findsOneWidget);
+    // 목록 위 앱바에도 나가기 버튼이 없다 — 대기 중엔 나갈 수 없다
+    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+    expect(find.byTooltip(l10n.buttonLeave), findsNothing);
+    expect(tester.takeException(), isNull);
+    // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+    await tester.pump(const Duration(seconds: 30));
+  });
+
+  testWidgets('police_wait_screen_steps_aside_for_chat_until_chat_closes', (
+    tester,
+  ) async {
+    setFreshGame(team: 'POLICE', policeWaitMinutes: 5);
+    await mount(tester, team: 'POLICE', size: const Size(393, 852));
+    await advance(tester, const Duration(seconds: 5));
+    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+
+    // 기다리는 동안 팀 채팅을 연다 — 채팅을 닫는 앱바 뒤로 버튼이 장면에 가리면 안 된다
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(ChaseScene), findsNothing);
+
+    await tester.tap(find.byTooltip(l10n.gameChatBackToMap));
+    await tester.pump();
+    expect(find.byType(ChaseScene), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+    await tester.pump(const Duration(seconds: 30));
+  });
+
+  testWidgets(
+    'police_wait_closes_without_dispatch_banner_when_app_returns_after_release',
+    (tester) async {
+      // iOS는 백그라운드 앱을 멈춘다 — 그동안 시계만 흐르고 Dart 타이머는 돌지 않는다
+      var suspended = Duration.zero;
+      final running = gameClock(tester);
+      await withClock(Clock(() => running.now().add(suspended)), () async {
+        setFreshGame(team: 'POLICE', policeWaitMinutes: 1);
+        await mount(tester, team: 'POLICE', size: const Size(393, 852));
+        await advance(tester, const Duration(seconds: 5));
+        expect(find.byType(ChaseScene), findsOneWidget);
+
+        for (final state in [
+          AppLifecycleState.inactive,
+          AppLifecycleState.hidden,
+          AppLifecycleState.paused,
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
+        suspended = const Duration(minutes: 2); // 출동 시각을 지난 뒤에 돌아온다
+        for (final state in [
+          AppLifecycleState.hidden,
+          AppLifecycleState.inactive,
+          AppLifecycleState.resumed,
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
+        await tester.pump();
+        expect(find.byType(ChaseScene), findsNothing);
+        expect(find.byType(DispatchBanner), findsNothing);
+        expect(tester.takeException(), isNull);
+        // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+        await tester.pump(const Duration(seconds: 30));
+      });
+    },
+  );
+
+  /// [d] 동안 100ms씩 흘리며 공지 배너에 [text]가 한 번이라도 떴는지.
+  Future<bool> bannerShows(WidgetTester tester, String text, Duration d) async {
+    var shown = false;
+    for (var i = 0; i < d.inMilliseconds ~/ 100; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      shown = shown || find.text(text).evaluate().isNotEmpty;
+    }
+    return shown;
+  }
+
+  testWidgets(
+    'rules_hint_shows_and_is_remembered_when_first_game_on_this_phone',
+    (tester) async {
+      // 대기 없는 방 — 역할 배너가 끝나면 안내할 때가 된다
+      setFreshGame(team: 'ROBBER', policeWaitMinutes: 0);
+      await mount(tester, size: const Size(393, 852));
+      final hint = AppLocalizations.of(
+        tester.element(find.byType(GamePage)),
+      ).startRulesHint;
+      expect(
+        await bannerShows(tester, hint, const Duration(seconds: 40)),
+        isTrue,
+      );
+      expect(await GameRulesHintPrefs.seen(), isTrue);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'rules_hint_stays_hidden_when_this_phone_saw_it_in_an_earlier_game',
+    (tester) async {
+      await GameRulesHintPrefs.markSeen(); // 지난 게임에서 이미 봤다
+      setFreshGame(team: 'ROBBER', policeWaitMinutes: 0);
+      await mount(tester, size: const Size(393, 852));
+      final hint = AppLocalizations.of(
+        tester.element(find.byType(GamePage)),
+      ).startRulesHint;
+      expect(
+        await bannerShows(tester, hint, const Duration(seconds: 40)),
+        isFalse,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'rules_hint_waits_for_report_tip_banner_when_robber_explainer_closes_first',
+    (tester) async {
+      setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
+      await mount(tester, size: const Size(393, 852));
+      final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+      // 설명 화면은 3.37초에 떠 20초 뒤 스스로 닫히고, 20초엔 신고 안내가 공지 배너에 뜬다
+      await advance(tester, const Duration(seconds: 21));
+      expect(find.text(l10n.gameEventStartReportTip), findsWidgets);
+      expect(find.text(l10n.startRulesHint), findsNothing);
+      // 신고 안내 배너가 내려간 뒤(20초 + 8.8초) 덮이지 않고 뜬다
+      await advance(tester, const Duration(seconds: 9));
+      expect(find.text(l10n.startRulesHint), findsOneWidget);
+      expect(await GameRulesHintPrefs.seen(), isTrue);
+      expect(tester.takeException(), isNull);
+      await tester.pump(const Duration(seconds: 10));
+    },
+  );
+
+  testWidgets(
+    'rules_hint_stays_unseen_when_game_screen_closes_before_it_appears',
+    (tester) async {
+      setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
+      await mount(tester, size: const Size(393, 852));
+      // 설명 화면이 닫히고(23.4초) 안내가 신고 안내 배너를 기다리는 동안 게임 화면이 닫힌다
+      await advance(tester, const Duration(seconds: 25));
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 10));
+      // 못 본 안내는 다음 게임에서 다시 뜰 수 있어야 한다
+      expect(await GameRulesHintPrefs.seen(), isFalse);
+    },
+  );
+
+  // 시작 직후 경찰이 모두 나가 바로 끝난 게임 — 안내가 결과 화면 밑에서 뜨고 본 것으로 저장되면 안 된다
+  testWidgets('rules_hint_stays_unseen_when_game_ends_before_it_appears', (
+    tester,
+  ) async {
+    setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
+    await mount(tester, size: const Size(393, 852));
+    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+    // 설명 화면이 닫히고(23.4초) 안내가 신고 안내 배너(28.8초까지)를 기다리는 중
+    await advance(tester, const Duration(seconds: 25));
+    socket.events.add(
+      const GameEventModel(
+        type: GameEventType.gameOver,
+        data: {'winnerTeam': 'ROBBER', 'reason': 'ALL_POLICE_LEFT'},
+      ),
+    );
+    await advance(tester, const Duration(seconds: 6));
+    expect(find.text(l10n.startRulesHint), findsNothing);
+    expect(await GameRulesHintPrefs.seen(), isFalse);
+    await tester.pump(const Duration(seconds: 10));
+  });
+
+  testWidgets('info_button_opens_rules_scene_when_normal_game', (tester) async {
+    // 기본 하네스: 1분 전에 시작한 도둑, 대기 없음 → 시작 장면 없이 지도
+    await mount(tester, size: const Size(393, 852));
+    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+    await tester.tap(find.byTooltip(l10n.titleGameRules));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    final scene = tester.widget<ChaseScene>(find.byType(ChaseScene));
+    expect(scene.mode, ChaseSceneMode.rulesReplay);
+
+    await tester.tapAt(const Offset(150, 426));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(ChaseScene), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -1155,7 +1534,7 @@ void main() {
   testWidgets(
     'jailed_button_stays_after_reconnect_when_robber_was_arrested_outside_playground',
     (tester) async {
-      await withClock(Clock(() => tester.binding.clock.now()), () async {
+      await withClock(gameClock(tester), () async {
         session.participants = const InGameParticipantsResponse(
           police: [],
           robbers: [
@@ -1239,7 +1618,7 @@ void main() {
   testWidgets(
     'escape_confirmation_left_open_is_harmless_when_auto_escape_wins',
     (tester) async {
-      await withClock(Clock(() => tester.binding.clock.now()), () async {
+      await withClock(gameClock(tester), () async {
         await mount(tester);
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
         await sendPosition(tester, inside: true);
@@ -1357,7 +1736,7 @@ void main() {
   testWidgets(
     'jailed_robber_escapes_automatically_when_leaving_jail_after_entry',
     (tester) async {
-      await withClock(Clock(() => tester.binding.clock.now()), () async {
+      await withClock(gameClock(tester), () async {
         await mount(tester);
         await sendPosition(tester, inside: true);
         await tester.pump(const Duration(seconds: 1));
@@ -1387,7 +1766,7 @@ void main() {
   testWidgets(
     'auto_escape_keeps_entry_when_socket_reconnects_before_leaving_jail',
     (tester) async {
-      await withClock(Clock(() => tester.binding.clock.now()), () async {
+      await withClock(gameClock(tester), () async {
         await mount(tester);
         await sendPosition(tester, inside: true);
         socket.emit(StompConnectionState.disconnected);
@@ -1409,7 +1788,7 @@ void main() {
   testWidgets('auto_escape_requests_when_socket_stays_disconnected', (
     tester,
   ) async {
-    await withClock(Clock(() => tester.binding.clock.now()), () async {
+    await withClock(gameClock(tester), () async {
       await mount(tester);
       await sendPosition(tester, inside: true);
       socket.acceptConnect = false;
@@ -1432,7 +1811,7 @@ void main() {
   testWidgets('auto_escape_retries_after_5s_when_escape_request_fails', (
     tester,
   ) async {
-    await withClock(Clock(() => tester.binding.clock.now()), () async {
+    await withClock(gameClock(tester), () async {
       game.failures = 1;
       await mount(tester);
       await sendPosition(tester, inside: true);
@@ -1465,7 +1844,7 @@ void main() {
   testWidgets(
     'auto_escape_retries_when_socket_disconnects_during_escape_request',
     (tester) async {
-      await withClock(Clock(() => tester.binding.clock.now()), () async {
+      await withClock(gameClock(tester), () async {
         final pendingEscape = Completer<void>();
         game.escapeGate = pendingEscape;
         await mount(tester);
@@ -1519,7 +1898,7 @@ void main() {
   testWidgets('auto_escape_requires_new_entry_when_robber_is_rearrested', (
     tester,
   ) async {
-    await withClock(Clock(() => tester.binding.clock.now()), () async {
+    await withClock(gameClock(tester), () async {
       await mount(tester);
       await sendPosition(tester, inside: true);
       await sendPosition(tester, inside: false);
@@ -1575,7 +1954,7 @@ void main() {
   testWidgets('auto_escape_requests_without_a_frame_when_app_is_paused', (
     tester,
   ) async {
-    await withClock(Clock(() => tester.binding.clock.now()), () async {
+    await withClock(gameClock(tester), () async {
       await mount(tester);
       await sendPosition(tester, inside: true);
       for (final state in [
@@ -1616,7 +1995,7 @@ void main() {
     testWidgets(
       'auto_escape_never_requests_when_player_is_not_a_jailed_robber_$variant',
       (tester) async {
-        await withClock(Clock(() => tester.binding.clock.now()), () async {
+        await withClock(gameClock(tester), () async {
           container.read(gameParticipantNotifierProvider.notifier)
             ..setGameInfo(
               gameId: 1,
@@ -1770,7 +2149,7 @@ void main() {
     (tester) async {
       // 실제 게임 화면 + 실제 컨트롤러: 소켓 연결 시 동기화가 받은 명단(도둑 5번, JAILED)으로
       // 잠금 화면 현황이 채워지고, 컨트롤러는 참가자 API를 따로 부르지 않는다.
-      await withClock(Clock(() => tester.binding.clock.now()), () async {
+      await withClock(gameClock(tester), () async {
         await mount(tester);
         await tester.pump(const Duration(milliseconds: 300));
 
