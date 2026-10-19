@@ -1185,6 +1185,101 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ 구역 밖으로 나가면 화면이 잠겨요';
 
   @override
+  String get gameRulesPingPrefix => '지도를 ';
+
+  @override
+  String get gameRulesPingHighlight => '길게 누르면';
+
+  @override
+  String get gameRulesPingSuffix => ' 핑을 찍어 우리 팀에 알릴 수 있어요';
+
+  @override
+  String get startRoleLabel => '내 역할';
+
+  @override
+  String get startMissionPolice => '도둑을 찾아 QR로 모두 체포하세요';
+
+  @override
+  String get startMissionRobber => '끝날 때까지 잡히지 말고 도망치세요';
+
+  @override
+  String get startWaitCountdownLabel => '경찰 출동까지';
+
+  @override
+  String get startGameTimeLeftLabel => '남은 게임 시간';
+
+  @override
+  String get startWaitPoliceTitle => '도둑이 도망치는 중이에요';
+
+  @override
+  String get startWaitRobberTitle => '경찰에게서 멀어지는 중이에요';
+
+  @override
+  String startRulesCounter(int current, int total) {
+    return '게임 규칙 $current/$total';
+  }
+
+  @override
+  String get startRuleQrArrest => '도둑의 QR을 스캔하면 체포돼요';
+
+  @override
+  String get startRulePing => '지도를 길게 누르면 핑을 찍어 우리 팀에 알릴 수 있어요';
+
+  @override
+  String startRuleRobberReveal(int minutes) {
+    return '도둑 위치는 $minutes분마다 경찰에게 공개돼요';
+  }
+
+  @override
+  String get startRuleZoneLock => '구역 밖으로 나가면 화면이 잠겨요';
+
+  @override
+  String get startRuleQrCaught => '경찰이 내 QR을 스캔하면 잡혀요';
+
+  @override
+  String startRuleMyReveal(int minutes) {
+    return '내 위치는 $minutes분마다 경찰에게 공개돼요';
+  }
+
+  @override
+  String get startRuleJailbreak => '잡히면 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥돼요';
+
+  @override
+  String get startRuleWin => '경찰은 모든 도둑을 체포하면, 도둑은 제한 시간이 끝날 때까지 버티면 승리해요';
+
+  @override
+  String startRuleTeamReveal(int minutes) {
+    return '도둑팀의 위치는 $minutes분마다 경찰팀에게 공유돼요';
+  }
+
+  @override
+  String get startRuleZone => '지정된 게임 구역에서 벗어나면 안 돼요. 구역 밖으로 나가면 화면이 잠겨요';
+
+  @override
+  String get startRuleJailbreakReplay => '잡힌 도둑은 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥해요';
+
+  @override
+  String get startTapToMap => '탭하면 지도로 돌아가요';
+
+  @override
+  String get dispatchPoliceLead => '시간이 됐어요';
+
+  @override
+  String get dispatchPoliceMain => '출동!';
+
+  @override
+  String get dispatchRobberLead => '경찰이 출동했어요';
+
+  @override
+  String get dispatchRobberMain => '조심!';
+
+  @override
+  String get startRulesHint => '규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요';
+
+  @override
+  String get gameGridToggle => '좌표 격자';
+
+  @override
   String get unitPerson => '명';
 
   @override
@@ -1530,6 +1625,21 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get labelFinalStatus => '종료 시점 상태';
+
+  @override
+  String get labelMvp => 'MVP';
+
+  @override
+  String get mvpRevealTease => 'MVP는 누굴까?!';
+
+  @override
+  String get labelPoliceTeamMvp => '경찰 팀 MVP';
+
+  @override
+  String get labelRobberTeamMvp => '도둑 팀 MVP';
+
+  @override
+  String get mvpRevealTapToContinue => '탭하면 넘어가요';
 
   @override
   String get statusAlive => '생존';
@@ -2417,6 +2527,26 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pingCooldownNotice => '잠시 후 다시 시도해주세요';
+
+  @override
+  String pingChatFoundRobber(String cell) {
+    return '$cell에서 도둑을 봤어요';
+  }
+
+  @override
+  String pingChatSuspectRobber(String cell) {
+    return '$cell에 도둑이 있는 것 같아요';
+  }
+
+  @override
+  String pingChatFoundCops(String cell) {
+    return '$cell에서 경찰을 봤어요';
+  }
+
+  @override
+  String pingChatSuspectCops(String cell) {
+    return '$cell에 경찰이 있는 것 같아요';
+  }
 
   @override
   String get gameLeaveConfirmTitle => '게임에서 나갈까요?';

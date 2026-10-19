@@ -9,6 +9,7 @@ import '../../../../core/constants/map_styles.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../data/models/game_area_model.dart';
+import 'route_geometry.dart';
 
 /// 경로 전체를 담는 카메라 경계.
 ///
@@ -45,6 +46,7 @@ class RecordRouteMap extends StatefulWidget {
   const RecordRouteMap({
     super.key,
     required this.route,
+    this.segmentStarts = const [],
     required this.markerPoints,
     required this.lineColor,
     required this.isDarkMode,
@@ -52,6 +54,9 @@ class RecordRouteMap extends StatefulWidget {
 
   /// 내 이동 경로 (누적 순서)
   final List<LatLngModel> route;
+
+  /// [route]에서 새 구간이 시작되는 인덱스 — 끊긴 구간끼리는 선으로 잇지 않는다
+  final List<int> segmentStarts;
 
   /// 강조 지점 — 경찰은 체포한 곳, 도둑은 잡힌 곳
   final List<LatLngModel> markerPoints;
@@ -182,15 +187,19 @@ class RecordRouteMapState extends State<RecordRouteMap> {
                 style: widget.isDarkMode ? MapStyles.dark : null,
                 onMapCreated: _onMapCreated,
                 polylines: {
-                  Polyline(
-                    polylineId: const PolylineId('my_route'),
-                    points: [
-                      for (final p in widget.route)
-                        LatLng(p.latitude, p.longitude),
-                    ],
-                    color: widget.lineColor,
-                    width: 5,
-                  ),
+                  for (final (i, segment) in splitRouteSegments(
+                    widget.route,
+                    widget.segmentStarts,
+                  ).indexed)
+                    Polyline(
+                      polylineId: PolylineId('my_route_$i'),
+                      points: [
+                        for (final p in segment)
+                          LatLng(p.latitude, p.longitude),
+                      ],
+                      color: widget.lineColor,
+                      width: 5,
+                    ),
                 },
                 markers: {
                   for (var i = 0; i < widget.markerPoints.length; i++)

@@ -7,7 +7,7 @@ part 'my_game_record_response_model.g.dart';
 
 /// 내 개인 기록 조회 응답 DTO
 ///
-/// `GET /api/game-results/{gameResultId}/me` 응답 (200, v2.36.0)
+/// `GET /api/game-results/{gameResultId}/me` 응답 (200, v2.36.0 · `isMvp`는 v2.39.0)
 ///
 /// 경찰은 잡히지 않고 도둑은 체포하지 않으므로(서버 `validateArrest`) 반대편 카운트는
 /// 항상 0으로 온다. 화면은 팀에 맞는 값만 골라 쓴다.
@@ -20,7 +20,8 @@ part 'my_game_record_response_model.g.dart';
 ///   "status": "ALIVE",
 ///   "arrestCount": 3,
 ///   "arrestedCount": 2,
-///   "leftAt": "2026-09-16T14:30:00+09:00"
+///   "leftAt": "2026-09-16T14:30:00+09:00",
+///   "isMvp": false
 /// }
 /// ```
 @freezed
@@ -43,6 +44,10 @@ class MyGameRecordResponseModel with _$MyGameRecordResponseModel {
 
     /// 게임 중 퇴장한 시각. 끝까지 있었으면 null
     String? leftAt,
+
+    /// 내가 우리 팀 MVP인지 (BE #212). 팀당 1명만 true다(동점은 서버가 이동 거리로 가린다).
+    /// 필드가 없는 구버전 서버 응답은 false로 읽는다.
+    @Default(false) bool isMvp,
   }) = _MyGameRecordResponseModel;
 
   factory MyGameRecordResponseModel.fromJson(Map<String, dynamic> json) =>
@@ -60,5 +65,6 @@ extension MyGameRecordResponseModelX on MyGameRecordResponseModel {
     status: status,
     arrestCount: arrestCount,
     arrestedCount: arrestedCount,
+    isMvp: isMvp,
   );
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,10 +26,17 @@ import 'features/game/data/models/game_area_model.dart';
 import 'features/game/domain/entities/area_shape.dart';
 import 'features/game/domain/entities/game_result_entity.dart';
 import 'features/game/domain/entities/my_game_record_entity.dart';
+import 'features/game/domain/start_flow.dart';
 import 'features/game/presentation/providers/game_result_provider.dart';
 import 'features/game/presentation/providers/player_game_record_provider.dart';
+import 'features/game/presentation/widgets/game_over_intro_modal.dart';
 import 'features/game/presentation/widgets/game_over_result_dialog.dart';
 import 'features/game/presentation/widgets/ping_selection_card.dart';
+import 'features/game/presentation/helpers/start_intro_controller.dart';
+import 'features/game/presentation/widgets/start/band_transition.dart';
+import 'features/game/presentation/widgets/start/chase_scene.dart';
+import 'features/game/presentation/widgets/start/chase_scene_rules.dart';
+import 'features/game/presentation/widgets/start/start_banners.dart';
 import 'features/session/presentation/pages/setup_playground_page.dart';
 import 'features/session/presentation/pages/setup_prison_page.dart';
 import 'features/session/presentation/widgets/area_type_toggle.dart';
@@ -184,6 +193,100 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 backgroundColor: AppColors.black800,
                 showBorder: false,
               ),
+
+              SizedBox(height: AppSpacing.vertical64),
+
+              // ============================================
+              // 게임 종료 + 팀 MVP 공개 (#628)
+              // ============================================
+              _buildSectionTitle('게임 종료 MVP 공개'),
+              SizedBox(height: AppSpacing.vertical16),
+              for (final (label, dark, entity) in [
+                (
+                  '경찰 승리 · 두 팀 MVP (light)',
+                  false,
+                  const GameResultEntity(
+                    winnerTeam: 'POLICE',
+                    durationSeconds: 1800,
+                    totalArrestCount: 12,
+                    remainingRobberCount: 0,
+                    policeMvpNickname: '살금살금고슴도치',
+                    robberMvpNickname: '재빠른너구리',
+                  ),
+                ),
+                (
+                  '도둑 승리 · 두 팀 MVP (dark)',
+                  true,
+                  const GameResultEntity(
+                    winnerTeam: 'ROBBER',
+                    durationSeconds: 1800,
+                    totalArrestCount: 3,
+                    remainingRobberCount: 4,
+                    policeMvpNickname: '살금살금고슴도치',
+                    robberMvpNickname: '재빠른너구리',
+                  ),
+                ),
+                (
+                  '도둑 전원 중도 퇴장 · 경찰 MVP만',
+                  false,
+                  const GameResultEntity(
+                    winnerTeam: 'POLICE',
+                    durationSeconds: 900,
+                    totalArrestCount: 4,
+                    remainingRobberCount: 0,
+                    policeMvpNickname: '살금살금고슴도치',
+                  ),
+                ),
+                (
+                  'MVP 없음 (이전 서버) — 예전 팝업과 같아야 함',
+                  false,
+                  const GameResultEntity(
+                    winnerTeam: 'POLICE',
+                    durationSeconds: 1800,
+                    totalArrestCount: 12,
+                    remainingRobberCount: 0,
+                  ),
+                ),
+              ]) ...[
+                AppButton(
+                  text: label,
+                  onPressed: () => GameOverIntroModal.show(
+                    context: context,
+                    isDarkMode: dark,
+                    reason: 'TIME_OVER',
+                    result: Future.value(entity),
+                  ),
+                  backgroundColor: AppColors.black800,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+              ],
+
+              // ============================================
+              // 게임 시작 흐름 (역할 배너·대기·출동)
+              // ============================================
+              _buildSectionTitle('게임 시작 흐름'),
+              SizedBox(height: AppSpacing.vertical16),
+              for (final (label, isPolice, open) in [
+                ('전체 흐름 — 경찰 (출동 15초 전 시작)', true, 'flow'),
+                ('전체 흐름 — 도둑 (출동 15초 전 시작)', false, 'flow'),
+                ('역할 배너 — 경찰', true, 'role'),
+                ('역할 배너 — 도둑', false, 'role'),
+                ('출동 배너 — 경찰', true, 'dispatch'),
+                ('출동 배너 — 도둑', false, 'dispatch'),
+                ('경찰 대기 — 출동 15초 전', true, 'wait'),
+                ('도둑 설명 화면', false, 'explainer'),
+                ('규칙 다시 보기 — 도둑', false, 'replay'),
+              ]) ...[
+                AppButton(
+                  text: label,
+                  onPressed: () =>
+                      _openStartPreview(isPolice: isPolice, kind: open),
+                  backgroundColor: AppColors.black800,
+                  showBorder: false,
+                ),
+                SizedBox(height: AppSpacing.vertical12),
+              ],
 
               SizedBox(height: AppSpacing.vertical64),
 
@@ -601,6 +704,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
             status: 'ALIVE',
             arrestCount: 3,
             arrestedCount: 0,
+            // 경찰 미리보기는 내가 MVP인 상태, 도둑은 아닌 상태를 보여준다.
+            isMvp: true,
           );
 
     // GameOverResultDialog.show()와 동일한 배리어/pop 설정 — Provider override가
@@ -653,6 +758,53 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
       AppIcons.pingMarker(type: type, isDark: isDark),
       width: 24.w,
       height: 24.w,
+    );
+  }
+
+  /// 게임 시작 흐름 미리보기 — 배경은 장면 3개를 차례로(누를 때마다 다음 gameId).
+  int _previewGameId = 0;
+
+  void _openStartPreview({required bool isPolice, required String kind}) {
+    final gameId = _previewGameId++;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (routeContext) {
+          void close() => Navigator.of(routeContext).pop();
+          // 5분 대기 방: 대기는 출동 15초 전, 설명·다시 보기는 시작 직후 기준
+          final start = DateTime.now().subtract(
+            kind == 'wait'
+                ? const Duration(minutes: 4, seconds: 45)
+                : const Duration(seconds: 3),
+          );
+          final Widget body = switch (kind) {
+            'flow' => _StartFlowPreview(
+              isPolice: isPolice,
+              gameId: gameId,
+              onDone: close,
+            ),
+            'role' => RoleBanner(isPolice: isPolice, onDone: close),
+            'dispatch' => DispatchBanner(isPolice: isPolice, onDone: close),
+            _ => ChaseScene(
+              mode: switch (kind) {
+                'wait' => ChaseSceneMode.policeWait,
+                'explainer' => ChaseSceneMode.robberExplainer,
+                _ => ChaseSceneMode.rulesReplay,
+              },
+              isPolice: isPolice,
+              scene: startWaitScene(gameId),
+              gameStartTime: start,
+              policeWaitMinutes: 5,
+              revealMinutes: 5,
+              roundTimeMinutes: 30,
+              onClose: close,
+            ),
+          };
+          return Scaffold(
+            backgroundColor: isPolice ? AppColors.black100 : AppColors.black900,
+            body: Stack(children: [Positioned.fill(child: body)]),
+          );
+        },
+      ),
     );
   }
 
@@ -732,4 +884,110 @@ class _MockPlayerGameRecord extends PlayerGameRecordNotifier {
 
   @override
   PlayerGameRecord build() => _data;
+}
+
+/// 역할 배너 → 대기·설명 장면 → 00:00 → 출동 배너를 게임 화면(game_page)과 같은 순서·전환으로 잇는다.
+/// 5분 대기 방의 출동 15초 전에 막 시작한 것처럼 띄운다.
+class _StartFlowPreview extends StatefulWidget {
+  const _StartFlowPreview({
+    required this.isPolice,
+    required this.gameId,
+    required this.onDone,
+  });
+
+  final bool isPolice;
+  final int gameId;
+  final VoidCallback onDone;
+
+  @override
+  State<_StartFlowPreview> createState() => _StartFlowPreviewState();
+}
+
+class _StartFlowPreviewState extends State<_StartFlowPreview> {
+  late final DateTime _start = DateTime.now().subtract(
+    const Duration(minutes: 4, seconds: 45),
+  );
+  late final StartIntroController _intro = StartIntroController(
+    steps: [
+      StartIntroStep.roleBanner,
+      widget.isPolice
+          ? StartIntroStep.policeWait
+          : StartIntroStep.robberExplainer,
+    ],
+    hasPoliceWait: true,
+  )..addListener(() => setState(() {}));
+  bool _folding = false;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // 출동 15초 + 00:00 1초
+    _timer = Timer(const Duration(seconds: 16), _release);
+  }
+
+  void _release() {
+    if (!(_intro.showPoliceWait || _intro.showRobberExplainer)) {
+      _intro.policeReleased(inForeground: true);
+      return;
+    }
+    setState(() => _folding = true);
+    _timer = Timer(
+      BandTransition.foldDuration,
+      () => _intro.policeReleased(inForeground: true),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _intro.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mode = _intro.showPoliceWait
+        ? ChaseSceneMode.policeWait
+        : _intro.showRobberExplainer
+        ? ChaseSceneMode.robberExplainer
+        : null;
+    return Stack(
+      children: [
+        if (mode != null)
+          Positioned.fill(
+            child: BandTransition(
+              key: ValueKey(mode),
+              revealFromBand: _intro.showRoleBanner,
+              fold: _folding,
+              child: ChaseScene(
+                mode: mode,
+                isPolice: widget.isPolice,
+                scene: startWaitScene(widget.gameId),
+                gameStartTime: _start,
+                policeWaitMinutes: 5,
+                revealMinutes: 5,
+                onClose: _intro.robberExplainerClosed,
+              ),
+            ),
+          ),
+        if (_intro.showRoleBanner)
+          Positioned.fill(
+            child: RoleBanner(
+              isPolice: widget.isPolice,
+              onRevealNext: _intro.roleBannerLeaving,
+              onDone: _intro.roleBannerDone,
+            ),
+          )
+        else if (_intro.showDispatchBanner)
+          Positioned.fill(
+            child: DispatchBanner(
+              isPolice: widget.isPolice,
+              fromFoldedScene: _folding,
+              onDone: widget.onDone,
+            ),
+          ),
+      ],
+    );
+  }
 }

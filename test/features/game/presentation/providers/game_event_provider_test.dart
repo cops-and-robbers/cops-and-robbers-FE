@@ -137,6 +137,24 @@ class _EventInjectableDatasource extends GameEventStompDatasource {
       ),
     );
   }
+
+  void emitPoliceMoveStart() {
+    _events.add(
+      GameEventModel(
+        type: GameEventType.policeMoveStart,
+        timestamp: DateTime.now().toUtc().toIso8601String(),
+      ),
+    );
+  }
+
+  void emitStart() {
+    _events.add(
+      GameEventModel(
+        type: GameEventType.start,
+        data: {'startTime': DateTime.now().toUtc().toIso8601String()},
+      ),
+    );
+  }
 }
 
 /// connectAndSubscribe가 토큰을 요구하므로 항상 유효 토큰을 주는 fake.
@@ -153,6 +171,7 @@ ProviderContainer _eventContainer({
   required _EventInjectableDatasource datasource,
   required int myParticipantId,
   EventArrestStorage? storage,
+  bool isEventGame = true,
 }) {
   final c = ProviderContainer(
     overrides: [
@@ -171,7 +190,7 @@ ProviderContainer _eventContainer({
         nickname: '경찰',
         team: 'police',
         participantId: myParticipantId,
-        isEventGame: true,
+        isEventGame: isEventGame,
       );
   addTearDown(c.dispose);
   return c;
@@ -697,6 +716,56 @@ void main() {
       // 영속화 실패해도 인메모리 집계·신호는 유지된다.
       expect(s.myArrestedRobberIds, contains(7));
       expect(s.myArrestSeq, 1);
+    });
+  });
+
+  group('GameEventNotifier start banners (일반 게임은 역할·출동 배너가 대신 알림)', () {
+    // START 처리가 백그라운드 인프라를 켜며 WidgetsBinding을 쓴다.
+    TestWidgetsFlutterBinding.ensureInitialized();
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+
+    Future<ProviderContainer> connected(
+      _EventInjectableDatasource ds, {
+      required bool isEventGame,
+    }) async {
+      final c = _eventContainer(
+        datasource: ds,
+        myParticipantId: 100,
+        isEventGame: isEventGame,
+      );
+      await c
+          .read(gameEventNotifierProvider.notifier)
+          .connectAndSubscribe(1, team: 'police');
+      return c;
+    }
+
+    test('police_dispatch_leaves_top_banner_empty_when_normal_game', () async {
+      final ds = _EventInjectableDatasource();
+      final c = await connected(ds, isEventGame: false);
+      ds.emitPoliceMoveStart();
+      await Future<void>.delayed(Duration.zero);
+      final s = c.read(gameEventNotifierProvider);
+      expect(s.isPoliceMoving, isTrue);
+      expect(s.policeMoveStartTime, isNotNull);
+      expect(s.bannerMessage, isNull);
+    });
+
+    test('police_dispatch_shows_top_banner_when_event_game', () async {
+      final ds = _EventInjectableDatasource();
+      final c = await connected(ds, isEventGame: true);
+      ds.emitPoliceMoveStart();
+      await Future<void>.delayed(Duration.zero);
+      expect(c.read(gameEventNotifierProvider).bannerMessage, isNotNull);
+    });
+
+    test('game_start_event_leaves_top_banner_empty_when_normal_game', () async {
+      final ds = _EventInjectableDatasource();
+      final c = await connected(ds, isEventGame: false);
+      ds.emitStart();
+      await Future<void>.delayed(Duration.zero);
+      final s = c.read(gameEventNotifierProvider);
+      expect(s.gameStartTime, isNotNull);
+      expect(s.bannerMessage, isNull);
     });
   });
 }

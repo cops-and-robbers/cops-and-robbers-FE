@@ -753,6 +753,11 @@ class GameEventNotifier extends _$GameEventNotifier {
     });
   }
 
+  /// 일반 게임은 시작·출동을 역할 배너·출동 배너(game_page)가 알리므로 위쪽 공지
+  /// 배너를 띄우지 않는다. 이벤트 게임은 예전처럼 공지 배너로 알린다.
+  bool get _announcesStartInTopBanner =>
+      ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+
   // ============================================================
   // 이벤트 처리
   // ============================================================
@@ -772,12 +777,15 @@ class GameEventNotifier extends _$GameEventNotifier {
       case GameEventType.policeMoveStart:
         final moveStartTime =
             IsoTimestampParser.parse(event.timestamp) ?? DateTime.now();
+        final announce = _announcesStartInTopBanner;
         state = state.copyWith(
           isPoliceMoving: true,
           policeMoveStartTime: moveStartTime,
-          bannerMessage: _localizeGameEvent(GameEventMessageKey.policeMove),
+          bannerMessage: announce
+              ? _localizeGameEvent(GameEventMessageKey.policeMove)
+              : state.bannerMessage,
         );
-        _startBannerTimer();
+        if (announce) _startBannerTimer();
       case GameEventType.locationReveal:
       case GameEventType.robberLocationReveal:
         _handleLocationReveal(event.data, event.timestamp);
@@ -789,11 +797,14 @@ class GameEventNotifier extends _$GameEventNotifier {
   void _handleStart(Map<String, dynamic> data) {
     final startTimeStr = data['startTime'] as String?;
     final startTime = IsoTimestampParser.parse(startTimeStr);
+    final announce = _announcesStartInTopBanner;
     state = state.copyWith(
       gameStartTime: startTime ?? DateTime.now(),
-      bannerMessage: _localizeGameEvent(GameEventMessageKey.startGo),
+      bannerMessage: announce
+          ? _localizeGameEvent(GameEventMessageKey.startGo)
+          : state.bannerMessage,
     );
-    _startBannerTimer();
+    if (announce) _startBannerTimer();
     debugPrint(
       '[GameEventNotifier] ✅ START 이벤트 → 게임 시작 시각: ${state.gameStartTime}',
     );

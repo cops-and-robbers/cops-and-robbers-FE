@@ -1268,6 +1268,105 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameRulesZoneRuleLine2 => '\n→ Screen locks if you leave the zone';
 
   @override
+  String get gameRulesPingPrefix => '';
+
+  @override
+  String get gameRulesPingHighlight => 'Long-press the map';
+
+  @override
+  String get gameRulesPingSuffix => ' to drop a ping for your team';
+
+  @override
+  String get startRoleLabel => 'Your role';
+
+  @override
+  String get startMissionPolice => 'Find the Robbers and arrest them all by QR';
+
+  @override
+  String get startMissionRobber => 'Don\'t get caught until time runs out';
+
+  @override
+  String get startWaitCountdownLabel => 'Cops move out in';
+
+  @override
+  String get startGameTimeLeftLabel => 'Game time left';
+
+  @override
+  String get startWaitPoliceTitle => 'The Robbers are getting away';
+
+  @override
+  String get startWaitRobberTitle => 'You\'re getting away from the Cops';
+
+  @override
+  String startRulesCounter(int current, int total) {
+    return 'Game rules $current/$total';
+  }
+
+  @override
+  String get startRuleQrArrest => 'Scan a Robber\'s QR to arrest them';
+
+  @override
+  String get startRulePing => 'Long-press the map to drop a ping for your team';
+
+  @override
+  String startRuleRobberReveal(int minutes) {
+    return 'Robber locations are revealed to the Cops every $minutes min';
+  }
+
+  @override
+  String get startRuleZoneLock => 'Your screen locks if you leave the zone';
+
+  @override
+  String get startRuleQrCaught => 'You\'re caught when the Cops scan your QR';
+
+  @override
+  String startRuleMyReveal(int minutes) {
+    return 'Your location is revealed to the Cops every $minutes min';
+  }
+
+  @override
+  String get startRuleJailbreak =>
+      'If caught, you go to Jail. Step outside for 3 seconds to escape';
+
+  @override
+  String get startRuleWin =>
+      'Cops win by arresting every Robber, Robbers win by lasting until time runs out';
+
+  @override
+  String startRuleTeamReveal(int minutes) {
+    return 'Robber locations are shared with the Cops every $minutes min';
+  }
+
+  @override
+  String get startRuleZone =>
+      'Stay inside the game zone. Your screen locks if you leave it';
+
+  @override
+  String get startRuleJailbreakReplay =>
+      'Caught Robbers go to Jail and escape after 3 seconds outside it';
+
+  @override
+  String get startTapToMap => 'Tap to return to the map';
+
+  @override
+  String get dispatchPoliceLead => 'Time\'s up';
+
+  @override
+  String get dispatchPoliceMain => 'Move out!';
+
+  @override
+  String get dispatchRobberLead => 'The Cops are moving';
+
+  @override
+  String get dispatchRobberMain => 'Watch out!';
+
+  @override
+  String get startRulesHint => 'Tap ⓘ at the top right to see the rules again';
+
+  @override
+  String get gameGridToggle => 'Coordinate grid';
+
+  @override
   String get unitPerson => 'people';
 
   @override
@@ -1635,6 +1734,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelFinalStatus => 'Final status';
+
+  @override
+  String get labelMvp => 'MVP';
+
+  @override
+  String get mvpRevealTease => 'Who\'s the MVP?!';
+
+  @override
+  String get labelPoliceTeamMvp => 'Cops team MVP';
+
+  @override
+  String get labelRobberTeamMvp => 'Robber team MVP';
+
+  @override
+  String get mvpRevealTapToContinue => 'Tap to continue';
 
   @override
   String get statusAlive => 'Alive';
@@ -2613,6 +2727,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pingCooldownNotice => 'Please try again shortly';
+
+  @override
+  String pingChatFoundRobber(String cell) {
+    return 'Spotted a robber at $cell';
+  }
+
+  @override
+  String pingChatSuspectRobber(String cell) {
+    return 'A robber may be at $cell';
+  }
+
+  @override
+  String pingChatFoundCops(String cell) {
+    return 'Spotted cops at $cell';
+  }
+
+  @override
+  String pingChatSuspectCops(String cell) {
+    return 'Cops may be at $cell';
+  }
 
   @override
   String get gameLeaveConfirmTitle => 'Leave the game?';

@@ -20,8 +20,14 @@ description: 이슈를 작성·GitHub 등록하고, 발급된 이슈 번호로 �
 ### 2단계: GitHub 등록 → 이슈 번호 확보
 
 ```bash
-gh issue create --title "<제목>" --body "<본문(파일에서 제목 줄 제외)>"
+gh issue create --title "<제목>" --body "<본문(파일에서 제목 줄 제외)>" \
+  --assignee @me --label "<템플릿 frontmatter의 labels>"
 ```
+
+- **담당자(assignee)는 기본값으로 이슈 작성자(`@me`)를 건다.** 사용자가 다른 담당자를 말했을 때만 그 사람으로 바꾼다.
+  CLI로 만든 이슈에는 템플릿의 `labels`·`assignees`가 자동으로 붙지 않으므로 반드시 명시한다.
+  (본문 「🙋‍♂️ 담당자」 섹션의 이름은 별개다 — 그 칸은 템플릿 그대로 둔다)
+- 등록 직후 `gh issue view <번호> --json assignees,labels`로 담당자·라벨이 붙었는지 확인한다.
 
 출력 URL 끝의 번호가 **이슈 번호**다. 등록 실패(네트워크·권한) 시 파일만 남기고
 사용자에게 알린 뒤 중단한다 — 번호 없이 브랜치를 만들지 않는다.

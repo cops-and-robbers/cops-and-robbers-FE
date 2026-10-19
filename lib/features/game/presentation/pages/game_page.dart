@@ -14,6 +14,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/character_assets.dart';
+import '../../../../core/constants/chat_constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/network/api_error_response.dart';
 import '../../../../core/utils/iso_timestamp_parser.dart';
@@ -48,10 +49,13 @@ import '../../data/datasources/game_event_stomp_datasource.dart';
 import '../../data/models/game_area_model.dart';
 import '../../domain/entities/area_shape.dart';
 import '../../domain/arrest_lock_visibility.dart';
+import '../../domain/distance_send_policy.dart';
 import '../../domain/location_send_policy.dart';
 import '../../domain/jail_escape_detector.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
+import '../../domain/ping_chat_policy.dart';
+import '../../domain/zone_grid.dart';
 import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
@@ -61,6 +65,7 @@ import '../providers/game_result_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
+import '../widgets/game_over_intro_modal.dart';
 import '../widgets/game_over_result_dialog.dart';
 import '../widgets/qr_display_dialog.dart';
 import '../widgets/qr_scanner_page.dart';
@@ -76,10 +81,17 @@ import '../widgets/marquee_alert_banner.dart';
 import '../widgets/police_start_countdown.dart';
 import '../widgets/zone_exit_banner.dart';
 import '../widgets/zone_exit_vignette.dart';
+import '../../../../core/services/storage/game_rules_hint_prefs.dart';
+import '../../../../core/widgets/dialogs/dialog_animation.dart';
+import '../../domain/start_flow.dart';
+import '../helpers/start_intro_controller.dart';
+import '../widgets/start/band_transition.dart';
+import '../widgets/start/chase_scene.dart';
+import '../widgets/start/chase_scene_rules.dart';
+import '../widgets/start/start_banners.dart';
 import 'package:cops_and_robbers/core/constants/game_config.dart';
 import 'package:cops_and_robbers/core/constants/game_status.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
-import 'package:cops_and_robbers/core/constants/game_result_reason.dart';
 import 'package:cops_and_robbers/core/constants/participant_status.dart';
 import '../../../../core/constants/dev_flags.dart';
 import '../widgets/event_arrest_success_dialog.dart';
@@ -136,6 +148,11 @@ class _GamePageState extends ConsumerState<GamePage>
   bool _isLocationFocused = false;
   bool _isProgrammaticMove = false;
 
+  /// 좌표 격자 (#636) — 게임마다 꺼진 상태로 시작, 구역이 로드되면 계산해 둔다
+  bool _showGrid = false;
+  ZoneGrid? _zoneGrid;
+  final _pingChatPolicy = PingChatPolicy();
+
   /// dispose()에서 ref 사용 불가이므로 사전에 저장
   ChatNotifier? _chatNotifier;
   GameEventNotifier? _gameEventNotifier;
@@ -152,6 +169,8 @@ class _GamePageState extends ConsumerState<GamePage>
   StreamSubscription<Position>? _locationSubscription;
   Position? _lastSentPosition;
   DateTime? _lastSentTime;
+  DateTime? _lastDistanceSentTime;
+  double? _lastSentDistanceMeters;
 
   // 재연결 시 시스템 메시지 중복 방지용 last-handled 값
   DateTime? _lastHandledPoliceMove;
@@ -217,6 +236,22 @@ class _GamePageState extends ConsumerState<GamePage>
   int _gameStateSyncGeneration = 0;
   Timer? _gameStateSyncRetryTimer;
 
+  /// 게임 시작 흐름(역할 배너·경찰 대기·도둑 설명·출동 배너). 이벤트 게임·더미 모드는 null.
+  StartIntroController? _intro;
+  Timer? _policeReleaseTimer;
+  DateTime? _introStartTime;
+  DateTime? _policeReleaseAt;
+  int _introWaitMinutes = 0;
+  int _introRevealMinutes = 5;
+  bool _rulesHintRequested = false;
+
+  /// 출동 때 장면이 출동 띠 모양으로 접히는 중 — 다 접히면 출동 배너가 그 자리에서 이어진다
+  bool _sceneFolding = false;
+  Timer? _rulesHintTimer;
+
+  /// 시작 시스템 메시지의 마지막 공지 배너가 내려가는 시각. 보내지 않았으면 null.
+  DateTime? _startBannersEndAt;
+
   /// 재연결 모달에 전달하는 현재 연결 상태 Notifier
   ValueNotifier<StompConnectionState>? _reconnectStateNotifier;
 
@@ -233,10 +268,23 @@ class _GamePageState extends ConsumerState<GamePage>
     _backgroundService = ref.read(backgroundServiceProvider);
     _recordNotifier = ref.read(playerGameRecordNotifierProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // 새 게임 진입마다 이전 기록 초기화(앱 resume 시에는 initState 미실행 → 보존).
+      // 게임 진입마다 내 기록 시작 — 앱이 죽었다 같은 라운드에 재진입하면 기기 파일에서
+      // 복원하고, 다른 게임·다른 라운드면 초기화한다(앱 resume 시에는 initState 미실행 → 보존).
       // initState 본문에서 직접 호출하면 build 중 provider 수정 에러(Riverpod) —
-      // 위치 스트림 시작(_ensureLocationAndInit)보다 먼저라 순서는 동일하다.
-      if (!widget.isDummy) _recordNotifier.reset();
+      // 복원이 끝난 뒤 위치 스트림을 시작해야 새 점이 복원된 경로 뒤에 붙는다.
+      if (!widget.isDummy) {
+        // 같은 방의 다음 라운드는 gameId가 같아 서버 시작 시각으로 라운드를 가른다(#641).
+        // 대기실 경유면 GAME_START로 이미 있고, 앱 재실행이면 설정 API로 먼저 채운다.
+        await _initSettingsFromApiIfNeeded();
+        if (!mounted) return;
+        await _recordNotifier.begin(
+          _gameId,
+          startedAt: IsoTimestampParser.parse(
+            ref.read(gameParticipantNotifierProvider)?.gameStartTime,
+          ),
+        );
+      }
+      if (!mounted) return;
       // 위치 권한 + STOMP 초기화 + participantInfo 로드를 끝까지 기다린 뒤
       // 재진입 가드를 호출해야 콜드 재시작 케이스에서 participantInfo.gameStartTime
       // 이 채워진 상태로 가드가 판정 가능.
@@ -252,6 +300,11 @@ class _GamePageState extends ConsumerState<GamePage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _checkLocationPermissionOnResume();
+      // 백그라운드에서 멈춰 있던 동안 출동 시각이 지났으면 타이머를 기다리지 않고 바로 닫는다
+      final releaseAt = _policeReleaseAt;
+      if (releaseAt != null && !clock.now().isBefore(releaseAt)) {
+        _onPoliceReleased();
+      }
     }
   }
 
@@ -338,7 +391,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
     _connectGameEvents();
     _loadGameArea();
-    _showPoliceTimerIfNeeded();
+    _startIntro();
     _sendGameStartSystemMessages();
   }
 
@@ -397,6 +450,11 @@ class _GamePageState extends ConsumerState<GamePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _gameStateSyncRetryTimer?.cancel();
+    _policeReleaseTimer?.cancel();
+    _rulesHintTimer?.cancel();
+    _intro
+      ?..removeListener(_onIntroChanged)
+      ..dispose();
     _locationSubscription?.cancel();
     _zoneExitVibrationTimer?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
@@ -419,7 +477,127 @@ class _GamePageState extends ConsumerState<GamePage>
     super.dispose();
   }
 
-  /// 경찰 대기 타이머 팝업 (경찰 팀만, 서버 startTime 기준 남은 시간)
+  /// 게임 시작 흐름을 정한다. 이벤트 게임은 예전 경찰 대기 팝업 그대로.
+  void _startIntro() {
+    // 위치 권한을 다시 허용하면 _initGameConnections가 한 번 더 돈다 — 흐름은 한 번만 만든다
+    if (widget.isDummy || _intro != null) return;
+    final info = ref.read(gameParticipantNotifierProvider);
+    if (info?.isEventGame ?? false) {
+      _showPoliceTimerIfNeeded();
+      return;
+    }
+    final start = IsoTimestampParser.parse(info?.gameStartTime);
+    if (start == null) return;
+    final wait = info?.policeWaitMinutes ?? 0;
+    final now = clock.now();
+    final releaseAt = policeReleaseAt(
+      gameStartTime: start,
+      policeWaitMinutes: wait,
+    )!;
+    _introStartTime = start;
+    _policeReleaseAt = releaseAt;
+    _introWaitMinutes = wait;
+    _introRevealMinutes = info?.locationRevealIntervalMinutes ?? 5;
+    final intro = StartIntroController(
+      steps: startIntroSteps(
+        isPolice: GameTeam.isPolice(widget.team),
+        isEventGame: false,
+        gameStartTime: start,
+        policeWaitMinutes: wait,
+        now: now,
+      ),
+      hasPoliceWait: wait > 0,
+    )..addListener(_onIntroChanged);
+    _intro = intro;
+    if (now.isBefore(releaseAt)) {
+      _policeReleaseTimer = Timer(releaseAt.difference(now), _onPoliceReleased);
+    } else {
+      intro.policeReleased(inForeground: false);
+    }
+    setState(() {});
+  }
+
+  void _onIntroChanged() {
+    if (!mounted) return;
+    setState(() {});
+    if (_intro?.hintDue ?? false) unawaited(_showRulesHintOnce());
+  }
+
+  /// 경찰 출동 — 기기 시계 타이머와 서버 POLICE_MOVE_START 중 먼저 온 쪽(컨트롤러가 한 번만 받는다).
+  void _onPoliceReleased() {
+    final releaseAt = _policeReleaseAt;
+    if (!mounted || releaseAt == null || _sceneFolding) return;
+    _policeReleaseTimer?.cancel();
+    // 00:00을 1초 보여 준 뒤 넘어간다 — 0이 되자마자 닫으면 00:01에서 끊겨 보인다.
+    // 서버 신호가 기기 시계보다 조금 먼저 와도 같고, 시계가 2초 넘게 어긋나면 기다리지 않는다
+    final now = clock.now();
+    final dispatchAt = releaseAt.add(const Duration(seconds: 1));
+    if (now.isBefore(dispatchAt) &&
+        !now.isBefore(releaseAt.subtract(const Duration(seconds: 2)))) {
+      _policeReleaseTimer = Timer(
+        dispatchAt.difference(now),
+        _onPoliceReleased,
+      );
+      return;
+    }
+    // 백그라운드에 있다 돌아와 늦게 처리되는 출동은 배너 없이 장면만 닫는다
+    final onTime = clock.now().isBefore(
+      releaseAt.add(const Duration(seconds: 2)),
+    );
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    final visible = lifecycle == null || lifecycle == AppLifecycleState.resumed;
+    final intro = _intro;
+    final sceneShown =
+        intro != null &&
+        (intro.showPoliceWait || intro.showRobberExplainer) &&
+        !_showParticipants &&
+        !_showChat;
+    // 보이는 장면은 출동 띠 모양으로 접은 뒤 출동 배너로 넘긴다
+    if (onTime &&
+        visible &&
+        sceneShown &&
+        !MediaQuery.disableAnimationsOf(context)) {
+      setState(() => _sceneFolding = true);
+      _policeReleaseTimer = Timer(BandTransition.foldDuration, () {
+        if (mounted) intro.policeReleased(inForeground: true);
+      });
+      return;
+    }
+    intro?.policeReleased(inForeground: onTime && visible);
+  }
+
+  /// "규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요" — 기기당 한 번, 기존 위쪽 공지 배너로.
+  ///
+  /// 시작 시스템 메시지(20초 신고 안내)가 아직 공지 배너에 남아 있으면 내려간 뒤에 띄운다.
+  /// 도둑 설명 화면은 약 23.4초에 닫혀 그대로 띄우면 20초 안내(8.8초간)에 덮인다.
+  Future<void> _showRulesHintOnce() async {
+    if (_rulesHintRequested) return;
+    _rulesHintRequested = true;
+    if (await GameRulesHintPrefs.seen()) return;
+    if (!mounted) return;
+    final wait = _startBannersEndAt?.difference(clock.now()) ?? Duration.zero;
+    if (wait > Duration.zero) {
+      _rulesHintTimer = Timer(wait, _showRulesHint);
+    } else {
+      _showRulesHint();
+    }
+  }
+
+  /// 실제로 띄웠을 때만 본 것으로 저장한다 — 띄우기 전에 화면이 닫히면 다음 게임에서 다시 뜬다.
+  void _showRulesHint() {
+    if (!mounted) return;
+    // 공지 배너가 가려지는 동안(구역 이탈 경고·참가자 목록)은 보이지 않으므로 잠시 뒤 다시 시도한다
+    if (_isZoneExitWarningActive || _showParticipants) {
+      _rulesHintTimer = Timer(const Duration(seconds: 3), _showRulesHint);
+      return;
+    }
+    _gameEventNotifier?.setBannerMessage(
+      AppLocalizations.of(context).startRulesHint,
+    );
+    unawaited(GameRulesHintPrefs.markSeen());
+  }
+
+  /// 경찰 대기 타이머 팝업 (이벤트 게임 경찰만, 서버 startTime 기준 남은 시간)
   void _showPoliceTimerIfNeeded() {
     if (widget.isDummy || !GameTeam.isPolice(widget.team)) return;
 
@@ -575,29 +753,37 @@ class _GamePageState extends ConsumerState<GamePage>
     final gameDuration = participantInfo?.roundTimeMinutes;
     final l10n = AppLocalizations.of(context);
 
-    final messages = <String>[
-      if (gameDuration != null) l10n.gameEventStartTime(gameDuration),
-      l10n.gameEventStartReady,
-      l10n.gameEventStartReportTip,
-      l10n.gameEventStartGo,
+    // 일반 게임은 역할 배너·대기 화면이 시작을 알리므로 "잠시 후 시작"·"게임 시작!"은 채팅에만 남긴다
+    final isEventGame = participantInfo?.isEventGame ?? false;
+    final messages = <(String, bool)>[
+      if (gameDuration != null) (l10n.gameEventStartTime(gameDuration), true),
+      (l10n.gameEventStartReady, isEventGame),
+      (l10n.gameEventStartReportTip, true),
+      (l10n.gameEventStartGo, isEventGame),
     ];
 
+    // 공지 배너는 8.8초(표시 8초 + 사라짐 0.8초) 동안 남는다
+    final lastBanner = messages.lastIndexWhere((m) => m.$2);
+    _startBannersEndAt = clock.now().add(
+      Duration(milliseconds: 10000 * lastBanner + 8800),
+    );
+
     for (var i = 0; i < messages.length; i++) {
-      final message = messages[i];
-      if (i == 0) {
-        // 첫 메시지는 즉시 발송 (채팅 + 배너)
+      final (message, showBanner) = messages[i];
+      void send() {
         ref
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(gameId: _gameId, message: message);
-        _gameEventNotifier?.setBannerMessage(message);
+        if (showBanner) _gameEventNotifier?.setBannerMessage(message);
+      }
+
+      if (i == 0) {
+        // 첫 메시지는 즉시 발송
+        send();
       } else {
-        // 이후 메시지는 5초 간격으로 발송
+        // 이후 메시지는 10초 간격으로 발송
         Timer(Duration(milliseconds: 10000 * i), () {
-          if (!mounted) return;
-          ref
-              .read(chatNotifierProvider.notifier)
-              .addSystemMessage(gameId: _gameId, message: message);
-          _gameEventNotifier?.setBannerMessage(message);
+          if (mounted) send();
         });
       }
     }
@@ -777,6 +963,31 @@ class _GamePageState extends ConsumerState<GamePage>
     }
   }
 
+  /// 내 누적 이동 거리를 30초마다 서버로 보낸다 (양 팀, 팀 MVP 동점 판정용 — BE #212).
+  ///
+  /// 서버는 게임 종료 순간 이미 받은 값으로 즉시 판정하므로 끝날 때가 아니라 게임 중에 보낸다.
+  /// 이벤트 게임은 서버가 MVP를 판정하지 않으므로 보내지 않는다.
+  void _maybePublishDistance() {
+    if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) return;
+    if (ref.read(gameEventNotifierProvider).connectionState !=
+        StompConnectionState.connected) {
+      return;
+    }
+    final now = DateTime.now();
+    final meters = ref.read(playerGameRecordNotifierProvider).distanceMeters;
+    if (!shouldSendDistance(
+      lastSentTime: _lastDistanceSentTime,
+      now: now,
+      lastSentMeters: _lastSentDistanceMeters,
+      currentMeters: meters,
+    )) {
+      return;
+    }
+    _gameEventDatasource?.publishDistance(_gameId, meters);
+    _lastDistanceSentTime = now;
+    _lastSentDistanceMeters = meters;
+  }
+
   /// 단일 GPS 스트림(양 팀): 구역 이탈 감지 + (도둑·연결됨) 위치 전송
   ///
   /// 기존 전송용(distanceFilter 10m)·구역감지용(0) 두 스트림을 하나로 통합하여
@@ -799,6 +1010,7 @@ class _GamePageState extends ConsumerState<GamePage>
             _recordNotifier.addPoint(
               LatLngModel(latitude: pos.latitude, longitude: pos.longitude),
             );
+            _maybePublishDistance();
 
             // 2) 위치 전송 — 도둑 팀, STOMP 연결 상태에서만
             if (!GameTeam.isRobber(widget.team)) return;
@@ -1062,6 +1274,11 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
+  void _toggleGrid() {
+    setState(() => _showGrid = !_showGrid);
+    _googleMapKey.currentState?.updateGrid(_showGrid ? _zoneGrid : null);
+  }
+
   void _onMapCameraMoved() {
     _closePingCard();
     if (_isProgrammaticMove) {
@@ -1117,6 +1334,7 @@ class _GamePageState extends ConsumerState<GamePage>
           gameId: _gameId,
         );
     _closePingCard();
+    if (ok) _announcePingInTeamChat(type, latLng);
     if (!ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1126,20 +1344,67 @@ class _GamePageState extends ConsumerState<GamePage>
     }
   }
 
-  /// 게임 규칙 다이얼로그 (앱바 우측 info 버튼)
+  /// 격자를 켠 상태면 핑 찍은 칸을 팀 채팅에도 내 이름으로 올린다 (#636)
   ///
-  /// 대기실과 동일한 GameRulesContent를 표시합니다.
+  /// 핑은 2.5초면 사라지므로 그때 지도를 안 보던 팀원도 채팅으로 알 수 있게 한다.
+  /// 보낼지·어느 칸인지는 [PingChatPolicy]가 정한다.
+  void _announcePingInTeamChat(PingType type, LatLng latLng) {
+    final cell = _pingChatPolicy.cellToAnnounce(
+      grid: _showGrid ? _zoneGrid : null,
+      type: type,
+      point: GeoPoint(latitude: latLng.latitude, longitude: latLng.longitude),
+      now: clock.now(),
+    );
+    if (cell == null || !mounted) return;
+
+    final l10n = AppLocalizations.of(context);
+    final message = switch ((type, GameTeam.isPolice(widget.team))) {
+      (PingType.found, true) => l10n.pingChatFoundRobber(cell),
+      (PingType.suspect, true) => l10n.pingChatSuspectRobber(cell),
+      (PingType.found, false) => l10n.pingChatFoundCops(cell),
+      (PingType.suspect, false) => l10n.pingChatSuspectCops(cell),
+    };
+    _chatNotifier?.sendMessage(
+      gameId: _gameId,
+      message: message,
+      scope: ChatScope.team,
+    );
+  }
+
+  /// 게임 규칙 (앱바 우측 info 버튼)
+  ///
+  /// 일반 게임은 시작 때 본 장면을 내 팀 테마로 다시 띄운다. 이벤트 게임은 예전 다이얼로그.
   void _showGameRulesDialog() {
     // 다이얼로그 열기 전 포커스 해제 — 다이얼로그 닫힘 시
     // 채팅 입력 TextField로 포커스가 복원되어 시트가 올라오는 현상 방지
     FocusScope.of(context).unfocus();
-    final interval = ref
-        .read(gameParticipantNotifierProvider)
-        ?.locationRevealIntervalMinutes;
-    GameRulesContent.showAsDialog(
-      context,
-      isDarkMode: _isDarkMode,
-      locationRevealIntervalMinutes: interval,
+    final info = ref.read(gameParticipantNotifierProvider);
+    final start =
+        _introStartTime ?? IsoTimestampParser.parse(info?.gameStartTime);
+    if ((info?.isEventGame ?? false) || start == null) {
+      GameRulesContent.showAsDialog(
+        context,
+        isDarkMode: _isDarkMode,
+        locationRevealIntervalMinutes: info?.locationRevealIntervalMinutes,
+      );
+      return;
+    }
+    showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: DialogAnimation.barrierColor,
+      transitionDuration: DialogAnimation.duration,
+      transitionBuilder: DialogAnimation.buildTransition,
+      pageBuilder: (dialogContext, _, _) => ChaseScene(
+        mode: ChaseSceneMode.rulesReplay,
+        isPolice: GameTeam.isPolice(widget.team),
+        scene: startWaitScene(_gameId),
+        gameStartTime: start,
+        policeWaitMinutes: info?.policeWaitMinutes ?? 0,
+        revealMinutes: info?.locationRevealIntervalMinutes ?? 5,
+        roundTimeMinutes: info?.roundTimeMinutes,
+        onClose: () => Navigator.of(dialogContext).pop(),
+      ),
     );
   }
 
@@ -1340,12 +1605,24 @@ class _GamePageState extends ConsumerState<GamePage>
   static const String _homeAfterGameExit =
       '${RoutePaths.home}?fromGameExit=true';
 
+  /// 경찰은 출동 전엔 나갈 수 없다 — 지금의 대기 팝업(PopScope canPop: false)과 같다.
+  /// 대기 화면 앞의 역할 배너(3.37초)도 출동 전이다.
+  bool get _policeHeldBeforeDispatch {
+    final intro = _intro;
+    if (intro == null) return false;
+    return intro.showPoliceWait ||
+        (GameTeam.isPolice(widget.team) &&
+            intro.hasPoliceWait &&
+            intro.showRoleBanner);
+  }
+
   /// 게임 중 나가기 진입점 — AppBar 나가기 버튼 / 시스템 뒤로가기 공통.
   ///
   /// 단순 확인 다이얼로그(대기방 톤) → 확인 시 [_leaveGameActively].
   Future<void> _confirmLeaveGame() async {
     // 이미 나가는 중이거나 게임 종료 다이얼로그가 떠 있으면 무시(중복/충돌 방지)
     if (_isLeaving || _gameOverDialogShown) return;
+    if (_policeHeldBeforeDispatch) return;
 
     // 더미 모드는 서버 호출 없이 즉시 홈
     if (widget.isDummy) {
@@ -1534,36 +1811,18 @@ class _GamePageState extends ConsumerState<GamePage>
       );
     }
 
-    // 1단계: 게임 종료 알림 팝업 (3초 자동 닫힘)
-    final l10n = AppLocalizations.of(context);
-    await AppPopup.show(
+    // 1단계: 게임 종료 알림 + 팀 MVP 공개 (DEC-0093 ⑤).
+    // MVP가 없으면(이전 서버·이벤트 게임·조회 실패) 예전 팝업처럼 3초 뒤 닫힌다.
+    // 결과는 위에서 사전 트리거한 같은 provider Future를 넘긴다(keepAlive 캐시).
+    final isEventGame =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    await GameOverIntroModal.show(
       context: context,
-      autoCloseDuration: const Duration(seconds: 3),
-      backgroundColor: _isDarkMode ? AppColors.black : null,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n.gameOverBannerTitle,
-            style: _isDarkMode
-                ? AppTextStyles.robberHeading.copyWith(color: AppColors.green)
-                : AppTextStyles.heading_20.copyWith(color: AppColors.black),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppSpacing.vertical8),
-          Text(
-            gameOverReasonMessage(l10n, reason),
-            style: _isDarkMode
-                ? AppTextStyles.paragraph_14_100.copyWith(
-                    color: AppColors.black400,
-                  )
-                : AppTextStyles.paragraph_14.copyWith(
-                    color: AppColors.black600,
-                  ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+      isDarkMode: _isDarkMode,
+      reason: reason,
+      result: gameResultId == null || isEventGame
+          ? null
+          : ref.read(gameResultProvider(gameResultId).future),
     );
 
     if (!mounted) return;
@@ -1849,6 +2108,10 @@ class _GamePageState extends ConsumerState<GamePage>
     ref.listen(gameEventNotifierProvider, (prev, next) {
       if (_isLeaving) return;
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
+        _policeReleaseTimer?.cancel();
+        // 결과 화면 밑에서 뜨면 못 본 안내가 본 것으로 저장된다 — 다음 게임에서 띄운다
+        _rulesHintTimer?.cancel();
+        _intro?.gameOver();
         _showGameOverDialog(next.winnerTeam, next.gameOverReason);
       }
     });
@@ -1866,6 +2129,7 @@ class _GamePageState extends ConsumerState<GamePage>
               gameId: _gameId,
               message: AppLocalizations.of(context).gameEventPoliceMove,
             );
+        _onPoliceReleased();
       }
     });
 
@@ -1973,6 +2237,14 @@ class _GamePageState extends ConsumerState<GamePage>
 
     // 도둑팀 경찰 시작 카운트다운용 시각 계산
     final policeStartTime = _computePoliceStartTime();
+    final intro = _intro;
+    final sceneMode = intro == null
+        ? null
+        : intro.showPoliceWait
+        ? ChaseSceneMode.policeWait
+        : intro.showRobberExplainer
+        ? ChaseSceneMode.robberExplainer
+        : null;
 
     // 연결 성공 시 게임 상태 동기화 + 도둑 팀 위치 즉시 재전송 / 끊김 시 재연결 모달 처리
     ref.listen(gameEventNotifierProvider.select((s) => s.connectionState), (
@@ -2048,6 +2320,8 @@ class _GamePageState extends ConsumerState<GamePage>
           ),
         );
         _googleMapKey.currentState?.updateAreaCircles(_buildAreaCircles(area));
+        _zoneGrid = ZoneGrid.forArea(area.playground);
+        if (_showGrid) _googleMapKey.currentState?.updateGrid(_zoneGrid);
         _googleMapKey.currentState?.updateAreaPolygons({
           ..._buildAreaBorderPolygons(area),
           ..._buildOutsideOverlay(area),
@@ -2090,6 +2364,11 @@ class _GamePageState extends ConsumerState<GamePage>
             _showParticipants = false;
             _showArrestInfo = false;
           });
+          return;
+        }
+        // 도둑 설명 화면은 뒤로가기로도 닫힌다(위에 열린 채팅·목록을 먼저 닫는다)
+        if (_intro?.showRobberExplainer ?? false) {
+          _intro!.robberExplainerClosed();
           return;
         }
         _confirmLeaveGame();
@@ -2167,8 +2446,43 @@ class _GamePageState extends ConsumerState<GamePage>
             else
               const SizedBox.shrink(),
 
+            /// index 2b: 경찰 대기 화면·도둑 설명 화면 (if/else로 개수 고정)
+            /// 지도·앱바를 덮고, 공지 배너·오른쪽 버튼·채팅은 위에 뜬다.
+            /// 참가자 목록(index 1)·채팅을 열면 Offstage로 비켜 준다 — 덮으면 목록이 안 보이고
+            /// 채팅을 닫는 앱바 뒤로 버튼(index 2)이 가려진다.
+            /// Offstage 동안에도 남은 시간·진동은 계속 돈다(출동은 목록을 보는 중에도 온다).
+            if (sceneMode != null)
+              Positioned.fill(
+                child: Offstage(
+                  offstage: _showParticipants || _showChat,
+                  child: TickerMode(
+                    enabled: !_showParticipants && !_showChat,
+                    child: BandTransition(
+                      key: ValueKey(sceneMode),
+                      // 역할 띠가 빠지는 자리에서 펼쳐진다. 다시 켠 앱은 바로 화면 전체
+                      revealFromBand: intro!.showRoleBanner,
+                      fold: _sceneFolding,
+                      child: ChaseScene(
+                        mode: sceneMode,
+                        isPolice: GameTeam.isPolice(widget.team),
+                        scene: startWaitScene(_gameId),
+                        gameStartTime: _introStartTime!,
+                        policeWaitMinutes: _introWaitMinutes,
+                        revealMinutes: _introRevealMinutes,
+                        onClose: intro.robberExplainerClosed,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+
             /// index 3: 도둑팀 경찰 시작 카운트다운 (if/else로 개수 고정)
-            if (!_showParticipants && policeStartTime != null)
+            /// 도둑 설명 화면에 같은 카운트다운이 있어 그동안은 숨긴다.
+            if (!_showParticipants &&
+                policeStartTime != null &&
+                sceneMode != ChaseSceneMode.robberExplainer)
               SafeArea(
                 bottom: false,
                 child: Padding(
@@ -2281,13 +2595,32 @@ class _GamePageState extends ConsumerState<GamePage>
             ///
             /// 이탈 중에도 활성화 유지 — 복귀 경로 파악에 필수적이라 차단하면 UX 저해.
             /// 참가자 모드에서는 지도가 안 보이므로 의미 없음 → 숨김.
-            if (!_showParticipants)
+            /// 대기·설명 장면도 지도를 덮고 규칙 줄과 겹치므로 숨김.
+            if (!_showParticipants && sceneMode == null)
               Positioned(
                 left: 20.w,
                 bottom: actionButtonBottom,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Semantics(
+                      label: AppLocalizations.of(context).gameGridToggle,
+                      button: true,
+                      toggled: _showGrid,
+                      child: SvgIconButton(
+                        assetPath: AppIcons.grid,
+                        onPressed: _toggleGrid,
+                        iconColor: switch ((_showGrid, _isDarkMode)) {
+                          (true, true) => AppColors.green,
+                          (true, false) => AppColors.blue,
+                          (false, true) => AppColors.green500,
+                          (false, false) => AppColors.blue500,
+                        },
+                        backgroundColor: _isDarkMode ? AppColors.black : null,
+                        isDarkMode: _isDarkMode,
+                      ),
+                    ),
+                    SizedBox(height: AppSpacing.vertical8),
                     MyLocationButton(
                       onPressed: _moveToCurrentLocation,
                       isFocused: _isLocationFocused,
@@ -2450,6 +2783,28 @@ class _GamePageState extends ConsumerState<GamePage>
             /// 팀 테마 분기는 위젯 내부에서 처리.
             if (_isZoneExitWarningActive)
               Positioned.fill(child: ZoneExitVignette(isDarkMode: _isDarkMode))
+            else
+              const SizedBox.shrink(),
+
+            /// index 11: 역할 배너·출동 배너 (가장 위, if/else로 개수 고정)
+            if (intro != null && intro.showRoleBanner)
+              Positioned.fill(
+                child: RoleBanner(
+                  key: const ValueKey('roleBanner'),
+                  isPolice: GameTeam.isPolice(widget.team),
+                  onRevealNext: intro.roleBannerLeaving,
+                  onDone: intro.roleBannerDone,
+                ),
+              )
+            else if (intro != null && intro.showDispatchBanner)
+              Positioned.fill(
+                child: DispatchBanner(
+                  key: const ValueKey('dispatchBanner'),
+                  isPolice: GameTeam.isPolice(widget.team),
+                  fromFoldedScene: _sceneFolding,
+                  onDone: intro.dispatchBannerDone,
+                ),
+              )
             else
               const SizedBox.shrink(),
           ],
@@ -2697,6 +3052,9 @@ class _GamePageState extends ConsumerState<GamePage>
                 color: _isDarkMode ? AppColors.black200 : AppColors.black800,
               ),
             )
+          // 경찰 대기 중엔 나갈 수 없어 나가기 버튼을 두지 않는다
+          : _policeHeldBeforeDispatch
+          ? null
           : _buildAppBarIcon(
               AppIcons.gameOut,
               tooltip: l10n.buttonLeave,

@@ -97,6 +97,27 @@ class GameEventStompDatasource extends BaseStompDatasource {
     }
   }
 
+  /// 내 누적 이동 거리 서버 전송 (양 팀, 팀 MVP 동점 판정용 — BE #212)
+  ///
+  /// 누적값을 보내므로 중간 전송이 유실돼도 다음 전송이 덮어쓴다.
+  void publishDistance(int gameId, double distanceMeters) {
+    if (stompClient == null || currentState != StompConnectionState.connected) {
+      if (kDebugMode) {
+        debugPrint('[$logTag] ⚠️ publishDistance 실패 - 연결되지 않음');
+      }
+      return;
+    }
+    stompClient!.send(
+      destination: '/publish/game/$gameId/distance',
+      body: jsonEncode({'distanceMeters': distanceMeters}),
+    );
+    if (kDebugMode) {
+      debugPrint(
+        '[$logTag] 📤 이동 거리 전송: ${distanceMeters.toStringAsFixed(1)}m',
+      );
+    }
+  }
+
   /// 핑 전송 — 연결돼 있으면 send 후 true, 끊겨 있으면 false.
   ///
   /// 호출자(PingNotifier)가 false면 rate-limit 카운트를 소모하지 않는다.

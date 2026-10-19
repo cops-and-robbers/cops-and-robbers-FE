@@ -61,6 +61,8 @@ class GameRulesContent extends StatelessWidget {
         _buildRule(number: '2.', content: _rule2(l10n)),
         SizedBox(height: AppSpacing.vertical12),
         _buildRule(number: '3.', content: _rule3(l10n)),
+        SizedBox(height: AppSpacing.vertical12),
+        _buildRule(number: '4.', content: _rule4(l10n)),
       ],
     );
   }
@@ -113,6 +115,17 @@ class GameRulesContent extends StatelessWidget {
       children: [
         _highlight(l10n.gameRulesZoneRuleLine1),
         TextSpan(text: l10n.gameRulesZoneRuleLine2),
+      ],
+    );
+  }
+
+  /// 대기실에서만 쓰인다 — 게임 화면 ⓘ는 시작 장면으로 다시 보여 준다.
+  InlineSpan _rule4(AppLocalizations l10n) {
+    return TextSpan(
+      children: [
+        TextSpan(text: l10n.gameRulesPingPrefix),
+        _highlight(l10n.gameRulesPingHighlight),
+        TextSpan(text: l10n.gameRulesPingSuffix),
       ],
     );
   }
