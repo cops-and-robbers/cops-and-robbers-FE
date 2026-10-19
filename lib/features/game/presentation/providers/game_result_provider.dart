@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -56,6 +57,20 @@ final gameResultDioProvider = Provider<Dio>((ref) {
       onRequiredTermsNotAgreed: () => notifyRequiredTermsNotAgreed(ref),
     ),
   );
+
+  // 전역 Dio와 같은 디버그 로그 — 없으면 결과·내 기록 요청만 로그에서 빠진다.
+  if (kDebugMode) {
+    dio.interceptors.add(
+      LogInterceptor(
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: false,
+        responseBody: true,
+        error: true,
+        logPrint: (log) => debugPrint('📡 $log'),
+      ),
+    );
+  }
 
   return dio;
 });

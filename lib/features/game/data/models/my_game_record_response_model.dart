@@ -7,7 +7,7 @@ part 'my_game_record_response_model.g.dart';
 
 /// 내 개인 기록 조회 응답 DTO
 ///
-/// `GET /api/game-results/{gameResultId}/me` 응답 (200, v2.36.0)
+/// `GET /api/game-results/{gameResultId}/me` 응답 (200, v2.36.0 · `isMvp`는 v2.39.0)
 ///
 /// 경찰은 잡히지 않고 도둑은 체포하지 않으므로(서버 `validateArrest`) 반대편 카운트는
 /// 항상 0으로 온다. 화면은 팀에 맞는 값만 골라 쓴다.
@@ -20,7 +20,8 @@ part 'my_game_record_response_model.g.dart';
 ///   "status": "ALIVE",
 ///   "arrestCount": 3,
 ///   "arrestedCount": 2,
-///   "leftAt": "2026-09-16T14:30:00+09:00"
+///   "leftAt": "2026-09-16T14:30:00+09:00",
+///   "isMvp": false
 /// }
 /// ```
 @freezed
