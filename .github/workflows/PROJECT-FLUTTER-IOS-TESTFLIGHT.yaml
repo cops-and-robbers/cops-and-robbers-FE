@@ -70,7 +70,7 @@ on:
 # 🔧 프로젝트별 설정 (아래 값들을 수정하세요)
 # ============================================
 env:
-  FLUTTER_VERSION: "3.35.5"
+  FLUTTER_VERSION: "3.38.9"
   XCODE_VERSION: "26.0" # macos-26 runner + iOS 26 SDK (TestFlight 경고 90725 대응 - 2026년 4월 필수)
   PROJECT_TYPE: "flutter"
 
