@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -52,6 +54,14 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     next.when(
       data: (page) {
         if (!mounted) return;
+        // 홈 배지는 전체 카테고리 첫 페이지를 봤을 때만 내린다 — 칩으로 거른 목록이나
+        // 뒤 페이지에는 최신 공지가 없을 수 있다.
+        if (page.currentPage == 0 &&
+            ref.read(selectedNoticeCategoryProvider) == NoticeCategory.all) {
+          unawaited(
+            ref.read(hasNewNoticeProvider.notifier).markSeen(page.items),
+          );
+        }
         if (_scrollController.hasClients) {
           _scrollController.jumpTo(0);
         }
