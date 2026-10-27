@@ -66,6 +66,9 @@ class RoutePaths {
   /// 여기도 함께 고쳐야 한다.
   static const int communityBranchIndex = 1;
 
+  /// 바텀 네비에서 홈이 몇 번째 브랜치인가 ([communityBranchIndex]와 같은 용도).
+  static const int homeBranchIndex = 0;
+
   /// 모집글 작성 화면 (커뮤니티 목록의 작성 버튼에서 진입)
   static const String communityCreate = '/community/create';
 

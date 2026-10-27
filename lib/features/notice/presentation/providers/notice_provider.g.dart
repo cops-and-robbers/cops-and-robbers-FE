@@ -98,5 +98,30 @@ final noticesNotifierProvider =
     );
 
 typedef _$NoticesNotifier = AutoDisposeAsyncNotifier<NoticePageEntity>;
+String _$hasNewNoticeHash() => r'977b8a799690162e735fe8f1d1d86d3e34098b33';
+
+/// 홈 공지 아이콘의 "새 공지" 배지
+///
+/// 서버는 읽음 상태를 들지 않는다 — 공지는 전원에게 같은 내용이라 앱이 마지막으로
+/// 본 공지 id만 기기에 저장해 비교한다(브레인 DEC-0038). 재설치하면 저장값이 사라져
+/// 옛 공지에 배지가 한 번 뜨는 것은 감수한다.
+///
+/// 홈이 셸에서 계속 watch하므로 `keepAlive`를 쓰지 않는다. 다시 받는 시점은 홈이
+/// 정한다(탭 복귀·앱 복귀).
+///
+/// Copied from [HasNewNotice].
+@ProviderFor(HasNewNotice)
+final hasNewNoticeProvider =
+    AutoDisposeAsyncNotifierProvider<HasNewNotice, bool>.internal(
+      HasNewNotice.new,
+      name: r'hasNewNoticeProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$hasNewNoticeHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$HasNewNotice = AutoDisposeAsyncNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
